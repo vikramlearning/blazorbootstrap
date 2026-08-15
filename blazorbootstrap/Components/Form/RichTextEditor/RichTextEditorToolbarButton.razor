@@ -1,12 +1,6 @@
 @namespace BlazorBootstrap
 @inherits BlazorBootstrapComponentBase
 
-<button type="button"
-        class="btn btn-outline-secondary"
-        data-editor-action="print"
-        disabled="@Disabled"
-        aria-label="@Label"
-        title="@Label"
-        data-bs-toggle="tooltip">
-    <Icon Name="@Icon" />
-</button>
+<Button @ref="saveButton1" Color="ButtonColor.Secondary" Outline="true" TooltipTitle="@Label" @onclick="OnClickAsync">
+    <Icon Name="@Icon"></Icon>
+</Button>

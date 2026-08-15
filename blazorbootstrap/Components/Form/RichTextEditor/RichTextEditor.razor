@@ -42,10 +42,10 @@
                 </div>
 
                 <div class="btn-group btn-group-sm" role="group" aria-label="Text emphasis">
-                    <button type="button" class="btn btn-outline-secondary fw-bold" data-editor-command="bold" aria-label="Bold" title="Bold">B</button>
-                    <button type="button" class="btn btn-outline-secondary fst-italic" data-editor-command="italic" aria-label="Italic" title="Italic">I</button>
-                    <button type="button" class="btn btn-outline-secondary text-decoration-underline" data-editor-command="underline" aria-label="Underline" title="Underline">U</button>
-                    <button type="button" class="btn btn-outline-secondary text-decoration-line-through" data-editor-command="strikeThrough" aria-label="Strikethrough" title="Strikethrough">S</button>
+                    <RichTextEditorToolbarButton Item="RichTextEditorToolbarItem.Bold" Disabled="@Disabled" />
+                    <RichTextEditorToolbarButton Item="RichTextEditorToolbarItem.Italic" Disabled="@Disabled" />
+                    <RichTextEditorToolbarButton Item="RichTextEditorToolbarItem.Underline" Disabled="@Disabled" />
+                    <RichTextEditorToolbarButton Item="RichTextEditorToolbarItem.Strikethrough" Disabled="@Disabled" />
                 </div>
 
                 <div class="btn-group btn-group-sm" role="group" aria-label="Text color">
@@ -73,23 +73,23 @@
                 </div>
 
                 <div class="btn-group btn-group-sm" role="group" aria-label="Alignment">
-                    <button type="button" class="btn btn-outline-secondary" data-editor-command="justifyLeft" aria-label="Align left" title="Align left"><i class="bi bi-text-left" aria-hidden="true"></i></button>
-                    <button type="button" class="btn btn-outline-secondary" data-editor-command="justifyCenter" aria-label="Align center" title="Align center"><i class="bi bi-text-center" aria-hidden="true"></i></button>
-                    <button type="button" class="btn btn-outline-secondary" data-editor-command="justifyRight" aria-label="Align right" title="Align right"><i class="bi bi-text-right" aria-hidden="true"></i></button>
-                    <button type="button" class="btn btn-outline-secondary" data-editor-command="justifyFull" aria-label="Justify text" title="Justify text"><i class="bi bi-justify" aria-hidden="true"></i></button>
+                    <RichTextEditorToolbarButton Item="RichTextEditorToolbarItem.AlignLeft" Disabled="@Disabled" />
+                    <RichTextEditorToolbarButton Item="RichTextEditorToolbarItem.AlignCenter" Disabled="@Disabled" />
+                    <RichTextEditorToolbarButton Item="RichTextEditorToolbarItem.AlignRight" Disabled="@Disabled" />
+                    <RichTextEditorToolbarButton Item="RichTextEditorToolbarItem.AlignJustify" Disabled="@Disabled" />
                 </div>
 
                 <div class="btn-group btn-group-sm" role="group" aria-label="Lists and indentation">
-                    <button type="button" class="btn btn-outline-secondary" data-editor-command="outdent" aria-label="Decrease indent" title="Decrease indent"><i class="bi bi-text-indent-left" aria-hidden="true"></i></button>
-                    <button type="button" class="btn btn-outline-secondary" data-editor-command="indent" aria-label="Increase indent" title="Increase indent"><i class="bi bi-text-indent-right" aria-hidden="true"></i></button>
-                    <button type="button" class="btn btn-outline-secondary" data-editor-command="insertOrderedList" aria-label="Numbered list" title="Numbered list"><i class="bi bi-list-ol" aria-hidden="true"></i></button>
-                    <button type="button" class="btn btn-outline-secondary" data-editor-command="insertUnorderedList" aria-label="Bulleted list" title="Bulleted list"><i class="bi bi-list-ul" aria-hidden="true"></i></button>
+                    <RichTextEditorToolbarButton Item="RichTextEditorToolbarItem.Outdent" Disabled="@Disabled" />
+                    <RichTextEditorToolbarButton Item="RichTextEditorToolbarItem.Indent" Disabled="@Disabled" />
+                    <RichTextEditorToolbarButton Item="RichTextEditorToolbarItem.OrderedList" Disabled="@Disabled" />
+                    <RichTextEditorToolbarButton Item="RichTextEditorToolbarItem.UnorderedList" Disabled="@Disabled" />
                 </div>
 
                 <div class="btn-group btn-group-sm" role="group" aria-label="Insert content">
-                    <button type="button" class="btn btn-outline-secondary" data-editor-action="link" aria-label="Insert link" title="Insert link"><i class="bi bi-link-45deg" aria-hidden="true"></i></button>
-                    <button type="button" class="btn btn-outline-secondary" data-editor-action="image" aria-label="Insert image" title="Insert image"><i class="bi bi-image" aria-hidden="true"></i></button>
-                    <button type="button" class="btn btn-outline-secondary" data-editor-command="insertHorizontalRule" aria-label="Insert horizontal rule" title="Insert horizontal rule"><i class="bi bi-hr" aria-hidden="true"></i></button>
+                    <RichTextEditorToolbarButton Item="RichTextEditorToolbarItem.Link" Disabled="@Disabled" />
+                    <RichTextEditorToolbarButton Item="RichTextEditorToolbarItem.Image" Disabled="@Disabled" />
+                    <RichTextEditorToolbarButton Item="RichTextEditorToolbarItem.HorizontalRule" Disabled="@Disabled" />
                 </div>
 
                 <div class="dropdown">
@@ -127,10 +127,10 @@
                 </div>
 
                 <div class="btn-group btn-group-sm" role="group" aria-label="Blocks and view">
-                    <button type="button" class="btn btn-outline-secondary" data-editor-block="blockquote" aria-label="Block quote" title="Block quote"><i class="bi bi-quote" aria-hidden="true"></i></button>
-                    <button type="button" class="btn btn-outline-secondary" data-editor-block="pre" aria-label="Code block" title="Code block"><i class="bi bi-code-square" aria-hidden="true"></i></button>
-                    <button type="button" class="btn btn-outline-secondary" data-editor-command="removeFormat" aria-label="Clear formatting" title="Clear formatting"><i class="bi bi-eraser" aria-hidden="true"></i></button>
-                    <button type="button" class="btn btn-outline-secondary" data-editor-action="fullscreen" aria-label="Fullscreen" title="Fullscreen"><i class="bi bi-arrows-fullscreen" aria-hidden="true"></i></button>
+                    <RichTextEditorToolbarButton Item="RichTextEditorToolbarItem.Blockquote" Disabled="@Disabled" />
+                    <RichTextEditorToolbarButton Item="RichTextEditorToolbarItem.CodeBlock" Disabled="@Disabled" />
+                    <RichTextEditorToolbarButton Item="RichTextEditorToolbarItem.ClearFormatting" Disabled="@Disabled" />
+                    <RichTextEditorToolbarButton Item="RichTextEditorToolbarItem.Fullscreen" Disabled="@Disabled" />
                 </div>
             </div>
         </div>

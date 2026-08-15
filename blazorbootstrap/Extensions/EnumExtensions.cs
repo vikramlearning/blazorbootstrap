@@ -340,6 +340,62 @@ public static class EnumExtensions
             _ => ""
         };
 
+    public static IconName ToIconName(this RichTextEditorToolbarItem toolbarItem) =>
+        toolbarItem switch
+        {
+            RichTextEditorToolbarItem.Print => IconName.Printer,
+            RichTextEditorToolbarItem.Undo => IconName.ArrowCounterclockwise,
+            RichTextEditorToolbarItem.Redo => IconName.ArrowClockwise,
+            RichTextEditorToolbarItem.Bold => IconName.TypeBold,
+            RichTextEditorToolbarItem.Italic => IconName.TypeItalic,
+            RichTextEditorToolbarItem.Underline => IconName.TypeUnderline,
+            RichTextEditorToolbarItem.Strikethrough => IconName.TypeStrikethrough,
+            RichTextEditorToolbarItem.ClearFormatting => IconName.Eraser,
+            RichTextEditorToolbarItem.AlignLeft => IconName.TextLeft,
+            RichTextEditorToolbarItem.AlignCenter => IconName.TextCenter,
+            RichTextEditorToolbarItem.AlignRight => IconName.TextRight,
+            RichTextEditorToolbarItem.AlignJustify => IconName.Justify,
+            RichTextEditorToolbarItem.Indent => IconName.TextIndentLeft,
+            RichTextEditorToolbarItem.Outdent => IconName.TextIndentRight,
+            RichTextEditorToolbarItem.OrderedList => IconName.ListOl,
+            RichTextEditorToolbarItem.UnorderedList => IconName.ListUl,
+            RichTextEditorToolbarItem.Blockquote => IconName.Quote,
+            RichTextEditorToolbarItem.CodeBlock => IconName.Code,
+            RichTextEditorToolbarItem.Link => IconName.Link45Deg,
+            RichTextEditorToolbarItem.Image => IconName.Image,
+            RichTextEditorToolbarItem.HorizontalRule => IconName.Hr,
+            RichTextEditorToolbarItem.Table => IconName.Table,
+            _ => IconName.Type
+        };
+
+    public static string ToIconLabel(this RichTextEditorToolbarItem toolbarItem) =>
+        toolbarItem switch
+        {
+            RichTextEditorToolbarItem.Print => "Print",
+            RichTextEditorToolbarItem.Undo => "Undo",
+            RichTextEditorToolbarItem.Redo => "Redo",
+            RichTextEditorToolbarItem.Bold => "Bold",
+            RichTextEditorToolbarItem.Italic => "Italic",
+            RichTextEditorToolbarItem.Underline => "Underline",
+            RichTextEditorToolbarItem.Strikethrough => "Strikethrough",
+            RichTextEditorToolbarItem.ClearFormatting => "Clear formatting",
+            RichTextEditorToolbarItem.AlignLeft => "Align left",
+            RichTextEditorToolbarItem.AlignCenter => "Align center",
+            RichTextEditorToolbarItem.AlignRight => "Align right",
+            RichTextEditorToolbarItem.AlignJustify => "Align justify",
+            RichTextEditorToolbarItem.Indent => "Indent",
+            RichTextEditorToolbarItem.Outdent => "Outdent",
+            RichTextEditorToolbarItem.OrderedList => "Numbered list",
+            RichTextEditorToolbarItem.UnorderedList => "Bulleted list",
+            RichTextEditorToolbarItem.Blockquote => "Blockquote",
+            RichTextEditorToolbarItem.CodeBlock => "Code block",
+            RichTextEditorToolbarItem.Link => "Insert link",
+            RichTextEditorToolbarItem.Image => "Insert image",
+            RichTextEditorToolbarItem.HorizontalRule => "Insert horizontal rule",
+            RichTextEditorToolbarItem.Table => "Insert table",
+            _ => Regex.Replace(toolbarItem.ToString(), "([a-z])([A-Z])", "$1 $2")
+        };
+
     public static string ToModalFullscreenClass(this ModalFullscreen modalFullscreen) =>
         modalFullscreen switch
         {

@@ -2,44 +2,53 @@
 
 public partial class RichTextEditorToolbarButton : BlazorBootstrapComponentBase
 {
-    private IconName Icon => Item switch
-    {
-        RichTextEditorToolbarItem.Print => IconName.Printer,
-        RichTextEditorToolbarItem.Undo => IconName.ArrowCounterclockwise,
-        RichTextEditorToolbarItem.Redo => IconName.ArrowClockwise,
-        RichTextEditorToolbarItem.Bold => IconName.TypeBold,
-        RichTextEditorToolbarItem.Italic => IconName.TypeItalic,
-        RichTextEditorToolbarItem.Underline => IconName.TypeUnderline,
-        RichTextEditorToolbarItem.Strikethrough => IconName.TypeStrikethrough,
-        RichTextEditorToolbarItem.ClearFormatting => IconName.Eraser,
-        RichTextEditorToolbarItem.AlignLeft => IconName.TextLeft,
-        RichTextEditorToolbarItem.AlignCenter => IconName.TextCenter,
-        RichTextEditorToolbarItem.AlignRight => IconName.TextRight,
-        RichTextEditorToolbarItem.OrderedList => IconName.ListOl,
-        RichTextEditorToolbarItem.UnorderedList => IconName.ListUl,
-        RichTextEditorToolbarItem.Blockquote => IconName.Quote,
-        RichTextEditorToolbarItem.CodeBlock => IconName.Code,
-        RichTextEditorToolbarItem.Link => IconName.Link45Deg,
-        RichTextEditorToolbarItem.Image => IconName.Image,
-        RichTextEditorToolbarItem.Table => IconName.Table,
-        _ => IconName.Type
-    };
+    #region Fields and Constants
 
-    private string Label => Item switch
-    {
-        RichTextEditorToolbarItem.AlignLeft => "Align left",
-        RichTextEditorToolbarItem.AlignCenter => "Align center",
-        RichTextEditorToolbarItem.AlignRight => "Align right",
-        RichTextEditorToolbarItem.OrderedList => "Ordered list",
-        RichTextEditorToolbarItem.UnorderedList => "Unordered list",
-        RichTextEditorToolbarItem.ClearFormatting => "Clear formatting",
-        RichTextEditorToolbarItem.CodeBlock => "Code block",
-        _ => System.Text.RegularExpressions.Regex.Replace(Item.ToString(), "([a-z])([A-Z])", "$1 $2")
-    };
+    private Button saveButton1 = default!;
 
-    [Parameter] 
+    private DotNetObjectReference<RichTextEditorToolbarButton>? objRef;
+
+    #endregion
+
+    #region Methods
+
+    private async Task OnClickAsync()
+    {
+        Console.WriteLine($"RichTextEditorToolbarButton.OnClickAsync: {Item}");
+        if (Disabled)
+        {
+            return;
+        }
+        //await RichTextEditor?.OnToolbarButtonClickAsync(Item);
+    }
+
+    #endregion
+
+    #region Properties, Indexers
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the button is disabled.
+    /// <para>
+    /// Default is <c>false</c>.
+    /// </para>
+    /// </summary>
+    [AddedVersion("4.0.0")]
+    [DefaultValue(false)]
+    [Description("Gets or sets a value indicating whether the button is disabled.")]
+    [Parameter]
     public bool Disabled { get; set; }
 
-    [Parameter, EditorRequired] 
-    public RichTextEditorToolbarItem Item { get; set; }
+    /// <summary>
+    /// Gets or sets the toolbar item associated with the button.
+    /// <para>
+    /// Default is <see cref="RichTextEditorToolbarItem.None"/>.
+    /// </para>
+    /// </summary>
+    [AddedVersion("4.0.0")]
+    [DefaultValue(RichTextEditorToolbarItem.None)]
+    [Description("Gets or sets the toolbar item associated with the button.")]
+    [Parameter, EditorRequired]
+    public RichTextEditorToolbarItem Item { get; set; } = RichTextEditorToolbarItem.None;
+
+    #endregion
 }

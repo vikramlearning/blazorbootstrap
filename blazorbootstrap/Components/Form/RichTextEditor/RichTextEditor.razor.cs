@@ -36,22 +36,22 @@ public partial class RichTextEditor : BlazorBootstrapComponentBase
         await base.DisposeAsyncCore(disposing);
     }
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-            objRef ??= DotNetObjectReference.Create(this);
-            await RichTextEditorJsInterop.InitializeAsync(Id!, objRef, DebounceInterval, MaxLength, ReadOnly, Disabled);
-            lastRenderedValue = Value;
-        }
-        else if (lastRenderedValue != Value)
-        {
-            await RichTextEditorJsInterop.SetValueAsync(Id!, Value);
-            lastRenderedValue = Value;
-        }
+    //protected override async Task OnAfterRenderAsync(bool firstRender)
+    //{
+    //    if (firstRender)
+    //    {
+    //        objRef ??= DotNetObjectReference.Create(this);
+    //        await RichTextEditorJsInterop.InitializeAsync(Id!, objRef, DebounceInterval, MaxLength, ReadOnly, Disabled);
+    //        lastRenderedValue = Value;
+    //    }
+    //    else if (lastRenderedValue != Value)
+    //    {
+    //        await RichTextEditorJsInterop.SetValueAsync(Id!, Value);
+    //        lastRenderedValue = Value;
+    //    }
 
-        await base.OnAfterRenderAsync(firstRender);
-    }
+    //    await base.OnAfterRenderAsync(firstRender);
+    //}
 
     protected override void OnInitialized()
     {

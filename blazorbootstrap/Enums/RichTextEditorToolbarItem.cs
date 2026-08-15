@@ -5,6 +5,7 @@ namespace BlazorBootstrap;
 /// </summary>
 public enum RichTextEditorToolbarItem
 {
+    None,
     Print,
     Undo,
     Redo,
@@ -24,7 +25,7 @@ public enum RichTextEditorToolbarItem
     AlignLeft,
     AlignCenter,
     AlignRight,
-    Justify,
+    AlignJustify,
     Indent,
     Outdent,
     OrderedList,
