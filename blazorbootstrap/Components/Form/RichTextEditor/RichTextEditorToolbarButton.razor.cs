@@ -4,13 +4,20 @@ public partial class RichTextEditorToolbarButton : BlazorBootstrapComponentBase
 {
     #region Fields and Constants
 
-    private Button saveButton1 = default!;
+    private string? label => Item.ToIconLabel();
+    private IconName iconName => Item.ToIconName();
 
     private DotNetObjectReference<RichTextEditorToolbarButton>? objRef;
 
     #endregion
 
     #region Methods
+
+    protected override async Task OnInitializedAsync()
+    {
+        objRef ??= DotNetObjectReference.Create(this);
+        await base.OnInitializedAsync();
+    }
 
     private async Task OnClickAsync()
     {
@@ -19,7 +26,7 @@ public partial class RichTextEditorToolbarButton : BlazorBootstrapComponentBase
         {
             return;
         }
-        //await RichTextEditor?.OnToolbarButtonClickAsync(Item);
+        await Parent?.OnToolbarButtonClickAsync(Id!, Item)!;
     }
 
     #endregion
@@ -49,6 +56,9 @@ public partial class RichTextEditorToolbarButton : BlazorBootstrapComponentBase
     [Description("Gets or sets the toolbar item associated with the button.")]
     [Parameter, EditorRequired]
     public RichTextEditorToolbarItem Item { get; set; } = RichTextEditorToolbarItem.None;
+
+    [CascadingParameter(Name = "RichTextEditor")]
+    private RichTextEditor? Parent { get; set; }
 
     #endregion
 }

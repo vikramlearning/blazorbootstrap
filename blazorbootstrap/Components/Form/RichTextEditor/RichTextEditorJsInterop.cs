@@ -2,6 +2,15 @@ namespace BlazorBootstrap;
 
 internal sealed class RichTextEditorJsInterop : JsInteropBase
 {
+    #region Fields and Constants
+
+    public const string Clear = "clear";
+    public const string Dispose = "dispose";
+    public const string Execute = "execute";
+    public const string Focus = "focus";
+
+    #endregion
+
     #region Constructors
 
     public RichTextEditorJsInterop(IJSRuntime jsRuntime)
@@ -13,18 +22,25 @@ internal sealed class RichTextEditorJsInterop : JsInteropBase
 
     #region Methods
 
-    public Task ClearAsync(string id) => SafeInvokeVoidAsync("clear", id);
+    public async Task ClearAsync(object objRef, string editorId)
+    {
+        await SafeInvokeVoidAsync(Execute, objRef, editorId, null, "clear", null);
+    }
 
-    public Task DisposeEditorAsync(string id) => SafeInvokeVoidAsync("dispose", id);
+    public async Task DisposeAsync(object objRef, string editorId)
+    {
+        await SafeInvokeVoidAsync(Dispose, objRef, editorId);
+    }
 
-    public Task FocusAsync(string id) => SafeInvokeVoidAsync("focus", id);
+    public async Task ExecuteAsync(object objRef, string editorId, string elementId, string command, string value)
+    {
+        await SafeInvokeVoidAsync(Execute, objRef, editorId, elementId, command, value);
+    }
 
-    public Task InitializeAsync(string id, DotNetObjectReference<RichTextEditor> objRef, int debounceInterval, int? maxLength, bool readOnly, bool disabled) =>
-        SafeInvokeVoidAsync("initialize", id, objRef, debounceInterval, maxLength, readOnly, disabled);
-
-    public Task InsertImageAsync(string id, string url, string altText) => SafeInvokeVoidAsync("insertImage", id, url, altText);
-
-    public Task SetValueAsync(string id, string value) => SafeInvokeVoidAsync("setValue", id, value);
+    public async Task FocusAsync(object objRef, string editorId)
+    {
+        await SafeInvokeVoidAsync(Focus, objRef, editorId);
+    }
 
     #endregion
 }

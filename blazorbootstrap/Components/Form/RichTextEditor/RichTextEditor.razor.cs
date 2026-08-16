@@ -28,7 +28,7 @@ public partial class RichTextEditor : BlazorBootstrapComponentBase
             uploadCancellationTokenSource.Dispose();
 
             if (Id is not null)
-                await RichTextEditorJsInterop.DisposeEditorAsync(Id);
+                await RichTextEditorJsInterop.DisposeAsync(objRef, Id);
 
             objRef?.Dispose();
         }
@@ -72,14 +72,22 @@ public partial class RichTextEditor : BlazorBootstrapComponentBase
     /// </summary>
     [AddedVersion("4.0.0")]
     [Description("Clears the editor content.")]
-    public Task ClearAsync() => RichTextEditorJsInterop.ClearAsync(Id!);
+    public Task ClearAsync() => RichTextEditorJsInterop.ClearAsync(objRef!, Id!);
 
     /// <summary>
     /// Focuses the editable area.
     /// </summary>
     [AddedVersion("4.0.0")]
     [Description("Focuses the editable area.")]
-    public Task FocusAsync() => RichTextEditorJsInterop.FocusAsync(Id!);
+    public Task FocusAsync() => RichTextEditorJsInterop.FocusAsync(objRef!, Id!);
+
+    public async Task OnToolbarButtonClickAsync(string toolbarElementId, RichTextEditorToolbarItem item)
+    {
+        if (Disabled || ReadOnly)
+            return;
+
+        await RichTextEditorJsInterop.ExecuteAsync(objRef!, Id!, toolbarElementId, item.ToString()!, string.Empty);
+    }
 
     /// <summary>
     /// Raises the committed editor value callback.
@@ -155,7 +163,8 @@ public partial class RichTextEditor : BlazorBootstrapComponentBase
                 return;
             }
 
-            await RichTextEditorJsInterop.InsertImageAsync(Id!, result.Url, string.Empty);
+            //await RichTextEditorJsInterop.InsertImageAsync(Id!, result.Url, string.Empty);
+            //TODO: Insert the uploaded image into the editor
         }
         catch (OperationCanceledException)
         {
@@ -281,9 +290,11 @@ public partial class RichTextEditor : BlazorBootstrapComponentBase
     [Parameter]
     public Expression<Func<string>>? ValueExpression { get; set; }
 
-    [CascadingParameter] private EditContext? EditContext { get; set; }
+    [CascadingParameter] 
+    private EditContext? EditContext { get; set; }
 
-    [Inject] private RichTextEditorJsInterop RichTextEditorJsInterop { get; set; } = default!;
+    [Inject] 
+    private RichTextEditorJsInterop RichTextEditorJsInterop { get; set; } = default!;
 
     #endregion
 }
