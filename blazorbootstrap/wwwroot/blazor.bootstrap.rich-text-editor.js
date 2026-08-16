@@ -1,10 +1,10 @@
-window.blazorBootstrap = window.blazorBootstrap || {};
+﻿window.blazorBootstrap = window.blazorBootstrap || {};
 window.blazorBootstrap.richTextEditor = window.blazorBootstrap.richTextEditor || {};
 
 // Font size label map shared across all editor instances
 const _fontSizeLabels = { 1: '10 px', 2: '12 px', 3: '14 px', 4: '16 px', 5: '18 px', 6: '24 px', 7: '32 px' };
 
-// ─── Per-editor state ─────────────────────────────────────────────────────────
+// PER-EDITOR STATE
 
 function getEditorState(editorId) {
     return window.blazorBootstrap.richTextEditor[editorId];
@@ -48,21 +48,21 @@ function createEditorState(editorId, dotNetHelper) {
     return state;
 }
 
-// ─── DOM lookup helpers ───────────────────────────────────────────────────────
+// DOM LOOKUP HELPERS
 
-/** Finds an element with ID = editorId + '-' + suffix. */
+// Finds an element with ID = editorId + '-' + suffix.
 function el(state, suffix) {
     return document.getElementById(state.editorId + '-' + suffix);
 }
 
-/** Returns a Bootstrap Modal instance for a modal whose ID is editorId + '-' + suffix. */
+// Returns a Bootstrap Modal instance for a modal whose ID is editorId + '-' + suffix.
 function getModal(state, suffix) {
     const modalEl = el(state, suffix);
     if (!modalEl || typeof bootstrap === 'undefined') return null;
     return { instance: bootstrap.Modal.getOrCreateInstance(modalEl), element: modalEl };
 }
 
-// ─── Selection helpers ────────────────────────────────────────────────────────
+// SELECTION HELPERS
 
 function getRangeElement(container) {
     return container.nodeType === Node.TEXT_NODE ? container.parentElement : container;
@@ -76,7 +76,7 @@ function getSelectionElement(state) {
     return node instanceof Element && state.editor.contains(node) ? node : null;
 }
 
-/** Stores the editor selection before a toolbar interaction can remove it. */
+// Stores the editor selection before a toolbar interaction can remove it.
 function rememberSelection(state) {
     const selection = window.getSelection();
     if (selection && selection.rangeCount && state.editor.contains(selection.anchorNode)) {
@@ -84,7 +84,7 @@ function rememberSelection(state) {
     }
 }
 
-/** Returns focus and the saved selection to the editable area. */
+// Returns focus and the saved selection to the editable area.
 function restoreSelection(state) {
     state.editor.focus();
     if (state.savedRange) {
@@ -94,7 +94,7 @@ function restoreSelection(state) {
     }
 }
 
-/** Returns the saved range only when it still belongs to this editor. */
+// Returns the saved range only when it still belongs to this editor.
 function getSavedEditorRange(state) {
     if (!state.savedRange || !state.editor.contains(state.savedRange.commonAncestorContainer)) {
         return null;
@@ -102,7 +102,7 @@ function getSavedEditorRange(state) {
     return state.savedRange.cloneRange();
 }
 
-/** Moves the browser selection to a range and keeps the editor cache in sync. */
+// Moves the browser selection to a range and keeps the editor cache in sync.
 function setEditorRange(state, range) {
     const selection = window.getSelection();
     selection.removeAllRanges();
@@ -110,7 +110,7 @@ function setEditorRange(state, range) {
     state.savedRange = range.cloneRange();
 }
 
-/** Finds all editable blocks touched by a range, or the current block for a collapsed range. */
+// Finds all editable blocks touched by a range, or the current block for a collapsed range.
 function getRangeBlocks(state, range) {
     const blockSelector = 'p, h1, h2, h3, h4, h5, h6, li, td, th, blockquote, pre';
     if (range.collapsed) {
@@ -127,9 +127,9 @@ function getRangeBlocks(state, range) {
     });
 }
 
-// ─── Undo / Redo ──────────────────────────────────────────────────────────────
+// UNDO / REDO
 
-/** Saves the current document state for Undo before a user-visible edit. */
+// Saves the current document state for Undo before a user-visible edit.
 function recordEditorState(state) {
     if (!state.editorUndoStates.length || state.editorUndoStates[state.editorUndoStates.length - 1] !== state.editor.innerHTML) {
         state.editorUndoStates.push(state.editor.innerHTML);
@@ -138,7 +138,7 @@ function recordEditorState(state) {
     state.editorRedoStates = [];
 }
 
-/** Restores one saved state and moves the current state to the opposite stack. */
+// Restores one saved state and moves the current state to the opposite stack.
 function restoreEditorHistory(state, fromStates, toStates) {
     if (!fromStates.length) return false;
     toStates.push(state.editor.innerHTML);
@@ -155,9 +155,9 @@ function restoreEditorHistory(state, fromStates, toStates) {
     return true;
 }
 
-// ─── Change notification ──────────────────────────────────────────────────────
+// CHANGE NOTIFICATION
 
-/** Notifies the .NET side whenever the editor document changes. */
+// Notifies the .NET side whenever the editor document changes.
 function notifyEditorChange(state) {
     if (state.dotNetHelper) {
         const html = state.editor.innerHTML.replace(/\u200B/g, '');
@@ -165,7 +165,7 @@ function notifyEditorChange(state) {
     }
 }
 
-// ─── Inline formatting ────────────────────────────────────────────────────────
+// INLINE FORMATTING
 
 function unwrapElement(element) {
     const fragment = document.createDocumentFragment();
@@ -173,7 +173,7 @@ function unwrapElement(element) {
     element.replaceWith(fragment);
 }
 
-/** Tests whether the selection is fully inside one matching inline wrapper. */
+// Tests whether the selection is fully inside one matching inline wrapper.
 function getMatchingInlineWrapper(state, range, matcher) {
     const startElement = getRangeElement(range.startContainer);
     const endElement = getRangeElement(range.endContainer);
@@ -184,7 +184,7 @@ function getMatchingInlineWrapper(state, range, matcher) {
         : null;
 }
 
-/** Inserts an inline wrapper using Selection/Range APIs. */
+// Inserts an inline wrapper using Selection/Range APIs.
 function applyInlineFormat(state, createWrapper, matcher) {
     restoreSelection(state);
     const range = getSavedEditorRange(state);
@@ -221,14 +221,14 @@ function applyInlineFormat(state, createWrapper, matcher) {
     notifyEditorChange(state);
 }
 
-/** Converts a hex color to its DOM-style rgb() serialization for state checks. */
+// Converts a hex color to its DOM-style rgb() serialization for state checks.
 function rgbFromHex(value) {
     if (!/^#[0-9a-f]{6}$/i.test(value || '')) return value;
     const n = Number.parseInt(value.slice(1), 16);
     return 'rgb(' + ((n >> 16) & 255) + ', ' + ((n >> 8) & 255) + ', ' + (n & 255) + ')';
 }
 
-/** Applies a semantic tag or standard inline style to the selected text. */
+// Applies a semantic tag or standard inline style to the selected text.
 function applyInlineCommand(state, command, value) {
     const semanticCommands = {
         bold: { tag: 'strong', match: (e) => e.tagName === 'STRONG' || e.tagName === 'B' },
@@ -277,7 +277,7 @@ function applyInlineCommand(state, command, value) {
     }, def.match);
 }
 
-/** Removes known inline formatting within the selection. */
+// Removes known inline formatting within the selection.
 function clearInlineFormatting(state) {
     restoreSelection(state);
     const range = getSavedEditorRange(state);
@@ -296,9 +296,9 @@ function clearInlineFormatting(state) {
     notifyEditorChange(state);
 }
 
-// ─── Block-level commands ─────────────────────────────────────────────────────
+// BLOCK-LEVEL COMMANDS
 
-/** Applies paragraph alignment to all blocks in the selection. */
+// Applies paragraph alignment to all blocks in the selection.
 function applyAlignment(state, value) {
     restoreSelection(state);
     const range = getSavedEditorRange(state);
@@ -310,7 +310,7 @@ function applyAlignment(state, value) {
     notifyEditorChange(state);
 }
 
-/** Adjusts block indentation through its standard inline style. */
+// Adjusts block indentation through its standard inline style.
 function changeIndent(state, direction) {
     restoreSelection(state);
     const range = getSavedEditorRange(state);
@@ -326,7 +326,7 @@ function changeIndent(state, direction) {
     notifyEditorChange(state);
 }
 
-/** Turns the current block into a list item, or removes the existing list type. */
+// Turns the current block into a list item, or removes the existing list type.
 function toggleList(state, listTag) {
     restoreSelection(state);
     const range = getSavedEditorRange(state);
@@ -377,7 +377,7 @@ function toggleList(state, listTag) {
     notifyEditorChange(state);
 }
 
-/** Inserts a horizontal rule and a following paragraph at the selection. */
+// Inserts a horizontal rule and a following paragraph at the selection.
 function insertHorizontalRule(state) {
     restoreSelection(state);
     const range = getSavedEditorRange(state);
@@ -398,7 +398,7 @@ function insertHorizontalRule(state) {
     notifyEditorChange(state);
 }
 
-/** Toggles blockquote wrapping on the current paragraph or heading. */
+// Toggles blockquote wrapping on the current paragraph or heading.
 function toggleBlockQuote(state) {
     if (!state.savedRange || !state.editor.contains(state.savedRange.commonAncestorContainer)) return;
     const startElement = getRangeElement(state.savedRange.startContainer);
@@ -431,7 +431,7 @@ function toggleBlockQuote(state) {
     notifyEditorChange(state);
 }
 
-/** Replaces the current text block with a semantic block element. */
+// Replaces the current text block with a semantic block element.
 function selectBlock(state, block) {
     if (block === 'blockquote') {
         toggleBlockQuote(state);
@@ -460,9 +460,9 @@ function selectBlock(state, block) {
     notifyEditorChange(state);
 }
 
-// ─── Command router ───────────────────────────────────────────────────────────
+// COMMAND ROUTER
 
-/** Routes toolbar commands to the appropriate inline or block implementation. */
+// Routes toolbar commands to the appropriate inline or block implementation.
 function executeCommand(state, command, value = null) {
     if (['bold', 'italic', 'underline', 'strikeThrough', 'fontName', 'fontSize', 'foreColor', 'hiliteColor'].includes(command)) {
         applyInlineCommand(state, command, value);
@@ -489,9 +489,9 @@ function executeCommand(state, command, value = null) {
     }
 }
 
-// ─── Link helpers ─────────────────────────────────────────────────────────────
+// LINK HELPERS
 
-/** Normalizes allowed link formats and rejects unsafe or malformed URLs. */
+// Normalizes allowed link formats and rejects unsafe or malformed URLs.
 function normalizeLinkUrl(value) {
     const rawValue = value.trim();
     if (!rawValue) return null;
@@ -508,7 +508,7 @@ function normalizeLinkUrl(value) {
     }
 }
 
-/** Confirms that a link selection stays within one editable text block. */
+// Confirms that a link selection stays within one editable text block.
 function isLinkSelectionSafe(state, range) {
     const startElement = getRangeElement(range.startContainer);
     const endElement = getRangeElement(range.endContainer);
@@ -519,7 +519,7 @@ function isLinkSelectionSafe(state, range) {
         && !endElement.closest('pre, code');
 }
 
-/** Finds one existing editor link when the stored selection is inside it. */
+// Finds one existing editor link when the stored selection is inside it.
 function getLinkAtSelection(state) {
     if (!state.savedRange || !state.editor.contains(state.savedRange.commonAncestorContainer)) return null;
     const startLink = getRangeElement(state.savedRange.startContainer).closest('a');
@@ -527,7 +527,7 @@ function getLinkAtSelection(state) {
     return startLink && startLink === endLink && state.editor.contains(startLink) ? startLink : null;
 }
 
-/** Inserts a safe link at the saved selection. */
+// Inserts a safe link at the saved selection.
 function insertLink(state, url, text, openInNewTab) {
     restoreSelection(state);
     const range = getSavedEditorRange(state);
@@ -553,7 +553,7 @@ function insertLink(state, url, text, openInNewTab) {
     notifyEditorChange(state);
 }
 
-/** Saves edits to an existing link in the editor. */
+// Saves edits to an existing link in the editor.
 function updateLink(state, link, url, text, openInNewTab) {
     recordEditorState(state);
     link.setAttribute('href', url);
@@ -576,15 +576,11 @@ function updateLink(state, link, url, text, openInNewTab) {
     notifyEditorChange(state);
 }
 
-// ─── Link modal ───────────────────────────────────────────────────────────────
+// LINK MODAL
 
-/**
- * Opens the link modal for inserting or editing a link.
- * Modal element ID convention:  {editorId}-insert-link-modal
- * Form field IDs:                {editorId}-insert-link-url
- *                                {editorId}-insert-link-text
- *                                {editorId}-insert-link-new-tab
- */
+// Opens the link modal for inserting or editing a link.
+// Modal ID: {editorId}-insert-link-modal
+// Fields:   {editorId}-insert-link-url, -insert-link-text, -insert-link-new-tab
 function openInsertLinkModal(state) {
     if (!state.savedRange || !state.editor.contains(state.savedRange.commonAncestorContainer)) return;
     if (!isLinkSelectionSafe(state, state.savedRange)) return;
@@ -640,9 +636,9 @@ function openInsertLinkModal(state) {
     modal.instance.show();
 }
 
-// ─── Table helpers ────────────────────────────────────────────────────────────
+// TABLE HELPERS
 
-/** Resolves the active table cell from the live selection or the preserved cell. */
+// Resolves the active table cell from the live selection or the preserved cell.
 function getTableContext(state) {
     restoreSelection(state);
     const element = getSelectionElement(state);
@@ -657,7 +653,7 @@ function getTableContext(state) {
     return { table, row, cell };
 }
 
-/** Moves the selection into a specific table cell. */
+// Moves the selection into a specific table cell.
 function selectTableCell(state, cell) {
     if (!cell || !state.editor.contains(cell)) {
         state.activeTableCell = null;
@@ -673,7 +669,7 @@ function selectTableCell(state, cell) {
     state.activeTableCell = cell;
 }
 
-/** Repairs empty or incomplete rows so table actions always work with a rectangular grid. */
+// Repairs empty or incomplete rows so table actions always work with a rectangular grid.
 function normalizeTableRows(table) {
     const rows = Array.from(table.rows);
     const columnCount = Math.max(0, ...rows.map((r) => r.cells.length));
@@ -791,7 +787,7 @@ function alignTableCell(state, alignment) {
     rememberSelection(state);
 }
 
-/** Inserts a bordered data table with a semantic header row. */
+// Inserts a bordered data table with a semantic header row.
 function insertTable(state, rows, columns) {
     restoreSelection(state);
     const range = getSavedEditorRange(state);
@@ -832,14 +828,11 @@ function insertTable(state, rows, columns) {
     notifyEditorChange(state);
 }
 
-// ─── Table modal ──────────────────────────────────────────────────────────────
+// TABLE MODAL
 
-/**
- * Opens the table-dimensions modal.
- * Modal element ID convention:  {editorId}-insert-table-modal
- * Form field IDs:                {editorId}-insert-table-rows
- *                                {editorId}-insert-table-columns
- */
+// Opens the table-dimensions modal.
+// Modal ID: {editorId}-insert-table-modal
+// Fields:   {editorId}-insert-table-rows, -insert-table-columns
 function openInsertTableModal(state) {
     const modal = getModal(state, 'insert-table-modal');
     if (!modal) return;
@@ -878,7 +871,7 @@ function openInsertTableModal(state) {
     modal.instance.show();
 }
 
-// ─── Image helpers ────────────────────────────────────────────────────────────
+// IMAGE HELPERS
 
 function normalizeHttpUrl(value) {
     try {
@@ -1143,7 +1136,7 @@ function resetImageModal(state) {
     clearImageFeedback(state);
 }
 
-/** Finds an editor image from a click or a saved selection, when available. */
+// Finds an editor image from a click or a saved selection, when available.
 function getImageForEditing(state) {
     if (state.activeEditorImage && state.editor.contains(state.activeEditorImage)) return state.activeEditorImage;
     if (!state.savedRange || !state.editor.contains(state.savedRange.commonAncestorContainer)) return null;
@@ -1159,7 +1152,7 @@ function getImageForEditing(state) {
     return null;
 }
 
-/** Pre-fills the image dialog from an existing editor image without changing its source. */
+// Pre-fills the image dialog from an existing editor image without changing its source.
 function loadImageForEditing(state, image) {
     const figure = image.closest('figure');
     const imageWidthValue = Number(image.getAttribute('width')) || image.naturalWidth || image.width || 1;
@@ -1206,7 +1199,7 @@ function loadImageForEditing(state, image) {
     if (submitBtn) submitBtn.disabled = false;
 }
 
-/** Creates the requested image or figure element and inserts it at the saved editor range. */
+// Creates the requested image or figure element and inserts it at the saved editor range.
 function insertPreparedImage(state) {
     const widthInput = el(state, 'image-width');
     const heightInput = el(state, 'image-height');
@@ -1302,30 +1295,16 @@ function insertPreparedImage(state) {
     if (modal) modal.instance.hide();
 }
 
-// ─── Image modal ──────────────────────────────────────────────────────────────
+// IMAGE MODAL
 
-/**
- * Opens the image modal in insert or edit mode.
- * Modal element ID convention: {editorId}-insert-image-modal
- * All image-related element IDs follow the pattern {editorId}-{field-name}, e.g.:
- *   {editorId}-image-direct-url          {editorId}-image-alt-text
- *   {editorId}-image-upload-file         {editorId}-image-width / -image-height
- *   {editorId}-image-render-type         {editorId}-image-alignment
- *   {editorId}-image-aspect-lock         {editorId}-image-responsive
- *   {editorId}-image-caption             {editorId}-image-title-text
- *   {editorId}-image-decorative          {editorId}-image-feedback
- *   {editorId}-image-preview             {editorId}-image-options
- *   {editorId}-image-caption-group       {editorId}-insert-image-submit
- *   {editorId}-insert-image-title        {editorId}-image-url-tab
- *   {editorId}-upload-image-file         {editorId}-validate-image-url
- *   {editorId}-image-upload-progress     {editorId}-image-upload-progress-bar
- *   {editorId}-image-response-mode       {editorId}-image-response-path-group
- *   {editorId}-image-extension-whitelist {editorId}-image-upload-file-field
- *   {editorId}-image-upload-endpoint     {editorId}-image-response-path
- *   {editorId}-image-max-size            {editorId}-image-size-message
- *   {editorId}-image-upload-fields       {editorId}-image-upload-headers
- *   {editorId}-insert-image-form
- */
+// Opens the image modal in insert or edit mode.
+// Modal ID: {editorId}-insert-image-modal
+// All image field IDs use the pattern {editorId}-{field-name}, e.g. {editorId}-image-direct-url,
+// -image-alt-text, -image-width, -image-height, -image-render-type, -image-alignment,
+// -image-aspect-lock, -image-responsive, -image-caption, -image-decorative, -image-feedback,
+// -image-preview, -image-options, -insert-image-submit, -insert-image-title, -image-url-tab,
+// -upload-image-file, -validate-image-url, -image-upload-progress, -image-response-mode,
+// -image-extension-whitelist, -image-upload-endpoint, -image-max-size, -insert-image-form
 function openInsertImageModal(state) {
     const modal = getModal(state, 'insert-image-modal');
     if (!modal) return;
@@ -1419,9 +1398,9 @@ function openInsertImageModal(state) {
     modal.instance.show();
 }
 
-// ─── Print ────────────────────────────────────────────────────────────────────
+// PRINT
 
-/** Uses the native print dialog while temporarily showing only the editor content. */
+// Uses the native print dialog while temporarily showing only the editor content.
 function printEditorDocument(state) {
     const editor = state.editor;
     const editorSurface = editor.closest('section');
@@ -1492,7 +1471,7 @@ function printEditorDocument(state) {
     }
 }
 
-// ─── Toolbar click handler ────────────────────────────────────────────────────
+// TOOLBAR CLICK HANDLER
 
 function handleToolbarClick(state, event) {
     const button = event.target.closest('button');
@@ -1559,7 +1538,7 @@ function handleToolbarClick(state, event) {
     }
 }
 
-// ─── Exported module API ──────────────────────────────────────────────────────
+// EXPORTED MODULE API
 
 export function dispose(dotNetHelper, editorId) {
     const state = getEditorState(editorId);
