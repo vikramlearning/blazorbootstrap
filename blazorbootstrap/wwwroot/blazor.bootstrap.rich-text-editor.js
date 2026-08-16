@@ -82,6 +82,7 @@ function rememberSelection(state) {
     if (selection && selection.rangeCount && state.editor.contains(selection.anchorNode)) {
         state.savedRange = selection.getRangeAt(0).cloneRange();
     }
+    updateFooterContext(state);
 }
 
 // Returns focus and the saved selection to the editable area.
@@ -162,6 +163,62 @@ function notifyEditorChange(state) {
     if (state.dotNetHelper) {
         const html = state.editor.innerHTML.replace(/\u200B/g, '');
         state.dotNetHelper.invokeMethodAsync('OnEditorValueChangedAsync', html);
+    }
+    updateFooterCounts(state);
+}
+
+// FOOTER UPDATE
+
+// Updates the character/word counts and the block/font/alignment context in the footer.
+function updateFooter(state) {
+    updateFooterCounts(state);
+    updateFooterContext(state);
+}
+
+// Recalculates the character and word counts shown in the footer.
+function updateFooterCounts(state) {
+    const characterCountEl = document.getElementById(state.editorId + '-footer-character-count');
+    const wordCountEl = document.getElementById(state.editorId + '-footer-word-count');
+    if (!characterCountEl && !wordCountEl) return;
+    const text = (state.editor.innerText || '').replace(/\u200B/g, '').trim();
+    const characters = text.length;
+    const words = text ? text.split(/\s+/).length : 0;
+    if (characterCountEl) characterCountEl.textContent = characters.toLocaleString() + ' characters';
+    if (wordCountEl) wordCountEl.textContent = words.toLocaleString() + ' words';
+}
+
+// Updates the block type, font/size, and alignment labels in the footer.
+function updateFooterContext(state) {
+    const blockEl = document.getElementById(state.editorId + '-footer-block');
+    const fontEl = document.getElementById(state.editorId + '-footer-font');
+    const alignmentEl = document.getElementById(state.editorId + '-footer-alignment');
+    if (!blockEl && !fontEl && !alignmentEl) return;
+
+    const element = getSelectionElement(state);
+
+    // Block label
+    if (blockEl) {
+        const block = element && element.closest('h1, h2, h3, p, blockquote, pre, li, td, th');
+        const blockLabels = { H1: 'Heading 1', H2: 'Heading 2', H3: 'Heading 3', BLOCKQUOTE: 'Block quote', PRE: 'Code block', LI: 'List item', TD: 'Table cell', TH: 'Table header' };
+        const label = block ? (blockLabels[block.tagName] || 'Paragraph') : 'Paragraph';
+        blockEl.innerHTML = '<i class="bi bi-file-earmark-text me-1" aria-hidden="true"></i>' + label;
+    }
+
+    // Font and size label
+    if (fontEl) {
+        const fontElement = element && element.closest('[data-rte-font], font[face]');
+        const selectedFont = fontElement ? (fontElement.dataset.rteFont || fontElement.getAttribute('face') || 'Inter') : 'Inter';
+        const sizeElement = element && element.closest('[data-rte-size], font[size]');
+        const selectedSize = sizeElement ? (sizeElement.dataset.rteSize || _fontSizeLabels[sizeElement.getAttribute('size')] || '14 px') : '14 px';
+        fontEl.innerHTML = '<i class="bi bi-type me-1" aria-hidden="true"></i>' + selectedFont + ', ' + selectedSize;
+    }
+
+    // Alignment label
+    if (alignmentEl) {
+        const block = element && element.closest('h1, h2, h3, h4, h5, h6, p, li, td, th, blockquote, pre');
+        const alignment = block ? getComputedStyle(block).textAlign : 'left';
+        const alignLabel = alignment === 'center' ? 'Centered' : alignment === 'right' ? 'Right aligned' : alignment === 'justify' ? 'Justified' : 'Left aligned';
+        alignmentEl.innerHTML = '<i class="bi bi-text-left me-1" aria-hidden="true"></i>' + alignLabel;
     }
 }
 
@@ -1609,4 +1666,7 @@ export function initialize(dotNetHelper, editorId) {
 
     // Send the initial editor value to .NET
     dotNetHelper.invokeMethodAsync('OnEditorValueChangedAsync', state.editor.innerHTML.replace(/\u200B/g, ''));
+
+    // Populate the footer with the initial document state
+    updateFooter(state);
 }

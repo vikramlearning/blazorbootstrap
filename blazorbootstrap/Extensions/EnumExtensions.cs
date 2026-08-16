@@ -375,7 +375,6 @@ public static class EnumExtensions
             RichTextEditorToolbarItem.Italic => IconName.TypeItalic,
             RichTextEditorToolbarItem.Underline => IconName.TypeUnderline,
             RichTextEditorToolbarItem.Strikethrough => IconName.TypeStrikethrough,
-            RichTextEditorToolbarItem.ClearFormatting => IconName.Eraser,
             RichTextEditorToolbarItem.AlignLeft => IconName.TextLeft,
             RichTextEditorToolbarItem.AlignCenter => IconName.TextCenter,
             RichTextEditorToolbarItem.AlignRight => IconName.TextRight,
@@ -384,12 +383,14 @@ public static class EnumExtensions
             RichTextEditorToolbarItem.Outdent => IconName.TextIndentRight,
             RichTextEditorToolbarItem.OrderedList => IconName.ListOl,
             RichTextEditorToolbarItem.UnorderedList => IconName.ListUl,
-            RichTextEditorToolbarItem.Blockquote => IconName.Quote,
-            RichTextEditorToolbarItem.CodeBlock => IconName.Code,
             RichTextEditorToolbarItem.Link => IconName.Link45Deg,
             RichTextEditorToolbarItem.Image => IconName.Image,
             RichTextEditorToolbarItem.HorizontalRule => IconName.Hr,
             RichTextEditorToolbarItem.Table => IconName.Table,
+            RichTextEditorToolbarItem.Blockquote => IconName.Quote,
+            RichTextEditorToolbarItem.CodeBlock => IconName.Code,
+            RichTextEditorToolbarItem.ClearFormatting => IconName.Eraser,
+            RichTextEditorToolbarItem.Fullscreen => IconName.Fullscreen,
             _ => IconName.Type
         };
 
@@ -403,7 +404,6 @@ public static class EnumExtensions
             RichTextEditorToolbarItem.Italic => "Italic",
             RichTextEditorToolbarItem.Underline => "Underline",
             RichTextEditorToolbarItem.Strikethrough => "Strikethrough",
-            RichTextEditorToolbarItem.ClearFormatting => "Clear formatting",
             RichTextEditorToolbarItem.AlignLeft => "Align left",
             RichTextEditorToolbarItem.AlignCenter => "Align center",
             RichTextEditorToolbarItem.AlignRight => "Align right",
@@ -412,12 +412,14 @@ public static class EnumExtensions
             RichTextEditorToolbarItem.Outdent => "Outdent",
             RichTextEditorToolbarItem.OrderedList => "Numbered list",
             RichTextEditorToolbarItem.UnorderedList => "Bulleted list",
-            RichTextEditorToolbarItem.Blockquote => "Blockquote",
-            RichTextEditorToolbarItem.CodeBlock => "Code block",
             RichTextEditorToolbarItem.Link => "Insert link",
             RichTextEditorToolbarItem.Image => "Insert image",
             RichTextEditorToolbarItem.HorizontalRule => "Insert horizontal rule",
             RichTextEditorToolbarItem.Table => "Insert table",
+            RichTextEditorToolbarItem.Blockquote => "Blockquote",
+            RichTextEditorToolbarItem.CodeBlock => "Code block",
+            RichTextEditorToolbarItem.ClearFormatting => "Clear formatting",
+            RichTextEditorToolbarItem.Fullscreen => "Fullscreen",
             _ => Regex.Replace(toolbarItem.ToString(), "([a-z])([A-Z])", "$1 $2")
         };
 

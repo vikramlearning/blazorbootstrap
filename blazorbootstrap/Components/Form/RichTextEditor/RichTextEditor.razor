@@ -153,13 +153,13 @@
         <footer class="card-footer bg-body-tertiary small text-body-secondary">
             <div class="d-flex flex-wrap align-items-center gap-2">
                 <div class="d-flex flex-wrap gap-3">
-                    <span id="editor-block"><i class="bi bi-file-earmark-text me-1" aria-hidden="true"></i>Paragraph</span>
-                    <span id="editor-font" class="border-start ps-3"><i class="bi bi-type me-1" aria-hidden="true"></i>Inter, 14 px</span>
-                    <span id="editor-alignment" class="border-start ps-3"><i class="bi bi-text-left me-1" aria-hidden="true"></i>Left aligned</span>
+                    <span id="@($"{Id}-footer-block")"><i class="bi bi-file-earmark-text me-1" aria-hidden="true"></i>Paragraph</span>
+                    <span id="@($"{Id}-footer-font")" class="border-start ps-3"><i class="bi bi-type me-1" aria-hidden="true"></i>Inter, 14 px</span>
+                    <span id="@($"{Id}-footer-alignment")" class="border-start ps-3"><i class="bi bi-text-left me-1" aria-hidden="true"></i>Left aligned</span>
                 </div>
                 <div class="d-flex flex-wrap gap-3 ms-md-auto">
-                    <span id="editor-character-count">1,248 characters</span>
-                    <span id="editor-word-count" class="border-start ps-3">214 words</span>
+                    <span id="@($"{Id}-footer-character-count")"></span>
+                    <span id="@($"{Id}-footer-word-count")" class="border-start ps-3"></span>
                 </div>
             </div>
         </footer>
