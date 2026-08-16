@@ -249,6 +249,31 @@ public static class EnumExtensions
             _ => null
         };
 
+    public static string? ToCommandName(this RichTextEditorToolbarItem toolbarItem) =>
+        toolbarItem switch
+        {
+            RichTextEditorToolbarItem.Print => "print",
+            RichTextEditorToolbarItem.Undo => "undo",
+            RichTextEditorToolbarItem.Redo => "redo",
+            RichTextEditorToolbarItem.Bold => "bold",
+            RichTextEditorToolbarItem.Italic => "italic",
+            RichTextEditorToolbarItem.Underline => "underline",
+            RichTextEditorToolbarItem.Strikethrough => "strikeThrough",
+            RichTextEditorToolbarItem.ClearFormatting => "removeFormat",
+            RichTextEditorToolbarItem.AlignLeft => "justifyLeft",
+            RichTextEditorToolbarItem.AlignCenter => "justifyCenter",
+            RichTextEditorToolbarItem.AlignRight => "justifyRight",
+            RichTextEditorToolbarItem.AlignJustify => "justifyFull",
+            RichTextEditorToolbarItem.Indent => "indent",
+            RichTextEditorToolbarItem.Outdent => "outdent",
+            RichTextEditorToolbarItem.OrderedList => "insertOrderedList",
+            RichTextEditorToolbarItem.UnorderedList => "insertUnorderedList",
+            RichTextEditorToolbarItem.HorizontalRule => "insertHorizontalRule",
+            RichTextEditorToolbarItem.Blockquote => "formatBlock", // TODO: Check if this is correct, as there is no command for blockquote in execCommand
+            RichTextEditorToolbarItem.CodeBlock => "formatBlock", // TODO: Check if this is correct, as there is no command for code block in execCommand
+            _ => null
+        };
+
     public static string ToCssString(this Unit unit) =>
         unit switch
         {

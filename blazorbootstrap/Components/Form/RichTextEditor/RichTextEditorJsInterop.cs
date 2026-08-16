@@ -8,6 +8,7 @@ internal sealed class RichTextEditorJsInterop : JsInteropBase
     public const string Dispose = "dispose";
     public const string Execute = "execute";
     public const string Focus = "focus";
+    public const string Initialize = "initialize";
 
     #endregion
 
@@ -40,6 +41,11 @@ internal sealed class RichTextEditorJsInterop : JsInteropBase
     public async Task FocusAsync(object objRef, string editorId)
     {
         await SafeInvokeVoidAsync(Focus, objRef, editorId);
+    }
+
+    public async Task InitializeAsync(object objRef, string editorId)
+    {
+        await SafeInvokeVoidAsync(Initialize, objRef, editorId);
     }
 
     #endregion

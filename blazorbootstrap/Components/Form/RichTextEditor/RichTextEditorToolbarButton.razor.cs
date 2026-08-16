@@ -21,7 +21,6 @@ public partial class RichTextEditorToolbarButton : BlazorBootstrapComponentBase
 
     private async Task OnClickAsync()
     {
-        Console.WriteLine($"RichTextEditorToolbarButton.OnClickAsync: {Item}");
         if (Disabled)
         {
             return;
