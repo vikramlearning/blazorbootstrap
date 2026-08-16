@@ -35,7 +35,7 @@ export function focus(dotNetHelper, editorId) {
 export function initialize(dotNetHelper, editorId) {
     let editorEl = getOrCreate(editorId);
     if (!editorEl && !editorEl.editor) {
-        dotNetHelper.invokeMethodAsync('OnEditorValueChangedAsync', "Password prompt canceled.");
+        dotNetHelper.invokeMethodAsync('OnEditorValueChangedAsync', "<TODO>"); // TODO: Send the editor's value to the .NET side
         return;
     }
 }
