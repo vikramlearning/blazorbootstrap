@@ -28,7 +28,7 @@ public partial class RichTextEditor : BlazorBootstrapComponentBase
             uploadCancellationTokenSource.Dispose();
 
             if (Id is not null)
-                await RichTextEditorJsInterop.DisposeAsync(objRef, Id);
+                await RichTextEditorJsInterop.DisposeAsync(objRef!, Id);
 
             objRef?.Dispose();
         }
@@ -41,7 +41,7 @@ public partial class RichTextEditor : BlazorBootstrapComponentBase
         if (firstRender)
         {
             objRef ??= DotNetObjectReference.Create(this);
-            await RichTextEditorJsInterop.InitializeAsync(objRef, Id!);
+            await RichTextEditorJsInterop.InitializeAsync(objRef!, Id!);
             lastRenderedValue = Value;
         }
         //else if (lastRenderedValue != Value)

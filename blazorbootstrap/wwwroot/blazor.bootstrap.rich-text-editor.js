@@ -521,7 +521,13 @@ function selectBlock(state, block) {
 
 // Routes toolbar commands to the appropriate inline or block implementation.
 function executeCommand(state, command, value = null) {
-    if (['bold', 'italic', 'underline', 'strikeThrough', 'fontName', 'fontSize', 'foreColor', 'hiliteColor'].includes(command)) {
+    if (command === 'undo') {
+        restoreEditorHistory(state, state.editorUndoStates, state.editorRedoStates);
+    } else if (command === 'redo') {
+        restoreEditorHistory(state, state.editorRedoStates, state.editorUndoStates);
+    } else if (command === 'print') {
+        printEditorDocument(state);
+    } else if (['bold', 'italic', 'underline', 'strikeThrough', 'fontName', 'fontSize', 'foreColor', 'hiliteColor'].includes(command)) {
         applyInlineCommand(state, command, value);
     } else if (command === 'justifyLeft') {
         applyAlignment(state, 'left');
@@ -1535,14 +1541,6 @@ function handleToolbarClick(state, event) {
     if (!button) return;
 
     if (button.dataset.editorCommand) {
-        if (button.dataset.editorCommand === 'undo') {
-            restoreEditorHistory(state, state.editorUndoStates, state.editorRedoStates);
-            return;
-        }
-        if (button.dataset.editorCommand === 'redo') {
-            restoreEditorHistory(state, state.editorRedoStates, state.editorUndoStates);
-            return;
-        }
         executeCommand(state, button.dataset.editorCommand);
     } else if (button.dataset.editorBlock) {
         selectBlock(state, button.dataset.editorBlock);
