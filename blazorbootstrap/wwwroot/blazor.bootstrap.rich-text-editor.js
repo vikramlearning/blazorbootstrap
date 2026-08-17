@@ -873,15 +873,6 @@ function applyTableStyle(state, style) {
     rememberSelection(state);
 }
 
-function alignTableCell(state, alignment) {
-    const context = getTableContext(state);
-    if (!context) return;
-    recordEditorState(state);
-    context.cell.classList.remove('text-start', 'text-center', 'text-end');
-    context.cell.classList.add(alignment);
-    notifyEditorChange(state);
-    rememberSelection(state);
-}
 
 // Inserts a bordered data table with a semantic header row.
 function insertTable(state, rows, columns) {
@@ -1623,8 +1614,6 @@ function handleToolbarClick(state, event) {
         applyTableAction(state, button.dataset.editorTableAction);
     } else if (button.dataset.editorTableStyle) {
         applyTableStyle(state, button.dataset.editorTableStyle);
-    } else if (button.dataset.editorTableAlign) {
-        alignTableCell(state, button.dataset.editorTableAlign);
     } else if (button.dataset.editorAction === 'apply-text-color') {
         executeCommand(state, 'foreColor', state.selectedTextColor);
     } else if (button.dataset.editorAction === 'apply-highlight-color') {
