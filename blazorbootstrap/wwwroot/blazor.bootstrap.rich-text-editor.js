@@ -1466,7 +1466,18 @@ function openInsertImageModal(state) {
 // Uses the native print dialog while temporarily showing only the editor content.
 function printEditorDocument(state) {
     const editor = state.editor;
+    const printScopeClass = 'bb-rte-printing';
+    const printDocumentClass = 'bb-rte-print-document';
+    let printDocument;
+    const printStyle = document.createElement('style');
+    printStyle.textContent = `@media print {
+        body.${printScopeClass} * { visibility: hidden !important; }
+        body.${printScopeClass} .${printDocumentClass}, body.${printScopeClass} .${printDocumentClass} * { visibility: visible !important; }
+        body.${printScopeClass} .${printDocumentClass} { position: absolute !important; inset: 0 !important; width: auto !important; }
+        body.${printScopeClass} .${printDocumentClass} table { width: 100% !important; }
+    }`;
     const editorSurface = editor.closest('section');
+
     const toolbar = editorSurface && editorSurface.querySelector('[role="toolbar"]');
     const footer = editorSurface && editorSurface.querySelector('.card-footer');
     const hiddenElements = [toolbar, footer].filter(Boolean).map((element) => ({ element, wasHidden: element.hidden }));
@@ -1485,6 +1496,7 @@ function printEditorDocument(state) {
         element.classList.remove(...removeClasses);
         element.classList.add(...addClasses);
     };
+
     adjustPrintClasses(editor, ['p-2'], ['p-4']);
     editor.querySelectorAll('.table-responsive').forEach((e) => adjustPrintClasses(e, [], ['table-responsive']));
     editor.querySelectorAll('table').forEach((e) => adjustPrintClasses(e, ['table-sm', 'small', 'text-break']));
@@ -1521,9 +1533,18 @@ function printEditorDocument(state) {
         if (editorAttributes.contenteditable !== null) editor.setAttribute('contenteditable', editorAttributes.contenteditable);
         if (editorAttributes.role !== null) editor.setAttribute('role', editorAttributes.role);
         if (editorAttributes.ariaMultiline !== null) editor.setAttribute('aria-multiline', editorAttributes.ariaMultiline);
+        document.body.classList.remove(printScopeClass);
+        printDocument?.remove();
+        printStyle.remove();
     };
     hiddenElements.forEach(({ element }) => { element.hidden = true; });
     if (editorSurface) editorSurface.classList.remove(...removedClasses);
+    printDocument = editor.cloneNode(true);
+    printDocument.removeAttribute('id');
+    printDocument.classList.add(printDocumentClass);
+    document.body.appendChild(printDocument);
+    document.head.appendChild(printStyle);
+    document.body.classList.add(printScopeClass);
     window.addEventListener('afterprint', restoreEditorView, { once: true });
     try {
         window.focus();
