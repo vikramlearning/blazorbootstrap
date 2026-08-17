@@ -11,7 +11,7 @@ function getEditorState(editorId) {
 }
 
 function createEditorState(editorId, dotNetHelper) {
-    const editor = document.getElementById(editorId);
+    const editor = document.getElementById(editorId + '-editor');
     if (!editor) return null;
 
     // The toolbar is expected to be a sibling/ancestor element with role="toolbar"
