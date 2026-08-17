@@ -8,6 +8,7 @@ public partial class RichTextEditor : BlazorBootstrapComponentBase
     #region Fields and Constants
 
     private static readonly string[] defaultAllowedImageFileTypes = { "jpg", "jpeg", "png", "gif", "webp" };
+    private static readonly HashSet<string> safeImageFileTypes = new(StringComparer.OrdinalIgnoreCase) { "jpg", "jpeg", "png", "gif", "webp" };
     private CancellationTokenSource uploadCancellationTokenSource = new();
     private FieldIdentifier fieldIdentifier;
     private string? imageUploadError;
@@ -41,7 +42,7 @@ public partial class RichTextEditor : BlazorBootstrapComponentBase
         if (firstRender)
         {
             objRef ??= DotNetObjectReference.Create(this);
-            await RichTextEditorJsInterop.InitializeAsync(objRef!, Id!, AllowedLinkDomains);
+            await RichTextEditorJsInterop.InitializeAsync(objRef!, Id!, AllowedLinkDomains, AllowedImageDomains);
             lastRenderedValue = Value;
         }
         //else if (lastRenderedValue != Value)
@@ -127,44 +128,62 @@ public partial class RichTextEditor : BlazorBootstrapComponentBase
 
         if (ImageUploadHandler is null)
         {
-            imageUploadError = "An image upload handler is not configured.";
-            await OnEditorStatusChangedAsync(imageUploadError);
+            await SetImageUploadErrorAsync("An image upload handler is not configured.");
             return;
         }
 
-        var extension = Path.GetExtension(file.Name).TrimStart('.');
+        if (MaxImageFileSize <= 0)
+        {
+            await SetImageUploadErrorAsync("The maximum image size must be greater than zero.");
+            return;
+        }
+
+        var extension = Path.GetExtension(file.Name).TrimStart('.').ToLowerInvariant();
         if (!NormalizedAllowedImageFileTypes.Contains(extension))
         {
-            imageUploadError = "The selected image type is not allowed.";
-            await OnEditorStatusChangedAsync(imageUploadError);
+            await SetImageUploadErrorAsync("The selected image type is not allowed.");
             return;
         }
 
-        if (file.Size > MaxImageFileSize)
+        if (file.Size == 0 || file.Size > MaxImageFileSize)
         {
-            imageUploadError = "The selected image exceeds the maximum allowed size.";
-            await OnEditorStatusChangedAsync(imageUploadError);
+            await SetImageUploadErrorAsync("The selected image exceeds the maximum allowed size.");
+            return;
+        }
+
+        if (!HasExpectedImageContentType(file.ContentType, extension))
+        {
+            await SetImageUploadErrorAsync("The selected file does not have the expected image content type.");
             return;
         }
 
         uploadCancellationTokenSource.Cancel();
         uploadCancellationTokenSource.Dispose();
         uploadCancellationTokenSource = new CancellationTokenSource();
+        var cancellationToken = uploadCancellationTokenSource.Token;
 
         try
         {
-            var request = new RichTextEditorImageUploadRequest(file, string.Empty, uploadCancellationTokenSource.Token);
-            var result = await ImageUploadHandler.Invoke(request);
-
-            if (result is null || !Uri.TryCreate(result.Url, UriKind.Absolute, out var uri) || uri.Scheme != Uri.UriSchemeHttps)
+            if (!await HasExpectedImageSignatureAsync(file, extension, cancellationToken))
             {
-                imageUploadError = "The upload did not return a valid HTTPS image URL.";
-                await OnEditorStatusChangedAsync(imageUploadError);
+                await SetImageUploadErrorAsync("The selected file content does not match its image type.");
                 return;
             }
 
-            //await RichTextEditorJsInterop.InsertImageAsync(Id!, result.Url, string.Empty);
-            //TODO: Insert the uploaded image into the editor
+            var request = new RichTextEditorImageUploadRequest(file, string.Empty, cancellationToken);
+            var result = await ImageUploadHandler.Invoke(request);
+
+            if (cancellationToken.IsCancellationRequested)
+                return;
+
+            if (result is null || !IsAllowedHttpsImageUrl(result.Url))
+            {
+                await SetImageUploadErrorAsync("The upload did not return a permitted HTTPS image URL.");
+                return;
+            }
+
+            await RichTextEditorJsInterop.PrepareUploadedImageAsync(Id!, result.Url);
+            await OnEditorStatusChangedAsync("Image uploaded. Review its accessibility options, then insert it.");
         }
         catch (OperationCanceledException)
         {
@@ -172,9 +191,70 @@ public partial class RichTextEditor : BlazorBootstrapComponentBase
         }
         catch (Exception)
         {
-            imageUploadError = "The image could not be uploaded.";
-            await OnEditorStatusChangedAsync(imageUploadError);
+            await SetImageUploadErrorAsync("The image could not be uploaded.");
         }
+    }
+
+    private static bool HasExpectedImageContentType(string? contentType, string extension) =>
+        extension switch
+        {
+            "jpg" or "jpeg" => string.Equals(contentType, "image/jpeg", StringComparison.OrdinalIgnoreCase),
+            "png" => string.Equals(contentType, "image/png", StringComparison.OrdinalIgnoreCase),
+            "gif" => string.Equals(contentType, "image/gif", StringComparison.OrdinalIgnoreCase),
+            "webp" => string.Equals(contentType, "image/webp", StringComparison.OrdinalIgnoreCase),
+            _ => false
+        };
+
+    private static async Task<bool> HasExpectedImageSignatureAsync(IBrowserFile file, string extension, CancellationToken cancellationToken)
+    {
+        var header = new byte[12];
+        await using var stream = file.OpenReadStream(file.Size, cancellationToken);
+        var bytesRead = await stream.ReadAsync(header.AsMemory(), cancellationToken);
+
+        return extension switch
+        {
+            "jpg" or "jpeg" => bytesRead >= 3 && header[0] == 0xFF && header[1] == 0xD8 && header[2] == 0xFF,
+            "png" => bytesRead >= 8 && header[0] == 0x89 && header[1] == 0x50 && header[2] == 0x4E && header[3] == 0x47 && header[4] == 0x0D && header[5] == 0x0A && header[6] == 0x1A && header[7] == 0x0A,
+            "gif" => bytesRead >= 6 && header[0] == 0x47 && header[1] == 0x49 && header[2] == 0x46 && header[3] == 0x38 && (header[4] == 0x37 || header[4] == 0x39) && header[5] == 0x61,
+            "webp" => bytesRead >= 12 && header[0] == 0x52 && header[1] == 0x49 && header[2] == 0x46 && header[3] == 0x46 && header[8] == 0x57 && header[9] == 0x45 && header[10] == 0x42 && header[11] == 0x50,
+            _ => false
+        };
+    }
+
+    private bool IsAllowedHttpsImageUrl(string value)
+    {
+        if (!Uri.TryCreate(value, UriKind.Absolute, out var uri)
+            || uri.Scheme != Uri.UriSchemeHttps
+            || !string.IsNullOrEmpty(uri.UserInfo)
+            || string.IsNullOrWhiteSpace(uri.Host))
+            return false;
+
+        var configuredDomains = AllowedImageDomains?.Where(domain => !string.IsNullOrWhiteSpace(domain)).ToArray() ?? Array.Empty<string>();
+        if (configuredDomains.Length == 0)
+            return true;
+
+        var host = uri.Host.TrimEnd('.');
+        return configuredDomains
+            .Select(NormalizeDomain)
+            .Where(domain => domain is not null)
+            .Any(domain => host.Equals(domain, StringComparison.OrdinalIgnoreCase) || host.EndsWith($".{domain}", StringComparison.OrdinalIgnoreCase));
+    }
+
+    private static string? NormalizeDomain(string domain)
+    {
+        var candidate = domain.Trim().TrimEnd('.');
+        if (candidate.StartsWith("*.", StringComparison.Ordinal))
+            candidate = candidate[2..];
+        if (Uri.TryCreate(candidate, UriKind.Absolute, out var uri))
+            candidate = uri.Host;
+        return Uri.CheckHostName(candidate) is UriHostNameType.Dns or UriHostNameType.IPv4 or UriHostNameType.IPv6 ? candidate : null;
+    }
+
+    private async Task SetImageUploadErrorAsync(string message)
+    {
+        imageUploadError = message;
+        await RichTextEditorJsInterop.ShowImageUploadErrorAsync(Id!, message);
+        await OnEditorStatusChangedAsync(message);
     }
 
     private static string ToPlainText(string html) => System.Net.WebUtility.HtmlDecode(System.Text.RegularExpressions.Regex.Replace(html, "<[^>]+>", " ")).Trim();
@@ -189,12 +269,12 @@ public partial class RichTextEditor : BlazorBootstrapComponentBase
 
     private string EditorId => $"{Id}-editor";
 
-    private string ImageInputId => $"{Id}-image-input";
+    private string ImageInputId => $"{Id}-image-upload-file";
 
     private HashSet<string> NormalizedAllowedImageFileTypes =>
         (AllowedImageFileTypes ?? defaultAllowedImageFileTypes)
             .Select(fileType => fileType.Trim().TrimStart('.').ToLowerInvariant())
-            .Where(fileType => !string.IsNullOrWhiteSpace(fileType))
+            .Where(fileType => safeImageFileTypes.Contains(fileType))
             .ToHashSet(StringComparer.OrdinalIgnoreCase);
 
     /// <summary>Gets or sets the accessible label for the editor.</summary>
@@ -215,6 +295,12 @@ public partial class RichTextEditor : BlazorBootstrapComponentBase
     [Description("Gets or sets the permitted HTTP(S) link domains. Subdomains are also permitted.")]
     [Parameter]
     public IEnumerable<string>? AllowedLinkDomains { get; set; }
+
+    /// <summary>Gets or sets the permitted HTTPS image domains. Subdomains are also permitted.</summary>
+    [AddedVersion("4.0.0")]
+    [Description("Gets or sets the permitted HTTPS image domains. Subdomains are also permitted.")]
+    [Parameter]
+    public IEnumerable<string>? AllowedImageDomains { get; set; }
 
     /// <summary>Gets or sets the delay, in milliseconds, before editor changes are raised.</summary>
     [AddedVersion("4.0.0")]

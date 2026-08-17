@@ -10,7 +10,7 @@ function getEditorState(editorId) {
     return window.blazorBootstrap.richTextEditor[editorId];
 }
 
-function createEditorState(editorId, dotNetHelper, allowedLinkDomains) {
+function createEditorState(editorId, dotNetHelper, allowedLinkDomains, allowedImageDomains) {
     const editor = document.getElementById(editorId + '-editor');
     if (!editor) return null;
 
@@ -31,6 +31,8 @@ function createEditorState(editorId, dotNetHelper, allowedLinkDomains) {
         selectedTextColor: '#212529',
         selectedHighlightColor: '#ffc107',
         allowedLinkDomains: normalizeAllowedLinkDomains(allowedLinkDomains),
+        allowedImageDomains: normalizeAllowedLinkDomains(allowedImageDomains),
+        hasImageDomainAllowList: Array.from(allowedImageDomains || []).some((domain) => String(domain).trim()),
         linkBeingEdited: null,
         preparedImage: null,
         imageBeingEdited: null,
@@ -550,6 +552,8 @@ function executeCommand(state, command, value = null) {
         insertHorizontalRule(state);
     } else if (command === 'link') {
         openInsertLinkModal(state);
+    } else if (command === 'image') {
+        openInsertImageModal(state);
     } else if (command === 'blockquote') {
         toggleBlockQuote(state);
     } else if (command === 'codeBlock') {
@@ -570,10 +574,17 @@ function executeCommand(state, command, value = null) {
 
 function normalizeAllowedLinkDomains(domains) {
     return Array.from(domains || [])
-        .map((domain) => String(domain).trim().toLowerCase().replace(/^\*\./, ''))
+        .map((domain) => String(domain).trim().replace(/^\*\./, '').replace(/\.$/, ''))
+        .map((domain) => {
+            try {
+                return /^[a-z][a-z0-9+.-]*:\/\//i.test(domain) ? new URL(domain).hostname : domain;
+            } catch (e) {
+                return '';
+            }
+        })
+        .map((domain) => domain.toLowerCase())
         .filter((domain) => /^[a-z0-9](?:[a-z0-9-]*[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]*[a-z0-9])?)*$/i.test(domain));
 }
-
 function isAllowedLinkUrl(url, allowedLinkDomains) {
     if (!allowedLinkDomains.length || !/^https?:/i.test(url)) return true;
     const hostname = new URL(url).hostname.toLowerCase();
@@ -960,15 +971,6 @@ function openInsertTableModal(state) {
 
 // IMAGE HELPERS
 
-function normalizeHttpUrl(value) {
-    try {
-        const parsedUrl = new URL(value.trim());
-        return parsedUrl.protocol === 'http:' || parsedUrl.protocol === 'https:' ? parsedUrl.href : null;
-    } catch (e) {
-        return null;
-    }
-}
-
 function getImageUrlExtension(url) {
     try {
         const filename = new URL(url).pathname.split('/').pop() || '';
@@ -981,16 +983,28 @@ function getImageUrlExtension(url) {
 
 function getAllowedImageExtensions(state) {
     const input = el(state, 'image-extension-whitelist');
-    const value = input ? input.value : 'png, jpg, jpeg, gif, webp';
-    return value.toLowerCase().split(',').map((ext) => ext.trim().replace(/^\./, '')).filter(Boolean);
+    return (input ? input.value : '').toLowerCase().split(',').map((ext) => ext.trim().replace(/^\./, '')).filter(Boolean);
+}
+
+function isAllowedImageUrl(url, state) {
+    if (!state.hasImageDomainAllowList) return true;
+    const hostname = new URL(url).hostname.toLowerCase();
+    return state.allowedImageDomains.some((domain) => hostname === domain || hostname.endsWith('.' + domain));
 }
 
 function normalizeImageUrl(state, value) {
-    const url = normalizeHttpUrl(value);
-    const extension = url ? getImageUrlExtension(url) : '';
-    return url && (!extension || getAllowedImageExtensions(state).includes(extension)) ? url : null;
+    const rawValue = value.trim();
+    if (!rawValue || /\s/.test(rawValue)) return null;
+    try {
+        const parsedUrl = new URL(rawValue);
+        if (parsedUrl.protocol !== 'https:' || parsedUrl.username || parsedUrl.password || !isAllowedImageUrl(parsedUrl.href, state)) return null;
+        const extension = getImageUrlExtension(parsedUrl.href);
+        const allowedExtensions = getAllowedImageExtensions(state);
+        return (!extension || allowedExtensions.includes(extension)) ? parsedUrl.href : null;
+    } catch (e) {
+        return null;
+    }
 }
-
 function loadImageDetails(url) {
     return new Promise((resolve, reject) => {
         const probe = new Image();
@@ -1016,7 +1030,7 @@ function clearImageFeedback(state) {
 
 async function prepareImagePreview(state, value) {
     const url = normalizeImageUrl(state, value);
-    if (!url) throw new Error('Enter a valid HTTP or HTTPS image URL with an allowed extension.');
+    if (!url) throw new Error('Enter a valid permitted HTTPS image URL with an allowed extension.');
     const details = await loadImageDetails(url);
     state.preparedImage = details;
     const preview = el(state, 'image-preview');
@@ -1045,150 +1059,6 @@ function updateImageAspectRatio(state, changedDimension) {
     } else if (changedDimension === 'height' && Number.isFinite(height) && height > 0) {
         if (widthInput) widthInput.value = Math.max(1, Math.round(height * state.preparedImage.width / state.preparedImage.height));
     }
-}
-
-function parseJsonObject(value, label) {
-    if (!value.trim()) return {};
-    try {
-        const parsed = JSON.parse(value);
-        if (!parsed || Array.isArray(parsed) || typeof parsed !== 'object') throw new Error();
-        return parsed;
-    } catch (e) {
-        throw new Error(label + ' must be a valid JSON object.');
-    }
-}
-
-function getImageUploadConfiguration(state, requireEndpoint) {
-    const allowedExtensions = getAllowedImageExtensions(state);
-    const maxSizeInput = el(state, 'image-max-size');
-    const maximumSize = Number(maxSizeInput ? maxSizeInput.value : 5);
-    const endpointInput = el(state, 'image-upload-endpoint');
-    const fileFieldInput = el(state, 'image-upload-file-field');
-    const responseModeInput = el(state, 'image-response-mode');
-    const responsePathInput = el(state, 'image-response-path');
-    const sizeMsgInput = el(state, 'image-size-message');
-    const fieldsInput = el(state, 'image-upload-fields');
-    const headersInput = el(state, 'image-upload-headers');
-    const configuration = {
-        endpoint: endpointInput ? endpointInput.value.trim() : '',
-        fileField: fileFieldInput ? fileFieldInput.value.trim() : 'file',
-        responseMode: responseModeInput ? responseModeInput.value : 'json',
-        responsePath: responsePathInput ? responsePathInput.value.trim() : 'data.url',
-        allowedExtensions,
-        maximumSize,
-        sizeMessage: sizeMsgInput ? sizeMsgInput.value.trim() : '',
-        fields: parseJsonObject(fieldsInput ? fieldsInput.value : '', 'Additional multipart fields'),
-        headers: parseJsonObject(headersInput ? headersInput.value : '', 'Request headers')
-    };
-    if (!allowedExtensions.length) throw new Error('Add at least one allowed image extension.');
-    if (!Number.isFinite(maximumSize) || maximumSize <= 0) throw new Error('Enter a maximum upload size greater than zero.');
-    if (!configuration.fileField) throw new Error('Enter the multipart file field name.');
-    if (configuration.responseMode === 'json' && !configuration.responsePath) throw new Error('Enter the JSON path that contains the uploaded image URL.');
-    if (Object.keys(configuration.headers).some((h) => h.toLowerCase() === 'content-type')) throw new Error('Do not set Content-Type; the browser supplies the multipart boundary.');
-    if (requireEndpoint && !normalizeHttpUrl(configuration.endpoint)) throw new Error('Enter a valid HTTP or HTTPS POST endpoint.');
-    return configuration;
-}
-
-function getResponseValue(response, path) {
-    return path.replace(/\[(\d+)\]/g, '.$1').split('.').filter(Boolean)
-        .reduce((value, key) => value == null ? undefined : value[key], response);
-}
-
-function getUploadedImageUrl(responseText, configuration) {
-    let responseUrl = '';
-    if (configuration.responseMode === 'text') {
-        responseUrl = responseText.trim();
-    } else {
-        try {
-            const response = JSON.parse(responseText);
-            const value = getResponseValue(response, configuration.responsePath);
-            responseUrl = typeof value === 'string' ? value.trim() : '';
-        } catch (e) {
-            return '';
-        }
-    }
-    try {
-        return responseUrl ? new URL(responseUrl, configuration.endpoint).href : '';
-    } catch (e) {
-        return '';
-    }
-}
-
-function validateImageFile(file, configuration) {
-    if (!file) return 'Choose an image file to upload.';
-    const extension = file.name.split('.').pop().toLowerCase();
-    if (!configuration.allowedExtensions.includes(extension)) {
-        return 'Choose a file with one of these extensions: ' + configuration.allowedExtensions.join(', ') + '.';
-    }
-    if (file.type && !file.type.startsWith('image/')) return 'Choose a valid image file.';
-    if (file.size > configuration.maximumSize * 1024 * 1024) {
-        return (configuration.sizeMessage || 'Choose an image smaller than {max} MB.').replace('{max}', configuration.maximumSize);
-    }
-    return '';
-}
-
-function setUploadProgress(state, value) {
-    const progressEl = el(state, 'image-upload-progress');
-    const barEl = el(state, 'image-upload-progress-bar');
-    if (!progressEl || !barEl) return;
-    const percent = Math.max(0, Math.min(100, Math.round(value)));
-    progressEl.classList.remove('d-none');
-    progressEl.setAttribute('aria-valuenow', String(percent));
-    barEl.style.width = percent + '%';
-    barEl.textContent = percent + '%';
-}
-
-function uploadSelectedImage(state) {
-    let configuration;
-    try {
-        configuration = getImageUploadConfiguration(state, true);
-    } catch (err) {
-        showImageFeedback(state, err.message);
-        return;
-    }
-    const fileInput = el(state, 'image-upload-file');
-    const fileError = validateImageFile(fileInput && fileInput.files[0], configuration);
-    if (fileError) {
-        showImageFeedback(state, fileError);
-        return;
-    }
-    clearImageFeedback(state);
-    const uploadBtn = el(state, 'upload-image-file');
-    if (uploadBtn) uploadBtn.disabled = true;
-    setUploadProgress(state, 0);
-    const formData = new FormData();
-    formData.append(configuration.fileField, fileInput.files[0], fileInput.files[0].name);
-    Object.entries(configuration.fields).forEach(([key, val]) =>
-        formData.append(key, val && typeof val === 'object' ? JSON.stringify(val) : String(val)));
-    const request = new XMLHttpRequest();
-    request.open('POST', configuration.endpoint, true);
-    Object.entries(configuration.headers).forEach(([header, val]) => request.setRequestHeader(header, String(val)));
-    request.upload.addEventListener('progress', (event) => {
-        if (event.lengthComputable) setUploadProgress(state, event.loaded / event.total * 100);
-    });
-    request.addEventListener('load', async () => {
-        if (uploadBtn) uploadBtn.disabled = false;
-        if (request.status < 200 || request.status >= 300) {
-            showImageFeedback(state, 'Upload failed with status ' + request.status + '.');
-            return;
-        }
-        const uploadedUrl = getUploadedImageUrl(request.responseText, configuration);
-        if (!uploadedUrl) {
-            showImageFeedback(state, 'The upload response did not contain an image URL at the configured location.');
-            return;
-        }
-        try {
-            await prepareImagePreview(state, uploadedUrl);
-            setUploadProgress(state, 100);
-        } catch (err) {
-            showImageFeedback(state, err.message);
-        }
-    });
-    request.addEventListener('error', () => {
-        if (uploadBtn) uploadBtn.disabled = false;
-        showImageFeedback(state, 'The upload request failed. Check the endpoint, CORS policy, and network connection.');
-    });
-    request.send(formData);
 }
 
 function resetImageModal(state) {
@@ -1241,11 +1111,16 @@ function getImageForEditing(state) {
 
 // Pre-fills the image dialog from an existing editor image without changing its source.
 function loadImageForEditing(state, image) {
+    const url = normalizeImageUrl(state, image.currentSrc || image.src);
+    if (!url) {
+        showImageFeedback(state, 'This image URL is not permitted by the current security policy.');
+        return false;
+    }
     const figure = image.closest('figure');
     const imageWidthValue = Number(image.getAttribute('width')) || image.naturalWidth || image.width || 1;
     const imageHeightValue = Number(image.getAttribute('height')) || image.naturalHeight || image.height || 1;
     state.preparedImage = {
-        url: image.currentSrc || image.src,
+        url,
         width: image.naturalWidth || imageWidthValue,
         height: image.naturalHeight || imageHeightValue
     };
@@ -1284,6 +1159,7 @@ function loadImageForEditing(state, image) {
     if (titleText) titleText.value = image.title || '';
     if (responsive) responsive.checked = image.classList.contains('img-fluid');
     if (submitBtn) submitBtn.disabled = false;
+    return true;
 }
 
 // Creates the requested image or figure element and inserts it at the saved editor range.
@@ -1386,12 +1262,7 @@ function insertPreparedImage(state) {
 
 // Opens the image modal in insert or edit mode.
 // Modal ID: {editorId}-insert-image-modal
-// All image field IDs use the pattern {editorId}-{field-name}, e.g. {editorId}-image-direct-url,
-// -image-alt-text, -image-width, -image-height, -image-render-type, -image-alignment,
-// -image-aspect-lock, -image-responsive, -image-caption, -image-decorative, -image-feedback,
-// -image-preview, -image-options, -insert-image-submit, -insert-image-title, -image-url-tab,
-// -upload-image-file, -validate-image-url, -image-upload-progress, -image-response-mode,
-// -image-extension-whitelist, -image-upload-endpoint, -image-max-size, -insert-image-form
+// The host application owns file uploads through ImageUploadHandler; this modal does not expose browser upload endpoints or headers.
 function openInsertImageModal(state) {
     const modal = getModal(state, 'insert-image-modal');
     if (!modal) return;
@@ -1416,10 +1287,6 @@ function openInsertImageModal(state) {
         modal.element._rteHandlersAttached = true;
 
         const validateUrlBtn = el(state, 'validate-image-url');
-        const uploadFileBtn = el(state, 'upload-image-file');
-        const responseModeEl = el(state, 'image-response-mode');
-        const responsePathGroupEl = el(state, 'image-response-path-group');
-        const extensionWhitelistEl = el(state, 'image-extension-whitelist');
         const decorativeEl = el(state, 'image-decorative');
         const altTextEl = el(state, 'image-alt-text');
         const renderTypeEl = el(state, 'image-render-type');
@@ -1436,20 +1303,6 @@ function openInsertImageModal(state) {
                 } catch (err) {
                     showImageFeedback(state, err.message);
                 }
-            });
-        }
-        if (uploadFileBtn) {
-            uploadFileBtn.addEventListener('click', () => uploadSelectedImage(state));
-        }
-        if (responseModeEl && responsePathGroupEl) {
-            responseModeEl.addEventListener('change', () => {
-                responsePathGroupEl.classList.toggle('d-none', responseModeEl.value !== 'json');
-            });
-        }
-        if (extensionWhitelistEl) {
-            extensionWhitelistEl.addEventListener('input', () => {
-                const fileInput = el(state, 'image-upload-file');
-                if (fileInput) fileInput.accept = getAllowedImageExtensions(state).map((ext) => '.' + ext).join(',');
             });
         }
         if (decorativeEl && altTextEl) {
@@ -1671,8 +1524,22 @@ export function focus(dotNetHelper, editorId) {
     state.editor.focus();
 }
 
-export function initialize(dotNetHelper, editorId, allowedLinkDomains) {
-    const state = createEditorState(editorId, dotNetHelper, allowedLinkDomains);
+export async function prepareUploadedImage(editorId, imageUrl) {
+    const state = getEditorState(editorId);
+    if (!state) return;
+    try {
+        await prepareImagePreview(state, imageUrl);
+    } catch (err) {
+        showImageFeedback(state, 'The uploaded image could not be loaded.');
+    }
+}
+
+export function showImageUploadError(editorId, message) {
+    const state = getEditorState(editorId);
+    if (state) showImageFeedback(state, message);
+}
+export function initialize(dotNetHelper, editorId, allowedLinkDomains, allowedImageDomains) {
+    const state = createEditorState(editorId, dotNetHelper, allowedLinkDomains, allowedImageDomains);
     if (!state || !state.editor) {
         dotNetHelper.invokeMethodAsync('OnEditorValueChangedAsync', '');
         return;

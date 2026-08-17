@@ -9,6 +9,8 @@ internal sealed class RichTextEditorJsInterop : JsInteropBase
     public const string Execute = "execute";
     public const string Focus = "focus";
     public const string Initialize = "initialize";
+    public const string PrepareUploadedImage = "prepareUploadedImage";
+    public const string ShowImageUploadError = "showImageUploadError";
 
     #endregion
 
@@ -44,9 +46,19 @@ internal sealed class RichTextEditorJsInterop : JsInteropBase
         await SafeInvokeVoidAsync(Focus, objRef, editorId);
     }
 
-    public async Task InitializeAsync(object objRef, string editorId, IEnumerable<string>? allowedLinkDomains)
+    public async Task InitializeAsync(object objRef, string editorId, IEnumerable<string>? allowedLinkDomains, IEnumerable<string>? allowedImageDomains)
     {
-        await SafeInvokeVoidAsync(Initialize, objRef, editorId, allowedLinkDomains);
+        await SafeInvokeVoidAsync(Initialize, objRef, editorId, allowedLinkDomains, allowedImageDomains);
+    }
+
+    public async Task PrepareUploadedImageAsync(string editorId, string imageUrl)
+    {
+        await SafeInvokeVoidAsync(PrepareUploadedImage, editorId, imageUrl);
+    }
+
+    public async Task ShowImageUploadErrorAsync(string editorId, string message)
+    {
+        await SafeInvokeVoidAsync(ShowImageUploadError, editorId, message);
     }
 
     #endregion
