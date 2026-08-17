@@ -550,6 +550,8 @@ function executeCommand(state, command, value = null) {
         insertHorizontalRule(state);
     } else if (command === 'link') {
         openInsertLinkModal(state);
+    } else if (command === 'blockquote') {
+        toggleBlockQuote(state);
     } else if (command === 'removeFormat') {
         clearInlineFormatting(state);
     }
