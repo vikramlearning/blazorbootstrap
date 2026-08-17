@@ -548,6 +548,8 @@ function executeCommand(state, command, value = null) {
         toggleList(state, 'ul');
     } else if (command === 'insertHorizontalRule') {
         insertHorizontalRule(state);
+    } else if (command === 'link') {
+        openInsertLinkModal(state);
     } else if (command === 'removeFormat') {
         clearInlineFormatting(state);
     }

@@ -1,4 +1,4 @@
-﻿namespace BlazorBootstrap;
+namespace BlazorBootstrap;
 
 /// <summary>
 /// Enum extensions
@@ -268,6 +268,7 @@ public static class EnumExtensions
             RichTextEditorToolbarItem.Outdent => "outdent",
             RichTextEditorToolbarItem.OrderedList => "insertOrderedList",
             RichTextEditorToolbarItem.UnorderedList => "insertUnorderedList",
+            RichTextEditorToolbarItem.Link => "link",
             RichTextEditorToolbarItem.HorizontalRule => "insertHorizontalRule",
             RichTextEditorToolbarItem.Blockquote => "formatBlock", // TODO: Check if this is correct, as there is no command for blockquote in execCommand
             RichTextEditorToolbarItem.CodeBlock => "formatBlock", // TODO: Check if this is correct, as there is no command for code block in execCommand
