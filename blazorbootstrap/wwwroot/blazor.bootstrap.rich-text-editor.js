@@ -554,6 +554,13 @@ function executeCommand(state, command, value = null) {
         toggleBlockQuote(state);
     } else if (command === 'codeBlock') {
         selectBlock(state, 'pre');
+    } else if (command === 'fullscreen') {
+        const surface = state.editor.closest('section');
+        if (document.fullscreenElement) {
+            document.exitFullscreen();
+        } else if (surface && surface.requestFullscreen) {
+            surface.requestFullscreen();
+        }
     } else if (command === 'removeFormat') {
         clearInlineFormatting(state);
     }

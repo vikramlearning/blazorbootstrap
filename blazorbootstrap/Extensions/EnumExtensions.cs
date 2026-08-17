@@ -272,6 +272,7 @@ public static class EnumExtensions
             RichTextEditorToolbarItem.HorizontalRule => "insertHorizontalRule",
             RichTextEditorToolbarItem.Blockquote => "blockquote",
             RichTextEditorToolbarItem.CodeBlock => "codeBlock",
+            RichTextEditorToolbarItem.Fullscreen => "fullscreen",
             _ => null
         };
 
