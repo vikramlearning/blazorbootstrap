@@ -552,6 +552,8 @@ function executeCommand(state, command, value = null) {
         openInsertLinkModal(state);
     } else if (command === 'blockquote') {
         toggleBlockQuote(state);
+    } else if (command === 'codeBlock') {
+        selectBlock(state, 'pre');
     } else if (command === 'removeFormat') {
         clearInlineFormatting(state);
     }

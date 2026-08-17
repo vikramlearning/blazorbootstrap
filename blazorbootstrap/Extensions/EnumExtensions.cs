@@ -271,7 +271,7 @@ public static class EnumExtensions
             RichTextEditorToolbarItem.Link => "link",
             RichTextEditorToolbarItem.HorizontalRule => "insertHorizontalRule",
             RichTextEditorToolbarItem.Blockquote => "blockquote",
-            RichTextEditorToolbarItem.CodeBlock => "formatBlock", // TODO: Check if this is correct, as there is no command for code block in execCommand
+            RichTextEditorToolbarItem.CodeBlock => "codeBlock",
             _ => null
         };
 
