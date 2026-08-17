@@ -44,9 +44,9 @@ internal sealed class RichTextEditorJsInterop : JsInteropBase
         await SafeInvokeVoidAsync(Focus, objRef, editorId);
     }
 
-    public async Task InitializeAsync(object objRef, string editorId)
+    public async Task InitializeAsync(object objRef, string editorId, IEnumerable<string>? allowedLinkDomains)
     {
-        await SafeInvokeVoidAsync(Initialize, objRef, editorId);
+        await SafeInvokeVoidAsync(Initialize, objRef, editorId, allowedLinkDomains);
     }
 
     #endregion

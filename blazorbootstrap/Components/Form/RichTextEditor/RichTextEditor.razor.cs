@@ -41,7 +41,7 @@ public partial class RichTextEditor : BlazorBootstrapComponentBase
         if (firstRender)
         {
             objRef ??= DotNetObjectReference.Create(this);
-            await RichTextEditorJsInterop.InitializeAsync(objRef!, Id!);
+            await RichTextEditorJsInterop.InitializeAsync(objRef!, Id!, AllowedLinkDomains);
             lastRenderedValue = Value;
         }
         //else if (lastRenderedValue != Value)
@@ -209,6 +209,12 @@ public partial class RichTextEditor : BlazorBootstrapComponentBase
     [Description("Gets or sets the permitted image file extensions.")]
     [Parameter]
     public IEnumerable<string>? AllowedImageFileTypes { get; set; }
+
+    /// <summary>Gets or sets the permitted HTTP(S) link domains. Subdomains are also permitted.</summary>
+    [AddedVersion("4.0.0")]
+    [Description("Gets or sets the permitted HTTP(S) link domains. Subdomains are also permitted.")]
+    [Parameter]
+    public IEnumerable<string>? AllowedLinkDomains { get; set; }
 
     /// <summary>Gets or sets the delay, in milliseconds, before editor changes are raised.</summary>
     [AddedVersion("4.0.0")]

@@ -10,7 +10,7 @@ function getEditorState(editorId) {
     return window.blazorBootstrap.richTextEditor[editorId];
 }
 
-function createEditorState(editorId, dotNetHelper) {
+function createEditorState(editorId, dotNetHelper, allowedLinkDomains) {
     const editor = document.getElementById(editorId + '-editor');
     if (!editor) return null;
 
@@ -30,6 +30,7 @@ function createEditorState(editorId, dotNetHelper) {
         activeEditorImage: null,
         selectedTextColor: '#212529',
         selectedHighlightColor: '#ffc107',
+        allowedLinkDomains: normalizeAllowedLinkDomains(allowedLinkDomains),
         linkBeingEdited: null,
         preparedImage: null,
         imageBeingEdited: null,
@@ -554,6 +555,18 @@ function executeCommand(state, command, value = null) {
 
 // LINK HELPERS
 
+function normalizeAllowedLinkDomains(domains) {
+    return Array.from(domains || [])
+        .map((domain) => String(domain).trim().toLowerCase().replace(/^\*\./, ''))
+        .filter((domain) => /^[a-z0-9](?:[a-z0-9-]*[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]*[a-z0-9])?)*$/i.test(domain));
+}
+
+function isAllowedLinkUrl(url, allowedLinkDomains) {
+    if (!allowedLinkDomains.length || !/^https?:/i.test(url)) return true;
+    const hostname = new URL(url).hostname.toLowerCase();
+    return allowedLinkDomains.some((domain) => hostname === domain || hostname.endsWith('.' + domain));
+}
+
 // Normalizes allowed link formats and rejects unsafe or malformed URLs.
 function normalizeLinkUrl(value) {
     const rawValue = value.trim();
@@ -654,6 +667,8 @@ function openInsertLinkModal(state) {
     const urlInput = el(state, 'insert-link-url');
     const textInput = el(state, 'insert-link-text');
     const newTabInput = el(state, 'insert-link-new-tab');
+    const title = el(state, 'insert-link-title');
+    const submit = el(state, 'insert-link-submit');
     const form = modal.element.querySelector('form');
     if (!form || !urlInput || !textInput) return;
 
@@ -667,8 +682,12 @@ function openInsertLinkModal(state) {
         textInput.value = state.linkBeingEdited.textContent;
         urlInput.value = state.linkBeingEdited.getAttribute('href') || '';
         if (newTabInput) newTabInput.checked = state.linkBeingEdited.target === '_blank';
+        if (title) title.textContent = 'Edit link';
+        if (submit) submit.textContent = 'Save link';
     } else {
         textInput.value = state.savedRange.toString().trim();
+        if (title) title.textContent = 'Insert link';
+        if (submit) submit.textContent = 'Insert link';
     }
 
     if (!modal.element._rteHandlersAttached) {
@@ -679,9 +698,10 @@ function openInsertLinkModal(state) {
             const text = textInput.value.trim();
             const url = normalizeLinkUrl(urlInput.value);
             textInput.setCustomValidity(text ? '' : 'Link text is required.');
-            urlInput.setCustomValidity(url ? '' : 'Enter a valid link URL.');
+            urlInput.setCustomValidity(url && isAllowedLinkUrl(url, state.allowedLinkDomains) ? '' : 'Enter a valid URL from an allowed domain.');
             form.classList.add('was-validated');
             if (!form.checkValidity()) return;
+            urlInput.value = url;
             if (state.linkBeingEdited && state.editor.contains(state.linkBeingEdited)) {
                 updateLink(state, state.linkBeingEdited, url, text, newTabInput ? newTabInput.checked : false);
             } else {
@@ -1649,8 +1669,8 @@ export function focus(dotNetHelper, editorId) {
     state.editor.focus();
 }
 
-export function initialize(dotNetHelper, editorId) {
-    const state = createEditorState(editorId, dotNetHelper);
+export function initialize(dotNetHelper, editorId, allowedLinkDomains) {
+    const state = createEditorState(editorId, dotNetHelper, allowedLinkDomains);
     if (!state || !state.editor) {
         dotNetHelper.invokeMethodAsync('OnEditorValueChangedAsync', '');
         return;

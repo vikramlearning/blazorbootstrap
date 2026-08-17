@@ -165,10 +165,38 @@
         </footer>
     </section>
 
-    <div id="@($"{Id}-link-modal")" class="modal fade" tabindex="-1" aria-labelledby="@($"{Id}-link-modal-title")" aria-hidden="true">
-        <div class="modal-dialog"><div class="modal-content"><div class="modal-header"><h2 id="@($"{Id}-link-modal-title")" class="modal-title fs-5">Insert or edit link</h2><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div><div class="modal-body"><label class="form-label" for="@($"{Id}-link-url")">URL</label><input id="@($"{Id}-link-url")" class="form-control" data-bb-rte-link-url type="url" /><label class="form-label mt-3" for="@($"{Id}-link-text")">Text</label><input id="@($"{Id}-link-text")" class="form-control" data-bb-rte-link-text type="text" /><div class="form-check mt-3"><input id="@($"{Id}-link-new-tab")" class="form-check-input" data-bb-rte-link-new-tab type="checkbox" /><label class="form-check-label" for="@($"{Id}-link-new-tab")">Open in a new tab</label></div></div><div class="modal-footer"><button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button><button type="button" class="btn btn-primary" data-bb-rte-save-link>Save link</button></div></div></div>
+    <div id="@($"{Id}-insert-link-modal")" class="modal fade" tabindex="-1" aria-labelledby="@($"{Id}-insert-link-title")" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <form id="@($"{Id}-insert-link-form")" novalidate>
+                    <div class="modal-header">
+                        <h2 id="@($"{Id}-insert-link-title")" class="modal-title fs-5">Insert link</h2>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label class="form-label" for="@($"{Id}-insert-link-text")">Link text</label>
+                            <input id="@($"{Id}-insert-link-text")" class="form-control" type="text" required autocomplete="off" />
+                            <div class="invalid-feedback">Enter the text to display for this link.</div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" for="@($"{Id}-insert-link-url")">URL</label>
+                            <input id="@($"{Id}-insert-link-url")" class="form-control" type="text" inputmode="url" required autocomplete="off" placeholder="https://example.com" />
+                            <div class="invalid-feedback">Enter a valid URL permitted by this editor.</div>
+                        </div>
+                        <div class="form-check">
+                            <input id="@($"{Id}-insert-link-new-tab")" class="form-check-input" type="checkbox" />
+                            <label class="form-check-label" for="@($"{Id}-insert-link-new-tab")">Open link in a new tab</label>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button id="@($"{Id}-insert-link-submit")" type="submit" class="btn btn-primary">Insert link</button>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
-
     <div id="@($"{Id}-image-modal")" class="modal fade" tabindex="-1" aria-labelledby="@($"{Id}-image-modal-title")" aria-hidden="true">
         <div class="modal-dialog"><div class="modal-content"><div class="modal-header"><h2 id="@($"{Id}-image-modal-title")" class="modal-title fs-5">Insert image</h2><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div><div class="modal-body"><label class="form-label" for="@($"{Id}-image-url")">HTTPS image URL</label><input id="@($"{Id}-image-url")" class="form-control" data-bb-rte-image-url type="url" /><label class="form-label mt-3" for="@($"{Id}-image-alt")">Alternative text</label><input id="@($"{Id}-image-alt")" class="form-control" data-bb-rte-image-alt type="text" required /></div><div class="modal-footer"><button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button><button type="button" class="btn btn-primary" data-bb-rte-save-image>Save image</button></div></div></div>
     </div>
