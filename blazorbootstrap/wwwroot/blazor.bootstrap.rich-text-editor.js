@@ -1032,6 +1032,8 @@ function openInsertTableModal(state) {
     if (!form || !rowsInput || !columnsInput) return;
 
     form.reset();
+    rowsInput.value = '5';
+    columnsInput.value = '5';
     form.classList.remove('was-validated');
     rowsInput.setCustomValidity('');
     columnsInput.setCustomValidity('');
