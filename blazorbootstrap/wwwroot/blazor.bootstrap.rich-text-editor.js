@@ -359,15 +359,38 @@ function clearInlineFormatting(state) {
         });
         if (!wrappers.length) return;
         recordEditorState(state);
+        if (wrappers.some((wrapper) => wrapper.closest('table'))) {
+            wrappers.filter((wrapper) => rangeContainsNode(range, wrapper)).reverse().forEach(unwrapElement);
+            rememberSelection(state);
+            notifyEditorChange(state);
+            return;
+        }
         const contents = range.extractContents();
         Array.from(contents.querySelectorAll(formattingSelector)).reverse().forEach(unwrapElement);
         range.insertNode(contents);
-        boundaryBlocks.filter((block, index, blocks) =>
-            blocks.indexOf(block) === index && block.parentNode === state.editor && !block.innerHTML.trim())
-            .forEach((block) => block.remove());
+        boundaryBlocks.filter((block, index, blocks) => blocks.indexOf(block) === index)
+            .forEach((block) => removeEmptyBoundaryAncestors(state.editor, block));
     }
     rememberSelection(state);
     notifyEditorChange(state);
+}
+
+// Tests whether a range fully contains an element, including its opening and closing tags.
+function rangeContainsNode(range, node) {
+    const nodeRange = document.createRange();
+    nodeRange.selectNode(node);
+    return range.compareBoundaryPoints(Range.START_TO_START, nodeRange) <= 0
+        && range.compareBoundaryPoints(Range.END_TO_END, nodeRange) >= 0;
+}
+
+// Removes only the empty nodes left outside an extracted selection boundary.
+function removeEmptyBoundaryAncestors(editor, element) {
+    let current = element;
+    while (current && current !== editor && !current.innerHTML.trim()) {
+        const parent = current.parentElement;
+        current.remove();
+        current = parent;
+    }
 }
 
 // BLOCK-LEVEL COMMANDS
