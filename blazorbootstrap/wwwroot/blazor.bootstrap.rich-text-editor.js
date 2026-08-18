@@ -342,15 +342,29 @@ function clearInlineFormatting(state) {
     restoreSelection(state);
     const range = getSavedEditorRange(state);
     if (!range) return;
-    recordEditorState(state);
     const formattingSelector = 'strong, b, em, i, u, s, strike, font, span';
     if (range.collapsed) {
         const wrapper = getRangeElement(range.startContainer).closest(formattingSelector);
-        if (wrapper && state.editor.contains(wrapper)) unwrapElement(wrapper);
+        if (!wrapper || !state.editor.contains(wrapper)) return;
+        recordEditorState(state);
+        unwrapElement(wrapper);
     } else {
+        const boundaryBlocks = getRangeBlocks(state, range);
+        const wrappers = Array.from(state.editor.querySelectorAll(formattingSelector)).filter((wrapper) => {
+            try {
+                return range.intersectsNode(wrapper);
+            } catch (e) {
+                return false;
+            }
+        });
+        if (!wrappers.length) return;
+        recordEditorState(state);
         const contents = range.extractContents();
         Array.from(contents.querySelectorAll(formattingSelector)).reverse().forEach(unwrapElement);
         range.insertNode(contents);
+        boundaryBlocks.filter((block, index, blocks) =>
+            blocks.indexOf(block) === index && block.parentNode === state.editor && !block.innerHTML.trim())
+            .forEach((block) => block.remove());
     }
     rememberSelection(state);
     notifyEditorChange(state);
