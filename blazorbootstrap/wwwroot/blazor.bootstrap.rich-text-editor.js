@@ -379,7 +379,7 @@ function getMatchingInlineWrapper(state, range, matcher) {
 }
 
 /**
- * Toggles an inline wrapper around the saved selection, including pending caret formatting.
+ * Toggles an inline wrapper around the saved selection, including pending caret formatting and whole table-cell selections.
  *
  * @param {object} state Current rich-text editor state.
  * @param {Function} createWrapper The createWrapper argument for this operation.
@@ -390,6 +390,31 @@ function applyInlineFormat(state, createWrapper, matcher) {
     restoreSelection(state);
     const range = getSavedEditorRange(state);
     if (!range) return;
+    const tableCells = range.collapsed ? [] : getFullySelectedTableCells(state, range);
+    if (tableCells.length) {
+        recordEditorState(state);
+        tableCells.forEach((cell) => {
+            const directWrapper = cell.childElementCount === 1 ? cell.firstElementChild : null;
+            if (directWrapper && matcher(directWrapper)) {
+                unwrapElement(directWrapper);
+                return;
+            }
+
+            // Wrap cell contents, never the td/th itself, to preserve valid table structure.
+            const cellRange = document.createRange();
+            cellRange.selectNodeContents(cell);
+            const wrapper = createWrapper();
+            wrapper.appendChild(cellRange.extractContents());
+            cellRange.insertNode(wrapper);
+        });
+        const updatedRange = document.createRange();
+        updatedRange.selectNodeContents(tableCells[tableCells.length - 1]);
+        setEditorRange(state, updatedRange);
+        rememberSelection(state);
+        notifyEditorChange(state);
+        return;
+    }
+
     const matchingWrapper = getMatchingInlineWrapper(state, range, matcher);
     recordEditorState(state);
     if (matchingWrapper) {
@@ -620,6 +645,27 @@ function rangeContainsTextContent(range, element) {
     return hasText;
 }
 
+/**
+ * Gets table cells whose complete content is selected by a range.
+ *
+ * @param {object} state Current rich-text editor state.
+ * @param {Range} range Selection to inspect.
+ * @returns {HTMLTableCellElement[]} Fully selected table cells.
+ *
+ * @example
+ * // A range that selects one cell returns that cell, not its containing row.
+ * const cells = getFullySelectedTableCells(state, range);
+ */
+function getFullySelectedTableCells(state, range) {
+    return Array.from(state.editor.querySelectorAll('td, th')).filter((cell) => {
+        try {
+            return range.intersectsNode(cell)
+                && (rangeContainsNode(range, cell) || rangeContainsTextContent(range, cell));
+        } catch (e) {
+            return false;
+        }
+    });
+}
 /**
  * Removes only the empty nodes left outside an extracted selection boundary.
  *
