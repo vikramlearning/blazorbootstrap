@@ -3,6 +3,7 @@ window.blazorBootstrap.richTextEditor = window.blazorBootstrap.richTextEditor ||
 
 // Font size label map shared across all editor instances
 const _fontSizeLabels = { 1: '10 px', 2: '12 px', 3: '14 px', 4: '16 px', 5: '18 px', 6: '24 px', 7: '32 px' };
+const _fontFamilies = new Set(['Inter', 'Arial', 'Georgia', 'Courier New']);
 
 // PER-EDITOR STATE
 
@@ -290,6 +291,7 @@ function rgbFromHex(value) {
 
 // Applies a semantic tag or standard inline style to the selected text.
 function applyInlineCommand(state, command, value) {
+    if (command === 'fontName' && !_fontFamilies.has(value)) return;
     const semanticCommands = {
         bold: { tag: 'strong', match: (e) => e.tagName === 'STRONG' || e.tagName === 'B' },
         italic: { tag: 'em', match: (e) => e.tagName === 'EM' || e.tagName === 'I' }

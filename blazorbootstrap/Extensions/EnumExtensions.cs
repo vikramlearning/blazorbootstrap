@@ -263,6 +263,7 @@ public static class EnumExtensions
             RichTextEditorToolbarItem.Heading5 => "heading5",
             RichTextEditorToolbarItem.Heading6 => "heading6",
             RichTextEditorToolbarItem.Caption => "caption",
+            RichTextEditorToolbarItem.FontFamily => "fontName",
             RichTextEditorToolbarItem.Bold => "bold",
             RichTextEditorToolbarItem.Italic => "italic",
             RichTextEditorToolbarItem.Underline => "underline",

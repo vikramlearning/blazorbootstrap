@@ -9,6 +9,7 @@ public partial class RichTextEditor : BlazorBootstrapComponentBase
 
     private static readonly string[] defaultAllowedImageFileTypes = { "jpg", "jpeg", "png", "gif", "webp" };
     private static readonly HashSet<string> safeImageFileTypes = new(StringComparer.OrdinalIgnoreCase) { "jpg", "jpeg", "png", "gif", "webp" };
+    private static readonly HashSet<string> fontFamilies = new(StringComparer.Ordinal) { "Inter", "Arial", "Georgia", "Courier New" };
     private CancellationTokenSource uploadCancellationTokenSource = new();
     private FieldIdentifier fieldIdentifier;
     private string? imageUploadError;
@@ -88,6 +89,14 @@ public partial class RichTextEditor : BlazorBootstrapComponentBase
             return;
 
         await RichTextEditorJsInterop.ExecuteAsync(objRef!, Id!, toolbarElementId, item.ToCommandName()!, string.Empty);
+    }
+    private async Task OnFontFamilyClickAsync(string fontFamily)
+    {
+        if (Disabled || ReadOnly || !fontFamilies.Contains(fontFamily))
+            return;
+
+        selectedFontFamily = fontFamily;
+        await RichTextEditorJsInterop.ExecuteAsync(objRef!, Id!, FontFamilyButtonId, RichTextEditorToolbarItem.FontFamily.ToCommandName()!, fontFamily);
     }
 
     /// <summary>
@@ -272,6 +281,10 @@ public partial class RichTextEditor : BlazorBootstrapComponentBase
     private string ImageInputId => $"{Id}-image-upload-file";
 
     private string InsertTableButtonId => $"{Id}-insert-table";
+
+    private string FontFamilyButtonId => $"{Id}-font-family";
+
+    private string selectedFontFamily = "Inter";
 
     private HashSet<string> NormalizedAllowedImageFileTypes =>
         (AllowedImageFileTypes ?? defaultAllowedImageFileTypes)

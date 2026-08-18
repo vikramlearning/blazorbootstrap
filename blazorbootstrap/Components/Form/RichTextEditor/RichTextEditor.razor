@@ -27,12 +27,12 @@
                         </ul>
                     </div>
                     <div class="dropdown">
-                        <button type="button" class="btn btn-outline-secondary btn-sm dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">Inter</button>
+                        <button id="@FontFamilyButtonId" type="button" class="btn btn-outline-secondary btn-sm dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" disabled="@Disabled">@selectedFontFamily</button>
                         <ul class="dropdown-menu">
-                            <li><button type="button" class="dropdown-item" data-editor-font="Inter">Inter</button></li>
-                            <li><button type="button" class="dropdown-item" data-editor-font="Arial">Arial</button></li>
-                            <li><button type="button" class="dropdown-item" data-editor-font="Georgia">Georgia</button></li>
-                            <li><button type="button" class="dropdown-item" data-editor-font="Courier New">Courier New</button></li>
+                            <li><button type="button" class="dropdown-item" disabled="@Disabled" @onclick='@(() => OnFontFamilyClickAsync("Inter"))'>Inter</button></li>
+                            <li><button type="button" class="dropdown-item" disabled="@Disabled" @onclick='@(() => OnFontFamilyClickAsync("Arial"))'>Arial</button></li>
+                            <li><button type="button" class="dropdown-item" disabled="@Disabled" @onclick='@(() => OnFontFamilyClickAsync("Georgia"))'>Georgia</button></li>
+                            <li><button type="button" class="dropdown-item" disabled="@Disabled" @onclick='@(() => OnFontFamilyClickAsync("Courier New"))'>Courier New</button></li>
                         </ul>
                     </div>
                     <div class="dropdown">
