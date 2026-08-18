@@ -1,4 +1,4 @@
-namespace BlazorBootstrap;
+﻿namespace BlazorBootstrap;
 
 internal sealed class RichTextEditorJsInterop : JsInteropBase
 {
@@ -37,7 +37,6 @@ internal sealed class RichTextEditorJsInterop : JsInteropBase
 
     public async Task ExecuteAsync(object objRef, string editorId, string elementId, string command, string value)
     {
-        Console.WriteLine($"Executing command: {command} with value: {value} on element: {elementId} in editor: {editorId}");
         await SafeInvokeVoidAsync(Execute, objRef, editorId, elementId, command, value);
     }
 

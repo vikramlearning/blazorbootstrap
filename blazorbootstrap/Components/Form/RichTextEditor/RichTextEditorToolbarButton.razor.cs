@@ -6,26 +6,15 @@ public partial class RichTextEditorToolbarButton : BlazorBootstrapComponentBase
 
     private string? label => Item.ToIconLabel();
     private IconName iconName => Item.ToIconName();
-
-    private DotNetObjectReference<RichTextEditorToolbarButton>? objRef;
-
     #endregion
 
     #region Methods
 
-    protected override async Task OnInitializedAsync()
-    {
-        objRef ??= DotNetObjectReference.Create(this);
-        await base.OnInitializedAsync();
-    }
-
     private async Task OnClickAsync()
     {
-        Console.WriteLine($"Toolbar button clicked: {Id}, Item: {Item}, Disabled: {Disabled}");
         if (Disabled)
-        {
             return;
-        }
+
         await Parent?.OnToolbarButtonClickAsync(Id!, Item)!;
     }
 

@@ -21,7 +21,6 @@ public partial class RichTextEditor : BlazorBootstrapComponentBase
     private CancellationTokenSource uploadCancellationTokenSource = new();
     private FieldIdentifier fieldIdentifier;
     private string? imageUploadError;
-    private string? lastRenderedValue;
     private DotNetObjectReference<RichTextEditor>? objRef;
 
     #endregion
@@ -52,14 +51,7 @@ public partial class RichTextEditor : BlazorBootstrapComponentBase
         {
             objRef ??= DotNetObjectReference.Create(this);
             await RichTextEditorJsInterop.InitializeAsync(objRef!, Id!, AllowedLinkDomains, AllowedImageDomains);
-            lastRenderedValue = Value;
         }
-        //else if (lastRenderedValue != Value)
-        //{
-        //    await RichTextEditorJsInterop.SetValueAsync(Id!, Value);
-        //    lastRenderedValue = Value;
-        //}
-
         await base.OnAfterRenderAsync(firstRender);
     }
 
@@ -91,6 +83,9 @@ public partial class RichTextEditor : BlazorBootstrapComponentBase
     [Description("Focuses the editable area.")]
     public Task FocusAsync() => RichTextEditorJsInterop.FocusAsync(objRef!, Id!);
 
+    /// <summary>
+    /// Executes a command requested by a child toolbar button.
+    /// </summary>
     public async Task OnToolbarButtonClickAsync(string toolbarElementId, RichTextEditorToolbarItem item)
     {
         if (Disabled || ReadOnly)
@@ -125,7 +120,6 @@ public partial class RichTextEditor : BlazorBootstrapComponentBase
     public async Task OnEditorValueChangedAsync(string html)
     {
         imageUploadError = null;
-        lastRenderedValue = html;
         var text = ToPlainText(html);
         await ValueChanged.InvokeAsync(new RichTextEditorChange(html, text, text.Length, CountWords(text)));
 
