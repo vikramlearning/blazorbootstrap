@@ -358,13 +358,16 @@ function clearInlineFormatting(state) {
             }
         });
         if (!wrappers.length) return;
-        recordEditorState(state);
         if (wrappers.some((wrapper) => wrapper.closest('table'))) {
-            wrappers.filter((wrapper) => rangeContainsNode(range, wrapper)).reverse().forEach(unwrapElement);
+            const tableWrappers = wrappers.filter((wrapper) => rangeContainsNode(range, wrapper));
+            if (!tableWrappers.length) return;
+            recordEditorState(state);
+            tableWrappers.reverse().forEach(unwrapElement);
             rememberSelection(state);
             notifyEditorChange(state);
             return;
         }
+        recordEditorState(state);
         const contents = range.extractContents();
         Array.from(contents.querySelectorAll(formattingSelector)).reverse().forEach(unwrapElement);
         range.insertNode(contents);
