@@ -430,12 +430,22 @@ function changeIndent(state, direction) {
 function toggleList(state, listTag) {
     restoreSelection(state);
     const range = getSavedEditorRange(state);
-    const blocks = range && getRangeBlocks(state, range).filter((b) => !b.closest('table, pre, code'));
+    const blocks = range && getRangeBlocks(state, range).filter((b) => !b.closest('pre, code'));
     if (!blocks || !blocks.length) return;
     const block = blocks[0];
     const existingList = block.tagName === 'LI' && block.parentElement;
     recordEditorState(state);
-    if (existingList && existingList.tagName === listTag.toUpperCase()) {
+    if (block.tagName === 'TD' || block.tagName === 'TH') {
+        const list = document.createElement(listTag);
+        const item = document.createElement('li');
+        item.innerHTML = block.innerHTML || '<br>';
+        list.appendChild(item);
+        block.replaceChildren(list);
+        const caret = document.createRange();
+        caret.selectNodeContents(item);
+        caret.collapse(true);
+        setEditorRange(state, caret);
+    } else if (existingList && existingList.tagName === listTag.toUpperCase()) {
         const paragraph = document.createElement('p');
         paragraph.innerHTML = block.innerHTML;
         const itemIndex = Array.from(existingList.children).indexOf(block);
