@@ -36,13 +36,13 @@
                         </ul>
                     </div>
                     <div class="dropdown">
-                        <button type="button" class="btn btn-outline-secondary btn-sm dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">14 px</button>
+                        <button id="@FontSizeButtonId" type="button" class="btn btn-outline-secondary btn-sm dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" disabled="@Disabled">@selectedFontSize</button>
                         <ul class="dropdown-menu">
-                            <li><button type="button" class="dropdown-item" data-editor-size="2">12 px</button></li>
-                            <li><button type="button" class="dropdown-item" data-editor-size="3">14 px</button></li>
-                            <li><button type="button" class="dropdown-item" data-editor-size="4">16 px</button></li>
-                            <li><button type="button" class="dropdown-item" data-editor-size="5">18 px</button></li>
-                            <li><button type="button" class="dropdown-item" data-editor-size="6">24 px</button></li>
+                            <li><button type="button" class="dropdown-item" disabled="@Disabled" @onclick='@(() => OnFontSizeClickAsync("2"))'>12 px</button></li>
+                            <li><button type="button" class="dropdown-item" disabled="@Disabled" @onclick='@(() => OnFontSizeClickAsync("3"))'>14 px</button></li>
+                            <li><button type="button" class="dropdown-item" disabled="@Disabled" @onclick='@(() => OnFontSizeClickAsync("4"))'>16 px</button></li>
+                            <li><button type="button" class="dropdown-item" disabled="@Disabled" @onclick='@(() => OnFontSizeClickAsync("5"))'>18 px</button></li>
+                            <li><button type="button" class="dropdown-item" disabled="@Disabled" @onclick='@(() => OnFontSizeClickAsync("6"))'>24 px</button></li>
                         </ul>
                     </div>
 

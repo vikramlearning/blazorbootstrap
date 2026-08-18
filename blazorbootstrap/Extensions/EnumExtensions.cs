@@ -1,4 +1,4 @@
-namespace BlazorBootstrap;
+﻿namespace BlazorBootstrap;
 
 /// <summary>
 /// Enum extensions
@@ -264,6 +264,7 @@ public static class EnumExtensions
             RichTextEditorToolbarItem.Heading6 => "heading6",
             RichTextEditorToolbarItem.Caption => "caption",
             RichTextEditorToolbarItem.FontFamily => "fontName",
+            RichTextEditorToolbarItem.FontSize => "fontSize",
             RichTextEditorToolbarItem.Bold => "bold",
             RichTextEditorToolbarItem.Italic => "italic",
             RichTextEditorToolbarItem.Underline => "underline",

@@ -1,4 +1,4 @@
-namespace BlazorBootstrap;
+﻿namespace BlazorBootstrap;
 
 /// <summary>
 /// Provides a dependency-free rich-text editing control with a grouped Bootstrap toolbar.
@@ -10,6 +10,14 @@ public partial class RichTextEditor : BlazorBootstrapComponentBase
     private static readonly string[] defaultAllowedImageFileTypes = { "jpg", "jpeg", "png", "gif", "webp" };
     private static readonly HashSet<string> safeImageFileTypes = new(StringComparer.OrdinalIgnoreCase) { "jpg", "jpeg", "png", "gif", "webp" };
     private static readonly HashSet<string> fontFamilies = new(StringComparer.Ordinal) { "Inter", "Arial", "Georgia", "Courier New" };
+    private static readonly IReadOnlyDictionary<string, string> fontSizes = new Dictionary<string, string>(StringComparer.Ordinal)
+    {
+        ["2"] = "12 px",
+        ["3"] = "14 px",
+        ["4"] = "16 px",
+        ["5"] = "18 px",
+        ["6"] = "24 px"
+    };
     private CancellationTokenSource uploadCancellationTokenSource = new();
     private FieldIdentifier fieldIdentifier;
     private string? imageUploadError;
@@ -97,6 +105,15 @@ public partial class RichTextEditor : BlazorBootstrapComponentBase
 
         selectedFontFamily = fontFamily;
         await RichTextEditorJsInterop.ExecuteAsync(objRef!, Id!, FontFamilyButtonId, RichTextEditorToolbarItem.FontFamily.ToCommandName()!, fontFamily);
+    }
+
+    private async Task OnFontSizeClickAsync(string fontSize)
+    {
+        if (Disabled || ReadOnly || !fontSizes.TryGetValue(fontSize, out var fontSizeLabel))
+            return;
+
+        selectedFontSize = fontSizeLabel;
+        await RichTextEditorJsInterop.ExecuteAsync(objRef!, Id!, FontSizeButtonId, RichTextEditorToolbarItem.FontSize.ToCommandName()!, fontSize);
     }
 
     /// <summary>
@@ -284,7 +301,11 @@ public partial class RichTextEditor : BlazorBootstrapComponentBase
 
     private string FontFamilyButtonId => $"{Id}-font-family";
 
+    private string FontSizeButtonId => $"{Id}-font-size";
+
     private string selectedFontFamily = "Inter";
+
+    private string selectedFontSize = "14 px";
 
     private HashSet<string> NormalizedAllowedImageFileTypes =>
         (AllowedImageFileTypes ?? defaultAllowedImageFileTypes)

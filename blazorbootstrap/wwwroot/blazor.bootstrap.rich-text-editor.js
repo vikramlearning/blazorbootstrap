@@ -443,10 +443,15 @@ function rgbFromHex(value) {
  * @example
  * // Apply the selected text color.
  * applyInlineCommand(state, 'foreColor', '#dc3545');
+ *
+ * // Apply the supported 16 px size level.
+ * applyInlineCommand(state, 'fontSize', '4');
  */
 function applyInlineCommand(state, command, value) {
     // Reject arbitrary font-family values supplied through stale UI or direct JS interop.
     if (command === 'fontName' && !_fontFamilies.has(value)) return;
+    // Reject unsupported size levels instead of silently falling back to the default size.
+    if (command === 'fontSize' && !Object.hasOwn(_fontSizeLabels, value)) return;
     const semanticCommands = {
         bold: { tag: 'strong', match: (e) => e.tagName === 'STRONG' || e.tagName === 'B' },
         italic: { tag: 'em', match: (e) => e.tagName === 'EM' || e.tagName === 'I' }
@@ -2089,8 +2094,6 @@ function handleToolbarClick(state, event) {
         selectBlock(state, button.dataset.editorBlock);
     } else if (button.dataset.editorFont) {
         executeCommand(state, 'fontName', button.dataset.editorFont);
-    } else if (button.dataset.editorSize) {
-        executeCommand(state, 'fontSize', button.dataset.editorSize);
     } else if (button.dataset.editorColor) {
         state.selectedTextColor = button.dataset.editorColor;
         const indicator = state.container && state.container.querySelector('[data-rte-text-color-indicator]');
