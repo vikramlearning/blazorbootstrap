@@ -342,7 +342,7 @@ function clearInlineFormatting(state) {
     restoreSelection(state);
     const range = getSavedEditorRange(state);
     if (!range) return;
-    const formattingSelector = 'strong, b, em, i, u, s, strike, font, span';
+    const formattingSelector = 'strong, b, em, i, u, s, strike, font, span, mark';
     if (range.collapsed) {
         const wrapper = getRangeElement(range.startContainer).closest(formattingSelector);
         if (!wrapper || !state.editor.contains(wrapper)) return;
@@ -367,7 +367,9 @@ function clearInlineFormatting(state) {
                 }
             });
             const tableWrappers = wrappers.filter((wrapper) =>
-                rangeContainsNode(range, wrapper) || selectedCells.includes(wrapper.closest('td, th')));
+                rangeContainsNode(range, wrapper)
+                || rangeContainsTextContent(range, wrapper)
+                || selectedCells.includes(wrapper.closest('td, th')));
             if (!tableWrappers.length) return;
             recordEditorState(state);
             tableWrappers.reverse().forEach(unwrapElement);
