@@ -8,7 +8,7 @@ const _fontFamilies = new Set(['Inter', 'Arial', 'Georgia', 'Courier New']);
 // PER-EDITOR STATE
 
 /**
- * Handles get editor state for the rich-text editor.
+ * Gets the state object that belongs to one rich-text editor instance.
  *
  * @param {string} editorId Component-generated unique editor identifier.
  * @returns {any} The result of the operation.
@@ -70,9 +70,8 @@ function createEditorState(editorId, dotNetHelper, allowedLinkDomains, allowedIm
 
 // DOM LOOKUP HELPERS
 
-// Finds an element with ID = editorId + '-' + suffix.
 /**
- * Handles el for the rich-text editor.
+ * Finds an editor-owned element by its ID suffix.
  *
  * @param {object} state Current rich-text editor state.
  * @param {string} suffix The suffix argument for this operation.
@@ -82,9 +81,8 @@ function el(state, suffix) {
     return document.getElementById(state.editorId + '-' + suffix);
 }
 
-// Returns a Bootstrap Modal instance for a modal whose ID is editorId + '-' + suffix.
 /**
- * Handles get modal for the rich-text editor.
+ * Returns the Bootstrap modal instance and element for an editor-owned dialog.
  *
  * @param {object} state Current rich-text editor state.
  * @param {string} suffix The suffix argument for this operation.
@@ -99,7 +97,7 @@ function getModal(state, suffix) {
 // SELECTION HELPERS
 
 /**
- * Handles get range element for the rich-text editor.
+ * Converts a Range boundary node into an element for ancestor lookups.
  *
  * @param {Node} container The container argument for this operation.
  * @returns {any} The result of the operation.
@@ -109,7 +107,7 @@ function getRangeElement(container) {
 }
 
 /**
- * Handles get selection element for the rich-text editor.
+ * Gets the current selection element only when it belongs to this editor.
  *
  * @param {object} state Current rich-text editor state.
  * @returns {any} The result of the operation.
@@ -122,12 +120,15 @@ function getSelectionElement(state) {
     return node instanceof Element && state.editor.contains(node) ? node : null;
 }
 
-// Stores the editor selection before a toolbar interaction can remove it.
 /**
- * Handles remember selection for the rich-text editor.
+ * Stores the editor selection before a toolbar interaction can remove it.
  *
  * @param {object} state Current rich-text editor state.
  * @returns {void} No return value.
+ *
+ * @example
+ * // Preserve selected text before opening a toolbar modal.
+ * rememberSelection(state);
  */
 function rememberSelection(state) {
     const selection = window.getSelection();
@@ -137,12 +138,15 @@ function rememberSelection(state) {
     updateFooterContext(state);
 }
 
-// Returns focus and the saved selection to the editable area.
 /**
- * Handles restore selection for the rich-text editor.
+ * Returns focus and the saved selection to the editable area.
  *
  * @param {object} state Current rich-text editor state.
  * @returns {void} No return value.
+ *
+ * @example
+ * // Restore the selection before inserting a link or image.
+ * restoreSelection(state);
  */
 function restoreSelection(state) {
     state.editor.focus();
@@ -153,9 +157,8 @@ function restoreSelection(state) {
     }
 }
 
-// Returns the saved range only when it still belongs to this editor.
 /**
- * Handles get saved editor range for the rich-text editor.
+ * Returns the saved range only when it still belongs to this editor.
  *
  * @param {object} state Current rich-text editor state.
  * @returns {any} The result of the operation.
@@ -167,9 +170,8 @@ function getSavedEditorRange(state) {
     return state.savedRange.cloneRange();
 }
 
-// Moves the browser selection to a range and keeps the editor cache in sync.
 /**
- * Handles set editor range for the rich-text editor.
+ * Moves the browser selection to a range and keeps the editor cache in sync.
  *
  * @param {object} state Current rich-text editor state.
  * @param {Range} range Browser selection range to inspect or update.
@@ -182,9 +184,8 @@ function setEditorRange(state, range) {
     state.savedRange = range.cloneRange();
 }
 
-// Finds all editable blocks touched by a range, or the current block for a collapsed range.
 /**
- * Handles get range blocks for the rich-text editor.
+ * Finds editable blocks touched by a range, or the current block for a collapsed range.
  *
  * @param {object} state Current rich-text editor state.
  * @param {Range} range Browser selection range to inspect or update.
@@ -209,12 +210,15 @@ function getRangeBlocks(state, range) {
 
 // UNDO / REDO
 
-// Saves the current document state for Undo before a user-visible edit.
 /**
- * Handles record editor state for the rich-text editor.
+ * Saves the current document state for Undo before a user-visible edit.
  *
  * @param {object} state Current rich-text editor state.
  * @returns {void} No return value.
+ *
+ * @example
+ * // Save a snapshot immediately before mutating editor.innerHTML.
+ * recordEditorState(state);
  */
 function recordEditorState(state) {
     if (!state.editorUndoStates.length || state.editorUndoStates[state.editorUndoStates.length - 1] !== state.editor.innerHTML) {
@@ -225,7 +229,6 @@ function recordEditorState(state) {
     state.editorRedoStates = [];
 }
 
-// Restores one saved state and moves the current state to the opposite stack.
 /**
  * Restores an Undo or Redo snapshot and transfers the current document to the opposite stack.
  *
@@ -233,6 +236,10 @@ function recordEditorState(state) {
  * @param {any} fromStates The fromStates argument for this operation.
  * @param {any} toStates The toStates argument for this operation.
  * @returns {any} The result of the operation.
+ *
+ * @example
+ * // Undo the most recent custom editor mutation.
+ * restoreEditorHistory(state, state.editorUndoStates, state.editorRedoStates);
  */
 function restoreEditorHistory(state, fromStates, toStates) {
     if (!fromStates.length) return false;
@@ -252,9 +259,8 @@ function restoreEditorHistory(state, fromStates, toStates) {
 
 // CHANGE NOTIFICATION
 
-// Notifies the .NET side whenever the editor document changes.
 /**
- * Handles notify editor change for the rich-text editor.
+ * Notifies the .NET side whenever the editor document changes.
  *
  * @param {object} state Current rich-text editor state.
  * @returns {void} No return value.
@@ -269,9 +275,8 @@ function notifyEditorChange(state) {
 
 // FOOTER UPDATE
 
-// Updates the character/word counts and the block/font/alignment context in the footer.
 /**
- * Handles update footer for the rich-text editor.
+ * Updates the character and word counts and selection context in the footer.
  *
  * @param {object} state Current rich-text editor state.
  * @returns {void} No return value.
@@ -281,9 +286,8 @@ function updateFooter(state) {
     updateFooterContext(state);
 }
 
-// Recalculates the character and word counts shown in the footer.
 /**
- * Handles update footer counts for the rich-text editor.
+ * Recalculates character and word counts shown in the footer.
  *
  * @param {object} state Current rich-text editor state.
  * @returns {void} No return value.
@@ -299,9 +303,8 @@ function updateFooterCounts(state) {
     if (wordCountEl) wordCountEl.textContent = words.toLocaleString() + ' words';
 }
 
-// Updates the block type, font/size, and alignment labels in the footer.
 /**
- * Handles update footer context for the rich-text editor.
+ * Updates the block type, font, size, and alignment labels in the footer.
  *
  * @param {object} state Current rich-text editor state.
  * @returns {void} No return value.
@@ -343,7 +346,7 @@ function updateFooterContext(state) {
 // INLINE FORMATTING
 
 /**
- * Handles unwrap element for the rich-text editor.
+ * Removes an element while retaining all of its child nodes.
  *
  * @param {Element} element The element argument for this operation.
  * @returns {void} No return value.
@@ -354,9 +357,8 @@ function unwrapElement(element) {
     element.replaceWith(fragment);
 }
 
-// Tests whether the selection is fully inside one matching inline wrapper.
 /**
- * Handles get matching inline wrapper for the rich-text editor.
+ * Tests whether the selection is fully inside one matching inline wrapper.
  *
  * @param {object} state Current rich-text editor state.
  * @param {Range} range Browser selection range to inspect or update.
@@ -373,7 +375,6 @@ function getMatchingInlineWrapper(state, range, matcher) {
         : null;
 }
 
-// Inserts an inline wrapper using Selection/Range APIs.
 /**
  * Toggles an inline wrapper around the saved selection, including pending caret formatting.
  *
@@ -419,9 +420,8 @@ function applyInlineFormat(state, createWrapper, matcher) {
     notifyEditorChange(state);
 }
 
-// Converts a hex color to its DOM-style rgb() serialization for state checks.
 /**
- * Handles rgb from hex for the rich-text editor.
+ * Converts a hex color to its DOM-style rgb() serialization for state checks.
  *
  * @param {string|number} value Optional formatting value.
  * @returns {any} The result of the operation.
@@ -432,14 +432,17 @@ function rgbFromHex(value) {
     return 'rgb(' + ((n >> 16) & 255) + ', ' + ((n >> 8) & 255) + ', ' + (n & 255) + ')';
 }
 
-// Applies a semantic tag or standard inline style to the selected text.
 /**
- * Handles apply inline command for the rich-text editor.
+ * Applies a semantic tag or standard inline style to selected text.
  *
  * @param {object} state Current rich-text editor state.
  * @param {string} command Toolbar command to execute.
  * @param {string|number} value Optional formatting value.
  * @returns {void} No return value.
+ *
+ * @example
+ * // Apply the selected text color.
+ * applyInlineCommand(state, 'foreColor', '#dc3545');
  */
 function applyInlineCommand(state, command, value) {
     // Reject arbitrary font-family values supplied through stale UI or direct JS interop.
@@ -491,9 +494,8 @@ function applyInlineCommand(state, command, value) {
     }, def.match);
 }
 
-// Removes browser-inherited inline formatting from a newly created empty paragraph.
 /**
- * Handles normalize empty paragraph after enter for the rich-text editor.
+ * Removes browser-inherited inline formatting from a newly created empty paragraph.
  *
  * @param {object} state Current rich-text editor state.
  * @returns {void} No return value.
@@ -513,12 +515,15 @@ function normalizeEmptyParagraphAfterEnter(state) {
     range.collapse(true);
     setEditorRange(state, range);
 }
-// Removes known inline formatting within the selection.
 /**
  * Removes inline formatting while retaining the selected document structure.
  *
  * @param {object} state Current rich-text editor state.
  * @returns {void} No return value.
+ *
+ * @example
+ * // Remove bold, color, and other inline styling while preserving paragraphs and lists.
+ * clearInlineFormatting(state);
  */
 function clearInlineFormatting(state) {
     restoreSelection(state);
@@ -571,9 +576,8 @@ function clearInlineFormatting(state) {
     notifyEditorChange(state);
 }
 
-// Tests whether a range fully contains an element, including its opening and closing tags.
 /**
- * Handles range contains node for the rich-text editor.
+ * Tests whether a range fully contains an element, including its opening and closing tags.
  *
  * @param {Range} range Browser selection range to inspect or update.
  * @param {Node} node The node argument for this operation.
@@ -586,9 +590,8 @@ function rangeContainsNode(range, node) {
         && range.compareBoundaryPoints(Range.END_TO_END, nodeRange) >= 0;
 }
 
-// Tests whether every text node in an element is fully within a range.
 /**
- * Handles range contains text content for the rich-text editor.
+ * Tests whether every text node in an element is fully within a range.
  *
  * @param {Range} range Browser selection range to inspect or update.
  * @param {Element} element The element argument for this operation.
@@ -608,9 +611,8 @@ function rangeContainsTextContent(range, element) {
     return hasText;
 }
 
-// Removes only the empty nodes left outside an extracted selection boundary.
 /**
- * Handles remove empty boundary ancestors for the rich-text editor.
+ * Removes only the empty nodes left outside an extracted selection boundary.
  *
  * @param {HTMLElement} editor The editor argument for this operation.
  * @param {Element} element The element argument for this operation.
@@ -627,13 +629,16 @@ function removeEmptyBoundaryAncestors(editor, element) {
 
 // BLOCK-LEVEL COMMANDS
 
-// Applies paragraph alignment to all blocks in the selection.
 /**
- * Handles apply alignment for the rich-text editor.
+ * Applies paragraph alignment to all blocks in the selection.
  *
  * @param {object} state Current rich-text editor state.
  * @param {string|number} value Optional formatting value.
  * @returns {void} No return value.
+ *
+ * @example
+ * // Center every block touched by the saved selection.
+ * applyAlignment(state, 'center');
  */
 function applyAlignment(state, value) {
     restoreSelection(state);
@@ -646,13 +651,16 @@ function applyAlignment(state, value) {
     notifyEditorChange(state);
 }
 
-// Adjusts block indentation through its standard inline style.
 /**
- * Handles change indent for the rich-text editor.
+ * Adjusts block indentation through its standard inline style.
  *
  * @param {object} state Current rich-text editor state.
  * @param {number} direction The direction argument for this operation.
  * @returns {void} No return value.
+ *
+ * @example
+ * // Increase indentation by one editor step.
+ * changeIndent(state, 1);
  */
 function changeIndent(state, direction) {
     restoreSelection(state);
@@ -669,13 +677,16 @@ function changeIndent(state, direction) {
     notifyEditorChange(state);
 }
 
-// Turns the current block into a list item, or removes the existing list type.
 /**
  * Creates, changes, or removes an ordered or unordered list at the saved selection.
  *
  * @param {object} state Current rich-text editor state.
  * @param {string} listTag The listTag argument for this operation.
  * @returns {void} No return value.
+ *
+ * @example
+ * // Convert the current paragraph into an ordered list item.
+ * toggleList(state, 'ol');
  */
 function toggleList(state, listTag) {
     restoreSelection(state);
@@ -737,12 +748,15 @@ function toggleList(state, listTag) {
     notifyEditorChange(state);
 }
 
-// Inserts a horizontal rule and a following paragraph at the selection.
 /**
- * Handles insert horizontal rule for the rich-text editor.
+ * Inserts a horizontal rule and a following paragraph at the selection.
  *
  * @param {object} state Current rich-text editor state.
  * @returns {void} No return value.
+ *
+ * @example
+ * // Insert a rule and leave a writable paragraph after it.
+ * insertHorizontalRule(state);
  */
 function insertHorizontalRule(state) {
     restoreSelection(state);
@@ -764,12 +778,15 @@ function insertHorizontalRule(state) {
     notifyEditorChange(state);
 }
 
-// Toggles blockquote wrapping on the current paragraph or heading.
 /**
- * Handles toggle block quote for the rich-text editor.
+ * Toggles blockquote wrapping on the current paragraph or heading.
  *
  * @param {object} state Current rich-text editor state.
  * @returns {void} No return value.
+ *
+ * @example
+ * // Wrap the current eligible paragraph in a Bootstrap-styled quote.
+ * toggleBlockQuote(state);
  */
 function toggleBlockQuote(state) {
     if (!state.savedRange || !state.editor.contains(state.savedRange.commonAncestorContainer)) return;
@@ -803,13 +820,16 @@ function toggleBlockQuote(state) {
     notifyEditorChange(state);
 }
 
-// Replaces the current text block with a semantic block element.
 /**
- * Handles select block for the rich-text editor.
+ * Replaces the current text block with a semantic block element.
  *
  * @param {object} state Current rich-text editor state.
  * @param {string} block The block argument for this operation.
  * @returns {void} No return value.
+ *
+ * @example
+ * // Convert the current paragraph into a level-two heading.
+ * selectBlock(state, 'h2');
  */
 function selectBlock(state, block) {
     if (block === 'blockquote') {
@@ -841,9 +861,8 @@ function selectBlock(state, block) {
 
 // COMMAND ROUTER
 
-// Routes toolbar commands to the appropriate inline or block implementation.
 /**
- * Handles execute command for the rich-text editor.
+ * Routes toolbar commands to the appropriate inline or block implementation.
  *
  * @param {object} state Current rich-text editor state.
  * @param {string} command Toolbar command to execute.
@@ -916,7 +935,7 @@ function executeCommand(state, command, value = null) {
 // LINK HELPERS
 
 /**
- * Handles normalize allowed link domains for the rich-text editor.
+ * Normalizes configured link domains for hostname comparisons.
  *
  * @param {string[]} domains The domains argument for this operation.
  * @returns {any} The result of the operation.
@@ -935,11 +954,15 @@ function normalizeAllowedLinkDomains(domains) {
         .filter((domain) => /^[a-z0-9](?:[a-z0-9-]*[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]*[a-z0-9])?)*$/i.test(domain));
 }
 /**
- * Handles is allowed link url for the rich-text editor.
+ * Checks whether an HTTP(S) link URL matches the configured domain allow-list.
  *
  * @param {string} url The url argument for this operation.
  * @param {string[]} allowedLinkDomains Configured link-domain allow-list.
  * @returns {any} The result of the operation.
+ *
+ * @example
+ * // Allow an exact configured host or one of its subdomains.
+ * isAllowedLinkUrl('https://docs.example.com/guide', ['example.com']);
  */
 function isAllowedLinkUrl(url, allowedLinkDomains) {
     if (!allowedLinkDomains.length || !/^https?:/i.test(url)) return true;
@@ -947,12 +970,15 @@ function isAllowedLinkUrl(url, allowedLinkDomains) {
     return allowedLinkDomains.some((domain) => hostname === domain || hostname.endsWith('.' + domain));
 }
 
-// Normalizes allowed link formats and rejects unsafe or malformed URLs.
 /**
  * Validates and normalizes a link URL without permitting unsafe schemes.
  *
  * @param {string|number} value Optional formatting value.
  * @returns {any} The result of the operation.
+ *
+ * @example
+ * // Accept an address without a scheme and normalize it for href.
+ * normalizeLinkUrl('example.com/docs'); // https://example.com/docs
  */
 function normalizeLinkUrl(value) {
     const rawValue = value.trim();
@@ -971,9 +997,8 @@ function normalizeLinkUrl(value) {
     }
 }
 
-// Confirms that a link selection stays within one editable text block.
 /**
- * Handles is link selection safe for the rich-text editor.
+ * Confirms that a link selection stays within one editable text block.
  *
  * @param {object} state Current rich-text editor state.
  * @param {Range} range Browser selection range to inspect or update.
@@ -989,9 +1014,8 @@ function isLinkSelectionSafe(state, range) {
         && !endElement.closest('pre, code');
 }
 
-// Finds one existing editor link when the stored selection is inside it.
 /**
- * Handles get link at selection for the rich-text editor.
+ * Finds an existing editor link when the saved selection is inside it.
  *
  * @param {object} state Current rich-text editor state.
  * @returns {any} The result of the operation.
@@ -1003,15 +1027,18 @@ function getLinkAtSelection(state) {
     return startLink && startLink === endLink && state.editor.contains(startLink) ? startLink : null;
 }
 
-// Inserts a safe link at the saved selection.
 /**
- * Handles insert link for the rich-text editor.
+ * Inserts a validated link at the saved selection.
  *
  * @param {object} state Current rich-text editor state.
  * @param {string} url The url argument for this operation.
  * @param {string} text The text argument for this operation.
  * @param {boolean} openInNewTab The openInNewTab argument for this operation.
  * @returns {void} No return value.
+ *
+ * @example
+ * // Replace the saved selection with a secure new-tab link.
+ * insertLink(state, 'https://example.com', 'Read more', true);
  */
 function insertLink(state, url, text, openInNewTab) {
     restoreSelection(state);
@@ -1038,9 +1065,8 @@ function insertLink(state, url, text, openInNewTab) {
     notifyEditorChange(state);
 }
 
-// Saves edits to an existing link in the editor.
 /**
- * Handles update link for the rich-text editor.
+ * Saves edits to an existing link in the editor.
  *
  * @param {object} state Current rich-text editor state.
  * @param {HTMLAnchorElement} link The link argument for this operation.
@@ -1048,6 +1074,10 @@ function insertLink(state, url, text, openInNewTab) {
  * @param {string} text The text argument for this operation.
  * @param {boolean} openInNewTab The openInNewTab argument for this operation.
  * @returns {void} No return value.
+ *
+ * @example
+ * // Update an existing anchor without rebuilding the surrounding paragraph.
+ * updateLink(state, link, 'https://example.com/new', 'New destination', false);
  */
 function updateLink(state, link, url, text, openInNewTab) {
     recordEditorState(state);
@@ -1075,12 +1105,15 @@ function updateLink(state, link, url, text, openInNewTab) {
 
 // Opens the link modal for inserting or editing a link.
 // Modal ID: {editorId}-insert-link-modal
-// Fields:   {editorId}-insert-link-url, -insert-link-text, -insert-link-new-tab
 /**
  * Opens the link modal in insert or edit mode and attaches one-time validation handlers.
  *
  * @param {object} state Current rich-text editor state.
  * @returns {void} No return value.
+ *
+ * @example
+ * // Open the modal after the selection has been saved.
+ * openInsertLinkModal(state);
  */
 function openInsertLinkModal(state) {
     if (!state.savedRange || !state.editor.contains(state.savedRange.commonAncestorContainer)) return;
@@ -1146,9 +1179,8 @@ function openInsertLinkModal(state) {
 
 // TABLE HELPERS
 
-// Resolves the active table cell from the live selection or the preserved cell.
 /**
- * Handles get table context for the rich-text editor.
+ * Resolves the active table cell from the live selection or preserved cell.
  *
  * @param {object} state Current rich-text editor state.
  * @returns {any} The result of the operation.
@@ -1167,9 +1199,8 @@ function getTableContext(state) {
     return { table, row, cell };
 }
 
-// Moves the selection into a specific table cell.
 /**
- * Handles select table cell for the rich-text editor.
+ * Moves the selection into a specific table cell.
  *
  * @param {object} state Current rich-text editor state.
  * @param {HTMLTableCellElement|null} cell The cell argument for this operation.
@@ -1190,9 +1221,8 @@ function selectTableCell(state, cell) {
     state.activeTableCell = cell;
 }
 
-// Repairs empty or incomplete rows so table actions always work with a rectangular grid.
 /**
- * Handles normalize table rows for the rich-text editor.
+ * Repairs empty or incomplete rows so table actions work with a rectangular grid.
  *
  * @param {HTMLTableElement} table The table argument for this operation.
  * @returns {void} No return value.
@@ -1218,6 +1248,10 @@ function normalizeTableRows(table) {
  * @param {object} state Current rich-text editor state.
  * @param {string} action The action argument for this operation.
  * @returns {void} No return value.
+ *
+ * @example
+ * // Insert a column to the right of the active table cell.
+ * applyTableAction(state, 'add-column-right');
  */
 function applyTableAction(state, action) {
     const context = getTableContext(state);
@@ -1272,11 +1306,15 @@ function applyTableAction(state, action) {
 }
 
 /**
- * Handles apply table style for the rich-text editor.
+ * Applies a style to the active table or toggles its header row.
  *
  * @param {object} state Current rich-text editor state.
  * @param {string} style The style argument for this operation.
  * @returns {void} No return value.
+ *
+ * @example
+ * // Convert the first table row into semantic header cells.
+ * applyTableStyle(state, 'header-row');
  */
 function applyTableStyle(state, style) {
     const context = getTableContext(state);
@@ -1321,7 +1359,6 @@ function applyTableStyle(state, style) {
 }
 
 
-// Inserts a bordered data table with a semantic header row.
 /**
  * Inserts a table with a semantic header row and a following writable paragraph.
  *
@@ -1329,6 +1366,10 @@ function applyTableStyle(state, style) {
  * @param {number} rows The rows argument for this operation.
  * @param {number} columns The columns argument for this operation.
  * @returns {void} No return value.
+ *
+ * @example
+ * // Insert a five-by-five table at the saved selection.
+ * insertTable(state, 5, 5);
  */
 function insertTable(state, rows, columns) {
     restoreSelection(state);
@@ -1383,12 +1424,15 @@ function insertTable(state, rows, columns) {
 
 // Opens the table-dimensions modal.
 // Modal ID: {editorId}-insert-table-modal
-// Fields:   {editorId}-insert-table-rows, -insert-table-columns
 /**
- * Handles open insert table modal for the rich-text editor.
+ * Opens the table-dimensions modal and validates row and column input.
  *
  * @param {object} state Current rich-text editor state.
  * @returns {void} No return value.
+ *
+ * @example
+ * // Open the validated Rows and Columns dialog.
+ * openInsertTableModal(state);
  */
 function openInsertTableModal(state) {
     const modal = getModal(state, 'insert-table-modal');
@@ -1433,7 +1477,7 @@ function openInsertTableModal(state) {
 // IMAGE HELPERS
 
 /**
- * Handles get image url extension for the rich-text editor.
+ * Gets the filename extension from an image URL.
  *
  * @param {string} url The url argument for this operation.
  * @returns {any} The result of the operation.
@@ -1449,7 +1493,7 @@ function getImageUrlExtension(url) {
 }
 
 /**
- * Handles get allowed image extensions for the rich-text editor.
+ * Reads allowed image extensions from the image modal allow-list.
  *
  * @param {object} state Current rich-text editor state.
  * @returns {any} The result of the operation.
@@ -1460,7 +1504,7 @@ function getAllowedImageExtensions(state) {
 }
 
 /**
- * Handles is allowed image url for the rich-text editor.
+ * Checks whether an image URL matches the image-domain allow-list.
  *
  * @param {string} url The url argument for this operation.
  * @param {object} state Current rich-text editor state.
@@ -1478,6 +1522,10 @@ function isAllowedImageUrl(url, state) {
  * @param {object} state Current rich-text editor state.
  * @param {string|number} value Optional formatting value.
  * @returns {any} The result of the operation.
+ *
+ * @example
+ * // Accept only policy-compliant HTTPS image URLs.
+ * normalizeImageUrl(state, 'https://cdn.example.com/photo.png');
  */
 function normalizeImageUrl(state, value) {
     const rawValue = value.trim();
@@ -1494,7 +1542,7 @@ function normalizeImageUrl(state, value) {
     }
 }
 /**
- * Handles load image details for the rich-text editor.
+ * Loads a validated image and returns its intrinsic dimensions.
  *
  * @param {string} url The url argument for this operation.
  * @returns {any} The result of the operation.
@@ -1509,7 +1557,7 @@ function loadImageDetails(url) {
 }
 
 /**
- * Handles show image feedback for the rich-text editor.
+ * Displays a validation or loading message in the image modal.
  *
  * @param {object} state Current rich-text editor state.
  * @param {string} message The message argument for this operation.
@@ -1523,7 +1571,7 @@ function showImageFeedback(state, message) {
 }
 
 /**
- * Handles clear image feedback for the rich-text editor.
+ * Clears the validation or loading message in the image modal.
  *
  * @param {object} state Current rich-text editor state.
  * @returns {void} No return value.
@@ -1536,11 +1584,15 @@ function clearImageFeedback(state) {
 }
 
 /**
- * Handles prepare image preview for the rich-text editor.
+ * Validates and previews an image before enabling insertion.
  *
  * @param {object} state Current rich-text editor state.
  * @param {string|number} value Optional formatting value.
  * @returns {Promise<any>} The result of the operation.
+ *
+ * @example
+ * // Validate and load an image before enabling insertion.
+ * await prepareImagePreview(state, 'https://cdn.example.com/photo.png');
  */
 async function prepareImagePreview(state, value) {
     const url = normalizeImageUrl(state, value);
@@ -1562,11 +1614,15 @@ async function prepareImagePreview(state, value) {
 }
 
 /**
- * Handles update image aspect ratio for the rich-text editor.
+ * Updates the other image dimension when aspect-ratio locking is enabled.
  *
  * @param {object} state Current rich-text editor state.
  * @param {string} changedDimension The changedDimension argument for this operation.
  * @returns {void} No return value.
+ *
+ * @example
+ * // Update height after the user changes width with aspect lock enabled.
+ * updateImageAspectRatio(state, 'width');
  */
 function updateImageAspectRatio(state, changedDimension) {
     if (!state.preparedImage) return;
@@ -1584,7 +1640,7 @@ function updateImageAspectRatio(state, changedDimension) {
 }
 
 /**
- * Handles reset image modal for the rich-text editor.
+ * Resets image modal fields and transient state to insertion defaults.
  *
  * @param {object} state Current rich-text editor state.
  * @returns {void} No return value.
@@ -1621,9 +1677,8 @@ function resetImageModal(state) {
     clearImageFeedback(state);
 }
 
-// Finds an editor image from a click or a saved selection, when available.
 /**
- * Handles get image for editing for the rich-text editor.
+ * Finds an editor image from a click or saved selection, when available.
  *
  * @param {object} state Current rich-text editor state.
  * @returns {any} The result of the operation.
@@ -1643,9 +1698,8 @@ function getImageForEditing(state) {
     return null;
 }
 
-// Pre-fills the image dialog from an existing editor image without changing its source.
 /**
- * Handles load image for editing for the rich-text editor.
+ * Pre-fills the image dialog from an existing editor image without changing its source.
  *
  * @param {object} state Current rich-text editor state.
  * @param {HTMLImageElement} image The image argument for this operation.
@@ -1703,12 +1757,15 @@ function loadImageForEditing(state, image) {
     return true;
 }
 
-// Creates the requested image or figure element and inserts it at the saved editor range.
 /**
  * Inserts or replaces an image or figure after validating all modal options.
  *
  * @param {object} state Current rich-text editor state.
  * @returns {void} No return value.
+ *
+ * @example
+ * // Insert the image prepared by the modal preview action.
+ * insertPreparedImage(state);
  */
 function insertPreparedImage(state) {
     const widthInput = el(state, 'image-width');
@@ -1810,12 +1867,15 @@ function insertPreparedImage(state) {
 
 // Opens the image modal in insert or edit mode.
 // Modal ID: {editorId}-insert-image-modal
-// The host application owns file uploads through ImageUploadHandler; this modal does not expose browser upload endpoints or headers.
 /**
- * Handles open insert image modal for the rich-text editor.
+ * Opens the image modal in insert or edit mode.
  *
  * @param {object} state Current rich-text editor state.
  * @returns {void} No return value.
+ *
+ * @example
+ * // Open the dialog in insert mode, or edit mode when an image is selected.
+ * openInsertImageModal(state);
  */
 function openInsertImageModal(state) {
     const modal = getModal(state, 'insert-image-modal');
@@ -1894,12 +1954,15 @@ function openInsertImageModal(state) {
 
 // PRINT
 
-// Uses the native print dialog while temporarily showing only the editor content.
 /**
  * Opens the native print dialog with a temporary print-only copy of editor content.
  *
  * @param {object} state Current rich-text editor state.
  * @returns {void} No return value.
+ *
+ * @example
+ * // Print only this editor's document, excluding its toolbar and footer.
+ * printEditorDocument(state);
  */
 function printEditorDocument(state) {
     const editor = state.editor;
@@ -2010,7 +2073,7 @@ function printEditorDocument(state) {
 // TOOLBAR CLICK HANDLER
 
 /**
- * Handles handle toolbar click for the rich-text editor.
+ * Routes legacy toolbar data attributes to the corresponding editor operation.
  *
  * @param {object} state Current rich-text editor state.
  * @param {MouseEvent} event Browser event raised by the toolbar.
@@ -2079,6 +2142,10 @@ function handleToolbarClick(state, event) {
  * @param {any} dotNetHelper .NET object reference used for Blazor interop.
  * @param {string} editorId Component-generated unique editor identifier.
  * @returns {void} No return value.
+ *
+ * @example
+ * // Remove event handlers when the component is disposed.
+ * dispose(dotNetHelper, 'editor-1');
  */
 export function dispose(dotNetHelper, editorId) {
     const state = getEditorState(editorId);
@@ -2110,6 +2177,10 @@ export function dispose(dotNetHelper, editorId) {
  * @param {string} command Toolbar command to execute.
  * @param {string|number} value Optional formatting value.
  * @returns {void} No return value.
+ *
+ * @example
+ * // Apply bold using the selection saved before the toolbar click.
+ * execute(dotNetHelper, 'editor-1', 'editor-1-bold', 'bold');
  */
 export function execute(dotNetHelper, editorId, elementId, command, value) {
     const state = getEditorState(editorId);
@@ -2118,11 +2189,15 @@ export function execute(dotNetHelper, editorId, elementId, command, value) {
 }
 
 /**
- * Handles focus for the rich-text editor.
+ * Moves focus to the editor surface.
  *
  * @param {any} dotNetHelper .NET object reference used for Blazor interop.
  * @param {string} editorId Component-generated unique editor identifier.
  * @returns {void} No return value.
+ *
+ * @example
+ * // Return keyboard focus to an initialized editor.
+ * focus(dotNetHelper, 'editor-1');
  */
 export function focus(dotNetHelper, editorId) {
     const state = getEditorState(editorId);
@@ -2131,11 +2206,15 @@ export function focus(dotNetHelper, editorId) {
 }
 
 /**
- * Handles prepare uploaded image for the rich-text editor.
+ * Prepares a host-uploaded image URL for preview in the image modal.
  *
  * @param {string} editorId Component-generated unique editor identifier.
  * @param {string} imageUrl The imageUrl argument for this operation.
  * @returns {Promise<any>} The result of the operation.
+ *
+ * @example
+ * // Preview a host-uploaded image in the open image modal.
+ * await prepareUploadedImage('editor-1', 'https://cdn.example.com/image.png');
  */
 export async function prepareUploadedImage(editorId, imageUrl) {
     const state = getEditorState(editorId);
@@ -2148,11 +2227,15 @@ export async function prepareUploadedImage(editorId, imageUrl) {
 }
 
 /**
- * Handles show image upload error for the rich-text editor.
+ * Displays an uploaded-image error message in the image modal.
  *
  * @param {string} editorId Component-generated unique editor identifier.
  * @param {string} message The message argument for this operation.
  * @returns {void} No return value.
+ *
+ * @example
+ * // Show a host-upload failure to the modal user.
+ * showImageUploadError('editor-1', 'The upload could not be completed.');
  */
 export function showImageUploadError(editorId, message) {
     const state = getEditorState(editorId);
@@ -2166,6 +2249,10 @@ export function showImageUploadError(editorId, message) {
  * @param {string[]} allowedLinkDomains Configured link-domain allow-list.
  * @param {string[]} allowedImageDomains Configured image-domain allow-list.
  * @returns {void} No return value.
+ *
+ * @example
+ * // Initialize one Blazor editor with link and image host policies.
+ * initialize(dotNetHelper, 'editor-1', ['example.com'], ['cdn.example.com']);
  */
 export function initialize(dotNetHelper, editorId, allowedLinkDomains, allowedImageDomains) {
     const state = createEditorState(editorId, dotNetHelper, allowedLinkDomains, allowedImageDomains);
