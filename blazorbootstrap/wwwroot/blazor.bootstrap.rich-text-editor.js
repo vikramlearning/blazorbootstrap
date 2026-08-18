@@ -339,6 +339,22 @@ function applyInlineCommand(state, command, value) {
     }, def.match);
 }
 
+// Removes browser-inherited inline formatting from a newly created empty paragraph.
+function normalizeEmptyParagraphAfterEnter(state) {
+    const selection = window.getSelection();
+    if (!selection || !selection.rangeCount) return;
+    const element = getRangeElement(selection.anchorNode);
+    const paragraph = element && element.closest('p');
+    if (!paragraph
+        || !state.editor.contains(paragraph)
+        || paragraph.textContent.replace(/\u200B/g, '').trim()
+        || paragraph.querySelector('img, table, hr')) return;
+    paragraph.replaceChildren(document.createElement('br'));
+    const range = document.createRange();
+    range.selectNodeContents(paragraph);
+    range.collapse(true);
+    setEditorRange(state, range);
+}
 // Removes known inline formatting within the selection.
 function clearInlineFormatting(state) {
     restoreSelection(state);
@@ -1659,7 +1675,8 @@ export function initialize(dotNetHelper, editorId, allowedLinkDomains, allowedIm
 
     // Editor content listeners
     state._editorBeforeInputHandler = () => recordEditorState(state);
-    state._editorInputHandler = () => {
+    state._editorInputHandler = (event) => {
+        if (event.inputType === 'insertParagraph') normalizeEmptyParagraphAfterEnter(state);
         rememberSelection(state);
         notifyEditorChange(state);
     };
