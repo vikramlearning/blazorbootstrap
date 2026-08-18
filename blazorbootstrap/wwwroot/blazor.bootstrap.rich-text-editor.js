@@ -1004,10 +1004,19 @@ function insertTable(state, rows, columns) {
     }
     const paragraph = document.createElement('p');
     paragraph.appendChild(document.createElement('br'));
-    range.deleteContents();
     const fragment = document.createDocumentFragment();
     fragment.append(table, paragraph);
-    range.insertNode(fragment);
+    const insertionParagraph = getRangeElement(range.startContainer).closest('p');
+    if (range.collapsed
+        && insertionParagraph
+        && state.editor.contains(insertionParagraph)
+        && !insertionParagraph.textContent.trim()
+        && !insertionParagraph.querySelector('img, table')) {
+        insertionParagraph.replaceWith(fragment);
+    } else {
+        range.deleteContents();
+        range.insertNode(fragment);
+    }
     const caret = document.createRange();
     caret.selectNodeContents(headerRow.cells[0]);
     caret.collapse(true);
