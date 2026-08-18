@@ -271,6 +271,8 @@ public partial class RichTextEditor : BlazorBootstrapComponentBase
 
     private string ImageInputId => $"{Id}-image-upload-file";
 
+    private string InsertTableButtonId => $"{Id}-insert-table";
+
     private HashSet<string> NormalizedAllowedImageFileTypes =>
         (AllowedImageFileTypes ?? defaultAllowedImageFileTypes)
             .Select(fileType => fileType.Trim().TrimStart('.').ToLowerInvariant())

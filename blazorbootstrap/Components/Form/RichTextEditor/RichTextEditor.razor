@@ -102,7 +102,7 @@
                             <li><button type="button" class="dropdown-item" data-editor-table="3x3">3 × 3 table</button></li>
                             <li><button type="button" class="dropdown-item" data-editor-table="4x4">4 × 4 table</button></li>
                             <li><hr class="dropdown-divider"></li>
-                            <li><button type="button" class="dropdown-item" data-editor-action="insert-table"><i class="bi bi-grid-3x3-gap me-2" aria-hidden="true"></i>Rows and columns…</button></li>
+                            <li><button id="@InsertTableButtonId" type="button" class="dropdown-item" disabled="@Disabled" @onclick="@(() => OnToolbarButtonClickAsync(InsertTableButtonId, RichTextEditorToolbarItem.Table))"><i class="bi bi-grid-3x3-gap me-2" aria-hidden="true"></i>Rows and columns…</button></li>
                             <li><hr class="dropdown-divider"></li>
                             <li><h2 class="dropdown-header">Table actions</h2></li>
                             <li><button type="button" class="dropdown-item" data-editor-table-action="add-column-right"><i class="bi bi-arrow-right-square me-2" aria-hidden="true"></i>Add column to the right</button></li>
@@ -220,8 +220,19 @@
             </form>
         </div></div>
     </div>
-    <div id="@($"{Id}-table-modal")" class="modal fade" tabindex="-1" aria-labelledby="@($"{Id}-table-modal-title")" aria-hidden="true">
-        <div class="modal-dialog"><div class="modal-content"><div class="modal-header"><h2 id="@($"{Id}-table-modal-title")" class="modal-title fs-5">Insert table</h2><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div><div class="modal-body"><div class="row g-3"><div class="col"><label class="form-label" for="@($"{Id}-table-rows")">Rows</label><input id="@($"{Id}-table-rows")" class="form-control" data-bb-rte-table-rows type="number" min="1" max="20" value="2" /></div><div class="col"><label class="form-label" for="@($"{Id}-table-columns")">Columns</label><input id="@($"{Id}-table-columns")" class="form-control" data-bb-rte-table-columns type="number" min="1" max="10" value="2" /></div></div></div><div class="modal-footer"><button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button><button type="button" class="btn btn-primary" data-bb-rte-save-table>Insert table</button></div></div></div>
+    <div id="@($"{Id}-insert-table-modal")" class="modal fade" tabindex="-1" aria-labelledby="@($"{Id}-insert-table-title")" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-sm">
+            <div class="modal-content">
+                <form id="@($"{Id}-insert-table-form")" novalidate>
+                    <div class="modal-header"><h2 id="@($"{Id}-insert-table-title")" class="modal-title fs-5">Insert table</h2><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div>
+                    <div class="modal-body">
+                        <div class="mb-3"><label for="@($"{Id}-insert-table-rows")" class="form-label">Rows</label><input id="@($"{Id}-insert-table-rows")" class="form-control" type="number" min="1" max="20" step="1" value="3" required inputmode="numeric" /><div class="invalid-feedback">Enter a whole number from 1 to 20.</div></div>
+                        <div class="mb-0"><label for="@($"{Id}-insert-table-columns")" class="form-label">Columns</label><input id="@($"{Id}-insert-table-columns")" class="form-control" type="number" min="1" max="20" step="1" value="3" required inputmode="numeric" /><div class="invalid-feedback">Enter a whole number from 1 to 20.</div></div>
+                    </div>
+                    <div class="modal-footer"><button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button><button type="submit" class="btn btn-primary">Insert table</button></div>
+                </form>
+            </div>
+        </div>
     </div>
 
 </CascadingValue>

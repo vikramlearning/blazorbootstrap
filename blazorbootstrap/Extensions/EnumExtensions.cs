@@ -270,6 +270,7 @@ public static class EnumExtensions
             RichTextEditorToolbarItem.UnorderedList => "insertUnorderedList",
             RichTextEditorToolbarItem.Link => "link",
             RichTextEditorToolbarItem.Image => "image",
+            RichTextEditorToolbarItem.Table => "insertTable",
             RichTextEditorToolbarItem.HorizontalRule => "insertHorizontalRule",
             RichTextEditorToolbarItem.Blockquote => "blockquote",
             RichTextEditorToolbarItem.CodeBlock => "codeBlock",

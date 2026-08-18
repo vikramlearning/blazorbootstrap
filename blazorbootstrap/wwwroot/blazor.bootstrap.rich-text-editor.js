@@ -554,6 +554,8 @@ function executeCommand(state, command, value = null) {
         openInsertLinkModal(state);
     } else if (command === 'image') {
         openInsertImageModal(state);
+    } else if (command === 'insertTable') {
+        openInsertTableModal(state);
     } else if (command === 'blockquote') {
         toggleBlockQuote(state);
     } else if (command === 'codeBlock') {
