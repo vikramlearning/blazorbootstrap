@@ -329,8 +329,11 @@ function updateFooterContext(state) {
     if (fontEl) {
         const fontElement = element && element.closest('[data-rte-font], font[face]');
         const selectedFont = fontElement ? (fontElement.dataset.rteFont || fontElement.getAttribute('face') || 'Inter') : 'Inter';
-        const sizeElement = element && element.closest('[data-rte-size], font[size]');
-        const selectedSize = sizeElement ? (sizeElement.dataset.rteSize || _fontSizeLabels[sizeElement.getAttribute('size')] || '14 px') : '14 px';
+        const sizeElement = element && element.closest('span[style*="font-size"], font[size]');
+        const selectedSize = sizeElement ? (
+            _fontSizeLabels[sizeElement.getAttribute('size')]
+            || Object.values(_fontSizeLabels).find((label) => label.replace(' ', '') === sizeElement.style.fontSize)
+            || '14 px') : '14 px';
         fontEl.innerHTML = '<i class="bi bi-type me-1" aria-hidden="true"></i>' + selectedFont + ', ' + selectedSize;
     }
 
@@ -476,9 +479,10 @@ function applyInlineCommand(state, command, value) {
             match: (e) => e.dataset.rteFont === value
         },
         fontSize: {
-            property: 'fontSize', value: _fontSizeLabels[value] || '14 px',
-            attribute: 'data-rte-size', attributeValue: _fontSizeLabels[value] || '14 px',
-            match: (e) => e.dataset.rteSize === (_fontSizeLabels[value] || '14 px')
+            // Labels include a space for readability; CSS length values must not include that space.
+            property: 'fontSize', value: (_fontSizeLabels[value] || '14 px').replace(' ', ''),
+            // Match the serialized CSS style so no editor-only data attribute is emitted in saved HTML.
+            match: (e) => e.style.fontSize === (_fontSizeLabels[value] || '14 px').replace(' ', '')
         },
         foreColor: {
             property: 'color', value,
