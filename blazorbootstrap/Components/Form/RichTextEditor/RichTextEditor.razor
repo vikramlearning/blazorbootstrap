@@ -16,11 +16,14 @@
                     <div class="dropdown">
                         <button type="button" class="btn btn-outline-secondary btn-sm dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">Paragraph</button>
                         <ul class="dropdown-menu">
-                            <li><button type="button" class="dropdown-item" data-editor-block="p">Paragraph</button></li>
-                            <li><button type="button" class="dropdown-item" data-editor-block="h1">Heading 1</button></li>
-                            <li><button type="button" class="dropdown-item" data-editor-block="h2">Heading 2</button></li>
-                            <li><button type="button" class="dropdown-item" data-editor-block="h3">Heading 3</button></li>
-                            <li><button type="button" class="dropdown-item" data-editor-block="small">Caption</button></li>
+                            <li><button type="button" class="dropdown-item" disabled="@Disabled" @onclick="@(() => OnToolbarButtonClickAsync(Id!, RichTextEditorToolbarItem.Paragraph))">Paragraph</button></li>
+                            <li><button type="button" class="dropdown-item" disabled="@Disabled" @onclick="@(() => OnToolbarButtonClickAsync(Id!, RichTextEditorToolbarItem.Heading1))">Heading 1</button></li>
+                            <li><button type="button" class="dropdown-item" disabled="@Disabled" @onclick="@(() => OnToolbarButtonClickAsync(Id!, RichTextEditorToolbarItem.Heading2))">Heading 2</button></li>
+                            <li><button type="button" class="dropdown-item" disabled="@Disabled" @onclick="@(() => OnToolbarButtonClickAsync(Id!, RichTextEditorToolbarItem.Heading3))">Heading 3</button></li>
+                            <li><button type="button" class="dropdown-item" disabled="@Disabled" @onclick="@(() => OnToolbarButtonClickAsync(Id!, RichTextEditorToolbarItem.Heading4))">Heading 4</button></li>
+                            <li><button type="button" class="dropdown-item" disabled="@Disabled" @onclick="@(() => OnToolbarButtonClickAsync(Id!, RichTextEditorToolbarItem.Heading5))">Heading 5</button></li>
+                            <li><button type="button" class="dropdown-item" disabled="@Disabled" @onclick="@(() => OnToolbarButtonClickAsync(Id!, RichTextEditorToolbarItem.Heading6))">Heading 6</button></li>
+                            <li><button type="button" class="dropdown-item" disabled="@Disabled" @onclick="@(() => OnToolbarButtonClickAsync(Id!, RichTextEditorToolbarItem.Caption))">Caption</button></li>
                         </ul>
                     </div>
                     <div class="dropdown">

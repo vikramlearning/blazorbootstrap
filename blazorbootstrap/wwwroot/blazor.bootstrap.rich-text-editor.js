@@ -116,7 +116,7 @@ function setEditorRange(state, range) {
 
 // Finds all editable blocks touched by a range, or the current block for a collapsed range.
 function getRangeBlocks(state, range) {
-    const blockSelector = 'p, h1, h2, h3, h4, h5, h6, li, td, th, blockquote, pre';
+    const blockSelector = 'p, div, h1, h2, h3, h4, h5, h6, li, td, th, blockquote, pre';
     if (range.collapsed) {
         const element = getRangeElement(range.startContainer);
         const block = element && element.closest(blockSelector);
@@ -201,8 +201,8 @@ function updateFooterContext(state) {
 
     // Block label
     if (blockEl) {
-        const block = element && element.closest('h1, h2, h3, p, blockquote, pre, li, td, th');
-        const blockLabels = { H1: 'Heading 1', H2: 'Heading 2', H3: 'Heading 3', BLOCKQUOTE: 'Block quote', PRE: 'Code block', LI: 'List item', TD: 'Table cell', TH: 'Table header' };
+        const block = element && element.closest('h1, h2, h3, h4, h5, h6, p, div, blockquote, pre, li, td, th');
+        const blockLabels = { H1: 'Heading 1', H2: 'Heading 2', H3: 'Heading 3', H4: 'Heading 4', H5: 'Heading 5', H6: 'Heading 6', BLOCKQUOTE: 'Block quote', PRE: 'Code block', LI: 'List item', TD: 'Table cell', TH: 'Table header' };
         const label = block ? (blockLabels[block.tagName] || 'Paragraph') : 'Paragraph';
         blockEl.innerHTML = '<i class="bi bi-file-earmark-text me-1" aria-hidden="true"></i>' + label;
     }
@@ -532,7 +532,21 @@ function executeCommand(state, command, value = null) {
         printEditorDocument(state);
     } else if (['bold', 'italic', 'underline', 'strikeThrough', 'fontName', 'fontSize', 'foreColor', 'hiliteColor'].includes(command)) {
         applyInlineCommand(state, command, value);
-    } else if (command === 'justifyLeft') {
+    } else if (command === 'paragraph') {
+        selectBlock(state, 'p');
+    } else if (command === 'heading1') {
+        selectBlock(state, 'h1');
+    } else if (command === 'heading2') {
+        selectBlock(state, 'h2');
+    } else if (command === 'heading3') {
+        selectBlock(state, 'h3');
+    } else if (command === 'heading4') {
+        selectBlock(state, 'h4');
+    } else if (command === 'heading5') {
+        selectBlock(state, 'h5');
+    } else if (command === 'heading6') {
+        selectBlock(state, 'h6');    } else if (command === 'caption') {
+        selectBlock(state, 'small');    } else if (command === 'justifyLeft') {
         applyAlignment(state, 'left');
     } else if (command === 'justifyCenter') {
         applyAlignment(state, 'center');
