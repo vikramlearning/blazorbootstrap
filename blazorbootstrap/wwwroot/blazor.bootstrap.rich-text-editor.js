@@ -359,7 +359,15 @@ function clearInlineFormatting(state) {
         });
         if (!wrappers.length) return;
         if (wrappers.some((wrapper) => wrapper.closest('table'))) {
-            const tableWrappers = wrappers.filter((wrapper) => rangeContainsNode(range, wrapper));
+            const selectedCells = Array.from(state.editor.querySelectorAll('td, th')).filter((cell) => {
+                try {
+                    return range.intersectsNode(cell) && rangeContainsTextContent(range, cell);
+                } catch (e) {
+                    return false;
+                }
+            });
+            const tableWrappers = wrappers.filter((wrapper) =>
+                rangeContainsNode(range, wrapper) || selectedCells.includes(wrapper.closest('td, th')));
             if (!tableWrappers.length) return;
             recordEditorState(state);
             tableWrappers.reverse().forEach(unwrapElement);
@@ -384,6 +392,21 @@ function rangeContainsNode(range, node) {
     nodeRange.selectNode(node);
     return range.compareBoundaryPoints(Range.START_TO_START, nodeRange) <= 0
         && range.compareBoundaryPoints(Range.END_TO_END, nodeRange) >= 0;
+}
+
+// Tests whether every text node in an element is fully within a range.
+function rangeContainsTextContent(range, element) {
+    const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT);
+    let hasText = false;
+    let textNode;
+    while ((textNode = walker.nextNode())) {
+        hasText = true;
+        const textRange = document.createRange();
+        textRange.selectNodeContents(textNode);
+        if (range.compareBoundaryPoints(Range.START_TO_START, textRange) > 0
+            || range.compareBoundaryPoints(Range.END_TO_END, textRange) < 0) return false;
+    }
+    return hasText;
 }
 
 // Removes only the empty nodes left outside an extracted selection boundary.
