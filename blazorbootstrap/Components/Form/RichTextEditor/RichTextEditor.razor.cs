@@ -23,6 +23,8 @@ public partial class RichTextEditor : BlazorBootstrapComponentBase
     private string? imageUploadError;
     private DotNetObjectReference<RichTextEditor>? objRef;
 
+    private bool ShouldRenderToolbar => ToolbarItems is null || ToolbarItems.Length > 0;
+
     #endregion
 
     #region Methods
@@ -69,6 +71,10 @@ public partial class RichTextEditor : BlazorBootstrapComponentBase
 
     #region Public Methods
 
+    internal bool IsToolbarItemVisible(RichTextEditorToolbarItem item) => ToolbarItems is null || ToolbarItems.Contains(item);
+
+    internal bool IsAnyToolbarItemVisible(params RichTextEditorToolbarItem[] items) => ToolbarItems is null || items.Any(IsToolbarItemVisible);
+
     /// <summary>
     /// Clears the editor content.
     /// </summary>
@@ -93,6 +99,7 @@ public partial class RichTextEditor : BlazorBootstrapComponentBase
 
         await RichTextEditorJsInterop.ExecuteAsync(objRef!, Id!, toolbarElementId, item.ToCommandName()!, string.Empty);
     }
+
     private async Task OnFontFamilyClickAsync(string fontFamily)
     {
         if (Disabled || ReadOnly || !fontFamilies.Contains(fontFamily))
@@ -375,6 +382,13 @@ public partial class RichTextEditor : BlazorBootstrapComponentBase
     [Description("Gets or sets whether the editor is read-only.")]
     [Parameter]
     public bool ReadOnly { get; set; }
+
+    /// <summary>Gets or sets whether the editor footer is displayed.</summary>
+    [AddedVersion("4.0.0")]
+    [DefaultValue(true)]
+    [Description("Gets or sets whether the editor footer is displayed.")]
+    [Parameter]
+    public bool ShowFooter { get; set; } = true;
 
     [AddedVersion("4.0.0")]
     [DefaultValue(null)]

@@ -4,28 +4,30 @@
 <CascadingValue Value="this" Name="RichTextEditor">
     <section id="@Id" class="card shadow-sm" aria-label="@AriaLabel" @attributes="AdditionalAttributes">
         <div class="card-body p-0">
+            @if (ShouldRenderToolbar)
+            {
             <div class="border-bottom bg-body-tertiary p-2" role="toolbar" aria-label="Rich text formatting toolbar">
                 <div class="d-flex flex-wrap align-items-center gap-1">
-                    <div class="btn-group btn-group-sm" role="group" aria-label="History">
+                    <div class="btn-group btn-group-sm" role="group" aria-label="History" hidden="@(!IsAnyToolbarItemVisible(RichTextEditorToolbarItem.Print, RichTextEditorToolbarItem.Undo, RichTextEditorToolbarItem.Redo))">
                         <RichTextEditorToolbarButton Item="RichTextEditorToolbarItem.Print" Disabled="@Disabled" />
                         <RichTextEditorToolbarButton Item="RichTextEditorToolbarItem.Undo" Disabled="@Disabled" />
                         <RichTextEditorToolbarButton Item="RichTextEditorToolbarItem.Redo" Disabled="@Disabled" />
                     </div>
 
-                    <div class="dropdown">
+                    <div class="dropdown" hidden="@(!IsAnyToolbarItemVisible(RichTextEditorToolbarItem.Paragraph, RichTextEditorToolbarItem.Heading1, RichTextEditorToolbarItem.Heading2, RichTextEditorToolbarItem.Heading3, RichTextEditorToolbarItem.Heading4, RichTextEditorToolbarItem.Heading5, RichTextEditorToolbarItem.Heading6, RichTextEditorToolbarItem.Caption))">
                         <button type="button" class="btn btn-outline-secondary btn-sm dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">Paragraph</button>
                         <ul class="dropdown-menu">
-                            <li><button type="button" class="dropdown-item" disabled="@Disabled" @onclick="@(() => OnToolbarButtonClickAsync(Id!, RichTextEditorToolbarItem.Paragraph))">Paragraph</button></li>
-                            <li><button type="button" class="dropdown-item" disabled="@Disabled" @onclick="@(() => OnToolbarButtonClickAsync(Id!, RichTextEditorToolbarItem.Heading1))">Heading 1</button></li>
-                            <li><button type="button" class="dropdown-item" disabled="@Disabled" @onclick="@(() => OnToolbarButtonClickAsync(Id!, RichTextEditorToolbarItem.Heading2))">Heading 2</button></li>
-                            <li><button type="button" class="dropdown-item" disabled="@Disabled" @onclick="@(() => OnToolbarButtonClickAsync(Id!, RichTextEditorToolbarItem.Heading3))">Heading 3</button></li>
-                            <li><button type="button" class="dropdown-item" disabled="@Disabled" @onclick="@(() => OnToolbarButtonClickAsync(Id!, RichTextEditorToolbarItem.Heading4))">Heading 4</button></li>
-                            <li><button type="button" class="dropdown-item" disabled="@Disabled" @onclick="@(() => OnToolbarButtonClickAsync(Id!, RichTextEditorToolbarItem.Heading5))">Heading 5</button></li>
-                            <li><button type="button" class="dropdown-item" disabled="@Disabled" @onclick="@(() => OnToolbarButtonClickAsync(Id!, RichTextEditorToolbarItem.Heading6))">Heading 6</button></li>
-                            <li><button type="button" class="dropdown-item" disabled="@Disabled" @onclick="@(() => OnToolbarButtonClickAsync(Id!, RichTextEditorToolbarItem.Caption))">Caption</button></li>
+                            <li hidden="@(!IsToolbarItemVisible(RichTextEditorToolbarItem.Paragraph))"><button type="button" class="dropdown-item" disabled="@Disabled" @onclick="@(() => OnToolbarButtonClickAsync(Id!, RichTextEditorToolbarItem.Paragraph))">Paragraph</button></li>
+                            <li hidden="@(!IsToolbarItemVisible(RichTextEditorToolbarItem.Heading1))"><button type="button" class="dropdown-item" disabled="@Disabled" @onclick="@(() => OnToolbarButtonClickAsync(Id!, RichTextEditorToolbarItem.Heading1))">Heading 1</button></li>
+                            <li hidden="@(!IsToolbarItemVisible(RichTextEditorToolbarItem.Heading2))"><button type="button" class="dropdown-item" disabled="@Disabled" @onclick="@(() => OnToolbarButtonClickAsync(Id!, RichTextEditorToolbarItem.Heading2))">Heading 2</button></li>
+                            <li hidden="@(!IsToolbarItemVisible(RichTextEditorToolbarItem.Heading3))"><button type="button" class="dropdown-item" disabled="@Disabled" @onclick="@(() => OnToolbarButtonClickAsync(Id!, RichTextEditorToolbarItem.Heading3))">Heading 3</button></li>
+                            <li hidden="@(!IsToolbarItemVisible(RichTextEditorToolbarItem.Heading4))"><button type="button" class="dropdown-item" disabled="@Disabled" @onclick="@(() => OnToolbarButtonClickAsync(Id!, RichTextEditorToolbarItem.Heading4))">Heading 4</button></li>
+                            <li hidden="@(!IsToolbarItemVisible(RichTextEditorToolbarItem.Heading5))"><button type="button" class="dropdown-item" disabled="@Disabled" @onclick="@(() => OnToolbarButtonClickAsync(Id!, RichTextEditorToolbarItem.Heading5))">Heading 5</button></li>
+                            <li hidden="@(!IsToolbarItemVisible(RichTextEditorToolbarItem.Heading6))"><button type="button" class="dropdown-item" disabled="@Disabled" @onclick="@(() => OnToolbarButtonClickAsync(Id!, RichTextEditorToolbarItem.Heading6))">Heading 6</button></li>
+                            <li hidden="@(!IsToolbarItemVisible(RichTextEditorToolbarItem.Caption))"><button type="button" class="dropdown-item" disabled="@Disabled" @onclick="@(() => OnToolbarButtonClickAsync(Id!, RichTextEditorToolbarItem.Caption))">Caption</button></li>
                         </ul>
                     </div>
-                    <div class="dropdown">
+                    <div class="dropdown" hidden="@(!IsToolbarItemVisible(RichTextEditorToolbarItem.FontFamily))">
                         <button id="@FontFamilyButtonId" type="button" class="btn btn-outline-secondary btn-sm dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" disabled="@Disabled">@selectedFontFamily</button>
                         <ul class="dropdown-menu">
                             <li><button type="button" class="dropdown-item" disabled="@Disabled" @onclick='@(() => OnFontFamilyClickAsync("Inter"))'>Inter</button></li>
@@ -34,7 +36,7 @@
                             <li><button type="button" class="dropdown-item" disabled="@Disabled" @onclick='@(() => OnFontFamilyClickAsync("Courier New"))'>Courier New</button></li>
                         </ul>
                     </div>
-                    <div class="dropdown">
+                    <div class="dropdown" hidden="@(!IsToolbarItemVisible(RichTextEditorToolbarItem.FontSize))">
                         <button id="@FontSizeButtonId" type="button" class="btn btn-outline-secondary btn-sm dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" disabled="@Disabled">@selectedFontSize</button>
                         <ul class="dropdown-menu">
                             <li><button type="button" class="dropdown-item" disabled="@Disabled" @onclick='@(() => OnFontSizeClickAsync("2"))'>12 px</button></li>
@@ -45,14 +47,14 @@
                         </ul>
                     </div>
 
-                    <div class="btn-group btn-group-sm" role="group" aria-label="Text emphasis">
+                    <div class="btn-group btn-group-sm" role="group" aria-label="Text emphasis" hidden="@(!IsAnyToolbarItemVisible(RichTextEditorToolbarItem.Bold, RichTextEditorToolbarItem.Italic, RichTextEditorToolbarItem.Underline, RichTextEditorToolbarItem.Strikethrough))">
                         <RichTextEditorToolbarButton Item="RichTextEditorToolbarItem.Bold" Disabled="@Disabled" />
                         <RichTextEditorToolbarButton Item="RichTextEditorToolbarItem.Italic" Disabled="@Disabled" />
                         <RichTextEditorToolbarButton Item="RichTextEditorToolbarItem.Underline" Disabled="@Disabled" />
                         <RichTextEditorToolbarButton Item="RichTextEditorToolbarItem.Strikethrough" Disabled="@Disabled" />
                     </div>
 
-                    <div class="btn-group btn-group-sm" role="group" aria-label="Text color">
+                    <div class="btn-group btn-group-sm" role="group" aria-label="Text color" hidden="@(!IsToolbarItemVisible(RichTextEditorToolbarItem.TextColor))">
                         <button type="button" class="btn btn-outline-secondary position-relative" data-editor-action="apply-text-color" aria-label="Apply text color" title="Apply selected text color"><i class="bi bi-fonts" aria-hidden="true"></i><span id="text-color-indicator" data-rte-text-color-indicator class="position-absolute bottom-0 start-0 end-0 border-bottom border-3 border-dark" aria-hidden="true"></span></button>
                         <button type="button" class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Choose text color" title="Choose text color"><span class="visually-hidden">Choose text color</span></button>
                         <ul class="dropdown-menu">
@@ -63,7 +65,7 @@
                             <li><button type="button" class="dropdown-item" data-editor-color="#fd7e14" data-editor-indicator="border-warning"><i class="bi bi-circle-fill text-warning me-2" aria-hidden="true"></i>Orange</button></li>
                         </ul>
                     </div>
-                    <div class="btn-group btn-group-sm" role="group" aria-label="Highlight color">
+                    <div class="btn-group btn-group-sm" role="group" aria-label="Highlight color" hidden="@(!IsToolbarItemVisible(RichTextEditorToolbarItem.HighlightColor))">
                         <button type="button" class="btn btn-outline-secondary position-relative" data-editor-action="apply-highlight-color" aria-label="Apply highlight color" title="Apply selected highlight color"><i class="bi bi-highlighter" aria-hidden="true"></i><span id="highlight-color-indicator" data-rte-highlight-color-indicator class="position-absolute bottom-0 start-0 end-0 border-bottom border-3 border-warning" aria-hidden="true"></span></button>
                         <button type="button" class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Choose highlight color" title="Choose highlight color"><span class="visually-hidden">Choose highlight color</span></button>
                         <ul class="dropdown-menu">
@@ -76,27 +78,27 @@
                         </ul>
                     </div>
 
-                    <div class="btn-group btn-group-sm" role="group" aria-label="Alignment">
+                    <div class="btn-group btn-group-sm" role="group" aria-label="Alignment" hidden="@(!IsAnyToolbarItemVisible(RichTextEditorToolbarItem.AlignLeft, RichTextEditorToolbarItem.AlignCenter, RichTextEditorToolbarItem.AlignRight, RichTextEditorToolbarItem.AlignJustify))">
                         <RichTextEditorToolbarButton Item="RichTextEditorToolbarItem.AlignLeft" Disabled="@Disabled" />
                         <RichTextEditorToolbarButton Item="RichTextEditorToolbarItem.AlignCenter" Disabled="@Disabled" />
                         <RichTextEditorToolbarButton Item="RichTextEditorToolbarItem.AlignRight" Disabled="@Disabled" />
                         <RichTextEditorToolbarButton Item="RichTextEditorToolbarItem.AlignJustify" Disabled="@Disabled" />
                     </div>
 
-                    <div class="btn-group btn-group-sm" role="group" aria-label="Lists and indentation">
+                    <div class="btn-group btn-group-sm" role="group" aria-label="Lists and indentation" hidden="@(!IsAnyToolbarItemVisible(RichTextEditorToolbarItem.Outdent, RichTextEditorToolbarItem.Indent, RichTextEditorToolbarItem.OrderedList, RichTextEditorToolbarItem.UnorderedList))">
                         <RichTextEditorToolbarButton Item="RichTextEditorToolbarItem.Outdent" Disabled="@Disabled" />
                         <RichTextEditorToolbarButton Item="RichTextEditorToolbarItem.Indent" Disabled="@Disabled" />
                         <RichTextEditorToolbarButton Item="RichTextEditorToolbarItem.OrderedList" Disabled="@Disabled" />
                         <RichTextEditorToolbarButton Item="RichTextEditorToolbarItem.UnorderedList" Disabled="@Disabled" />
                     </div>
 
-                    <div class="btn-group btn-group-sm" role="group" aria-label="Insert content">
+                    <div class="btn-group btn-group-sm" role="group" aria-label="Insert content" hidden="@(!IsAnyToolbarItemVisible(RichTextEditorToolbarItem.Link, RichTextEditorToolbarItem.Image, RichTextEditorToolbarItem.HorizontalRule))">
                         <RichTextEditorToolbarButton Item="RichTextEditorToolbarItem.Link" Disabled="@Disabled" />
                         <RichTextEditorToolbarButton Item="RichTextEditorToolbarItem.Image" Disabled="@Disabled" />
                         <RichTextEditorToolbarButton Item="RichTextEditorToolbarItem.HorizontalRule" Disabled="@Disabled" />
                     </div>
 
-                    <div class="dropdown">
+                    <div class="dropdown" hidden="@(!IsToolbarItemVisible(RichTextEditorToolbarItem.Table))">
                         <button type="button" class="btn btn-outline-secondary btn-sm dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Insert table"><i class="bi bi-table" aria-hidden="true"></i></button>
                         <ul class="dropdown-menu">
                             <li><h2 class="dropdown-header">Insert table</h2></li>
@@ -125,7 +127,7 @@
                         </ul>
                     </div>
 
-                    <div class="btn-group btn-group-sm" role="group" aria-label="Blocks and view">
+                    <div class="btn-group btn-group-sm" role="group" aria-label="Blocks and view" hidden="@(!IsAnyToolbarItemVisible(RichTextEditorToolbarItem.Blockquote, RichTextEditorToolbarItem.CodeBlock, RichTextEditorToolbarItem.ClearFormatting, RichTextEditorToolbarItem.Fullscreen))">
                         <RichTextEditorToolbarButton Item="RichTextEditorToolbarItem.Blockquote" Disabled="@Disabled" />
                         <RichTextEditorToolbarButton Item="RichTextEditorToolbarItem.CodeBlock" Disabled="@Disabled" />
                         <RichTextEditorToolbarButton Item="RichTextEditorToolbarItem.ClearFormatting" Disabled="@Disabled" />
@@ -133,6 +135,7 @@
                     </div>
                 </div>
             </div>
+            }
 
             <div id="@EditorId"
                  class="form-control rounded-0 border-0 shadow-none"
@@ -147,6 +150,8 @@
 
         </div>
 
+        @if (ShowFooter)
+        {
         <footer class="card-footer bg-body-tertiary small text-body-secondary">
             <div class="d-flex flex-wrap align-items-center gap-2">
                 <div class="d-flex flex-wrap gap-3">
@@ -160,8 +165,11 @@
                 </div>
             </div>
         </footer>
+        }
     </section>
 
+    @if (IsToolbarItemVisible(RichTextEditorToolbarItem.Link))
+    {
     <div id="@($"{Id}-insert-link-modal")" class="modal fade" tabindex="-1" aria-labelledby="@($"{Id}-insert-link-title")" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
@@ -194,6 +202,9 @@
             </div>
         </div>
     </div>
+    }
+    @if (IsToolbarItemVisible(RichTextEditorToolbarItem.Image))
+    {
     <div id="@($"{Id}-insert-image-modal")" class="modal fade" tabindex="-1" aria-labelledby="@($"{Id}-insert-image-title")" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable"><div class="modal-content">
             <form id="@($"{Id}-insert-image-form")" class="d-flex flex-column h-100 overflow-hidden" novalidate>
@@ -222,6 +233,9 @@
             </form>
         </div></div>
     </div>
+    }
+    @if (IsToolbarItemVisible(RichTextEditorToolbarItem.Table))
+    {
     <div id="@($"{Id}-insert-table-modal")" class="modal fade" tabindex="-1" aria-labelledby="@($"{Id}-insert-table-title")" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-sm">
             <div class="modal-content">
@@ -236,5 +250,6 @@
             </div>
         </div>
     </div>
+    }
 
 </CascadingValue>
