@@ -1,0 +1,31 @@
+<div class="d-flex gap-2 mb-3">
+    <Button Color="ButtonColor.Primary" @onclick="AddItem">Add event</Button>
+    <Button Color="ButtonColor.Danger" Disabled="@(items.Count == 0)" @onclick="RemoveItem">Remove latest</Button>
+</div>
+
+<Timeline Items="items" />
+
+@code {
+    private readonly List<TimelineItem> items = [];
+    private int eventNumber;
+
+    protected override void OnInitialized() => AddItem();
+
+    private void AddItem()
+    {
+        eventNumber++;
+        items.Insert(0, new TimelineItem
+        {
+            Title = $"Event {eventNumber}",
+            Description = "This item was added to the bound collection.",
+            Timestamp = DateTime.Now.ToString("g"),
+            IconCssClass = "bi bi-plus-lg"
+        });
+    }
+
+    private void RemoveItem()
+    {
+        if (items.Count > 0)
+            items.RemoveAt(0);
+    }
+}

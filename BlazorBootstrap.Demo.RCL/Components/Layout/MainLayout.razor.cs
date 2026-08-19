@@ -89,6 +89,7 @@ public partial class MainLayout : MainLayoutBase
             new (){ Id = "526", Text = "Spinner", Href = DemoRouteConstants.Demos_URL_Spinners, IconName = IconName.ArrowRepeat, ParentId = "5" },
             new (){ Id = "527", Text = "Tabs", Href = DemoRouteConstants.Demos_URL_Tabs, IconName = IconName.WindowPlus, ParentId = "5" },
             new (){ Id = "528", Text = "Theme Switcher", Href = DemoRouteConstants.Demos_URL_ThemeSwitcher, IconName = IconName.NintendoSwitch, ParentId = "5" },
+            new (){ Id = "5285", Text = "Timeline", Href = DemoRouteConstants.Demos_URL_Timeline, IconName = IconName.ClockHistory, ParentId = "5" },
             new (){ Id = "529", Text = "Toasts", Href = DemoRouteConstants.Demos_URL_Toasts, IconName = IconName.ExclamationTriangleFill, ParentId = "5" },
             new (){ Id = "530", Text = "Tooltips", Href = DemoRouteConstants.Demos_URL_Tooltips, IconName = IconName.ChatSquareDotsFill, ParentId = "5" },
 

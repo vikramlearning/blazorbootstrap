@@ -1,0 +1,17 @@
+<h3 class="h5">Right aligned</h3>
+<Timeline Items="items" Alignment="TimelineAlignment.Right" Class="mb-5" />
+
+<h3 class="h5">Alternating</h3>
+<Timeline Items="items" AlternateItems="true" Class="mb-5" />
+
+<h3 class="h5">Horizontal</h3>
+<Timeline Items="items" Orientation="TimelineOrientation.Horizontal" />
+
+@code {
+    private readonly List<TimelineItem> items =
+    [
+        new() { Title = "Plan", Description = "Define the requirements.", Timestamp = "Step 1", IconCssClass = "bi bi-list-check" },
+        new() { Title = "Build", Description = "Implement the component.", Timestamp = "Step 2", IconCssClass = "bi bi-tools", IconColor = IconColor.Warning },
+        new() { Title = "Ship", Description = "Release to users.", Timestamp = "Step 3", IconCssClass = "bi bi-rocket-takeoff", IconColor = IconColor.Success }
+    ];
+}
