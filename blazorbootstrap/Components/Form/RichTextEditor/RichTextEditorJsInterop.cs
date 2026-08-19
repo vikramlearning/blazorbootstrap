@@ -8,6 +8,7 @@ internal sealed class RichTextEditorJsInterop : JsInteropBase
     public const string Dispose = "dispose";
     public const string Execute = "execute";
     public const string Focus = "focus";
+    public const string HideModal = "hideModal";
     public const string Initialize = "initialize";
     public const string PrepareUploadedImage = "prepareUploadedImage";
     public const string ShowImageUploadError = "showImageUploadError";
@@ -43,6 +44,16 @@ internal sealed class RichTextEditorJsInterop : JsInteropBase
     public async Task FocusAsync(object objRef, string editorId)
     {
         await SafeInvokeVoidAsync(Focus, objRef, editorId);
+    }
+
+    /// <summary>
+    /// Hides a rendered editor modal so its close handler can dispose and unmount it.
+    /// </summary>
+    /// <param name="editorId">The editor identifier.</param>
+    /// <param name="modalId">The editor-scoped modal identifier.</param>
+    public async Task HideModalAsync(string editorId, string modalId)
+    {
+        await SafeInvokeVoidAsync(HideModal, editorId, modalId);
     }
 
     public async Task InitializeAsync(object objRef, string editorId, IEnumerable<string>? allowedLinkDomains, IEnumerable<string>? allowedImageDomains)

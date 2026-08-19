@@ -168,7 +168,7 @@
         }
     </section>
 
-    @if (IsToolbarItemVisible(RichTextEditorToolbarItem.Link))
+    @if (isLinkModalMounted)
     {
     <div id="@($"{Id}-insert-link-modal")" class="modal fade" tabindex="-1" aria-labelledby="@($"{Id}-insert-link-title")" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
@@ -203,7 +203,7 @@
         </div>
     </div>
     }
-    @if (IsToolbarItemVisible(RichTextEditorToolbarItem.Image))
+    @if (isImageModalMounted)
     {
     <div id="@($"{Id}-insert-image-modal")" class="modal fade" tabindex="-1" aria-labelledby="@($"{Id}-insert-image-title")" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable"><div class="modal-content">
@@ -234,7 +234,7 @@
         </div></div>
     </div>
     }
-    @if (IsToolbarItemVisible(RichTextEditorToolbarItem.Table))
+    @if (isTableModalMounted)
     {
     <div id="@($"{Id}-insert-table-modal")" class="modal fade" tabindex="-1" aria-labelledby="@($"{Id}-insert-table-title")" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-sm">

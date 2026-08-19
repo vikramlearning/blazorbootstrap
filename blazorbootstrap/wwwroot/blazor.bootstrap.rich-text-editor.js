@@ -94,6 +94,19 @@ function getModal(state, suffix) {
     return { instance: bootstrap.Modal.getOrCreateInstance(modalEl), element: modalEl };
 }
 
+/**
+ * Disposes a closed Bootstrap modal and asks .NET to unmount its markup.
+ *
+ * @param {object} state Current rich-text editor state.
+ * @param {{ instance: bootstrap.Modal, element: HTMLElement }} modal The closed modal.
+ * @param {string} modalName The logical modal name sent to .NET.
+ * @returns {void} No return value.
+ */
+function notifyModalClosed(state, modal, modalName) {
+    modal.instance.dispose();
+    state.dotNetHelper?.invokeMethodAsync('OnEditorModalClosedAsync', modalName);
+}
+
 // SELECTION HELPERS
 
 /**
@@ -1289,7 +1302,10 @@ function openInsertLinkModal(state) {
 
         urlInput.addEventListener('input', () => urlInput.setCustomValidity(''));
         textInput.addEventListener('input', () => textInput.setCustomValidity(''));
-        modal.element.addEventListener('hidden.bs.modal', () => { state.linkBeingEdited = null; });
+        modal.element.addEventListener('hidden.bs.modal', () => {
+            state.linkBeingEdited = null;
+            notifyModalClosed(state, modal, 'link');
+        });
     }
 
     modal.instance.show();
@@ -1587,6 +1603,7 @@ function openInsertTableModal(state) {
 
         rowsInput.addEventListener('input', () => rowsInput.setCustomValidity(''));
         columnsInput.addEventListener('input', () => columnsInput.setCustomValidity(''));
+        modal.element.addEventListener('hidden.bs.modal', () => notifyModalClosed(state, modal, 'table'));
     }
 
     modal.instance.show();
@@ -2064,6 +2081,7 @@ function openInsertImageModal(state) {
         modal.element.addEventListener('hidden.bs.modal', () => {
             state.imageBeingEdited = null;
             state.activeEditorImage = null;
+            notifyModalClosed(state, modal, 'image');
         });
     }
 
@@ -2282,6 +2300,29 @@ export function dispose(dotNetHelper, editorId) {
     }
 
     delete window.blazorBootstrap.richTextEditor[editorId];
+}
+
+/**
+ * Closes an editor modal or disposes an unshown modal that must be unmounted.
+ *
+ * @param {string} editorId Component-generated unique editor identifier.
+ * @param {string} modalId The editor-scoped modal identifier.
+ * @returns {void} No return value.
+ */
+export function hideModal(editorId, modalId) {
+    const state = getEditorState(editorId);
+    if (!state) return;
+
+    const modal = getModal(state, modalId);
+    if (!modal) return;
+
+    if (modal.element.classList.contains('show'))
+    {
+        modal.instance.hide();
+        return;
+    }
+
+    notifyModalClosed(state, modal, modalId.replace('insert-', '').replace('-modal', ''));
 }
 
 /**

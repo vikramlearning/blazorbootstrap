@@ -22,6 +22,11 @@ public partial class RichTextEditor : BlazorBootstrapComponentBase
     private FieldIdentifier fieldIdentifier;
     private string? imageUploadError;
     private DotNetObjectReference<RichTextEditor>? objRef;
+    private RichTextEditorToolbarItem? pendingModalItem;
+    private string? pendingToolbarElementId;
+    private bool isLinkModalMounted;
+    private bool isImageModalMounted;
+    private bool isTableModalMounted;
 
     private bool ShouldRenderToolbar => ToolbarItems is null || ToolbarItems.Length > 0;
 
@@ -54,7 +59,31 @@ public partial class RichTextEditor : BlazorBootstrapComponentBase
             objRef ??= DotNetObjectReference.Create(this);
             await RichTextEditorJsInterop.InitializeAsync(objRef!, Id!, AllowedLinkDomains, AllowedImageDomains);
         }
+
+        if (pendingModalItem is RichTextEditorToolbarItem item && pendingToolbarElementId is not null)
+        {
+            var toolbarElementId = pendingToolbarElementId;
+            pendingModalItem = null;
+            pendingToolbarElementId = null;
+
+            if (IsToolbarItemVisible(item) && IsModalMounted(item))
+                await RichTextEditorJsInterop.ExecuteAsync(objRef!, Id!, toolbarElementId, item.ToCommandName()!, string.Empty);
+        }
+
         await base.OnAfterRenderAsync(firstRender);
+    }
+
+    /// <inheritdoc />
+    protected override async Task OnParametersSetAsync()
+    {
+        if (objRef is not null && Id is not null)
+        {
+            await HideModalIfUnavailableAsync(RichTextEditorToolbarItem.Link, "insert-link-modal");
+            await HideModalIfUnavailableAsync(RichTextEditorToolbarItem.Image, "insert-image-modal");
+            await HideModalIfUnavailableAsync(RichTextEditorToolbarItem.Table, "insert-table-modal");
+        }
+
+        await base.OnParametersSetAsync();
     }
 
     protected override void OnInitialized()
@@ -96,6 +125,18 @@ public partial class RichTextEditor : BlazorBootstrapComponentBase
     {
         if (Disabled || ReadOnly)
             return;
+
+        if (IsModalToolbarItem(item))
+        {
+            if (!IsToolbarItemVisible(item))
+                return;
+
+            MountModal(item);
+            pendingModalItem = item;
+            pendingToolbarElementId = toolbarElementId;
+            await InvokeAsync(StateHasChanged);
+            return;
+        }
 
         await RichTextEditorJsInterop.ExecuteAsync(objRef!, Id!, toolbarElementId, item.ToCommandName()!, string.Empty);
     }
@@ -141,6 +182,31 @@ public partial class RichTextEditor : BlazorBootstrapComponentBase
     [JSInvokable]
     public Task OnEditorStatusChangedAsync(string status) => StatusChanged.InvokeAsync(status);
 
+    /// <summary>
+    /// Handles a browser notification after a lazily rendered editor modal has closed.
+    /// </summary>
+    /// <param name="modalName">The closed modal identifier.</param>
+    [JSInvokable]
+    public Task OnEditorModalClosedAsync(string modalName)
+    {
+        switch (modalName)
+        {
+            case "link":
+                isLinkModalMounted = false;
+                break;
+            case "image":
+                isImageModalMounted = false;
+                imageUploadError = null;
+                ResetImageUploadCancellation();
+                break;
+            case "table":
+                isTableModalMounted = false;
+                break;
+        }
+
+        return InvokeAsync(StateHasChanged);
+    }
+
     #endregion
 
     #region Private Methods
@@ -181,10 +247,7 @@ public partial class RichTextEditor : BlazorBootstrapComponentBase
             return;
         }
 
-        uploadCancellationTokenSource.Cancel();
-        uploadCancellationTokenSource.Dispose();
-        uploadCancellationTokenSource = new CancellationTokenSource();
-        var cancellationToken = uploadCancellationTokenSource.Token;
+        var cancellationToken = ResetImageUploadCancellation();
 
         try
         {
@@ -197,7 +260,7 @@ public partial class RichTextEditor : BlazorBootstrapComponentBase
             var request = new RichTextEditorImageUploadRequest(file, string.Empty, cancellationToken);
             var result = await ImageUploadHandler.Invoke(request);
 
-            if (cancellationToken.IsCancellationRequested)
+            if (cancellationToken.IsCancellationRequested || !isImageModalMounted)
                 return;
 
             if (result is null || !IsAllowedHttpsImageUrl(result.Url))
@@ -206,8 +269,13 @@ public partial class RichTextEditor : BlazorBootstrapComponentBase
                 return;
             }
 
+            if (cancellationToken.IsCancellationRequested || !isImageModalMounted)
+                return;
+
             await RichTextEditorJsInterop.PrepareUploadedImageAsync(Id!, result.Url);
-            await OnEditorStatusChangedAsync("Image uploaded. Review its accessibility options, then insert it.");
+
+            if (!cancellationToken.IsCancellationRequested && isImageModalMounted)
+                await OnEditorStatusChangedAsync("Image uploaded. Review its accessibility options, then insert it.");
         }
         catch (OperationCanceledException)
         {
@@ -217,6 +285,71 @@ public partial class RichTextEditor : BlazorBootstrapComponentBase
         {
             await SetImageUploadErrorAsync("The image could not be uploaded.");
         }
+    }
+
+    /// <summary>
+    /// Closes a mounted modal when its associated toolbar item is no longer available.
+    /// </summary>
+    /// <param name="item">The toolbar item associated with the modal.</param>
+    /// <param name="modalId">The editor-scoped modal identifier.</param>
+    private async Task HideModalIfUnavailableAsync(RichTextEditorToolbarItem item, string modalId)
+    {
+        if (IsToolbarItemVisible(item) || !IsModalMounted(item))
+            return;
+
+        await RichTextEditorJsInterop.HideModalAsync(Id!, modalId);
+    }
+
+    /// <summary>
+    /// Determines whether the modal associated with a toolbar item is currently rendered.
+    /// </summary>
+    /// <param name="item">The toolbar item to evaluate.</param>
+    /// <returns><see langword="true" /> when the associated modal is mounted; otherwise, <see langword="false" />.</returns>
+    private bool IsModalMounted(RichTextEditorToolbarItem item) => item switch
+    {
+        RichTextEditorToolbarItem.Link => isLinkModalMounted,
+        RichTextEditorToolbarItem.Image => isImageModalMounted,
+        RichTextEditorToolbarItem.Table => isTableModalMounted,
+        _ => false
+    };
+
+    /// <summary>
+    /// Determines whether a toolbar item opens a lazily rendered modal.
+    /// </summary>
+    /// <param name="item">The toolbar item to evaluate.</param>
+    /// <returns><see langword="true" /> when the item opens a modal; otherwise, <see langword="false" />.</returns>
+    private static bool IsModalToolbarItem(RichTextEditorToolbarItem item) => item is RichTextEditorToolbarItem.Link or RichTextEditorToolbarItem.Image or RichTextEditorToolbarItem.Table;
+
+    /// <summary>
+    /// Marks the modal associated with a toolbar item for rendering.
+    /// </summary>
+    /// <param name="item">The toolbar item whose modal should be mounted.</param>
+    private void MountModal(RichTextEditorToolbarItem item)
+    {
+        switch (item)
+        {
+            case RichTextEditorToolbarItem.Link:
+                isLinkModalMounted = true;
+                break;
+            case RichTextEditorToolbarItem.Image:
+                isImageModalMounted = true;
+                break;
+            case RichTextEditorToolbarItem.Table:
+                isTableModalMounted = true;
+                break;
+        }
+    }
+
+    /// <summary>
+    /// Cancels the current image upload and creates a token for the next upload.
+    /// </summary>
+    /// <returns>A cancellation token for the next image upload.</returns>
+    private CancellationToken ResetImageUploadCancellation()
+    {
+        uploadCancellationTokenSource.Cancel();
+        uploadCancellationTokenSource.Dispose();
+        uploadCancellationTokenSource = new CancellationTokenSource();
+        return uploadCancellationTokenSource.Token;
     }
 
     private static bool HasExpectedImageContentType(string? contentType, string extension) =>
