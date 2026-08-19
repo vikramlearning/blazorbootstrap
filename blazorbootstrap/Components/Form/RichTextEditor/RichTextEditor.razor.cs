@@ -112,16 +112,15 @@ public partial class RichTextEditor : BlazorBootstrapComponentBase
     }
 
     /// <summary>
-    /// Raises the committed editor value callback.
+    /// Raises the committed editor value callback using the same normalized text and metrics shown in the editor footer.
     /// </summary>
     [AddedVersion("4.0.0")]
-    [Description("Raises the committed editor value callback.")]
+    [Description("Raises the committed editor value callback with the normalized text and metrics shown in the editor footer.")]
     [JSInvokable]
-    public async Task OnEditorValueChangedAsync(string html)
+    public async Task OnEditorValueChangedAsync(string html, string text, int characterCount, int wordCount)
     {
         imageUploadError = null;
-        var text = ToPlainText(html);
-        await ValueChanged.InvokeAsync(new RichTextEditorChange(html, text, text.Length, CountWords(text)));
+        await ValueChanged.InvokeAsync(new RichTextEditorChange(html, text, characterCount, wordCount));
 
         if (ValueExpression is not null)
             EditContext?.NotifyFieldChanged(fieldIdentifier);
@@ -138,8 +137,6 @@ public partial class RichTextEditor : BlazorBootstrapComponentBase
     #endregion
 
     #region Private Methods
-
-    private static int CountWords(string text) => string.IsNullOrWhiteSpace(text) ? 0 : text.Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries).Length;
 
     private async Task OnImageFileChangedAsync(InputFileChangeEventArgs e)
     {
@@ -276,8 +273,6 @@ public partial class RichTextEditor : BlazorBootstrapComponentBase
         await RichTextEditorJsInterop.ShowImageUploadErrorAsync(Id!, message);
         await OnEditorStatusChangedAsync(message);
     }
-
-    private static string ToPlainText(string html) => System.Net.WebUtility.HtmlDecode(System.Text.RegularExpressions.Regex.Replace(html, "<[^>]+>", " ")).Trim();
 
     #endregion
 

@@ -2,7 +2,6 @@
 @inherits BlazorBootstrapComponentBase
 
 <CascadingValue Value="this" Name="RichTextEditor">
-    @* @ChildContent *@
     <section id="@Id" class="card shadow-sm" aria-label="@AriaLabel" @attributes="AdditionalAttributes">
         <div class="card-body p-0">
             <div class="border-bottom bg-body-tertiary p-2" role="toolbar" aria-label="Rich text formatting toolbar">
@@ -136,7 +135,7 @@
             </div>
 
             <div id="@EditorId"
-                 class="form-control rounded-0 border-0"
+                 class="form-control rounded-0 border-0 shadow-none"
                  contenteditable="@(!Disabled && !ReadOnly)"
                  role="textbox"
                  aria-multiline="true"

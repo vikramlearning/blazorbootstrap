@@ -266,11 +266,12 @@ function restoreEditorHistory(state, fromStates, toStates) {
  * @returns {void} No return value.
  */
 function notifyEditorChange(state) {
+    const metrics = getEditorTextMetrics(state);
     if (state.dotNetHelper) {
         const html = state.editor.innerHTML.replace(/\u200B/g, '');
-        state.dotNetHelper.invokeMethodAsync('OnEditorValueChangedAsync', html);
+        state.dotNetHelper.invokeMethodAsync('OnEditorValueChangedAsync', html, metrics.text, metrics.characterCount, metrics.wordCount);
     }
-    updateFooterCounts(state);
+    updateFooterCounts(state, metrics);
 }
 
 // FOOTER UPDATE
@@ -279,30 +280,92 @@ function notifyEditorChange(state) {
  * Updates the character and word counts and selection context in the footer.
  *
  * @param {object} state Current rich-text editor state.
+ * @param {{ text: string, characterCount: number, wordCount: number }} [metrics] Previously calculated editor metrics.
  * @returns {void} No return value.
  */
-function updateFooter(state) {
-    updateFooterCounts(state);
+function updateFooter(state, metrics = getEditorTextMetrics(state)) {
+    updateFooterCounts(state, metrics);
     updateFooterContext(state);
 }
 
 /**
- * Recalculates character and word counts shown in the footer.
+ * Updates the character and word counts shown in the footer from shared editor metrics.
  *
  * @param {object} state Current rich-text editor state.
+ * @param {{ text: string, characterCount: number, wordCount: number }} metrics Normalized editor metrics.
  * @returns {void} No return value.
  */
-function updateFooterCounts(state) {
+function updateFooterCounts(state, metrics) {
     const characterCountEl = document.getElementById(state.editorId + '-footer-character-count');
     const wordCountEl = document.getElementById(state.editorId + '-footer-word-count');
     if (!characterCountEl && !wordCountEl) return;
-    const text = (state.editor.innerText || '').replace(/\u200B/g, '').trim();
-    const characters = text.length;
-    const words = text ? text.split(/\s+/).length : 0;
-    if (characterCountEl) characterCountEl.textContent = characters.toLocaleString() + ' characters';
-    if (wordCountEl) wordCountEl.textContent = words.toLocaleString() + ' words';
+    if (characterCountEl) characterCountEl.textContent = metrics.characterCount.toLocaleString() + ' characters';
+    if (wordCountEl) wordCountEl.textContent = metrics.wordCount.toLocaleString() + ' words';
 }
 
+/**
+ * Produces the text and counts shared by the footer and the .NET change callback.
+ *
+ * Empty structure and zero-width caret markers are ignored. Non-empty blocks and table
+ * rows are separated by newlines; table cells are separated by tabs.
+ *
+ * @param {object} state Current rich-text editor state.
+ * @returns {{ text: string, characterCount: number, wordCount: number }} Normalized editor metrics.
+ *
+ * @example
+ * // A row containing "Draft" and "Editorial" produces "Draft\tEditorial".
+ * const metrics = getEditorTextMetrics(state);
+ */
+function getEditorTextMetrics(state) {
+    const getText = (node) => {
+        if (node.nodeType === Node.TEXT_NODE) return node.nodeValue.replace(/\u200B/g, '');
+        if (node.nodeType !== Node.ELEMENT_NODE) return '';
+        if (node.tagName === 'BR') return '\n';
+        if (node.tagName === 'TABLE') {
+            return Array.from(node.querySelectorAll('tr'))
+                .filter((row) => row.closest('table') === node && hasText(row))
+                .map((row) => Array.from(row.children)
+                    .filter((cell) => cell.tagName === 'TD' || cell.tagName === 'TH')
+                    .map((cell) => hasText(cell) ? getText(cell) : '')
+                    .join('\t'))
+                .join('\n');
+        }
+
+        const parts = [];
+        let inline = '';
+        for (const child of node.childNodes) {
+            const isBlock = child.nodeType === Node.ELEMENT_NODE && /^(ADDRESS|ARTICLE|ASIDE|BLOCKQUOTE|DIV|FIGCAPTION|FIGURE|FOOTER|H[1-6]|HEADER|LI|MAIN|NAV|OL|P|PRE|SECTION|TABLE|UL)$/.test(child.tagName);
+            if (isBlock) {
+                if (inline) parts.push(inline);
+                inline = '';
+                if (hasText(child)) parts.push(getText(child));
+            } else {
+                inline += getText(child);
+            }
+        }
+        if (inline) parts.push(inline);
+        return parts.join('\n');
+    };
+    const hasText = (node) => Array.from(node.childNodes).some((child) =>
+        child.nodeType === Node.TEXT_NODE
+            ? child.nodeValue.replace(/\u200B/g, '').length > 0
+            : child.nodeType === Node.ELEMENT_NODE && hasText(child));
+    const text = getText(state.editor);
+    const graphemeSegmenter = typeof Intl !== 'undefined' && typeof Intl.Segmenter === 'function'
+        ? new Intl.Segmenter(undefined, { granularity: 'grapheme' })
+        : null;
+    const wordSegmenter = typeof Intl !== 'undefined' && typeof Intl.Segmenter === 'function'
+        ? new Intl.Segmenter(undefined, { granularity: 'word' })
+        : null;
+
+    return {
+        text,
+        characterCount: graphemeSegmenter ? Array.from(graphemeSegmenter.segment(text)).length : Array.from(text).length,
+        wordCount: !text ? 0 : wordSegmenter
+            ? Array.from(wordSegmenter.segment(text)).filter((segment) => segment.isWordLike).length
+            : text.trim().split(/\s+/).filter(Boolean).length
+    };
+}
 /**
  * Updates the block type, font, size, and alignment labels in the footer.
  *
@@ -2310,7 +2373,7 @@ export function showImageUploadError(editorId, message) {
 export function initialize(dotNetHelper, editorId, allowedLinkDomains, allowedImageDomains) {
     const state = createEditorState(editorId, dotNetHelper, allowedLinkDomains, allowedImageDomains);
     if (!state || !state.editor) {
-        dotNetHelper.invokeMethodAsync('OnEditorValueChangedAsync', '');
+        dotNetHelper.invokeMethodAsync('OnEditorValueChangedAsync', '', '', 0, 0);
         return;
     }
 
@@ -2343,9 +2406,8 @@ export function initialize(dotNetHelper, editorId, allowedLinkDomains, allowedIm
     };
     state.editor.addEventListener('click', state._imageClickHandler);
 
-    // Send the initial editor value to .NET
-    dotNetHelper.invokeMethodAsync('OnEditorValueChangedAsync', state.editor.innerHTML.replace(/\u200B/g, ''));
-
-    // Populate the footer with the initial document state
-    updateFooter(state);
+    // Reuse initial metrics for both .NET and footer output.
+    const metrics = getEditorTextMetrics(state);
+    dotNetHelper.invokeMethodAsync('OnEditorValueChangedAsync', state.editor.innerHTML.replace(/\u200B/g, ''), metrics.text, metrics.characterCount, metrics.wordCount);
+    updateFooter(state, metrics);
 }
