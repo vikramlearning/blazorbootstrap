@@ -442,13 +442,14 @@ function unwrapElement(element) {
  * @param {object} state Current rich-text editor state.
  * @param {Range} range Browser selection range to inspect or update.
  * @param {Function} matcher The matcher argument for this operation.
+ * @param {string} matchingSelector Selector used to find the active inline wrapper.
  * @returns {any} The result of the operation.
  */
-function getMatchingInlineWrapper(state, range, matcher) {
+function getMatchingInlineWrapper(state, range, matcher, matchingSelector) {
     const startElement = getRangeElement(range.startContainer);
     const endElement = getRangeElement(range.endContainer);
-    const startWrapper = startElement && startElement.closest('strong, em, span, s, strike, b, i, u');
-    const endWrapper = endElement && endElement.closest('strong, em, span, s, strike, b, i, u');
+    const startWrapper = startElement && startElement.closest(matchingSelector);
+    const endWrapper = endElement && endElement.closest(matchingSelector);
     return startWrapper && startWrapper === endWrapper && state.editor.contains(startWrapper) && matcher(startWrapper)
         ? startWrapper
         : null;
@@ -460,9 +461,11 @@ function getMatchingInlineWrapper(state, range, matcher) {
  * @param {object} state Current rich-text editor state.
  * @param {Function} createWrapper The createWrapper argument for this operation.
  * @param {Function} matcher The matcher argument for this operation.
+ * @param {string|null} conflictingSelector Selector for formatting that must be removed before applying this wrapper.
+ * @param {string} matchingSelector Selector used to find the active wrapper for toggling.
  * @returns {void} No return value.
  */
-function applyInlineFormat(state, createWrapper, matcher) {
+function applyInlineFormat(state, createWrapper, matcher, conflictingSelector = null, matchingSelector = 'strong, em, span, s, strike, b, i, u') {
     restoreSelection(state);
     const range = getSavedEditorRange(state);
     if (!range) return;
@@ -475,6 +478,8 @@ function applyInlineFormat(state, createWrapper, matcher) {
                 unwrapElement(directWrapper);
                 return;
             }
+
+            if (conflictingSelector) Array.from(cell.querySelectorAll(conflictingSelector)).reverse().forEach(unwrapElement);
 
             // Wrap cell contents, never the td/th itself, to preserve valid table structure.
             const cellRange = document.createRange();
@@ -491,7 +496,7 @@ function applyInlineFormat(state, createWrapper, matcher) {
         return;
     }
 
-    const matchingWrapper = getMatchingInlineWrapper(state, range, matcher);
+    const matchingWrapper = getMatchingInlineWrapper(state, range, matcher, matchingSelector);
     recordEditorState(state);
     if (matchingWrapper) {
         const afterWrapper = document.createRange();
@@ -502,6 +507,10 @@ function applyInlineFormat(state, createWrapper, matcher) {
     } else {
         const wrapper = createWrapper();
         if (range.collapsed) {
+            const rangeElement = getRangeElement(range.startContainer);
+            const conflictingWrapper = conflictingSelector && rangeElement && rangeElement.closest(conflictingSelector);
+            if (conflictingWrapper && state.editor.contains(conflictingWrapper)) unwrapElement(conflictingWrapper);
+
             // A zero-width space keeps the wrapper and caret alive until the user types content.
             const placeholder = document.createTextNode('\u200B');
             wrapper.dataset.rtePending = 'true';
@@ -512,9 +521,21 @@ function applyInlineFormat(state, createWrapper, matcher) {
             caret.collapse(true);
             setEditorRange(state, caret);
         } else {
-            const contents = range.extractContents();
-            wrapper.appendChild(contents);
-            range.insertNode(wrapper);
+            const startElement = getRangeElement(range.startContainer);
+            const endElement = getRangeElement(range.endContainer);
+            const startConflictingWrapper = conflictingSelector && startElement && startElement.closest(conflictingSelector);
+            const endConflictingWrapper = conflictingSelector && endElement && endElement.closest(conflictingSelector);
+            if (startConflictingWrapper && startConflictingWrapper === endConflictingWrapper
+                && state.editor.contains(startConflictingWrapper)
+                && rangeContainsTextContent(range, startConflictingWrapper)) {
+                while (startConflictingWrapper.firstChild) wrapper.appendChild(startConflictingWrapper.firstChild);
+                startConflictingWrapper.replaceWith(wrapper);
+            } else {
+                const contents = range.extractContents();
+                if (conflictingSelector) Array.from(contents.querySelectorAll(conflictingSelector)).reverse().forEach(unwrapElement);
+                wrapper.appendChild(contents);
+                range.insertNode(wrapper);
+            }
             const selectedWrapper = document.createRange();
             selectedWrapper.selectNodeContents(wrapper);
             setEditorRange(state, selectedWrapper);
@@ -558,11 +579,13 @@ function applyInlineCommand(state, command, value) {
     if (command === 'fontSize' && !Object.hasOwn(_fontSizeLabels, value)) return;
     const semanticCommands = {
         bold: { tag: 'strong', match: (e) => e.tagName === 'STRONG' || e.tagName === 'B' },
-        italic: { tag: 'em', match: (e) => e.tagName === 'EM' || e.tagName === 'I' }
+        italic: { tag: 'em', match: (e) => e.tagName === 'EM' || e.tagName === 'I' },
+        subscript: { tag: 'sub', match: (e) => e.tagName === 'SUB', conflictingSelector: 'sup', matchingSelector: 'sub' },
+        superscript: { tag: 'sup', match: (e) => e.tagName === 'SUP', conflictingSelector: 'sub', matchingSelector: 'sup' }
     };
     if (semanticCommands[command]) {
         const def = semanticCommands[command];
-        applyInlineFormat(state, () => document.createElement(def.tag), def.match);
+        applyInlineFormat(state, () => document.createElement(def.tag), def.match, def.conflictingSelector, def.matchingSelector);
         return;
     }
     const styles = {
@@ -639,7 +662,7 @@ function clearInlineFormatting(state) {
     restoreSelection(state);
     const range = getSavedEditorRange(state);
     if (!range) return;
-    const formattingSelector = 'strong, b, em, i, u, s, strike, font, span, mark';
+    const formattingSelector = 'strong, b, em, i, u, s, strike, sub, sup, font, span, mark';
     if (range.collapsed) {
         const wrapper = getRangeElement(range.startContainer).closest(formattingSelector);
         if (!wrapper || !state.editor.contains(wrapper)) return;
@@ -1007,7 +1030,7 @@ function executeCommand(state, command, value = null) {
         restoreEditorHistory(state, state.editorRedoStates, state.editorUndoStates);
     } else if (command === 'print') {
         printEditorDocument(state);
-    } else if (['bold', 'italic', 'underline', 'strikeThrough', 'fontName', 'fontSize', 'foreColor', 'hiliteColor'].includes(command)) {
+    } else if (['bold', 'italic', 'underline', 'strikeThrough', 'subscript', 'superscript', 'fontName', 'fontSize', 'foreColor', 'hiliteColor'].includes(command)) {
         applyInlineCommand(state, command, value);
     } else if (command === 'paragraph') {
         selectBlock(state, 'p');

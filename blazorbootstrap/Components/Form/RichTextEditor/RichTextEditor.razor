@@ -47,11 +47,13 @@
                         </ul>
                     </div>
 
-                    <div class="btn-group btn-group-sm" role="group" aria-label="Text emphasis" hidden="@(!IsAnyToolbarItemVisible(RichTextEditorToolbarItem.Bold, RichTextEditorToolbarItem.Italic, RichTextEditorToolbarItem.Underline, RichTextEditorToolbarItem.Strikethrough))">
+                    <div class="btn-group btn-group-sm" role="group" aria-label="Text emphasis" hidden="@(!IsAnyToolbarItemVisible(RichTextEditorToolbarItem.Bold, RichTextEditorToolbarItem.Italic, RichTextEditorToolbarItem.Underline, RichTextEditorToolbarItem.Strikethrough, RichTextEditorToolbarItem.Subscript, RichTextEditorToolbarItem.Superscript))">
                         <RichTextEditorToolbarButton Item="RichTextEditorToolbarItem.Bold" Disabled="@Disabled" />
                         <RichTextEditorToolbarButton Item="RichTextEditorToolbarItem.Italic" Disabled="@Disabled" />
                         <RichTextEditorToolbarButton Item="RichTextEditorToolbarItem.Underline" Disabled="@Disabled" />
                         <RichTextEditorToolbarButton Item="RichTextEditorToolbarItem.Strikethrough" Disabled="@Disabled" />
+                        <RichTextEditorToolbarButton Item="RichTextEditorToolbarItem.Subscript" Disabled="@Disabled" />
+                        <RichTextEditorToolbarButton Item="RichTextEditorToolbarItem.Superscript" Disabled="@Disabled" />
                     </div>
 
                     <div class="btn-group btn-group-sm" role="group" aria-label="Text color" hidden="@(!IsToolbarItemVisible(RichTextEditorToolbarItem.TextColor))">

@@ -23,6 +23,8 @@ public enum RichTextEditorToolbarItem
     Italic,
     Underline,
     Strikethrough,
+    Subscript,
+    Superscript,
     TextColor,
     HighlightColor,
     AlignLeft,
