@@ -1,0 +1,46 @@
+---
+title: Blazor RichTextEditor Component
+description: A dependency-free rich-text editor with Bootstrap toolbar groups and safe client-side HTML filtering.
+sidebar_label: RichTextEditor
+sidebar_position: 13
+---
+
+# Blazor RichTextEditor
+
+`RichTextEditor` provides document, style, color, alignment, list, link, image, table, block, fullscreen, and print controls without a third-party editor dependency.
+
+```cshtml
+<RichTextEditor Value="@content"
+                ValueChanged="OnContentChanged"
+                StatusChanged="OnEditorStatus"
+                Placeholder="Write the article" />
+
+@code {
+    private string content = "<p>Draft</p>";
+    private void OnContentChanged(RichTextEditorChange change) => content = change.Html;
+    private void OnEditorStatus(string status) { }
+}
+```
+
+`ValueChanged` receives `RichTextEditorChange`, containing sanitized HTML, plain text, character count, and word count. `StatusChanged` is reserved for transient activity and error feedback.
+
+## Text and count rules
+
+`RichTextEditorChange.Text`, `CharacterCount`, and `WordCount` use the same normalized text as the editor footer. Formatting and inline markup do not add text. Authored whitespace is preserved, while empty paragraphs, empty cells, and zero-width caret markers count as zero.
+
+- Non-empty block elements and table rows are separated by a newline; adjacent table cells are separated by a tab; an in-content `<br>` is a newline.
+- Characters are user-perceived grapheme clusters. Browsers without `Intl.Segmenter` use a Unicode code-point fallback, which can count combined characters differently.
+- Words use browser language-aware segmentation when available, otherwise whitespace separation. Counts can therefore vary by browser-default locale.
+- Images do not contribute text unless authored visible text, such as a caption, is present.
+
+These browser-side rules provide consistent UI feedback. Continue to validate uploads and sanitize HTML on the server before persistence or markup rendering.
+
+## Security and drafts
+
+The browser module removes unsafe elements, event handlers, unsupported attributes, and unsafe URL schemes before content renders or is emitted. HTTPS image URLs are required. Browser filtering is defense in depth: validate uploads and sanitize HTML again on the server before persistence or markup rendering.
+
+The demo stores a draft under `advanced-rich-text-editor-document` in `sessionStorage`; it does not use local storage.
+
+## Toolbar and API coverage
+
+See [the demo](https://demos.blazorbootstrap.com/rich-text-editor) for selection, history, formatting, links, tables, images, fullscreen, print, callbacks, and session-only draft behavior.

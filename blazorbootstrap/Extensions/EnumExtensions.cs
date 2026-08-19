@@ -249,6 +249,47 @@ public static class EnumExtensions
             _ => null
         };
 
+    public static string? ToCommandName(this RichTextEditorToolbarItem toolbarItem) =>
+        toolbarItem switch
+        {
+            RichTextEditorToolbarItem.Print => "print",
+            RichTextEditorToolbarItem.Undo => "undo",
+            RichTextEditorToolbarItem.Redo => "redo",
+            RichTextEditorToolbarItem.Paragraph => "paragraph",
+            RichTextEditorToolbarItem.Heading1 => "heading1",
+            RichTextEditorToolbarItem.Heading2 => "heading2",
+            RichTextEditorToolbarItem.Heading3 => "heading3",
+            RichTextEditorToolbarItem.Heading4 => "heading4",
+            RichTextEditorToolbarItem.Heading5 => "heading5",
+            RichTextEditorToolbarItem.Heading6 => "heading6",
+            RichTextEditorToolbarItem.Caption => "caption",
+            RichTextEditorToolbarItem.FontFamily => "fontName",
+            RichTextEditorToolbarItem.FontSize => "fontSize",
+            RichTextEditorToolbarItem.Bold => "bold",
+            RichTextEditorToolbarItem.Italic => "italic",
+            RichTextEditorToolbarItem.Underline => "underline",
+            RichTextEditorToolbarItem.Strikethrough => "strikeThrough",
+            RichTextEditorToolbarItem.Subscript => "subscript",
+            RichTextEditorToolbarItem.Superscript => "superscript",
+            RichTextEditorToolbarItem.ClearFormatting => "removeFormat",
+            RichTextEditorToolbarItem.AlignLeft => "justifyLeft",
+            RichTextEditorToolbarItem.AlignCenter => "justifyCenter",
+            RichTextEditorToolbarItem.AlignRight => "justifyRight",
+            RichTextEditorToolbarItem.AlignJustify => "justifyFull",
+            RichTextEditorToolbarItem.Indent => "indent",
+            RichTextEditorToolbarItem.Outdent => "outdent",
+            RichTextEditorToolbarItem.OrderedList => "insertOrderedList",
+            RichTextEditorToolbarItem.UnorderedList => "insertUnorderedList",
+            RichTextEditorToolbarItem.Link => "link",
+            RichTextEditorToolbarItem.Image => "image",
+            RichTextEditorToolbarItem.Table => "insertTable",
+            RichTextEditorToolbarItem.HorizontalRule => "insertHorizontalRule",
+            RichTextEditorToolbarItem.Blockquote => "blockquote",
+            RichTextEditorToolbarItem.CodeBlock => "codeBlock",
+            RichTextEditorToolbarItem.Fullscreen => "fullscreen",
+            _ => null
+        };
+
     public static string ToCssString(this Unit unit) =>
         unit switch
         {
@@ -338,6 +379,68 @@ public static class EnumExtensions
             IconColor.Muted => "text-muted",
             IconColor.White => "text-white",
             _ => ""
+        };
+
+    public static IconName ToIconName(this RichTextEditorToolbarItem toolbarItem) =>
+        toolbarItem switch
+        {
+            RichTextEditorToolbarItem.Print => IconName.Printer,
+            RichTextEditorToolbarItem.Undo => IconName.ArrowCounterclockwise,
+            RichTextEditorToolbarItem.Redo => IconName.ArrowClockwise,
+            RichTextEditorToolbarItem.Bold => IconName.TypeBold,
+            RichTextEditorToolbarItem.Italic => IconName.TypeItalic,
+            RichTextEditorToolbarItem.Underline => IconName.TypeUnderline,
+            RichTextEditorToolbarItem.Strikethrough => IconName.TypeStrikethrough,
+            RichTextEditorToolbarItem.Subscript => IconName.Subscript,
+            RichTextEditorToolbarItem.Superscript => IconName.Superscript,
+            RichTextEditorToolbarItem.AlignLeft => IconName.TextLeft,
+            RichTextEditorToolbarItem.AlignCenter => IconName.TextCenter,
+            RichTextEditorToolbarItem.AlignRight => IconName.TextRight,
+            RichTextEditorToolbarItem.AlignJustify => IconName.Justify,
+            RichTextEditorToolbarItem.Indent => IconName.TextIndentLeft,
+            RichTextEditorToolbarItem.Outdent => IconName.TextIndentRight,
+            RichTextEditorToolbarItem.OrderedList => IconName.ListOl,
+            RichTextEditorToolbarItem.UnorderedList => IconName.ListUl,
+            RichTextEditorToolbarItem.Link => IconName.Link45Deg,
+            RichTextEditorToolbarItem.Image => IconName.Image,
+            RichTextEditorToolbarItem.HorizontalRule => IconName.Hr,
+            RichTextEditorToolbarItem.Table => IconName.Table,
+            RichTextEditorToolbarItem.Blockquote => IconName.Quote,
+            RichTextEditorToolbarItem.CodeBlock => IconName.Code,
+            RichTextEditorToolbarItem.ClearFormatting => IconName.Eraser,
+            RichTextEditorToolbarItem.Fullscreen => IconName.Fullscreen,
+            _ => IconName.Type
+        };
+
+    public static string ToIconLabel(this RichTextEditorToolbarItem toolbarItem) =>
+        toolbarItem switch
+        {
+            RichTextEditorToolbarItem.Print => "Print",
+            RichTextEditorToolbarItem.Undo => "Undo",
+            RichTextEditorToolbarItem.Redo => "Redo",
+            RichTextEditorToolbarItem.Bold => "Bold",
+            RichTextEditorToolbarItem.Italic => "Italic",
+            RichTextEditorToolbarItem.Underline => "Underline",
+            RichTextEditorToolbarItem.Strikethrough => "Strikethrough",
+            RichTextEditorToolbarItem.Subscript => "Subscript",
+            RichTextEditorToolbarItem.Superscript => "Superscript",
+            RichTextEditorToolbarItem.AlignLeft => "Align left",
+            RichTextEditorToolbarItem.AlignCenter => "Align center",
+            RichTextEditorToolbarItem.AlignRight => "Align right",
+            RichTextEditorToolbarItem.AlignJustify => "Align justify",
+            RichTextEditorToolbarItem.Indent => "Indent",
+            RichTextEditorToolbarItem.Outdent => "Outdent",
+            RichTextEditorToolbarItem.OrderedList => "Numbered list",
+            RichTextEditorToolbarItem.UnorderedList => "Bulleted list",
+            RichTextEditorToolbarItem.Link => "Insert link",
+            RichTextEditorToolbarItem.Image => "Insert image",
+            RichTextEditorToolbarItem.HorizontalRule => "Insert horizontal rule",
+            RichTextEditorToolbarItem.Table => "Insert table",
+            RichTextEditorToolbarItem.Blockquote => "Blockquote",
+            RichTextEditorToolbarItem.CodeBlock => "Code block",
+            RichTextEditorToolbarItem.ClearFormatting => "Clear formatting",
+            RichTextEditorToolbarItem.Fullscreen => "Fullscreen",
+            _ => Regex.Replace(toolbarItem.ToString(), "([a-z])([A-Z])", "$1 $2")
         };
 
     public static string ToModalFullscreenClass(this ModalFullscreen modalFullscreen) =>

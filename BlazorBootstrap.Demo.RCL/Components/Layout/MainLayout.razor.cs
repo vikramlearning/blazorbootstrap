@@ -1,4 +1,4 @@
-﻿namespace BlazorBootstrap.Demo.RCL;
+namespace BlazorBootstrap.Demo.RCL;
 
 public partial class MainLayout : MainLayoutBase
 {
@@ -33,6 +33,7 @@ public partial class MainLayout : MainLayoutBase
             new (){ Id = "410", Text = "Text Input", Href = DemoRouteConstants.Demos_URL_TextInput, IconName = IconName.InputCursorText, ParentId = "4" },
             new (){ Id = "411", Text = "Text Area Input", Href = DemoRouteConstants.Demos_URL_TextAreaInput, IconName = IconName.InputCursorText, ParentId = "4" },
             new (){ Id = "412", Text = "Time Input", Href = DemoRouteConstants.Demos_URL_TimeInput, IconName = IconName.ClockFill, ParentId = "4" },
+            new (){ Id = "413", Text = "RichTextEditor", Href = DemoRouteConstants.Demos_URL_RichTextEditor, IconName = IconName.Type, ParentId = "4" },
 
             new (){ Id = "5", Text = "Components", IconName = IconName.GearFill, IconColor = IconColor.Danger },
             new (){ Id = "500", Text = "Accordion", Href = DemoRouteConstants.Demos_URL_Accordion, IconName = IconName.ChevronBarExpand, ParentId = "5" },

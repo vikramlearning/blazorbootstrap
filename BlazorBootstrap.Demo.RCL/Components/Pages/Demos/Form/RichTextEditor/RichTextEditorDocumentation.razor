@@ -1,0 +1,19 @@
+@page "/rich-text-editor"
+
+@attribute [Route(DemoRouteConstants.Demos_URL_RichTextEditor)]
+@layout DemosMainLayout
+
+<DemosPageHeadSection PageUrl="@DemoRouteConstants.Demos_URL_RichTextEditor" PageTitle="Blazor RichTextEditor" PageDescription="A dependency-free rich text editor with a grouped Bootstrap toolbar." MetaTitle="Blazor RichTextEditor Component" MetaDescription="Rich text editing with safe HTML output." />
+
+<Section Size="HeadingSize.H2" Name="Basic usage" PageUrl="@pageUrl" Link="basic-usage">
+    <Demo Type="typeof(RichTextEditor_Demo_01_Undo)" Tabs="true" />
+</Section>
+
+@code {
+    private const string pageUrl = DemoRouteConstants.Demos_URL_RichTextEditor;
+    private const string pageTitle = "Blazor RichTextEditor";
+    private const string pageDescription = "Rich text editing component with a grouped Bootstrap toolbar. It is dependency-free and outputs safe HTML.";
+    private const string metaTitle = "Blazor RichTextEditor Component";
+    private const string metaDescription = "Rich text editing with safe HTML output.";
+    private const string imageUrl = "https://i.imgur.com/N2VUHIn.png"; // TODO: Update the image URL to a relevant image for RichTextEditor
+}

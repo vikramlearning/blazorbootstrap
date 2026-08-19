@@ -1,0 +1,9 @@
+@namespace BlazorBootstrap
+@inherits BlazorBootstrapComponentBase
+
+@if (Parent?.IsToolbarItemVisible(Item) ?? true)
+{
+    <Button Color="ButtonColor.Secondary" Outline="true" TooltipTitle="@label" @onclick="OnClickAsync">
+        <Icon Name="@iconName"></Icon>
+    </Button>
+}
