@@ -1,10 +1,16 @@
-﻿<RichTextEditor Value="@editorInitialContent"
+<RichTextEditor Value="@editorInitialContent"
                 ToolbarItems="@toolbarItems"
                 ValueChanged="OnValueChanged"
                 Placeholder="Edit the draft to see callback results." />
 
-<div class="mb-3">
-    @(new MarkupString(content))
+<div class="border rounded p-3 mb-3">
+    <strong>Last committed change</strong>
+    <p class="mb-0">@lastChange</p>
+</div>
+
+<div class="border rounded p-3">
+    <strong>Committed HTML preview</strong>
+    <div class="mb-0">@(new MarkupString(content))</div>
 </div>
 
 @code {

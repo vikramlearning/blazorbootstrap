@@ -434,28 +434,11 @@ public partial class RichTextEditor : BlazorBootstrapComponentBase
 
     private string Accept => string.Join(',', NormalizedAllowedImageFileTypes.Select(fileType => $".{fileType}"));
 
-    private string EditorId => $"{Id}-editor";
-
-    private string ImageInputId => $"{Id}-image-upload-file";
-
-    private string InsertTableButtonId => $"{Id}-insert-table";
-
-    private string FontFamilyButtonId => $"{Id}-font-family";
-
-    private string FontSizeButtonId => $"{Id}-font-size";
-
-    private HashSet<string> NormalizedAllowedImageFileTypes =>
-        (AllowedImageFileTypes ?? defaultAllowedImageFileTypes)
-            .Select(fileType => fileType.Trim().TrimStart('.').ToLowerInvariant())
-            .Where(fileType => safeImageFileTypes.Contains(fileType))
-            .ToHashSet(StringComparer.OrdinalIgnoreCase);
-
-    /// <summary>Gets or sets the accessible label for the editor.</summary>
+    /// <summary>Gets or sets the permitted HTTPS image domains. Subdomains are also permitted.</summary>
     [AddedVersion("4.0.0")]
-    [DefaultValue("Rich text editor")]
-    [Description("Gets or sets the accessible label for the editor.")]
+    [Description("Gets or sets the permitted HTTPS image domains. Subdomains are also permitted.")]
     [Parameter]
-    public string AriaLabel { get; set; } = "Rich text editor";
+    public IEnumerable<string>? AllowedImageDomains { get; set; }
 
     /// <summary>Gets or sets the permitted image file extensions.</summary>
     [AddedVersion("4.0.0")]
@@ -469,11 +452,12 @@ public partial class RichTextEditor : BlazorBootstrapComponentBase
     [Parameter]
     public IEnumerable<string>? AllowedLinkDomains { get; set; }
 
-    /// <summary>Gets or sets the permitted HTTPS image domains. Subdomains are also permitted.</summary>
+    /// <summary>Gets or sets the accessible label for the editor.</summary>
     [AddedVersion("4.0.0")]
-    [Description("Gets or sets the permitted HTTPS image domains. Subdomains are also permitted.")]
+    [DefaultValue("Rich text editor")]
+    [Description("Gets or sets the accessible label for the editor.")]
     [Parameter]
-    public IEnumerable<string>? AllowedImageDomains { get; set; }
+    public string AriaLabel { get; set; } = "Rich text editor";
 
     /// <summary>Gets or sets the delay, in milliseconds, before editor changes are raised.</summary>
     [AddedVersion("4.0.0")]
@@ -489,12 +473,25 @@ public partial class RichTextEditor : BlazorBootstrapComponentBase
     [Parameter]
     public bool Disabled { get; set; }
 
+    [CascadingParameter]
+    private EditContext? EditContext { get; set; }
+
+    private string EditorId => $"{Id}-editor";
+
+    private string FontFamilyButtonId => $"{Id}-font-family";
+
+    private string FontSizeButtonId => $"{Id}-font-size";
+
+    private string ImageInputId => $"{Id}-image-upload-file";
+
     /// <summary>Gets or sets the image upload handler.</summary>
     [AddedVersion("4.0.0")]
     [DefaultValue(null)]
     [Description("Gets or sets the image upload handler.")]
     [Parameter]
     public RichTextEditorImageUploadDelegate? ImageUploadHandler { get; set; }
+
+    private string InsertTableButtonId => $"{Id}-insert-table";
 
     /// <summary>Gets or sets the maximum allowed image size in bytes.</summary>
     [AddedVersion("4.0.0")]
@@ -510,6 +507,12 @@ public partial class RichTextEditor : BlazorBootstrapComponentBase
     [Parameter]
     public int? MaxLength { get; set; }
 
+    private HashSet<string> NormalizedAllowedImageFileTypes =>
+        (AllowedImageFileTypes ?? defaultAllowedImageFileTypes)
+            .Select(fileType => fileType.Trim().TrimStart('.').ToLowerInvariant())
+            .Where(fileType => safeImageFileTypes.Contains(fileType))
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
     /// <summary>Gets or sets the placeholder text.</summary>
     [AddedVersion("4.0.0")]
     [DefaultValue(null)]
@@ -524,6 +527,9 @@ public partial class RichTextEditor : BlazorBootstrapComponentBase
     [Parameter]
     public bool ReadOnly { get; set; }
 
+    [Inject]
+    private RichTextEditorJsInterop RichTextEditorJsInterop { get; set; } = default!;
+
     /// <summary>Gets or sets whether the editor footer is displayed.</summary>
     [AddedVersion("4.0.0")]
     [DefaultValue(true)]
@@ -532,6 +538,12 @@ public partial class RichTextEditor : BlazorBootstrapComponentBase
     public bool ShowFooter { get; set; } = true;
 
     private bool ShouldRenderToolbar => ToolbarItems is null || ToolbarItems.Length > 0;
+
+    /// <summary>Fires for transient editor activity and error status.</summary>
+    [AddedVersion("4.0.0")]
+    [Description("Fires for transient editor activity and error status.")]
+    [Parameter]
+    public EventCallback<string> StatusChanged { get; set; }
 
     [AddedVersion("4.0.0")]
     [DefaultValue(null)]
@@ -552,23 +564,11 @@ public partial class RichTextEditor : BlazorBootstrapComponentBase
     [Parameter]
     public EventCallback<RichTextEditorChange> ValueChanged { get; set; }
 
-    /// <summary>Fires for transient editor activity and error status.</summary>
-    [AddedVersion("4.0.0")]
-    [Description("Fires for transient editor activity and error status.")]
-    [Parameter]
-    public EventCallback<string> StatusChanged { get; set; }
-
     /// <summary>Gets or sets the expression that identifies the bound value.</summary>
     [AddedVersion("4.0.0")]
     [Description("Gets or sets the expression that identifies the bound value.")]
     [Parameter]
     public Expression<Func<string>>? ValueExpression { get; set; }
-
-    [CascadingParameter]
-    private EditContext? EditContext { get; set; }
-
-    [Inject]
-    private RichTextEditorJsInterop RichTextEditorJsInterop { get; set; } = default!;
 
     #endregion
 }

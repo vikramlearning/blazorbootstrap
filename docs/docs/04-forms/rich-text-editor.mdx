@@ -14,14 +14,19 @@ sidebar_position: 13
 Add the component to a page, provide its initial HTML, and handle `ValueChanged` when the application needs the sanitized editor result.
 
 ```cshtml
-<RichTextEditor Value="@content"
+<RichTextEditor Value="@editorInitialContent"
                 ValueChanged="OnContentChanged"
                 Placeholder="Write the article" />
 
-@code {
-    private string content = "<p>Draft</p>";
+<div class="mt-3">
+    @(new MarkupString(committedHtml))
+</div>
 
-    private void OnContentChanged(RichTextEditorChange change) => content = change.Html;
+@code {
+    private const string editorInitialContent = "<p>Draft</p>";
+    private string committedHtml = editorInitialContent;
+
+    private void OnContentChanged(RichTextEditorChange change) => committedHtml = change.Html;
 }
 ```
 
@@ -52,7 +57,7 @@ Supply `ToolbarItems` when an editor should expose only the controls needed for 
 
 ## Demo walkthrough
 
-The [RichTextEditor demo](https://demos.blazorbootstrap.com/rich-text-editor) starts with the complete toolbar, then shows practical workflows for drafting an article, publishing rich content, and responding to `ValueChanged` and `StatusChanged` events. Each scenario includes a short explanation and ordered `How to use` steps before its runnable source.
+The [RichTextEditor demo](https://demos.blazorbootstrap.com/rich-text-editor) starts with the complete toolbar, then shows practical workflows for drafting an article, publishing rich content, and observing committed `ValueChanged` results. Each scenario includes a short explanation and ordered `How to use` steps before its runnable source.
 
 ## Text and count rules
 
