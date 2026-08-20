@@ -1,11 +1,11 @@
-@page "/rich-text-editor"
+﻿@page "/rich-text-editor"
 
 @attribute [Route(DemoRouteConstants.Demos_URL_RichTextEditor)]
 @layout DemosMainLayout
 
 <DemosPageHeadSection PageUrl="@DemoRouteConstants.Demos_URL_RichTextEditor" PageTitle="Blazor RichTextEditor" PageDescription="A dependency-free rich text editor with a grouped Bootstrap toolbar." MetaTitle="Blazor RichTextEditor Component" MetaDescription="Rich text editing with safe HTML output." />
 
-<Section Class="p-0" Size="HeadingSize.H3" Name="Full document editor" PageUrl="@pageUrl" Link="full-document-editor">
+<Section Class="p-0" Size="HeadingSize.H3" Name="Full toolbar" PageUrl="@pageUrl" Link="full-toolbar">
     <div class="mb-3">
         Start with the complete toolbar when authors need the full RichTextEditor feature set in one place, from document styles and text formatting through media, tables, history, printing, and fullscreen mode.
         <br /><br />
@@ -18,10 +18,10 @@
             </ol>
         </div>
     </div>
-    <Demo Type="typeof(RichTextEditor_Demo_01_Undo)" Tabs="true" />
+    <Demo Type="typeof(RichTextEditor_Demo_01_Full_Toolbar)" Tabs="true" />
 </Section>
 
-<Section Class="p-0" Size="HeadingSize.H3" Name="Draft an article" PageUrl="@pageUrl" Link="draft-an-article">
+<Section Class="p-0" Size="HeadingSize.H3" Name="Article draft" PageUrl="@pageUrl" Link="article-draft">
     <div class="mb-3">
         Use a focused authoring toolbar to turn a rough release-note draft into structured, scannable content with headings, emphasis, color, alignment, lists, and quotations.
         <br /><br />
@@ -34,10 +34,10 @@
             </ol>
         </div>
     </div>
-    <Demo Type="typeof(RichTextEditor_Demo_22_ArticleDraft)" Tabs="true" />
+    <Demo Type="typeof(RichTextEditor_Demo_02_Article_Draft)" Tabs="true" />
 </Section>
 
-<Section Class="p-0" Size="HeadingSize.H3" Name="Publish a rich update" PageUrl="@pageUrl" Link="publish-a-rich-update">
+<Section Class="p-0" Size="HeadingSize.H3" Name="Publish rich update" PageUrl="@pageUrl" Link="publish-rich-update">
     <div class="mb-3">
         Give a publishing workflow only the insertion commands it needs to add a link, image, separator, or table to an already-authored announcement.
         <br /><br />
@@ -50,10 +50,10 @@
             </ol>
         </div>
     </div>
-    <Demo Type="typeof(RichTextEditor_Demo_24_PublishUpdate)" Tabs="true" />
+    <Demo Type="typeof(RichTextEditor_Demo_03_Publish_Rich_Update)" Tabs="true" />
 </Section>
 
-<Section Class="p-0" Size="HeadingSize.H3" Name="Respond to editor events" PageUrl="@pageUrl" Link="respond-to-editor-events">
+<Section Class="p-0" Size="HeadingSize.H3" Name="Events" PageUrl="@pageUrl" Link="events">
     <div class="mb-3">
         Use <code>ValueChanged</code> to react to committed content and <code>StatusChanged</code> to surface transient editor activity or validation feedback in the surrounding UI.
         <br /><br />
@@ -66,7 +66,7 @@
             </ol>
         </div>
     </div>
-    <Demo Type="typeof(RichTextEditor_Demo_25_Events)" Tabs="true" />
+    <Demo Type="typeof(RichTextEditor_Demo_04_Events)" Tabs="true" />
 </Section>
 
 @code {
