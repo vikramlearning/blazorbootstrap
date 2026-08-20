@@ -1,13 +1,7 @@
-﻿namespace BlazorBootstrap;
+namespace BlazorBootstrap;
 
 public partial class RichTextEditorToolbarButton : BlazorBootstrapComponentBase
 {
-    #region Fields and Constants
-
-    private string? label => Item.ToIconLabel();
-    private IconName iconName => Item.ToIconName();
-    #endregion
-
     #region Methods
 
     private async Task OnClickAsync()
@@ -21,6 +15,10 @@ public partial class RichTextEditorToolbarButton : BlazorBootstrapComponentBase
     #endregion
 
     #region Properties, Indexers
+
+    private IconName iconName => Item.ToIconName();
+
+    private string? label => Item.ToIconLabel();
 
     /// <summary>
     /// Gets or sets a value indicating whether the button is disabled.
