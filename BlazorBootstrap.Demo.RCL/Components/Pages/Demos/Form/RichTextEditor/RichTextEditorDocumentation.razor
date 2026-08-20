@@ -5,6 +5,8 @@
 
 <DemosPageHeadSection PageUrl="@DemoRouteConstants.Demos_URL_RichTextEditor" PageTitle="Blazor RichTextEditor" PageDescription="A dependency-free rich text editor with a grouped Bootstrap toolbar." MetaTitle="Blazor RichTextEditor Component" MetaDescription="Rich text editing with safe HTML output." />
 
+<DocsLink Href="@DemoRouteConstants.Docs_URL_RichTextEditor" />
+
 <Section Class="p-0" Size="HeadingSize.H3" Name="Full toolbar" PageUrl="@pageUrl" Link="full-toolbar">
     <div class="mb-3">
         Start with the complete toolbar when authors need the full RichTextEditor feature set in one place, from document styles and text formatting through media, tables, history, printing, and fullscreen mode.
@@ -53,22 +55,6 @@
     <Demo Type="typeof(RichTextEditor_Demo_03_Publish_Rich_Update)" Tabs="true" />
 </Section>
 
-<Section Class="p-0" Size="HeadingSize.H3" Name="Events" PageUrl="@pageUrl" Link="events">
-    <div class="mb-3">
-        Use <code>ValueChanged</code> to react to committed content and show its text metrics in surrounding UI. This typing-focused example deliberately reports the callback without assigning its HTML back to the editor value.
-        <br /><br />
-        <strong>How to use:</strong>
-        <div class="content mb-2">
-            <ol>
-                <li>Handle <code>ValueChanged</code> to receive sanitized HTML, plain text, and count metrics after an edit is committed.</li>
-                <li>Update external UI such as metrics or a save indicator without writing the callback HTML back into the active editor value.</li>
-                <li>Edit the text below and observe the committed word and character counts.</li>
-            </ol>
-        </div>
-    </div>
-    <Demo Type="typeof(RichTextEditor_Demo_04_Events)" Tabs="true" />
-</Section>
-
 <Section Class="p-0" Size="HeadingSize.H3" Name="Disabled" PageUrl="@pageUrl" Link="disabled">
     <div class="mb-3">
         Use <code>Disabled</code> when rich text should remain visible for review but users must not edit it or invoke toolbar commands.
@@ -82,7 +68,39 @@
             </ol>
         </div>
     </div>
-    <Demo Type="typeof(RichTextEditor_Demo_05_Disabled)" Tabs="true" />
+    <Demo Type="typeof(RichTextEditor_Demo_04_Disabled)" Tabs="true" />
+</Section>
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="Form validation" PageUrl="@pageUrl" Link="form-validation">
+    <div class="mb-3">
+        Use <code>ValueExpression</code> inside an <code>EditForm</code> to validate the editor's plain-text content while retaining its HTML separately for submission.
+        <br /><br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Add <code>DataAnnotationsValidator</code> and a <code>ValidationMessage</code> for the model property.</li>
+                <li>Set <code>ValueExpression</code> to the validated model property and update that property from <code>ValueChanged</code>.</li>
+                <li>Delete the editor content and submit to see the required validation feedback, then enter content and submit again.</li>
+            </ol>
+        </div>
+    </div>
+    <Demo Type="typeof(RichTextEditor_Demo_05_Form_Validation)" Tabs="true" />
+</Section>
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="Events" PageUrl="@pageUrl" Link="events">
+    <div class="mb-3">
+        Use <code>ValueChanged</code> to react to committed content and show its text metrics in surrounding UI. This typing-focused example deliberately reports the callback without assigning its HTML back to the editor value.
+        <br /><br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Handle <code>ValueChanged</code> to receive sanitized HTML, plain text, and count metrics after an edit is committed.</li>
+                <li>Update external UI such as metrics or a save indicator without writing the callback HTML back into the active editor value.</li>
+                <li>Edit the text below and observe the committed word and character counts.</li>
+            </ol>
+        </div>
+    </div>
+    <Demo Type="typeof(RichTextEditor_Demo_06_Events)" Tabs="true" />
 </Section>
 
 @code {
