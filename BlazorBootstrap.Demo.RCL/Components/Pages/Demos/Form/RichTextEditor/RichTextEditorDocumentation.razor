@@ -55,18 +55,34 @@
 
 <Section Class="p-0" Size="HeadingSize.H3" Name="Events" PageUrl="@pageUrl" Link="events">
     <div class="mb-3">
-        Use <code>ValueChanged</code> to react to committed content and <code>StatusChanged</code> to surface transient editor activity or validation feedback in the surrounding UI.
+        Use <code>ValueChanged</code> to react to committed content and show its text metrics in surrounding UI. This typing-focused example deliberately reports the callback without assigning its HTML back to the editor value.
         <br /><br />
         <strong>How to use:</strong>
         <div class="content mb-2">
             <ol>
                 <li>Handle <code>ValueChanged</code> to receive sanitized HTML, plain text, and count metrics after an edit is committed.</li>
-                <li>Handle <code>StatusChanged</code> when the application needs to display transient editor messages.</li>
-                <li>Edit the text below and observe the callback results beneath the editor.</li>
+                <li>Update external UI such as metrics or a save indicator without writing the callback HTML back into the active editor value.</li>
+                <li>Edit the text below and observe the committed word and character counts.</li>
             </ol>
         </div>
     </div>
     <Demo Type="typeof(RichTextEditor_Demo_04_Events)" Tabs="true" />
+</Section>
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="Disabled" PageUrl="@pageUrl" Link="disabled">
+    <div class="mb-3">
+        Use <code>Disabled</code> when rich text should remain visible for review but users must not edit it or invoke toolbar commands.
+        <br /><br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Provide the rich text through <code>Value</code>.</li>
+                <li>Set <code>Disabled</code> to <code>true</code> when the content is unavailable for editing.</li>
+                <li>Keep the visible content as context while the editor and toolbar controls remain unavailable.</li>
+            </ol>
+        </div>
+    </div>
+    <Demo Type="typeof(RichTextEditor_Demo_05_Disabled)" Tabs="true" />
 </Section>
 
 @code {
