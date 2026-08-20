@@ -5,15 +5,70 @@
 
 <DemosPageHeadSection PageUrl="@DemoRouteConstants.Demos_URL_RichTextEditor" PageTitle="Blazor RichTextEditor" PageDescription="A dependency-free rich text editor with a grouped Bootstrap toolbar." MetaTitle="Blazor RichTextEditor Component" MetaDescription="Rich text editing with safe HTML output." />
 
-<Section Size="HeadingSize.H2" Name="Basic usage" PageUrl="@pageUrl" Link="basic-usage">
+<Section Class="p-0" Size="HeadingSize.H3" Name="Full document editor" PageUrl="@pageUrl" Link="full-document-editor">
+    <div class="mb-3">
+        Start with the complete toolbar when authors need the full RichTextEditor feature set in one place, from document styles and text formatting through media, tables, history, printing, and fullscreen mode.
+        <br /><br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Add <code>RichTextEditor</code> to the page and provide an initial <code>Value</code>.</li>
+                <li>Omit <code>ToolbarItems</code> to render every supported toolbar control.</li>
+                <li>Edit the sample content and use multiple toolbar groups to build a complete document.</li>
+            </ol>
+        </div>
+    </div>
     <Demo Type="typeof(RichTextEditor_Demo_01_Undo)" Tabs="true" />
+</Section>
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="Draft an article" PageUrl="@pageUrl" Link="draft-an-article">
+    <div class="mb-3">
+        Use a focused authoring toolbar to turn a rough release-note draft into structured, scannable content with headings, emphasis, color, alignment, lists, and quotations.
+        <br /><br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Choose the commands that match the authoring workflow in <code>ToolbarItems</code>.</li>
+                <li>Place the caret in a paragraph or select text in the draft.</li>
+                <li>Apply a heading, emphasis, list, alignment, or quotation as the document takes shape.</li>
+            </ol>
+        </div>
+    </div>
+    <Demo Type="typeof(RichTextEditor_Demo_22_ArticleDraft)" Tabs="true" />
+</Section>
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="Publish a rich update" PageUrl="@pageUrl" Link="publish-a-rich-update">
+    <div class="mb-3">
+        Give a publishing workflow only the insertion commands it needs to add a link, image, separator, or table to an already-authored announcement.
+        <br /><br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Configure the insertion-focused commands in <code>ToolbarItems</code>.</li>
+                <li>Place the caret where the new content belongs in the announcement.</li>
+                <li>Use the link, image, horizontal-rule, or table control and complete its dialog when prompted.</li>
+            </ol>
+        </div>
+    </div>
+    <Demo Type="typeof(RichTextEditor_Demo_24_PublishUpdate)" Tabs="true" />
+</Section>
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="Respond to editor events" PageUrl="@pageUrl" Link="respond-to-editor-events">
+    <div class="mb-3">
+        Use <code>ValueChanged</code> to react to committed content and <code>StatusChanged</code> to surface transient editor activity or validation feedback in the surrounding UI.
+        <br /><br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Handle <code>ValueChanged</code> to receive sanitized HTML, plain text, and count metrics after an edit is committed.</li>
+                <li>Handle <code>StatusChanged</code> when the application needs to display transient editor messages.</li>
+                <li>Edit the text below and observe the callback results beneath the editor.</li>
+            </ol>
+        </div>
+    </div>
+    <Demo Type="typeof(RichTextEditor_Demo_25_Events)" Tabs="true" />
 </Section>
 
 @code {
     private const string pageUrl = DemoRouteConstants.Demos_URL_RichTextEditor;
-    private const string pageTitle = "Blazor RichTextEditor";
-    private const string pageDescription = "Rich text editing component with a grouped Bootstrap toolbar. It is dependency-free and outputs safe HTML.";
-    private const string metaTitle = "Blazor RichTextEditor Component";
-    private const string metaDescription = "Rich text editing with safe HTML output.";
-    private const string imageUrl = "https://i.imgur.com/N2VUHIn.png"; // TODO: Update the image URL to a relevant image for RichTextEditor
 }
