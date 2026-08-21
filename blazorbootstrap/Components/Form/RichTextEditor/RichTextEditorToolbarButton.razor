@@ -3,7 +3,7 @@
 
 @if (Parent?.IsToolbarItemVisible(Item) ?? true)
 {
-    <Button Color="ButtonColor.Secondary" Outline="true" TooltipTitle="@label" @onclick="OnClickAsync">
+    <Button Color="ButtonColor.Secondary" Outline="true" TooltipTitle="@label" Disabled="@Disabled" @onclick="OnClickAsync">
         <Icon Name="@iconName"></Icon>
     </Button>
 }
