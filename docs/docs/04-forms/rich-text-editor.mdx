@@ -7,22 +7,62 @@ sidebar_position: 13
 
 # Blazor RichTextEditor
 
-`RichTextEditor` provides document, style, color, alignment, list, link, image, table, block, fullscreen, and print controls without a third-party editor dependency.
+`RichTextEditor` is a dependency-free editor for HTML content. Its default toolbar includes document styles, font settings, text emphasis, colors, alignment, lists, links, images, tables, block content, fullscreen, printing, and history controls.
+
+## Get started
+
+Add the component to a page, provide its initial HTML, and handle `ValueChanged` when the application needs the sanitized editor result.
 
 ```cshtml
-<RichTextEditor Value="@content"
+<RichTextEditor Value="@editorInitialContent"
                 ValueChanged="OnContentChanged"
-                StatusChanged="OnEditorStatus"
                 Placeholder="Write the article" />
 
+<div class="mt-3">
+    @(new MarkupString(committedHtml))
+</div>
+
 @code {
-    private string content = "<p>Draft</p>";
-    private void OnContentChanged(RichTextEditorChange change) => content = change.Html;
-    private void OnEditorStatus(string status) { }
+    private const string editorInitialContent = "<p>Draft</p>";
+    private string committedHtml = editorInitialContent;
+
+    private void OnContentChanged(RichTextEditorChange change) => committedHtml = change.Html;
 }
 ```
 
-`ValueChanged` receives `RichTextEditorChange`, containing sanitized HTML, plain text, character count, and word count. `StatusChanged` is reserved for transient activity and error feedback.
+Omit `ToolbarItems` to show the complete default toolbar. `ValueChanged` receives `RichTextEditorChange`, which contains sanitized HTML, plain text, character count, and word count.
+
+## Choose toolbar controls
+
+Supply `ToolbarItems` when an editor should expose only the controls needed for its workflow.
+
+```cshtml
+<RichTextEditor Value="@content"
+                ToolbarItems="@toolbarItems"
+                Placeholder="Write a short update" />
+
+@code {
+    private string content = "<p>Short update</p>";
+
+    private readonly RichTextEditorToolbarItem[] toolbarItems =
+    {
+        RichTextEditorToolbarItem.Bold,
+        RichTextEditorToolbarItem.Italic,
+        RichTextEditorToolbarItem.Link,
+        RichTextEditorToolbarItem.OrderedList,
+        RichTextEditorToolbarItem.UnorderedList
+    };
+}
+```
+
+
+## Disabled state
+
+Use `Disabled` as the sole inactive-state parameter. When it is `true`, the editor keeps its content visible for review but is not editable, and every toolbar action is unavailable. Hovering the inactive toolbar explains that editing is disabled. Set `Disabled` back to `false` to restore the existing editing and toolbar behavior.
+
+## Demo walkthrough
+
+The [RichTextEditor demo](https://demos.blazorbootstrap.com/rich-text-editor) keeps six scenarios in order: Full toolbar, Article draft, Publish rich update, Disabled, Form validation, and Events. Each scenario includes a short explanation and ordered `How to use` steps before its runnable source.
 
 ## Text and count rules
 
@@ -40,7 +80,3 @@ These browser-side rules provide consistent UI feedback. Continue to validate up
 The browser module removes unsafe elements, event handlers, unsupported attributes, and unsafe URL schemes before content renders or is emitted. HTTPS image URLs are required. Browser filtering is defense in depth: validate uploads and sanitize HTML again on the server before persistence or markup rendering.
 
 The demo stores a draft under `advanced-rich-text-editor-document` in `sessionStorage`; it does not use local storage.
-
-## Toolbar and API coverage
-
-See [the demo](https://demos.blazorbootstrap.com/rich-text-editor) for selection, history, formatting, links, tables, images, fullscreen, print, callbacks, and session-only draft behavior.

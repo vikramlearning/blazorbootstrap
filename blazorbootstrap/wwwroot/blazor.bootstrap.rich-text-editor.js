@@ -1,4 +1,4 @@
-﻿window.blazorBootstrap = window.blazorBootstrap || {};
+window.blazorBootstrap = window.blazorBootstrap || {};
 window.blazorBootstrap.richTextEditor = window.blazorBootstrap.richTextEditor || {};
 
 // Font size label map shared across all editor instances
@@ -2241,6 +2241,12 @@ function printEditorDocument(state) {
 function handleToolbarClick(state, event) {
     const button = event.target.closest('button');
     if (!button) return;
+
+    if (state.editor.getAttribute('aria-disabled') === 'true') {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        return;
+    }
 
     if (button.dataset.editorCommand) {
         executeCommand(state, button.dataset.editorCommand);

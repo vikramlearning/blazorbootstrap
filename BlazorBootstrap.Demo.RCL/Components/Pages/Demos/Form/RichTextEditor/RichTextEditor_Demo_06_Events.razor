@@ -1,0 +1,38 @@
+<RichTextEditor Value="@editorInitialContent"
+                ToolbarItems="@toolbarItems"
+                ValueChanged="OnValueChanged"
+                Placeholder="Edit the draft to see callback results." />
+
+<div class="border rounded p-3 mb-3">
+    <strong>Last committed change</strong>
+    <p class="mb-0">@lastChange</p>
+</div>
+
+<div class="border rounded p-3">
+    <strong>Committed HTML preview</strong>
+    <div class="mb-0">@(new MarkupString(content))</div>
+</div>
+
+@code {
+    private readonly RichTextEditorToolbarItem[] toolbarItems =
+    {
+        RichTextEditorToolbarItem.Bold,
+        RichTextEditorToolbarItem.Italic,
+        RichTextEditorToolbarItem.Link,
+        RichTextEditorToolbarItem.OrderedList,
+        RichTextEditorToolbarItem.UnorderedList
+    };
+
+    private const string editorInitialContent =
+        "<p>Change this project update and pause briefly to commit the editor value.</p>";
+
+    private string content = editorInitialContent;
+    private string lastChange = "No committed change yet.";
+
+    private Task OnValueChanged(RichTextEditorChange change)
+    {
+        content = change.Html; // Updates the external preview only.
+        lastChange = $"Committed {change.WordCount} words and {change.CharacterCount} characters.";
+        return Task.CompletedTask;
+    }
+}

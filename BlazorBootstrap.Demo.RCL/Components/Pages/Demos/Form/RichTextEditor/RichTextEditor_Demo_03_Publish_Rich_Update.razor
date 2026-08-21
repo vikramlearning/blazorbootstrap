@@ -1,0 +1,18 @@
+<div class="mb-3">
+    <RichTextEditor Value="@content"
+                    ToolbarItems="@toolbarItems"
+                    Placeholder="Publish the announcement." />
+</div>
+
+@code {
+    private string content = "<h2>Service update</h2><p>We have published the latest service update. Add the supporting link, image, or availability table before sharing it.</p>";
+
+    private readonly RichTextEditorToolbarItem[] toolbarItems =
+    {
+        RichTextEditorToolbarItem.Link,
+        RichTextEditorToolbarItem.Image,
+        RichTextEditorToolbarItem.HorizontalRule,
+        RichTextEditorToolbarItem.Table,
+        RichTextEditorToolbarItem.Fullscreen
+    };
+}

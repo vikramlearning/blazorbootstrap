@@ -1,0 +1,50 @@
+﻿@using System.ComponentModel.DataAnnotations
+
+<EditForm Model="@draft" OnValidSubmit="HandleValidSubmit">
+    <DataAnnotationsValidator />
+
+    <div class="mb-3">
+        <RichTextEditor Value="@editorInitialHtml"
+                        ValueExpression="@(() => draft.Content)"
+                        ValueChanged="OnValueChanged"
+                        Placeholder="Enter the required announcement content." />
+        <ValidationMessage For="@(() => draft.Content)" />
+    </div>
+
+    <Button Type="ButtonType.Submit" Color="ButtonColor.Primary">Submit announcement</Button>
+
+    @if (submitted)
+    {
+        <div class="alert alert-success mt-3 mb-0" role="status">The announcement passed validation.</div>
+    }
+</EditForm>
+
+@code {
+    private const string editorInitialHtml = "<p>Review this announcement, then submit the form.</p>";
+
+    private readonly AnnouncementDraft draft = new()
+    {
+        Content = "Review this announcement, then submit the form.",
+        Html = editorInitialHtml
+    };
+
+    private bool submitted;
+
+    private void HandleValidSubmit() => submitted = true;
+
+    private Task OnValueChanged(RichTextEditorChange change)
+    {
+        draft.Content = change.Text;
+        draft.Html = change.Html;
+        submitted = false;
+        return Task.CompletedTask;
+    }
+
+    private sealed class AnnouncementDraft
+    {
+        [Required(ErrorMessage = "Announcement content is required.")]
+        public string Content { get; set; } = string.Empty;
+
+        public string Html { get; set; } = string.Empty;
+    }
+}

@@ -1,0 +1,22 @@
+<div class="mb-3">
+    <RichTextEditor Value="@content"
+                    ToolbarItems="@toolbarItems"
+                    Placeholder="Draft the release notes." />
+</div>
+
+@code {
+    private string content = "<h2>June release notes</h2><p>This draft needs a clear structure before it is published.</p><p>Highlight the most important update, then organize the remaining details for readers.</p><ul><li>Improved editor workflow</li><li>Updated content guidance</li></ul>";
+
+    private readonly RichTextEditorToolbarItem[] toolbarItems =
+    {
+        RichTextEditorToolbarItem.Heading2,
+        RichTextEditorToolbarItem.Bold,
+        RichTextEditorToolbarItem.Italic,
+        RichTextEditorToolbarItem.TextColor,
+        RichTextEditorToolbarItem.AlignLeft,
+        RichTextEditorToolbarItem.AlignCenter,
+        RichTextEditorToolbarItem.OrderedList,
+        RichTextEditorToolbarItem.UnorderedList,
+        RichTextEditorToolbarItem.Blockquote
+    };
+}
