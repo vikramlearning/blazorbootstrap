@@ -1,4 +1,4 @@
-﻿@page "/rich-text-editor"
+@page "/rich-text-editor"
 
 @attribute [Route(DemoRouteConstants.Demos_URL_RichTextEditor)]
 @layout DemosMainLayout
@@ -9,14 +9,14 @@
 
 <Section Class="p-0" Size="HeadingSize.H3" Name="Full toolbar" PageUrl="@pageUrl" Link="full-toolbar">
     <div class="mb-3">
-        Start with the complete toolbar when authors need the full RichTextEditor feature set in one place, from document styles and text formatting through media, tables, history, printing, and fullscreen mode.
+        Start with the complete toolbar when authors need the full RichTextEditor feature set in one place. Keep <code>Disabled</code> set to <code>false</code> so every toolbar action remains available, from document styles and text formatting through media, tables, history, printing, and fullscreen mode.
         <br /><br />
         <strong>How to use:</strong>
         <div class="content mb-2">
             <ol>
                 <li>Add <code>RichTextEditor</code> to the page and provide an initial <code>Value</code>.</li>
                 <li>Omit <code>ToolbarItems</code> to render every supported toolbar control.</li>
-                <li>Edit the sample content and use multiple toolbar groups to build a complete document.</li>
+                <li>Keep <code>Disabled</code> set to <code>false</code>, then use toolbar actions to build a complete document.</li>
             </ol>
         </div>
     </div>
@@ -25,14 +25,14 @@
 
 <Section Class="p-0" Size="HeadingSize.H3" Name="Article draft" PageUrl="@pageUrl" Link="article-draft">
     <div class="mb-3">
-        Use a focused authoring toolbar to turn a rough release-note draft into structured, scannable content with headings, emphasis, color, alignment, lists, and quotations.
+        Use a focused authoring toolbar to turn a rough release-note draft into structured, scannable content. While <code>Disabled</code> is <code>false</code>, each toolbar action can apply headings, emphasis, color, alignment, lists, and quotations.
         <br /><br />
         <strong>How to use:</strong>
         <div class="content mb-2">
             <ol>
                 <li>Choose the commands that match the authoring workflow in <code>ToolbarItems</code>.</li>
                 <li>Place the caret in a paragraph or select text in the draft.</li>
-                <li>Apply a heading, emphasis, list, alignment, or quotation as the document takes shape.</li>
+                <li>Use each toolbar action needed for a heading, emphasis, list, alignment, or quotation as the document takes shape.</li>
             </ol>
         </div>
     </div>
@@ -41,14 +41,14 @@
 
 <Section Class="p-0" Size="HeadingSize.H3" Name="Publish rich update" PageUrl="@pageUrl" Link="publish-rich-update">
     <div class="mb-3">
-        Give a publishing workflow only the insertion commands it needs to add a link, image, separator, or table to an already-authored announcement.
+        Give a publishing workflow only the insertion commands it needs to add a link, image, separator, or table to an already-authored announcement. Keep <code>Disabled</code> set to <code>false</code> while authors use each toolbar action.
         <br /><br />
         <strong>How to use:</strong>
         <div class="content mb-2">
             <ol>
                 <li>Configure the insertion-focused commands in <code>ToolbarItems</code>.</li>
                 <li>Place the caret where the new content belongs in the announcement.</li>
-                <li>Use the link, image, horizontal-rule, or table control and complete its dialog when prompted.</li>
+                <li>Use the link, image, horizontal-rule, or table toolbar action and complete its dialog when prompted.</li>
             </ol>
         </div>
     </div>
@@ -57,14 +57,14 @@
 
 <Section Class="p-0" Size="HeadingSize.H3" Name="Disabled" PageUrl="@pageUrl" Link="disabled">
     <div class="mb-3">
-        Use <code>Disabled</code> when rich text should remain visible for review but users must not edit it or invoke toolbar commands.
+        Use <code>Disabled</code> when rich text should remain visible for review. Editing is disabled: users cannot change the content or invoke a toolbar action.
         <br /><br />
         <strong>How to use:</strong>
         <div class="content mb-2">
             <ol>
                 <li>Provide the rich text through <code>Value</code>.</li>
-                <li>Set <code>Disabled</code> to <code>true</code> when the content is unavailable for editing.</li>
-                <li>Keep the visible content as context while the editor and toolbar controls remain unavailable.</li>
+                <li>Set <code>Disabled</code> to <code>true</code> when editing is disabled.</li>
+                <li>Keep the visible content as context; hovering the inactive toolbar explains that editing is disabled, and no toolbar action is available.</li>
             </ol>
         </div>
     </div>
@@ -73,14 +73,14 @@
 
 <Section Class="p-0" Size="HeadingSize.H3" Name="Form validation" PageUrl="@pageUrl" Link="form-validation">
     <div class="mb-3">
-        Use <code>ValueExpression</code> inside an <code>EditForm</code> to validate the editor's plain-text content while retaining its HTML separately for submission.
+        Use <code>ValueExpression</code> inside an <code>EditForm</code> to validate the editor's plain-text content while retaining its HTML separately for submission. Keep <code>Disabled</code> set to <code>false</code> while users edit content and use a toolbar action.
         <br /><br />
         <strong>How to use:</strong>
         <div class="content mb-2">
             <ol>
                 <li>Add <code>DataAnnotationsValidator</code> and a <code>ValidationMessage</code> for the model property.</li>
                 <li>Set <code>ValueExpression</code> to the validated model property and update that property from <code>ValueChanged</code>.</li>
-                <li>Delete the editor content and submit to see the required validation feedback, then enter content and submit again.</li>
+                <li>Keep editing enabled, then delete the editor content and submit to see required validation feedback before entering content and submitting again.</li>
             </ol>
         </div>
     </div>
@@ -89,14 +89,14 @@
 
 <Section Class="p-0" Size="HeadingSize.H3" Name="Events" PageUrl="@pageUrl" Link="events">
     <div class="mb-3">
-        Use <code>ValueChanged</code> to react to committed content and show its text metrics in surrounding UI. This typing-focused example deliberately reports the callback without assigning its HTML back to the editor value.
+        Use <code>ValueChanged</code> to react to committed content and show its text metrics in surrounding UI. Keep <code>Disabled</code> set to <code>false</code> while observing edits and toolbar actions. This typing-focused example deliberately reports the callback without assigning its HTML back to the editor value.
         <br /><br />
         <strong>How to use:</strong>
         <div class="content mb-2">
             <ol>
                 <li>Handle <code>ValueChanged</code> to receive sanitized HTML, plain text, and count metrics after an edit is committed.</li>
                 <li>Update external UI such as metrics or a save indicator without writing the callback HTML back into the active editor value.</li>
-                <li>Edit the text below and observe the committed word and character counts.</li>
+                <li>Edit the text or use a toolbar action, then observe the committed word and character counts.</li>
             </ol>
         </div>
     </div>

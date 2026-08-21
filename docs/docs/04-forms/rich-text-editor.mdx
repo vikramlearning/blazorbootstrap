@@ -55,9 +55,14 @@ Supply `ToolbarItems` when an editor should expose only the controls needed for 
 }
 ```
 
+
+## Disabled state
+
+Use `Disabled` as the sole inactive-state parameter. When it is `true`, the editor keeps its content visible for review but is not editable, and every toolbar action is unavailable. Hovering the inactive toolbar explains that editing is disabled. Set `Disabled` back to `false` to restore the existing editing and toolbar behavior.
+
 ## Demo walkthrough
 
-The [RichTextEditor demo](https://demos.blazorbootstrap.com/rich-text-editor) starts with the complete toolbar, then shows practical workflows for drafting an article, publishing rich content, and observing committed `ValueChanged` results. Each scenario includes a short explanation and ordered `How to use` steps before its runnable source.
+The [RichTextEditor demo](https://demos.blazorbootstrap.com/rich-text-editor) keeps six scenarios in order: Full toolbar, Article draft, Publish rich update, Disabled, Form validation, and Events. Each scenario includes a short explanation and ordered `How to use` steps before its runnable source.
 
 ## Text and count rules
 
