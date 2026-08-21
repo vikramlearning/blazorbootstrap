@@ -6,7 +6,13 @@
         <div class="card-body p-0">
             @if (ShouldRenderToolbar)
             {
-            <Tooltip Title="@(Disabled ? disabledTooltipTitle : null)" Class="d-block" Style="@toolbarTooltipStyle">
+            <div class="position-relative">
+                @if (Disabled)
+                {
+                <Tooltip Title="@disabledTooltipTitle" Class="d-block position-absolute top-0 bottom-0 start-0 end-0" Style="@disabledToolbarOverlayStyle">
+                    <span class="d-block h-100 w-100"></span>
+                </Tooltip>
+                }
                 <div class="border-bottom bg-body-tertiary p-2" role="toolbar" aria-label="Rich text formatting toolbar" aria-disabled="@Disabled">
                     <div class="d-flex flex-wrap align-items-center gap-1">
                         <div class="btn-group btn-group-sm" role="group" aria-label="History" hidden="@(!IsAnyToolbarItemVisible(RichTextEditorToolbarItem.Print, RichTextEditorToolbarItem.Undo, RichTextEditorToolbarItem.Redo))">
@@ -138,7 +144,7 @@
                         </div>
                     </div>
                 </div>
-                </Tooltip>
+                </div>
             }
 
             <div id="@EditorId"
