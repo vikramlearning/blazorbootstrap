@@ -6,139 +6,145 @@
         <div class="card-body p-0">
             @if (ShouldRenderToolbar)
             {
-            <Tooltip Title="@(Disabled ? disabledTooltipTitle : null)" Class="d-block" Style="@toolbarTooltipStyle">
-                <div class="border-bottom bg-body-tertiary p-2" role="toolbar" aria-label="Rich text formatting toolbar" aria-disabled="@Disabled">
-                    <div class="d-flex flex-wrap align-items-center gap-1">
-                        <div class="btn-group btn-group-sm" role="group" aria-label="History" hidden="@(!IsAnyToolbarItemVisible(RichTextEditorToolbarItem.Print, RichTextEditorToolbarItem.Undo, RichTextEditorToolbarItem.Redo))">
-                            <RichTextEditorToolbarButton Item="RichTextEditorToolbarItem.Print" Disabled="@Disabled" />
-                            <RichTextEditorToolbarButton Item="RichTextEditorToolbarItem.Undo" Disabled="@Disabled" />
-                            <RichTextEditorToolbarButton Item="RichTextEditorToolbarItem.Redo" Disabled="@Disabled" />
-                        </div>
+                <div class="position-relative">
+                    @if (Disabled)
+                    {
+                        <Tooltip Title="@disabledTooltipTitle" Class="d-block position-absolute top-0 bottom-0 start-0 end-0" Style="@disabledToolbarOverlayStyle">
+                            <span class="d-block h-100 w-100"></span>
+                        </Tooltip>
+                    }
+                    <div class="border-bottom bg-body-tertiary p-2" role="toolbar" aria-label="Rich text formatting toolbar" aria-disabled="@Disabled">
+                        <div class="d-flex flex-wrap align-items-center gap-1">
+                            <div class="btn-group btn-group-sm" role="group" aria-label="History" hidden="@(!IsAnyToolbarItemVisible(RichTextEditorToolbarItem.Print, RichTextEditorToolbarItem.Undo, RichTextEditorToolbarItem.Redo))">
+                                <RichTextEditorToolbarButton Item="RichTextEditorToolbarItem.Print" Disabled="@Disabled" />
+                                <RichTextEditorToolbarButton Item="RichTextEditorToolbarItem.Undo" Disabled="@Disabled" />
+                                <RichTextEditorToolbarButton Item="RichTextEditorToolbarItem.Redo" Disabled="@Disabled" />
+                            </div>
 
-                        <div class="dropdown" hidden="@(!IsAnyToolbarItemVisible(RichTextEditorToolbarItem.Paragraph, RichTextEditorToolbarItem.Heading1, RichTextEditorToolbarItem.Heading2, RichTextEditorToolbarItem.Heading3, RichTextEditorToolbarItem.Heading4, RichTextEditorToolbarItem.Heading5, RichTextEditorToolbarItem.Heading6, RichTextEditorToolbarItem.Caption))">
-                            <button disabled="@Disabled" type="button" class="btn btn-outline-secondary btn-sm dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">Paragraph</button>
-                            <ul class="dropdown-menu">
-                                <li hidden="@(!IsToolbarItemVisible(RichTextEditorToolbarItem.Paragraph))"><button type="button" class="dropdown-item" disabled="@Disabled" @onclick="@(() => OnToolbarButtonClickAsync(Id!, RichTextEditorToolbarItem.Paragraph))">Paragraph</button></li>
-                                <li hidden="@(!IsToolbarItemVisible(RichTextEditorToolbarItem.Heading1))"><button type="button" class="dropdown-item" disabled="@Disabled" @onclick="@(() => OnToolbarButtonClickAsync(Id!, RichTextEditorToolbarItem.Heading1))">Heading 1</button></li>
-                                <li hidden="@(!IsToolbarItemVisible(RichTextEditorToolbarItem.Heading2))"><button type="button" class="dropdown-item" disabled="@Disabled" @onclick="@(() => OnToolbarButtonClickAsync(Id!, RichTextEditorToolbarItem.Heading2))">Heading 2</button></li>
-                                <li hidden="@(!IsToolbarItemVisible(RichTextEditorToolbarItem.Heading3))"><button type="button" class="dropdown-item" disabled="@Disabled" @onclick="@(() => OnToolbarButtonClickAsync(Id!, RichTextEditorToolbarItem.Heading3))">Heading 3</button></li>
-                                <li hidden="@(!IsToolbarItemVisible(RichTextEditorToolbarItem.Heading4))"><button type="button" class="dropdown-item" disabled="@Disabled" @onclick="@(() => OnToolbarButtonClickAsync(Id!, RichTextEditorToolbarItem.Heading4))">Heading 4</button></li>
-                                <li hidden="@(!IsToolbarItemVisible(RichTextEditorToolbarItem.Heading5))"><button type="button" class="dropdown-item" disabled="@Disabled" @onclick="@(() => OnToolbarButtonClickAsync(Id!, RichTextEditorToolbarItem.Heading5))">Heading 5</button></li>
-                                <li hidden="@(!IsToolbarItemVisible(RichTextEditorToolbarItem.Heading6))"><button type="button" class="dropdown-item" disabled="@Disabled" @onclick="@(() => OnToolbarButtonClickAsync(Id!, RichTextEditorToolbarItem.Heading6))">Heading 6</button></li>
-                                <li hidden="@(!IsToolbarItemVisible(RichTextEditorToolbarItem.Caption))"><button type="button" class="dropdown-item" disabled="@Disabled" @onclick="@(() => OnToolbarButtonClickAsync(Id!, RichTextEditorToolbarItem.Caption))">Caption</button></li>
-                            </ul>
-                        </div>
-                        <div class="dropdown" hidden="@(!IsToolbarItemVisible(RichTextEditorToolbarItem.FontFamily))">
-                            <button id="@FontFamilyButtonId" type="button" class="btn btn-outline-secondary btn-sm dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" disabled="@Disabled">@selectedFontFamily</button>
-                            <ul class="dropdown-menu">
-                                <li><button type="button" class="dropdown-item" disabled="@Disabled" @onclick='@(() => OnFontFamilyClickAsync("Inter"))'>Inter</button></li>
-                                <li><button type="button" class="dropdown-item" disabled="@Disabled" @onclick='@(() => OnFontFamilyClickAsync("Arial"))'>Arial</button></li>
-                                <li><button type="button" class="dropdown-item" disabled="@Disabled" @onclick='@(() => OnFontFamilyClickAsync("Georgia"))'>Georgia</button></li>
-                                <li><button type="button" class="dropdown-item" disabled="@Disabled" @onclick='@(() => OnFontFamilyClickAsync("Courier New"))'>Courier New</button></li>
-                            </ul>
-                        </div>
-                        <div class="dropdown" hidden="@(!IsToolbarItemVisible(RichTextEditorToolbarItem.FontSize))">
-                            <button id="@FontSizeButtonId" type="button" class="btn btn-outline-secondary btn-sm dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" disabled="@Disabled">@selectedFontSize</button>
-                            <ul class="dropdown-menu">
-                                <li><button type="button" class="dropdown-item" disabled="@Disabled" @onclick='@(() => OnFontSizeClickAsync("2"))'>12 px</button></li>
-                                <li><button type="button" class="dropdown-item" disabled="@Disabled" @onclick='@(() => OnFontSizeClickAsync("3"))'>14 px</button></li>
-                                <li><button type="button" class="dropdown-item" disabled="@Disabled" @onclick='@(() => OnFontSizeClickAsync("4"))'>16 px</button></li>
-                                <li><button type="button" class="dropdown-item" disabled="@Disabled" @onclick='@(() => OnFontSizeClickAsync("5"))'>18 px</button></li>
-                                <li><button type="button" class="dropdown-item" disabled="@Disabled" @onclick='@(() => OnFontSizeClickAsync("6"))'>24 px</button></li>
-                            </ul>
-                        </div>
+                            <div class="dropdown" hidden="@(!IsAnyToolbarItemVisible(RichTextEditorToolbarItem.Paragraph, RichTextEditorToolbarItem.Heading1, RichTextEditorToolbarItem.Heading2, RichTextEditorToolbarItem.Heading3, RichTextEditorToolbarItem.Heading4, RichTextEditorToolbarItem.Heading5, RichTextEditorToolbarItem.Heading6, RichTextEditorToolbarItem.Caption))">
+                                <button disabled="@Disabled" type="button" class="btn btn-outline-secondary btn-sm dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">Paragraph</button>
+                                <ul class="dropdown-menu">
+                                    <li hidden="@(!IsToolbarItemVisible(RichTextEditorToolbarItem.Paragraph))"><button type="button" class="dropdown-item" disabled="@Disabled" @onclick="@(() => OnToolbarButtonClickAsync(Id!, RichTextEditorToolbarItem.Paragraph))">Paragraph</button></li>
+                                    <li hidden="@(!IsToolbarItemVisible(RichTextEditorToolbarItem.Heading1))"><button type="button" class="dropdown-item" disabled="@Disabled" @onclick="@(() => OnToolbarButtonClickAsync(Id!, RichTextEditorToolbarItem.Heading1))">Heading 1</button></li>
+                                    <li hidden="@(!IsToolbarItemVisible(RichTextEditorToolbarItem.Heading2))"><button type="button" class="dropdown-item" disabled="@Disabled" @onclick="@(() => OnToolbarButtonClickAsync(Id!, RichTextEditorToolbarItem.Heading2))">Heading 2</button></li>
+                                    <li hidden="@(!IsToolbarItemVisible(RichTextEditorToolbarItem.Heading3))"><button type="button" class="dropdown-item" disabled="@Disabled" @onclick="@(() => OnToolbarButtonClickAsync(Id!, RichTextEditorToolbarItem.Heading3))">Heading 3</button></li>
+                                    <li hidden="@(!IsToolbarItemVisible(RichTextEditorToolbarItem.Heading4))"><button type="button" class="dropdown-item" disabled="@Disabled" @onclick="@(() => OnToolbarButtonClickAsync(Id!, RichTextEditorToolbarItem.Heading4))">Heading 4</button></li>
+                                    <li hidden="@(!IsToolbarItemVisible(RichTextEditorToolbarItem.Heading5))"><button type="button" class="dropdown-item" disabled="@Disabled" @onclick="@(() => OnToolbarButtonClickAsync(Id!, RichTextEditorToolbarItem.Heading5))">Heading 5</button></li>
+                                    <li hidden="@(!IsToolbarItemVisible(RichTextEditorToolbarItem.Heading6))"><button type="button" class="dropdown-item" disabled="@Disabled" @onclick="@(() => OnToolbarButtonClickAsync(Id!, RichTextEditorToolbarItem.Heading6))">Heading 6</button></li>
+                                    <li hidden="@(!IsToolbarItemVisible(RichTextEditorToolbarItem.Caption))"><button type="button" class="dropdown-item" disabled="@Disabled" @onclick="@(() => OnToolbarButtonClickAsync(Id!, RichTextEditorToolbarItem.Caption))">Caption</button></li>
+                                </ul>
+                            </div>
+                            <div class="dropdown" hidden="@(!IsToolbarItemVisible(RichTextEditorToolbarItem.FontFamily))">
+                                <button id="@FontFamilyButtonId" type="button" class="btn btn-outline-secondary btn-sm dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" disabled="@Disabled">@selectedFontFamily</button>
+                                <ul class="dropdown-menu">
+                                    <li><button type="button" class="dropdown-item" disabled="@Disabled" @onclick='@(() => OnFontFamilyClickAsync("Inter"))'>Inter</button></li>
+                                    <li><button type="button" class="dropdown-item" disabled="@Disabled" @onclick='@(() => OnFontFamilyClickAsync("Arial"))'>Arial</button></li>
+                                    <li><button type="button" class="dropdown-item" disabled="@Disabled" @onclick='@(() => OnFontFamilyClickAsync("Georgia"))'>Georgia</button></li>
+                                    <li><button type="button" class="dropdown-item" disabled="@Disabled" @onclick='@(() => OnFontFamilyClickAsync("Courier New"))'>Courier New</button></li>
+                                </ul>
+                            </div>
+                            <div class="dropdown" hidden="@(!IsToolbarItemVisible(RichTextEditorToolbarItem.FontSize))">
+                                <button id="@FontSizeButtonId" type="button" class="btn btn-outline-secondary btn-sm dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" disabled="@Disabled">@selectedFontSize</button>
+                                <ul class="dropdown-menu">
+                                    <li><button type="button" class="dropdown-item" disabled="@Disabled" @onclick='@(() => OnFontSizeClickAsync("2"))'>12 px</button></li>
+                                    <li><button type="button" class="dropdown-item" disabled="@Disabled" @onclick='@(() => OnFontSizeClickAsync("3"))'>14 px</button></li>
+                                    <li><button type="button" class="dropdown-item" disabled="@Disabled" @onclick='@(() => OnFontSizeClickAsync("4"))'>16 px</button></li>
+                                    <li><button type="button" class="dropdown-item" disabled="@Disabled" @onclick='@(() => OnFontSizeClickAsync("5"))'>18 px</button></li>
+                                    <li><button type="button" class="dropdown-item" disabled="@Disabled" @onclick='@(() => OnFontSizeClickAsync("6"))'>24 px</button></li>
+                                </ul>
+                            </div>
 
-                        <div class="btn-group btn-group-sm" role="group" aria-label="Text emphasis" hidden="@(!IsAnyToolbarItemVisible(RichTextEditorToolbarItem.Bold, RichTextEditorToolbarItem.Italic, RichTextEditorToolbarItem.Underline, RichTextEditorToolbarItem.Strikethrough, RichTextEditorToolbarItem.Subscript, RichTextEditorToolbarItem.Superscript))">
-                            <RichTextEditorToolbarButton Item="RichTextEditorToolbarItem.Bold" Disabled="@Disabled" />
-                            <RichTextEditorToolbarButton Item="RichTextEditorToolbarItem.Italic" Disabled="@Disabled" />
-                            <RichTextEditorToolbarButton Item="RichTextEditorToolbarItem.Underline" Disabled="@Disabled" />
-                            <RichTextEditorToolbarButton Item="RichTextEditorToolbarItem.Strikethrough" Disabled="@Disabled" />
-                            <RichTextEditorToolbarButton Item="RichTextEditorToolbarItem.Subscript" Disabled="@Disabled" />
-                            <RichTextEditorToolbarButton Item="RichTextEditorToolbarItem.Superscript" Disabled="@Disabled" />
-                        </div>
+                            <div class="btn-group btn-group-sm" role="group" aria-label="Text emphasis" hidden="@(!IsAnyToolbarItemVisible(RichTextEditorToolbarItem.Bold, RichTextEditorToolbarItem.Italic, RichTextEditorToolbarItem.Underline, RichTextEditorToolbarItem.Strikethrough, RichTextEditorToolbarItem.Subscript, RichTextEditorToolbarItem.Superscript))">
+                                <RichTextEditorToolbarButton Item="RichTextEditorToolbarItem.Bold" Disabled="@Disabled" />
+                                <RichTextEditorToolbarButton Item="RichTextEditorToolbarItem.Italic" Disabled="@Disabled" />
+                                <RichTextEditorToolbarButton Item="RichTextEditorToolbarItem.Underline" Disabled="@Disabled" />
+                                <RichTextEditorToolbarButton Item="RichTextEditorToolbarItem.Strikethrough" Disabled="@Disabled" />
+                                <RichTextEditorToolbarButton Item="RichTextEditorToolbarItem.Subscript" Disabled="@Disabled" />
+                                <RichTextEditorToolbarButton Item="RichTextEditorToolbarItem.Superscript" Disabled="@Disabled" />
+                            </div>
 
-                        <div class="btn-group btn-group-sm" role="group" aria-label="Text color" hidden="@(!IsToolbarItemVisible(RichTextEditorToolbarItem.TextColor))">
-                            <button disabled="@Disabled" type="button" class="btn btn-outline-secondary position-relative" data-editor-action="apply-text-color" aria-label="Apply text color" title="Apply selected text color"><i class="bi bi-fonts" aria-hidden="true"></i><span id="text-color-indicator" data-rte-text-color-indicator class="position-absolute bottom-0 start-0 end-0 border-bottom border-3 border-dark" aria-hidden="true"></span></button>
-                            <button disabled="@Disabled" type="button" class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Choose text color" title="Choose text color"><span class="visually-hidden">Choose text color</span></button>
-                            <ul class="dropdown-menu">
-                                <li><button disabled="@Disabled" type="button" class="dropdown-item" data-editor-color="#212529" data-editor-indicator="border-dark"><i class="bi bi-circle-fill text-body me-2" aria-hidden="true"></i>Automatic</button></li>
-                                <li><button disabled="@Disabled" type="button" class="dropdown-item" data-editor-color="#0d6efd" data-editor-indicator="border-primary"><i class="bi bi-circle-fill text-primary me-2" aria-hidden="true"></i>Blue</button></li>
-                                <li><button disabled="@Disabled" type="button" class="dropdown-item" data-editor-color="#198754" data-editor-indicator="border-success"><i class="bi bi-circle-fill text-success me-2" aria-hidden="true"></i>Green</button></li>
-                                <li><button disabled="@Disabled" type="button" class="dropdown-item" data-editor-color="#dc3545" data-editor-indicator="border-danger"><i class="bi bi-circle-fill text-danger me-2" aria-hidden="true"></i>Red</button></li>
-                                <li><button disabled="@Disabled" type="button" class="dropdown-item" data-editor-color="#fd7e14" data-editor-indicator="border-warning"><i class="bi bi-circle-fill text-warning me-2" aria-hidden="true"></i>Orange</button></li>
-                            </ul>
-                        </div>
-                        <div class="btn-group btn-group-sm" role="group" aria-label="Highlight color" hidden="@(!IsToolbarItemVisible(RichTextEditorToolbarItem.HighlightColor))">
-                            <button disabled="@Disabled" type="button" class="btn btn-outline-secondary position-relative" data-editor-action="apply-highlight-color" aria-label="Apply highlight color" title="Apply selected highlight color"><i class="bi bi-highlighter" aria-hidden="true"></i><span id="highlight-color-indicator" data-rte-highlight-color-indicator class="position-absolute bottom-0 start-0 end-0 border-bottom border-3 border-warning" aria-hidden="true"></span></button>
-                            <button disabled="@Disabled" type="button" class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Choose highlight color" title="Choose highlight color"><span class="visually-hidden">Choose highlight color</span></button>
-                            <ul class="dropdown-menu">
-                                <li><button disabled="@Disabled" type="button" class="dropdown-item" data-editor-highlight="#ffc107" data-editor-indicator="border-warning"><i class="bi bi-square-fill text-warning me-2" aria-hidden="true"></i>Yellow</button></li>
-                                <li><button disabled="@Disabled" type="button" class="dropdown-item" data-editor-highlight="#198754" data-editor-indicator="border-success"><i class="bi bi-square-fill text-success me-2" aria-hidden="true"></i>Green</button></li>
-                                <li><button disabled="@Disabled" type="button" class="dropdown-item" data-editor-highlight="#0d6efd" data-editor-indicator="border-primary"><i class="bi bi-square-fill text-primary me-2" aria-hidden="true"></i>Blue</button></li>
-                                <li><button disabled="@Disabled" type="button" class="dropdown-item" data-editor-highlight="#d63384" data-editor-indicator="border-danger"><i class="bi bi-square-fill text-danger me-2" aria-hidden="true"></i>Pink</button></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li><button disabled="@Disabled" type="button" class="dropdown-item" data-editor-highlight="transparent" data-editor-indicator="border-0">No highlight</button></li>
-                            </ul>
-                        </div>
+                            <div class="btn-group btn-group-sm" role="group" aria-label="Text color" hidden="@(!IsToolbarItemVisible(RichTextEditorToolbarItem.TextColor))">
+                                <button disabled="@Disabled" type="button" class="btn btn-outline-secondary position-relative" data-editor-action="apply-text-color" aria-label="Apply text color" title="Apply selected text color"><i class="bi bi-fonts" aria-hidden="true"></i><span id="text-color-indicator" data-rte-text-color-indicator class="position-absolute bottom-0 start-0 end-0 border-bottom border-3 border-dark" aria-hidden="true"></span></button>
+                                <button disabled="@Disabled" type="button" class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Choose text color" title="Choose text color"><span class="visually-hidden">Choose text color</span></button>
+                                <ul class="dropdown-menu">
+                                    <li><button disabled="@Disabled" type="button" class="dropdown-item" data-editor-color="#212529" data-editor-indicator="border-dark"><i class="bi bi-circle-fill text-body me-2" aria-hidden="true"></i>Automatic</button></li>
+                                    <li><button disabled="@Disabled" type="button" class="dropdown-item" data-editor-color="#0d6efd" data-editor-indicator="border-primary"><i class="bi bi-circle-fill text-primary me-2" aria-hidden="true"></i>Blue</button></li>
+                                    <li><button disabled="@Disabled" type="button" class="dropdown-item" data-editor-color="#198754" data-editor-indicator="border-success"><i class="bi bi-circle-fill text-success me-2" aria-hidden="true"></i>Green</button></li>
+                                    <li><button disabled="@Disabled" type="button" class="dropdown-item" data-editor-color="#dc3545" data-editor-indicator="border-danger"><i class="bi bi-circle-fill text-danger me-2" aria-hidden="true"></i>Red</button></li>
+                                    <li><button disabled="@Disabled" type="button" class="dropdown-item" data-editor-color="#fd7e14" data-editor-indicator="border-warning"><i class="bi bi-circle-fill text-warning me-2" aria-hidden="true"></i>Orange</button></li>
+                                </ul>
+                            </div>
+                            <div class="btn-group btn-group-sm" role="group" aria-label="Highlight color" hidden="@(!IsToolbarItemVisible(RichTextEditorToolbarItem.HighlightColor))">
+                                <button disabled="@Disabled" type="button" class="btn btn-outline-secondary position-relative" data-editor-action="apply-highlight-color" aria-label="Apply highlight color" title="Apply selected highlight color"><i class="bi bi-highlighter" aria-hidden="true"></i><span id="highlight-color-indicator" data-rte-highlight-color-indicator class="position-absolute bottom-0 start-0 end-0 border-bottom border-3 border-warning" aria-hidden="true"></span></button>
+                                <button disabled="@Disabled" type="button" class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Choose highlight color" title="Choose highlight color"><span class="visually-hidden">Choose highlight color</span></button>
+                                <ul class="dropdown-menu">
+                                    <li><button disabled="@Disabled" type="button" class="dropdown-item" data-editor-highlight="#ffc107" data-editor-indicator="border-warning"><i class="bi bi-square-fill text-warning me-2" aria-hidden="true"></i>Yellow</button></li>
+                                    <li><button disabled="@Disabled" type="button" class="dropdown-item" data-editor-highlight="#198754" data-editor-indicator="border-success"><i class="bi bi-square-fill text-success me-2" aria-hidden="true"></i>Green</button></li>
+                                    <li><button disabled="@Disabled" type="button" class="dropdown-item" data-editor-highlight="#0d6efd" data-editor-indicator="border-primary"><i class="bi bi-square-fill text-primary me-2" aria-hidden="true"></i>Blue</button></li>
+                                    <li><button disabled="@Disabled" type="button" class="dropdown-item" data-editor-highlight="#d63384" data-editor-indicator="border-danger"><i class="bi bi-square-fill text-danger me-2" aria-hidden="true"></i>Pink</button></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><button disabled="@Disabled" type="button" class="dropdown-item" data-editor-highlight="transparent" data-editor-indicator="border-0">No highlight</button></li>
+                                </ul>
+                            </div>
 
-                        <div class="btn-group btn-group-sm" role="group" aria-label="Alignment" hidden="@(!IsAnyToolbarItemVisible(RichTextEditorToolbarItem.AlignLeft, RichTextEditorToolbarItem.AlignCenter, RichTextEditorToolbarItem.AlignRight, RichTextEditorToolbarItem.AlignJustify))">
-                            <RichTextEditorToolbarButton Item="RichTextEditorToolbarItem.AlignLeft" Disabled="@Disabled" />
-                            <RichTextEditorToolbarButton Item="RichTextEditorToolbarItem.AlignCenter" Disabled="@Disabled" />
-                            <RichTextEditorToolbarButton Item="RichTextEditorToolbarItem.AlignRight" Disabled="@Disabled" />
-                            <RichTextEditorToolbarButton Item="RichTextEditorToolbarItem.AlignJustify" Disabled="@Disabled" />
-                        </div>
+                            <div class="btn-group btn-group-sm" role="group" aria-label="Alignment" hidden="@(!IsAnyToolbarItemVisible(RichTextEditorToolbarItem.AlignLeft, RichTextEditorToolbarItem.AlignCenter, RichTextEditorToolbarItem.AlignRight, RichTextEditorToolbarItem.AlignJustify))">
+                                <RichTextEditorToolbarButton Item="RichTextEditorToolbarItem.AlignLeft" Disabled="@Disabled" />
+                                <RichTextEditorToolbarButton Item="RichTextEditorToolbarItem.AlignCenter" Disabled="@Disabled" />
+                                <RichTextEditorToolbarButton Item="RichTextEditorToolbarItem.AlignRight" Disabled="@Disabled" />
+                                <RichTextEditorToolbarButton Item="RichTextEditorToolbarItem.AlignJustify" Disabled="@Disabled" />
+                            </div>
 
-                        <div class="btn-group btn-group-sm" role="group" aria-label="Lists and indentation" hidden="@(!IsAnyToolbarItemVisible(RichTextEditorToolbarItem.Outdent, RichTextEditorToolbarItem.Indent, RichTextEditorToolbarItem.OrderedList, RichTextEditorToolbarItem.UnorderedList))">
-                            <RichTextEditorToolbarButton Item="RichTextEditorToolbarItem.Outdent" Disabled="@Disabled" />
-                            <RichTextEditorToolbarButton Item="RichTextEditorToolbarItem.Indent" Disabled="@Disabled" />
-                            <RichTextEditorToolbarButton Item="RichTextEditorToolbarItem.OrderedList" Disabled="@Disabled" />
-                            <RichTextEditorToolbarButton Item="RichTextEditorToolbarItem.UnorderedList" Disabled="@Disabled" />
-                        </div>
+                            <div class="btn-group btn-group-sm" role="group" aria-label="Lists and indentation" hidden="@(!IsAnyToolbarItemVisible(RichTextEditorToolbarItem.Outdent, RichTextEditorToolbarItem.Indent, RichTextEditorToolbarItem.OrderedList, RichTextEditorToolbarItem.UnorderedList))">
+                                <RichTextEditorToolbarButton Item="RichTextEditorToolbarItem.Outdent" Disabled="@Disabled" />
+                                <RichTextEditorToolbarButton Item="RichTextEditorToolbarItem.Indent" Disabled="@Disabled" />
+                                <RichTextEditorToolbarButton Item="RichTextEditorToolbarItem.OrderedList" Disabled="@Disabled" />
+                                <RichTextEditorToolbarButton Item="RichTextEditorToolbarItem.UnorderedList" Disabled="@Disabled" />
+                            </div>
 
-                        <div class="btn-group btn-group-sm" role="group" aria-label="Insert content" hidden="@(!IsAnyToolbarItemVisible(RichTextEditorToolbarItem.Link, RichTextEditorToolbarItem.Image, RichTextEditorToolbarItem.HorizontalRule))">
-                            <RichTextEditorToolbarButton Item="RichTextEditorToolbarItem.Link" Disabled="@Disabled" />
-                            <RichTextEditorToolbarButton Item="RichTextEditorToolbarItem.Image" Disabled="@Disabled" />
-                            <RichTextEditorToolbarButton Item="RichTextEditorToolbarItem.HorizontalRule" Disabled="@Disabled" />
-                        </div>
+                            <div class="btn-group btn-group-sm" role="group" aria-label="Insert content" hidden="@(!IsAnyToolbarItemVisible(RichTextEditorToolbarItem.Link, RichTextEditorToolbarItem.Image, RichTextEditorToolbarItem.HorizontalRule))">
+                                <RichTextEditorToolbarButton Item="RichTextEditorToolbarItem.Link" Disabled="@Disabled" />
+                                <RichTextEditorToolbarButton Item="RichTextEditorToolbarItem.Image" Disabled="@Disabled" />
+                                <RichTextEditorToolbarButton Item="RichTextEditorToolbarItem.HorizontalRule" Disabled="@Disabled" />
+                            </div>
 
-                        <div class="dropdown" hidden="@(!IsToolbarItemVisible(RichTextEditorToolbarItem.Table))">
-                            <button disabled="@Disabled" type="button" class="btn btn-outline-secondary btn-sm dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Insert table"><i class="bi bi-table" aria-hidden="true"></i></button>
-                            <ul class="dropdown-menu">
-                                <li><h2 class="dropdown-header">Insert table</h2></li>
-                                <li><button disabled="@Disabled" type="button" class="dropdown-item" data-editor-table="2x2">2 × 2 table</button></li>
-                                <li><button disabled="@Disabled" type="button" class="dropdown-item" data-editor-table="3x3">3 × 3 table</button></li>
-                                <li><button disabled="@Disabled" type="button" class="dropdown-item" data-editor-table="4x4">4 × 4 table</button></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li><button id="@InsertTableButtonId" type="button" class="dropdown-item" disabled="@Disabled" @onclick="@(() => OnToolbarButtonClickAsync(InsertTableButtonId, RichTextEditorToolbarItem.Table))"><i class="bi bi-grid-3x3-gap me-2" aria-hidden="true"></i>Rows and columns…</button></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li><h2 class="dropdown-header">Table actions</h2></li>
-                                <li><button disabled="@Disabled" type="button" class="dropdown-item" data-editor-table-action="add-column-right"><i class="bi bi-arrow-right-square me-2" aria-hidden="true"></i>Add column to the right</button></li>
-                                <li><button disabled="@Disabled" type="button" class="dropdown-item" data-editor-table-action="add-column-left"><i class="bi bi-arrow-left-square me-2" aria-hidden="true"></i>Add column to the left</button></li>
-                                <li><button disabled="@Disabled" type="button" class="dropdown-item" data-editor-table-action="add-row-below"><i class="bi bi-arrow-down-square me-2" aria-hidden="true"></i>Add row below</button></li>
-                                <li><button disabled="@Disabled" type="button" class="dropdown-item" data-editor-table-action="add-row-above"><i class="bi bi-arrow-up-square me-2" aria-hidden="true"></i>Add row above</button></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li><button disabled="@Disabled" type="button" class="dropdown-item" data-editor-table-action="delete-column">Delete column</button></li>
-                                <li><button disabled="@Disabled" type="button" class="dropdown-item" data-editor-table-action="delete-row">Delete row</button></li>
-                                <li><button disabled="@Disabled" type="button" class="dropdown-item" data-editor-table-action="delete-table">Delete table</button></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li><h2 class="dropdown-header">Table appearance</h2></li>
-                                <li><button disabled="@Disabled" type="button" class="dropdown-item" data-editor-table-style="table-bordered"><i class="bi bi-border-all me-2" aria-hidden="true"></i>Toggle borders</button></li>
-                                <li><button disabled="@Disabled" type="button" class="dropdown-item" data-editor-table-style="table-striped"><i class="bi bi-distribute-vertical me-2" aria-hidden="true"></i>Toggle striped rows</button></li>
-                                <li><button disabled="@Disabled" type="button" class="dropdown-item" data-editor-table-style="table-hover"><i class="bi bi-hand-index-thumb me-2" aria-hidden="true"></i>Toggle hover rows</button></li>
-                                <li><button disabled="@Disabled" type="button" class="dropdown-item" data-editor-table-style="table-sm"><i class="bi bi-arrows-collapse-vertical me-2" aria-hidden="true"></i>Toggle compact spacing</button></li>
-                                <li><button disabled="@Disabled" type="button" class="dropdown-item" data-editor-table-style="header-row"><i class="bi bi-layout-text-window-reverse me-2" aria-hidden="true"></i>Toggle header row</button></li>
-                            </ul>
-                        </div>
+                            <div class="dropdown" hidden="@(!IsToolbarItemVisible(RichTextEditorToolbarItem.Table))">
+                                <button disabled="@Disabled" type="button" class="btn btn-outline-secondary btn-sm dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Insert table"><i class="bi bi-table" aria-hidden="true"></i></button>
+                                <ul class="dropdown-menu">
+                                    <li><h2 class="dropdown-header">Insert table</h2></li>
+                                    <li><button disabled="@Disabled" type="button" class="dropdown-item" data-editor-table="2x2">2 × 2 table</button></li>
+                                    <li><button disabled="@Disabled" type="button" class="dropdown-item" data-editor-table="3x3">3 × 3 table</button></li>
+                                    <li><button disabled="@Disabled" type="button" class="dropdown-item" data-editor-table="4x4">4 × 4 table</button></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><button id="@InsertTableButtonId" type="button" class="dropdown-item" disabled="@Disabled" @onclick="@(() => OnToolbarButtonClickAsync(InsertTableButtonId, RichTextEditorToolbarItem.Table))"><i class="bi bi-grid-3x3-gap me-2" aria-hidden="true"></i>Rows and columns…</button></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><h2 class="dropdown-header">Table actions</h2></li>
+                                    <li><button disabled="@Disabled" type="button" class="dropdown-item" data-editor-table-action="add-column-right"><i class="bi bi-arrow-right-square me-2" aria-hidden="true"></i>Add column to the right</button></li>
+                                    <li><button disabled="@Disabled" type="button" class="dropdown-item" data-editor-table-action="add-column-left"><i class="bi bi-arrow-left-square me-2" aria-hidden="true"></i>Add column to the left</button></li>
+                                    <li><button disabled="@Disabled" type="button" class="dropdown-item" data-editor-table-action="add-row-below"><i class="bi bi-arrow-down-square me-2" aria-hidden="true"></i>Add row below</button></li>
+                                    <li><button disabled="@Disabled" type="button" class="dropdown-item" data-editor-table-action="add-row-above"><i class="bi bi-arrow-up-square me-2" aria-hidden="true"></i>Add row above</button></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><button disabled="@Disabled" type="button" class="dropdown-item" data-editor-table-action="delete-column">Delete column</button></li>
+                                    <li><button disabled="@Disabled" type="button" class="dropdown-item" data-editor-table-action="delete-row">Delete row</button></li>
+                                    <li><button disabled="@Disabled" type="button" class="dropdown-item" data-editor-table-action="delete-table">Delete table</button></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><h2 class="dropdown-header">Table appearance</h2></li>
+                                    <li><button disabled="@Disabled" type="button" class="dropdown-item" data-editor-table-style="table-bordered"><i class="bi bi-border-all me-2" aria-hidden="true"></i>Toggle borders</button></li>
+                                    <li><button disabled="@Disabled" type="button" class="dropdown-item" data-editor-table-style="table-striped"><i class="bi bi-distribute-vertical me-2" aria-hidden="true"></i>Toggle striped rows</button></li>
+                                    <li><button disabled="@Disabled" type="button" class="dropdown-item" data-editor-table-style="table-hover"><i class="bi bi-hand-index-thumb me-2" aria-hidden="true"></i>Toggle hover rows</button></li>
+                                    <li><button disabled="@Disabled" type="button" class="dropdown-item" data-editor-table-style="table-sm"><i class="bi bi-arrows-collapse-vertical me-2" aria-hidden="true"></i>Toggle compact spacing</button></li>
+                                    <li><button disabled="@Disabled" type="button" class="dropdown-item" data-editor-table-style="header-row"><i class="bi bi-layout-text-window-reverse me-2" aria-hidden="true"></i>Toggle header row</button></li>
+                                </ul>
+                            </div>
 
-                        <div class="btn-group btn-group-sm" role="group" aria-label="Blocks and view" hidden="@(!IsAnyToolbarItemVisible(RichTextEditorToolbarItem.Blockquote, RichTextEditorToolbarItem.CodeBlock, RichTextEditorToolbarItem.ClearFormatting, RichTextEditorToolbarItem.Fullscreen))">
-                            <RichTextEditorToolbarButton Item="RichTextEditorToolbarItem.Blockquote" Disabled="@Disabled" />
-                            <RichTextEditorToolbarButton Item="RichTextEditorToolbarItem.CodeBlock" Disabled="@Disabled" />
-                            <RichTextEditorToolbarButton Item="RichTextEditorToolbarItem.ClearFormatting" Disabled="@Disabled" />
-                            <RichTextEditorToolbarButton Item="RichTextEditorToolbarItem.Fullscreen" Disabled="@Disabled" />
+                            <div class="btn-group btn-group-sm" role="group" aria-label="Blocks and view" hidden="@(!IsAnyToolbarItemVisible(RichTextEditorToolbarItem.Blockquote, RichTextEditorToolbarItem.CodeBlock, RichTextEditorToolbarItem.ClearFormatting, RichTextEditorToolbarItem.Fullscreen))">
+                                <RichTextEditorToolbarButton Item="RichTextEditorToolbarItem.Blockquote" Disabled="@Disabled" />
+                                <RichTextEditorToolbarButton Item="RichTextEditorToolbarItem.CodeBlock" Disabled="@Disabled" />
+                                <RichTextEditorToolbarButton Item="RichTextEditorToolbarItem.ClearFormatting" Disabled="@Disabled" />
+                                <RichTextEditorToolbarButton Item="RichTextEditorToolbarItem.Fullscreen" Disabled="@Disabled" />
+                            </div>
                         </div>
                     </div>
                 </div>
-                </Tooltip>
             }
 
             <div id="@EditorId"
@@ -156,104 +162,114 @@
 
         @if (ShowFooter)
         {
-        <footer class="card-footer bg-body-tertiary small text-body-secondary">
-            <div class="d-flex flex-wrap align-items-center gap-2">
-                <div class="d-flex flex-wrap gap-3">
-                    <span id="@($"{Id}-footer-block")"><i class="bi bi-file-earmark-text me-1" aria-hidden="true"></i>Paragraph</span>
-                    <span id="@($"{Id}-footer-font")" class="border-start ps-3"><i class="bi bi-type me-1" aria-hidden="true"></i>Inter, 14 px</span>
-                    <span id="@($"{Id}-footer-alignment")" class="border-start ps-3"><i class="bi bi-text-left me-1" aria-hidden="true"></i>Left aligned</span>
+            <footer class="card-footer bg-body-tertiary small text-body-secondary">
+                <div class="d-flex flex-wrap align-items-center gap-2">
+                    <div class="d-flex flex-wrap gap-3">
+                        <span id="@($"{Id}-footer-block")"><i class="bi bi-file-earmark-text me-1" aria-hidden="true"></i>Paragraph</span>
+                        <span id="@($"{Id}-footer-font")" class="border-start ps-3"><i class="bi bi-type me-1" aria-hidden="true"></i>Inter, 14 px</span>
+                        <span id="@($"{Id}-footer-alignment")" class="border-start ps-3"><i class="bi bi-text-left me-1" aria-hidden="true"></i>Left aligned</span>
+                    </div>
+                    <div class="d-flex flex-wrap gap-3 ms-md-auto">
+                        <span id="@($"{Id}-footer-character-count")"></span>
+                        <span id="@($"{Id}-footer-word-count")" class="border-start ps-3"></span>
+                    </div>
                 </div>
-                <div class="d-flex flex-wrap gap-3 ms-md-auto">
-                    <span id="@($"{Id}-footer-character-count")"></span>
-                    <span id="@($"{Id}-footer-word-count")" class="border-start ps-3"></span>
-                </div>
-            </div>
-        </footer>
+            </footer>
         }
     </section>
 
     @if (isLinkModalMounted)
     {
-    <div id="@($"{Id}-insert-link-modal")" class="modal fade" tabindex="-1" aria-labelledby="@($"{Id}-insert-link-title")" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <form id="@($"{Id}-insert-link-form")" novalidate>
-                    <div class="modal-header">
-                        <h2 id="@($"{Id}-insert-link-title")" class="modal-title fs-5">Insert link</h2>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="mb-3">
-                            <label class="form-label" for="@($"{Id}-insert-link-text")">Link text</label>
-                            <input id="@($"{Id}-insert-link-text")" class="form-control" type="text" required autocomplete="off" />
-                            <div class="invalid-feedback">Enter the text to display for this link.</div>
+        <div id="@($"{Id}-insert-link-modal")" class="modal fade" tabindex="-1" aria-labelledby="@($"{Id}-insert-link-title")" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <form id="@($"{Id}-insert-link-form")" novalidate>
+                        <div class="modal-header">
+                            <h2 id="@($"{Id}-insert-link-title")" class="modal-title fs-5">Insert link</h2>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
-                        <div class="mb-3">
-                            <label class="form-label" for="@($"{Id}-insert-link-url")">URL</label>
-                            <input id="@($"{Id}-insert-link-url")" class="form-control" type="text" inputmode="url" required autocomplete="off" placeholder="https://example.com" />
-                            <div class="invalid-feedback">Enter a valid URL permitted by this editor.</div>
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label class="form-label" for="@($"{Id}-insert-link-text")">Link text</label>
+                                <input id="@($"{Id}-insert-link-text")" class="form-control" type="text" required autocomplete="off" />
+                                <div class="invalid-feedback">Enter the text to display for this link.</div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label" for="@($"{Id}-insert-link-url")">URL</label>
+                                <input id="@($"{Id}-insert-link-url")" class="form-control" type="text" inputmode="url" required autocomplete="off" placeholder="https://example.com" />
+                                <div class="invalid-feedback">Enter a valid URL permitted by this editor.</div>
+                            </div>
+                            <div class="form-check">
+                                <input id="@($"{Id}-insert-link-new-tab")" class="form-check-input" type="checkbox" />
+                                <label class="form-check-label" for="@($"{Id}-insert-link-new-tab")">Open link in a new tab</label>
+                            </div>
                         </div>
-                        <div class="form-check">
-                            <input id="@($"{Id}-insert-link-new-tab")" class="form-check-input" type="checkbox" />
-                            <label class="form-check-label" for="@($"{Id}-insert-link-new-tab")">Open link in a new tab</label>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <button id="@($"{Id}-insert-link-submit")" type="submit" class="btn btn-primary">Insert link</button>
                         </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
-                        <button id="@($"{Id}-insert-link-submit")" type="submit" class="btn btn-primary">Insert link</button>
-                    </div>
-                </form>
+                    </form>
+                </div>
             </div>
         </div>
-    </div>
     }
     @if (isImageModalMounted)
     {
-    <div id="@($"{Id}-insert-image-modal")" class="modal fade" tabindex="-1" aria-labelledby="@($"{Id}-insert-image-title")" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable"><div class="modal-content">
-            <form id="@($"{Id}-insert-image-form")" class="d-flex flex-column h-100 overflow-hidden" novalidate>
-                <div class="modal-header"><h2 id="@($"{Id}-insert-image-title")" class="modal-title fs-5">Insert image</h2><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div>
-                <div class="modal-body flex-grow-1 overflow-auto" tabindex="0" aria-label="Scrollable image settings">
-                    <ul class="nav nav-tabs mb-3" role="tablist">
-                        <li class="nav-item" role="presentation"><button id="@($"{Id}-image-url-tab")" class="nav-link active" type="button" data-bs-toggle="tab" data-bs-target="@($"#{Id}-image-url-pane")" role="tab" aria-controls="@($"{Id}-image-url-pane")" aria-selected="true">Image URL</button></li>
-                        @if (ImageUploadHandler is not null) { <li class="nav-item" role="presentation"><button id="@($"{Id}-image-upload-tab")" class="nav-link" type="button" data-bs-toggle="tab" data-bs-target="@($"#{Id}-image-upload-pane")" role="tab" aria-controls="@($"{Id}-image-upload-pane")" aria-selected="false">Upload image</button></li> }
-                    </ul>
-                    <div class="tab-content">
-                        <div id="@($"{Id}-image-url-pane")" class="tab-pane fade show active" role="tabpanel" aria-labelledby="@($"{Id}-image-url-tab")" tabindex="0"><label for="@($"{Id}-image-direct-url")" class="form-label">HTTPS image URL</label><div class="input-group"><input id="@($"{Id}-image-direct-url")" class="form-control" type="url" inputmode="url" autocomplete="off" placeholder="https://example.com/image.webp" /><button id="@($"{Id}-validate-image-url")" class="btn btn-outline-primary" type="button">Preview</button></div><div class="form-text">Only HTTPS URLs are accepted. Extensionless URLs are verified by loading the image.</div></div>
-                        @if (ImageUploadHandler is not null) { <div id="@($"{Id}-image-upload-pane")" class="tab-pane fade" role="tabpanel" aria-labelledby="@($"{Id}-image-upload-tab")" tabindex="0"><label for="@ImageInputId" class="form-label">Image file</label><InputFile id="@ImageInputId" class="form-control" accept="@Accept" OnChange="OnImageFileChangedAsync" /><div class="form-text">Selecting a file uploads it through the host application's configured handler. Allowed types: @string.Join(", ", NormalizedAllowedImageFileTypes). Maximum size: @((MaxImageFileSize / 1024d / 1024d).ToString("0.##")) MB.</div></div> }
-                    </div>
-                    <input id="@($"{Id}-image-extension-whitelist")" type="hidden" value="@string.Join(",", NormalizedAllowedImageFileTypes)" />
-                    <div id="@($"{Id}-image-feedback")" class="alert alert-danger @(imageUploadError is null ? "d-none" : string.Empty) mt-3 mb-0" role="alert">@imageUploadError</div>
-                    <div id="@($"{Id}-image-options")" class="d-none mt-4 border-top pt-3"><div class="row g-3">
-                        <div class="col-md-6"><label for="@($"{Id}-image-render-type")" class="form-label">Render as</label><select id="@($"{Id}-image-render-type")" class="form-select"><option value="figure">Figure with optional caption</option><option value="img">Standalone image</option></select></div>
-                        <div class="col-md-6"><label for="@($"{Id}-image-alignment")" class="form-label">Alignment</label><select id="@($"{Id}-image-alignment")" class="form-select"><option value="center">Centered</option><option value="start">Left</option><option value="end">Right</option><option value="inline">Inline</option></select></div>
-                        <div class="col-12"><label for="@($"{Id}-image-alt-text")" class="form-label">Alternative text</label><input id="@($"{Id}-image-alt-text")" class="form-control" type="text" autocomplete="off" /><div class="invalid-feedback">Provide alternative text or mark this image as decorative.</div><div class="form-check mt-2"><input id="@($"{Id}-image-decorative")" class="form-check-input" type="checkbox" /><label for="@($"{Id}-image-decorative")" class="form-check-label">Decorative image</label></div></div>
-                        <div id="@($"{Id}-image-caption-group")" class="col-12"><label for="@($"{Id}-image-caption")" class="form-label">Caption (optional)</label><input id="@($"{Id}-image-caption")" class="form-control" type="text" autocomplete="off" /></div>
-                        <div class="col-md-4"><label for="@($"{Id}-image-width")" class="form-label">Width (px)</label><input id="@($"{Id}-image-width")" class="form-control" type="number" min="1" step="1" inputmode="numeric" /></div><div class="col-md-4"><label for="@($"{Id}-image-height")" class="form-label">Height (px)</label><input id="@($"{Id}-image-height")" class="form-control" type="number" min="1" step="1" inputmode="numeric" /></div><div class="col-md-4 d-flex align-items-end"><div class="form-check mb-2"><input id="@($"{Id}-image-aspect-lock")" class="form-check-input" type="checkbox" checked /><label for="@($"{Id}-image-aspect-lock")" class="form-check-label">Lock aspect ratio</label></div></div>
-                        <div class="col-md-6"><label for="@($"{Id}-image-title-text")" class="form-label">Image title (optional)</label><input id="@($"{Id}-image-title-text")" class="form-control" type="text" autocomplete="off" /></div><div class="col-md-6 d-flex align-items-end"><div class="form-check mb-2"><input id="@($"{Id}-image-responsive")" class="form-check-input" type="checkbox" checked /><label for="@($"{Id}-image-responsive")" class="form-check-label">Responsive image</label></div></div><div class="col-12"><img id="@($"{Id}-image-preview")" class="img-fluid border rounded" alt="Image preview" /></div>
-                    </div></div>
+        <div id="@($"{Id}-insert-image-modal")" class="modal fade" tabindex="-1" aria-labelledby="@($"{Id}-insert-image-title")" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
+                <div class="modal-content">
+                    <form id="@($"{Id}-insert-image-form")" class="d-flex flex-column h-100 overflow-hidden" novalidate>
+                        <div class="modal-header"><h2 id="@($"{Id}-insert-image-title")" class="modal-title fs-5">Insert image</h2><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div>
+                        <div class="modal-body flex-grow-1 overflow-auto" tabindex="0" aria-label="Scrollable image settings">
+                            <ul class="nav nav-tabs mb-3" role="tablist">
+                                <li class="nav-item" role="presentation"><button id="@($"{Id}-image-url-tab")" class="nav-link active" type="button" data-bs-toggle="tab" data-bs-target="@($"#{Id}-image-url-pane")" role="tab" aria-controls="@($"{Id}-image-url-pane")" aria-selected="true">Image URL</button></li>
+                                @if (ImageUploadHandler is not null)
+                                {
+                                    <li class="nav-item" role="presentation"><button id="@($"{Id}-image-upload-tab")" class="nav-link" type="button" data-bs-toggle="tab" data-bs-target="@($"#{Id}-image-upload-pane")" role="tab" aria-controls="@($"{Id}-image-upload-pane")" aria-selected="false">Upload image</button></li>
+                                }
+                            </ul>
+                            <div class="tab-content">
+                                <div id="@($"{Id}-image-url-pane")" class="tab-pane fade show active" role="tabpanel" aria-labelledby="@($"{Id}-image-url-tab")" tabindex="0"><label for="@($"{Id}-image-direct-url")" class="form-label">HTTPS image URL</label><div class="input-group"><input id="@($"{Id}-image-direct-url")" class="form-control" type="url" inputmode="url" autocomplete="off" placeholder="https://example.com/image.webp" /><button id="@($"{Id}-validate-image-url")" class="btn btn-outline-primary" type="button">Preview</button></div><div class="form-text">Only HTTPS URLs are accepted. Extensionless URLs are verified by loading the image.</div></div>
+                                @if (ImageUploadHandler is not null)
+                                {
+                                    <div id="@($"{Id}-image-upload-pane")" class="tab-pane fade" role="tabpanel" aria-labelledby="@($"{Id}-image-upload-tab")" tabindex="0"><label for="@ImageInputId" class="form-label">Image file</label><InputFile id="@ImageInputId" class="form-control" accept="@Accept" OnChange="OnImageFileChangedAsync" /><div class="form-text">Selecting a file uploads it through the host application's configured handler. Allowed types: @string.Join(", ", NormalizedAllowedImageFileTypes). Maximum size: @((MaxImageFileSize / 1024d / 1024d).ToString("0.##")) MB.</div></div>
+                                }
+                            </div>
+                            <input id="@($"{Id}-image-extension-whitelist")" type="hidden" value="@string.Join(",", NormalizedAllowedImageFileTypes)" />
+                            <div id="@($"{Id}-image-feedback")" class="alert alert-danger @(imageUploadError is null ? "d-none" : string.Empty) mt-3 mb-0" role="alert">@imageUploadError</div>
+                            <div id="@($"{Id}-image-options")" class="d-none mt-4 border-top pt-3">
+                                <div class="row g-3">
+                                    <div class="col-md-6"><label for="@($"{Id}-image-render-type")" class="form-label">Render as</label><select id="@($"{Id}-image-render-type")" class="form-select"><option value="figure">Figure with optional caption</option><option value="img">Standalone image</option></select></div>
+                                    <div class="col-md-6"><label for="@($"{Id}-image-alignment")" class="form-label">Alignment</label><select id="@($"{Id}-image-alignment")" class="form-select"><option value="center">Centered</option><option value="start">Left</option><option value="end">Right</option><option value="inline">Inline</option></select></div>
+                                    <div class="col-12"><label for="@($"{Id}-image-alt-text")" class="form-label">Alternative text</label><input id="@($"{Id}-image-alt-text")" class="form-control" type="text" autocomplete="off" /><div class="invalid-feedback">Provide alternative text or mark this image as decorative.</div><div class="form-check mt-2"><input id="@($"{Id}-image-decorative")" class="form-check-input" type="checkbox" /><label for="@($"{Id}-image-decorative")" class="form-check-label">Decorative image</label></div></div>
+                                    <div id="@($"{Id}-image-caption-group")" class="col-12"><label for="@($"{Id}-image-caption")" class="form-label">Caption (optional)</label><input id="@($"{Id}-image-caption")" class="form-control" type="text" autocomplete="off" /></div>
+                                    <div class="col-md-4"><label for="@($"{Id}-image-width")" class="form-label">Width (px)</label><input id="@($"{Id}-image-width")" class="form-control" type="number" min="1" step="1" inputmode="numeric" /></div><div class="col-md-4"><label for="@($"{Id}-image-height")" class="form-label">Height (px)</label><input id="@($"{Id}-image-height")" class="form-control" type="number" min="1" step="1" inputmode="numeric" /></div><div class="col-md-4 d-flex align-items-end"><div class="form-check mb-2"><input id="@($"{Id}-image-aspect-lock")" class="form-check-input" type="checkbox" checked /><label for="@($"{Id}-image-aspect-lock")" class="form-check-label">Lock aspect ratio</label></div></div>
+                                    <div class="col-md-6"><label for="@($"{Id}-image-title-text")" class="form-label">Image title (optional)</label><input id="@($"{Id}-image-title-text")" class="form-control" type="text" autocomplete="off" /></div><div class="col-md-6 d-flex align-items-end"><div class="form-check mb-2"><input id="@($"{Id}-image-responsive")" class="form-check-input" type="checkbox" checked /><label for="@($"{Id}-image-responsive")" class="form-check-label">Responsive image</label></div></div><div class="col-12"><img id="@($"{Id}-image-preview")" class="img-fluid border rounded" alt="Image preview" /></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer"><button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button><button id="@($"{Id}-insert-image-submit")" type="submit" class="btn btn-primary" disabled>Insert image</button></div>
+                    </form>
                 </div>
-                <div class="modal-footer"><button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button><button id="@($"{Id}-insert-image-submit")" type="submit" class="btn btn-primary" disabled>Insert image</button></div>
-            </form>
-        </div></div>
-    </div>
+            </div>
+        </div>
     }
     @if (isTableModalMounted)
     {
-    <div id="@($"{Id}-insert-table-modal")" class="modal fade" tabindex="-1" aria-labelledby="@($"{Id}-insert-table-title")" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-sm">
-            <div class="modal-content">
-                <form id="@($"{Id}-insert-table-form")" novalidate>
-                    <div class="modal-header"><h2 id="@($"{Id}-insert-table-title")" class="modal-title fs-5">Insert table</h2><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div>
-                    <div class="modal-body">
-                        <div class="mb-3"><label for="@($"{Id}-insert-table-rows")" class="form-label">Rows</label><input id="@($"{Id}-insert-table-rows")" class="form-control" type="number" min="1" max="20" step="1" value="5" required inputmode="numeric" /><div class="invalid-feedback">Enter a whole number from 1 to 20.</div></div>
-                        <div class="mb-0"><label for="@($"{Id}-insert-table-columns")" class="form-label">Columns</label><input id="@($"{Id}-insert-table-columns")" class="form-control" type="number" min="1" max="20" step="1" value="5" required inputmode="numeric" /><div class="invalid-feedback">Enter a whole number from 1 to 20.</div></div>
-                    </div>
-                    <div class="modal-footer"><button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button><button type="submit" class="btn btn-primary">Insert table</button></div>
-                </form>
+        <div id="@($"{Id}-insert-table-modal")" class="modal fade" tabindex="-1" aria-labelledby="@($"{Id}-insert-table-title")" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-sm">
+                <div class="modal-content">
+                    <form id="@($"{Id}-insert-table-form")" novalidate>
+                        <div class="modal-header"><h2 id="@($"{Id}-insert-table-title")" class="modal-title fs-5">Insert table</h2><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div>
+                        <div class="modal-body">
+                            <div class="mb-3"><label for="@($"{Id}-insert-table-rows")" class="form-label">Rows</label><input id="@($"{Id}-insert-table-rows")" class="form-control" type="number" min="1" max="20" step="1" value="5" required inputmode="numeric" /><div class="invalid-feedback">Enter a whole number from 1 to 20.</div></div>
+                            <div class="mb-0"><label for="@($"{Id}-insert-table-columns")" class="form-label">Columns</label><input id="@($"{Id}-insert-table-columns")" class="form-control" type="number" min="1" max="20" step="1" value="5" required inputmode="numeric" /><div class="invalid-feedback">Enter a whole number from 1 to 20.</div></div>
+                        </div>
+                        <div class="modal-footer"><button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button><button type="submit" class="btn btn-primary">Insert table</button></div>
+                    </form>
+                </div>
             </div>
         </div>
-    </div>
     }
 
 </CascadingValue>

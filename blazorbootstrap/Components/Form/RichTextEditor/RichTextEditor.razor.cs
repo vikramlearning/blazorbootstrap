@@ -7,6 +7,7 @@ public partial class RichTextEditor : BlazorBootstrapComponentBase
 {
     #region Fields and Constants
 
+    private const string disabledToolbarOverlayStyle = "cursor: not-allowed; z-index: 1;";
     private const string disabledTooltipTitle = "Editing is disabled";
 
     private static readonly string[] defaultAllowedImageFileTypes = { "jpg", "jpeg", "png", "gif", "webp" };
@@ -522,7 +523,7 @@ public partial class RichTextEditor : BlazorBootstrapComponentBase
     [Parameter]
     public string? Placeholder { get; set; }
 
-[Inject]
+    [Inject]
     private RichTextEditorJsInterop RichTextEditorJsInterop { get; set; } = default!;
 
     /// <summary>Gets or sets whether the editor footer is displayed.</summary>
@@ -534,7 +535,6 @@ public partial class RichTextEditor : BlazorBootstrapComponentBase
 
     private bool ShouldRenderToolbar => ToolbarItems is null || ToolbarItems.Length > 0;
 
-    private string? toolbarTooltipStyle => Disabled ? "cursor: not-allowed;" : null;
 
     /// <summary>Fires for transient editor activity and error status.</summary>
     [AddedVersion("4.0.0")]
