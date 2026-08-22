@@ -339,44 +339,44 @@ public partial class RichTextEditor : BlazorBootstrapComponentBase
     private async Task OnImageFileChangedAsync(InputFileChangeEventArgs e)
     {
         imageUploadError = null;
-        var file = e.File;
-
-        if (ImageUploadHandler is null)
-        {
-            await SetImageUploadErrorAsync("An image upload handler is not configured.");
-            return;
-        }
-
-        if (MaxImageFileSize <= 0)
-        {
-            await SetImageUploadErrorAsync("The maximum image size must be greater than zero.");
-            return;
-        }
-
-        var extension = Path.GetExtension(file.Name).TrimStart('.').ToLowerInvariant();
-        if (!NormalizedAllowedImageFileTypes.Contains(extension))
-        {
-            await SetImageUploadErrorAsync("The selected image type is not allowed.");
-            return;
-        }
-
-        if (file.Size == 0 || file.Size > MaxImageFileSize)
-        {
-            await SetImageUploadErrorAsync("The selected image exceeds the maximum allowed size.");
-            return;
-        }
-
-        if (!HasExpectedImageContentType(file.ContentType, extension))
-        {
-            await SetImageUploadErrorAsync("The selected file does not have the expected image content type.");
-            return;
-        }
-
         var cancellationToken = ResetImageUploadCancellation();
         await SetImageUploadInProgressAsync(true);
 
         try
         {
+            var file = e.File;
+
+            if (ImageUploadHandler is null)
+            {
+                await SetImageUploadErrorAsync("An image upload handler is not configured.");
+                return;
+            }
+
+            if (MaxImageFileSize <= 0)
+            {
+                await SetImageUploadErrorAsync("The maximum image size must be greater than zero.");
+                return;
+            }
+
+            var extension = Path.GetExtension(file.Name).TrimStart('.').ToLowerInvariant();
+            if (!NormalizedAllowedImageFileTypes.Contains(extension))
+            {
+                await SetImageUploadErrorAsync("The selected image type is not allowed.");
+                return;
+            }
+
+            if (file.Size == 0 || file.Size > MaxImageFileSize)
+            {
+                await SetImageUploadErrorAsync("The selected image exceeds the maximum allowed size.");
+                return;
+            }
+
+            if (!HasExpectedImageContentType(file.ContentType, extension))
+            {
+                await SetImageUploadErrorAsync("The selected file does not have the expected image content type.");
+                return;
+            }
+
             if (!await HasExpectedImageSignatureAsync(file, extension, cancellationToken))
             {
                 await SetImageUploadErrorAsync("The selected file content does not match its image type.");
@@ -421,7 +421,6 @@ public partial class RichTextEditor : BlazorBootstrapComponentBase
                 await SetImageUploadInProgressAsync(false);
         }
     }
-
     /// <summary>
     /// Cancels the current image upload and creates a token for the next upload.
     /// </summary>
