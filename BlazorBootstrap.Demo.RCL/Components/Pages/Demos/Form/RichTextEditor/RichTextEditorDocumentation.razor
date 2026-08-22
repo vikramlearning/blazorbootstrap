@@ -55,6 +55,22 @@
     <Demo Type="typeof(RichTextEditor_Demo_03_Publish_Rich_Update)" Tabs="true" />
 </Section>
 
+<Section Class="p-0" Size="HeadingSize.H3" Name="Host-controlled image upload" PageUrl="@pageUrl" Link="host-controlled-image-upload">
+    <div class="mb-3">
+        Configure <code>ImageUploadHandler</code> in the host application instead of configuring a browser endpoint. This shared demo accepts JPEG, PNG, WebP, and GIF files up to 5 MB, returns a trusted temporary HTTPS preview URL, and exposes callback counts so rejected files can be distinguished from host-handler failures. The selectable outcomes also demonstrate cancellation and domain policy rejection.
+        <br /><br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Set <code>ImageUploadHandler</code>, the allowed raster types, size limit, and optional HTTPS domain allow-list.</li>
+                <li>Open the Image dialog, choose <strong>Upload image</strong>, and select a valid local raster image.</li>
+                <li>Review the preview and accessibility options before insertion; use the simulated outcomes to observe host failure, cancellation, and URL-policy feedback.</li>
+            </ol>
+        </div>
+    </div>
+    <Demo Type="typeof(RichTextEditor_Demo_07_Image_Upload_Handler)" Tabs="true" />
+</Section>
+
 <Section Class="p-0" Size="HeadingSize.H3" Name="Disabled" PageUrl="@pageUrl" Link="disabled">
     <div class="mb-3">
         Use <code>Disabled</code> when rich text should remain visible for review. Editing is disabled: users cannot change the content or invoke a toolbar action.
