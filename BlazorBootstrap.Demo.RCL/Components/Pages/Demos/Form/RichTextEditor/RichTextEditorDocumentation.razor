@@ -41,7 +41,7 @@
 
 <Section Class="p-0" Size="HeadingSize.H3" Name="Publish rich update" PageUrl="@pageUrl" Link="publish-rich-update">
     <div class="mb-3">
-        Give a publishing workflow only the insertion commands it needs to add a link, image, separator, or table to an already-authored announcement. Keep <code>Disabled</code> set to <code>false</code> while authors use each toolbar action.
+        Give a publishing workflow only the insertion commands it needs to add a link, image, separator, or table to an already-authored announcement. This example does not configure <code>ImageUploadHandler</code>, so its Image dialog intentionally shows only the <strong>Image URL</strong> tab. Keep <code>Disabled</code> set to <code>false</code> while authors use each toolbar action.
         <br /><br />
         <strong>How to use:</strong>
         <div class="content mb-2">
@@ -57,7 +57,7 @@
 
 <Section Class="p-0" Size="HeadingSize.H3" Name="Host-controlled image upload" PageUrl="@pageUrl" Link="host-controlled-image-upload">
     <div class="mb-3">
-        Configure <code>ImageUploadHandler</code> in the host application instead of configuring a browser endpoint. This shared demo accepts JPEG, PNG, WebP, and GIF files up to 5 MB, returns a trusted temporary HTTPS preview URL, and exposes callback counts so rejected files can be distinguished from host-handler failures. The selectable outcomes also demonstrate cancellation and domain policy rejection.
+        Configure <code>ImageUploadHandler</code> in the host application instead of configuring a browser endpoint. The <strong>Upload image</strong> tab is conditional: editors without this callback intentionally show only <strong>Image URL</strong>. This shared demo supplies the callback, accepts JPEG, PNG, WebP, and GIF files up to 5 MB, returns a trusted temporary HTTPS preview URL, and exposes callback counts so rejected files can be distinguished from host-handler failures. The selectable outcomes also demonstrate cancellation and domain policy rejection.
         <br /><br />
         <strong>How to use:</strong>
         <div class="content mb-2">

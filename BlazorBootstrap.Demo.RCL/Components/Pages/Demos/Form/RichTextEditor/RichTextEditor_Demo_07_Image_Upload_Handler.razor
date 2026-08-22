@@ -16,7 +16,7 @@
         <option value="cancellation">Wait for cancellation</option>
         <option value="off-policy-url">Return an HTTPS URL outside the allow-list</option>
     </select>
-    <div class="form-text">Select an image through the editor's <strong>Upload image</strong> tab. Invalid, too-large, or unsupported files are rejected before this callback is invoked.</div>
+    <div class="form-text">This editor shows <strong>Upload image</strong> because it supplies <code>ImageUploadHandler</code>; editors without that callback show only <strong>Image URL</strong>. Invalid, too-large, or unsupported files are rejected before this callback is invoked.</div>
     <div class="alert alert-secondary mt-3 mb-0" role="status">
         <strong>Host callback invocations:</strong> @callbackCount<br />
         @hostStatus
