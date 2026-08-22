@@ -24,6 +24,7 @@ public partial class RichTextEditor : BlazorBootstrapComponentBase
     private FieldIdentifier fieldIdentifier;
     private string? imageUploadError;
     private bool isImageModalMounted;
+    private bool isImageUploadInProgress;
     private bool isLinkModalMounted;
     private bool isTableModalMounted;
     private DotNetObjectReference<RichTextEditor>? objRef;
@@ -133,6 +134,7 @@ public partial class RichTextEditor : BlazorBootstrapComponentBase
                 break;
             case "image":
                 isImageModalMounted = false;
+                isImageUploadInProgress = false;
                 imageUploadError = null;
                 ResetImageUploadCancellation();
                 break;
@@ -337,43 +339,44 @@ public partial class RichTextEditor : BlazorBootstrapComponentBase
     private async Task OnImageFileChangedAsync(InputFileChangeEventArgs e)
     {
         imageUploadError = null;
-        var file = e.File;
-
-        if (ImageUploadHandler is null)
-        {
-            await SetImageUploadErrorAsync("An image upload handler is not configured.");
-            return;
-        }
-
-        if (MaxImageFileSize <= 0)
-        {
-            await SetImageUploadErrorAsync("The maximum image size must be greater than zero.");
-            return;
-        }
-
-        var extension = Path.GetExtension(file.Name).TrimStart('.').ToLowerInvariant();
-        if (!NormalizedAllowedImageFileTypes.Contains(extension))
-        {
-            await SetImageUploadErrorAsync("The selected image type is not allowed.");
-            return;
-        }
-
-        if (file.Size == 0 || file.Size > MaxImageFileSize)
-        {
-            await SetImageUploadErrorAsync("The selected image exceeds the maximum allowed size.");
-            return;
-        }
-
-        if (!HasExpectedImageContentType(file.ContentType, extension))
-        {
-            await SetImageUploadErrorAsync("The selected file does not have the expected image content type.");
-            return;
-        }
-
         var cancellationToken = ResetImageUploadCancellation();
+        await SetImageUploadInProgressAsync(true);
 
         try
         {
+            var file = e.File;
+
+            if (ImageUploadHandler is null)
+            {
+                await SetImageUploadErrorAsync("An image upload handler is not configured.");
+                return;
+            }
+
+            if (MaxImageFileSize <= 0)
+            {
+                await SetImageUploadErrorAsync("The maximum image size must be greater than zero.");
+                return;
+            }
+
+            var extension = Path.GetExtension(file.Name).TrimStart('.').ToLowerInvariant();
+            if (!NormalizedAllowedImageFileTypes.Contains(extension))
+            {
+                await SetImageUploadErrorAsync("The selected image type is not allowed.");
+                return;
+            }
+
+            if (file.Size == 0 || file.Size > MaxImageFileSize)
+            {
+                await SetImageUploadErrorAsync("The selected image exceeds the maximum allowed size.");
+                return;
+            }
+
+            if (!HasExpectedImageContentType(file.ContentType, extension))
+            {
+                await SetImageUploadErrorAsync("The selected file does not have the expected image content type.");
+                return;
+            }
+
             if (!await HasExpectedImageSignatureAsync(file, extension, cancellationToken))
             {
                 await SetImageUploadErrorAsync("The selected file content does not match its image type.");
@@ -395,7 +398,11 @@ public partial class RichTextEditor : BlazorBootstrapComponentBase
             if (cancellationToken.IsCancellationRequested || !isImageModalMounted)
                 return;
 
-            await RichTextEditorJsInterop.PrepareUploadedImageAsync(Id!, result.Url);
+            if (!await RichTextEditorJsInterop.PrepareUploadedImageAsync(Id!, result.Url))
+            {
+                await SetImageUploadErrorAsync("The uploaded image could not be loaded.");
+                return;
+            }
 
             if (!cancellationToken.IsCancellationRequested && isImageModalMounted)
                 await OnEditorStatusChangedAsync("Image uploaded. Review its accessibility options, then insert it.");
@@ -408,8 +415,12 @@ public partial class RichTextEditor : BlazorBootstrapComponentBase
         {
             await SetImageUploadErrorAsync("The image could not be uploaded.");
         }
+        finally
+        {
+            if (!cancellationToken.IsCancellationRequested && isImageModalMounted)
+                await SetImageUploadInProgressAsync(false);
+        }
     }
-
     /// <summary>
     /// Cancels the current image upload and creates a token for the next upload.
     /// </summary>
@@ -427,6 +438,12 @@ public partial class RichTextEditor : BlazorBootstrapComponentBase
         imageUploadError = message;
         await RichTextEditorJsInterop.ShowImageUploadErrorAsync(Id!, message);
         await OnEditorStatusChangedAsync(message);
+    }
+
+    private Task SetImageUploadInProgressAsync(bool value)
+    {
+        isImageUploadInProgress = value;
+        return InvokeAsync(StateHasChanged);
     }
 
     #endregion

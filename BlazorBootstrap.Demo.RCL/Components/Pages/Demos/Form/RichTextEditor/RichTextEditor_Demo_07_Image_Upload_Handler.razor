@@ -1,0 +1,62 @@
+<div class="mb-3">
+    <RichTextEditor Value="@content"
+                    ToolbarItems="@toolbarItems"
+                    ImageUploadHandler="UploadImageAsync"
+                    AllowedImageDomains="@allowedImageDomains"
+                    AllowedImageFileTypes="@allowedImageFileTypes"
+                    MaxImageFileSize="@maxImageFileSize"
+                    Placeholder="Add a hosted image to the announcement." />
+</div>
+
+<div class="border rounded p-3">
+    <label class="form-label" for="image-upload-handler-outcome">Simulated host outcome</label>
+    <select id="image-upload-handler-outcome" class="form-select" @bind="selectedOutcome">
+        <option value="success">Return a trusted HTTPS preview URL</option>
+        <option value="failure">Throw a host-handler failure</option>
+        <option value="cancellation">Wait for cancellation</option>
+        <option value="off-policy-url">Return an HTTPS URL outside the allow-list</option>
+    </select>
+    <div class="form-text">This editor shows <strong>Upload image</strong> because it supplies <code>ImageUploadHandler</code>; editors without that callback show only <strong>Image URL</strong>. Invalid, too-large, or unsupported files are rejected before this callback is invoked.</div>
+    <div class="alert alert-secondary mt-3 mb-0" role="status">
+        <strong>Host callback invocations:</strong> @callbackCount<br />
+        @hostStatus
+    </div>
+</div>
+
+@code {
+    private const long maxImageFileSize = 5 * 1024 * 1024;
+    private const string successImageUrl = "https://placehold.co/800x450/png?text=Hosted+image";
+
+    private readonly string[] allowedImageDomains = { "placehold.co" };
+    private readonly string[] allowedImageFileTypes = { "jpg", "jpeg", "png", "webp", "gif" };
+    private readonly RichTextEditorToolbarItem[] toolbarItems = { RichTextEditorToolbarItem.Image };
+
+    private int callbackCount;
+    private string content = "<p>Choose the image command, then use the host-controlled upload flow.</p>";
+    private string hostStatus = "No host callback has been invoked yet.";
+    private string selectedOutcome = "success";
+
+    private async Task<RichTextEditorImageUploadResult?> UploadImageAsync(RichTextEditorImageUploadRequest request)
+    {
+        callbackCount++;
+        hostStatus = $"The host received {request.File.Name}. It must authorize, revalidate, scan, and store the upload before returning a temporary HTTPS URL.";
+        await InvokeAsync(StateHasChanged);
+
+        request.CancellationToken.ThrowIfCancellationRequested();
+
+        switch (selectedOutcome)
+        {
+            case "failure":
+                throw new InvalidOperationException("Simulated host upload failure.");
+            case "cancellation":
+                hostStatus = "The host callback is waiting. Close the Image modal or select another file to cancel it.";
+                await InvokeAsync(StateHasChanged);
+                await Task.Delay(Timeout.InfiniteTimeSpan, request.CancellationToken);
+                return null;
+            case "off-policy-url":
+                return new RichTextEditorImageUploadResult("https://example.com/untrusted-image.png");
+            default:
+                return new RichTextEditorImageUploadResult(successImageUrl);
+        }
+    }
+}
