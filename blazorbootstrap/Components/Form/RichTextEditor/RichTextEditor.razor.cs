@@ -24,6 +24,7 @@ public partial class RichTextEditor : BlazorBootstrapComponentBase
     private FieldIdentifier fieldIdentifier;
     private string? imageUploadError;
     private bool isImageModalMounted;
+    private bool isImageUploadInProgress;
     private bool isLinkModalMounted;
     private bool isTableModalMounted;
     private DotNetObjectReference<RichTextEditor>? objRef;
@@ -133,6 +134,7 @@ public partial class RichTextEditor : BlazorBootstrapComponentBase
                 break;
             case "image":
                 isImageModalMounted = false;
+                isImageUploadInProgress = false;
                 imageUploadError = null;
                 ResetImageUploadCancellation();
                 break;
@@ -371,6 +373,7 @@ public partial class RichTextEditor : BlazorBootstrapComponentBase
         }
 
         var cancellationToken = ResetImageUploadCancellation();
+        await SetImageUploadInProgressAsync(true);
 
         try
         {
@@ -395,7 +398,11 @@ public partial class RichTextEditor : BlazorBootstrapComponentBase
             if (cancellationToken.IsCancellationRequested || !isImageModalMounted)
                 return;
 
-            await RichTextEditorJsInterop.PrepareUploadedImageAsync(Id!, result.Url);
+            if (!await RichTextEditorJsInterop.PrepareUploadedImageAsync(Id!, result.Url))
+            {
+                await SetImageUploadErrorAsync("The uploaded image could not be loaded.");
+                return;
+            }
 
             if (!cancellationToken.IsCancellationRequested && isImageModalMounted)
                 await OnEditorStatusChangedAsync("Image uploaded. Review its accessibility options, then insert it.");
@@ -407,6 +414,11 @@ public partial class RichTextEditor : BlazorBootstrapComponentBase
         catch (Exception)
         {
             await SetImageUploadErrorAsync("The image could not be uploaded.");
+        }
+        finally
+        {
+            if (!cancellationToken.IsCancellationRequested && isImageModalMounted)
+                await SetImageUploadInProgressAsync(false);
         }
     }
 
@@ -427,6 +439,12 @@ public partial class RichTextEditor : BlazorBootstrapComponentBase
         imageUploadError = message;
         await RichTextEditorJsInterop.ShowImageUploadErrorAsync(Id!, message);
         await OnEditorStatusChangedAsync(message);
+    }
+
+    private Task SetImageUploadInProgressAsync(bool value)
+    {
+        isImageUploadInProgress = value;
+        return InvokeAsync(StateHasChanged);
     }
 
     #endregion

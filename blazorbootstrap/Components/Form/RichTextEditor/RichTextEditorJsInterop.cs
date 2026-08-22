@@ -83,9 +83,9 @@ internal sealed class RichTextEditorJsInterop : JsInteropBase
     /// <summary>Prepares an uploaded image for insertion through the rich-text editor JavaScript module.</summary>
     [AddedVersion("4.0.0")]
     [Description("Prepares an uploaded image for insertion through the rich-text editor JavaScript module.")]
-    public async Task PrepareUploadedImageAsync(string editorId, string imageUrl)
+    public async Task<bool> PrepareUploadedImageAsync(string editorId, string imageUrl)
     {
-        await SafeInvokeVoidAsync(PrepareUploadedImage, editorId, imageUrl);
+        return await SafeInvokeAsync<bool>(PrepareUploadedImage, editorId, imageUrl);
     }
 
     /// <summary>Shows an image-upload error through the rich-text editor JavaScript module.</summary>

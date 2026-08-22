@@ -2404,11 +2404,13 @@ export function focus(dotNetHelper, editorId) {
  */
 export async function prepareUploadedImage(editorId, imageUrl) {
     const state = getEditorState(editorId);
-    if (!state) return;
+    if (!state) return false;
     try {
         await prepareImagePreview(state, imageUrl);
+        return true;
     } catch (err) {
         showImageFeedback(state, 'The uploaded image could not be loaded.');
+        return false;
     }
 }
 

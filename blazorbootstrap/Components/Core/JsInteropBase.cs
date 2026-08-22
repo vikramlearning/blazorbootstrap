@@ -41,6 +41,26 @@ public abstract class JsInteropBase : IAsyncDisposable
         }
     }
 
+    protected async Task<T> SafeInvokeAsync<T>(string identifier, params object?[] args)
+    {
+        if (!isJsRuntimeAvailable)
+            return default!;
+
+        try
+        {
+            var module = await moduleTask.Value;
+            return await module.InvokeAsync<T>(identifier, args);
+        }
+        catch (JSDisconnectedException)
+        {
+            isJsRuntimeAvailable = false;
+            return default!;
+        }
+        catch (TaskCanceledException)
+        {
+            return default!;
+        }
+    }
     protected async Task SafeInvokeVoidAsync(string identifier, params object?[] args)
     {
         if (!isJsRuntimeAvailable)
