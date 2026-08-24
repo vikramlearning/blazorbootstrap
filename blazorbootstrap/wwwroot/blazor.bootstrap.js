@@ -264,6 +264,7 @@ window.blazorBootstrap = {
     currencyInput: {
         initialize: (elementId, isFloat, allowNegativeNumbers, decimalSeperator) => {
             let currencyEl = document.getElementById(elementId);
+            const modifierShortcutKeys = ['a', 'x', 'c', 'v'];
 
             currencyEl?.addEventListener('keydown', function (event) {
 
@@ -277,6 +278,13 @@ window.blazorBootstrap = {
                     case "ArrowDown":
                     case "Delete":
                         return;
+                }
+
+                // allow select-all, cut, copy, and paste keys with Ctrl (Windows/Linux) or Cmd (macOS)
+                const isModifierPressed = event.ctrlKey || event.metaKey;
+                const normalizedKey = event.key.toLowerCase();
+                if (isModifierPressed && modifierShortcutKeys.includes(normalizedKey)) {
+                    return;
                 }
 
                 let validChars = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
