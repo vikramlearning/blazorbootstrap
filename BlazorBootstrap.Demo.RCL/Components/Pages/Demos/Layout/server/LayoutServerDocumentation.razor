@@ -31,6 +31,15 @@
     <Snippet FilePath="~\Components\Pages\Demos\Layout\server\Layout_Server_Demo_01.razor" />
 </Section>
 
+<Section Size="HeadingSize.H2" Name="Sticky header stacking order" PageUrl="@pageUrl" Link="sticky-header-stacking-order">
+    <div class="mb-3">
+        When <code>StickyHeader="true"</code> is used, the layout header defaults to Bootstrap's sticky-navigation stacking level.
+        To change that level, set the following variable in a global stylesheet loaded after <code>blazor.bootstrap.css</code>:
+    </div>
+
+    <Snippet FilePath="~\Components\Pages\Demos\Layout\server\Layout_Server_Demo_02.razor" LanguageCode="LanguageCode.Css" />
+</Section>
+
 @code {
     private const string pageUrl = DemoRouteConstants.Demos_URL_Layout_Blazor_Server;
     private const string pageTitle = "Blazor Bootstrap Layout Setup - Blazor Server";
