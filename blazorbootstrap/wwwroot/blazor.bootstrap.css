@@ -1,4 +1,6 @@
 :root {
+    /* layout */
+    --bb-layout-sticky-header-z-index: 1020;
     /* preload */
     --bb-preload-modal-z-index: 2055;
     --bb-preload-modal-backdrop-z-index: 2050;
@@ -653,7 +655,7 @@ table > tbody > tr > td:is(.freeze-column-right).freeze-column-active {
     .bb-top-row-sticky {
         position: sticky;
         top: 0;
-        z-index: 1;
+        z-index: var(--bb-layout-sticky-header-z-index);
     }
 
     .top-row, article {
