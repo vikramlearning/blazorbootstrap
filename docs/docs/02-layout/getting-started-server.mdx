@@ -79,6 +79,16 @@ Remove all the CSS content from the **Shared/MainLayout.razor.css** file.
 }
 ```
 
+## Sticky header stacking order
+
+When `StickyHeader="true"` is used, the layout header defaults to Bootstrap's sticky-navigation stacking level. To change that level, set the following variable in a global stylesheet loaded after `blazor.bootstrap.css`:
+
+```css
+:root {
+    --bb-layout-sticky-header-z-index: 1030;
+}
+```
+
 ## Starter templates
 
 ### .NET 8

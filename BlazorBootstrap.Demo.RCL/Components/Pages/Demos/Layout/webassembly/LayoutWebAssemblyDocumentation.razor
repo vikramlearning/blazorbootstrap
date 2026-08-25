@@ -28,7 +28,16 @@
         Remove all the CSS content from the <b>Shared/MainLayout.razor.css</b> file.
     </Callout>
 
-    <Snippet FilePath="~\Components\Pages\Layout\webassembly\Layout_WebAssembly_Demo_01.razor" />
+    <Snippet FilePath="~\Components\Pages\Demos\Layout\webassembly\Layout_WebAssembly_Demo_01.razor" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Sticky header stacking order" PageUrl="@pageUrl" Link="sticky-header-stacking-order">
+    <div class="mb-3">
+        When <code>StickyHeader="true"</code> is used, the layout header defaults to Bootstrap's sticky-navigation stacking level.
+        To change that level, set the following variable in a global stylesheet loaded after <code>blazor.bootstrap.css</code>:
+    </div>
+
+    <Snippet FilePath="~\Components\Pages\Demos\Layout\webassembly\Layout_WebAssembly_Demo_02.razor" LanguageCode="LanguageCode.Css" />
 </Section>
 
 @code {
