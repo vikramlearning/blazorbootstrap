@@ -80,7 +80,7 @@ public abstract class BlazorBootstrapLayoutComponentBase : LayoutComponentBase, 
     }
 
     /// <inheritdoc />
-    /// <see href="https://learn.microsoft.com/en-us/dotnet/api/system.idisposable?view=net-6.0" />
+    /// <see href="https://learn.microsoft.com/en-us/dotnet/api/system.idisposable?view=net-8.0" />
     public void Dispose()
     {
         Dispose(true);

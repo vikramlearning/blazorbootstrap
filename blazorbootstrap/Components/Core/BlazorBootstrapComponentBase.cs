@@ -111,7 +111,7 @@ public abstract class BlazorBootstrapComponentBase : ComponentBase, IDisposable,
     }
 
     /// <inheritdoc />
-    /// <see href="https://learn.microsoft.com/en-us/dotnet/api/system.idisposable?view=net-6.0" />
+    /// <see href="https://learn.microsoft.com/en-us/dotnet/api/system.idisposable?view=net-8.0" />
     public void Dispose()
     {
         Dispose(true);
