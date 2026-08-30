@@ -15,7 +15,7 @@
 
 <br>
 
-**NOTE:** We strongly recommend all BlazorBootstrap users migrate to version 2.x.x. [Read more...](https://docs.blazorbootstrap.com/blog/2024/02/25/upgrade-to-v2.0.0)
+**NOTE:** We strongly recommend all BlazorBootstrap users upgrade to version 4.0.0. [Read more...](https://docs.blazorbootstrap.com/blog/2025/12/01/upgrade-to-v4.0.0)
 
 ## Status
 
@@ -41,7 +41,7 @@
 
 ## Install
 
-Install with [NuGet](https://www.nuget.org/): `Install-Package Blazor.Bootstrap -Version 3.5.0`
+Install with [NuGet](https://www.nuget.org/): `Install-Package Blazor.Bootstrap -Version 4.0.0`
 
 ## Install Blazor Bootstrap templates
 
