@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkblazorbootstrap=self.webpackChunkblazorbootstrap||[]).push([[74066],{53723:t=>{t.exports=JSON.parse('{"label":"otpinput","permalink":"/blog/tags/otpinput","allTagsPath":"/blog/tags","count":1}')}}]);
