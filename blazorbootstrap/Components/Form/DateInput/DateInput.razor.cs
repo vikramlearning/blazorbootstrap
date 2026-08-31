@@ -1,4 +1,4 @@
-﻿namespace BlazorBootstrap;
+namespace BlazorBootstrap;
 
 [AddedVersion("1.5.0")]
 public partial class DateInput<TValue> : BlazorBootstrapComponentBase
@@ -117,17 +117,17 @@ public partial class DateInput<TValue> : BlazorBootstrapComponentBase
     }
 
     /// <summary>
-    /// Disables currency input.
+    /// Disables the date input so users cannot change its value.
     /// </summary>
     [AddedVersion("1.5.0")]
-    [Description("Disables currency input.")]
+    [Description("Disables the date input so users cannot change its value.")]
     public void Disable() => Disabled = true;
 
     /// <summary>
-    /// Enables currency input.
+    /// Enables the date input so users can change its value.
     /// </summary>
     [AddedVersion("1.5.0")]
-    [Description("Enables currency input.")]
+    [Description("Enables the date input so users can change its value.")]
     public void Enable() => Disabled = false;
 
     private string GetFormattedValue(object value)
@@ -291,26 +291,26 @@ public partial class DateInput<TValue> : BlazorBootstrapComponentBase
     private string autoComplete => AutoComplete ? "true" : "false";
 
     /// <summary>
-    /// If <see langword="true" />, DateInput can complete the values automatically by the browser.
+    /// Gets or sets whether browser autocomplete is enabled for the date input.
     /// </summary>
     /// <remarks>
     /// Default value is false.
     /// </remarks>
     [AddedVersion("1.5.0")]
     [DefaultValue(false)]
-    [Description("If , DateInput can complete the values automatically by the browser.")]
+    [Description("Gets or sets whether browser autocomplete is enabled. When true, the browser may offer saved dates for the input.")]
     [Parameter]
     public bool AutoComplete { get; set; }
 
     /// <summary>
-    /// Gets or sets the disabled state.
+    /// Gets or sets whether the date input is disabled.
     /// </summary>
     /// <remarks>
     /// Default value is false.
     /// </remarks>
     [AddedVersion("1.5.0")]
     [DefaultValue(false)]
-    [Description("Gets or sets the disabled state.")]
+    [Description("Gets or sets whether the date input is disabled. When true, users cannot change its value.")]
     [Parameter]
     public bool Disabled { get; set; }
 
@@ -320,73 +320,73 @@ public partial class DateInput<TValue> : BlazorBootstrapComponentBase
     private EditContext EditContext { get; set; } = default!;
 
     /// <summary>
-    /// Determines whether to restrict the user input to Min and Max range.
-    /// If <see langword="true" />, restricts the user input between the Min and Max range. Else accepts the user input.
+    /// Gets or sets whether input is restricted to the configured minimum and maximum dates.
+    /// 
     /// </summary>
     /// <remarks>
     /// Default value is false.
     /// </remarks>
-    [Description("Determines whether to restrict the user input to Min and Max range. If , restricts the user input between the Min and Max range. Else accepts the user input.")]
+    [Description("Gets or sets whether input is restricted to the configured minimum and maximum dates. If , restricts the user input between the Min and Max range. Else accepts the user input.")]
     [Parameter]
     public bool EnableMinMax { get; set; }
 
     private string fieldCssClasses => EditContext?.FieldCssClass(fieldIdentifier) ?? "";
 
     /// <summary>
-    /// Gets or sets the max.
-    /// Allowed format is yyyy-mm-dd.
+    /// Gets or sets the maximum permitted date.
+    /// 
     /// </summary>
     [AddedVersion("1.5.0")]
-    [Description("Gets or sets the max. Allowed format is yyyy-mm-dd.")]
+    [Description("Gets or sets the maximum permitted date. ")]
     [Parameter]
     public TValue Max { get; set; } = default!;
 
     /// <summary>
-    /// Gets or sets the min.
-    /// Allowed format is yyyy-mm-dd.
+    /// Gets or sets the minimum permitted date.
+    /// 
     /// </summary>
     [AddedVersion("1.5.0")]
-    [Description("Gets or sets the min. Allowed format is yyyy-mm-dd.")]
+    [Description("Gets or sets the minimum permitted date. ")]
     [Parameter]
     public TValue Min { get; set; } = default!;
 
     /// <summary>
-    /// Gets or sets the placeholder.
+    /// Gets or sets placeholder text displayed when the input has no value.
     /// </summary>
     /// <remarks>
     /// Default value is null.
     /// </remarks>
     [AddedVersion("1.5.0")]
     [DefaultValue(null)]
-    [Description("Gets or sets the placeholder.")]
+    [Description("Gets or sets placeholder text displayed when the input has no value.")]
     [Parameter]
     public string? Placeholder { get; set; }
 
     /// <summary>
-    /// Gets or sets the value.
+    /// Gets or sets the current date value bound to the input.
     /// </summary>
     [AddedVersion("1.5.0")]
-    [Description("Gets or sets the value.")]
+    [Description("Gets or sets the current date value bound to the input.")]
     [Parameter]
     public TValue Value { get; set; } = default!;
 
     /// <summary>
-    /// This event fired on every user keystroke that changes the DateInput value.
+    /// Occurs whenever user input changes the date value, including changes produced by typing.
     /// </summary>
     [AddedVersion("1.5.0")]
-    [Description("This event fired on every user keystroke that changes the DateInput value.")]
+    [Description("Fires whenever user input changes the date value, including changes produced by typing.")]
     [Parameter]
     public EventCallback<TValue> ValueChanged { get; set; }
 
     /// <summary>
-    /// Gets or sets the expression.
+    /// Gets or sets the expression that identifies the bound value for validation and EditContext notifications.
     /// </summary>
     /// <remarks>
     /// Default value is <see langword="null" />.
     /// </remarks>
     [AddedVersion("1.5.0")]
     [DefaultValue(null)]
-    [Description("Gets or sets the expression.")]
+    [Description("Gets or sets the expression that identifies the bound value for validation and EditContext notifications.")]
     [Parameter]
     public Expression<Func<TValue>> ValueExpression { get; set; } = default!;
 
