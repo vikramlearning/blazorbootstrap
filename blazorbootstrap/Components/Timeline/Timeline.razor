@@ -1,0 +1,68 @@
+@namespace BlazorBootstrap
+@inherits BlazorBootstrapComponentBase
+
+<ol @ref="Element" id="@Id" class="@ClassNames" style="@StyleNames" aria-label="@AriaLabel" @attributes="AdditionalAttributes">
+    @if (Items is not null)
+    {
+        @foreach (var item in Items)
+        {
+            <li class="@GetItemClass(item)">
+                <div class="bb-timeline-marker" aria-hidden="true">
+                    @if (item.ShowIcon && !string.IsNullOrWhiteSpace(item.IconCssClass))
+                    {
+                        <i class="@GetIconClass(item)"></i>
+                    }
+                </div>
+                <article class="bb-timeline-content card shadow-sm">
+                    <div class="card-body">
+                        @if (!string.IsNullOrWhiteSpace(item.Timestamp))
+                        {
+                            <time class="bb-timeline-time text-body-secondary small">@item.Timestamp</time>
+                        }
+                        @if (!string.IsNullOrWhiteSpace(item.Title) || !string.IsNullOrWhiteSpace(item.Badge))
+                        {
+                            <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
+                                @if (!string.IsNullOrWhiteSpace(item.Title))
+                                {
+                                    <h3 class="h5 mb-0">@item.Title</h3>
+                                }
+                                @if (!string.IsNullOrWhiteSpace(item.Badge))
+                                {
+                                    <span class="@GetBadgeClass(item)">@item.Badge</span>
+                                }
+                            </div>
+                        }
+                        @if (!string.IsNullOrWhiteSpace(item.Description))
+                        {
+                            <p class="mb-3">@item.Description</p>
+                        }
+                        @if (!string.IsNullOrWhiteSpace(item.ImageUrl))
+                        {
+                            <img src="@item.ImageUrl" alt="@item.ImageAlt" class="img-fluid rounded mb-3" loading="lazy" />
+                        }
+                        @item.ChildContent
+                        @if (item.Actions?.Any() == true)
+                        {
+                            <div class="d-flex flex-wrap gap-2 mt-3" role="group" aria-label="Actions for @item.Title">
+                                @foreach (var action in item.Actions)
+                                {
+                                    <button type="button" class="@GetActionClass(action)" disabled="@action.Disabled"
+                                            aria-label="@(action.AriaLabel ?? action.Text)" @onclick="() => InvokeActionAsync(action, item)">
+                                        @if (!string.IsNullOrWhiteSpace(action.IconCssClass))
+                                        {
+                                            <i class="@action.IconCssClass" aria-hidden="true"></i>
+                                        }
+                                        @if (!string.IsNullOrWhiteSpace(action.Text))
+                                        {
+                                            <span class="@(string.IsNullOrWhiteSpace(action.IconCssClass) ? null : "ms-1")">@action.Text</span>
+                                        }
+                                    </button>
+                                }
+                            </div>
+                        }
+                    </div>
+                </article>
+            </li>
+        }
+    }
+</ol>
