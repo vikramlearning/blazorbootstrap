@@ -81,11 +81,15 @@ public partial class NumberInput<TValue> : BlazorBootstrapComponentBase
     /// <summary>
     /// Disables number input.
     /// </summary>
+    [AddedVersion("1.0.0")]
+    [Description("Disables number input.")]
     public void Disable() => Disabled = true;
 
     /// <summary>
     /// Enables number input.
     /// </summary>
+    [AddedVersion("1.0.0")]
+    [Description("Enables number input.")]
     public void Enable() => Disabled = false;
 
     private string GetInvariantNumber(TValue value)
@@ -357,6 +361,8 @@ public partial class NumberInput<TValue> : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is false.
     /// </remarks>
+    [AddedVersion("1.0.0")]
+    [Description("If , allows negative numbers.")]
     [Parameter]
     public bool AllowNegativeNumbers { get; set; }
 
@@ -368,6 +374,8 @@ public partial class NumberInput<TValue> : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is false.
     /// </remarks>
+    [AddedVersion("1.0.0")]
+    [Description("If , NumberInput can complete the values automatically by the browser.")]
     [Parameter]
     public bool AutoComplete { get; set; }
 
@@ -377,9 +385,12 @@ public partial class NumberInput<TValue> : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is false.
     /// </remarks>
+    [AddedVersion("1.0.0")]
+    [Description("Gets or sets the disabled state .")]
     [Parameter]
     public bool Disabled { get; set; }
 
+    [AddedVersion("1.0.0")]
     [CascadingParameter] private EditContext EditContext { get; set; } = default!;
 
     /// <summary>
@@ -389,6 +400,7 @@ public partial class NumberInput<TValue> : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is false.
     /// </remarks>
+    [Description("Determines whether to restrict the user input to Min and Max range. If , restricts the user input between the Min and Max range. Else accepts the user input.")]
     [Parameter]
     public bool EnableMinMax { get; set; }
 
@@ -402,12 +414,15 @@ public partial class NumberInput<TValue> : BlazorBootstrapComponentBase
     /// </remarks>
     [Parameter]
     //[EditorRequired]
+    [AddedVersion("1.0.0")]
     public string Locale { get; set; } = "en-US";
 
     /// <summary>
     /// Gets or sets the max.
     /// Max ignored if EnableMinMax="false".
     /// </summary>
+    [AddedVersion("1.0.0")]
+    [Description("Gets or sets the max. Max ignored if EnableMinMax=\"false\".")]
     [Parameter]
     public TValue Max { get; set; } = default!;
 
@@ -415,6 +430,8 @@ public partial class NumberInput<TValue> : BlazorBootstrapComponentBase
     /// Gets or sets the min.
     /// Min ignored if EnableMinMax="false".
     /// </summary>
+    [AddedVersion("1.0.0")]
+    [Description("Gets or sets the min. Min ignored if EnableMinMax=\"false\".")]
     [Parameter]
     public TValue Min { get; set; } = default!;
 
@@ -424,6 +441,8 @@ public partial class NumberInput<TValue> : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is null.
     /// </remarks>
+    [AddedVersion("1.0.0")]
+    [Description("Gets or sets the placeholder.")]
     [Parameter]
     public string? Placeholder { get; set; }
 
@@ -433,6 +452,8 @@ public partial class NumberInput<TValue> : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is null.
     /// </remarks>
+    [AddedVersion("1.0.0")]
+    [Description("Gets or sets the step.")]
     [Parameter]
     public double? Step { get; set; }
 
@@ -442,22 +463,38 @@ public partial class NumberInput<TValue> : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see cref="Alignment.None" />.
     /// </remarks>
+    [AddedVersion("1.0.0")]
+    [Description("Gets or sets the text alignment.")]
     [Parameter]
     public Alignment TextAlignment { get; set; } = Alignment.None;
 
     /// <summary>
     /// Gets or sets the value.
     /// </summary>
+    [AddedVersion("1.0.0")]
+    [Description("Gets or sets the value.")]
     [Parameter]
     public TValue Value { get; set; } = default!;
 
     /// <summary>
     /// This event fired on every user keystroke that changes the NumberInput value.
     /// </summary>
+    [AddedVersion("1.0.0")]
+    [Description("This event fired on every user keystroke that changes the NumberInput value.")]
     [Parameter]
     public EventCallback<TValue> ValueChanged { get; set; }
 
-    [Parameter] public Expression<Func<TValue>> ValueExpression { get; set; } = default!;
+    /// <summary>
+    /// Gets or sets an expression that identifies the bound value.
+    /// </summary>
+    /// <remarks>
+    /// Default value is <see langword="null" />.
+    /// </remarks>
+    [AddedVersion("1.0.0")]
+    [DefaultValue(null)]
+    [Description("Gets or sets an expression that identifies the bound value.")]
+    [Parameter]
+    public Expression<Func<TValue>> ValueExpression { get; set; } = default!;
 
     #endregion
 }

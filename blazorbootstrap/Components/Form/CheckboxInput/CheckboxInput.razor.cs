@@ -23,11 +23,15 @@ public partial class CheckboxInput : BlazorBootstrapComponentBase
     /// <summary>
     /// Disables checkbox input.
     /// </summary>
+    [AddedVersion("3.3.0")]
+    [Description("Disables checkbox input.")]
     public void Disable() => Disabled = true;
 
     /// <summary>
     /// Enables checkbox input.
     /// </summary>
+    [AddedVersion("3.3.0")]
+    [Description("Enables checkbox input.")]
     public void Enable() => Disabled = false;
 
     private async Task OnChange(ChangeEventArgs e)
@@ -57,6 +61,8 @@ public partial class CheckboxInput : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is false.
     /// </remarks>
+    [AddedVersion("3.3.0")]
+    [Description("Gets or sets the disabled state.")]
     [Parameter]
     public bool Disabled { get; set; }
 
@@ -69,22 +75,38 @@ public partial class CheckboxInput : BlazorBootstrapComponentBase
     /// <summary>
     /// Gets or sets the label.
     /// </summary>
+    [AddedVersion("3.3.0")]
+    [Description("Gets or sets the label.")]
     [Parameter]
     public string? Label { get; set; }
 
     /// <summary>
     /// Gets or sets the value.
     /// </summary>
+    [AddedVersion("3.3.0")]
+    [Description("Gets or sets the value.")]
     [Parameter]
     public bool Value { get; set; }
 
     /// <summary>
     /// This event fires when the <see cref="CheckboxInput" /> value changes.
     /// </summary>
+    [AddedVersion("3.3.0")]
+    [Description("This event fires when the value changes.")]
     [Parameter]
     public EventCallback<bool> ValueChanged { get; set; }
 
-    [Parameter] public Expression<Func<bool>> ValueExpression { get; set; } = default!;
+    /// <summary>
+    /// Gets or sets an expression that identifies the bound value.
+    /// </summary>
+    /// <remarks>
+    /// Default value is <see langword="null" />.
+    /// </remarks>
+    [AddedVersion("3.3.0")]
+    [DefaultValue(null)]
+    [Description("Gets or sets an expression that identifies the bound value.")]
+    [Parameter]
+    public Expression<Func<bool>> ValueExpression { get; set; } = default!;
 
     #endregion
 }

@@ -212,6 +212,7 @@ public abstract class FileInputBase : BlazorBootstrapComponentBase
     /// <summary>
     /// Gets the currently selected files.
     /// </summary>
+    [Description("Gets the currently selected files.")]
     public IReadOnlyList<IBrowserFile> SelectedFiles => files.AsReadOnly();
 
     /// <summary>

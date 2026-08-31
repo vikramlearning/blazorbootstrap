@@ -561,6 +561,9 @@ public partial class RichTextEditor : BlazorBootstrapComponentBase
 
     [AddedVersion("4.0.0")]
     [DefaultValue(null)]
+    /// <summary>
+    /// Gets or sets the toolbar items.
+    /// </summary>
     [Description("Gets or sets the toolbar items.")]
     [Parameter]
     public RichTextEditorToolbarItem[]? ToolbarItems { get; set; }
@@ -579,6 +582,10 @@ public partial class RichTextEditor : BlazorBootstrapComponentBase
     public EventCallback<RichTextEditorChange> ValueChanged { get; set; }
 
     /// <summary>Gets or sets the expression that identifies the bound value.</summary>
+    /// <remarks>
+    /// Default value is <see langword="null" />.
+    /// </remarks>
+    [DefaultValue(null)]
     [AddedVersion("4.0.0")]
     [Description("Gets or sets the expression that identifies the bound value.")]
     [Parameter]
@@ -586,3 +593,4 @@ public partial class RichTextEditor : BlazorBootstrapComponentBase
 
     #endregion
 }
+

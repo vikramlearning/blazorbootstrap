@@ -39,11 +39,15 @@ public partial class Switch : BlazorBootstrapComponentBase
     /// <summary>
     /// Disables switch.
     /// </summary>
+    [AddedVersion("1.3.0")]
+    [Description("Disables switch.")]
     public void Disable() => Disabled = true;
 
     /// <summary>
     /// Enables switch.
     /// </summary>
+    [AddedVersion("1.3.0")]
+    [Description("Enables switch.")]
     public void Enable() => Disabled = false;
 
     /// <summary>
@@ -78,6 +82,8 @@ public partial class Switch : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is false.
     /// </remarks>
+    [AddedVersion("1.3.0")]
+    [Description("Gets or sets the disabled state.")]
     [Parameter]
     public bool Disabled { get; set; }
 
@@ -91,6 +97,8 @@ public partial class Switch : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is null.
     /// </remarks>
+    [AddedVersion("1.3.0")]
+    [Description("Gets or sets the label.")]
     [Parameter]
     public string Label { get; set; } = default!;
 
@@ -102,6 +110,8 @@ public partial class Switch : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is false.
     /// </remarks>
+    [AddedVersion("1.3.0")]
+    [Description("Determines whether to put the switch on the opposite side.")]
     [Parameter]
     public bool Reverse { get; set; }
 
@@ -111,16 +121,30 @@ public partial class Switch : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is false.
     /// </remarks>
+    [AddedVersion("1.3.0")]
+    [Description("Gets or sets the value.")]
     [Parameter]
     public bool Value { get; set; }
 
     /// <summary>
     /// This event is fired when the switch selection changes.
     /// </summary>
+    [AddedVersion("1.3.0")]
+    [Description("This event is fired when the switch selection changes.")]
     [Parameter]
     public EventCallback<bool> ValueChanged { get; set; } = default!;
 
-    [Parameter] public Expression<Func<bool>> ValueExpression { get; set; } = default!;
+    /// <summary>
+    /// Gets or sets an expression that identifies the bound value.
+    /// </summary>
+    /// <remarks>
+    /// Default value is <see langword="null" />.
+    /// </remarks>
+    [AddedVersion("1.3.0")]
+    [DefaultValue(null)]
+    [Description("Gets or sets an expression that identifies the bound value.")]
+    [Parameter]
+    public Expression<Func<bool>> ValueExpression { get; set; } = default!;
 
     #endregion
 }

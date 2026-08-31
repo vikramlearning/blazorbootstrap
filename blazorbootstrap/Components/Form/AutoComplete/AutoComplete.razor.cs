@@ -71,6 +71,11 @@ public partial class AutoComplete<TItem> : BlazorBootstrapComponentBase
         await base.OnInitializedAsync();
     }
 
+    /// <summary>
+    /// Handles the autocomplete dropdown hidden notification from JavaScript.
+    /// </summary>
+    [Description("Handles the autocomplete dropdown hidden notification from JavaScript.")]
+    [AddedVersion("0.4.0")]
     [JSInvokable]
     public void bsHiddenAutocomplete()
     {
@@ -85,12 +90,27 @@ public partial class AutoComplete<TItem> : BlazorBootstrapComponentBase
         }
     }
 
+    /// <summary>
+    /// Handles the autocomplete dropdown hide notification from JavaScript.
+    /// </summary>
+    [Description("Handles the autocomplete dropdown hide notification from JavaScript.")]
+    [AddedVersion("0.4.0")]
     [JSInvokable]
     public void bsHideAutocomplete() { }
 
+    /// <summary>
+    /// Handles the autocomplete dropdown show notification from JavaScript.
+    /// </summary>
+    [Description("Handles the autocomplete dropdown show notification from JavaScript.")]
+    [AddedVersion("0.4.0")]
     [JSInvokable]
     public void bsShowAutocomplete() { }
 
+    /// <summary>
+    /// Handles the autocomplete dropdown shown notification from JavaScript.
+    /// </summary>
+    [Description("Handles the autocomplete dropdown shown notification from JavaScript.")]
+    [AddedVersion("0.4.0")]
     [JSInvokable]
     public void bsShownAutocomplete() { }
 
@@ -467,6 +487,9 @@ public partial class AutoComplete<TItem> : BlazorBootstrapComponentBase
     /// <summary>
     /// Gets or sets the value expression.
     /// </summary>
+    /// <remarks>
+    /// Default value is <see langword="null" />.
+    /// </remarks>
     [AddedVersion("1.0.0")]
     [DefaultValue(null)]
     [Description("Gets or sets the value expression.")]
@@ -475,3 +498,4 @@ public partial class AutoComplete<TItem> : BlazorBootstrapComponentBase
 
     #endregion
 }
+

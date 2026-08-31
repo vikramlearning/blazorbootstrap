@@ -41,11 +41,15 @@ public partial class PasswordInput : BlazorBootstrapComponentBase
     /// <summary>
     /// Disables InputPassword.
     /// </summary>
+    [AddedVersion("3.3.0")]
+    [Description("Disables InputPassword.")]
     public void Disable() => Disabled = true;
 
     /// <summary>
     /// Enables InputPassword.
     /// </summary>
+    [AddedVersion("3.3.0")]
+    [Description("Enables InputPassword.")]
     public void Enable() => Disabled = false;
 
     /// <summary>
@@ -82,6 +86,8 @@ public partial class PasswordInput : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is false.
     /// </remarks>
+    [AddedVersion("3.3.0")]
+    [Description("Gets or sets the disabled state.")]
     [Parameter]
     public bool Disabled { get; set; }
 
@@ -99,6 +105,8 @@ public partial class PasswordInput : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is `btn btn-primary btn-sm`.
     /// </remarks>
+    [AddedVersion("3.3.0")]
+    [Description("Gets or sets the show/hide password button CSS class.")]
     [Parameter]
     public string? ShowHidePasswordButtonCssClass { get; set; } = "btn border-top border-end border-bottom border border-start-0"; //""btn btn-light border";
 
@@ -110,16 +118,30 @@ public partial class PasswordInput : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is null.
     /// </remarks>
+    [AddedVersion("3.3.0")]
+    [Description("Gets or sets the value.")]
     [Parameter]
     public string? Value { get; set; }
 
     /// <summary>
     /// This event is fired when the PasswordInput value changes.
     /// </summary>
+    [AddedVersion("3.3.0")]
+    [Description("This event is fired when the PasswordInput value changes.")]
     [Parameter]
     public EventCallback<string?> ValueChanged { get; set; }
 
-    [Parameter] public Expression<Func<string?>> ValueExpression { get; set; } = default!;
+    /// <summary>
+    /// Gets or sets an expression that identifies the bound value.
+    /// </summary>
+    /// <remarks>
+    /// Default value is <see langword="null" />.
+    /// </remarks>
+    [AddedVersion("3.3.0")]
+    [DefaultValue(null)]
+    [Description("Gets or sets an expression that identifies the bound value.")]
+    [Parameter]
+    public Expression<Func<string?>> ValueExpression { get; set; } = default!;
 
     #endregion
 }

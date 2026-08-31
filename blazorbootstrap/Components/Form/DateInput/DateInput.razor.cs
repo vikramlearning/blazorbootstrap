@@ -119,11 +119,15 @@ public partial class DateInput<TValue> : BlazorBootstrapComponentBase
     /// <summary>
     /// Disables currency input.
     /// </summary>
+    [AddedVersion("1.5.0")]
+    [Description("Disables currency input.")]
     public void Disable() => Disabled = true;
 
     /// <summary>
     /// Enables currency input.
     /// </summary>
+    [AddedVersion("1.5.0")]
+    [Description("Enables currency input.")]
     public void Enable() => Disabled = false;
 
     private string GetFormattedValue(object value)
@@ -292,6 +296,8 @@ public partial class DateInput<TValue> : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is false.
     /// </remarks>
+    [AddedVersion("1.5.0")]
+    [Description("If , DateInput can complete the values automatically by the browser.")]
     [Parameter]
     public bool AutoComplete { get; set; }
 
@@ -301,9 +307,12 @@ public partial class DateInput<TValue> : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is false.
     /// </remarks>
+    [AddedVersion("1.5.0")]
+    [Description("Gets or sets the disabled state.")]
     [Parameter]
     public bool Disabled { get; set; }
 
+    [AddedVersion("1.5.0")]
     [CascadingParameter] private EditContext EditContext { get; set; } = default!;
 
     /// <summary>
@@ -313,6 +322,7 @@ public partial class DateInput<TValue> : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is false.
     /// </remarks>
+    [Description("Determines whether to restrict the user input to Min and Max range. If , restricts the user input between the Min and Max range. Else accepts the user input.")]
     [Parameter]
     public bool EnableMinMax { get; set; }
 
@@ -322,6 +332,8 @@ public partial class DateInput<TValue> : BlazorBootstrapComponentBase
     /// Gets or sets the max.
     /// Allowed format is yyyy-mm-dd.
     /// </summary>
+    [AddedVersion("1.5.0")]
+    [Description("Gets or sets the max. Allowed format is yyyy-mm-dd.")]
     [Parameter]
     public TValue Max { get; set; } = default!;
 
@@ -329,6 +341,8 @@ public partial class DateInput<TValue> : BlazorBootstrapComponentBase
     /// Gets or sets the min.
     /// Allowed format is yyyy-mm-dd.
     /// </summary>
+    [AddedVersion("1.5.0")]
+    [Description("Gets or sets the min. Allowed format is yyyy-mm-dd.")]
     [Parameter]
     public TValue Min { get; set; } = default!;
 
@@ -338,26 +352,39 @@ public partial class DateInput<TValue> : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is null.
     /// </remarks>
+    [AddedVersion("1.5.0")]
+    [Description("Gets or sets the placeholder.")]
     [Parameter]
     public string? Placeholder { get; set; }
 
     /// <summary>
     /// Gets or sets the value.
     /// </summary>
+    [AddedVersion("1.5.0")]
+    [Description("Gets or sets the value.")]
     [Parameter]
     public TValue Value { get; set; } = default!;
 
     /// <summary>
     /// This event fired on every user keystroke that changes the DateInput value.
     /// </summary>
+    [AddedVersion("1.5.0")]
+    [Description("This event fired on every user keystroke that changes the DateInput value.")]
     [Parameter]
     public EventCallback<TValue> ValueChanged { get; set; }
 
     /// <summary>
     /// Gets or sets the expression.
     /// </summary>
+    /// <remarks>
+    /// Default value is <see langword="null" />.
+    /// </remarks>
+    [DefaultValue(null)]
+    [AddedVersion("1.5.0")]
+    [Description("Gets or sets the expression.")]
     [Parameter]
     public Expression<Func<TValue>> ValueExpression { get; set; } = default!;
 
     #endregion
 }
+

@@ -23,11 +23,15 @@ public partial class TextAreaInput : BlazorBootstrapComponentBase
     /// <summary>
     /// Disables number input.
     /// </summary>
+    [AddedVersion("3.3.0")]
+    [Description("Disables number input.")]
     public void Disable() => Disabled = true;
 
     /// <summary>
     /// Enables number input.
     /// </summary>
+    [AddedVersion("3.3.0")]
+    [Description("Enables number input.")]
     public void Enable() => Disabled = false;
 
     private async Task OnChange(ChangeEventArgs e)
@@ -59,12 +63,16 @@ public partial class TextAreaInput : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is false.
     /// </remarks>
+    [AddedVersion("3.3.0")]
+    [Description("If , NumberInput can complete the values automatically by the browser.")]
     [Parameter]
     public bool AutoComplete { get; set; }
 
     /// <summary>
     /// Gets or sets the number of columns.
     /// </summary>
+    [AddedVersion("3.3.0")]
+    [Description("Gets or sets the number of columns.")]
     [Parameter]
     public int? Cols { get; set; }
 
@@ -74,6 +82,8 @@ public partial class TextAreaInput : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is false.
     /// </remarks>
+    [AddedVersion("3.3.0")]
+    [Description("Gets or sets the disabled state.")]
     [Parameter]
     public bool Disabled { get; set; }
 
@@ -84,6 +94,8 @@ public partial class TextAreaInput : BlazorBootstrapComponentBase
     /// <summary>
     /// Gets or sets the maximum number of characters that can be entered.
     /// </summary>
+    [AddedVersion("3.3.0")]
+    [Description("Gets or sets the maximum number of characters that can be entered.")]
     [Parameter]
     public int? MaxLength { get; set; }
 
@@ -93,12 +105,16 @@ public partial class TextAreaInput : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is null.
     /// </remarks>
+    [AddedVersion("3.3.0")]
+    [Description("Gets or sets the placeholder text.")]
     [Parameter]
     public string? Placeholder { get; set; }
 
     /// <summary>
     /// Gets or sets the number of rows.
     /// </summary>
+    [AddedVersion("3.3.0")]
+    [Description("Gets or sets the number of rows.")]
     [Parameter]
     public int? Rows { get; set; }
 
@@ -108,22 +124,38 @@ public partial class TextAreaInput : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see cref="Alignment.None" />.
     /// </remarks>
+    [AddedVersion("3.3.0")]
+    [Description("Gets or sets the text alignment.")]
     [Parameter]
     public Alignment TextAlignment { get; set; } = Alignment.None;
 
     /// <summary>
     /// Gets or sets the value.
     /// </summary>
+    [AddedVersion("3.3.0")]
+    [Description("Gets or sets the value.")]
     [Parameter]
     public string Value { get; set; } = default!;
 
     /// <summary>
     /// This event fires when the <see cref="TextAreaInput" /> value changes.
     /// </summary>
+    [AddedVersion("3.3.0")]
+    [Description("This event fires when the value changes.")]
     [Parameter]
     public EventCallback<string> ValueChanged { get; set; }
 
-    [Parameter] public Expression<Func<string>> ValueExpression { get; set; } = default!;
+    /// <summary>
+    /// Gets or sets an expression that identifies the bound value.
+    /// </summary>
+    /// <remarks>
+    /// Default value is <see langword="null" />.
+    /// </remarks>
+    [AddedVersion("3.3.0")]
+    [DefaultValue(null)]
+    [Description("Gets or sets an expression that identifies the bound value.")]
+    [Parameter]
+    public Expression<Func<string>> ValueExpression { get; set; } = default!;
 
     #endregion
 }

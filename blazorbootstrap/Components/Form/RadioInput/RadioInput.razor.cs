@@ -34,6 +34,11 @@ public partial class RadioInput : BlazorBootstrapComponentBase
         base.OnInitialized();
     }
 
+    /// <summary>
+    /// Updates the radio input value from JavaScript.
+    /// </summary>
+    [Description("Updates the radio input value from JavaScript.")]
+    [AddedVersion("3.3.0")]
     [JSInvokable]
     public async Task OnChangeJS(bool newValue)
     {
@@ -47,11 +52,15 @@ public partial class RadioInput : BlazorBootstrapComponentBase
     /// <summary>
     /// Disables number input.
     /// </summary>
+    [AddedVersion("3.3.0")]
+    [Description("Disables number input.")]
     public void Disable() => Disabled = true;
 
     /// <summary>
     /// Enables number input.
     /// </summary>
+    [AddedVersion("3.3.0")]
+    [Description("Enables number input.")]
     public void Enable() => Disabled = false;
 
     #endregion
@@ -71,6 +80,8 @@ public partial class RadioInput : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is false.
     /// </remarks>
+    [AddedVersion("3.3.0")]
+    [Description("Gets or sets the disabled state.")]
     [Parameter]
     public bool Disabled { get; set; }
 
@@ -83,28 +94,46 @@ public partial class RadioInput : BlazorBootstrapComponentBase
     /// <summary>
     /// Gets or sets the label.
     /// </summary>
+    [AddedVersion("3.3.0")]
+    [Description("Gets or sets the label.")]
     [Parameter]
     public string? Label { get; set; }
 
     /// <summary>
     /// Gets or sets the name.
     /// </summary>
+    [AddedVersion("3.3.0")]
+    [Description("Gets or sets the name.")]
     [Parameter]
     public string? Name { get; set; }
 
     /// <summary>
     /// Gets or sets the value.
     /// </summary>
+    [AddedVersion("3.3.0")]
+    [Description("Gets or sets the value.")]
     [Parameter]
     public bool Value { get; set; } = default!;
 
     /// <summary>
     /// This event fired on every user keystroke that changes the NumberInput value.
     /// </summary>
+    [AddedVersion("3.3.0")]
+    [Description("This event fired on every user keystroke that changes the NumberInput value.")]
     [Parameter]
     public EventCallback<bool> ValueChanged { get; set; }
 
-    [Parameter] public Expression<Func<bool>> ValueExpression { get; set; } = default!;
+    /// <summary>
+    /// Gets or sets an expression that identifies the bound value.
+    /// </summary>
+    /// <remarks>
+    /// Default value is <see langword="null" />.
+    /// </remarks>
+    [AddedVersion("3.3.0")]
+    [DefaultValue(null)]
+    [Description("Gets or sets an expression that identifies the bound value.")]
+    [Parameter]
+    public Expression<Func<bool>> ValueExpression { get; set; } = default!;
 
     #endregion
 }
