@@ -1,5 +1,9 @@
 namespace BlazorBootstrap;
 
+/// <summary>
+/// Provides two resizable panes separated by a draggable divider.
+/// </summary>
+[AddedVersion("4.0.0")]
 public partial class SplitView : BlazorBootstrapComponentBase
 {
     #region Fields and Constants
@@ -87,6 +91,13 @@ public partial class SplitView : BlazorBootstrapComponentBase
         return base.OnParametersSetAsync();
     }
 
+    /// <summary>
+    /// Handles the JavaScript notification that divider resizing has ended.
+    /// </summary>
+    /// <param name="primaryPaneSize">The final primary-pane size as a percentage.</param>
+    /// <param name="secondaryPaneSize">The final secondary-pane size as a percentage.</param>
+    [AddedVersion("4.0.0")]
+    [Description("Handles the notification that divider resizing has ended, updates the current size, and raises OnResizeEnded.")]
     [JSInvokable]
     public async Task OnResizeEndedJS(double primaryPaneSize, double secondaryPaneSize)
     {
@@ -98,6 +109,13 @@ public partial class SplitView : BlazorBootstrapComponentBase
             await OnResizeEnded.InvokeAsync(new SplitViewResizeEventArgs(primaryPaneSize, secondaryPaneSize, Orientation));
     }
 
+    /// <summary>
+    /// Handles the JavaScript notification that divider resizing has started.
+    /// </summary>
+    /// <param name="primaryPaneSize">The initial primary-pane size as a percentage.</param>
+    /// <param name="secondaryPaneSize">The initial secondary-pane size as a percentage.</param>
+    [AddedVersion("4.0.0")]
+    [Description("Handles the notification that divider resizing has started and raises OnResizeStarted.")]
     [JSInvokable]
     public async Task OnResizeStartedJS(double primaryPaneSize, double secondaryPaneSize)
     {
@@ -108,6 +126,13 @@ public partial class SplitView : BlazorBootstrapComponentBase
             await OnResizeStarted.InvokeAsync(new SplitViewResizeEventArgs(primaryPaneSize, secondaryPaneSize, Orientation));
     }
 
+    /// <summary>
+    /// Handles the JavaScript notification that the divider size has changed.
+    /// </summary>
+    /// <param name="primaryPaneSize">The current primary-pane size as a percentage.</param>
+    /// <param name="secondaryPaneSize">The current secondary-pane size as a percentage.</param>
+    [AddedVersion("4.0.0")]
+    [Description("Handles a divider-size change, updates the current primary-pane size, and raises the bound size and resize callbacks.")]
     [JSInvokable]
     public async Task OnResizedJS(double primaryPaneSize, double secondaryPaneSize)
     {
@@ -164,19 +189,19 @@ public partial class SplitView : BlazorBootstrapComponentBase
     private double EffectiveMinimumPaneSize => Math.Clamp(MinimumPaneSize, 0d, 50d);
 
     /// <summary>
-    /// Gets or sets the divider color.
+    /// Gets or sets the Bootstrap contextual color used for the divider.
     /// <para>
     /// Default value is <see cref="SplitViewColor.None" />.
     /// </para>
     /// </summary>
     [AddedVersion("4.0.0")]
     [DefaultValue(SplitViewColor.None)]
-    [Description("Gets or sets the divider color.")]
+    [Description("Gets or sets the Bootstrap contextual color used for the divider.")]
     [Parameter]
     public SplitViewColor Color { get; set; }
 
     /// <summary>
-    /// Gets or sets a custom divider color.
+    /// Gets or sets a custom CSS color used for the divider.
     /// <para>
     /// Accepts any valid CSS color expression, including CSS variables.
     /// Default value is <see langword="null" />.
@@ -184,113 +209,113 @@ public partial class SplitView : BlazorBootstrapComponentBase
     /// </summary>
     [AddedVersion("4.0.0")]
     [DefaultValue(null)]
-    [Description("Gets or sets a custom divider color.")]
+    [Description("Gets or sets a custom CSS color used for the divider. When specified, it overrides the color supplied by Color.")]
     [Parameter]
     public string? CustomColor { get; set; }
 
     /// <summary>
-    /// Gets or sets a value indicating whether user interaction is disabled.
+    /// Gets or sets whether users can resize the panes.
     /// <para>
     /// Default value is <see langword="false" />.
     /// </para>
     /// </summary>
     [AddedVersion("4.0.0")]
     [DefaultValue(false)]
-    [Description("Gets or sets a value indicating whether user interaction is disabled.")]
+    [Description("Gets or sets whether users can resize the panes. When true, the divider is displayed but cannot be dragged.")]
     [Parameter]
     public bool IsDisabled { get; set; }
 
     /// <summary>
-    /// Gets or sets the minimum pane size as a percentage.
+    /// Gets or sets the minimum allowed size of each pane as a percentage.
     /// <para>
     /// Default value is <c>0</c>.
     /// </para>
     /// </summary>
     [AddedVersion("4.0.0")]
     [DefaultValue(0d)]
-    [Description("Gets or sets the minimum pane size as a percentage.")]
+    [Description("Gets or sets the minimum allowed size of each pane as a percentage. Values are constrained to the range 0 through 50.")]
     [Parameter]
     public double MinimumPaneSize { get; set; }
 
     /// <summary>
-    /// Fired when resizing ends.
+    /// Occurs after the user releases the divider.
     /// </summary>
     [AddedVersion("4.0.0")]
-    [Description("Fired when resizing ends.")]
+    [Description("Fires after the user releases the divider and supplies the final size of both panes.")]
     [Parameter]
     public EventCallback<SplitViewResizeEventArgs> OnResizeEnded { get; set; }
 
     /// <summary>
-    /// Fired while the divider is being dragged.
+    /// Occurs whenever dragging changes the divider position.
     /// </summary>
     [AddedVersion("4.0.0")]
-    [Description("Fired while the divider is being dragged.")]
+    [Description("Fires while the divider is dragged and supplies the current size of both panes.")]
     [Parameter]
     public EventCallback<SplitViewResizeEventArgs> OnResized { get; set; }
 
     /// <summary>
-    /// Fired when resizing starts.
+    /// Occurs when the user starts dragging the divider.
     /// </summary>
     [AddedVersion("4.0.0")]
-    [Description("Fired when resizing starts.")]
+    [Description("Fires when the user starts dragging the divider and supplies the initial size of both panes.")]
     [Parameter]
     public EventCallback<SplitViewResizeEventArgs> OnResizeStarted { get; set; }
 
     /// <summary>
-    /// Gets or sets the SplitView orientation.
+    /// Gets or sets whether panes are arranged side by side or stacked.
     /// <para>
     /// Default value is <see cref="SplitViewOrientation.Horizontal" />.
     /// </para>
     /// </summary>
     [AddedVersion("4.0.0")]
     [DefaultValue(SplitViewOrientation.Horizontal)]
-    [Description("Gets or sets the SplitView orientation.")]
+    [Description("Gets or sets whether panes are arranged side by side or stacked. The orientation also determines the divider drag direction.")]
     [Parameter]
     public SplitViewOrientation Orientation { get; set; } = SplitViewOrientation.Horizontal;
 
     /// <summary>
-    /// Gets or sets the first pane content.
+    /// Gets or sets the content rendered in the primary pane.
     /// <para>
     /// Default value is <see langword="null" />.
     /// </para>
     /// </summary>
     [AddedVersion("4.0.0")]
     [DefaultValue(null)]
-    [Description("Gets or sets the first pane content.")]
+    [Description("Gets or sets the content rendered in the primary pane, before the divider.")]
     [EditorRequired]
     [Parameter]
     public RenderFragment? Pane1 { get; set; }
 
     /// <summary>
-    /// Gets or sets the second pane content.
+    /// Gets or sets the content rendered in the secondary pane.
     /// <para>
     /// Default value is <see langword="null" />.
     /// </para>
     /// </summary>
     [AddedVersion("4.0.0")]
     [DefaultValue(null)]
-    [Description("Gets or sets the second pane content.")]
+    [Description("Gets or sets the content rendered in the secondary pane, after the divider.")]
     [EditorRequired]
     [Parameter]
     public RenderFragment? Pane2 { get; set; }
 
     /// <summary>
-    /// Gets or sets the primary pane size as a percentage.
+    /// Gets or sets the primary-pane size as a percentage.
     /// <para>
     /// Default value is <c>50</c>.
     /// </para>
     /// </summary>
     [AddedVersion("4.0.0")]
     [DefaultValue(50d)]
-    [Description("Gets or sets the primary pane size as a percentage.")]
+    [Description("Gets or sets the primary-pane size as a percentage. The value is constrained so both panes satisfy MinimumPaneSize.")]
     [Parameter]
     public double PrimaryPaneSize { get; set; } = 50d;
 
     /// <summary>
-    /// Fired when the primary pane size changes.
+    /// Occurs whenever the user changes the primary-pane size.
     /// </summary>
     [AddedVersion("4.0.0")]
-    [Description("Fired when the primary pane size changes.")]
+    [Description("Fires whenever dragging changes the primary-pane size and supports two-way binding with PrimaryPaneSize.")]
     [Parameter]
     public EventCallback<double> PrimaryPaneSizeChanged { get; set; }
 
