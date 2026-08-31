@@ -571,11 +571,11 @@ public partial class RichTextEditor : BlazorBootstrapComponentBase
     [Parameter]
     public EventCallback<string> StatusChanged { get; set; }
 
-    [AddedVersion("4.0.0")]
-    [DefaultValue(null)]
     /// <summary>
     /// Gets or sets the toolbar items.
     /// </summary>
+    [AddedVersion("4.0.0")]
+    [DefaultValue(null)]
     [Description("Gets or sets the toolbar commands available to users. Null displays the complete built-in toolbar.")]
     [Parameter]
     public RichTextEditorToolbarItem[]? ToolbarItems { get; set; }

@@ -41,7 +41,7 @@ public partial class RichTextEditorToolbarButton : BlazorBootstrapComponentBase
     [AddedVersion("4.0.0")]
     [DefaultValue(RichTextEditorToolbarItem.None)]
     [Description("Gets or sets the toolbar command represented by this button.")]
-    [Parameter, EditorRequired]
+    [EditorRequired, Parameter]
     public RichTextEditorToolbarItem Item { get; set; } = RichTextEditorToolbarItem.None;
 
     [CascadingParameter(Name = "RichTextEditor")]
