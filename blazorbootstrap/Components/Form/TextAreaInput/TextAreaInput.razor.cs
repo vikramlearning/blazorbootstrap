@@ -72,7 +72,11 @@ public partial class TextAreaInput : BlazorBootstrapComponentBase
     /// <summary>
     /// Gets or sets the number of columns.
     /// </summary>
+    /// <remarks>
+    /// Default value is <see langword="null" />.
+    /// </remarks>
     [AddedVersion("3.3.0")]
+    [DefaultValue(null)]
     [Description("Gets or sets the number of columns.")]
     [Parameter]
     public int? Cols { get; set; }
@@ -96,7 +100,11 @@ public partial class TextAreaInput : BlazorBootstrapComponentBase
     /// <summary>
     /// Gets or sets the maximum number of characters that can be entered.
     /// </summary>
+    /// <remarks>
+    /// Default value is <see langword="null" />.
+    /// </remarks>
     [AddedVersion("3.3.0")]
+    [DefaultValue(null)]
     [Description("Gets or sets the maximum number of characters that can be entered.")]
     [Parameter]
     public int? MaxLength { get; set; }
@@ -116,7 +124,11 @@ public partial class TextAreaInput : BlazorBootstrapComponentBase
     /// <summary>
     /// Gets or sets the number of rows.
     /// </summary>
+    /// <remarks>
+    /// Default value is <see langword="null" />.
+    /// </remarks>
     [AddedVersion("3.3.0")]
+    [DefaultValue(null)]
     [Description("Gets or sets the number of rows.")]
     [Parameter]
     public int? Rows { get; set; }
@@ -136,7 +148,11 @@ public partial class TextAreaInput : BlazorBootstrapComponentBase
     /// <summary>
     /// Gets or sets the value.
     /// </summary>
+    /// <remarks>
+    /// Default value is <see langword="null" />.
+    /// </remarks>
     [AddedVersion("3.3.0")]
+    [DefaultValue(null)]
     [Description("Gets or sets the value.")]
     [Parameter]
     public string Value { get; set; } = default!;

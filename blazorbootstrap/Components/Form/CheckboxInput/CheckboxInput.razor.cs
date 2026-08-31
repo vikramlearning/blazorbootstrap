@@ -76,7 +76,11 @@ public partial class CheckboxInput : BlazorBootstrapComponentBase
     /// <summary>
     /// Gets or sets the label.
     /// </summary>
+    /// <remarks>
+    /// Default value is <see langword="null" />.
+    /// </remarks>
     [AddedVersion("3.3.0")]
+    [DefaultValue(null)]
     [Description("Gets or sets the label.")]
     [Parameter]
     public string? Label { get; set; }
@@ -84,7 +88,11 @@ public partial class CheckboxInput : BlazorBootstrapComponentBase
     /// <summary>
     /// Gets or sets the value.
     /// </summary>
+    /// <remarks>
+    /// Default value is <see langword="false" />.
+    /// </remarks>
     [AddedVersion("3.3.0")]
+    [DefaultValue(false)]
     [Description("Gets or sets the value.")]
     [Parameter]
     public bool Value { get; set; }

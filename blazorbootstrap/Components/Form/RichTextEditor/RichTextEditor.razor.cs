@@ -455,19 +455,31 @@ public partial class RichTextEditor : BlazorBootstrapComponentBase
     private string Accept => string.Join(',', NormalizedAllowedImageFileTypes.Select(fileType => $".{fileType}"));
 
     /// <summary>Gets or sets the permitted HTTPS image domains. Subdomains are also permitted.</summary>
+    /// <remarks>
+    /// Default value is <see langword="null" />.
+    /// </remarks>
     [AddedVersion("4.0.0")]
+    [DefaultValue(null)]
     [Description("Gets or sets the permitted HTTPS image domains. Subdomains are also permitted.")]
     [Parameter]
     public IEnumerable<string>? AllowedImageDomains { get; set; }
 
     /// <summary>Gets or sets the permitted image file extensions.</summary>
+    /// <remarks>
+    /// Default value is <see langword="null" />.
+    /// </remarks>
     [AddedVersion("4.0.0")]
+    [DefaultValue(null)]
     [Description("Gets or sets the permitted image file extensions.")]
     [Parameter]
     public IEnumerable<string>? AllowedImageFileTypes { get; set; }
 
     /// <summary>Gets or sets the permitted HTTP(S) link domains. Subdomains are also permitted.</summary>
+    /// <remarks>
+    /// Default value is <see langword="null" />.
+    /// </remarks>
     [AddedVersion("4.0.0")]
+    [DefaultValue(null)]
     [Description("Gets or sets the permitted HTTP(S) link domains. Subdomains are also permitted.")]
     [Parameter]
     public IEnumerable<string>? AllowedLinkDomains { get; set; }

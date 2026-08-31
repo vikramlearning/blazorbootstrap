@@ -107,6 +107,7 @@ public partial class PasswordInput : BlazorBootstrapComponentBase
     /// Default value is `btn btn-primary btn-sm`.
     /// </remarks>
     [AddedVersion("3.3.0")]
+    [DefaultValue("btn border-top border-end border-bottom border border-start-0")]
     [Description("Gets or sets the show/hide password button CSS class.")]
     [Parameter]
     public string? ShowHidePasswordButtonCssClass { get; set; } = "btn border-top border-end border-bottom border border-start-0"; //""btn btn-light border";

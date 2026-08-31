@@ -88,7 +88,11 @@ public partial class TextInput : BlazorBootstrapComponentBase
     /// <summary>
     /// Gets or sets the maximum number of characters that can be entered.
     /// </summary>
+    /// <remarks>
+    /// Default value is <see langword="null" />.
+    /// </remarks>
     [AddedVersion("3.3.0")]
+    [DefaultValue(null)]
     [Description("Gets or sets the maximum number of characters that can be entered.")]
     [Parameter]
     public int? MaxLength { get; set; }
@@ -120,7 +124,11 @@ public partial class TextInput : BlazorBootstrapComponentBase
     /// <summary>
     /// Gets or sets the value.
     /// </summary>
+    /// <remarks>
+    /// Default value is <see langword="null" />.
+    /// </remarks>
     [AddedVersion("3.3.0")]
+    [DefaultValue(null)]
     [Description("Gets or sets the value.")]
     [Parameter]
     public string Value { get; set; } = default!;
