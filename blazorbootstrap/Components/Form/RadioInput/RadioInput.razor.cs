@@ -37,8 +37,8 @@ public partial class RadioInput : BlazorBootstrapComponentBase
     /// <summary>
     /// Updates the radio input value from JavaScript.
     /// </summary>
-    [Description("Updates the radio input value from JavaScript.")]
     [AddedVersion("3.3.0")]
+    [Description("Updates the radio input value from JavaScript.")]
     [JSInvokable]
     public async Task OnChangeJS(bool newValue)
     {

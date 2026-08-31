@@ -74,8 +74,8 @@ public partial class AutoComplete<TItem> : BlazorBootstrapComponentBase
     /// <summary>
     /// Handles the autocomplete dropdown hidden notification from JavaScript.
     /// </summary>
-    [Description("Handles the autocomplete dropdown hidden notification from JavaScript.")]
     [AddedVersion("1.0.0")]
+    [Description("Handles the autocomplete dropdown hidden notification from JavaScript.")]
     [JSInvokable]
     public void bsHiddenAutocomplete()
     {
@@ -93,24 +93,24 @@ public partial class AutoComplete<TItem> : BlazorBootstrapComponentBase
     /// <summary>
     /// Handles the autocomplete dropdown hide notification from JavaScript.
     /// </summary>
-    [Description("Handles the autocomplete dropdown hide notification from JavaScript.")]
     [AddedVersion("1.0.0")]
+    [Description("Handles the autocomplete dropdown hide notification from JavaScript.")]
     [JSInvokable]
     public void bsHideAutocomplete() { }
 
     /// <summary>
     /// Handles the autocomplete dropdown show notification from JavaScript.
     /// </summary>
-    [Description("Handles the autocomplete dropdown show notification from JavaScript.")]
     [AddedVersion("1.0.0")]
+    [Description("Handles the autocomplete dropdown show notification from JavaScript.")]
     [JSInvokable]
     public void bsShowAutocomplete() { }
 
     /// <summary>
     /// Handles the autocomplete dropdown shown notification from JavaScript.
     /// </summary>
-    [Description("Handles the autocomplete dropdown shown notification from JavaScript.")]
     [AddedVersion("1.0.0")]
+    [Description("Handles the autocomplete dropdown shown notification from JavaScript.")]
     [JSInvokable]
     public void bsShownAutocomplete() { }
 
@@ -256,7 +256,7 @@ public partial class AutoComplete<TItem> : BlazorBootstrapComponentBase
         cancellationTokenSource = new CancellationTokenSource();
 
         var token = cancellationTokenSource.Token;
-        await Task.Delay(300, token); // 300ms timeout for the debouncing 
+        await Task.Delay(300, token); // 300ms timeout for the debouncing
         await FilterDataAsync(token);
 
         closeButton?.HideLoading();
@@ -358,7 +358,7 @@ public partial class AutoComplete<TItem> : BlazorBootstrapComponentBase
     [Parameter]
     public bool Disabled { get; set; }
 
-    [CascadingParameter] 
+    [CascadingParameter]
     private EditContext EditContext { get; set; } = default!;
 
     /// <summary>
@@ -493,7 +493,7 @@ public partial class AutoComplete<TItem> : BlazorBootstrapComponentBase
     [AddedVersion("1.0.0")]
     [DefaultValue(null)]
     [Description("Gets or sets the value expression.")]
-    [Parameter] 
+    [Parameter]
     public Expression<Func<string?>>? ValueExpression { get; set; }
 
     #endregion

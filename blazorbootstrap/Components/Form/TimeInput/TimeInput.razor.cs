@@ -280,8 +280,8 @@ public partial class TimeInput<TValue> : BlazorBootstrapComponentBase
     public bool Disabled { get; set; }
 
     [AddedVersion("1.6.0")]
-    [DefaultValue(false)]
     [CascadingParameter] private EditContext EditContext { get; set; } = default!;
+    [DefaultValue(false)]
 
     /// <summary>
     /// Determines whether to restrict the user input to Min and Max range.
@@ -348,8 +348,8 @@ public partial class TimeInput<TValue> : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see langword="null" />.
     /// </remarks>
-    [DefaultValue(null)]
     [AddedVersion("1.6.0")]
+    [DefaultValue(null)]
     [Description("Gets or sets the expression.")]
     [Parameter]
     public Expression<Func<TValue>> ValueExpression { get; set; } = default!;

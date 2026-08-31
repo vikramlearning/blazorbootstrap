@@ -394,8 +394,8 @@ public partial class NumberInput<TValue> : BlazorBootstrapComponentBase
     public bool Disabled { get; set; }
 
     [AddedVersion("1.0.0")]
-    [DefaultValue(false)]
     [CascadingParameter] private EditContext EditContext { get; set; } = default!;
+    [DefaultValue(false)]
 
     /// <summary>
     /// Determines whether to restrict the user input to Min and Max range.

@@ -597,8 +597,8 @@ public partial class RichTextEditor : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is <see langword="null" />.
     /// </remarks>
-    [DefaultValue(null)]
     [AddedVersion("4.0.0")]
+    [DefaultValue(null)]
     [Description("Gets or sets the expression that identifies the bound value.")]
     [Parameter]
     public Expression<Func<string>>? ValueExpression { get; set; }

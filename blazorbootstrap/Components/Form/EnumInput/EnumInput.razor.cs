@@ -134,8 +134,8 @@ public partial class EnumInput<TEnum> : BlazorBootstrapComponentBase where TEnum
     /// <remarks>
     /// Default value is <see langword="null" />.
     /// </remarks>
-    [DefaultValue(null)]
     [AddedVersion("3.5.0")]
+    [DefaultValue(null)]
     [Description("Gets or sets the expression.")]
     [Parameter]
     public Expression<Func<string>> TextExpression { get; set; } = default!;
@@ -166,8 +166,8 @@ public partial class EnumInput<TEnum> : BlazorBootstrapComponentBase where TEnum
     /// <remarks>
     /// Default value is <see langword="null" />.
     /// </remarks>
-    [DefaultValue(null)]
     [AddedVersion("3.5.0")]
+    [DefaultValue(null)]
     [Description("Gets or sets the expression.")]
     [Parameter]
     public Expression<Func<int>> ValueExpression { get; set; } = default!;

@@ -95,14 +95,14 @@ public partial class CurrencyInput<TValue> : BlazorBootstrapComponentBase
     /// Disables currency input.
     /// </summary>
     [AddedVersion("1.0.0")]
-    [Description("Disables currency input.")]
+    [Description("Disables the currency input so users cannot change its value.")]
     public void Disable() => Disabled = true;
 
     /// <summary>
     /// Enables currency input.
     /// </summary>
     [AddedVersion("1.0.0")]
-    [Description("Enables currency input.")]
+    [Description("Enables the currency input so users can change its value.")]
     public void Enable() => Disabled = false;
 
     private string ExtractValue(object value, CultureInfo cultureInfo)
@@ -412,7 +412,7 @@ public partial class CurrencyInput<TValue> : BlazorBootstrapComponentBase
     /// </remarks>
     [AddedVersion("1.0.0")]
     [DefaultValue(false)]
-    [Description("If , allows negative numbers.")]
+    [Description("Gets or sets whether users can enter negative currency values. When false, negative input is rejected during parsing.")]
     [Parameter]
     public bool AllowNegativeNumbers { get; set; }
 
@@ -426,7 +426,7 @@ public partial class CurrencyInput<TValue> : BlazorBootstrapComponentBase
     /// </remarks>
     [AddedVersion("1.0.0")]
     [DefaultValue(false)]
-    [Description("If , CurrencyInput can complete the values automatically by the browser.")]
+    [Description("Gets or sets whether browser autocomplete is enabled. When true, the browser may offer saved values for the input.")]
     [Parameter]
     public bool AutoComplete { get; set; }
 
@@ -438,7 +438,7 @@ public partial class CurrencyInput<TValue> : BlazorBootstrapComponentBase
     /// </remarks>
     [AddedVersion("1.0.0")]
     [DefaultValue(CurrencySign.Standard)]
-    [Description("Gets or sets the currency sign.")]
+    [Description("Gets or sets how the currency sign is displayed when the value is formatted.")]
     [Parameter]
     public CurrencySign CurrencySign { get; set; } = CurrencySign.Standard;
 
@@ -450,13 +450,13 @@ public partial class CurrencyInput<TValue> : BlazorBootstrapComponentBase
     /// </remarks>
     [AddedVersion("1.0.0")]
     [DefaultValue(false)]
-    [Description("Gets or sets the disabled state.")]
+    [Description("Gets or sets whether the input is disabled. When true, users cannot change its value.")]
     [Parameter]
     public bool Disabled { get; set; }
 
     [AddedVersion("1.0.0")]
-    [DefaultValue(false)]
     [CascadingParameter] private EditContext EditContext { get; set; } = default!;
+    [DefaultValue(false)]
 
     /// <summary>
     /// Determines whether to restrict the user input to Min and Max range.
@@ -465,21 +465,22 @@ public partial class CurrencyInput<TValue> : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is false.
     /// </remarks>
-    [Description("Determines whether to restrict the user input to Min and Max range. If , restricts the user input between the Min and Max range. Else accepts the user input.")]
+    [AddedVersion("1.0.0")]
+    [Description("Gets or sets whether input is restricted to the configured minimum and maximum values. When true, values outside the range are rejected.")]
     [Parameter]
     public bool EnableMinMax { get; set; }
 
     private string fieldCssClasses => EditContext?.FieldCssClass(fieldIdentifier) ?? "";
 
     /// <summary>
-    /// Determines whether to hide the currency symbol are not.
+    /// Gets or sets whether the currency symbol is hidden.
     /// </summary>
     /// <remarks>
     /// Default value is false.
     /// </remarks>
     [AddedVersion("1.0.0")]
     [DefaultValue(false)]
-    [Description("Determines whether to hide the currency symbol are not.")]
+    [Description("Gets or sets whether the currency symbol is hidden. When true, formatting omits the symbol while retaining the numeric value.")]
     [Parameter]
     public bool HideCurrencySymbol { get; set; }
 
@@ -489,9 +490,10 @@ public partial class CurrencyInput<TValue> : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is 'en-US'.
     /// </remarks>
-    [Parameter]
-    //[EditorRequired]
     [AddedVersion("1.0.0")]
+    [DefaultValue("en-US")]
+    [Description("Gets or sets the culture name used to format the currency value. It controls decimal separators, grouping, and currency conventions.")]
+    [Parameter]
     public string Locale { get; set; } = "en-US";
 
     /// <summary>
@@ -499,7 +501,7 @@ public partial class CurrencyInput<TValue> : BlazorBootstrapComponentBase
     /// Max ignored if EnableMinMax="false".
     /// </summary>
     [AddedVersion("1.0.0")]
-    [Description("Gets or sets the max. Max ignored if EnableMinMax=\"false\".")]
+    [Description("Gets or sets the maximum permitted value. It is enforced only when EnableMinMax is true.")]
     [Parameter]
     public TValue Max { get; set; } = default!;
 
@@ -511,7 +513,7 @@ public partial class CurrencyInput<TValue> : BlazorBootstrapComponentBase
     /// </remarks>
     [AddedVersion("1.0.0")]
     [DefaultValue(null)]
-    [Description("The maximum number of fraction digits to use.")]
+    [Description("Gets or sets the maximum number of fraction digits used when formatting the value. Null uses the culture default.")]
     [Parameter]
     public byte? MaximumFractionDigits { get; set; }
 
@@ -520,7 +522,7 @@ public partial class CurrencyInput<TValue> : BlazorBootstrapComponentBase
     /// Min ignored if EnableMinMax="false".
     /// </summary>
     [AddedVersion("1.0.0")]
-    [Description("Gets or sets the min. Min ignored if EnableMinMax=\"false\".")]
+    [Description("Gets or sets the minimum permitted value. It is enforced only when EnableMinMax is true.")]
     [Parameter]
     public TValue Min { get; set; } = default!;
 
@@ -532,7 +534,7 @@ public partial class CurrencyInput<TValue> : BlazorBootstrapComponentBase
     /// </remarks>
     [AddedVersion("1.0.0")]
     [DefaultValue(null)]
-    [Description("The minimum number of fraction digits to use.")]
+    [Description("Gets or sets the minimum number of fraction digits used when formatting the value. Null uses the culture default.")]
     [Parameter]
     public byte? MinimumFractionDigits { get; set; }
 
@@ -545,7 +547,7 @@ public partial class CurrencyInput<TValue> : BlazorBootstrapComponentBase
     /// </remarks>
     [AddedVersion("1.0.0")]
     [DefaultValue(1)]
-    [Description("The minimum number of integer digits to use. A value with a smaller number of integer digits than this number will be left-padded with zeros (to the specified length) when formatted.")]
+    [Description("Gets or sets the minimum number of integer digits used when formatting. Values with fewer digits are left-padded with zeros.")]
     [Parameter]
     public byte MinimumIntegerDigits { get; set; } = 1;
 
@@ -557,7 +559,7 @@ public partial class CurrencyInput<TValue> : BlazorBootstrapComponentBase
     /// </remarks>
     [AddedVersion("1.0.0")]
     [DefaultValue(null)]
-    [Description("Gets or sets the placeholder.")]
+    [Description("Gets or sets placeholder text displayed when the input has no value.")]
     [Parameter]
     public string? Placeholder { get; set; }
 
@@ -569,7 +571,7 @@ public partial class CurrencyInput<TValue> : BlazorBootstrapComponentBase
     /// </remarks>
     [AddedVersion("1.0.0")]
     [DefaultValue(Alignment.None)]
-    [Description("Gets or sets the text alignment.")]
+    [Description("Gets or sets the horizontal alignment of the formatted input value.")]
     [Parameter]
     public Alignment TextAlignment { get; set; } = Alignment.None;
 
@@ -577,7 +579,7 @@ public partial class CurrencyInput<TValue> : BlazorBootstrapComponentBase
     /// Gets or sets the value.
     /// </summary>
     [AddedVersion("1.0.0")]
-    [Description("Gets or sets the value.")]
+    [Description("Gets or sets the current currency value bound to the input.")]
     [Parameter]
     public TValue Value { get; set; } = default!;
 
@@ -585,7 +587,7 @@ public partial class CurrencyInput<TValue> : BlazorBootstrapComponentBase
     /// This event fired on every user keystroke that changes the CurrencyInput value.
     /// </summary>
     [AddedVersion("1.0.0")]
-    [Description("This event fired on every user keystroke that changes the CurrencyInput value.")]
+    [Description("Fires whenever user input changes the currency value, including changes produced by typing.")]
     [Parameter]
     public EventCallback<TValue> ValueChanged { get; set; }
 
@@ -597,7 +599,7 @@ public partial class CurrencyInput<TValue> : BlazorBootstrapComponentBase
     /// </remarks>
     [AddedVersion("1.0.0")]
     [DefaultValue(null)]
-    [Description("Gets or sets an expression that identifies the bound value.")]
+    [Description("Gets or sets the expression that identifies the bound value for validation and EditContext notifications.")]
     [Parameter]
     public Expression<Func<TValue>> ValueExpression { get; set; } = default!;
 

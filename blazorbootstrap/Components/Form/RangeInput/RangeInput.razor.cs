@@ -84,8 +84,8 @@ public partial class RangeInput<TValue> : BlazorBootstrapComponentBase
     /// <summary>
     /// Updates the range input value from JavaScript.
     /// </summary>
-    [Description("Updates the range input value from JavaScript.")]
     [AddedVersion("1.10.6")]
+    [Description("Updates the range input value from JavaScript.")]
     [JSInvokable]
     public async Task bsOnInput(object? newValue)
     {
