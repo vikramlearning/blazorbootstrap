@@ -1,5 +1,6 @@
 ﻿namespace BlazorBootstrap;
 
+[AddedVersion("1.3.0")]
 public partial class Switch : BlazorBootstrapComponentBase
 {
     #region Fields and Constants

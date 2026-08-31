@@ -8,6 +8,7 @@
 /// Supported types for TValue: sbyte, sbyte?, short, short?, int, int?, long, long?, float, float?, double, double?,
 /// decimal, decimal?
 /// </remarks>
+[AddedVersion("1.10.6")]
 public partial class RangeInput<TValue> : BlazorBootstrapComponentBase
 {
     #region Fields and Constants

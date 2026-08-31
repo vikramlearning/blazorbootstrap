@@ -1,5 +1,6 @@
 ﻿namespace BlazorBootstrap;
 
+[AddedVersion("1.0.0")]
 public partial class NumberInput<TValue> : BlazorBootstrapComponentBase
 {
     #region Fields and Constants

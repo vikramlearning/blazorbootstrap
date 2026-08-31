@@ -1,5 +1,6 @@
 ﻿namespace BlazorBootstrap;
 
+[AddedVersion("3.5.0")]
 public partial class EnumInput<TEnum> : BlazorBootstrapComponentBase where TEnum : Enum
 {
     #region Fields and Constants

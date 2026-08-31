@@ -2,7 +2,7 @@
 title: Blazor File Input Component
 description: The Blazor Bootstrap FileInput component provides a standard Bootstrap file control with validation, feedback, and removal.
 sidebar_label: File Input
-sidebar_position: 6
+sidebar_position: 7
 ---
 
 import CarbonAd from '/carbon-ad.mdx'
@@ -45,7 +45,7 @@ Use the visible Bootstrap file control to open the native file picker.
 <FileInput HintText="Select a file with the standard Bootstrap file control." />
 ```
 
-[See demo here](https://demos.blazorbootstrap.com/form/file-input#basic-usage)
+[See demo here](https://demos.blazorbootstrap.com/demos/form/file-input#basic-usage)
 
 ### Multiple files and removal
 
@@ -56,7 +56,7 @@ Set `Multiple` to show every accepted file. Each file has its own keyboard-acces
            HintText="Select multiple files and remove them individually." />
 ```
 
-[See demo here](https://demos.blazorbootstrap.com/form/file-input#multiple-files-and-removal)
+[See demo here](https://demos.blazorbootstrap.com/demos/form/file-input#multiple-files-and-removal)
 
 ### Validation
 
@@ -74,7 +74,7 @@ Set `Multiple` to show every accepted file. Each file has its own keyboard-acces
 }
 ```
 
-[See demo here](https://demos.blazorbootstrap.com/form/file-input#validation)
+[See demo here](https://demos.blazorbootstrap.com/demos/form/file-input#validation)
 
 ### Validation message templates
 
@@ -103,7 +103,7 @@ Use an empty `AllowedFileTypes` collection when every extension is permitted. Ot
 }
 ```
 
-[See demo here](https://demos.blazorbootstrap.com/form/file-input#hint-text-and-unrestricted-extensions)
+[See demo here](https://demos.blazorbootstrap.com/demos/form/file-input#hint-text-and-unrestricted-extensions)
 
 ### Sizes
 
@@ -114,8 +114,14 @@ Use `Size` to apply Bootstrap's `form-control-lg` or `form-control-sm` classes.
            HintText="Large file input." />
 ```
 
-[See demo here](https://demos.blazorbootstrap.com/form/file-input#sizes)
+[See demo here](https://demos.blazorbootstrap.com/demos/form/file-input#sizes)
 
 ## Accessibility
+### Form validation
+
+`FileInput` participates in an `EditForm` and reports file-selection validation errors alongside the form.
+
+[See demo here](https://demos.blazorbootstrap.com/demos/form/file-input#form-validation)
+
 
 Provide a clear `AriaLabel` when the default label does not describe the expected files. FileInput announces validation errors through an alert region, and each selected file has an accessible, keyboard-operable remove button. For drag-and-drop with a touch-friendly native-picker fallback, use [DragAndDropFileInput](./drag-and-drop-file-input).

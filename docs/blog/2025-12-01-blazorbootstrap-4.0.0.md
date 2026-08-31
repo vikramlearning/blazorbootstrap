@@ -56,6 +56,7 @@ A resizable split-panel layout component that lets users drag a divider to resiz
 A one-time password (OTP) input component providing individual digit boxes and auto-advance behavior — ideal for verification code flows.
 
 - PR [#1238](https://github.com/vikramlearning/blazorbootstrap/pull/1238)
+- Docs: [OTP Input](https://docs.blazorbootstrap.com/forms/otp-input)
 
 ---
 

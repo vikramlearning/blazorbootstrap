@@ -1,5 +1,6 @@
 ﻿namespace BlazorBootstrap;
 
+[AddedVersion("1.0.0")]
 public partial class CurrencyInput<TValue> : BlazorBootstrapComponentBase
 {
     #region Fields and Constants

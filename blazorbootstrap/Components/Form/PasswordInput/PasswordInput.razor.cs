@@ -1,5 +1,6 @@
 ﻿namespace BlazorBootstrap;
 
+[AddedVersion("3.3.0")]
 public partial class PasswordInput : BlazorBootstrapComponentBase
 {
     #region Fields and Constants

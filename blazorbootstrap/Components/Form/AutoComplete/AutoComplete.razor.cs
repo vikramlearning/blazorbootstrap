@@ -1,5 +1,6 @@
 ﻿namespace BlazorBootstrap;
 
+[AddedVersion("0.4.0")]
 public partial class AutoComplete<TItem> : BlazorBootstrapComponentBase
 {
     #region Fields and Constants

@@ -62,7 +62,7 @@ Use `Disabled` as the sole inactive-state parameter. When it is `true`, the edit
 
 ## Demo walkthrough
 
-The [RichTextEditor demo](https://demos.blazorbootstrap.com/rich-text-editor) keeps seven scenarios in order: Full toolbar, Article draft, Publish rich update, Host-controlled image upload, Disabled, Form validation, and Events. Each scenario includes a short explanation and ordered `How to use` steps before its runnable source.
+The [RichTextEditor demo](https://demos.blazorbootstrap.com/demos/form/rich-text-editor) keeps seven scenarios in order: Full toolbar, Article draft, Publish rich update, Host-controlled image upload, Disabled, Form validation, and Events. Each scenario includes a short explanation and ordered `How to use` steps before its runnable source.
 
 ## Host-controlled image upload
 
@@ -99,7 +99,7 @@ The default limit is 5 MB. Supported raster formats are JPEG (`.jpg`/`.jpeg`), P
 
 Set `AllowedImageDomains` when returned image URLs must come from specific HTTPS domains; subdomains are accepted. The component rejects non-HTTPS URLs, URLs containing credentials, returned URLs outside the configured allow-list, and images that fail to load in the preview. Closing the dialog or starting a newer upload cancels the earlier callback safely. Handler failures, cancellation, and rejected URLs remain visible feedback states rather than insertable images.
 
-See the shared [host-controlled image upload demo](https://demos.blazorbootstrap.com/rich-text-editor#host-controlled-image-upload) for successful, failed, cancelled, and off-policy returned-URL flows. Its callback counter also demonstrates that a file rejected before callback validation does not invoke the host handler. The same Demo RCL example is consumed by both the Server and WebAssembly demo hosts.
+See the shared [host-controlled image upload demo](https://demos.blazorbootstrap.com/demos/form/rich-text-editor#host-controlled-image-upload) for successful, failed, cancelled, and off-policy returned-URL flows. Its callback counter also demonstrates that a file rejected before callback validation does not invoke the host handler. The same Demo RCL example is consumed by both the Server and WebAssembly demo hosts.
 
 Temporary preview uploads are a host concern: expire or clean up temporary objects if the author cancels or abandons the dialog, and promote them only after the application accepts the final content. The host must also sanitize persisted HTML before rendering it again.
 

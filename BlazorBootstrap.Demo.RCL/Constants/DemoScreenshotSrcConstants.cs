@@ -23,12 +23,15 @@ public class DemoScreenshotSrcConstants
     public const string Demos_URL_CurrencyInput = DemoScreenshotSrcPrefix + "currency-input.png";
     public const string Demos_URL_DateInput = DemoScreenshotSrcPrefix + "date-input.png";
     public const string Demos_URL_EnumInput = DemoScreenshotSrcPrefix + "enum-input.png"; // TODO: pending
+    public const string Demos_URL_DragAndDropFileInput = DemoScreenshotSrcPrefix + "drag-and-drop-file-input.png";
     public const string Demos_URL_NumberInput = DemoScreenshotSrcPrefix + "number-input.png";
+    public const string Demos_URL_FileInput = DemoScreenshotSrcPrefix + "file-input.png";
     public const string Demos_URL_OTPInput = DemoScreenshotSrcPrefix + "otp-input.png";
     public const string Demos_URL_PasswordInput = DemoScreenshotSrcPrefix + "password-input.png";
     public const string Demos_URL_RadioInput = DemoScreenshotSrcPrefix + "radio-input.png";
     public const string Demos_URL_RangeInput = DemoScreenshotSrcPrefix + "range-input.png";
     public const string Demos_URL_SelectInput = DemoScreenshotSrcPrefix + "select-input.png";
+    public const string Demos_URL_RichTextEditor = DemoScreenshotSrcPrefix + "rich-text-editor.png";
     public const string Demos_URL_Switch = DemoScreenshotSrcPrefix + "switch.png";
     public const string Demos_URL_TextAreaInput = DemoScreenshotSrcPrefix + "textarea-input.png";
     public const string Demos_URL_TextInput = DemoScreenshotSrcPrefix + "text-input.png";
