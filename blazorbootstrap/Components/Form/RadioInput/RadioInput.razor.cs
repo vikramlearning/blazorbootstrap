@@ -81,6 +81,7 @@ public partial class RadioInput : BlazorBootstrapComponentBase
     /// Default value is false.
     /// </remarks>
     [AddedVersion("3.3.0")]
+    [DefaultValue(false)]
     [Description("Gets or sets the disabled state.")]
     [Parameter]
     public bool Disabled { get; set; }

@@ -83,6 +83,7 @@ public partial class Switch : BlazorBootstrapComponentBase
     /// Default value is false.
     /// </remarks>
     [AddedVersion("1.3.0")]
+    [DefaultValue(false)]
     [Description("Gets or sets the disabled state.")]
     [Parameter]
     public bool Disabled { get; set; }
@@ -98,6 +99,7 @@ public partial class Switch : BlazorBootstrapComponentBase
     /// Default value is null.
     /// </remarks>
     [AddedVersion("1.3.0")]
+    [DefaultValue(null)]
     [Description("Gets or sets the label.")]
     [Parameter]
     public string Label { get; set; } = default!;
@@ -111,6 +113,7 @@ public partial class Switch : BlazorBootstrapComponentBase
     /// Default value is false.
     /// </remarks>
     [AddedVersion("1.3.0")]
+    [DefaultValue(false)]
     [Description("Determines whether to put the switch on the opposite side.")]
     [Parameter]
     public bool Reverse { get; set; }
@@ -122,6 +125,7 @@ public partial class Switch : BlazorBootstrapComponentBase
     /// Default value is false.
     /// </remarks>
     [AddedVersion("1.3.0")]
+    [DefaultValue(false)]
     [Description("Gets or sets the value.")]
     [Parameter]
     public bool Value { get; set; }

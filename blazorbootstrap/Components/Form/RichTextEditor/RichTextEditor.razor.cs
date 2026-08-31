@@ -593,4 +593,3 @@ public partial class RichTextEditor : BlazorBootstrapComponentBase
 
     #endregion
 }
-

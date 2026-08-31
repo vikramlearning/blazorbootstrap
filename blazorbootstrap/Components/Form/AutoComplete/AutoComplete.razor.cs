@@ -1,6 +1,6 @@
 ﻿namespace BlazorBootstrap;
 
-[AddedVersion("0.4.0")]
+[AddedVersion("1.0.0")]
 public partial class AutoComplete<TItem> : BlazorBootstrapComponentBase
 {
     #region Fields and Constants
@@ -75,7 +75,7 @@ public partial class AutoComplete<TItem> : BlazorBootstrapComponentBase
     /// Handles the autocomplete dropdown hidden notification from JavaScript.
     /// </summary>
     [Description("Handles the autocomplete dropdown hidden notification from JavaScript.")]
-    [AddedVersion("0.4.0")]
+    [AddedVersion("1.0.0")]
     [JSInvokable]
     public void bsHiddenAutocomplete()
     {
@@ -94,7 +94,7 @@ public partial class AutoComplete<TItem> : BlazorBootstrapComponentBase
     /// Handles the autocomplete dropdown hide notification from JavaScript.
     /// </summary>
     [Description("Handles the autocomplete dropdown hide notification from JavaScript.")]
-    [AddedVersion("0.4.0")]
+    [AddedVersion("1.0.0")]
     [JSInvokable]
     public void bsHideAutocomplete() { }
 
@@ -102,7 +102,7 @@ public partial class AutoComplete<TItem> : BlazorBootstrapComponentBase
     /// Handles the autocomplete dropdown show notification from JavaScript.
     /// </summary>
     [Description("Handles the autocomplete dropdown show notification from JavaScript.")]
-    [AddedVersion("0.4.0")]
+    [AddedVersion("1.0.0")]
     [JSInvokable]
     public void bsShowAutocomplete() { }
 
@@ -110,7 +110,7 @@ public partial class AutoComplete<TItem> : BlazorBootstrapComponentBase
     /// Handles the autocomplete dropdown shown notification from JavaScript.
     /// </summary>
     [Description("Handles the autocomplete dropdown shown notification from JavaScript.")]
-    [AddedVersion("0.4.0")]
+    [AddedVersion("1.0.0")]
     [JSInvokable]
     public void bsShownAutocomplete() { }
 
@@ -498,4 +498,3 @@ public partial class AutoComplete<TItem> : BlazorBootstrapComponentBase
 
     #endregion
 }
-

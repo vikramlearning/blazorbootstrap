@@ -87,6 +87,7 @@ public partial class PasswordInput : BlazorBootstrapComponentBase
     /// Default value is false.
     /// </remarks>
     [AddedVersion("3.3.0")]
+    [DefaultValue(false)]
     [Description("Gets or sets the disabled state.")]
     [Parameter]
     public bool Disabled { get; set; }
@@ -119,6 +120,7 @@ public partial class PasswordInput : BlazorBootstrapComponentBase
     /// Default value is null.
     /// </remarks>
     [AddedVersion("3.3.0")]
+    [DefaultValue(null)]
     [Description("Gets or sets the value.")]
     [Parameter]
     public string? Value { get; set; }

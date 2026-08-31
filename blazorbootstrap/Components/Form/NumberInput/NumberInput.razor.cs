@@ -362,6 +362,7 @@ public partial class NumberInput<TValue> : BlazorBootstrapComponentBase
     /// Default value is false.
     /// </remarks>
     [AddedVersion("1.0.0")]
+    [DefaultValue(false)]
     [Description("If , allows negative numbers.")]
     [Parameter]
     public bool AllowNegativeNumbers { get; set; }
@@ -375,6 +376,7 @@ public partial class NumberInput<TValue> : BlazorBootstrapComponentBase
     /// Default value is false.
     /// </remarks>
     [AddedVersion("1.0.0")]
+    [DefaultValue(false)]
     [Description("If , NumberInput can complete the values automatically by the browser.")]
     [Parameter]
     public bool AutoComplete { get; set; }
@@ -386,11 +388,13 @@ public partial class NumberInput<TValue> : BlazorBootstrapComponentBase
     /// Default value is false.
     /// </remarks>
     [AddedVersion("1.0.0")]
+    [DefaultValue(false)]
     [Description("Gets or sets the disabled state .")]
     [Parameter]
     public bool Disabled { get; set; }
 
     [AddedVersion("1.0.0")]
+    [DefaultValue(false)]
     [CascadingParameter] private EditContext EditContext { get; set; } = default!;
 
     /// <summary>
@@ -442,6 +446,7 @@ public partial class NumberInput<TValue> : BlazorBootstrapComponentBase
     /// Default value is null.
     /// </remarks>
     [AddedVersion("1.0.0")]
+    [DefaultValue(null)]
     [Description("Gets or sets the placeholder.")]
     [Parameter]
     public string? Placeholder { get; set; }
@@ -453,6 +458,7 @@ public partial class NumberInput<TValue> : BlazorBootstrapComponentBase
     /// Default value is null.
     /// </remarks>
     [AddedVersion("1.0.0")]
+    [DefaultValue(null)]
     [Description("Gets or sets the step.")]
     [Parameter]
     public double? Step { get; set; }
@@ -464,6 +470,7 @@ public partial class NumberInput<TValue> : BlazorBootstrapComponentBase
     /// Default value is <see cref="Alignment.None" />.
     /// </remarks>
     [AddedVersion("1.0.0")]
+    [DefaultValue(Alignment.None)]
     [Description("Gets or sets the text alignment.")]
     [Parameter]
     public Alignment TextAlignment { get; set; } = Alignment.None;

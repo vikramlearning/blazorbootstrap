@@ -388,6 +388,7 @@ public partial class RangeInput<TValue> : BlazorBootstrapComponentBase
     /// Default value is false.
     /// </remarks>
     [AddedVersion("1.10.6")]
+    [DefaultValue(false)]
     [Description("Gets or sets the disabled state.")]
     [Parameter]
     public bool Disabled { get; set; }
@@ -421,6 +422,7 @@ public partial class RangeInput<TValue> : BlazorBootstrapComponentBase
     /// Default value is 1.
     /// </remarks>
     [AddedVersion("1.10.6")]
+    [DefaultValue(1)]
     [Description("Gets or sets the step value of the range input.")]
     [Parameter]
     public double Step { get; set; } = 1;
@@ -432,6 +434,7 @@ public partial class RangeInput<TValue> : BlazorBootstrapComponentBase
     /// Default value is null.
     /// </remarks>
     [AddedVersion("1.10.6")]
+    [DefaultValue(null)]
     [Description("Gets or sets the tick marks.")]
     [Parameter]
     public IEnumerable<TickMark> TickMarks { get; set; } = default!;

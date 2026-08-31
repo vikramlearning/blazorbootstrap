@@ -262,6 +262,7 @@ public partial class TimeInput<TValue> : BlazorBootstrapComponentBase
     /// Default value is false.
     /// </remarks>
     [AddedVersion("1.6.0")]
+    [DefaultValue(false)]
     [Description("If , DateInput can complete the values automatically by the browser.")]
     [Parameter]
     public bool AutoComplete { get; set; }
@@ -273,11 +274,13 @@ public partial class TimeInput<TValue> : BlazorBootstrapComponentBase
     /// Default value is false.
     /// </remarks>
     [AddedVersion("1.6.0")]
+    [DefaultValue(false)]
     [Description("Gets or sets the disabled state.")]
     [Parameter]
     public bool Disabled { get; set; }
 
     [AddedVersion("1.6.0")]
+    [DefaultValue(false)]
     [CascadingParameter] private EditContext EditContext { get; set; } = default!;
 
     /// <summary>
@@ -318,6 +321,7 @@ public partial class TimeInput<TValue> : BlazorBootstrapComponentBase
     /// Default value is null.
     /// </remarks>
     [AddedVersion("1.6.0")]
+    [DefaultValue(null)]
     [Description("Gets or sets the placeholder.")]
     [Parameter]
     public string? Placeholder { get; set; }
@@ -352,4 +356,3 @@ public partial class TimeInput<TValue> : BlazorBootstrapComponentBase
 
     #endregion
 }
-

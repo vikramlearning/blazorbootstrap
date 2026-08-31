@@ -86,6 +86,7 @@ public partial class EnumInput<TEnum> : BlazorBootstrapComponentBase where TEnum
     /// </para>
     /// </summary>
     [AddedVersion("3.5.0")]
+    [DefaultValue(false)]
     [Description("Gets or sets the disabled state. Default value is false.")]
     [Parameter]
     public bool Disabled { get; set; } = false;
@@ -102,6 +103,7 @@ public partial class EnumInput<TEnum> : BlazorBootstrapComponentBase where TEnum
     /// </para>
     /// </summary>
     [AddedVersion("3.5.0")]
+    [DefaultValue(EnumInputSize.None)]
     [Description("Gets or sets the size. Default value is .")]
     [Parameter]
     public EnumInputSize Size { get; set; } = EnumInputSize.None;
@@ -113,6 +115,7 @@ public partial class EnumInput<TEnum> : BlazorBootstrapComponentBase where TEnum
     /// </para>
     /// </summary>
     [AddedVersion("3.5.0")]
+    [DefaultValue(null)]
     [Description("Gets or sets the text. Default value is .")]
     [Parameter]
     public string Text { get; set; } = default!;
@@ -144,6 +147,7 @@ public partial class EnumInput<TEnum> : BlazorBootstrapComponentBase where TEnum
     /// </para>
     /// </summary>
     [AddedVersion("3.5.0")]
+    [DefaultValue(0)]
     [Description("Gets or sets the value. Default value is 0.")]
     [Parameter]
     public int Value { get; set; }
@@ -170,4 +174,3 @@ public partial class EnumInput<TEnum> : BlazorBootstrapComponentBase where TEnum
 
     #endregion
 }
-

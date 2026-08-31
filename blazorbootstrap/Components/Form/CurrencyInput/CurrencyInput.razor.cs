@@ -411,6 +411,7 @@ public partial class CurrencyInput<TValue> : BlazorBootstrapComponentBase
     /// Default value is false.
     /// </remarks>
     [AddedVersion("1.0.0")]
+    [DefaultValue(false)]
     [Description("If , allows negative numbers.")]
     [Parameter]
     public bool AllowNegativeNumbers { get; set; }
@@ -424,6 +425,7 @@ public partial class CurrencyInput<TValue> : BlazorBootstrapComponentBase
     /// Default value is false.
     /// </remarks>
     [AddedVersion("1.0.0")]
+    [DefaultValue(false)]
     [Description("If , CurrencyInput can complete the values automatically by the browser.")]
     [Parameter]
     public bool AutoComplete { get; set; }
@@ -435,6 +437,7 @@ public partial class CurrencyInput<TValue> : BlazorBootstrapComponentBase
     /// Default value is <see cref="CurrencySign.Standard" />.
     /// </remarks>
     [AddedVersion("1.0.0")]
+    [DefaultValue(CurrencySign.Standard)]
     [Description("Gets or sets the currency sign.")]
     [Parameter]
     public CurrencySign CurrencySign { get; set; } = CurrencySign.Standard;
@@ -446,11 +449,13 @@ public partial class CurrencyInput<TValue> : BlazorBootstrapComponentBase
     /// Default value is false.
     /// </remarks>
     [AddedVersion("1.0.0")]
+    [DefaultValue(false)]
     [Description("Gets or sets the disabled state.")]
     [Parameter]
     public bool Disabled { get; set; }
 
     [AddedVersion("1.0.0")]
+    [DefaultValue(false)]
     [CascadingParameter] private EditContext EditContext { get; set; } = default!;
 
     /// <summary>
@@ -473,6 +478,7 @@ public partial class CurrencyInput<TValue> : BlazorBootstrapComponentBase
     /// Default value is false.
     /// </remarks>
     [AddedVersion("1.0.0")]
+    [DefaultValue(false)]
     [Description("Determines whether to hide the currency symbol are not.")]
     [Parameter]
     public bool HideCurrencySymbol { get; set; }
@@ -504,6 +510,7 @@ public partial class CurrencyInput<TValue> : BlazorBootstrapComponentBase
     /// Default value is null.
     /// </remarks>
     [AddedVersion("1.0.0")]
+    [DefaultValue(null)]
     [Description("The maximum number of fraction digits to use.")]
     [Parameter]
     public byte? MaximumFractionDigits { get; set; }
@@ -524,6 +531,7 @@ public partial class CurrencyInput<TValue> : BlazorBootstrapComponentBase
     /// Default value is null.
     /// </remarks>
     [AddedVersion("1.0.0")]
+    [DefaultValue(null)]
     [Description("The minimum number of fraction digits to use.")]
     [Parameter]
     public byte? MinimumFractionDigits { get; set; }
@@ -536,6 +544,7 @@ public partial class CurrencyInput<TValue> : BlazorBootstrapComponentBase
     /// Default value is 1.
     /// </remarks>
     [AddedVersion("1.0.0")]
+    [DefaultValue(1)]
     [Description("The minimum number of integer digits to use. A value with a smaller number of integer digits than this number will be left-padded with zeros (to the specified length) when formatted.")]
     [Parameter]
     public byte MinimumIntegerDigits { get; set; } = 1;
@@ -547,6 +556,7 @@ public partial class CurrencyInput<TValue> : BlazorBootstrapComponentBase
     /// Default value is null.
     /// </remarks>
     [AddedVersion("1.0.0")]
+    [DefaultValue(null)]
     [Description("Gets or sets the placeholder.")]
     [Parameter]
     public string? Placeholder { get; set; }
@@ -558,6 +568,7 @@ public partial class CurrencyInput<TValue> : BlazorBootstrapComponentBase
     /// Default value is <see cref="Alignment.None" />.
     /// </remarks>
     [AddedVersion("1.0.0")]
+    [DefaultValue(Alignment.None)]
     [Description("Gets or sets the text alignment.")]
     [Parameter]
     public Alignment TextAlignment { get; set; } = Alignment.None;
