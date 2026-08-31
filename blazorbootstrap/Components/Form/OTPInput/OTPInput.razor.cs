@@ -26,7 +26,7 @@ public partial class OTPInput : BlazorBootstrapComponentBase
     /// Clears the OTP input fields.
     /// </summary>
     [AddedVersion("4.0.0")]
-    [Description("Clears the OTP input fields.")]
+    [Description("Clears every OTP digit, raises the change callback, and returns focus to the first field.")]
     public async Task ClearAsync()
     {
         otpValues = new string[Length];
@@ -174,7 +174,7 @@ public partial class OTPInput : BlazorBootstrapComponentBase
     /// </summary>
     [AddedVersion("4.0.0")]
     [DefaultValue(null)]
-    [Description("Gets or sets the CSS class for the container element.")]
+    [Description("Gets or sets CSS classes applied to the element that contains the OTP fields.")]
     [Parameter]
     public string? ContainerCssClass { get; set; }
 
@@ -186,7 +186,7 @@ public partial class OTPInput : BlazorBootstrapComponentBase
     /// </summary>
     [AddedVersion("4.0.0")]
     [DefaultValue(null)]
-    [Description("Gets or sets the CSS style for the container element.")]
+    [Description("Gets or sets inline CSS styles applied to the element that contains the OTP fields.")]
     [Parameter]
     public string? ContainerCssStyle { get; set; }
 
@@ -203,7 +203,7 @@ public partial class OTPInput : BlazorBootstrapComponentBase
     /// </summary>
     [AddedVersion("4.0.0")]
     [DefaultValue(6)]
-    [Description("Gets or sets the OTP input length.")]
+    [Description("Gets or sets the number of digit fields rendered for the one-time password.")]
     [Parameter]
     public int Length { get; set; } = 6;
 
@@ -211,7 +211,7 @@ public partial class OTPInput : BlazorBootstrapComponentBase
     /// This event fires when the OTP input value changes.
     /// </summary>
     [AddedVersion("4.0.0")]
-    [Description("This event fires when the OTP input value changes.")]
+    [Description("Fires whenever an OTP digit changes and supplies the current combined value.")]
     [Parameter]
     public EventCallback<string> OnOTPChanged { get; set; }
 
@@ -222,7 +222,7 @@ public partial class OTPInput : BlazorBootstrapComponentBase
     /// This event fires when the OTP input is completed.
     /// </summary>
     [AddedVersion("4.0.0")]
-    [Description("This event fires when the OTP input is completed.")]
+    [Description("Fires when every OTP field contains a digit and supplies the completed one-time password.")]
     [Parameter]
     public EventCallback<string> OnOTPCompleted { get; set; }
 

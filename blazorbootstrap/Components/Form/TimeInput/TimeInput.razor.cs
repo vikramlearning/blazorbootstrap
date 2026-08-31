@@ -1,4 +1,4 @@
-namespace BlazorBootstrap;
+﻿namespace BlazorBootstrap;
 
 [AddedVersion("1.6.0")]
 public partial class TimeInput<TValue> : BlazorBootstrapComponentBase
@@ -290,7 +290,7 @@ public partial class TimeInput<TValue> : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is false.
     /// </remarks>
-    [Description("Gets or sets whether input is restricted to the configured minimum and maximum times. If , restricts the user input between the Min and Max range. Else accepts the user input.")]
+    [Description("Gets or sets whether input is restricted to the configured minimum and maximum times. When true, times outside the range are rejected.")]
     [Parameter]
     public bool EnableMinMax { get; set; }
 
@@ -301,7 +301,7 @@ public partial class TimeInput<TValue> : BlazorBootstrapComponentBase
     /// 
     /// </summary>
     [AddedVersion("1.6.0")]
-    [Description("Gets or sets the maximum permitted time. ")]
+    [Description("Gets or sets the maximum permitted time. It is enforced only when EnableMinMax is true.")]
     [Parameter]
     public TValue Max { get; set; } = default!;
 
@@ -310,7 +310,7 @@ public partial class TimeInput<TValue> : BlazorBootstrapComponentBase
     /// 
     /// </summary>
     [AddedVersion("1.6.0")]
-    [Description("Gets or sets the minimum permitted time. ")]
+    [Description("Gets or sets the minimum permitted time. It is enforced only when EnableMinMax is true.")]
     [Parameter]
     public TValue Min { get; set; } = default!;
 

@@ -1,4 +1,4 @@
-namespace BlazorBootstrap;
+﻿namespace BlazorBootstrap;
 
 public partial class FileInput : FileInputBase
 {
@@ -9,7 +9,7 @@ public partial class FileInput : FileInputBase
     /// </summary>
     [AddedVersion("4.0.0")]
     [DefaultValue(FileInputSize.Default)]
-    [Description("Gets or sets the component size.")]
+    [Description("Gets or sets the Bootstrap size used to render the file picker.")]
     [Parameter]
     public FileInputSize Size { get; set; } = FileInputSize.Default;
 

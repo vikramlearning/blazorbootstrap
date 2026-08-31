@@ -1,4 +1,4 @@
-namespace BlazorBootstrap;
+﻿namespace BlazorBootstrap;
 
 [AddedVersion("3.3.0")]
 public partial class TextAreaInput : BlazorBootstrapComponentBase
@@ -89,7 +89,7 @@ public partial class TextAreaInput : BlazorBootstrapComponentBase
     /// </remarks>
     [AddedVersion("3.3.0")]
     [DefaultValue(false)]
-    [Description("Gets or sets whether the text area is disabled.")]
+    [Description("Gets or sets whether the text area is disabled. When true, users cannot change its value.")]
     [Parameter]
     public bool Disabled { get; set; }
 
@@ -105,7 +105,7 @@ public partial class TextAreaInput : BlazorBootstrapComponentBase
     /// </remarks>
     [AddedVersion("3.3.0")]
     [DefaultValue(null)]
-    [Description("Gets or sets the maximum number of characters users can enter.")]
+    [Description("Gets or sets the maximum number of characters users can enter. Additional input is prevented when the limit is reached.")]
     [Parameter]
     public int? MaxLength { get; set; }
 

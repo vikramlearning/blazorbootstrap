@@ -1,4 +1,4 @@
-namespace BlazorBootstrap;
+﻿namespace BlazorBootstrap;
 
 [AddedVersion("1.0.0")]
 public partial class NumberInput<TValue> : BlazorBootstrapComponentBase
@@ -389,7 +389,7 @@ public partial class NumberInput<TValue> : BlazorBootstrapComponentBase
     /// </remarks>
     [AddedVersion("1.0.0")]
     [DefaultValue(false)]
-    [Description("Gets or sets whether the input is disabled.")]
+    [Description("Gets or sets whether the input is disabled. When true, users cannot change its value.")]
     [Parameter]
     public bool Disabled { get; set; }
 
@@ -404,7 +404,7 @@ public partial class NumberInput<TValue> : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is false.
     /// </remarks>
-    [Description("Gets or sets whether input is restricted to the configured minimum and maximum values. If , restricts the user input between the Min and Max range. Else accepts the user input.")]
+    [Description("Gets or sets whether input is restricted to the configured minimum and maximum values. When true, values outside the range are rejected.")]
     [Parameter]
     public bool EnableMinMax { get; set; }
 
@@ -426,7 +426,7 @@ public partial class NumberInput<TValue> : BlazorBootstrapComponentBase
     /// 
     /// </summary>
     [AddedVersion("1.0.0")]
-    [Description("Gets or sets the maximum permitted value. Max ignored if EnableMinMax=\"false\".")]
+    [Description("Gets or sets the maximum permitted value. It is enforced only when EnableMinMax is true.")]
     [Parameter]
     public TValue Max { get; set; } = default!;
 
@@ -435,7 +435,7 @@ public partial class NumberInput<TValue> : BlazorBootstrapComponentBase
     /// 
     /// </summary>
     [AddedVersion("1.0.0")]
-    [Description("Gets or sets the minimum permitted value. Min ignored if EnableMinMax=\"false\".")]
+    [Description("Gets or sets the minimum permitted value. It is enforced only when EnableMinMax is true.")]
     [Parameter]
     public TValue Min { get; set; } = default!;
 

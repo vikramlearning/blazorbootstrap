@@ -85,7 +85,7 @@ public partial class RangeInput<TValue> : BlazorBootstrapComponentBase
     /// Updates the range input value from JavaScript.
     /// </summary>
     [AddedVersion("1.10.6")]
-    [Description("Updates the range input value from JavaScript.")]
+    [Description("Updates the range input value from the JavaScript change handler.")]
     [JSInvokable]
     public async Task bsOnInput(object? newValue)
     {
@@ -389,7 +389,7 @@ public partial class RangeInput<TValue> : BlazorBootstrapComponentBase
     /// </remarks>
     [AddedVersion("1.10.6")]
     [DefaultValue(false)]
-    [Description("Gets or sets the disabled state.")]
+    [Description("Gets or sets whether the range input is disabled. When true, users cannot change its value.")]
     [Parameter]
     public bool Disabled { get; set; }
 
@@ -401,7 +401,7 @@ public partial class RangeInput<TValue> : BlazorBootstrapComponentBase
     /// Gets or sets the maximum value of the range input.
     /// </summary>
     [AddedVersion("1.10.6")]
-    [Description("Gets or sets the maximum value of the range input.")]
+    [Description("Gets or sets the maximum value selectable with the range input.")]
     [Parameter]
     public TValue Max { get; set; } = default!;
 
@@ -409,7 +409,7 @@ public partial class RangeInput<TValue> : BlazorBootstrapComponentBase
     /// Gets or sets the minimum value of the range input.
     /// </summary>
     [AddedVersion("1.10.6")]
-    [Description("Gets or sets the minimum value of the range input.")]
+    [Description("Gets or sets the minimum value selectable with the range input.")]
     [Parameter]
     public TValue Min { get; set; } = default!;
 
@@ -423,7 +423,7 @@ public partial class RangeInput<TValue> : BlazorBootstrapComponentBase
     /// </remarks>
     [AddedVersion("1.10.6")]
     [DefaultValue(1)]
-    [Description("Gets or sets the step value of the range input.")]
+    [Description("Gets or sets the increment between selectable range values.")]
     [Parameter]
     public double Step { get; set; } = 1;
 
@@ -435,7 +435,7 @@ public partial class RangeInput<TValue> : BlazorBootstrapComponentBase
     /// </remarks>
     [AddedVersion("1.10.6")]
     [DefaultValue(null)]
-    [Description("Gets or sets the tick marks.")]
+    [Description("Gets or sets tick marks displayed along the range input.")]
     [Parameter]
     public IEnumerable<TickMark> TickMarks { get; set; } = default!;
 
@@ -443,7 +443,7 @@ public partial class RangeInput<TValue> : BlazorBootstrapComponentBase
     /// Gets or sets the value of the range input.
     /// </summary>
     [AddedVersion("1.10.6")]
-    [Description("Gets or sets the value of the range input.")]
+    [Description("Gets or sets the current value bound to the range input.")]
     [Parameter]
     public TValue Value { get; set; } = default!;
 
@@ -451,7 +451,7 @@ public partial class RangeInput<TValue> : BlazorBootstrapComponentBase
     /// This event fires when the user specifies a numeric value.
     /// </summary>
     [AddedVersion("1.10.6")]
-    [Description("This event fires when the user specifies a numeric value.")]
+    [Description("Fires whenever user interaction changes the range value.")]
     [Parameter]
     public EventCallback<TValue> ValueChanged { get; set; }
 
@@ -463,7 +463,7 @@ public partial class RangeInput<TValue> : BlazorBootstrapComponentBase
     /// </remarks>
     [AddedVersion("1.10.6")]
     [DefaultValue(null)]
-    [Description("Gets or sets an expression that identifies the bound value.")]
+    [Description("Gets or sets the expression that identifies the bound value for validation and EditContext notifications.")]
     [Parameter]
     public Expression<Func<TValue>> ValueExpression { get; set; } = default!;
 

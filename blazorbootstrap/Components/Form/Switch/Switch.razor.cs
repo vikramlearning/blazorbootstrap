@@ -37,17 +37,17 @@ public partial class Switch : BlazorBootstrapComponentBase
     }
 
     /// <summary>
-    /// Disables switch.
+    /// Disables the switch so users cannot change its value.
     /// </summary>
     [AddedVersion("1.3.0")]
-    [Description("Disables switch.")]
+    [Description("Disables the switch so users cannot change its value.")]
     public void Disable() => Disabled = true;
 
     /// <summary>
-    /// Enables switch.
+    /// Enables the switch so users can change its value.
     /// </summary>
     [AddedVersion("1.3.0")]
-    [Description("Enables switch.")]
+    [Description("Enables the switch so users can change its value.")]
     public void Enable() => Disabled = false;
 
     /// <summary>
@@ -77,14 +77,14 @@ public partial class Switch : BlazorBootstrapComponentBase
             (BootstrapClass.FormCheckReverse, Reverse));
 
     /// <summary>
-    /// Gets or sets the disabled state.
+    /// Gets or sets whether the switch is disabled.
     /// </summary>
     /// <remarks>
     /// Default value is false.
     /// </remarks>
     [AddedVersion("1.3.0")]
     [DefaultValue(false)]
-    [Description("Gets or sets the disabled state.")]
+    [Description("Gets or sets whether the switch is disabled. When true, users cannot change its value.")]
     [Parameter]
     public bool Disabled { get; set; }
 
@@ -100,7 +100,7 @@ public partial class Switch : BlazorBootstrapComponentBase
     /// </remarks>
     [AddedVersion("1.3.0")]
     [DefaultValue(null)]
-    [Description("Gets or sets the label.")]
+    [Description("Gets or sets the label displayed next to the switch.")]
     [Parameter]
     public string Label { get; set; } = default!;
 
@@ -114,7 +114,7 @@ public partial class Switch : BlazorBootstrapComponentBase
     /// </remarks>
     [AddedVersion("1.3.0")]
     [DefaultValue(false)]
-    [Description("Determines whether to put the switch on the opposite side.")]
+    [Description("Gets or sets whether the switch is displayed on the opposite side of its label.")]
     [Parameter]
     public bool Reverse { get; set; }
 
@@ -126,7 +126,7 @@ public partial class Switch : BlazorBootstrapComponentBase
     /// </remarks>
     [AddedVersion("1.3.0")]
     [DefaultValue(false)]
-    [Description("Gets or sets the value.")]
+    [Description("Gets or sets the current checked value bound to the switch.")]
     [Parameter]
     public bool Value { get; set; }
 
@@ -134,7 +134,7 @@ public partial class Switch : BlazorBootstrapComponentBase
     /// This event is fired when the switch selection changes.
     /// </summary>
     [AddedVersion("1.3.0")]
-    [Description("This event is fired when the switch selection changes.")]
+    [Description("Fires whenever user interaction changes the switch value.")]
     [Parameter]
     public EventCallback<bool> ValueChanged { get; set; } = default!;
 
@@ -146,7 +146,7 @@ public partial class Switch : BlazorBootstrapComponentBase
     /// </remarks>
     [AddedVersion("1.3.0")]
     [DefaultValue(null)]
-    [Description("Gets or sets an expression that identifies the bound value.")]
+    [Description("Gets or sets the expression that identifies the bound value for validation and EditContext notifications.")]
     [Parameter]
     public Expression<Func<bool>> ValueExpression { get; set; } = default!;
 

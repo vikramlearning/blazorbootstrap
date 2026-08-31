@@ -35,14 +35,14 @@ public partial class EnumInput<TEnum> : BlazorBootstrapComponentBase where TEnum
     /// Disables the <see cref="EnumInput" />.
     /// </summary>
     [AddedVersion("3.5.0")]
-    [Description("Disables the .")]
+    [Description("Disables the enum input so users cannot change its selection.")]
     public void Disable() => Disabled = true;
 
     /// <summary>
     /// Enables the <see cref="EnumInput" />.
     /// </summary>
     [AddedVersion("3.5.0")]
-    [Description("Enables the .")]
+    [Description("Enables the enum input so users can change its selection.")]
     public void Enable() => Disabled = false;
 
     private void OnChange(ChangeEventArgs e)
@@ -87,7 +87,7 @@ public partial class EnumInput<TEnum> : BlazorBootstrapComponentBase where TEnum
     /// </summary>
     [AddedVersion("3.5.0")]
     [DefaultValue(false)]
-    [Description("Gets or sets the disabled state. Default value is false.")]
+    [Description("Gets or sets whether the enum input is disabled. When true, users cannot change its selection.")]
     [Parameter]
     public bool Disabled { get; set; } = false;
 
@@ -104,7 +104,7 @@ public partial class EnumInput<TEnum> : BlazorBootstrapComponentBase where TEnum
     /// </summary>
     [AddedVersion("3.5.0")]
     [DefaultValue(EnumInputSize.None)]
-    [Description("Gets or sets the size. Default value is .")]
+    [Description("Gets or sets the Bootstrap size of the enum select input.")]
     [Parameter]
     public EnumInputSize Size { get; set; } = EnumInputSize.None;
 
@@ -116,7 +116,7 @@ public partial class EnumInput<TEnum> : BlazorBootstrapComponentBase where TEnum
     /// </summary>
     [AddedVersion("3.5.0")]
     [DefaultValue(null)]
-    [Description("Gets or sets the text. Default value is .")]
+    [Description("Gets or sets the display text of the selected enum value.")]
     [Parameter]
     public string Text { get; set; } = default!;
 
@@ -124,7 +124,7 @@ public partial class EnumInput<TEnum> : BlazorBootstrapComponentBase where TEnum
     /// This event fires when the <see cref="EnumInput" /> text changes.
     /// </summary>
     [AddedVersion("3.5.0")]
-    [Description("This event fires when the text changes.")]
+    [Description("Fires whenever selection changes the display text of the selected enum value.")]
     [Parameter]
     public EventCallback<string> TextChanged { get; set; }
 
@@ -136,7 +136,7 @@ public partial class EnumInput<TEnum> : BlazorBootstrapComponentBase where TEnum
     /// </remarks>
     [AddedVersion("3.5.0")]
     [DefaultValue(null)]
-    [Description("Gets or sets the expression.")]
+    [Description("Gets or sets the expression that identifies the bound value for validation and EditContext notifications.")]
     [Parameter]
     public Expression<Func<string>> TextExpression { get; set; } = default!;
 
@@ -148,7 +148,7 @@ public partial class EnumInput<TEnum> : BlazorBootstrapComponentBase where TEnum
     /// </summary>
     [AddedVersion("3.5.0")]
     [DefaultValue(0)]
-    [Description("Gets or sets the value. Default value is 0.")]
+    [Description("Gets or sets the numeric value of the selected enum member.")]
     [Parameter]
     public int Value { get; set; }
 
@@ -156,7 +156,7 @@ public partial class EnumInput<TEnum> : BlazorBootstrapComponentBase where TEnum
     /// This event fires when the <see cref="EnumInput" /> value changes.
     /// </summary>
     [AddedVersion("3.5.0")]
-    [Description("This event fires when the value changes.")]
+    [Description("Fires whenever selection changes the numeric value of the selected enum member.")]
     [Parameter]
     public EventCallback<int> ValueChanged { get; set; }
 
@@ -168,7 +168,7 @@ public partial class EnumInput<TEnum> : BlazorBootstrapComponentBase where TEnum
     /// </remarks>
     [AddedVersion("3.5.0")]
     [DefaultValue(null)]
-    [Description("Gets or sets the expression.")]
+    [Description("Gets or sets the expression that identifies the bound value for validation and EditContext notifications.")]
     [Parameter]
     public Expression<Func<int>> ValueExpression { get; set; } = default!;
 

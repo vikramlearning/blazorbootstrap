@@ -1,4 +1,4 @@
-namespace BlazorBootstrap;
+﻿namespace BlazorBootstrap;
 
 public abstract class FileInputBase : BlazorBootstrapComponentBase
 {
@@ -122,7 +122,7 @@ public abstract class FileInputBase : BlazorBootstrapComponentBase
     /// </summary>
     [AddedVersion("4.0.0")]
     [DefaultValue(null)]
-    [Description("Gets or sets the allowed file extensions.")]
+    [Description("Gets or sets the file extensions accepted by the picker. Null or an empty collection permits every extension.")]
     [Parameter]
     public IEnumerable<string>? AllowedFileTypes { get; set; }
 
@@ -139,7 +139,7 @@ public abstract class FileInputBase : BlazorBootstrapComponentBase
     /// This event fires when the selected files change.
     /// </summary>
     [AddedVersion("4.0.0")]
-    [Description("This event fires when the selected files change.")]
+    [Description("Fires after accepted files are added or removed and supplies the current read-only file list.")]
     [Parameter]
     public EventCallback<IReadOnlyList<IBrowserFile>> FilesChanged { get; set; }
 
@@ -148,7 +148,7 @@ public abstract class FileInputBase : BlazorBootstrapComponentBase
     /// </summary>
     [AddedVersion("4.0.0")]
     [DefaultValue(null)]
-    [Description("Gets or sets the hint text displayed below the component.")]
+    [Description("Gets or sets supplementary text displayed below the file selection area.")]
     [Parameter]
     public string? HintText { get; set; }
 
@@ -158,7 +158,7 @@ public abstract class FileInputBase : BlazorBootstrapComponentBase
     /// </summary>
     [AddedVersion("4.0.0")]
     [DefaultValue(DefaultInvalidFileTypeErrorMessage)]
-    [Description("Gets or sets the invalid file type validation message template.")]
+    [Description("Gets or sets the message template used when a selected file extension is not allowed. Supports {FileName} and {AllowedFileTypes} tokens.")]
     [Parameter]
     public string InvalidFileTypeErrorMessage { get; set; } = DefaultInvalidFileTypeErrorMessage;
 
@@ -167,7 +167,7 @@ public abstract class FileInputBase : BlazorBootstrapComponentBase
     /// </summary>
     [AddedVersion("4.0.0")]
     [DefaultValue(null)]
-    [Description("Gets or sets the maximum number of selected files.")]
+    [Description("Gets or sets the maximum number of accepted files. Null does not impose a file-count limit.")]
     [Parameter]
     public int? MaxFileCount { get; set; }
 
@@ -177,7 +177,7 @@ public abstract class FileInputBase : BlazorBootstrapComponentBase
     /// </summary>
     [AddedVersion("4.0.0")]
     [DefaultValue(DefaultMaxFileCountErrorMessage)]
-    [Description("Gets or sets the maximum file count validation message template.")]
+    [Description("Gets or sets the message template used when a file exceeds the configured file-count limit. Supports {FileName} and {MaxFileCount} tokens.")]
     [Parameter]
     public string MaxFileCountErrorMessage { get; set; } = DefaultMaxFileCountErrorMessage;
 
@@ -186,7 +186,7 @@ public abstract class FileInputBase : BlazorBootstrapComponentBase
     /// </summary>
     [AddedVersion("4.0.0")]
     [DefaultValue(null)]
-    [Description("Gets or sets the maximum allowed file size in bytes.")]
+    [Description("Gets or sets the maximum accepted file size in bytes. Null does not impose a size limit.")]
     [Parameter]
     public long? MaxFileSize { get; set; }
 
@@ -196,7 +196,7 @@ public abstract class FileInputBase : BlazorBootstrapComponentBase
     /// </summary>
     [AddedVersion("4.0.0")]
     [DefaultValue(DefaultMaxFileSizeErrorMessage)]
-    [Description("Gets or sets the maximum file size validation message template.")]
+    [Description("Gets or sets the message template used when a file exceeds the configured size limit. Supports {FileName} and {MaxFileSize} tokens.")]
     [Parameter]
     public string MaxFileSizeErrorMessage { get; set; } = DefaultMaxFileSizeErrorMessage;
 
@@ -205,14 +205,14 @@ public abstract class FileInputBase : BlazorBootstrapComponentBase
     /// </summary>
     [AddedVersion("4.0.0")]
     [DefaultValue(false)]
-    [Description("Gets or sets whether multiple files can be selected.")]
+    [Description("Gets or sets whether users can select multiple files. When false, selecting a file replaces the current selection.")]
     [Parameter]
     public bool Multiple { get; set; }
 
     /// <summary>
     /// Gets the currently selected files.
     /// </summary>
-    [Description("Gets the currently selected files.")]
+    [Description("Gets a read-only list of files currently accepted by the component.")]
     public IReadOnlyList<IBrowserFile> SelectedFiles => files.AsReadOnly();
 
     /// <summary>
@@ -220,7 +220,7 @@ public abstract class FileInputBase : BlazorBootstrapComponentBase
     /// </summary>
     [AddedVersion("4.0.0")]
     [DefaultValue(DefaultSingleFileErrorMessage)]
-    [Description("Gets or sets the single-file selection validation message template.")]
+    [Description("Gets or sets the message shown when users select multiple files while Multiple is false.")]
     [Parameter]
     public string SingleFileErrorMessage { get; set; } = DefaultSingleFileErrorMessage;
 

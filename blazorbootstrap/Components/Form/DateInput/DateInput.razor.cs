@@ -1,4 +1,4 @@
-namespace BlazorBootstrap;
+﻿namespace BlazorBootstrap;
 
 [AddedVersion("1.5.0")]
 public partial class DateInput<TValue> : BlazorBootstrapComponentBase
@@ -326,7 +326,7 @@ public partial class DateInput<TValue> : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is false.
     /// </remarks>
-    [Description("Gets or sets whether input is restricted to the configured minimum and maximum dates. If , restricts the user input between the Min and Max range. Else accepts the user input.")]
+    [Description("Gets or sets whether input is restricted to the configured minimum and maximum dates. When true, dates outside the range are rejected.")]
     [Parameter]
     public bool EnableMinMax { get; set; }
 
@@ -337,7 +337,7 @@ public partial class DateInput<TValue> : BlazorBootstrapComponentBase
     /// 
     /// </summary>
     [AddedVersion("1.5.0")]
-    [Description("Gets or sets the maximum permitted date. ")]
+    [Description("Gets or sets the maximum permitted date. It is enforced only when EnableMinMax is true.")]
     [Parameter]
     public TValue Max { get; set; } = default!;
 
@@ -346,7 +346,7 @@ public partial class DateInput<TValue> : BlazorBootstrapComponentBase
     /// 
     /// </summary>
     [AddedVersion("1.5.0")]
-    [Description("Gets or sets the minimum permitted date. ")]
+    [Description("Gets or sets the minimum permitted date. It is enforced only when EnableMinMax is true.")]
     [Parameter]
     public TValue Min { get; set; } = default!;
 

@@ -21,17 +21,17 @@ public partial class CheckboxInput : BlazorBootstrapComponentBase
     }
 
     /// <summary>
-    /// Disables checkbox input.
+    /// Disables the checkbox so users cannot change its value.
     /// </summary>
     [AddedVersion("3.3.0")]
-    [Description("Disables checkbox input.")]
+    [Description("Disables the checkbox so users cannot change its value.")]
     public void Disable() => Disabled = true;
 
     /// <summary>
-    /// Enables checkbox input.
+    /// Enables the checkbox so users can change its value.
     /// </summary>
     [AddedVersion("3.3.0")]
-    [Description("Enables checkbox input.")]
+    [Description("Enables the checkbox so users can change its value.")]
     public void Enable() => Disabled = false;
 
     private async Task OnChange(ChangeEventArgs e)
@@ -56,14 +56,14 @@ public partial class CheckboxInput : BlazorBootstrapComponentBase
         );
 
     /// <summary>
-    /// Gets or sets the disabled state.
+    /// Gets or sets whether the checkbox is disabled.
     /// </summary>
     /// <remarks>
     /// Default value is false.
     /// </remarks>
     [AddedVersion("3.3.0")]
     [DefaultValue(false)]
-    [Description("Gets or sets the disabled state.")]
+    [Description("Gets or sets whether the checkbox is disabled. When true, users cannot change its value.")]
     [Parameter]
     public bool Disabled { get; set; }
 
@@ -81,7 +81,7 @@ public partial class CheckboxInput : BlazorBootstrapComponentBase
     /// </remarks>
     [AddedVersion("3.3.0")]
     [DefaultValue(null)]
-    [Description("Gets or sets the label.")]
+    [Description("Gets or sets the label displayed next to the checkbox.")]
     [Parameter]
     public string? Label { get; set; }
 
@@ -93,7 +93,7 @@ public partial class CheckboxInput : BlazorBootstrapComponentBase
     /// </remarks>
     [AddedVersion("3.3.0")]
     [DefaultValue(false)]
-    [Description("Gets or sets the value.")]
+    [Description("Gets or sets the current checked value bound to the checkbox.")]
     [Parameter]
     public bool Value { get; set; }
 
@@ -101,7 +101,7 @@ public partial class CheckboxInput : BlazorBootstrapComponentBase
     /// This event fires when the <see cref="CheckboxInput" /> value changes.
     /// </summary>
     [AddedVersion("3.3.0")]
-    [Description("This event fires when the value changes.")]
+    [Description("Fires whenever user interaction changes the checked value.")]
     [Parameter]
     public EventCallback<bool> ValueChanged { get; set; }
 
@@ -113,7 +113,7 @@ public partial class CheckboxInput : BlazorBootstrapComponentBase
     /// </remarks>
     [AddedVersion("3.3.0")]
     [DefaultValue(null)]
-    [Description("Gets or sets an expression that identifies the bound value.")]
+    [Description("Gets or sets the expression that identifies the bound value for validation and EditContext notifications.")]
     [Parameter]
     public Expression<Func<bool>> ValueExpression { get; set; } = default!;
 
