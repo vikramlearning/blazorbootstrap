@@ -75,7 +75,9 @@ This is a breaking change for existing chart users: install `BlazorExpress.Chart
 | Currency Input | [Docs](https://docs.blazorbootstrap.com/forms/currency-input) | [Demos](https://demos.blazorbootstrap.com/form/currency-input) |
 | Date Input | [Docs](https://docs.blazorbootstrap.com/forms/date-input) | [Demos](https://demos.blazorbootstrap.com/form/date-input) |
 | Dropdown | [Docs](https://docs.blazorbootstrap.com/components/dropdown) | [Demos](https://demos.blazorbootstrap.com/dropdown) |
+| DragAndDropFileInput | [Docs](https://docs.blazorbootstrap.com/forms/drag-and-drop-file-input) | [Demos](https://demos.blazorbootstrap.com/demos/form/drag-and-drop-file-input) |
 | Enum Input| [Docs](https://docs.blazorbootstrap.com/forms/enum-input) | [Demos](https://demos.blazorbootstrap.com//form/enum-input) |
+| FileInput | [Docs](https://docs.blazorbootstrap.com/forms/file-input) | [Demos](https://demos.blazorbootstrap.com/demos/form/file-input) |
 | Google Map | [Docs](https://docs.blazorbootstrap.com/components/google-map) | [Demos](https://demos.blazorbootstrap.com/google-map) |
 | Grid | [Docs](https://docs.blazorbootstrap.com/components/grid) | [Demos](https://demos.blazorbootstrap.com/grid) |
 | Icons | [Docs](https://docs.blazorbootstrap.com/content/icons) | [Demos](https://demos.blazorbootstrap.com/icons) |
@@ -83,6 +85,7 @@ This is a breaking change for existing chart users: install `BlazorExpress.Chart
 | Markdown | [Docs](https://docs.blazorbootstrap.com/content/markdown) | [Demos](https://demos.blazorbootstrap.com/markdown) |
 | Modals | [Docs](https://docs.blazorbootstrap.com/components/modal) | [Demos](https://demos.blazorbootstrap.com/modals) |
 | Number Input | [Docs](https://docs.blazorbootstrap.com/forms/number-input) | [Demos](https://demos.blazorbootstrap.com/form/number-input) |
+| OTPInput | [Docs](https://docs.blazorbootstrap.com/forms/otp-input) | [Demos](https://demos.blazorbootstrap.com/demos/form/otp-input) |
 | Offcanvas | [Docs](https://docs.blazorbootstrap.com/components/offcanvas) | [Demos](https://demos.blazorbootstrap.com/offcanvas) |
 | Pagination | [Docs](https://docs.blazorbootstrap.com/components/pagination) | [Demos](https://demos.blazorbootstrap.com/pagination) |
 | Password Input | [Docs](https://docs.blazorbootstrap.com/forms/password-input) | [Demos](https://demos.blazorbootstrap.com/form/password-input) |
@@ -92,10 +95,12 @@ This is a breaking change for existing chart users: install `BlazorExpress.Chart
 | Progress | [Docs](https://docs.blazorbootstrap.com/components/progress) | [Demos](https://demos.blazorbootstrap.com/progress) |
 | Radio Input | [Docs](https://docs.blazorbootstrap.com/forms/radio-input) | [Demos](https://demos.blazorbootstrap.com/form/radio-input) |
 | RangeInput | [Docs](https://docs.blazorbootstrap.com/forms/range-input) | [Demos](https://demos.blazorbootstrap.com/form/range-input) |
+| RichTextEditor | [Docs](https://docs.blazorbootstrap.com/forms/rich-text-editor) | [Demos](https://demos.blazorbootstrap.com/demos/form/rich-text-editor) |
 | Ribbon | [Docs](https://docs.blazorbootstrap.com/components/ribbon) | [Demos](https://demos.blazorbootstrap.com/ribbon) |
 | Script Loader | [Docs](https://docs.blazorbootstrap.com/components/script-loader) | [Demos](https://demos.blazorbootstrap.com/script-loader) |
 | Sidebar | [Docs](https://docs.blazorbootstrap.com/components/sidebar) | [Demos](https://demos.blazorbootstrap.com/sidebar) |
 | Sidebar2 | [Docs](https://docs.blazorbootstrap.com/components/sidebar2) | [Demos](https://demos.blazorbootstrap.com/sidebar2) |
+| SplitView | [Docs](https://docs.blazorbootstrap.com/components/split-view) | [Demos](https://demos.blazorbootstrap.com/demos/split-view) |
 | Sortable List | [Docs](https://docs.blazorbootstrap.com/components/sortable-list) | [Demos](https://demos.blazorbootstrap.com/sortable-list) |
 | Spinners | [Docs](https://docs.blazorbootstrap.com/components/spinners) | [Demos](https://demos.blazorbootstrap.com/spinners) |
 | Switch | [Docs](https://docs.blazorbootstrap.com/forms/switch) | [Demos](https://demos.blazorbootstrap.com/form/switch) |
@@ -157,11 +162,17 @@ Blazor Bootstrap's documentation, which is included in this repository's root di
 ### Blazor Bootstrap - Date Input
 ![Blazor Bootstrap - Date Input](https://i.imgur.com/1mVjqQv.png "Blazor Bootstrap - Date Input")
 
+### Blazor Bootstrap - DragAndDropFileInput
+![Blazor Bootstrap - DragAndDropFileInput](https://demos.blazorbootstrap.com/_content/BlazorBootstrap.Demo.RCL/images/screenshots/drag-and-drop-file-input.png "Blazor Bootstrap - DragAndDropFileInput")
+
 ### Blazor Bootstrap - Dropdown
 ![Blazor Bootstrap - Dropdown](https://i.imgur.com/beAr31J.png "Blazor Bootstrap - Dropdown")
 
 ### Blazor Bootstrap - Enum Input
 ![Blazor Bootstrap - Enum Input](https://private-user-images.githubusercontent.com/2337067/517874250-8a624590-1dfc-470a-8f9d-7636851d6c95.png?jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3NjM5MjAxNzEsIm5iZiI6MTc2MzkxOTg3MSwicGF0aCI6Ii8yMzM3MDY3LzUxNzg3NDI1MC04YTYyNDU5MC0xZGZjLTQ3MGEtOGY5ZC03NjM2ODUxZDZjOTUucG5nP1gtQW16LUFsZ29yaXRobT1BV1M0LUhNQUMtU0hBMjU2JlgtQW16LUNyZWRlbnRpYWw9QUtJQVZDT0RZTFNBNTNQUUs0WkElMkYyMDI1MTEyMyUyRnVzLWVhc3QtMSUyRnMzJTJGYXdzNF9yZXF1ZXN0JlgtQW16LURhdGU9MjAyNTExMjNUMTc0NDMxWiZYLUFtei1FeHBpcmVzPTMwMCZYLUFtei1TaWduYXR1cmU9ZmVlNDlmZDZkNGQ5ZWUxMjE5MGM3NmEzMzc2OTdhYzk0MjY4YTU3NTk5M2JmMGIxNDNkYjI0ZWYyM2UwMDA5YyZYLUFtei1TaWduZWRIZWFkZXJzPWhvc3QifQ.hvU9-57w9n41vwE3eyy3ZcDPDYXbQ3p_JW1RmDmT-c8 "Blazor Bootstrap - Enum Input")
+
+### Blazor Bootstrap - FileInput
+![Blazor Bootstrap - FileInput](https://demos.blazorbootstrap.com/_content/BlazorBootstrap.Demo.RCL/images/screenshots/file-input.png "Blazor Bootstrap - FileInput")
 
 ### Blazor Bootstrap - Google Map
 ![Blazor Bootstrap - Google Map](https://i.imgur.com/AbyDP51.png "Blazor Bootstrap - Google Map")
@@ -183,6 +194,9 @@ Blazor Bootstrap's documentation, which is included in this repository's root di
 
 ### Blazor Bootstrap - Number Input
 ![Blazor Bootstrap - Number Input](https://i.imgur.com/iUNBkki.png "Blazor Bootstrap - Number Input")
+
+### Blazor Bootstrap - OTPInput
+![Blazor Bootstrap - OTPInput](https://demos.blazorbootstrap.com/_content/BlazorBootstrap.Demo.RCL/images/screenshots/otp-input.png "Blazor Bootstrap - OTPInput")
 
 ### Blazor Bootstrap - Offcanvas
 ![Blazor Bootstrap - Offcanvas](https://i.imgur.com/1vNz5Ci.jpg "Blazor Bootstrap - Offcanvas")
@@ -211,6 +225,9 @@ Blazor Bootstrap's documentation, which is included in this repository's root di
 ### Blazor Bootstrap - Range Input
 ![Blazor Bootstrap - Range Input](https://i.imgur.com/rWDDHaf.png "Blazor Bootstrap - Range Input")
 
+### Blazor Bootstrap - RichTextEditor
+![Blazor Bootstrap - RichTextEditor](https://demos.blazorbootstrap.com/_content/BlazorBootstrap.Demo.RCL/images/screenshots/rich-text-editor.png "Blazor Bootstrap - RichTextEditor")
+
 ### Blazor Bootstrap - Ribbon
 ![Blazor Bootstrap - Ribbon](https://i.imgur.com/LpZVLbF.png "Blazor Bootstrap - Ribbon")
 
@@ -222,6 +239,9 @@ Blazor Bootstrap's documentation, which is included in this repository's root di
 
 ### Blazor Bootstrap - Sidebar2
 ![Blazor Bootstrap - Sidebar2](https://i.imgur.com/HUP7ydv.png "Blazor Bootstrap - Sidebar2")
+
+### Blazor Bootstrap - SplitView
+![Blazor Bootstrap - SplitView](https://demos.blazorbootstrap.com/_content/BlazorBootstrap.Demo.RCL/images/screenshots/split-view.png "Blazor Bootstrap - SplitView")
 
 ### Blazor Bootstrap - Sortable List
 ![Blazor Bootstrap - Sortable List](https://i.imgur.com/bfzP8Yi.png "Blazor Bootstrap - Sortable List")

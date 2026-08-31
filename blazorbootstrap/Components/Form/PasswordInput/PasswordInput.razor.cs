@@ -1,5 +1,6 @@
 ﻿namespace BlazorBootstrap;
 
+[AddedVersion("3.3.0")]
 public partial class PasswordInput : BlazorBootstrapComponentBase
 {
     #region Fields and Constants
@@ -38,13 +39,17 @@ public partial class PasswordInput : BlazorBootstrapComponentBase
     }
 
     /// <summary>
-    /// Disables InputPassword.
+    /// Disables the password input so users cannot change its value.
     /// </summary>
+    [AddedVersion("3.3.0")]
+    [Description("Disables the password input so users cannot change its value.")]
     public void Disable() => Disabled = true;
 
     /// <summary>
-    /// Enables InputPassword.
+    /// Enables the password input so users can change its value.
     /// </summary>
+    [AddedVersion("3.3.0")]
+    [Description("Enables the password input so users can change its value.")]
     public void Enable() => Disabled = false;
 
     /// <summary>
@@ -76,11 +81,14 @@ public partial class PasswordInput : BlazorBootstrapComponentBase
         );
 
     /// <summary>
-    /// Gets or sets the disabled state.
+    /// Gets or sets whether the password input is disabled.
     /// </summary>
     /// <remarks>
     /// Default value is false.
     /// </remarks>
+    [AddedVersion("3.3.0")]
+    [DefaultValue(false)]
+    [Description("Gets or sets whether the password input is disabled. When true, users cannot change its value.")]
     [Parameter]
     public bool Disabled { get; set; }
 
@@ -98,6 +106,9 @@ public partial class PasswordInput : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is `btn btn-primary btn-sm`.
     /// </remarks>
+    [AddedVersion("3.3.0")]
+    [DefaultValue("btn border-top border-end border-bottom border border-start-0")]
+    [Description("Gets or sets CSS classes applied to the button that reveals or hides the password.")]
     [Parameter]
     public string? ShowHidePasswordButtonCssClass { get; set; } = "btn border-top border-end border-bottom border border-start-0"; //""btn btn-light border";
 
@@ -109,16 +120,31 @@ public partial class PasswordInput : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is null.
     /// </remarks>
+    [AddedVersion("3.3.0")]
+    [DefaultValue(null)]
+    [Description("Gets or sets the current password value bound to the input.")]
     [Parameter]
     public string? Value { get; set; }
 
     /// <summary>
     /// This event is fired when the PasswordInput value changes.
     /// </summary>
+    [AddedVersion("3.3.0")]
+    [Description("Fires whenever user input changes the password value.")]
     [Parameter]
     public EventCallback<string?> ValueChanged { get; set; }
 
-    [Parameter] public Expression<Func<string?>> ValueExpression { get; set; } = default!;
+    /// <summary>
+    /// Gets or sets an expression that identifies the bound value.
+    /// </summary>
+    /// <remarks>
+    /// Default value is <see langword="null" />.
+    /// </remarks>
+    [AddedVersion("3.3.0")]
+    [DefaultValue(null)]
+    [Description("Gets or sets the expression that identifies the bound value for validation and EditContext notifications.")]
+    [Parameter]
+    public Expression<Func<string?>> ValueExpression { get; set; } = default!;
 
     #endregion
 }

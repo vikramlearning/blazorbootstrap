@@ -1,5 +1,6 @@
 ﻿namespace BlazorBootstrap;
 
+[AddedVersion("3.5.0")]
 public partial class EnumInput<TEnum> : BlazorBootstrapComponentBase where TEnum : Enum
 {
     #region Fields and Constants
@@ -33,11 +34,15 @@ public partial class EnumInput<TEnum> : BlazorBootstrapComponentBase where TEnum
     /// <summary>
     /// Disables the <see cref="EnumInput" />.
     /// </summary>
+    [AddedVersion("3.5.0")]
+    [Description("Disables the enum input so users cannot change its selection.")]
     public void Disable() => Disabled = true;
 
     /// <summary>
     /// Enables the <see cref="EnumInput" />.
     /// </summary>
+    [AddedVersion("3.5.0")]
+    [Description("Enables the enum input so users can change its selection.")]
     public void Enable() => Disabled = false;
 
     private void OnChange(ChangeEventArgs e)
@@ -80,6 +85,9 @@ public partial class EnumInput<TEnum> : BlazorBootstrapComponentBase where TEnum
     /// Default value is false.
     /// </para>
     /// </summary>
+    [AddedVersion("3.5.0")]
+    [DefaultValue(false)]
+    [Description("Gets or sets whether the enum input is disabled. When true, users cannot change its selection.")]
     [Parameter]
     public bool Disabled { get; set; } = false;
 
@@ -94,6 +102,9 @@ public partial class EnumInput<TEnum> : BlazorBootstrapComponentBase where TEnum
     /// Default value is <see cref="EnumInputSize.None" />.
     /// </para>
     /// </summary>
+    [AddedVersion("3.5.0")]
+    [DefaultValue(EnumInputSize.None)]
+    [Description("Gets or sets the Bootstrap size of the enum select input.")]
     [Parameter]
     public EnumInputSize Size { get; set; } = EnumInputSize.None;
 
@@ -103,18 +114,29 @@ public partial class EnumInput<TEnum> : BlazorBootstrapComponentBase where TEnum
     /// Default value is <see langword="null"/>.
     /// </para>
     /// </summary>
+    [AddedVersion("3.5.0")]
+    [DefaultValue(null)]
+    [Description("Gets or sets the display text of the selected enum value.")]
     [Parameter]
     public string Text { get; set; } = default!;
 
     /// <summary>
     /// This event fires when the <see cref="EnumInput" /> text changes.
     /// </summary>
+    [AddedVersion("3.5.0")]
+    [Description("Fires whenever selection changes the display text of the selected enum value.")]
     [Parameter]
     public EventCallback<string> TextChanged { get; set; }
 
     /// <summary>
     /// Gets or sets the expression.
     /// </summary>
+    /// <remarks>
+    /// Default value is <see langword="null" />.
+    /// </remarks>
+    [AddedVersion("3.5.0")]
+    [DefaultValue(null)]
+    [Description("Gets or sets the expression that identifies the bound value for validation and EditContext notifications.")]
     [Parameter]
     public Expression<Func<string>> TextExpression { get; set; } = default!;
 
@@ -124,18 +146,29 @@ public partial class EnumInput<TEnum> : BlazorBootstrapComponentBase where TEnum
     /// Default value is 0.
     /// </para>
     /// </summary>
+    [AddedVersion("3.5.0")]
+    [DefaultValue(0)]
+    [Description("Gets or sets the numeric value of the selected enum member.")]
     [Parameter]
     public int Value { get; set; }
 
     /// <summary>
     /// This event fires when the <see cref="EnumInput" /> value changes.
     /// </summary>
+    [AddedVersion("3.5.0")]
+    [Description("Fires whenever selection changes the numeric value of the selected enum member.")]
     [Parameter]
     public EventCallback<int> ValueChanged { get; set; }
 
     /// <summary>
     /// Gets or sets the expression.
     /// </summary>
+    /// <remarks>
+    /// Default value is <see langword="null" />.
+    /// </remarks>
+    [AddedVersion("3.5.0")]
+    [DefaultValue(null)]
+    [Description("Gets or sets the expression that identifies the bound value for validation and EditContext notifications.")]
     [Parameter]
     public Expression<Func<int>> ValueExpression { get; set; } = default!;
 

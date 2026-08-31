@@ -2,7 +2,7 @@
 title: Blazor Drag and Drop File Input Component
 description: The Blazor Bootstrap DragAndDropFileInput component supports desktop drag and drop with a touch-friendly native file-picker fallback.
 sidebar_label: Drag and Drop File Input
-sidebar_position: 7
+sidebar_position: 5
 ---
 
 import CarbonAd from '/carbon-ad.mdx'
@@ -12,6 +12,8 @@ import CarbonAd from '/carbon-ad.mdx'
 The Blazor Bootstrap `DragAndDropFileInput` component displays a file drop area. On desktop browsers, users can drop files onto the area. On touch browsers, tapping the area opens the native file picker. It supports the same selection, validation, feedback, and removal behavior as `FileInput`.
 
 <CarbonAd />
+
+<img src="https://demos.blazorbootstrap.com/_content/BlazorBootstrap.Demo.RCL/images/screenshots/drag-and-drop-file-input.png" alt="Blazor Bootstrap DragAndDropFileInput component" />
 
 ## Parameters
 
@@ -45,7 +47,7 @@ Drop a file onto the area in desktop browsers. On tablet and mobile touch browse
 <DragAndDropFileInput HintText="Drop files here on desktop, or tap to browse on touch devices." />
 ```
 
-[See demo here](https://demos.blazorbootstrap.com/form/drag-and-drop-file-input#basic-usage)
+[See demo here](https://demos.blazorbootstrap.com/demos/form/drag-and-drop-file-input#basic-usage)
 
 ### Validation
 
@@ -63,7 +65,7 @@ Drop a file onto the area in desktop browsers. On tablet and mobile touch browse
 }
 ```
 
-[See demo here](https://demos.blazorbootstrap.com/form/drag-and-drop-file-input#validation)
+[See demo here](https://demos.blazorbootstrap.com/demos/form/drag-and-drop-file-input#validation)
 
 ### Validation message templates
 
@@ -87,5 +89,11 @@ Use `BackgroundColor` to match the drop area to the surrounding Bootstrap interf
 ```
 
 ## Accessibility
+### Form validation
+
+`DragAndDropFileInput` participates in an `EditForm` and retains the same validation behavior whether files are dropped or selected through the native picker.
+
+[See demo here](https://demos.blazorbootstrap.com/demos/form/drag-and-drop-file-input#form-validation)
+
 
 The native file input is visually hidden within the drop area but remains the selection control. It is therefore operable through touch, pointer, and keyboard activation. DragAndDropFileInput announces validation errors through an alert region, and each selected file has an accessible, keyboard-operable remove button.

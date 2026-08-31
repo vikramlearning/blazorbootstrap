@@ -1,5 +1,6 @@
 ﻿namespace BlazorBootstrap;
 
+[AddedVersion("1.0.0")]
 public partial class NumberInput<TValue> : BlazorBootstrapComponentBase
 {
     #region Fields and Constants
@@ -78,13 +79,17 @@ public partial class NumberInput<TValue> : BlazorBootstrapComponentBase
     }
 
     /// <summary>
-    /// Disables number input.
+    /// Disables the number input so users cannot change its value.
     /// </summary>
+    [AddedVersion("1.0.0")]
+    [Description("Disables the number input so users cannot change its value.")]
     public void Disable() => Disabled = true;
 
     /// <summary>
-    /// Enables number input.
+    /// Enables the number input so users can change its value.
     /// </summary>
+    [AddedVersion("1.0.0")]
+    [Description("Enables the number input so users can change its value.")]
     public void Enable() => Disabled = false;
 
     private string GetInvariantNumber(TValue value)
@@ -356,107 +361,147 @@ public partial class NumberInput<TValue> : BlazorBootstrapComponentBase
     /// <remarks>
     /// Default value is false.
     /// </remarks>
+    [AddedVersion("1.0.0")]
+    [DefaultValue(false)]
+    [Description("Gets or sets whether users can enter negative numbers. When false, negative input is rejected during parsing.")]
     [Parameter]
     public bool AllowNegativeNumbers { get; set; }
 
     private string autoComplete => AutoComplete ? "true" : "false";
 
     /// <summary>
-    /// If <see langword="true" />, NumberInput can complete the values automatically by the browser.
+    /// Gets or sets whether browser autocomplete is enabled for the number input.
     /// </summary>
     /// <remarks>
     /// Default value is false.
     /// </remarks>
+    [AddedVersion("1.0.0")]
+    [DefaultValue(false)]
+    [Description("Gets or sets whether browser autocomplete is enabled. When true, the browser may offer saved values for the input.")]
     [Parameter]
     public bool AutoComplete { get; set; }
 
     /// <summary>
-    /// Gets or sets the disabled state .
+    /// Gets or sets whether the input is disabled.
     /// </summary>
     /// <remarks>
     /// Default value is false.
     /// </remarks>
+    [AddedVersion("1.0.0")]
+    [DefaultValue(false)]
+    [Description("Gets or sets whether the input is disabled. When true, users cannot change its value.")]
     [Parameter]
     public bool Disabled { get; set; }
 
+    [AddedVersion("1.0.0")]
     [CascadingParameter] private EditContext EditContext { get; set; } = default!;
+    [DefaultValue(false)]
 
     /// <summary>
-    /// Determines whether to restrict the user input to Min and Max range.
-    /// If <see langword="true" />, restricts the user input between the Min and Max range. Else accepts the user input.
+    /// Gets or sets whether input is restricted to the configured minimum and maximum values.
+    /// 
     /// </summary>
     /// <remarks>
     /// Default value is false.
     /// </remarks>
+    [Description("Gets or sets whether input is restricted to the configured minimum and maximum values. When true, values outside the range are rejected.")]
     [Parameter]
     public bool EnableMinMax { get; set; }
 
     private string fieldCssClasses => EditContext?.FieldCssClass(fieldIdentifier) ?? "";
 
     /// <summary>
-    /// Gets or sets the locale. Default locale is 'en-US'.
+    /// Gets or sets the culture name used to parse and format the number.
     /// </summary>
     /// <remarks>
     /// Default value is 'en-US'.
     /// </remarks>
     [Parameter]
     //[EditorRequired]
+    [AddedVersion("1.0.0")]
     public string Locale { get; set; } = "en-US";
 
     /// <summary>
-    /// Gets or sets the max.
-    /// Max ignored if EnableMinMax="false".
+    /// Gets or sets the maximum permitted value.
+    /// 
     /// </summary>
+    [AddedVersion("1.0.0")]
+    [Description("Gets or sets the maximum permitted value. It is enforced only when EnableMinMax is true.")]
     [Parameter]
     public TValue Max { get; set; } = default!;
 
     /// <summary>
-    /// Gets or sets the min.
-    /// Min ignored if EnableMinMax="false".
+    /// Gets or sets the minimum permitted value.
+    /// 
     /// </summary>
+    [AddedVersion("1.0.0")]
+    [Description("Gets or sets the minimum permitted value. It is enforced only when EnableMinMax is true.")]
     [Parameter]
     public TValue Min { get; set; } = default!;
 
     /// <summary>
-    /// Gets or sets the placeholder.
+    /// Gets or sets placeholder text displayed when the input has no value.
     /// </summary>
     /// <remarks>
     /// Default value is null.
     /// </remarks>
+    [AddedVersion("1.0.0")]
+    [DefaultValue(null)]
+    [Description("Gets or sets placeholder text displayed when the input has no value.")]
     [Parameter]
     public string? Placeholder { get; set; }
 
     /// <summary>
-    /// Gets or sets the step.
+    /// Gets or sets the increment used by the browser's number input controls.
     /// </summary>
     /// <remarks>
     /// Default value is null.
     /// </remarks>
+    [AddedVersion("1.0.0")]
+    [DefaultValue(null)]
+    [Description("Gets or sets the increment used by the browser's number input controls.")]
     [Parameter]
     public double? Step { get; set; }
 
     /// <summary>
-    /// Gets or sets the text alignment.
+    /// Gets or sets the horizontal alignment of the input value.
     /// </summary>
     /// <remarks>
     /// Default value is <see cref="Alignment.None" />.
     /// </remarks>
+    [AddedVersion("1.0.0")]
+    [DefaultValue(Alignment.None)]
+    [Description("Gets or sets the horizontal alignment of the input value.")]
     [Parameter]
     public Alignment TextAlignment { get; set; } = Alignment.None;
 
     /// <summary>
-    /// Gets or sets the value.
+    /// Gets or sets the current numeric value bound to the input.
     /// </summary>
+    [AddedVersion("1.0.0")]
+    [Description("Gets or sets the current numeric value bound to the input.")]
     [Parameter]
     public TValue Value { get; set; } = default!;
 
     /// <summary>
-    /// This event fired on every user keystroke that changes the NumberInput value.
+    /// Occurs whenever user input changes the number value, including changes produced by typing.
     /// </summary>
+    [AddedVersion("1.0.0")]
+    [Description("Occurs whenever user input changes the number value, including changes produced by typing.")]
     [Parameter]
     public EventCallback<TValue> ValueChanged { get; set; }
 
-    [Parameter] public Expression<Func<TValue>> ValueExpression { get; set; } = default!;
+    /// <summary>
+    /// Gets or sets the expression that identifies the bound value for validation and EditContext notifications.
+    /// </summary>
+    /// <remarks>
+    /// Default value is <see langword="null" />.
+    /// </remarks>
+    [AddedVersion("1.0.0")]
+    [DefaultValue(null)]
+    [Description("Gets or sets the expression that identifies the bound value for validation and EditContext notifications.")]
+    [Parameter]
+    public Expression<Func<TValue>> ValueExpression { get; set; } = default!;
 
     #endregion
 }

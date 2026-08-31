@@ -20,7 +20,7 @@
                 <tbody>
                     @foreach (var propertyInfo in typeof(TItem).GetComponentParametersOnly())
                     {
-                        <DocxPropertyRow TItem="TItem" PropertyInfo="@propertyInfo" VersionContextType="@VersionContextType" AddedVersionOverrides="@AddedVersionOverrides" />
+                        <DocxPropertyRow TItem="TItem" PropertyInfo="@propertyInfo" VersionContextType="@(VersionContextType ?? typeof(TItem))" AddedVersionOverrides="@AddedVersionOverrides" />
                     }
                 </tbody>
             </table>
@@ -64,7 +64,7 @@
                 <tbody>
                     @foreach (var methodInfo in typeof(TItem).GetComponentMethods())
                     {
-                        <DocxMethodRow TItem="TItem" MethodInfo="@methodInfo" VersionContextType="@VersionContextType" />
+                        <DocxMethodRow TItem="TItem" MethodInfo="@methodInfo" VersionContextType="@(VersionContextType ?? typeof(TItem))" />
                     }
                 </tbody>
             </table>
@@ -85,7 +85,7 @@
                 <tbody>
                     @foreach (var propertyInfo in typeof(TItem).GetComponentEventCallbacks())
                     {
-                        <DocxEventCallbackRow TItem="TItem" PropertyInfo="@propertyInfo" />
+                        <DocxEventCallbackRow TItem="TItem" PropertyInfo="@propertyInfo" VersionContextType="@(VersionContextType ?? typeof(TItem))" />
                     }
                 </tbody>
             </table>

@@ -1,4 +1,4 @@
-namespace BlazorBootstrap;
+﻿namespace BlazorBootstrap;
 
 /// <summary>
 /// Provides a dependency-free rich-text editing control with a grouped Bootstrap toolbar.
@@ -108,14 +108,14 @@ public partial class RichTextEditor : BlazorBootstrapComponentBase
     /// Clears the editor content.
     /// </summary>
     [AddedVersion("4.0.0")]
-    [Description("Clears the editor content.")]
+    [Description("Clears the editor HTML content through the editor module.")]
     public Task ClearAsync() => RichTextEditorJsInterop.ClearAsync(objRef!, Id!);
 
     /// <summary>
     /// Focuses the editable area.
     /// </summary>
     [AddedVersion("4.0.0")]
-    [Description("Focuses the editable area.")]
+    [Description("Moves keyboard focus to the editable area.")]
     public Task FocusAsync() => RichTextEditorJsInterop.FocusAsync(objRef!, Id!);
 
     /// <summary>
@@ -455,41 +455,53 @@ public partial class RichTextEditor : BlazorBootstrapComponentBase
     private string Accept => string.Join(',', NormalizedAllowedImageFileTypes.Select(fileType => $".{fileType}"));
 
     /// <summary>Gets or sets the permitted HTTPS image domains. Subdomains are also permitted.</summary>
+    /// <remarks>
+    /// Default value is <see langword="null" />.
+    /// </remarks>
     [AddedVersion("4.0.0")]
-    [Description("Gets or sets the permitted HTTPS image domains. Subdomains are also permitted.")]
+    [DefaultValue(null)]
+    [Description("Gets or sets the HTTPS domains permitted for uploaded-image URLs. Subdomains of configured domains are also permitted.")]
     [Parameter]
     public IEnumerable<string>? AllowedImageDomains { get; set; }
 
     /// <summary>Gets or sets the permitted image file extensions.</summary>
+    /// <remarks>
+    /// Default value is <see langword="null" />.
+    /// </remarks>
     [AddedVersion("4.0.0")]
-    [Description("Gets or sets the permitted image file extensions.")]
+    [DefaultValue(null)]
+    [Description("Gets or sets image file extensions accepted by the upload dialog. Null uses the built-in safe image types.")]
     [Parameter]
     public IEnumerable<string>? AllowedImageFileTypes { get; set; }
 
     /// <summary>Gets or sets the permitted HTTP(S) link domains. Subdomains are also permitted.</summary>
+    /// <remarks>
+    /// Default value is <see langword="null" />.
+    /// </remarks>
     [AddedVersion("4.0.0")]
-    [Description("Gets or sets the permitted HTTP(S) link domains. Subdomains are also permitted.")]
+    [DefaultValue(null)]
+    [Description("Gets or sets the HTTP(S) domains permitted for inserted links. Subdomains of configured domains are also permitted.")]
     [Parameter]
     public IEnumerable<string>? AllowedLinkDomains { get; set; }
 
     /// <summary>Gets or sets the accessible label for the editor.</summary>
     [AddedVersion("4.0.0")]
     [DefaultValue("Rich text editor")]
-    [Description("Gets or sets the accessible label for the editor.")]
+    [Description("Gets or sets the accessible name announced for the editor by assistive technologies.")]
     [Parameter]
     public string AriaLabel { get; set; } = "Rich text editor";
 
     /// <summary>Gets or sets the delay, in milliseconds, before editor changes are raised.</summary>
     [AddedVersion("4.0.0")]
     [DefaultValue(300)]
-    [Description("Gets or sets the delay, in milliseconds, before editor changes are raised.")]
+    [Description("Gets or sets the debounce delay, in milliseconds, before editor content changes are raised to ValueChanged.")]
     [Parameter]
     public int DebounceInterval { get; set; } = 300;
 
     /// <summary>Gets or sets whether the editor is disabled.</summary>
     [AddedVersion("4.0.0")]
     [DefaultValue(false)]
-    [Description("Gets or sets whether the editor is disabled.")]
+    [Description("Gets or sets whether editing is disabled. When true, users cannot change content or invoke toolbar commands.")]
     [Parameter]
     public bool Disabled { get; set; }
 
@@ -507,7 +519,7 @@ public partial class RichTextEditor : BlazorBootstrapComponentBase
     /// <summary>Gets or sets the image upload handler.</summary>
     [AddedVersion("4.0.0")]
     [DefaultValue(null)]
-    [Description("Gets or sets the image upload handler.")]
+    [Description("Gets or sets the delegate that uploads a validated image and returns its HTTPS URL for insertion.")]
     [Parameter]
     public RichTextEditorImageUploadDelegate? ImageUploadHandler { get; set; }
 
@@ -516,14 +528,14 @@ public partial class RichTextEditor : BlazorBootstrapComponentBase
     /// <summary>Gets or sets the maximum allowed image size in bytes.</summary>
     [AddedVersion("4.0.0")]
     [DefaultValue(5242880)]
-    [Description("Gets or sets the maximum allowed image size in bytes.")]
+    [Description("Gets or sets the maximum accepted image-upload size in bytes. Larger files are rejected before upload.")]
     [Parameter]
     public long MaxImageFileSize { get; set; } = 5 * 1024 * 1024;
 
     /// <summary>Gets or sets the maximum plain-text character count.</summary>
     [AddedVersion("4.0.0")]
     [DefaultValue(null)]
-    [Description("Gets or sets the maximum plain-text character count.")]
+    [Description("Gets or sets the maximum plain-text character count. Null does not impose a character limit.")]
     [Parameter]
     public int? MaxLength { get; set; }
 
@@ -536,7 +548,7 @@ public partial class RichTextEditor : BlazorBootstrapComponentBase
     /// <summary>Gets or sets the placeholder text.</summary>
     [AddedVersion("4.0.0")]
     [DefaultValue(null)]
-    [Description("Gets or sets the placeholder text.")]
+    [Description("Gets or sets placeholder text displayed when the editor has no content.")]
     [Parameter]
     public string? Placeholder { get; set; }
 
@@ -546,7 +558,7 @@ public partial class RichTextEditor : BlazorBootstrapComponentBase
     /// <summary>Gets or sets whether the editor footer is displayed.</summary>
     [AddedVersion("4.0.0")]
     [DefaultValue(true)]
-    [Description("Gets or sets whether the editor footer is displayed.")]
+    [Description("Gets or sets whether the footer displaying editor metrics is rendered.")]
     [Parameter]
     public bool ShowFooter { get; set; } = true;
 
@@ -555,32 +567,39 @@ public partial class RichTextEditor : BlazorBootstrapComponentBase
 
     /// <summary>Fires for transient editor activity and error status.</summary>
     [AddedVersion("4.0.0")]
-    [Description("Fires for transient editor activity and error status.")]
+    [Description("Fires for transient editor activity and error status, such as image-upload progress or validation failures.")]
     [Parameter]
     public EventCallback<string> StatusChanged { get; set; }
 
+    /// <summary>
+    /// Gets or sets the toolbar items.
+    /// </summary>
     [AddedVersion("4.0.0")]
     [DefaultValue(null)]
-    [Description("Gets or sets the toolbar items.")]
+    [Description("Gets or sets the toolbar commands available to users. Null displays the complete built-in toolbar.")]
     [Parameter]
     public RichTextEditorToolbarItem[]? ToolbarItems { get; set; }
 
     /// <summary>Gets or sets the HTML value.</summary>
     [AddedVersion("4.0.0")]
     [DefaultValue(null)]
-    [Description("Gets or sets the HTML value.")]
+    [Description("Gets or sets the editor HTML content bound to the component.")]
     [Parameter]
     public string Value { get; set; } = string.Empty;
 
     /// <summary>Fires after the editor commits a content change.</summary>
     [AddedVersion("4.0.0")]
-    [Description("Fires after the editor commits a content change.")]
+    [Description("Fires after debounced editor content changes and supplies HTML, normalized text, and character metrics.")]
     [Parameter]
     public EventCallback<RichTextEditorChange> ValueChanged { get; set; }
 
     /// <summary>Gets or sets the expression that identifies the bound value.</summary>
+    /// <remarks>
+    /// Default value is <see langword="null" />.
+    /// </remarks>
     [AddedVersion("4.0.0")]
-    [Description("Gets or sets the expression that identifies the bound value.")]
+    [DefaultValue(null)]
+    [Description("Gets or sets the expression that identifies the bound value for validation and EditContext notifications.")]
     [Parameter]
     public Expression<Func<string>>? ValueExpression { get; set; }
 

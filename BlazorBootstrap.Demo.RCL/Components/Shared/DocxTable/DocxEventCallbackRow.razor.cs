@@ -6,7 +6,7 @@
 /// <typeparam name="TItem"></typeparam>
 public partial class DocxEventCallbackRow<TItem> : BlazorBootstrapComponentBase
 {
-    private string AddedVersion => PropertyInfo.GetPropertyAddedVersion();
+    private string AddedVersion => PropertyInfo.GetPropertyAddedVersion(VersionContextType);
 
     private string Description => PropertyInfo.GetPropertyDescription();
 
@@ -16,4 +16,7 @@ public partial class DocxEventCallbackRow<TItem> : BlazorBootstrapComponentBase
 
     [Parameter]
     public PropertyInfo PropertyInfo { get; set; } = default!;
+    [Parameter]
+    public Type? VersionContextType { get; set; }
+
 }

@@ -1,5 +1,6 @@
 ﻿namespace BlazorBootstrap;
 
+[AddedVersion("3.3.0")]
 public partial class RadioInput : BlazorBootstrapComponentBase
 {
     #region Fields and Constants
@@ -33,6 +34,11 @@ public partial class RadioInput : BlazorBootstrapComponentBase
         base.OnInitialized();
     }
 
+    /// <summary>
+    /// Updates the radio input value from the JavaScript change handler.
+    /// </summary>
+    [AddedVersion("3.3.0")]
+    [Description("Updates the radio input value from the JavaScript change handler.")]
     [JSInvokable]
     public async Task OnChangeJS(bool newValue)
     {
@@ -44,13 +50,17 @@ public partial class RadioInput : BlazorBootstrapComponentBase
     }
 
     /// <summary>
-    /// Disables number input.
+    /// Disables the radio input so users cannot select it.
     /// </summary>
+    [AddedVersion("3.3.0")]
+    [Description("Disables the radio input so users cannot select it.")]
     public void Disable() => Disabled = true;
 
     /// <summary>
-    /// Enables number input.
+    /// Enables the radio input so users can select it.
     /// </summary>
+    [AddedVersion("3.3.0")]
+    [Description("Enables the radio input so users can select it.")]
     public void Enable() => Disabled = false;
 
     #endregion
@@ -65,11 +75,14 @@ public partial class RadioInput : BlazorBootstrapComponentBase
         );
 
     /// <summary>
-    /// Gets or sets the disabled state.
+    /// Gets or sets whether the radio input is disabled.
     /// </summary>
     /// <remarks>
     /// Default value is false.
     /// </remarks>
+    [AddedVersion("3.3.0")]
+    [DefaultValue(false)]
+    [Description("Gets or sets whether the radio input is disabled. When true, users cannot select it.")]
     [Parameter]
     public bool Disabled { get; set; }
 
@@ -82,28 +95,58 @@ public partial class RadioInput : BlazorBootstrapComponentBase
     /// <summary>
     /// Gets or sets the label.
     /// </summary>
+    /// <remarks>
+    /// Default value is <see langword="null" />.
+    /// </remarks>
+    [AddedVersion("3.3.0")]
+    [DefaultValue(null)]
+    [Description("Gets or sets the label displayed next to the radio input.")]
     [Parameter]
     public string? Label { get; set; }
 
     /// <summary>
     /// Gets or sets the name.
     /// </summary>
+    /// <remarks>
+    /// Default value is <see langword="null" />.
+    /// </remarks>
+    [AddedVersion("3.3.0")]
+    [DefaultValue(null)]
+    [Description("Gets or sets the HTML name used to group related radio inputs.")]
     [Parameter]
     public string? Name { get; set; }
 
     /// <summary>
     /// Gets or sets the value.
     /// </summary>
+    /// <remarks>
+    /// Default value is <see langword="false" />.
+    /// </remarks>
+    [AddedVersion("3.3.0")]
+    [DefaultValue(false)]
+    [Description("Gets or sets the current value represented by this radio input.")]
     [Parameter]
     public bool Value { get; set; } = default!;
 
     /// <summary>
     /// This event fired on every user keystroke that changes the NumberInput value.
     /// </summary>
+    [AddedVersion("3.3.0")]
+    [Description("Fires whenever user interaction selects this radio input.")]
     [Parameter]
     public EventCallback<bool> ValueChanged { get; set; }
 
-    [Parameter] public Expression<Func<bool>> ValueExpression { get; set; } = default!;
+    /// <summary>
+    /// Gets or sets an expression that identifies the bound value.
+    /// </summary>
+    /// <remarks>
+    /// Default value is <see langword="null" />.
+    /// </remarks>
+    [AddedVersion("3.3.0")]
+    [DefaultValue(null)]
+    [Description("Gets or sets the expression that identifies the bound value for validation and EditContext notifications.")]
+    [Parameter]
+    public Expression<Func<bool>> ValueExpression { get; set; } = default!;
 
     #endregion
 }

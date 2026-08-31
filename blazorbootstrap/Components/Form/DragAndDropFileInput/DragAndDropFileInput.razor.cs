@@ -1,4 +1,4 @@
-namespace BlazorBootstrap;
+﻿namespace BlazorBootstrap;
 
 public partial class DragAndDropFileInput : FileInputBase
 {
@@ -41,7 +41,7 @@ public partial class DragAndDropFileInput : FileInputBase
     /// </summary>
     [AddedVersion("4.0.0")]
     [DefaultValue(BackgroundColor.None)]
-    [Description("Gets or sets the contextual background color of the drag-and-drop area.")]
+    [Description("Gets or sets the Bootstrap contextual background color of the drop area. The color is applied while the area is not using its default background.")]
     [Parameter]
     public BackgroundColor BackgroundColor { get; set; } = BackgroundColor.None;
 

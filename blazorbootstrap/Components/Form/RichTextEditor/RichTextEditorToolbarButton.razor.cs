@@ -1,4 +1,4 @@
-namespace BlazorBootstrap;
+﻿namespace BlazorBootstrap;
 
 public partial class RichTextEditorToolbarButton : BlazorBootstrapComponentBase
 {
@@ -28,7 +28,7 @@ public partial class RichTextEditorToolbarButton : BlazorBootstrapComponentBase
     /// </summary>
     [AddedVersion("4.0.0")]
     [DefaultValue(false)]
-    [Description("Gets or sets a value indicating whether the button is disabled.")]
+    [Description("Gets or sets whether the toolbar button is disabled. When true, its command cannot be invoked.")]
     [Parameter]
     public bool Disabled { get; set; }
 
@@ -40,8 +40,8 @@ public partial class RichTextEditorToolbarButton : BlazorBootstrapComponentBase
     /// </summary>
     [AddedVersion("4.0.0")]
     [DefaultValue(RichTextEditorToolbarItem.None)]
-    [Description("Gets or sets the toolbar item associated with the button.")]
-    [Parameter, EditorRequired]
+    [Description("Gets or sets the toolbar command represented by this button.")]
+    [EditorRequired, Parameter]
     public RichTextEditorToolbarItem Item { get; set; } = RichTextEditorToolbarItem.None;
 
     [CascadingParameter(Name = "RichTextEditor")]

@@ -1,5 +1,6 @@
 ﻿namespace BlazorBootstrap;
 
+[AddedVersion("1.0.0")]
 public partial class AutoComplete<TItem> : BlazorBootstrapComponentBase
 {
     #region Fields and Constants
@@ -70,6 +71,11 @@ public partial class AutoComplete<TItem> : BlazorBootstrapComponentBase
         await base.OnInitializedAsync();
     }
 
+    /// <summary>
+    /// Handles the autocomplete dropdown hidden notification from JavaScript.
+    /// </summary>
+    [AddedVersion("1.0.0")]
+    [Description("Handles the autocomplete dropdown hidden notification from JavaScript.")]
     [JSInvokable]
     public void bsHiddenAutocomplete()
     {
@@ -84,12 +90,27 @@ public partial class AutoComplete<TItem> : BlazorBootstrapComponentBase
         }
     }
 
+    /// <summary>
+    /// Handles the autocomplete dropdown hide notification from JavaScript.
+    /// </summary>
+    [AddedVersion("1.0.0")]
+    [Description("Handles the autocomplete dropdown hide notification from JavaScript.")]
     [JSInvokable]
     public void bsHideAutocomplete() { }
 
+    /// <summary>
+    /// Handles the autocomplete dropdown show notification from JavaScript.
+    /// </summary>
+    [AddedVersion("1.0.0")]
+    [Description("Handles the autocomplete dropdown show notification from JavaScript.")]
     [JSInvokable]
     public void bsShowAutocomplete() { }
 
+    /// <summary>
+    /// Handles the autocomplete dropdown shown notification from JavaScript.
+    /// </summary>
+    [AddedVersion("1.0.0")]
+    [Description("Handles the autocomplete dropdown shown notification from JavaScript.")]
     [JSInvokable]
     public void bsShownAutocomplete() { }
 
@@ -97,14 +118,14 @@ public partial class AutoComplete<TItem> : BlazorBootstrapComponentBase
     /// Disables autocomplete.
     /// </summary>
     [AddedVersion("1.0.0")]
-    [Description("Disables autocomplete.")]
+    [Description("Disables the autocomplete input so users cannot search or change its value.")]
     public void Disable() => Disabled = true;
 
     /// <summary>
     /// Enables autocomplete.
     /// </summary>
     [AddedVersion("1.0.0")]
-    [Description("Enables autocomplete.")]
+    [Description("Enables the autocomplete input so users can search and select a value.")]
     public void Enable() => Disabled = false;
 
     /// <summary>
@@ -112,14 +133,14 @@ public partial class AutoComplete<TItem> : BlazorBootstrapComponentBase
     /// </summary>
     /// <returns>Task</returns>
     [AddedVersion("1.0.0")]
-    [Description("Refresh the autocomplete data.")]
+    [Description("Refreshes the autocomplete results using the current input value and data provider.")]
     public async Task RefreshDataAsync() => await FilterDataAsync();
 
     /// <summary>
     /// Resets the autocomplete selection.
     /// </summary>
     [AddedVersion("1.0.0")]
-    [Description("Resets the autocomplete selection.")]
+    [Description("Clears the input and selected item, then notifies bound values and the change callback.")]
     public async Task ResetAsync() => await ClearInputTextAsync();
 
     /// <summary>
@@ -235,7 +256,7 @@ public partial class AutoComplete<TItem> : BlazorBootstrapComponentBase
         cancellationTokenSource = new CancellationTokenSource();
 
         var token = cancellationTokenSource.Token;
-        await Task.Delay(300, token); // 300ms timeout for the debouncing 
+        await Task.Delay(300, token); // 300ms timeout for the debouncing
         await FilterDataAsync(token);
 
         closeButton?.HideLoading();
@@ -308,7 +329,7 @@ public partial class AutoComplete<TItem> : BlazorBootstrapComponentBase
     /// </summary>
     [AddedVersion("1.0.0")]
     [DefaultValue(null)]
-    [Description("Gets or sets the data provider.")]
+    [Description("Gets or sets the delegate used to retrieve autocomplete results for the current filter.")]
     [EditorRequired]
     [Parameter]
     public AutoCompleteDataProviderDelegate<TItem>? DataProvider { get; set; }
@@ -333,11 +354,11 @@ public partial class AutoComplete<TItem> : BlazorBootstrapComponentBase
     /// </summary>
     [AddedVersion("1.0.0")]
     [DefaultValue(false)]
-    [Description("Gets or sets the disabled state.")]
+    [Description("Gets or sets whether the autocomplete input is disabled. When true, users cannot search or select a value.")]
     [Parameter]
     public bool Disabled { get; set; }
 
-    [CascadingParameter] 
+    [CascadingParameter]
     private EditContext EditContext { get; set; } = default!;
 
     /// <summary>
@@ -348,7 +369,7 @@ public partial class AutoComplete<TItem> : BlazorBootstrapComponentBase
     /// </summary>
     [AddedVersion("1.0.0")]
     [DefaultValue("No records found.")]
-    [Description("Gets or sets the empty text.")]
+    [Description("Gets or sets the message displayed when the data provider returns no matching results.")]
     [Parameter]
     public string EmptyText { get; set; } = "No records found.";
 
@@ -362,7 +383,7 @@ public partial class AutoComplete<TItem> : BlazorBootstrapComponentBase
     /// </summary>
     [AddedVersion("1.0.0")]
     [DefaultValue("Loading...")]
-    [Description("Gets or sets the loading text.")]
+    [Description("Gets or sets the message displayed while autocomplete results are loading.")]
     [Parameter]
     public string LoadingText { get; set; } = "Loading...";
 
@@ -370,7 +391,7 @@ public partial class AutoComplete<TItem> : BlazorBootstrapComponentBase
     /// This event fires immediately when the autocomplete selection changes by the user.
     /// </summary>
     [AddedVersion("1.0.0")]
-    [Description("This event fires immediately when the autocomplete selection changes by the user.")]
+    [Description("Fires after a user selects an autocomplete item and supplies the selected item.")]
     [Parameter]
     public EventCallback<TItem> OnChanged { get; set; }
 
@@ -382,7 +403,7 @@ public partial class AutoComplete<TItem> : BlazorBootstrapComponentBase
     /// </summary>
     [AddedVersion("1.0.0")]
     [DefaultValue(null)]
-    [Description("Gets or sets the placeholder.")]
+    [Description("Gets or sets placeholder text displayed when the autocomplete input has no value.")]
     [Parameter]
     public string? Placeholder { get; set; }
 
@@ -394,7 +415,7 @@ public partial class AutoComplete<TItem> : BlazorBootstrapComponentBase
     /// </summary>
     [AddedVersion("1.0.0")]
     [DefaultValue(null)]
-    [Description("Gets or sets the property name.")]
+    [Description("Gets or sets the TItem property whose text is shown and filtered in the autocomplete input.")]
     [EditorRequired]
     [Parameter]
     public string? PropertyName { get; set; }
@@ -404,7 +425,7 @@ public partial class AutoComplete<TItem> : BlazorBootstrapComponentBase
     /// </summary>
     [AddedVersion("1.0.0")]
     [DefaultValue(null)]
-    [Description("Gets selected item.")]
+    [Description("Gets the item most recently selected by the user, or null when no item is selected.")]
     public TItem? SelectedItem => selectedItem;
 
     /// <summary>
@@ -415,7 +436,7 @@ public partial class AutoComplete<TItem> : BlazorBootstrapComponentBase
     /// </summary>
     [AddedVersion("1.0.0")]
     [DefaultValue(AutoCompleteSize.Default)]
-    [Description("Gets or sets the autocomplete size.")]
+    [Description("Gets or sets the Bootstrap size of the autocomplete input.")]
     [Parameter]
     public AutoCompleteSize Size { get; set; } = AutoCompleteSize.Default;
 
@@ -427,7 +448,7 @@ public partial class AutoComplete<TItem> : BlazorBootstrapComponentBase
     /// </summary>
     [AddedVersion("1.0.0")]
     [DefaultValue(StringComparison.OrdinalIgnoreCase)]
-    [Description("Gets or sets the StringComparison.")]
+    [Description("Gets or sets the string-comparison rule used when filtering results.")]
     [Parameter]
     public StringComparison StringComparison { get; set; } = StringComparison.OrdinalIgnoreCase;
 
@@ -439,7 +460,7 @@ public partial class AutoComplete<TItem> : BlazorBootstrapComponentBase
     /// </summary>
     [AddedVersion("1.0.0")]
     [DefaultValue(StringFilterOperator.Contains)]
-    [Description("Gets or sets the string filter operator.")]
+    [Description("Gets or sets the operator used to match the input text against PropertyName.")]
     [Parameter]
     public StringFilterOperator StringFilterOperator { get; set; } = StringFilterOperator.Contains;
 
@@ -451,7 +472,7 @@ public partial class AutoComplete<TItem> : BlazorBootstrapComponentBase
     /// </summary>
     [AddedVersion("1.0.0")]
     [DefaultValue(null)]
-    [Description("Gets or sets the value.")]
+    [Description("Gets or sets the current text value bound to the autocomplete input.")]
     [Parameter]
     public string? Value { get; set; }
 
@@ -459,17 +480,20 @@ public partial class AutoComplete<TItem> : BlazorBootstrapComponentBase
     /// This is event fires on every user keystroke that changes the textbox value.
     /// </summary>
     [AddedVersion("1.0.0")]
-    [Description("This is event fires on every user keystroke that changes the textbox value.")]
+    [Description("Fires whenever user input changes the autocomplete text value, including changes produced by typing.")]
     [Parameter]
     public EventCallback<string> ValueChanged { get; set; }
 
     /// <summary>
     /// Gets or sets the value expression.
     /// </summary>
+    /// <remarks>
+    /// Default value is <see langword="null" />.
+    /// </remarks>
     [AddedVersion("1.0.0")]
     [DefaultValue(null)]
-    [Description("Gets or sets the value expression.")]
-    [Parameter] 
+    [Description("Gets or sets the expression that identifies the bound value for validation and EditContext notifications.")]
+    [Parameter]
     public Expression<Func<string?>>? ValueExpression { get; set; }
 
     #endregion
