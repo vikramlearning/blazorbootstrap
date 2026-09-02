@@ -1,0 +1,27 @@
+﻿<Button Color="ButtonColor.Primary" @onclick="async () => await ShowBarsProgressionLoader(SpinnerColor.Primary)">Show Bars Progression Loader</Button>
+<Button Color="ButtonColor.Success" @onclick="async () => await ShowBouncingDotsAnimationLoader(SpinnerColor.Success)">Show Bouncing Dots Loader</Button>
+<Button Color="ButtonColor.Info" @onclick="async () => await ShowPulseRingLoader(SpinnerColor.Info)">Show Pulse Ring Loader</Button>
+@code {
+    [Inject] protected PreloadService PreloadService { get; set; } = default!;
+
+    private async Task ShowBarsProgressionLoader(SpinnerColor spinnerColor)
+    {
+        PreloadService.Show(spinnerColor, "Loading data...", StringConstants.BarsProgressionLoader);
+        await Task.Delay(3000);
+        PreloadService.Hide();
+    }
+
+    private async Task ShowBouncingDotsAnimationLoader(SpinnerColor spinnerColor)
+    {
+        PreloadService.Show(spinnerColor, "Loading data...", StringConstants.BouncingDots);
+        await Task.Delay(3000);
+        PreloadService.Hide();
+    }
+
+    private async Task ShowPulseRingLoader(SpinnerColor spinnerColor)
+    {
+        PreloadService.Show(spinnerColor, "Loading data...", StringConstants.PulseRingLoader);
+        await Task.Delay(3000);
+        PreloadService.Hide();
+    }
+}

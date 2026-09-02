@@ -36,5 +36,9 @@ public static class StringConstants
     public const string PropertyTypeNameGuidCSharpTypeKeyword = "Guid";
     public const string PropertyTypeNameObjectCSharpTypeKeyword = "object";
 
+    public const string BouncingDots = "BouncingDots";
+    public const string BarsProgressionLoader = "BarsProgressionLoader";
+    public const string DefaultBootstrapSpinner = "DefaultBootstrapSpinner";
+    public const string PulseRingLoader = "PulseRingLoader";
     #endregion
 }
