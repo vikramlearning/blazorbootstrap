@@ -88,13 +88,13 @@ public partial class ConfirmDialog : BlazorBootstrapComponentBase
     private void OnNoClick()
     {
         Hide();
-        taskCompletionSource?.SetResult(false);
+        taskCompletionSource?.TrySetResult(false);
     }
 
     private void OnYesClick()
     {
         Hide();
-        taskCompletionSource?.SetResult(true);
+        taskCompletionSource?.TrySetResult(true);
     }
 
     private Task<bool> Show(string title, string? message1, string? message2, Type? type, Dictionary<string, object>? parameters, ConfirmDialogOptions confirmDialogOptions)
