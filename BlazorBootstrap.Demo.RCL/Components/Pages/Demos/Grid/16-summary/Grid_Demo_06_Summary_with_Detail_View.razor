@@ -1,0 +1,74 @@
+﻿<Grid TItem="Employee"
+      Class="table table-hover table-bordered"
+      Data="employees"
+      AllowDetailView="true"
+      AllowSelection="true"
+      SelectionMode="GridSelectionMode.Multiple"
+      @bind-SelectedItems="@selectedEmployees"
+      AllowSummary="true"
+      Responsive="true">
+
+    <GridColumns>
+        <GridColumn TItem="Employee" HeaderText="Id" PropertyName="Id">
+            @context.Id
+        </GridColumn>
+        <GridColumn TItem="Employee" HeaderText="Employee Name" PropertyName="Name" SummaryType="GridSummaryColumnType.Count">
+            @context.Name
+        </GridColumn>
+        <GridColumn TItem="Employee" HeaderText="Designation" PropertyName="Designation">
+            @context.Designation
+        </GridColumn>
+        <GridColumn TItem="Employee" HeaderText="Salary" HeaderTextAlignment="Alignment.End" TextAlignment="Alignment.End" PropertyName="Salary" SummaryType="GridSummaryColumnType.Sum" SummaryValueDisplayFormat="C">
+            @context.Salary.ToString("C")
+        </GridColumn>
+        <GridColumn TItem="Employee" HeaderText="Active" PropertyName="IsActive">
+            @context.IsActive
+        </GridColumn>
+    </GridColumns>
+
+    <GridDetailView TItem="Employee">
+        <div class="row">
+            <div class="col-2 fw-bold">Name</div>
+            <div class="col">@context.Name</div>
+        </div>
+        <div class="row">
+            <div class="col-2 fw-bold">Designation</div>
+            <div class="col">@context.Designation</div>
+        </div>
+        <div class="row">
+            <div class="col-2 fw-bold">DOJ</div>
+            <div class="col">@context.DOJ</div>
+        </div>
+        <div class="row">
+            <div class="col-2 fw-bold">Salary</div>
+            <div class="col">@context.Salary.ToString("C")</div>
+        </div>
+    </GridDetailView>
+
+</Grid>
+
+<div class="mt-3">
+    Selected Items Count: @selectedEmployees.Count
+</div>
+
+@code {
+    private HashSet<Employee> selectedEmployees = new();
+
+    private List<Employee> employees = new List<Employee> {
+        new Employee { Id = 107, Name = "Alice", Designation = "AI Engineer", DOJ = new DateOnly(1998, 11, 17), Salary = 7700, IsActive = true },
+        new Employee { Id = 103, Name = "Bob", Designation = "Senior DevOps Engineer", DOJ = new DateOnly(1985, 1, 5), Salary = 19000, IsActive = true },
+        new Employee { Id = 106, Name = "John", Designation = "Data Engineer", DOJ = new DateOnly(1995, 4, 17), Salary = 12000, IsActive = true },
+        new Employee { Id = 104, Name = "Pop", Designation = "Associate Architect", DOJ = new DateOnly(1985, 6, 8), Salary = 19000, IsActive = false },
+        new Employee { Id = 105, Name = "Ronald", Designation = "Senior Data Engineer", DOJ = new DateOnly(1991, 8, 23), Salary = 16500.50f, IsActive = true }
+    };
+
+    public record class Employee
+    {
+        public int Id { get; set; }
+        public string? Name { get; set; }
+        public string? Designation { get; set; }
+        public DateOnly DOJ { get; set; }
+        public float Salary { get; set; }
+        public bool IsActive { get; set; }
+    }
+}
