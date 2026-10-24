@@ -52,6 +52,13 @@
     <Demo Type="typeof(Grid_Demo_05_Locale)" Tabs="true" />
 </Section>
 
+<Section Size="HeadingSize.H2" Name="Summary with detail view" PageUrl="@pageUrl" Link="summary-with-detail-view">
+    <div class="mb-3">
+        Summaries can be combined with detail view and row selection. Set the <code>AllowSummary</code>, <code>AllowDetailView</code>, and <code>AllowSelection</code> parameters to <b>true</b>. The summary row adds an empty cell for the detail view toggle column and the selection column, so each summary value stays aligned with its column.
+    </div>
+    <Demo Type="typeof(Grid_Demo_06_Summary_with_Detail_View)" Tabs="true" />
+</Section>
+
 @code {
     private const string pageUrl = DemoRouteConstants.Demos_URL_Grid_Summary;
     private const string pageTitle = "Blazor Grid - Summary";
