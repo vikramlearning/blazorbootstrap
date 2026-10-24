@@ -560,13 +560,13 @@ public partial class Markdown : BlazorBootstrapComponentBase
                 if (isTableStart)
                 {
                     isTableStart = false;
+                    isTableHeadingAdded = false;
                     parsedLines.Add($"<table class=\"{TableCssClass}\"><thead>{string.Join("", htmlLines)}</tbody></table>");
                     htmlLines.Clear();
                 }
-                else
-                {
-                    parsedLines.Add(line);
-                }
+
+                // Keep the line that ended the table
+                parsedLines.Add(line);
             }
         }
 
