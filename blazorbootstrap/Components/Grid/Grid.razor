@@ -190,7 +190,7 @@
                                     {
                                         <td></td>
                                     }
-                                    <td colspan="@(columnCount - 1)">
+                                    <td colspan="@(columnCount - (AllowSelection ? 2 : 1))">
                                         @detailView?.GetTemplate(item)
                                     </td>
                                 </tr>
