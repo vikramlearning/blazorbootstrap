@@ -20,6 +20,11 @@
     <Demo Type="typeof(Grid_Demo_14_B_DetailView_Dynamic_Data)" Tabs="false" />
 </Section>
 
+<Section Size="HeadingSize.H2" Name="Detail view with selection" PageUrl="@pageUrl" Link="detail-view-with-selection">
+    <div class="mb-3">Detail view can be combined with row selection. Set both <code>AllowDetailView</code> and <code>AllowSelection</code> parameters to <b>true</b>. The detail view toggle column is rendered first, followed by the selection column, and the expanded detail row spans the data columns.</div>
+    <Demo Type="typeof(Grid_Demo_14_C_DetailView_With_Selection)" Tabs="false" />
+</Section>
+
 @code {
     private const string pageUrl = DemoRouteConstants.Demos_URL_Grid_DetailView;
     private const string pageTitle = "Blazor Grid - Detail View";
