@@ -7,11 +7,11 @@
     {
         if (LoadingTemplate is not null)
         {
-            <div class="list-group-item sortable-list-group-item">@LoadingTemplate</div>
+            <div class="list-group-item sortable-list-group-item @filter.Replace(".", "")">@LoadingTemplate</div>
         }
         else
         {
-            <Spinner Type="SpinnerType.Dots" Color="SpinnerColor.Secondary" />
+            <Spinner Class="@filter.Replace(".", "")" Type="SpinnerType.Dots" Color="SpinnerColor.Secondary" />
         }
     }
     else if (Data?.Any() ?? false)
@@ -36,11 +36,11 @@
     {
         if (EmptyDataTemplate is not null)
         {
-            <div class="list-group-item sortable-list-group-item">@EmptyDataTemplate</div>
+            <div class="list-group-item sortable-list-group-item @filter.Replace(".", "")">@EmptyDataTemplate</div>
         }
         else
         {
-            <div class="list-group-item sortable-list-group-item">@EmptyText</div>
+            <div class="list-group-item sortable-list-group-item @filter.Replace(".", "")">@EmptyText</div>
         }
     }
 </div>
