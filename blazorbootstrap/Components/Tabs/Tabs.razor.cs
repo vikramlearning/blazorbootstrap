@@ -45,7 +45,6 @@ public partial class Tabs : BlazorBootstrapComponentBase
             }
 
             tabs.Clear();
-            tabs = null!;
         }
 
         await base.DisposeAsyncCore(disposing);
