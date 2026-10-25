@@ -4,7 +4,7 @@ public partial class DropdownToggleButton : BlazorBootstrapComponentBase
 {
     #region Methods
 
-    protected override void OnInitialized()
+    protected override void OnParametersSet()
     {
         AdditionalAttributes ??= new Dictionary<string, object>();
 
@@ -33,7 +33,7 @@ public partial class DropdownToggleButton : BlazorBootstrapComponentBase
         else
             AdditionalAttributes["data-bs-auto-close"] = autoClose;
 
-        base.OnInitialized();
+        base.OnParametersSet();
     }
 
     #endregion
@@ -43,7 +43,7 @@ public partial class DropdownToggleButton : BlazorBootstrapComponentBase
     protected override string? ClassNames =>
         BuildClassNames(Class,
             (BootstrapClass.Button, true),
-            (Color.ToDropdownButtonColorClass(), Color != DropdownColor.None),
+            (EffectiveColor.ToDropdownButtonColorClass(), EffectiveColor != DropdownColor.None),
             (Size.ToDropdownButtonSizeClass(), Size != DropdownSize.None),
             (BootstrapClass.DropdownToggle, true),
             (BootstrapClass.DropdownToggleSplit, Split));
@@ -67,6 +67,12 @@ public partial class DropdownToggleButton : BlazorBootstrapComponentBase
     public DropdownAutoCloseBehavior AutoCloseBehavior { get; set; } = DropdownAutoCloseBehavior.Inside;
 
     /// <summary>
+    /// Gets or sets the color cascaded from the parent <see cref="Dropdown" />.
+    /// </summary>
+    [CascadingParameter(Name = "Color")]
+    private DropdownColor CascadedColor { get; set; } = DropdownColor.None;
+
+    /// <summary>
     /// Gets or sets the content to be rendered within the component.
     /// <para>
     /// Default value is <see langword="null"/>.
@@ -80,11 +86,15 @@ public partial class DropdownToggleButton : BlazorBootstrapComponentBase
 
     /// <summary>
     /// Gets or sets the dropdown toggle button color.
+    /// When set to a value other than <see cref="DropdownColor.None" />, it overrides the color of the parent <see cref="Dropdown" />.
     /// <para>
-    /// Default value is  <see cref="DropdownColor.None"/>.
+    /// Default value is <see cref="DropdownColor.None" />.
     /// </para>
     /// </summary>
-    [CascadingParameter(Name = "Color")]
+    [AddedVersion("4.1.0")]
+    [DefaultValue(DropdownColor.None)]
+    [Description("Gets or sets the dropdown toggle button color. When set to a value other than <b>None</b>, it overrides the color of the parent <b>Dropdown</b>.")]
+    [Parameter]
     public DropdownColor Color { get; set; } = DropdownColor.None;
 
     /// <summary>
@@ -95,6 +105,11 @@ public partial class DropdownToggleButton : BlazorBootstrapComponentBase
     /// </para>
     [CascadingParameter(Name = "Disabled")]
     public bool Disabled { get; set; }
+
+    /// <summary>
+    /// Gets the color to render: <see cref="Color" /> when it is not <see cref="DropdownColor.None" />; otherwise, the color cascaded from the parent <see cref="Dropdown" />.
+    /// </summary>
+    private DropdownColor EffectiveColor => Color != DropdownColor.None ? Color : CascadedColor;
 
     /// <summary>
     /// Gets or sets the dropdown action button size.
