@@ -1,0 +1,16 @@
+﻿<Dropdown Color="DropdownColor.Secondary">
+    <DropdownToggleButton title="Choose a status" data-testid="status-dropdown">Status: @selectedStatus</DropdownToggleButton>
+    <DropdownMenu>
+        @foreach (var status in statuses)
+        {
+            <DropdownItem Type="DropdownItemType.Button" Active="@(status == selectedStatus)" @onclick="() => selectedStatus = status">@status</DropdownItem>
+        }
+    </DropdownMenu>
+</Dropdown>
+
+<div class="mt-3">Selected status: <b>@selectedStatus</b></div>
+
+@code {
+    private readonly string[] statuses = { "Open", "In progress", "Closed" };
+    private string selectedStatus = "Open";
+}

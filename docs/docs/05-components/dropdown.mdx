@@ -36,6 +36,7 @@ They are toggled by clicking, not by hovering; this is an intentional design dec
 | Name | Type | Default | Required | Description | Added Version |
 |:--|:--|:--|:--|:--|:--|
 | ChildContent | RenderFragment | null | ✔️ | Gets or sets the content to be rendered within the component. | 1.10.0 |
+| Color | `DropdownColor` | `DropdownColor.None` | | Gets or sets the dropdown toggle button color. When set to a value other than None, it overrides the color of the parent Dropdown. | 4.1.0 |
 | TabIndex | `int?` | null | | Gets or sets the dropdown toggle button tab index. | 1.10.0 |
 
 ## DropdownActionButton Parameters
@@ -43,7 +44,7 @@ They are toggled by clicking, not by hovering; this is an intentional design dec
 | Name | Type | Default | Required | Description | Added Version |
 |:--|:--|:--|:--|:--|:--|
 | ChildContent | RenderFragment | null | ✔️ | Gets or sets the content to be rendered within the component. | 1.10.0 |
-| Color | `ButtonColor` | Gets or sets the button color. | | | 1.10.0 |
+| Color | `DropdownColor` | `DropdownColor.None` | | Gets or sets the dropdown action button color. When set to a value other than None, it overrides the color of the parent Dropdown. | 4.1.0 |
 | TabIndex | `int?` | If defined, indicates that its element can be focused and can participates in sequential keyboard navigation. | | | 1.10.0 |
 
 ## DropdownMenu Parameters
@@ -241,6 +242,47 @@ They are toggled by clicking, not by hovering; this is an intentional design dec
 ```
 
 [See the demo here.](https://demos.blazorbootstrap.com/dropdown#split-button)
+
+### Button color
+
+By default, the toggle and action buttons use the `Color` of the **Dropdown**. To give a button its own color, set the `Color` parameter on the **DropdownToggleButton** or **DropdownActionButton**. A button color other than `DropdownColor.None` overrides the **Dropdown** color.
+
+```cshtml {3,23-24} showLineNumbers
+<div class="d-flex gap-2 mb-4">
+    <Dropdown Color="DropdownColor.Secondary">
+        <DropdownToggleButton Color="DropdownColor.Primary">Own color</DropdownToggleButton>
+        <DropdownMenu>
+            <DropdownItem To="#" Type="DropdownItemType.Link">Action</DropdownItem>
+            <DropdownItem To="#" Type="DropdownItemType.Link">Another action</DropdownItem>
+            <DropdownItem To="#" Type="DropdownItemType.Link">Something else here</DropdownItem>
+        </DropdownMenu>
+    </Dropdown>
+
+    <Dropdown Color="DropdownColor.Secondary">
+        <DropdownToggleButton>Dropdown color</DropdownToggleButton>
+        <DropdownMenu>
+            <DropdownItem To="#" Type="DropdownItemType.Link">Action</DropdownItem>
+            <DropdownItem To="#" Type="DropdownItemType.Link">Another action</DropdownItem>
+            <DropdownItem To="#" Type="DropdownItemType.Link">Something else here</DropdownItem>
+        </DropdownMenu>
+    </Dropdown>
+</div>
+
+<div class="d-flex gap-2">
+    <Dropdown Color="DropdownColor.Secondary" Split="true">
+        <DropdownActionButton Color="DropdownColor.Success">Save</DropdownActionButton>
+        <DropdownToggleButton Color="DropdownColor.Danger" />
+        <DropdownMenu>
+            <DropdownItem To="#" Type="DropdownItemType.Link">Save as draft</DropdownItem>
+            <DropdownItem To="#" Type="DropdownItemType.Link">Save and close</DropdownItem>
+            <DropdownDivider />
+            <DropdownItem To="#" Type="DropdownItemType.Link">Discard</DropdownItem>
+        </DropdownMenu>
+    </Dropdown>
+</div>
+```
+
+[See the demo here.](https://demos.blazorbootstrap.com/dropdown#button-color)
 
 ### Sizing
 

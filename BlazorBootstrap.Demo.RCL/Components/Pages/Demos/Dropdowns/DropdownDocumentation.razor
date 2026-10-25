@@ -22,6 +22,25 @@
     <Demo Type="typeof(Dropdown_Demo_03_Split_Button)" Tabs="true" />
 </Section>
 
+<Section Size="HeadingSize.H2" Name="Button color" PageUrl="@pageUrl" Link="button-color">
+    <div class="mb-3">
+        By default, the toggle and action buttons use the <b>Color</b> of the <b>Dropdown</b>.
+        To give a button its own color, set the <b>Color</b> parameter on the <b>DropdownToggleButton</b> or <b>DropdownActionButton</b>.
+        A button color other than <code>DropdownColor.None</code> overrides the <b>Dropdown</b> color.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Optionally set <code>Color</code> on the <b>Dropdown</b> as the default color for its buttons.</li>
+                <li>Set <code>Color</code> to a <code>DropdownColor</code> value, such as <code>DropdownColor.Primary</code>, on a <b>DropdownToggleButton</b> or <b>DropdownActionButton</b>.</li>
+                <li>Leave a button's <code>Color</code> unset, or set it to <code>DropdownColor.None</code>, to use the <b>Dropdown</b> color.</li>
+            </ol>
+        </div>
+        This demo shows a toggle with its own color next to one that uses the dropdown color, and a split button whose action and toggle buttons use different colors.
+    </div>
+    <Demo Type="typeof(Dropdown_Demo_17_Button_Color)" Tabs="true" />
+</Section>
+
 <Section Size="HeadingSize.H2" Name="Sizing" PageUrl="@pageUrl" Link="sizing">
     <Demo Type="typeof(Dropdown_Demo_04_A_Sizing)" Tabs="false" />
     <Demo Type="typeof(Dropdown_Demo_04_B_Sizing)" Tabs="false" />
@@ -116,6 +135,23 @@
         You can use the <b>AutoClose</b> and <b>AutoCloseBehavior</b> parameters to change this behavior of the <b>Dropdown</b>.
     </div>
     <Demo Type="typeof(Dropdown_Demo_13_AutoClose)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Additional attributes" PageUrl="@pageUrl" Link="additional-attributes">
+    <div class="mb-3">
+        Any additional HTML attributes, such as <code>title</code> or <code>data-*</code>, set on the <b>DropdownToggleButton</b> or <b>DropdownActionButton</b> are rendered on the button.
+        The dropdown keeps working when the parent component re-renders.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Add any HTML attribute, such as <code>title</code> or <code>data-testid</code>, to the <b>DropdownToggleButton</b>.</li>
+                <li>Update state in the parent component as usual, for example from a <b>DropdownItem</b> click.</li>
+            </ol>
+        </div>
+        In this demo, selecting a status updates the toggle text and re-renders the dropdown.
+    </div>
+    <Demo Type="typeof(Dropdown_Demo_16_Additional_Attributes)" Tabs="true" />
 </Section>
 
 <Section Size="HeadingSize.H2" Name="Methods" PageUrl="@pageUrl" Link="methods">
