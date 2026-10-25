@@ -1170,9 +1170,16 @@ window.blazorBootstrap = {
             if (elementRef != null)
                 bootstrap?.Tooltip?.getOrCreateInstance(elementRef)?.show();
         },
-        update: (elementRef) => {
-            if (elementRef != null)
+        update: (elementRef, title) => {
+            if (elementRef != null) {
+                // Bootstrap keeps the old 'data-bs-original-title' when the new title is empty
+                if (title)
+                    elementRef.setAttribute('data-bs-original-title', title);
+                else if (title !== undefined)
+                    elementRef.removeAttribute('data-bs-original-title');
+
                 bootstrap?.Tooltip?.getOrCreateInstance(elementRef)?.update();
+            }
         },
         dispose: (elementRef) => {
             if (elementRef != null)
