@@ -324,6 +324,30 @@ HTML tooltips not supported at this moment.
 
 [See demo here.](https://demos.blazorbootstrap.com/buttons#dynamically-update-the-tooltip-text)
 
+### Clear the tooltip text
+
+Set the `TooltipTitle` parameter to an empty string or `null` to stop showing the tooltip. Set it again to show the new text.
+
+```cshtml showLineNumbers
+<div class="mb-3">
+    <Button Color="ButtonColor.Primary" TooltipTitle="@text" TooltipPlacement="TooltipPlacement.Top"> Tooltip Top </Button>
+</div>
+
+<Button Type="ButtonType.Button" Color="ButtonColor.Primary" @onclick="SetTooltip">Set Tooltip</Button>
+<Button Type="ButtonType.Button" Color="ButtonColor.Secondary" @onclick="ClearTooltip">Clear Tooltip</Button>
+```
+```csharp
+@code {
+    private string? text = "Tooltip text";
+
+    private void SetTooltip() => text = $"Updated {DateTime.Now.ToLongTimeString()}";
+
+    private void ClearTooltip() => text = string.Empty;
+}
+```
+
+[See demo here.](https://demos.blazorbootstrap.com/buttons#clear-the-tooltip-text)
+
 ### Events
 
 #### Click events

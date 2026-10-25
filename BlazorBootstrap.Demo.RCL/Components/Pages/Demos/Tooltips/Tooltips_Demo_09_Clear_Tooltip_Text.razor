@@ -1,0 +1,14 @@
+﻿<div class="mb-3">
+    <Tooltip Title="@title">Hover me</Tooltip>
+</div>
+
+<Button Color="ButtonColor.Primary" @onclick="SetTooltip">Set Tooltip</Button>
+<Button Color="ButtonColor.Secondary" @onclick="ClearTooltip">Clear Tooltip</Button>
+
+@code {
+    private string? title = "Tooltip text";
+
+    private void SetTooltip() => title = $"Updated {DateTime.Now.ToLongTimeString()}";
+
+    private void ClearTooltip() => title = string.Empty;
+}
