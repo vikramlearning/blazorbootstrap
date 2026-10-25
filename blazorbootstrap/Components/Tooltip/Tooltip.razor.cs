@@ -66,7 +66,7 @@ public partial class Tooltip : BlazorBootstrapComponentBase
                 color = Color;
 
                 await SafeInvokeVoidAsync("window.blazorBootstrap.tooltip.dispose", Element);
-                await SafeInvokeVoidAsync("window.blazorBootstrap.tooltip.update", Element);
+                await SafeInvokeVoidAsync("window.blazorBootstrap.tooltip.update", Element, Title);
             }
     }
 

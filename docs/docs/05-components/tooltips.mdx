@@ -109,6 +109,30 @@ Use Blazor Bootstrap tooltip component to add custom tooltips to your web pages.
 ```
 [see demo here](https://demos.blazorbootstrap.com/tooltips#dynamically-update-the-tooltip-text)
 
+### Clear the tooltip text
+
+Set the `Title` parameter to an empty string or `null` to stop showing the tooltip. Set it again to show the new text.
+
+```cshtml showLineNumbers
+<div class="mb-3">
+    <Tooltip Title="@title">Hover me</Tooltip>
+</div>
+
+<Button Color="ButtonColor.Primary" @onclick="SetTooltip">Set Tooltip</Button>
+<Button Color="ButtonColor.Secondary" @onclick="ClearTooltip">Clear Tooltip</Button>
+```
+
+```cs showLineNumbers
+@code {
+    private string? title = "Tooltip text";
+
+    private void SetTooltip() => title = $"Updated {DateTime.Now.ToLongTimeString()}";
+
+    private void ClearTooltip() => title = string.Empty;
+}
+```
+[see demo here](https://demos.blazorbootstrap.com/tooltips#clear-the-tooltip-text)
+
 ### Tooltip with HTML
 
 <img src="https://i.imgur.com/2xuTx6b.png" alt="Blazor Bootstrap: Tooltip with HTML" />
