@@ -74,7 +74,8 @@ public partial class RangeInput<TValue> : BlazorBootstrapComponentBase
 
         AdditionalAttributes ??= new Dictionary<string, object>();
 
-        fieldIdentifier = FieldIdentifier.Create(ValueExpression);
+        if (ValueExpression is not null)
+            fieldIdentifier = FieldIdentifier.Create(ValueExpression);
 
         SetDefaultValues();
 
@@ -124,7 +125,9 @@ public partial class RangeInput<TValue> : BlazorBootstrapComponentBase
     private async Task HandleChangeAsync()
     {
         await ValueChanged.InvokeAsync(Value);
-        EditContext?.NotifyFieldChanged(fieldIdentifier);
+
+        if (fieldIdentifier.FieldName is not null)
+            EditContext?.NotifyFieldChanged(fieldIdentifier);
     }
 
     /// <summary>
@@ -395,7 +398,10 @@ public partial class RangeInput<TValue> : BlazorBootstrapComponentBase
 
     [CascadingParameter] private EditContext EditContext { get; set; } = default!;
 
-    private string fieldCssClasses => EditContext?.FieldCssClass(fieldIdentifier) ?? "";
+    private string fieldCssClasses =>
+        EditContext is not null && fieldIdentifier.FieldName is not null
+            ? EditContext.FieldCssClass(fieldIdentifier)
+            : "";
 
     /// <summary>
     /// Gets or sets the maximum value of the range input.

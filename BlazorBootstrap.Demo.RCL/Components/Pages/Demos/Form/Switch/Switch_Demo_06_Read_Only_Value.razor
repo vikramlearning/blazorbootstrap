@@ -1,0 +1,28 @@
+<table class="table">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Active</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var employee in employees)
+        {
+            <tr>
+                <td>@employee.Name</td>
+                <td><Switch Value="employee.IsActive" Disabled="true" /></td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+    private readonly List<Employee> employees = new()
+    {
+        new("Vikram Reddy", true),
+        new("Ada Lovelace", false),
+        new("Grace Hopper", true)
+    };
+
+    private record Employee(string Name, bool IsActive);
+}

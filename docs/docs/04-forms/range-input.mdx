@@ -273,3 +273,91 @@ To add tick marks to a `RangeInput`, set the `TickMarks` parameter.
 ```
 
 [See demo here](https://demos.blazorbootstrap.com/form/range-input#tick-marks)
+
+### Events: ValueChanged
+
+Use `Value` and the `ValueChanged` event instead of `@bind-Value` when you need to run your own logic as the value changes. Update your field in the handler so the `RangeInput` shows the new value.
+
+```cshtml {} showLineNumbers
+<div class="d-flex flex-row mb-3">
+    <RangeInput TValue="int" Value="amount" ValueChanged="OnAmountChanged" Min="0" Max="100" />
+    <Badge Color="BadgeColor.Primary" Class="ms-2" VisuallyHiddenText="amount">@amount</Badge>
+</div>
+```
+
+```cs {} showLineNumbers
+@code {
+    private int amount = 25;
+
+    private void OnAmountChanged(int value)
+    {
+        amount = value; // this is mandatory
+    }
+}
+```
+
+[See demo here](https://demos.blazorbootstrap.com/form/range-input#events-value-changed)
+
+### EditForm
+
+The `RangeInput` can be used inside an `EditForm` with either `@bind-Value` or `Value` and `ValueChanged`. Use `@bind-Value` when you want the `EditContext` to track the field and apply validation CSS classes to it.
+
+```cshtml {} showLineNumbers
+<EditForm Model="@employee" OnValidSubmit="HandleOnValidSubmit">
+    <DataAnnotationsValidator />
+
+    <div class="form-group row mb-3">
+        <label class="col-md-2 col-form-label">Name: <span class="text-danger">*</span></label>
+        <div class="col-md-10">
+            <TextInput @bind-Value="@employee.Name" Placeholder="Enter name" />
+            <ValidationMessage For="@(() => employee.Name)" />
+        </div>
+    </div>
+
+    <div class="form-group row mb-3">
+        <label class="col-md-2 col-form-label">Experience:</label>
+        <div class="col-md-10 d-flex flex-row align-items-center">
+            <RangeInput TValue="int" Value="@employee.Experience" ValueChanged="OnExperienceChanged" Min="0" Max="40" />
+            <Badge Color="BadgeColor.Primary" Class="ms-2" VisuallyHiddenText="experience">@employee.Experience</Badge>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <Button Type="ButtonType.Submit" Color="ButtonColor.Success" Class="float-end">Submit</Button>
+        </div>
+    </div>
+</EditForm>
+
+<div class="mt-3">@submitMessage</div>
+```
+
+```cs {} showLineNumbers
+@using System.ComponentModel.DataAnnotations
+
+@code {
+    private Employee employee = new();
+    private string? submitMessage;
+
+    private void OnExperienceChanged(int value)
+    {
+        employee.Experience = value;
+        submitMessage = null;
+    }
+
+    private void HandleOnValidSubmit()
+    {
+        submitMessage = $"Submitted: {employee.Name} ({employee.Experience} years)";
+    }
+
+    public class Employee
+    {
+        [Required(ErrorMessage = "Name required.")]
+        public string? Name { get; set; }
+
+        public int Experience { get; set; } = 5;
+    }
+}
+```
+
+[See demo here](https://demos.blazorbootstrap.com/form/range-input#edit-form)

@@ -40,8 +40,21 @@
     <Demo Type="typeof(Switch_Demo_04_Events_Value_Changed)" Tabs="true" />
 </Section>
 
+<Section Size="HeadingSize.H2" Name="Read-only value" PageUrl="@pageUrl" Link="read-only-value">
+    <div class="mb-3">
+        Set only the <code>Value</code> parameter to display a value that cannot be written back, such as a read-only property.
+        Combine it with <code>Disabled</code> so users cannot toggle the display.
+    </div>
+    <Demo Type="typeof(Switch_Demo_06_Read_Only_Value)" Tabs="true" />
+</Section>
+
 <Section Size="HeadingSize.H2" Name="Form" PageUrl="@pageUrl" Link="form">
     <Demo Type="typeof(Switch_Demo_05_Form)" Tabs="true" />
+    <div class="my-3">
+        The <code>Switch</code> can also be used inside an <code>EditForm</code> with <code>Value</code> and <code>ValueChanged</code> instead of <code>@@bind-Value</code>.
+        Use <code>@@bind-Value</code> when you want the <code>EditContext</code> to track the field.
+    </div>
+    <Demo Type="typeof(Switch_Demo_07_Form_Value_Changed)" Tabs="true" />
 </Section>
 
 @code {

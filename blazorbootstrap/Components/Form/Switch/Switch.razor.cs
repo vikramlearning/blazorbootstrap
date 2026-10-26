@@ -19,7 +19,8 @@ public partial class Switch : BlazorBootstrapComponentBase
 
         AdditionalAttributes ??= new Dictionary<string, object>();
 
-        fieldIdentifier = FieldIdentifier.Create(ValueExpression);
+        if (ValueExpression is not null)
+            fieldIdentifier = FieldIdentifier.Create(ValueExpression);
 
         await base.OnInitializedAsync();
     }
@@ -30,7 +31,8 @@ public partial class Switch : BlazorBootstrapComponentBase
         {
             await ValueChanged.InvokeAsync(Value);
 
-            EditContext?.NotifyFieldChanged(fieldIdentifier);
+            if (fieldIdentifier.FieldName is not null)
+                EditContext?.NotifyFieldChanged(fieldIdentifier);
 
             oldValue = Value;
         }
@@ -61,7 +63,8 @@ public partial class Switch : BlazorBootstrapComponentBase
 
         await ValueChanged.InvokeAsync(Value);
 
-        EditContext?.NotifyFieldChanged(fieldIdentifier);
+        if (fieldIdentifier.FieldName is not null)
+            EditContext?.NotifyFieldChanged(fieldIdentifier);
 
         oldValue = Value;
     }
@@ -90,7 +93,10 @@ public partial class Switch : BlazorBootstrapComponentBase
 
     [CascadingParameter] private EditContext EditContext { get; set; } = default!;
 
-    private string fieldCssClasses => EditContext?.FieldCssClass(fieldIdentifier) ?? "";
+    private string fieldCssClasses =>
+        EditContext is not null && fieldIdentifier.FieldName is not null
+            ? EditContext.FieldCssClass(fieldIdentifier)
+            : "";
 
     /// <summary>
     /// Gets or sets the label.

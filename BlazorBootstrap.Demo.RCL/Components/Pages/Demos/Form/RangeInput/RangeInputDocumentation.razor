@@ -62,6 +62,22 @@
     <Demo Type="typeof(RangeInput_Demo_06_Tick_Marks)" Tabs="true" />
 </Section>
 
+<Section Size="HeadingSize.H2" Name="Events: ValueChanged" PageUrl="@pageUrl" Link="events-value-changed">
+    <div class="mb-3">
+        Use <code>Value</code> and the <code>ValueChanged</code> event instead of <code>@@bind-Value</code> when you need to run your own logic as the value changes.
+        Update your field in the handler so the <code>RangeInput</code> shows the new value.
+    </div>
+    <Demo Type="typeof(RangeInput_Demo_07_Events_ValueChanged)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="EditForm" PageUrl="@pageUrl" Link="edit-form">
+    <div class="mb-3">
+        The <code>RangeInput</code> can be used inside an <code>EditForm</code> with either <code>@@bind-Value</code> or <code>Value</code> and <code>ValueChanged</code>.
+        Use <code>@@bind-Value</code> when you want the <code>EditContext</code> to track the field and apply validation CSS classes to it.
+    </div>
+    <Demo Type="typeof(RangeInput_Demo_08_EditForm)" Tabs="true" />
+</Section>
+
 @code {
     private const string pageUrl = DemoRouteConstants.Demos_URL_RangeInput;
     private const string pageTitle = "Blazor RangeInput";

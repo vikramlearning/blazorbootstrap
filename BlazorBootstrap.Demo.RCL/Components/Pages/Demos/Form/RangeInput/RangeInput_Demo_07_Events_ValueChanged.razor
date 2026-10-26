@@ -1,0 +1,13 @@
+<div class="d-flex flex-row mb-3">
+    <RangeInput TValue="int" Value="amount" ValueChanged="OnAmountChanged" Min="0" Max="100" />
+    <Badge Color="BadgeColor.Primary" Class="ms-2" VisuallyHiddenText="amount">@amount</Badge>
+</div>
+
+@code {
+    private int amount = 25;
+
+    private void OnAmountChanged(int value)
+    {
+        amount = value; // this is mandatory
+    }
+}
