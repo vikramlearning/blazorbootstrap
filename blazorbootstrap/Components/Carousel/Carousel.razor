@@ -10,17 +10,17 @@
                     var i = 0;
                     foreach (var item in items)
                     {
-                        var j = i;
                         bool isActiveItem = (i == activeIndex);
                         string? itemClass = isActiveItem ? "active" : null;
+                        string? ariaCurrent = isActiveItem ? "true" : null;
                         string? label = item.Label ?? $"Slide {i + 1}";
 
                         <button type="button"
                                 class="@itemClass"
-                                aria-current="isActiveItem"
+                                aria-current="@ariaCurrent"
                                 aria-label="@label"
                                 data-bs-target="#@Id"
-                                @onclick="async () => await ShowItemByIndexAsync(j)"></button>
+                                data-bs-slide-to="@i"></button>
                         i++;
                     }
                 }
