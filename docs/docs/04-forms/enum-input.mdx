@@ -225,6 +225,77 @@ The **EnumInput** component supports event callbacks for value and text changes,
 
 [See demo here](https://demos.blazorbootstrap.com/form/enum-input#events)
 
+### EditForm
+
+The **EnumInput** component can be used inside an `EditForm` with either `@bind-Value` or `Value` and `ValueChanged`. Use `@bind-Value` when you want the `EditContext` to track the field and apply validation CSS classes to it.
+
+```cshtml {} showLineNumbers
+<EditForm Model="@employee" OnValidSubmit="HandleOnValidSubmit">
+    <DataAnnotationsValidator />
+
+    <div class="form-group row mb-3">
+        <label class="col-md-2 col-form-label">Name: <span class="text-danger">*</span></label>
+        <div class="col-md-10">
+            <TextInput @bind-Value="@employee.Name" Placeholder="Enter name" />
+            <ValidationMessage For="@(() => employee.Name)" />
+        </div>
+    </div>
+
+    <div class="form-group row mb-3">
+        <label class="col-md-2 col-form-label">Status:</label>
+        <div class="col-md-10">
+            <EnumInput TEnum="EmployeeStatus" Value="@employee.Status" ValueChanged="OnStatusChanged" />
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <Button Type="ButtonType.Submit" Color="ButtonColor.Success" Class="float-end">Submit</Button>
+        </div>
+    </div>
+</EditForm>
+
+<div class="mt-3">Selected status: @((EmployeeStatus)employee.Status)</div>
+<div>@submitMessage</div>
+```
+
+```cs {} showLineNumbers
+@using System.ComponentModel.DataAnnotations
+
+@code {
+    private Employee employee = new();
+    private string? submitMessage;
+
+    private void OnStatusChanged(int value)
+    {
+        employee.Status = value;
+        submitMessage = null;
+    }
+
+    private void HandleOnValidSubmit()
+    {
+        submitMessage = $"Submitted: {employee.Name} ({(EmployeeStatus)employee.Status})";
+    }
+
+    public class Employee
+    {
+        [Required(ErrorMessage = "Name required.")]
+        public string? Name { get; set; }
+
+        public int Status { get; set; } = (int)EmployeeStatus.Pending;
+    }
+
+    public enum EmployeeStatus
+    {
+        Active,
+        Inactive,
+        Pending
+    }
+}
+```
+
+[See demo here](https://demos.blazorbootstrap.com/form/enum-input#edit-form)
+
 ### Methods
 
 The **EnumInput** component can be enabled or disabled dynamically at runtime.

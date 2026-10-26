@@ -90,6 +90,23 @@
     <Demo Type="typeof(EnumInput_Demo_07_Events_B_TextChanged)" Tabs="true" />
 </Section>
 
+<Section Class="p-0" Size="HeadingSize.H3" Name="EditForm" PageUrl="@pageUrl" Link="edit-form">
+    <div class="mb-3">
+        The <strong>EnumInput</strong> component can be used inside an <code>EditForm</code> with either <code>@@bind-Value</code> or <code>Value</code> and <code>ValueChanged</code>.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Place the <code>EnumInput</code> inside an <code>EditForm</code>.</li>
+                <li>Set the <code>Value</code> parameter and handle the <code>ValueChanged</code> event to update your model.</li>
+                <li>Use <code>@@bind-Value</code> instead when you want the <code>EditContext</code> to track the field and apply validation CSS classes to it.</li>
+            </ol>
+        </div>
+        This demo shows how to use EnumInput with <code>Value</code> and <code>ValueChanged</code> inside an EditForm that validates other fields.
+    </div>
+    <Demo Type="typeof(EnumInput_Demo_09_EditForm)" Tabs="true" />
+</Section>
+
 <Section Class="p-0" Size="HeadingSize.H3" Name="Mehods" PageUrl="@pageUrl" Link="methods">
     <div class="mb-3">
         The <strong>EnumInput</strong> component can be enabled or disabled dynamically at runtime.

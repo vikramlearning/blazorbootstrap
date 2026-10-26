@@ -94,7 +94,11 @@ public partial class EnumInput<TEnum> : BlazorBootstrapComponentBase where TEnum
     [CascadingParameter]
     private EditContext EditContext { get; set; } = default!;
 
-    private string FieldCssClasses => EditContext?.FieldCssClass(fieldIdentifier) ?? "";
+    // fieldIdentifier is only set when ValueExpression or TextExpression is provided (e.g. not with Value + ValueChanged).
+    private string FieldCssClasses =>
+        EditContext is not null && fieldIdentifier.FieldName is not null
+            ? EditContext.FieldCssClass(fieldIdentifier)
+            : "";
 
     /// <summary>
     /// Gets or sets the size.
