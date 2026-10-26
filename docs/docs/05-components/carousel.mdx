@@ -200,6 +200,27 @@ Instead, it will only start after the first user interaction.
 
 [See the demo here.](https://demos.blazorbootstrap.com/carousel#autoplaying-carousels)
 
+### Autoplaying carousels with indicators
+
+Set `ShowIndicators` to `true` on an autoplaying carousel to show the indicators. 
+The active indicator follows each slide as the carousel cycles, and selecting an indicator jumps directly to that slide.
+
+```cshtml {} showLineNumbers
+<Carousel Autoplay="CarouselAutoPlay.StartOnPageLoad" ShowIndicators="true">
+    <CarouselItem Active="true">
+        <Image Src="_content/BlazorBootstrap.Demo.RCL/images/carousel/slide-01.png" />
+    </CarouselItem>
+    <CarouselItem>
+        <Image Src="_content/BlazorBootstrap.Demo.RCL/images/carousel/slide-02.png" />
+    </CarouselItem>
+    <CarouselItem>
+        <Image Src="_content/BlazorBootstrap.Demo.RCL/images/carousel/slide-03.png" />
+    </CarouselItem>
+</Carousel>
+```
+
+[See the demo here.](https://demos.blazorbootstrap.com/carousel#autoplaying-carousels-with-indicators)
+
 ### Individual carousel item interval
 
 Add `Interval` parameter to a `CarouselItem` component to change the amount of time to delay between automatically cycling to the next item.

@@ -70,6 +70,7 @@ public partial class Carousel : BlazorBootstrapComponentBase
     public async Task bslide(CarouselEventArgs args)
     {
         activeIndex = args.To;
+        StateHasChanged(); // Required: autoplay, keyboard, swipe and indicator clicks are Bootstrap-driven and raise no Blazor event
         await Onslide.InvokeAsync(args);
     }
 
