@@ -1,0 +1,20 @@
+<Alert Color="AlertColor.Info" Class="d-none d-lg-block">Resize your browser to show the responsive offcanvas button.</Alert>
+
+<Offcanvas @ref="offcanvas"
+           Title="Offcanvas title"
+           Responsive="OffcanvasResponsive.LargeDown"
+           FooterCssClass="d-lg-none">
+    <BodyTemplate>
+        <p>This is content within an <code>Offcanvas</code> with <code>OffcanvasResponsive.LargeDown</code>.</p>
+    </BodyTemplate>
+    <FooterTemplate>
+        <Button Color="ButtonColor.Secondary" @onclick="() => offcanvas.HideAsync()">Close</Button>
+    </FooterTemplate>
+</Offcanvas>
+
+<Button Class="d-lg-none" Color="ButtonColor.Primary" @onclick="OnShowOffcanvasClick">Show offcanvas</Button>
+
+@code {
+    private Offcanvas offcanvas = default!;
+    private async Task OnShowOffcanvasClick() => await offcanvas.ShowAsync();
+}
