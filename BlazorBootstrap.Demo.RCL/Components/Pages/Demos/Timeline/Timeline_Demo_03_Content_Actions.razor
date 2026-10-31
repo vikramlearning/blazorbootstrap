@@ -1,0 +1,40 @@
+@if (!string.IsNullOrWhiteSpace(message))
+{
+    <Alert Color="AlertColor.Info">@message</Alert>
+}
+
+<Timeline Items="items" AriaLabel="Release activity" Style="--bb-timeline-color: var(--bs-success);">
+</Timeline>
+
+@code {
+    private readonly List<TimelineItem> items = [];
+    private string? message;
+
+    protected override void OnInitialized()
+    {
+        var release = new TimelineItem
+        {
+            Title = "Version 4.0 released",
+            Description = "The release includes new components and accessibility improvements.",
+            Timestamp = "August 19, 2026 at 10:30 AM",
+            Badge = "Latest",
+            BadgeColor = BadgeColor.Success,
+            IconCssClass = "bi bi-github",
+            IconColor = IconColor.Dark,
+            ImageUrl = "https://picsum.photos/seed/blazor-timeline/900/300",
+            ImageAlt = "Abstract release banner",
+            ChildContent = builder => builder.AddMarkupContent(0, "<div class=\"small text-body-secondary\"><i class=\"bi bi-box-seam me-1\"></i>Package available from NuGet.</div>")
+        };
+
+        release.Actions =
+        [
+            new() { Text = "View", IconCssClass = "bi bi-eye", Color = ButtonColor.Primary, OnClick = EventCallback.Factory.Create<TimelineItem>(this, item => ShowMessage($"Viewing {item.Title}")) },
+            new() { Text = "Download", IconCssClass = "bi bi-download", Color = ButtonColor.Success, OnClick = EventCallback.Factory.Create<TimelineItem>(this, item => ShowMessage($"Downloading {item.Title}")) },
+            new() { Text = "Delete", IconCssClass = "bi bi-trash", Color = ButtonColor.Danger, Disabled = true, AriaLabel = "Delete release (disabled)" }
+        ];
+
+        items.Add(release);
+    }
+
+    private void ShowMessage(string value) => message = value;
+}

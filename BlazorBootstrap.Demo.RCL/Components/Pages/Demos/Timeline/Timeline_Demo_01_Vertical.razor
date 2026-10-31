@@ -1,0 +1,10 @@
+<Timeline Items="items" />
+
+@code {
+    private readonly List<TimelineItem> items =
+    [
+        new() { Title = "Project created", Description = "The project workspace and repository were created.", Timestamp = "March 3, 2026", IconCssClass = "bi bi-folder-plus" },
+        new() { Title = "Design approved", Description = "The component design was reviewed and approved.", Timestamp = "March 8, 2026", IconCssClass = "bi bi-check2-circle", IconColor = IconColor.Success, Badge = "Approved", BadgeColor = BadgeColor.Success },
+        new() { Title = "Development started", Description = "Implementation began on the reusable timeline component.", Timestamp = "March 10, 2026", IconCssClass = "bi bi-code-slash", IconColor = IconColor.Info }
+    ];
+}
