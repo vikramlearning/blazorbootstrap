@@ -230,12 +230,16 @@ public partial class AutoComplete<TItem> : BlazorBootstrapComponentBase
         await SafeInvokeVoidAsync("window.blazorBootstrap.autocomplete.hide", Element);
     }
 
-    private async Task OnInputChangedAsync(ChangeEventArgs args)
+    /// <summary>
+    /// Runs after <c>@bind</c> has written the typed text to <see cref="Value" />.
+    /// Using <c>@bind</c> (not a manual <c>value</c> + <c>@oninput</c>) lets Blazor Server keep the input in sync with
+    /// the browser, so a slow round-trip does not overwrite text typed in the meantime.
+    /// </summary>
+    private async Task OnInputChangedAsync()
     {
         searchInProgress = true;
 
         selectedIndex = -1;
-        Value = args?.Value?.ToString()!;
 
         SetInputHasValue();
 

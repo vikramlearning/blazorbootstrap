@@ -9,12 +9,13 @@
                id="@Id"               
                class="@ClassNames @fieldCssClasses" 
                style="@StyleNames"
-               value="@Value"
                placeholder="@Placeholder"
                disabled="@Disabled"
                autocomplete="off"
                @attributes="@AdditionalAttributes"
-               @oninput="OnInputChangedAsync"
+               @bind="Value"
+               @bind:event="oninput"
+               @bind:after="OnInputChangedAsync"
                @onkeydown="OnKeyDownAsync" />
 
         @if (inputHasValue)

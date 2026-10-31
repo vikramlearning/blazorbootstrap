@@ -123,6 +123,8 @@ public partial class GridColumnFilter : BlazorBootstrapComponentBase
        {
            builder.AddAttribute(105, "style", filterStyle);
            builder.AddAttribute(106, "oninput", async (ChangeEventArgs args) => await OnFilterValueChangedAsync(args));
+           // Same as @bind: Blazor Server records the browser's value, so a slow round-trip does not overwrite text typed in the meantime.
+           builder.SetUpdatesAttributeName("value");
        }
 
        builder.CloseElement();
