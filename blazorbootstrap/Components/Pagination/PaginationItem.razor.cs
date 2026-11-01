@@ -2,18 +2,6 @@
 
 public partial class PaginationItem : BlazorBootstrapComponentBase
 {
-    #region Methods
-
-    protected override void OnParametersSet()
-    {
-        if (Active)
-            AdditionalAttributes?.Add("aria-current", "page");
-
-        base.OnParametersSet();
-    }
-
-    #endregion
-
     #region Properties, Indexers
 
     protected override string? ClassNames =>

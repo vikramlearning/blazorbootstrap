@@ -23,13 +23,13 @@ Use Blazor Bootstrap pagination component to indicate a series of related conten
 | Alignment | `Alignment` | `Alignment.None` | | Gets or sets the pagination alignment. | 1.0.0 |
 | DisplayPages | int | 5 | | Gets or sets the maximum page links to be displayed. | 1.0.0 |
 | FirstLinkIcon | `IconName` | `IconName.None` | | Gets or sets the first link icon. | 1.0.0 |
-| FirstLinkText | string | null | | Gets or sets the first link text. 'FirstLinkText' is ignored if 'FirstLinkIcon' is specified. | 1.0.0 |
+| FirstLinkText | string | null | | Gets or sets the first link text. If 'FirstLinkIcon' is specified, the icon is shown instead and 'FirstLinkText' is used as the link's accessible name (aria-label). | 1.0.0 |
 | LastLinkIcon | `IconName` | `IconName.None` | | Gets or sets the last link icon. | 1.0.0 |
-| LastLinkText | string | null | | Gets or sets the last link text. 'LastLinkText' is ignored if 'LastLinkIcon' is specified. | 1.0.0 |
+| LastLinkText | string | null | | Gets or sets the last link text. If 'LastLinkIcon' is specified, the icon is shown instead and 'LastLinkText' is used as the link's accessible name (aria-label). | 1.0.0 |
 | NextLinkIcon | `IconName` | `IconName.None` | | Gets or sets the next link icon. | 1.0.0 |
-| NextLinkText | string | null | | Gets or sets the next link text. 'NextLinkText' is ignored if 'NextLinkIcon' is specified. | 1.0.0 |
+| NextLinkText | string | null | | Gets or sets the next link text. If 'NextLinkIcon' is specified, the icon is shown instead and 'NextLinkText' is used as the link's accessible name (aria-label). | 1.0.0 |
 | PreviousLinkIcon | `IconName` | `IconName.None` | | Gets or sets the previous link icon. | 1.0.0 |
-| PreviousLinkText | string | null | | Gets or sets the previous link text. 'PreviousLinkText' is ignored if 'PreviousLinkIcon' is specified. | 1.0.0 |
+| PreviousLinkText | string | null | | Gets or sets the previous link text. If 'PreviousLinkIcon' is specified, the icon is shown instead and 'PreviousLinkText' is used as the link's accessible name (aria-label). | 1.0.0 |
 | Size | `PaginationSize` | `PaginationSize.None` | | Gets or sets the pagination size. | 1.0.0 |
 | TotalPages | int | 0 | | Gets or sets the total pages. | 1.0.0 |
 
@@ -58,6 +58,8 @@ We use a large block of connected links for our pagination, making links hard to
 [See demo here.](https://demos.blazorbootstrap.com/pagination#examples)
 
 ### Working with icons
+
+When a link shows an icon, its text is not displayed but is still used as the link's accessible name, so screen readers announce **First**, **Previous**, **Next** and **Last** by default. Set `FirstLinkText`, `PreviousLinkText`, `NextLinkText` and `LastLinkText` to change or translate these labels.
 
 <img src="https://i.imgur.com/nhfGHfy.jpg" alt="Pagination - Working with icons" />
 

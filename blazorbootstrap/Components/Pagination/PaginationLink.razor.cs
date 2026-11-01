@@ -2,22 +2,12 @@
 
 public partial class PaginationLink : BlazorBootstrapComponentBase
 {
-    #region Methods
-
-    protected override void OnParametersSet()
-    {
-        if (!string.IsNullOrWhiteSpace(LinkAriaLabel))
-            AdditionalAttributes?.Add("aria-label", LinkAriaLabel); // TODO: this is not working revisit again
-
-        base.OnParametersSet();
-    }
-
-    #endregion
-
     #region Properties, Indexers
 
     protected override string? ClassNames =>
         BuildClassNames(Class, (BootstrapClass.PaginationLink, true));
+
+    private string? ariaLabel => string.IsNullOrWhiteSpace(LinkAriaLabel) ? null : LinkAriaLabel;
 
     /// <summary>
     /// Gets or sets the link aria-label attribute.

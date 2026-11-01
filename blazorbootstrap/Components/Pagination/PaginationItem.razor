@@ -2,5 +2,5 @@
 @inherits BlazorBootstrapComponentBase
 
 <li id="@Id" class="@ClassNames" style="@StyleNames" @attributes="@AdditionalAttributes">
-    <PaginationLink LinkIcon="@LinkIcon" LinkText="@LinkText" Text="@Text" LinkAriaLabel="@AriaLabel"/>
+    <PaginationLink LinkIcon="@LinkIcon" LinkText="@LinkText" Text="@Text" LinkAriaLabel="@AriaLabel" aria-current="@(Active ? "page" : null)" aria-disabled="@(Disabled ? "true" : null)" tabindex="@(Disabled ? "-1" : null)"/>
 </li>
