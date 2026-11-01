@@ -1,7 +1,7 @@
 ﻿@namespace BlazorBootstrap
 @inherits BlazorBootstrapComponentBase
 
-<a id="@Id" class="@ClassNames" style="@StyleNames" @attributes="@AdditionalAttributes">
+<button type="button" id="@Id" class="@ClassNames" style="@StyleNames" aria-label="@ariaLabel" @attributes="@AdditionalAttributes">
     @if (Enum.IsDefined(typeof(IconName), LinkIcon) && LinkIcon != IconName.None)
     {
         <span aria-hidden="true">
@@ -12,4 +12,4 @@
     {
         @Text
     }
-</a>
+</button>

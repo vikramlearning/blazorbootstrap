@@ -192,6 +192,8 @@ public partial class Pagination : BlazorBootstrapComponentBase
 
     private int nextPageNumber => GetNextPageNumber();
 
+    private string nextPagesLinkText => "Next pages";
+
     /// <summary>
     /// This event fires immediately when the page number is changed.
     /// </summary>
@@ -231,6 +233,8 @@ public partial class Pagination : BlazorBootstrapComponentBase
     public string? PreviousLinkText { get; set; }
 
     private int previousPageNumber => GetPreviousPageNumber();
+
+    private string previousPagesLinkText => "Previous pages";
 
     /// <summary>
     /// Gets or sets the pagination size.
