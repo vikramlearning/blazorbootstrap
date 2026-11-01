@@ -123,14 +123,14 @@ public partial class Pagination : BlazorBootstrapComponentBase
     private string firstLinkText => string.IsNullOrWhiteSpace(FirstLinkText) ? "First" : FirstLinkText;
 
     /// <summary>
-    /// Gets or sets the first link text. 'FirstLinkText' is ignored if 'FirstLinkIcon' is specified.
+    /// Gets or sets the first link text. If 'FirstLinkIcon' is specified, the icon is shown instead and 'FirstLinkText' is used as the link's accessible name (aria-label).
     /// </summary>
     /// <para>
     /// Default value is <see langword="null"/>.
     /// </para>
     [AddedVersion("1.0.0")]
     [DefaultValue(null)]
-    [Description("Gets or sets the first link text. <b>FirstLinkText</b> is ignored if <b>FirstLinkIcon</b> is specified.")]
+    [Description("Gets or sets the first link text. If <b>FirstLinkIcon</b> is specified, the icon is shown instead and <b>FirstLinkText</b> is used as the link's accessible name (aria-label).")]
     [Parameter]
     public string? FirstLinkText { get; set; }
 
@@ -151,14 +151,14 @@ public partial class Pagination : BlazorBootstrapComponentBase
     private string lastLinkText => string.IsNullOrWhiteSpace(LastLinkText) ? "Last" : LastLinkText;
 
     /// <summary>
-    /// Gets or sets the last link text. 'LastLinkText' is ignored if 'LastLinkIcon' is specified.
+    /// Gets or sets the last link text. If 'LastLinkIcon' is specified, the icon is shown instead and 'LastLinkText' is used as the link's accessible name (aria-label).
     /// </summary>
     /// <para>
     /// Default value is <see langword="null"/>.
     /// </para>
     [AddedVersion("1.0.0")]
     [DefaultValue(null)]
-    [Description("Gets or sets the last link text. <b>LastLinkText</b> is ignored if <b>LastLinkIcon</b> is specified.")]
+    [Description("Gets or sets the last link text. If <b>LastLinkIcon</b> is specified, the icon is shown instead and <b>LastLinkText</b> is used as the link's accessible name (aria-label).")]
     [Parameter]
     public string? LastLinkText { get; set; }
 
@@ -179,14 +179,14 @@ public partial class Pagination : BlazorBootstrapComponentBase
     private string nextLinkText => string.IsNullOrWhiteSpace(NextLinkText) ? "Next" : NextLinkText;
 
     /// <summary>
-    /// Gets or sets the next link text. 'NextLinkText' is ignored if 'NextLinkIcon' is specified.
+    /// Gets or sets the next link text. If 'NextLinkIcon' is specified, the icon is shown instead and 'NextLinkText' is used as the link's accessible name (aria-label).
     /// </summary>
     /// <para>
     /// Default value is <see langword="null"/>.
     /// </para>
     [AddedVersion("1.0.0")]
     [DefaultValue(null)]
-    [Description("Gets or sets the next link text. <b>NextLinkText</b> is ignored if <b>NextLinkIcon</b> is specified.")]
+    [Description("Gets or sets the next link text. If <b>NextLinkIcon</b> is specified, the icon is shown instead and <b>NextLinkText</b> is used as the link's accessible name (aria-label).")]
     [Parameter]
     public string? NextLinkText { get; set; }
 
@@ -221,14 +221,14 @@ public partial class Pagination : BlazorBootstrapComponentBase
     private string previousLinkText => string.IsNullOrWhiteSpace(PreviousLinkText) ? "Previous" : PreviousLinkText;
 
     /// <summary>
-    /// Gets or sets the previous link text. 'PreviousLinkText' is ignored if 'PreviousLinkIcon' is specified.
+    /// Gets or sets the previous link text. If 'PreviousLinkIcon' is specified, the icon is shown instead and 'PreviousLinkText' is used as the link's accessible name (aria-label).
     /// </summary>
     /// <para>
     /// Default value is null.
     /// </para>
     [AddedVersion("1.0.0")]
     [DefaultValue(null)]
-    [Description("Gets or sets the previous link text. <b>PreviousLinkText</b> is ignored if <b>PreviousLinkIcon</b> is specified.")]
+    [Description("Gets or sets the previous link text. If <b>PreviousLinkIcon</b> is specified, the icon is shown instead and <b>PreviousLinkText</b> is used as the link's accessible name (aria-label).")]
     [Parameter]
     public string? PreviousLinkText { get; set; }
 
