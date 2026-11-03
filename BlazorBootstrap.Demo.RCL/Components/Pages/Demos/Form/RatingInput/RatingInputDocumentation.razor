@@ -1,0 +1,188 @@
+@attribute [Route(pageUrl)]
+@layout DemosMainLayout
+
+<DemosPageHeadSection PageUrl="@pageUrl"
+                      PageTitle="@pageTitle"
+                      PageDescription="@pageDescription"
+                      MetaTitle="@metaTitle"
+                      MetaDescription="@metaDescription"
+                      ImageUrl="@imageUrl" />
+
+<DocsLink Href="@DemoRouteConstants.Docs_URL_RatingInput" />
+
+<Callout Color="CalloutColor.Info">
+    <b>RatingInput</b> renders Bootstrap Icons. Reference the Bootstrap Icons stylesheet in your app, because Blazor Bootstrap does not bundle it.
+</Callout>
+
+<Section Size="HeadingSize.H2" Name="Basic usage" PageUrl="@pageUrl" Link="basic-usage">
+    <div class="mb-3">
+        <b>RatingInput</b> lets users pick a score by clicking an icon or using the arrow keys.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Add <code>RatingInput</code> and set <code>TValue</code> to <code>int</code>, <code>int?</code>, <code>decimal</code>, or <code>decimal?</code>.</li>
+                <li>Bind the score with <code>@@bind-Value</code>.</li>
+                <li>Optionally set <code>MaxValue</code> to change the number of icons (default 5).</li>
+                <li>Give the group an accessible name with <code>aria-label</code> or <code>aria-labelledby</code>.</li>
+            </ol>
+        </div>
+        This demo binds an <code>int</code> score out of 5.
+    </div>
+    <Demo Type="typeof(RatingInput_Demo_01_Basic_Usage)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Read-only fractional values" PageUrl="@pageUrl" Link="read-only-fractional-values">
+    <div class="mb-3">
+        Set <code>ReadOnly</code> to display a score that users cannot change. Fractional values are shown to the nearest half, and assistive technology announces the exact value.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Set <code>ReadOnly="true"</code>.</li>
+                <li>Bind a <code>decimal</code> value such as <code>4.3m</code>.</li>
+                <li>Expect the display to round to the nearest half: 4.3 shows 4½ and 4.2 shows 4.</li>
+            </ol>
+        </div>
+        This demo shows three read-only averages.
+    </div>
+    <Demo Type="typeof(RatingInput_Demo_02_Read_Only_Fractional)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Custom icons" PageUrl="@pageUrl" Link="custom-icons">
+    <div class="mb-3">
+        Replace the default stars with any Bootstrap icon.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Set <code>FilledIconName</code> for selected items.</li>
+                <li>Set <code>EmptyIconName</code> for unselected items.</li>
+                <li>Set <code>HalfIconName</code> for half-filled items shown for fractional values.</li>
+            </ol>
+        </div>
+        This demo uses hearts and circles.
+    </div>
+    <Demo Type="typeof(RatingInput_Demo_03_Custom_Icons)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Sizes" PageUrl="@pageUrl" Link="sizes">
+    <div class="mb-3">
+        Change the icon size with the <code>Size</code> parameter.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Set <code>Size</code> to <code>RatingInputSize.Small</code>, <code>RatingInputSize.Default</code>, or <code>RatingInputSize.Large</code>.</li>
+            </ol>
+        </div>
+        This demo shows each size.
+    </div>
+    <Demo Type="typeof(RatingInput_Demo_04_Sizes)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Colors" PageUrl="@pageUrl" Link="colors">
+    <div class="mb-3">
+        Change the icon color with the <code>Color</code> parameter. The default is <code>RatingInputColor.Warning</code>.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Set <code>Color</code> to a <code>RatingInputColor</code> value such as <code>RatingInputColor.Primary</code>.</li>
+                <li>Use <code>RatingInputColor.None</code> to inherit the surrounding text color.</li>
+            </ol>
+        </div>
+        This demo shows the theme colors.
+    </div>
+    <Demo Type="typeof(RatingInput_Demo_05_Colors)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Disabled" PageUrl="@pageUrl" Link="disabled">
+    <div class="mb-3">
+        A disabled rating input cannot be focused or changed.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Set <code>Disabled="true"</code>.</li>
+            </ol>
+        </div>
+        This demo toggles the disabled state.
+    </div>
+    <Demo Type="typeof(RatingInput_Demo_06_Disabled)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Allow clear" PageUrl="@pageUrl" Link="allow-clear">
+    <div class="mb-3">
+        With <code>AllowClear</code>, clicking the selected icon again clears the value.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Set <code>AllowClear="true"</code>.</li>
+                <li>Click the selected icon to clear it. The value becomes <code>null</code> for nullable types and <code>0</code> otherwise.</li>
+            </ol>
+        </div>
+        This demo binds an <code>int?</code> value.
+    </div>
+    <Demo Type="typeof(RatingInput_Demo_07_Allow_Clear)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Allow half" PageUrl="@pageUrl" Link="allow-half">
+    <div class="mb-3">
+        With <code>AllowHalf</code>, users can select half values. This works only with <code>decimal</code> and <code>decimal?</code>; integer types throw an exception.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Set <code>TValue</code> to <code>decimal</code> or <code>decimal?</code>.</li>
+                <li>Set <code>AllowHalf="true"</code>.</li>
+                <li>Click the left half of an icon, or use the arrow keys, to select .5 values.</li>
+            </ol>
+        </div>
+        This demo binds a <code>decimal</code> value in half steps.
+    </div>
+    <Demo Type="typeof(RatingInput_Demo_08_Allow_Half)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="EditForm validation" PageUrl="@pageUrl" Link="edit-form-validation">
+    <div class="mb-3">
+        <b>RatingInput</b> takes part in <code>EditForm</code> validation like other form inputs.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Place <code>RatingInput</code> inside an <code>EditForm</code> with a <code>DataAnnotationsValidator</code>.</li>
+                <li>Bind a model property with <code>@@bind-Value</code>.</li>
+                <li>Add a <code>ValidationMessage</code> for the property.</li>
+            </ol>
+        </div>
+        This demo requires a score before the form can be submitted.
+    </div>
+    <Demo Type="typeof(RatingInput_Demo_09_EditForm_Validation)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Events: ValueChanged" PageUrl="@pageUrl" Link="events-value-changed">
+    <div class="mb-3">
+        <code>ValueChanged</code> fires once for each change made by the user, and never when the component is read-only or disabled.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Set <code>Value</code> and handle <code>ValueChanged</code>.</li>
+                <li>Update your field in the handler.</li>
+            </ol>
+        </div>
+        This demo logs each change.
+    </div>
+    <Demo Type="typeof(RatingInput_Demo_10_Events_ValueChanged)" Tabs="true" />
+</Section>
+
+@code {
+    private const string pageUrl = DemoRouteConstants.Demos_URL_RatingInput;
+    private const string pageTitle = "Blazor RatingInput";
+    private const string pageDescription = "The Blazor Bootstrap RatingInput component lets users select or display a score using icons.";
+    private const string metaTitle = "Blazor RatingInput Component";
+    private const string metaDescription = "The Blazor Bootstrap RatingInput component lets users select or display a score using icons.";
+    private const string imageUrl = DemoScreenshotSrcConstants.Demos_URL_RatingInput;
+}

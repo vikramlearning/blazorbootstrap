@@ -1,0 +1,199 @@
+---
+title: Blazor Rating Input Component
+description: The Blazor Bootstrap RatingInput component lets users select or display a score using icons, with EditForm validation, half values, and keyboard support.
+
+sidebar_label: Rating Input
+sidebar_position: 11.5
+---
+
+import CarbonAd from '/carbon-ad.mdx'
+
+# Blazor Rating Input
+
+The Blazor Bootstrap `RatingInput` component lets users select or display a score using icons, stars by default. It is built with native radio inputs and works without JavaScript.
+
+<CarbonAd />
+
+:::info
+`RatingInput` renders Bootstrap Icons. Reference the Bootstrap Icons stylesheet in your app, because Blazor Bootstrap does not bundle it.
+:::
+
+Supported types for `TValue`: `int`, `int?`, `decimal`, `decimal?`. Any other type throws an `InvalidOperationException`.
+
+## Parameters
+
+| Name | Type | Default | Required | Description | Added Version |
+|:--|:--|:--|:--|:--|:--|
+| AllowClear | bool | false | | Gets or sets whether clicking the currently selected item clears the value to empty (null for nullable types, 0 otherwise). | 4.1.0 |
+| AllowHalf | bool | false | | Gets or sets whether half values can be selected. Supported only for decimal and decimal? values. | 4.1.0 |
+| Color | `RatingInputColor` | `RatingInputColor.Warning` | | Gets or sets the color of the rating icons. | 4.1.0 |
+| Disabled | bool | false | | Gets or sets whether the rating input is disabled. When true, users cannot focus or change it. | 4.1.0 |
+| EmptyIconName | `IconName` | `IconName.Star` | | Gets or sets the icon used for empty items. | 4.1.0 |
+| FilledIconName | `IconName` | `IconName.StarFill` | | Gets or sets the icon used for filled items. | 4.1.0 |
+| HalfIconName | `IconName` | `IconName.StarHalf` | | Gets or sets the icon used for half-filled items when a fractional value is displayed. | 4.1.0 |
+| ItemLabelFormat | string | `"{0} of {1}"` | | Gets or sets the format of each item's accessible label and of the value description. Placeholder `{0}` is the item value and `{1}` is the maximum value. | 4.1.0 |
+| MaxValue | int | 5 | | Gets or sets the number of rating items. Must be greater than or equal to 1. | 4.1.0 |
+| ReadOnly | bool | false | | Gets or sets whether the rating input is read-only. When true, the value is displayed, including half values, and cannot be changed. | 4.1.0 |
+| Size | `RatingInputSize` | `RatingInputSize.Default` | | Gets or sets the size of the rating icons. | 4.1.0 |
+| Value | TValue | | | Gets or sets the current rating value. | 4.1.0 |
+| ValueExpression | `Expression<Func<TValue>>` | null | | Gets or sets the expression that identifies the bound value for validation and EditContext notifications. | 4.1.0 |
+
+## Events
+
+| Name | Description | Added Version |
+|:--|:--|:--|
+| ValueChanged | Fires once whenever user interaction changes the rating value. It does not fire when the component is read-only or disabled. | 4.1.0 |
+
+## Accessibility
+
+- The component renders a `radiogroup`. Give it an accessible name with `aria-label` or `aria-labelledby`.
+- Each item is a radio labelled with `ItemLabelFormat`, for example "3 of 5". The group's description announces the exact value, for example "4.3 of 5".
+- **Tab** moves focus into and out of the group in a single stop. **Arrow keys** change the value and wrap at the ends; Left and Right are mirrored in right-to-left layouts.
+- A read-only rating can be focused but not changed. A disabled rating cannot be focused.
+
+## Examples
+
+### Basic usage
+
+```cshtml {2} showLineNumbers
+<div class="d-flex align-items-center gap-2">
+    <RatingInput TValue="int" @bind-Value="score" aria-label="Product rating" />
+    <span>@score of 5</span>
+</div>
+```
+
+```cs {} showLineNumbers
+@code {
+    private int score = 3;
+}
+```
+
+[See demo here](https://demos.blazorbootstrap.com/form/rating-input#basic-usage)
+
+### Read-only fractional values
+
+Set `ReadOnly` to display a score that users cannot change. Fractional values are shown to the nearest half: 4.3 shows 4½ and 4.2 shows 4.
+
+```cshtml {} showLineNumbers
+<RatingInput TValue="decimal" Value="4.3m" ReadOnly="true" aria-label="Average rating 4.3" />
+```
+
+[See demo here](https://demos.blazorbootstrap.com/form/rating-input#read-only-fractional-values)
+
+### Custom icons
+
+Use `FilledIconName`, `EmptyIconName`, and `HalfIconName` to replace the default stars.
+
+```cshtml {3-5} showLineNumbers
+<RatingInput TValue="int"
+             @bind-Value="hearts"
+             FilledIconName="IconName.HeartFill"
+             EmptyIconName="IconName.Heart"
+             HalfIconName="IconName.HeartHalf"
+             Color="RatingInputColor.Danger"
+             aria-label="Heart rating" />
+```
+
+[See demo here](https://demos.blazorbootstrap.com/form/rating-input#custom-icons)
+
+### Sizes
+
+Set `Size` to `RatingInputSize.Small`, `RatingInputSize.Default`, or `RatingInputSize.Large`.
+
+```cshtml {} showLineNumbers
+<RatingInput TValue="int" @bind-Value="score" Size="RatingInputSize.Small" aria-label="Small rating" />
+<RatingInput TValue="int" @bind-Value="score" Size="RatingInputSize.Large" aria-label="Large rating" />
+```
+
+[See demo here](https://demos.blazorbootstrap.com/form/rating-input#sizes)
+
+### Colors
+
+Set `Color` to a `RatingInputColor` value. Use `RatingInputColor.None` to inherit the surrounding text color.
+
+```cshtml {} showLineNumbers
+<RatingInput TValue="int" Value="3" ReadOnly="true" Color="RatingInputColor.Primary" aria-label="Primary rating" />
+```
+
+[See demo here](https://demos.blazorbootstrap.com/form/rating-input#colors)
+
+### Disabled
+
+```cshtml {} showLineNumbers
+<RatingInput TValue="int" @bind-Value="score" Disabled="true" aria-label="Service rating" />
+```
+
+[See demo here](https://demos.blazorbootstrap.com/form/rating-input#disabled)
+
+### Allow clear
+
+With `AllowClear`, clicking the selected icon again clears the value.
+
+```cshtml {} showLineNumbers
+<RatingInput TValue="int?" @bind-Value="score" AllowClear="true" aria-label="Clearable rating" />
+```
+
+[See demo here](https://demos.blazorbootstrap.com/form/rating-input#allow-clear)
+
+### Allow half
+
+With `AllowHalf`, users can select half values by clicking the left half of an icon or using the arrow keys.
+
+:::caution
+`AllowHalf` is supported only for `decimal` and `decimal?`. Setting it with `int` or `int?` throws an `InvalidOperationException`.
+:::
+
+```cshtml {} showLineNumbers
+<RatingInput TValue="decimal" @bind-Value="score" AllowHalf="true" aria-label="Half-step rating" />
+```
+
+[See demo here](https://demos.blazorbootstrap.com/form/rating-input#allow-half)
+
+### EditForm validation
+
+```cshtml {5} showLineNumbers
+<EditForm Model="review" OnValidSubmit="HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <label class="form-label" id="review-score-label">Score</label>
+    <div>
+        <RatingInput TValue="int?" @bind-Value="review.Score" aria-labelledby="review-score-label" />
+    </div>
+    <ValidationMessage For="() => review.Score" />
+    <Button Type="ButtonType.Submit" Color="ButtonColor.Primary">Submit</Button>
+</EditForm>
+```
+
+```cs {} showLineNumbers
+@code {
+    private Review review = new();
+
+    private void HandleValidSubmit() { /* save the review */ }
+
+    public class Review
+    {
+        [Required(ErrorMessage = "Please select a score.")]
+        public int? Score { get; set; }
+    }
+}
+```
+
+[See demo here](https://demos.blazorbootstrap.com/form/rating-input#edit-form-validation)
+
+### Events: ValueChanged
+
+```cshtml {} showLineNumbers
+<RatingInput TValue="int" Value="score" ValueChanged="OnScoreChanged" aria-label="Rating with events" />
+```
+
+```cs {} showLineNumbers
+@code {
+    private int score = 2;
+
+    private void OnScoreChanged(int value)
+    {
+        score = value; // this is mandatory
+    }
+}
+```
+
+[See demo here](https://demos.blazorbootstrap.com/form/rating-input#events-value-changed)

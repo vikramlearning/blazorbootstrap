@@ -1,0 +1,21 @@
+<div class="d-flex flex-column gap-2">
+    <RatingInput TValue="int"
+                 @bind-Value="hearts"
+                 FilledIconName="IconName.HeartFill"
+                 EmptyIconName="IconName.Heart"
+                 HalfIconName="IconName.HeartHalf"
+                 Color="RatingInputColor.Danger"
+                 aria-label="Heart rating" />
+    <RatingInput TValue="decimal"
+                 Value="2.5m"
+                 ReadOnly="true"
+                 FilledIconName="IconName.CircleFill"
+                 EmptyIconName="IconName.Circle"
+                 HalfIconName="IconName.CircleHalf"
+                 Color="RatingInputColor.Primary"
+                 aria-label="Circle rating 2.5" />
+</div>
+
+@code {
+    private int hearts = 4;
+}

@@ -1,0 +1,31 @@
+@using System.ComponentModel.DataAnnotations
+
+<EditForm Model="review" OnValidSubmit="HandleValidSubmit" OnInvalidSubmit="() => submitted = false">
+    <DataAnnotationsValidator />
+    <div class="mb-3">
+        <label class="form-label" id="review-score-label">Score</label>
+        <div>
+            <RatingInput TValue="int?" @bind-Value="review.Score" AllowClear="true" aria-labelledby="review-score-label" />
+        </div>
+        <ValidationMessage For="() => review.Score" />
+    </div>
+    <Button Type="ButtonType.Submit" Color="ButtonColor.Primary">Submit</Button>
+</EditForm>
+
+@if (submitted)
+{
+    <div class="mt-3">Thanks! You rated @review.Score of 5.</div>
+}
+
+@code {
+    private Review review = new();
+    private bool submitted;
+
+    private void HandleValidSubmit() => submitted = true;
+
+    public class Review
+    {
+        [Required(ErrorMessage = "Please select a score.")]
+        public int? Score { get; set; }
+    }
+}

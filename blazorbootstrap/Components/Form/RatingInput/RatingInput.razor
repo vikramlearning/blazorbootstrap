@@ -1,0 +1,64 @@
+@namespace BlazorBootstrap
+@inherits BlazorBootstrapComponentBase
+@typeparam TValue
+
+<div @ref="@Element"
+     id="@Id"
+     class="@ClassNames"
+     style="@StyleNames"
+     role="radiogroup"
+     aria-readonly="@(ReadOnly ? "true" : null)"
+     aria-disabled="@(Disabled ? "true" : null)"
+     aria-describedby="@descriptionId"
+     @attributes="@AdditionalAttributes">
+    @if (ReadOnly)
+    {
+        @for (var i = 1; i <= MaxValue; i++)
+        {
+            var itemValue = (decimal)i;
+            var isChecked = itemValue == readOnlyCheckedValue;
+            <span role="radio"
+                  class="@GetItemClassNames(itemValue, isHalfItem: false, isStartHalf: false)"
+                  aria-checked="@(isChecked ? "true" : "false")"
+                  aria-label="@GetItemLabel(itemValue)"
+                  tabindex="@(!Disabled && itemValue == readOnlyTabStopValue ? "0" : "-1")">
+                @RenderIcons(isHalfItem: false)
+            </span>
+        }
+    }
+    else
+    {
+        @foreach (var itemValue in GetSelectableValues())
+        {
+            var selectedValue = itemValue;
+            var radioId = $"{Id}-{selectedValue.ToString(CultureInfo.InvariantCulture)}";
+            var isStartHalf = isHalfStepEnabled && selectedValue % 1 != 0;
+            <input type="radio"
+                   id="@radioId"
+                   class="visually-hidden bb-rating-input-radio"
+                   name="@Id"
+                   value="@selectedValue.ToString(CultureInfo.InvariantCulture)"
+                   checked="@(selectedValue == currentValue)"
+                   disabled="@Disabled"
+                   aria-label="@GetItemLabel(selectedValue)"
+                   @onchange="() => OnItemChangedAsync(selectedValue)"
+                   @onclick="() => OnItemClickedAsync(selectedValue)" />
+            <label for="@radioId" class="@GetItemClassNames(selectedValue, isHalfStepEnabled, isStartHalf)">
+                @RenderIcons(isHalfStepEnabled)
+            </label>
+        }
+    }
+    <span id="@descriptionId" class="visually-hidden">@GetItemLabel(descriptionValue)</span>
+</div>
+
+@code {
+    private RenderFragment RenderIcons(bool isHalfItem) => __builder =>
+    {
+        <span class="bb-rating-input-icon bb-rating-input-icon-empty"><Icon Name="@EmptyIconName" aria-hidden="true" /></span>
+        @if (!isHalfItem)
+        {
+            <span class="bb-rating-input-icon bb-rating-input-icon-half"><Icon Name="@HalfIconName" aria-hidden="true" /></span>
+        }
+        <span class="bb-rating-input-icon bb-rating-input-icon-filled"><Icon Name="@FilledIconName" aria-hidden="true" /></span>
+    };
+}

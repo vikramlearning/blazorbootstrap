@@ -1,0 +1,20 @@
+<div class="mb-3">
+    <RatingInput TValue="int" Value="score" ValueChanged="OnScoreChanged" AllowClear="true" aria-label="Rating with events" />
+</div>
+<ul>
+    @foreach (var entry in log)
+    {
+        <li>@entry</li>
+    }
+</ul>
+
+@code {
+    private int score = 2;
+    private readonly List<string> log = new();
+
+    private void OnScoreChanged(int value)
+    {
+        score = value; // this is mandatory
+        log.Add($"ValueChanged: {value}");
+    }
+}
