@@ -1,0 +1,8 @@
+<div class="d-flex align-items-center gap-2">
+    <RatingInput TValue="int" @bind-Value="score" aria-label="Product rating" />
+    <span>@score of 5</span>
+</div>
+
+@code {
+    private int score = 3;
+}

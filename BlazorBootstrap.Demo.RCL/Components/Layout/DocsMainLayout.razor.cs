@@ -27,6 +27,7 @@ public partial class DocsMainLayout : MainLayoutBase
             new (){ Id = "406", Text = "OTP Input", Href = DemoRouteConstants.Docs_URL_OTPInput, IconName = IconName.Asterisk, ParentId = "4" },
             new (){ Id = "407", Text = "Password Input", Href = DemoRouteConstants.Docs_URL_PasswordInput, IconName = IconName.EyeSlashFill, ParentId = "4" },
             new (){ Id = "408", Text = "Radio Input", Href = DemoRouteConstants.Docs_URL_RadioInput, IconName = IconName.RecordCircle, ParentId = "4" },
+            new (){ Id = "491", Text = "Rating Input", Href = DemoRouteConstants.Docs_URL_RatingInput, IconName = IconName.StarHalf, ParentId = "4" },
             new (){ Id = "409", Text = "Range Input", Href = DemoRouteConstants.Docs_URL_RangeInput, IconName = IconName.Sliders, ParentId = "4" },
             //new (){ Id = "404", Text = "Select Input", Href = DemoRouteConstants.Docs_URL_SelectInput, IconName = IconName.MenuButtonWideFill, ParentId = "4" },
             new (){ Id = "416", Text = "RichTextEditor", Href = DemoRouteConstants.Docs_URL_RichTextEditor, IconName = IconName.Type, ParentId = "4" },

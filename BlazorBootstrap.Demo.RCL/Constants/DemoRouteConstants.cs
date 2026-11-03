@@ -37,6 +37,7 @@ public static class DemoRouteConstants
     public const string Demos_URL_OTPInput = Demos_URL_Forms_Prefix + "/otp-input";
     public const string Demos_URL_PasswordInput = Demos_URL_Forms_Prefix + "/password-input";
     public const string Demos_URL_RadioInput = Demos_URL_Forms_Prefix + "/radio-input";
+    public const string Demos_URL_RatingInput = Demos_URL_Forms_Prefix + "/rating-input";
     public const string Demos_URL_RangeInput = Demos_URL_Forms_Prefix + "/range-input";
     public const string Demos_URL_RichTextEditor = Demos_URL_Forms_Prefix + "/rich-text-editor";
     public const string Demos_URL_SelectInput = Demos_URL_Forms_Prefix + "/select-input";
@@ -154,6 +155,7 @@ public static class DemoRouteConstants
     public const string Docs_URL_OTPInput = Docs_URL_Forms_Prefix + "/otp-input";
     public const string Docs_URL_PasswordInput = Docs_URL_Forms_Prefix + "/password-input";
     public const string Docs_URL_RadioInput = Docs_URL_Forms_Prefix + "/radio-input";
+    public const string Docs_URL_RatingInput = Docs_URL_Forms_Prefix + "/rating-input";
     public const string Docs_URL_RangeInput = Docs_URL_Forms_Prefix + "/range-input";
     public const string Docs_URL_RichTextEditor = Docs_URL_Forms_Prefix + "/rich-text-editor";
     public const string Docs_URL_SelectInput = Docs_URL_Forms_Prefix + "/select-input";

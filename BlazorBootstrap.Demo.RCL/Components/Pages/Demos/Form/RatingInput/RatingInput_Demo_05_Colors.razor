@@ -1,0 +1,22 @@
+<div class="d-flex flex-column gap-2">
+    @foreach (var color in colors)
+    {
+        <div class="d-flex align-items-center gap-2">
+            <RatingInput TValue="int" Value="3" ReadOnly="true" Color="color" aria-label="@($"{color} rating")" />
+            <code>RatingInputColor.@color</code>
+        </div>
+    }
+</div>
+
+@code {
+    private readonly RatingInputColor[] colors =
+    {
+        RatingInputColor.Primary,
+        RatingInputColor.Secondary,
+        RatingInputColor.Success,
+        RatingInputColor.Danger,
+        RatingInputColor.Warning,
+        RatingInputColor.Info,
+        RatingInputColor.Dark
+    };
+}

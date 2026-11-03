@@ -27,6 +27,7 @@ public partial class MainLayout : MainLayoutBase
             new (){ Id = "405", Text = "Number Input", Href = DemoRouteConstants.Demos_URL_NumberInput, IconName = IconName.InputCursor, ParentId = "4" },
             new (){ Id = "406", Text = "Password Input", Href = DemoRouteConstants.Demos_URL_PasswordInput, IconName = IconName.EyeSlashFill, ParentId = "4" },
             new (){ Id = "407", Text = "Radio Input", Href = DemoRouteConstants.Demos_URL_RadioInput, IconName = IconName.RecordCircle, ParentId = "4" },
+            new (){ Id = "491", Text = "Rating Input", Href = DemoRouteConstants.Demos_URL_RatingInput, IconName = IconName.StarHalf, ParentId = "4" },
             new (){ Id = "408", Text = "Range Input", Href = DemoRouteConstants.Demos_URL_RangeInput, IconName = IconName.Sliders, ParentId = "4" },
             //new (){ Id = "404", Text = "Select Input", Href = DemoRouteConstants.Demos_URL_SelectInput, IconName = IconName.MenuButtonWideFill, ParentId = "4" },
             new (){ Id = "409", Text = "Switch", Href = DemoRouteConstants.Demos_URL_Switch, IconName = IconName.ToggleOn, ParentId = "4" },

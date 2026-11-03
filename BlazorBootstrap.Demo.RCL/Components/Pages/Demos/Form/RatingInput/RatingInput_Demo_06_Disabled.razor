@@ -1,0 +1,9 @@
+<div class="mb-3">
+    <RatingInput TValue="int" @bind-Value="score" Disabled="disabled" aria-label="Service rating" />
+</div>
+<Button Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="() => disabled = !disabled">@(disabled ? "Enable" : "Disable")</Button>
+
+@code {
+    private int score = 2;
+    private bool disabled = true;
+}

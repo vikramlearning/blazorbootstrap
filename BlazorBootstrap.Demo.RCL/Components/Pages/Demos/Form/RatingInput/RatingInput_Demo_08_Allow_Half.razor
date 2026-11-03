@@ -1,0 +1,8 @@
+<div class="d-flex align-items-center gap-2">
+    <RatingInput TValue="decimal" @bind-Value="score" AllowHalf="true" aria-label="Half-step rating" />
+    <span>Value: @score</span>
+</div>
+
+@code {
+    private decimal score = 3.5m;
+}
