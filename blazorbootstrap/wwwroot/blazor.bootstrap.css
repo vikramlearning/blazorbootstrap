@@ -841,3 +841,96 @@ main {
 .bb-sortable-list-handle .bi-grip-vertical::before {
     cursor: grab !important;
 }
+
+/* rating-input */
+.bb-rating-input {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    font-size: 1.5rem;
+    line-height: 1;
+}
+
+.bb-rating-input-sm {
+    font-size: 1rem;
+}
+
+.bb-rating-input-lg {
+    font-size: 2rem;
+}
+
+.bb-rating-input-item {
+    position: relative;
+    display: inline-block;
+    width: 1.25em;
+    height: 1em;
+    overflow: hidden;
+}
+
+.bb-rating-input-item-start {
+    width: .5em;
+}
+
+.bb-rating-input-item-end {
+    width: .75em;
+}
+
+.bb-rating-input-icon {
+    position: absolute;
+    top: 0;
+    inset-inline-start: 0;
+    display: none;
+    width: 1em;
+    height: 1em;
+}
+
+.bb-rating-input-item-end .bb-rating-input-icon {
+    inset-inline-start: -.5em;
+}
+
+.bb-rating-input-icon .bi::before {
+    vertical-align: top;
+}
+
+.bb-rating-input-item-empty .bb-rating-input-icon-empty,
+.bb-rating-input-item-half .bb-rating-input-icon-half,
+.bb-rating-input-item-filled .bb-rating-input-icon-filled {
+    display: block;
+}
+
+.bb-rating-input-interactive .bb-rating-input-item {
+    cursor: pointer;
+}
+
+.bb-rating-input-disabled {
+    opacity: .65;
+}
+
+.bb-rating-input-disabled .bb-rating-input-item {
+    cursor: not-allowed;
+}
+
+.bb-rating-input-radio:focus-visible + .bb-rating-input-item,
+.bb-rating-input-readonly .bb-rating-input-item:focus-visible {
+    outline: 2px solid var(--bs-focus-ring-color, rgba(13, 110, 253, .5));
+    outline-offset: 1px;
+    border-radius: .125em;
+}
+
+@media (hover: hover) {
+    .bb-rating-input-interactive:hover .bb-rating-input-item .bb-rating-input-icon {
+        display: none;
+    }
+
+    .bb-rating-input-interactive:hover .bb-rating-input-item .bb-rating-input-icon-filled {
+        display: block;
+    }
+
+    .bb-rating-input-interactive .bb-rating-input-item:hover ~ .bb-rating-input-item .bb-rating-input-icon-filled {
+        display: none;
+    }
+
+    .bb-rating-input-interactive .bb-rating-input-item:hover ~ .bb-rating-input-item .bb-rating-input-icon-empty {
+        display: block;
+    }
+}

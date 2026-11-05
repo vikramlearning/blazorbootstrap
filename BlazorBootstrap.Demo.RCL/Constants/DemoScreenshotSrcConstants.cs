@@ -29,6 +29,7 @@ public class DemoScreenshotSrcConstants
     public const string Demos_URL_OTPInput = DemoScreenshotSrcPrefix + "otp-input.png";
     public const string Demos_URL_PasswordInput = DemoScreenshotSrcPrefix + "password-input.png";
     public const string Demos_URL_RadioInput = DemoScreenshotSrcPrefix + "radio-input.png";
+    public const string Demos_URL_RatingInput = DemoScreenshotSrcPrefix + "rating-input.png";
     public const string Demos_URL_RangeInput = DemoScreenshotSrcPrefix + "range-input.png";
     public const string Demos_URL_SelectInput = DemoScreenshotSrcPrefix + "select-input.png";
     public const string Demos_URL_RichTextEditor = DemoScreenshotSrcPrefix + "rich-text-editor.png";

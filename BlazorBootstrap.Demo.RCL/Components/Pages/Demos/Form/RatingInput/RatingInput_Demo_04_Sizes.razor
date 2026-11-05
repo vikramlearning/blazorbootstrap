@@ -1,0 +1,9 @@
+<div class="d-flex flex-column gap-2">
+    <RatingInput TValue="int" @bind-Value="score" Size="RatingInputSize.Small" aria-label="Small rating" />
+    <RatingInput TValue="int" @bind-Value="score" Size="RatingInputSize.Default" aria-label="Default rating" />
+    <RatingInput TValue="int" @bind-Value="score" Size="RatingInputSize.Large" aria-label="Large rating" />
+</div>
+
+@code {
+    private int score = 3;
+}

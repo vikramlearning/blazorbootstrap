@@ -1,0 +1,8 @@
+<div class="d-flex align-items-center gap-2">
+    <RatingInput TValue="int?" @bind-Value="score" AllowClear="true" aria-label="Clearable rating" />
+    <span>Value: @(score?.ToString() ?? "null")</span>
+</div>
+
+@code {
+    private int? score = 3;
+}
