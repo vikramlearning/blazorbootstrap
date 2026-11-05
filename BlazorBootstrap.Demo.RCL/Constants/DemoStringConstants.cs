@@ -17,7 +17,7 @@ public static class DemoStringConstants
     public const string StaticAssets_Docs_Path = StaticAssets_RootPath + "/docs";
 
     public const string StaticAssets_Icons_Path = StaticAssets_RootPath + "/icons";
-    public const string StaticAssets_Icons_Logo_png = StaticAssets_Icons_Path + "/logo.png";
+    public const string StaticAssets_Icons_Logo_png = "images/logo/128X128.png";
 
     public const string StaticAssets_Images_Path = StaticAssets_RootPath + "/images";
 

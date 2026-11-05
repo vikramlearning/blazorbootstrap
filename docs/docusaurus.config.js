@@ -9,7 +9,11 @@ const config = {
     baseUrl: '/',
     onBrokenLinks: 'throw',
     onBrokenMarkdownLinks: 'warn',
-    favicon: 'img/logo/logo-color.svg',
+    favicon: 'favicon.ico',
+    headTags: [
+        { tagName: 'link', attributes: { rel: 'icon', type: 'image/svg+xml', sizes: 'any', href: '/favicon.svg' } },
+        { tagName: 'link', attributes: { rel: 'apple-touch-icon', sizes: '180x180', href: '/apple-touch-icon.png' } },
+    ],
     organizationName: 'vikramlearning',
     projectName: 'blazorbootstrap',
     trailingSlash: false,
@@ -54,10 +58,12 @@ const config = {
                 isCloseable: true,
             },
             navbar: {
-                title: 'Blazor Bootstrap',
                 logo: {
-                    alt: 'Blazor Bootstrap',
-                    src: 'img/logo.svg',
+                    alt: 'Blazor Bootstrap home',
+                    src: 'img/logo/wordmark.svg',
+                    srcDark: 'img/logo/wordmark-night.svg',
+                    width: 176,
+                    height: 32,
                 },
                 items: [
                     { type: 'doc', docId: 'getting-started/blazor-webassembly-net-8', label: 'Docs', position: 'left' },
@@ -69,6 +75,14 @@ const config = {
             },
             footer: {
                 style: 'dark',
+                logo: {
+                    alt: 'Blazor Bootstrap home',
+                    src: 'img/logo/wordmark-night.svg',
+                    href: '/',
+                    target: '_self',
+                    width: 176,
+                    height: 32,
+                },
                 links: [
                     {
                         title: 'Links',

@@ -460,3 +460,16 @@ pre[class*=language-] {
     --bs-tertiary-bg-rgb: 43, 48, 53;
     --bb-example-pre-background: #1e1e1e;
 }
+
+/* Use the selected site theme when an external SVG selects its own colors. */
+.bb-site-brand {
+    color-scheme: light;
+}
+
+[data-bs-theme="dark"] .bb-site-brand {
+    color-scheme: dark;
+}
+
+.bb-demo-wordmark .navbar-brand-text {
+    display: none;
+}

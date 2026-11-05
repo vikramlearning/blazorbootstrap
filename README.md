@@ -1,6 +1,9 @@
 <p align="center">
   <a href="https://getblazorbootstrap.com/">
-    <img src="https://demos.blazorbootstrap.com/images/logo/logo-color.svg" alt="Blazor Bootstrap logo" width="200" height="200">
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="docs/static/img/logo/logo-night.svg">
+      <img src="docs/static/img/logo/logo-color.svg" alt="Blazor Bootstrap" width="200" height="180">
+    </picture>
   </a>
 </p>
 

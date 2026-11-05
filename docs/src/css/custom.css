@@ -21,20 +21,16 @@
   /* See: https://codepen.io/sosuke/pen/Pjoqqp */
 }
 
-html[data-theme='light'] .navbar__brand>img {
-  filter: var(--filter-black);
-}
-
-html[data-theme='dark'] .navbar__brand>img {
-  filter: var(--filter-white);
-}
-
 html[data-theme='light'] .hero--primary svg {
   filter: var(--filter-white);
 }
 
 html[data-theme='dark'] .hero--primary svg {
   filter: var(--filter-black);
+}
+
+.footer a:has(.footer__logo) {
+  opacity: 1;
 }
 
 .feature-emoji {
