@@ -1,0 +1,33 @@
+@attribute [Route(pageUrl)]
+@layout DocsMainLayout
+
+<DocsPageHeadSection PageUrl="@pageUrl"
+                     PageTitle="@pageTitle"
+                     PageDescription="@pageDescription"
+                     MetaTitle="@metaTitle"
+                     MetaDescription="@metaDescription"
+                     ImageUrl="@imageUrl" />
+
+<DemoLink Href="@DemoRouteConstants.Demos_URL_Timeline" />
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="Timeline Parameters" PageUrl="@pageUrl" Link="timeline-parameters">
+    <DocxTable TItem="Timeline" DocType="DocType.Parameters" />
+</Section>
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="TimelineOrientation Enum" PageUrl="@pageUrl" Link="timeline-orientation-enum">
+    <DocxTable TItem="TimelineOrientation" DocType="DocType.Enum" />
+</Section>
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="TimelineAlignment Enum" PageUrl="@pageUrl" Link="timeline-alignment-enum">
+    <DocxTable TItem="TimelineAlignment" DocType="DocType.Enum" />
+</Section>
+
+@code {
+    private const string componentName = nameof(Timeline);
+    private const string pageUrl = DemoRouteConstants.Docs_URL_Timeline;
+    private const string pageTitle = componentName;
+    private const string pageDescription = $"This documentation provides a comprehensive reference for the <code>{componentName}</code> component and its layout options.";
+    private const string metaTitle = $"Blazor {componentName} Component";
+    private const string metaDescription = $"API reference for the Blazor Bootstrap {componentName} component.";
+    private const string imageUrl = DemoScreenshotSrcConstants.Demos_URL_Timeline;
+}

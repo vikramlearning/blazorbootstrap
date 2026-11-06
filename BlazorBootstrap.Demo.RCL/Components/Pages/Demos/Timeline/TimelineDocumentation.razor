@@ -1,0 +1,40 @@
+@attribute [Route(pageUrl)]
+@layout DemosMainLayout
+
+<DemosPageHeadSection PageUrl="@pageUrl"
+                      PageTitle="@pageTitle"
+                      PageDescription="@pageDescription"
+                      MetaTitle="@metaTitle"
+                      MetaDescription="@metaDescription"
+                      ImageUrl="@imageUrl" />
+
+<DocsLink Href="@DemoRouteConstants.Docs_URL_Timeline" />
+
+<Section Size="HeadingSize.H2" Name="Vertical timeline" PageUrl="@pageUrl" Link="vertical-timeline">
+    <div class="mb-3">The default orientation renders events vertically with the timeline rail aligned to the left.</div>
+    <Demo Type="typeof(Timeline_Demo_01_Vertical)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Layouts" PageUrl="@pageUrl" Link="layouts">
+    <div class="mb-3">Use <code>Orientation</code>, <code>Alignment</code>, and <code>AlternateItems</code> to select a layout.</div>
+    <Demo Type="typeof(Timeline_Demo_02_Layouts)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Rich content and actions" PageUrl="@pageUrl" Link="content-actions">
+    <div class="mb-3">Items can include images, badges, custom fragments, custom icon classes, and multiple accessible actions.</div>
+    <Demo Type="typeof(Timeline_Demo_03_Content_Actions)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Dynamic data" PageUrl="@pageUrl" Link="dynamic-data">
+    <div class="mb-3">The component rerenders as items are added to or removed from the bound collection.</div>
+    <Demo Type="typeof(Timeline_Demo_04_Dynamic_Data)" Tabs="true" />
+</Section>
+
+@code {
+    private const string pageUrl = DemoRouteConstants.Demos_URL_Timeline;
+    private const string pageTitle = "Blazor Timeline";
+    private const string pageDescription = "The Blazor Bootstrap Timeline component displays chronological events in responsive vertical or horizontal layouts.";
+    private const string metaTitle = "Blazor Timeline Component";
+    private const string metaDescription = "Display chronological events with responsive layouts, custom content, images, icons, badges, and actions.";
+    private const string imageUrl = DemoScreenshotSrcConstants.Demos_URL_Timeline;
+}
