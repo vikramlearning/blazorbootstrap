@@ -11,20 +11,72 @@
                 }
                 else
                 {
-                    <div class="text-center @spinnerColor">
-                        <div class="spinner-border" role="status">
-                            <span class="visually-hidden">Loading...</span>
+                    @if (spinnerType == StringConstants.BouncingDots)
+                    {
+                        <div class="loading">
+                            <div class="boucingdots-spinner"><span></span><span></span><span></span><span></span><span></span></div>
+                            @if (!string.IsNullOrWhiteSpace(loadingText))
+                            {
+                                <div>@loadingText</div>
+                            }
+                            else if (!string.IsNullOrWhiteSpace(LoadingText))
+                            {
+                                <div>@LoadingText</div>
+                            }
                         </div>
-                        @if (!string.IsNullOrWhiteSpace(loadingText))
-                        {
-                            <div>@loadingText</div>
-                        }
-                        else if (!string.IsNullOrWhiteSpace(LoadingText))
-                        {
-                            <div>@LoadingText</div>
-                        }
-                    </div>
+                    }
+
+                    @if (spinnerType == StringConstants.BarsProgressionLoader)
+                    {
+                        <div class="loading">
+                            <div class="barsprogression-loader"><span></span><span></span><span></span><span></span><span></span></div>
+                            @if (!string.IsNullOrWhiteSpace(loadingText))
+                            {
+                                <div>@loadingText</div>
+                            }
+                            else if (!string.IsNullOrWhiteSpace(LoadingText))
+                            {
+                                <div>@LoadingText</div>
+                            }
+                        </div>
+                    }
+
+                    @if (spinnerType == StringConstants.PulseRingLoader)
+                    {
+                        <div class="loading">
+                            <div class="pulse"></div>
+                            @if (!string.IsNullOrWhiteSpace(loadingText))
+                            {
+                                <div>@loadingText</div>
+                            }
+                            else if (!string.IsNullOrWhiteSpace(LoadingText))
+                            {
+                                <div>@LoadingText</div>
+                            }
+                        </div>
+                    }
+
+                    @if (string.IsNullOrEmpty(spinnerType) || (spinnerType == StringConstants.DefaultBootstrapSpinner))
+                    {
+                        <div class="text-center @spinnerColor">
+                            <div class="spinner-border" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                            @if (!string.IsNullOrWhiteSpace(loadingText))
+                            {
+                                <div>@loadingText</div>
+                            }
+                            else if (!string.IsNullOrWhiteSpace(LoadingText))
+                            {
+                                <div>@LoadingText</div>
+                            }
+                        </div>
+                    }
+
                 }
+
+                
+                
             </div>
         </div>
     </div>
@@ -34,3 +86,142 @@
 {
     <div class="modal-backdrop modal-backdrop-page-loading fade show"></div>
 }
+
+
+
+<style>
+    .loading {
+        display: flex;
+        flex-wrap: wrap;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+
+        .barsprogression-loader {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 5px;
+            width: 80px;
+            height: 50px;
+
+            span {
+                display: block;
+                height: 5px;
+                width: 15px;
+                background-color: #ffffff;
+                animation: barsprogression-loader 1.5s infinite ease-in-out;
+
+                &:nth-of-type(2) {
+                    animation-delay: 0.2s;
+                }
+
+                &:nth-of-type(3) {
+                    animation-delay: 0.4s;
+                }
+
+                &:nth-of-type(4) {
+                    animation-delay: 0.6s;
+                }
+
+                &:last-of-type {
+                    animation-delay: 0.8s;
+                }
+            }
+        }
+
+        .boucingdots-spinner {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 5px;
+
+            span {
+                display: block;
+                height: 20px;
+                width: 20px;
+                border-radius: 50%;
+                background-color: @animatedLoaderPrimaryColor;
+                opacity: 0.5s;
+                animation: boucingdots-spinner 1.5s infinite ease-in-out;
+
+                &:nth-of-type(2) {
+                    animation-delay: 0.2s;
+                }
+
+                &:nth-of-type(3) {
+                    animation-delay: 0.4s;
+                }
+
+                &:nth-of-type(4) {
+                    animation-delay: 0.6s;
+                }
+
+                &:last-of-type {
+                    animation-delay: 0.8s;
+                }
+            }
+        }
+    }
+
+    @@keyframes barsprogression-loader {
+        0%, 50%, 100% {
+            height: 8px;
+            background-color: @animatedLoaderPrimaryColor;
+        }
+
+        25% {
+            height: 40px;
+            background-color: #ffffff;
+        }
+    }
+
+    @@keyframes boucingdots-spinner {
+        0%, 100% {
+            opacity: 0.3;
+            transform: translateY(0);
+            box-shadow: 0 0 3px rgba(0, 0, 0, 0.1);
+        }
+
+        50% {
+            opacity: 1;
+            transform: translateY(-10px);
+            background-color: #ffffff;
+            box-shadow: 0 20px 3px rgba(0, 0, 0, 0.05);
+        }
+    }
+
+    .pulse {
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      position: relative;
+    }
+
+    .pulse::before,
+    .pulse::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      border: 6px solid @animatedLoaderPrimaryColor;
+      animation: pulseRing 1.2s ease-out infinite;
+    }
+
+    .pulse::after {
+      animation-delay: 0.6s;
+      opacity: 0.5;
+    }
+
+    @@keyframes pulseRing {
+      0% {
+        transform: scale(0.3);
+        opacity: 0.9;
+      }
+      100% {
+        transform: scale(1.2);
+        opacity: 0;
+      }
+    }
+
+</style>
