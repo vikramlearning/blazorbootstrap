@@ -1,0 +1,31 @@
+<MindMap TItem="Topic"
+         Root="plan"
+         Children="topic => topic.Children"
+         Label="topic => topic.Name"
+         AllowSearch="false"
+         AllowZoom="false"
+         AllowPan="false"
+         ShowPath="false"
+         InitialExpandDepth="2"
+         aria-label="Team structure" />
+
+@code {
+    private readonly Topic plan =
+        new Topic("Engineering",
+            new Topic("Platform", new Topic("API"), new Topic("Data")),
+            new Topic("Product", new Topic("Web"), new Topic("Mobile")),
+            new Topic("Quality", new Topic("Testing")));
+
+    public sealed class Topic
+    {
+        public Topic(string name, params Topic[] children)
+        {
+            Name = name;
+            Children = children;
+        }
+
+        public IReadOnlyList<Topic> Children { get; }
+
+        public string Name { get; }
+    }
+}

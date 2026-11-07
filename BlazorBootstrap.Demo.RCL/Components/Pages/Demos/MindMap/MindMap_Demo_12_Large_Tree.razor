@@ -1,0 +1,31 @@
+<div class="d-flex flex-wrap align-items-center gap-2 mb-3">
+    <Button Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="() => mindMap.ExpandAllAsync()">Expand all</Button>
+    <Button Color="ButtonColor.Secondary" Size="ButtonSize.Small" @onclick="() => mindMap.CollapseAllAsync()">Collapse all</Button>
+    <span class="small text-body-secondary">@nodeCount nodes</span>
+</div>
+
+<MindMap @ref="mindMap"
+         TItem="MindMapComponentTreeData.ComponentNode"
+         Root="root"
+         Children="node => node.Children"
+         Label="node => node.Name"
+         InitialExpandDepth="2"
+         aria-label="Blazor Bootstrap components and parameters">
+    <NodeTemplate Context="node">
+        <span class="@(node.Item.Kind is "category" or "library" ? null : "font-monospace")">@node.Item.Name</span>
+        @if (node.Item.Kind is not ("category" or "library"))
+        {
+            <small class="text-body-secondary ms-1">@node.Item.Kind</small>
+        }
+    </NodeTemplate>
+</MindMap>
+
+@code {
+    private MindMap<MindMapComponentTreeData.ComponentNode> mindMap = default!;
+    private readonly MindMapComponentTreeData.ComponentNode root = MindMapComponentTreeData.Create();
+    private int nodeCount;
+
+    protected override void OnInitialized() => nodeCount = Count(root);
+
+    private static int Count(MindMapComponentTreeData.ComponentNode node) => 1 + node.Children.Sum(Count);
+}

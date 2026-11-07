@@ -618,6 +618,87 @@ window.blazorBootstrap = {
             }
         },
     },
+    mindMap: {
+        instances: {},
+        dispose: (elementId) => {
+            let instance = window.blazorBootstrap.mindMap.instances[elementId];
+            if (!instance)
+                return;
+
+            instance.tree.removeEventListener('keydown', instance.onKeyDown);
+            instance.canvas.removeEventListener('pointerdown', instance.onPointerDown);
+            instance.canvas.removeEventListener('pointermove', instance.onPointerMove);
+            instance.canvas.removeEventListener('pointerup', instance.onPointerEnd);
+            instance.canvas.removeEventListener('pointercancel', instance.onPointerEnd);
+            instance.canvas.classList.remove('bb-mind-map-panning');
+            delete window.blazorBootstrap.mindMap.instances[elementId];
+        },
+        initialize: (elementId, allowPan) => {
+            let canvas = document.getElementById(elementId + '-canvas');
+            let tree = document.getElementById(elementId + '-tree');
+            if (canvas == null || tree == null)
+                return;
+
+            window.blazorBootstrap.mindMap.dispose(elementId);
+
+            // Keys the tree handles itself; stop them from scrolling the page.
+            let treeKeys = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Home', 'End', 'Enter', ' '];
+            let instance = { allowPan: allowPan, canvas: canvas, pan: null, tree: tree };
+
+            instance.onKeyDown = (event) => {
+                if (treeKeys.includes(event.key) && event.target.getAttribute('role') === 'treeitem')
+                    event.preventDefault();
+            };
+            instance.onPointerDown = (event) => {
+                if (!instance.allowPan || event.button !== 0 || event.pointerType === 'touch')
+                    return;
+                if (event.target.closest('.bb-mind-map-card, button, input, a, select, textarea'))
+                    return;
+
+                instance.pan = { x: event.clientX, y: event.clientY, left: canvas.scrollLeft, top: canvas.scrollTop, pointerId: event.pointerId };
+                canvas.setPointerCapture(event.pointerId);
+                canvas.classList.add('bb-mind-map-panning');
+            };
+            instance.onPointerMove = (event) => {
+                if (!instance.pan || event.pointerId !== instance.pan.pointerId)
+                    return;
+
+                canvas.scrollLeft = instance.pan.left - (event.clientX - instance.pan.x);
+                canvas.scrollTop = instance.pan.top - (event.clientY - instance.pan.y);
+            };
+            instance.onPointerEnd = () => {
+                instance.pan = null;
+                canvas.classList.remove('bb-mind-map-panning');
+            };
+
+            tree.addEventListener('keydown', instance.onKeyDown);
+            canvas.addEventListener('pointerdown', instance.onPointerDown);
+            canvas.addEventListener('pointermove', instance.onPointerMove);
+            canvas.addEventListener('pointerup', instance.onPointerEnd);
+            canvas.addEventListener('pointercancel', instance.onPointerEnd);
+            window.blazorBootstrap.mindMap.instances[elementId] = instance;
+        },
+        scrollRootIntoView: (elementId, direction) => {
+            let canvas = document.getElementById(elementId + '-canvas');
+            let rootCard = document.getElementById(elementId + '-n-0-c');
+            if (canvas == null || rootCard == null)
+                return;
+
+            // Keep the root at its own edge (Right, Left, Down, Up) and centre it on the other axis.
+            let canvasRect = canvas.getBoundingClientRect();
+            let rootRect = rootCard.getBoundingClientRect();
+            let centreX = canvas.scrollLeft + (rootRect.left + rootRect.width / 2) - (canvasRect.left + canvasRect.width / 2);
+            let centreY = canvas.scrollTop + (rootRect.top + rootRect.height / 2) - (canvasRect.top + canvasRect.height / 2);
+
+            canvas.scrollLeft = direction === 'Right' ? 0 : direction === 'Left' ? canvas.scrollWidth : centreX;
+            canvas.scrollTop = direction === 'Down' ? 0 : direction === 'Up' ? canvas.scrollHeight : centreY;
+        },
+        update: (elementId, allowPan) => {
+            let instance = window.blazorBootstrap.mindMap.instances[elementId];
+            if (instance)
+                instance.allowPan = allowPan;
+        }
+    },
     modal: {
         initialize: (elementId, useStaticBackdrop, closeOnEscape, dotNetHelper) => {
             let modalEl = document.getElementById(elementId);

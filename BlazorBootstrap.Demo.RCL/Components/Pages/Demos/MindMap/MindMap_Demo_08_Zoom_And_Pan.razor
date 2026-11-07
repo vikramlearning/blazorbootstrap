@@ -1,0 +1,30 @@
+<MindMap TItem="Topic"
+         Root="plan"
+         Children="topic => topic.Children"
+         Label="topic => topic.Name"
+         Direction="MindMapDirection.BothSides"
+         InitialExpandDepth="5"
+         Style="--bb-mind-map-max-height: 22rem;"
+         aria-label="Product roadmap" />
+
+@code {
+    private readonly Topic plan =
+        new Topic("Product roadmap",
+            new Topic("Q1", new Topic("Accounts", new Topic("Sign-in"), new Topic("Profiles"), new Topic("Teams")), new Topic("Billing", new Topic("Invoices"), new Topic("Taxes"))),
+            new Topic("Q2", new Topic("Search", new Topic("Filters"), new Topic("Saved searches")), new Topic("Reports", new Topic("Exports"), new Topic("Schedules"), new Topic("Sharing"))),
+            new Topic("Q3", new Topic("Mobile", new Topic("Offline mode"), new Topic("Push alerts")), new Topic("Integrations", new Topic("Calendar"), new Topic("Chat"), new Topic("Storage"))),
+            new Topic("Q4", new Topic("Performance", new Topic("Caching"), new Topic("Lazy loading")), new Topic("Accessibility", new Topic("Keyboard"), new Topic("Screen readers"), new Topic("Contrast"))));
+
+    public sealed class Topic
+    {
+        public Topic(string name, params Topic[] children)
+        {
+            Name = name;
+            Children = children;
+        }
+
+        public IReadOnlyList<Topic> Children { get; }
+
+        public string Name { get; }
+    }
+}

@@ -1,0 +1,78 @@
+<MindMap TItem="ApiNode"
+         Root="api"
+         Children="node => node.Children"
+         Label="node => node.Name"
+         InitialExpandDepth="3"
+         aria-label="UnlimitedPDF public API">
+    <NodeTemplate Context="node">
+        @if (node.Item.Status is not null)
+        {
+            <span class="d-inline-block rounded-circle me-1 @(node.Item.Status == "changed" ? "bg-success" : "bg-info")"
+                  style="width: .5rem; height: .5rem;" aria-hidden="true"></span>
+        }
+        <span class="@(node.Item.Kind is null ? null : "font-monospace")">@node.Item.Name</span>
+        @if (node.Item.Kind is not null)
+        {
+            <small class="text-body-secondary ms-1">@node.Item.Kind@(node.Item.Count is int count ? $" · {count}" : "")</small>
+        }
+        @foreach (var tag in node.Item.Tags)
+        {
+            <Badge Color="BadgeColor.Warning" Class="ms-1">@tag</Badge>
+        }
+        @if (node.Item.Issues > 0)
+        {
+            <small class="text-warning-emphasis fw-semibold ms-1">@node.Item.Issues @(node.Item.Issues == 1 ? "issue" : "issues")</small>
+        }
+    </NodeTemplate>
+</MindMap>
+
+@code {
+    private readonly ApiNode api =
+        new ApiNode("UnlimitedPDF", null,
+            new ApiNode("Document", null,
+                new ApiNode("PdfDocument", "class", 16) { Issues = 1 }),
+            new ApiNode("Page layout", null,
+                new ApiNode("PdfBodyFlow", "sealed class", 10,
+                    new ApiNode("AddBlock(spacing, keepWithNext)", null),
+                    new ApiNode("AddImage(image, w?, h?, spacing, x, …)", null) { Status = "changed", Tags = new[] { "N-05" } },
+                    new ApiNode("AddText(text, spacing, fontSize, …)", null) { Status = "changed", Tags = new[] { "N-05" } },
+                    new ApiNode("PageBreak()", null) { Status = "changed", Tags = new[] { "N-07" } },
+                    new ApiNode("TopGap", "prop") { Status = "review", Tags = new[] { "N-06" } },
+                    new ApiNode("Remaining", "prop") { Status = "review", Tags = new[] { "N-08" } }),
+                new ApiNode("PdfFlowBlock", "sealed class", 4) { Issues = 1 },
+                new ApiNode("PdfPageInfo", "sealed class", 4)),
+            new ApiNode("Tables", null,
+                new ApiNode("PdfTable", "class", 27) { Status = "changed", Tags = new[] { "N-12" }, Issues = 4 },
+                new ApiNode("PdfTableRow", "class", 7) { Status = "changed", Issues = 3 },
+                new ApiNode("PdfTableCell", "class", 19) { Status = "review", Issues = 5 },
+                new ApiNode("PdfBorder", "class", 3) { Status = "review", Tags = new[] { "N-12" } }),
+            new ApiNode("Values & units", null,
+                new ApiNode("PdfColor", "record", 4) { Status = "review", Tags = new[] { "N-12", "N-13" }, Issues = 1 },
+                new ApiNode("PdfUnits", "static class", 4)));
+
+    public sealed class ApiNode
+    {
+        public ApiNode(string name, string? kind, params ApiNode[] children)
+        {
+            Name = name;
+            Kind = kind;
+            Children = children;
+        }
+
+        public ApiNode(string name, string? kind, int count, params ApiNode[] children) : this(name, kind, children) => Count = count;
+
+        public IReadOnlyList<ApiNode> Children { get; }
+
+        public int? Count { get; }
+
+        public int Issues { get; init; }
+
+        public string? Kind { get; }
+
+        public string Name { get; }
+
+        public string? Status { get; init; }
+
+        public IReadOnlyList<string> Tags { get; init; } = Array.Empty<string>();
+    }
+}

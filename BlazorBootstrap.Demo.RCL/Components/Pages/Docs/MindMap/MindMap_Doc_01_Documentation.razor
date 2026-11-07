@@ -1,0 +1,55 @@
+@attribute [Route(pageUrl)]
+@layout DocsMainLayout
+
+<DocsPageHeadSection PageUrl="@pageUrl"
+                     PageTitle="@pageTitle"
+                     PageDescription="@pageDescription"
+                     MetaTitle="@metaTitle"
+                     MetaDescription="@metaDescription"
+                     ImageUrl="@imageUrl" />
+
+<DemoLink Href="@DemoRouteConstants.Demos_URL_MindMap" />
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="Screenshot" PageUrl="@pageUrl" Link="screenshot">
+    <img src="@imageUrl" class="img-fluid" alt="@metaTitle" />
+</Section>
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="Parameters" PageUrl="@pageUrl" Link="parameters">
+    <DocxTable TItem="MindMap<TItem>" DocType="DocType.Parameters" />
+</Section>
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="Methods" PageUrl="@pageUrl" Link="methods">
+    <DocxTable TItem="MindMap<TItem>" DocType="DocType.Methods" />
+</Section>
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="Events" PageUrl="@pageUrl" Link="events">
+    <DocxTable TItem="MindMap<TItem>" DocType="DocType.Events" />
+</Section>
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="MindMapNodeContext Properties" PageUrl="@pageUrl" Link="mind-map-node-context-properties">
+    <DocxTable TItem="MindMapNodeContext<TItem>" DocType="DocType.Properties" />
+</Section>
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="MindMapExpandedChangedEventArgs Properties" PageUrl="@pageUrl" Link="mind-map-expanded-changed-event-args-properties">
+    <DocxTable TItem="MindMapExpandedChangedEventArgs<TItem>" DocType="DocType.Properties" />
+</Section>
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="MindMapDirection Enum" PageUrl="@pageUrl" Link="mind-map-direction-enum">
+    <DocxTable TItem="MindMapDirection" DocType="DocType.Enum" />
+</Section>
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="MindMapColor Enum" PageUrl="@pageUrl" Link="mind-map-color-enum">
+    <DocxTable TItem="MindMapColor" DocType="DocType.Enum" />
+</Section>
+
+@code {
+    private const string componentName = nameof(MindMap<TItem>);
+    private const string pageUrl = DemoRouteConstants.Docs_URL_MindMap;
+    private const string pageTitle = componentName;
+    private const string pageDescription = $"This documentation provides a comprehensive reference for the <code>{componentName}</code> component, guiding you through its configuration options.";
+    private const string metaTitle = $"Blazor {componentName} Component";
+    private const string metaDescription = $"This documentation provides a comprehensive reference for the {componentName} component, guiding you through its configuration options.";
+    private const string imageUrl = DemoScreenshotSrcConstants.Demos_URL_MindMap;
+
+    public class TItem : object { }
+}

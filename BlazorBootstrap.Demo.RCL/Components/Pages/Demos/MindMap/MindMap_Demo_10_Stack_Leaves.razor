@@ -1,0 +1,34 @@
+<Switch @bind-Value="stackLeaves" Label="Stack leaves in a column" Class="mb-3" />
+
+<MindMap TItem="Topic"
+         Root="plan"
+         Children="topic => topic.Children"
+         Label="topic => topic.Name"
+         Direction="MindMapDirection.Down"
+         StackLeaves="stackLeaves"
+         InitialExpandDepth="2"
+         aria-label="Website launch plan" />
+
+@code {
+    private bool stackLeaves = true;
+
+    private readonly Topic plan =
+        new Topic("Website launch",
+            new Topic("Design", new Topic("Wireframes"), new Topic("Visual style"), new Topic("Accessibility review")),
+            new Topic("Build", new Topic("Pages"), new Topic("Search"), new Topic("Analytics")),
+            new Topic("Content", new Topic("Copywriting"), new Topic("Images")),
+            new Topic("Launch", new Topic("Announcement")));
+
+    public sealed class Topic
+    {
+        public Topic(string name, params Topic[] children)
+        {
+            Name = name;
+            Children = children;
+        }
+
+        public IReadOnlyList<Topic> Children { get; }
+
+        public string Name { get; }
+    }
+}

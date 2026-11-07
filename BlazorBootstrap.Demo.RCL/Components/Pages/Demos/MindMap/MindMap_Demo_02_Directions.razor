@@ -1,0 +1,41 @@
+<div class="btn-group btn-group-sm mb-3" role="group" aria-label="Direction">
+    @foreach (var value in Enum.GetValues<MindMapDirection>())
+    {
+        var current = value;
+        <input type="radio" class="btn-check" name="mind-map-direction" id="mind-map-direction-@current" autocomplete="off"
+               checked="@(direction == current)" @onchange="() => direction = current" />
+        <label class="btn btn-outline-primary" for="mind-map-direction-@current">@current</label>
+    }
+</div>
+
+<MindMap TItem="Topic"
+         Root="plan"
+         Children="topic => topic.Children"
+         Label="topic => topic.Name"
+         Direction="direction"
+         InitialExpandDepth="2"
+         aria-label="Website launch plan" />
+
+@code {
+    private MindMapDirection direction = MindMapDirection.Right;
+
+    private readonly Topic plan =
+        new Topic("Website launch",
+            new Topic("Design", new Topic("Wireframes"), new Topic("Visual style"), new Topic("Accessibility review")),
+            new Topic("Build", new Topic("Pages"), new Topic("Search"), new Topic("Analytics")),
+            new Topic("Content", new Topic("Copywriting"), new Topic("Images")),
+            new Topic("Launch", new Topic("Announcement"), new Topic("Monitoring")));
+
+    public sealed class Topic
+    {
+        public Topic(string name, params Topic[] children)
+        {
+            Name = name;
+            Children = children;
+        }
+
+        public IReadOnlyList<Topic> Children { get; }
+
+        public string Name { get; }
+    }
+}

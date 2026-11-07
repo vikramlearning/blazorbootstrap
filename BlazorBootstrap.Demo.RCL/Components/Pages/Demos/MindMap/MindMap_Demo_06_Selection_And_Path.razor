@@ -1,0 +1,42 @@
+<MindMap TItem="Topic"
+         Root="plan"
+         Children="topic => topic.Children"
+         Label="topic => topic.Name"
+         @bind-SelectedItem="selectedTopic"
+         InitialExpandDepth="2"
+         aria-label="Website launch plan" />
+
+<div class="small mt-3">
+    @if (selectedTopic is null)
+    {
+        <span class="text-body-secondary">Select a node to see its details.</span>
+    }
+    else
+    {
+        <span><strong>@selectedTopic.Name</strong> has @selectedTopic.Children.Count @(selectedTopic.Children.Count == 1 ? "child" : "children").</span>
+    }
+</div>
+
+@code {
+    private Topic? selectedTopic;
+
+    private readonly Topic plan =
+        new Topic("Website launch",
+            new Topic("Design", new Topic("Wireframes"), new Topic("Visual style"), new Topic("Accessibility review")),
+            new Topic("Build", new Topic("Pages"), new Topic("Search"), new Topic("Analytics")),
+            new Topic("Content", new Topic("Copywriting"), new Topic("Images")),
+            new Topic("Launch", new Topic("Announcement"), new Topic("Monitoring")));
+
+    public sealed class Topic
+    {
+        public Topic(string name, params Topic[] children)
+        {
+            Name = name;
+            Children = children;
+        }
+
+        public IReadOnlyList<Topic> Children { get; }
+
+        public string Name { get; }
+    }
+}
