@@ -1,0 +1,67 @@
+<div class="d-flex flex-wrap gap-2 mb-3">
+    <Button Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="AddTask">Add a Build task</Button>
+    <Button Color="ButtonColor.Secondary" Size="ButtonSize.Small" @onclick="RemoveTask">Remove the last Build task</Button>
+    <Button Color="ButtonColor.Secondary" Size="ButtonSize.Small" @onclick="MoveFirstBranch">Move the first branch to the end</Button>
+    <Button Color="ButtonColor.Danger" Outline="true" Size="ButtonSize.Small" @onclick="RemoveBuild">Remove Build</Button>
+</div>
+
+<MindMap TItem="Topic"
+         Root="plan"
+         Children="topic => topic.Children"
+         Label="topic => topic.Name"
+         @bind-ExpandedItems="expandedItems"
+         @bind-SelectedItem="selectedTopic"
+         aria-label="Website launch plan" />
+
+<div class="small mt-3">
+    <div><strong>Open:</strong> @string.Join(", ", expandedItems.Select(topic => topic.Name))</div>
+    <div><strong>Selected:</strong> @(selectedTopic?.Name ?? "nothing")</div>
+</div>
+
+@code {
+    private Topic build = default!;
+    private IReadOnlyCollection<Topic> expandedItems = Array.Empty<Topic>();
+    private Topic plan = default!;
+    private Topic? selectedTopic;
+    private int taskNumber = 1;
+
+    protected override void OnInitialized()
+    {
+        build = new Topic("Build", new Topic("Pages"), new Topic("Search"));
+        plan = new Topic("Website launch",
+                         new Topic("Design", new Topic("Wireframes"), new Topic("Visual style")),
+                         build,
+                         new Topic("Launch", new Topic("Announcement")));
+        expandedItems = new[] { plan, build };
+    }
+
+    private void AddTask() => build.Children.Add(new Topic($"Task {taskNumber++}"));
+
+    private void MoveFirstBranch()
+    {
+        var first = plan.Children[0];
+        plan.Children.RemoveAt(0);
+        plan.Children.Add(first);
+    }
+
+    private void RemoveBuild() => plan.Children.Remove(build);
+
+    private void RemoveTask()
+    {
+        if (build.Children.Count > 0)
+            build.Children.RemoveAt(build.Children.Count - 1);
+    }
+
+    public sealed class Topic
+    {
+        public Topic(string name, params Topic[] children)
+        {
+            Name = name;
+            Children = children.ToList();
+        }
+
+        public List<Topic> Children { get; }
+
+        public string Name { get; }
+    }
+}

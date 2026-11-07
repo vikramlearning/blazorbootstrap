@@ -75,6 +75,7 @@ public class DemoScreenshotSrcConstants
     #endregion Grid
 
     public const string Demos_URL_Markdown = DemoScreenshotSrcPrefix + "markdown.png";
+    public const string Demos_URL_MindMap = DemoScreenshotSrcPrefix + "mind-map.png";
     public const string Demos_URL_Modal = DemoScreenshotSrcPrefix + "modal.png";
     public const string Demos_URL_Offcanvas = DemoScreenshotSrcPrefix + "offcanvas.png";
     public const string Demos_URL_Pagination = DemoScreenshotSrcPrefix + "pagination.png";

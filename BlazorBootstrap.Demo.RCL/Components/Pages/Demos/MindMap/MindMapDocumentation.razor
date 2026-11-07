@@ -1,0 +1,222 @@
+@attribute [Route(pageUrl)]
+@layout DemosMainLayout
+
+<DemosPageHeadSection PageUrl="@pageUrl"
+                      PageTitle="@pageTitle"
+                      PageDescription="@pageDescription"
+                      MetaTitle="@metaTitle"
+                      MetaDescription="@metaDescription"
+                      ImageUrl="@imageUrl" />
+
+<DocsLink Href="@DemoRouteConstants.Docs_URL_MindMap" />
+
+<Callout Color="CalloutColor.Info">
+    On a prerendered or static page, <b>MindMap</b> first shows the tree read-only. The +/− controls, find box, zoom, and keyboard support start once the page is interactive.
+</Callout>
+
+<Section Size="HeadingSize.H2" Name="Basic usage" PageUrl="@pageUrl" Link="basic-usage">
+    <div class="mb-3">
+        <b>MindMap</b> draws one root item and its descendants as a collapsible node-link tree, with a line from each parent to each child.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Add <code>MindMap</code> and set <code>TItem</code> to your item type.</li>
+                <li>Set <code>Root</code> to the central item.</li>
+                <li>Set <code>Children</code> to a selector that returns an item's children, and <code>Label</code> to a selector that returns its text.</li>
+                <li>Name the map for screen readers with <code>aria-label</code> or <code>aria-labelledby</code>.</li>
+            </ol>
+        </div>
+        Click + or − on a card to open or close it. By default only the root starts open.
+    </div>
+    <Demo Type="typeof(MindMap_Demo_01_Basic_Usage)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Directions" PageUrl="@pageUrl" Link="directions">
+    <div class="mb-3">
+        Branches grow to the right by default. <code>Direction</code> can make them grow left, to both sides of a central root, down, or up.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Set <code>Direction</code> to a <code>MindMapDirection</code> value: <code>Right</code>, <code>Left</code>, <code>BothSides</code>, <code>Down</code>, or <code>Up</code>.</li>
+                <li>With <code>BothSides</code>, first-level branches are split between the right and left so both sides hold a similar number of nodes.</li>
+            </ol>
+        </div>
+        Pick a direction below to see the same plan laid out each way.
+    </div>
+    <Demo Type="typeof(MindMap_Demo_02_Directions)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Node template" PageUrl="@pageUrl" Link="node-template">
+    <div class="mb-3">
+        <code>NodeTemplate</code> fills each card with your own markup. The component still draws the card frame, the +/− control, and the lines.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Add a <code>NodeTemplate</code> and name its context, for example <code>Context="node"</code>.</li>
+                <li>Read the item from <code>node.Item</code> and render any markup, such as <code>Badge</code> components.</li>
+                <li>Keep <code>Label</code> set: search, the path bar, and screen readers use it.</li>
+            </ol>
+        </div>
+        This API map shows each type's kind, member count, review tags, open issues, and a status dot.
+    </div>
+    <Demo Type="typeof(MindMap_Demo_03_Node_Template)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Branch colors" PageUrl="@pageUrl" Link="branch-colors">
+    <div class="mb-3">
+        Each first-level branch takes the next Bootstrap palette color, and its descendants share it. Your data can pin a color for any branch.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Leave <code>AutoBranchColors</code> on for automatic colors, or set it to <code>false</code> for neutral lines.</li>
+                <li>Set <code>BranchColor</code> to a selector that returns a <code>MindMapColor</code> for an item, or <code>null</code> to keep the automatic color.</li>
+            </ol>
+        </div>
+        Here <b>Risks</b> is pinned to red, and the switch turns automatic colors off.
+    </div>
+    <Demo Type="typeof(MindMap_Demo_04_Branch_Colors)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Expansion" PageUrl="@pageUrl" Link="expansion">
+    <div class="mb-3">
+        Bind the open nodes to read, set, save, or restore them, and react to each change.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Bind the open nodes with <code>@@bind-ExpandedItems</code>. Without a binding, <code>InitialExpandDepth</code> decides which nodes start open.</li>
+                <li>Call <code>ExpandAllAsync()</code> or <code>CollapseAllAsync()</code> through a component reference.</li>
+                <li>Handle <code>OnExpandedChanged</code> to see which nodes opened and closed in each change.</li>
+            </ol>
+        </div>
+        The lines under the map show the bound set and the last change.
+    </div>
+    <Demo Type="typeof(MindMap_Demo_05_Expansion)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Selection and path" PageUrl="@pageUrl" Link="selection-and-path">
+    <div class="mb-3">
+        Clicking a card, or pressing Enter or Space on it, selects it. The path bar under the map shows the way from the root to the selected node.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Bind the selected item with <code>@@bind-SelectedItem</code>.</li>
+                <li>Use the selected item to show details elsewhere on the page.</li>
+                <li>Set <code>ShowPath="false"</code> to hide the path bar.</li>
+            </ol>
+        </div>
+        Selecting a node does not open or close it. Only the +/− control does that.
+    </div>
+    <Demo Type="typeof(MindMap_Demo_06_Selection_And_Path)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Search" PageUrl="@pageUrl" Link="search">
+    <div class="mb-3">
+        The find box matches node labels, opens every branch that leads to a match, and marks the matching cards.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Type in the find box. Matching is case-insensitive and uses the <code>Label</code> text.</li>
+                <li>In a <code>NodeTemplate</code>, use <code>node.IsMatch</code> and <code>node.SearchText</code> to mark the matching text yourself.</li>
+                <li>Set <code>AllowSearch="false"</code> to hide the find box.</li>
+            </ol>
+        </div>
+        Try searching for <code>Table</code>.
+    </div>
+    <Demo Type="typeof(MindMap_Demo_07_Search)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Zoom and pan" PageUrl="@pageUrl" Link="zoom-and-pan">
+    <div class="mb-3">
+        Large maps scroll inside their own frame. Zoom out to see more of the map, and drag the background to move it.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Use the − and + buttons to zoom between 50% and 150%, and <b>Reset zoom</b> to return to 100%.</li>
+                <li>Drag the map background with a mouse or pen to pan. On touch screens, scroll as usual.</li>
+                <li>Change the frame's maximum height with the <code>--bb-mind-map-max-height</code> CSS variable.</li>
+            </ol>
+        </div>
+        Zoom controls are hidden in browsers that do not support the CSS <code>zoom</code> property.
+    </div>
+    <Demo Type="typeof(MindMap_Demo_08_Zoom_And_Pan)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Hide built-in features" PageUrl="@pageUrl" Link="hide-built-in-features">
+    <div class="mb-3">
+        Search, zoom, panning, and the path bar are on by default. Turn off the ones a small map does not need.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Set <code>AllowSearch</code>, <code>AllowZoom</code>, <code>AllowPan</code>, or <code>ShowPath</code> to <code>false</code>.</li>
+            </ol>
+        </div>
+        This map shows only the tree.
+    </div>
+    <Demo Type="typeof(MindMap_Demo_09_Hide_Built_In_Features)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Stack leaves" PageUrl="@pageUrl" Link="stack-leaves">
+    <div class="mb-3">
+        In the <code>Down</code> and <code>Up</code> directions, siblings sit side by side, so wide maps grow quickly. Stacking lists leaf children in a column instead.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Set <code>Direction</code> to <code>MindMapDirection.Down</code> or <code>MindMapDirection.Up</code>.</li>
+                <li>Set <code>StackLeaves="true"</code>. A node whose two or more children are all leaves then lists them in a column.</li>
+            </ol>
+        </div>
+        Turn the switch off to see the classic side-by-side layout.
+    </div>
+    <Demo Type="typeof(MindMap_Demo_10_Stack_Leaves)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Dynamic data" PageUrl="@pageUrl" Link="dynamic-data">
+    <div class="mb-3">
+        When your data changes, the map shows the new tree. Open and selected items that still exist stay open and selected; removed items leave both bindings.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Change the children your <code>Children</code> selector returns.</li>
+                <li>Re-render the page, which happens automatically after a button click.</li>
+            </ol>
+        </div>
+        Open or select <b>Build</b>, then remove it to see the bindings update.
+    </div>
+    <Demo Type="typeof(MindMap_Demo_11_Dynamic_Data)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Large tree" PageUrl="@pageUrl" Link="large-tree">
+    <div class="mb-3">
+        <b>MindMap</b> keeps all data in memory and stays responsive with hundreds of open nodes.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Pass the whole tree through <code>Root</code> and <code>Children</code>.</li>
+                <li>Use <code>InitialExpandDepth</code> to choose how much opens at first, and <code>ExpandAllAsync()</code> to open everything.</li>
+            </ol>
+        </div>
+        This map lists every Blazor Bootstrap component and its parameters.
+    </div>
+    <Demo Type="typeof(MindMap_Demo_12_Large_Tree)" Tabs="true" />
+</Section>
+
+@code {
+    private const string pageUrl = DemoRouteConstants.Demos_URL_MindMap;
+    private const string pageTitle = "Blazor Mind Map";
+    private const string pageDescription = "The Blazor Bootstrap Mind Map component shows hierarchical data as a collapsible node-link tree that grows right, left, to both sides, down, or up.";
+    private const string metaTitle = "Blazor Mind Map Component";
+    private const string metaDescription = "The Blazor Bootstrap Mind Map component shows hierarchical data as a collapsible node-link tree that grows right, left, to both sides, down, or up.";
+    private const string imageUrl = DemoScreenshotSrcConstants.Demos_URL_MindMap;
+}

@@ -1,0 +1,56 @@
+<MindMap TItem="ApiNode"
+         Root="api"
+         Children="node => node.Children"
+         Label="node => node.Name"
+         aria-label="UnlimitedPDF public API">
+    <NodeTemplate Context="node">
+        @if (node.IsMatch && node.SearchText is not null)
+        {
+            var start = node.Item.Name.IndexOf(node.SearchText, StringComparison.OrdinalIgnoreCase);
+            <span class="font-monospace">@node.Item.Name[..start]<mark>@node.Item.Name.Substring(start, node.SearchText.Length)</mark>@node.Item.Name[(start + node.SearchText.Length)..]</span>
+        }
+        else
+        {
+            <span class="font-monospace">@node.Item.Name</span>
+        }
+        @if (node.Item.Kind is not null)
+        {
+            <small class="text-body-secondary ms-1">@node.Item.Kind</small>
+        }
+    </NodeTemplate>
+</MindMap>
+
+@code {
+    private readonly ApiNode api =
+        new ApiNode("UnlimitedPDF", null,
+            new ApiNode("Document", null, new ApiNode("PdfDocument", "class")),
+            new ApiNode("Page layout", null,
+                new ApiNode("PdfBodyFlow", "sealed class",
+                    new ApiNode("AddTable(width, spacing, x, …)", "method"),
+                    new ApiNode("AddText(text, spacing, fontSize, …)", "method")),
+                new ApiNode("PdfPageInfo", "sealed class")),
+            new ApiNode("Tables", null,
+                new ApiNode("PdfTable", "class"),
+                new ApiNode("PdfTableRow", "class"),
+                new ApiNode("PdfTableColumn", "class"),
+                new ApiNode("PdfTableCell", "class")),
+            new ApiNode("Images", null,
+                new ApiNode("PdfImage", "sealed class"),
+                new ApiNode("PdfImageLoadOptions", "sealed class")));
+
+    public sealed class ApiNode
+    {
+        public ApiNode(string name, string? kind, params ApiNode[] children)
+        {
+            Name = name;
+            Kind = kind;
+            Children = children;
+        }
+
+        public IReadOnlyList<ApiNode> Children { get; }
+
+        public string? Kind { get; }
+
+        public string Name { get; }
+    }
+}

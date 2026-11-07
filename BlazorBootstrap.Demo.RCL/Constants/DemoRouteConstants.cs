@@ -83,6 +83,7 @@ public static class DemoRouteConstants
     #endregion Grid
 
     public const string Demos_URL_Markdown = Demos_URL_Prefix + "/markdown";
+    public const string Demos_URL_MindMap = Demos_URL_Prefix + "/mind-map";
     public const string Demos_URL_Modal = Demos_URL_Prefix + "/modals";
     public const string Demos_URL_Offcanvas = Demos_URL_Prefix + "/offcanvas";
     public const string Demos_URL_Pagination = Demos_URL_Prefix + "/pagination";
@@ -180,6 +181,7 @@ public static class DemoRouteConstants
     public const string Docs_URL_GoogleMap = Docs_URL_Prefix + "/google-map";
     public const string Docs_URL_Grid = Docs_URL_Prefix + "/grid";
     public const string Docs_URL_Markdown = Docs_URL_Prefix + "/markdown";
+    public const string Docs_URL_MindMap = Docs_URL_Prefix + "/mind-map";
     public const string Docs_URL_Modal = Docs_URL_Prefix + "/modals";
     public const string Docs_URL_Offcanvas = Docs_URL_Prefix + "/offcanvas";
     public const string Docs_URL_Pagination = Docs_URL_Prefix + "/pagination";

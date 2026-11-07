@@ -1,0 +1,38 @@
+<Switch @bind-Value="autoBranchColors" Label="Automatic branch colors" Class="mb-3" />
+
+<MindMap TItem="Topic"
+         Root="plan"
+         Children="topic => topic.Children"
+         Label="topic => topic.Name"
+         AutoBranchColors="autoBranchColors"
+         BranchColor="GetBranchColor"
+         InitialExpandDepth="2"
+         aria-label="Website launch plan" />
+
+@code {
+    private bool autoBranchColors = true;
+
+    private readonly Topic plan =
+        new Topic("Website launch",
+            new Topic("Design", new Topic("Wireframes"), new Topic("Visual style")),
+            new Topic("Build", new Topic("Pages"), new Topic("Search")),
+            new Topic("Content", new Topic("Copywriting"), new Topic("Images")),
+            new Topic("Risks", new Topic("Late content"), new Topic("Hosting limits")),
+            new Topic("Launch", new Topic("Announcement"), new Topic("Monitoring")));
+
+    // Pin the Risks branch to red; null keeps the automatic color.
+    private static MindMapColor? GetBranchColor(Topic topic) => topic.Name == "Risks" ? MindMapColor.Red : null;
+
+    public sealed class Topic
+    {
+        public Topic(string name, params Topic[] children)
+        {
+            Name = name;
+            Children = children;
+        }
+
+        public IReadOnlyList<Topic> Children { get; }
+
+        public string Name { get; }
+    }
+}

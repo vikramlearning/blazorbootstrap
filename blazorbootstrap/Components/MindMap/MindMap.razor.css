@@ -1,0 +1,505 @@
+/* Layout: nested flex rows (horizontal) or columns (vertical); connectors are drawn by ::before / ::after
+   on the group and child wrappers. Avoids color-mix(), flex gap, and :has() so it renders in every browser
+   Bootstrap 5.3 supports. */
+
+.bb-mind-map-canvas {
+    position: relative;
+    max-height: var(--bb-mind-map-max-height, 70vh);
+    overflow: auto;
+    border: var(--bs-border-width) solid var(--bs-border-color);
+    border-radius: var(--bs-border-radius);
+    background-color: var(--bs-body-bg);
+    overscroll-behavior: contain;
+}
+
+    .bb-mind-map-canvas.bb-mind-map-panning {
+        cursor: grabbing;
+        user-select: none;
+    }
+
+.bb-mind-map-tree {
+    --bb-mind-map-branch-color: var(--bs-secondary-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: max-content;
+    min-width: 100%;
+    padding: 1.5rem;
+}
+
+    .bb-mind-map-tree.bb-mind-map-right {
+        justify-content: flex-start;
+    }
+
+    .bb-mind-map-tree.bb-mind-map-left {
+        justify-content: flex-end;
+    }
+
+    .bb-mind-map-tree.bb-mind-map-down {
+        align-items: flex-start;
+    }
+
+    .bb-mind-map-tree.bb-mind-map-up {
+        align-items: flex-end;
+    }
+
+.bb-mind-map-node {
+    display: flex;
+    align-items: center;
+}
+
+    .bb-mind-map-node:focus {
+        outline: none;
+    }
+
+.bb-mind-map-children {
+    position: relative;
+    display: flex;
+}
+
+    .bb-mind-map-children::before,
+    .bb-mind-map-child::before,
+    .bb-mind-map-child::after {
+        content: "";
+        position: absolute;
+        pointer-events: none;
+    }
+
+.bb-mind-map-child {
+    position: relative;
+}
+
+/* ---- horizontal: branches grow right ---- */
+.bb-mind-map-h .bb-mind-map-children {
+    flex-direction: column;
+    margin-left: 1.375rem;
+}
+
+    .bb-mind-map-h .bb-mind-map-children::before {
+        top: 50%;
+        left: -1.375rem;
+        width: 1.375rem;
+        border-top: 1.25px solid var(--bb-mind-map-branch-color);
+    }
+
+.bb-mind-map-h .bb-mind-map-child {
+    padding: .1875rem 0 .1875rem 1.375rem;
+}
+
+    .bb-mind-map-h .bb-mind-map-child::before {
+        left: 0;
+        top: 0;
+        bottom: 0;
+        border-left: 1.25px solid var(--bb-mind-map-branch-color);
+    }
+
+    .bb-mind-map-h .bb-mind-map-child::after {
+        left: 0;
+        top: 50%;
+        width: 1.375rem;
+        border-top: 1.25px solid var(--bb-mind-map-branch-color);
+    }
+
+    .bb-mind-map-h .bb-mind-map-child:first-child::before {
+        top: 50%;
+        width: 1.375rem;
+        border-top: 1.25px solid var(--bb-mind-map-branch-color);
+        border-top-left-radius: .4375rem;
+    }
+
+    .bb-mind-map-h .bb-mind-map-child:last-child::before {
+        top: 0;
+        bottom: calc(50% - 1.25px);
+        width: 1.375rem;
+        border-bottom: 1.25px solid var(--bb-mind-map-branch-color);
+        border-bottom-left-radius: .4375rem;
+    }
+
+    .bb-mind-map-h .bb-mind-map-child:first-child::after,
+    .bb-mind-map-h .bb-mind-map-child:last-child::after {
+        display: none;
+    }
+
+    .bb-mind-map-h .bb-mind-map-child:only-child::before {
+        display: none;
+    }
+
+    .bb-mind-map-h .bb-mind-map-child:only-child::after {
+        display: block;
+    }
+
+/* mirrored: branches grow left (Left, and the left half of BothSides) */
+.bb-mind-map-h .bb-mind-map-mirror,
+.bb-mind-map-h .bb-mind-map-mirror .bb-mind-map-children {
+    margin-left: 0;
+    margin-right: 1.375rem;
+}
+
+    .bb-mind-map-h .bb-mind-map-mirror::before,
+    .bb-mind-map-h .bb-mind-map-mirror .bb-mind-map-children::before {
+        left: auto;
+        right: -1.375rem;
+    }
+
+    .bb-mind-map-h .bb-mind-map-mirror .bb-mind-map-node,
+    .bb-mind-map-tree.bb-mind-map-left > .bb-mind-map-node {
+        flex-direction: row-reverse;
+    }
+
+    .bb-mind-map-h .bb-mind-map-mirror .bb-mind-map-child {
+        padding: .1875rem 1.375rem .1875rem 0;
+    }
+
+        .bb-mind-map-h .bb-mind-map-mirror .bb-mind-map-child::before {
+            left: auto;
+            right: 0;
+            border-left: 0;
+            border-right: 1.25px solid var(--bb-mind-map-branch-color);
+        }
+
+        .bb-mind-map-h .bb-mind-map-mirror .bb-mind-map-child::after {
+            left: auto;
+            right: 0;
+        }
+
+        .bb-mind-map-h .bb-mind-map-mirror .bb-mind-map-child:first-child::before {
+            border-top-left-radius: 0;
+            border-top-right-radius: .4375rem;
+        }
+
+        .bb-mind-map-h .bb-mind-map-mirror .bb-mind-map-child:last-child::before {
+            border-bottom-left-radius: 0;
+            border-bottom-right-radius: .4375rem;
+        }
+
+.bb-mind-map-both-root > .bb-mind-map-children.bb-mind-map-mirror {
+    order: -1;
+}
+
+/* ---- vertical: branches grow down ---- */
+.bb-mind-map-v .bb-mind-map-node {
+    flex-direction: column;
+}
+
+.bb-mind-map-v .bb-mind-map-children {
+    flex-direction: row;
+    align-items: flex-start;
+    margin-top: 1.375rem;
+}
+
+    .bb-mind-map-v .bb-mind-map-children::before {
+        left: 50%;
+        top: -1.375rem;
+        height: 1.375rem;
+        border-left: 1.25px solid var(--bb-mind-map-branch-color);
+    }
+
+.bb-mind-map-v .bb-mind-map-child {
+    padding: 1.375rem .3125rem 0;
+}
+
+    .bb-mind-map-v .bb-mind-map-child::before {
+        left: 0;
+        right: 0;
+        top: 0;
+        border-top: 1.25px solid var(--bb-mind-map-branch-color);
+    }
+
+    .bb-mind-map-v .bb-mind-map-child::after {
+        left: 50%;
+        top: 0;
+        height: 1.375rem;
+        border-left: 1.25px solid var(--bb-mind-map-branch-color);
+    }
+
+    .bb-mind-map-v .bb-mind-map-child:first-child::before {
+        left: 50%;
+        height: 1.375rem;
+        border-left: 1.25px solid var(--bb-mind-map-branch-color);
+        border-top-left-radius: .4375rem;
+    }
+
+    .bb-mind-map-v .bb-mind-map-child:last-child::before {
+        right: calc(50% - 1.25px);
+        height: 1.375rem;
+        border-right: 1.25px solid var(--bb-mind-map-branch-color);
+        border-top-right-radius: .4375rem;
+    }
+
+    .bb-mind-map-v .bb-mind-map-child:first-child::after,
+    .bb-mind-map-v .bb-mind-map-child:last-child::after {
+        display: none;
+    }
+
+    .bb-mind-map-v .bb-mind-map-child:only-child::before {
+        display: none;
+    }
+
+    .bb-mind-map-v .bb-mind-map-child:only-child::after {
+        display: block;
+    }
+
+/* flipped vertical: branches grow up */
+.bb-mind-map-v.bb-mind-map-up .bb-mind-map-node {
+    flex-direction: column-reverse;
+}
+
+.bb-mind-map-v.bb-mind-map-up .bb-mind-map-children {
+    align-items: flex-end;
+    margin-top: 0;
+    margin-bottom: 1.375rem;
+}
+
+    .bb-mind-map-v.bb-mind-map-up .bb-mind-map-children::before {
+        top: auto;
+        bottom: -1.375rem;
+    }
+
+.bb-mind-map-v.bb-mind-map-up .bb-mind-map-child {
+    padding: 0 .3125rem 1.375rem;
+}
+
+    .bb-mind-map-v.bb-mind-map-up .bb-mind-map-child::before {
+        top: auto;
+        bottom: 0;
+        border-top: 0;
+        border-bottom: 1.25px solid var(--bb-mind-map-branch-color);
+    }
+
+    .bb-mind-map-v.bb-mind-map-up .bb-mind-map-child::after {
+        top: auto;
+        bottom: 0;
+    }
+
+    .bb-mind-map-v.bb-mind-map-up .bb-mind-map-child:first-child::before {
+        border-top-left-radius: 0;
+        border-bottom-left-radius: .4375rem;
+    }
+
+    .bb-mind-map-v.bb-mind-map-up .bb-mind-map-child:last-child::before {
+        border-top-right-radius: 0;
+        border-bottom-right-radius: .4375rem;
+    }
+
+/* vertical, StackLeaves: leaf-only branches list their children in a column */
+.bb-mind-map-v .bb-mind-map-children.bb-mind-map-stack {
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+    .bb-mind-map-v .bb-mind-map-children.bb-mind-map-stack::after {
+        content: "";
+        position: absolute;
+        pointer-events: none;
+        top: 0;
+        left: 0;
+        width: 50%;
+        height: .4375rem;
+        border-top: 1.25px solid var(--bb-mind-map-branch-color);
+        border-left: 1.25px solid var(--bb-mind-map-branch-color);
+        border-top-left-radius: .4375rem;
+    }
+
+.bb-mind-map-v .bb-mind-map-stack > .bb-mind-map-child {
+    padding: .1875rem 0 .1875rem 1.375rem;
+}
+
+    .bb-mind-map-v .bb-mind-map-stack > .bb-mind-map-child::before {
+        display: block;
+        left: 0;
+        right: auto;
+        top: 0;
+        bottom: 0;
+        width: 0;
+        height: auto;
+        border: 0;
+        border-left: 1.25px solid var(--bb-mind-map-branch-color);
+        border-radius: 0;
+    }
+
+    .bb-mind-map-v .bb-mind-map-stack > .bb-mind-map-child::after {
+        display: block;
+        left: 0;
+        top: 50%;
+        bottom: auto;
+        width: 1.375rem;
+        height: 0;
+        border: 0;
+        border-top: 1.25px solid var(--bb-mind-map-branch-color);
+    }
+
+    .bb-mind-map-v .bb-mind-map-stack > .bb-mind-map-child:last-child::before {
+        bottom: calc(50% - 1.25px);
+        width: 1.375rem;
+        border-bottom: 1.25px solid var(--bb-mind-map-branch-color);
+        border-bottom-left-radius: .4375rem;
+    }
+
+    .bb-mind-map-v .bb-mind-map-stack > .bb-mind-map-child:last-child::after {
+        display: none;
+    }
+
+.bb-mind-map-v.bb-mind-map-up .bb-mind-map-children.bb-mind-map-stack::after {
+    top: auto;
+    bottom: 0;
+    border-top: 0;
+    border-bottom: 1.25px solid var(--bb-mind-map-branch-color);
+    border-top-left-radius: 0;
+    border-bottom-left-radius: .4375rem;
+}
+
+.bb-mind-map-v.bb-mind-map-up .bb-mind-map-stack > .bb-mind-map-child:last-child::before {
+    bottom: 0;
+    border-bottom: 0;
+    border-bottom-left-radius: 0;
+}
+
+.bb-mind-map-v.bb-mind-map-up .bb-mind-map-stack > .bb-mind-map-child:last-child::after {
+    display: block;
+}
+
+.bb-mind-map-v.bb-mind-map-up .bb-mind-map-stack > .bb-mind-map-child:first-child::before {
+    top: 50%;
+    width: 1.375rem;
+    border-top: 1.25px solid var(--bb-mind-map-branch-color);
+    border-top-left-radius: .4375rem;
+}
+
+.bb-mind-map-v.bb-mind-map-up .bb-mind-map-stack > .bb-mind-map-child:first-child::after {
+    display: none;
+}
+
+/* ---- cards ---- */
+.bb-mind-map-card {
+    position: relative;
+    z-index: 0;
+    display: inline-flex;
+    align-items: center;
+    padding: .1875rem .625rem;
+    border: 1px solid var(--bb-mind-map-branch-color);
+    border-radius: var(--bs-border-radius-sm);
+    background-color: var(--bs-body-bg);
+    color: var(--bs-body-color);
+    font-size: .8125rem;
+    line-height: 1.35;
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+.bb-mind-map-card-root {
+    padding: .625rem 1rem;
+    border: 0;
+    border-radius: var(--bs-border-radius);
+    background-color: var(--bs-emphasis-color);
+    color: var(--bs-body-bg);
+    font-size: .9375rem;
+    font-weight: 700;
+}
+
+.bb-mind-map-card-first {
+    padding: .3125rem .75rem;
+    font-weight: 600;
+}
+
+    /* tint without color-mix(): a translucent layer under the content */
+    .bb-mind-map-card-first::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        z-index: -1;
+        border-radius: inherit;
+        background-color: var(--bb-mind-map-branch-color);
+        opacity: .14;
+    }
+
+.bb-mind-map-card-leaf {
+    border-color: transparent;
+    background-color: transparent;
+    padding: .125rem .375rem;
+}
+
+.bb-mind-map-card-match {
+    border-style: dashed;
+    border-color: var(--bs-warning-text-emphasis);
+    background-color: var(--bs-warning-bg-subtle);
+}
+
+    /* the root has no border and light text; keep its label readable and its frame visible when it matches */
+    .bb-mind-map-card-root.bb-mind-map-card-match {
+        padding: calc(.625rem - 1px) calc(1rem - 1px);
+        border: 1px dashed var(--bs-warning-text-emphasis);
+        color: var(--bs-warning-text-emphasis);
+    }
+
+    /* Bootstrap's <mark> shares the matching card's background; ::deep also reaches marks drawn by a NodeTemplate */
+    .bb-mind-map-card-match ::deep mark {
+        padding: 0 .0625rem;
+        background-color: var(--bs-warning);
+        color: var(--bs-dark);
+    }
+
+.bb-mind-map-card-selected {
+    outline: 2px solid var(--bs-primary);
+    outline-offset: 2px;
+}
+
+.bb-mind-map-node:focus-visible > .bb-mind-map-card {
+    box-shadow: 0 0 0 .25rem rgba(var(--bs-primary-rgb), .4);
+}
+
+.bb-mind-map-toggle {
+    display: inline-block;
+    width: 1rem;
+    margin-right: .375rem;
+    text-align: center;
+    font-family: var(--bs-font-monospace);
+    font-weight: 600;
+    color: var(--bs-secondary-color);
+}
+
+.bb-mind-map-card-root .bb-mind-map-toggle {
+    color: inherit;
+}
+
+.bb-mind-map-search {
+    width: 14rem;
+    max-width: 100%;
+}
+
+.bb-mind-map-zoom-value {
+    min-width: 3.25rem;
+    text-align: center;
+}
+
+@supports not (zoom: 1) {
+    .bb-mind-map-zoom {
+        display: none !important;
+    }
+}
+
+/* ---- branch colors: Bootstrap palette; light values meet 3:1 on white, dark values use Bootstrap's 300 shades ---- */
+.bb-mind-map-color-none { --bb-mind-map-branch-color: var(--bs-secondary-color); }
+.bb-mind-map-color-blue { --bb-mind-map-branch-color: #0d6efd; }
+.bb-mind-map-color-indigo { --bb-mind-map-branch-color: #6610f2; }
+.bb-mind-map-color-purple { --bb-mind-map-branch-color: #6f42c1; }
+.bb-mind-map-color-pink { --bb-mind-map-branch-color: #d63384; }
+.bb-mind-map-color-red { --bb-mind-map-branch-color: #dc3545; }
+.bb-mind-map-color-orange { --bb-mind-map-branch-color: #984c0c; }
+.bb-mind-map-color-yellow { --bb-mind-map-branch-color: #997404; }
+.bb-mind-map-color-green { --bb-mind-map-branch-color: #198754; }
+.bb-mind-map-color-teal { --bb-mind-map-branch-color: #13795b; }
+.bb-mind-map-color-cyan { --bb-mind-map-branch-color: #087990; }
+
+[data-bs-theme=dark] .bb-mind-map-color-blue { --bb-mind-map-branch-color: #6ea8fe; }
+[data-bs-theme=dark] .bb-mind-map-color-indigo { --bb-mind-map-branch-color: #a370f7; }
+[data-bs-theme=dark] .bb-mind-map-color-purple { --bb-mind-map-branch-color: #a98eda; }
+[data-bs-theme=dark] .bb-mind-map-color-pink { --bb-mind-map-branch-color: #e685b5; }
+[data-bs-theme=dark] .bb-mind-map-color-red { --bb-mind-map-branch-color: #ea868f; }
+[data-bs-theme=dark] .bb-mind-map-color-orange { --bb-mind-map-branch-color: #feb272; }
+[data-bs-theme=dark] .bb-mind-map-color-yellow { --bb-mind-map-branch-color: #ffda6a; }
+[data-bs-theme=dark] .bb-mind-map-color-green { --bb-mind-map-branch-color: #75b798; }
+[data-bs-theme=dark] .bb-mind-map-color-teal { --bb-mind-map-branch-color: #79dfc1; }
+[data-bs-theme=dark] .bb-mind-map-color-cyan { --bb-mind-map-branch-color: #6edff6; }

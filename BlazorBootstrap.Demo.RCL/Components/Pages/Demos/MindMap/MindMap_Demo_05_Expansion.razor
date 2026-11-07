@@ -1,0 +1,55 @@
+<div class="d-flex flex-wrap gap-2 mb-3">
+    <Button Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="() => mindMap.ExpandAllAsync()">Expand all</Button>
+    <Button Color="ButtonColor.Secondary" Size="ButtonSize.Small" @onclick="() => mindMap.CollapseAllAsync()">Collapse all</Button>
+    <Button Color="ButtonColor.Secondary" Outline="true" Size="ButtonSize.Small" @onclick="OpenBuildOnly">Open Build only</Button>
+</div>
+
+<MindMap @ref="mindMap"
+         TItem="Topic"
+         Root="plan"
+         Children="topic => topic.Children"
+         Label="topic => topic.Name"
+         @bind-ExpandedItems="expandedItems"
+         OnExpandedChanged="OnExpandedChanged"
+         aria-label="Website launch plan" />
+
+<div class="small mt-3">
+    <div><strong>Open:</strong> @string.Join(", ", expandedItems.Select(topic => topic.Name))</div>
+    <div><strong>Last change:</strong> @lastChange</div>
+</div>
+
+@code {
+    private MindMap<Topic> mindMap = default!;
+    private IReadOnlyCollection<Topic> expandedItems = Array.Empty<Topic>();
+    private string lastChange = "none yet";
+
+    private readonly Topic plan =
+        new Topic("Website launch",
+            new Topic("Design", new Topic("Wireframes"), new Topic("Visual style", new Topic("Colors"), new Topic("Typography"))),
+            new Topic("Build", new Topic("Pages"), new Topic("Search"), new Topic("Analytics")),
+            new Topic("Content", new Topic("Copywriting"), new Topic("Images")),
+            new Topic("Launch", new Topic("Announcement"), new Topic("Monitoring")));
+
+    protected override void OnInitialized() => expandedItems = new[] { plan };
+
+    private void OnExpandedChanged(MindMapExpandedChangedEventArgs<Topic> args) =>
+        lastChange = $"opened {Names(args.Opened)}; closed {Names(args.Closed)}";
+
+    private void OpenBuildOnly() => expandedItems = new[] { plan, plan.Children[1] };
+
+    private static string Names(IReadOnlyList<Topic> topics) =>
+        topics.Count == 0 ? "nothing" : string.Join(", ", topics.Select(topic => topic.Name));
+
+    public sealed class Topic
+    {
+        public Topic(string name, params Topic[] children)
+        {
+            Name = name;
+            Children = children;
+        }
+
+        public IReadOnlyList<Topic> Children { get; }
+
+        public string Name { get; }
+    }
+}

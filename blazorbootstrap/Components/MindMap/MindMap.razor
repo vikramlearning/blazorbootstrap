@@ -1,0 +1,135 @@
+@namespace BlazorBootstrap
+@inherits BlazorBootstrapComponentBase
+@typeparam TItem where TItem : notnull
+
+@{
+    var tabStop = isInteractive && focusedNode is not null && IsVisible(focusedNode) ? focusedNode : rootNode;
+}
+
+<div @ref="@Element" id="@Id" class="@ClassNames" style="@StyleNames" @attributes="@GetRootAttributes()">
+    @if (isInteractive && (AllowSearch || AllowZoom))
+    {
+        <div class="bb-mind-map-toolbar d-flex flex-wrap align-items-center gap-2 mb-2">
+            @if (AllowSearch)
+            {
+                <input id="@($"{Id}-search")"
+                       type="search"
+                       class="form-control form-control-sm bb-mind-map-search"
+                       placeholder="@SearchPlaceholder"
+                       aria-label="@SearchLabel"
+                       autocomplete="off"
+                       value="@searchInput"
+                       @oninput="OnSearchInputAsync" />
+                <span class="small text-body-secondary bb-mind-map-search-status" role="status">@SearchStatusText</span>
+            }
+            @if (AllowZoom)
+            {
+                <div class="d-flex align-items-center gap-1 ms-auto bb-mind-map-zoom">
+                    <button type="button" class="btn btn-sm btn-outline-secondary" aria-label="@ZoomOutText" title="@ZoomOutText" disabled="@(zoom <= ZoomMinimum)" @onclick="OnZoomOut">−</button>
+                    <span class="small font-monospace bb-mind-map-zoom-value">@zoom%</span>
+                    <button type="button" class="btn btn-sm btn-outline-secondary" aria-label="@ZoomInText" title="@ZoomInText" disabled="@(zoom >= ZoomMaximum)" @onclick="OnZoomIn">+</button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary" disabled="@(zoom == ZoomDefault)" @onclick="OnZoomReset">@ZoomResetText</button>
+                </div>
+            }
+        </div>
+    }
+
+    <div id="@($"{Id}-canvas")" class="bb-mind-map-canvas">
+        <div id="@($"{Id}-tree")"
+             class="@TreeClassNames"
+             style="@TreeStyle"
+             role="tree"
+             aria-label="@GetTreeAttribute("aria-label")"
+             aria-labelledby="@GetTreeAttribute("aria-labelledby")">
+            @if (rootNode is not null)
+            {
+                @RenderNode(rootNode, tabStop)
+            }
+        </div>
+    </div>
+
+    @if (ShowPath)
+    {
+        <nav class="bb-mind-map-path mt-2" aria-label="@PathLabel">
+            <ol class="breadcrumb small mb-0">
+                @{
+                    var path = GetSelectedPath();
+                }
+                @for (var i = 0; i < path.Count; i++)
+                {
+                    if (i == path.Count - 1)
+                    {
+                        <li class="breadcrumb-item active" aria-current="true">@path[i].Label</li>
+                    }
+                    else
+                    {
+                        <li class="breadcrumb-item">@path[i].Label</li>
+                    }
+                }
+            </ol>
+        </nav>
+    }
+</div>
+
+@code {
+    private RenderFragment RenderGroup(IEnumerable<Node> children, bool mirror, bool stack, Node? tabStop) => __builder =>
+    {
+        <div class="@GetGroupClass(mirror, stack)" role="group">
+            @foreach (var child in children)
+            {
+                <div @key="child.Key" class="bb-mind-map-child" role="none">
+                    @RenderNode(child, tabStop)
+                </div>
+            }
+        </div>
+    };
+
+    private RenderFragment RenderNode(Node node, Node? tabStop) => __builder =>
+    {
+        var open = node.HasChildren && IsExpanded(node);
+        var handlers = GetHandlers(node);
+
+        <div id="@GetNodeId(node)"
+             class="@GetNodeClass(node)"
+             role="treeitem"
+             aria-level="@(node.Depth + 1)"
+             aria-expanded="@(node.HasChildren ? (open ? "true" : "false") : null)"
+             aria-selected="@(isInteractive ? (IsSelected(node) ? "true" : "false") : null)"
+             aria-labelledby="@GetCardId(node)"
+             tabindex="@GetTabIndex(node, tabStop)"
+             @onkeydown="handlers.KeyDown"
+             @onkeydown:stopPropagation="true">
+            <div id="@GetCardId(node)" class="@GetCardClass(node)" @onclick="handlers.Click">
+                @if (isInteractive && node.HasChildren)
+                {
+                    <span class="bb-mind-map-toggle" aria-hidden="true" @onclick="handlers.Toggle" @onclick:stopPropagation="true">@(open ? "−" : "+")</span>
+                }
+                @if (NodeTemplate is not null)
+                {
+                    @NodeTemplate(new MindMapNodeContext<TItem>(node.Item, node.IsMatch, searchQuery))
+                }
+                else if (node.IsMatch && searchQuery is not null)
+                {
+                    var start = node.Label.IndexOf(searchQuery, StringComparison.OrdinalIgnoreCase);
+                    <span class="bb-mind-map-label">@node.Label[..start]<mark>@node.Label.Substring(start, searchQuery.Length)</mark>@node.Label[(start + searchQuery.Length)..]</span>
+                }
+                else
+                {
+                    <span class="bb-mind-map-label">@node.Label</span>
+                }
+            </div>
+            @if (open)
+            {
+                if (node.Depth == 0 && Direction == MindMapDirection.BothSides && node.Children.Count > 1)
+                {
+                    @RenderGroup(node.Children.Take(node.RightCount), false, false, tabStop)
+                    @RenderGroup(node.Children.Skip(node.RightCount), true, false, tabStop)
+                }
+                else
+                {
+                    @RenderGroup(node.Children, node.Depth == 0 && Direction == MindMapDirection.Left, IsStacked(node), tabStop)
+                }
+            }
+        </div>
+    };
+}

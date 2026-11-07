@@ -1,0 +1,293 @@
+---
+title: Blazor Mind Map Component
+description: The Blazor Bootstrap Mind Map component shows hierarchical data as a collapsible node-link tree that grows right, left, to both sides, down, or up.
+image: https://demos.blazorbootstrap.com/images/screenshots/mind-map.png
+
+sidebar_label: Mind Map
+sidebar_position: 15
+---
+
+import CarbonAd from '/carbon-ad.mdx'
+
+# Blazor Mind Map
+
+The Blazor Bootstrap Mind Map component shows one root item and its descendants as a collapsible node-link tree, with a line from each parent to each child.
+
+<CarbonAd />
+
+## Before you start
+
+- **Interactivity:** on a prerendered or static (SSR) page, **MindMap** first shows the tree at its initial expansion, read-only. The +/− controls, find box, zoom, panning, and keyboard support start once the component is interactive.
+- **Zoom support:** zoom uses the CSS `zoom` property. Browsers that do not support it hide the zoom controls; the rest of the map still works.
+- **Item identity:** open and selected items are tracked with the item type's default equality. Records that compare equal are treated as the same node.
+
+## Parameters
+
+| Name | Type | Default | Required | Description | Added Version |
+|:--|:--|:--|:--|:--|:--|
+| AllowPan | bool | true | | Gets or sets whether the map's background can be dragged with a mouse or pen to scroll the map. | 4.1.0 |
+| AllowSearch | bool | true | | Gets or sets whether the built-in find box is shown. | 4.1.0 |
+| AllowZoom | bool | true | | Gets or sets whether the zoom controls are shown. | 4.1.0 |
+| AutoBranchColors | bool | true | | Gets or sets whether each first-level branch takes the next Bootstrap palette color automatically. | 4.1.0 |
+| BranchColor | `Func<TItem, MindMapColor?>?` | null | | Gets or sets a selector that pins a branch color for a node and its descendants. Return `null` to keep the inherited or automatic color. | 4.1.0 |
+| Children | `Func<TItem, IEnumerable<TItem>?>?` | null | | Gets or sets the selector that returns a node's children. A `null` or empty result makes the node a leaf. | 4.1.0 |
+| Direction | `MindMapDirection` | `MindMapDirection.Right` | | Gets or sets the direction in which branches grow from the root. | 4.1.0 |
+| ExpandedItems | `IReadOnlyCollection<TItem>?` | null | | Gets or sets the open nodes. Use with `@bind-ExpandedItems`. When `null`, `InitialExpandDepth` decides which nodes start open. | 4.1.0 |
+| InitialExpandDepth | int | 1 | | Gets or sets how deep nodes start open when `ExpandedItems` is not set. The root is depth 0, so 1 opens only the root. | 4.1.0 |
+| Label | `Func<TItem, string>?` | null | | Gets or sets the selector that returns a node's label. When `null`, `ToString()` is used. Search matches this text. | 4.1.0 |
+| NodeTemplate | `RenderFragment<MindMapNodeContext<TItem>>?` | null | | Gets or sets the template that fills each node card. Without it, the card shows the label. | 4.1.0 |
+| PathLabel | string | `Selected node path` | | Gets or sets the accessible label of the path bar. | 4.1.0 |
+| Root | `TItem?` | null | | Gets or sets the root item of the map. | 4.1.0 |
+| SearchLabel | string | `Find a node` | | Gets or sets the accessible label of the find box. | 4.1.0 |
+| SearchMatchesTextFormat | string | `{0} matches` | | Gets or sets the match count text format. `{0}` is replaced by the number of matches. | 4.1.0 |
+| SearchNoMatchesText | string | `No matches` | | Gets or sets the text shown when a search has no matches. | 4.1.0 |
+| SearchOneMatchText | string | `1 match` | | Gets or sets the text shown when a search has exactly one match. | 4.1.0 |
+| SearchPlaceholder | string | `Find a node…` | | Gets or sets the placeholder of the find box. | 4.1.0 |
+| SelectedItem | `TItem?` | null | | Gets or sets the selected node's item. Use with `@bind-SelectedItem`. | 4.1.0 |
+| ShowPath | bool | true | | Gets or sets whether the path bar shows the labels from the root to the selected node. | 4.1.0 |
+| StackLeaves | bool | false | | Gets or sets whether, in the `Down` and `Up` directions, a node whose two or more children are all leaves lists them in a column instead of side by side. | 4.1.0 |
+| ZoomInText | string | `Zoom in` | | Gets or sets the accessible label of the zoom-in button. | 4.1.0 |
+| ZoomOutText | string | `Zoom out` | | Gets or sets the accessible label of the zoom-out button. | 4.1.0 |
+| ZoomResetText | string | `Reset zoom` | | Gets or sets the text of the reset-zoom button. | 4.1.0 |
+
+Name the map for screen readers by adding `aria-label` or `aria-labelledby` to the component; they are applied to the tree.
+
+## Methods
+
+| Name | Description | Added Version |
+|:--|:--|:--|
+| CollapseAllAsync() | Closes every node except the root. | 4.1.0 |
+| ExpandAllAsync() | Opens every node that has children. | 4.1.0 |
+
+## Callback Events
+
+| Event | Description | Added Version |
+|--|--|--|
+| ExpandedItemsChanged | This event fires when the set of open nodes changes. | 4.1.0 |
+| OnExpandedChanged | This event fires when nodes open or close, listing every node that opened and closed in the change (`MindMapExpandedChangedEventArgs<TItem>`). | 4.1.0 |
+| SelectedItemChanged | This event fires when the selected node changes. | 4.1.0 |
+
+## MindMapNodeContext properties
+
+| Name | Type | Description | Added Version |
+|:--|:--|:--|:--|
+| IsMatch | bool | Gets whether the node's label matches the current search text. | 4.1.0 |
+| Item | `TItem` | Gets the item the node represents. | 4.1.0 |
+| SearchText | `string?` | Gets the current search text, or `null` when nothing is searched. | 4.1.0 |
+
+## MindMapDirection
+
+| Name | Description | Added Version |
+|:--|:--|:--|
+| Right | The root sits at the left and branches grow to the right. | 4.1.0 |
+| Left | The root sits at the right and branches grow to the left. | 4.1.0 |
+| BothSides | The root sits in the centre and its branches are split between the right and left sides. | 4.1.0 |
+| Down | The root sits at the top and branches grow down. | 4.1.0 |
+| Up | The root sits at the bottom and branches grow up. | 4.1.0 |
+
+## MindMapColor
+
+`None` (neutral lines), `Blue`, `Indigo`, `Purple`, `Pink`, `Red`, `Orange`, `Yellow`, `Green`, `Teal`, `Cyan`. Each color has a light-theme and a dark-theme shade chosen for contrast.
+
+## CSS variables
+
+| Name | Default | Description |
+|:--|:--|:--|
+| `--bb-mind-map-max-height` | `70vh` | Maximum height of the map's scroll frame. |
+
+## Examples
+
+### Basic usage
+
+Set `TItem`, `Root`, `Children`, and `Label`. Click + or − on a card to open or close it. By default only the root starts open.
+
+```cshtml {} showLineNumbers
+<MindMap TItem="Topic"
+         Root="plan"
+         Children="topic => topic.Children"
+         Label="topic => topic.Name"
+         aria-label="Website launch plan" />
+```
+
+```cs {} showLineNumbers
+@code {
+    private readonly Topic plan =
+        new Topic("Website launch",
+            new Topic("Design", new Topic("Wireframes"), new Topic("Visual style")),
+            new Topic("Build", new Topic("Pages"), new Topic("Search")),
+            new Topic("Launch", new Topic("Announcement")));
+
+    public sealed class Topic
+    {
+        public Topic(string name, params Topic[] children)
+        {
+            Name = name;
+            Children = children;
+        }
+
+        public IReadOnlyList<Topic> Children { get; }
+
+        public string Name { get; }
+    }
+}
+```
+
+### Directions
+
+Set `Direction` to `Right` (default), `Left`, `BothSides`, `Down`, or `Up`. With `BothSides`, first-level branches are split between the right and left so both sides hold a similar number of nodes.
+
+```cshtml {} showLineNumbers
+<MindMap TItem="Topic"
+         Root="plan"
+         Children="topic => topic.Children"
+         Label="topic => topic.Name"
+         Direction="MindMapDirection.BothSides" />
+```
+
+### Node template
+
+`NodeTemplate` fills each card with your own markup; the component still draws the card frame, the +/− control, and the lines. Keep `Label` set: search, the path bar, and screen readers use it.
+
+```cshtml {} showLineNumbers
+<MindMap TItem="ApiNode"
+         Root="api"
+         Children="node => node.Children"
+         Label="node => node.Name">
+    <NodeTemplate Context="node">
+        <span class="font-monospace">@node.Item.Name</span>
+        <small class="text-body-secondary ms-1">@node.Item.Kind</small>
+        @foreach (var tag in node.Item.Tags)
+        {
+            <Badge Color="BadgeColor.Warning" Class="ms-1">@tag</Badge>
+        }
+    </NodeTemplate>
+</MindMap>
+```
+
+### Branch colors
+
+Each first-level branch takes the next Bootstrap palette color, and its descendants share it. `BranchColor` pins a color for a node and its descendants; `AutoBranchColors="false"` leaves the other branches neutral.
+
+```cshtml {} showLineNumbers
+<MindMap TItem="Topic"
+         Root="plan"
+         Children="topic => topic.Children"
+         Label="topic => topic.Name"
+         BranchColor="GetBranchColor" />
+
+@code {
+    private static MindMapColor? GetBranchColor(Topic topic) => topic.Name == "Risks" ? MindMapColor.Red : null;
+}
+```
+
+### Expansion
+
+Bind the open nodes with `@bind-ExpandedItems`, call `ExpandAllAsync()` or `CollapseAllAsync()` through a component reference, and handle `OnExpandedChanged` to see what opened and closed.
+
+```cshtml {} showLineNumbers
+<Button Color="ButtonColor.Primary" @onclick="() => mindMap.ExpandAllAsync()">Expand all</Button>
+
+<MindMap @ref="mindMap"
+         TItem="Topic"
+         Root="plan"
+         Children="topic => topic.Children"
+         Label="topic => topic.Name"
+         @bind-ExpandedItems="expandedItems"
+         OnExpandedChanged="OnExpandedChanged" />
+
+@code {
+    private MindMap<Topic> mindMap = default!;
+    private IReadOnlyCollection<Topic> expandedItems = Array.Empty<Topic>();
+
+    private void OnExpandedChanged(MindMapExpandedChangedEventArgs<Topic> args)
+    {
+        // args.Opened and args.Closed list the nodes that changed.
+    }
+}
+```
+
+### Selection and path
+
+Bind the selected item with `@bind-SelectedItem`. Clicking a card, or pressing Enter or Space on it, selects it; only the +/− control opens or closes a node. The path bar shows the way from the root to the selected node; set `ShowPath="false"` to hide it.
+
+```cshtml {} showLineNumbers
+<MindMap TItem="Topic"
+         Root="plan"
+         Children="topic => topic.Children"
+         Label="topic => topic.Name"
+         @bind-SelectedItem="selectedTopic" />
+```
+
+### Search
+
+The find box matches node labels (case-insensitive), opens every branch that leads to a match, and marks matching cards. In a `NodeTemplate`, use `node.IsMatch` and `node.SearchText` to mark the matching text yourself.
+
+```cshtml {} showLineNumbers
+<NodeTemplate Context="node">
+    @if (node.IsMatch && node.SearchText is not null)
+    {
+        var start = node.Item.Name.IndexOf(node.SearchText, StringComparison.OrdinalIgnoreCase);
+        <span>@node.Item.Name[..start]<mark>@node.Item.Name.Substring(start, node.SearchText.Length)</mark>@node.Item.Name[(start + node.SearchText.Length)..]</span>
+    }
+    else
+    {
+        <span>@node.Item.Name</span>
+    }
+</NodeTemplate>
+```
+
+### Zoom and pan
+
+Zoom between 50% and 150% with the − and + buttons, and drag the map background with a mouse or pen to pan. On touch screens, scroll as usual. Change the frame height with `--bb-mind-map-max-height`.
+
+```cshtml {} showLineNumbers
+<MindMap TItem="Topic"
+         Root="plan"
+         Children="topic => topic.Children"
+         Label="topic => topic.Name"
+         Style="--bb-mind-map-max-height: 22rem;" />
+```
+
+### Hide built-in features
+
+Search, zoom, panning, and the path bar are on by default. Turn off the ones a small map does not need.
+
+```cshtml {} showLineNumbers
+<MindMap TItem="Topic"
+         Root="plan"
+         Children="topic => topic.Children"
+         Label="topic => topic.Name"
+         AllowSearch="false"
+         AllowZoom="false"
+         AllowPan="false"
+         ShowPath="false" />
+```
+
+### Stack leaves
+
+In the `Down` and `Up` directions, siblings sit side by side. Set `StackLeaves="true"` to list a node's leaf children in a column instead.
+
+```cshtml {} showLineNumbers
+<MindMap TItem="Topic"
+         Root="plan"
+         Children="topic => topic.Children"
+         Label="topic => topic.Name"
+         Direction="MindMapDirection.Down"
+         StackLeaves="true" />
+```
+
+### Dynamic data
+
+When the children your `Children` selector returns change, the map shows the new tree on its next render. Open and selected items that still exist stay open and selected; removed items leave both bindings.
+
+## Keyboard
+
+| Key | Action |
+|:--|:--|
+| ↓ / ↑ | Move to the next or previous visible node. |
+| → | Open a closed node, or move to its first child. |
+| ← | Close an open node, or move to its parent. |
+| Home / End | Move to the first or last visible node. |
+| Enter / Space | Select the focused node. |
+
+Arrow keys work the same way in every direction.
