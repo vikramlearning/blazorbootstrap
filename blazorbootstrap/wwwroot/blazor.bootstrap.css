@@ -416,9 +416,15 @@ table button.dropdown-toggle.bb-grid-filter::after {
             background-color: var(--bb-table-sticky-background-color);
             top: 0px;
             position: sticky;
+            z-index: 3; /* above positioned cell content; below freeze columns (4 body, 5 header) */
             border-style: solid;
             border-color: var(--bs-table-border-color);
             box-shadow: inset 0 1px 0 var(--bs-table-border-color), inset 0 -1px 0 var(--bs-table-border-color);
+        }
+
+        /* an open filter menu must stay above freeze columns */
+        .bb-table-sticky > thead > tr > th:has(.dropdown-menu.show) {
+            z-index: 6;
         }
 
         .bb-table-sticky > thead > tr:nth-child(2) > th {
