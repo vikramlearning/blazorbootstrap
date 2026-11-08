@@ -31,6 +31,49 @@ public static class EnumExtensions
             _ => ""
         };
 
+    public static string ToAvatarColorClass(this AvatarColor avatarColor) =>
+        avatarColor switch
+        {
+            AvatarColor.Primary => "text-bg-primary",
+            AvatarColor.Secondary => "text-bg-secondary",
+            AvatarColor.Success => "text-bg-success",
+            AvatarColor.Danger => "text-bg-danger",
+            AvatarColor.Warning => "text-bg-warning",
+            AvatarColor.Info => "text-bg-info",
+            AvatarColor.Light => "text-bg-light",
+            AvatarColor.Dark => "text-bg-dark",
+            _ => ""
+        };
+
+    public static string ToAvatarShapeClass(this AvatarShape avatarShape) =>
+        avatarShape switch
+        {
+            AvatarShape.Circle => "rounded-circle",
+            AvatarShape.Rounded => "rounded",
+            AvatarShape.Square => "rounded-0",
+            _ => ""
+        };
+
+    public static string ToAvatarSizeClass(this AvatarSize avatarSize) =>
+        avatarSize switch
+        {
+            AvatarSize.Small => "bb-avatar-sm",
+            AvatarSize.Medium => "bb-avatar-md",
+            AvatarSize.Large => "bb-avatar-lg",
+            AvatarSize.ExtraLarge => "bb-avatar-xl",
+            _ => ""
+        };
+
+    public static string ToAvatarStatusClass(this AvatarStatus avatarStatus) =>
+        avatarStatus switch
+        {
+            AvatarStatus.Online => "bg-success",
+            AvatarStatus.Away => "bg-warning",
+            AvatarStatus.Busy => "bg-danger",
+            AvatarStatus.Offline => "bg-secondary",
+            _ => ""
+        };
+
     public static string ToBackgroundAndTextClass(this BackgroundColor backgroundColor) =>
         backgroundColor switch
         {

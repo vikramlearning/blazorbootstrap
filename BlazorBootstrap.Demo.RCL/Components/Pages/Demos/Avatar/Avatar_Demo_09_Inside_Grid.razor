@@ -1,0 +1,33 @@
+<Grid TItem="Employee" Class="table table-hover border-top" Data="employees">
+    <GridColumns>
+        <GridColumn TItem="Employee" HeaderText="Employee" PropertyName="Name">
+            <div class="d-flex align-items-center gap-2">
+                <Avatar Name="@context.Name" ImageUrl="@context.ImageUrl" Status="@context.Status" Size="AvatarSize.Small" />
+                <span>@context.Name</span>
+            </div>
+        </GridColumn>
+        <GridColumn TItem="Employee" HeaderText="Designation" PropertyName="Designation">
+            @context.Designation
+        </GridColumn>
+        <GridColumn TItem="Employee" HeaderText="Team">
+            <AvatarGroup Size="AvatarSize.Small" Max="2" aria-label="@($"Team of {context.Name}")">
+                @foreach (var member in context.Team)
+                {
+                    <Avatar Name="@member" />
+                }
+            </AvatarGroup>
+        </GridColumn>
+    </GridColumns>
+</Grid>
+
+@code {
+    private readonly List<Employee> employees = new()
+    {
+        new("Jane Doe", "Engineering manager", "_content/BlazorBootstrap.Demo.RCL/images/avatars/person-01.svg", AvatarStatus.Online, new[] { "Kwame Mensah", "Ana Silva", "Mia Wong" }),
+        new("Kwame Mensah", "Senior developer", "_content/BlazorBootstrap.Demo.RCL/images/avatars/person-02.svg", AvatarStatus.Busy, new[] { "Ana Silva" }),
+        new("Ana Silva", "Designer", "_content/BlazorBootstrap.Demo.RCL/images/avatars/person-03.svg", AvatarStatus.Away, new[] { "Mia Wong", "Rahul Mehta" }),
+        new("Rahul Mehta", "QA engineer", null, AvatarStatus.Offline, new[] { "Jane Doe", "Kwame Mensah", "Ana Silva", "Mia Wong" })
+    };
+
+    private sealed record Employee(string Name, string Designation, string? ImageUrl, AvatarStatus Status, string[] Team);
+}

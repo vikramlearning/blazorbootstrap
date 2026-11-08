@@ -49,6 +49,7 @@ public static class DemoRouteConstants
     // Components
     public const string Demos_URL_Accordion = Demos_URL_Prefix + "/accordion";
     public const string Demos_URL_Alerts = Demos_URL_Prefix + "/alerts";
+    public const string Demos_URL_Avatar = Demos_URL_Prefix + "/avatar";
     public const string Demos_URL_Badge = Demos_URL_Prefix + "/badge";
     public const string Demos_URL_Breadcrumb = Demos_URL_Prefix + "/breadcrumb";
     public const string Demos_URL_Buttons = Demos_URL_Prefix + "/buttons";
@@ -168,6 +169,7 @@ public static class DemoRouteConstants
     // Components
     public const string Docs_URL_Accordion = Docs_URL_Prefix + "/accordion";
     public const string Docs_URL_Alerts = Docs_URL_Prefix + "/alerts";
+    public const string Docs_URL_Avatar = Docs_URL_Prefix + "/avatar";
     public const string Docs_URL_Badge = Docs_URL_Prefix + "/badge";
     public const string Docs_URL_Breadcrumb = Docs_URL_Prefix + "/breadcrumb";
     public const string Docs_URL_Buttons = Docs_URL_Prefix + "/buttons";

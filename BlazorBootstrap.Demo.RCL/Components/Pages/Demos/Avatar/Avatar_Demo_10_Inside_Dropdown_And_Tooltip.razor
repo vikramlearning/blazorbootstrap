@@ -1,0 +1,26 @@
+<div class="d-flex flex-wrap align-items-center gap-4">
+    <Dropdown Color="DropdownColor.Light">
+        <DropdownToggleButton>
+            <Avatar ImageUrl="_content/BlazorBootstrap.Demo.RCL/images/avatars/person-01.svg" Name="Jane Doe" Status="AvatarStatus.Online" Size="AvatarSize.Small" class="me-2" />
+            Jane Doe
+        </DropdownToggleButton>
+        <DropdownMenu>
+            <DropdownItem To="#" Type="DropdownItemType.Link">
+                <Avatar Name="Jane Doe" Color="AvatarColor.Primary" Size="AvatarSize.Small" class="me-2" /> Profile
+            </DropdownItem>
+            <DropdownItem To="#" Type="DropdownItemType.Link">
+                <Avatar IconName="IconName.Building" Size="AvatarSize.Small" class="me-2" /> Switch organization
+            </DropdownItem>
+        </DropdownMenu>
+    </Dropdown>
+
+    <Tooltip Title="Kwame Mensah, Busy">
+        <Avatar ImageUrl="_content/BlazorBootstrap.Demo.RCL/images/avatars/person-02.svg" Name="Kwame Mensah" Status="AvatarStatus.Busy" />
+    </Tooltip>
+
+    <Tooltip Title="Ana Silva, Away">
+        <span class="d-inline-flex align-items-center gap-2">
+            <Avatar Name="Ana Silva" Status="AvatarStatus.Away" Shape="AvatarShape.Rounded" Size="AvatarSize.Small" /> Ana Silva
+        </span>
+    </Tooltip>
+</div>

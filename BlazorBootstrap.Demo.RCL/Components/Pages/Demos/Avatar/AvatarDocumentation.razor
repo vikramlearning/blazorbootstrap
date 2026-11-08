@@ -1,0 +1,179 @@
+@attribute [Route(pageUrl)]
+@layout DemosMainLayout
+
+<DemosPageHeadSection PageUrl="@pageUrl"
+                      PageTitle="@pageTitle"
+                      PageDescription="@pageDescription"
+                      MetaTitle="@metaTitle"
+                      MetaDescription="@metaDescription"
+                      ImageUrl="@imageUrl" />
+
+<DocsLink Href="@DemoRouteConstants.Docs_URL_Avatar" />
+
+<Callout Color="CalloutColor.Info">
+    Icon avatars use Bootstrap Icons, so reference the Bootstrap Icons stylesheet in your app. The broken-image fallback runs once the page is interactive; on a static server-rendered page a broken image stays as rendered.
+</Callout>
+
+<Section Size="HeadingSize.H2" Name="Image, initials, and icon" PageUrl="@pageUrl" Link="image-initials-and-icon">
+    <div class="mb-3">
+        <b>Avatar</b> shows the image from <code>ImageUrl</code>. Without an image it shows initials from <code>Name</code>, then the icon from <code>IconName</code>, then a person icon.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Add <code>Avatar</code> and set <code>Name</code>. It gives the initials and the name screen readers announce.</li>
+                <li>Set <code>ImageUrl</code> to show a photo.</li>
+                <li>Set <code>Initials</code> when the computed ones are wrong, or <code>IconName</code> (or <code>CustomIconName</code>) for an icon.</li>
+                <li>Leave <code>Name</code> empty for a decorative avatar, or name it with <code>aria-label</code>.</li>
+            </ol>
+        </div>
+        Initials use the first letter of the first and last words, so <i>María José García</i> would show <i>MG</i>; this example overrides it with <i>MJ</i>.
+    </div>
+    <Demo Type="typeof(Avatar_Demo_01_Image_Initials_And_Icon)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Broken image fallback" PageUrl="@pageUrl" Link="broken-image-fallback">
+    <div class="mb-3">
+        When the image fails to load, the avatar falls back to the next source: initials, the icon, then the person icon.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Set <code>ImageUrl</code> together with <code>Name</code> or <code>IconName</code> so there is something to fall back to.</li>
+                <li>Change <code>ImageUrl</code> at any time. The avatar tries the new image again, even after a failure.</li>
+            </ol>
+        </div>
+        Use the button to switch between a missing and a working image.
+    </div>
+    <Demo Type="typeof(Avatar_Demo_02_Broken_Image_Fallback)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Sizes" PageUrl="@pageUrl" Link="sizes">
+    <div class="mb-3">
+        Avatars come in four sizes, and the <code>--bb-avatar-size</code> CSS custom property sets any other size.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Set <code>Size</code> to <code>AvatarSize.Small</code>, <code>Medium</code> (default), <code>Large</code>, or <code>ExtraLarge</code>.</li>
+                <li>For a custom size, add <code>Style="--bb-avatar-size: 6rem;"</code>. Initials and icons scale with it.</li>
+            </ol>
+        </div>
+    </div>
+    <Demo Type="typeof(Avatar_Demo_03_Sizes)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Shapes" PageUrl="@pageUrl" Link="shapes">
+    <div class="mb-3">
+        Avatars are circles by default and can also be rounded squares or squares.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Set <code>Shape</code> to <code>AvatarShape.Circle</code>, <code>Rounded</code>, or <code>Square</code>.</li>
+            </ol>
+        </div>
+    </div>
+    <Demo Type="typeof(Avatar_Demo_04_Shapes)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Colors" PageUrl="@pageUrl" Link="colors">
+    <div class="mb-3">
+        <code>Color</code> sets the background of initials and icon avatars, with a readable text color in light and dark themes. It has no effect while an image is shown.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Set <code>Color</code> to an <code>AvatarColor</code> value. The default is <code>Secondary</code>; <code>None</code> removes the background.</li>
+            </ol>
+        </div>
+    </div>
+    <Demo Type="typeof(Avatar_Demo_05_Colors)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Status" PageUrl="@pageUrl" Link="status">
+    <div class="mb-3">
+        A status dot at the bottom-end corner shows presence. The status is also part of the name screen readers announce, so it never relies on color alone.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Set <code>Status</code> to <code>AvatarStatus.Online</code>, <code>Away</code>, <code>Busy</code>, or <code>Offline</code>.</li>
+                <li>Translate the announced text with <code>OnlineText</code>, <code>AwayText</code>, <code>BusyText</code>, and <code>OfflineText</code>.</li>
+            </ol>
+        </div>
+    </div>
+    <Demo Type="typeof(Avatar_Demo_06_Status)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Group with overflow" PageUrl="@pageUrl" Link="group-with-overflow">
+    <div class="mb-3">
+        <b>AvatarGroup</b> overlaps its avatars, shows at most <code>Max</code> of them, and adds a "+N" button for the rest. Hover the button to see the hidden names, or select it to open a list of them.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Wrap <code>Avatar</code> components in <code>AvatarGroup</code>.</li>
+                <li>Set <code>Max</code> to the number of avatars to show. Leave it unset to show them all.</li>
+                <li>Name the group for screen readers with <code>aria-label</code> or <code>aria-labelledby</code>.</li>
+                <li>Translate the button's announced text with <code>OverflowTextFormat</code>, for example <code>"{0} more"</code>.</li>
+            </ol>
+        </div>
+        The group follows avatars as they are added and removed. Hidden avatars without a name are counted but not listed.
+    </div>
+    <Demo Type="typeof(Avatar_Demo_07_Group_Overflow)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Group size, shape, and overlap" PageUrl="@pageUrl" Link="group-size-shape-and-overlap">
+    <div class="mb-3">
+        A group gives every avatar and the "+N" button the same size and shape. The overlap follows the size and mirrors in right-to-left layouts.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Set <code>Size</code> and <code>Shape</code> on <code>AvatarGroup</code>; they replace the values on each avatar.</li>
+                <li>Change the overlap with <code>Style="--bb-avatar-group-overlap: .25rem;"</code>.</li>
+            </ol>
+        </div>
+    </div>
+    <Demo Type="typeof(Avatar_Demo_08_Group_Size_Shape_And_Overlap)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Inside a grid" PageUrl="@pageUrl" Link="inside-a-grid">
+    <div class="mb-3">
+        Avatars and groups fit in <b>Grid</b> cells next to text.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Place an <code>Avatar</code> in a <code>GridColumn</code> template.</li>
+                <li>Use <code>AvatarSize.Small</code> to keep rows compact.</li>
+            </ol>
+        </div>
+    </div>
+    <Demo Type="typeof(Avatar_Demo_09_Inside_Grid)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Inside a dropdown and tooltip" PageUrl="@pageUrl" Link="inside-a-dropdown-and-tooltip">
+    <div class="mb-3">
+        Avatars work in a <b>Dropdown</b> toggle and its items, and inside a <b>Tooltip</b>.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Put an <code>Avatar</code> in <code>DropdownToggleButton</code> or <code>DropdownItem</code> content, with a margin class such as <code>me-2</code>.</li>
+                <li>Wrap an <code>Avatar</code> in a <code>Tooltip</code> to show more details on hover.</li>
+            </ol>
+        </div>
+    </div>
+    <Demo Type="typeof(Avatar_Demo_10_Inside_Dropdown_And_Tooltip)" Tabs="true" />
+</Section>
+
+@code {
+    private const string pageUrl = DemoRouteConstants.Demos_URL_Avatar;
+    private const string pageTitle = "Blazor Avatar";
+    private const string pageDescription = "The Blazor Bootstrap Avatar component shows a person or entity as an image, initials, or an icon, with an optional status, and AvatarGroup stacks avatars with a \"+N\" overflow.";
+    private const string metaTitle = "Blazor Avatar Component";
+    private const string metaDescription = "The Blazor Bootstrap Avatar component shows a person or entity as an image, initials, or an icon, with an optional status, and AvatarGroup stacks avatars with a \"+N\" overflow.";
+    private const string imageUrl = DemoScreenshotSrcConstants.Demos_URL_Avatar;
+}
