@@ -40,6 +40,7 @@ public partial class DemosMainLayout : MainLayoutBase
             new (){ Id = "5", Text = "Components", IconName = IconName.GearFill, IconColor = IconColor.Danger },
             new (){ Id = "500", Text = "Accordion", Href = DemoRouteConstants.Demos_URL_Accordion, IconName = IconName.ChevronBarExpand, ParentId = "5" },
             new (){ Id = "501", Text = "Alerts", Href = DemoRouteConstants.Demos_URL_Alerts, IconName = IconName.CheckCircleFill, ParentId = "5" },
+            new (){ Id = "5015", Text = "Avatar", Href = DemoRouteConstants.Demos_URL_Avatar, IconName = IconName.PersonCircle, ParentId = "5" },
             new (){ Id = "502", Text = "Badge", Href = DemoRouteConstants.Demos_URL_Badge, IconName = IconName.AppIndicator, ParentId = "5" },
             new (){ Id = "503", Text = "Breadcrumb", Href = DemoRouteConstants.Demos_URL_Breadcrumb, IconName = IconName.SegmentedNav, ParentId = "5" },
             new (){ Id = "504", Text = "Buttons", Href = DemoRouteConstants.Demos_URL_Buttons, IconName = IconName.ToggleOn, ParentId = "5" },

@@ -934,3 +934,48 @@ main {
         display: block;
     }
 }
+
+/* avatar */
+.bb-avatar-sm {
+    --bb-avatar-size: 2rem;
+}
+
+.bb-avatar-md {
+    --bb-avatar-size: 2.5rem;
+}
+
+.bb-avatar-lg {
+    --bb-avatar-size: 3.5rem;
+}
+
+.bb-avatar-xl {
+    --bb-avatar-size: 5rem;
+}
+
+.bb-avatar {
+    width: var(--bb-avatar-size, 2.5rem);
+    height: var(--bb-avatar-size, 2.5rem);
+    font-size: calc(var(--bb-avatar-size, 2.5rem) * .4);
+    line-height: 1;
+    vertical-align: middle;
+}
+
+.bb-avatar-status {
+    width: max(.5rem, calc(var(--bb-avatar-size, 2.5rem) * .3));
+    height: max(.5rem, calc(var(--bb-avatar-size, 2.5rem) * .3));
+    box-shadow: 0 0 0 2px var(--bs-body-bg);
+    z-index: 1;
+}
+
+.bb-avatar-group {
+    --bb-avatar-group-overlap: calc(var(--bb-avatar-size, 2.5rem) * .25);
+}
+
+.bb-avatar-group > :not(:first-child) {
+    margin-inline-start: calc(var(--bb-avatar-group-overlap) * -1);
+}
+
+.bb-avatar-group .bb-avatar-face,
+.bb-avatar-group .bb-avatar-overflow {
+    box-shadow: 0 0 0 2px var(--bs-body-bg);
+}

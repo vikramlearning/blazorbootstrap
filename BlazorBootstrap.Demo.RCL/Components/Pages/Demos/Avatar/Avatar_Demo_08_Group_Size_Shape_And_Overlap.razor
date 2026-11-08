@@ -1,0 +1,43 @@
+<div class="d-flex flex-column gap-3">
+    <AvatarGroup Size="AvatarSize.Small" Max="4" aria-label="Small group">
+        @foreach (var name in names)
+        {
+            <Avatar Name="@name" Color="AvatarColor.Primary" />
+        }
+    </AvatarGroup>
+
+    <AvatarGroup Size="AvatarSize.Large" Shape="AvatarShape.Rounded" Max="3" aria-label="Large rounded group">
+        @foreach (var name in names)
+        {
+            <Avatar Name="@name" Color="AvatarColor.Success" />
+        }
+    </AvatarGroup>
+
+    <AvatarGroup Max="4" Style="--bb-avatar-group-overlap: .25rem;" aria-label="Group with less overlap">
+        @foreach (var name in names)
+        {
+            <Avatar Name="@name" Color="AvatarColor.Dark" />
+        }
+    </AvatarGroup>
+
+    <AvatarGroup Max="4" aria-label="Group with status">
+        @for (var i = 0; i < names.Length; i++)
+        {
+            <Avatar Name="@names[i]" Status="@statuses[i % statuses.Length]" Color="AvatarColor.Secondary" />
+        }
+    </AvatarGroup>
+
+    <div dir="rtl">
+        <AvatarGroup Max="3" aria-label="Right-to-left group">
+            @foreach (var name in names)
+            {
+                <Avatar Name="@name" Color="AvatarColor.Info" />
+            }
+        </AvatarGroup>
+    </div>
+</div>
+
+@code {
+    private readonly string[] names = { "Jane Doe", "Kwame Mensah", "Ana Silva", "Mia Wong", "Rahul Mehta", "Lena Fischer" };
+    private readonly AvatarStatus[] statuses = { AvatarStatus.Online, AvatarStatus.Away, AvatarStatus.Busy, AvatarStatus.Offline };
+}

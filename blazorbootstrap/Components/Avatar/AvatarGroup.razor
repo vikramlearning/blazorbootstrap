@@ -1,0 +1,31 @@
+@namespace BlazorBootstrap
+@inherits BlazorBootstrapComponentBase
+
+<div @ref="@Element" id="@Id" class="@ClassNames" style="@StyleNames" role="group" @attributes="@AdditionalAttributes">
+    <CascadingValue Value="@this" IsFixed="true">
+        @ChildContent
+    </CascadingValue>
+    @if (HiddenCount > 0)
+    {
+        <span class="position-relative d-inline-flex">
+            <button type="button"
+                    class="@OverflowButtonClassNames"
+                    title="@OverflowTitle"
+                    aria-expanded="@OverflowAriaExpanded"
+                    aria-controls="@(ShowOverflowList ? OverflowListId : null)"
+                    @onclick="ToggleOverflowList">
+                <span aria-hidden="true">+@HiddenCount</span>
+                <span class="visually-hidden">@OverflowText</span>
+            </button>
+            @if (ShowOverflowList)
+            {
+                <ul id="@OverflowListId" class="dropdown-menu show" data-bs-popper="static">
+                    @foreach (var name in HiddenNames)
+                    {
+                        <li class="dropdown-item-text text-nowrap">@name</li>
+                    }
+                </ul>
+            }
+        </span>
+    }
+</div>

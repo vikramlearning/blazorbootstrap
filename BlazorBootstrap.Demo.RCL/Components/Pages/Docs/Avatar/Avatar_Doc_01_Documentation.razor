@@ -1,0 +1,49 @@
+@attribute [Route(pageUrl)]
+@layout DocsMainLayout
+
+<DocsPageHeadSection PageUrl="@pageUrl"
+                     PageTitle="@pageTitle"
+                     PageDescription="@pageDescription"
+                     MetaTitle="@metaTitle"
+                     MetaDescription="@metaDescription"
+                     ImageUrl="@imageUrl" />
+
+<DemoLink Href="@DemoRouteConstants.Demos_URL_Avatar" />
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="Screenshot" PageUrl="@pageUrl" Link="screenshot">
+    <img src="@imageUrl" class="img-fluid" alt="@metaTitle" />
+</Section>
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="Avatar Parameters" PageUrl="@pageUrl" Link="avatar-parameters">
+    <DocxTable TItem="Avatar" DocType="DocType.Parameters" />
+</Section>
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="AvatarGroup Parameters" PageUrl="@pageUrl" Link="avatar-group-parameters">
+    <DocxTable TItem="AvatarGroup" DocType="DocType.Parameters" />
+</Section>
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="AvatarSize Enum" PageUrl="@pageUrl" Link="avatar-size-enum">
+    <DocxTable TItem="AvatarSize" DocType="DocType.Enum" />
+</Section>
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="AvatarShape Enum" PageUrl="@pageUrl" Link="avatar-shape-enum">
+    <DocxTable TItem="AvatarShape" DocType="DocType.Enum" />
+</Section>
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="AvatarColor Enum" PageUrl="@pageUrl" Link="avatar-color-enum">
+    <DocxTable TItem="AvatarColor" DocType="DocType.Enum" />
+</Section>
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="AvatarStatus Enum" PageUrl="@pageUrl" Link="avatar-status-enum">
+    <DocxTable TItem="AvatarStatus" DocType="DocType.Enum" />
+</Section>
+
+@code {
+    private const string componentName = nameof(Avatar);
+    private const string pageUrl = DemoRouteConstants.Docs_URL_Avatar;
+    private const string pageTitle = componentName;
+    private const string pageDescription = $"This documentation provides a comprehensive reference for the <code>{componentName}</code> and <code>AvatarGroup</code> components, guiding you through their configuration options.";
+    private const string metaTitle = $"Blazor {componentName} Component";
+    private const string metaDescription = $"This documentation provides a comprehensive reference for the {componentName} and AvatarGroup components, guiding you through their configuration options.";
+    private const string imageUrl = DemoScreenshotSrcConstants.Demos_URL_Avatar;
+}

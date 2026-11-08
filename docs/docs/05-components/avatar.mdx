@@ -1,0 +1,229 @@
+---
+title: Blazor Avatar Component
+description: The Blazor Bootstrap Avatar component shows a person or entity as an image, initials, or an icon, with an optional status, and AvatarGroup stacks avatars with a "+N" overflow.
+image: https://demos.blazorbootstrap.com/images/screenshots/avatar.png
+
+sidebar_label: Avatar
+sidebar_position: 2.5
+---
+
+import CarbonAd from '/carbon-ad.mdx'
+
+# Blazor Avatar
+
+The Blazor Bootstrap Avatar component shows a person or entity as an image, initials, or an icon, with an optional presence status. AvatarGroup stacks several avatars and adds a "+N" button for the ones it hides.
+
+<CarbonAd />
+
+## Before you start
+
+- **Icons:** icon avatars, including the default person icon, use Bootstrap Icons. Reference the Bootstrap Icons stylesheet in your app; the package does not include it.
+- **Broken images:** when an image fails to load, the avatar falls back to initials, then an icon. The fallback runs once the component is interactive (Interactive Server, WebAssembly, or Auto). On a static server-rendered page, a broken image stays as rendered.
+- **Image URLs:** `ImageUrl` is used as the image source unchanged, so the browser requests it directly. Only pass URLs you trust.
+- **No JavaScript:** Avatar and AvatarGroup use no JavaScript interop.
+
+## Avatar parameters
+
+| Name | Type | Default | Required | Description | Added Version |
+|:--|:--|:--|:--|:--|:--|
+| AwayText | string | `Away` | | Gets or sets the accessible text for the **Away** status. | 4.1.0 |
+| BusyText | string | `Busy` | | Gets or sets the accessible text for the **Busy** status. | 4.1.0 |
+| Color | `AvatarColor` | `AvatarColor.Secondary` | | Gets or sets the background color of an initials or icon avatar. It has no visible effect while an image is shown. | 4.1.0 |
+| CustomIconName | string? | null | | Gets or sets a custom icon CSS class, such as a Font Awesome class, used when no image or initials are shown. | 4.1.0 |
+| IconName | `IconName` | `IconName.None` | | Gets or sets the Bootstrap icon shown when no image or initials are available. When neither this nor `CustomIconName` is set, a person icon is shown. | 4.1.0 |
+| ImageUrl | string? | null | | Gets or sets the image URL. When it is empty or fails to load, the avatar shows initials, then an icon. | 4.1.0 |
+| Initials | string? | null | | Gets or sets the initials to show instead of the ones computed from `Name`. | 4.1.0 |
+| Name | string? | null | | Gets or sets the name of the person or entity. It provides the initials and the accessible name. An avatar without a name is treated as decorative. | 4.1.0 |
+| OfflineText | string | `Offline` | | Gets or sets the accessible text for the **Offline** status. | 4.1.0 |
+| OnlineText | string | `Online` | | Gets or sets the accessible text for the **Online** status. | 4.1.0 |
+| Shape | `AvatarShape` | `AvatarShape.Circle` | | Gets or sets the avatar shape. Inside an `AvatarGroup`, the group's shape is used instead. | 4.1.0 |
+| Size | `AvatarSize` | `AvatarSize.Medium` | | Gets or sets the avatar size. Inside an `AvatarGroup`, the group's size is used instead. | 4.1.0 |
+| Status | `AvatarStatus` | `AvatarStatus.None` | | Gets or sets the presence status shown as an indicator at the bottom-end corner. | 4.1.0 |
+
+## AvatarGroup parameters
+
+| Name | Type | Default | Required | Description | Added Version |
+|:--|:--|:--|:--|:--|:--|
+| ChildContent | RenderFragment? | null | | Gets or sets the avatars to display. | 4.1.0 |
+| Max | int? | null | | Gets or sets the maximum number of avatars to show, not counting the "+N" button. When it is `null`, every avatar is shown. A value below 1 throws an `InvalidOperationException`. | 4.1.0 |
+| OverflowTextFormat | string | `{0} more` | | Gets or sets the format of the accessible text of the "+N" button. `{0}` is replaced with the number of hidden avatars. | 4.1.0 |
+| Shape | `AvatarShape` | `AvatarShape.Circle` | | Gets or sets the shape of every avatar in the group and of the "+N" button. | 4.1.0 |
+| Size | `AvatarSize` | `AvatarSize.Medium` | | Gets or sets the size of every avatar in the group and of the "+N" button. | 4.1.0 |
+
+## AvatarSize
+
+| Name | Description | Added Version |
+|:--|:--|:--|
+| Small | Indicates a small avatar (2rem). | 4.1.0 |
+| Medium | Indicates a medium avatar (2.5rem). | 4.1.0 |
+| Large | Indicates a large avatar (3.5rem). | 4.1.0 |
+| ExtraLarge | Indicates an extra large avatar (5rem). | 4.1.0 |
+
+## AvatarShape
+
+| Name | Description | Added Version |
+|:--|:--|:--|
+| Circle | Renders the avatar as a circle. | 4.1.0 |
+| Rounded | Renders the avatar as a square with rounded corners. | 4.1.0 |
+| Square | Renders the avatar as a square. | 4.1.0 |
+
+## AvatarColor
+
+| Name | Description | Added Version |
+|:--|:--|:--|
+| None | No color styling is applied. | 4.1.0 |
+| Primary | Applies the primary theme color. | 4.1.0 |
+| Secondary | Applies the secondary theme color. | 4.1.0 |
+| Success | Applies the success theme color. | 4.1.0 |
+| Danger | Applies the danger theme color. | 4.1.0 |
+| Warning | Applies the warning theme color. | 4.1.0 |
+| Info | Applies the info theme color. | 4.1.0 |
+| Light | Applies the light theme color. | 4.1.0 |
+| Dark | Applies the dark theme color. | 4.1.0 |
+
+## AvatarStatus
+
+| Name | Description | Added Version |
+|:--|:--|:--|
+| None | No status indicator is shown. | 4.1.0 |
+| Online | Indicates the person is online. | 4.1.0 |
+| Away | Indicates the person is away. | 4.1.0 |
+| Busy | Indicates the person is busy. | 4.1.0 |
+| Offline | Indicates the person is offline. | 4.1.0 |
+
+## CSS variables
+
+| Name | Default | Description |
+|:--|:--|:--|
+| `--bb-avatar-size` | set by `Size` | Width and height of the avatar. Initials, icons, and the status dot scale with it. Set it on an `Avatar`, or on an `AvatarGroup` for the whole group. |
+| `--bb-avatar-group-overlap` | 25% of the avatar size | How far each avatar in a group overlaps the previous one. |
+
+## Accessibility
+
+- An image avatar uses `Name` as its alternative text; an initials or icon avatar is announced as an image named `Name`.
+- With a status, the status text is added to the name, for example "Jane Doe, Online". Translate it with `OnlineText`, `AwayText`, `BusyText`, and `OfflineText`.
+- An avatar without `Name` is decorative and hidden from screen readers. Add `aria-label` or `aria-labelledby` to name it yourself, or `aria-hidden="true"` to hide a named avatar shown next to the same visible name.
+- `AvatarGroup` has `role="group"`. Name it with `aria-label` or `aria-labelledby`.
+- The "+N" button shows the hidden names in a tooltip on hover, and opens or closes a list of them on click, tap, <kbd>Enter</kbd>, or <kbd>Space</kbd>.
+
+## Examples
+
+### Image, initials, and icon
+
+Set `Name` for initials and the accessible name, and `ImageUrl` for a photo. Without an image, the avatar shows initials, then the icon from `IconName`, then a person icon.
+
+```cshtml {} showLineNumbers
+<Avatar ImageUrl="images/jane.png" Name="Jane Doe" />
+<Avatar Name="Jane Doe" />
+<Avatar Name="Rahul" Color="AvatarColor.Primary" />
+<Avatar Name="María José García" Initials="MJ" Color="AvatarColor.Success" />
+<Avatar IconName="IconName.Building" Color="AvatarColor.Info" aria-label="Contoso Ltd" />
+<Avatar />
+```
+
+Initials use the first letter of the first and last words of `Name`; a single word gives one letter.
+
+### Broken image fallback
+
+When the image fails to load, the avatar shows the next source. Changing `ImageUrl` tries the new image again.
+
+```cshtml {} showLineNumbers
+<Avatar ImageUrl="images/missing-photo.png" Name="Jane Doe" />
+<Avatar ImageUrl="images/missing-photo.png" IconName="IconName.Robot" />
+```
+
+### Sizes
+
+```cshtml {} showLineNumbers
+<Avatar Name="Jane Doe" Size="AvatarSize.Small" />
+<Avatar Name="Jane Doe" Size="AvatarSize.Medium" />
+<Avatar Name="Jane Doe" Size="AvatarSize.Large" />
+<Avatar Name="Jane Doe" Size="AvatarSize.ExtraLarge" />
+<Avatar Name="Ana Silva" Style="--bb-avatar-size: 6rem;" />
+```
+
+### Shapes
+
+```cshtml {} showLineNumbers
+<Avatar Name="Mia Wong" Shape="AvatarShape.Circle" />
+<Avatar Name="Mia Wong" Shape="AvatarShape.Rounded" />
+<Avatar Name="Mia Wong" Shape="AvatarShape.Square" />
+```
+
+### Colors
+
+```cshtml {} showLineNumbers
+@foreach (var color in Enum.GetValues<AvatarColor>())
+{
+    <Avatar Name="@color.ToString()" Color="color" />
+}
+```
+
+### Status
+
+```cshtml {} showLineNumbers
+<Avatar ImageUrl="images/jane.png" Name="Jane Doe" Status="AvatarStatus.Online" />
+<Avatar Name="Rahul Mehta" Status="AvatarStatus.Away" />
+<Avatar Name="Ana Silva" Status="AvatarStatus.Busy" />
+<Avatar Name="Guest user" Status="AvatarStatus.Offline" />
+<Avatar Name="Jeanne Dupont" Status="AvatarStatus.Online" OnlineText="En ligne" />
+```
+
+### Group with overflow
+
+`AvatarGroup` shows at most `Max` avatars, followed by a "+N" button for the rest.
+
+```cshtml {} showLineNumbers
+<AvatarGroup Max="3" aria-label="Project team">
+    @foreach (var person in people)
+    {
+        <Avatar @key="person" Name="@person.Name" ImageUrl="@person.ImageUrl" />
+    }
+</AvatarGroup>
+```
+
+The visible avatars are the first `Max` in the order they were added. Adding and removing avatars at the end keeps that order; an avatar inserted in the middle of the list after the first render is placed last.
+
+### Group size, shape, and overlap
+
+```cshtml {} showLineNumbers
+<AvatarGroup Size="AvatarSize.Large" Shape="AvatarShape.Rounded" Max="3" aria-label="Reviewers">
+    @foreach (var name in names)
+    {
+        <Avatar Name="@name" />
+    }
+</AvatarGroup>
+
+<AvatarGroup Max="4" Style="--bb-avatar-group-overlap: .25rem;" aria-label="Watchers">
+    @foreach (var name in names)
+    {
+        <Avatar Name="@name" />
+    }
+</AvatarGroup>
+```
+
+The overlap mirrors automatically in right-to-left layouts.
+
+### Inside a grid, dropdown, or tooltip
+
+```cshtml {} showLineNumbers
+<GridColumn TItem="Employee" HeaderText="Employee" PropertyName="Name">
+    <div class="d-flex align-items-center gap-2">
+        <Avatar Name="@context.Name" ImageUrl="@context.ImageUrl" Size="AvatarSize.Small" />
+        <span>@context.Name</span>
+    </div>
+</GridColumn>
+
+<Dropdown Color="DropdownColor.Light">
+    <DropdownToggleButton>
+        <Avatar Name="Jane Doe" Status="AvatarStatus.Online" Size="AvatarSize.Small" class="me-2" /> Jane Doe
+    </DropdownToggleButton>
+    <DropdownMenu>
+        <DropdownItem To="#" Type="DropdownItemType.Link">Profile</DropdownItem>
+    </DropdownMenu>
+</Dropdown>
+
+<Tooltip Title="Kwame Mensah, Busy">
+    <Avatar Name="Kwame Mensah" Status="AvatarStatus.Busy" />
+</Tooltip>
+```

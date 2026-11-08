@@ -1,0 +1,21 @@
+<div class="d-flex flex-wrap align-items-center gap-3 mb-3">
+    <Avatar ImageUrl="@imageUrl" Name="Jane Doe" />
+    <Avatar ImageUrl="@imageUrl" IconName="IconName.Robot" />
+    <Avatar ImageUrl="@imageUrl" />
+</div>
+
+<Button Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="ToggleImage">@(isBroken ? "Use a working image" : "Use a broken image")</Button>
+
+@code {
+    private const string brokenImageUrl = "_content/BlazorBootstrap.Demo.RCL/images/avatars/missing-photo.png";
+    private const string workingImageUrl = "_content/BlazorBootstrap.Demo.RCL/images/avatars/person-02.svg";
+
+    private string imageUrl = brokenImageUrl;
+    private bool isBroken = true;
+
+    private void ToggleImage()
+    {
+        isBroken = !isBroken;
+        imageUrl = isBroken ? brokenImageUrl : workingImageUrl;
+    }
+}

@@ -1,0 +1,6 @@
+<div class="d-flex flex-wrap align-items-center gap-3">
+    @foreach (var color in Enum.GetValues<AvatarColor>())
+    {
+        <Avatar Name="@color.ToString()" Color="color" title="@color.ToString()" />
+    }
+</div>

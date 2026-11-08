@@ -41,6 +41,7 @@ public class DemoScreenshotSrcConstants
     // Components
     public const string Demos_URL_Accordion = DemoScreenshotSrcPrefix + "accordion.png";
     public const string Demos_URL_Alerts = DemoScreenshotSrcPrefix + "alerts.png";
+    public const string Demos_URL_Avatar = DemoScreenshotSrcPrefix + "avatar.png";
     public const string Demos_URL_Badge = DemoScreenshotSrcPrefix + "badge.png";
     public const string Demos_URL_Breadcrumb = DemoScreenshotSrcPrefix + "breadcrumb.png";
     public const string Demos_URL_Buttons = DemoScreenshotSrcPrefix + "buttons.png";

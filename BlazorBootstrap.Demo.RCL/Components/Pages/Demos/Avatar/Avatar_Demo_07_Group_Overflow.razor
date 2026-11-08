@@ -1,0 +1,35 @@
+<AvatarGroup Max="3" class="mb-3" aria-label="Project team">
+    @foreach (var person in people)
+    {
+        <Avatar @key="person" Name="@person.Name" ImageUrl="@person.ImageUrl" />
+    }
+</AvatarGroup>
+
+<div class="d-flex gap-2">
+    <Button Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="AddPerson">Add a person</Button>
+    <Button Color="ButtonColor.Secondary" Size="ButtonSize.Small" Disabled="@(people.Count == 0)" @onclick="RemovePerson">Remove the last person</Button>
+</div>
+
+@code {
+    private int nextNumber = 1;
+
+    private readonly List<Person> people = new()
+    {
+        new("Jane Doe", "_content/BlazorBootstrap.Demo.RCL/images/avatars/person-01.svg"),
+        new("Kwame Mensah", "_content/BlazorBootstrap.Demo.RCL/images/avatars/person-02.svg"),
+        new("Ana Silva", "_content/BlazorBootstrap.Demo.RCL/images/avatars/person-03.svg"),
+        new("Mia Wong", "_content/BlazorBootstrap.Demo.RCL/images/avatars/person-04.svg"),
+        new("Rahul Mehta", null),
+        new("", null)
+    };
+
+    private void AddPerson() => people.Add(new Person($"New member {nextNumber++}", null));
+
+    private void RemovePerson()
+    {
+        if (people.Count > 0)
+            people.RemoveAt(people.Count - 1);
+    }
+
+    private sealed record Person(string Name, string? ImageUrl);
+}

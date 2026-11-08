@@ -1,0 +1,34 @@
+@namespace BlazorBootstrap
+@inherits BlazorBootstrapComponentBase
+
+@if (IsShown)
+{
+    <span @ref="@Element" id="@Id" class="@ClassNames" style="@StyleNames" role="@RootRole" @attributes="@AdditionalAttributes">
+        @if (ShowImage)
+        {
+            var imageUrl = ImageUrl;
+            <img @key="imageUrl" class="@FaceClassNames" src="@imageUrl" alt="@(FaceAccessibleName ?? string.Empty)" aria-hidden="@FaceAriaHidden" @onerror="@(() => OnImageError(imageUrl))" />
+        }
+        else
+        {
+            <span class="@FaceClassNames" role="@(FaceAccessibleName is null ? null : "img")" aria-label="@FaceAccessibleName" aria-hidden="@FaceAriaHidden">
+                @if (DisplayInitials is not null)
+                {
+                    @DisplayInitials
+                }
+                else if (HasCustomIcon)
+                {
+                    <Icon Name="@IconName" CustomIconName="@CustomIconName" aria-hidden="true" />
+                }
+                else
+                {
+                    <Icon Name="BlazorBootstrap.IconName.PersonFill" aria-hidden="true" />
+                }
+            </span>
+        }
+        @if (Status != AvatarStatus.None)
+        {
+            <span class="@StatusClassNames" aria-hidden="true"></span>
+        }
+    </span>
+}
