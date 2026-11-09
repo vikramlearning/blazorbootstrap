@@ -943,9 +943,11 @@ window.blazorBootstrap = {
             let navbarEl = document.getElementById(elementId);
             let menuEl = document.getElementById(menuId);
             let previous = window.blazorBootstrap.navbar.instances[elementId];
-            let keepsMenu = previous != null && previous.menuEl === menuEl && previous.isExternal === isExternal;
+            // An open offcanvas whose element stays (only the toggler changed) keeps its Bootstrap instance, so it stays open and still closes.
+            // Everything else is re-created, so Bootstrap picks up the new toggler (Collapse records its togglers when it is created).
+            let keepsMenu = previous != null && previous.menuEl === menuEl && previous.isExternal === isExternal
+                && menuEl.classList.contains('offcanvas') && (previous.phase === 'showing' || previous.phase === 'shown');
             if (keepsMenu) {
-                // Same menu element (only the toggler changed): keep its Bootstrap instance, so an open menu stays open and still closes.
                 delete window.blazorBootstrap.navbar.instances[elementId];
                 previous.listeners.forEach(([target, type, handler]) => target.removeEventListener(type, handler));
             }
@@ -965,12 +967,22 @@ window.blazorBootstrap = {
                 phase: keepsMenu ? previous.phase : menuEl.classList.contains('show') ? 'shown' : 'hidden',
                 hideWhenShown: keepsMenu ? previous.hideWhenShown : false
             };
-            if (keepsMenu && isOffcanvas && togglerEl != null)
-                togglerEl.setAttribute('aria-expanded', state.phase === 'showing' || state.phase === 'shown' ? 'true' : 'false');
             let listen = (target, type, handler) => {
                 target.addEventListener(type, handler);
                 state.listeners.push([target, type, handler]);
             };
+            if (keepsMenu && togglerEl != null) {
+                togglerEl.setAttribute('aria-expanded', 'true');
+                // Bootstrap returns focus to the toggler that opened the panel, which is gone; return it to the new toggler instead.
+                let returnFocus = (event) => {
+                    if (event.target !== menuEl)
+                        return;
+                    menuEl.removeEventListener('hidden.bs.offcanvas', returnFocus);
+                    if (document.activeElement == null || document.activeElement === document.body || menuEl.contains(document.activeElement))
+                        togglerEl.focus();
+                };
+                listen(menuEl, 'hidden.bs.offcanvas', returnFocus);
+            }
 
             // Track the transition phase: dispose and hide must not act on Bootstrap mid-transition.
             let suffix = isOffcanvas ? 'offcanvas' : 'collapse';
@@ -1197,16 +1209,16 @@ window.blazorBootstrap = {
             window.blazorBootstrap.popover.getInstance(elementId)?.hide();
         },
         hideNow: (elementId) => {
-            // Hide without waiting for the fade, so OnHiding / OnHidden reach .NET and Bootstrap removes aria-describedby.
+            // Hide without waiting for the fade (also one already running), so OnHiding / OnHidden reach .NET and Bootstrap removes
+            // aria-describedby before the instance goes away.
             let state = window.blazorBootstrap.popover.instances[elementId];
-            if (state?.phase !== 'showing' && state?.phase !== 'shown')
-                return;
-
-            window.blazorBootstrap.popover.hide(elementId);
+            if (state?.phase === 'showing' || state?.phase === 'shown')
+                window.blazorBootstrap.popover.hide(elementId);
             window.blazorBootstrap.popover.finishFade(elementId);
         },
         initialize: (elementId, options, dotNetHelper) => {
-            // Also called again when an option or the trigger changes; drop the old instance first.
+            // Also called again when an option or the trigger changes: close an open popover with its events, then drop the old instance.
+            window.blazorBootstrap.popover.hideNow(elementId);
             window.blazorBootstrap.popover.dispose(elementId);
 
             let hostEl = document.getElementById(elementId);
@@ -1355,6 +1367,7 @@ window.blazorBootstrap = {
             });
             listen(triggerEl, 'hide.bs.popover', () => {
                 state.phase = 'hiding';
+                window.blazorBootstrap.popover.setOpen(elementId, false); // a closing popover no longer takes Escape
                 // Return focus to the trigger only when it was in the content; a Focus trigger would open again on focus.
                 state.restoreFocus = !isHoverOrFocus && (tip()?.contains(document.activeElement) ?? false);
                 triggerEl.setAttribute('aria-expanded', 'false');
@@ -1394,13 +1407,15 @@ window.blazorBootstrap = {
             }, true);
 
             // Escape closes the popover first. Hover and Focus popovers always close on Escape (WCAG 1.4.13); others when AutoClose is on.
-            // Only the last opened popover handles it, and a key another handler already took (defaultPrevented) is left alone.
+            // Of the open popovers that close on Escape, only the last opened handles it; a key another handler already took
+            // (defaultPrevented) is left alone.
+            state.closesOnEscape = () => isOpen() && (state.autoClose || isHoverOrFocus);
             let handleEscape = (event) => {
-                if (event.key !== 'Escape' || event.defaultPrevented || !isOpen() || (!state.autoClose && !isHoverOrFocus))
+                if (event.key !== 'Escape' || event.defaultPrevented || !state.closesOnEscape())
                     return false;
 
-                let openOrder = window.blazorBootstrap.popover.openOrder;
-                if (openOrder[openOrder.length - 1] !== elementId)
+                let lastCloser = [...window.blazorBootstrap.popover.openOrder].reverse().find((id) => window.blazorBootstrap.popover.instances[id]?.closesOnEscape?.() ?? false);
+                if (lastCloser !== elementId)
                     return false;
 
                 let tipEl = tip();
@@ -1481,13 +1496,13 @@ window.blazorBootstrap = {
             }
 
             // Re-attach when the trigger changes: another first element, or a control that became disabled or enabled. An open popover
-            // closes first (with its events), and the new instance takes the live settings, not the ones from the last .NET initialize.
+            // closes first (initialize does it, with its events), and the new instance takes the live settings, not the ones from the last
+            // .NET initialize.
             if (typeof MutationObserver !== 'undefined') {
                 state.mutationObserver = new MutationObserver(() => {
                     if (window.blazorBootstrap.popover.instances[elementId] !== state || window.blazorBootstrap.popover.findTrigger(hostEl) === state.triggerEl)
                         return;
 
-                    window.blazorBootstrap.popover.hideNow(elementId);
                     let liveOptions = { ...state.options, autoClose: state.autoClose, enabled: state.enabled, hasContent: state.hasContent, hasTitle: state.hasTitle };
                     window.blazorBootstrap.popover.initialize(elementId, liveOptions, state.dotNetHelper);
                 });

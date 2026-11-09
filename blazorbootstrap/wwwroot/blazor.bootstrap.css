@@ -336,6 +336,7 @@ table button.dropdown-toggle.bb-grid-filter::after {
     --bb-button-group-outline-dark-color: var(--bs-dark);
     --bb-button-group-outline-dark-checked-bg: var(--bs-dark);
     --bb-button-group-outline-dark-checked-color: #fff;
+    --bb-button-group-outline-dark-focus-rgb: 33, 37, 41;
 }
 
 [data-bs-theme=dark] {
@@ -350,6 +351,8 @@ table button.dropdown-toggle.bb-grid-filter::after {
     /* Bootstrap's checked dark fill (#212529) matches the dark body, so the checked item inverts instead. */
     --bb-button-group-outline-dark-checked-bg: var(--bs-dark-text-emphasis);
     --bb-button-group-outline-dark-checked-color: var(--bs-dark);
+    /* Bootstrap's dark focus ring (33, 37, 41) does not show on the dark body; use the light emphasis color (#dee2e6). */
+    --bb-button-group-outline-dark-focus-rgb: 222, 226, 230;
 }
 
 .bb-button-group-item.btn-outline-primary { --bs-btn-color: var(--bb-button-group-outline-primary-color); --bs-btn-border-color: var(--bb-button-group-outline-primary-color); }
@@ -368,6 +371,7 @@ table button.dropdown-toggle.bb-grid-filter::after {
     --bs-btn-active-bg: var(--bb-button-group-outline-dark-checked-bg);
     --bs-btn-active-border-color: var(--bb-button-group-outline-dark-checked-bg);
     --bs-btn-active-color: var(--bb-button-group-outline-dark-checked-color);
+    --bs-btn-focus-shadow-rgb: var(--bb-button-group-outline-dark-focus-rgb);
 }
 
 /* popover - contextual colors, set through Bootstrap's popover CSS variables (header and border; the body keeps its colors) */

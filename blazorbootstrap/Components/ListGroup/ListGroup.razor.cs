@@ -12,13 +12,14 @@ public partial class ListGroup<TItem> : BlazorBootstrapComponentBase, IListGroup
 
     private FieldIdentifier fieldIdentifier;
 
-    /// <summary>
-    /// The name of the shown pane: the initial one until Bootstrap reports a shown tab, then the last shown one.
-    /// Rendering follows it, so a pane added or re-added later does not render as a second active pane.
-    /// </summary>
-    private string? activeTabName;
-
     private bool hasActionableItems;
+
+    /// <summary>
+    /// The pane shown at first render. Bootstrap switches tabs in the page, so after the first render the group never changes which pane
+    /// renders as active: this pane instance keeps its classes, and a pane added later (a new instance) renders inactive. Blazor therefore
+    /// never writes the active state over Bootstrap's.
+    /// </summary>
+    private ListGroupTabPane? initialActivePane;
 
     /// <summary>
     /// What the interop was last initialized for: the tab mode with its tab ids, or the listbox. <see langword="null" /> when not initialized.
@@ -81,12 +82,11 @@ public partial class ListGroup<TItem> : BlazorBootstrapComponentBase, IListGroup
             else
             {
                 await SafeInvokeVoidAsync("window.blazorBootstrap.listGroup.initializeListbox", Id);
-                StateHasChanged(); // options switch from their pre-interop tab stop to tabindex="-1"; syncListbox runs after that render
             }
         }
         else if (interopKey is not null && isListbox)
         {
-            // Options render tabindex="-1"; the interop keeps exactly one of them as the tab stop.
+            // Each option keeps the tabindex it first rendered, so Blazor never rewrites it; the interop keeps exactly one tab stop.
             await SafeInvokeVoidAsync("window.blazorBootstrap.listGroup.syncListbox", Id);
         }
 
@@ -127,16 +127,7 @@ public partial class ListGroup<TItem> : BlazorBootstrapComponentBase, IListGroup
     public async Task bsShowTab(string? activeTabName, string? previousTabName) => await OnShowing.InvokeAsync(new ListGroupTabEventArgs(activeTabName, previousTabName));
 
     [JSInvokable]
-    public async Task bsShownTab(string? activeTabName, string? previousTabName)
-    {
-        if (activeTabName is not null)
-        {
-            this.activeTabName = activeTabName;
-            isActiveTabFrozen = true;
-        }
-
-        await OnShown.InvokeAsync(new ListGroupTabEventArgs(activeTabName, previousTabName));
-    }
+    public async Task bsShownTab(string? activeTabName, string? previousTabName) => await OnShown.InvokeAsync(new ListGroupTabEventArgs(activeTabName, previousTabName));
 
     internal void AddItem(ListGroupItem<TItem> item)
     {
@@ -154,11 +145,22 @@ public partial class ListGroup<TItem> : BlazorBootstrapComponentBase, IListGroup
     }
 
     /// <summary>
-    /// Returns whether a listbox option is a tab stop before the interop owns <c>tabindex</c> (prerender, or before the script runs):
-    /// the selected options and the first enabled one.
+    /// Returns whether a listbox option is the tab stop before the interop owns <c>tabindex</c> (prerender, or before the script runs):
+    /// the first selected enabled option when the group has a selection, else the first enabled option. Options are compared in
+    /// registration order, which is markup order for direct children and data-bound lists.
     /// </summary>
-    internal bool IsInitialTabStop(ListGroupItem<TItem> item) =>
-        IsSelected(item.Value) || items.FirstOrDefault(i => !i.IsDisabled) == item;
+    internal bool IsInitialTabStop(ListGroupItem<TItem> item)
+    {
+        var hasSelection = SelectionMode == ListGroupSelectionMode.Multiple
+            ? SelectedItems?.Any() ?? false
+            : !EqualityComparer<TItem>.Default.Equals(SelectedItem, default!);
+
+        var enabled = items.Where(i => !i.IsDisabled);
+
+        return hasSelection
+            ? enabled.FirstOrDefault(i => IsSelected(i.Value)) == item
+            : enabled.FirstOrDefault() == item;
+    }
 
     internal bool IsSelected(TItem value) =>
         SelectionMode switch
@@ -213,9 +215,9 @@ public partial class ListGroup<TItem> : BlazorBootstrapComponentBase, IListGroup
     bool IListGroupTabHost.IsActive(ListGroupTabPane pane)
     {
         if (!isActiveTabFrozen)
-            activeTabName = (panes.FirstOrDefault(p => p.Active && !p.Disabled) ?? panes.FirstOrDefault(p => !p.Disabled))?.Name;
+            initialActivePane = panes.FirstOrDefault(p => p.Active && !p.Disabled) ?? panes.FirstOrDefault(p => !p.Disabled);
 
-        return pane.Name == activeTabName;
+        return ReferenceEquals(pane, initialActivePane);
     }
 
     void IListGroupTabHost.RemovePane(ListGroupTabPane pane)
