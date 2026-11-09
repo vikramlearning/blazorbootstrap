@@ -1,0 +1,29 @@
+@namespace BlazorBootstrap
+@inherits BlazorBootstrapComponentBase
+
+<span @ref="@Element" id="@Id" class="@ClassNames" style="@StyleNames" @attributes="@AdditionalAttributes">@ChildContent</span>
+
+@* Home of the Blazor-owned title and content. The interop hands these two elements to Bootstrap's popover while it is open,
+   and moves them back here when it closes, so Blazor keeps updating the same elements wherever they are. *@
+<div id="@homeId" class="d-none">
+    <div data-bb-popover-title="">
+        @if (TitleTemplate is not null)
+        {
+            @TitleTemplate
+        }
+        else
+        {
+            @Title
+        }
+    </div>
+    <div data-bb-popover-content="">
+        @if (ContentTemplate is not null)
+        {
+            @ContentTemplate
+        }
+        else
+        {
+            @Content
+        }
+    </div>
+</div>

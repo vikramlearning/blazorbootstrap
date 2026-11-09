@@ -1,0 +1,37 @@
+<Popover Title="Events" Content="Open and close me, and watch the log."
+         OnShowing="@(() => Log("OnShowing"))"
+         OnInserted="@(() => Log("OnInserted"))"
+         OnShown="@(() => Log("OnShown"))"
+         OnHiding="@(() => Log("OnHiding"))"
+         OnHidden="@(() => Log("OnHidden"))">
+    <Button Color="ButtonColor.Primary">Toggle popover</Button>
+</Popover>
+
+<div class="mt-3 small">
+    <strong>Events:</strong>
+    @if (log.Count == 0)
+    {
+        <span>none yet.</span>
+    }
+    else
+    {
+        <ol class="mb-0">
+            @foreach (var entry in log)
+            {
+                <li>@entry</li>
+            }
+        </ol>
+    }
+</div>
+
+@code {
+    private readonly List<string> log = new();
+
+    private void Log(string name)
+    {
+        log.Add($"{DateTime.Now:HH:mm:ss.fff} {name}");
+
+        if (log.Count > 10)
+            log.RemoveAt(0);
+    }
+}

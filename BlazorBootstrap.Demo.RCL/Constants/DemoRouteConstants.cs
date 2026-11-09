@@ -118,6 +118,7 @@ public static class DemoRouteConstants
     public const string Demos_URL_Pagination = Demos_URL_Prefix + "/pagination";
     public const string Demos_URL_PDFViewer = Demos_URL_Prefix + "/pdf-viewer";
     public const string Demos_URL_Placeholders = Demos_URL_Prefix + "/placeholders";
+    public const string Demos_URL_Popover = Demos_URL_Prefix + "/popover";
     public const string Demos_URL_Preload = Demos_URL_Prefix + "/preload";
     public const string Demos_URL_Progress = Demos_URL_Prefix + "/progress";
     public const string Demos_URL_Ribbon = Demos_URL_Prefix + "/ribbon";
@@ -221,6 +222,7 @@ public static class DemoRouteConstants
     public const string Docs_URL_Pagination = Docs_URL_Prefix + "/pagination";
     public const string Docs_URL_PDFViewer = Docs_URL_Prefix + "/pdf-viewer";
     public const string Docs_URL_Placeholders = Docs_URL_Prefix + "/placeholders";
+    public const string Docs_URL_Popover = Docs_URL_Prefix + "/popover";
     public const string Docs_URL_Preload = Docs_URL_Prefix + "/preload";
     public const string Docs_URL_Progress = Docs_URL_Prefix + "/progress";
     public const string Docs_URL_Ribbon = Docs_URL_Prefix + "/ribbon";

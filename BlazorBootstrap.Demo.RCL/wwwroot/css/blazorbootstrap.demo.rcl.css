@@ -634,3 +634,17 @@ pre[class*=language-] {
         transform: none;
     }
 }
+
+/* popover demos: a popover themed through Bootstrap's popover CSS variables, and a wider popover for table content */
+.bb-demo-custom-popover {
+    --bs-popover-max-width: 200px;
+    --bs-popover-border-color: #6f42c1;
+    --bs-popover-header-bg: #6f42c1;
+    --bs-popover-header-color: #fff;
+    --bs-popover-body-padding-x: 1rem;
+    --bs-popover-body-padding-y: .5rem;
+}
+
+.bb-demo-popover-wide {
+    --bs-popover-max-width: 22rem;
+}

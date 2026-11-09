@@ -1,0 +1,23 @@
+<div class="mb-3" style="max-width: 22rem;">
+    <label class="form-label" for="popover-note">Note shown in the popover</label>
+    <TextInput Id="popover-note" @bind-Value="note" />
+</div>
+
+<Popover Title="@($"Cart ({quantity} items)")" Placement="PopoverPlacement.Right">
+    <ContentTemplate>
+        <p class="mb-2">@note</p>
+        <div class="d-flex align-items-center gap-2">
+            <Button Color="ButtonColor.Secondary" Size="ButtonSize.Small" aria-label="Remove one" @onclick="() => quantity = Math.Max(0, quantity - 1)">−</Button>
+            <span aria-live="polite">Quantity: @quantity</span>
+            <Button Color="ButtonColor.Secondary" Size="ButtonSize.Small" aria-label="Add one" @onclick="() => quantity++">+</Button>
+        </div>
+    </ContentTemplate>
+    <ChildContent>
+        <Button Color="ButtonColor.Primary">Open the cart</Button>
+    </ChildContent>
+</Popover>
+
+@code {
+    private string note = "Change the quantity here; the popover stays open.";
+    private int quantity = 1;
+}

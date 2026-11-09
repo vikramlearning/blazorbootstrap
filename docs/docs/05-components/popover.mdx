@@ -1,0 +1,243 @@
+---
+title: Blazor Popover Component
+description: The Blazor Bootstrap Popover component shows a title and rich content next to a trigger, with placements, triggers, colors, and content that updates while it is open, wrapping the Bootstrap 5.3 popover.
+image: https://demos.blazorbootstrap.com/images/screenshots/popover.png
+
+sidebar_label: Popover
+sidebar_position: 20.5
+---
+
+import CarbonAd from '/carbon-ad.mdx'
+
+# Blazor Popover
+
+The Blazor Bootstrap `Popover` component wraps the [Bootstrap 5.3 popover](https://getbootstrap.com/docs/5.3/components/popovers/). It shows a title and content next to its trigger. The title and content are rendered by Blazor, so they can hold any markup, including tables and buttons, and keep updating while the popover is open.
+
+<CarbonAd />
+
+## Before you start
+
+- **Trigger:** put the trigger inside `Popover`. Its first element gets the popover; use a focusable, interactive element such as a button.
+- **Disabled controls:** a disabled element cannot be hovered, clicked, or focused, so when the trigger is disabled the wrapper around it gets the popover and becomes focusable, as Bootstrap recommends.
+- **Empty popovers never open:** with no title and no content, `ShowAsync` and the trigger do nothing.
+- **Text is text:** `Title` and `Content` strings always show as text, never as HTML.
+- **Container:** the popover is added to the page body by default. Inside a modal, set `Container` to the modal's body, so interactive content works inside the modal's focus trap.
+- **Changing options:** `Placement`, `Trigger`, `Offset`, delays, `Container`, `Color`, `CustomClass`, `Animation`, and `FallbackPlacements` are read when the popover is created, so changing one re-creates it (an open popover closes). `Disabled`, `AutoClose`, and the title and content update in place.
+- **Links that wrap:** a popover on a link that wraps across lines is centered between the lines; add `text-nowrap` to the link to avoid it, as Bootstrap advises.
+- Popovers use the Bootstrap JavaScript bundle (with Popper) the app already loads.
+
+## Accessibility
+
+- The trigger gets `aria-describedby` (pointing to the open popover) and `aria-expanded`.
+- Opened with Enter or Space, a Click or Manual popover moves focus to the first interactive element in its content; Escape closes it and returns focus to the trigger.
+- The tab order stays next to the trigger, although the popover is added at the end of the page: Tab from the trigger enters the open content, Shift+Tab from its first element returns to the trigger, and Tab from its last element moves to the element after the trigger (closing the popover when `AutoClose` is on).
+- With `AutoClose` (default), a click outside, Escape, or moving focus out of the content closes it.
+- Pair the Hover trigger with Focus, so keyboard users can open it too.
+- The fade respects the user's reduced-motion setting.
+
+## Parameters
+
+| Name | Type | Default | Required | Description | Added Version |
+|:--|:--|:--|:--|:--|:--|
+| Animation | bool | true | | Gets or sets whether the popover fades in and out. The fade also respects the user's reduced-motion setting. | 4.1.0 |
+| AutoClose | bool | true | | Gets or sets whether the popover closes on a click outside it and its trigger, on Escape, and when focus leaves its content. | 4.1.0 |
+| ChildContent | RenderFragment | null | | Gets or sets the trigger of the popover. Its first element gets the popover; use a focusable, interactive element such as a button. When that element is disabled, the wrapper around it gets the popover and becomes focusable instead. | 4.1.0 |
+| Color | `PopoverColor` | `PopoverColor.None` | | Gets or sets the color of the popover header and border. | 4.1.0 |
+| Container | string? | null | | Gets or sets the CSS selector of the element the popover is added to, for example a modal's `.modal-body` so its content can take focus inside the modal. When `null`, the popover is added to the page body. | 4.1.0 |
+| Content | string? | null | | Gets or sets the content text, always shown as text. `ContentTemplate` takes precedence. | 4.1.0 |
+| ContentTemplate | RenderFragment | null | | Gets or sets the content markup, such as formatted text, a table, or buttons. It updates in place while the popover is open. | 4.1.0 |
+| CustomClass | string? | null | | Gets or sets a CSS class added to the popover, for styling it through Bootstrap's popover CSS variables. | 4.1.0 |
+| Disabled | bool | false | | Gets or sets whether the popover is disabled. A disabled popover does not open until it is enabled again, and closes if it is open. | 4.1.0 |
+| FallbackPlacements | `IEnumerable<PopoverPlacement>?` | null | | Gets or sets the placements to try, in order, when `Placement` has no room. When `null`, Bootstrap tries top, right, bottom, and left. | 4.1.0 |
+| HideDelay | int | 0 | | Gets or sets the delay before hiding, in milliseconds. Applies to the Hover and Focus triggers. | 4.1.0 |
+| Offset | string? | null | | Gets or sets the offset of the popover from its trigger, as "skidding,distance" in pixels. When `null`, Bootstrap's "0,8" is used. | 4.1.0 |
+| Placement | `PopoverPlacement` | `PopoverPlacement.Right` | | Gets or sets where the popover opens relative to its trigger. Right and Left are mirrored in right-to-left layouts. | 4.1.0 |
+| ShowDelay | int | 0 | | Gets or sets the delay before showing, in milliseconds. Applies to the Hover and Focus triggers. | 4.1.0 |
+| Title | string? | null | | Gets or sets the title text, always shown as text. `TitleTemplate` takes precedence. | 4.1.0 |
+| TitleTemplate | RenderFragment | null | | Gets or sets the title markup. It updates in place while the popover is open. | 4.1.0 |
+| Trigger | `PopoverTrigger` | `PopoverTrigger.Click` | | Gets or sets how the popover opens. Click, Hover, and Focus can be combined, for example `PopoverTrigger.Hover \| PopoverTrigger.Focus`; Manual cannot, and wins when combined. | 4.1.0 |
+
+## Methods
+
+| Name | Description | Added Version |
+|:--|:--|:--|
+| HideAsync() | Hides the popover. | 4.1.0 |
+| ShowAsync() | Shows the popover. Does nothing when it has no title and no content, or when it is disabled. | 4.1.0 |
+| ToggleAsync() | Shows the popover if it is hidden, or hides it if it is shown. | 4.1.0 |
+| UpdateAsync() | Updates the position of an open popover, for example after its trigger moved. Content size changes reposition it automatically. | 4.1.0 |
+
+## Events
+
+| Name | Description | Added Version |
+|:--|:--|:--|
+| OnHidden | This event fires after the popover is hidden. | 4.1.0 |
+| OnHiding | This event fires when the popover starts to hide. | 4.1.0 |
+| OnInserted | This event fires after the popover is added to the page, before it is shown. | 4.1.0 |
+| OnShowing | This event fires when the popover starts to show. | 4.1.0 |
+| OnShown | This event fires after the popover is shown. | 4.1.0 |
+
+## Examples
+
+### Basic usage
+
+```cshtml {} showLineNumbers
+<Popover Title="Popover title" Content="And here's some amazing content. It's very engaging. Right?">
+    <Button Color="ButtonColor.Danger" Size="ButtonSize.Large">Click to toggle popover</Button>
+</Popover>
+```
+
+[See demo here](https://demos.blazorbootstrap.com/popover#basic-usage)
+
+### Placements
+
+```cshtml {1} showLineNumbers
+<Popover Placement="PopoverPlacement.Top" Content="Top popover">
+    <Button Color="ButtonColor.Secondary">Popover on top</Button>
+</Popover>
+```
+
+`Placement` is `Auto`, `Top`, `Right` (default), `Bottom`, or `Left`. Right and Left are mirrored in right-to-left layouts.
+
+[See demo here](https://demos.blazorbootstrap.com/popover#placements)
+
+### Triggers
+
+```cshtml {1,5} showLineNumbers
+<Popover Title="Hover or focus" Content="..." Trigger="PopoverTrigger.Hover | PopoverTrigger.Focus">
+    <Button Color="ButtonColor.Primary" Outline="true">Hover or focus</Button>
+</Popover>
+
+<Popover @ref="manualPopover" Content="I open and close only from code." Trigger="PopoverTrigger.Manual">
+    <Button Color="ButtonColor.Secondary">Manual target</Button>
+</Popover>
+```
+
+[See demo here](https://demos.blazorbootstrap.com/popover#triggers)
+
+### Dismiss on next click
+
+Use the Focus trigger on an `<a tabindex="0" role="button">`; buttons do not take focus on click in every browser.
+
+```cshtml {1} showLineNumbers
+<Popover Title="Dismissible popover" Content="Click anywhere else to close me." Trigger="PopoverTrigger.Focus">
+    <a tabindex="0" class="btn btn-danger" role="button">Dismiss on next click</a>
+</Popover>
+```
+
+Set `AutoClose="false"` to keep a Click popover open until its trigger is clicked again.
+
+[See demo here](https://demos.blazorbootstrap.com/popover#dismiss-behavior)
+
+### Rich content
+
+```cshtml {1-12} showLineNumbers
+<Popover CustomClass="popover-wide">
+    <TitleTemplate>
+        Order #1042 <Badge Color="BadgeColor.Success">Paid</Badge>
+    </TitleTemplate>
+    <ContentTemplate>
+        <table class="table table-sm mb-0">
+            ...
+        </table>
+    </ContentTemplate>
+    <ChildContent>
+        <Button Color="ButtonColor.Primary">Show order details</Button>
+    </ChildContent>
+</Popover>
+```
+
+```css
+.popover-wide { --bs-popover-max-width: 22rem; }
+```
+
+The content can change while the popover is open, for example a quantity with + and − buttons; the popover updates in place and repositions.
+
+[See demo here](https://demos.blazorbootstrap.com/popover#rich-content)
+
+### Methods and events
+
+```cshtml {1-3} showLineNumbers
+<Popover @ref="popover" Title="Controlled from code" Content="..." Trigger="PopoverTrigger.Manual"
+         OnShown="OnShown" OnHidden="OnHidden">
+    <Button Color="ButtonColor.Primary">Popover target</Button>
+</Popover>
+```
+
+```cs {} showLineNumbers
+@code {
+    private Popover popover = default!;
+
+    private async Task ShowAsync() => await popover.ShowAsync();
+    private void OnShown() { }
+    private void OnHidden() { }
+}
+```
+
+[See demo here](https://demos.blazorbootstrap.com/popover#methods)
+
+### Colors and custom popovers
+
+```cshtml {1,5} showLineNumbers
+<Popover Title="Primary popover" Content="..." Color="PopoverColor.Primary">
+    <Button Color="ButtonColor.Secondary" Outline="true">Primary</Button>
+</Popover>
+
+<Popover Title="Custom popover" Content="This popover is themed via CSS variables." CustomClass="custom-popover">
+    <Button Color="ButtonColor.Secondary">Custom popover</Button>
+</Popover>
+```
+
+```css
+.custom-popover {
+    --bs-popover-max-width: 200px;
+    --bs-popover-border-color: #6f42c1;
+    --bs-popover-header-bg: #6f42c1;
+    --bs-popover-header-color: #fff;
+}
+```
+
+[See demo here](https://demos.blazorbootstrap.com/popover#colors)
+
+### Disabled elements and disabled popovers
+
+```cshtml {1,5} showLineNumbers
+<Popover Content="Upgrade your plan to export reports." Trigger="PopoverTrigger.Hover | PopoverTrigger.Focus">
+    <Button Color="ButtonColor.Primary" Disabled="true">Export (disabled)</Button>
+</Popover>
+
+<Popover Title="Help" Content="..." Disabled="@disabled">
+    <Button Color="ButtonColor.Primary">Toggle popover</Button>
+</Popover>
+```
+
+[See demo here](https://demos.blazorbootstrap.com/popover#disabled-elements)
+
+### Offset, delay, animation, and fallback placements
+
+```cshtml {} showLineNumbers
+<Popover Content="..." Offset="40,20" Placement="PopoverPlacement.Bottom">...</Popover>
+<Popover Content="..." Trigger="PopoverTrigger.Hover | PopoverTrigger.Focus" ShowDelay="500" HideDelay="200">...</Popover>
+<Popover Content="..." Animation="false">...</Popover>
+<Popover Content="..." Placement="PopoverPlacement.Top" FallbackPlacements="@(new[] { PopoverPlacement.Bottom, PopoverPlacement.Left })">...</Popover>
+```
+
+[See demo here](https://demos.blazorbootstrap.com/popover#options)
+
+### Custom container
+
+```cshtml {3} showLineNumbers
+<Modal Id="invite-modal" Title="Invite a teammate">
+    <BodyTemplate>
+        <Popover Title="Roles" Container="#invite-modal .modal-body">
+            <ContentTemplate>
+                <Button Color="ButtonColor.Primary" Size="ButtonSize.Small">Got it</Button>
+            </ContentTemplate>
+            <ChildContent>
+                <Button Color="ButtonColor.Secondary" Outline="true">What do the roles mean?</Button>
+            </ChildContent>
+        </Popover>
+    </BodyTemplate>
+</Modal>
+```
+
+[See demo here](https://demos.blazorbootstrap.com/popover#custom-container)

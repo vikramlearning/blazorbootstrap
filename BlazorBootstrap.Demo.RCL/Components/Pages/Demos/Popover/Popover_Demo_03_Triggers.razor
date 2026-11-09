@@ -1,0 +1,18 @@
+<div class="d-flex flex-wrap align-items-center gap-2">
+    <Popover Title="Click" Content="Click the button again to close me.">
+        <Button Color="ButtonColor.Primary">Click</Button>
+    </Popover>
+
+    <Popover Title="Hover or focus" Content="I open while the pointer is over the button, or while it has focus." Trigger="PopoverTrigger.Hover | PopoverTrigger.Focus" AutoClose="false">
+        <Button Color="ButtonColor.Primary" Outline="true">Hover or focus</Button>
+    </Popover>
+
+    <Popover @ref="manualPopover" Title="Manual" Content="I open and close only from code." Trigger="PopoverTrigger.Manual" AutoClose="false" Placement="PopoverPlacement.Bottom">
+        <Button Color="ButtonColor.Secondary" Outline="true">Manual target</Button>
+    </Popover>
+    <Button Color="ButtonColor.Secondary" Size="ButtonSize.Small" @onclick="() => manualPopover.ToggleAsync()">Toggle the manual popover</Button>
+</div>
+
+@code {
+    private Popover manualPopover = default!;
+}

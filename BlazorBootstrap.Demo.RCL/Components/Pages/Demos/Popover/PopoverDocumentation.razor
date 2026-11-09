@@ -1,0 +1,233 @@
+@attribute [Route(pageUrl)]
+@layout DemosMainLayout
+
+<DemosPageHeadSection PageUrl="@pageUrl"
+                      PageTitle="@pageTitle"
+                      PageDescription="@pageDescription"
+                      MetaTitle="@metaTitle"
+                      MetaDescription="@metaDescription"
+                      ImageUrl="@imageUrl" />
+
+<DocsLink Href="@DemoRouteConstants.Docs_URL_Popover" />
+
+<Callout Color="CalloutColor.Info">
+    <b>Popover</b> wraps the <a href="https://getbootstrap.com/docs/5.3/components/popovers/" target="_blank" rel="noopener">Bootstrap 5.3 popover</a>.
+    Put the trigger, a focusable element such as a button, inside <code>Popover</code>. The title and content are rendered by Blazor and keep updating while the popover is open.
+    A popover with no title and no content never opens.
+</Callout>
+
+<Section Size="HeadingSize.H2" Name="Basic usage" PageUrl="@pageUrl" Link="basic-usage">
+    <div class="mb-3">
+        Click the button to open and close the popover.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Wrap the trigger in <code>Popover</code>, and set <code>Title</code> and <code>Content</code>. Strings always show as text.</li>
+                <li>The trigger gets <code>aria-describedby</code> and <code>aria-expanded</code>.</li>
+            </ol>
+        </div>
+    </div>
+    <Demo Type="typeof(Popover_Demo_01_Basic_Usage)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Placements" PageUrl="@pageUrl" Link="placements">
+    <div class="mb-3">
+        Open the popover on the top, right, bottom, or left of the trigger, or let it pick the side with the most room.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Set <code>Placement</code>. The default is <code>Right</code>; Right and Left are mirrored in right-to-left layouts.</li>
+            </ol>
+        </div>
+    </div>
+    <Demo Type="typeof(Popover_Demo_02_Placements)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Triggers" PageUrl="@pageUrl" Link="triggers">
+    <div class="mb-3">
+        Open the popover on click (default), hover, focus, or only from code.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Set <code>Trigger</code>. Combine Click, Hover, and Focus with <code>|</code>; Manual stands alone.</li>
+                <li>Pair Hover with Focus, so keyboard users can open it too.</li>
+            </ol>
+        </div>
+    </div>
+    <Demo Type="typeof(Popover_Demo_03_Triggers)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Dismiss behavior" PageUrl="@pageUrl" Link="dismiss-behavior">
+    <div class="mb-3">
+        Close the popover on the next click, on a click outside, or on Escape.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>For Bootstrap's dismiss on next click, use the Focus trigger on an <code>&lt;a tabindex="0" role="button"&gt;</code>; buttons do not take focus on click in every browser.</li>
+                <li><code>AutoClose</code> (default <code>true</code>) closes the popover on a click outside it and its trigger, on Escape, and when focus leaves its content. Set it to <code>false</code> to keep it open until the trigger is clicked again.</li>
+            </ol>
+        </div>
+    </div>
+    <Demo Type="typeof(Popover_Demo_04_Dismiss_Behavior)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Rich content" PageUrl="@pageUrl" Link="rich-content">
+    <div class="mb-3">
+        Show markup in the title and content, such as an icon, a badge, a table, or a link.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Set <code>TitleTemplate</code> and <code>ContentTemplate</code>, and put the trigger in <code>ChildContent</code>.</li>
+                <li>Widen the popover for a table with a <code>CustomClass</code> that sets <code>--bs-popover-max-width</code>.</li>
+            </ol>
+        </div>
+    </div>
+    <Demo Type="typeof(Popover_Demo_05_Rich_Content)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Live content" PageUrl="@pageUrl" Link="live-content">
+    <div class="mb-3">
+        The content updates in place while the popover is open, and the popover repositions when its size changes.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Bind the content to your state as usual; the open popover is never re-created.</li>
+                <li>Open it with Enter or Space, and focus moves to its first button; Escape closes it and returns focus to the trigger.</li>
+                <li>Tab and Shift+Tab move between the trigger and the content as if the popover sat right after the trigger; tabbing past the last button closes it.</li>
+            </ol>
+        </div>
+    </div>
+    <Demo Type="typeof(Popover_Demo_06_Live_Content)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Methods" PageUrl="@pageUrl" Link="methods">
+    <div class="mb-3">
+        Control the popover from code.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Get a reference with <code>@@ref</code>, and call <code>ShowAsync</code>, <code>HideAsync</code>, <code>ToggleAsync</code>, or <code>UpdateAsync</code>.</li>
+                <li>Call <code>UpdateAsync</code> after the trigger moves; content size changes reposition the popover by themselves.</li>
+            </ol>
+        </div>
+    </div>
+    <Demo Type="typeof(Popover_Demo_07_Methods)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Events" PageUrl="@pageUrl" Link="events">
+    <div class="mb-3">
+        React when the popover shows and hides.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Handle <code>OnShowing</code>, <code>OnInserted</code>, <code>OnShown</code>, <code>OnHiding</code>, and <code>OnHidden</code>.</li>
+            </ol>
+        </div>
+    </div>
+    <Demo Type="typeof(Popover_Demo_08_Events)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Colors" PageUrl="@pageUrl" Link="colors">
+    <div class="mb-3">
+        Color the popover's header and border.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Set <code>Color</code>.</li>
+            </ol>
+        </div>
+    </div>
+    <Demo Type="typeof(Popover_Demo_09_Colors)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Custom popovers" PageUrl="@pageUrl" Link="custom-popovers">
+    <div class="mb-3">
+        Style a popover through Bootstrap's popover CSS variables.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Define a class that sets the <code>--bs-popover-*</code> variables, and set it as <code>CustomClass</code>.</li>
+            </ol>
+        </div>
+    </div>
+    <Demo Type="typeof(Popover_Demo_10_Custom_Popovers)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Disabled elements" PageUrl="@pageUrl" Link="disabled-elements">
+    <div class="mb-3">
+        Describe a disabled control. A disabled element cannot be hovered, clicked, or focused, so the wrapper around it gets the popover and becomes focusable.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Put the disabled control in <code>Popover</code>; the wrapper takes over automatically.</li>
+                <li>Use <code>PopoverTrigger.Hover | PopoverTrigger.Focus</code>, as users may not expect to click a disabled control.</li>
+            </ol>
+        </div>
+    </div>
+    <Demo Type="typeof(Popover_Demo_11_Disabled_Elements)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Disabled popover" PageUrl="@pageUrl" Link="disabled-popover">
+    <div class="mb-3">
+        Stop a popover from opening until it is enabled again.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Set <code>Disabled="true"</code>. An open popover closes when it is disabled.</li>
+            </ol>
+        </div>
+    </div>
+    <Demo Type="typeof(Popover_Demo_12_Disabled_Popover)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Offset, delay, animation, and fallback placements" PageUrl="@pageUrl" Link="options">
+    <div class="mb-3">
+        Fine-tune where and when the popover appears.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li><code>Offset</code> is "skidding,distance" in pixels (Bootstrap's default is "0,8").</li>
+                <li><code>ShowDelay</code> and <code>HideDelay</code> apply to the Hover and Focus triggers.</li>
+                <li><code>Animation="false"</code> turns off the fade.</li>
+                <li><code>FallbackPlacements</code> lists the sides to try, in order, when <code>Placement</code> has no room.</li>
+            </ol>
+        </div>
+    </div>
+    <Demo Type="typeof(Popover_Demo_13_Options)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Custom container" PageUrl="@pageUrl" Link="custom-container">
+    <div class="mb-3">
+        Add the popover to another element, for example a modal, so its interactive content works inside the modal's focus trap.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Set <code>Container</code> to a CSS selector, such as <code>"#my-modal .modal-body"</code>. The default is the page body.</li>
+            </ol>
+        </div>
+    </div>
+    <Demo Type="typeof(Popover_Demo_14_Custom_Container)" Tabs="true" />
+</Section>
+
+@code {
+    private const string pageUrl = DemoRouteConstants.Demos_URL_Popover;
+    private const string pageTitle = "Blazor Popover";
+    private const string pageDescription = "The Blazor Bootstrap Popover component shows a title and rich content next to a trigger, with placements, triggers, colors, and content that updates while it is open.";
+    private const string metaTitle = "Blazor Popover Component";
+    private const string metaDescription = "The Blazor Bootstrap Popover component shows a title and rich content next to a trigger, with placements, triggers, colors, and content that updates while it is open.";
+    private const string imageUrl = DemoScreenshotSrcConstants.Demos_URL_Popover;
+}

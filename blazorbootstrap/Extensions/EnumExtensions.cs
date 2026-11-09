@@ -466,6 +466,25 @@ public static class EnumExtensions
         };
 
     /// <summary>
+    /// Converts a <see cref="PopoverColor" /> value to its <c>bb-popover-*</c> class.
+    /// </summary>
+    [AddedVersion("4.1.0")]
+    [Description("Converts a PopoverColor value to its bb-popover-* class.")]
+    public static string ToPopoverColorClass(this PopoverColor popoverColor) =>
+        popoverColor switch
+        {
+            PopoverColor.Primary => "bb-popover-primary",
+            PopoverColor.Secondary => "bb-popover-secondary",
+            PopoverColor.Success => "bb-popover-success",
+            PopoverColor.Danger => "bb-popover-danger",
+            PopoverColor.Warning => "bb-popover-warning",
+            PopoverColor.Info => "bb-popover-info",
+            PopoverColor.Light => "bb-popover-light",
+            PopoverColor.Dark => "bb-popover-dark",
+            _ => ""
+        };
+
+    /// <summary>
     /// Converts a <see cref="NavbarColor" /> value to its Bootstrap <c>text-bg-*</c> class.
     /// </summary>
     [AddedVersion("4.1.0")]

@@ -1,0 +1,9 @@
+<Switch @bind-Value="disabled" Label="Disable the popover" Class="mb-3" />
+
+<Popover Title="Help" Content="Turn the switch on to stop me from opening." Disabled="@disabled">
+    <Button Color="ButtonColor.Primary">Toggle popover</Button>
+</Popover>
+
+@code {
+    private bool disabled;
+}

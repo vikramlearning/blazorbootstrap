@@ -1,0 +1,24 @@
+<Button Color="ButtonColor.Primary" @onclick="() => modal.ShowAsync()">Open the modal</Button>
+
+<Modal @ref="modal" Id="popover-demo-modal" Title="Invite a teammate">
+    <BodyTemplate>
+        <p>The popover below is added to this modal's body, so its button can take focus inside the modal.</p>
+        <Popover Title="Roles" Placement="PopoverPlacement.Bottom" Container="#popover-demo-modal .modal-body">
+            <ContentTemplate>
+                <p class="mb-2">Editors can change content; viewers can only read it.</p>
+                <Button Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="() => picked = picked + 1">Got it (@picked)</Button>
+            </ContentTemplate>
+            <ChildContent>
+                <Button Color="ButtonColor.Secondary" Outline="true">What do the roles mean?</Button>
+            </ChildContent>
+        </Popover>
+    </BodyTemplate>
+    <FooterTemplate>
+        <Button Color="ButtonColor.Secondary" @onclick="() => modal.HideAsync()">Close</Button>
+    </FooterTemplate>
+</Modal>
+
+@code {
+    private Modal modal = default!;
+    private int picked;
+}
