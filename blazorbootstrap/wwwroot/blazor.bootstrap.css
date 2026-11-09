@@ -321,6 +321,41 @@ table button.dropdown-toggle.bb-grid-filter::after {
     --bs-btn-border-radius: var(--bs-border-radius-lg);
 }
 
+/* button group - outline toggle items. In dark mode Bootstrap's outline text (for example #0d6efd) is below 4.5:1 on the dark body,
+   so unselected items use Bootstrap's theme-aware text-emphasis colors there; light mode keeps Bootstrap's colors. The colors are set
+   per theme scope, so the nearest data-bs-theme wins. */
+:root,
+[data-bs-theme=light] {
+    --bb-button-group-outline-primary-color: var(--bs-primary);
+    --bb-button-group-outline-secondary-color: var(--bs-secondary);
+    --bb-button-group-outline-success-color: var(--bs-success);
+    --bb-button-group-outline-danger-color: var(--bs-danger);
+    --bb-button-group-outline-warning-color: var(--bs-warning);
+    --bb-button-group-outline-info-color: var(--bs-info);
+    --bb-button-group-outline-light-color: var(--bs-light);
+    --bb-button-group-outline-dark-color: var(--bs-dark);
+}
+
+[data-bs-theme=dark] {
+    --bb-button-group-outline-primary-color: var(--bs-primary-text-emphasis);
+    --bb-button-group-outline-secondary-color: var(--bs-secondary-text-emphasis);
+    --bb-button-group-outline-success-color: var(--bs-success-text-emphasis);
+    --bb-button-group-outline-danger-color: var(--bs-danger-text-emphasis);
+    --bb-button-group-outline-warning-color: var(--bs-warning-text-emphasis);
+    --bb-button-group-outline-info-color: var(--bs-info-text-emphasis);
+    --bb-button-group-outline-light-color: var(--bs-light-text-emphasis);
+    --bb-button-group-outline-dark-color: var(--bs-dark-text-emphasis);
+}
+
+.bb-button-group-item.btn-outline-primary { --bs-btn-color: var(--bb-button-group-outline-primary-color); --bs-btn-border-color: var(--bb-button-group-outline-primary-color); }
+.bb-button-group-item.btn-outline-secondary { --bs-btn-color: var(--bb-button-group-outline-secondary-color); --bs-btn-border-color: var(--bb-button-group-outline-secondary-color); }
+.bb-button-group-item.btn-outline-success { --bs-btn-color: var(--bb-button-group-outline-success-color); --bs-btn-border-color: var(--bb-button-group-outline-success-color); }
+.bb-button-group-item.btn-outline-danger { --bs-btn-color: var(--bb-button-group-outline-danger-color); --bs-btn-border-color: var(--bb-button-group-outline-danger-color); }
+.bb-button-group-item.btn-outline-warning { --bs-btn-color: var(--bb-button-group-outline-warning-color); --bs-btn-border-color: var(--bb-button-group-outline-warning-color); }
+.bb-button-group-item.btn-outline-info { --bs-btn-color: var(--bb-button-group-outline-info-color); --bs-btn-border-color: var(--bb-button-group-outline-info-color); }
+.bb-button-group-item.btn-outline-light { --bs-btn-color: var(--bb-button-group-outline-light-color); --bs-btn-border-color: var(--bb-button-group-outline-light-color); }
+.bb-button-group-item.btn-outline-dark { --bs-btn-color: var(--bb-button-group-outline-dark-color); --bs-btn-border-color: var(--bb-button-group-outline-dark-color); }
+
 /* popover - contextual colors, set through Bootstrap's popover CSS variables (header and border; the body keeps its colors) */
 .popover.bb-popover-primary { --bb-popover-color: var(--bs-primary); --bs-popover-header-color: #fff; }
 .popover.bb-popover-secondary { --bb-popover-color: var(--bs-secondary); --bs-popover-header-color: #fff; }

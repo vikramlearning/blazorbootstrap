@@ -53,6 +53,7 @@ public partial class ButtonGroupItem<TValue> : BlazorBootstrapComponentBase
     protected override string? ClassNames =>
         BuildClassNames(Class,
             (BootstrapClass.Button, true),
+            ("bb-button-group-item", true), // hook for the dark-mode outline colors in blazor.bootstrap.css
             (resolvedColor.ToButtonColorClass(), resolvedColor != ButtonColor.None && !resolvedOutline),
             (resolvedColor.ToButtonOutlineColorClass(), resolvedColor != ButtonColor.None && resolvedOutline));
 
