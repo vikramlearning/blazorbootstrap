@@ -16,11 +16,12 @@ public partial class ListGroup<TItem> : BlazorBootstrapComponentBase, IListGroup
 
     private string? initialActiveTabName;
 
+    /// <summary>
+    /// What the interop was last initialized for: the tab mode with its tab ids, or the listbox. <see langword="null" /> when not initialized.
+    /// </summary>
+    private string? initializedInteropKey;
+
     private bool isInitialActiveTabFrozen;
-
-    private bool isListboxInitialized;
-
-    private bool isTabsInitialized;
 
     private readonly List<ListGroupItem<TItem>> items = new();
 
@@ -37,7 +38,7 @@ public partial class ListGroup<TItem> : BlazorBootstrapComponentBase, IListGroup
     {
         if (disposing)
         {
-            if (isTabsInitialized || isListboxInitialized)
+            if (initializedInteropKey is not null)
                 await SafeInvokeVoidAsync("window.blazorBootstrap.listGroup.dispose", Id);
 
             objRef?.Dispose();
@@ -48,17 +49,40 @@ public partial class ListGroup<TItem> : BlazorBootstrapComponentBase, IListGroup
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (TabMode && !isTabsInitialized && panes.Count > 0)
+        // A pane rendered conditionally registers last, so when the panes change, take their order from the page (markup order).
+        if (TabMode && panes.Count > 1 && GetTabsInteropKey() != initializedInteropKey && await ReorderPanesFromPageAsync())
         {
-            isTabsInitialized = true;
-            isInitialActiveTabFrozen = true;
-            objRef ??= DotNetObjectReference.Create(this);
-            await SafeInvokeVoidAsync("window.blazorBootstrap.listGroup.initializeTabs", Id, objRef);
+            StateHasChanged(); // the interop re-wires after this render, with the tabs in order
+            await base.OnAfterRenderAsync(firstRender);
+            return;
         }
-        else if (isListbox && !isListboxInitialized)
+
+        // The key changes when the tab list or the listbox container is replaced or its tabs change, so the interop re-wires (CS-004).
+        var interopKey = TabMode ? GetTabsInteropKey() : isListbox ? "listbox" : null;
+
+        if (interopKey != initializedInteropKey)
         {
-            isListboxInitialized = true;
-            await SafeInvokeVoidAsync("window.blazorBootstrap.listGroup.initializeListbox", Id);
+            initializedInteropKey = interopKey;
+
+            if (interopKey is null)
+            {
+                await SafeInvokeVoidAsync("window.blazorBootstrap.listGroup.dispose", Id);
+            }
+            else if (TabMode)
+            {
+                isInitialActiveTabFrozen = true;
+                objRef ??= DotNetObjectReference.Create(this);
+                await SafeInvokeVoidAsync("window.blazorBootstrap.listGroup.initializeTabs", Id, objRef);
+            }
+            else
+            {
+                await SafeInvokeVoidAsync("window.blazorBootstrap.listGroup.initializeListbox", Id);
+            }
+        }
+        else if (interopKey is not null && isListbox)
+        {
+            // Options render tabindex="-1"; the interop keeps exactly one of them as the tab stop.
+            await SafeInvokeVoidAsync("window.blazorBootstrap.listGroup.syncListbox", Id);
         }
 
         await base.OnAfterRenderAsync(firstRender);
@@ -119,18 +143,6 @@ public partial class ListGroup<TItem> : BlazorBootstrapComponentBase, IListGroup
             _ => false
         };
 
-    /// <summary>
-    /// Returns whether the item is the listbox's tab stop: the first selected enabled item, or else the first enabled item.
-    /// Arrow keys then move focus between items.
-    /// </summary>
-    internal bool IsTabStop(ListGroupItem<TItem> item)
-    {
-        var enabled = items.Where(i => !i.IsDisabled).ToList();
-        var tabStop = enabled.FirstOrDefault(i => IsSelected(i.Value)) ?? enabled.FirstOrDefault();
-
-        return ReferenceEquals(tabStop, item);
-    }
-
     internal async Task OnItemCheckedChangedAsync(TItem value, bool isChecked)
     {
         if (Disabled)
@@ -182,6 +194,8 @@ public partial class ListGroup<TItem> : BlazorBootstrapComponentBase, IListGroup
             StateHasChanged();
     }
 
+    private string? GetTabsInteropKey() => panes.Count > 0 ? $"tabs|{string.Join(",", panes.Select(p => p.TabId))}" : null;
+
     private string GetTabClassNames(ListGroupTabPane pane) =>
         BuildClassNames(
             (BootstrapClass.ListGroupItem, true),
@@ -196,6 +210,34 @@ public partial class ListGroup<TItem> : BlazorBootstrapComponentBase, IListGroup
         StateHasChanged();
 
         await Task.CompletedTask;
+    }
+
+    /// <summary>
+    /// Orders <see cref="panes" /> by the page order of their pane elements. Returns whether the order changed.
+    /// </summary>
+    private async Task<bool> ReorderPanesFromPageAsync()
+    {
+        string[]? paneIds;
+        try
+        {
+            paneIds = await JSRuntime.InvokeAsync<string[]?>("window.blazorBootstrap.listGroup.getPaneOrder", Id);
+        }
+        catch (Exception ex) when (ex is JSDisconnectedException or TaskCanceledException)
+        {
+            return false;
+        }
+
+        if (paneIds is null || paneIds.Length != panes.Count)
+            return false;
+
+        var ordered = paneIds.Select(id => panes.FirstOrDefault(p => p.Id == id)).ToList();
+        if (ordered.Any(p => p is null) || ordered.SequenceEqual(panes))
+            return false;
+
+        panes.Clear();
+        panes.AddRange(ordered!);
+
+        return true;
     }
 
     private async Task SetSelectedItemAsync(TItem value)
@@ -230,14 +272,15 @@ public partial class ListGroup<TItem> : BlazorBootstrapComponentBase, IListGroup
     #region Properties, Indexers
 
     /// <summary>
-    /// Gets or sets the accessible name of the list, read by screen readers. Set it for a selectable list or tab list.
+    /// Gets or sets the accessible name of the list, read by screen readers. A listbox (<see cref="ListGroupSelectionMode.Single" />,
+    /// <see cref="ListGroupSelectionMode.Multiple" />) and a tab list need it, or <c>aria-labelledby</c>.
     /// <para>
     /// Default value is <see langword="null" />.
     /// </para>
     /// </summary>
     [AddedVersion("4.1.0")]
     [DefaultValue(null)]
-    [Description("Gets or sets the accessible name of the list, read by screen readers. Set it for a selectable list or tab list.")]
+    [Description("Gets or sets the accessible name of the list, read by screen readers. A listbox (<b>Single</b>, <b>Multiple</b>) and a tab list need it, or <b>aria-labelledby</b>.")]
     [Parameter]
     public string? AriaLabel { get; set; }
 

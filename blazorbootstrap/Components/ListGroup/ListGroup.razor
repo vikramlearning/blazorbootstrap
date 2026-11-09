@@ -10,7 +10,8 @@
             <div @ref="@Element" id="@Id" class="@ClassNames" style="@StyleNames" role="tablist" aria-label="@AriaLabel" @attributes="@AdditionalAttributes">
                 @foreach (var pane in panes)
                 {
-                    <button type="button"
+                    <button @key="pane"
+                            type="button"
                             class="@GetTabClassNames(pane)"
                             id="@pane.TabId"
                             data-bs-toggle="list"

@@ -46,7 +46,7 @@ The Blazor Bootstrap `Navbar` component is a responsive navigation header that f
 | AriaLabel | string? | null | | Gets or sets the accessible name of the navigation landmark, read by screen readers. Set it when the page has more than one navigation landmark. | 4.1.0 |
 | BackgroundColor | `BackgroundColor` | `BackgroundColor.None` | | Gets or sets the background color, applied with Bootstrap's `bg-*` classes. | 4.1.0 |
 | Brand | RenderFragment | null | | Gets or sets the brand, usually a `NavbarBrand`. | 4.1.0 |
-| BrandInCollapse | bool | false | | Gets or sets whether the brand is placed inside the collapsed menu, so it is hidden until the menu expands. | 4.1.0 |
+| BrandInCollapse | bool | false | | Gets or sets whether the brand is placed inside the collapsed menu, so it is hidden until the menu expands. Ignored when `ExternalCollapseId` is set, because there is no menu inside the navbar to hold it. | 4.1.0 |
 | ChildContent | RenderFragment | null | | Gets or sets the content of the menu: `NavbarNav`, `NavbarText`, forms, input groups, or buttons. It collapses behind the toggler below `ExpandBreakpoint`. | 4.1.0 |
 | CollapseMode | `NavbarCollapseMode` | `NavbarCollapseMode.Collapse` | | Gets or sets how the menu is shown below `ExpandBreakpoint`: in a collapse region or an offcanvas panel. | 4.1.0 |
 | Color | `NavbarColor` | `NavbarColor.None` | | Gets or sets the contextual background color, applied with Bootstrap's `text-bg-*` classes. Pair a dark color with `NavbarTheme.Dark`. | 4.1.0 |
@@ -55,7 +55,7 @@ The Blazor Bootstrap `Navbar` component is a responsive navigation header that f
 | ExternalCollapseId | string? | null | | Gets or sets the id of a `Collapse` outside the navbar that the toggler shows and hides. When set, `ChildContent` is not collapsed, and focus moves into the collapse when it opens. | 4.1.0 |
 | OffcanvasCloseButtonAriaLabel | string | "Close" | | Gets or sets the accessible label of the offcanvas close button. | 4.1.0 |
 | OffcanvasPlacement | `Placement` | `Placement.End` | | Gets or sets the side the offcanvas panel opens from when `CollapseMode` is `Offcanvas`. | 4.1.0 |
-| OffcanvasTitle | string? | null | | Gets or sets the title of the offcanvas panel. It also names the panel for screen readers. | 4.1.0 |
+| OffcanvasTitle | string? | null | | Gets or sets the title of the offcanvas panel. It also names the panel for screen readers. Without a title, the panel is named by `AriaLabel`, so set one of the two. | 4.1.0 |
 | Placement | `NavbarPlacement` | `NavbarPlacement.Static` | | Gets or sets where the navbar is placed on the page. | 4.1.0 |
 | Theme | `NavbarTheme` | `NavbarTheme.None` | | Gets or sets the color theme, set through Bootstrap's `data-bs-theme` attribute. | 4.1.0 |
 | TogglerAriaLabel | string | "Toggle navigation" | | Gets or sets the accessible label of the toggler button. | 4.1.0 |

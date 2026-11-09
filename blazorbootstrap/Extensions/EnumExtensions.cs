@@ -88,6 +88,8 @@ public static class EnumExtensions
             BackgroundColor.Body => "bg-body text-dark",
             BackgroundColor.White => "bg-white text-dark",
             BackgroundColor.Transparent => "bg-transparent text-dark",
+            BackgroundColor.BodySecondary => "bg-body-secondary text-body",
+            BackgroundColor.BodyTertiary => "bg-body-tertiary text-body",
             _ => ""
         };
 

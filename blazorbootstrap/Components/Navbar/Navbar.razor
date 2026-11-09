@@ -14,7 +14,8 @@
             @RenderToggler()
         }
 
-        @if (!BrandInCollapse)
+        @* With external content there is no collapse inside the navbar to hold the brand, so it stays in the bar. *@
+        @if (!BrandInCollapse || hasExternalCollapse)
         {
             @Brand
         }
@@ -30,9 +31,16 @@
         }
         else if (CollapseMode == NavbarCollapseMode.Offcanvas)
         {
-            <div class="@offcanvasClassNames" tabindex="-1" id="@menuId" aria-labelledby="@offcanvasTitleId">
+            <div class="@offcanvasClassNames"
+                 tabindex="-1"
+                 id="@menuId"
+                 aria-labelledby="@(hasOffcanvasTitle ? offcanvasTitleId : null)"
+                 aria-label="@(hasOffcanvasTitle ? null : AriaLabel)">
                 <div class="offcanvas-header">
-                    <h5 class="offcanvas-title" id="@offcanvasTitleId">@OffcanvasTitle</h5>
+                    @if (hasOffcanvasTitle)
+                    {
+                        <h5 class="offcanvas-title" id="@offcanvasTitleId">@OffcanvasTitle</h5>
+                    }
                     <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="@OffcanvasCloseButtonAriaLabel"></button>
                 </div>
                 <div class="offcanvas-body">
@@ -46,7 +54,7 @@
         }
         else if (hasMenu)
         {
-            <div class="collapse navbar-collapse" id="@menuId">
+            <div class="collapse @BootstrapClass.NavbarCollapse" id="@menuId">
                 @if (BrandInCollapse)
                 {
                     @Brand
@@ -62,14 +70,14 @@
     {
         @if (hasToggler)
         {
-            <button class="navbar-toggler"
+            <button class="@BootstrapClass.NavbarToggler"
                     type="button"
                     data-bs-toggle="@(CollapseMode == NavbarCollapseMode.Offcanvas && !hasExternalCollapse ? "offcanvas" : "collapse")"
                     data-bs-target="@($"#{togglerTargetId}")"
                     aria-controls="@togglerTargetId"
                     aria-expanded="false"
                     aria-label="@TogglerAriaLabel">
-                <span class="navbar-toggler-icon"></span>
+                <span class="@BootstrapClass.NavbarTogglerIcon"></span>
             </button>
         }
     };
