@@ -1,0 +1,43 @@
+<ButtonToolbar AriaLabel="Pagination toolbar" Class="mb-3">
+    <ButtonGroup AriaLabel="Pages 1 to 4" Class="me-2">
+        <Button Color="ButtonColor.Primary">1</Button>
+        <Button Color="ButtonColor.Primary">2</Button>
+        <Button Color="ButtonColor.Primary">3</Button>
+        <Button Color="ButtonColor.Primary">4</Button>
+    </ButtonGroup>
+    <ButtonGroup AriaLabel="Pages 5 to 7" Class="me-2">
+        <Button Color="ButtonColor.Secondary">5</Button>
+        <Button Color="ButtonColor.Secondary">6</Button>
+        <Button Color="ButtonColor.Secondary">7</Button>
+    </ButtonGroup>
+    <ButtonGroup AriaLabel="Page 8">
+        <Button Color="ButtonColor.Info">8</Button>
+    </ButtonGroup>
+</ButtonToolbar>
+
+<ButtonToolbar AriaLabel="Editor toolbar" Class="mb-3">
+    <ButtonGroup AriaLabel="Undo and redo" Class="me-2">
+        <Button Color="ButtonColor.Secondary" Outline="true">Undo</Button>
+        <Button Color="ButtonColor.Secondary" Outline="true">Redo</Button>
+    </ButtonGroup>
+    <InputGroup>
+        <InputGroupText Id="toolbar-mention-addon">@@</InputGroupText>
+        <TextInput @bind-Value="mention" Placeholder="Mention someone" aria-label="Mention someone" aria-describedby="toolbar-mention-addon" />
+    </InputGroup>
+</ButtonToolbar>
+
+<ButtonToolbar AriaLabel="Table toolbar" Class="justify-content-between">
+    <ButtonGroup AriaLabel="Table actions">
+        <Button Color="ButtonColor.Secondary" Outline="true">Export</Button>
+        <Button Color="ButtonColor.Secondary" Outline="true">Print</Button>
+    </ButtonGroup>
+    <InputGroup>
+        <InputGroupText><Icon Name="IconName.Search" aria-hidden="true" /></InputGroupText>
+        <TextInput @bind-Value="search" Placeholder="Search rows" aria-label="Search rows" />
+    </InputGroup>
+</ButtonToolbar>
+
+@code {
+    private string? mention;
+    private string? search;
+}

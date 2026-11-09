@@ -1,0 +1,11 @@
+<ButtonGroup AriaLabel="Text alignment">
+    <Button Color="ButtonColor.Primary" @onclick="@(() => alignment = "left")">Left</Button>
+    <Button Color="ButtonColor.Primary" @onclick="@(() => alignment = "middle")">Middle</Button>
+    <Button Color="ButtonColor.Primary" @onclick="@(() => alignment = "right")">Right</Button>
+</ButtonGroup>
+
+<div class="mt-3">Alignment: @alignment</div>
+
+@code {
+    private string alignment = "left";
+}

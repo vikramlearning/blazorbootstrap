@@ -1,0 +1,34 @@
+<div class="d-flex flex-column align-items-start gap-3">
+    <ButtonGroup AriaLabel="Large button group" Size="ButtonGroupSize.Large">
+        <Button Color="ButtonColor.Primary" Outline="true">Left</Button>
+        <Button Color="ButtonColor.Primary" Outline="true">Middle</Button>
+        <Button Color="ButtonColor.Primary" Outline="true">Right</Button>
+    </ButtonGroup>
+
+    <ButtonGroup AriaLabel="Default button group">
+        <Button Color="ButtonColor.Primary" Outline="true">Left</Button>
+        <Button Color="ButtonColor.Primary" Outline="true">Middle</Button>
+        <Button Color="ButtonColor.Primary" Outline="true">Right</Button>
+    </ButtonGroup>
+
+    <ButtonGroup AriaLabel="Small button group" Size="ButtonGroupSize.Small">
+        <Button Color="ButtonColor.Primary" Outline="true">Left</Button>
+        <Button Color="ButtonColor.Primary" Outline="true">Middle</Button>
+        <Dropdown Class="btn-group" role="group" aria-label="More options">
+            <DropdownToggleButton Class="btn-outline-primary">More</DropdownToggleButton>
+            <DropdownMenu>
+                <DropdownItem>First option</DropdownItem>
+                <DropdownItem>Second option</DropdownItem>
+            </DropdownMenu>
+        </Dropdown>
+    </ButtonGroup>
+
+    <RadioButtonGroup @bind-Value="view" AriaLabel="View" Size="ButtonGroupSize.Large">
+        <ButtonGroupItem Value="@("list")" Text="List" />
+        <ButtonGroupItem Value="@("board")" Text="Board" />
+    </RadioButtonGroup>
+</div>
+
+@code {
+    private string view = "list";
+}

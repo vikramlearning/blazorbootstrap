@@ -1,0 +1,53 @@
+@attribute [Route(pageUrl)]
+@layout DocsMainLayout
+
+<DocsPageHeadSection PageUrl="@pageUrl"
+                     PageTitle="@pageTitle"
+                     PageDescription="@pageDescription"
+                     MetaTitle="@metaTitle"
+                     MetaDescription="@metaDescription"
+                     ImageUrl="@imageUrl" />
+
+<DemoLink Href="@DemoRouteConstants.Demos_URL_ButtonGroup" />
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="Screenshot" PageUrl="@pageUrl" Link="screenshot">
+    <img src="@imageUrl" class="img-fluid" alt="@metaTitle" />
+</Section>
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="ButtonGroup Parameters" PageUrl="@pageUrl" Link="button-group-parameters">
+    <DocxTable TItem="ButtonGroup" DocType="DocType.Parameters" />
+</Section>
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="ButtonToolbar Parameters" PageUrl="@pageUrl" Link="button-toolbar-parameters">
+    <DocxTable TItem="ButtonToolbar" DocType="DocType.Parameters" />
+</Section>
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="RadioButtonGroup Parameters" PageUrl="@pageUrl" Link="radio-button-group-parameters">
+    <DocxTable TItem="RadioButtonGroup<object>" DocType="DocType.Parameters" />
+</Section>
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="RadioButtonGroup Events" PageUrl="@pageUrl" Link="radio-button-group-events">
+    <DocxTable TItem="RadioButtonGroup<object>" DocType="DocType.Events" />
+</Section>
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="CheckboxButtonGroup Parameters" PageUrl="@pageUrl" Link="checkbox-button-group-parameters">
+    <DocxTable TItem="CheckboxButtonGroup<object>" DocType="DocType.Parameters" />
+</Section>
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="CheckboxButtonGroup Events" PageUrl="@pageUrl" Link="checkbox-button-group-events">
+    <DocxTable TItem="CheckboxButtonGroup<object>" DocType="DocType.Events" />
+</Section>
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="ButtonGroupItem Parameters" PageUrl="@pageUrl" Link="button-group-item-parameters">
+    <DocxTable TItem="ButtonGroupItem<object>" DocType="DocType.Parameters" />
+</Section>
+
+@code {
+    private const string componentName = nameof(ButtonGroup);
+    private const string pageUrl = DemoRouteConstants.Docs_URL_ButtonGroup;
+    private const string pageTitle = componentName;
+    private const string pageDescription = $"This documentation provides a comprehensive reference for the <code>{componentName}</code>, <code>ButtonToolbar</code>, <code>RadioButtonGroup</code>, <code>CheckboxButtonGroup</code>, and <code>ButtonGroupItem</code> components, guiding you through their configuration options.";
+    private const string metaTitle = $"Blazor {componentName} Component";
+    private const string metaDescription = $"This documentation provides a comprehensive reference for the {componentName}, ButtonToolbar, RadioButtonGroup, CheckboxButtonGroup, and ButtonGroupItem components, guiding you through their configuration options.";
+    private const string imageUrl = DemoScreenshotSrcConstants.Demos_URL_ButtonGroup;
+}

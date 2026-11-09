@@ -32,7 +32,9 @@ public static class BootstrapClass
     public const string ButtonBlock = "btn-block";
     public const string ButtonDisabled = "disabled";
     public const string ButtonGroup = "btn-group";
+    public const string ButtonGroupVertical = "btn-group-vertical";
     public const string? ButtonLoading = null;
+    public const string ButtonToolbar = "btn-toolbar";
 
     public const string Callout = "bb-callout";
     public const string CalloutHeading = "bb-callout-heading";

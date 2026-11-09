@@ -1,0 +1,14 @@
+<CheckboxButtonGroup @bind-Values="statuses" AriaLabel="Filter by status">
+    <ButtonGroupItem Value="WorkStatus.Open" Text="Open" />
+    <ButtonGroupItem Value="WorkStatus.InProgress" Text="In progress" />
+    <ButtonGroupItem Value="WorkStatus.Blocked" Text="Blocked" Color="ButtonColor.Danger" />
+    <ButtonGroupItem Value="WorkStatus.Done" Text="Done" Color="ButtonColor.Success" />
+</CheckboxButtonGroup>
+
+<div class="mt-3">Showing: @(statuses.Any() ? string.Join(", ", statuses) : "nothing")</div>
+
+@code {
+    private IEnumerable<WorkStatus> statuses = new[] { WorkStatus.Open, WorkStatus.InProgress };
+
+    public enum WorkStatus { Open, InProgress, Blocked, Done }
+}

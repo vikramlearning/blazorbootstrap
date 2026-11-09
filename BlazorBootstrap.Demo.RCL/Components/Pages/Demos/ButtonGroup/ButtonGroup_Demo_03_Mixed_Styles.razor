@@ -1,0 +1,11 @@
+<ButtonGroup AriaLabel="Review decision">
+    <Button Color="ButtonColor.Danger" @onclick="@(() => decision = "Rejected")">Reject</Button>
+    <Button Color="ButtonColor.Warning" @onclick="@(() => decision = "Deferred")">Defer</Button>
+    <Button Color="ButtonColor.Success" @onclick="@(() => decision = "Approved")">Approve</Button>
+</ButtonGroup>
+
+<div class="mt-3">Decision: @(decision ?? "none")</div>
+
+@code {
+    private string? decision;
+}

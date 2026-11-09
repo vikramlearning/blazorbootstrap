@@ -1,0 +1,208 @@
+@attribute [Route(pageUrl)]
+@layout DemosMainLayout
+
+<DemosPageHeadSection PageUrl="@pageUrl"
+                      PageTitle="@pageTitle"
+                      PageDescription="@pageDescription"
+                      MetaTitle="@metaTitle"
+                      MetaDescription="@metaDescription"
+                      ImageUrl="@imageUrl" />
+
+<DocsLink Href="@DemoRouteConstants.Docs_URL_ButtonGroup" />
+
+<Callout Color="CalloutColor.Info">
+    The button group components follow the <a href="https://getbootstrap.com/docs/5.3/components/button-group/" target="_blank" rel="noopener">Bootstrap 5.3 button group</a>.
+    <code>ButtonGroup</code> and <code>ButtonToolbar</code> lay out existing <code>Button</code>, <code>Dropdown</code>, and <code>InputGroup</code> components.
+    <code>RadioButtonGroup</code> and <code>CheckboxButtonGroup</code> are form inputs: they bind one value or a set of values, and work inside an <code>EditForm</code>.
+</Callout>
+
+<Callout Color="CalloutColor.Warning">
+    Every group and toolbar needs an accessible name. Set <code>AriaLabel</code>, or set <code>aria-labelledby</code> to the id of a visible label. Without one, screen readers announce only "group" or "toolbar".
+</Callout>
+
+<Section Size="HeadingSize.H2" Name="Basic usage" PageUrl="@pageUrl" Link="basic-usage">
+    <div class="mb-3">
+        Join a series of buttons on a single line.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Add <code>ButtonGroup</code> and place <code>Button</code> components inside it.</li>
+                <li>Set <code>AriaLabel</code> to describe what the buttons do together.</li>
+            </ol>
+        </div>
+        This demo picks a text alignment.
+    </div>
+    <Demo Type="typeof(ButtonGroup_Demo_01_Basic_Usage)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Links" PageUrl="@pageUrl" Link="links">
+    <div class="mb-3">
+        A group can join link buttons as well as buttons.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Use <code>Button</code> with <code>Type="ButtonType.Link"</code> and <code>To</code>.</li>
+                <li>Mark the link to the current page with <code>Class="active"</code> and <code>aria-current="page"</code>.</li>
+            </ol>
+        </div>
+        This demo links to related demos; the current page is active.
+    </div>
+    <Demo Type="typeof(ButtonGroup_Demo_02_Links)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Mixed styles" PageUrl="@pageUrl" Link="mixed-styles">
+    <div class="mb-3">
+        Each button keeps its own color.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Set a different <code>Color</code> on each <code>Button</code>.</li>
+            </ol>
+        </div>
+        This demo records a review decision.
+    </div>
+    <Demo Type="typeof(ButtonGroup_Demo_03_Mixed_Styles)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Outlined styles" PageUrl="@pageUrl" Link="outlined-styles">
+    <div class="mb-3">
+        Outlined buttons join the same way.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Set <code>Outline="true"</code> on each <code>Button</code>.</li>
+                <li>Give icon-only buttons an <code>aria-label</code>.</li>
+            </ol>
+        </div>
+        This demo shows text formatting buttons.
+    </div>
+    <Demo Type="typeof(ButtonGroup_Demo_04_Outlined_Styles)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Radio toggle buttons" PageUrl="@pageUrl" Link="radio-toggle-buttons">
+    <div class="mb-3">
+        Pick one value from a set of toggle buttons.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Add <code>RadioButtonGroup</code> with <code>@@bind-Value</code> and an <code>AriaLabel</code>.</li>
+                <li>Add one <code>ButtonGroupItem</code> per choice, with its <code>Value</code> and <code>Text</code> (or child content).</li>
+                <li>Set <code>Color</code> and <code>Outline</code> on the group for every button, or on an item to override it.</li>
+                <li>Set <code>Disabled</code> on an item, or on the group to disable every item.</li>
+            </ol>
+        </div>
+        This demo picks a billing period and a chart range. The value type comes from the binding: <code>string</code> and <code>int</code> here.
+    </div>
+    <Demo Type="typeof(ButtonGroup_Demo_05_Radio_Toggle_Buttons)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Checkbox toggle buttons" PageUrl="@pageUrl" Link="checkbox-toggle-buttons">
+    <div class="mb-3">
+        Pick any number of values from a set of toggle buttons.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Add <code>CheckboxButtonGroup</code> with <code>@@bind-Values</code> bound to an <code>IEnumerable&lt;TValue&gt;</code> property, and an <code>AriaLabel</code>.</li>
+                <li>Add one <code>ButtonGroupItem</code> per choice.</li>
+            </ol>
+        </div>
+        This demo filters tasks by status, using an enum as the value type.
+    </div>
+    <Demo Type="typeof(ButtonGroup_Demo_06_Checkbox_Toggle_Buttons)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Button toolbar" PageUrl="@pageUrl" Link="button-toolbar">
+    <div class="mb-3">
+        Combine groups, and input groups, into a toolbar.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Add <code>ButtonToolbar</code> with an <code>AriaLabel</code>, and place <code>ButtonGroup</code> and <code>InputGroup</code> components inside it.</li>
+                <li>Space the groups with margin utilities such as <code>Class="me-2"</code>, or spread them with <code>Class="justify-content-between"</code> on the toolbar.</li>
+            </ol>
+        </div>
+        This demo shows a pagination toolbar, an editor toolbar with an input group, and a table toolbar.
+    </div>
+    <Demo Type="typeof(ButtonGroup_Demo_07_Button_Toolbar)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Sizing" PageUrl="@pageUrl" Link="sizing">
+    <div class="mb-3">
+        Size every button in a group at once, nested groups included.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Set <code>Size</code> to <code>ButtonGroupSize.Small</code> or <code>ButtonGroupSize.Large</code> on the group.</li>
+                <li>Do not size the individual buttons inside the group.</li>
+            </ol>
+        </div>
+        This demo shows large, default, and small groups (the small one with a nested dropdown), and a large radio group.
+    </div>
+    <Demo Type="typeof(ButtonGroup_Demo_08_Sizing)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Nesting" PageUrl="@pageUrl" Link="nesting">
+    <div class="mb-3">
+        Put a dropdown inside a group.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Place a <code>Dropdown</code> inside <code>ButtonGroup</code>.</li>
+                <li>Set <code>Class="btn-group"</code>, <code>role="group"</code>, and an <code>aria-label</code> on the <code>Dropdown</code>, so it joins the group as a nested group.</li>
+            </ol>
+        </div>
+        This demo shows message actions with a "More" menu.
+    </div>
+    <Demo Type="typeof(ButtonGroup_Demo_09_Nesting)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Vertical variation" PageUrl="@pageUrl" Link="vertical-variation">
+    <div class="mb-3">
+        Stack the buttons vertically.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Set <code>Vertical="true"</code> on <code>ButtonGroup</code>, <code>RadioButtonGroup</code>, or <code>CheckboxButtonGroup</code>.</li>
+                <li>Split button dropdowns are not supported in a vertical group, as in Bootstrap; use a regular dropdown.</li>
+            </ol>
+        </div>
+        This demo shows vertical buttons, a vertical group with a dropdown, and a vertical radio group.
+    </div>
+    <Demo Type="typeof(ButtonGroup_Demo_10_Vertical)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="EditForm validation" PageUrl="@pageUrl" Link="editform-validation">
+    <div class="mb-3">
+        Toggle button groups take part in an <code>EditForm</code> like other inputs.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Bind the group to a model property inside an <code>EditForm</code>.</li>
+                <li>Add a <code>ValidationMessage</code> for the property after the group.</li>
+                <li>Name the group by its visible label with <code>aria-labelledby</code>.</li>
+            </ol>
+        </div>
+        Submit the empty form to see both messages. Invalid groups get the <code>invalid</code> class, and their inputs get <code>aria-invalid="true"</code>.
+    </div>
+    <Demo Type="typeof(ButtonGroup_Demo_11_EditForm_Validation)" Tabs="true" />
+</Section>
+
+@code {
+    private const string pageUrl = DemoRouteConstants.Demos_URL_ButtonGroup;
+    private const string pageTitle = "Blazor ButtonGroup";
+    private const string pageDescription = "The Blazor Bootstrap button group components join buttons into groups and toolbars, and turn sets of toggle buttons into radio and checkbox inputs.";
+    private const string metaTitle = "Blazor ButtonGroup Component";
+    private const string metaDescription = "The Blazor Bootstrap button group components join buttons into groups and toolbars, and turn sets of toggle buttons into radio and checkbox inputs.";
+    private const string imageUrl = DemoScreenshotSrcConstants.Demos_URL_ButtonGroup;
+}

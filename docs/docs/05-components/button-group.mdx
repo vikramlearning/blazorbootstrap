@@ -1,0 +1,292 @@
+---
+title: Blazor Button Group Component
+description: The Blazor Bootstrap button group components join buttons into groups and toolbars, and turn sets of toggle buttons into radio and checkbox inputs, following the Bootstrap 5.3 button group.
+image: https://demos.blazorbootstrap.com/images/screenshots/button-group.png
+
+sidebar_label: Button Group
+sidebar_position: 5.5
+---
+
+import CarbonAd from '/carbon-ad.mdx'
+
+# Blazor Button Group
+
+The Blazor Bootstrap button group components follow the [Bootstrap 5.3 button group](https://getbootstrap.com/docs/5.3/components/button-group/):
+
+- `ButtonGroup` joins existing `Button` components (links included), nested groups, and dropdowns on a single line or stacked vertically.
+- `ButtonToolbar` combines several groups, and input groups, into a toolbar.
+- `RadioButtonGroup<TValue>` and `CheckboxButtonGroup<TValue>` render toggle buttons from `ButtonGroupItem<TValue>` children. A radio group binds one value, a checkbox group binds a set of values, and both work inside an `EditForm` like other inputs.
+
+<CarbonAd />
+
+## Accessibility
+
+- **Every group and toolbar needs an accessible name.** `AriaLabel` is marked required: set it, or set `aria-labelledby` to the id of a visible label (it takes precedence). Without a name, screen readers announce only "group" or "toolbar". Nested groups, such as a `Dropdown` inside a group, need one too.
+- Give icon-only buttons an `aria-label`. For an icon-only `ButtonGroupItem`, set `aria-label` on the item; it applies to the item's input.
+- Mark the link to the current page with `aria-current="page"`.
+
+## ButtonGroup parameters
+
+| Name | Type | Default | Required | Description | Added Version |
+|:--|:--|:--|:--|:--|:--|
+| AriaLabel | string? | null | ✔️ | Gets or sets the accessible name of the group, read by screen readers. To name the group by visible text instead, set `aria-labelledby`; it takes precedence. | 4.1.0 |
+| ChildContent | RenderFragment | null | ✔️ | Gets or sets the content of the group: buttons, links, nested groups, or dropdowns. | 4.1.0 |
+| Size | `ButtonGroupSize` | `ButtonGroupSize.None` | | Gets or sets the size of every button in the group, nested groups included. | 4.1.0 |
+| Vertical | bool | false | | Gets or sets whether the buttons are stacked vertically instead of horizontally. Split button dropdowns are not supported in a vertical group. | 4.1.0 |
+
+## ButtonToolbar parameters
+
+| Name | Type | Default | Required | Description | Added Version |
+|:--|:--|:--|:--|:--|:--|
+| AriaLabel | string? | null | ✔️ | Gets or sets the accessible name of the toolbar, read by screen readers. To name the toolbar by visible text instead, set `aria-labelledby`; it takes precedence. | 4.1.0 |
+| ChildContent | RenderFragment | null | ✔️ | Gets or sets the content of the toolbar: button groups and input groups. | 4.1.0 |
+
+## RadioButtonGroup parameters
+
+| Name | Type | Default | Required | Description | Added Version |
+|:--|:--|:--|:--|:--|:--|
+| AriaLabel | string? | null | ✔️ | Gets or sets the accessible name of the group, read by screen readers. To name the group by visible text instead, set `aria-labelledby`; it takes precedence. | 4.1.0 |
+| ChildContent | RenderFragment | null | ✔️ | Gets or sets the choices of the group: `ButtonGroupItem` components. | 4.1.0 |
+| Color | `ButtonColor` | `ButtonColor.Primary` | | Gets or sets the default color of the buttons. An item's `Color` overrides it. | 4.1.0 |
+| Disabled | bool | false | | Gets or sets whether every button in the group is disabled. | 4.1.0 |
+| Outline | bool | true | | Gets or sets whether the buttons use the outline style by default. An item's `Outline` overrides it. | 4.1.0 |
+| Size | `ButtonGroupSize` | `ButtonGroupSize.None` | | Gets or sets the size of every button in the group. | 4.1.0 |
+| Value | TValue | | | Gets or sets the selected value. | 4.1.0 |
+| ValueExpression | `Expression<Func<TValue>>` | null | | Gets or sets the expression that identifies the bound value for validation and EditContext notifications. | 4.1.0 |
+| Vertical | bool | false | | Gets or sets whether the buttons are stacked vertically instead of horizontally. | 4.1.0 |
+
+## RadioButtonGroup events
+
+| Name | Description | Added Version |
+|:--|:--|:--|
+| ValueChanged | This event fires when the user selects a different value. | 4.1.0 |
+
+## CheckboxButtonGroup parameters
+
+| Name | Type | Default | Required | Description | Added Version |
+|:--|:--|:--|:--|:--|:--|
+| AriaLabel | string? | null | ✔️ | Gets or sets the accessible name of the group, read by screen readers. To name the group by visible text instead, set `aria-labelledby`; it takes precedence. | 4.1.0 |
+| ChildContent | RenderFragment | null | ✔️ | Gets or sets the choices of the group: `ButtonGroupItem` components. | 4.1.0 |
+| Color | `ButtonColor` | `ButtonColor.Primary` | | Gets or sets the default color of the buttons. An item's `Color` overrides it. | 4.1.0 |
+| Disabled | bool | false | | Gets or sets whether every button in the group is disabled. | 4.1.0 |
+| Outline | bool | true | | Gets or sets whether the buttons use the outline style by default. An item's `Outline` overrides it. | 4.1.0 |
+| Size | `ButtonGroupSize` | `ButtonGroupSize.None` | | Gets or sets the size of every button in the group. | 4.1.0 |
+| Values | `IEnumerable<TValue>?` | null | | Gets or sets the selected values. | 4.1.0 |
+| ValuesExpression | `Expression<Func<IEnumerable<TValue>?>>` | null | | Gets or sets the expression that identifies the bound values for validation and EditContext notifications. | 4.1.0 |
+| Vertical | bool | false | | Gets or sets whether the buttons are stacked vertically instead of horizontally. | 4.1.0 |
+
+## CheckboxButtonGroup events
+
+| Name | Description | Added Version |
+|:--|:--|:--|
+| ValuesChanged | This event fires when the user checks or unchecks a button. The new set keeps the existing order, with a newly checked value added at the end. | 4.1.0 |
+
+## ButtonGroupItem parameters
+
+`Class` and `Style` apply to the visible button (the label). `Id` and other attributes, such as `aria-label`, apply to the input.
+
+| Name | Type | Default | Required | Description | Added Version |
+|:--|:--|:--|:--|:--|:--|
+| ChildContent | RenderFragment | null | | Gets or sets the content of the button. Takes precedence over `Text`. | 4.1.0 |
+| Color | `ButtonColor?` | null | | Gets or sets the color of this button. When `null`, the group's color is used. | 4.1.0 |
+| Disabled | bool | false | | Gets or sets whether this button is disabled. The button is also disabled when its group is disabled. | 4.1.0 |
+| Outline | bool? | null | | Gets or sets whether this button uses the outline style. When `null`, the group's setting is used. | 4.1.0 |
+| Text | string? | null | | Gets or sets the text of the button. `ChildContent` takes precedence. | 4.1.0 |
+| Value | TValue | | ✔️ | Gets or sets the value this button selects. | 4.1.0 |
+
+## Examples
+
+### Basic usage
+
+```cshtml {1-5} showLineNumbers
+<ButtonGroup AriaLabel="Text alignment">
+    <Button Color="ButtonColor.Primary" @onclick="@(() => alignment = "left")">Left</Button>
+    <Button Color="ButtonColor.Primary" @onclick="@(() => alignment = "middle")">Middle</Button>
+    <Button Color="ButtonColor.Primary" @onclick="@(() => alignment = "right")">Right</Button>
+</ButtonGroup>
+```
+
+```cs {} showLineNumbers
+@code {
+    private string alignment = "left";
+}
+```
+
+[See demo here](https://demos.blazorbootstrap.com/button-group#basic-usage)
+
+### Links
+
+Mark the link to the current page with `Class="active"` and `aria-current="page"`.
+
+```cshtml {2} showLineNumbers
+<ButtonGroup AriaLabel="Related demos">
+    <Button Type="ButtonType.Link" To="/button-group" Color="ButtonColor.Primary" Class="active" aria-current="page">Button Group</Button>
+    <Button Type="ButtonType.Link" To="/buttons" Color="ButtonColor.Primary">Buttons</Button>
+</ButtonGroup>
+```
+
+[See demo here](https://demos.blazorbootstrap.com/button-group#links)
+
+### Mixed and outlined styles
+
+Each button keeps its own `Color` and `Outline`.
+
+```cshtml {} showLineNumbers
+<ButtonGroup AriaLabel="Review decision">
+    <Button Color="ButtonColor.Danger">Reject</Button>
+    <Button Color="ButtonColor.Warning">Defer</Button>
+    <Button Color="ButtonColor.Success">Approve</Button>
+</ButtonGroup>
+
+<ButtonGroup AriaLabel="Text formatting">
+    <Button Color="ButtonColor.Primary" Outline="true" aria-label="Bold"><Icon Name="IconName.TypeBold" aria-hidden="true" /></Button>
+    <Button Color="ButtonColor.Primary" Outline="true" aria-label="Italic"><Icon Name="IconName.TypeItalic" aria-hidden="true" /></Button>
+</ButtonGroup>
+```
+
+[See demo here](https://demos.blazorbootstrap.com/button-group#mixed-styles)
+
+### Radio toggle buttons
+
+The value type comes from the binding.
+
+```cshtml {1-5} showLineNumbers
+<RadioButtonGroup @bind-Value="billingPeriod" AriaLabel="Billing period">
+    <ButtonGroupItem Value="@("monthly")" Text="Monthly" />
+    <ButtonGroupItem Value="@("yearly")" Text="Yearly" />
+    <ButtonGroupItem Value="@("lifetime")" Text="Lifetime" Disabled="true" />
+</RadioButtonGroup>
+```
+
+```cs {} showLineNumbers
+@code {
+    private string billingPeriod = "monthly";
+}
+```
+
+[See demo here](https://demos.blazorbootstrap.com/button-group#radio-toggle-buttons)
+
+### Checkbox toggle buttons
+
+Bind `@bind-Values` to an `IEnumerable<TValue>` property. Set `Color` on an item to override the group's color.
+
+```cshtml {1-6} showLineNumbers
+<CheckboxButtonGroup @bind-Values="statuses" AriaLabel="Filter by status">
+    <ButtonGroupItem Value="WorkStatus.Open" Text="Open" />
+    <ButtonGroupItem Value="WorkStatus.InProgress" Text="In progress" />
+    <ButtonGroupItem Value="WorkStatus.Blocked" Text="Blocked" Color="ButtonColor.Danger" />
+    <ButtonGroupItem Value="WorkStatus.Done" Text="Done" Color="ButtonColor.Success" />
+</CheckboxButtonGroup>
+```
+
+```cs {} showLineNumbers
+@code {
+    private IEnumerable<WorkStatus> statuses = new[] { WorkStatus.Open, WorkStatus.InProgress };
+
+    public enum WorkStatus { Open, InProgress, Blocked, Done }
+}
+```
+
+[See demo here](https://demos.blazorbootstrap.com/button-group#checkbox-toggle-buttons)
+
+### Button toolbar
+
+A toolbar can hold button groups and input groups. Space them with margin utilities, or spread them with `justify-content-between`.
+
+```cshtml {} showLineNumbers
+<ButtonToolbar AriaLabel="Editor toolbar">
+    <ButtonGroup AriaLabel="Undo and redo" Class="me-2">
+        <Button Color="ButtonColor.Secondary" Outline="true">Undo</Button>
+        <Button Color="ButtonColor.Secondary" Outline="true">Redo</Button>
+    </ButtonGroup>
+    <InputGroup>
+        <InputGroupText Id="toolbar-mention-addon">@@</InputGroupText>
+        <TextInput @bind-Value="mention" Placeholder="Mention someone" aria-label="Mention someone" aria-describedby="toolbar-mention-addon" />
+    </InputGroup>
+</ButtonToolbar>
+```
+
+[See demo here](https://demos.blazorbootstrap.com/button-group#button-toolbar)
+
+### Sizing
+
+Set `Size` on the group; every button in it resizes, nested groups included.
+
+```cshtml {1} showLineNumbers
+<ButtonGroup AriaLabel="Large button group" Size="ButtonGroupSize.Large">
+    <Button Color="ButtonColor.Primary" Outline="true">Left</Button>
+    <Button Color="ButtonColor.Primary" Outline="true">Middle</Button>
+    <Button Color="ButtonColor.Primary" Outline="true">Right</Button>
+</ButtonGroup>
+```
+
+[See demo here](https://demos.blazorbootstrap.com/button-group#sizing)
+
+### Nesting
+
+Place a `Dropdown` inside a group, and set `Class="btn-group"`, `role="group"`, and an `aria-label` on it so it joins the group as a nested group.
+
+```cshtml {4-10} showLineNumbers
+<ButtonGroup AriaLabel="Message actions">
+    <Button Color="ButtonColor.Primary">Reply</Button>
+    <Button Color="ButtonColor.Primary">Forward</Button>
+    <Dropdown Color="DropdownColor.Primary" Class="btn-group" role="group" aria-label="More message actions">
+        <DropdownToggleButton>More</DropdownToggleButton>
+        <DropdownMenu>
+            <DropdownItem>Archive</DropdownItem>
+            <DropdownItem>Mark as unread</DropdownItem>
+        </DropdownMenu>
+    </Dropdown>
+</ButtonGroup>
+```
+
+[See demo here](https://demos.blazorbootstrap.com/button-group#nesting)
+
+### Vertical variation
+
+Set `Vertical="true"`. Split button dropdowns are not supported in a vertical group, as in Bootstrap.
+
+```cshtml {1} showLineNumbers
+<RadioButtonGroup @bind-Value="density" AriaLabel="Row density" Color="ButtonColor.Danger" Vertical="true">
+    <ButtonGroupItem Value="@("compact")" Text="Compact" />
+    <ButtonGroupItem Value="@("comfortable")" Text="Comfortable" />
+    <ButtonGroupItem Value="@("spacious")" Text="Spacious" />
+</RadioButtonGroup>
+```
+
+[See demo here](https://demos.blazorbootstrap.com/button-group#vertical-variation)
+
+### EditForm validation
+
+Bind the group inside an `EditForm` and add a `ValidationMessage` after it. An invalid group gets the `invalid` class, and its inputs get `aria-invalid="true"`.
+
+```cshtml {5-10} showLineNumbers
+<EditForm Model="signup" OnValidSubmit="HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <div class="mb-3">
+        <div class="form-label" id="validation-plan-label">Plan</div>
+        <RadioButtonGroup @bind-Value="signup.Plan" AriaLabel="Plan" aria-labelledby="validation-plan-label">
+            <ButtonGroupItem Value="@("starter")" Text="Starter" />
+            <ButtonGroupItem Value="@("pro")" Text="Pro" />
+        </RadioButtonGroup>
+        <ValidationMessage For="() => signup.Plan" />
+    </div>
+    <Button Type="ButtonType.Submit" Color="ButtonColor.Primary">Submit</Button>
+</EditForm>
+```
+
+```cs {} showLineNumbers
+@code {
+    private Signup signup = new();
+
+    private void HandleValidSubmit() { }
+
+    public class Signup
+    {
+        [Required(ErrorMessage = "Please choose a plan.")]
+        public string? Plan { get; set; }
+    }
+}
+```
+
+[See demo here](https://demos.blazorbootstrap.com/button-group#editform-validation)

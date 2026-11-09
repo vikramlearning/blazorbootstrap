@@ -1,0 +1,31 @@
+<div class="d-flex flex-wrap gap-4 align-items-start">
+    <ButtonGroup AriaLabel="Vertical button group" Vertical="true">
+        <Button Color="ButtonColor.Primary">Button</Button>
+        <Button Color="ButtonColor.Primary">Button</Button>
+        <Button Color="ButtonColor.Primary">Button</Button>
+    </ButtonGroup>
+
+    <ButtonGroup AriaLabel="Vertical button group with a dropdown" Vertical="true">
+        <Button Color="ButtonColor.Primary">Button</Button>
+        <Button Color="ButtonColor.Primary">Button</Button>
+        <Dropdown Color="DropdownColor.Primary" Class="btn-group" role="group" aria-label="Dropdown options">
+            <DropdownToggleButton>Dropdown</DropdownToggleButton>
+            <DropdownMenu>
+                <DropdownItem>Dropdown link</DropdownItem>
+                <DropdownItem>Dropdown link</DropdownItem>
+            </DropdownMenu>
+        </Dropdown>
+    </ButtonGroup>
+
+    <RadioButtonGroup @bind-Value="density" AriaLabel="Row density" Color="ButtonColor.Danger" Vertical="true">
+        <ButtonGroupItem Value="@("compact")" Text="Compact" />
+        <ButtonGroupItem Value="@("comfortable")" Text="Comfortable" />
+        <ButtonGroupItem Value="@("spacious")" Text="Spacious" />
+    </RadioButtonGroup>
+</div>
+
+<div class="mt-3">Row density: @density</div>
+
+@code {
+    private string density = "comfortable";
+}

@@ -1,0 +1,25 @@
+@namespace BlazorBootstrap
+@inherits BlazorBootstrapComponentBase
+@typeparam TValue
+
+<input @ref="@Element"
+       type="@Host!.InputType"
+       class="btn-check"
+       id="@Id"
+       name="@Host.Name"
+       autocomplete="off"
+       checked="@isChecked"
+       disabled="@isDisabled"
+       aria-invalid="@(Host.IsInvalid ? "true" : null)"
+       @onchange="OnChangeAsync"
+       @attributes="@AdditionalAttributes" />
+<label class="@ClassNames" style="@StyleNames" for="@Id">
+    @if (ChildContent is not null)
+    {
+        @ChildContent
+    }
+    else
+    {
+        @Text
+    }
+</label>
