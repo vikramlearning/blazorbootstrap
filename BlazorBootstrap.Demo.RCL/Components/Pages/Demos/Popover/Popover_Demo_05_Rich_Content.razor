@@ -1,0 +1,34 @@
+<Popover Placement="PopoverPlacement.Right" CustomClass="bb-demo-popover-wide">
+    <TitleTemplate>
+        <Icon Name="IconName.Receipt" Class="me-1" aria-hidden="true" /> Order #1042 <Badge Color="BadgeColor.Success" Class="ms-1">Paid</Badge>
+    </TitleTemplate>
+    <ContentTemplate>
+        <table class="table table-sm mb-2">
+            <thead>
+                <tr><th scope="col">Item</th><th scope="col" class="text-end">Qty</th><th scope="col" class="text-end">Price</th></tr>
+            </thead>
+            <tbody>
+                @foreach (var line in lines)
+                {
+                    <tr><td>@line.Item</td><td class="text-end">@line.Qty</td><td class="text-end">@line.Price.ToString("C")</td></tr>
+                }
+            </tbody>
+            <tfoot>
+                <tr><th scope="row" colspan="2">Total</th><th class="text-end">@lines.Sum(l => l.Qty * l.Price).ToString("C")</th></tr>
+            </tfoot>
+        </table>
+        <a href="@DemoRouteConstants.Demos_URL_Popover">View the full order</a>
+    </ContentTemplate>
+    <ChildContent>
+        <Button Color="ButtonColor.Primary">Show order details</Button>
+    </ChildContent>
+</Popover>
+
+@code {
+    private readonly (string Item, int Qty, decimal Price)[] lines =
+    {
+        ("Keyboard", 1, 79.00m),
+        ("Mouse", 2, 25.50m),
+        ("USB-C cable", 3, 9.99m),
+    };
+}

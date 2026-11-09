@@ -1,0 +1,17 @@
+<div class="d-flex flex-wrap gap-2">
+    <Popover Content="I sit 20px away from the button and 40px along it." Offset="40,20" Placement="PopoverPlacement.Bottom">
+        <Button Color="ButtonColor.Secondary" Outline="true">Offset 40,20</Button>
+    </Popover>
+
+    <Popover Content="I open after 500ms and close 200ms after you leave." Trigger="PopoverTrigger.Hover | PopoverTrigger.Focus" ShowDelay="500" HideDelay="200" AutoClose="false">
+        <Button Color="ButtonColor.Secondary" Outline="true">Delayed (hover or focus)</Button>
+    </Popover>
+
+    <Popover Content="I appear and disappear without a fade." Animation="false">
+        <Button Color="ButtonColor.Secondary" Outline="true">No animation</Button>
+    </Popover>
+
+    <Popover Content="I prefer the top; without room there, I try the bottom, then the left." Placement="PopoverPlacement.Top" FallbackPlacements="@(new[] { PopoverPlacement.Bottom, PopoverPlacement.Left })">
+        <Button Color="ButtonColor.Secondary" Outline="true">Fallback placements</Button>
+    </Popover>
+</div>

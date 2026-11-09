@@ -62,6 +62,7 @@ public partial class DocsMainLayout : MainLayoutBase
             new (){ Id = "516", Text = "Pagination", Href = DemoRouteConstants.Docs_URL_Pagination, IconName = IconName.ThreeDots, ParentId = "5" },
             new (){ Id = "517", Text = "PDF Viewer", Href = DemoRouteConstants.Docs_URL_PDFViewer, IconName = IconName.FilePdfFill, ParentId = "5" },
             new (){ Id = "518", Text = "Placeholders", Href = DemoRouteConstants.Docs_URL_Placeholders, IconName = IconName.ColumnsGap, ParentId = "5" },
+            new (){ Id = "5185", Text = "Popover", Href = DemoRouteConstants.Docs_URL_Popover, IconName = IconName.ChatSquareText, ParentId = "5" },
             new (){ Id = "519", Text = "Preload", Href = DemoRouteConstants.Docs_URL_Preload, IconName = IconName.ArrowClockwise, ParentId = "5" },
             new (){ Id = "520", Text = "Progress", Href = DemoRouteConstants.Docs_URL_Progress, IconName = IconName.UsbC, ParentId = "5" },
             new (){ Id = "521", Text = "Ribbon", Href = DemoRouteConstants.Docs_URL_Ribbon, IconName = IconName.WindowStack, ParentId = "5" },

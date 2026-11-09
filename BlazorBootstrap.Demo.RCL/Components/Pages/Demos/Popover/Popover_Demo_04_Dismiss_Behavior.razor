@@ -1,0 +1,13 @@
+<div class="d-flex flex-wrap align-items-center gap-2">
+    <Popover Title="Dismissible popover" Content="Click anywhere else to close me." Trigger="PopoverTrigger.Focus">
+        <a tabindex="0" class="btn btn-danger" role="button">Dismiss on next click</a>
+    </Popover>
+
+    <Popover Title="Auto close" Content="Click outside, press Escape, or tab out of me to close me.">
+        <Button Color="ButtonColor.Primary">AutoClose (default)</Button>
+    </Popover>
+
+    <Popover Title="Stays open" Content="Only clicking the button again closes me." AutoClose="false">
+        <Button Color="ButtonColor.Primary" Outline="true">AutoClose off</Button>
+    </Popover>
+</div>

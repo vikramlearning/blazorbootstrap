@@ -1,0 +1,8 @@
+<div class="d-flex flex-wrap gap-2">
+    @foreach (var color in Enum.GetValues<PopoverColor>())
+    {
+        <Popover Title="@($"{color} popover")" Content="The header and border take the color; the body keeps the page's colors." Color="@color" Placement="PopoverPlacement.Top">
+            <Button Color="ButtonColor.Secondary" Outline="true">@color</Button>
+        </Popover>
+    }
+</div>

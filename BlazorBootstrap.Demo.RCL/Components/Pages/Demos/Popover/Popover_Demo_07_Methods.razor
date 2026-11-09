@@ -1,0 +1,34 @@
+<div class="d-flex flex-wrap gap-2 mb-4">
+    <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => popover.ShowAsync()">Show</Button>
+    <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => popover.HideAsync()">Hide</Button>
+    <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => popover.ToggleAsync()">Toggle</Button>
+    <Button Color="ButtonColor.Secondary" Outline="true" @onclick="MoveTarget">Move the target, then update</Button>
+</div>
+
+<div style="@($"margin-left: {offset}px; transition: none;")">
+    <Popover @ref="popover" Title="Controlled from code" Content="Show, hide, toggle, and reposition me with the buttons above." Trigger="PopoverTrigger.Manual" AutoClose="false" Placement="PopoverPlacement.Bottom">
+        <Button Color="ButtonColor.Primary">Popover target</Button>
+    </Popover>
+</div>
+
+@code {
+    private Popover popover = default!;
+    private int offset;
+    private bool updatePending;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        // Reposition after the moved target has rendered.
+        if (updatePending)
+        {
+            updatePending = false;
+            await popover.UpdateAsync();
+        }
+    }
+
+    private void MoveTarget()
+    {
+        offset = offset == 0 ? 160 : 0;
+        updatePending = true;
+    }
+}

@@ -86,6 +86,7 @@ public class DemoScreenshotSrcConstants
     public const string Demos_URL_Pagination = DemoScreenshotSrcPrefix + "pagination.png";
     public const string Demos_URL_PDFViewer = DemoScreenshotSrcPrefix + "pdf-viewer.png";
     public const string Demos_URL_Placeholders = DemoScreenshotSrcPrefix + "placeholders.png";
+    public const string Demos_URL_Popover = DemoScreenshotSrcPrefix + "popover.png";
     public const string Demos_URL_Preload = DemoScreenshotSrcPrefix + "preload.png";
     public const string Demos_URL_Progress = DemoScreenshotSrcPrefix + "progress.png";
     public const string Demos_URL_Ribbon = DemoScreenshotSrcPrefix + "ribbon.png";

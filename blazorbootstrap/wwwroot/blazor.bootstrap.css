@@ -285,6 +285,21 @@ table button.dropdown-toggle.bb-grid-filter::after {
     --bs-btn-border-radius: var(--bs-border-radius-lg);
 }
 
+/* popover - contextual colors, set through Bootstrap's popover CSS variables (header and border; the body keeps its colors) */
+.bb-popover-primary { --bb-popover-color: var(--bs-primary); --bs-popover-header-color: #fff; }
+.bb-popover-secondary { --bb-popover-color: var(--bs-secondary); --bs-popover-header-color: #fff; }
+.bb-popover-success { --bb-popover-color: var(--bs-success); --bs-popover-header-color: #fff; }
+.bb-popover-danger { --bb-popover-color: var(--bs-danger); --bs-popover-header-color: #fff; }
+.bb-popover-warning { --bb-popover-color: var(--bs-warning); --bs-popover-header-color: #000; }
+.bb-popover-info { --bb-popover-color: var(--bs-info); --bs-popover-header-color: #000; }
+.bb-popover-light { --bb-popover-color: var(--bs-light); --bs-popover-header-color: #000; }
+.bb-popover-dark { --bb-popover-color: var(--bs-dark); --bs-popover-header-color: #fff; }
+
+.popover[class*="bb-popover-"] {
+    --bs-popover-border-color: var(--bb-popover-color);
+    --bs-popover-header-bg: var(--bb-popover-color);
+}
+
 /* split view */
 .bb-split-view {
     display: flex;
