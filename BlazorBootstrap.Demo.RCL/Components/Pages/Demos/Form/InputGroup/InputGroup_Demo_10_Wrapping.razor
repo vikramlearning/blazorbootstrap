@@ -1,0 +1,18 @@
+<div style="max-width: 16rem;">
+    <div class="mb-1">Wraps (default):</div>
+    <InputGroup Class="mb-3">
+        <InputGroupText>A long add-on label</InputGroupText>
+        <TextInput @bind-Value="wrapped" aria-label="Wrapping input" />
+    </InputGroup>
+
+    <div class="mb-1">No wrap:</div>
+    <InputGroup NoWrap="true">
+        <InputGroupText>A long add-on label</InputGroupText>
+        <TextInput @bind-Value="noWrap" aria-label="Non-wrapping input" />
+    </InputGroup>
+</div>
+
+@code {
+    private string? wrapped;
+    private string? noWrap;
+}

@@ -21,6 +21,7 @@ public partial class DocsMainLayout : MainLayoutBase
             new (){ Id = "402", Text = "Currency Input", Href = DemoRouteConstants.Docs_URL_CurrencyInput, IconName = IconName.CurrencyDollar, ParentId = "4" },
             new (){ Id = "403", Text = "Date Input", Href = DemoRouteConstants.Docs_URL_DateInput, IconName = IconName.CalendarDate, ParentId = "4" },
             new (){ Id = "415", Text = "Drag and Drop File Input", Href = DemoRouteConstants.Docs_URL_DragAndDropFileInput, IconName = IconName.FileEarmarkArrowUp, ParentId = "4" },
+            new (){ Id = "492", Text = "Input Group", Href = DemoRouteConstants.Docs_URL_InputGroup, IconName = IconName.UiChecksGrid, ParentId = "4" },
             new (){ Id = "404", Text = "Enum Input", Href = DemoRouteConstants.Docs_URL_EnumInput, IconName = IconName.MenuButtonWideFill, ParentId = "4" },
             new (){ Id = "414", Text = "File Input", Href = DemoRouteConstants.Docs_URL_FileInput, IconName = IconName.FileEarmarkArrowUp, ParentId = "4" },
             new (){ Id = "405", Text = "Number Input", Href = DemoRouteConstants.Docs_URL_NumberInput, IconName = IconName.InputCursor, ParentId = "4" },

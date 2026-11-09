@@ -1,0 +1,10 @@
+<InputGroup>
+    <InputGroupText>First and last name</InputGroupText>
+    <TextInput @bind-Value="firstName" aria-label="First name" />
+    <TextInput @bind-Value="lastName" aria-label="Last name" />
+</InputGroup>
+
+@code {
+    private string? firstName;
+    private string? lastName;
+}

@@ -1,0 +1,20 @@
+<InputGroup Size="InputGroupSize.Small" Class="mb-3">
+    <InputGroupText Id="sizing-small">Small</InputGroupText>
+    <TextInput @bind-Value="small" aria-label="Small text input" aria-describedby="sizing-small" />
+</InputGroup>
+
+<InputGroup Class="mb-3">
+    <InputGroupText Id="sizing-default">Default</InputGroupText>
+    <TextInput @bind-Value="normal" aria-label="Default text input" aria-describedby="sizing-default" />
+</InputGroup>
+
+<InputGroup Size="InputGroupSize.Large">
+    <InputGroupText Id="sizing-large">Large</InputGroupText>
+    <TextInput @bind-Value="large" aria-label="Large text input" aria-describedby="sizing-large" />
+</InputGroup>
+
+@code {
+    private string? small;
+    private string? normal;
+    private string? large;
+}

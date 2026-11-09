@@ -26,6 +26,7 @@ public class DemoScreenshotSrcConstants
     public const string Demos_URL_DragAndDropFileInput = DemoScreenshotSrcPrefix + "drag-and-drop-file-input.png";
     public const string Demos_URL_NumberInput = DemoScreenshotSrcPrefix + "number-input.png";
     public const string Demos_URL_FileInput = DemoScreenshotSrcPrefix + "file-input.png";
+    public const string Demos_URL_InputGroup = DemoScreenshotSrcPrefix + "input-group.png";
     public const string Demos_URL_OTPInput = DemoScreenshotSrcPrefix + "otp-input.png";
     public const string Demos_URL_PasswordInput = DemoScreenshotSrcPrefix + "password-input.png";
     public const string Demos_URL_RadioInput = DemoScreenshotSrcPrefix + "radio-input.png";

@@ -1,0 +1,44 @@
+@using System.ComponentModel.DataAnnotations
+
+<EditForm Model="signup" OnValidSubmit="HandleValidSubmit" OnInvalidSubmit="() => submitted = false">
+    <DataAnnotationsValidator />
+    <label class="form-label" for="validation-username">Username</label>
+    <InputGroup Class="mb-3">
+        <InputGroupText Id="validation-addon">@@</InputGroupText>
+        <TextInput Id="validation-username" @bind-Value="signup.Username" aria-describedby="validation-addon" />
+        <ValidationMessage For="() => signup.Username" />
+    </InputGroup>
+
+    <label class="form-label" for="validation-budget">Monthly budget</label>
+    <InputGroup Class="mb-3">
+        <InputGroupText>$</InputGroupText>
+        <NumberInput TValue="decimal?" Id="validation-budget" @bind-Value="signup.Budget" />
+        <InputGroupText>.00</InputGroupText>
+        <ValidationMessage For="() => signup.Budget" />
+    </InputGroup>
+
+    <Button Type="ButtonType.Submit" Color="ButtonColor.Primary">Submit</Button>
+</EditForm>
+
+@if (submitted)
+{
+    <div class="mt-3">Welcome, @signup.Username!</div>
+}
+
+@code {
+    private Signup signup = new();
+    private bool submitted;
+
+    private void HandleValidSubmit() => submitted = true;
+
+    public class Signup
+    {
+        [Required(ErrorMessage = "Please choose a username.")]
+        [StringLength(20, MinimumLength = 3, ErrorMessage = "Use 3 to 20 characters.")]
+        public string? Username { get; set; }
+
+        [Required(ErrorMessage = "Please enter a budget.")]
+        [Range(1, 10000, ErrorMessage = "Enter a budget from 1 to 10,000.")]
+        public decimal? Budget { get; set; }
+    }
+}

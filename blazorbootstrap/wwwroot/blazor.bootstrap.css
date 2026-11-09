@@ -233,6 +233,43 @@ table button.dropdown-toggle.bb-grid-filter::after {
     color: var(--bb-validation-message-color);
 }
 
+/* input group - validation */
+.input-group > .validation-message {
+    width: 100%;
+    margin-left: 0 !important;
+}
+
+.input-group > :not(.validation-message):has(+ .validation-message) {
+    border-top-right-radius: var(--bs-border-radius) !important;
+    border-bottom-right-radius: var(--bs-border-radius) !important;
+}
+
+.input-group-sm > :not(.validation-message):has(+ .validation-message) {
+    border-top-right-radius: var(--bs-border-radius-sm) !important;
+    border-bottom-right-radius: var(--bs-border-radius-sm) !important;
+}
+
+.input-group-lg > :not(.validation-message):has(+ .validation-message) {
+    border-top-right-radius: var(--bs-border-radius-lg) !important;
+    border-bottom-right-radius: var(--bs-border-radius-lg) !important;
+}
+
+.input-group > .invalid,
+.input-group > .valid.modified:not([type=checkbox]) {
+    z-index: 3;
+}
+
+/* input group - Dropdown add-ons (the Dropdown component wraps its buttons in a div) */
+.input-group > .dropdown:not(:first-child) > .btn:first-child {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}
+
+.input-group > .dropdown:not(:last-child) > .btn:not(:has(~ .btn)) {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
 /* split view */
 .bb-split-view {
     display: flex;

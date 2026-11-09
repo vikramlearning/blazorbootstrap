@@ -1,0 +1,203 @@
+---
+title: Blazor Input Group Component
+description: The Blazor Bootstrap InputGroup component extends form inputs with text, icon, checkbox, radio, button, and dropdown add-ons on either side, following the Bootstrap 5.3 input group.
+image: https://demos.blazorbootstrap.com/images/screenshots/input-group.png
+
+sidebar_label: Input Group
+sidebar_position: 14.5
+---
+
+import CarbonAd from '/carbon-ad.mdx'
+
+# Blazor Input Group
+
+The Blazor Bootstrap `InputGroup` component extends a form input with add-ons placed before, after, or on both sides of it: text, icons, checkboxes, radios, buttons, and dropdowns. It follows the [Bootstrap 5.3 input group](https://getbootstrap.com/docs/5.3/forms/input-group/) and uses no JavaScript.
+
+<CarbonAd />
+
+## Before you start
+
+- **Supported inputs:** `TextInput`, `NumberInput`, `CurrencyInput`, `DateInput`, `TimeInput`, `TextAreaInput`, `EnumInput`, and Blazor's `InputFile` (with `class="form-control"`) work inside an `InputGroup`.
+- **Not supported:** `PasswordInput` and `AutoComplete` already render their own input group, so they cannot be placed inside an `InputGroup`.
+- **Validation:** in an `EditForm`, put `ValidationMessage` as the last child of the group. Validation styling is supported only for groups with a single input, as in Bootstrap.
+
+## InputGroup parameters
+
+| Name | Type | Default | Required | Description | Added Version |
+|:--|:--|:--|:--|:--|:--|
+| ChildContent | RenderFragment | null | ✔️ | Gets or sets the content of the input group: inputs and add-ons in display order. | 4.1.0 |
+| NoWrap | bool | false | | Gets or sets whether the input group stays on one line instead of wrapping its children. | 4.1.0 |
+| Size | `InputGroupSize` | `InputGroupSize.Default` | | Gets or sets the size of the input group. The size applies to every input and add-on in the group. | 4.1.0 |
+
+## InputGroupText parameters
+
+| Name | Type | Default | Required | Description | Added Version |
+|:--|:--|:--|:--|:--|:--|
+| ChildContent | RenderFragment | null | ✔️ | Gets or sets the content of the add-on, such as text, an icon, or a checkbox or radio input. | 4.1.0 |
+| For | string? | null | | Gets or sets the id of the input this add-on labels. When set, the add-on renders as a `label` element linked to that input; otherwise it renders as a `span`. | 4.1.0 |
+
+## Accessibility
+
+- Give every input an accessible name with `aria-label`, or with a `<label>` placed outside the group.
+- Set an `Id` on an `InputGroupText` and reference it from the input's `aria-describedby`, so screen readers read the add-on together with the input.
+- A checkbox or radio inside an add-on has no visible label, so give it an `aria-label`.
+- Give icon-only buttons an `aria-label`, and give a split dropdown toggle screen-reader text with a `visually-hidden` span.
+
+## Examples
+
+### Basic usage
+
+Place text or icon add-ons before, after, or on both sides of an input.
+
+```cshtml {1-4} showLineNumbers
+<InputGroup Class="mb-3">
+    <InputGroupText Id="basic-addon-at">@@</InputGroupText>
+    <TextInput @bind-Value="username" Placeholder="Username" aria-label="Username" aria-describedby="basic-addon-at" />
+</InputGroup>
+
+<InputGroup Class="mb-3">
+    <TextInput @bind-Value="recipient" Placeholder="Recipient's username" aria-label="Recipient's username" aria-describedby="basic-addon-domain" />
+    <InputGroupText Id="basic-addon-domain">@@example.com</InputGroupText>
+</InputGroup>
+
+<InputGroup>
+    <InputGroupText><Icon Name="IconName.Search" aria-hidden="true" /></InputGroupText>
+    <TextInput @bind-Value="search" Placeholder="Search" aria-label="Search" />
+</InputGroup>
+```
+
+```cs {} showLineNumbers
+@code {
+    private string? username;
+    private string? recipient;
+    private string? search;
+}
+```
+
+[See demo here](https://demos.blazorbootstrap.com/form/input-group#basic-usage)
+
+### Sizing
+
+Set `Size` on the group; every input and add-on inside it resizes.
+
+```cshtml {1} showLineNumbers
+<InputGroup Size="InputGroupSize.Small">
+    <InputGroupText Id="sizing-small">Small</InputGroupText>
+    <TextInput @bind-Value="small" aria-label="Small text input" aria-describedby="sizing-small" />
+</InputGroup>
+```
+
+[See demo here](https://demos.blazorbootstrap.com/form/input-group#sizing)
+
+### Checkboxes and radios
+
+Place a checkbox or radio inside an `InputGroupText`, and give it an `aria-label`.
+
+```cshtml {2-4} showLineNumbers
+<InputGroup>
+    <InputGroupText>
+        <input class="form-check-input mt-0" type="checkbox" @bind="newsletter" aria-label="Subscribe to the newsletter" />
+    </InputGroupText>
+    <TextInput @bind-Value="email" Placeholder="Email for the newsletter" aria-label="Email for the newsletter" Disabled="@(!newsletter)" />
+</InputGroup>
+```
+
+[See demo here](https://demos.blazorbootstrap.com/form/input-group#checkboxes-and-radios)
+
+### Multiple inputs and add-ons
+
+A group can hold several inputs or several add-ons.
+
+```cshtml {} showLineNumbers
+<InputGroup Class="mb-3">
+    <InputGroupText>First and last name</InputGroupText>
+    <TextInput @bind-Value="firstName" aria-label="First name" />
+    <TextInput @bind-Value="lastName" aria-label="Last name" />
+</InputGroup>
+
+<InputGroup>
+    <InputGroupText>$</InputGroupText>
+    <InputGroupText>0.00</InputGroupText>
+    <NumberInput TValue="decimal?" @bind-Value="amount" aria-label="Dollar amount (with dot and two decimal places)" />
+</InputGroup>
+```
+
+[See demo here](https://demos.blazorbootstrap.com/form/input-group#multiple-inputs)
+
+### Button add-ons
+
+```cshtml {3} showLineNumbers
+<InputGroup>
+    <TextInput @bind-Value="query" Placeholder="Search docs" aria-label="Search docs" />
+    <Button Color="ButtonColor.Primary" @onclick="Search">Search</Button>
+</InputGroup>
+```
+
+[See demo here](https://demos.blazorbootstrap.com/form/input-group#button-addons)
+
+### Buttons with dropdowns and segmented buttons
+
+```cshtml {3-10} showLineNumbers
+<InputGroup>
+    <TextInput @bind-Value="message" Placeholder="Write a message" aria-label="Message" />
+    <Dropdown Color="DropdownColor.Primary" Split="true">
+        <DropdownActionButton @onclick="Send">Send</DropdownActionButton>
+        <DropdownToggleButton><span class="visually-hidden">More send options</span></DropdownToggleButton>
+        <DropdownMenu Position="DropdownMenuPosition.End">
+            <DropdownItem @onclick="Schedule">Schedule send</DropdownItem>
+            <DropdownItem @onclick="SaveDraft">Save as draft</DropdownItem>
+        </DropdownMenu>
+    </Dropdown>
+</InputGroup>
+```
+
+[See demo here](https://demos.blazorbootstrap.com/form/input-group#segmented-buttons)
+
+### Select and file inputs
+
+Set `For` on `InputGroupText` to label the control with the add-on.
+
+```cshtml {2,7} showLineNumbers
+<InputGroup Class="mb-3">
+    <InputGroupText For="input-group-priority">Priority</InputGroupText>
+    <EnumInput TEnum="Priority" Id="input-group-priority" @bind-Value="priority" />
+</InputGroup>
+
+<InputGroup>
+    <InputGroupText For="input-group-file">Upload</InputGroupText>
+    <InputFile id="input-group-file" class="form-control" OnChange="OnFileChange" />
+</InputGroup>
+```
+
+[See demo here](https://demos.blazorbootstrap.com/form/input-group#select-and-file-inputs)
+
+### Wrapping
+
+Input groups wrap by default. Set `NoWrap="true"` to keep everything on one line.
+
+```cshtml {1} showLineNumbers
+<InputGroup NoWrap="true">
+    <InputGroupText>A long add-on label</InputGroupText>
+    <TextInput @bind-Value="noWrap" aria-label="Non-wrapping input" />
+</InputGroup>
+```
+
+[See demo here](https://demos.blazorbootstrap.com/form/input-group#wrapping)
+
+### EditForm validation
+
+Put `ValidationMessage` as the last child of the group. The message shows below the group, and the corners stay intact.
+
+```cshtml {6} showLineNumbers
+<EditForm Model="signup" OnValidSubmit="HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <InputGroup Class="mb-3">
+        <InputGroupText Id="validation-addon">@@</InputGroupText>
+        <TextInput @bind-Value="signup.Username" aria-label="Username" aria-describedby="validation-addon" />
+        <ValidationMessage For="() => signup.Username" />
+    </InputGroup>
+    <Button Type="ButtonType.Submit" Color="ButtonColor.Primary">Submit</Button>
+</EditForm>
+```
+
+[See demo here](https://demos.blazorbootstrap.com/form/input-group#editform-validation)

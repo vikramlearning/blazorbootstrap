@@ -1,0 +1,15 @@
+@namespace BlazorBootstrap
+@inherits BlazorBootstrapComponentBase
+
+@if (string.IsNullOrWhiteSpace(For))
+{
+    <span @ref="@Element" id="@Id" class="@ClassNames" style="@StyleNames" @attributes="@AdditionalAttributes">
+        @ChildContent
+    </span>
+}
+else
+{
+    <label @ref="@Element" id="@Id" for="@For" class="@ClassNames" style="@StyleNames" @attributes="@AdditionalAttributes">
+        @ChildContent
+    </label>
+}

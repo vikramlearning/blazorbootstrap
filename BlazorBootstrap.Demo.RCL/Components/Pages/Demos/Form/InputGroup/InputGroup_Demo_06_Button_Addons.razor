@@ -1,0 +1,33 @@
+<InputGroup Class="mb-3">
+    <Button Color="ButtonColor.Secondary" Outline="true" @onclick="Paste">Paste</Button>
+    <TextInput @bind-Value="text" Placeholder="Click Paste to fill" aria-label="Text with a button add-on before it" />
+</InputGroup>
+
+<InputGroup Class="mb-3">
+    <TextInput @bind-Value="query" Placeholder="Search docs" aria-label="Search docs" />
+    <Button Color="ButtonColor.Primary" @onclick="Search">Search</Button>
+</InputGroup>
+
+<InputGroup>
+    <Button Color="ButtonColor.Secondary" Outline="true" @onclick="Decrease" aria-label="Decrease seats">−</Button>
+    <Button Color="ButtonColor.Secondary" Outline="true" @onclick="Increase" aria-label="Increase seats">+</Button>
+    <NumberInput TValue="int" @bind-Value="seats" Min="1" Max="20" EnableMinMax="true" aria-label="Seats" />
+    <Button Color="ButtonColor.Danger" Outline="true" @onclick="Reset">Reset</Button>
+    <Button Color="ButtonColor.Success" Outline="true" @onclick="Save">Save</Button>
+</InputGroup>
+
+<div class="mt-3">@message</div>
+
+@code {
+    private string? text;
+    private string? query;
+    private int seats = 2;
+    private string? message;
+
+    private void Paste() => text = "Pasted text";
+    private void Search() => message = $"Searching for \"{query}\".";
+    private void Decrease() => seats = Math.Max(1, seats - 1);
+    private void Increase() => seats = Math.Min(20, seats + 1);
+    private void Reset() => seats = 2;
+    private void Save() => message = $"Saved {seats} seats.";
+}

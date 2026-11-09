@@ -88,6 +88,7 @@ public static class BootstrapClass
     public const string Flex = "d-flex";
     public const string FlexColumn = "flex-column";
     public const string FlexInline = "d-inline-flex";
+    public const string FlexNoWrap = "flex-nowrap";
     public const string FlexRow = "flex-row";
 
     public const string FormCheck = "form-check";
@@ -102,6 +103,9 @@ public static class BootstrapClass
 
     public const string ImageFluid = "img-fluid";
     public const string ImageThumbnail = "img-thumbnail";
+
+    public const string InputGroup = "input-group";
+    public const string InputGroupText = "input-group-text";
 
     public const string MarginEnd1 = "me-1";
     public const string MarginEnd2 = "me-2";
