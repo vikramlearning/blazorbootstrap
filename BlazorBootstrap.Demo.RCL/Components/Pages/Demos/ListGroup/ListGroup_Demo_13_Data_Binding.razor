@@ -1,0 +1,33 @@
+<ListGroup TItem="TaskItem" Data="tasks" TextField="@(t => t.Title)" OnItemClick="OnTaskClick" AriaLabel="Tasks" Style="max-width: 24rem;" />
+
+<form class="d-flex gap-2 mt-3" style="max-width: 24rem;" @onsubmit="AddTask">
+    <TextInput @bind-Value="newTitle" Placeholder="New task" aria-label="New task" />
+    <Button Type="ButtonType.Submit" Color="ButtonColor.Primary">Add</Button>
+</form>
+
+<div class="mt-3">@(status ?? "Click a task, or add one. Titles render as text, never as HTML.")</div>
+
+@code {
+    private readonly List<TaskItem> tasks = new()
+    {
+        new(1, "Write release notes"),
+        new(2, "Review the pull request"),
+        new(3, "Update the screenshots"),
+    };
+
+    private string? newTitle;
+    private string? status;
+
+    private void AddTask()
+    {
+        if (string.IsNullOrWhiteSpace(newTitle))
+            return;
+
+        tasks.Add(new TaskItem(tasks.Count + 1, newTitle));
+        newTitle = null;
+    }
+
+    private void OnTaskClick(TaskItem task) => status = $"Clicked task {task.Id}: {task.Title}";
+
+    public record TaskItem(int Id, string Title);
+}

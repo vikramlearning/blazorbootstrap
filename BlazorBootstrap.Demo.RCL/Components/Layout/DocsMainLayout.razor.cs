@@ -53,6 +53,7 @@ public partial class DocsMainLayout : MainLayoutBase
             new (){ Id = "511", Text = "Dropdown", Href = DemoRouteConstants.Docs_URL_Dropdown, IconName = IconName.MenuButtonWideFill, ParentId = "5" },
             new (){ Id = "512", Text = "Google Map", Href = DemoRouteConstants.Docs_URL_GoogleMap, IconName = IconName.Map, ParentId = "5" },
             new (){ Id = "513", Text = "Grid", Href = DemoRouteConstants.Docs_URL_Grid, IconName = IconName.Grid, ParentId = "5" },
+            new (){ Id = "5135", Text = "List Group", Href = DemoRouteConstants.Docs_URL_ListGroup, IconName = IconName.ListUl, ParentId = "5" },
             new (){ Id = "514", Text = "Markdown", Href = DemoRouteConstants.Docs_URL_Markdown, IconName = IconName.MarkdownFill, ParentId = "5" },
             new (){ Id = "5141", Text = "Mind Map", Href = DemoRouteConstants.Docs_URL_MindMap, IconName = IconName.Diagram3, ParentId = "5" },
             new (){ Id = "5145", Text = "Modals", Href = DemoRouteConstants.Docs_URL_Modal, IconName = IconName.WindowStack, ParentId = "5" },

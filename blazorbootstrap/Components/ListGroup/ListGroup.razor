@@ -1,0 +1,94 @@
+@namespace BlazorBootstrap
+@inherits BlazorBootstrapComponentBase
+@typeparam TItem
+@attribute [CascadingTypeParameter(nameof(TItem))]
+
+@if (TabMode)
+{
+    <div class="row g-3">
+        <div class="@TabListClass">
+            <div @ref="@Element" id="@Id" class="@ClassNames" style="@StyleNames" role="tablist" aria-label="@AriaLabel" @attributes="@AdditionalAttributes">
+                @foreach (var pane in panes)
+                {
+                    <button type="button"
+                            class="@GetTabClassNames(pane)"
+                            id="@pane.TabId"
+                            data-bs-toggle="list"
+                            data-bs-target="@($"#{pane.Id}")"
+                            data-bb-name="@pane.Name"
+                            role="tab"
+                            aria-controls="@pane.Id"
+                            aria-selected="@(((IListGroupTabHost)this).IsInitiallyActive(pane) ? "true" : "false")"
+                            disabled="@pane.Disabled">
+                        @if (pane.TitleTemplate is not null)
+                        {
+                            @pane.TitleTemplate
+                        }
+                        else
+                        {
+                            @pane.Title
+                        }
+                    </button>
+                }
+            </div>
+        </div>
+        <div class="@TabContentClass">
+            <div class="tab-content">
+                <CascadingValue Value="@((IListGroupTabHost)this)">
+                    @ChildContent
+                </CascadingValue>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <CascadingValue Value="@this">
+        @if (containerTag == "ol")
+        {
+            <ol @ref="@Element" id="@Id" class="@ClassNames" style="@StyleNames" aria-label="@AriaLabel" @attributes="@AdditionalAttributes">@RenderItems()</ol>
+        }
+        else if (containerTag == "ul")
+        {
+            <ul @ref="@Element" id="@Id" class="@ClassNames" style="@StyleNames" aria-label="@AriaLabel" @attributes="@AdditionalAttributes">@RenderItems()</ul>
+        }
+        else
+        {
+            <div @ref="@Element"
+                 id="@Id"
+                 class="@ClassNames"
+                 style="@StyleNames"
+                 role="@(isListbox ? "listbox" : null)"
+                 aria-label="@AriaLabel"
+                 aria-multiselectable="@(SelectionMode == ListGroupSelectionMode.Multiple ? "true" : null)"
+                 aria-invalid="@(isListbox && IsInvalid ? "true" : null)"
+                 @attributes="@AdditionalAttributes">@RenderItems()</div>
+        }
+    </CascadingValue>
+}
+
+@code {
+    private RenderFragment RenderItems() => __builder =>
+    {
+        @if (Data is not null)
+        {
+            @foreach (var item in Data)
+            {
+                <ListGroupItem TItem="TItem" Value="@item" Disabled="@(DisabledSelector?.Invoke(item) ?? false)">
+                    @if (ItemTemplate is not null)
+                    {
+                        @ItemTemplate(item)
+                    }
+                    else
+                    {
+                        @(TextField is not null ? TextField(item) : item?.ToString())
+                    }
+                </ListGroupItem>
+            }
+        }
+        else
+        {
+            @ChildContent
+        }
+    };
+}

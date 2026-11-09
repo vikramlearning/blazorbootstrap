@@ -1,0 +1,252 @@
+@attribute [Route(pageUrl)]
+@layout DemosMainLayout
+
+<DemosPageHeadSection PageUrl="@pageUrl"
+                      PageTitle="@pageTitle"
+                      PageDescription="@pageDescription"
+                      MetaTitle="@metaTitle"
+                      MetaDescription="@metaDescription"
+                      ImageUrl="@imageUrl" />
+
+<DocsLink Href="@DemoRouteConstants.Docs_URL_ListGroup" />
+
+<Callout Color="CalloutColor.Info">
+    <b>ListGroup</b> follows the <a href="https://getbootstrap.com/docs/5.3/components/list-group/" target="_blank" rel="noopener">Bootstrap 5.3 list group</a>.
+    Use <code>ListGroupItem</code> children (static mode), or set <code>Data</code> (data-bound mode).
+    Set <code>TItem</code> to the type of the item values; a static list without selection still sets it, for example <code>TItem="string"</code>.
+</Callout>
+
+<Section Size="HeadingSize.H2" Name="Basic usage" PageUrl="@pageUrl" Link="basic-usage">
+    <div class="mb-3">
+        A list of items, with an optional active item.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Add <code>ListGroup</code> with <code>TItem</code>, and <code>ListGroupItem</code> children.</li>
+                <li>Set <code>Active="true"</code> on the current item; it is marked <code>aria-current="true"</code>.</li>
+            </ol>
+        </div>
+    </div>
+    <Demo Type="typeof(ListGroup_Demo_01_Basic_Usage)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Links and buttons" PageUrl="@pageUrl" Link="links-and-buttons">
+    <div class="mb-3">
+        Make items actionable with a link or a click handler; they get hover, focus, and active styles.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Set <code>Href</code> for a link, or <code>OnClick</code> for a button.</li>
+                <li>Set <code>Disabled="true"</code>. A disabled link has no <code>href</code>, is marked <code>aria-disabled="true"</code>, and does not navigate; a disabled button uses the native <code>disabled</code> attribute.</li>
+            </ol>
+        </div>
+    </div>
+    <Demo Type="typeof(ListGroup_Demo_02_Links_And_Buttons)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Flush" PageUrl="@pageUrl" Link="flush">
+    <div class="mb-3">
+        Remove the outer borders and rounded corners so the list sits edge to edge, for example in a card.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Set <code>Flush="true"</code>. It is ignored when <code>Horizontal</code> is set.</li>
+            </ol>
+        </div>
+    </div>
+    <Demo Type="typeof(ListGroup_Demo_03_Flush)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Numbered" PageUrl="@pageUrl" Link="numbered">
+    <div class="mb-3">
+        Number the items. The list renders as an ordered list.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Set <code>Numbered="true"</code>. Items can hold custom content, such as a heading and a badge.</li>
+            </ol>
+        </div>
+    </div>
+    <Demo Type="typeof(ListGroup_Demo_04_Numbered)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Horizontal" PageUrl="@pageUrl" Link="horizontal">
+    <div class="mb-3">
+        Lay the items out in a row at every width, or from a breakpoint up.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Set <code>Horizontal="true"</code>, and <code>HorizontalBreakpoint</code> to <code>Small</code> through <code>ExtraExtraLarge</code> (default <code>Always</code>).</li>
+            </ol>
+        </div>
+        Resize the window to see each list switch from a column to a row.
+    </div>
+    <Demo Type="typeof(ListGroup_Demo_05_Horizontal)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Colors" PageUrl="@pageUrl" Link="colors">
+    <div class="mb-3">
+        Give an item a contextual color. Actionable items also get matching hover and active styles.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Set <code>Color</code> on <code>ListGroupItem</code>.</li>
+                <li>Do not rely on color alone to carry meaning; also say it in the text.</li>
+            </ol>
+        </div>
+    </div>
+    <Demo Type="typeof(ListGroup_Demo_06_Colors)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Badges" PageUrl="@pageUrl" Link="badges">
+    <div class="mb-3">
+        Add a badge to an item, for example a count.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Put a <code>Badge</code> in the item, and lay it out with <code>Class="d-flex justify-content-between align-items-center"</code>.</li>
+            </ol>
+        </div>
+    </div>
+    <Demo Type="typeof(ListGroup_Demo_07_Badges)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Custom content" PageUrl="@pageUrl" Link="custom-content">
+    <div class="mb-3">
+        Put any markup inside an item, including links.
+        <br />
+        This demo shows a notification panel; the newest notification is active.
+    </div>
+    <Demo Type="typeof(ListGroup_Demo_08_Custom_Content)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Checkboxes and radios" PageUrl="@pageUrl" Link="checkboxes-and-radios">
+    <div class="mb-3">
+        Give each item a real checkbox or radio input with a label.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Set <code>SelectionMode</code> to <code>Checkbox</code> and bind <code>@@bind-SelectedItems</code>, or to <code>Radio</code> and bind <code>@@bind-SelectedItem</code>.</li>
+                <li>Set <code>Value</code> on each item. The item content is the input's label; set <code>AriaLabel</code> when an item has no visible text.</li>
+                <li>Set <code>StretchedLink="true"</code> to make the whole row clickable.</li>
+            </ol>
+        </div>
+    </div>
+    <Demo Type="typeof(ListGroup_Demo_09_Checkboxes_And_Radios)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Single selection" PageUrl="@pageUrl" Link="single-selection">
+    <div class="mb-3">
+        Select one item. The list is a listbox: items are options with <code>aria-selected</code>, and a check mark shows the selected item.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Set <code>SelectionMode="ListGroupSelectionMode.Single"</code>, bind <code>@@bind-SelectedItem</code>, and set an <code>AriaLabel</code>.</li>
+                <li>Keyboard: Tab moves into the list, the arrow keys, Home, and End move between items, and Space or Enter selects.</li>
+            </ol>
+        </div>
+    </div>
+    <Demo Type="typeof(ListGroup_Demo_10_Single_Selection)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Multiple selection" PageUrl="@pageUrl" Link="multiple-selection">
+    <div class="mb-3">
+        Select any number of items. The listbox is marked <code>aria-multiselectable="true"</code>.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Set <code>SelectionMode="ListGroupSelectionMode.Multiple"</code> and bind <code>@@bind-SelectedItems</code>. Space or Enter toggles the focused item.</li>
+            </ol>
+        </div>
+    </div>
+    <Demo Type="typeof(ListGroup_Demo_11_Multiple_Selection)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Disabled" PageUrl="@pageUrl" Link="disabled">
+    <div class="mb-3">
+        Disable the whole list, or single items.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Set <code>Disabled="true"</code> on the group, <code>Disabled</code> on a static item, or <code>DisabledSelector</code> for data-bound items.</li>
+            </ol>
+        </div>
+    </div>
+    <Demo Type="typeof(ListGroup_Demo_12_Disabled)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Data binding" PageUrl="@pageUrl" Link="data-binding">
+    <div class="mb-3">
+        Render items from data.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Set <code>Data</code> and <code>TextField</code>.</li>
+                <li>Set <code>OnItemClick</code> to make the items buttons that report the clicked item.</li>
+            </ol>
+        </div>
+    </div>
+    <Demo Type="typeof(ListGroup_Demo_13_Data_Binding)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Templates" PageUrl="@pageUrl" Link="templates">
+    <div class="mb-3">
+        Render data-bound items with your own markup.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Set <code>ItemTemplate</code>; it takes precedence over <code>TextField</code>.</li>
+            </ol>
+        </div>
+        This demo combines a template with checkbox selection.
+    </div>
+    <Demo Type="typeof(ListGroup_Demo_14_Templates)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Tabs" PageUrl="@pageUrl" Link="tabs">
+    <div class="mb-3">
+        Use the items as tabs that switch content panes.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Set <code>TabMode="true"</code>, and add a <code>ListGroupTabPane</code> per section with a unique <code>Name</code>, and a <code>Title</code> or <code>TitleTemplate</code>.</li>
+                <li>Panes fade by default; set <code>Fade="false"</code> to switch instantly. Set <code>TabListClass</code> and <code>TabContentClass</code> to change the two columns.</li>
+                <li>Handle <code>OnShowing</code>, <code>OnShown</code>, <code>OnHiding</code>, and <code>OnHidden</code>, and call <code>ShowTabAsync</code> to switch from code.</li>
+                <li>Keyboard: the arrow keys move between tabs and show them.</li>
+            </ol>
+        </div>
+    </div>
+    <Demo Type="typeof(ListGroup_Demo_15_Tabs)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="EditForm validation" PageUrl="@pageUrl" Link="editform-validation">
+    <div class="mb-3">
+        Selectable lists take part in an <code>EditForm</code> like other inputs.
+        <br />
+        Submit the empty form to see both messages. An invalid list gets the <code>invalid</code> class and <code>aria-invalid="true"</code>.
+    </div>
+    <Demo Type="typeof(ListGroup_Demo_16_EditForm_Validation)" Tabs="true" />
+</Section>
+
+@code {
+    private const string pageUrl = DemoRouteConstants.Demos_URL_ListGroup;
+    private const string pageTitle = "Blazor ListGroup";
+    private const string pageDescription = "The Blazor Bootstrap ListGroup component shows a list of items, links, or buttons, with single, multiple, checkbox, or radio selection, or tabs that switch content panes.";
+    private const string metaTitle = "Blazor ListGroup Component";
+    private const string metaDescription = "The Blazor Bootstrap ListGroup component shows a list of items, links, or buttons, with single, multiple, checkbox, or radio selection, or tabs that switch content panes.";
+    private const string imageUrl = DemoScreenshotSrcConstants.Demos_URL_ListGroup;
+}

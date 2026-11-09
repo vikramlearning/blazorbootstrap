@@ -112,6 +112,12 @@ public static class BootstrapClass
     public const string MarginEnd1 = "me-1";
     public const string MarginEnd2 = "me-2";
 
+    public const string ListGroup = "list-group";
+    public const string ListGroupFlush = "list-group-flush";
+    public const string ListGroupItem = "list-group-item";
+    public const string ListGroupItemAction = "list-group-item-action";
+    public const string ListGroupNumbered = "list-group-numbered";
+
     public const string Modal = "modal";
     public const string ModalFade = "fade";
 

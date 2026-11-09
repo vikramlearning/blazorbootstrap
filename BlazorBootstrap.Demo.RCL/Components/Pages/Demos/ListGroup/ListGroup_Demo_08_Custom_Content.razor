@@ -1,0 +1,22 @@
+<ListGroup TItem="string" AriaLabel="Notifications">
+    @foreach (var notification in notifications)
+    {
+        <ListGroupItem Href="@DemoRouteConstants.Demos_URL_ListGroup" Active="@notification.IsNew">
+            <div class="d-flex w-100 justify-content-between">
+                <h5 class="mb-1">@notification.Title</h5>
+                <small>@notification.When</small>
+            </div>
+            <p class="mb-1">@notification.Body</p>
+            <small>@notification.Footer</small>
+        </ListGroupItem>
+    }
+</ListGroup>
+
+@code {
+    private readonly (string Title, string When, string Body, string Footer, bool IsNew)[] notifications =
+    {
+        ("Deployment finished", "3 mins ago", "Version 4.1.0 is live in production.", "Pipeline #882", true),
+        ("New comment", "1 hour ago", "Maya replied to your note on the pricing page.", "Pricing redesign", false),
+        ("Weekly report", "Yesterday", "Signups grew 12% compared to last week.", "Analytics", false),
+    };
+}

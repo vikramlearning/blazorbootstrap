@@ -1,0 +1,12 @@
+<ListGroup @bind-SelectedItems="labels" SelectionMode="ListGroupSelectionMode.Multiple" AriaLabel="Labels" Style="max-width: 24rem;">
+    <ListGroupItem Value="@("Bug")">Bug</ListGroupItem>
+    <ListGroupItem Value="@("Feature")">Feature</ListGroupItem>
+    <ListGroupItem Value="@("Docs")">Docs</ListGroupItem>
+    <ListGroupItem Value="@("Question")">Question</ListGroupItem>
+</ListGroup>
+
+<div class="mt-3">Labels: @(labels.Any() ? string.Join(", ", labels) : "none")</div>
+
+@code {
+    private IEnumerable<string> labels = new[] { "Bug" };
+}

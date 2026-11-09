@@ -1,0 +1,21 @@
+<ListGroup TItem="Country" Data="countries" SelectionMode="ListGroupSelectionMode.Checkbox" @bind-SelectedItems="selected" AriaLabel="Countries" Style="max-width: 24rem;">
+    <ItemTemplate Context="country">
+        @country.Name <Badge Color="BadgeColor.Secondary" Class="ms-1">@country.Code</Badge>
+    </ItemTemplate>
+</ListGroup>
+
+<div class="mt-3">Shipping to: @(selected.Any() ? string.Join(", ", selected.Select(c => c.Code)) : "nowhere yet")</div>
+
+@code {
+    private readonly Country[] countries =
+    {
+        new("India", "IN"),
+        new("Japan", "JP"),
+        new("Brazil", "BR"),
+        new("Germany", "DE"),
+    };
+
+    private IEnumerable<Country> selected = Array.Empty<Country>();
+
+    public record Country(string Name, string Code);
+}

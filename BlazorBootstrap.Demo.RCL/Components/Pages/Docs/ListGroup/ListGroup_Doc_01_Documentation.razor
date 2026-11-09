@@ -1,0 +1,49 @@
+@attribute [Route(pageUrl)]
+@layout DocsMainLayout
+
+<DocsPageHeadSection PageUrl="@pageUrl"
+                     PageTitle="@pageTitle"
+                     PageDescription="@pageDescription"
+                     MetaTitle="@metaTitle"
+                     MetaDescription="@metaDescription"
+                     ImageUrl="@imageUrl" />
+
+<DemoLink Href="@DemoRouteConstants.Demos_URL_ListGroup" />
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="Screenshot" PageUrl="@pageUrl" Link="screenshot">
+    <img src="@imageUrl" class="img-fluid" alt="@metaTitle" />
+</Section>
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="ListGroup Parameters" PageUrl="@pageUrl" Link="list-group-parameters">
+    <DocxTable TItem="ListGroup<object>" DocType="DocType.Parameters" />
+</Section>
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="ListGroup Methods" PageUrl="@pageUrl" Link="list-group-methods">
+    <DocxTable TItem="ListGroup<object>" DocType="DocType.Methods" />
+</Section>
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="ListGroup Events" PageUrl="@pageUrl" Link="list-group-events">
+    <DocxTable TItem="ListGroup<object>" DocType="DocType.Events" />
+</Section>
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="ListGroupItem Parameters" PageUrl="@pageUrl" Link="list-group-item-parameters">
+    <DocxTable TItem="ListGroupItem<object>" DocType="DocType.Parameters" />
+</Section>
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="ListGroupItem Events" PageUrl="@pageUrl" Link="list-group-item-events">
+    <DocxTable TItem="ListGroupItem<object>" DocType="DocType.Events" />
+</Section>
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="ListGroupTabPane Parameters" PageUrl="@pageUrl" Link="list-group-tab-pane-parameters">
+    <DocxTable TItem="ListGroupTabPane" DocType="DocType.Parameters" />
+</Section>
+
+@code {
+    private const string componentName = nameof(ListGroup<object>);
+    private const string pageUrl = DemoRouteConstants.Docs_URL_ListGroup;
+    private const string pageTitle = "ListGroup";
+    private const string pageDescription = "This documentation provides a comprehensive reference for the <code>ListGroup</code>, <code>ListGroupItem</code>, and <code>ListGroupTabPane</code> components, guiding you through their configuration options.";
+    private const string metaTitle = "Blazor ListGroup Component";
+    private const string metaDescription = "This documentation provides a comprehensive reference for the ListGroup, ListGroupItem, and ListGroupTabPane components, guiding you through their configuration options.";
+    private const string imageUrl = DemoScreenshotSrcConstants.Demos_URL_ListGroup;
+}

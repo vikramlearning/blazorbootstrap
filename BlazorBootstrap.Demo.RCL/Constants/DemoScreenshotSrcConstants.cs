@@ -77,6 +77,7 @@ public class DemoScreenshotSrcConstants
     public const string Demos_URL_Grid_OtherExamples = DemoScreenshotSrcPrefix + "home.png";
     #endregion Grid
 
+    public const string Demos_URL_ListGroup = DemoScreenshotSrcPrefix + "list-group.png";
     public const string Demos_URL_Markdown = DemoScreenshotSrcPrefix + "markdown.png";
     public const string Demos_URL_MindMap = DemoScreenshotSrcPrefix + "mind-map.png";
     public const string Demos_URL_Modal = DemoScreenshotSrcPrefix + "modal.png";

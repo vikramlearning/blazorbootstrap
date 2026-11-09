@@ -78,6 +78,7 @@ public partial class DemosMainLayout : MainLayoutBase
 
             #endregion Grid
                         
+            new (){ Id = "5135", Text = "List Group", Href = DemoRouteConstants.Demos_URL_ListGroup, IconName = IconName.ListUl, ParentId = "5" },
             new (){ Id = "514", Text = "Markdown", Href = DemoRouteConstants.Demos_URL_Markdown, IconName = IconName.MarkdownFill, ParentId = "5" },
             new (){ Id = "5141", Text = "Mind Map", Href = DemoRouteConstants.Demos_URL_MindMap, IconName = IconName.Diagram3, ParentId = "5" },
             new (){ Id = "5145", Text = "Modals", Href = DemoRouteConstants.Demos_URL_Modal, IconName = IconName.WindowStack, ParentId = "5" },

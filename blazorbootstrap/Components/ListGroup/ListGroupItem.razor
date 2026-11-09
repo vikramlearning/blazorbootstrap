@@ -1,0 +1,74 @@
+@namespace BlazorBootstrap
+@inherits BlazorBootstrapComponentBase
+@typeparam TItem
+
+@if (isCheckMode)
+{
+    <li @ref="@Element" class="@ClassNames" style="@StyleNames" @attributes="@AdditionalAttributes">
+        <input class="form-check-input me-1"
+               type="@(Parent!.SelectionMode == ListGroupSelectionMode.Radio ? "radio" : "checkbox")"
+               id="@Id"
+               name="@(Parent.SelectionMode == ListGroupSelectionMode.Radio ? Parent.Id : null)"
+               checked="@isSelected"
+               disabled="@IsDisabled"
+               aria-label="@AriaLabel"
+               aria-invalid="@(Parent.IsInvalid ? "true" : null)"
+               @onchange="OnCheckedChangeAsync" />
+        <label class="@labelClassNames" for="@Id">@ChildContent</label>
+    </li>
+}
+else if (isOption)
+{
+    <button @ref="@Element"
+            type="button"
+            id="@Id"
+            class="@ClassNames"
+            style="@StyleNames"
+            role="option"
+            aria-selected="@(isSelected ? "true" : "false")"
+            aria-label="@AriaLabel"
+            tabindex="@(Parent!.IsTabStop(this) ? "0" : "-1")"
+            disabled="@IsDisabled"
+            @onclick="OnClickAsync"
+            @attributes="@AdditionalAttributes">
+        <span class="flex-grow-1">@ChildContent</span>
+        @if (isSelected)
+        {
+            <Icon Name="IconName.Check2" Class="ms-2" aria-hidden="true" />
+        }
+    </button>
+}
+else if (Href is not null)
+{
+    <a @ref="@Element"
+       id="@Id"
+       class="@ClassNames"
+       style="@StyleNames"
+       href="@(IsDisabled ? null : Href)"
+       aria-current="@(Active ? "true" : null)"
+       aria-disabled="@(IsDisabled ? "true" : null)"
+       aria-label="@AriaLabel"
+       @onclick="OnClickAsync"
+       @attributes="@AdditionalAttributes">@ChildContent</a>
+}
+else if (isButton)
+{
+    <button @ref="@Element"
+            type="button"
+            id="@Id"
+            class="@ClassNames"
+            style="@StyleNames"
+            aria-current="@(Active ? "true" : null)"
+            aria-label="@AriaLabel"
+            disabled="@IsDisabled"
+            @onclick="OnClickAsync"
+            @attributes="@AdditionalAttributes">@ChildContent</button>
+}
+else if (Parent!.UsesDivItems)
+{
+    <div @ref="@Element" id="@Id" class="@ClassNames" style="@StyleNames" aria-current="@(Active ? "true" : null)" aria-disabled="@(IsDisabled ? "true" : null)" @attributes="@AdditionalAttributes">@ChildContent</div>
+}
+else
+{
+    <li @ref="@Element" id="@Id" class="@ClassNames" style="@StyleNames" aria-current="@(Active ? "true" : null)" aria-disabled="@(IsDisabled ? "true" : null)" @attributes="@AdditionalAttributes">@ChildContent</li>
+}

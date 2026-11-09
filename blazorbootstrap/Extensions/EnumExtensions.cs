@@ -431,6 +431,41 @@ public static class EnumExtensions
         };
 
     /// <summary>
+    /// Converts a <see cref="ListGroupColor" /> value to its Bootstrap <c>list-group-item-*</c> class.
+    /// </summary>
+    [AddedVersion("4.1.0")]
+    [Description("Converts a ListGroupColor value to its Bootstrap list-group-item-* class.")]
+    public static string ToListGroupColorClass(this ListGroupColor listGroupColor) =>
+        listGroupColor switch
+        {
+            ListGroupColor.Primary => "list-group-item-primary",
+            ListGroupColor.Secondary => "list-group-item-secondary",
+            ListGroupColor.Success => "list-group-item-success",
+            ListGroupColor.Danger => "list-group-item-danger",
+            ListGroupColor.Warning => "list-group-item-warning",
+            ListGroupColor.Info => "list-group-item-info",
+            ListGroupColor.Light => "list-group-item-light",
+            ListGroupColor.Dark => "list-group-item-dark",
+            _ => ""
+        };
+
+    /// <summary>
+    /// Converts a <see cref="ListGroupHorizontalBreakpoint" /> value to its Bootstrap <c>list-group-horizontal*</c> class.
+    /// </summary>
+    [AddedVersion("4.1.0")]
+    [Description("Converts a ListGroupHorizontalBreakpoint value to its Bootstrap list-group-horizontal* class.")]
+    public static string ToListGroupHorizontalClass(this ListGroupHorizontalBreakpoint breakpoint) =>
+        breakpoint switch
+        {
+            ListGroupHorizontalBreakpoint.Small => "list-group-horizontal-sm",
+            ListGroupHorizontalBreakpoint.Medium => "list-group-horizontal-md",
+            ListGroupHorizontalBreakpoint.Large => "list-group-horizontal-lg",
+            ListGroupHorizontalBreakpoint.ExtraLarge => "list-group-horizontal-xl",
+            ListGroupHorizontalBreakpoint.ExtraExtraLarge => "list-group-horizontal-xxl",
+            _ => "list-group-horizontal"
+        };
+
+    /// <summary>
     /// Converts a <see cref="NavbarColor" /> value to its Bootstrap <c>text-bg-*</c> class.
     /// </summary>
     [AddedVersion("4.1.0")]

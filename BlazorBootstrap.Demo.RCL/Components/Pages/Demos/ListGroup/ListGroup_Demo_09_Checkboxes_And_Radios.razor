@@ -1,0 +1,26 @@
+<div class="row g-3">
+    <div class="col-md-6">
+        <h6 id="lg-notify-heading">Notify me about</h6>
+        <ListGroup @bind-SelectedItems="topics" SelectionMode="ListGroupSelectionMode.Checkbox" aria-labelledby="lg-notify-heading">
+            <ListGroupItem Value="@("mentions")">Mentions</ListGroupItem>
+            <ListGroupItem Value="@("replies")">Replies to my posts</ListGroupItem>
+            <ListGroupItem Value="@("digest")">Weekly digest</ListGroupItem>
+            <ListGroupItem Value="@("billing")" Disabled="true">Billing (managed by your admin)</ListGroupItem>
+        </ListGroup>
+        <div class="mt-2">Selected: @(topics.Any() ? string.Join(", ", topics) : "none")</div>
+    </div>
+    <div class="col-md-6">
+        <h6 id="lg-plan-heading">Plan (the whole row is clickable)</h6>
+        <ListGroup @bind-SelectedItem="plan" SelectionMode="ListGroupSelectionMode.Radio" StretchedLink="true" aria-labelledby="lg-plan-heading">
+            <ListGroupItem Value="@("free")">Free</ListGroupItem>
+            <ListGroupItem Value="@("pro")">Pro</ListGroupItem>
+            <ListGroupItem Value="@("team")">Team</ListGroupItem>
+        </ListGroup>
+        <div class="mt-2">Plan: @plan</div>
+    </div>
+</div>
+
+@code {
+    private IEnumerable<string> topics = new[] { "mentions" };
+    private string plan = "pro";
+}

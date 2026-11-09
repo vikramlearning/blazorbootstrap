@@ -1,0 +1,13 @@
+@namespace BlazorBootstrap
+@inherits BlazorBootstrapComponentBase
+
+<div @ref="@Element"
+     id="@Id"
+     class="@ClassNames"
+     style="@StyleNames"
+     role="tabpanel"
+     aria-labelledby="@TabId"
+     tabindex="0"
+     @attributes="@AdditionalAttributes">
+    @ChildContent
+</div>

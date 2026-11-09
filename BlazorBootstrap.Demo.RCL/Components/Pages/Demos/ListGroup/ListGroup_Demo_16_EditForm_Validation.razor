@@ -1,0 +1,48 @@
+@using System.ComponentModel.DataAnnotations
+
+<EditForm Model="request" OnValidSubmit="HandleValidSubmit" OnInvalidSubmit="() => submitted = false">
+    <DataAnnotationsValidator />
+
+    <div class="mb-3" style="max-width: 24rem;">
+        <div class="form-label" id="lg-team-label">Team</div>
+        <ListGroup @bind-SelectedItem="request.Team" SelectionMode="ListGroupSelectionMode.Single" aria-labelledby="lg-team-label">
+            <ListGroupItem Value="@("Platform")">Platform</ListGroupItem>
+            <ListGroupItem Value="@("Payments")">Payments</ListGroupItem>
+            <ListGroupItem Value="@("Mobile")">Mobile</ListGroupItem>
+        </ListGroup>
+        <ValidationMessage For="() => request.Team" />
+    </div>
+
+    <div class="mb-3" style="max-width: 24rem;">
+        <div class="form-label" id="lg-access-label">Access</div>
+        <ListGroup @bind-SelectedItems="request.Access" SelectionMode="ListGroupSelectionMode.Checkbox" aria-labelledby="lg-access-label">
+            <ListGroupItem Value="@("Repository")">Repository</ListGroupItem>
+            <ListGroupItem Value="@("Dashboards")">Dashboards</ListGroupItem>
+            <ListGroupItem Value="@("Production logs")">Production logs</ListGroupItem>
+        </ListGroup>
+        <ValidationMessage For="() => request.Access" />
+    </div>
+
+    <Button Type="ButtonType.Submit" Color="ButtonColor.Primary">Request access</Button>
+</EditForm>
+
+@if (submitted)
+{
+    <div class="mt-3">Requested @string.Join(", ", request.Access) for the @request.Team team.</div>
+}
+
+@code {
+    private AccessRequest request = new();
+    private bool submitted;
+
+    private void HandleValidSubmit() => submitted = true;
+
+    public class AccessRequest
+    {
+        [Required(ErrorMessage = "Please choose a team.")]
+        public string? Team { get; set; }
+
+        [MinLength(1, ErrorMessage = "Please choose at least one kind of access.")]
+        public IEnumerable<string> Access { get; set; } = Array.Empty<string>();
+    }
+}
