@@ -710,11 +710,21 @@ window.blazorBootstrap = {
             state.tabEls.forEach((tabEl) => bootstrap?.Tab?.getOrCreateInstance(tabEl));
 
             window.blazorBootstrap.listGroup.instances[elementId] = state;
+
+            // The shown pane was removed: show the first enabled tab, so a pane is visible and the tab list keeps a tab stop.
+            if (!state.tabEls.some((tabEl) => tabEl.classList.contains('active'))) {
+                let firstEnabled = state.tabEls.find((tabEl) => !tabEl.disabled);
+                if (firstEnabled != null)
+                    bootstrap?.Tab?.getOrCreateInstance(firstEnabled)?.show();
+            }
         },
         getPaneOrder: (elementId) => {
             // The pane elements are in markup order; the group orders its tabs to match.
+            // Panes may sit inside wrapper elements; panes of a nested tab list belong to its own .tab-content.
             let contentEl = document.getElementById(elementId)?.closest('.row')?.querySelector('.tab-content');
-            return contentEl == null ? null : [...contentEl.querySelectorAll(':scope > .tab-pane')].map((paneEl) => paneEl.id);
+            return contentEl == null
+                ? null
+                : [...contentEl.querySelectorAll('.tab-pane')].filter((paneEl) => paneEl.parentElement.closest('.tab-content') === contentEl).map((paneEl) => paneEl.id);
         },
         setTabStop: (listEl, optionEl) => {
             // Exactly one option is reachable by Tab (WAI-ARIA listbox); arrow keys reach the rest.
@@ -929,11 +939,19 @@ window.blazorBootstrap = {
                 window.blazorBootstrap.navbar.getInstance(state.menuEl)?.hide();
         },
         initialize: (elementId, menuId, isExternal) => {
-            // Also called again when the menu or toggler element was replaced; drop the old elements first.
-            window.blazorBootstrap.navbar.dispose(elementId);
-
+            // Also called again when the menu or toggler element was replaced.
             let navbarEl = document.getElementById(elementId);
             let menuEl = document.getElementById(menuId);
+            let previous = window.blazorBootstrap.navbar.instances[elementId];
+            let keepsMenu = previous != null && previous.menuEl === menuEl && previous.isExternal === isExternal;
+            if (keepsMenu) {
+                // Same menu element (only the toggler changed): keep its Bootstrap instance, so an open menu stays open and still closes.
+                delete window.blazorBootstrap.navbar.instances[elementId];
+                previous.listeners.forEach(([target, type, handler]) => target.removeEventListener(type, handler));
+            }
+            else
+                window.blazorBootstrap.navbar.dispose(elementId);
+
             if (navbarEl == null || menuEl == null)
                 return;
 
@@ -944,9 +962,11 @@ window.blazorBootstrap = {
                 togglerEl: togglerEl,
                 isExternal: isExternal,
                 listeners: [],
-                phase: menuEl.classList.contains('show') ? 'shown' : 'hidden',
-                hideWhenShown: false
+                phase: keepsMenu ? previous.phase : menuEl.classList.contains('show') ? 'shown' : 'hidden',
+                hideWhenShown: keepsMenu ? previous.hideWhenShown : false
             };
+            if (keepsMenu && isOffcanvas && togglerEl != null)
+                togglerEl.setAttribute('aria-expanded', state.phase === 'showing' || state.phase === 'shown' ? 'true' : 'false');
             let listen = (target, type, handler) => {
                 target.addEventListener(type, handler);
                 state.listeners.push([target, type, handler]);
@@ -1117,12 +1137,15 @@ window.blazorBootstrap = {
     popover: {
         // State by popover id. Blazor removes the elements before dispose runs on the server, so dispose cannot look them up.
         instances: {},
+        // Ids of open popovers, in the order they opened. Escape closes only the last one (nested popovers close one at a time).
+        openOrder: [],
         dispose: (elementId) => {
             let state = window.blazorBootstrap.popover.instances[elementId];
             if (state == null)
                 return;
 
             delete window.blazorBootstrap.popover.instances[elementId];
+            window.blazorBootstrap.popover.setOpen(elementId, false);
 
             state.resizeObserver?.disconnect();
             state.mutationObserver?.disconnect();
@@ -1173,6 +1196,15 @@ window.blazorBootstrap = {
             window.blazorBootstrap.popover.finishFade(elementId);
             window.blazorBootstrap.popover.getInstance(elementId)?.hide();
         },
+        hideNow: (elementId) => {
+            // Hide without waiting for the fade, so OnHiding / OnHidden reach .NET and Bootstrap removes aria-describedby.
+            let state = window.blazorBootstrap.popover.instances[elementId];
+            if (state?.phase !== 'showing' && state?.phase !== 'shown')
+                return;
+
+            window.blazorBootstrap.popover.hide(elementId);
+            window.blazorBootstrap.popover.finishFade(elementId);
+        },
         initialize: (elementId, options, dotNetHelper) => {
             // Also called again when an option or the trigger changes; drop the old instance first.
             window.blazorBootstrap.popover.dispose(elementId);
@@ -1193,6 +1225,7 @@ window.blazorBootstrap = {
             let state = {
                 autoClose: options.autoClose,
                 dotNetHelper: dotNetHelper,
+                enabled: options.enabled,
                 hasContent: options.hasContent,
                 hasTitle: options.hasTitle,
                 isWrapperTrigger: isWrapperTrigger,
@@ -1248,7 +1281,8 @@ window.blazorBootstrap = {
             if (popover == null)
                 return;
 
-            if (isWrapperTrigger) {
+            // A wrapper takes focus only when focus or a key opens the popover (Click, Focus); Hover-only and Manual popovers get no tab stop.
+            if (isWrapperTrigger && /click|focus/.test(options.trigger)) {
                 hostEl.setAttribute('tabindex', '0');
                 if (/click/.test(options.trigger))
                     hostEl.setAttribute('role', 'button');
@@ -1300,6 +1334,11 @@ window.blazorBootstrap = {
             };
 
             listen(triggerEl, 'show.bs.popover', () => {
+                // Bootstrap's own trigger can show during a hide fade; it then replaces the popover element while the old one's hide
+                // completion is still queued, to run later on a changed or disposed instance. Finish the old fade first.
+                if (state.phase === 'hiding')
+                    tip()?.dispatchEvent(new Event('transitionend'));
+                window.blazorBootstrap.popover.setOpen(elementId, true);
                 state.phase = 'showing';
                 triggerEl.setAttribute('aria-expanded', 'true');
                 notify('bsShow');
@@ -1323,6 +1362,7 @@ window.blazorBootstrap = {
             });
             listen(triggerEl, 'hidden.bs.popover', () => {
                 state.phase = 'hidden';
+                window.blazorBootstrap.popover.setOpen(elementId, false);
                 // Bootstrap removes the popover element when it hides (and before each show); bring the elements home each time.
                 state.restore();
                 if (state.restoreFocus)
@@ -1354,22 +1394,37 @@ window.blazorBootstrap = {
             }, true);
 
             // Escape closes the popover first. Hover and Focus popovers always close on Escape (WCAG 1.4.13); others when AutoClose is on.
-            // Handled in the capture phase so a surrounding modal or offcanvas does not close on the same key.
-            listen(document, 'keydown', (event) => {
-                if (event.key !== 'Escape' || !isOpen() || (!state.autoClose && !isHoverOrFocus))
-                    return;
+            // Only the last opened popover handles it, and a key another handler already took (defaultPrevented) is left alone.
+            let handleEscape = (event) => {
+                if (event.key !== 'Escape' || event.defaultPrevented || !isOpen() || (!state.autoClose && !isHoverOrFocus))
+                    return false;
+
+                let openOrder = window.blazorBootstrap.popover.openOrder;
+                if (openOrder[openOrder.length - 1] !== elementId)
+                    return false;
 
                 let tipEl = tip();
                 if (tipEl?.querySelector('.dropdown-menu.show'))
-                    return; // let an open menu inside the content close first
+                    return false; // Bootstrap's dropdown closes its open menu on the same key, at the document
 
                 let focusWasInside = (tipEl?.contains(document.activeElement) ?? false) || triggerEl.contains(document.activeElement);
-                if (triggerEl.closest('.modal, .offcanvas'))
+                event.preventDefault(); // marks the key as handled
+                // Stop it here so a surrounding modal or offcanvas does not close on the same key.
+                if (triggerEl.closest('.modal, .offcanvas') || tipEl?.closest('.modal, .offcanvas'))
                     event.stopPropagation();
                 window.blazorBootstrap.popover.hide(elementId);
                 if (focusWasInside && !isHoverOrFocus)
                     state.restoreFocus = true;
+                return true;
+            };
+            // Focus outside the content: handle Escape in the capture phase, before a surrounding modal or offcanvas sees it.
+            listen(document, 'keydown', (event) => {
+                if (!(tip()?.contains(event.target) ?? false))
+                    handleEscape(event);
             }, true);
+            // Focus inside the content: let its own controls (a menu, a combobox) handle Escape first; the popover gets it as it bubbles
+            // out of the content, before any modal around it. The popover element is new on every show.
+            listen(triggerEl, 'inserted.bs.popover', () => tip()?.addEventListener('keydown', handleEscape));
 
             // Keep the tab order next to the trigger. The popover is added at the end of the page (or its container), so the browser would
             // skip its content and later move focus from it to unrelated elements. Instead: Tab from the trigger enters the open content,
@@ -1425,19 +1480,33 @@ window.blazorBootstrap = {
                 state.resizeObserver.observe(contentEl);
             }
 
-            // Re-attach when the trigger changes: another first element, or a control that became disabled or enabled.
+            // Re-attach when the trigger changes: another first element, or a control that became disabled or enabled. An open popover
+            // closes first (with its events), and the new instance takes the live settings, not the ones from the last .NET initialize.
             if (typeof MutationObserver !== 'undefined') {
                 state.mutationObserver = new MutationObserver(() => {
-                    if (window.blazorBootstrap.popover.instances[elementId] === state && window.blazorBootstrap.popover.findTrigger(hostEl) !== state.triggerEl)
-                        window.blazorBootstrap.popover.initialize(elementId, state.options, state.dotNetHelper);
+                    if (window.blazorBootstrap.popover.instances[elementId] !== state || window.blazorBootstrap.popover.findTrigger(hostEl) === state.triggerEl)
+                        return;
+
+                    window.blazorBootstrap.popover.hideNow(elementId);
+                    let liveOptions = { ...state.options, autoClose: state.autoClose, enabled: state.enabled, hasContent: state.hasContent, hasTitle: state.hasTitle };
+                    window.blazorBootstrap.popover.initialize(elementId, liveOptions, state.dotNetHelper);
                 });
-                state.mutationObserver.observe(hostEl, { childList: true, subtree: true, attributes: true, attributeFilter: ['disabled', 'class', 'href'] });
+                // The attributes findTrigger reads.
+                state.mutationObserver.observe(hostEl, { childList: true, subtree: true, attributes: true, attributeFilter: ['disabled', 'class', 'href', 'aria-disabled', 'tabindex', 'role', 'type'] });
             }
 
             if (!options.enabled)
                 popover.disable();
 
             window.blazorBootstrap.popover.instances[elementId] = state;
+        },
+        setOpen: (elementId, isOpen) => {
+            let openOrder = window.blazorBootstrap.popover.openOrder;
+            let index = openOrder.indexOf(elementId);
+            if (index >= 0)
+                openOrder.splice(index, 1);
+            if (isOpen)
+                openOrder.push(elementId);
         },
         setAutoClose: (elementId, autoClose) => {
             let state = window.blazorBootstrap.popover.instances[elementId];
@@ -1464,6 +1533,10 @@ window.blazorBootstrap = {
             window.blazorBootstrap.popover.getInstance(elementId)?.update();
         },
         setEnabled: (elementId, enabled) => {
+            let state = window.blazorBootstrap.popover.instances[elementId];
+            if (state != null)
+                state.enabled = enabled;
+
             let popover = window.blazorBootstrap.popover.getInstance(elementId);
             if (popover == null)
                 return;

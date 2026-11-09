@@ -264,42 +264,42 @@ table button.dropdown-toggle.bb-grid-filter::after {
     flex-wrap: wrap !important;
 }
 
-/* input group - Dropdown add-ons (the Dropdown component wraps its buttons in a div) */
-.input-group > .dropdown:not(:first-child) > .btn:first-child {
+/* input group - Dropdown add-ons (the Dropdown component wraps its buttons in a div: .dropdown, .dropup, .dropstart, or .dropend) */
+.input-group > :is(.dropdown, .dropup, .dropstart, .dropend):not(:first-child) > .btn:first-child {
     border-top-left-radius: 0;
     border-bottom-left-radius: 0;
 }
 
-.input-group > .dropdown:not(:last-child) > .btn:not(:has(~ .btn)) {
+.input-group > :is(.dropdown, .dropup, .dropstart, .dropend):not(:last-child) > .btn:not(:has(~ .btn)) {
     border-top-right-radius: 0;
     border-bottom-right-radius: 0;
 }
 
 /* A Dropdown just before a validation message is the last control, so its outer corners stay rounded. */
-.input-group > .dropdown:has(+ .validation-message) > .btn:not(:has(~ .btn)) {
+.input-group > :is(.dropdown, .dropup, .dropstart, .dropend):has(+ .validation-message) > .btn:not(:has(~ .btn)) {
     border-top-right-radius: var(--bs-border-radius);
     border-bottom-right-radius: var(--bs-border-radius);
 }
 
-.input-group-sm > .dropdown:has(+ .validation-message) > .btn:not(:has(~ .btn)) {
+.input-group-sm > :is(.dropdown, .dropup, .dropstart, .dropend):has(+ .validation-message) > .btn:not(:has(~ .btn)) {
     border-top-right-radius: var(--bs-border-radius-sm);
     border-bottom-right-radius: var(--bs-border-radius-sm);
 }
 
-.input-group-lg > .dropdown:has(+ .validation-message) > .btn:not(:has(~ .btn)) {
+.input-group-lg > :is(.dropdown, .dropup, .dropstart, .dropend):has(+ .validation-message) > .btn:not(:has(~ .btn)) {
     border-top-right-radius: var(--bs-border-radius-lg);
     border-bottom-right-radius: var(--bs-border-radius-lg);
 }
 
 /* Group sizing reaches the Dropdown's buttons, as Bootstrap's .input-group-sm / -lg do for direct .btn children. */
-.input-group-sm > .dropdown > .btn {
+.input-group-sm > :is(.dropdown, .dropup, .dropstart, .dropend) > .btn {
     --bs-btn-padding-y: 0.25rem;
     --bs-btn-padding-x: 0.5rem;
     --bs-btn-font-size: 0.875rem;
     --bs-btn-border-radius: var(--bs-border-radius-sm);
 }
 
-.input-group-lg > .dropdown > .btn {
+.input-group-lg > :is(.dropdown, .dropup, .dropstart, .dropend) > .btn {
     --bs-btn-padding-y: 0.5rem;
     --bs-btn-padding-x: 1rem;
     --bs-btn-font-size: 1.25rem;
@@ -334,6 +334,8 @@ table button.dropdown-toggle.bb-grid-filter::after {
     --bb-button-group-outline-info-color: var(--bs-info);
     --bb-button-group-outline-light-color: var(--bs-light);
     --bb-button-group-outline-dark-color: var(--bs-dark);
+    --bb-button-group-outline-dark-checked-bg: var(--bs-dark);
+    --bb-button-group-outline-dark-checked-color: #fff;
 }
 
 [data-bs-theme=dark] {
@@ -345,6 +347,9 @@ table button.dropdown-toggle.bb-grid-filter::after {
     --bb-button-group-outline-info-color: var(--bs-info-text-emphasis);
     --bb-button-group-outline-light-color: var(--bs-light-text-emphasis);
     --bb-button-group-outline-dark-color: var(--bs-dark-text-emphasis);
+    /* Bootstrap's checked dark fill (#212529) matches the dark body, so the checked item inverts instead. */
+    --bb-button-group-outline-dark-checked-bg: var(--bs-dark-text-emphasis);
+    --bb-button-group-outline-dark-checked-color: var(--bs-dark);
 }
 
 .bb-button-group-item.btn-outline-primary { --bs-btn-color: var(--bb-button-group-outline-primary-color); --bs-btn-border-color: var(--bb-button-group-outline-primary-color); }
@@ -354,7 +359,16 @@ table button.dropdown-toggle.bb-grid-filter::after {
 .bb-button-group-item.btn-outline-warning { --bs-btn-color: var(--bb-button-group-outline-warning-color); --bs-btn-border-color: var(--bb-button-group-outline-warning-color); }
 .bb-button-group-item.btn-outline-info { --bs-btn-color: var(--bb-button-group-outline-info-color); --bs-btn-border-color: var(--bb-button-group-outline-info-color); }
 .bb-button-group-item.btn-outline-light { --bs-btn-color: var(--bb-button-group-outline-light-color); --bs-btn-border-color: var(--bb-button-group-outline-light-color); }
-.bb-button-group-item.btn-outline-dark { --bs-btn-color: var(--bb-button-group-outline-dark-color); --bs-btn-border-color: var(--bb-button-group-outline-dark-color); }
+.bb-button-group-item.btn-outline-dark {
+    --bs-btn-color: var(--bb-button-group-outline-dark-color);
+    --bs-btn-border-color: var(--bb-button-group-outline-dark-color);
+    --bs-btn-hover-bg: var(--bb-button-group-outline-dark-checked-bg);
+    --bs-btn-hover-border-color: var(--bb-button-group-outline-dark-checked-bg);
+    --bs-btn-hover-color: var(--bb-button-group-outline-dark-checked-color);
+    --bs-btn-active-bg: var(--bb-button-group-outline-dark-checked-bg);
+    --bs-btn-active-border-color: var(--bb-button-group-outline-dark-checked-bg);
+    --bs-btn-active-color: var(--bb-button-group-outline-dark-checked-color);
+}
 
 /* popover - contextual colors, set through Bootstrap's popover CSS variables (header and border; the body keeps its colors) */
 .popover.bb-popover-primary { --bb-popover-color: var(--bs-primary); --bs-popover-header-color: #fff; }
@@ -366,7 +380,8 @@ table button.dropdown-toggle.bb-grid-filter::after {
 .popover.bb-popover-light { --bb-popover-color: var(--bs-light); --bs-popover-header-color: #000; }
 .popover.bb-popover-dark { --bb-popover-color: var(--bs-dark); --bs-popover-header-color: #fff; }
 
-.popover[class*="bb-popover-"] {
+.popover.bb-popover-primary, .popover.bb-popover-secondary, .popover.bb-popover-success, .popover.bb-popover-danger,
+.popover.bb-popover-warning, .popover.bb-popover-info, .popover.bb-popover-light, .popover.bb-popover-dark {
     --bs-popover-border-color: var(--bb-popover-color);
     --bs-popover-header-bg: var(--bb-popover-color);
 }

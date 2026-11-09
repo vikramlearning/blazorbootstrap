@@ -201,14 +201,14 @@ public partial class Popover : BlazorBootstrapComponentBase
 
     /// <summary>
     /// Gets or sets the trigger of the popover. Its first interactive element (a link, button, form control, or element with a tabindex) gets the popover.
-    /// When there is none, or it is disabled, the wrapper around it gets the popover and becomes focusable instead; with the Click trigger, Enter and Space open it.
+    /// When there is none, or it is disabled, the wrapper around it gets the popover instead, focusable with the Click or Focus trigger; with the Click trigger, Enter and Space open it.
     /// <para>
     /// Default value is <see langword="null" />.
     /// </para>
     /// </summary>
     [AddedVersion("4.1.0")]
     [DefaultValue(null)]
-    [Description("Gets or sets the trigger of the popover. Its first interactive element (a link, button, form control, or element with a tabindex) gets the popover. When there is none, or it is disabled, the wrapper around it gets the popover and becomes focusable instead; with the Click trigger, Enter and Space open it.")]
+    [Description("Gets or sets the trigger of the popover. Its first interactive element (a link, button, form control, or element with a tabindex) gets the popover. When there is none, or it is disabled, the wrapper around it gets the popover instead, focusable with the Click or Focus trigger; with the Click trigger, Enter and Space open it.")]
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
 

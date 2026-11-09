@@ -17,8 +17,8 @@ The Blazor Bootstrap `Popover` component wraps the [Bootstrap 5.3 popover](https
 
 ## Before you start
 
-- **Trigger:** put the trigger inside `Popover`. Its first interactive element (a link, button, form control, or element with a `tabindex`) gets the popover. When it changes (another element, or one that becomes disabled or enabled), the popover moves to the new trigger.
-- **Disabled controls and plain text:** a disabled element cannot be hovered, clicked, or focused, so when the trigger is disabled, or there is no interactive element, the wrapper around it gets the popover and becomes focusable, as Bootstrap recommends. With the Click trigger the wrapper also acts as a button: Enter and Space open it.
+- **Trigger:** put the trigger inside `Popover`. Its first interactive element (a link, button, form control, or element with a `tabindex`) gets the popover. When it changes (another element, or one that becomes disabled or enabled), the popover moves to the new trigger, keeping its `Disabled`, `AutoClose`, title, and content; an open popover closes first (`OnHiding` and `OnHidden` fire).
+- **Disabled controls and plain text:** a disabled element cannot be hovered, clicked, or focused, so when the trigger is disabled, or there is no interactive element, the wrapper around it gets the popover, as Bootstrap recommends. With the Click or Focus trigger the wrapper becomes focusable, and with Click it also acts as a button: Enter and Space open it. Hover-only and Manual popovers add no tab stop.
 - **Hover and Focus popovers are for content that is read.** They close when focus leaves the trigger, so Tab moves past them. Put links and buttons in a Click popover.
 - **Empty popovers never open:** with no title and no content, `ShowAsync` and the trigger do nothing.
 - **Text is text:** `Title` and `Content` strings always show as text, never as HTML.
@@ -34,6 +34,7 @@ The Blazor Bootstrap `Popover` component wraps the [Bootstrap 5.3 popover](https
 - For Click and Manual popovers, the tab order stays next to the trigger, although the popover is added at the end of the page: Tab from the trigger enters the open content, Shift+Tab from its first element returns to the trigger, and Tab from its last element moves to the element after the trigger (closing the popover when `AutoClose` is on).
 - With `AutoClose` (default), a click outside, Escape, or moving focus out of the content closes it. Hover and Focus popovers always close on Escape.
 - Inside a modal or offcanvas, Escape closes the open popover first; the next Escape closes the modal.
+- With several popovers open (for example one inside another's content), Escape closes the most recently opened one. A control in the content that handles Escape itself (an open menu, or one that calls `preventDefault`) gets it first.
 - Pair the Hover trigger with Focus, so keyboard users can open it too.
 - The fade respects the user's reduced-motion setting.
 
@@ -43,7 +44,7 @@ The Blazor Bootstrap `Popover` component wraps the [Bootstrap 5.3 popover](https
 |:--|:--|:--|:--|:--|:--|
 | Animation | bool | true | | Gets or sets whether the popover fades in and out. The fade also respects the user's reduced-motion setting. | 4.1.0 |
 | AutoClose | bool | true | | Gets or sets whether the popover closes on a click outside it and its trigger, on Escape, and when focus leaves its content. Hover and Focus popovers close on Escape either way. | 4.1.0 |
-| ChildContent | RenderFragment | null | | Gets or sets the trigger of the popover. Its first interactive element (a link, button, form control, or element with a tabindex) gets the popover. When there is none, or it is disabled, the wrapper around it gets the popover and becomes focusable instead; with the Click trigger, Enter and Space open it. | 4.1.0 |
+| ChildContent | RenderFragment | null | | Gets or sets the trigger of the popover. Its first interactive element (a link, button, form control, or element with a tabindex) gets the popover. When there is none, or it is disabled, the wrapper around it gets the popover instead, focusable with the Click or Focus trigger; with the Click trigger, Enter and Space open it. | 4.1.0 |
 | Color | `PopoverColor` | `PopoverColor.None` | | Gets or sets the color of the popover header and border. | 4.1.0 |
 | Container | string? | null | | Gets or sets the CSS selector of the element the popover is added to, for example a modal's `.modal-body` so its content can take focus inside the modal. When `null`, the popover is added to the page body. | 4.1.0 |
 | Content | string? | null | | Gets or sets the content text, always shown as text. `ContentTemplate` takes precedence. | 4.1.0 |

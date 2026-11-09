@@ -13,9 +13,9 @@ internal interface IListGroupTabHost
     void AddPane(ListGroupTabPane pane);
 
     /// <summary>
-    /// Returns whether the pane is the one shown when the group first renders.
+    /// Returns whether the pane is the shown one: the initial pane until a tab is shown, then the last shown pane.
     /// </summary>
-    bool IsInitiallyActive(ListGroupTabPane pane);
+    bool IsActive(ListGroupTabPane pane);
 
     /// <summary>
     /// Unregisters a pane that is being removed.

@@ -23,6 +23,7 @@ The Blazor Bootstrap `ListGroup` component follows the [Bootstrap 5.3 list group
 - **Value types and single selection.** `SelectedItem` starts at the type's default, so with `TItem="int"` an item whose value is `0` shows as selected. Use a nullable type, such as `int?`, when nothing should be selected at first.
 - **Tab mode** uses the Bootstrap JavaScript bundle the app already loads.
 - **Static lists of links or buttons.** A static list starts as a `ul` and becomes a `div` when its first `Href` or `OnClick` item registers, which re-creates the items (and any components inside them) once. Set `OnItemClick` on the group, or use data-bound mode, to start as a `div`.
+- **Tab panes that come and go.** A pane added later (for example with `@if`) takes its place in markup order and is not shown until chosen. When the shown pane is removed, the first enabled tab is shown (`OnShowing` and `OnShown` fire for it).
 - **Name selectable lists and tab lists.** A listbox (`Single`, `Multiple`) and a tab list need `AriaLabel` or `aria-labelledby`; without one, screen readers announce them without a name.
 
 ## Accessibility

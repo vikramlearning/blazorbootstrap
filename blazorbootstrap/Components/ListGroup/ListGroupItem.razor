@@ -27,7 +27,7 @@ else if (isOption)
             role="option"
             aria-selected="@(isSelected ? "true" : "false")"
             aria-label="@AriaLabel"
-            tabindex="-1"
+            tabindex="@(Parent!.IsListboxInteropReady || !Parent.IsInitialTabStop(this) ? "-1" : "0")"
             disabled="@IsDisabled"
             @onclick="OnClickAsync"
             @attributes="@AdditionalAttributes">
