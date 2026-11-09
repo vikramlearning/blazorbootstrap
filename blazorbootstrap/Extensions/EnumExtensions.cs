@@ -105,6 +105,8 @@ public static class EnumExtensions
             BackgroundColor.Body => "bg-body",
             BackgroundColor.White => "bg-white",
             BackgroundColor.Transparent => "bg-transparent",
+            BackgroundColor.BodySecondary => "bg-body-secondary",
+            BackgroundColor.BodyTertiary => "bg-body-tertiary",
             _ => ""
         };
 
@@ -426,6 +428,87 @@ public static class EnumExtensions
             InputGroupSize.Large => "input-group-lg",
             InputGroupSize.Small => "input-group-sm",
             _ => ""
+        };
+
+    /// <summary>
+    /// Converts a <see cref="NavbarColor" /> value to its Bootstrap <c>text-bg-*</c> class.
+    /// </summary>
+    [AddedVersion("4.1.0")]
+    [Description("Converts a NavbarColor value to its Bootstrap text-bg-* class.")]
+    public static string ToNavbarColorClass(this NavbarColor navbarColor) =>
+        navbarColor switch
+        {
+            NavbarColor.Primary => "text-bg-primary",
+            NavbarColor.Secondary => "text-bg-secondary",
+            NavbarColor.Success => "text-bg-success",
+            NavbarColor.Danger => "text-bg-danger",
+            NavbarColor.Warning => "text-bg-warning",
+            NavbarColor.Info => "text-bg-info",
+            NavbarColor.Light => "text-bg-light",
+            NavbarColor.Dark => "text-bg-dark",
+            _ => ""
+        };
+
+    /// <summary>
+    /// Converts a <see cref="NavbarContainer" /> value to its Bootstrap container class.
+    /// </summary>
+    [AddedVersion("4.1.0")]
+    [Description("Converts a NavbarContainer value to its Bootstrap container class.")]
+    public static string ToNavbarContainerClass(this NavbarContainer navbarContainer) =>
+        navbarContainer switch
+        {
+            NavbarContainer.Default => "container",
+            NavbarContainer.Small => "container-sm",
+            NavbarContainer.Medium => "container-md",
+            NavbarContainer.Large => "container-lg",
+            NavbarContainer.ExtraLarge => "container-xl",
+            NavbarContainer.ExtraExtraLarge => "container-xxl",
+            _ => "container-fluid"
+        };
+
+    /// <summary>
+    /// Converts a <see cref="NavbarExpand" /> value to its Bootstrap <c>navbar-expand-*</c> class.
+    /// </summary>
+    [AddedVersion("4.1.0")]
+    [Description("Converts a NavbarExpand value to its Bootstrap navbar-expand-* class.")]
+    public static string ToNavbarExpandClass(this NavbarExpand navbarExpand) =>
+        navbarExpand switch
+        {
+            NavbarExpand.Small => "navbar-expand-sm",
+            NavbarExpand.Medium => "navbar-expand-md",
+            NavbarExpand.Large => "navbar-expand-lg",
+            NavbarExpand.ExtraLarge => "navbar-expand-xl",
+            NavbarExpand.ExtraExtraLarge => "navbar-expand-xxl",
+            NavbarExpand.Always => "navbar-expand",
+            _ => ""
+        };
+
+    /// <summary>
+    /// Converts a <see cref="NavbarPlacement" /> value to its Bootstrap position class.
+    /// </summary>
+    [AddedVersion("4.1.0")]
+    [Description("Converts a NavbarPlacement value to its Bootstrap position class.")]
+    public static string ToNavbarPlacementClass(this NavbarPlacement navbarPlacement) =>
+        navbarPlacement switch
+        {
+            NavbarPlacement.FixedTop => "fixed-top",
+            NavbarPlacement.FixedBottom => "fixed-bottom",
+            NavbarPlacement.StickyTop => "sticky-top",
+            NavbarPlacement.StickyBottom => "sticky-bottom",
+            _ => ""
+        };
+
+    /// <summary>
+    /// Converts a <see cref="NavbarTheme" /> value to its Bootstrap <c>data-bs-theme</c> attribute value.
+    /// </summary>
+    [AddedVersion("4.1.0")]
+    [Description("Converts a NavbarTheme value to its Bootstrap data-bs-theme attribute value.")]
+    public static string? ToNavbarThemeAttribute(this NavbarTheme navbarTheme) =>
+        navbarTheme switch
+        {
+            NavbarTheme.Light => "light",
+            NavbarTheme.Dark => "dark",
+            _ => null
         };
 
     public static string ToIconColorClass(this IconColor iconColor) =>

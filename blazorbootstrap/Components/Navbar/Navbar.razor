@@ -1,0 +1,76 @@
+@namespace BlazorBootstrap
+@inherits BlazorBootstrapComponentBase
+
+<nav @ref="@Element"
+     id="@Id"
+     class="@ClassNames"
+     style="@StyleNames"
+     data-bs-theme="@Theme.ToNavbarThemeAttribute()"
+     aria-label="@AriaLabel"
+     @attributes="@AdditionalAttributes">
+    <div class="@Container.ToNavbarContainerClass()">
+        @if (TogglerPosition == NavbarTogglerPosition.Start)
+        {
+            @RenderToggler()
+        }
+
+        @if (!BrandInCollapse)
+        {
+            @Brand
+        }
+
+        @if (TogglerPosition == NavbarTogglerPosition.End)
+        {
+            @RenderToggler()
+        }
+
+        @if (hasExternalCollapse)
+        {
+            @ChildContent
+        }
+        else if (CollapseMode == NavbarCollapseMode.Offcanvas)
+        {
+            <div class="@offcanvasClassNames" tabindex="-1" id="@menuId" aria-labelledby="@offcanvasTitleId">
+                <div class="offcanvas-header">
+                    <h5 class="offcanvas-title" id="@offcanvasTitleId">@OffcanvasTitle</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="@OffcanvasCloseButtonAriaLabel"></button>
+                </div>
+                <div class="offcanvas-body">
+                    @if (BrandInCollapse)
+                    {
+                        @Brand
+                    }
+                    @ChildContent
+                </div>
+            </div>
+        }
+        else if (hasMenu)
+        {
+            <div class="collapse navbar-collapse" id="@menuId">
+                @if (BrandInCollapse)
+                {
+                    @Brand
+                }
+                @ChildContent
+            </div>
+        }
+    </div>
+</nav>
+
+@code {
+    private RenderFragment RenderToggler() => __builder =>
+    {
+        @if (hasToggler)
+        {
+            <button class="navbar-toggler"
+                    type="button"
+                    data-bs-toggle="@(CollapseMode == NavbarCollapseMode.Offcanvas && !hasExternalCollapse ? "offcanvas" : "collapse")"
+                    data-bs-target="@($"#{togglerTargetId}")"
+                    aria-controls="@togglerTargetId"
+                    aria-expanded="false"
+                    aria-label="@TogglerAriaLabel">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+        }
+    };
+}

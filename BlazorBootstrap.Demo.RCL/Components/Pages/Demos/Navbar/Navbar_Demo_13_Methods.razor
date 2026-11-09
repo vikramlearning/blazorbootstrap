@@ -1,0 +1,27 @@
+<div class="d-flex flex-wrap gap-2 mb-3">
+    <Button Color="ButtonColor.Primary" @onclick="ShowAsync">Show menu</Button>
+    <Button Color="ButtonColor.Primary" @onclick="HideAsync">Hide menu</Button>
+    <Button Color="ButtonColor.Primary" @onclick="ToggleAsync">Toggle menu</Button>
+</div>
+
+<Navbar @ref="navbar" BackgroundColor="BackgroundColor.BodyTertiary" ExpandBreakpoint="NavbarExpand.Never" AriaLabel="Navbar controlled from code">
+    <Brand>
+        <NavbarBrand Href="@DemoRouteConstants.Demos_URL_Navbar">Controlled from code</NavbarBrand>
+    </Brand>
+    <ChildContent>
+        <NavbarNav>
+            <NavbarItem Href="@DemoRouteConstants.Demos_URL_Navbar" Match="NavLinkMatch.All">Home</NavbarItem>
+            <NavbarItem Href="@DemoRouteConstants.Demos_URL_Buttons">Buttons</NavbarItem>
+        </NavbarNav>
+    </ChildContent>
+</Navbar>
+
+@code {
+    private Navbar navbar = default!;
+
+    private async Task ShowAsync() => await navbar.ShowAsync();
+
+    private async Task HideAsync() => await navbar.HideAsync();
+
+    private async Task ToggleAsync() => await navbar.ToggleAsync();
+}

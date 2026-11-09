@@ -120,6 +120,17 @@ public static class BootstrapClass
     public const string NavTabs = "nav-tabs";
     public const string NavUnderline = "nav-underline";
 
+    public const string NavItem = "nav-item";
+    public const string NavLink = "nav-link";
+    public const string Navbar = "navbar";
+    public const string NavbarBrand = "navbar-brand";
+    public const string NavbarCollapse = "navbar-collapse";
+    public const string NavbarNav = "navbar-nav";
+    public const string NavbarNavScroll = "navbar-nav-scroll";
+    public const string NavbarText = "navbar-text";
+    public const string NavbarToggler = "navbar-toggler";
+    public const string NavbarTogglerIcon = "navbar-toggler-icon";
+
     public const string Offcanvas = "offcanvas";
 
     public const string PageLoadingModal = "modal-page-loading";

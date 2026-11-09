@@ -1,0 +1,288 @@
+---
+title: Blazor Navbar Component
+description: The Blazor Bootstrap Navbar component is a responsive navigation header with a brand, links, dropdowns, forms, and text, which collapses behind a toggler or into an offcanvas panel, following the Bootstrap 5.3 navbar.
+image: https://demos.blazorbootstrap.com/images/screenshots/navbar.png
+
+sidebar_label: Navbar
+sidebar_position: 16.5
+---
+
+import CarbonAd from '/carbon-ad.mdx'
+
+# Blazor Navbar
+
+The Blazor Bootstrap `Navbar` component is a responsive navigation header that follows the [Bootstrap 5.3 navbar](https://getbootstrap.com/docs/5.3/components/navbar/). It holds a brand, navigation links, dropdowns, forms, and text, and collapses them behind a toggler, or into an offcanvas panel, below a breakpoint. The collapse, offcanvas, and dropdowns use the Bootstrap JavaScript bundle the app already loads.
+
+<CarbonAd />
+
+## Components
+
+- `Navbar`: the navigation landmark. Put the brand in its `Brand` slot and the menu in `ChildContent`.
+- `NavbarBrand`: the brand, as a link, plain text, an image, or an image and text.
+- `NavbarNav`: the navigation list, holding `NavbarItem` and `NavbarDropdown` components.
+- `NavbarItem`: a link. It is active, with `aria-current="page"`, when its `Href` matches the current URL.
+- `NavbarDropdown`: a dropdown holding the existing `DropdownItem`, `DropdownHeader`, and `DropdownDivider` components.
+- `NavbarText`: text colored and aligned for the navbar.
+
+## Behavior
+
+- The collapsed menu closes by itself after a navigation.
+- `ShowAsync`, `HideAsync`, and `ToggleAsync` control the collapsed menu from code. They do nothing while the navbar is expanded.
+- Beside a `Sidebar`, `Sidebar2`, or `BlazorBootstrapLayout`, the navbar uses Bootstrap's own sticky (1020) and fixed (1030) z-index.
+- Animations follow Bootstrap, which turns them off when the user prefers reduced motion.
+
+## Accessibility
+
+- Set `AriaLabel` when the page has more than one navigation landmark.
+- The toggler has `aria-controls`, `aria-expanded`, and a label set by `TogglerAriaLabel` (default "Toggle navigation").
+- Dropdown toggles are buttons with `aria-expanded`, and work by keyboard: Enter or Space opens the menu, the arrow keys move through it, and Escape closes it.
+- Give a search form `role="search"`, and give each input an `aria-label`.
+- With `ExternalCollapseId`, focus moves into the external content when it opens.
+
+## Navbar parameters
+
+| Name | Type | Default | Required | Description | Added Version |
+|:--|:--|:--|:--|:--|:--|
+| AriaLabel | string? | null | | Gets or sets the accessible name of the navigation landmark, read by screen readers. Set it when the page has more than one navigation landmark. | 4.1.0 |
+| BackgroundColor | `BackgroundColor` | `BackgroundColor.None` | | Gets or sets the background color, applied with Bootstrap's `bg-*` classes. | 4.1.0 |
+| Brand | RenderFragment | null | | Gets or sets the brand, usually a `NavbarBrand`. | 4.1.0 |
+| BrandInCollapse | bool | false | | Gets or sets whether the brand is placed inside the collapsed menu, so it is hidden until the menu expands. | 4.1.0 |
+| ChildContent | RenderFragment | null | | Gets or sets the content of the menu: `NavbarNav`, `NavbarText`, forms, input groups, or buttons. It collapses behind the toggler below `ExpandBreakpoint`. | 4.1.0 |
+| CollapseMode | `NavbarCollapseMode` | `NavbarCollapseMode.Collapse` | | Gets or sets how the menu is shown below `ExpandBreakpoint`: in a collapse region or an offcanvas panel. | 4.1.0 |
+| Color | `NavbarColor` | `NavbarColor.None` | | Gets or sets the contextual background color, applied with Bootstrap's `text-bg-*` classes. Pair a dark color with `NavbarTheme.Dark`. | 4.1.0 |
+| Container | `NavbarContainer` | `NavbarContainer.Fluid` | | Gets or sets the width of the container inside the navbar. | 4.1.0 |
+| ExpandBreakpoint | `NavbarExpand` | `NavbarExpand.Large` | | Gets or sets the breakpoint at which the navbar expands from its collapsed menu to a horizontal bar. | 4.1.0 |
+| ExternalCollapseId | string? | null | | Gets or sets the id of a `Collapse` outside the navbar that the toggler shows and hides. When set, `ChildContent` is not collapsed, and focus moves into the collapse when it opens. | 4.1.0 |
+| OffcanvasCloseButtonAriaLabel | string | "Close" | | Gets or sets the accessible label of the offcanvas close button. | 4.1.0 |
+| OffcanvasPlacement | `Placement` | `Placement.End` | | Gets or sets the side the offcanvas panel opens from when `CollapseMode` is `Offcanvas`. | 4.1.0 |
+| OffcanvasTitle | string? | null | | Gets or sets the title of the offcanvas panel. It also names the panel for screen readers. | 4.1.0 |
+| Placement | `NavbarPlacement` | `NavbarPlacement.Static` | | Gets or sets where the navbar is placed on the page. | 4.1.0 |
+| Theme | `NavbarTheme` | `NavbarTheme.None` | | Gets or sets the color theme, set through Bootstrap's `data-bs-theme` attribute. | 4.1.0 |
+| TogglerAriaLabel | string | "Toggle navigation" | | Gets or sets the accessible label of the toggler button. | 4.1.0 |
+| TogglerPosition | `NavbarTogglerPosition` | `NavbarTogglerPosition.End` | | Gets or sets where the toggler is placed relative to the brand. | 4.1.0 |
+
+## Navbar methods
+
+| Name | Description | Added Version |
+|:--|:--|:--|
+| HideAsync() | Hides the collapsed menu. Does nothing when the navbar is expanded or the menu is already hidden. | 4.1.0 |
+| ShowAsync() | Shows the collapsed menu. | 4.1.0 |
+| ToggleAsync() | Shows the collapsed menu if it is hidden, or hides it if it is shown. | 4.1.0 |
+
+## NavbarBrand parameters
+
+| Name | Type | Default | Required | Description | Added Version |
+|:--|:--|:--|:--|:--|:--|
+| ChildContent | RenderFragment | null | | Gets or sets the brand text, shown after the image when both are set. | 4.1.0 |
+| Href | string? | null | | Gets or sets the link of the brand. When `null`, the brand renders as plain text. | 4.1.0 |
+| ImageAlt | string? | null | | Gets or sets the alternative text of the brand image. Set it to the brand name when the image is shown without text. | 4.1.0 |
+| ImageHeight | int? | null | | Gets or sets the height of the brand image, in pixels. | 4.1.0 |
+| ImageSrc | string? | null | | Gets or sets the source of the brand image. | 4.1.0 |
+| ImageWidth | int? | null | | Gets or sets the width of the brand image, in pixels. | 4.1.0 |
+
+## NavbarNav parameters
+
+| Name | Type | Default | Required | Description | Added Version |
+|:--|:--|:--|:--|:--|:--|
+| ChildContent | RenderFragment | null | ✔️ | Gets or sets the items of the navigation: `NavbarItem` and `NavbarDropdown` components. | 4.1.0 |
+| Scrollable | bool | false | | Gets or sets whether the collapsed navigation scrolls within `ScrollHeight` instead of growing to fit its items. | 4.1.0 |
+| ScrollHeight | string | "75vh" | | Gets or sets the maximum height of the scrolling navigation when `Scrollable` is `true`, as a CSS length. | 4.1.0 |
+
+## NavbarItem parameters
+
+`Id`, `Class`, `Style`, and other attributes apply to the link.
+
+| Name | Type | Default | Required | Description | Added Version |
+|:--|:--|:--|:--|:--|:--|
+| ChildContent | RenderFragment | null | ✔️ | Gets or sets the content of the link. | 4.1.0 |
+| Disabled | bool | false | | Gets or sets whether the link is disabled. A disabled link has no `href` and is marked `aria-disabled="true"`. | 4.1.0 |
+| Href | string? | null | | Gets or sets the URL of the link. | 4.1.0 |
+| Match | `NavLinkMatch` | `NavLinkMatch.Prefix` | | Gets or sets how the link matches the current URL to become active. Use `NavLinkMatch.All` for a home link, so it is not active on every page. | 4.1.0 |
+
+## NavbarDropdown parameters
+
+| Name | Type | Default | Required | Description | Added Version |
+|:--|:--|:--|:--|:--|:--|
+| ChildContent | RenderFragment | null | ✔️ | Gets or sets the menu items: `DropdownItem`, `DropdownHeader`, and `DropdownDivider` components. | 4.1.0 |
+| MenuEnd | bool | false | | Gets or sets whether the menu is aligned to the end of the toggle instead of the start, when the navbar is expanded. | 4.1.0 |
+| Text | string? | null | ✔️ | Gets or sets the text of the dropdown toggle. | 4.1.0 |
+
+## NavbarText parameters
+
+| Name | Type | Default | Required | Description | Added Version |
+|:--|:--|:--|:--|:--|:--|
+| ChildContent | RenderFragment | null | ✔️ | Gets or sets the text. | 4.1.0 |
+
+## Examples
+
+### Basic usage
+
+```cshtml {1-23} showLineNumbers
+<Navbar BackgroundColor="BackgroundColor.BodyTertiary" AriaLabel="Main navigation">
+    <Brand>
+        <NavbarBrand Href="/">Navbar</NavbarBrand>
+    </Brand>
+    <ChildContent>
+        <NavbarNav Class="me-auto mb-2 mb-lg-0">
+            <NavbarItem Href="/" Match="NavLinkMatch.All">Home</NavbarItem>
+            <NavbarItem Href="/pricing">Pricing</NavbarItem>
+            <NavbarDropdown Text="Products">
+                <DropdownItem Type="DropdownItemType.Link" To="/products/new">New arrivals</DropdownItem>
+                <DropdownItem Type="DropdownItemType.Link" To="/products/sale">On sale</DropdownItem>
+                <DropdownDivider />
+                <DropdownItem Type="DropdownItemType.Link" To="/products">All products</DropdownItem>
+            </NavbarDropdown>
+            <NavbarItem Disabled="true">Disabled</NavbarItem>
+        </NavbarNav>
+        <form class="d-flex" role="search" @onsubmit="Search">
+            <TextInput @bind-Value="query" Class="me-2" Placeholder="Search" aria-label="Search" />
+            <Button Type="ButtonType.Submit" Color="ButtonColor.Success" Outline="true">Search</Button>
+        </form>
+    </ChildContent>
+</Navbar>
+```
+
+```cs {} showLineNumbers
+@code {
+    private string? query;
+
+    private void Search() { }
+}
+```
+
+[See demo here](https://demos.blazorbootstrap.com/navbar#basic-usage)
+
+### Brand
+
+```cshtml {} showLineNumbers
+<Navbar BackgroundColor="BackgroundColor.BodyTertiary">
+    <Brand>
+        <NavbarBrand Href="/" ImageSrc="images/logo.svg" ImageAlt="" ImageWidth="30" ImageHeight="24">Blazor Bootstrap</NavbarBrand>
+    </Brand>
+</Navbar>
+```
+
+Leave `Href` unset for a plain-text brand. Set `ImageAlt` to the brand name when the image is shown without text.
+
+[See demo here](https://demos.blazorbootstrap.com/navbar#brand)
+
+### Color schemes
+
+Set `BackgroundColor` or `Color`, and set `Theme` to match the background.
+
+```cshtml {1} showLineNumbers
+<Navbar BackgroundColor="BackgroundColor.Dark" Theme="NavbarTheme.Dark" Class="border-bottom border-body">
+    <Brand>
+        <NavbarBrand Href="/">Navbar</NavbarBrand>
+    </Brand>
+</Navbar>
+```
+
+[See demo here](https://demos.blazorbootstrap.com/navbar#color-schemes)
+
+### Containers and placement
+
+```cshtml {1} showLineNumbers
+<Navbar BackgroundColor="BackgroundColor.BodyTertiary" Container="NavbarContainer.Default" Placement="NavbarPlacement.StickyTop">
+    <Brand>
+        <NavbarBrand Href="/">Navbar</NavbarBrand>
+    </Brand>
+</Navbar>
+```
+
+A fixed navbar leaves the page flow, so add padding to the `body` to keep content from going under it.
+
+[See demo here](https://demos.blazorbootstrap.com/navbar#placement)
+
+### Responsive behaviors
+
+`ExpandBreakpoint` sets where the menu expands: `Never` keeps it collapsed, and `Always` never collapses it. `TogglerPosition="NavbarTogglerPosition.Start"` puts the toggler before the brand, and `BrandInCollapse="true"` hides the brand until the menu expands.
+
+```cshtml {1} showLineNumbers
+<Navbar BackgroundColor="BackgroundColor.BodyTertiary" TogglerPosition="NavbarTogglerPosition.Start">
+    <Brand>
+        <NavbarBrand Href="/">Navbar</NavbarBrand>
+    </Brand>
+    <ChildContent>
+        <NavbarNav>
+            <NavbarItem Href="/" Match="NavLinkMatch.All">Home</NavbarItem>
+            <NavbarItem Href="/pricing">Pricing</NavbarItem>
+        </NavbarNav>
+    </ChildContent>
+</Navbar>
+```
+
+[See demo here](https://demos.blazorbootstrap.com/navbar#responsive-behaviors)
+
+### Scrolling
+
+```cshtml {1} showLineNumbers
+<NavbarNav Class="me-auto my-2 my-lg-0" Scrollable="true" ScrollHeight="100px">
+    <NavbarItem Href="/" Match="NavLinkMatch.All">Home</NavbarItem>
+    <NavbarItem Href="/pricing">Pricing</NavbarItem>
+</NavbarNav>
+```
+
+[See demo here](https://demos.blazorbootstrap.com/navbar#scrolling)
+
+### External content
+
+Give a `Collapse` an `Id`, and set `ExternalCollapseId` to it. Set `ExpandBreakpoint="NavbarExpand.Never"` so the toggler shows at every width.
+
+```cshtml {1,6} showLineNumbers
+<Collapse Id="navbar-external-content" data-bs-theme="dark">
+    <div class="bg-dark p-4">
+        <h5 class="text-body-emphasis h4">Collapsed content</h5>
+    </div>
+</Collapse>
+<Navbar BackgroundColor="BackgroundColor.Dark" Theme="NavbarTheme.Dark" ExpandBreakpoint="NavbarExpand.Never" ExternalCollapseId="navbar-external-content" />
+```
+
+[See demo here](https://demos.blazorbootstrap.com/navbar#external-content)
+
+### Offcanvas
+
+```cshtml {2-3} showLineNumbers
+<Navbar BackgroundColor="BackgroundColor.BodyTertiary"
+        CollapseMode="NavbarCollapseMode.Offcanvas"
+        OffcanvasTitle="Menu">
+    <Brand>
+        <NavbarBrand Href="/">Navbar</NavbarBrand>
+    </Brand>
+    <ChildContent>
+        <NavbarNav Class="justify-content-end flex-grow-1 pe-3">
+            <NavbarItem Href="/" Match="NavLinkMatch.All">Home</NavbarItem>
+            <NavbarItem Href="/pricing">Pricing</NavbarItem>
+        </NavbarNav>
+    </ChildContent>
+</Navbar>
+```
+
+Above `ExpandBreakpoint` the menu shows inline. Use `NavbarExpand.Never` to keep the offcanvas at every width, and `OffcanvasPlacement` to choose the side it opens from.
+
+[See demo here](https://demos.blazorbootstrap.com/navbar#offcanvas)
+
+### Methods
+
+```cshtml {1} showLineNumbers
+<Navbar @ref="navbar" ExpandBreakpoint="NavbarExpand.Never">
+    <Brand>
+        <NavbarBrand Href="/">Navbar</NavbarBrand>
+    </Brand>
+    <ChildContent>
+        <NavbarNav>
+            <NavbarItem Href="/" Match="NavLinkMatch.All">Home</NavbarItem>
+        </NavbarNav>
+    </ChildContent>
+</Navbar>
+```
+
+```cs {} showLineNumbers
+@code {
+    private Navbar navbar = default!;
+
+    private async Task ShowMenuAsync() => await navbar.ShowAsync();
+}
+```
+
+[See demo here](https://demos.blazorbootstrap.com/navbar#methods)

@@ -1,0 +1,45 @@
+<RadioButtonGroup @bind-Value="placement" AriaLabel="Placement" Size="ButtonGroupSize.Small" Class="mb-3 flex-wrap">
+    @foreach (var option in Enum.GetValues<NavbarPlacement>())
+    {
+        <ButtonGroupItem Value="@option" Text="@option.ToString()" />
+    }
+</RadioButtonGroup>
+
+@* The transform makes this box the containing block for a fixed navbar, so the box stands in for the viewport. *@
+<div class="border rounded overflow-hidden" style="height: 220px; transform: translateZ(0);">
+    @if (isFixed)
+    {
+        @RenderNavbar()
+    }
+    <div class="h-100 overflow-auto @(placement == NavbarPlacement.FixedTop ? "pt-5" : null) @(placement == NavbarPlacement.FixedBottom ? "pb-5" : null)" tabindex="0" aria-label="Scrollable placement preview">
+        @if (placement is NavbarPlacement.Static or NavbarPlacement.StickyTop)
+        {
+            @RenderNavbar()
+        }
+        <div class="p-3">
+            @for (var i = 1; i <= 12; i++)
+            {
+                <p class="mb-2">Scroll the box to see how the @placement navbar behaves. Line @i.</p>
+            }
+        </div>
+        @if (placement == NavbarPlacement.StickyBottom)
+        {
+            @RenderNavbar()
+        }
+    </div>
+</div>
+
+@code {
+    private NavbarPlacement placement = NavbarPlacement.StickyTop;
+
+    private bool isFixed => placement is NavbarPlacement.FixedTop or NavbarPlacement.FixedBottom;
+
+    private RenderFragment RenderNavbar() => __builder =>
+    {
+        <Navbar BackgroundColor="BackgroundColor.BodyTertiary" Placement="@placement" AriaLabel="Placement preview">
+            <Brand>
+                <NavbarBrand>@placement</NavbarBrand>
+            </Brand>
+        </Navbar>
+    };
+}

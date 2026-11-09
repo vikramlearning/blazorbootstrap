@@ -1,0 +1,26 @@
+@namespace BlazorBootstrap
+@inherits BlazorBootstrapComponentBase
+
+@if (Href is not null)
+{
+    <a @ref="@Element" id="@Id" class="@ClassNames" style="@StyleNames" href="@Href" @attributes="@AdditionalAttributes">@RenderContent()</a>
+}
+else
+{
+    <span @ref="@Element" id="@Id" class="@ClassNames" style="@StyleNames" @attributes="@AdditionalAttributes">@RenderContent()</span>
+}
+
+@code {
+    private RenderFragment RenderContent() => __builder =>
+    {
+        @if (ImageSrc is not null)
+        {
+            <img src="@ImageSrc"
+                 alt="@ImageAlt"
+                 width="@ImageWidth"
+                 height="@ImageHeight"
+                 class="@(ChildContent is not null ? "d-inline-block align-text-top" : null)" />
+        }
+        @ChildContent
+    };
+}

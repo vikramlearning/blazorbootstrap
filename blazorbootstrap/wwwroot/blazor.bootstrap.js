@@ -740,6 +740,114 @@ window.blazorBootstrap = {
                 bootstrap?.Modal?.getOrCreateInstance(modalEl)?.dispose();
         }
     },
+    navbar: {
+        // Element references by navbar id. Blazor removes the elements before dispose runs on the server, so dispose cannot look them up.
+        instances: {},
+        dispose: (elementId) => {
+            let state = window.blazorBootstrap.navbar.instances[elementId];
+            if (state == null)
+                return;
+
+            delete window.blazorBootstrap.navbar.instances[elementId];
+
+            state.listeners.forEach(([target, type, handler]) => target.removeEventListener(type, handler));
+
+            let menuEl = state.menuEl;
+            if (menuEl.classList.contains('offcanvas')) {
+                let wasShown = menuEl.classList.contains('show') || menuEl.classList.contains('showing');
+                bootstrap?.Offcanvas?.getInstance(menuEl)?.dispose(); // also removes its backdrop
+                if (wasShown)
+                    window.blazorBootstrap.navbar.resetScrollbar();
+            }
+            else if (!state.isExternal) {
+                bootstrap?.Collapse?.getInstance(menuEl)?.dispose();
+            }
+        },
+        getInstance: (menuEl) => {
+            if (menuEl.classList.contains('offcanvas'))
+                return bootstrap?.Offcanvas?.getOrCreateInstance(menuEl);
+
+            return bootstrap?.Collapse?.getOrCreateInstance(menuEl, { toggle: false });
+        },
+        hide: (elementId) => {
+            let state = window.blazorBootstrap.navbar.instances[elementId];
+            if (state == null || !state.menuEl.classList.contains('show'))
+                return;
+
+            window.blazorBootstrap.navbar.getInstance(state.menuEl)?.hide();
+        },
+        initialize: (elementId, menuId, isExternal) => {
+            let navbarEl = document.getElementById(elementId);
+            let menuEl = document.getElementById(menuId);
+            if (navbarEl == null || menuEl == null)
+                return;
+
+            let togglerEl = navbarEl.querySelector('.navbar-toggler');
+            let state = { menuEl: menuEl, togglerEl: togglerEl, isExternal: isExternal, listeners: [] };
+            let listen = (target, type, handler) => {
+                target.addEventListener(type, handler);
+                state.listeners.push([target, type, handler]);
+            };
+
+            if (menuEl.classList.contains('offcanvas') && togglerEl != null) {
+                // Bootstrap tracks aria-expanded for collapse togglers only.
+                listen(menuEl, 'show.bs.offcanvas', () => togglerEl.setAttribute('aria-expanded', 'true'));
+                listen(menuEl, 'hidden.bs.offcanvas', () => togglerEl.setAttribute('aria-expanded', 'false'));
+            }
+
+            if (isExternal) {
+                // Move focus into external content when it opens.
+                listen(menuEl, 'shown.bs.collapse', (event) => {
+                    if (event.target !== menuEl)
+                        return;
+
+                    let focusableEl = menuEl.querySelector('a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])');
+                    if (focusableEl == null) {
+                        menuEl.setAttribute('tabindex', '-1');
+                        focusableEl = menuEl;
+                    }
+                    focusableEl.focus();
+                });
+            }
+
+            window.blazorBootstrap.navbar.dispose(elementId);
+            window.blazorBootstrap.navbar.instances[elementId] = state;
+        },
+        isCollapsed: (state) => {
+            // The menu is collapsed only while the toggler is visible; above the expand breakpoint there is nothing to show or hide.
+            return state.togglerEl != null && window.getComputedStyle(state.togglerEl).display !== 'none';
+        },
+        resetScrollbar: () => {
+            // Undo Bootstrap's ScrollBarHelper when an open offcanvas is disposed before its hide transition completes.
+            let reset = (el, property) => {
+                let value = el.getAttribute(`data-bs-${property}`);
+                if (value == null)
+                    el.style.removeProperty(property);
+                else {
+                    el.style.setProperty(property, value);
+                    el.removeAttribute(`data-bs-${property}`);
+                }
+            };
+            reset(document.body, 'overflow');
+            reset(document.body, 'padding-right');
+            document.querySelectorAll('.fixed-top, .fixed-bottom, .is-fixed').forEach((el) => reset(el, 'padding-right'));
+            document.querySelectorAll('.sticky-top').forEach((el) => reset(el, 'margin-right'));
+        },
+        show: (elementId) => {
+            let state = window.blazorBootstrap.navbar.instances[elementId];
+            if (state == null || !window.blazorBootstrap.navbar.isCollapsed(state))
+                return;
+
+            window.blazorBootstrap.navbar.getInstance(state.menuEl)?.show();
+        },
+        toggle: (elementId) => {
+            let state = window.blazorBootstrap.navbar.instances[elementId];
+            if (state == null || !window.blazorBootstrap.navbar.isCollapsed(state))
+                return;
+
+            window.blazorBootstrap.navbar.getInstance(state.menuEl)?.toggle();
+        }
+    },
     numberInput: {
         initialize: (elementId, isFloat, allowNegativeNumbers, numberDecimalSeparator) => {
             let numberEl = document.getElementById(elementId);

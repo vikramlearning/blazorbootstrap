@@ -1,0 +1,9 @@
+@namespace BlazorBootstrap
+@inherits BlazorBootstrapComponentBase
+
+<li @ref="@Element" id="@Id" class="@ClassNames" style="@StyleNames" @attributes="@AdditionalAttributes">
+    <button type="button" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">@Text</button>
+    <ul class="@menuClassNames">
+        @ChildContent
+    </ul>
+</li>

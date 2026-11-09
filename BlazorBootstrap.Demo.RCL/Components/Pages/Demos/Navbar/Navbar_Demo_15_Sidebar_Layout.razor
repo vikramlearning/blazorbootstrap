@@ -1,0 +1,49 @@
+@* The box stands in for the viewport: main fills it and scrolls, instead of taking the layout's full 100vh height. *@
+<div class="border rounded overflow-hidden" style="height: 420px; transform: translateZ(0);">
+    <div class="bb-page h-100">
+        <Sidebar Href="@DemoRouteConstants.Demos_URL_Navbar"
+                 IconName="IconName.BootstrapFill"
+                 Title="Blazor Bootstrap"
+                 DataProvider="SidebarDataProvider" />
+
+        <main style="height: auto; min-height: 0; overflow-y: auto;">
+            <Navbar BackgroundColor="BackgroundColor.BodyTertiary" Placement="NavbarPlacement.StickyTop" AriaLabel="Page navigation" Class="border-bottom">
+                <Brand>
+                    <NavbarBrand>Dashboard</NavbarBrand>
+                </Brand>
+                <ChildContent>
+                    <NavbarNav Class="ms-auto">
+                        <NavbarItem Href="@DemoRouteConstants.Demos_URL_Navbar" Match="NavLinkMatch.All">Home</NavbarItem>
+                        <NavbarItem Href="@DemoRouteConstants.Demos_URL_Buttons">Buttons</NavbarItem>
+                        <NavbarDropdown Text="Account" MenuEnd="true">
+                            <DropdownItem Type="DropdownItemType.Link" To="@DemoRouteConstants.Demos_URL_Navbar">Profile</DropdownItem>
+                            <DropdownItem Type="DropdownItemType.Link" To="@DemoRouteConstants.Demos_URL_Navbar">Sign out</DropdownItem>
+                        </NavbarDropdown>
+                    </NavbarNav>
+                </ChildContent>
+            </Navbar>
+            <article class="content px-4 py-3">
+                @for (var i = 1; i <= 15; i++)
+                {
+                    <p>Page content line @i. The navbar sticks to the top of the content while it scrolls.</p>
+                }
+            </article>
+        </main>
+    </div>
+</div>
+
+@code {
+    private IEnumerable<NavItem>? navItems;
+
+    private async Task<SidebarDataProviderResult> SidebarDataProvider(SidebarDataProviderRequest request)
+    {
+        navItems ??= new List<NavItem>
+        {
+            new NavItem { Id = "1", Href = DemoRouteConstants.Demos_URL_Navbar, IconName = IconName.HouseDoorFill, Text = "Home", Match = NavLinkMatch.All },
+            new NavItem { Id = "2", Href = DemoRouteConstants.Demos_URL_Buttons, IconName = IconName.ToggleOn, Text = "Buttons" },
+            new NavItem { Id = "3", Href = DemoRouteConstants.Demos_URL_ButtonGroup, IconName = IconName.Toggles, Text = "Button Group" },
+        };
+
+        return await Task.FromResult(request.ApplyTo(navItems));
+    }
+}

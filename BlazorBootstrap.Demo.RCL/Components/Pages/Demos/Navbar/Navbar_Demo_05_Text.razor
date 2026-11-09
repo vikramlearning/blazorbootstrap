@@ -1,0 +1,21 @@
+<Navbar BackgroundColor="BackgroundColor.BodyTertiary" AriaLabel="Navbar with text">
+    <Brand>
+        <NavbarBrand Href="@DemoRouteConstants.Demos_URL_Navbar">Navbar w/ text</NavbarBrand>
+    </Brand>
+    <ChildContent>
+        <NavbarNav Class="me-auto mb-2 mb-lg-0">
+            <NavbarItem Href="@DemoRouteConstants.Demos_URL_Navbar" Match="NavLinkMatch.All">Home</NavbarItem>
+            <NavbarItem Href="@DemoRouteConstants.Demos_URL_Buttons">Buttons</NavbarItem>
+        </NavbarNav>
+        <NavbarText>Signed in as @displayName</NavbarText>
+    </ChildContent>
+</Navbar>
+
+<div class="mt-3" style="max-width: 22rem;">
+    <label class="form-label" for="navbar-display-name">Display name</label>
+    <TextInput Id="navbar-display-name" @bind-Value="displayName" />
+</div>
+
+@code {
+    private string displayName = "Mark Otto";
+}

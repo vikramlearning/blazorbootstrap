@@ -1,0 +1,31 @@
+<Navbar BackgroundColor="BackgroundColor.BodyTertiary" AriaLabel="Basic navbar">
+    <Brand>
+        <NavbarBrand Href="@DemoRouteConstants.Demos_URL_Navbar">Navbar</NavbarBrand>
+    </Brand>
+    <ChildContent>
+        <NavbarNav Class="me-auto mb-2 mb-lg-0">
+            <NavbarItem Href="@DemoRouteConstants.Demos_URL_Navbar" Match="NavLinkMatch.All">Home</NavbarItem>
+            <NavbarItem Href="@DemoRouteConstants.Demos_URL_ButtonGroup">Button Group</NavbarItem>
+            <NavbarDropdown Text="Forms">
+                <DropdownItem Type="DropdownItemType.Link" To="@DemoRouteConstants.Demos_URL_InputGroup">Input Group</DropdownItem>
+                <DropdownItem Type="DropdownItemType.Link" To="@DemoRouteConstants.Demos_URL_TextInput">Text Input</DropdownItem>
+                <DropdownDivider />
+                <DropdownItem Type="DropdownItemType.Link" To="@DemoRouteConstants.Demos_URL_Buttons">Buttons</DropdownItem>
+            </NavbarDropdown>
+            <NavbarItem Disabled="true">Disabled</NavbarItem>
+        </NavbarNav>
+        <form class="d-flex" role="search" @onsubmit="Search">
+            <TextInput @bind-Value="query" Class="me-2" Placeholder="Search" aria-label="Search" />
+            <Button Type="ButtonType.Submit" Color="ButtonColor.Success" Outline="true">Search</Button>
+        </form>
+    </ChildContent>
+</Navbar>
+
+<div class="mt-3">@status</div>
+
+@code {
+    private string? query;
+    private string? status;
+
+    private void Search() => status = string.IsNullOrWhiteSpace(query) ? "Type something to search." : $"Searching for \"{query}\".";
+}

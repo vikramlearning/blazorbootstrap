@@ -1,0 +1,59 @@
+<Navbar BackgroundColor="BackgroundColor.BodyTertiary" BrandInCollapse="true" AriaLabel="Navbar with a hidden brand" Class="mb-3">
+    <Brand>
+        <NavbarBrand Href="@DemoRouteConstants.Demos_URL_Navbar">Hidden brand</NavbarBrand>
+    </Brand>
+    <ChildContent>
+        <NavbarNav Class="me-auto mb-2 mb-lg-0">
+            <NavbarItem Href="@DemoRouteConstants.Demos_URL_Navbar" Match="NavLinkMatch.All">Home</NavbarItem>
+            <NavbarItem Href="@DemoRouteConstants.Demos_URL_Buttons">Buttons</NavbarItem>
+        </NavbarNav>
+    </ChildContent>
+</Navbar>
+
+<Navbar BackgroundColor="BackgroundColor.BodyTertiary" AriaLabel="Navbar with the toggler on the right" Class="mb-3">
+    <Brand>
+        <NavbarBrand Href="@DemoRouteConstants.Demos_URL_Navbar">Toggler right</NavbarBrand>
+    </Brand>
+    <ChildContent>
+        <NavbarNav Class="me-auto mb-2 mb-lg-0">
+            <NavbarItem Href="@DemoRouteConstants.Demos_URL_Navbar" Match="NavLinkMatch.All">Home</NavbarItem>
+            <NavbarItem Href="@DemoRouteConstants.Demos_URL_Buttons">Buttons</NavbarItem>
+        </NavbarNav>
+    </ChildContent>
+</Navbar>
+
+<Navbar BackgroundColor="BackgroundColor.BodyTertiary" TogglerPosition="NavbarTogglerPosition.Start" AriaLabel="Navbar with the toggler on the left" Class="mb-3">
+    <Brand>
+        <NavbarBrand Href="@DemoRouteConstants.Demos_URL_Navbar">Toggler left</NavbarBrand>
+    </Brand>
+    <ChildContent>
+        <NavbarNav Class="me-auto mb-2 mb-lg-0">
+            <NavbarItem Href="@DemoRouteConstants.Demos_URL_Navbar" Match="NavLinkMatch.All">Home</NavbarItem>
+            <NavbarItem Href="@DemoRouteConstants.Demos_URL_Buttons">Buttons</NavbarItem>
+        </NavbarNav>
+    </ChildContent>
+</Navbar>
+
+<Navbar BackgroundColor="BackgroundColor.BodyTertiary" ExpandBreakpoint="NavbarExpand.Never" AriaLabel="Navbar that never expands" Class="mb-3">
+    <Brand>
+        <NavbarBrand Href="@DemoRouteConstants.Demos_URL_Navbar">Never expands</NavbarBrand>
+    </Brand>
+    <ChildContent>
+        <NavbarNav>
+            <NavbarItem Href="@DemoRouteConstants.Demos_URL_Navbar" Match="NavLinkMatch.All">Home</NavbarItem>
+            <NavbarItem Href="@DemoRouteConstants.Demos_URL_Buttons">Buttons</NavbarItem>
+        </NavbarNav>
+    </ChildContent>
+</Navbar>
+
+<Navbar BackgroundColor="BackgroundColor.BodyTertiary" ExpandBreakpoint="NavbarExpand.Always" AriaLabel="Navbar that is always expanded">
+    <Brand>
+        <NavbarBrand Href="@DemoRouteConstants.Demos_URL_Navbar">Always expanded</NavbarBrand>
+    </Brand>
+    <ChildContent>
+        <NavbarNav>
+            <NavbarItem Href="@DemoRouteConstants.Demos_URL_Navbar" Match="NavLinkMatch.All">Home</NavbarItem>
+            <NavbarItem Href="@DemoRouteConstants.Demos_URL_Buttons">Buttons</NavbarItem>
+        </NavbarNav>
+    </ChildContent>
+</Navbar>

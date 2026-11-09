@@ -1,0 +1,41 @@
+<Navbar BackgroundColor="BackgroundColor.BodyTertiary"
+        CollapseMode="NavbarCollapseMode.Offcanvas"
+        OffcanvasTitle="Offcanvas"
+        AriaLabel="Offcanvas navbar"
+        Class="mb-3">
+    <Brand>
+        <NavbarBrand Href="@DemoRouteConstants.Demos_URL_Navbar">Responsive offcanvas</NavbarBrand>
+    </Brand>
+    <ChildContent>
+        <NavbarNav Class="justify-content-end flex-grow-1 pe-3">
+            <NavbarItem Href="@DemoRouteConstants.Demos_URL_Navbar" Match="NavLinkMatch.All">Home</NavbarItem>
+            <NavbarItem Href="@DemoRouteConstants.Demos_URL_Buttons">Buttons</NavbarItem>
+            <NavbarDropdown Text="Dropdown" MenuEnd="true">
+                <DropdownItem Type="DropdownItemType.Link" To="@DemoRouteConstants.Demos_URL_Modal">Modals</DropdownItem>
+                <DropdownItem Type="DropdownItemType.Link" To="@DemoRouteConstants.Demos_URL_Offcanvas">Offcanvas</DropdownItem>
+            </NavbarDropdown>
+        </NavbarNav>
+    </ChildContent>
+</Navbar>
+
+<Navbar BackgroundColor="BackgroundColor.Dark"
+        Theme="NavbarTheme.Dark"
+        ExpandBreakpoint="NavbarExpand.Never"
+        CollapseMode="NavbarCollapseMode.Offcanvas"
+        OffcanvasPlacement="Placement.Start"
+        OffcanvasTitle="Dark offcanvas"
+        AriaLabel="Dark offcanvas navbar">
+    <Brand>
+        <NavbarBrand Href="@DemoRouteConstants.Demos_URL_Navbar">Dark offcanvas</NavbarBrand>
+    </Brand>
+    <ChildContent>
+        <NavbarNav Class="flex-grow-1">
+            <NavbarItem Href="@DemoRouteConstants.Demos_URL_Navbar" Match="NavLinkMatch.All">Home</NavbarItem>
+            <NavbarItem Href="@DemoRouteConstants.Demos_URL_Buttons">Buttons</NavbarItem>
+            <NavbarDropdown Text="Dropdown">
+                <DropdownItem Type="DropdownItemType.Link" To="@DemoRouteConstants.Demos_URL_Modal">Modals</DropdownItem>
+                <DropdownItem Type="DropdownItemType.Link" To="@DemoRouteConstants.Demos_URL_Offcanvas">Offcanvas</DropdownItem>
+            </NavbarDropdown>
+        </NavbarNav>
+    </ChildContent>
+</Navbar>
