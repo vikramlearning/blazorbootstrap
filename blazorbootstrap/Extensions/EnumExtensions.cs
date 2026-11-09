@@ -228,6 +228,14 @@ public static class EnumExtensions
             _ => ""
         };
 
+    public static string ToButtonGroupSizeClass(this ButtonGroupSize buttonGroupSize) =>
+        buttonGroupSize switch
+        {
+            ButtonGroupSize.Large => "btn-group-lg",
+            ButtonGroupSize.Small => "btn-group-sm",
+            _ => ""
+        };
+
     public static string ToButtonSizeClass(this ButtonSize buttonSize) =>
         buttonSize switch
         {

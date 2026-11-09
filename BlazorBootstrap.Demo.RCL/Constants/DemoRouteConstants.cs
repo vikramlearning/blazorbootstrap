@@ -77,6 +77,7 @@ public static class DemoRouteConstants
     public const string Demos_URL_Avatar = Demos_URL_Prefix + "/avatar";
     public const string Demos_URL_Badge = Demos_URL_Prefix + "/badge";
     public const string Demos_URL_Breadcrumb = Demos_URL_Prefix + "/breadcrumb";
+    public const string Demos_URL_ButtonGroup = Demos_URL_Prefix + "/button-group";
     public const string Demos_URL_Buttons = Demos_URL_Prefix + "/buttons";
     public const string Demos_URL_Callout = Demos_URL_Prefix + "/callout";
     public const string Demos_URL_Card = Demos_URL_Prefix + "/card";
@@ -198,6 +199,7 @@ public static class DemoRouteConstants
     public const string Docs_URL_Avatar = Docs_URL_Prefix + "/avatar";
     public const string Docs_URL_Badge = Docs_URL_Prefix + "/badge";
     public const string Docs_URL_Breadcrumb = Docs_URL_Prefix + "/breadcrumb";
+    public const string Docs_URL_ButtonGroup = Docs_URL_Prefix + "/button-group";
     public const string Docs_URL_Buttons = Docs_URL_Prefix + "/buttons";
     public const string Docs_URL_Callout = Docs_URL_Prefix + "/callout";
     public const string Docs_URL_Card = Docs_URL_Prefix + "/card";

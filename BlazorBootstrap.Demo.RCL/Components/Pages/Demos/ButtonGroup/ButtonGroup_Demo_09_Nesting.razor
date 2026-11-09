@@ -1,0 +1,17 @@
+<ButtonGroup AriaLabel="Message actions">
+    <Button Color="ButtonColor.Primary" @onclick="@(() => action = "Reply")">Reply</Button>
+    <Button Color="ButtonColor.Primary" @onclick="@(() => action = "Forward")">Forward</Button>
+    <Dropdown Color="DropdownColor.Primary" Class="btn-group" role="group" aria-label="More message actions">
+        <DropdownToggleButton>More</DropdownToggleButton>
+        <DropdownMenu>
+            <DropdownItem @onclick="@(() => action = "Archive")">Archive</DropdownItem>
+            <DropdownItem @onclick="@(() => action = "Mark as unread")">Mark as unread</DropdownItem>
+        </DropdownMenu>
+    </Dropdown>
+</ButtonGroup>
+
+<div class="mt-3">Last action: @(action ?? "none")</div>
+
+@code {
+    private string? action;
+}

@@ -270,6 +270,21 @@ table button.dropdown-toggle.bb-grid-filter::after {
     border-bottom-right-radius: 0;
 }
 
+/* button group - group sizing reaches nested groups, such as a Dropdown */
+.btn-group-sm > .btn-group > .btn {
+    --bs-btn-padding-y: 0.25rem;
+    --bs-btn-padding-x: 0.5rem;
+    --bs-btn-font-size: 0.875rem;
+    --bs-btn-border-radius: var(--bs-border-radius-sm);
+}
+
+.btn-group-lg > .btn-group > .btn {
+    --bs-btn-padding-y: 0.5rem;
+    --bs-btn-padding-x: 1rem;
+    --bs-btn-font-size: 1.25rem;
+    --bs-btn-border-radius: var(--bs-border-radius-lg);
+}
+
 /* split view */
 .bb-split-view {
     display: flex;

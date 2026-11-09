@@ -1,0 +1,48 @@
+@using System.ComponentModel.DataAnnotations
+
+<EditForm Model="signup" OnValidSubmit="HandleValidSubmit" OnInvalidSubmit="() => submitted = false">
+    <DataAnnotationsValidator />
+
+    <div class="mb-3">
+        <div class="form-label" id="validation-plan-label">Plan</div>
+        <RadioButtonGroup @bind-Value="signup.Plan" AriaLabel="Plan" aria-labelledby="validation-plan-label">
+            <ButtonGroupItem Value="@("starter")" Text="Starter" />
+            <ButtonGroupItem Value="@("pro")" Text="Pro" />
+            <ButtonGroupItem Value="@("enterprise")" Text="Enterprise" />
+        </RadioButtonGroup>
+        <ValidationMessage For="() => signup.Plan" />
+    </div>
+
+    <div class="mb-3">
+        <div class="form-label" id="validation-topics-label">Email me about</div>
+        <CheckboxButtonGroup @bind-Values="signup.Topics" AriaLabel="Email topics" aria-labelledby="validation-topics-label">
+            <ButtonGroupItem Value="@("releases")" Text="Releases" />
+            <ButtonGroupItem Value="@("events")" Text="Events" />
+            <ButtonGroupItem Value="@("tips")" Text="Tips" />
+        </CheckboxButtonGroup>
+        <ValidationMessage For="() => signup.Topics" />
+    </div>
+
+    <Button Type="ButtonType.Submit" Color="ButtonColor.Primary">Submit</Button>
+</EditForm>
+
+@if (submitted)
+{
+    <div class="mt-3">Signed up for the @signup.Plan plan, with emails about @string.Join(", ", signup.Topics).</div>
+}
+
+@code {
+    private Signup signup = new();
+    private bool submitted;
+
+    private void HandleValidSubmit() => submitted = true;
+
+    public class Signup
+    {
+        [Required(ErrorMessage = "Please choose a plan.")]
+        public string? Plan { get; set; }
+
+        [MinLength(1, ErrorMessage = "Please choose at least one topic.")]
+        public IEnumerable<string> Topics { get; set; } = Array.Empty<string>();
+    }
+}

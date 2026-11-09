@@ -45,6 +45,7 @@ public class DemoScreenshotSrcConstants
     public const string Demos_URL_Avatar = DemoScreenshotSrcPrefix + "avatar.png";
     public const string Demos_URL_Badge = DemoScreenshotSrcPrefix + "badge.png";
     public const string Demos_URL_Breadcrumb = DemoScreenshotSrcPrefix + "breadcrumb.png";
+    public const string Demos_URL_ButtonGroup = DemoScreenshotSrcPrefix + "button-group.png";
     public const string Demos_URL_Buttons = DemoScreenshotSrcPrefix + "buttons.png";
     public const string Demos_URL_Callout = DemoScreenshotSrcPrefix + "callout.png";
     public const string Demos_URL_Card = DemoScreenshotSrcPrefix + "card.png";

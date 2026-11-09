@@ -1,0 +1,22 @@
+<RadioButtonGroup @bind-Value="billingPeriod" AriaLabel="Billing period" Class="mb-3">
+    <ButtonGroupItem Value="@("monthly")" Text="Monthly" />
+    <ButtonGroupItem Value="@("yearly")" Text="Yearly" />
+    <ButtonGroupItem Value="@("lifetime")" Text="Lifetime" Disabled="true" />
+</RadioButtonGroup>
+
+<div class="mb-4">Billing period: @billingPeriod</div>
+
+<RadioButtonGroup @bind-Value="range" AriaLabel="Chart range" Color="ButtonColor.Secondary" Size="ButtonGroupSize.Small">
+    @foreach (var option in ranges)
+    {
+        <ButtonGroupItem Value="@option" Text="@($"{option} days")" />
+    }
+</RadioButtonGroup>
+
+<div class="mt-3">Chart range: last @range days</div>
+
+@code {
+    private string billingPeriod = "monthly";
+    private int range = 30;
+    private readonly int[] ranges = { 7, 30, 90 };
+}

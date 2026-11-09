@@ -1,0 +1,8 @@
+@namespace BlazorBootstrap
+@inherits BlazorBootstrapComponentBase
+@typeparam TValue
+@attribute [CascadingTypeParameter(nameof(TValue))]
+
+<CascadingValue Value="@((IButtonGroupItemHost<TValue>)this)">
+    <div @ref="@Element" id="@Id" class="@ClassNames" style="@StyleNames" role="group" aria-label="@AriaLabel" @attributes="@AdditionalAttributes">@ChildContent</div>
+</CascadingValue>
