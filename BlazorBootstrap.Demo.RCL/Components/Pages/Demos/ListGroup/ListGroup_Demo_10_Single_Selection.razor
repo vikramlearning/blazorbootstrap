@@ -1,0 +1,12 @@
+<ListGroup @bind-SelectedItem="conversation" SelectionMode="ListGroupSelectionMode.Single" AriaLabel="Conversations" Style="max-width: 24rem;">
+    <ListGroupItem Value="@("Release planning")">Release planning</ListGroupItem>
+    <ListGroupItem Value="@("Support rota")">Support rota</ListGroupItem>
+    <ListGroupItem Value="@("Design review")">Design review</ListGroupItem>
+    <ListGroupItem Value="@("Archived thread")" Disabled="true">Archived thread</ListGroupItem>
+</ListGroup>
+
+<div class="mt-3">Open conversation: @(conversation ?? "none")</div>
+
+@code {
+    private string? conversation = "Support rota";
+}

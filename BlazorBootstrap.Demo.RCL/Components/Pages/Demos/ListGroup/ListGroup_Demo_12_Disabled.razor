@@ -1,0 +1,28 @@
+<Switch @bind-Value="groupDisabled" Label="Disable the whole list" Class="mb-3" />
+
+<ListGroup TItem="Member"
+           Data="members"
+           TextField="@(m => $"{m.Name} ({m.Role})")"
+           DisabledSelector="@(m => m.IsSuspended)"
+           Disabled="@groupDisabled"
+           SelectionMode="ListGroupSelectionMode.Single"
+           @bind-SelectedItem="selected"
+           AriaLabel="Members"
+           Style="max-width: 24rem;" />
+
+<div class="mt-3">Selected: @(selected?.Name ?? "none"). Suspended members are disabled by <code>DisabledSelector</code>.</div>
+
+@code {
+    private bool groupDisabled;
+    private Member? selected;
+
+    private readonly Member[] members =
+    {
+        new("Ava Patel", "Owner", false),
+        new("Ben Ortiz", "Editor", true),
+        new("Chen Wei", "Viewer", false),
+        new("Dana Kim", "Editor", true),
+    };
+
+    public record Member(string Name, string Role, bool IsSuspended);
+}

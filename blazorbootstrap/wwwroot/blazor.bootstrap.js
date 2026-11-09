@@ -611,12 +611,102 @@ window.blazorBootstrap = {
                     checkboxEl.checked = false;
                     checkboxEl.indeterminate = false;
                 }
-                else if (state === 3) { // indeterminate 
+                else if (state === 3) { // indeterminate
                     checkboxEl.checked = false;
                     checkboxEl.indeterminate = true;
                 }
             }
         },
+    },
+    listGroup: {
+        // Element references by list id. Blazor removes the elements before dispose runs on the server, so dispose cannot look them up.
+        instances: {},
+        dispose: (elementId) => {
+            let state = window.blazorBootstrap.listGroup.instances[elementId];
+            if (state == null)
+                return;
+
+            delete window.blazorBootstrap.listGroup.instances[elementId];
+
+            state.listeners.forEach(([target, type, handler]) => target.removeEventListener(type, handler));
+            state.tabEls.forEach((tabEl) => bootstrap?.Tab?.getInstance(tabEl)?.dispose());
+        },
+        initializeListbox: (elementId) => {
+            let listEl = document.getElementById(elementId);
+            if (listEl == null)
+                return;
+
+            window.blazorBootstrap.listGroup.dispose(elementId);
+
+            // Arrow keys, Home, and End move focus between the enabled options and keep a single tab stop.
+            let handler = (event) => {
+                let options = [...listEl.querySelectorAll(':scope > [role="option"]:not(:disabled)')];
+                let index = options.indexOf(document.activeElement);
+                if (index < 0)
+                    return;
+
+                let next = null;
+                switch (event.key) {
+                    case 'ArrowDown':
+                    case 'ArrowRight':
+                        next = options[Math.min(index + 1, options.length - 1)];
+                        break;
+                    case 'ArrowUp':
+                    case 'ArrowLeft':
+                        next = options[Math.max(index - 1, 0)];
+                        break;
+                    case 'Home':
+                        next = options[0];
+                        break;
+                    case 'End':
+                        next = options[options.length - 1];
+                        break;
+                    default:
+                        return;
+                }
+
+                event.preventDefault();
+                options.forEach((optionEl) => optionEl.setAttribute('tabindex', optionEl === next ? '0' : '-1'));
+                next.focus();
+            };
+
+            listEl.addEventListener('keydown', handler);
+            window.blazorBootstrap.listGroup.instances[elementId] = { listeners: [[listEl, 'keydown', handler]], tabEls: [] };
+        },
+        initializeTabs: (elementId, dotNetHelper) => {
+            let listEl = document.getElementById(elementId);
+            if (listEl == null)
+                return;
+
+            window.blazorBootstrap.listGroup.dispose(elementId);
+
+            let state = { listeners: [], tabEls: [...listEl.querySelectorAll('[data-bs-toggle="list"]')] };
+            let nameOf = (el) => el?.getAttribute('data-bb-name') ?? null;
+            let listen = (type, callback) => {
+                let handler = (event) => {
+                    if (state.tabEls.includes(event.target))
+                        callback(event);
+                };
+                listEl.addEventListener(type, handler);
+                state.listeners.push([listEl, type, handler]);
+            };
+
+            // event.target is the tab being shown (or hidden); event.relatedTarget is the other tab.
+            listen('show.bs.tab', (event) => dotNetHelper.invokeMethodAsync('bsShowTab', nameOf(event.target), nameOf(event.relatedTarget)));
+            listen('shown.bs.tab', (event) => dotNetHelper.invokeMethodAsync('bsShownTab', nameOf(event.target), nameOf(event.relatedTarget)));
+            listen('hide.bs.tab', (event) => dotNetHelper.invokeMethodAsync('bsHideTab', nameOf(event.relatedTarget), nameOf(event.target)));
+            listen('hidden.bs.tab', (event) => dotNetHelper.invokeMethodAsync('bsHiddenTab', nameOf(event.relatedTarget), nameOf(event.target)));
+
+            // Bootstrap creates Tab instances for active tabs only on window load; create them so arrow keys work in the tab list.
+            state.tabEls.forEach((tabEl) => bootstrap?.Tab?.getOrCreateInstance(tabEl));
+
+            window.blazorBootstrap.listGroup.instances[elementId] = state;
+        },
+        showTab: (tabId) => {
+            let tabEl = document.getElementById(tabId);
+            if (tabEl != null)
+                bootstrap?.Tab?.getOrCreateInstance(tabEl)?.show();
+        }
     },
     mindMap: {
         instances: {},

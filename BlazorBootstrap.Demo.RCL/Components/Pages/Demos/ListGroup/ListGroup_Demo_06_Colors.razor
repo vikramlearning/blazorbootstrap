@@ -1,0 +1,23 @@
+<div class="row g-3">
+    <div class="col-md-6">
+        <ListGroup TItem="string">
+            @foreach (var color in Enum.GetValues<ListGroupColor>())
+            {
+                <ListGroupItem Color="@color">A simple @color.ToString().ToLowerInvariant() list group item</ListGroupItem>
+            }
+        </ListGroup>
+    </div>
+    <div class="col-md-6">
+        <ListGroup TItem="string" AriaLabel="Actionable colored items">
+            @foreach (var color in Enum.GetValues<ListGroupColor>())
+            {
+                <ListGroupItem Color="@color" OnClick="@(() => picked = color)">A @color.ToString().ToLowerInvariant() button item</ListGroupItem>
+            }
+        </ListGroup>
+        <div class="mt-3">Picked: @picked</div>
+    </div>
+</div>
+
+@code {
+    private ListGroupColor picked = ListGroupColor.None;
+}

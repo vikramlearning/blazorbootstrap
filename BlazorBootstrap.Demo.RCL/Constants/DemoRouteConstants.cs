@@ -109,6 +109,7 @@ public static class DemoRouteConstants
     public const string Demos_URL_Grid_OtherExamples = Demos_URL_Grid_Prefix + "/other";
     #endregion Grid
 
+    public const string Demos_URL_ListGroup = Demos_URL_Prefix + "/list-group";
     public const string Demos_URL_Markdown = Demos_URL_Prefix + "/markdown";
     public const string Demos_URL_MindMap = Demos_URL_Prefix + "/mind-map";
     public const string Demos_URL_Modal = Demos_URL_Prefix + "/modals";
@@ -211,6 +212,7 @@ public static class DemoRouteConstants
     public const string Docs_URL_Dropdown = Docs_URL_Prefix + "/dropdown";
     public const string Docs_URL_GoogleMap = Docs_URL_Prefix + "/google-map";
     public const string Docs_URL_Grid = Docs_URL_Prefix + "/grid";
+    public const string Docs_URL_ListGroup = Docs_URL_Prefix + "/list-group";
     public const string Docs_URL_Markdown = Docs_URL_Prefix + "/markdown";
     public const string Docs_URL_MindMap = Docs_URL_Prefix + "/mind-map";
     public const string Docs_URL_Modal = Docs_URL_Prefix + "/modals";

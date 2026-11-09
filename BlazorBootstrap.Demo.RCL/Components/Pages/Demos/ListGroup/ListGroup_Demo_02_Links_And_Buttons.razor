@@ -1,0 +1,23 @@
+<div class="row g-3">
+    <div class="col-md-6">
+        <ListGroup TItem="string" AriaLabel="Related demos">
+            <ListGroupItem Href="@DemoRouteConstants.Demos_URL_ListGroup" Active="true">List Group (this page)</ListGroupItem>
+            <ListGroupItem Href="@DemoRouteConstants.Demos_URL_ButtonGroup">Button Group</ListGroupItem>
+            <ListGroupItem Href="@DemoRouteConstants.Demos_URL_InputGroup">Input Group</ListGroupItem>
+            <ListGroupItem Href="@DemoRouteConstants.Demos_URL_Navbar" Disabled="true">A disabled link</ListGroupItem>
+        </ListGroup>
+    </div>
+    <div class="col-md-6">
+        <ListGroup TItem="string" AriaLabel="Actions">
+            <ListGroupItem OnClick="@(() => status = "Archived.")">Archive</ListGroupItem>
+            <ListGroupItem OnClick="@(() => status = "Marked as read.")">Mark as read</ListGroupItem>
+            <ListGroupItem OnClick="@(() => status = "Moved.")">Move to folder</ListGroupItem>
+            <ListGroupItem OnClick="@(() => status = "Deleted.")" Disabled="true">A disabled button</ListGroupItem>
+        </ListGroup>
+        <div class="mt-3">@(status ?? "Pick an action.")</div>
+    </div>
+</div>
+
+@code {
+    private string? status;
+}

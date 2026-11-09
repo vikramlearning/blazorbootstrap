@@ -1,0 +1,8 @@
+@foreach (var breakpoint in Enum.GetValues<ListGroupHorizontalBreakpoint>())
+{
+    <ListGroup TItem="string" Horizontal="true" HorizontalBreakpoint="@breakpoint" Class="mb-3">
+        <ListGroupItem>@breakpoint</ListGroupItem>
+        <ListGroupItem>A second item</ListGroupItem>
+        <ListGroupItem>A third item</ListGroupItem>
+    </ListGroup>
+}

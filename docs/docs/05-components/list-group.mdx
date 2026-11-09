@@ -1,0 +1,232 @@
+---
+title: Blazor List Group Component
+description: The Blazor Bootstrap ListGroup component shows a list of items, links, or buttons, with single, multiple, checkbox, or radio selection, or tabs that switch content panes, following the Bootstrap 5.3 list group.
+image: https://demos.blazorbootstrap.com/images/screenshots/list-group.png
+
+sidebar_label: List Group
+sidebar_position: 15.5
+---
+
+import CarbonAd from '/carbon-ad.mdx'
+
+# Blazor List Group
+
+The Blazor Bootstrap `ListGroup` component follows the [Bootstrap 5.3 list group](https://getbootstrap.com/docs/5.3/components/list-group/). It shows a list of items, links, or buttons; lets users select one item, several items, or check items with checkboxes or radios; or turns the items into tabs that switch content panes.
+
+<CarbonAd />
+
+## Before you start
+
+- **Two modes.** Add `ListGroupItem` children (static mode), or set `Data` with `TextField` or `ItemTemplate` (data-bound mode).
+- **`TItem` is the type of the item values.** Razor infers it from `Data` or a selection binding; a static list without either still sets it, for example `TItem="string"`.
+- **`Flush` and `Horizontal` do not combine.** `Flush` is ignored while `Horizontal` is set.
+- **Value types and single selection.** `SelectedItem` starts at the type's default, so with `TItem="int"` an item whose value is `0` shows as selected. Use a nullable type, such as `int?`, when nothing should be selected at first.
+- **Tab mode** uses the Bootstrap JavaScript bundle the app already loads.
+
+## Accessibility
+
+- A plain list is a `ul` (or an `ol` when `Numbered`); a list of links or buttons is a `div`, as in Bootstrap. The active item is marked `aria-current="true"`.
+- A disabled link has no `href`, is marked `aria-disabled="true"`, and does not navigate. A disabled button uses the native `disabled` attribute.
+- With `SelectionMode` `Single` or `Multiple`, the list is a `listbox` (`aria-multiselectable="true"` for `Multiple`) and items are `option`s with `aria-selected`. Tab moves into the list, the arrow keys, Home, and End move between items, and Space or Enter selects. A check mark shows selected items, so selection is not shown by color alone. Give the list an accessible name with `AriaLabel` or `aria-labelledby`.
+- With `Checkbox` or `Radio`, each item has a real input and label. Set `AriaLabel` on an item that has no visible text.
+- In tab mode the list is a `tablist`, items are `tab`s, and panes are `tabpanel`s linked with `aria-controls` and `aria-labelledby`. The arrow keys move between tabs.
+- In an `EditForm`, an invalid selectable list gets `aria-invalid="true"`.
+
+## ListGroup parameters
+
+| Name | Type | Default | Required | Description | Added Version |
+|:--|:--|:--|:--|:--|:--|
+| AriaLabel | string? | null | | Gets or sets the accessible name of the list, read by screen readers. Set it for a selectable list or tab list. | 4.1.0 |
+| ChildContent | RenderFragment | null | | Gets or sets the content: `ListGroupItem` components in static mode, or `ListGroupTabPane` components in tab mode. | 4.1.0 |
+| Data | `IEnumerable<TItem>?` | null | | Gets or sets the items to render in data-bound mode. When set, `ChildContent` is ignored. | 4.1.0 |
+| Disabled | bool | false | | Gets or sets whether every item is disabled. | 4.1.0 |
+| DisabledSelector | `Func<TItem, bool>?` | null | | Gets or sets a function that returns whether a data-bound item is disabled. | 4.1.0 |
+| Fade | bool | true | | Gets or sets whether tab panes fade in and out. Applies in tab mode. | 4.1.0 |
+| Flush | bool | false | | Gets or sets whether the outer borders and rounded corners are removed, so the list sits edge to edge in its parent. Ignored when `Horizontal` is set. | 4.1.0 |
+| Horizontal | bool | false | | Gets or sets whether the items are laid out in a row instead of a column, from `HorizontalBreakpoint` up. | 4.1.0 |
+| HorizontalBreakpoint | `ListGroupHorizontalBreakpoint` | `ListGroupHorizontalBreakpoint.Always` | | Gets or sets the breakpoint from which a horizontal list lays its items out in a row. | 4.1.0 |
+| ItemTemplate | `RenderFragment<TItem>?` | null | | Gets or sets the template of a data-bound item. Takes precedence over `TextField`. | 4.1.0 |
+| Numbered | bool | false | | Gets or sets whether the items are numbered. | 4.1.0 |
+| SelectedItem | TItem | | | Gets or sets the selected item. Applies when `SelectionMode` is `Single` or `Radio`. | 4.1.0 |
+| SelectedItemExpression | `Expression<Func<TItem>>?` | null | | Gets or sets the expression that identifies the bound selected item for validation and EditContext notifications. | 4.1.0 |
+| SelectedItems | `IEnumerable<TItem>?` | null | | Gets or sets the selected items. Applies when `SelectionMode` is `Multiple` or `Checkbox`. | 4.1.0 |
+| SelectedItemsExpression | `Expression<Func<IEnumerable<TItem>?>>?` | null | | Gets or sets the expression that identifies the bound selected items for validation and EditContext notifications. | 4.1.0 |
+| SelectionMode | `ListGroupSelectionMode` | `ListGroupSelectionMode.None` | | Gets or sets how items are selected. | 4.1.0 |
+| StretchedLink | bool | false | | Gets or sets whether the whole row of a checkbox or radio item toggles it, not only the input and its label. | 4.1.0 |
+| TabContentClass | string | "col-md-8" | | Gets or sets the CSS class of the column that holds the tab panes. Applies in tab mode. | 4.1.0 |
+| TabListClass | string | "col-md-4" | | Gets or sets the CSS class of the column that holds the tab list. Applies in tab mode. | 4.1.0 |
+| TabMode | bool | false | | Gets or sets whether the items act as tabs that switch the `ListGroupTabPane` children. | 4.1.0 |
+| TextField | `Func<TItem, string>?` | null | | Gets or sets a function that returns the text of a data-bound item, when there is no `ItemTemplate`. | 4.1.0 |
+
+## ListGroup methods
+
+| Name | Description | Added Version |
+|:--|:--|:--|
+| ShowTabAsync(string name) | Shows the tab pane with the given name. Applies in tab mode. | 4.1.0 |
+
+## ListGroup events
+
+| Name | Description | Added Version |
+|:--|:--|:--|
+| OnHidden | This event fires after a tab pane is hidden. Applies in tab mode. | 4.1.0 |
+| OnHiding | This event fires when a tab pane starts to hide. Applies in tab mode. | 4.1.0 |
+| OnItemClick | This event fires when the user clicks an item. Items become buttons when it is set. | 4.1.0 |
+| OnShowing | This event fires when a tab pane starts to show. Applies in tab mode. | 4.1.0 |
+| OnShown | This event fires after a tab pane is shown. Applies in tab mode. | 4.1.0 |
+| SelectedItemChanged | This event fires when the user selects a different item. | 4.1.0 |
+| SelectedItemsChanged | This event fires when the user selects or deselects an item. The new set keeps the existing order, with a newly selected item added at the end. | 4.1.0 |
+
+The tab events receive a `ListGroupTabEventArgs` with `ActiveTabName` and `PreviousTabName`.
+
+## ListGroupItem parameters
+
+| Name | Type | Default | Required | Description | Added Version |
+|:--|:--|:--|:--|:--|:--|
+| Active | bool | false | | Gets or sets whether the item is active, marked with `aria-current="true"`. Applies when the group is not selectable; a selectable group marks its selected items instead. | 4.1.0 |
+| AriaLabel | string? | null | | Gets or sets the accessible name of the item. In checkbox and radio modes it names the input; set it when the item has no visible text. | 4.1.0 |
+| ChildContent | RenderFragment | null | | Gets or sets the content of the item: text or any markup. | 4.1.0 |
+| Color | `ListGroupColor` | `ListGroupColor.None` | | Gets or sets the contextual color of the item. | 4.1.0 |
+| Disabled | bool | false | | Gets or sets whether the item is disabled. The item is also disabled when its group is disabled. | 4.1.0 |
+| Href | string? | null | | Gets or sets the URL of the item, which makes it a link. A disabled link has no `href` and is marked `aria-disabled="true"`. Applies when the group is not selectable. | 4.1.0 |
+| Value | TItem | | | Gets or sets the value of the item. Selection and `OnItemClick` report it. | 4.1.0 |
+
+## ListGroupItem events
+
+| Name | Description | Added Version |
+|:--|:--|:--|
+| OnClick | This event fires when the user clicks the item, which makes it a button. Applies when the group is not selectable. | 4.1.0 |
+
+## ListGroupTabPane parameters
+
+| Name | Type | Default | Required | Description | Added Version |
+|:--|:--|:--|:--|:--|:--|
+| Active | bool | false | | Gets or sets whether this pane is shown when the group first renders. When no pane sets it, the first enabled pane is shown. | 4.1.0 |
+| ChildContent | RenderFragment | null | | Gets or sets the content of the pane. | 4.1.0 |
+| Disabled | bool | false | | Gets or sets whether the pane's tab is disabled. | 4.1.0 |
+| Name | string | null | ✔️ | Gets or sets the unique name of the pane. Tab events report it, and `ShowTabAsync` takes it. | 4.1.0 |
+| Title | string? | null | | Gets or sets the text of the pane's tab. `TitleTemplate` takes precedence. | 4.1.0 |
+| TitleTemplate | RenderFragment | null | | Gets or sets the content of the pane's tab, such as text with a badge. | 4.1.0 |
+
+## Examples
+
+### Basic usage
+
+```cshtml {} showLineNumbers
+<ListGroup TItem="string">
+    <ListGroupItem Active="true">An active item</ListGroupItem>
+    <ListGroupItem>A second item</ListGroupItem>
+    <ListGroupItem>A third item</ListGroupItem>
+</ListGroup>
+```
+
+[See demo here](https://demos.blazorbootstrap.com/list-group#basic-usage)
+
+### Links and buttons
+
+```cshtml {} showLineNumbers
+<ListGroup TItem="string">
+    <ListGroupItem Href="/inbox" Active="true">Inbox</ListGroupItem>
+    <ListGroupItem Href="/archive">Archive</ListGroupItem>
+    <ListGroupItem Href="/trash" Disabled="true">Trash</ListGroupItem>
+</ListGroup>
+
+<ListGroup TItem="string">
+    <ListGroupItem OnClick="Archive">Archive</ListGroupItem>
+    <ListGroupItem OnClick="Delete" Disabled="true">Delete</ListGroupItem>
+</ListGroup>
+```
+
+[See demo here](https://demos.blazorbootstrap.com/list-group#links-and-buttons)
+
+### Flush, numbered, horizontal, and colors
+
+```cshtml {} showLineNumbers
+<ListGroup TItem="string" Flush="true">...</ListGroup>
+<ListGroup TItem="string" Numbered="true">...</ListGroup>
+<ListGroup TItem="string" Horizontal="true" HorizontalBreakpoint="ListGroupHorizontalBreakpoint.Medium">...</ListGroup>
+
+<ListGroup TItem="string">
+    <ListGroupItem Color="ListGroupColor.Success">Payment received</ListGroupItem>
+    <ListGroupItem Color="ListGroupColor.Danger">Payment failed</ListGroupItem>
+</ListGroup>
+```
+
+[See demo here](https://demos.blazorbootstrap.com/list-group#horizontal)
+
+### Checkboxes and radios
+
+```cshtml {1,7} showLineNumbers
+<ListGroup @bind-SelectedItems="topics" SelectionMode="ListGroupSelectionMode.Checkbox" AriaLabel="Notify me about">
+    <ListGroupItem Value="@("mentions")">Mentions</ListGroupItem>
+    <ListGroupItem Value="@("replies")">Replies to my posts</ListGroupItem>
+    <ListGroupItem Value="@("digest")">Weekly digest</ListGroupItem>
+</ListGroup>
+
+<ListGroup @bind-SelectedItem="plan" SelectionMode="ListGroupSelectionMode.Radio" StretchedLink="true" AriaLabel="Plan">
+    <ListGroupItem Value="@("free")">Free</ListGroupItem>
+    <ListGroupItem Value="@("pro")">Pro</ListGroupItem>
+</ListGroup>
+```
+
+```cs {} showLineNumbers
+@code {
+    private IEnumerable<string> topics = new[] { "mentions" };
+    private string plan = "pro";
+}
+```
+
+[See demo here](https://demos.blazorbootstrap.com/list-group#checkboxes-and-radios)
+
+### Single and multiple selection
+
+```cshtml {1} showLineNumbers
+<ListGroup @bind-SelectedItem="conversation" SelectionMode="ListGroupSelectionMode.Single" AriaLabel="Conversations">
+    <ListGroupItem Value="@("Release planning")">Release planning</ListGroupItem>
+    <ListGroupItem Value="@("Support rota")">Support rota</ListGroupItem>
+</ListGroup>
+```
+
+Use `SelectionMode="ListGroupSelectionMode.Multiple"` with `@bind-SelectedItems` to select several items.
+
+[See demo here](https://demos.blazorbootstrap.com/list-group#single-selection)
+
+### Data binding and templates
+
+```cshtml {1-5} showLineNumbers
+<ListGroup TItem="Country" Data="countries" SelectionMode="ListGroupSelectionMode.Checkbox" @bind-SelectedItems="selected" AriaLabel="Countries">
+    <ItemTemplate Context="country">
+        @country.Name <Badge Color="BadgeColor.Secondary">@country.Code</Badge>
+    </ItemTemplate>
+</ListGroup>
+```
+
+```cs {} showLineNumbers
+@code {
+    private readonly Country[] countries = { new("India", "IN"), new("Japan", "JP") };
+    private IEnumerable<Country> selected = Array.Empty<Country>();
+
+    public record Country(string Name, string Code);
+}
+```
+
+Without a template, set `TextField="@(c => c.Name)"`. Set `DisabledSelector` to disable data-bound items, and `OnItemClick` to make them buttons.
+
+[See demo here](https://demos.blazorbootstrap.com/list-group#templates)
+
+### Tabs
+
+```cshtml {1-3} showLineNumbers
+<ListGroup TItem="string" TabMode="true" AriaLabel="Settings sections" OnShown="OnShown">
+    <ListGroupTabPane Name="profile" Title="Profile">Your name, photo, and contact details.</ListGroupTabPane>
+    <ListGroupTabPane Name="billing" Title="Billing">Invoices, payment method, and plan.</ListGroupTabPane>
+    <ListGroupTabPane Name="danger" Title="Danger zone" Disabled="true">...</ListGroupTabPane>
+</ListGroup>
+```
+
+```cs {} showLineNumbers
+@code {
+    private void OnShown(ListGroupTabEventArgs e) => Console.WriteLine($"Showing {e.ActiveTabName}");
+}
+```
+
+[See demo here](https://demos.blazorbootstrap.com/list-group#tabs)
