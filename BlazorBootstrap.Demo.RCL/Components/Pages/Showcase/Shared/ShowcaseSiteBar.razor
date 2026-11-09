@@ -1,0 +1,25 @@
+<div class="sc-sitebar" role="region" aria-label="Showcase example toolbar">
+    <div class="sc-sitebar-inner">
+        <a class="sc-sitebar-link" href="@DemoRouteConstants.Showcase_URL_Prefix">
+            <Icon Name="IconName.ArrowLeft" aria-hidden="true" />
+            <span>All examples</span>
+        </a>
+        <span class="sc-sitebar-divider d-none d-sm-inline" aria-hidden="true"></span>
+        <span class="sc-sitebar-title d-none d-sm-inline">
+            Built with <strong>Blazor Bootstrap</strong>
+            <span class="d-none d-md-inline"> · @Site.Name</span>
+        </span>
+        <span class="ms-auto"></span>
+        <a class="sc-sitebar-link" href="@Site.DocsUrl" target="_blank" rel="noopener">
+            <Icon Name="IconName.JournalText" aria-hidden="true" />
+            <span class="d-none d-md-inline">Docs</span>
+            <span class="visually-hidden d-md-none">Docs</span>
+        </a>
+        <a class="sc-sitebar-link" href="@Site.SourceUrl" target="_blank" rel="noopener">
+            <Icon Name="IconName.Github" aria-hidden="true" />
+            <span class="d-none d-md-inline">View source</span>
+            <span class="visually-hidden d-md-none">View source</span>
+        </a>
+        <ThemeSwitcher Class="sc-sitebar-theme" Position="DropdownMenuPosition.End" />
+    </div>
+</div>

@@ -1,0 +1,155 @@
+@page "/showcase/marketing"
+@layout MarketingLayout
+@inject MarketingState State
+
+<PageTitle>Lumora · Product analytics that explains itself</PageTitle>
+
+<section class="mk-hero">
+    <div class="container-xl">
+        <div class="row align-items-center g-4 g-lg-5">
+            <div class="col-lg-6">
+                <a class="mk-pill" href="@($"{MarketingLayout.Base}/features#ai")">
+                    <Badge Color="BadgeColor.Primary" Class="rounded-pill me-2">New</Badge>
+                    AI insights now on every plan trial
+                    <Icon Name="IconName.ChevronRight" class="ms-1" aria-hidden="true" />
+                </a>
+                <h1 class="mk-hero-title">Product analytics that <span class="mk-gradient-text">explains itself</span>.</h1>
+                <p class="mk-hero-lead">
+                    Lumora turns raw events into live dashboards, funnels, and plain-language insights &mdash;
+                    so every team can see what changed and why, without waiting on an analyst.
+                </p>
+                <div class="d-flex flex-wrap gap-2 mb-4">
+                    <a class="btn btn-primary btn-lg mk-cta-lg" href="@($"{MarketingLayout.Base}/signup")">Start free trial</a>
+                    <a class="btn btn-outline-secondary btn-lg mk-cta-lg" href="@($"{MarketingLayout.Base}/pricing")">See pricing</a>
+                </div>
+                <ul class="mk-checks list-unstyled">
+                    <li><Icon Name="IconName.CheckCircleFill" aria-hidden="true" /> 14-day trial, no card needed</li>
+                    <li><Icon Name="IconName.CheckCircleFill" aria-hidden="true" /> Set up in 10 minutes</li>
+                    <li><Icon Name="IconName.CheckCircleFill" aria-hidden="true" /> GDPR-ready</li>
+                </ul>
+            </div>
+            <div class="col-lg-6">
+                <div class="mk-hero-visual" aria-hidden="true">
+                    <div class="mk-mock-window">
+                        <div class="mk-mock-bar"><span></span><span></span><span></span></div>
+                        <div class="mk-mock-body">
+                            <div class="row g-2">
+                                @foreach (var kpi in kpis)
+                                {
+                                    <div class="col-4">
+                                        <div class="mk-mock-kpi">
+                                            <small>@kpi.Label</small>
+                                            <strong>@kpi.Value</strong>
+                                            <span class="@(kpi.Up ? "mk-up" : "mk-down")">@kpi.Change</span>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                            <div class="mk-mock-chart">
+                                @foreach (var height in bars)
+                                {
+                                    <span style="height: @(height)%;"></span>
+                                }
+                            </div>
+                            <div class="mk-mock-insight">
+                                <Icon Name="IconName.Stars" />
+                                <span><strong>Checkout conversion is up 12%</strong> this week, driven by mobile visitors from the new onboarding flow.</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="mk-logos" aria-label="Customers">
+    <div class="container-xl">
+        <p class="text-center text-body-secondary mb-3">Trusted by 4,000+ product teams (all fictitious)</p>
+        <ul class="list-unstyled mk-logo-row">
+            @foreach (var caseStudy in State.CaseStudies)
+            {
+                <li><Icon Name="@caseStudy.IconName" aria-hidden="true" /> @caseStudy.Company</li>
+            }
+        </ul>
+    </div>
+</section>
+
+<section class="container-xl py-5" aria-labelledby="mk-why">
+    <div class="text-center mx-auto mb-5" style="max-width: 40rem;">
+        <span class="sc-eyebrow">Why Lumora</span>
+        <h2 class="mk-section-title" id="mk-why">Everything you need to understand your product</h2>
+        <p class="text-body-secondary">From the first event to the boardroom slide, one workspace keeps the whole team on the same numbers.</p>
+    </div>
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
+        @foreach (var feature in State.Features.Take(4))
+        {
+            <div class="col">
+                <Card Class="h-100 mk-feature-card sc-card-hover">
+                    <CardBody>
+                        <span class="mk-feature-icon" aria-hidden="true"><Icon Name="@feature.IconName" /></span>
+                        <CardTitle Size="HeadingSize.H3" Class="h5 mt-3">@feature.Title</CardTitle>
+                        <CardText Class="text-body-secondary">@feature.Summary</CardText>
+                        <a class="mk-more" href="@($"{MarketingLayout.Base}/features#{feature.Id}")">Learn more <span class="visually-hidden">about @feature.Title</span><Icon Name="IconName.ArrowRight" class="ms-1" aria-hidden="true" /></a>
+                    </CardBody>
+                </Card>
+            </div>
+        }
+    </div>
+</section>
+
+<section class="mk-quote-band">
+    <div class="container-xl py-5">
+        <div class="row align-items-center g-4">
+            <div class="col-lg-7">
+                <figure class="mb-0">
+                    <blockquote class="mk-big-quote">&ldquo;@State.Testimonials[0].Quote&rdquo;</blockquote>
+                    <figcaption class="mt-3">
+                        <strong>@State.Testimonials[0].Person</strong>
+                        <span class="text-body-secondary">· @State.Testimonials[0].Role, @State.Testimonials[0].Company</span>
+                    </figcaption>
+                </figure>
+            </div>
+            <div class="col-lg-5">
+                <div class="row g-3 text-center">
+                    @foreach (var testimonial in State.Testimonials.Take(2))
+                    {
+                        <div class="col-6">
+                            <div class="mk-stat">
+                                <strong>@testimonial.Metric</strong>
+                                <span>@testimonial.MetricLabel</span>
+                            </div>
+                        </div>
+                    }
+                </div>
+                <a class="btn btn-link px-0 mt-3" href="@($"{MarketingLayout.Base}/customers")">Read customer stories <Icon Name="IconName.ArrowRight" class="ms-1" aria-hidden="true" /></a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="container-xl py-5">
+    <Callout Color="CalloutColor.Info" Heading="Ships with your stack">
+        Lumora has SDKs for web, iOS, Android, and every major server language &mdash; plus two-way warehouse sync.
+        <a href="@($"{MarketingLayout.Base}/features#sdks")">See integrations</a>.
+    </Callout>
+
+    <div class="mk-cta-band">
+        <div>
+            <h2 class="h3 fw-bold mb-1">Ready to see what your data is saying?</h2>
+            <p class="mb-0">Start a free 14-day trial. Setup takes about ten minutes.</p>
+        </div>
+        <a class="btn btn-light btn-lg fw-semibold" href="@($"{MarketingLayout.Base}/signup")">Start free trial</a>
+    </div>
+</section>
+
+@code {
+    private readonly (string Label, string Value, string Change, bool Up)[] kpis =
+    {
+        ("Active users", "48.2k", "+8.1%", true),
+        ("Conversion", "4.6%", "+12%", true),
+        ("Churn", "1.9%", "−0.4%", true),
+    };
+
+    private readonly int[] bars = { 38, 52, 45, 61, 58, 72, 66, 80, 74, 88, 83, 95 };
+}

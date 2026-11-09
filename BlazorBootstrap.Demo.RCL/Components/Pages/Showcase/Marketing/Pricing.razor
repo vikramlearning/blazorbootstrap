@@ -1,0 +1,116 @@
+@page "/showcase/marketing/pricing"
+@layout MarketingLayout
+@inject MarketingState State
+
+<PageTitle>Pricing · Lumora</PageTitle>
+
+<section class="mk-page-hero">
+    <div class="container-xl">
+        <span class="sc-eyebrow">Pricing</span>
+        <h1 class="mk-section-title">Simple pricing that grows with you</h1>
+        <p>Start free, upgrade when your team is ready. Every paid plan includes a 14-day trial.</p>
+        <div class="mk-billing mt-3">
+            <span class="@(State.AnnualBilling ? "text-body-secondary" : "fw-semibold")">Monthly</span>
+            <Switch Value="State.AnnualBilling" ValueExpression="() => State.AnnualBilling" ValueChanged="OnBillingChanged" Label="Bill annually" />
+            <Badge Color="BadgeColor.Success" Class="rounded-pill">Save 20%</Badge>
+        </div>
+    </div>
+</section>
+
+<section class="container-xl pb-5" aria-label="Plans">
+    <p class="visually-hidden" aria-live="polite">Showing @(State.AnnualBilling ? "annual" : "monthly") prices</p>
+    <div class="row row-cols-1 row-cols-lg-3 g-4 pt-3">
+        @foreach (var plan in State.Plans)
+        {
+            var price = State.MonthlyPriceFor(plan);
+            <div class="col" @key="plan.Id">
+                <Card Class="@($"h-100 mk-plan {(plan.IsPopular ? "mk-plan-popular" : string.Empty)}")">
+                    @if (plan.IsPopular)
+                    {
+                        <span class="mk-plan-badge badge rounded-pill text-bg-primary px-3 py-2">Most popular</span>
+                    }
+                    <CardBody Class="p-4 d-flex flex-column">
+                        <h2 class="h4 fw-bold mb-1">@plan.Name</h2>
+                        <p class="text-body-secondary">@plan.Description</p>
+                        <div class="d-flex align-items-end gap-2 my-3">
+                            <span class="mk-plan-price">@(price == 0 ? "$0" : $"${price:0}")</span>
+                            <span class="text-body-secondary pb-1">/ seat / month</span>
+                        </div>
+                        <p class="small text-body-secondary mb-4">
+                            @if (price == 0)
+                            {
+                                <text>Free forever for up to 3 seats.</text>
+                            }
+                            else if (State.AnnualBilling)
+                            {
+                                <text>Billed annually (@($"${price * 12:0}") per seat / year).</text>
+                            }
+                            else
+                            {
+                                <text>Billed monthly. Switch to annual to save 20%.</text>
+                            }
+                        </p>
+                        <ul class="list-unstyled mk-plan-list mb-4">
+                            @foreach (var highlight in plan.Highlights)
+                            {
+                                <li><Icon Name="IconName.Check2Circle" aria-hidden="true" />@highlight</li>
+                            }
+                        </ul>
+                        <a class="btn @(plan.IsPopular ? "btn-primary" : "btn-outline-primary") btn-lg w-100 mt-auto mk-cta-lg"
+                           href="@($"{MarketingLayout.Base}/signup?plan={plan.Id}")">
+                            @plan.CallToAction <span class="visually-hidden">with the @plan.Name plan</span>
+                        </a>
+                    </CardBody>
+                </Card>
+            </div>
+        }
+    </div>
+
+    <div class="text-center mt-5">
+        <Button Color="ButtonColor.Secondary" Outline="true" Class="rounded-pill px-4" @onclick="ToggleComparisonAsync"
+                aria-expanded="@(comparisonOpen ? "true" : "false")" aria-controls="mk-compare">
+            @(comparisonOpen ? "Hide full comparison" : "Compare all features")
+            <Icon Name="@(comparisonOpen ? IconName.ChevronUp : IconName.ChevronDown)" class="ms-1" aria-hidden="true" />
+        </Button>
+    </div>
+
+    <Collapse @ref="comparisonCollapse" id="mk-compare" OnShown="() => comparisonOpen = true" OnHidden="() => comparisonOpen = false">
+        <div class="table-responsive mt-4">
+            <table class="table align-middle">
+                <caption class="visually-hidden">Plan comparison</caption>
+                <thead>
+                    <tr>
+                        <th scope="col">Feature</th>
+                        <th scope="col">Starter</th>
+                        <th scope="col">Growth</th>
+                        <th scope="col">Enterprise</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var row in State.Comparison)
+                    {
+                        <tr>
+                            <th scope="row" class="fw-medium">@row.Feature</th>
+                            <td>@row.Starter</td>
+                            <td>@row.Growth</td>
+                            <td>@row.Enterprise</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </Collapse>
+
+    <Callout Color="CalloutColor.Info" Heading="Non-profit or education?" Class="mt-5">
+        We offer 50% off any paid plan for registered non-profits and schools. Mention it when you <a href="@($"{MarketingLayout.Base}/signup?plan=growth")">start your trial</a>.
+    </Callout>
+</section>
+
+@code {
+    private bool comparisonOpen;
+    private Collapse comparisonCollapse = default!;
+
+    private void OnBillingChanged(bool annual) => State.AnnualBilling = annual;
+
+    private async Task ToggleComparisonAsync() => await comparisonCollapse.ToggleAsync();
+}

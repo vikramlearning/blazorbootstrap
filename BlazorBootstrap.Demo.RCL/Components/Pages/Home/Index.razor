@@ -1,5 +1,7 @@
 @page "/"
 @layout EmptyLayout
+@using BlazorBootstrap.Demo.RCL.Components.Pages.Showcase.Shared
+@using BlazorBootstrap.Demo.RCL.Services.Showcase
 
 <PageTitle>Blazor Bootstrap Components Examples & Demos | Blazor Bootstrap</PageTitle>
 
@@ -28,6 +30,33 @@
         </div>
     </div>
 </div>
+
+@if (ShowcaseCatalog.IsPublished)
+{
+<section class="container bd-gutter mb-5" aria-labelledby="home-showcase-heading">
+    <div class="col-lg-7 mb-4 mx-auto text-md-center">
+        <h2 class="mb-3 fw-semibold lh-sm" id="home-showcase-heading">Showcase <Badge Color="BadgeColor.Success">New</Badge></h2>
+        <p class="text-muted mb-0">See what you can build: @ShowcaseCatalog.Sites.Count complete, interactive sample websites made only with Blazor Bootstrap components.</p>
+    </div>
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-4 g-3">
+        @foreach (var site in ShowcaseCatalog.Sites.Take(4))
+        {
+            <div class="col">
+                <a class="card h-100 text-decoration-none overflow-hidden" href="@site.Url">
+                    <ShowcaseImage Src="@site.ScreenshotLight" Width="1280" Height="800" Accent="@site.Accent" PlaceholderIcon="@site.IconName" Caption="@site.Name" />
+                    <span class="card-body">
+                        <span class="d-block fw-semibold text-body">@site.Name</span>
+                        <small class="text-muted">@site.Tagline</small>
+                    </span>
+                </a>
+            </div>
+        }
+    </div>
+    <div class="text-md-center mt-4">
+        <a class="btn btn-primary" href="@DemoRouteConstants.Showcase_URL_Prefix">Explore the Showcase <Icon Name="IconName.ArrowRight" class="ms-1" /></a>
+    </div>
+</section>
+}
 
 <div class="container bd-gutter masthead-followup mb-5">
     <div class="col-lg-7 mb-4 mx-auto text-md-center">

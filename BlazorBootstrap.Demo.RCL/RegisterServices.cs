@@ -1,4 +1,6 @@
-﻿namespace BlazorBootstrap.Demo.RCL;
+﻿using BlazorBootstrap.Demo.RCL.Services.Showcase;
+
+namespace BlazorBootstrap.Demo.RCL;
 
 public static class RegisterServices
 {
@@ -6,6 +8,7 @@ public static class RegisterServices
     {
         services.AddScoped<IEmployeeService, EmployeeService>();
         services.AddScoped<ICustomerService, CustomerService>();
+        services.AddShowcaseServices();
 
         return services;
     }

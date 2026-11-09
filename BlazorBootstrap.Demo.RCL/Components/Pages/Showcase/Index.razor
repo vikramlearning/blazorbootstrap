@@ -1,0 +1,88 @@
+@page "/showcase"
+@layout ShowcaseLayout
+
+<PageTitle>Showcase: real-world websites built with Blazor Bootstrap</PageTitle>
+
+<section class="sc-gallery-hero">
+    <div class="container-xxl py-5">
+        <div class="col-lg-8">
+            <span class="sc-gallery-kicker">Showcase</span>
+            <h1 class="display-5 fw-bold mt-2 mb-3">Real-world websites built with Blazor Bootstrap</h1>
+            <p class="lead mb-4">
+                Fifteen complete, interactive sample apps &mdash; from AI chat and SaaS dashboards to clinics, travel, and storefronts.
+                Every screen is built only with Blazor Bootstrap components, runs on fictitious data, and works in Blazor Server and WebAssembly.
+            </p>
+            <div class="d-flex flex-wrap gap-2">
+                <a class="btn btn-light btn-lg fw-semibold" href="#examples">Browse examples</a>
+                <a class="btn btn-outline-light btn-lg" href="@DemoRouteConstants.Showcase_Source_URL_Prefix" target="_blank" rel="noopener">
+                    <Icon Name="IconName.Github" class="me-1" aria-hidden="true" /> View source
+                </a>
+            </div>
+        </div>
+        <dl class="sc-gallery-stats row row-cols-3 g-3 mt-4 mb-0 col-lg-6">
+            <div class="col"><dt>Sites</dt><dd>@ShowcaseCatalog.Sites.Count</dd></div>
+            <div class="col"><dt>Screens</dt><dd>80+</dd></div>
+            <div class="col"><dt>Backend</dt><dd>None</dd></div>
+        </dl>
+    </div>
+</section>
+
+<section class="container-xxl py-5" id="examples" aria-labelledby="examples-heading">
+    <div class="d-flex flex-column flex-md-row align-items-md-end justify-content-between gap-3 mb-4">
+        <div>
+            <h2 class="h3 fw-bold mb-1" id="examples-heading">Pick an example</h2>
+            <p class="text-body-secondary mb-0">Open any site, click around, and toggle light or dark mode &mdash; nothing you do is sent anywhere.</p>
+        </div>
+        <div class="sc-gallery-filters" role="group" aria-label="Filter examples by category">
+            @foreach (var category in categories)
+            {
+                <button type="button"
+                        class="btn btn-sm @(category == selectedCategory ? "btn-primary" : "btn-outline-secondary")"
+                        aria-pressed="@(category == selectedCategory ? "true" : "false")"
+                        @onclick="() => SelectCategory(category)">
+                    @category
+                </button>
+            }
+        </div>
+    </div>
+
+    <p class="visually-hidden" aria-live="polite">@VisibleSites.Count() examples shown</p>
+
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-xl-3 g-4">
+        @foreach (var site in VisibleSites)
+        {
+            <div class="col" @key="site.Slug">
+                <article class="card h-100 sc-gallery-card sc-card-hover" style="--sc-card-accent: @site.Accent;">
+                    <a class="sc-gallery-shot" href="@site.Url" tabindex="-1" aria-hidden="true">
+                        <ShowcaseImage Src="@site.ScreenshotLight" Class="sc-shot-light" Width="1280" Height="800" Accent="@site.Accent" PlaceholderIcon="@site.IconName" Caption="@site.Name" />
+                        <ShowcaseImage Src="@site.ScreenshotDark" Class="sc-shot-dark" Width="1280" Height="800" Accent="@site.Accent" PlaceholderIcon="@site.IconName" Caption="@site.Name" />
+                    </a>
+                    <div class="card-body d-flex flex-column">
+                        <div class="d-flex align-items-center gap-2 mb-2">
+                            <span class="sc-gallery-icon" aria-hidden="true"><Icon Name="@site.IconName" /></span>
+                            <span class="badge rounded-pill text-bg-light border">@site.Category</span>
+                        </div>
+                        <h3 class="h5 fw-bold card-title mb-1">
+                            <a class="text-decoration-none text-body" href="@site.Url">@site.Name</a>
+                        </h3>
+                        <p class="card-text text-body-secondary mb-3">@site.Tagline</p>
+                        <ul class="sc-gallery-components list-unstyled d-flex flex-wrap gap-1 mb-3" aria-label="Components used">
+                            @foreach (var component in site.Components.Take(6))
+                            {
+                                <li><span class="badge bg-body-tertiary text-body-secondary border fw-medium">@component</span></li>
+                            }
+                            @if (site.Components.Count > 6)
+                            {
+                                <li><span class="badge bg-body-tertiary text-body-secondary border fw-medium">+@(site.Components.Count - 6) more</span></li>
+                            }
+                        </ul>
+                        <div class="mt-auto d-flex gap-2">
+                            <a class="btn btn-primary btn-sm" href="@site.Url">Live demo <span class="visually-hidden">of @site.Name</span></a>
+                            <a class="btn btn-outline-secondary btn-sm" href="@site.DocsUrl" target="_blank" rel="noopener">How it's built <span class="visually-hidden">: @site.Name</span></a>
+                        </div>
+                    </div>
+                </article>
+            </div>
+        }
+    </div>
+</section>

@@ -1,0 +1,15 @@
+@page "/showcase/marketing/{*path}"
+@layout MarketingLayout
+
+<PageTitle>Page not found · Lumora</PageTitle>
+
+<section class="container-xl mk-not-found">
+    <span class="mk-feature-icon fs-3 mb-3" aria-hidden="true"><Icon Name="IconName.Compass" /></span>
+    <h1 class="mk-section-title">We couldn't find that page</h1>
+    <p class="text-body-secondary mb-4">The link may be old, or the page may have moved.</p>
+    <a class="btn btn-primary btn-lg mk-cta-lg" href="@MarketingLayout.Base">Back to Lumora home</a>
+</section>
+
+@code {
+    [Parameter] public string? Path { get; set; }
+}

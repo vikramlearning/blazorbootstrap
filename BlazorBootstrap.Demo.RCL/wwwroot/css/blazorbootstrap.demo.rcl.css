@@ -473,3 +473,164 @@ pre[class*=language-] {
 .bb-demo-wordmark .navbar-brand-text {
     display: none;
 }
+
+/* ---------------------------------------------------------------------------
+   Showcase sample websites (/showcase)
+   Each site layout sets --sc-primary, --sc-primary-rgb, --sc-primary-hover,
+   --sc-primary-contrast, and font tokens on its .sc-site root; this bridge maps
+   them onto the Bootstrap component variables that use literal colors.
+   --------------------------------------------------------------------------- */
+.sc-site {
+    --bs-primary: var(--sc-primary);
+    --bs-primary-rgb: var(--sc-primary-rgb);
+    --bs-link-color: var(--sc-primary);
+    --bs-link-color-rgb: var(--sc-primary-rgb);
+    --bs-link-hover-color: var(--sc-primary-hover);
+    --bs-link-hover-color-rgb: var(--sc-primary-rgb);
+    --bs-focus-ring-color: rgba(var(--sc-primary-rgb), .3);
+    --bs-body-font-family: var(--sc-font-body, var(--bs-font-sans-serif));
+    font-family: var(--sc-font-body, var(--bs-font-sans-serif));
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--sc-page-bg, var(--bs-body-bg));
+}
+
+    .sc-site h1, .sc-site h2, .sc-site h3, .sc-site h4, .sc-site h5, .sc-site h6,
+    .sc-site .h1, .sc-site .h2, .sc-site .h3, .sc-site .h4, .sc-site .h5, .sc-site .h6,
+    .sc-site .display-1, .sc-site .display-2, .sc-site .display-3, .sc-site .display-4, .sc-site .display-5, .sc-site .display-6 {
+        font-family: var(--sc-font-heading, var(--sc-font-body, inherit));
+    }
+
+    .sc-site .btn-primary {
+        --bs-btn-color: var(--sc-primary-contrast, #fff);
+        --bs-btn-bg: var(--sc-primary);
+        --bs-btn-border-color: var(--sc-primary);
+        --bs-btn-hover-color: var(--sc-primary-contrast, #fff);
+        --bs-btn-hover-bg: var(--sc-primary-hover);
+        --bs-btn-hover-border-color: var(--sc-primary-hover);
+        --bs-btn-active-color: var(--sc-primary-contrast, #fff);
+        --bs-btn-active-bg: var(--sc-primary-hover);
+        --bs-btn-active-border-color: var(--sc-primary-hover);
+        --bs-btn-disabled-bg: var(--sc-primary);
+        --bs-btn-disabled-border-color: var(--sc-primary);
+        --bs-btn-focus-shadow-rgb: var(--sc-primary-rgb);
+    }
+
+    .sc-site .btn-outline-primary {
+        --bs-btn-color: var(--sc-primary);
+        --bs-btn-border-color: var(--sc-primary);
+        --bs-btn-hover-color: var(--sc-primary-contrast, #fff);
+        --bs-btn-hover-bg: var(--sc-primary);
+        --bs-btn-hover-border-color: var(--sc-primary);
+        --bs-btn-active-color: var(--sc-primary-contrast, #fff);
+        --bs-btn-active-bg: var(--sc-primary);
+        --bs-btn-active-border-color: var(--sc-primary);
+        --bs-btn-focus-shadow-rgb: var(--sc-primary-rgb);
+    }
+
+    .sc-site .form-control:focus,
+    .sc-site .form-select:focus,
+    .sc-site .form-check-input:focus {
+        border-color: rgba(var(--sc-primary-rgb), .6);
+        box-shadow: 0 0 0 .25rem rgba(var(--sc-primary-rgb), .25);
+    }
+
+    .sc-site .form-check-input:checked {
+        background-color: var(--sc-primary);
+        border-color: var(--sc-primary);
+    }
+
+    .sc-site .form-range::-webkit-slider-thumb {
+        background-color: var(--sc-primary);
+    }
+
+    .sc-site .form-range::-moz-range-thumb {
+        background-color: var(--sc-primary);
+    }
+
+    .sc-site .nav-pills {
+        --bs-nav-pills-link-active-bg: var(--sc-primary);
+        --bs-nav-pills-link-active-color: var(--sc-primary-contrast, #fff);
+    }
+
+    .sc-site .nav-link {
+        --bs-nav-link-color: var(--bs-body-color);
+        --bs-nav-link-hover-color: var(--sc-primary);
+    }
+
+    .sc-site .nav-tabs .nav-link.active {
+        color: var(--sc-primary);
+    }
+
+    .sc-site .pagination {
+        --bs-pagination-active-bg: var(--sc-primary);
+        --bs-pagination-active-border-color: var(--sc-primary);
+        --bs-pagination-color: var(--sc-primary);
+        --bs-pagination-hover-color: var(--sc-primary-hover);
+        --bs-pagination-focus-color: var(--sc-primary-hover);
+        --bs-pagination-focus-box-shadow: 0 0 0 .25rem rgba(var(--sc-primary-rgb), .25);
+    }
+
+    .sc-site .progress,
+    .sc-site .progress-stacked {
+        --bs-progress-bar-bg: var(--sc-primary);
+    }
+
+    .sc-site .dropdown-menu {
+        --bs-dropdown-link-active-bg: var(--sc-primary);
+        --bs-dropdown-link-active-color: var(--sc-primary-contrast, #fff);
+    }
+
+    .sc-site .list-group {
+        --bs-list-group-active-bg: var(--sc-primary);
+        --bs-list-group-active-border-color: var(--sc-primary);
+    }
+
+    .sc-site .accordion {
+        --bs-accordion-active-color: var(--sc-primary);
+        --bs-accordion-active-bg: rgba(var(--sc-primary-rgb), .08);
+        --bs-accordion-btn-focus-box-shadow: 0 0 0 .25rem rgba(var(--sc-primary-rgb), .25);
+    }
+
+.sc-main {
+    flex: 1 0 auto;
+}
+
+/* One Carbon Ad per showcase page; the slot collapses when no ad renders (localhost, blockers). */
+.sc-ad {
+    display: flex;
+    justify-content: center;
+    margin-block: 1.5rem;
+}
+
+    .sc-ad:empty,
+    .sc-ad:not(:has(#carbonads)) {
+        display: none;
+    }
+
+.sc-eyebrow {
+    display: inline-block;
+    font-size: .75rem;
+    font-weight: 700;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--sc-primary);
+}
+
+.sc-card-hover {
+    transition: transform .2s ease, box-shadow .2s ease;
+}
+
+    .sc-card-hover:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 .75rem 1.75rem rgba(15, 23, 42, .12);
+    }
+
+@media (prefers-reduced-motion: reduce) {
+    .sc-card-hover,
+    .sc-card-hover:hover {
+        transition: none;
+        transform: none;
+    }
+}

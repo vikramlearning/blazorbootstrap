@@ -1,0 +1,41 @@
+@if (HasApiKey)
+{
+    <GoogleMap ApiKey="@apiKey"
+               Center="@(Center ?? DefaultCenter)"
+               Height="@Height"
+               Width="100"
+               Zoom="@Zoom"
+               Markers="@markers" />
+}
+else
+{
+    <div class="sc-map-placeholder" style="height: @(Height)px;" role="img" aria-label="@AriaLabel">
+        <div class="sc-map-grid" aria-hidden="true"></div>
+        @for (var index = 0; index < Locations.Count; index++)
+        {
+            var location = Locations[index];
+            <span class="sc-map-pin" style="@PinStyle(location)" title="@location.Name" aria-hidden="true">
+                <Icon Name="IconName.GeoAltFill" />
+                <span class="sc-map-pin-label">@(index + 1)</span>
+            </span>
+        }
+        <span class="sc-map-badge">
+            <Icon Name="IconName.Map" class="me-1" aria-hidden="true" />
+            Map preview
+        </span>
+    </div>
+}
+
+@if (ShowList)
+{
+    <ol class="sc-map-list list-unstyled mt-3 mb-0" aria-label="Locations">
+        @for (var index = 0; index < Locations.Count; index++)
+        {
+            var location = Locations[index];
+            <li class="d-flex gap-2 align-items-start">
+                <span class="sc-map-list-number" aria-hidden="true">@(index + 1)</span>
+                <span><strong>@location.Name</strong><br /><small class="text-body-secondary">@location.Detail</small></span>
+            </li>
+        }
+    </ol>
+}

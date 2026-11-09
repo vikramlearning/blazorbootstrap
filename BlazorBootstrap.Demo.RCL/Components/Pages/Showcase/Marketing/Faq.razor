@@ -1,0 +1,55 @@
+@page "/showcase/marketing/faq"
+@layout MarketingLayout
+@inject MarketingState State
+
+<PageTitle>FAQ · Lumora</PageTitle>
+
+<section class="mk-page-hero">
+    <div class="container-xl">
+        <span class="sc-eyebrow">FAQ</span>
+        <h1 class="mk-section-title">Questions, answered</h1>
+        <p>Can't find what you're looking for? Our (fictitious) team replies within one business day.</p>
+        <div class="mx-auto mt-4" style="max-width: 28rem;">
+            <label class="visually-hidden" for="mk-faq-search">Search questions</label>
+            <div class="input-group">
+                <span class="input-group-text"><Icon Name="IconName.Search" aria-hidden="true" /></span>
+                <input id="mk-faq-search" class="form-control" type="search" placeholder="Search questions"
+                       @bind="search" @bind:event="oninput" />
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="container-xl pb-5" style="max-width: 52rem;">
+    <p class="visually-hidden" aria-live="polite">@Matches.Count() questions shown</p>
+    @if (!Matches.Any())
+    {
+        <div class="text-center text-body-secondary py-5">
+            <Icon Name="IconName.QuestionCircle" class="fs-1 d-block mb-2" aria-hidden="true" />
+            No questions match &ldquo;@search&rdquo;. <button type="button" class="btn btn-link p-0 align-baseline" @onclick="() => search = string.Empty">Clear search</button>
+        </div>
+    }
+    @foreach (var group in Matches.GroupBy(faq => faq.Category))
+    {
+        <h2 class="h5 fw-bold mt-4 mb-3">@group.Key</h2>
+        <Accordion @key="@($"{group.Key}-{search}")">
+            @foreach (var faq in group)
+            {
+                <AccordionItem Title="@faq.Question" Name="@faq.Id">
+                    <Content>
+                        <p class="mb-0">@faq.Answer</p>
+                    </Content>
+                </AccordionItem>
+            }
+        </Accordion>
+    }
+</section>
+
+@code {
+    private string search = string.Empty;
+
+    private IEnumerable<MarketingFaq> Matches => string.IsNullOrWhiteSpace(search)
+        ? State.Faqs
+        : State.Faqs.Where(faq => faq.Question.Contains(search.Trim(), StringComparison.OrdinalIgnoreCase)
+                               || faq.Answer.Contains(search.Trim(), StringComparison.OrdinalIgnoreCase));
+}

@@ -1,0 +1,38 @@
+@namespace BlazorBootstrap.Demo.RCL
+@inherits MainLayoutBase
+
+<HeadContent>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" />
+</HeadContent>
+
+<div class="sc-site sc-gallery-site">
+    <header class="sc-gallery-nav">
+        <nav class="container-xxl d-flex align-items-center gap-3 py-2" aria-label="Showcase navigation">
+            <a class="d-flex align-items-center gap-2 text-decoration-none me-auto" href="/" aria-label="Blazor Bootstrap home">
+                <img src="images/logo/logo-white.svg" width="32" height="29" alt="" />
+                <span class="sc-gallery-brand">Blazor Bootstrap <span class="sc-gallery-brand-tag">Showcase</span></span>
+            </a>
+            <a class="sc-gallery-nav-link d-none d-md-inline" href="/">Home</a>
+            <a class="sc-gallery-nav-link d-none d-md-inline" href="/getting-started/blazor-webassembly">Demos</a>
+            <a class="sc-gallery-nav-link d-none d-md-inline" href="@DocsUrl">Docs</a>
+            <a class="sc-gallery-nav-link" href="@GithubUrl" target="_blank" rel="noopener" aria-label="GitHub"><Icon Name="IconName.Github" aria-hidden="true" /></a>
+            <ThemeSwitcher Class="sc-gallery-theme" Position="DropdownMenuPosition.End" />
+        </nav>
+    </header>
+
+    <main class="sc-main">
+        @Body
+        <div class="container-xxl">
+            <CarbonAds Class="sc-ad" />
+        </div>
+    </main>
+
+    <footer class="sc-gallery-footer">
+        <div class="container-xxl py-4 d-flex flex-column flex-md-row gap-2 justify-content-between">
+            <span>Every example is built only with <a href="https://www.nuget.org/packages/Blazor.Bootstrap" target="_blank" rel="noopener">Blazor Bootstrap</a> components and fictitious data.</span>
+            <span>Code licensed <a href="https://github.com/vikramlearning/blazorbootstrap/blob/main/LICENSE.txt" target="_blank" rel="license noopener">Apache License 2.0</a>.</span>
+        </div>
+    </footer>
+</div>
