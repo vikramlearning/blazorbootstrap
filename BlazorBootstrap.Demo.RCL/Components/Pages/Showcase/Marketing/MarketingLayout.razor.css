@@ -19,24 +19,32 @@
     --mk-soft: #1f1430;
 }
 
-.mk-header {
-    position: sticky;
-    top: 0;
-    z-index: 1020;
+/* Header: the Navbar component renders the nav, brand link, and nav links, so they need ::deep. */
+.sc-marketing ::deep .mk-header {
+    min-height: 4rem;
     background: color-mix(in srgb, var(--bs-body-bg) 88%, transparent);
     backdrop-filter: saturate(180%) blur(12px);
     border-bottom: 1px solid var(--bs-border-color-translucent);
 }
 
-.mk-nav {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 1rem;
-    min-height: 4rem;
+.sc-marketing ::deep .mk-header .navbar-nav {
+    gap: .25rem;
 }
 
-.mk-brand {
+.sc-marketing ::deep .mk-header .nav-link {
+    padding: .5rem .75rem;
+    border-radius: .5rem;
+    color: var(--bs-body-color);
+    font-weight: 500;
+}
+
+    .sc-marketing ::deep .mk-header .nav-link:hover,
+    .sc-marketing ::deep .mk-header .nav-link.active {
+        color: var(--sc-primary);
+        background: rgba(var(--sc-primary-rgb), .08);
+    }
+
+.sc-marketing ::deep .mk-brand {
     display: inline-flex;
     align-items: center;
     gap: .5rem;
@@ -58,49 +66,11 @@
     background: var(--mk-gradient);
 }
 
-.mk-menu-toggle {
-    margin-left: auto;
-    font-size: 1.5rem;
-    line-height: 1;
-    color: var(--mk-ink);
-}
-
-.mk-menu {
-    display: none;
-    flex-basis: 100%;
-    padding-bottom: 1rem;
-}
-
-.mk-menu-open {
-    display: block;
-}
-
-.mk-links {
-    display: flex;
-    flex-direction: column;
-    gap: .25rem;
-    margin: 0 0 1rem;
-}
-
-.mk-menu ::deep .mk-link {
-    display: block;
-    padding: .5rem .75rem;
-    border-radius: .5rem;
-    color: var(--bs-body-color);
-    text-decoration: none;
-    font-weight: 500;
-}
-
-    .mk-menu ::deep .mk-link:hover,
-    .mk-menu ::deep .mk-link.active {
-        color: var(--sc-primary);
-        background: rgba(var(--sc-primary-rgb), .08);
-    }
-
 .mk-actions {
     display: flex;
     gap: .5rem;
     flex-wrap: wrap;
+    padding-bottom: 1rem;
 }
 
 .mk-signin {
@@ -115,21 +85,9 @@
 }
 
 @media (min-width: 992px) {
-    .mk-menu {
-        display: flex;
-        flex-basis: auto;
-        flex-grow: 1;
-        align-items: center;
-        padding-bottom: 0;
-    }
-
-    .mk-links {
-        flex-direction: row;
-        margin: 0 auto;
-    }
-
     .mk-actions {
         flex-wrap: nowrap;
+        padding-bottom: 0;
     }
 }
 
@@ -532,6 +490,25 @@
 
 .sc-marketing ::deep .carousel-indicators [data-bs-target] {
     background-color: var(--sc-primary);
+}
+
+/* Signup plan picker: a RadioButtonGroup laid out as separate cards, stacked on phones and in a row from 576px. */
+.sc-marketing ::deep .mk-plan-picker {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: .5rem;
+    width: 100%;
+}
+
+    .sc-marketing ::deep .mk-plan-picker > .btn {
+        margin: 0 !important;
+        border-radius: var(--bs-btn-border-radius) !important;
+    }
+
+@media (min-width: 576px) {
+    .sc-marketing ::deep .mk-plan-picker {
+        grid-template-columns: repeat(3, 1fr);
+    }
 }
 
 .sc-marketing ::deep .mk-signup-panel {

@@ -23,19 +23,5 @@ public partial class MarketingLayout : LayoutComponentBase
 
     private readonly ShowcaseSite site = ShowcaseCatalog.Get("marketing");
 
-    private bool menuOpen;
-
-    #endregion
-
-    #region Methods
-
-    #region Private Methods
-
-    private void CloseMenu() => menuOpen = false;
-
-    private void ToggleMenu() => menuOpen = !menuOpen;
-
-    #endregion
-
     #endregion
 }

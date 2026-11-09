@@ -9,38 +9,30 @@
 <div class="sc-site sc-marketing">
     <ShowcaseSiteBar Site="@site" />
 
-    <header class="mk-header">
-        <nav class="container-xl mk-nav" aria-label="Lumora">
-            <a class="mk-brand" href="@Base">
+    <Navbar Class="mk-header"
+            Placement="NavbarPlacement.StickyTop"
+            Container="NavbarContainer.ExtraLarge"
+            AriaLabel="Lumora"
+            TogglerAriaLabel="Menu">
+        <Brand>
+            <NavbarBrand Href="@Base" Class="mk-brand">
                 <span class="mk-brand-mark" aria-hidden="true"><Icon Name="IconName.Lightning" /></span>
                 <span>@MarketingSeedData.ProductName</span>
-            </a>
-
-            <button type="button"
-                    class="btn mk-menu-toggle d-lg-none"
-                    aria-controls="mk-menu"
-                    aria-expanded="@(menuOpen ? "true" : "false")"
-                    @onclick="ToggleMenu">
-                <Icon Name="@(menuOpen ? IconName.XLg : IconName.List)" aria-hidden="true" />
-                <span class="visually-hidden">Menu</span>
-            </button>
-
-            <div id="mk-menu" class="mk-menu @(menuOpen ? "mk-menu-open" : null)">
-                <ul class="mk-links list-unstyled">
-                    @foreach (var link in links)
-                    {
-                        <li>
-                            <NavLink class="mk-link" href="@($"{Base}/{link.Path}")" Match="NavLinkMatch.Prefix" @onclick="CloseMenu">@link.Text</NavLink>
-                        </li>
-                    }
-                </ul>
-                <div class="mk-actions">
-                    <a class="btn btn-link mk-signin" href="@($"{Base}/signup")" @onclick="CloseMenu">Sign in</a>
-                    <a class="btn btn-primary mk-cta" href="@($"{Base}/signup")" @onclick="CloseMenu">Start free trial</a>
-                </div>
+            </NavbarBrand>
+        </Brand>
+        <ChildContent>
+            <NavbarNav Class="mx-lg-auto mb-3 mb-lg-0">
+                @foreach (var link in links)
+                {
+                    <NavbarItem Href="@($"{Base}/{link.Path}")">@link.Text</NavbarItem>
+                }
+            </NavbarNav>
+            <div class="mk-actions">
+                <a class="btn btn-link mk-signin" href="@($"{Base}/signup")">Sign in</a>
+                <a class="btn btn-primary mk-cta" href="@($"{Base}/signup")">Start free trial</a>
             </div>
-        </nav>
-    </header>
+        </ChildContent>
+    </Navbar>
 
     <main class="sc-main" id="mk-main">
         @Body
