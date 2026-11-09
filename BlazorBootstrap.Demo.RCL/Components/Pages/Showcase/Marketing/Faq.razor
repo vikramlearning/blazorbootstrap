@@ -11,11 +11,12 @@
         <p>Can't find what you're looking for? Our (fictitious) team replies within one business day.</p>
         <div class="mx-auto mt-4" style="max-width: 28rem;">
             <label class="visually-hidden" for="mk-faq-search">Search questions</label>
-            <div class="input-group">
-                <span class="input-group-text"><Icon Name="IconName.Search" aria-hidden="true" /></span>
+            <InputGroup>
+                <InputGroupText><Icon Name="IconName.Search" aria-hidden="true" /></InputGroupText>
+                @* A native search input keeps the filter running on every keystroke. *@
                 <input id="mk-faq-search" class="form-control" type="search" placeholder="Search questions"
                        @bind="search" @bind:event="oninput" />
-            </div>
+            </InputGroup>
         </div>
     </div>
 </section>

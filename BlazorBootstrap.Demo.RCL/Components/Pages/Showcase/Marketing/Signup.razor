@@ -46,21 +46,16 @@
                     <EditForm Model="form" OnValidSubmit="Submit" FormName="mk-signup">
                         <DataAnnotationsValidator />
                         <fieldset class="mb-4">
-                            <legend class="h6 fw-bold">Choose a plan</legend>
-                            <div class="row row-cols-1 row-cols-sm-3 g-2">
+                            <legend class="h6 fw-bold" id="mk-plan-legend">Choose a plan</legend>
+                            <RadioButtonGroup @bind-Value="form.PlanId" AriaLabel="Choose a plan" aria-labelledby="mk-plan-legend" Class="mk-plan-picker">
                                 @foreach (var plan in State.Plans)
                                 {
-                                    var id = $"mk-plan-{plan.Id}";
-                                    <div class="col">
-                                        <input type="radio" class="btn-check" name="mk-plan" id="@id" value="@plan.Id"
-                                               checked="@(form.PlanId == plan.Id)" @onchange="() => form.PlanId = plan.Id" />
-                                        <label class="btn btn-outline-primary w-100 text-start py-2" for="@id">
-                                            <span class="d-block fw-semibold">@plan.Name</span>
-                                            <small>@(State.MonthlyPriceFor(plan) == 0 ? "Free" : $"${State.MonthlyPriceFor(plan):0} / seat / mo")</small>
-                                        </label>
-                                    </div>
+                                    <ButtonGroupItem Value="@plan.Id" Id="@($"mk-plan-{plan.Id}")" Class="text-start py-2">
+                                        <span class="d-block fw-semibold">@plan.Name</span>
+                                        <small>@(State.MonthlyPriceFor(plan) == 0 ? "Free" : $"${State.MonthlyPriceFor(plan):0} / seat / mo")</small>
+                                    </ButtonGroupItem>
                                 }
-                            </div>
+                            </RadioButtonGroup>
                             <div class="mt-3">
                                 <Switch Value="State.AnnualBilling" ValueExpression="() => State.AnnualBilling" ValueChanged="(bool v) => { State.AnnualBilling = v; }" Label="Bill annually (save 20%)" />
                             </div>
