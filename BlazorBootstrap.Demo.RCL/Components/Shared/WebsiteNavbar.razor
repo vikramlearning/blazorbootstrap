@@ -5,6 +5,15 @@
     <img class="bb-site-brand" src="images/logo/logo.svg" width="32" height="29" alt="" />
 </a>
 
+@if (BlazorBootstrap.Demo.RCL.Services.Showcase.ShowcaseCatalog.IsPublished)
+{
+    <div>
+        <a class="nav-link py-2 px-2 d-inline-flex align-items-center gap-1" href="@DemoRouteConstants.Showcase_URL_Prefix">
+            <i class="bi bi-grid-1x2-fill" aria-hidden="true"></i>
+            <span>Showcase</span>
+        </a>
+    </div>
+}
 <div>
     <a class="nav-link py-2 px-2" href="@githubUrl" aria-label="GitHub" target="_blank" rel="noopener">
         <i class="bi bi-github"></i>

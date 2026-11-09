@@ -1,0 +1,174 @@
+@page "/showcase/marketing/signup"
+@layout MarketingLayout
+@using System.ComponentModel.DataAnnotations
+@inject MarketingState State
+
+<PageTitle>Start your trial · Lumora</PageTitle>
+
+<section class="mk-page-hero pb-4">
+    <div class="container-xl">
+        <span class="sc-eyebrow">Free trial</span>
+        <h1 class="mk-section-title">Start your 14-day trial</h1>
+        <p>No card needed. You can change plans any time.</p>
+    </div>
+</section>
+
+<section class="container-xl pb-5">
+    <div class="row g-4 justify-content-center">
+        <div class="col-lg-7">
+            <div class="mk-signup-panel" data-clarity-mask="true">
+                @if (submitted is not null)
+                {
+                    <div class="text-center py-4" role="status">
+                        <span class="mk-feature-icon fs-3 mb-3" aria-hidden="true"><Icon Name="IconName.EnvelopeCheck" /></span>
+                        <h2 class="h3 fw-bold">You're on the list, @submitted.Name.Split(' ')[0]!</h2>
+                        <p class="text-body-secondary">
+                            In a real product we would email a sign-in link to <strong>@submitted.Email</strong>.
+                            Here, nothing was sent &mdash; this sign-up lives only in this browser tab until you reload.
+                        </p>
+                        <dl class="row text-start small mx-auto mt-4" style="max-width: 22rem;">
+                            <dt class="col-5">Plan</dt>
+                            <dd class="col-7">@(State.FindPlan(submitted.PlanId)?.Name)</dd>
+                            <dt class="col-5">Billing</dt>
+                            <dd class="col-7">@(submitted.Annual ? "Annual" : "Monthly")</dd>
+                            <dt class="col-5">Company</dt>
+                            <dd class="col-7">@submitted.Company</dd>
+                        </dl>
+                        <div class="d-flex justify-content-center gap-2 mt-3">
+                            <a class="btn btn-primary mk-cta-lg" href="@MarketingLayout.Base">Back to home</a>
+                            <button type="button" class="btn btn-outline-secondary mk-cta-lg" @onclick="StartOver">Sign up someone else</button>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <ShowcaseDemoNotice Class="mb-4" />
+                    <EditForm Model="form" OnValidSubmit="Submit" FormName="mk-signup">
+                        <DataAnnotationsValidator />
+                        <fieldset class="mb-4">
+                            <legend class="h6 fw-bold">Choose a plan</legend>
+                            <div class="row row-cols-1 row-cols-sm-3 g-2">
+                                @foreach (var plan in State.Plans)
+                                {
+                                    var id = $"mk-plan-{plan.Id}";
+                                    <div class="col">
+                                        <input type="radio" class="btn-check" name="mk-plan" id="@id" value="@plan.Id"
+                                               checked="@(form.PlanId == plan.Id)" @onchange="() => form.PlanId = plan.Id" />
+                                        <label class="btn btn-outline-primary w-100 text-start py-2" for="@id">
+                                            <span class="d-block fw-semibold">@plan.Name</span>
+                                            <small>@(State.MonthlyPriceFor(plan) == 0 ? "Free" : $"${State.MonthlyPriceFor(plan):0} / seat / mo")</small>
+                                        </label>
+                                    </div>
+                                }
+                            </div>
+                            <div class="mt-3">
+                                <Switch Value="State.AnnualBilling" ValueExpression="() => State.AnnualBilling" ValueChanged="(bool v) => { State.AnnualBilling = v; }" Label="Bill annually (save 20%)" />
+                            </div>
+                        </fieldset>
+
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label" for="mk-name">Full name</label>
+                                <TextInput Id="mk-name" @bind-Value="form.Name" Placeholder="Alex Morgan" />
+                                <ValidationMessage For="() => form.Name" />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label" for="mk-email">Work email</label>
+                                <TextInput Id="mk-email" @bind-Value="form.Email" Placeholder="alex@example.com" />
+                                <ValidationMessage For="() => form.Email" />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label" for="mk-company">Company</label>
+                                <TextInput Id="mk-company" @bind-Value="form.Company" Placeholder="Example Inc." />
+                                <ValidationMessage For="() => form.Company" />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label" for="mk-size">Team size</label>
+                                <InputSelect id="mk-size" class="form-select" @bind-Value="form.TeamSize">
+                                    <option value="">Select…</option>
+                                    <option>1–10</option>
+                                    <option>11–50</option>
+                                    <option>51–200</option>
+                                    <option>200+</option>
+                                </InputSelect>
+                                <ValidationMessage For="() => form.TeamSize" />
+                            </div>
+                            <div class="col-12">
+                                <div class="form-check">
+                                    <InputCheckbox id="mk-terms" class="form-check-input" @bind-Value="form.AcceptTerms" />
+                                    <label class="form-check-label" for="mk-terms">I understand this is a demo and agree to the (fictitious) terms.</label>
+                                </div>
+                                <ValidationMessage For="() => form.AcceptTerms" />
+                            </div>
+                        </div>
+
+                        <Button Type="ButtonType.Submit" Color="ButtonColor.Primary" Size="ButtonSize.Large" Class="w-100 mt-4 mk-cta-lg">
+                            Start free trial
+                        </Button>
+                    </EditForm>
+                }
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <Card Class="mk-feature-card">
+                <CardBody Class="p-4">
+                    <h2 class="h6 fw-bold mb-3">Included in your trial</h2>
+                    <ul class="list-unstyled mk-plan-list mb-4">
+                        @foreach (var highlight in (State.FindPlan("growth")?.Highlights ?? Array.Empty<string>()))
+                        {
+                            <li><Icon Name="IconName.Check2Circle" aria-hidden="true" />@highlight</li>
+                        }
+                    </ul>
+                    <figure class="mb-0 small">
+                        <blockquote class="mb-2">&ldquo;@State.Testimonials[1].Quote&rdquo;</blockquote>
+                        <figcaption class="text-body-secondary">@State.Testimonials[1].Person, @State.Testimonials[1].Company</figcaption>
+                    </figure>
+                </CardBody>
+            </Card>
+        </div>
+    </div>
+</section>
+
+@code {
+    private SignupForm form = new();
+    private MarketingSignup? submitted;
+
+    [SupplyParameterFromQuery(Name = "plan")] public string? Plan { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        if (State.FindPlan(Plan) is { } plan)
+            form.PlanId = plan.Id;
+    }
+
+    private void StartOver()
+    {
+        submitted = null;
+        form = new SignupForm { PlanId = form.PlanId };
+    }
+
+    private void Submit() => submitted = State.SignUp(form.Name!, form.Email!, form.Company!, form.PlanId);
+
+    private sealed class SignupForm
+    {
+        [Range(typeof(bool), "true", "true", ErrorMessage = "Please confirm you understand this is a demo.")]
+        public bool AcceptTerms { get; set; }
+
+        [Required(ErrorMessage = "Enter your company.")]
+        [StringLength(80)]
+        public string? Company { get; set; }
+
+        [Required(ErrorMessage = "Enter your work email.")]
+        [EmailAddress(ErrorMessage = "Enter a valid email address.")]
+        public string? Email { get; set; }
+
+        [Required(ErrorMessage = "Enter your name.")]
+        [StringLength(80)]
+        public string? Name { get; set; }
+
+        public string PlanId { get; set; } = "growth";
+
+        [Required(ErrorMessage = "Select your team size.")]
+        public string? TeamSize { get; set; }
+    }
+}

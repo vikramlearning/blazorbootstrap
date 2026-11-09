@@ -1,0 +1,25 @@
+@if (ShowcaseCatalog.IsAssetAvailable(Src))
+{
+    <img src="@Src"
+         alt="@Alt"
+         width="@Width"
+         height="@Height"
+         loading="@(Eager ? "eager" : "lazy")"
+         decoding="async"
+         class="sc-image @Class"
+         aria-hidden="@(string.IsNullOrEmpty(Alt) ? "true" : null)" />
+}
+else
+{
+    <div class="sc-image-placeholder @Class"
+         style="aspect-ratio: @Width / @Height; --sc-placeholder-accent: @(Accent ?? "var(--sc-primary, var(--bs-primary))");"
+         role="@(string.IsNullOrEmpty(Alt) ? null : "img")"
+         aria-label="@(string.IsNullOrEmpty(Alt) ? null : Alt)"
+         aria-hidden="@(string.IsNullOrEmpty(Alt) ? "true" : null)">
+        <Icon Name="@PlaceholderIcon" class="sc-image-placeholder-icon" aria-hidden="true" />
+        @if (!string.IsNullOrEmpty(Caption))
+        {
+            <span class="sc-image-placeholder-caption">@Caption</span>
+        }
+    </div>
+}

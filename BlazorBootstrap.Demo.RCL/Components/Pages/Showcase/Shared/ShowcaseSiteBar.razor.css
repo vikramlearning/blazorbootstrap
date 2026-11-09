@@ -1,0 +1,50 @@
+.sc-sitebar {
+    background: #0f172a;
+    color: #cbd5e1;
+    font-size: .8125rem;
+    position: relative;
+    z-index: 1031;
+}
+
+.sc-sitebar-inner {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    min-height: 2.5rem;
+    padding: .25rem 1rem;
+    max-width: 1600px;
+    margin-inline: auto;
+}
+
+.sc-sitebar-link {
+    display: inline-flex;
+    align-items: center;
+    gap: .375rem;
+    color: #e2e8f0;
+    text-decoration: none;
+    padding: .25rem .375rem;
+    border-radius: .375rem;
+}
+
+    .sc-sitebar-link:hover,
+    .sc-sitebar-link:focus-visible {
+        color: #fff;
+        background: rgba(255, 255, 255, .1);
+    }
+
+.sc-sitebar-divider {
+    width: 1px;
+    height: 1rem;
+    background: rgba(255, 255, 255, .2);
+}
+
+.sc-sitebar-title strong {
+    color: #fff;
+    font-weight: 600;
+}
+
+.sc-sitebar ::deep .sc-sitebar-theme .btn,
+.sc-sitebar ::deep .sc-sitebar-theme .nav-link {
+    color: #e2e8f0;
+    padding: .25rem .5rem;
+}

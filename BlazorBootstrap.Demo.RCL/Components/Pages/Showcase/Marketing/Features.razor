@@ -1,0 +1,82 @@
+@page "/showcase/marketing/features"
+@layout MarketingLayout
+@inject MarketingState State
+
+<PageTitle>Features · Lumora</PageTitle>
+
+<section class="mk-page-hero">
+    <div class="container-xl">
+        <span class="sc-eyebrow">Features</span>
+        <h1 class="mk-section-title">One workspace to analyze, act, and connect</h1>
+        <p>Pick a category to narrow the list, and open any feature for the details.</p>
+        <div class="d-flex flex-wrap justify-content-center gap-2 mt-4" role="group" aria-label="Filter features">
+            @foreach (var category in categories)
+            {
+                <button type="button"
+                        class="btn btn-sm rounded-pill px-3 @(category == selectedCategory ? "btn-primary" : "btn-outline-secondary")"
+                        aria-pressed="@(category == selectedCategory ? "true" : "false")"
+                        @onclick="() => selectedCategory = category">
+                    @category
+                </button>
+            }
+        </div>
+    </div>
+</section>
+
+<section class="container-xl py-5">
+    <p class="visually-hidden" aria-live="polite">@VisibleFeatures.Count() features shown</p>
+    <div class="row row-cols-1 row-cols-md-2 g-4">
+        @foreach (var feature in VisibleFeatures)
+        {
+            var isOpen = openFeatureId == feature.Id;
+            <div class="col" @key="feature.Id">
+                <Card Class="h-100 mk-feature-card" id="@feature.Id">
+                    <CardBody>
+                        <div class="d-flex gap-3">
+                            <span class="mk-feature-icon flex-shrink-0" aria-hidden="true"><Icon Name="@feature.IconName" /></span>
+                            <div class="flex-grow-1">
+                                <span class="badge rounded-pill bg-body-tertiary text-body-secondary border mb-2">@feature.Category</span>
+                                <h2 class="h5 fw-bold">@feature.Title</h2>
+                                <p class="text-body-secondary mb-2">@feature.Summary</p>
+                                <button type="button"
+                                        class="btn btn-link px-0 fw-semibold text-decoration-none"
+                                        aria-expanded="@(isOpen ? "true" : "false")"
+                                        aria-controls="@($"{feature.Id}-details")"
+                                        @onclick="() => ToggleFeature(feature.Id)">
+                                    @(isOpen ? "Hide details" : "Show details")
+                                    <Icon Name="@(isOpen ? IconName.ChevronUp : IconName.ChevronDown)" class="ms-1" aria-hidden="true" />
+                                </button>
+                                <div id="@($"{feature.Id}-details")" class="mk-feature-details" hidden="@(!isOpen)">
+                                    <p class="mb-0 pt-2">@feature.Details</p>
+                                </div>
+                            </div>
+                        </div>
+                    </CardBody>
+                </Card>
+            </div>
+        }
+    </div>
+
+    <div class="mk-cta-band">
+        <div>
+            <h2 class="h3 fw-bold mb-1">See every feature on your own data</h2>
+            <p class="mb-0">The 14-day trial unlocks everything in the Growth plan.</p>
+        </div>
+        <a class="btn btn-light btn-lg fw-semibold" href="@($"{MarketingLayout.Base}/signup?plan=growth")">Start free trial</a>
+    </div>
+</section>
+
+@code {
+    private const string All = "All";
+
+    private string? openFeatureId;
+    private string selectedCategory = All;
+
+    private IReadOnlyList<string> categories => new[] { All }.Concat(State.Features.Select(f => f.Category).Distinct()).ToList();
+
+    private IEnumerable<MarketingFeature> VisibleFeatures => selectedCategory == All
+        ? State.Features
+        : State.Features.Where(f => f.Category == selectedCategory);
+
+    private void ToggleFeature(string id) => openFeatureId = openFeatureId == id ? null : id;
+}

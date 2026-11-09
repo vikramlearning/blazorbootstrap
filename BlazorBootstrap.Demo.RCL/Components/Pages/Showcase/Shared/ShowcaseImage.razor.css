@@ -1,0 +1,36 @@
+.sc-image {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    object-fit: cover;
+}
+
+.sc-image-placeholder {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: .5rem;
+    width: 100%;
+    overflow: hidden;
+    color: #fff;
+    background:
+        radial-gradient(circle at 20% 20%, rgba(255, 255, 255, .28), transparent 45%),
+        radial-gradient(circle at 85% 75%, rgba(0, 0, 0, .18), transparent 50%),
+        linear-gradient(135deg, var(--sc-placeholder-accent), color-mix(in srgb, var(--sc-placeholder-accent) 55%, #111827));
+}
+
+    .sc-image-placeholder ::deep .sc-image-placeholder-icon {
+        font-size: clamp(1.5rem, 6vw, 3rem);
+        opacity: .85;
+    }
+
+.sc-image-placeholder-caption {
+    font-size: .8125rem;
+    font-weight: 600;
+    letter-spacing: .02em;
+    opacity: .9;
+    text-align: center;
+    padding-inline: .5rem;
+}

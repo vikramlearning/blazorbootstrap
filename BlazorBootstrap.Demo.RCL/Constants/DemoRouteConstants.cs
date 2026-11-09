@@ -5,6 +5,30 @@ public static class DemoRouteConstants
     public const string Blog_URL_Prefix = "/blog";
     public const string Demos_URL_Prefix = "/demos";
     public const string Docs_URL_Prefix = "/docs";
+    public const string Showcase_URL_Prefix = "/showcase";
+
+    #region Showcase
+
+    public const string Showcase_URL_AiAssistant = Showcase_URL_Prefix + "/ai-assistant";
+    public const string Showcase_URL_CreatorBlog = Showcase_URL_Prefix + "/creator-blog";
+    public const string Showcase_URL_Crm = Showcase_URL_Prefix + "/crm";
+    public const string Showcase_URL_Ecommerce = Showcase_URL_Prefix + "/ecommerce";
+    public const string Showcase_URL_Fintech = Showcase_URL_Prefix + "/fintech";
+    public const string Showcase_URL_Healthcare = Showcase_URL_Prefix + "/healthcare";
+    public const string Showcase_URL_HelpDesk = Showcase_URL_Prefix + "/help-desk";
+    public const string Showcase_URL_HrPortal = Showcase_URL_Prefix + "/hr-portal";
+    public const string Showcase_URL_Learning = Showcase_URL_Prefix + "/learning";
+    public const string Showcase_URL_Marketing = Showcase_URL_Prefix + "/marketing";
+    public const string Showcase_URL_Monitoring = Showcase_URL_Prefix + "/monitoring";
+    public const string Showcase_URL_ProjectBoard = Showcase_URL_Prefix + "/project-board";
+    public const string Showcase_URL_Restaurant = Showcase_URL_Prefix + "/restaurant";
+    public const string Showcase_URL_SaasDashboard = Showcase_URL_Prefix + "/saas-dashboard";
+    public const string Showcase_URL_Travel = Showcase_URL_Prefix + "/travel";
+
+    public const string Showcase_Source_URL_Prefix = "https://github.com/vikramlearning/blazorbootstrap/tree/main/BlazorBootstrap.Demo.RCL/Components/Pages/Showcase";
+    public const string Showcase_Docs_URL_Prefix = "https://docs.blazorbootstrap.com/showcase";
+
+    #endregion
 
     #region Demos
 

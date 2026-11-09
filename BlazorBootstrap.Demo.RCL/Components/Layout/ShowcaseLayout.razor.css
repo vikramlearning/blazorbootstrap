@@ -1,0 +1,59 @@
+.sc-gallery-site {
+    --sc-primary: #6d28d9;
+    --sc-primary-rgb: 109, 40, 217;
+    --sc-primary-hover: #5b21b6;
+    --sc-primary-contrast: #fff;
+    --sc-font-body: "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --sc-font-heading: "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+[data-bs-theme=dark] .sc-gallery-site {
+    --sc-primary: #a78bfa;
+    --sc-primary-rgb: 167, 139, 250;
+    --sc-primary-hover: #c4b5fd;
+    --sc-primary-contrast: #1e1b4b;
+}
+
+.sc-gallery-nav {
+    position: sticky;
+    top: 0;
+    z-index: 1030;
+    background: #0f0a1f;
+    border-bottom: 1px solid rgba(255, 255, 255, .08);
+}
+
+.sc-gallery-brand {
+    color: #fff;
+    font-weight: 700;
+    font-size: 1.0625rem;
+}
+
+.sc-gallery-brand-tag {
+    font-weight: 600;
+    color: #c4b5fd;
+}
+
+.sc-gallery-nav-link {
+    color: #ddd6fe;
+    text-decoration: none;
+    font-size: .9375rem;
+    padding: .375rem .5rem;
+    border-radius: .375rem;
+}
+
+    .sc-gallery-nav-link:hover,
+    .sc-gallery-nav-link:focus-visible {
+        color: #fff;
+        background: rgba(255, 255, 255, .08);
+    }
+
+.sc-gallery-nav ::deep .sc-gallery-theme .btn,
+.sc-gallery-nav ::deep .sc-gallery-theme .nav-link {
+    color: #ddd6fe;
+}
+
+.sc-gallery-footer {
+    border-top: 1px solid var(--bs-border-color);
+    color: var(--bs-secondary-color);
+    font-size: .875rem;
+}

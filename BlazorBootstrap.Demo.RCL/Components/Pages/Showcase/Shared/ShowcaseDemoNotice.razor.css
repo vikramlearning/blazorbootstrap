@@ -1,0 +1,17 @@
+.sc-demo-notice {
+    display: flex;
+    gap: .5rem;
+    align-items: flex-start;
+    padding: .625rem .875rem;
+    border: 1px dashed var(--bs-border-color);
+    border-radius: var(--bs-border-radius);
+    background-color: var(--bs-tertiary-bg);
+    color: var(--bs-secondary-color);
+    font-size: .875rem;
+}
+
+    .sc-demo-notice ::deep .sc-demo-notice-icon {
+        color: var(--sc-primary, var(--bs-primary));
+        flex-shrink: 0;
+        margin-top: .125rem;
+    }
