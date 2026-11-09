@@ -1,0 +1,30 @@
+<InputGroup Class="mb-3">
+    <Dropdown Color="DropdownColor.Secondary">
+        <DropdownToggleButton>@field</DropdownToggleButton>
+        <DropdownMenu>
+            <DropdownItem @onclick="@(() => field = "Title")">Title</DropdownItem>
+            <DropdownItem @onclick="@(() => field = "Author")">Author</DropdownItem>
+            <DropdownItem @onclick="@(() => field = "Tag")">Tag</DropdownItem>
+        </DropdownMenu>
+    </Dropdown>
+    <TextInput @bind-Value="term" Placeholder="@($"Search by {field.ToLowerInvariant()}")" aria-label="@($"Search by {field.ToLowerInvariant()}")" />
+</InputGroup>
+
+<InputGroup>
+    <NumberInput TValue="decimal?" @bind-Value="price" aria-label="Price" />
+    <Dropdown Color="DropdownColor.Secondary">
+        <DropdownToggleButton>@currency</DropdownToggleButton>
+        <DropdownMenu Position="DropdownMenuPosition.End">
+            <DropdownItem @onclick="@(() => currency = "USD")">USD</DropdownItem>
+            <DropdownItem @onclick="@(() => currency = "EUR")">EUR</DropdownItem>
+            <DropdownItem @onclick="@(() => currency = "INR")">INR</DropdownItem>
+        </DropdownMenu>
+    </Dropdown>
+</InputGroup>
+
+@code {
+    private string field = "Title";
+    private string? term;
+    private decimal? price;
+    private string currency = "USD";
+}

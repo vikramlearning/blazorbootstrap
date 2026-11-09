@@ -407,6 +407,19 @@ public static class EnumExtensions
             _ => ""
         };
 
+    /// <summary>
+    /// Converts an <see cref="InputGroupSize" /> value to its Bootstrap CSS class.
+    /// </summary>
+    [AddedVersion("4.1.0")]
+    [Description("Converts an InputGroupSize value to its Bootstrap CSS class.")]
+    public static string ToInputGroupSizeClass(this InputGroupSize inputGroupSize) =>
+        inputGroupSize switch
+        {
+            InputGroupSize.Large => "input-group-lg",
+            InputGroupSize.Small => "input-group-sm",
+            _ => ""
+        };
+
     public static string ToIconColorClass(this IconColor iconColor) =>
         iconColor switch
         {

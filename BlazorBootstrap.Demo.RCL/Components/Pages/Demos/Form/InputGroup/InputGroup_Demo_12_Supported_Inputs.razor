@@ -1,0 +1,21 @@
+<InputGroup Class="mb-3">
+    <InputGroupText>Price</InputGroupText>
+    <CurrencyInput TValue="decimal" @bind-Value="price" Locale="en-US" aria-label="Price" />
+    <InputGroupText>per month</InputGroupText>
+</InputGroup>
+
+<InputGroup Class="mb-3">
+    <InputGroupText><Icon Name="IconName.CalendarDate" aria-hidden="true" /></InputGroupText>
+    <DateInput TValue="DateOnly?" @bind-Value="date" aria-label="Check-in date" />
+</InputGroup>
+
+<InputGroup>
+    <InputGroupText><Icon Name="IconName.Clock" aria-hidden="true" /></InputGroupText>
+    <TimeInput TValue="TimeOnly?" @bind-Value="time" aria-label="Arrival time" />
+</InputGroup>
+
+@code {
+    private decimal price = 49;
+    private DateOnly? date;
+    private TimeOnly? time;
+}

@@ -1,0 +1,25 @@
+<InputGroup Class="mb-3">
+    <InputGroupText For="input-group-priority">Priority</InputGroupText>
+    <EnumInput TEnum="Priority" Id="input-group-priority" @bind-Value="priority" />
+</InputGroup>
+
+<InputGroup Class="mb-3">
+    <EnumInput TEnum="Priority" @bind-Value="priority" aria-label="Priority" />
+    <Button Color="ButtonColor.Secondary" Outline="true" @onclick="Apply">Apply</Button>
+</InputGroup>
+
+<InputGroup>
+    <InputGroupText For="input-group-file">Upload</InputGroupText>
+    <InputFile id="input-group-file" class="form-control" OnChange="OnFileChange" />
+</InputGroup>
+
+<div class="mt-3">@status</div>
+
+@code {
+    private int priority = (int)Priority.Medium;
+    private string? status;
+
+    private void Apply() => status = $"Priority set to {(Priority)priority}.";
+
+    private void OnFileChange(InputFileChangeEventArgs e) => status = $"Selected {e.File.Name}.";
+}

@@ -1,0 +1,23 @@
+<InputGroup Class="mb-3">
+    <InputGroupText>$</InputGroupText>
+    <InputGroupText>0.00</InputGroupText>
+    <NumberInput TValue="decimal?" @bind-Value="amountBefore" aria-label="Dollar amount (with dot and two decimal places)" />
+</InputGroup>
+
+<InputGroup Class="mb-3">
+    <NumberInput TValue="decimal?" @bind-Value="amountAfter" aria-label="Dollar amount (with dot and two decimal places)" />
+    <InputGroupText>$</InputGroupText>
+    <InputGroupText>0.00</InputGroupText>
+</InputGroup>
+
+<InputGroup>
+    <InputGroupText>Weight</InputGroupText>
+    <NumberInput TValue="int?" @bind-Value="weight" aria-label="Weight in kilograms" />
+    <InputGroupText>kg</InputGroupText>
+</InputGroup>
+
+@code {
+    private decimal? amountBefore;
+    private decimal? amountAfter;
+    private int? weight;
+}

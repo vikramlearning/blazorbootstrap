@@ -1,0 +1,24 @@
+<InputGroup>
+    <TextInput @bind-Value="message" Placeholder="Write a message" aria-label="Message" />
+    <Dropdown Color="DropdownColor.Primary" Split="true">
+        <DropdownActionButton @onclick="Send">Send</DropdownActionButton>
+        <DropdownToggleButton>
+            <span class="visually-hidden">More send options</span>
+        </DropdownToggleButton>
+        <DropdownMenu Position="DropdownMenuPosition.End">
+            <DropdownItem @onclick="Schedule">Schedule send</DropdownItem>
+            <DropdownItem @onclick="SaveDraft">Save as draft</DropdownItem>
+        </DropdownMenu>
+    </Dropdown>
+</InputGroup>
+
+<div class="mt-3">@status</div>
+
+@code {
+    private string? message;
+    private string? status;
+
+    private void Send() => status = $"Sent: \"{message}\"";
+    private void Schedule() => status = "Scheduled for tomorrow at 9:00.";
+    private void SaveDraft() => status = "Saved as draft.";
+}

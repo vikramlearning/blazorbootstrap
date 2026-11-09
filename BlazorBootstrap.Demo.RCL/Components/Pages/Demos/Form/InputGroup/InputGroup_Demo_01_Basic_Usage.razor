@@ -1,0 +1,34 @@
+<InputGroup Class="mb-3">
+    <InputGroupText Id="basic-addon-at">@@</InputGroupText>
+    <TextInput @bind-Value="username" Placeholder="Username" aria-label="Username" aria-describedby="basic-addon-at" />
+</InputGroup>
+
+<InputGroup Class="mb-3">
+    <TextInput @bind-Value="recipient" Placeholder="Recipient's username" aria-label="Recipient's username" aria-describedby="basic-addon-domain" />
+    <InputGroupText Id="basic-addon-domain">@@example.com</InputGroupText>
+</InputGroup>
+
+<label for="basic-url" class="form-label">Your vanity URL</label>
+<InputGroup Class="mb-3">
+    <InputGroupText Id="basic-addon-url">https://example.com/users/</InputGroupText>
+    <TextInput Id="basic-url" @bind-Value="vanityUrl" aria-describedby="basic-addon-url basic-url-help" />
+</InputGroup>
+<div class="form-text mb-3" id="basic-url-help">Example help text goes outside the input group.</div>
+
+<InputGroup Class="mb-3">
+    <InputGroupText><Icon Name="IconName.Search" aria-hidden="true" /></InputGroupText>
+    <TextInput @bind-Value="search" Placeholder="Search" aria-label="Search" />
+</InputGroup>
+
+<InputGroup>
+    <InputGroupText>With textarea</InputGroupText>
+    <TextAreaInput @bind-Value="notes" aria-label="With textarea" />
+</InputGroup>
+
+@code {
+    private string? username;
+    private string? recipient;
+    private string? vanityUrl;
+    private string? search;
+    private string? notes;
+}

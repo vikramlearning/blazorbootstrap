@@ -57,6 +57,7 @@ public static class DemoRouteConstants
     public const string Demos_URL_DragAndDropFileInput = Demos_URL_Forms_Prefix + "/drag-and-drop-file-input";
     public const string Demos_URL_EnumInput = Demos_URL_Forms_Prefix + "/enum-input";
     public const string Demos_URL_FileInput = Demos_URL_Forms_Prefix + "/file-input";
+    public const string Demos_URL_InputGroup = Demos_URL_Forms_Prefix + "/input-group";
     public const string Demos_URL_NumberInput = Demos_URL_Forms_Prefix + "/number-input";
     public const string Demos_URL_OTPInput = Demos_URL_Forms_Prefix + "/otp-input";
     public const string Demos_URL_PasswordInput = Demos_URL_Forms_Prefix + "/password-input";
@@ -177,6 +178,7 @@ public static class DemoRouteConstants
     public const string Docs_URL_DragAndDropFileInput = Docs_URL_Forms_Prefix + "/drag-and-drop-file-input";
     public const string Docs_URL_EnumInput = Docs_URL_Forms_Prefix + "/enum-input";
     public const string Docs_URL_FileInput = Docs_URL_Forms_Prefix + "/file-input";
+    public const string Docs_URL_InputGroup = Docs_URL_Forms_Prefix + "/input-group";
     public const string Docs_URL_NumberInput = Docs_URL_Forms_Prefix + "/number-input";
     public const string Docs_URL_OTPInput = Docs_URL_Forms_Prefix + "/otp-input";
     public const string Docs_URL_PasswordInput = Docs_URL_Forms_Prefix + "/password-input";

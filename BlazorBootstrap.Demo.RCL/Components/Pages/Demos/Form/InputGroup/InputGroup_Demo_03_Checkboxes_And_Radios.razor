@@ -1,0 +1,27 @@
+<InputGroup Class="mb-3">
+    <InputGroupText>
+        <input class="form-check-input mt-0" type="checkbox" @bind="newsletter" aria-label="Subscribe to the newsletter" />
+    </InputGroupText>
+    <TextInput @bind-Value="email" Placeholder="Email for the newsletter" aria-label="Email for the newsletter" Disabled="@(!newsletter)" />
+</InputGroup>
+
+<InputGroup>
+    <InputGroupText>
+        <input class="form-check-input mt-0" type="radio" name="contact-method" checked="@(contactMethod == "phone")" @onchange="@(() => contactMethod = "phone")" aria-label="Contact me by phone" />
+    </InputGroupText>
+    <TextInput @bind-Value="phone" Placeholder="Phone number" aria-label="Phone number" />
+    <InputGroupText>
+        <input class="form-check-input mt-0" type="radio" name="contact-method" checked="@(contactMethod == "email")" @onchange="@(() => contactMethod = "email")" aria-label="Contact me by email" />
+    </InputGroupText>
+    <TextInput @bind-Value="contactEmail" Placeholder="Email" aria-label="Contact email" />
+</InputGroup>
+
+<div class="mt-3">Newsletter: <b>@(newsletter ? "on" : "off")</b>, contact method: <b>@contactMethod</b></div>
+
+@code {
+    private bool newsletter = true;
+    private string? email;
+    private string contactMethod = "phone";
+    private string? phone;
+    private string? contactEmail;
+}

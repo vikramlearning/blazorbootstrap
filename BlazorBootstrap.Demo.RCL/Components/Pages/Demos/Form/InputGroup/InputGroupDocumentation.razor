@@ -1,0 +1,220 @@
+@attribute [Route(pageUrl)]
+@layout DemosMainLayout
+
+<DemosPageHeadSection PageUrl="@pageUrl"
+                      PageTitle="@pageTitle"
+                      PageDescription="@pageDescription"
+                      MetaTitle="@metaTitle"
+                      MetaDescription="@metaDescription"
+                      ImageUrl="@imageUrl" />
+
+<DocsLink Href="@DemoRouteConstants.Docs_URL_InputGroup" />
+
+<Callout Color="CalloutColor.Info">
+    <b>InputGroup</b> follows the <a href="https://getbootstrap.com/docs/5.3/forms/input-group/" target="_blank" rel="noopener">Bootstrap 5.3 input group</a>.
+    It wraps <code>TextInput</code>, <code>NumberInput</code>, <code>CurrencyInput</code>, <code>DateInput</code>, <code>TimeInput</code>, <code>TextAreaInput</code>, <code>EnumInput</code>, and Blazor's <code>InputFile</code>.
+    <code>PasswordInput</code> and <code>AutoComplete</code> already render their own input group, so they cannot be placed inside an <code>InputGroup</code>.
+</Callout>
+
+<Section Size="HeadingSize.H2" Name="Basic usage" PageUrl="@pageUrl" Link="basic-usage">
+    <div class="mb-3">
+        Place text or icon add-ons before, after, or on both sides of an input.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Add <code>InputGroup</code> and put the input and its <code>InputGroupText</code> add-ons inside, in display order.</li>
+                <li>Give the input an accessible name with <code>aria-label</code> or a <code>&lt;label&gt;</code> outside the group.</li>
+                <li>Set an <code>Id</code> on the <code>InputGroupText</code> and reference it from the input's <code>aria-describedby</code> so screen readers read the add-on with the input.</li>
+                <li>Keep help text outside the group.</li>
+            </ol>
+        </div>
+        This demo shows prefix, suffix, label-plus-help, icon, and textarea groups.
+    </div>
+    <Demo Type="typeof(InputGroup_Demo_01_Basic_Usage)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Sizing" PageUrl="@pageUrl" Link="sizing">
+    <div class="mb-3">
+        Set the size on the group, and every input and add-on inside it resizes.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Set <code>Size</code> to <code>InputGroupSize.Small</code> or <code>InputGroupSize.Large</code>.</li>
+                <li>Do not size the individual inputs inside the group.</li>
+            </ol>
+        </div>
+        This demo shows small, default, and large groups.
+    </div>
+    <Demo Type="typeof(InputGroup_Demo_02_Sizing)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Checkboxes and radios" PageUrl="@pageUrl" Link="checkboxes-and-radios">
+    <div class="mb-3">
+        Put a checkbox or radio inside an add-on instead of text.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Place an <code>&lt;input class="form-check-input mt-0"&gt;</code> of type <code>checkbox</code> or <code>radio</code> inside <code>InputGroupText</code>.</li>
+                <li>Give the checkbox or radio an <code>aria-label</code>, because it has no visible label.</li>
+                <li>Give radios in the same set the same <code>name</code>.</li>
+            </ol>
+        </div>
+        This demo enables an email field with a checkbox and picks a contact method with radios.
+    </div>
+    <Demo Type="typeof(InputGroup_Demo_03_Checkboxes_And_Radios)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Multiple inputs" PageUrl="@pageUrl" Link="multiple-inputs">
+    <div class="mb-3">
+        A group can hold more than one input. Validation styling is supported only for groups with a single input, as in Bootstrap.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Place the inputs side by side inside <code>InputGroup</code>.</li>
+                <li>Give each input its own <code>aria-label</code>.</li>
+            </ol>
+        </div>
+        This demo collects a first and last name.
+    </div>
+    <Demo Type="typeof(InputGroup_Demo_04_Multiple_Inputs)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Multiple add-ons" PageUrl="@pageUrl" Link="multiple-addons">
+    <div class="mb-3">
+        Stack several add-ons on one side, or use add-ons on both sides.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Add several <code>InputGroupText</code> components next to each other.</li>
+                <li>Mix them freely with the input.</li>
+            </ol>
+        </div>
+        This demo shows currency and unit add-ons around a <code>NumberInput</code>.
+    </div>
+    <Demo Type="typeof(InputGroup_Demo_05_Multiple_Addons)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Button add-ons" PageUrl="@pageUrl" Link="button-addons">
+    <div class="mb-3">
+        Use <code>Button</code> components as add-ons, one or more on each side.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Place <code>Button</code> components before or after the input inside <code>InputGroup</code>.</li>
+                <li>Give icon-only or symbol-only buttons an <code>aria-label</code>.</li>
+            </ol>
+        </div>
+        This demo shows a paste button, a search button, and a seat counter with buttons on both sides.
+    </div>
+    <Demo Type="typeof(InputGroup_Demo_06_Button_Addons)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Buttons with dropdowns" PageUrl="@pageUrl" Link="buttons-with-dropdowns">
+    <div class="mb-3">
+        Use a <code>Dropdown</code> as an add-on to let users choose an option that changes the input.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Place a <code>Dropdown</code> with a <code>DropdownToggleButton</code> and <code>DropdownMenu</code> before or after the input.</li>
+                <li>Set <code>Position="DropdownMenuPosition.End"</code> on the menu when the dropdown is the last add-on.</li>
+            </ol>
+        </div>
+        This demo picks a search field and a currency.
+    </div>
+    <Demo Type="typeof(InputGroup_Demo_07_Buttons_With_Dropdowns)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Segmented buttons" PageUrl="@pageUrl" Link="segmented-buttons">
+    <div class="mb-3">
+        Combine an action button with a split dropdown toggle.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Place a <code>Dropdown</code> with <code>Split="true"</code>, a <code>DropdownActionButton</code>, and a <code>DropdownToggleButton</code> next to the input.</li>
+                <li>Give the split toggle screen-reader text with a <code>visually-hidden</code> span, because it has no visible text.</li>
+            </ol>
+        </div>
+        This demo sends, schedules, or saves a message.
+    </div>
+    <Demo Type="typeof(InputGroup_Demo_08_Segmented_Buttons)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Select and file inputs" PageUrl="@pageUrl" Link="select-and-file-inputs">
+    <div class="mb-3">
+        Select menus and file inputs work in input groups too.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Use <code>EnumInput</code> for a select, or Blazor's <code>InputFile</code> with <code>class="form-control"</code> for a file input.</li>
+                <li>To label the control with the add-on, set <code>For</code> on <code>InputGroupText</code> to the control's id; the add-on then renders as a <code>&lt;label&gt;</code>.</li>
+            </ol>
+        </div>
+        This demo labels a select and a file input with add-ons and pairs a select with a button.
+    </div>
+    <Demo Type="typeof(InputGroup_Demo_09_Select_And_File_Inputs)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Wrapping" PageUrl="@pageUrl" Link="wrapping">
+    <div class="mb-3">
+        Input groups wrap by default so validation messages fit. Turn wrapping off to keep everything on one line.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Set <code>NoWrap="true"</code>.</li>
+            </ol>
+        </div>
+        This demo shows both behaviors in a narrow container.
+    </div>
+    <Demo Type="typeof(InputGroup_Demo_10_Wrapping)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="EditForm validation" PageUrl="@pageUrl" Link="editform-validation">
+    <div class="mb-3">
+        A group with a single input shows its validation message below the group, with the corners intact.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Place the input inside <code>InputGroup</code> in an <code>EditForm</code>.</li>
+                <li>Add <code>ValidationMessage</code> as the last child of the <code>InputGroup</code>.</li>
+            </ol>
+        </div>
+        This demo requires a username and a budget before the form can be submitted.
+    </div>
+    <Demo Type="typeof(InputGroup_Demo_11_EditForm_Validation)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Supported inputs" PageUrl="@pageUrl" Link="supported-inputs">
+    <div class="mb-3">
+        The Blazor Bootstrap inputs that render a single input element work inside an input group.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Use <code>TextInput</code>, <code>NumberInput</code>, <code>CurrencyInput</code>, <code>DateInput</code>, <code>TimeInput</code>, <code>TextAreaInput</code>, or <code>EnumInput</code> inside <code>InputGroup</code>.</li>
+                <li>Do not nest <code>PasswordInput</code> or <code>AutoComplete</code>; they already render their own input group.</li>
+            </ol>
+        </div>
+        This demo shows currency, date, and time inputs with add-ons.
+    </div>
+    <Demo Type="typeof(InputGroup_Demo_12_Supported_Inputs)" Tabs="true" />
+</Section>
+
+@code {
+    private const string pageUrl = DemoRouteConstants.Demos_URL_InputGroup;
+    private const string pageTitle = "Blazor InputGroup";
+    private const string pageDescription = "The Blazor Bootstrap InputGroup component extends form inputs with text, icon, checkbox, radio, button, and dropdown add-ons on either side.";
+    private const string metaTitle = "Blazor InputGroup Component";
+    private const string metaDescription = "The Blazor Bootstrap InputGroup component extends form inputs with text, icon, checkbox, radio, button, and dropdown add-ons on either side.";
+    private const string imageUrl = DemoScreenshotSrcConstants.Demos_URL_InputGroup;
+}
