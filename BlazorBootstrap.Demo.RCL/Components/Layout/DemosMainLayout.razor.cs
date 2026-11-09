@@ -81,6 +81,7 @@ public partial class DemosMainLayout : MainLayoutBase
             new (){ Id = "514", Text = "Markdown", Href = DemoRouteConstants.Demos_URL_Markdown, IconName = IconName.MarkdownFill, ParentId = "5" },
             new (){ Id = "5141", Text = "Mind Map", Href = DemoRouteConstants.Demos_URL_MindMap, IconName = IconName.Diagram3, ParentId = "5" },
             new (){ Id = "5145", Text = "Modals", Href = DemoRouteConstants.Demos_URL_Modal, IconName = IconName.WindowStack, ParentId = "5" },
+            new (){ Id = "5147", Text = "Navbar", Href = DemoRouteConstants.Demos_URL_Navbar, IconName = IconName.LayoutTextWindow, ParentId = "5" },
             new (){ Id = "515", Text = "Offcanvas", Href = DemoRouteConstants.Demos_URL_Offcanvas, IconName = IconName.LayoutSidebarReverse, ParentId = "5" },
             new (){ Id = "516", Text = "Pagination", Href = DemoRouteConstants.Demos_URL_Pagination, IconName = IconName.ThreeDots, ParentId = "5" },
             new (){ Id = "517", Text = "PDF Viewer", Href = DemoRouteConstants.Demos_URL_PDFViewer, IconName = IconName.FilePdfFill, ParentId = "5" },

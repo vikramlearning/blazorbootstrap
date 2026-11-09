@@ -80,6 +80,7 @@ public class DemoScreenshotSrcConstants
     public const string Demos_URL_Markdown = DemoScreenshotSrcPrefix + "markdown.png";
     public const string Demos_URL_MindMap = DemoScreenshotSrcPrefix + "mind-map.png";
     public const string Demos_URL_Modal = DemoScreenshotSrcPrefix + "modal.png";
+    public const string Demos_URL_Navbar = DemoScreenshotSrcPrefix + "navbar.png";
     public const string Demos_URL_Offcanvas = DemoScreenshotSrcPrefix + "offcanvas.png";
     public const string Demos_URL_Pagination = DemoScreenshotSrcPrefix + "pagination.png";
     public const string Demos_URL_PDFViewer = DemoScreenshotSrcPrefix + "pdf-viewer.png";

@@ -1,0 +1,43 @@
+@implements IDisposable
+@inject NavigationManager NavigationManager
+
+<Navbar BackgroundColor="BackgroundColor.BodyTertiary" ExpandBreakpoint="NavbarExpand.Never" AriaLabel="Navbar that closes after navigation">
+    <Brand>
+        <NavbarBrand Href="@DemoRouteConstants.Demos_URL_Navbar">Views</NavbarBrand>
+    </Brand>
+    <ChildContent>
+        <NavbarNav>
+            <NavbarItem Href="@($"{viewsUrl}/overview")">Overview</NavbarItem>
+            <NavbarItem Href="@($"{viewsUrl}/reports")">Reports</NavbarItem>
+            <NavbarItem Href="@($"{viewsUrl}/settings")">Settings</NavbarItem>
+        </NavbarNav>
+    </ChildContent>
+</Navbar>
+
+<div class="mt-3">Current view: @(currentView ?? "none")</div>
+
+@code {
+    private const string viewsUrl = DemoRouteConstants.Demos_URL_Navbar + "/views";
+    private string? currentView;
+
+    protected override void OnInitialized()
+    {
+        SetCurrentView(NavigationManager.Uri);
+        NavigationManager.LocationChanged += OnLocationChanged;
+    }
+
+    public void Dispose() => NavigationManager.LocationChanged -= OnLocationChanged;
+
+    private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
+    {
+        SetCurrentView(e.Location);
+        StateHasChanged();
+    }
+
+    private void SetCurrentView(string uri)
+    {
+        var path = NavigationManager.ToBaseRelativePath(uri).Split('?', '#')[0];
+        var prefix = viewsUrl.TrimStart('/') + "/";
+        currentView = path.StartsWith(prefix, StringComparison.OrdinalIgnoreCase) ? path[prefix.Length..] : null;
+    }
+}

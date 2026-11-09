@@ -1,0 +1,20 @@
+<Navbar BackgroundColor="BackgroundColor.BodyTertiary" AriaLabel="Navbar with nav links">
+    <Brand>
+        <NavbarBrand Href="@DemoRouteConstants.Demos_URL_Navbar">Navbar</NavbarBrand>
+    </Brand>
+    <ChildContent>
+        <NavbarNav>
+            <NavbarItem Href="@DemoRouteConstants.Demos_URL_Navbar" Match="NavLinkMatch.All">Home</NavbarItem>
+            <NavbarItem Href="@DemoRouteConstants.Demos_URL_Buttons">Buttons</NavbarItem>
+            <NavbarItem Href="@DemoRouteConstants.Demos_URL_ButtonGroup">Button Group</NavbarItem>
+            <NavbarDropdown Text="More components">
+                <DropdownHeader>Overlays</DropdownHeader>
+                <DropdownItem Type="DropdownItemType.Link" To="@DemoRouteConstants.Demos_URL_Modal">Modals</DropdownItem>
+                <DropdownItem Type="DropdownItemType.Link" To="@DemoRouteConstants.Demos_URL_Offcanvas">Offcanvas</DropdownItem>
+                <DropdownDivider />
+                <DropdownItem Type="DropdownItemType.Link" To="@DemoRouteConstants.Demos_URL_Tooltips">Tooltips</DropdownItem>
+            </NavbarDropdown>
+            <NavbarItem Disabled="true">Disabled</NavbarItem>
+        </NavbarNav>
+    </ChildContent>
+</Navbar>

@@ -112,6 +112,7 @@ public static class DemoRouteConstants
     public const string Demos_URL_Markdown = Demos_URL_Prefix + "/markdown";
     public const string Demos_URL_MindMap = Demos_URL_Prefix + "/mind-map";
     public const string Demos_URL_Modal = Demos_URL_Prefix + "/modals";
+    public const string Demos_URL_Navbar = Demos_URL_Prefix + "/navbar";
     public const string Demos_URL_Offcanvas = Demos_URL_Prefix + "/offcanvas";
     public const string Demos_URL_Pagination = Demos_URL_Prefix + "/pagination";
     public const string Demos_URL_PDFViewer = Demos_URL_Prefix + "/pdf-viewer";
@@ -213,6 +214,7 @@ public static class DemoRouteConstants
     public const string Docs_URL_Markdown = Docs_URL_Prefix + "/markdown";
     public const string Docs_URL_MindMap = Docs_URL_Prefix + "/mind-map";
     public const string Docs_URL_Modal = Docs_URL_Prefix + "/modals";
+    public const string Docs_URL_Navbar = Docs_URL_Prefix + "/navbar";
     public const string Docs_URL_Offcanvas = Docs_URL_Prefix + "/offcanvas";
     public const string Docs_URL_Pagination = Docs_URL_Prefix + "/pagination";
     public const string Docs_URL_PDFViewer = Docs_URL_Prefix + "/pdf-viewer";

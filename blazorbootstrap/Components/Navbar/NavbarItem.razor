@@ -1,0 +1,13 @@
+@namespace BlazorBootstrap
+@inherits BlazorBootstrapComponentBase
+
+<li class="nav-item">
+    @if (Disabled)
+    {
+        <a @ref="@Element" id="@Id" class="@ClassNames" style="@StyleNames" aria-disabled="true" @attributes="@AdditionalAttributes">@ChildContent</a>
+    }
+    else
+    {
+        <a @ref="@Element" id="@Id" class="@ClassNames" style="@StyleNames" href="@Href" aria-current="@(isActive ? "page" : null)" @attributes="@AdditionalAttributes">@ChildContent</a>
+    }
+</li>

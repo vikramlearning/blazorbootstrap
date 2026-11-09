@@ -1,0 +1,260 @@
+@attribute [Route(pageUrl)]
+@attribute [Route(pageUrl + "/views/{View}")]
+@layout DemosMainLayout
+
+<DemosPageHeadSection PageUrl="@pageUrl"
+                      PageTitle="@pageTitle"
+                      PageDescription="@pageDescription"
+                      MetaTitle="@metaTitle"
+                      MetaDescription="@metaDescription"
+                      ImageUrl="@imageUrl" />
+
+<DocsLink Href="@DemoRouteConstants.Docs_URL_Navbar" />
+
+<Callout Color="CalloutColor.Info">
+    <b>Navbar</b> follows the <a href="https://getbootstrap.com/docs/5.3/components/navbar/" target="_blank" rel="noopener">Bootstrap 5.3 navbar</a>.
+    It collapses its menu behind a toggler below <code>ExpandBreakpoint</code> (Large by default), so resize the window to see the collapsed menu.
+    The collapse, offcanvas, and dropdowns use the Bootstrap JavaScript bundle the app already loads.
+</Callout>
+
+<Section Size="HeadingSize.H2" Name="Basic usage" PageUrl="@pageUrl" Link="basic-usage">
+    <div class="mb-3">
+        A navbar holds a brand, navigation links, dropdowns, and forms, and collapses them behind a toggler on small screens.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Add <code>Navbar</code> with an <code>AriaLabel</code> and a <code>BackgroundColor</code>.</li>
+                <li>Put a <code>NavbarBrand</code> in the <code>Brand</code> slot.</li>
+                <li>Put the menu in <code>ChildContent</code>: a <code>NavbarNav</code> with <code>NavbarItem</code> and <code>NavbarDropdown</code> components, and any form.</li>
+                <li>Give a search form <code>role="search"</code>.</li>
+            </ol>
+        </div>
+        The item matching the current URL is active and marked <code>aria-current="page"</code>.
+    </div>
+    <Demo Type="typeof(Navbar_Demo_01_Basic_Usage)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Brand" PageUrl="@pageUrl" Link="brand">
+    <div class="mb-3">
+        The brand can be a link, plain text, an image, or an image with text.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Set <code>Href</code> for a link; leave it unset for plain text.</li>
+                <li>Set <code>ImageSrc</code>, <code>ImageWidth</code>, and <code>ImageHeight</code> for an image.</li>
+                <li>Set <code>ImageAlt</code> to the brand name when the image is shown alone, or to an empty string when text follows it.</li>
+            </ol>
+        </div>
+    </div>
+    <Demo Type="typeof(Navbar_Demo_02_Brand)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Nav" PageUrl="@pageUrl" Link="nav">
+    <div class="mb-3">
+        Navigation links, disabled links, and dropdowns.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Add <code>NavbarItem</code> with <code>Href</code>. Set <code>Match="NavLinkMatch.All"</code> on a home link so it is not active on every page.</li>
+                <li>Set <code>Disabled="true"</code> to disable a link.</li>
+                <li>Add <code>NavbarDropdown</code> with <code>Text</code>, holding <code>DropdownItem</code>, <code>DropdownHeader</code>, and <code>DropdownDivider</code> components.</li>
+            </ol>
+        </div>
+    </div>
+    <Demo Type="typeof(Navbar_Demo_03_Nav)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Forms" PageUrl="@pageUrl" Link="forms">
+    <div class="mb-3">
+        Place a search form, an input group, or buttons in the navbar.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Put the form in <code>ChildContent</code>. Use <code>class="d-flex"</code> to keep its controls on one line.</li>
+                <li>Use <code>InputGroup</code> for add-ons, and <code>Button</code> for actions.</li>
+            </ol>
+        </div>
+        These navbars set <code>ExpandBreakpoint="NavbarExpand.Always"</code>, so they never collapse.
+    </div>
+    <Demo Type="typeof(Navbar_Demo_04_Forms)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Text" PageUrl="@pageUrl" Link="text">
+    <div class="mb-3">
+        Add text that is vertically centered and colored for the navbar.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Add <code>NavbarText</code> in <code>ChildContent</code>.</li>
+            </ol>
+        </div>
+        Change the display name and press Tab to update the text. It is rendered as text, never as HTML.
+    </div>
+    <Demo Type="typeof(Navbar_Demo_05_Text)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Color schemes" PageUrl="@pageUrl" Link="color-schemes">
+    <div class="mb-3">
+        Pair a background with a light or dark theme.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Set <code>BackgroundColor</code> (a <code>bg-*</code> class) or <code>Color</code> (a <code>text-bg-*</code> class), or a custom background with <code>Style</code>.</li>
+                <li>Set <code>Theme="NavbarTheme.Dark"</code> on dark backgrounds, so the text is light, and <code>NavbarTheme.Light</code> on light ones.</li>
+            </ol>
+        </div>
+    </div>
+    <Demo Type="typeof(Navbar_Demo_06_Color_Schemes)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Containers" PageUrl="@pageUrl" Link="containers">
+    <div class="mb-3">
+        The navbar's contents are fluid by default. Wrap the navbar in a container, or limit its contents to a container width.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Set <code>Container</code> to <code>NavbarContainer.Default</code> for a centered container, or to a breakpoint for a responsive container.</li>
+            </ol>
+        </div>
+    </div>
+    <Demo Type="typeof(Navbar_Demo_07_Containers)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Placement" PageUrl="@pageUrl" Link="placement">
+    <div class="mb-3">
+        Place the navbar in the page flow, fix it to the top or bottom of the viewport, or make it sticky.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Set <code>Placement</code>. A fixed navbar leaves the page flow, so add padding to the <code>body</code> to keep content from going under it.</li>
+            </ol>
+        </div>
+        Pick a placement and scroll the box. The demo box stands in for the viewport.
+    </div>
+    <Demo Type="typeof(Navbar_Demo_08_Placement)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Responsive behaviors" PageUrl="@pageUrl" Link="responsive-behaviors">
+    <div class="mb-3">
+        Choose when the menu collapses and where the toggler goes.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Set <code>ExpandBreakpoint</code>. <code>Never</code> keeps the menu collapsed at every width; <code>Always</code> never collapses it.</li>
+                <li>Set <code>TogglerPosition="NavbarTogglerPosition.Start"</code> to put the toggler before the brand.</li>
+                <li>Set <code>BrandInCollapse="true"</code> to hide the brand until the menu expands.</li>
+            </ol>
+        </div>
+        Narrow the window below 992px to see the first three collapse.
+    </div>
+    <Demo Type="typeof(Navbar_Demo_09_Responsive_Behaviors)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Scrolling" PageUrl="@pageUrl" Link="scrolling">
+    <div class="mb-3">
+        Let a long collapsed menu scroll instead of growing.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Set <code>Scrollable="true"</code> on <code>NavbarNav</code>, and <code>ScrollHeight</code> to its maximum height (75vh by default).</li>
+            </ol>
+        </div>
+    </div>
+    <Demo Type="typeof(Navbar_Demo_10_Scrolling)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="External content" PageUrl="@pageUrl" Link="external-content">
+    <div class="mb-3">
+        Show and hide content that lives outside the navbar.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Add a <code>Collapse</code> with an <code>Id</code>.</li>
+                <li>Set <code>ExternalCollapseId</code> on the navbar to that id. The toggler then controls the collapse, and focus moves into it when it opens.</li>
+                <li>Set <code>ExpandBreakpoint="NavbarExpand.Never"</code> so the toggler shows at every width.</li>
+            </ol>
+        </div>
+    </div>
+    <Demo Type="typeof(Navbar_Demo_11_External_Content)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Offcanvas" PageUrl="@pageUrl" Link="offcanvas">
+    <div class="mb-3">
+        Show the collapsed menu in an offcanvas panel.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Set <code>CollapseMode="NavbarCollapseMode.Offcanvas"</code> and an <code>OffcanvasTitle</code>.</li>
+                <li>Set <code>OffcanvasPlacement</code> to choose the side it opens from; the default is the end.</li>
+                <li>Above <code>ExpandBreakpoint</code> the menu shows inline, as a regular navbar. Use <code>NavbarExpand.Never</code> to keep the offcanvas at every width.</li>
+            </ol>
+        </div>
+        The first navbar is a responsive offcanvas; the second always uses a dark offcanvas.
+    </div>
+    <Demo Type="typeof(Navbar_Demo_12_Offcanvas)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Methods" PageUrl="@pageUrl" Link="methods">
+    <div class="mb-3">
+        Show, hide, or toggle the collapsed menu from code.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Get a reference with <code>@@ref</code>, and call <code>ShowAsync</code>, <code>HideAsync</code>, or <code>ToggleAsync</code>.</li>
+                <li>The methods do nothing while the navbar is expanded.</li>
+            </ol>
+        </div>
+    </div>
+    <Demo Type="typeof(Navbar_Demo_13_Methods)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Close after navigation" PageUrl="@pageUrl" Link="close-after-navigation">
+    <div class="mb-3">
+        The collapsed menu closes by itself after a navigation, so the new page is not hidden behind it.
+        <br />
+        Open the menu and pick a view. The menu closes, and the picked view becomes the active item.
+    </div>
+    <Demo Type="typeof(Navbar_Demo_14_Close_After_Navigation)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Sidebar layout" PageUrl="@pageUrl" Link="sidebar-layout">
+    <div class="mb-3">
+        Use the navbar as the top bar of a layout with a <code>Sidebar</code>.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Put the navbar at the top of <code>main</code>, beside the <code>Sidebar</code>, with <code>Placement="NavbarPlacement.StickyTop"</code>.</li>
+                <li>The navbar uses Bootstrap's own sticky (1020) and fixed (1030) z-index, which matches the layout's sticky header.</li>
+            </ol>
+        </div>
+    </div>
+    <Demo Type="typeof(Navbar_Demo_15_Sidebar_Layout)" Tabs="true" />
+</Section>
+
+@code {
+    private const string pageUrl = DemoRouteConstants.Demos_URL_Navbar;
+    private const string pageTitle = "Blazor Navbar";
+    private const string pageDescription = "The Blazor Bootstrap Navbar component is a responsive navigation header with a brand, links, dropdowns, forms, and text, which collapses behind a toggler or into an offcanvas panel.";
+    private const string metaTitle = "Blazor Navbar Component";
+    private const string metaDescription = "The Blazor Bootstrap Navbar component is a responsive navigation header with a brand, links, dropdowns, forms, and text, which collapses behind a toggler or into an offcanvas panel.";
+    private const string imageUrl = DemoScreenshotSrcConstants.Demos_URL_Navbar;
+
+    /// <summary>
+    /// The view picked in the "Close after navigation" demo.
+    /// </summary>
+    [Parameter] public string? View { get; set; }
+}

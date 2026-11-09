@@ -1,0 +1,53 @@
+@attribute [Route(pageUrl)]
+@layout DocsMainLayout
+
+<DocsPageHeadSection PageUrl="@pageUrl"
+                     PageTitle="@pageTitle"
+                     PageDescription="@pageDescription"
+                     MetaTitle="@metaTitle"
+                     MetaDescription="@metaDescription"
+                     ImageUrl="@imageUrl" />
+
+<DemoLink Href="@DemoRouteConstants.Demos_URL_Navbar" />
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="Screenshot" PageUrl="@pageUrl" Link="screenshot">
+    <img src="@imageUrl" class="img-fluid" alt="@metaTitle" />
+</Section>
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="Navbar Parameters" PageUrl="@pageUrl" Link="navbar-parameters">
+    <DocxTable TItem="Navbar" DocType="DocType.Parameters" />
+</Section>
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="Navbar Methods" PageUrl="@pageUrl" Link="navbar-methods">
+    <DocxTable TItem="Navbar" DocType="DocType.Methods" />
+</Section>
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="NavbarBrand Parameters" PageUrl="@pageUrl" Link="navbar-brand-parameters">
+    <DocxTable TItem="NavbarBrand" DocType="DocType.Parameters" />
+</Section>
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="NavbarNav Parameters" PageUrl="@pageUrl" Link="navbar-nav-parameters">
+    <DocxTable TItem="NavbarNav" DocType="DocType.Parameters" />
+</Section>
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="NavbarItem Parameters" PageUrl="@pageUrl" Link="navbar-item-parameters">
+    <DocxTable TItem="NavbarItem" DocType="DocType.Parameters" />
+</Section>
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="NavbarDropdown Parameters" PageUrl="@pageUrl" Link="navbar-dropdown-parameters">
+    <DocxTable TItem="NavbarDropdown" DocType="DocType.Parameters" />
+</Section>
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="NavbarText Parameters" PageUrl="@pageUrl" Link="navbar-text-parameters">
+    <DocxTable TItem="NavbarText" DocType="DocType.Parameters" />
+</Section>
+
+@code {
+    private const string componentName = nameof(Navbar);
+    private const string pageUrl = DemoRouteConstants.Docs_URL_Navbar;
+    private const string pageTitle = componentName;
+    private const string pageDescription = $"This documentation provides a comprehensive reference for the <code>{componentName}</code>, <code>NavbarBrand</code>, <code>NavbarNav</code>, <code>NavbarItem</code>, <code>NavbarDropdown</code>, and <code>NavbarText</code> components, guiding you through their configuration options.";
+    private const string metaTitle = $"Blazor {componentName} Component";
+    private const string metaDescription = $"This documentation provides a comprehensive reference for the {componentName}, NavbarBrand, NavbarNav, NavbarItem, NavbarDropdown, and NavbarText components, guiding you through their configuration options.";
+    private const string imageUrl = DemoScreenshotSrcConstants.Demos_URL_Navbar;
+}
