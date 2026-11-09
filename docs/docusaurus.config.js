@@ -1,5 +1,7 @@
-const lightCodeTheme = require('prism-react-renderer/themes/vsDark');
-const darkCodeTheme = require('prism-react-renderer/themes/dracula');
+const { themes } = require('prism-react-renderer');
+
+const lightCodeTheme = themes.vsDark;
+const darkCodeTheme = themes.dracula;
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
@@ -8,7 +10,11 @@ const config = {
     url: 'https://docs.blazorbootstrap.com',
     baseUrl: '/',
     onBrokenLinks: 'throw',
-    onBrokenMarkdownLinks: 'warn',
+    markdown: {
+        hooks: {
+            onBrokenMarkdownLinks: 'warn',
+        },
+    },
     favicon: 'favicon.ico',
     headTags: [
         { tagName: 'link', attributes: { rel: 'icon', type: 'image/svg+xml', sizes: 'any', href: '/favicon.svg' } },
@@ -30,6 +36,8 @@ const config = {
                 },
                 blog: {
                     showReadingTime: true,
+                    onInlineAuthors: 'ignore', // posts declare their author inline in front matter
+                    onUntruncatedBlogPosts: 'ignore',
                     editUrl: 'https://github.com/vikramlearning/blazorbootstrap/edit/master/docs/blog/',
                 },
                 theme: {

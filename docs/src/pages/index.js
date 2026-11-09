@@ -5,7 +5,7 @@ import Link from '@docusaurus/Link';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import styles from './index.module.css';
 import HomepageFeatures from '../components/HomepageFeatures';
-import  { Redirect } from 'react-router-dom';
+import { Redirect } from '@docusaurus/router';
 
 function HomepageHeader() {
     const { siteConfig } = useDocusaurusContext();
