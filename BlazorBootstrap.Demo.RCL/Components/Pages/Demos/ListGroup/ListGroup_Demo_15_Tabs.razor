@@ -1,5 +1,6 @@
-<div class="d-flex flex-wrap gap-2 mb-3">
+<div class="d-flex flex-wrap align-items-center gap-2 mb-3">
     <Button Color="ButtonColor.Secondary" Outline="true" Size="ButtonSize.Small" @onclick="@(() => listGroup.ShowTabAsync("billing"))">Show Billing from code</Button>
+    <Switch @bind-Value="showTeam" Label="Show the Team section" Class="ms-2" />
 </div>
 
 <ListGroup @ref="listGroup"
@@ -21,6 +22,13 @@
             <p class="mb-0">Choose which emails and alerts you get.</p>
         </ChildContent>
     </ListGroupTabPane>
+    @if (showTeam)
+    {
+        <ListGroupTabPane Name="team" Title="Team">
+            <h5>Team</h5>
+            <p class="mb-0">Members, roles, and invitations.</p>
+        </ListGroupTabPane>
+    }
     <ListGroupTabPane Name="billing" Title="Billing">
         <h5>Billing</h5>
         <p class="mb-0">Invoices, payment method, and plan.</p>
@@ -50,6 +58,7 @@
 @code {
     private ListGroup<string> listGroup = default!;
     private readonly List<string> log = new();
+    private bool showTeam;
 
     private void Log(string name, ListGroupTabEventArgs e)
     {

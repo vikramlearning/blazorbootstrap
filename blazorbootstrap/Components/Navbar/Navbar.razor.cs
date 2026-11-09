@@ -9,6 +9,11 @@ public partial class Navbar : BlazorBootstrapComponentBase
 {
     #region Fields and Constants
 
+    /// <summary>
+    /// The parameters that decide which menu and toggler elements the interop holds, as of its last initialization.
+    /// </summary>
+    private string? initializedInteropKey;
+
     private bool isLocationChangedSubscribed;
 
     #endregion
@@ -35,8 +40,13 @@ public partial class Navbar : BlazorBootstrapComponentBase
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (firstRender)
+        // These parameters replace the menu or toggler element, so the interop must pick up the new ones (CS-004).
+        var interopKey = $"{togglerTargetId}|{hasExternalCollapse}|{CollapseMode}|{TogglerPosition}|{hasToggler}|{hasMenu}";
+        if (interopKey != initializedInteropKey)
+        {
+            initializedInteropKey = interopKey;
             await SafeInvokeVoidAsync("window.blazorBootstrap.navbar.initialize", Id, togglerTargetId, hasExternalCollapse);
+        }
 
         await base.OnAfterRenderAsync(firstRender);
     }
@@ -116,13 +126,14 @@ public partial class Navbar : BlazorBootstrapComponentBase
 
     /// <summary>
     /// Gets or sets whether the brand is placed inside the collapsed menu, so it is hidden until the menu expands.
+    /// Ignored when <see cref="ExternalCollapseId" /> is set, because there is no menu inside the navbar to hold it.
     /// <para>
     /// Default value is <see langword="false" />.
     /// </para>
     /// </summary>
     [AddedVersion("4.1.0")]
     [DefaultValue(false)]
-    [Description("Gets or sets whether the brand is placed inside the collapsed menu, so it is hidden until the menu expands.")]
+    [Description("Gets or sets whether the brand is placed inside the collapsed menu, so it is hidden until the menu expands. Ignored when <b>ExternalCollapseId</b> is set, because there is no menu inside the navbar to hold it.")]
     [Parameter]
     public bool BrandInCollapse { get; set; }
 
@@ -250,15 +261,18 @@ public partial class Navbar : BlazorBootstrapComponentBase
 
     /// <summary>
     /// Gets or sets the title of the offcanvas panel. It also names the panel for screen readers.
+    /// Without a title, the panel is named by <see cref="AriaLabel" />, so set one of the two.
     /// <para>
     /// Default value is <see langword="null" />.
     /// </para>
     /// </summary>
     [AddedVersion("4.1.0")]
     [DefaultValue(null)]
-    [Description("Gets or sets the title of the offcanvas panel. It also names the panel for screen readers.")]
+    [Description("Gets or sets the title of the offcanvas panel. It also names the panel for screen readers. Without a title, the panel is named by <b>AriaLabel</b>, so set one of the two.")]
     [Parameter]
     public string? OffcanvasTitle { get; set; }
+
+    private bool hasOffcanvasTitle => !string.IsNullOrWhiteSpace(OffcanvasTitle);
 
     private string offcanvasTitleId => $"{Id}-offcanvas-title";
 

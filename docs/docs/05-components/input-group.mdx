@@ -19,7 +19,7 @@ The Blazor Bootstrap `InputGroup` component extends a form input with add-ons pl
 
 - **Supported inputs:** `TextInput`, `NumberInput`, `CurrencyInput`, `DateInput`, `TimeInput`, `TextAreaInput`, `EnumInput`, and Blazor's `InputFile` (with `class="form-control"`) work inside an `InputGroup`.
 - **Not supported:** `PasswordInput` and `AutoComplete` already render their own input group, so they cannot be placed inside an `InputGroup`.
-- **Validation:** in an `EditForm`, put `ValidationMessage` as the last child of the group. Validation styling is supported only for groups with a single input, as in Bootstrap.
+- **Validation:** in an `EditForm`, put `ValidationMessage` as the last child of the group. Validation styling is supported only for groups with a single input, as in Bootstrap. The library styles Blazor's `ValidationMessage` itself, so the group needs no `has-validation` class (that class is for Bootstrap's `.invalid-feedback`).
 
 ## InputGroup parameters
 
@@ -173,7 +173,7 @@ Set `For` on `InputGroupText` to label the control with the add-on.
 
 ### Wrapping
 
-Input groups wrap by default. Set `NoWrap="true"` to keep everything on one line.
+Input groups wrap by default. Set `NoWrap="true"` to keep everything on one line. A validation message that is showing still gets its own row.
 
 ```cshtml {1} showLineNumbers
 <InputGroup NoWrap="true">

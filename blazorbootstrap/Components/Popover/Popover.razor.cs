@@ -1,7 +1,7 @@
 namespace BlazorBootstrap;
 
 /// <summary>
-/// Shows a title and content in an overlay next to its trigger, the first element in <see cref="ChildContent" />.
+/// Shows a title and content in an overlay next to its trigger, the first interactive element in <see cref="ChildContent" />.
 /// It wraps Bootstrap's popover plugin; the title and content are rendered by Blazor and keep updating while the popover is open. <br/>
 /// Bootstrap docs: <see href="https://getbootstrap.com/docs/5.3/components/popovers/" />
 /// </summary>
@@ -17,6 +17,10 @@ public partial class Popover : BlazorBootstrapComponentBase
     private bool? previousAutoClose;
 
     private bool? previousDisabled;
+
+    private bool? previousHasContent;
+
+    private bool? previousHasTitle;
 
     private string? previousOptionsKey;
 
@@ -52,9 +56,19 @@ public partial class Popover : BlazorBootstrapComponentBase
             previousOptionsKey = optionsKey;
             previousDisabled = Disabled;
             previousAutoClose = AutoClose;
+            previousHasTitle = hasTitle;
+            previousHasContent = hasContent;
         }
         else
         {
+            if (previousHasTitle != hasTitle || previousHasContent != hasContent)
+            {
+                // A title or content that appears or disappears updates the open popover in place; it is never re-created for it.
+                previousHasTitle = hasTitle;
+                previousHasContent = hasContent;
+                await SafeInvokeVoidAsync("window.blazorBootstrap.popover.setContent", Id, hasTitle, hasContent);
+            }
+
             if (previousDisabled != Disabled)
             {
                 previousDisabled = Disabled;
@@ -141,12 +155,11 @@ public partial class Popover : BlazorBootstrapComponentBase
         };
 
     /// <summary>
-    /// The options Bootstrap reads only when the popover is created. A change re-creates it; <see cref="Disabled" /> and <see cref="AutoClose" /> update in place.
+    /// The options Bootstrap reads only when the popover is created. A change re-creates it; <see cref="Disabled" />, <see cref="AutoClose" />,
+    /// and whether there is a title or content update in place.
     /// </summary>
     private string GetOptionsKey() =>
         string.Join("|",
-            hasTitle,
-            hasContent,
             Placement,
             FallbackPlacements is null ? "" : string.Join(",", FallbackPlacements),
             triggerString,
@@ -175,26 +188,27 @@ public partial class Popover : BlazorBootstrapComponentBase
 
     /// <summary>
     /// Gets or sets whether the popover closes on a click outside it and its trigger, on Escape, and when focus leaves its content.
+    /// Hover and Focus popovers close on Escape either way.
     /// <para>
     /// Default value is <see langword="true" />.
     /// </para>
     /// </summary>
     [AddedVersion("4.1.0")]
     [DefaultValue(true)]
-    [Description("Gets or sets whether the popover closes on a click outside it and its trigger, on Escape, and when focus leaves its content.")]
+    [Description("Gets or sets whether the popover closes on a click outside it and its trigger, on Escape, and when focus leaves its content. Hover and Focus popovers close on Escape either way.")]
     [Parameter]
     public bool AutoClose { get; set; } = true;
 
     /// <summary>
-    /// Gets or sets the trigger of the popover. Its first element gets the popover; use a focusable, interactive element such as a button.
-    /// When that element is disabled, the wrapper around it gets the popover and becomes focusable instead.
+    /// Gets or sets the trigger of the popover. Its first interactive element (a link, button, form control, or element with a tabindex) gets the popover.
+    /// When there is none, or it is disabled, the wrapper around it gets the popover and becomes focusable instead; with the Click trigger, Enter and Space open it.
     /// <para>
     /// Default value is <see langword="null" />.
     /// </para>
     /// </summary>
     [AddedVersion("4.1.0")]
     [DefaultValue(null)]
-    [Description("Gets or sets the trigger of the popover. Its first element gets the popover; use a focusable, interactive element such as a button. When that element is disabled, the wrapper around it gets the popover and becomes focusable instead.")]
+    [Description("Gets or sets the trigger of the popover. Its first interactive element (a link, button, form control, or element with a tabindex) gets the popover. When there is none, or it is disabled, the wrapper around it gets the popover and becomes focusable instead; with the Click trigger, Enter and Space open it.")]
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
 
@@ -263,10 +277,15 @@ public partial class Popover : BlazorBootstrapComponentBase
     [Parameter]
     public string? CustomClass { get; set; }
 
+    /// <summary>
+    /// The classes for Bootstrap's <c>customClass</c>, separated by single spaces: Bootstrap splits on a space and an empty name throws.
+    /// </summary>
     private string customClassNames =>
-        BuildClassNames(
-            (Color.ToPopoverColorClass(), Color != PopoverColor.None),
-            (CustomClass, !string.IsNullOrWhiteSpace(CustomClass)));
+        string.Join(' ',
+            BuildClassNames(
+                    (Color.ToPopoverColorClass(), Color != PopoverColor.None),
+                    (CustomClass, !string.IsNullOrWhiteSpace(CustomClass)))
+                .Split(new[] { ' ', '\t', '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries));
 
     /// <summary>
     /// Gets or sets whether the popover is disabled. A disabled popover does not open until it is enabled again, and closes if it is open.

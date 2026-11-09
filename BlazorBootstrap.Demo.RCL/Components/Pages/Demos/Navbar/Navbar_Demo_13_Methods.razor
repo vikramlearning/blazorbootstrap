@@ -1,10 +1,16 @@
-<div class="d-flex flex-wrap gap-2 mb-3">
+<div class="d-flex flex-wrap align-items-center gap-2 mb-3">
     <Button Color="ButtonColor.Primary" @onclick="ShowAsync">Show menu</Button>
     <Button Color="ButtonColor.Primary" @onclick="HideAsync">Hide menu</Button>
     <Button Color="ButtonColor.Primary" @onclick="ToggleAsync">Toggle menu</Button>
+    <Switch @bind-Value="useOffcanvas" Label="Open in an offcanvas panel" Class="ms-2" />
 </div>
 
-<Navbar @ref="navbar" BackgroundColor="BackgroundColor.BodyTertiary" ExpandBreakpoint="NavbarExpand.Never" AriaLabel="Navbar controlled from code">
+<Navbar @ref="navbar"
+        BackgroundColor="BackgroundColor.BodyTertiary"
+        ExpandBreakpoint="NavbarExpand.Never"
+        CollapseMode="@(useOffcanvas ? NavbarCollapseMode.Offcanvas : NavbarCollapseMode.Collapse)"
+        OffcanvasTitle="Controlled from code"
+        AriaLabel="Navbar controlled from code">
     <Brand>
         <NavbarBrand Href="@DemoRouteConstants.Demos_URL_Navbar">Controlled from code</NavbarBrand>
     </Brand>
@@ -18,6 +24,7 @@
 
 @code {
     private Navbar navbar = default!;
+    private bool useOffcanvas;
 
     private async Task ShowAsync() => await navbar.ShowAsync();
 

@@ -632,11 +632,11 @@ window.blazorBootstrap = {
             state.tabEls.forEach((tabEl) => bootstrap?.Tab?.getInstance(tabEl)?.dispose());
         },
         initializeListbox: (elementId) => {
+            window.blazorBootstrap.listGroup.dispose(elementId); // also called again when the list element was replaced
+
             let listEl = document.getElementById(elementId);
             if (listEl == null)
                 return;
-
-            window.blazorBootstrap.listGroup.dispose(elementId);
 
             // Arrow keys, Home, and End move focus between the enabled options and keep a single tab stop.
             let handler = (event) => {
@@ -666,19 +666,27 @@ window.blazorBootstrap = {
                 }
 
                 event.preventDefault();
-                options.forEach((optionEl) => optionEl.setAttribute('tabindex', optionEl === next ? '0' : '-1'));
+                window.blazorBootstrap.listGroup.setTabStop(listEl, next);
                 next.focus();
             };
 
+            // An option focused by a click becomes the tab stop too.
+            let focusHandler = (event) => {
+                if (event.target.parentElement === listEl && event.target.getAttribute('role') === 'option')
+                    window.blazorBootstrap.listGroup.setTabStop(listEl, event.target);
+            };
+
             listEl.addEventListener('keydown', handler);
-            window.blazorBootstrap.listGroup.instances[elementId] = { listeners: [[listEl, 'keydown', handler]], tabEls: [] };
+            listEl.addEventListener('focusin', focusHandler);
+            window.blazorBootstrap.listGroup.instances[elementId] = { listEl: listEl, listeners: [[listEl, 'keydown', handler], [listEl, 'focusin', focusHandler]], tabEls: [] };
+            window.blazorBootstrap.listGroup.syncListbox(elementId);
         },
         initializeTabs: (elementId, dotNetHelper) => {
+            window.blazorBootstrap.listGroup.dispose(elementId); // also called again when tabs were added or removed
+
             let listEl = document.getElementById(elementId);
             if (listEl == null)
                 return;
-
-            window.blazorBootstrap.listGroup.dispose(elementId);
 
             let state = { listeners: [], tabEls: [...listEl.querySelectorAll('[data-bs-toggle="list"]')] };
             let nameOf = (el) => el?.getAttribute('data-bb-name') ?? null;
@@ -703,10 +711,33 @@ window.blazorBootstrap = {
 
             window.blazorBootstrap.listGroup.instances[elementId] = state;
         },
+        getPaneOrder: (elementId) => {
+            // The pane elements are in markup order; the group orders its tabs to match.
+            let contentEl = document.getElementById(elementId)?.closest('.row')?.querySelector('.tab-content');
+            return contentEl == null ? null : [...contentEl.querySelectorAll(':scope > .tab-pane')].map((paneEl) => paneEl.id);
+        },
+        setTabStop: (listEl, optionEl) => {
+            // Exactly one option is reachable by Tab (WAI-ARIA listbox); arrow keys reach the rest.
+            listEl.querySelectorAll(':scope > [role="option"]').forEach((el) => el.setAttribute('tabindex', el === optionEl ? '0' : '-1'));
+        },
         showTab: (tabId) => {
             let tabEl = document.getElementById(tabId);
             if (tabEl != null)
                 bootstrap?.Tab?.getOrCreateInstance(tabEl)?.show();
+        },
+        syncListbox: (elementId) => {
+            // Called after each render: the tab stop is the focused option, else the first selected enabled option, else the first enabled one.
+            let state = window.blazorBootstrap.listGroup.instances[elementId];
+            let listEl = state?.listEl;
+            if (listEl == null || !listEl.isConnected)
+                return;
+
+            let options = [...listEl.querySelectorAll(':scope > [role="option"]:not(:disabled)')];
+            let tabStop = options.find((el) => el === document.activeElement)
+                ?? options.find((el) => el.getAttribute('aria-selected') === 'true')
+                ?? options[0]
+                ?? null;
+            window.blazorBootstrap.listGroup.setTabStop(listEl, tabStop);
         }
     },
     mindMap: {
@@ -844,15 +875,41 @@ window.blazorBootstrap = {
             state.listeners.forEach(([target, type, handler]) => target.removeEventListener(type, handler));
 
             let menuEl = state.menuEl;
-            if (menuEl.classList.contains('offcanvas')) {
-                let wasShown = menuEl.classList.contains('show') || menuEl.classList.contains('showing');
-                bootstrap?.Offcanvas?.getInstance(menuEl)?.dispose(); // also removes its backdrop
-                if (wasShown)
+            let isOffcanvas = menuEl.classList.contains('offcanvas');
+            if (!isOffcanvas && state.isExternal)
+                return; // the external Collapse component owns its instance
+
+            let instance = isOffcanvas ? bootstrap?.Offcanvas?.getInstance(menuEl) : bootstrap?.Collapse?.getInstance(menuEl);
+            if (instance == null)
+                return;
+
+            let wasShown = state.phase === 'shown' || state.phase === 'showing';
+            let disposeInstance = () => {
+                instance.dispose(); // an offcanvas also removes its backdrop
+                if (isOffcanvas && wasShown)
                     window.blazorBootstrap.navbar.resetScrollbar();
+            };
+
+            // Bootstrap finishes a transition in a queued callback that reads the instance; disposing first makes that callback throw.
+            // Bootstrap still runs the callback on a removed element (its transition-end fallback timer), so wait for it.
+            if (state.phase === 'showing' || state.phase === 'hiding') {
+                let suffix = isOffcanvas ? 'offcanvas' : 'collapse';
+                let done = false;
+                let finish = (event) => {
+                    if (done || (event != null && event.target !== menuEl))
+                        return;
+                    done = true;
+                    menuEl.removeEventListener(`shown.bs.${suffix}`, finish);
+                    menuEl.removeEventListener(`hidden.bs.${suffix}`, finish);
+                    disposeInstance();
+                };
+                menuEl.addEventListener(`shown.bs.${suffix}`, finish);
+                menuEl.addEventListener(`hidden.bs.${suffix}`, finish);
+                setTimeout(() => finish(), 1000); // safety net if no event arrives
+                return;
             }
-            else if (!state.isExternal) {
-                bootstrap?.Collapse?.getInstance(menuEl)?.dispose();
-            }
+
+            disposeInstance();
         },
         getInstance: (menuEl) => {
             if (menuEl.classList.contains('offcanvas'))
@@ -862,25 +919,58 @@ window.blazorBootstrap = {
         },
         hide: (elementId) => {
             let state = window.blazorBootstrap.navbar.instances[elementId];
-            if (state == null || !state.menuEl.classList.contains('show'))
+            if (state == null)
                 return;
 
-            window.blazorBootstrap.navbar.getInstance(state.menuEl)?.hide();
+            // Bootstrap ignores hide() while the menu is still opening, so hide it once it has opened.
+            if (state.phase === 'showing')
+                state.hideWhenShown = true;
+            else if (state.phase === 'shown')
+                window.blazorBootstrap.navbar.getInstance(state.menuEl)?.hide();
         },
         initialize: (elementId, menuId, isExternal) => {
+            // Also called again when the menu or toggler element was replaced; drop the old elements first.
+            window.blazorBootstrap.navbar.dispose(elementId);
+
             let navbarEl = document.getElementById(elementId);
             let menuEl = document.getElementById(menuId);
             if (navbarEl == null || menuEl == null)
                 return;
 
+            let isOffcanvas = menuEl.classList.contains('offcanvas');
             let togglerEl = navbarEl.querySelector('.navbar-toggler');
-            let state = { menuEl: menuEl, togglerEl: togglerEl, isExternal: isExternal, listeners: [] };
+            let state = {
+                menuEl: menuEl,
+                togglerEl: togglerEl,
+                isExternal: isExternal,
+                listeners: [],
+                phase: menuEl.classList.contains('show') ? 'shown' : 'hidden',
+                hideWhenShown: false
+            };
             let listen = (target, type, handler) => {
                 target.addEventListener(type, handler);
                 state.listeners.push([target, type, handler]);
             };
 
-            if (menuEl.classList.contains('offcanvas') && togglerEl != null) {
+            // Track the transition phase: dispose and hide must not act on Bootstrap mid-transition.
+            let suffix = isOffcanvas ? 'offcanvas' : 'collapse';
+            let onPhase = (phase) => (event) => {
+                if (event.target !== menuEl)
+                    return; // a nested collapse inside the menu
+                state.phase = phase;
+                if (phase === 'shown' && state.hideWhenShown) {
+                    state.hideWhenShown = false;
+                    window.blazorBootstrap.navbar.getInstance(menuEl)?.hide();
+                }
+                else if (phase !== 'shown')
+                    state.hideWhenShown = false;
+            };
+            listen(menuEl, `show.bs.${suffix}`, onPhase('showing'));
+            listen(menuEl, `shown.bs.${suffix}`, onPhase('shown'));
+            listen(menuEl, `hide.bs.${suffix}`, onPhase('hiding'));
+            listen(menuEl, `hidden.bs.${suffix}`, onPhase('hidden'));
+
+            if (isOffcanvas && togglerEl != null) {
                 // Bootstrap tracks aria-expanded for collapse togglers only.
                 listen(menuEl, 'show.bs.offcanvas', () => togglerEl.setAttribute('aria-expanded', 'true'));
                 listen(menuEl, 'hidden.bs.offcanvas', () => togglerEl.setAttribute('aria-expanded', 'false'));
@@ -901,7 +991,6 @@ window.blazorBootstrap = {
                 });
             }
 
-            window.blazorBootstrap.navbar.dispose(elementId);
             window.blazorBootstrap.navbar.instances[elementId] = state;
         },
         isCollapsed: (state) => {
@@ -1036,47 +1125,82 @@ window.blazorBootstrap = {
             delete window.blazorBootstrap.popover.instances[elementId];
 
             state.resizeObserver?.disconnect();
+            state.mutationObserver?.disconnect();
             state.listeners.forEach(([target, type, handler, capture]) => target.removeEventListener(type, handler, capture));
 
             // Move the Blazor-owned elements home first: dispose removes the open popover, and the elements must not go with it.
             state.restore();
-            bootstrap?.Popover?.getInstance(state.triggerEl)?.dispose();
 
+            state.triggerEl.removeAttribute('aria-expanded');
             if (state.isWrapperTrigger) {
                 state.triggerEl.removeAttribute('tabindex');
-                state.triggerEl.removeAttribute('aria-expanded');
+                state.triggerEl.removeAttribute('role');
             }
+
+            let popover = bootstrap?.Popover?.getInstance(state.triggerEl);
+            if (popover == null)
+                return;
+
+            // Bootstrap finishes a fade in a callback queued on the popover element, and that callback reads the instance, so disposing
+            // mid-fade makes it throw. Bootstrap runs the callback on 'transitionend'; dispatching one finishes the fade now.
+            if (state.phase === 'showing' || state.phase === 'hiding')
+                popover.tip?.dispatchEvent(new Event('transitionend'));
+
+            popover.dispose();
+        },
+        findTrigger: (hostEl) => {
+            // The first interactive element inside the host. With none, or a disabled one (which cannot take focus or pointer events),
+            // the host itself is the trigger, as Bootstrap recommends for disabled elements.
+            let el = hostEl.querySelector('a[href], button, input:not([type="hidden"]), select, textarea, [tabindex]:not([tabindex="-1"]), [role="button"]');
+            return el == null || el.matches(':disabled, .disabled, [aria-disabled="true"]') ? hostEl : el;
+        },
+        finishFade: (elementId) => {
+            // A show or hide started during the other's fade is undone when that fade completes (Bootstrap resets its hover tracking
+            // in the completion callback). Bootstrap completes a fade on 'transitionend', so dispatch one to finish it now.
+            let state = window.blazorBootstrap.popover.instances[elementId];
+            if (state?.phase === 'showing' || state?.phase === 'hiding')
+                window.blazorBootstrap.popover.getInstance(elementId)?.tip?.dispatchEvent(new Event('transitionend'));
         },
         getInstance: (elementId) => {
             let state = window.blazorBootstrap.popover.instances[elementId];
             return state == null ? null : bootstrap?.Popover?.getInstance(state.triggerEl);
         },
-        hide: (elementId) => window.blazorBootstrap.popover.getInstance(elementId)?.hide(),
+        hide: (elementId) => {
+            let state = window.blazorBootstrap.popover.instances[elementId];
+            if (state == null)
+                return;
+
+            window.blazorBootstrap.popover.finishFade(elementId);
+            window.blazorBootstrap.popover.getInstance(elementId)?.hide();
+        },
         initialize: (elementId, options, dotNetHelper) => {
+            // Also called again when an option or the trigger changes; drop the old instance first.
+            window.blazorBootstrap.popover.dispose(elementId);
+
             let hostEl = document.getElementById(elementId);
             let homeEl = document.getElementById(`${elementId}-home`);
             if (hostEl == null || homeEl == null)
                 return;
 
-            window.blazorBootstrap.popover.dispose(elementId);
-
-            // The popover belongs to the trigger, the first element inside the host. A disabled control cannot take focus or
-            // pointer events, so, as Bootstrap recommends, the wrapper gets the popover and becomes focusable instead.
-            let firstEl = hostEl.firstElementChild;
-            let isWrapperTrigger = firstEl == null || firstEl.matches(':disabled, .disabled');
-            let triggerEl = isWrapperTrigger ? hostEl : firstEl;
-            if (isWrapperTrigger)
-                hostEl.setAttribute('tabindex', '0');
+            let triggerEl = window.blazorBootstrap.popover.findTrigger(hostEl);
+            let isWrapperTrigger = triggerEl === hostEl;
+            // Hover and Focus popovers close when focus leaves the trigger, so they are for content that is read, not used.
+            let isHoverOrFocus = /focus|hover/.test(options.trigger);
 
             let titleEl = homeEl.querySelector(':scope > [data-bb-popover-title]');
             let contentEl = homeEl.querySelector(':scope > [data-bb-popover-content]');
 
             let state = {
                 autoClose: options.autoClose,
-                isShown: false,
+                dotNetHelper: dotNetHelper,
+                hasContent: options.hasContent,
+                hasTitle: options.hasTitle,
                 isWrapperTrigger: isWrapperTrigger,
                 listeners: [],
+                mutationObserver: null,
                 openedByKeyboard: false,
+                options: options,
+                phase: 'hidden', // showing, shown, hiding, or hidden
                 resizeObserver: null,
                 restoreFocus: false,
                 triggerEl: triggerEl
@@ -1089,6 +1213,48 @@ window.blazorBootstrap = {
                     homeEl.appendChild(contentEl);
             };
 
+            // Bootstrap decides whether there is anything to show from these, so a title or content that appears or disappears
+            // later needs no re-creation.
+            let config = {
+                // html: true makes Bootstrap append the elements themselves instead of copying their text.
+                // No HTML string is ever passed, so the sanitizer (left at its default) has nothing to process.
+                html: true,
+                title: () => state.hasTitle ? titleEl : '',
+                content: () => state.hasContent ? contentEl : '',
+                placement: options.placement,
+                trigger: options.trigger,
+                delay: { show: options.showDelay, hide: options.hideDelay },
+                animation: options.animation
+            };
+            if (options.fallbackPlacements?.length)
+                config.fallbackPlacements = options.fallbackPlacements;
+            if (options.offset)
+                config.offset = options.offset;
+            if (options.container)
+                config.container = options.container;
+            if (options.customClass)
+                config.customClass = options.customClass;
+
+            // Create the instance before anything is attached, so an invalid option (for example a Container that matches nothing)
+            // leaves nothing behind and no error reaches .NET.
+            let popover;
+            try {
+                popover = bootstrap?.Popover?.getOrCreateInstance(triggerEl, config);
+            }
+            catch (error) {
+                console.warn(`Blazor Bootstrap: popover '${elementId}' was not created.`, error);
+                return;
+            }
+            if (popover == null)
+                return;
+
+            if (isWrapperTrigger) {
+                hostEl.setAttribute('tabindex', '0');
+                if (/click/.test(options.trigger))
+                    hostEl.setAttribute('role', 'button');
+            }
+            triggerEl.setAttribute('aria-expanded', 'false');
+
             let listen = (target, type, handler, capture = false) => {
                 target.addEventListener(type, handler, capture);
                 state.listeners.push([target, type, handler, capture]);
@@ -1097,31 +1263,66 @@ window.blazorBootstrap = {
             let notify = (method) => dotNetHelper.invokeMethodAsync(method).catch(() => { });
             let instance = () => bootstrap?.Popover?.getInstance(triggerEl);
             let tip = () => instance()?.tip ?? null;
+            let isOpen = () => state.phase === 'showing' || state.phase === 'shown';
             let focusableSelector = 'a[href], button:not([disabled]), input:not([disabled]):not([type="hidden"]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
-            triggerEl.setAttribute('aria-expanded', 'false');
+            state.syncTip = () => {
+                // Put the title and content into the open popover, or take them out, when they appear or disappear while it is open.
+                let tipEl = tip();
+                if (tipEl == null)
+                    return;
+
+                let headerEl = tipEl.querySelector(':scope > .popover-header');
+                if (state.hasTitle && headerEl == null) {
+                    headerEl = document.createElement('h3');
+                    headerEl.className = 'popover-header';
+                    tipEl.insertBefore(headerEl, tipEl.querySelector(':scope > .popover-body'));
+                }
+                if (state.hasTitle && titleEl.parentElement !== headerEl)
+                    headerEl.appendChild(titleEl);
+                else if (!state.hasTitle && headerEl != null) {
+                    homeEl.insertBefore(titleEl, homeEl.firstChild);
+                    headerEl.remove();
+                }
+
+                let bodyEl = tipEl.querySelector(':scope > .popover-body');
+                if (state.hasContent && bodyEl == null) {
+                    bodyEl = document.createElement('div');
+                    bodyEl.className = 'popover-body';
+                    tipEl.appendChild(bodyEl);
+                }
+                if (state.hasContent && contentEl.parentElement !== bodyEl)
+                    bodyEl.appendChild(contentEl);
+                else if (!state.hasContent && bodyEl != null) {
+                    homeEl.appendChild(contentEl);
+                    bodyEl.remove();
+                }
+            };
 
             listen(triggerEl, 'show.bs.popover', () => {
-                state.isShown = true;
+                state.phase = 'showing';
                 triggerEl.setAttribute('aria-expanded', 'true');
                 notify('bsShow');
             });
             listen(triggerEl, 'inserted.bs.popover', () => notify('bsInserted'));
             listen(triggerEl, 'shown.bs.popover', () => {
+                if (state.phase === 'showing') // not when a hide already started during the fade
+                    state.phase = 'shown';
                 // Opened by keyboard: move focus to the first interactive element in the content, if any.
-                // Not for the Focus and Hover triggers, which close when focus leaves the trigger.
-                if (state.openedByKeyboard && !/focus|hover/.test(options.trigger))
+                if (state.openedByKeyboard && !isHoverOrFocus)
                     tip()?.querySelector(focusableSelector)?.focus();
                 state.openedByKeyboard = false;
                 notify('bsShown');
             });
             listen(triggerEl, 'hide.bs.popover', () => {
-                state.isShown = false;
-                state.restoreFocus = tip()?.contains(document.activeElement) ?? false;
+                state.phase = 'hiding';
+                // Return focus to the trigger only when it was in the content; a Focus trigger would open again on focus.
+                state.restoreFocus = !isHoverOrFocus && (tip()?.contains(document.activeElement) ?? false);
                 triggerEl.setAttribute('aria-expanded', 'false');
                 notify('bsHide');
             });
             listen(triggerEl, 'hidden.bs.popover', () => {
+                state.phase = 'hidden';
                 // Bootstrap removes the popover element when it hides (and before each show); bring the elements home each time.
                 state.restore();
                 if (state.restoreFocus)
@@ -1131,36 +1332,53 @@ window.blazorBootstrap = {
             });
 
             listen(triggerEl, 'keydown', (event) => {
-                if (event.key === 'Enter' || event.key === ' ')
-                    state.openedByKeyboard = true;
+                if (event.key !== 'Enter' && event.key !== ' ')
+                    return;
+
+                state.openedByKeyboard = true;
+                // A wrapper is a span: Enter and Space do not click it, so do it for the Click trigger.
+                if (isWrapperTrigger && event.target === hostEl && /click/.test(options.trigger)) {
+                    event.preventDefault();
+                    hostEl.click();
+                }
             });
             listen(triggerEl, 'pointerdown', () => state.openedByKeyboard = false);
 
-            // AutoClose: close on a click outside the popover and its trigger, on Escape, and when focus leaves the content.
+            // AutoClose: close on a click outside the popover and its trigger, and when focus leaves the content.
             listen(document, 'click', (event) => {
-                if (!state.autoClose || !state.isShown)
+                if (!state.autoClose || !isOpen())
                     return;
                 if (triggerEl.contains(event.target) || tip()?.contains(event.target))
                     return;
                 instance()?.hide();
             }, true);
+
+            // Escape closes the popover first. Hover and Focus popovers always close on Escape (WCAG 1.4.13); others when AutoClose is on.
+            // Handled in the capture phase so a surrounding modal or offcanvas does not close on the same key.
             listen(document, 'keydown', (event) => {
-                if (event.key !== 'Escape' || !state.autoClose || !state.isShown)
+                if (event.key !== 'Escape' || !isOpen() || (!state.autoClose && !isHoverOrFocus))
                     return;
-                let focusWasInside = tip()?.contains(document.activeElement) || triggerEl.contains(document.activeElement);
-                instance()?.hide();
-                if (focusWasInside)
+
+                let tipEl = tip();
+                if (tipEl?.querySelector('.dropdown-menu.show'))
+                    return; // let an open menu inside the content close first
+
+                let focusWasInside = (tipEl?.contains(document.activeElement) ?? false) || triggerEl.contains(document.activeElement);
+                if (triggerEl.closest('.modal, .offcanvas'))
+                    event.stopPropagation();
+                window.blazorBootstrap.popover.hide(elementId);
+                if (focusWasInside && !isHoverOrFocus)
                     state.restoreFocus = true;
-            });
+            }, true);
 
             // Keep the tab order next to the trigger. The popover is added at the end of the page (or its container), so the browser would
             // skip its content and later move focus from it to unrelated elements. Instead: Tab from the trigger enters the open content,
             // Shift+Tab from its first element goes back to the trigger, and Tab from its last element goes to the element after the
-            // trigger, closing the popover when AutoClose is on.
+            // trigger, closing the popover when AutoClose is on. Not for Hover and Focus popovers, which close when focus leaves the trigger.
             let isFocusable = (el) => !el.closest('[inert]') && el.getClientRects().length > 0;
             listen(document, 'keydown', (event) => {
                 let tipEl = tip();
-                if (event.key !== 'Tab' || !state.isShown || tipEl == null)
+                if (event.key !== 'Tab' || isHoverOrFocus || !isOpen() || tipEl == null)
                     return;
 
                 let inside = [...tipEl.querySelectorAll(focusableSelector)].filter(isFocusable);
@@ -1191,7 +1409,7 @@ window.blazorBootstrap = {
                 }
             });
             listen(document, 'focusin', (event) => {
-                if (!state.autoClose || !state.isShown)
+                if (!state.autoClose || !isOpen())
                     return;
                 if (triggerEl.contains(event.target) || tip()?.contains(event.target))
                     return;
@@ -1207,29 +1425,17 @@ window.blazorBootstrap = {
                 state.resizeObserver.observe(contentEl);
             }
 
-            let config = {
-                // html: true makes Bootstrap append the elements themselves instead of copying their text.
-                // No HTML string is ever passed, so the sanitizer (left at its default) has nothing to process.
-                html: true,
-                title: options.hasTitle ? titleEl : '',
-                content: options.hasContent ? contentEl : '',
-                placement: options.placement,
-                trigger: options.trigger,
-                delay: { show: options.showDelay, hide: options.hideDelay },
-                animation: options.animation
-            };
-            if (options.fallbackPlacements?.length)
-                config.fallbackPlacements = options.fallbackPlacements;
-            if (options.offset)
-                config.offset = options.offset;
-            if (options.container)
-                config.container = options.container;
-            if (options.customClass)
-                config.customClass = options.customClass;
+            // Re-attach when the trigger changes: another first element, or a control that became disabled or enabled.
+            if (typeof MutationObserver !== 'undefined') {
+                state.mutationObserver = new MutationObserver(() => {
+                    if (window.blazorBootstrap.popover.instances[elementId] === state && window.blazorBootstrap.popover.findTrigger(hostEl) !== state.triggerEl)
+                        window.blazorBootstrap.popover.initialize(elementId, state.options, state.dotNetHelper);
+                });
+                state.mutationObserver.observe(hostEl, { childList: true, subtree: true, attributes: true, attributeFilter: ['disabled', 'class', 'href'] });
+            }
 
-            let popover = bootstrap?.Popover?.getOrCreateInstance(triggerEl, config);
             if (!options.enabled)
-                popover?.disable();
+                popover.disable();
 
             window.blazorBootstrap.popover.instances[elementId] = state;
         },
@@ -1237,6 +1443,25 @@ window.blazorBootstrap = {
             let state = window.blazorBootstrap.popover.instances[elementId];
             if (state != null)
                 state.autoClose = autoClose;
+        },
+        setContent: (elementId, hasTitle, hasContent) => {
+            // The title or content appeared or disappeared: update the open popover in place.
+            let state = window.blazorBootstrap.popover.instances[elementId];
+            if (state == null)
+                return;
+
+            state.hasTitle = hasTitle;
+            state.hasContent = hasContent;
+            if (state.phase !== 'showing' && state.phase !== 'shown')
+                return;
+
+            if (!hasTitle && !hasContent) {
+                window.blazorBootstrap.popover.hide(elementId); // Bootstrap never shows an empty popover
+                return;
+            }
+
+            state.syncTip();
+            window.blazorBootstrap.popover.getInstance(elementId)?.update();
         },
         setEnabled: (elementId, enabled) => {
             let popover = window.blazorBootstrap.popover.getInstance(elementId);
@@ -1250,17 +1475,24 @@ window.blazorBootstrap = {
                 popover.disable();
             }
         },
-        show: (elementId) => window.blazorBootstrap.popover.getInstance(elementId)?.show(),
+        show: (elementId) => {
+            let state = window.blazorBootstrap.popover.instances[elementId];
+            if (state == null)
+                return;
+
+            window.blazorBootstrap.popover.finishFade(elementId);
+            if (state.phase !== 'shown') // Bootstrap would re-create an open popover
+                window.blazorBootstrap.popover.getInstance(elementId)?.show();
+        },
         toggle: (elementId) => {
             let state = window.blazorBootstrap.popover.instances[elementId];
             if (state == null)
                 return;
 
-            let popover = bootstrap?.Popover?.getInstance(state.triggerEl);
-            if (state.isShown)
-                popover?.hide();
+            if (state.phase === 'showing' || state.phase === 'shown')
+                window.blazorBootstrap.popover.hide(elementId);
             else
-                popover?.show();
+                window.blazorBootstrap.popover.show(elementId);
         },
         update: (elementId) => window.blazorBootstrap.popover.getInstance(elementId)?.update()
     },

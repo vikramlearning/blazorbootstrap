@@ -8,13 +8,39 @@
     <TextInput @bind-Value="normal" aria-label="Default text input" aria-describedby="sizing-default" />
 </InputGroup>
 
-<InputGroup Size="InputGroupSize.Large">
+<InputGroup Size="InputGroupSize.Large" Class="mb-3">
     <InputGroupText Id="sizing-large">Large</InputGroupText>
     <TextInput @bind-Value="large" aria-label="Large text input" aria-describedby="sizing-large" />
+</InputGroup>
+
+<InputGroup Size="InputGroupSize.Small" Class="mb-3">
+    <TextInput @bind-Value="smallSearch" aria-label="Small search" />
+    <Dropdown Color="DropdownColor.Secondary">
+        <DropdownToggleButton>@smallScope</DropdownToggleButton>
+        <DropdownMenu Position="DropdownMenuPosition.End">
+            <DropdownItem @onclick="@(() => smallScope = "All")">All</DropdownItem>
+            <DropdownItem @onclick="@(() => smallScope = "Docs")">Docs</DropdownItem>
+        </DropdownMenu>
+    </Dropdown>
+</InputGroup>
+
+<InputGroup Size="InputGroupSize.Large">
+    <TextInput @bind-Value="largeSearch" aria-label="Large search" />
+    <Dropdown Color="DropdownColor.Secondary">
+        <DropdownToggleButton>@largeScope</DropdownToggleButton>
+        <DropdownMenu Position="DropdownMenuPosition.End">
+            <DropdownItem @onclick="@(() => largeScope = "All")">All</DropdownItem>
+            <DropdownItem @onclick="@(() => largeScope = "Docs")">Docs</DropdownItem>
+        </DropdownMenu>
+    </Dropdown>
 </InputGroup>
 
 @code {
     private string? small;
     private string? normal;
     private string? large;
+    private string? smallSearch;
+    private string? largeSearch;
+    private string smallScope = "All";
+    private string largeScope = "All";
 }
