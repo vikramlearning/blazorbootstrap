@@ -13,9 +13,9 @@ internal interface IListGroupTabHost
     void AddPane(ListGroupTabPane pane);
 
     /// <summary>
-    /// Returns whether the pane is the one shown when the group first renders.
+    /// Returns whether the pane renders as active: only the pane shown at first render (Bootstrap switches tabs in the page after that).
     /// </summary>
-    bool IsInitiallyActive(ListGroupTabPane pane);
+    bool IsActive(ListGroupTabPane pane);
 
     /// <summary>
     /// Unregisters a pane that is being removed.

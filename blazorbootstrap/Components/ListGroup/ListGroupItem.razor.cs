@@ -153,6 +153,14 @@ public partial class ListGroupItem<TItem> : BlazorBootstrapComponentBase
 
     private bool isOption => Parent!.SelectionMode is ListGroupSelectionMode.Single or ListGroupSelectionMode.Multiple;
 
+    private string? firstOptionTabIndex;
+
+    /// <summary>
+    /// The option's <c>tabindex</c>, fixed at its first render so Blazor never rewrites it: "0" for the tab stop before the interop runs,
+    /// otherwise "-1". From then on the interop moves the tab stop.
+    /// </summary>
+    private string optionTabIndex => firstOptionTabIndex ??= Parent!.IsListboxInteropReady || !Parent.IsInitialTabStop(this) ? "-1" : "0";
+
     private bool isSelected => Parent!.IsSelected(Value);
 
     private string labelClassNames =>

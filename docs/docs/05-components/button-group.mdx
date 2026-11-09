@@ -24,7 +24,8 @@ The Blazor Bootstrap button group components follow the [Bootstrap 5.3 button gr
 - **Every group and toolbar needs an accessible name.** `AriaLabel` is marked required: set it, or set `aria-labelledby` to the id of a visible label (it takes precedence). Without a name, screen readers announce only "group" or "toolbar". Nested groups, such as a `Dropdown` inside a group, need one too.
 - Give icon-only buttons an `aria-label`. For an icon-only `ButtonGroupItem`, set `aria-label` on the item; it applies to the item's input.
 - Mark the link to the current page with `aria-current="page"`.
-- In dark mode, unselected outline items in `RadioButtonGroup` and `CheckboxButtonGroup` use Bootstrap's `--bs-<color>-text-emphasis` colors, so their text keeps at least 4.5:1 contrast on the dark background; light mode keeps Bootstrap's outline colors. Plain `Button`s with `Outline` inside a `ButtonGroup` keep Bootstrap's colors.
+- In dark mode, unselected outline items in `RadioButtonGroup` and `CheckboxButtonGroup` use Bootstrap's `--bs-<color>-text-emphasis` colors, so their text keeps at least 4.5:1 contrast on the dark background; light mode keeps Bootstrap's outline colors. A checked `Dark` outline item shows light with dark text in dark mode, because Bootstrap's dark fill matches the dark background. Plain `Button`s with `Outline` inside a `ButtonGroup` keep Bootstrap's colors.
+- To restyle toggle items, set `--bb-button-group-outline-<color>-color` (for example `--bb-button-group-outline-primary-color`); it takes precedence over `--bs-btn-color` and `--bs-btn-border-color` on the items.
 
 ## ButtonGroup parameters
 

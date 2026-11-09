@@ -63,8 +63,8 @@ public partial class ListGroupTabPane : BlazorBootstrapComponentBase
         BuildClassNames(Class,
             ("tab-pane", true),
             ("fade", Parent!.Fade),
-            (BootstrapClass.Show, Parent.Fade && Parent.IsInitiallyActive(this)),
-            (BootstrapClass.Active, Parent.IsInitiallyActive(this)));
+            (BootstrapClass.Show, Parent.Fade && Parent.IsActive(this)),
+            (BootstrapClass.Active, Parent.IsActive(this)));
 
     /// <summary>
     /// Gets or sets whether the pane's tab is disabled.

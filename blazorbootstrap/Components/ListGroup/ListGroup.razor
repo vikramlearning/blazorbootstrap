@@ -19,7 +19,7 @@
                             data-bb-name="@pane.Name"
                             role="tab"
                             aria-controls="@pane.Id"
-                            aria-selected="@(((IListGroupTabHost)this).IsInitiallyActive(pane) ? "true" : "false")"
+                            aria-selected="@(((IListGroupTabHost)this).IsActive(pane) ? "true" : "false")"
                             disabled="@pane.Disabled">
                         @if (pane.TitleTemplate is not null)
                         {

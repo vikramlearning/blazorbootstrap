@@ -27,7 +27,7 @@ else if (isOption)
             role="option"
             aria-selected="@(isSelected ? "true" : "false")"
             aria-label="@AriaLabel"
-            tabindex="-1"
+            tabindex="@optionTabIndex"
             disabled="@IsDisabled"
             @onclick="OnClickAsync"
             @attributes="@AdditionalAttributes">
