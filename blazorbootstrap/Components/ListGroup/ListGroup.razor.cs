@@ -69,6 +69,13 @@ public partial class ListGroup<TItem> : BlazorBootstrapComponentBase, IListGroup
         {
             initializedInteropKey = interopKey;
 
+            // Leaving tab mode: when it is turned on again, its panes are new and the first render picks the active one again.
+            if (!TabMode)
+            {
+                isActiveTabFrozen = false;
+                initialActivePane = null;
+            }
+
             if (interopKey is null)
             {
                 await SafeInvokeVoidAsync("window.blazorBootstrap.listGroup.dispose", Id);
@@ -88,6 +95,12 @@ public partial class ListGroup<TItem> : BlazorBootstrapComponentBase, IListGroup
         {
             // Each option keeps the tabindex it first rendered, so Blazor never rewrites it; the interop keeps exactly one tab stop.
             await SafeInvokeVoidAsync("window.blazorBootstrap.listGroup.syncListbox", Id);
+        }
+        else if (interopKey is not null && TabMode)
+        {
+            // Panes and tabs keep their first-render active state; a render that rewrites a class (a changed Class or Fade) is put
+            // back to the tab Bootstrap shows.
+            await SafeInvokeVoidAsync("window.blazorBootstrap.listGroup.syncTabs", Id);
         }
 
         await base.OnAfterRenderAsync(firstRender);
@@ -146,14 +159,17 @@ public partial class ListGroup<TItem> : BlazorBootstrapComponentBase, IListGroup
 
     /// <summary>
     /// Returns whether a listbox option is the tab stop before the interop owns <c>tabindex</c> (prerender, or before the script runs):
-    /// the first selected enabled option when the group has a selection, else the first enabled option. Options are compared in
-    /// registration order, which is markup order for direct children and data-bound lists.
+    /// the first selected enabled option when there is one, else the first enabled option. A data-bound list knows its options from
+    /// <see cref="Data" />; a static list decides from the bound value, and compares options in registration order (markup order for
+    /// direct children).
     /// </summary>
     internal bool IsInitialTabStop(ListGroupItem<TItem> item)
     {
-        var hasSelection = SelectionMode == ListGroupSelectionMode.Multiple
-            ? SelectedItems?.Any() ?? false
-            : !EqualityComparer<TItem>.Default.Equals(SelectedItem, default!);
+        var hasSelection = Data is not null
+            ? Data.Any(value => IsSelected(value) && !Disabled && !(DisabledSelector?.Invoke(value) ?? false))
+            : SelectionMode == ListGroupSelectionMode.Multiple
+                ? SelectedItems?.Any() ?? false
+                : !EqualityComparer<TItem>.Default.Equals(SelectedItem, default!);
 
         var enabled = items.Where(i => !i.IsDisabled);
 
