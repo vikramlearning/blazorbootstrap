@@ -28,6 +28,13 @@ public partial class ListGroup<TItem> : BlazorBootstrapComponentBase, IListGroup
 
     private bool isActiveTabFrozen;
 
+    /// <summary>
+    /// The pre-interop tab stop of a listbox, worked out once per change of options or parameters (see <see cref="IsInitialTabStop" />).
+    /// </summary>
+    private ListGroupItem<TItem>? initialTabStop;
+
+    private bool isInitialTabStopKnown;
+
     private readonly List<ListGroupItem<TItem>> items = new();
 
     private DotNetObjectReference<ListGroup<TItem>>? objRef;
@@ -69,8 +76,8 @@ public partial class ListGroup<TItem> : BlazorBootstrapComponentBase, IListGroup
         {
             initializedInteropKey = interopKey;
 
-            // Leaving tab mode: when it is turned on again, its panes are new and the first render picks the active one again.
-            if (!TabMode)
+            // Leaving tab mode, or every pane gone: panes added later are new, and their first render picks the active one again.
+            if (!TabMode || interopKey is null)
             {
                 isActiveTabFrozen = false;
                 initialActivePane = null;
@@ -116,6 +123,13 @@ public partial class ListGroup<TItem> : BlazorBootstrapComponentBase, IListGroup
             fieldIdentifier = FieldIdentifier.Create(SelectedItemsExpression);
     }
 
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+
+        isInitialTabStopKnown = false; // the selection or the disabled state may have changed
+    }
+
     /// <summary>
     /// Shows the tab pane with the given name. Applies in tab mode.
     /// </summary>
@@ -145,6 +159,7 @@ public partial class ListGroup<TItem> : BlazorBootstrapComponentBase, IListGroup
     internal void AddItem(ListGroupItem<TItem> item)
     {
         items.Add(item);
+        isInitialTabStopKnown = false;
 
         if (!hasActionableItems && item.HasOwnAction)
         {
@@ -159,23 +174,19 @@ public partial class ListGroup<TItem> : BlazorBootstrapComponentBase, IListGroup
 
     /// <summary>
     /// Returns whether a listbox option is the tab stop before the interop owns <c>tabindex</c> (prerender, or before the script runs):
-    /// the first selected enabled option when there is one, else the first enabled option. A data-bound list knows its options from
-    /// <see cref="Data" />; a static list decides from the bound value, and compares options in registration order (markup order for
-    /// direct children).
+    /// the first selected enabled option, else the first enabled option. Options register (in markup order for direct children and
+    /// data-bound lists) while the group renders, before any of them renders, so the whole set is known. Worked out once per change.
     /// </summary>
     internal bool IsInitialTabStop(ListGroupItem<TItem> item)
     {
-        var hasSelection = Data is not null
-            ? Data.Any(value => IsSelected(value) && !Disabled && !(DisabledSelector?.Invoke(value) ?? false))
-            : SelectionMode == ListGroupSelectionMode.Multiple
-                ? SelectedItems?.Any() ?? false
-                : !EqualityComparer<TItem>.Default.Equals(SelectedItem, default!);
+        if (!isInitialTabStopKnown)
+        {
+            var enabled = items.Where(i => !i.IsDisabled).ToList();
+            initialTabStop = enabled.FirstOrDefault(i => IsSelected(i.Value)) ?? enabled.FirstOrDefault();
+            isInitialTabStopKnown = true;
+        }
 
-        var enabled = items.Where(i => !i.IsDisabled);
-
-        return hasSelection
-            ? enabled.FirstOrDefault(i => IsSelected(i.Value)) == item
-            : enabled.FirstOrDefault() == item;
+        return ReferenceEquals(initialTabStop, item);
     }
 
     internal bool IsSelected(TItem value) =>
@@ -218,8 +229,18 @@ public partial class ListGroup<TItem> : BlazorBootstrapComponentBase, IListGroup
     internal void RemoveItem(ListGroupItem<TItem> item)
     {
         // If the removed option held the tab stop, syncListbox picks another after the render.
-        if (items.Remove(item) && IsListboxInteropReady)
+        if (!items.Remove(item))
+            return;
+
+        isInitialTabStopKnown = false;
+        if (IsListboxInteropReady)
             StateHasChanged();
+    }
+
+    async Task IListGroupTabHost.SyncTabsAsync()
+    {
+        if (TabMode && initializedInteropKey is not null)
+            await SafeInvokeVoidAsync("window.blazorBootstrap.listGroup.syncTabs", Id);
     }
 
     void IListGroupTabHost.AddPane(ListGroupTabPane pane)

@@ -7,6 +7,12 @@ namespace BlazorBootstrap;
 [AddedVersion("4.1.0")]
 public partial class ListGroupTabPane : BlazorBootstrapComponentBase
 {
+    #region Fields and Constants
+
+    private string? renderedClassNames;
+
+    #endregion
+
     #region Methods
 
     /// <inheritdoc />
@@ -16,6 +22,18 @@ public partial class ListGroupTabPane : BlazorBootstrapComponentBase
             Parent?.RemovePane(this);
 
         return base.DisposeAsyncCore(disposing);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        // The pane writes its whole class when any part of it changes; a pane inside a component that re-renders on its own does that
+        // without a group render, so ask the group to put Bootstrap's tab state back.
+        var classNames = ClassNames;
+        if (!firstRender && classNames != renderedClassNames)
+            await Parent!.SyncTabsAsync();
+        renderedClassNames = classNames;
+
+        await base.OnAfterRenderAsync(firstRender);
     }
 
     protected override void OnInitialized()
