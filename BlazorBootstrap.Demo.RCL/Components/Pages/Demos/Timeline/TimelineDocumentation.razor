@@ -1,0 +1,161 @@
+@attribute [Route(pageUrl)]
+@layout DemosMainLayout
+
+<DemosPageHeadSection PageUrl="@pageUrl"
+                      PageTitle="@pageTitle"
+                      PageDescription="@pageDescription"
+                      MetaTitle="@metaTitle"
+                      MetaDescription="@metaDescription"
+                      ImageUrl="@imageUrl" />
+
+<DocsLink Href="@DemoRouteConstants.Docs_URL_Timeline" />
+
+<Callout Color="CalloutColor.Info">
+    Bootstrap 5.3 has no timeline component. <b>Timeline</b> is built from Bootstrap utilities (rounded markers, <code>text-bg-*</code> colors, Bootstrap Icons)
+    and a small set of <code>--bb-timeline-*</code> CSS properties for the line and the layouts, so it follows the light and dark themes.
+    It renders an ordered list, so screen readers announce each item's position and the number of items.
+</Callout>
+
+<Section Size="HeadingSize.H2" Name="Basic usage" PageUrl="@pageUrl" Link="basic-usage">
+    <div class="mb-3">
+        A vertical timeline with the line and markers at the start and each item's content beside them.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Add <code>Timeline</code> with <code>TimelineItem</code> children, in the order the events happened.</li>
+                <li>Set <code>Title</code>, <code>Subtitle</code> (for example a timestamp), and optional content on each item.</li>
+                <li>Set <code>AriaLabel</code> to name the list for screen readers.</li>
+            </ol>
+        </div>
+    </div>
+    <Demo Type="typeof(Timeline_Demo_01_Basic_Usage)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Horizontal" PageUrl="@pageUrl" Link="horizontal">
+    <div class="mb-3">
+        Lay the items out left to right. When they do not fit, the timeline scrolls inside its own container, never the page.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Set <code>Orientation="TimelineOrientation.Horizontal"</code>.</li>
+                <li>Below the collapse breakpoint (medium by default) it shows as a vertical timeline; see <a href="@($"{pageUrl}#responsive")">Responsive</a>.</li>
+            </ol>
+        </div>
+    </div>
+    <Demo Type="typeof(Timeline_Demo_02_Horizontal)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Alternate" PageUrl="@pageUrl" Link="alternate">
+    <div class="mb-3">
+        Place the items of a vertical timeline on alternating sides of a centered line. Items of different heights keep their markers on the line.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Set <code>Alternate="true"</code>. It has no effect on a horizontal timeline.</li>
+                <li>Below the collapse breakpoint the items stack in one column.</li>
+            </ol>
+        </div>
+    </div>
+    <Demo Type="typeof(Timeline_Demo_03_Alternate)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Icons and colors" PageUrl="@pageUrl" Link="icons-and-colors">
+    <div class="mb-3">
+        Show an icon in the marker and color it.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Set <code>IconName</code> to show a Bootstrap icon in the marker; without it the marker is a dot.</li>
+                <li>Set <code>Color</code> (<code>TimelineColor</code>) to color the dot or icon marker. Do not rely on color alone to tell items apart; say it in the title too.</li>
+            </ol>
+        </div>
+    </div>
+    <Demo Type="typeof(Timeline_Demo_04_Icons_And_Colors)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Custom markers" PageUrl="@pageUrl" Link="custom-markers">
+    <div class="mb-3">
+        Use any content as the marker, such as an <code>Avatar</code>.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Set <code>MarkerTemplate</code>; it takes precedence over <code>IconName</code>, and <code>Color</code> does not apply to it.</li>
+                <li>When an item also has content, put it in <code>ChildContent</code>.</li>
+            </ol>
+        </div>
+    </div>
+    <Demo Type="typeof(Timeline_Demo_05_Custom_Markers)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Current item" PageUrl="@pageUrl" Link="current-item">
+    <div class="mb-3">
+        Mark the item the process has reached.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Set <code>Current="true"</code> on one item. It is marked <code>aria-current="step"</code>, gets a ring around its marker, and a bold title.</li>
+            </ol>
+        </div>
+    </div>
+    <Demo Type="typeof(Timeline_Demo_06_Current_Item)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Responsive" PageUrl="@pageUrl" Link="responsive">
+    <div class="mb-3">
+        Choose the width below which a horizontal or alternate timeline shows as a single vertical column. Resize the window, or change the breakpoint below.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Set <code>CollapseBreakpoint</code>: <code>Small</code> (576px), <code>Medium</code> (768px, default), <code>Large</code> (992px), <code>ExtraLarge</code> (1200px), <code>ExtraExtraLarge</code> (1400px), or <code>None</code> to never collapse.</li>
+                <li>Above the breakpoint, a horizontal timeline whose items do not fit scrolls inside its own container.</li>
+            </ol>
+        </div>
+    </div>
+    <Demo Type="typeof(Timeline_Demo_07_Responsive)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Data binding" PageUrl="@pageUrl" Link="data-binding">
+    <div class="mb-3">
+        Show a collection as timeline items. Add, remove, or reorder items, or move the current item, and the timeline follows.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Inside <code>Timeline</code>, add <code>TimelineItems</code> and set <code>Data</code>; <code>TItem</code> is inferred from it.</li>
+                <li>Map each part with <code>TitleField</code>, <code>SubtitleField</code>, <code>IconNameField</code>, <code>ColorField</code>, and <code>CurrentField</code>.</li>
+                <li>Use <code>ItemTemplate</code> for the content and <code>MarkerTemplate</code> for a custom marker. A null or empty <code>Data</code> shows no items.</li>
+            </ol>
+        </div>
+    </div>
+    <Demo Type="typeof(Timeline_Demo_09_Data_Binding)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Static and data items" PageUrl="@pageUrl" Link="static-and-data-items">
+    <div class="mb-3">
+        Mix <code>TimelineItem</code> components and <code>TimelineItems</code> in one timeline; they show in markup order.
+    </div>
+    <Demo Type="typeof(Timeline_Demo_10_Static_And_Data_Items)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Nested" PageUrl="@pageUrl" Link="nested">
+    <div class="mb-3">
+        A timeline inside an item keeps its own orientation, layout, alignment, and current item, even inside an alternate timeline.
+    </div>
+    <Demo Type="typeof(Timeline_Demo_08_Nested)" Tabs="true" />
+</Section>
+
+@code {
+    private const string pageUrl = DemoRouteConstants.Demos_URL_Timeline;
+    private const string pageTitle = "Blazor Timeline";
+    private const string pageDescription = "The Blazor Bootstrap Timeline component shows events in order along a line, vertically, horizontally, or on alternating sides, with dot, icon, or custom markers.";
+    private const string metaTitle = "Blazor Timeline Component";
+    private const string metaDescription = "The Blazor Bootstrap Timeline component shows events in order along a line, vertically, horizontally, or on alternating sides, with dot, icon, or custom markers.";
+    private const string imageUrl = DemoScreenshotSrcConstants.Demos_URL_Timeline;
+}

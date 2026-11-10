@@ -1,0 +1,15 @@
+<Timeline AriaLabel="Deal history">
+    <TimelineItem Title="Lead created" Subtitle="Mar 1" IconName="IconName.Flag" Color="TimelineColor.Secondary" />
+    <TimelineItems Data="calls" TitleField="c => c.Title" SubtitleField="c => c.When" IconNameField="c => IconName.Telephone" ColorField="c => TimelineColor.Primary" />
+    <TimelineItem Title="Proposal sent" Subtitle="Mar 20" IconName="IconName.Send" Color="TimelineColor.Success" Current="true" />
+</Timeline>
+
+@code {
+    private record Call(string Title, string When);
+
+    private readonly List<Call> calls = new()
+    {
+        new("Discovery call", "Mar 4"),
+        new("Demo call", "Mar 12")
+    };
+}

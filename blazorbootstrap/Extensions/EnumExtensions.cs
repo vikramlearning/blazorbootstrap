@@ -879,6 +879,49 @@ public static class EnumExtensions
             _ => ""
         };
 
+    /// <summary>
+    /// Converts a <see cref="TimelineCollapseBreakpoint" /> value to its <c>bb-timeline-collapse-*</c> class.
+    /// </summary>
+    [AddedVersion("4.1.0")]
+    [Description("Converts a TimelineCollapseBreakpoint value to its bb-timeline-collapse-* class.")]
+    public static string ToTimelineCollapseClass(this TimelineCollapseBreakpoint breakpoint) =>
+        breakpoint switch
+        {
+            TimelineCollapseBreakpoint.Small => "bb-timeline-collapse-sm",
+            TimelineCollapseBreakpoint.Medium => "bb-timeline-collapse-md",
+            TimelineCollapseBreakpoint.Large => "bb-timeline-collapse-lg",
+            TimelineCollapseBreakpoint.ExtraLarge => "bb-timeline-collapse-xl",
+            TimelineCollapseBreakpoint.ExtraExtraLarge => "bb-timeline-collapse-xxl",
+            _ => ""
+        };
+
+    /// <summary>
+    /// Converts a <see cref="TimelineColor" /> value to the classes of a dot or icon marker: Bootstrap's <c>text-bg-*</c>, or the neutral marker.
+    /// </summary>
+    [AddedVersion("4.1.0")]
+    [Description("Converts a TimelineColor value to the classes of a dot or icon marker: Bootstrap's text-bg-*, or the neutral marker.")]
+    public static string ToTimelineMarkerColorClass(this TimelineColor timelineColor) =>
+        timelineColor switch
+        {
+            TimelineColor.Primary => "text-bg-primary",
+            TimelineColor.Secondary => "text-bg-secondary",
+            TimelineColor.Success => "text-bg-success",
+            TimelineColor.Danger => "text-bg-danger",
+            TimelineColor.Warning => "text-bg-warning",
+            TimelineColor.Info => "text-bg-info",
+            TimelineColor.Light => "text-bg-light",
+            TimelineColor.Dark => "text-bg-dark",
+            _ => "bb-timeline-marker-neutral"
+        };
+
+    /// <summary>
+    /// Converts a <see cref="TimelineOrientation" /> value to its <c>bb-timeline-*</c> class.
+    /// </summary>
+    [AddedVersion("4.1.0")]
+    [Description("Converts a TimelineOrientation value to its bb-timeline-* class.")]
+    public static string ToTimelineOrientationClass(this TimelineOrientation orientation) =>
+        orientation == TimelineOrientation.Horizontal ? "bb-timeline-horizontal" : "bb-timeline-vertical";
+
     public static string? ToTooltipColorClass(this TooltipColor tooltipColor) =>
         tooltipColor switch
         {

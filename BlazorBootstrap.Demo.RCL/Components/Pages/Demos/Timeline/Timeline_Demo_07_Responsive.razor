@@ -1,0 +1,34 @@
+<div class="mb-3">
+    <label class="form-label" for="timeline-breakpoint">Collapse breakpoint</label>
+    <select id="timeline-breakpoint" class="form-select w-auto" @bind="breakpoint">
+        @foreach (var value in Enum.GetValues<TimelineCollapseBreakpoint>())
+        {
+            <option value="@value">@value</option>
+        }
+    </select>
+</div>
+
+<Timeline Orientation="TimelineOrientation.Horizontal" CollapseBreakpoint="breakpoint" AriaLabel="Release train">
+    @foreach (var release in releases)
+    {
+        <TimelineItem Title="@release.Version" Subtitle="@release.Date" Color="TimelineColor.Primary">@release.Note</TimelineItem>
+    }
+</Timeline>
+
+@code {
+    private TimelineCollapseBreakpoint breakpoint = TimelineCollapseBreakpoint.Medium;
+
+    private record Release(string Version, string Date, string Note);
+
+    private readonly List<Release> releases = new()
+    {
+        new("4.0.0", "Dec 1", "Major release."),
+        new("4.0.1", "Dec 9", "Bug fixes."),
+        new("4.1.0", "Jan 20", "New components."),
+        new("4.1.1", "Feb 3", "Docs updates."),
+        new("4.2.0", "Mar 14", "Accessibility improvements."),
+        new("4.2.1", "Mar 28", "Bug fixes."),
+        new("4.3.0", "May 5", "Performance work."),
+        new("4.4.0", "Jun 30", "New charts.")
+    };
+}

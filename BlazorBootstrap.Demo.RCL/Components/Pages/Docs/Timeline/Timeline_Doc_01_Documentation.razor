@@ -1,0 +1,36 @@
+@attribute [Route(pageUrl)]
+@layout DocsMainLayout
+
+<DocsPageHeadSection PageUrl="@pageUrl"
+                     PageTitle="@pageTitle"
+                     PageDescription="@pageDescription"
+                     MetaTitle="@metaTitle"
+                     MetaDescription="@metaDescription"
+                     ImageUrl="@imageUrl" />
+
+<DemoLink Href="@DemoRouteConstants.Demos_URL_Timeline" />
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="Screenshot" PageUrl="@pageUrl" Link="screenshot">
+    <img src="@imageUrl" class="img-fluid" alt="@metaTitle" />
+</Section>
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="Timeline Parameters" PageUrl="@pageUrl" Link="timeline-parameters">
+    <DocxTable TItem="Timeline" DocType="DocType.Parameters" />
+</Section>
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="TimelineItem Parameters" PageUrl="@pageUrl" Link="timeline-item-parameters">
+    <DocxTable TItem="TimelineItem" DocType="DocType.Parameters" />
+</Section>
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="TimelineItems Parameters" PageUrl="@pageUrl" Link="timeline-items-parameters">
+    <DocxTable TItem="TimelineItems<object>" DocType="DocType.Parameters" />
+</Section>
+
+@code {
+    private const string pageUrl = DemoRouteConstants.Docs_URL_Timeline;
+    private const string pageTitle = "Timeline";
+    private const string pageDescription = "This documentation provides a comprehensive reference for the <code>Timeline</code>, <code>TimelineItem</code>, and <code>TimelineItems</code> components, guiding you through their configuration options.";
+    private const string metaTitle = "Blazor Timeline Component";
+    private const string metaDescription = "This documentation provides a comprehensive reference for the Timeline, TimelineItem, and TimelineItems components, guiding you through their configuration options.";
+    private const string imageUrl = DemoScreenshotSrcConstants.Demos_URL_Timeline;
+}

@@ -1,0 +1,167 @@
+---
+title: Blazor Timeline Component
+description: The Blazor Bootstrap Timeline component shows events in order along a line, vertically, horizontally, or on alternating sides, with dot, icon, or custom markers, in declarative or data-bound mode.
+image: https://demos.blazorbootstrap.com/images/screenshots/timeline.png
+
+sidebar_label: Timeline
+sidebar_position: 31.5
+---
+
+import CarbonAd from '/carbon-ad.mdx'
+
+# Blazor Timeline
+
+The Blazor Bootstrap `Timeline` component shows events in order along one connector line: top to bottom, left to right, or on alternating sides. Each event has a marker (a dot, an icon, or custom content such as an avatar), a title, a subtitle such as a timestamp, and optional content. Use it for order tracking, activity feeds, ticket history, and project milestones.
+
+<CarbonAd />
+
+## Before you start
+
+- **No Bootstrap page.** Bootstrap 5.3 has no timeline component. `Timeline` is built from Bootstrap utilities (rounded markers, `text-bg-*` colors, Bootstrap Icons) and a small set of `--bb-timeline-*` CSS properties for the line and the layouts, so it follows the light and dark themes.
+- **Two ways to add items.** Add `TimelineItem` children, or put a data-bound `TimelineItems` inside the `Timeline` and set `Data`. `TItem` is inferred from `Data`. Both can be mixed in one timeline; items show in markup order.
+- **Alternate is vertical only.** `Alternate` has no effect on a horizontal timeline.
+- **Responsive.** Below `CollapseBreakpoint` (medium, 768px, by default) a horizontal or alternate timeline shows as a single vertical column. Above it, a horizontal timeline whose items do not fit scrolls inside its own container, never the page.
+- **Theming.** Override the `--bb-timeline-*` properties on the timeline (or a parent) to change the line color and width, marker sizes, spacing, and the minimum item width of a horizontal timeline.
+
+## Accessibility
+
+- The timeline is an ordered list (`ol` with `li` items), so screen readers announce each item's position and the number of items. Set `AriaLabel` to name the list.
+- Markers and the line are decorative and marked `aria-hidden="true"`. Do not rely on a marker's color alone to tell items apart; say it in the title too.
+- The current item is marked `aria-current="step"` and shown with a ring around its marker and a bold title, not by color alone.
+- Titles render as text, not headings, so a timeline does not change the page's heading order.
+
+## Timeline parameters
+
+| Name | Type | Default | Required | Description | Added Version |
+|:--|:--|:--|:--|:--|:--|
+| Alternate | bool | false | | Gets or sets whether the items of a vertical timeline sit on alternating sides of a centered line. Has no effect on a horizontal timeline. | 4.1.0 |
+| AriaLabel | string? | null | | Gets or sets the accessible name of the timeline list, read by screen readers. | 4.1.0 |
+| ChildContent | RenderFragment | null | | Gets or sets the items: `TimelineItem` components, `TimelineItems`, or both. | 4.1.0 |
+| CollapseBreakpoint | `TimelineCollapseBreakpoint` | `TimelineCollapseBreakpoint.Medium` | | Gets or sets the width below which a horizontal or alternate timeline shows as a single vertical column. `None` never collapses. | 4.1.0 |
+| Orientation | `TimelineOrientation` | `TimelineOrientation.Vertical` | | Gets or sets whether the items are laid out top to bottom or left to right. A horizontal timeline whose items do not fit scrolls inside its own container. | 4.1.0 |
+
+## TimelineItem parameters
+
+| Name | Type | Default | Required | Description | Added Version |
+|:--|:--|:--|:--|:--|:--|
+| ChildContent | RenderFragment | null | | Gets or sets the content of the item, shown under its title and subtitle. | 4.1.0 |
+| Color | `TimelineColor` | `TimelineColor.None` | | Gets or sets the color of the dot or icon marker. A `MarkerTemplate` brings its own look. | 4.1.0 |
+| Current | bool | false | | Gets or sets whether this is the current item. It is marked `aria-current="step"` and shown with a ring around its marker. | 4.1.0 |
+| IconName | `IconName` | `IconName.None` | | Gets or sets the icon shown in the marker. When `None`, the marker is a dot. | 4.1.0 |
+| MarkerTemplate | RenderFragment | null | | Gets or sets custom marker content, such as an `Avatar`. Takes precedence over `IconName`. | 4.1.0 |
+| Subtitle | string? | null | | Gets or sets the subtitle of the item, such as a timestamp. | 4.1.0 |
+| Title | string? | null | | Gets or sets the title of the item. | 4.1.0 |
+
+## TimelineItems parameters
+
+| Name | Type | Default | Required | Description | Added Version |
+|:--|:--|:--|:--|:--|:--|
+| ColorField | `Func<TItem, TimelineColor>?` | null | | Gets or sets a function that returns the marker color of an element. | 4.1.0 |
+| CurrentField | `Func<TItem, bool>?` | null | | Gets or sets a function that returns whether an element is the current item. | 4.1.0 |
+| Data | `IEnumerable<TItem>?` | null | | Gets or sets the elements to show, in order. A null or empty collection renders no items. | 4.1.0 |
+| IconNameField | `Func<TItem, IconName>?` | null | | Gets or sets a function that returns the marker icon of an element. | 4.1.0 |
+| ItemTemplate | `RenderFragment<TItem>?` | null | | Gets or sets the template of an element's content, shown under its title and subtitle. | 4.1.0 |
+| MarkerTemplate | `RenderFragment<TItem>?` | null | | Gets or sets the template of an element's marker, such as an `Avatar`. Takes precedence over `IconNameField`. | 4.1.0 |
+| SubtitleField | `Func<TItem, string?>?` | null | | Gets or sets a function that returns the subtitle of an element, such as a timestamp. | 4.1.0 |
+| TitleField | `Func<TItem, string?>?` | null | | Gets or sets a function that returns the title of an element. | 4.1.0 |
+
+## Examples
+
+### Basic usage
+
+A vertical timeline with the line and markers at the start and each item's content beside them.
+
+```cshtml {} showLineNumbers
+<Timeline AriaLabel="Order history">
+    <TimelineItem Title="Order placed" Subtitle="Mon, 09:15 AM">
+        Payment confirmed. We have started packing your order.
+    </TimelineItem>
+    <TimelineItem Title="Shipped" Subtitle="Tue, 02:40 PM" />
+    <TimelineItem Title="Delivered" Subtitle="Wed, 11:30 AM">
+        Left at the front door.
+    </TimelineItem>
+</Timeline>
+```
+
+[See demo here](https://demos.blazorbootstrap.com/timeline#basic-usage)
+
+### Horizontal
+
+```cshtml {} showLineNumbers
+<Timeline Orientation="TimelineOrientation.Horizontal" AriaLabel="Project milestones">
+    <TimelineItem Title="Kickoff" Subtitle="Jan 8" Color="TimelineColor.Primary" />
+    <TimelineItem Title="Design" Subtitle="Feb 2" Color="TimelineColor.Primary" />
+    <TimelineItem Title="Launch" Subtitle="Apr 30" Color="TimelineColor.Success" />
+</Timeline>
+```
+
+[See demo here](https://demos.blazorbootstrap.com/timeline#horizontal)
+
+### Alternate
+
+```cshtml {} showLineNumbers
+<Timeline Alternate="true" AriaLabel="Company history">
+    <TimelineItem Title="2019 · Founded" Subtitle="Two people, one idea" />
+    <TimelineItem Title="2020 · First customers" Subtitle="Product launch" />
+    <TimelineItem Title="2024 · 10,000 teams" Subtitle="Milestone" />
+</Timeline>
+```
+
+[See demo here](https://demos.blazorbootstrap.com/timeline#alternate)
+
+### Icons, colors, and custom markers
+
+```cshtml {} showLineNumbers
+<Timeline AriaLabel="Ticket activity">
+    <TimelineItem Title="Jane Doe opened the ticket" Subtitle="2 hours ago">
+        <MarkerTemplate><Avatar Name="Jane Doe" Size="AvatarSize.Small" Color="AvatarColor.Primary" /></MarkerTemplate>
+        <ChildContent>The export button does nothing on Safari.</ChildContent>
+    </TimelineItem>
+    <TimelineItem Title="Tests passed" Subtitle="10:06" IconName="IconName.CheckLg" Color="TimelineColor.Success" />
+    <TimelineItem Title="Rollback" Subtitle="10:12" IconName="IconName.ArrowCounterclockwise" Color="TimelineColor.Danger" />
+</Timeline>
+```
+
+[See demo here](https://demos.blazorbootstrap.com/timeline#icons-and-colors)
+
+### Current item
+
+```cshtml {} showLineNumbers
+<Timeline AriaLabel="Order status">
+    <TimelineItem Title="Packed" Subtitle="Tue" IconName="IconName.CheckLg" Color="TimelineColor.Success" />
+    <TimelineItem Title="In transit" Subtitle="Today" IconName="IconName.Truck" Color="TimelineColor.Primary" Current="true" />
+    <TimelineItem Title="Delivered" Subtitle="Expected Thu" />
+</Timeline>
+```
+
+[See demo here](https://demos.blazorbootstrap.com/timeline#current-item)
+
+### Responsive
+
+```cshtml {} showLineNumbers
+<Timeline Orientation="TimelineOrientation.Horizontal" CollapseBreakpoint="TimelineCollapseBreakpoint.Large" AriaLabel="Release train">
+    @foreach (var release in releases)
+    {
+        <TimelineItem Title="@release.Version" Subtitle="@release.Date" />
+    }
+</Timeline>
+```
+
+[See demo here](https://demos.blazorbootstrap.com/timeline#responsive)
+
+### Data binding
+
+```cshtml {} showLineNumbers
+<Timeline AriaLabel="Account activity">
+    <TimelineItems Data="activities"
+                   TitleField="a => a.Title"
+                   SubtitleField="a => a.When"
+                   IconNameField="a => a.Icon"
+                   ColorField="a => a.Color"
+                   CurrentField="a => a.Id == currentId">
+        <ItemTemplate Context="activity">@activity.Note</ItemTemplate>
+    </TimelineItems>
+</Timeline>
+```
+
+[See demo here](https://demos.blazorbootstrap.com/timeline#data-binding)

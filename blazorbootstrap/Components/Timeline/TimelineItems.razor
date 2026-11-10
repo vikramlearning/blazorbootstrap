@@ -1,0 +1,18 @@
+@namespace BlazorBootstrap
+@inherits BlazorBootstrapComponentBase
+@typeparam TItem
+
+@if (Data is not null)
+{
+    @* No @key: items hold no state, so positional reuse is correct and duplicate values cannot break the diff. *@
+    foreach (var item in Data)
+    {
+        <TimelineItem Title="@TitleField?.Invoke(item)"
+                      Subtitle="@SubtitleField?.Invoke(item)"
+                      IconName="@(IconNameField?.Invoke(item) ?? IconName.None)"
+                      Color="@(ColorField?.Invoke(item) ?? TimelineColor.None)"
+                      Current="@(CurrentField?.Invoke(item) ?? false)"
+                      MarkerTemplate="@(MarkerTemplate is null ? null : MarkerTemplate(item))"
+                      ChildContent="@(ItemTemplate is null ? null : ItemTemplate(item))" />
+    }
+}

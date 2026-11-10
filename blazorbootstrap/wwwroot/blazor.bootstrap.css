@@ -390,6 +390,156 @@ table button.dropdown-toggle.bb-grid-filter::after {
     --bs-popover-header-bg: var(--bb-popover-color);
 }
 
+/* timeline - an ol of items; Bootstrap utilities style the markers and text, these rules draw the line and the layouts.
+   Below its collapse breakpoint a horizontal or alternate timeline keeps the start-aligned vertical layout. */
+.bb-timeline {
+    --bb-timeline-line-color: var(--bs-border-color);
+    --bb-timeline-line-width: 2px;
+    --bb-timeline-marker-column: 2.5rem;
+    --bb-timeline-dot-size: 1rem;
+    --bb-timeline-icon-size: 2rem;
+    --bb-timeline-gap: 1rem;
+    --bb-timeline-item-min-width: 10rem;
+    padding: 0;
+    text-align: start; /* a timeline nested in an end-aligned alternate item is start-aligned again */
+}
+
+.bb-timeline > .bb-timeline-item {
+    position: relative;
+    display: grid;
+    grid-template-columns: var(--bb-timeline-marker-column) minmax(0, 1fr);
+    column-gap: var(--bb-timeline-gap);
+    padding-bottom: var(--bb-timeline-gap);
+}
+
+.bb-timeline > .bb-timeline-item:last-child { padding-bottom: 0; }
+
+/* The line runs from this item's marker to the next item's marker; the last item draws none. */
+.bb-timeline > .bb-timeline-item:not(:last-child)::before {
+    content: "";
+    position: absolute;
+    top: calc(var(--bb-timeline-marker-column) / 2);
+    bottom: calc(var(--bb-timeline-marker-column) / -2);
+    inset-inline-start: calc(var(--bb-timeline-marker-column) / 2 - var(--bb-timeline-line-width) / 2);
+    width: var(--bb-timeline-line-width);
+    background-color: var(--bb-timeline-line-color);
+}
+
+.bb-timeline > .bb-timeline-item > .bb-timeline-marker {
+    grid-column: 1;
+    grid-row: 1;
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: var(--bb-timeline-marker-column);
+}
+
+.bb-timeline > .bb-timeline-item > .bb-timeline-content {
+    grid-column: 2;
+    grid-row: 1;
+    min-width: 0;
+    overflow-wrap: anywhere;
+    padding-top: calc((var(--bb-timeline-marker-column) - 1.5em) / 2);
+}
+
+.bb-timeline-dot { flex: none; width: var(--bb-timeline-dot-size); height: var(--bb-timeline-dot-size); }
+.bb-timeline-dot.bb-timeline-dot-icon { width: var(--bb-timeline-icon-size); height: var(--bb-timeline-icon-size); font-size: .875rem; }
+.bb-timeline-marker-neutral { background-color: var(--bs-body-bg); border: var(--bb-timeline-line-width) solid var(--bs-secondary-color); color: var(--bs-body-color); }
+/* Light matches the light page and Dark the dark page, so both keep an edge in every theme. */
+.bb-timeline-dot.text-bg-light, .bb-timeline-dot.text-bg-dark { border: var(--bb-timeline-line-width) solid var(--bs-secondary-color); }
+
+/* Current item: a ring around the marker (a shape cue, not only color) and a bold title. */
+.bb-timeline > .bb-timeline-item-current > .bb-timeline-marker > * { box-shadow: 0 0 0 .1875rem var(--bs-body-bg), 0 0 0 .3125rem var(--bs-emphasis-color); }
+.bb-timeline > .bb-timeline-item-current > .bb-timeline-content > .bb-timeline-title { font-weight: 700 !important; }
+
+
+/* Alternate and horizontal layouts: always without a collapse breakpoint, otherwise from the breakpoint up. */
+
+.bb-timeline-alternate:not([class*="bb-timeline-collapse-"]) > .bb-timeline-item { grid-template-columns: minmax(0, 1fr) var(--bb-timeline-marker-column) minmax(0, 1fr); }
+.bb-timeline-alternate:not([class*="bb-timeline-collapse-"]) > .bb-timeline-item > .bb-timeline-marker { grid-column: 2; }
+.bb-timeline-alternate:not([class*="bb-timeline-collapse-"]) > .bb-timeline-item > .bb-timeline-content { grid-column: 3; }
+.bb-timeline-alternate:not([class*="bb-timeline-collapse-"]) > .bb-timeline-item:nth-of-type(even) > .bb-timeline-content { grid-column: 1; text-align: end; }
+.bb-timeline-alternate:not([class*="bb-timeline-collapse-"]) > .bb-timeline-item:not(:last-child)::before { inset-inline-start: calc(50% - var(--bb-timeline-line-width) / 2); }
+
+.bb-timeline-horizontal:not([class*="bb-timeline-collapse-"]) { display: flex; overflow-x: auto; }
+.bb-timeline-horizontal:not([class*="bb-timeline-collapse-"]) > .bb-timeline-item { flex: 1 0 var(--bb-timeline-item-min-width); grid-template-columns: minmax(0, 1fr); padding-bottom: 0; padding-inline-end: var(--bb-timeline-gap); }
+.bb-timeline-horizontal:not([class*="bb-timeline-collapse-"]) > .bb-timeline-item:last-child { padding-inline-end: 0; }
+.bb-timeline-horizontal:not([class*="bb-timeline-collapse-"]) > .bb-timeline-item > .bb-timeline-marker { grid-column: 1; width: var(--bb-timeline-marker-column); }
+.bb-timeline-horizontal:not([class*="bb-timeline-collapse-"]) > .bb-timeline-item > .bb-timeline-content { grid-column: 1; grid-row: 2; padding-top: .5rem; }
+.bb-timeline-horizontal:not([class*="bb-timeline-collapse-"]) > .bb-timeline-item:not(:last-child)::before { top: calc(var(--bb-timeline-marker-column) / 2 - var(--bb-timeline-line-width) / 2); bottom: auto; inset-inline-start: calc(var(--bb-timeline-marker-column) / 2); inset-inline-end: calc(var(--bb-timeline-marker-column) / -2); width: auto; height: var(--bb-timeline-line-width); }
+
+@media (min-width: 576px) {
+    .bb-timeline-alternate.bb-timeline-collapse-sm > .bb-timeline-item { grid-template-columns: minmax(0, 1fr) var(--bb-timeline-marker-column) minmax(0, 1fr); }
+    .bb-timeline-alternate.bb-timeline-collapse-sm > .bb-timeline-item > .bb-timeline-marker { grid-column: 2; }
+    .bb-timeline-alternate.bb-timeline-collapse-sm > .bb-timeline-item > .bb-timeline-content { grid-column: 3; }
+    .bb-timeline-alternate.bb-timeline-collapse-sm > .bb-timeline-item:nth-of-type(even) > .bb-timeline-content { grid-column: 1; text-align: end; }
+    .bb-timeline-alternate.bb-timeline-collapse-sm > .bb-timeline-item:not(:last-child)::before { inset-inline-start: calc(50% - var(--bb-timeline-line-width) / 2); }
+    .bb-timeline-horizontal.bb-timeline-collapse-sm { display: flex; overflow-x: auto; }
+    .bb-timeline-horizontal.bb-timeline-collapse-sm > .bb-timeline-item { flex: 1 0 var(--bb-timeline-item-min-width); grid-template-columns: minmax(0, 1fr); padding-bottom: 0; padding-inline-end: var(--bb-timeline-gap); }
+    .bb-timeline-horizontal.bb-timeline-collapse-sm > .bb-timeline-item:last-child { padding-inline-end: 0; }
+    .bb-timeline-horizontal.bb-timeline-collapse-sm > .bb-timeline-item > .bb-timeline-marker { grid-column: 1; width: var(--bb-timeline-marker-column); }
+    .bb-timeline-horizontal.bb-timeline-collapse-sm > .bb-timeline-item > .bb-timeline-content { grid-column: 1; grid-row: 2; padding-top: .5rem; }
+    .bb-timeline-horizontal.bb-timeline-collapse-sm > .bb-timeline-item:not(:last-child)::before { top: calc(var(--bb-timeline-marker-column) / 2 - var(--bb-timeline-line-width) / 2); bottom: auto; inset-inline-start: calc(var(--bb-timeline-marker-column) / 2); inset-inline-end: calc(var(--bb-timeline-marker-column) / -2); width: auto; height: var(--bb-timeline-line-width); }
+}
+
+@media (min-width: 768px) {
+    .bb-timeline-alternate.bb-timeline-collapse-md > .bb-timeline-item { grid-template-columns: minmax(0, 1fr) var(--bb-timeline-marker-column) minmax(0, 1fr); }
+    .bb-timeline-alternate.bb-timeline-collapse-md > .bb-timeline-item > .bb-timeline-marker { grid-column: 2; }
+    .bb-timeline-alternate.bb-timeline-collapse-md > .bb-timeline-item > .bb-timeline-content { grid-column: 3; }
+    .bb-timeline-alternate.bb-timeline-collapse-md > .bb-timeline-item:nth-of-type(even) > .bb-timeline-content { grid-column: 1; text-align: end; }
+    .bb-timeline-alternate.bb-timeline-collapse-md > .bb-timeline-item:not(:last-child)::before { inset-inline-start: calc(50% - var(--bb-timeline-line-width) / 2); }
+    .bb-timeline-horizontal.bb-timeline-collapse-md { display: flex; overflow-x: auto; }
+    .bb-timeline-horizontal.bb-timeline-collapse-md > .bb-timeline-item { flex: 1 0 var(--bb-timeline-item-min-width); grid-template-columns: minmax(0, 1fr); padding-bottom: 0; padding-inline-end: var(--bb-timeline-gap); }
+    .bb-timeline-horizontal.bb-timeline-collapse-md > .bb-timeline-item:last-child { padding-inline-end: 0; }
+    .bb-timeline-horizontal.bb-timeline-collapse-md > .bb-timeline-item > .bb-timeline-marker { grid-column: 1; width: var(--bb-timeline-marker-column); }
+    .bb-timeline-horizontal.bb-timeline-collapse-md > .bb-timeline-item > .bb-timeline-content { grid-column: 1; grid-row: 2; padding-top: .5rem; }
+    .bb-timeline-horizontal.bb-timeline-collapse-md > .bb-timeline-item:not(:last-child)::before { top: calc(var(--bb-timeline-marker-column) / 2 - var(--bb-timeline-line-width) / 2); bottom: auto; inset-inline-start: calc(var(--bb-timeline-marker-column) / 2); inset-inline-end: calc(var(--bb-timeline-marker-column) / -2); width: auto; height: var(--bb-timeline-line-width); }
+}
+
+@media (min-width: 992px) {
+    .bb-timeline-alternate.bb-timeline-collapse-lg > .bb-timeline-item { grid-template-columns: minmax(0, 1fr) var(--bb-timeline-marker-column) minmax(0, 1fr); }
+    .bb-timeline-alternate.bb-timeline-collapse-lg > .bb-timeline-item > .bb-timeline-marker { grid-column: 2; }
+    .bb-timeline-alternate.bb-timeline-collapse-lg > .bb-timeline-item > .bb-timeline-content { grid-column: 3; }
+    .bb-timeline-alternate.bb-timeline-collapse-lg > .bb-timeline-item:nth-of-type(even) > .bb-timeline-content { grid-column: 1; text-align: end; }
+    .bb-timeline-alternate.bb-timeline-collapse-lg > .bb-timeline-item:not(:last-child)::before { inset-inline-start: calc(50% - var(--bb-timeline-line-width) / 2); }
+    .bb-timeline-horizontal.bb-timeline-collapse-lg { display: flex; overflow-x: auto; }
+    .bb-timeline-horizontal.bb-timeline-collapse-lg > .bb-timeline-item { flex: 1 0 var(--bb-timeline-item-min-width); grid-template-columns: minmax(0, 1fr); padding-bottom: 0; padding-inline-end: var(--bb-timeline-gap); }
+    .bb-timeline-horizontal.bb-timeline-collapse-lg > .bb-timeline-item:last-child { padding-inline-end: 0; }
+    .bb-timeline-horizontal.bb-timeline-collapse-lg > .bb-timeline-item > .bb-timeline-marker { grid-column: 1; width: var(--bb-timeline-marker-column); }
+    .bb-timeline-horizontal.bb-timeline-collapse-lg > .bb-timeline-item > .bb-timeline-content { grid-column: 1; grid-row: 2; padding-top: .5rem; }
+    .bb-timeline-horizontal.bb-timeline-collapse-lg > .bb-timeline-item:not(:last-child)::before { top: calc(var(--bb-timeline-marker-column) / 2 - var(--bb-timeline-line-width) / 2); bottom: auto; inset-inline-start: calc(var(--bb-timeline-marker-column) / 2); inset-inline-end: calc(var(--bb-timeline-marker-column) / -2); width: auto; height: var(--bb-timeline-line-width); }
+}
+
+@media (min-width: 1200px) {
+    .bb-timeline-alternate.bb-timeline-collapse-xl > .bb-timeline-item { grid-template-columns: minmax(0, 1fr) var(--bb-timeline-marker-column) minmax(0, 1fr); }
+    .bb-timeline-alternate.bb-timeline-collapse-xl > .bb-timeline-item > .bb-timeline-marker { grid-column: 2; }
+    .bb-timeline-alternate.bb-timeline-collapse-xl > .bb-timeline-item > .bb-timeline-content { grid-column: 3; }
+    .bb-timeline-alternate.bb-timeline-collapse-xl > .bb-timeline-item:nth-of-type(even) > .bb-timeline-content { grid-column: 1; text-align: end; }
+    .bb-timeline-alternate.bb-timeline-collapse-xl > .bb-timeline-item:not(:last-child)::before { inset-inline-start: calc(50% - var(--bb-timeline-line-width) / 2); }
+    .bb-timeline-horizontal.bb-timeline-collapse-xl { display: flex; overflow-x: auto; }
+    .bb-timeline-horizontal.bb-timeline-collapse-xl > .bb-timeline-item { flex: 1 0 var(--bb-timeline-item-min-width); grid-template-columns: minmax(0, 1fr); padding-bottom: 0; padding-inline-end: var(--bb-timeline-gap); }
+    .bb-timeline-horizontal.bb-timeline-collapse-xl > .bb-timeline-item:last-child { padding-inline-end: 0; }
+    .bb-timeline-horizontal.bb-timeline-collapse-xl > .bb-timeline-item > .bb-timeline-marker { grid-column: 1; width: var(--bb-timeline-marker-column); }
+    .bb-timeline-horizontal.bb-timeline-collapse-xl > .bb-timeline-item > .bb-timeline-content { grid-column: 1; grid-row: 2; padding-top: .5rem; }
+    .bb-timeline-horizontal.bb-timeline-collapse-xl > .bb-timeline-item:not(:last-child)::before { top: calc(var(--bb-timeline-marker-column) / 2 - var(--bb-timeline-line-width) / 2); bottom: auto; inset-inline-start: calc(var(--bb-timeline-marker-column) / 2); inset-inline-end: calc(var(--bb-timeline-marker-column) / -2); width: auto; height: var(--bb-timeline-line-width); }
+}
+
+@media (min-width: 1400px) {
+    .bb-timeline-alternate.bb-timeline-collapse-xxl > .bb-timeline-item { grid-template-columns: minmax(0, 1fr) var(--bb-timeline-marker-column) minmax(0, 1fr); }
+    .bb-timeline-alternate.bb-timeline-collapse-xxl > .bb-timeline-item > .bb-timeline-marker { grid-column: 2; }
+    .bb-timeline-alternate.bb-timeline-collapse-xxl > .bb-timeline-item > .bb-timeline-content { grid-column: 3; }
+    .bb-timeline-alternate.bb-timeline-collapse-xxl > .bb-timeline-item:nth-of-type(even) > .bb-timeline-content { grid-column: 1; text-align: end; }
+    .bb-timeline-alternate.bb-timeline-collapse-xxl > .bb-timeline-item:not(:last-child)::before { inset-inline-start: calc(50% - var(--bb-timeline-line-width) / 2); }
+    .bb-timeline-horizontal.bb-timeline-collapse-xxl { display: flex; overflow-x: auto; }
+    .bb-timeline-horizontal.bb-timeline-collapse-xxl > .bb-timeline-item { flex: 1 0 var(--bb-timeline-item-min-width); grid-template-columns: minmax(0, 1fr); padding-bottom: 0; padding-inline-end: var(--bb-timeline-gap); }
+    .bb-timeline-horizontal.bb-timeline-collapse-xxl > .bb-timeline-item:last-child { padding-inline-end: 0; }
+    .bb-timeline-horizontal.bb-timeline-collapse-xxl > .bb-timeline-item > .bb-timeline-marker { grid-column: 1; width: var(--bb-timeline-marker-column); }
+    .bb-timeline-horizontal.bb-timeline-collapse-xxl > .bb-timeline-item > .bb-timeline-content { grid-column: 1; grid-row: 2; padding-top: .5rem; }
+    .bb-timeline-horizontal.bb-timeline-collapse-xxl > .bb-timeline-item:not(:last-child)::before { top: calc(var(--bb-timeline-marker-column) / 2 - var(--bb-timeline-line-width) / 2); bottom: auto; inset-inline-start: calc(var(--bb-timeline-marker-column) / 2); inset-inline-end: calc(var(--bb-timeline-marker-column) / -2); width: auto; height: var(--bb-timeline-line-width); }
+}
+
 /* split view */
 .bb-split-view {
     display: flex;

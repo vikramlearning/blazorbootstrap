@@ -1,0 +1,34 @@
+@namespace BlazorBootstrap
+@inherits BlazorBootstrapComponentBase
+
+<li @ref="@Element" id="@Id" class="@ClassNames" style="@StyleNames" aria-current="@(Current ? "step" : null)" @attributes="@AdditionalAttributes">
+    <div class="bb-timeline-marker" aria-hidden="true">
+        @if (MarkerTemplate is not null)
+        {
+            @MarkerTemplate
+        }
+        else
+        {
+            <span class="@markerClassNames">
+                @if (IconName != IconName.None)
+                {
+                    <Icon Name="@IconName" />
+                }
+            </span>
+        }
+    </div>
+    <div class="bb-timeline-content">
+        @if (!string.IsNullOrWhiteSpace(Title))
+        {
+            <div class="bb-timeline-title fw-semibold">@Title</div>
+        }
+        @if (!string.IsNullOrWhiteSpace(Subtitle))
+        {
+            <div class="bb-timeline-subtitle small text-body-secondary">@Subtitle</div>
+        }
+        @if (ChildContent is not null)
+        {
+            <div class="bb-timeline-body">@ChildContent</div>
+        }
+    </div>
+</li>
