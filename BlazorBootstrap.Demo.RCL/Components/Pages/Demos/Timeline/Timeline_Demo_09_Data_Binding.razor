@@ -1,0 +1,79 @@
+<div class="d-flex flex-wrap gap-2 mb-3">
+    <input class="form-control w-auto" aria-label="New activity title" @bind="newTitle" @bind:event="oninput" placeholder="New activity title" />
+    <Button Color="ButtonColor.Primary" @onclick="AddActivity">Add</Button>
+    <Button Color="ButtonColor.Secondary" Outline="true" @onclick="RemoveFirst">Remove first</Button>
+    <Button Color="ButtonColor.Secondary" Outline="true" @onclick="Reverse">Reverse order</Button>
+    <Button Color="ButtonColor.Secondary" Outline="true" @onclick="MoveCurrent">Move current</Button>
+    <Button Color="ButtonColor.Secondary" Outline="true" @onclick="Clear">Clear</Button>
+    <Button Color="ButtonColor.Secondary" Outline="true" @onclick="SetNull">Set Data to null</Button>
+    <Button Color="ButtonColor.Secondary" Outline="true" @onclick="Reset">Reset</Button>
+</div>
+
+<Timeline AriaLabel="Account activity">
+    <TimelineItems Data="activities"
+                   TitleField="a => a.Title"
+                   SubtitleField="a => a.When"
+                   IconNameField="a => a.Icon"
+                   ColorField="a => a.Color"
+                   CurrentField="a => a.Id == currentId">
+        <ItemTemplate Context="activity">
+            @if (!string.IsNullOrWhiteSpace(activity.Note))
+            {
+                @activity.Note
+            }
+        </ItemTemplate>
+    </TimelineItems>
+</Timeline>
+
+@code {
+    private record Activity(int Id, string Title, string When, IconName Icon, TimelineColor Color, string? Note);
+
+    private List<Activity>? activities;
+    private int currentId;
+    private int nextId;
+    private string newTitle = "";
+
+    protected override void OnInitialized() => Reset();
+
+    private void AddActivity()
+    {
+        activities ??= new();
+        var title = string.IsNullOrWhiteSpace(newTitle) ? $"Activity {nextId}" : newTitle;
+        activities.Add(new(nextId++, title, "Just now", IconName.PlusLg, TimelineColor.Info, null));
+        newTitle = "";
+    }
+
+    private void RemoveFirst()
+    {
+        if (activities is { Count: > 0 })
+            activities.RemoveAt(0);
+    }
+
+    private void Reverse() => activities?.Reverse();
+
+    private void MoveCurrent()
+    {
+        if (activities is not { Count: > 0 })
+            return;
+
+        var index = activities.FindIndex(a => a.Id == currentId);
+        currentId = activities[(index + 1) % activities.Count].Id;
+    }
+
+    private void Clear() => activities = new();
+
+    private void SetNull() => activities = null;
+
+    private void Reset()
+    {
+        activities = new()
+        {
+            new(1, "Account created", "Jan 3", IconName.PersonPlus, TimelineColor.Primary, "Signed up from the pricing page."),
+            new(2, "Trial started", "Jan 3", IconName.Rocket, TimelineColor.Info, null),
+            new(3, "Upgraded to Pro", "Jan 17", IconName.Star, TimelineColor.Success, "Annual plan, 12 seats."),
+            new(4, "Support ticket", "Feb 2", IconName.Headset, TimelineColor.Warning, "Asked about SSO setup.")
+        };
+        currentId = 3;
+        nextId = 5;
+    }
+}

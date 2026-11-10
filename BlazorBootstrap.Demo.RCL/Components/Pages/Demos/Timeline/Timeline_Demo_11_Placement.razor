@@ -1,0 +1,25 @@
+<div class="mb-3">
+    <label class="form-label" for="timeline-placement">Placement</label>
+    <select id="timeline-placement" class="form-select w-auto" @bind="placement">
+        @foreach (var value in Enum.GetValues<TimelinePlacement>())
+        {
+            <option value="@value">@value</option>
+        }
+    </select>
+</div>
+
+<Timeline Placement="placement" AriaLabel="Support ticket">
+    <TimelineItem Title="Ticket opened" Subtitle="Mon, 09:12" IconName="IconName.EnvelopeOpen" Color="TimelineColor.Primary">
+        The export button does nothing on Safari.
+    </TimelineItem>
+    <TimelineItem Title="Assigned to support" Subtitle="Mon, 09:40" />
+    <TimelineItem Title="Fix in review" Subtitle="Tue, 15:05" IconName="IconName.CodeSlash" Color="TimelineColor.Info" Current="true">
+        The click handler now waits for the download permission. Long content wraps inside its item, and the marker stays on the line
+        whichever side the content is on.
+    </TimelineItem>
+    <TimelineItem Title="Resolved" Subtitle="Expected Wed" />
+</Timeline>
+
+@code {
+    private TimelinePlacement placement = TimelinePlacement.End;
+}

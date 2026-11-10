@@ -74,6 +74,7 @@ public partial class DocsMainLayout : MainLayoutBase
             new (){ Id = "5245", Text = "Split View", Href = DemoRouteConstants.Docs_URL_SplitView, IconName = IconName.LayoutSplit, ParentId = "5" },
             new (){ Id = "527", Text = "Tabs", Href = DemoRouteConstants.Docs_URL_Tabs, IconName = IconName.WindowPlus, ParentId = "5" },
             new (){ Id = "528", Text = "Theme Switcher", Href = DemoRouteConstants.Docs_URL_ThemeSwitcher, IconName = IconName.NintendoSwitch, ParentId = "5" },
+            new (){ Id = "5285", Text = "Timeline", Href = DemoRouteConstants.Docs_URL_Timeline, IconName = IconName.ClockHistory, ParentId = "5" },
             new (){ Id = "529", Text = "Toasts", Href = DemoRouteConstants.Docs_URL_Toasts, IconName = IconName.ExclamationTriangleFill, ParentId = "5" },
             new (){ Id = "530", Text = "Tooltips", Href = DemoRouteConstants.Docs_URL_Tooltips, IconName = IconName.ChatSquareDotsFill, ParentId = "5" },
 

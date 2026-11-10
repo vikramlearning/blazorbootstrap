@@ -98,6 +98,7 @@ public class DemoScreenshotSrcConstants
     public const string Demos_URL_Spinners = DemoScreenshotSrcPrefix + "spinners.png";
     public const string Demos_URL_Tabs = DemoScreenshotSrcPrefix + "tabs.png";
     public const string Demos_URL_ThemeSwitcher = DemoScreenshotSrcPrefix + "theme-switcher.png";
+    public const string Demos_URL_Timeline = DemoScreenshotSrcPrefix + "timeline.png";
     public const string Demos_URL_Toasts = DemoScreenshotSrcPrefix + "toasts.png";
     public const string Demos_URL_Tooltips = DemoScreenshotSrcPrefix + "tooltips.png";
 
