@@ -922,6 +922,20 @@ public static class EnumExtensions
     public static string ToTimelineOrientationClass(this TimelineOrientation orientation) =>
         orientation == TimelineOrientation.Horizontal ? "bb-timeline-horizontal" : "bb-timeline-vertical";
 
+    /// <summary>
+    /// Converts a <see cref="TimelinePlacement" /> value to its <c>bb-timeline-*</c> classes; <see cref="TimelinePlacement.Start" /> needs none.
+    /// </summary>
+    [AddedVersion("4.1.0")]
+    [Description("Converts a TimelinePlacement value to its bb-timeline-* classes; Start needs none.")]
+    public static string ToTimelinePlacementClass(this TimelinePlacement placement) =>
+        placement switch
+        {
+            TimelinePlacement.End => "bb-timeline-end",
+            TimelinePlacement.Alternate => "bb-timeline-alternate",
+            TimelinePlacement.AlternateReverse => "bb-timeline-alternate bb-timeline-alternate-reverse",
+            _ => ""
+        };
+
     public static string? ToTooltipColorClass(this TooltipColor tooltipColor) =>
         tooltipColor switch
         {

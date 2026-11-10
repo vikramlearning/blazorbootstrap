@@ -32,6 +32,22 @@
     <Demo Type="typeof(Timeline_Demo_01_Basic_Usage)" Tabs="true" />
 </Section>
 
+<Section Size="HeadingSize.H2" Name="Placement" PageUrl="@pageUrl" Link="placement">
+    <div class="mb-3">
+        Choose where the line and markers of a vertical timeline sit. Change the placement below.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Set <code>Placement</code> (<code>TimelinePlacement</code>): <code>Start</code> (default) puts the line at the start edge, <code>End</code> at the end edge with the content aligned toward it, and <code>Alternate</code> or <code>AlternateReverse</code> centers it with the items on alternating sides.</li>
+                <li><code>Start</code> and <code>End</code> keep their layout at every width. Below the collapse breakpoint the alternate placements show as <code>Start</code>.</li>
+                <li><code>Placement</code> has no effect on a horizontal timeline.</li>
+            </ol>
+        </div>
+    </div>
+    <Demo Type="typeof(Timeline_Demo_11_Placement)" Tabs="true" />
+</Section>
+
 <Section Size="HeadingSize.H2" Name="Horizontal" PageUrl="@pageUrl" Link="horizontal">
     <div class="mb-3">
         Lay the items out left to right. When they do not fit, the timeline scrolls inside its own container, never the page.
@@ -54,8 +70,8 @@
         <strong>How to use:</strong>
         <div class="content mb-2">
             <ol>
-                <li>Set <code>Alternate="true"</code>. It has no effect on a horizontal timeline.</li>
-                <li>Below the collapse breakpoint the items stack in one column.</li>
+                <li>Set <code>Placement="TimelinePlacement.Alternate"</code> (the first item on the end side) or <code>TimelinePlacement.AlternateReverse</code> (the first item on the start side). It has no effect on a horizontal timeline.</li>
+                <li>Below the collapse breakpoint the items stack in one column, as with <code>Start</code>.</li>
             </ol>
         </div>
     </div>

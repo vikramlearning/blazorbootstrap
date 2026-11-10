@@ -19,7 +19,7 @@ The Blazor Bootstrap `Timeline` component shows events in order along one connec
 
 - **No Bootstrap page.** Bootstrap 5.3 has no timeline component. `Timeline` is built from Bootstrap utilities (rounded markers, `text-bg-*` colors, Bootstrap Icons) and a small set of `--bb-timeline-*` CSS properties for the line and the layouts, so it follows the light and dark themes.
 - **Two ways to add items.** Add `TimelineItem` children, or put a data-bound `TimelineItems` inside the `Timeline` and set `Data`. `TItem` is inferred from `Data`. Both can be mixed in one timeline; items show in markup order.
-- **Alternate is vertical only.** `Alternate` has no effect on a horizontal timeline.
+- **Placement is vertical only.** `Placement` puts the line and markers of a vertical timeline at the start edge (default), at the end edge, or in the center with the items on alternating sides. It has no effect on a horizontal timeline.
 - **Responsive.** Below `CollapseBreakpoint` (medium, 768px, by default) a horizontal or alternate timeline shows as a single vertical column. Above it, a horizontal timeline whose items do not fit scrolls inside its own container, never the page.
 - **Theming.** Override the `--bb-timeline-*` properties on the timeline (or a parent) to change the line color and width, marker sizes, spacing, and the minimum item width of a horizontal timeline.
 
@@ -34,11 +34,11 @@ The Blazor Bootstrap `Timeline` component shows events in order along one connec
 
 | Name | Type | Default | Required | Description | Added Version |
 |:--|:--|:--|:--|:--|:--|
-| Alternate | bool | false | | Gets or sets whether the items of a vertical timeline sit on alternating sides of a centered line. Has no effect on a horizontal timeline. | 4.1.0 |
 | AriaLabel | string? | null | | Gets or sets the accessible name of the timeline list, read by screen readers. | 4.1.0 |
 | ChildContent | RenderFragment | null | | Gets or sets the items: `TimelineItem` components, `TimelineItems`, or both. | 4.1.0 |
 | CollapseBreakpoint | `TimelineCollapseBreakpoint` | `TimelineCollapseBreakpoint.Medium` | | Gets or sets the width below which a horizontal or alternate timeline shows as a single vertical column. `None` never collapses. | 4.1.0 |
 | Orientation | `TimelineOrientation` | `TimelineOrientation.Vertical` | | Gets or sets whether the items are laid out top to bottom or left to right. A horizontal timeline whose items do not fit scrolls inside its own container. | 4.1.0 |
+| Placement | `TimelinePlacement` | `TimelinePlacement.Start` | | Gets or sets where the line and markers of a vertical timeline sit: `Start`, `End`, `Alternate` (centered, the first item on the end side), or `AlternateReverse` (the first item on the start side). Has no effect on a horizontal timeline. Below `CollapseBreakpoint`, the alternate placements show as `Start`. | 4.1.0 |
 
 ## TimelineItem parameters
 
@@ -85,6 +85,20 @@ A vertical timeline with the line and markers at the start and each item's conte
 
 [See demo here](https://demos.blazorbootstrap.com/timeline#basic-usage)
 
+### Placement
+
+Put the line and markers at the end edge, with the content aligned toward them. `End` keeps this layout at every width.
+
+```cshtml {} showLineNumbers
+<Timeline Placement="TimelinePlacement.End" AriaLabel="Support ticket">
+    <TimelineItem Title="Ticket opened" Subtitle="Mon, 09:12" IconName="IconName.EnvelopeOpen" Color="TimelineColor.Primary" />
+    <TimelineItem Title="Fix in review" Subtitle="Tue, 15:05" IconName="IconName.CodeSlash" Color="TimelineColor.Info" Current="true" />
+    <TimelineItem Title="Resolved" Subtitle="Expected Wed" />
+</Timeline>
+```
+
+[See demo here](https://demos.blazorbootstrap.com/timeline#placement)
+
 ### Horizontal
 
 ```cshtml {} showLineNumbers
@@ -100,7 +114,7 @@ A vertical timeline with the line and markers at the start and each item's conte
 ### Alternate
 
 ```cshtml {} showLineNumbers
-<Timeline Alternate="true" AriaLabel="Company history">
+<Timeline Placement="TimelinePlacement.Alternate" AriaLabel="Company history">
     <TimelineItem Title="2019 · Founded" Subtitle="Two people, one idea" />
     <TimelineItem Title="2020 · First customers" Subtitle="Product launch" />
     <TimelineItem Title="2024 · 10,000 teams" Subtitle="Milestone" />
