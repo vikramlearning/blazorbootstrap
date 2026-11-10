@@ -22,6 +22,11 @@ internal interface IListGroupTabHost
     /// </summary>
     void RemovePane(ListGroupTabPane pane);
 
+    /// <summary>
+    /// Puts Bootstrap's tab state back after a pane re-rendered its class on its own (for example a changed <c>Class</c>).
+    /// </summary>
+    Task SyncTabsAsync();
+
     #endregion
 
     #region Properties, Indexers

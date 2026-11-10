@@ -689,9 +689,11 @@ window.blazorBootstrap = {
             if (listEl == null)
                 return;
 
-            // activeTabEl is the tab Bootstrap shows (from its 'show' event), so the group can put it back if a Blazor render rewrites
-            // a tab's or pane's class (for example a changed pane Class); switching is true until Bootstrap's 'shown'.
-            let state = { listeners: [], tabEls: [...listEl.querySelectorAll('[data-bs-toggle="list"]')], activeTabEl: null, switching: false };
+            // activeTabEl is the tab Bootstrap shows, so the group can put it back if a Blazor render rewrites a tab's or pane's class
+            // (for example a changed pane Class). It is taken from 'shown': Bootstrap fires 'hide' and 'show' before it checks whether a
+            // listener cancelled the switch, but fires the tab's 'shown' (synchronously; tab buttons do not fade) only for a switch that
+            // went ahead.
+            let state = { listeners: [], tabEls: [...listEl.querySelectorAll('[data-bs-toggle="list"]')], activeTabEl: null };
             let nameOf = (el) => el?.getAttribute('data-bb-name') ?? null;
             let listen = (type, callback) => {
                 let handler = (event) => {
@@ -704,15 +706,9 @@ window.blazorBootstrap = {
 
             // event.target is the tab being shown (or hidden); event.relatedTarget is the other tab.
             // A lost Server connection rejects the .NET calls; the tabs keep working, so the rejection is ignored.
-            listen('show.bs.tab', (event) => {
-                if (event.defaultPrevented)
-                    return;
-                state.activeTabEl = event.target;
-                state.switching = true;
-                dotNetHelper.invokeMethodAsync('bsShowTab', nameOf(event.target), nameOf(event.relatedTarget)).catch(() => { });
-            });
+            listen('show.bs.tab', (event) => dotNetHelper.invokeMethodAsync('bsShowTab', nameOf(event.target), nameOf(event.relatedTarget)).catch(() => { }));
             listen('shown.bs.tab', (event) => {
-                state.switching = false;
+                state.activeTabEl = event.target;
                 dotNetHelper.invokeMethodAsync('bsShownTab', nameOf(event.target), nameOf(event.relatedTarget)).catch(() => { });
             });
             listen('hide.bs.tab', (event) => dotNetHelper.invokeMethodAsync('bsHideTab', nameOf(event.relatedTarget), nameOf(event.target)).catch(() => { }));
@@ -762,8 +758,8 @@ window.blazorBootstrap = {
                 if (isActive) {
                     if (!paneEl.classList.contains('active'))
                         paneEl.classList.add('active');
-                    // While Bootstrap fades the pane in, it adds 'show' itself when the fade completes.
-                    if (!paneEl.classList.contains('show') && (!state.switching || !paneEl.classList.contains('fade')))
+                    // During a fade-in Bootstrap adds 'show' after its fade delay; adding it here only starts the fade a little earlier.
+                    if (!paneEl.classList.contains('show'))
                         paneEl.classList.add('show');
                 }
                 else if (paneEl.classList.contains('active') || paneEl.classList.contains('show'))
@@ -1012,13 +1008,16 @@ window.blazorBootstrap = {
 
             let isOffcanvas = menuEl.classList.contains('offcanvas');
             let togglerEl = navbarEl.querySelector('.navbar-toggler');
+            // The same menu element carries its phase over, so a menu that is still opening (a collapse has 'collapsing', not 'show',
+            // until it has opened) is not taken for a closed one.
+            let sameMenu = previous != null && previous.menuEl === menuEl;
             let state = {
                 menuEl: menuEl,
                 togglerEl: togglerEl,
                 isExternal: isExternal,
                 listeners: [],
-                phase: keepsMenu ? previous.phase : menuEl.classList.contains('show') ? 'shown' : 'hidden',
-                hideWhenShown: keepsMenu ? previous.hideWhenShown : false
+                phase: sameMenu ? previous.phase : menuEl.classList.contains('show') ? 'shown' : 'hidden',
+                hideWhenShown: sameMenu ? previous.hideWhenShown : false
             };
             let listen = (target, type, handler) => {
                 target.addEventListener(type, handler);
@@ -1026,7 +1025,7 @@ window.blazorBootstrap = {
             };
             // The toggler is new, or rendered with aria-expanded="false": show the menu's current state.
             if (togglerEl != null) {
-                let isOpen = keepsMenu ? state.phase === 'showing' || state.phase === 'shown' : menuEl.classList.contains('show');
+                let isOpen = state.phase === 'showing' || state.phase === 'shown';
                 togglerEl.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
                 if (!isOffcanvas)
                     togglerEl.classList.toggle('collapsed', !isOpen);
@@ -1068,15 +1067,16 @@ window.blazorBootstrap = {
             }
             else if (togglerEl != null) {
                 // Bootstrap updates the togglers a Collapse found when it was created. An external Collapse keeps its instance across a
-                // toggler change, so keep this toggler in step too (for a navbar's own collapse this repeats what Bootstrap sets).
+                // toggler change, and a re-created one may still be finishing on the old instance, so keep this toggler in step too (for
+                // a navbar's own collapse this repeats what Bootstrap sets). 'shown' and 'hidden' fire only for a change that went ahead.
                 let sync = (isOpen) => (event) => {
                     if (event.target !== menuEl)
                         return;
                     togglerEl.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
                     togglerEl.classList.toggle('collapsed', !isOpen);
                 };
-                listen(menuEl, 'show.bs.collapse', sync(true));
-                listen(menuEl, 'hide.bs.collapse', sync(false));
+                listen(menuEl, 'shown.bs.collapse', sync(true));
+                listen(menuEl, 'hidden.bs.collapse', sync(false));
             }
 
             if (isExternal) {
