@@ -682,13 +682,16 @@ window.blazorBootstrap = {
             window.blazorBootstrap.listGroup.syncListbox(elementId);
         },
         initializeTabs: (elementId, dotNetHelper) => {
+            let previousActiveId = window.blazorBootstrap.listGroup.instances[elementId]?.activeTabEl?.id ?? null;
             window.blazorBootstrap.listGroup.dispose(elementId); // also called again when tabs were added or removed
 
             let listEl = document.getElementById(elementId);
             if (listEl == null)
                 return;
 
-            let state = { listeners: [], tabEls: [...listEl.querySelectorAll('[data-bs-toggle="list"]')] };
+            // activeTabEl is the tab Bootstrap shows (from its 'show' event), so the group can put it back if a Blazor render rewrites
+            // a tab's or pane's class (for example a changed pane Class); switching is true until Bootstrap's 'shown'.
+            let state = { listeners: [], tabEls: [...listEl.querySelectorAll('[data-bs-toggle="list"]')], activeTabEl: null, switching: false };
             let nameOf = (el) => el?.getAttribute('data-bb-name') ?? null;
             let listen = (type, callback) => {
                 let handler = (event) => {
@@ -701,8 +704,17 @@ window.blazorBootstrap = {
 
             // event.target is the tab being shown (or hidden); event.relatedTarget is the other tab.
             // A lost Server connection rejects the .NET calls; the tabs keep working, so the rejection is ignored.
-            listen('show.bs.tab', (event) => dotNetHelper.invokeMethodAsync('bsShowTab', nameOf(event.target), nameOf(event.relatedTarget)).catch(() => { }));
-            listen('shown.bs.tab', (event) => dotNetHelper.invokeMethodAsync('bsShownTab', nameOf(event.target), nameOf(event.relatedTarget)).catch(() => { }));
+            listen('show.bs.tab', (event) => {
+                if (event.defaultPrevented)
+                    return;
+                state.activeTabEl = event.target;
+                state.switching = true;
+                dotNetHelper.invokeMethodAsync('bsShowTab', nameOf(event.target), nameOf(event.relatedTarget)).catch(() => { });
+            });
+            listen('shown.bs.tab', (event) => {
+                state.switching = false;
+                dotNetHelper.invokeMethodAsync('bsShownTab', nameOf(event.target), nameOf(event.relatedTarget)).catch(() => { });
+            });
             listen('hide.bs.tab', (event) => dotNetHelper.invokeMethodAsync('bsHideTab', nameOf(event.relatedTarget), nameOf(event.target)).catch(() => { }));
             listen('hidden.bs.tab', (event) => dotNetHelper.invokeMethodAsync('bsHiddenTab', nameOf(event.relatedTarget), nameOf(event.target)).catch(() => { }));
 
@@ -711,12 +723,52 @@ window.blazorBootstrap = {
 
             window.blazorBootstrap.listGroup.instances[elementId] = state;
 
-            // The shown pane was removed: show the first enabled tab, so a pane is visible and the tab list keeps a tab stop.
-            if (!state.tabEls.some((tabEl) => tabEl.classList.contains('active'))) {
+            // Keep the tab that was shown before this re-initialize when it is still there, else the one the page marks active.
+            state.activeTabEl = state.tabEls.find((tabEl) => tabEl.id === previousActiveId)
+                ?? state.tabEls.find((tabEl) => tabEl.classList.contains('active'))
+                ?? null;
+
+            if (state.activeTabEl == null) {
+                // The shown pane was removed: show the first enabled tab, so a pane is visible and the tab list keeps a tab stop.
                 let firstEnabled = state.tabEls.find((tabEl) => !tabEl.disabled);
                 if (firstEnabled != null)
                     bootstrap?.Tab?.getOrCreateInstance(firstEnabled)?.show();
             }
+            else
+                window.blazorBootstrap.listGroup.syncTabs(elementId);
+        },
+        syncTabs: (elementId) => {
+            // Called after each render in tab mode. Blazor writes a tab's or pane's whole class when another part of it changes (Class,
+            // Fade); put Bootstrap's state back: only the shown tab and its pane are active. Writes nothing when the page already agrees.
+            let state = window.blazorBootstrap.listGroup.instances[elementId];
+            if (state?.activeTabEl == null || !state.activeTabEl.isConnected)
+                return;
+
+            state.tabEls.forEach((tabEl) => {
+                let isActive = tabEl === state.activeTabEl;
+                let paneEl = document.querySelector(tabEl.getAttribute('data-bs-target'));
+
+                if (tabEl.classList.contains('active') !== isActive) {
+                    tabEl.classList.toggle('active', isActive);
+                    tabEl.setAttribute('aria-selected', isActive ? 'true' : 'false');
+                    if (isActive)
+                        tabEl.removeAttribute('tabindex');
+                    else
+                        tabEl.setAttribute('tabindex', '-1');
+                }
+
+                if (paneEl == null)
+                    return;
+                if (isActive) {
+                    if (!paneEl.classList.contains('active'))
+                        paneEl.classList.add('active');
+                    // While Bootstrap fades the pane in, it adds 'show' itself when the fade completes.
+                    if (!paneEl.classList.contains('show') && (!state.switching || !paneEl.classList.contains('fade')))
+                        paneEl.classList.add('show');
+                }
+                else if (paneEl.classList.contains('active') || paneEl.classList.contains('show'))
+                    paneEl.classList.remove('active', 'show');
+            });
         },
         getPaneOrder: (elementId) => {
             // The pane elements are in markup order; the group orders its tabs to match.
@@ -943,10 +995,11 @@ window.blazorBootstrap = {
             let navbarEl = document.getElementById(elementId);
             let menuEl = document.getElementById(menuId);
             let previous = window.blazorBootstrap.navbar.instances[elementId];
-            // An open offcanvas whose element stays (only the toggler changed) keeps its Bootstrap instance, so it stays open and still closes.
-            // Everything else is re-created, so Bootstrap picks up the new toggler (Collapse records its togglers when it is created).
+            // An open (or closing) offcanvas whose element stays (only the toggler changed) keeps its Bootstrap instance, so it stays open,
+            // still closes, and finishes a running close itself. Everything else is re-created, so Bootstrap picks up the new toggler
+            // (Collapse records its togglers when it is created).
             let keepsMenu = previous != null && previous.menuEl === menuEl && previous.isExternal === isExternal
-                && menuEl.classList.contains('offcanvas') && (previous.phase === 'showing' || previous.phase === 'shown');
+                && menuEl.classList.contains('offcanvas') && previous.phase !== 'hidden';
             if (keepsMenu) {
                 delete window.blazorBootstrap.navbar.instances[elementId];
                 previous.listeners.forEach(([target, type, handler]) => target.removeEventListener(type, handler));
@@ -971,8 +1024,14 @@ window.blazorBootstrap = {
                 target.addEventListener(type, handler);
                 state.listeners.push([target, type, handler]);
             };
+            // The toggler is new, or rendered with aria-expanded="false": show the menu's current state.
+            if (togglerEl != null) {
+                let isOpen = keepsMenu ? state.phase === 'showing' || state.phase === 'shown' : menuEl.classList.contains('show');
+                togglerEl.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+                if (!isOffcanvas)
+                    togglerEl.classList.toggle('collapsed', !isOpen);
+            }
             if (keepsMenu && togglerEl != null) {
-                togglerEl.setAttribute('aria-expanded', 'true');
                 // Bootstrap returns focus to the toggler that opened the panel, which is gone; return it to the new toggler instead.
                 let returnFocus = (event) => {
                     if (event.target !== menuEl)
@@ -1006,6 +1065,18 @@ window.blazorBootstrap = {
                 // Bootstrap tracks aria-expanded for collapse togglers only.
                 listen(menuEl, 'show.bs.offcanvas', () => togglerEl.setAttribute('aria-expanded', 'true'));
                 listen(menuEl, 'hidden.bs.offcanvas', () => togglerEl.setAttribute('aria-expanded', 'false'));
+            }
+            else if (togglerEl != null) {
+                // Bootstrap updates the togglers a Collapse found when it was created. An external Collapse keeps its instance across a
+                // toggler change, so keep this toggler in step too (for a navbar's own collapse this repeats what Bootstrap sets).
+                let sync = (isOpen) => (event) => {
+                    if (event.target !== menuEl)
+                        return;
+                    togglerEl.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+                    togglerEl.classList.toggle('collapsed', !isOpen);
+                };
+                listen(menuEl, 'show.bs.collapse', sync(true));
+                listen(menuEl, 'hide.bs.collapse', sync(false));
             }
 
             if (isExternal) {
