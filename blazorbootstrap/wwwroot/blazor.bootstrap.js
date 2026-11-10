@@ -712,7 +712,14 @@ window.blazorBootstrap = {
                 dotNetHelper.invokeMethodAsync('bsShownTab', nameOf(event.target), nameOf(event.relatedTarget)).catch(() => { });
             });
             listen('hide.bs.tab', (event) => dotNetHelper.invokeMethodAsync('bsHideTab', nameOf(event.relatedTarget), nameOf(event.target)).catch(() => { }));
-            listen('hidden.bs.tab', (event) => dotNetHelper.invokeMethodAsync('bsHiddenTab', nameOf(event.relatedTarget), nameOf(event.target)).catch(() => { }));
+            listen('hidden.bs.tab', (event) => {
+                // Bootstrap fires the old tab's 'hidden' before it activates the new one, and only for a switch that went ahead, so the
+                // incoming tab is already the shown one: a render from an OnHidden handler (synchronous on WebAssembly) must not put the
+                // old tab back.
+                if (event.relatedTarget != null && state.tabEls.includes(event.relatedTarget))
+                    state.activeTabEl = event.relatedTarget;
+                dotNetHelper.invokeMethodAsync('bsHiddenTab', nameOf(event.relatedTarget), nameOf(event.target)).catch(() => { });
+            });
 
             // Bootstrap creates Tab instances for active tabs only on window load; create them so arrow keys work in the tab list.
             state.tabEls.forEach((tabEl) => bootstrap?.Tab?.getOrCreateInstance(tabEl));
@@ -937,6 +944,8 @@ window.blazorBootstrap = {
             if (!isOffcanvas && state.isExternal)
                 return; // the external Collapse component owns its instance
 
+            window.blazorBootstrap.navbar.settlePhase(state);
+
             let instance = isOffcanvas ? bootstrap?.Offcanvas?.getInstance(menuEl) : bootstrap?.Collapse?.getInstance(menuEl);
             if (instance == null)
                 return;
@@ -969,6 +978,22 @@ window.blazorBootstrap = {
 
             disposeInstance();
         },
+        settlePhase: (state) => {
+            // The phase follows Bootstrap's 'show' / 'hide' events, which fire before Bootstrap checks whether a listener cancelled the
+            // change. A 'showing' or 'hiding' phase counts only while the page shows that transition (a collapse's 'collapsing', an
+            // offcanvas's 'showing' / 'hiding'); otherwise it is taken from the menu's 'show' class.
+            if (state.phase !== 'showing' && state.phase !== 'hiding')
+                return;
+
+            let classList = state.menuEl.classList;
+            let isTransitioning = classList.contains('offcanvas')
+                ? classList.contains('showing') || classList.contains('hiding')
+                : classList.contains('collapsing');
+            if (!isTransitioning) {
+                state.phase = classList.contains('show') ? 'shown' : 'hidden';
+                state.hideWhenShown = false;
+            }
+        },
         getInstance: (menuEl) => {
             if (menuEl.classList.contains('offcanvas'))
                 return bootstrap?.Offcanvas?.getOrCreateInstance(menuEl);
@@ -981,6 +1006,7 @@ window.blazorBootstrap = {
                 return;
 
             // Bootstrap ignores hide() while the menu is still opening, so hide it once it has opened.
+            window.blazorBootstrap.navbar.settlePhase(state);
             if (state.phase === 'showing')
                 state.hideWhenShown = true;
             else if (state.phase === 'shown')
@@ -991,6 +1017,8 @@ window.blazorBootstrap = {
             let navbarEl = document.getElementById(elementId);
             let menuEl = document.getElementById(menuId);
             let previous = window.blazorBootstrap.navbar.instances[elementId];
+            if (previous != null)
+                window.blazorBootstrap.navbar.settlePhase(previous);
             // An open (or closing) offcanvas whose element stays (only the toggler changed) keeps its Bootstrap instance, so it stays open,
             // still closes, and finishes a running close itself. Everything else is re-created, so Bootstrap picks up the new toggler
             // (Collapse records its togglers when it is created).
