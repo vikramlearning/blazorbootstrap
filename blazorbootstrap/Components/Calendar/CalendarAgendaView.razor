@@ -1,0 +1,28 @@
+@namespace BlazorBootstrap
+@inherits BlazorBootstrapComponentBase
+@typeparam TItem
+
+<div @ref="@Element" id="@Id" class="@ClassNames" style="@StyleNames" @attributes="@AdditionalAttributes">
+    @if (Owner.AgendaLayout.Count == 0)
+    {
+        <div class="bb-calendar-agenda-empty text-body-secondary text-center p-4">@Owner.EmptyText</div>
+    }
+    @foreach (var day in Owner.AgendaLayout)
+    {
+        var info = Owner.GetDayInfo(day.Date);
+
+        <section class="bb-calendar-agenda-day" data-bb-date="@day.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)">
+            <div class="@GetDateClass(day.Date, info)">
+                @day.Date.ToString("D", Owner.EffectiveCulture)
+                @if (info.Label is not null)
+                {
+                    <span class="bb-calendar-agenda-label fw-normal @info.LabelClass">@info.Label</span>
+                }
+            </div>
+            @if (day.Keys.Count > 0)
+            {
+                @Owner.DayEventList(day.Date)
+            }
+        </section>
+    }
+</div>

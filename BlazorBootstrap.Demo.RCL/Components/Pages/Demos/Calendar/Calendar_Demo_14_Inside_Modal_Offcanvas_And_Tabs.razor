@@ -1,0 +1,77 @@
+<div class="d-flex flex-wrap gap-2 mb-3">
+    <Button Color="ButtonColor.Primary" @onclick="() => modal.ShowAsync()">Show in a modal</Button>
+    <Button Color="ButtonColor.Primary" @onclick="() => offcanvas.ShowAsync()">Show in an offcanvas</Button>
+</div>
+
+<Modal @ref="modal" Title="Calendar in a modal" Size="ModalSize.ExtraLarge">
+    <BodyTemplate>
+        <Calendar TItem="Appointment"
+                  AriaLabel="Modal calendar"
+                  Data="appointments"
+                  Date="@date"
+                  View="CalendarView.Week"
+                  Height="360"
+                  StartField="a => a.Start"
+                  EndField="a => a.End"
+                  TitleField="a => a.Title"
+                  ColorField="a => a.Color" />
+    </BodyTemplate>
+</Modal>
+
+@* An offcanvas is narrow, so the Day view fits it best. *@
+<Offcanvas @ref="offcanvas" Title="Calendar in an offcanvas" Size="OffcanvasSize.Large">
+    <BodyTemplate>
+        <Calendar TItem="Appointment"
+                  AriaLabel="Offcanvas calendar"
+                  Data="appointments"
+                  Date="@date"
+                  View="CalendarView.Day"
+                  Height="420"
+                  StartField="a => a.Start"
+                  EndField="a => a.End"
+                  TitleField="a => a.Title"
+                  ColorField="a => a.Color" />
+    </BodyTemplate>
+</Offcanvas>
+
+<Tabs>
+    <Tab Title="Notes" Active="true">
+        <Content>
+            <p class="mt-3">The calendar is in the second tab. It is rendered while that tab is hidden and takes its size when the tab is shown.</p>
+        </Content>
+    </Tab>
+    <Tab Title="Calendar">
+        <Content>
+            <div class="mt-3">
+                <Calendar TItem="Appointment"
+                          AriaLabel="Tab calendar"
+                          Data="appointments"
+                          Date="@date"
+                          View="CalendarView.Week"
+                          Height="360"
+                          StartField="a => a.Start"
+                          EndField="a => a.End"
+                          TitleField="a => a.Title"
+                          ColorField="a => a.Color" />
+            </div>
+        </Content>
+    </Tab>
+</Tabs>
+
+@code {
+    private record Appointment(string Title, DateTime Start, DateTime End, CalendarColor Color);
+
+    private static DateTime At(int day, int hour, int minute = 0) => new(2024, 11, day, hour, minute, 0);
+
+    private readonly List<Appointment> appointments = new()
+    {
+        new("Standup", At(5, 9), At(5, 9, 30), CalendarColor.Primary),
+        new("Design review", At(5, 11), At(5, 12, 30), CalendarColor.Info),
+        new("Lunch with Sam", At(6, 12), At(6, 13), CalendarColor.Success),
+        new("Release planning", At(7, 14), At(7, 15, 30), CalendarColor.Warning)
+    };
+
+    private readonly DateOnly date = new(2024, 11, 5);
+    private Modal modal = default!;
+    private Offcanvas offcanvas = default!;
+}

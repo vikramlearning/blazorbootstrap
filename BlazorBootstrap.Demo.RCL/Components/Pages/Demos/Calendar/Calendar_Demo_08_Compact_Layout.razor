@@ -1,0 +1,45 @@
+<div class="d-flex flex-wrap align-items-center gap-3 mb-3">
+    <label class="d-flex align-items-center gap-2">
+        Compact below
+        <select class="form-select form-select-sm w-auto" @bind="breakpoint">
+            <option value="@CalendarCompactBreakpoint.None">Never</option>
+            <option value="@CalendarCompactBreakpoint.Small">Small (576px)</option>
+            <option value="@CalendarCompactBreakpoint.Medium">Medium (768px)</option>
+            <option value="@CalendarCompactBreakpoint.Large">Large (992px)</option>
+            <option value="@CalendarCompactBreakpoint.ExtraExtraLarge">Extra extra large (1400px)</option>
+        </select>
+    </label>
+</div>
+
+<Calendar TItem="Appointment"
+          AriaLabel="Pocket calendar"
+          Data="appointments"
+          Date="@(new DateOnly(2024, 11, 5))"
+          CompactBreakpoint="breakpoint"
+          @bind-SelectedDate="selectedDate"
+          StartField="a => a.Start"
+          EndField="a => a.End"
+          TitleField="a => a.Title"
+          AllDayField="a => a.IsAllDay"
+          ColorField="a => a.Color" />
+
+@code {
+    private record Appointment(string Title, DateTime Start, DateTime End, bool IsAllDay, CalendarColor Color);
+
+    private static DateTime At(int day, int hour = 0, int minute = 0) => new(2024, 11, day, hour, minute, 0);
+
+    private readonly List<Appointment> appointments = new()
+    {
+        new("Trip to London", At(1), At(5), true, CalendarColor.Success),
+        new("Meet with Sean", At(2, 6), At(2, 7), false, CalendarColor.Primary),
+        new("Stonehenge, Windsor Castle, Oxford", At(5, 8, 45), At(6, 17), false, CalendarColor.Info),
+        new("Standup", At(5, 9), At(5, 9, 30), false, CalendarColor.Primary),
+        new("Design review", At(5, 11), At(5, 12, 30), false, CalendarColor.Warning),
+        new("Domain name due", At(12, 12), At(12, 12), false, CalendarColor.Danger),
+        new("Design conference", At(14), At(23), true, CalendarColor.Warning)
+    };
+
+    // Choose "Extra extra large" to see the compact layout on a wide screen.
+    private CalendarCompactBreakpoint breakpoint = CalendarCompactBreakpoint.Medium;
+    private DateOnly? selectedDate = new DateOnly(2024, 11, 5);
+}

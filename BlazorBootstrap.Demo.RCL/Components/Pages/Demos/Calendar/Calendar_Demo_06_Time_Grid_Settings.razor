@@ -1,0 +1,55 @@
+<div class="d-flex flex-wrap align-items-center gap-3 mb-3">
+    <label class="d-flex align-items-center gap-2">
+        Slot length
+        <select class="form-select form-select-sm w-auto" @bind="slotMinutes">
+            <option value="15">15 minutes</option>
+            <option value="30">30 minutes</option>
+            <option value="60">60 minutes</option>
+        </select>
+    </label>
+    <label class="d-flex align-items-center gap-2">
+        Visible hours
+        <select class="form-select form-select-sm w-auto" @bind="visibleHours">
+            <option value="all">Whole day</option>
+            <option value="business">7 AM to 7 PM</option>
+        </select>
+    </label>
+    <label class="d-flex align-items-center gap-2">
+        Height
+        <select class="form-select form-select-sm w-auto" @bind="height">
+            <option value="400">400 px</option>
+            <option value="600">600 px</option>
+            <option value="0">Whole grid</option>
+        </select>
+    </label>
+</div>
+
+<Calendar TItem="Appointment"
+          AriaLabel="Today's schedule"
+          Data="appointments"
+          View="CalendarView.Week"
+          SlotMinutes="slotMinutes"
+          DayStart="@(visibleHours == "business" ? new TimeOnly(7, 0) : TimeOnly.MinValue)"
+          DayEnd="@(visibleHours == "business" ? new TimeOnly(19, 0) : TimeOnly.MinValue)"
+          WorkDayStart="@(new TimeOnly(9, 0))"
+          WorkDayEnd="@(new TimeOnly(17, 0))"
+          Height="height"
+          StartField="a => a.Start"
+          EndField="a => a.End"
+          TitleField="a => a.Title"
+          ColorField="a => a.Color" />
+
+@code {
+    private record Appointment(string Title, DateTime Start, DateTime End, CalendarColor Color);
+
+    private readonly List<Appointment> appointments = new()
+    {
+        new("Standup", DateTime.Today.AddHours(9), DateTime.Today.AddHours(9).AddMinutes(15), CalendarColor.Primary),
+        new("Design review", DateTime.Today.AddHours(11), DateTime.Today.AddHours(12).AddMinutes(30), CalendarColor.Warning),
+        new("Planning", DateTime.Today.AddDays(1).AddHours(14), DateTime.Today.AddDays(1).AddHours(16), CalendarColor.Success)
+    };
+
+    private double height = 400;
+    private int slotMinutes = 30;
+    private string visibleHours = "all";
+}

@@ -1,0 +1,39 @@
+@using System.Globalization
+
+<p class="mb-2">Both calendars show the same event, which starts on <b>5 November 2024</b> in the Gregorian calendar.</p>
+
+<h6>fa-IR, Persian calendar</h6>
+<Calendar TItem="Appointment"
+          AriaLabel="Persian calendar"
+          Culture="@persian"
+          Data="appointments"
+          Date="@date"
+          Height="320"
+          StartField="a => a.Start"
+          EndField="a => a.End"
+          TitleField="a => a.Title" />
+
+<h6 class="mt-4">ar-SA, Umm al-Qura calendar</h6>
+<Calendar TItem="Appointment"
+          AriaLabel="Umm al-Qura calendar"
+          Culture="@arabic"
+          Data="appointments"
+          Date="@date"
+          Height="320"
+          StartField="a => a.Start"
+          EndField="a => a.End"
+          TitleField="a => a.Title" />
+
+@code {
+    private record Appointment(string Title, DateTime Start, DateTime End);
+
+    // Your events keep their ordinary DateTime values; only the way the calendar shows months, years, and day numbers changes.
+    private readonly List<Appointment> appointments = new()
+    {
+        new("Launch", new DateTime(2024, 11, 5, 10, 0, 0), new DateTime(2024, 11, 5, 11, 0, 0))
+    };
+
+    private readonly CultureInfo arabic = CultureInfo.GetCultureInfo("ar-SA");
+    private readonly DateOnly date = new(2024, 11, 5);
+    private readonly CultureInfo persian = CultureInfo.GetCultureInfo("fa-IR");
+}

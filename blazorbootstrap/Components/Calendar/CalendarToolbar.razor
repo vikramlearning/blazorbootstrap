@@ -1,0 +1,59 @@
+@namespace BlazorBootstrap
+@inherits BlazorBootstrapComponentBase
+
+<div @ref="@Element" id="@Id" class="@ClassNames" style="@StyleNames" @attributes="@AdditionalAttributes">
+    <div class="btn-group" role="group">
+        <button type="button" class="btn btn-outline-secondary btn-sm" aria-label="@PreviousText" title="@PreviousText" data-bb-nav="previous" @onclick="OnPreviousClick">
+            <Icon Name="IconName.ChevronLeft" Class="bb-calendar-direction-icon" />
+        </button>
+        <button type="button" class="btn btn-outline-secondary btn-sm" aria-label="@NextText" title="@NextText" data-bb-nav="next" @onclick="OnNextClick">
+            <Icon Name="IconName.ChevronRight" Class="bb-calendar-direction-icon" />
+        </button>
+    </div>
+    <button type="button" class="btn btn-outline-secondary btn-sm" @onclick="OnTodayClick">@TodayText</button>
+    @* The browser script closes the picker on Escape: it clicks the title and gives it focus, before a modal that holds the calendar sees the key. *@
+    <div class="bb-calendar-title-wrap">
+        <div class="fs-5" aria-live="polite">
+            @* The title opens a small month grid to jump to any date. It is not a heading, so the calendar does not change the page's heading order. *@
+            <button type="button"
+                    class="bb-calendar-title btn btn-link link-body-emphasis text-decoration-none fs-5 fw-medium p-0 mw-100 text-truncate"
+                    aria-haspopup="dialog"
+                    aria-expanded="@(isPickerOpen ? "true" : "false")"
+                    @onclick="TogglePicker">
+                @Title
+                <Icon Name="IconName.ChevronDown" Class="small" />
+            </button>
+        </div>
+        @if (isPickerOpen)
+        {
+            <div class="bb-calendar-popup-backdrop" @onclick="ClosePicker"></div>
+            <div class="bb-calendar-date-popup position-absolute bg-body text-body border rounded shadow p-2" role="dialog" aria-label="@Title">
+                <CalendarDatePicker Culture="@Culture"
+                                    FirstDayOfWeek="@FirstDayOfWeek"
+                                    Date="@Date"
+                                    Today="@Today"
+                                    PreviousText="@PreviousText"
+                                    NextText="@NextText"
+                                    OnDateSelected="SelectDateAsync" />
+            </div>
+        }
+    </div>
+    <div class="btn-group bb-calendar-view-switch" role="group" aria-label="@ViewText">
+        @foreach (var (view, text) in ViewItems)
+        {
+            <button type="button"
+                    class="btn btn-sm @(view == View ? "btn-secondary" : "btn-outline-secondary")"
+                    aria-pressed="@(view == View ? "true" : "false")"
+                    @onclick="() => OnViewClick.InvokeAsync(view)">
+                @text
+            </button>
+        }
+    </div>
+    @* Below the calendar's compact breakpoint the list replaces the button group; CSS shows one of the two. *@
+    <select class="bb-calendar-view-select form-select form-select-sm w-auto" aria-label="@ViewText" value="@View" @onchange="OnViewSelectChangedAsync">
+        @foreach (var (view, text) in ViewItems)
+        {
+            <option value="@view" selected="@(view == View)">@text</option>
+        }
+    </select>
+</div>

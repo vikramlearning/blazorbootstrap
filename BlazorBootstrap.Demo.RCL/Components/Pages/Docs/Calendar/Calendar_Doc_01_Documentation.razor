@@ -1,0 +1,32 @@
+@attribute [Route(pageUrl)]
+@layout DocsMainLayout
+
+<DocsPageHeadSection PageUrl="@pageUrl"
+                     PageTitle="@pageTitle"
+                     PageDescription="@pageDescription"
+                     MetaTitle="@metaTitle"
+                     MetaDescription="@metaDescription"
+                     ImageUrl="@imageUrl" />
+
+<DemoLink Href="@DemoRouteConstants.Demos_URL_Calendar" />
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="Screenshot" PageUrl="@pageUrl" Link="screenshot">
+    <img src="@imageUrl" class="img-fluid" alt="@metaTitle" />
+</Section>
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="Calendar Parameters" PageUrl="@pageUrl" Link="calendar-parameters">
+    <DocxTable TItem="Calendar<object>" DocType="DocType.Parameters" />
+</Section>
+
+<Section Class="p-0" Size="HeadingSize.H3" Name="Calendar Events" PageUrl="@pageUrl" Link="calendar-events">
+    <DocxTable TItem="Calendar<object>" DocType="DocType.Events" />
+</Section>
+
+@code {
+    private const string pageUrl = DemoRouteConstants.Docs_URL_Calendar;
+    private const string pageTitle = "Calendar";
+    private const string pageDescription = "This documentation provides a comprehensive reference for the <code>Calendar</code> component, guiding you through its configuration options.";
+    private const string metaTitle = "Blazor Calendar Component";
+    private const string metaDescription = "This documentation provides a comprehensive reference for the Calendar component, guiding you through its configuration options.";
+    private const string imageUrl = DemoScreenshotSrcConstants.Demos_URL_Calendar;
+}

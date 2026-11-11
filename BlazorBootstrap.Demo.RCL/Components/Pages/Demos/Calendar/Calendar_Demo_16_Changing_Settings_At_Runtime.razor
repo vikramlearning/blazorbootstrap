@@ -1,0 +1,143 @@
+@using System.Globalization
+
+<div class="d-flex flex-wrap align-items-center gap-3 mb-2">
+    <label class="d-flex align-items-center gap-2">
+        View
+        <select class="form-select form-select-sm w-auto" @bind="view">
+            <option value="@CalendarView.Month">Month</option>
+            <option value="@CalendarView.Week">Week</option>
+            <option value="@CalendarView.WorkWeek">Work week</option>
+            <option value="@CalendarView.Day">Day</option>
+            <option value="@CalendarView.Agenda">Agenda</option>
+        </select>
+    </label>
+    <label class="d-flex align-items-center gap-2">
+        Culture
+        <select class="form-select form-select-sm w-auto" @bind="cultureName">
+            <option value="">From the app</option>
+            <option value="en-US">en-US</option>
+            <option value="de-DE">de-DE</option>
+            <option value="fr-FR">fr-FR</option>
+            <option value="fa-IR">fa-IR</option>
+        </select>
+    </label>
+    <label class="d-flex align-items-center gap-2">
+        Slot
+        <select class="form-select form-select-sm w-auto" @bind="slotMinutes">
+            <option value="15">15 minutes</option>
+            <option value="30">30 minutes</option>
+            <option value="60">60 minutes</option>
+        </select>
+    </label>
+    <label class="d-flex align-items-center gap-2">
+        Height
+        <select class="form-select form-select-sm w-auto" @bind="height">
+            <option value="320">320 px</option>
+            <option value="480">480 px</option>
+            <option value="0">Whole grid</option>
+        </select>
+    </label>
+</div>
+<div class="d-flex flex-wrap align-items-center gap-3 mb-2">
+    <Switch @bind-Value="showWeekNumbers" Label="Week numbers" />
+    <Switch @bind-Value="hideWeekends" Label="Hide weekends" />
+    <Switch @bind-Value="showHolidays" Label="Holidays" />
+    <Switch @bind-Value="shortDay" Label="Show 7:00 to 19:00 only" />
+    <Switch @bind-Value="use24HourClock" Label="24-hour clock" />
+    <Switch @bind-Value="allowDrag" Label="Dragging" />
+</div>
+<div class="d-flex flex-wrap align-items-center gap-2 mb-3">
+    <Button Color="ButtonColor.Secondary" Outline="true" Size="ButtonSize.Small" @onclick="AddEvent">Add an event</Button>
+    <Button Color="ButtonColor.Secondary" Outline="true" Size="ButtonSize.Small" @onclick="RemoveEvent">Remove the last event</Button>
+    <Button Color="ButtonColor.Secondary" Outline="true" Size="ButtonSize.Small" @onclick="@(() => date = new DateOnly(2025, 1, 15))">Go to January 2025</Button>
+    <Button Color="ButtonColor.Secondary" Outline="true" Size="ButtonSize.Small" @onclick="@(() => date = new DateOnly(2024, 11, 5))">Go to November 2024</Button>
+</div>
+
+<Calendar TItem="Appointment"
+          AriaLabel="Settings calendar"
+          Data="appointments"
+          @bind-Date="date"
+          @bind-View="view"
+          Culture="@Culture"
+          SlotMinutes="slotMinutes"
+          Height="height"
+          ShowWeekNumbers="showWeekNumbers"
+          HiddenDays="@(hideWeekends ? weekend : null)"
+          Holidays="@(showHolidays ? holidays : null)"
+          DayStart="@(shortDay ? new TimeOnly(7, 0) : TimeOnly.MinValue)"
+          DayEnd="@(shortDay ? new TimeOnly(19, 0) : TimeOnly.MinValue)"
+          TimeFormat="@(use24HourClock ? CalendarTimeFormat.TwentyFourHour : CalendarTimeFormat.Culture)"
+          AllowRangeSelection="allowDrag"
+          AllowEventMove="allowDrag"
+          AllowEventResize="allowDrag"
+          StartField="a => a.Start"
+          EndField="a => a.End"
+          TitleField="a => a.Title"
+          OnEventMoved="OnEventChanged"
+          OnEventResized="OnEventChanged" />
+
+<div class="mt-3">Events in the list: <b>@appointments.Count</b></div>
+
+@code {
+    private class Appointment
+    {
+        public string Title { get; set; } = "";
+        public DateTime Start { get; set; }
+        public DateTime End { get; set; }
+    }
+
+    private static DateTime At(int day, int hour, int minute = 0) => new(2024, 11, day, hour, minute, 0);
+
+    private readonly List<Appointment> appointments = new()
+    {
+        new() { Title = "Standup", Start = At(5, 9), End = At(5, 9, 30) },
+        new() { Title = "Design review", Start = At(6, 11), End = At(6, 12, 30) },
+        new() { Title = "Weekend trip", Start = At(9, 8), End = At(10, 18) }
+    };
+
+    // The calendar holds no holiday data; you supply the dates and names.
+    private readonly List<CalendarHoliday> holidays = new()
+    {
+        new(new DateOnly(2024, 11, 11), "Veterans Day"),
+        new(new DateOnly(2024, 11, 28), "Thanksgiving")
+    };
+
+    private readonly DayOfWeek[] weekend = { DayOfWeek.Saturday, DayOfWeek.Sunday };
+
+    private bool allowDrag = true;
+    private string cultureName = "en-US";
+    private DateOnly date = new(2024, 11, 5);
+    private int height = 480;
+    private bool hideWeekends;
+    private int newEventNumber;
+    private bool shortDay;
+    private bool showHolidays;
+    private bool showWeekNumbers;
+    private int slotMinutes = 30;
+    private bool use24HourClock;
+    private CalendarView view = CalendarView.Month;
+
+    // Every setting is an ordinary parameter. Change the value it is bound to and the calendar renders again.
+    private CultureInfo? Culture => cultureName.Length == 0 ? null : CultureInfo.GetCultureInfo(cultureName);
+
+    private void AddEvent()
+    {
+        newEventNumber++;
+
+        var start = date.ToDateTime(new TimeOnly(13, 0));
+
+        appointments.Add(new Appointment { Title = $"New event {newEventNumber}", Start = start, End = start.AddHours(1) });
+    }
+
+    private void RemoveEvent()
+    {
+        if (appointments.Count > 0)
+            appointments.RemoveAt(appointments.Count - 1);
+    }
+
+    private void OnEventChanged(CalendarEventChangedEventArgs<Appointment> args)
+    {
+        args.Item.Start = args.NewStart;
+        args.Item.End = args.NewEnd;
+    }
+}

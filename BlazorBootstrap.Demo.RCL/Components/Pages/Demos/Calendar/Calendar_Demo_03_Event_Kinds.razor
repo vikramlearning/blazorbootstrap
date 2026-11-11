@@ -1,0 +1,59 @@
+<Calendar TItem="Appointment"
+          AriaLabel="Travel calendar"
+          Data="appointments"
+          Date="@(new DateOnly(2024, 11, 5))"
+          StartField="a => a.Start"
+          EndField="a => a.End"
+          TitleField="a => a.Title"
+          AllDayField="a => a.IsAllDay"
+          ColorField="a => a.Color"
+          @bind-SelectedDate="selectedDate"
+          OnDayClick="OnDayClick"
+          OnEventClick="OnEventClick" />
+
+<div class="mt-3">
+    <div>Selected date: <b>@(selectedDate?.ToString("D") ?? "none")</b></div>
+    <div>Last click: <b>@lastClick</b></div>
+</div>
+
+@code {
+    private record Appointment(string Title, DateTime Start, DateTime End, bool IsAllDay, CalendarColor Color);
+
+    private static DateTime At(int day, int hour = 0, int minute = 0) => new(2024, 11, day, hour, minute, 0);
+
+    private readonly List<Appointment> appointments = new()
+    {
+        // All-day events: the end is the start of the day after the last day.
+        new("Trip to London", At(1), At(5), true, CalendarColor.Success),
+        new("Design conference", At(14), At(23), true, CalendarColor.Warning),
+
+        // Timed events.
+        new("Meet with Sean", At(2, 6), At(2, 7), false, CalendarColor.Primary),
+        new("Stonehenge, Windsor Castle, Oxford", At(5, 8, 45), At(6, 17), false, CalendarColor.Info),
+
+        // An end that is not after its start still shows.
+        new("Domain name due", At(12, 12), At(12, 12), false, CalendarColor.Danger),
+
+        // A title is always shown as text, never as markup.
+        new("<img src=x onerror=alert(1)>", At(8, 10), At(8, 11), false, CalendarColor.Dark),
+
+        // A day with more events than fit shows "+N more".
+        new("Live recording", At(26, 3), At(26, 4), false, CalendarColor.Primary),
+        new("Visit partner office", At(26, 5), At(26, 6), false, CalendarColor.Primary),
+        new("Exercise class", At(26, 7, 30), At(26, 8, 30), false, CalendarColor.Success),
+        new("Announcement", At(26, 15), At(26, 15, 30), false, CalendarColor.Danger),
+        new("Dinner", At(26, 18), At(26, 20), false, CalendarColor.Secondary),
+        new("Release day", At(26), At(27), true, CalendarColor.Info),
+        new("Budget review", At(26, 11), At(26, 12), false, CalendarColor.None),
+        new("Team retro", At(26, 13), At(26, 14), false, CalendarColor.Warning)
+    };
+
+    private string lastClick = "none";
+    private DateOnly? selectedDate;
+
+    private void OnDayClick(CalendarDayClickEventArgs args) => lastClick = $"day {args.Date:yyyy-MM-dd}";
+
+    // Open your own form here, for example in a Modal.
+    private void OnEventClick(CalendarEventClickEventArgs<Appointment> args) =>
+        lastClick = $"event \"{args.Item.Title}\" ({args.Item.Start:yyyy-MM-dd HH:mm} to {args.Item.End:yyyy-MM-dd HH:mm})";
+}

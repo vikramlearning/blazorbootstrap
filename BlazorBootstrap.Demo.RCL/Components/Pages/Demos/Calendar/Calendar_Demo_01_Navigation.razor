@@ -1,0 +1,40 @@
+<Calendar TItem="Appointment"
+          AriaLabel="Team calendar"
+          @bind-View="view"
+          @bind-Date="date"
+          OnVisibleRangeChanged="OnVisibleRangeChanged" />
+
+<div class="mt-3">
+    <div>Bound view: <b>@view</b></div>
+    <div>Bound date: <b>@date.ToString("D")</b></div>
+    <div class="d-flex flex-wrap gap-2 my-2">
+        <Button Color="ButtonColor.Secondary" Outline="true" Size="ButtonSize.Small" @onclick="GoToNewYear">Set date to 1 January 2027</Button>
+        <Button Color="ButtonColor.Secondary" Outline="true" Size="ButtonSize.Small" @onclick="ShowWorkWeek">Set view to Work week</Button>
+        <Button Color="ButtonColor.Secondary" Outline="true" Size="ButtonSize.Small" @onclick="ClearLog">Clear log</Button>
+    </div>
+    <div>Visible range log (newest first):</div>
+    <ol class="mb-0" reversed>
+        @foreach (var entry in rangeLog)
+        {
+            <li>@entry</li>
+        }
+    </ol>
+</div>
+
+@code {
+    private record Appointment(string Title, DateTime Start, DateTime End);
+
+    private DateOnly date = DateOnly.FromDateTime(DateTime.Today);
+    private readonly List<string> rangeLog = new();
+    private CalendarView view = CalendarView.Month;
+
+    private void ClearLog() => rangeLog.Clear();
+
+    private void GoToNewYear() => date = new DateOnly(2027, 1, 1);
+
+    // Load the events of the visible range here; this demo only logs the range.
+    private void OnVisibleRangeChanged(CalendarVisibleRangeChangedEventArgs args) =>
+        rangeLog.Insert(0, $"{args.View}: {args.Start:yyyy-MM-dd} to {args.End:yyyy-MM-dd}");
+
+    private void ShowWorkWeek() => view = CalendarView.WorkWeek;
+}

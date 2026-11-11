@@ -271,6 +271,79 @@ public static class EnumExtensions
             _ => ""
         };
 
+    /// <summary>
+    /// Converts a <see cref="CalendarCompactBreakpoint" /> value to its <c>bb-calendar-compact-*</c> class.
+    /// </summary>
+    [AddedVersion("4.1.0")]
+    [Description("Converts a CalendarCompactBreakpoint value to its bb-calendar-compact-* class.")]
+    public static string ToCalendarCompactClass(this CalendarCompactBreakpoint breakpoint) =>
+        breakpoint switch
+        {
+            CalendarCompactBreakpoint.Small => "bb-calendar-compact-sm",
+            CalendarCompactBreakpoint.Medium => "bb-calendar-compact-md",
+            CalendarCompactBreakpoint.Large => "bb-calendar-compact-lg",
+            CalendarCompactBreakpoint.ExtraLarge => "bb-calendar-compact-xl",
+            CalendarCompactBreakpoint.ExtraExtraLarge => "bb-calendar-compact-xxl",
+            _ => ""
+        };
+
+    /// <summary>
+    /// Converts a <see cref="CalendarColor" /> value to the class that tints a marked day: Bootstrap's <c>bg-*-subtle</c>, or none.
+    /// </summary>
+    [AddedVersion("4.1.0")]
+    [Description("Converts a CalendarColor value to the class that tints a marked day: Bootstrap's bg-*-subtle, or none.")]
+    public static string ToCalendarDayHighlightClass(this CalendarColor calendarColor) =>
+        calendarColor switch
+        {
+            CalendarColor.Primary => "bg-primary-subtle",
+            CalendarColor.Secondary => "bg-secondary-subtle",
+            CalendarColor.Success => "bg-success-subtle",
+            CalendarColor.Danger => "bg-danger-subtle",
+            CalendarColor.Warning => "bg-warning-subtle",
+            CalendarColor.Info => "bg-info-subtle",
+            CalendarColor.Light => "bg-light-subtle",
+            CalendarColor.Dark => "bg-dark-subtle",
+            _ => ""
+        };
+
+    /// <summary>
+    /// Converts a <see cref="CalendarColor" /> value to the class that colors the label of a marked day: Bootstrap's <c>text-*-emphasis</c>, or the secondary text color.
+    /// </summary>
+    [AddedVersion("4.1.0")]
+    [Description("Converts a CalendarColor value to the class that colors the label of a marked day: Bootstrap's text-*-emphasis, or the secondary text color.")]
+    public static string ToCalendarDayLabelClass(this CalendarColor calendarColor) =>
+        calendarColor switch
+        {
+            CalendarColor.Primary => "text-primary-emphasis",
+            CalendarColor.Secondary => "text-secondary-emphasis",
+            CalendarColor.Success => "text-success-emphasis",
+            CalendarColor.Danger => "text-danger-emphasis",
+            CalendarColor.Warning => "text-warning-emphasis",
+            CalendarColor.Info => "text-info-emphasis",
+            CalendarColor.Light => "text-light-emphasis",
+            CalendarColor.Dark => "text-dark-emphasis",
+            _ => "text-body-secondary"
+        };
+
+    /// <summary>
+    /// Converts a <see cref="CalendarColor" /> value to the classes of an event: Bootstrap's <c>text-bg-*</c>, or the neutral body colors.
+    /// </summary>
+    [AddedVersion("4.1.0")]
+    [Description("Converts a CalendarColor value to the classes of an event: Bootstrap's text-bg-*, or the neutral body colors.")]
+    public static string ToCalendarEventColorClass(this CalendarColor calendarColor) =>
+        calendarColor switch
+        {
+            CalendarColor.Primary => "text-bg-primary",
+            CalendarColor.Secondary => "text-bg-secondary",
+            CalendarColor.Success => "text-bg-success",
+            CalendarColor.Danger => "text-bg-danger",
+            CalendarColor.Warning => "text-bg-warning",
+            CalendarColor.Info => "text-bg-info",
+            CalendarColor.Light => "text-bg-light",
+            CalendarColor.Dark => "text-bg-dark",
+            _ => "bg-body-secondary text-body"
+        };
+
     public static string ToCalloutColorClass(this CalloutColor calloutColor) =>
         calloutColor switch
         {

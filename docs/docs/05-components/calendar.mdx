@@ -1,0 +1,390 @@
+---
+title: Blazor Calendar Component
+description: The Blazor Bootstrap Calendar component is an event calendar with Month, Week, Work week, Day, and Agenda views, drag to select, move, and resize, holidays, week numbers, cultures, and right-to-left layout.
+image: https://demos.blazorbootstrap.com/images/screenshots/calendar.png
+
+sidebar_label: Calendar
+sidebar_position: 5.7
+---
+
+import CarbonAd from '/carbon-ad.mdx'
+
+# Blazor Calendar
+
+The Blazor Bootstrap `Calendar` component is an event calendar, like the calendar in an email app. It shows your events in Month, Week, Work week, Day, and Agenda views. Users move through time, select days and time ranges, and move or resize events by dragging. Your app binds a list of events and reacts to callbacks.
+
+<CarbonAd />
+
+## Before you start
+
+- **No Bootstrap page.** Bootstrap 5.3 has no calendar component. `Calendar` is built from Bootstrap classes (buttons, button groups, `text-bg-*` colors) and a small set of `--bb-calendar-*` CSS properties, so it follows the light and dark themes.
+- **Your list, your type.** Bind any list to `Data` and tell the calendar how to read an item with `StartField`, `EndField`, and `TitleField`. `TItem` is inferred from `Data`.
+- **The calendar never changes an event.** A click, a drag selection, a move, or a resize raises a callback with the item and the new times. Your app decides whether the user may make the change, applies it to its own list, and the calendar shows the result on its next render. If your app does nothing, the event stays where it was.
+- **No editor.** The calendar has no built-in form. Open your own, for example a `Modal` with an `EditForm`, from `OnEventClick`, `OnSlotClick`, or `OnRangeSelected`.
+- **No recurrence.** The calendar shows the events you give it. For a repeating event, add one item per occurrence in the visible period. `OnVisibleRangeChanged` tells you which period is shown, so you can load or build only those.
+- **Times as supplied.** The calendar shows each `DateTime` as it is. It does not convert between time zones.
+- **Today and now are the user's.** The highlighted day, the Today button, and the current-time line follow the clock of the user's device, in Blazor WebAssembly and in Blazor Server alike. Pass event times in the user's local time so they line up with it. In a Blazor Server app the first paint uses the server's date and corrects itself as soon as the browser reports its time.
+- **An end at midnight is exclusive.** An event from 1 November 00:00 to 3 November 00:00 covers 1 and 2 November. An all-day event with the same start and end covers that one day.
+- **Small screens.** Below `CompactBreakpoint` (medium, 768px, by default) the view switch becomes a list, the Month view shows a marker per day with the selected day's events below the grid, and the time grid scrolls sideways inside the calendar.
+- **The type name.** The component is generic (`Calendar<TItem>`), so it does not clash with `System.Globalization.Calendar` when a file imports both namespaces.
+
+## Accessibility
+
+- Every view works from the keyboard, except moving and resizing an event by dragging. To change an event's times without a mouse, open your form from `OnEventClick`.
+- **Tab** reaches the toolbar, one day or time slot of the grid, and each event. On a day or a time slot, the **arrow keys** move, **Home** and **End** go to the ends of the week or the day, and **Page Up** and **Page Down** show the previous or next period.
+- **Enter** or **Space** activates a day, a time slot, or an event and raises the same callback as a click.
+- **Esc** closes the jump-to-date picker or a day's event list and returns focus to the button that opened it.
+- Days, time slots, and events carry their full date, time, and title as their accessible name. Today is marked with `aria-current="date"` and the selected day with `aria-selected`.
+- Set `AriaLabel` to name the calendar. Do not rely on an event's color alone to tell events apart; say it in the title too.
+
+## Calendar parameters
+
+| Name | Type | Default | Required | Description | Added Version |
+|:--|:--|:--|:--|:--|:--|
+| AgendaDays | `int` | 7 | | Gets or sets the number of days the Agenda view lists. | 4.1.0 |
+| AgendaText | `string` | `"Agenda"` | | Gets or sets the text of the Agenda view button. | 4.1.0 |
+| AllDayField | `Func<TItem, bool>?` | null | | Gets or sets a function that tells whether an event is an all-day event. | 4.1.0 |
+| AllDayText | `string` | `"All day"` | | Gets or sets the label of the all-day row in the Week, Work week, and Day views. | 4.1.0 |
+| AllowEventMove | `bool` | true | | Gets or sets whether the user can move an event by dragging it. The calendar reports the new times through OnEventMoved; the event moves only when the app updates its list. | 4.1.0 |
+| AllowEventResize | `bool` | true | | Gets or sets whether the user can resize an event by dragging one of its ends. The calendar reports the new times through OnEventResized; the event changes only when the app updates its list. | 4.1.0 |
+| AllowRangeSelection | `bool` | true | | Gets or sets whether the user can select a range of days or time slots by dragging. The calendar reports the range through OnRangeSelected. | 4.1.0 |
+| AriaLabel | `string?` | null | | Gets or sets the accessible name of the calendar, read by screen readers. | 4.1.0 |
+| CloseText | `string` | `"Close"` | | Gets or sets the accessible name of the button that closes a day's full event list. | 4.1.0 |
+| ColorField | `Func<TItem, CalendarColor>?` | null | | Gets or sets a function that returns the color of an event. | 4.1.0 |
+| CompactBreakpoint | `CalendarCompactBreakpoint` | `CalendarCompactBreakpoint.Medium` | | Gets or sets the width below which the calendar shows its compact layout. | 4.1.0 |
+| Culture | `CultureInfo?` | null | | Gets or sets the culture that supplies month and day names, date and time formats, the first day of the week, and the calendar system. When null, the current culture is used. | 4.1.0 |
+| Data | `IEnumerable<TItem>?` | null | | Gets or sets the events. | 4.1.0 |
+| Date | `DateOnly` | today | | Gets or sets the date the calendar shows: the visible period is the one that contains it. Default value is today. | 4.1.0 |
+| DayEnd | `TimeOnly` | 00:00 | | Gets or sets the time the hourly grid of the Week, Work week, and Day views ends at. A value that is not after DayStart means the end of the day. Default value is 00:00, the end of the day. | 4.1.0 |
+| DayMarkProvider | `Func<DateOnly, CalendarDayMark?>?` | null | | Gets or sets a function that marks a day: a label, a highlight color, and non-working shading. It is called for each day the calendar shows; return null for a day with no mark. | 4.1.0 |
+| DayStart | `TimeOnly` | 00:00 | | Gets or sets the time the hourly grid of the Week, Work week, and Day views starts at. Default value is 00:00. | 4.1.0 |
+| DayText | `string` | `"Day"` | | Gets or sets the text of the Day view button. | 4.1.0 |
+| EmptyText | `string` | `"No events"` | | Gets or sets the text shown where there are no events: in the Agenda view for a period without events, and in the compact Month view for a selected day without events. | 4.1.0 |
+| EndField | `Func<TItem, DateTime>?` | null | | Gets or sets a function that returns the end of an event. An end at midnight is exclusive: an event from 1 November 00:00 to 3 November 00:00 covers 1 and 2 November. | 4.1.0 |
+| EventTemplate | `RenderFragment<CalendarEventContext<TItem>>?` | null | | Gets or sets a template that replaces the content of every event. Its context carries the event's item, title, start, end, and the view it is drawn in. | 4.1.0 |
+| FirstDayOfWeek | `DayOfWeek?` | null | | Gets or sets the first day of the week. It overrides the culture's first day without changing the culture. When null, the culture's first day is used. | 4.1.0 |
+| Height | `double` | 600 | | Gets or sets the height in pixels of the hourly grid of the Week, Work week, and Day views. The grid scrolls inside it. A value of 0 or less shows the whole grid. | 4.1.0 |
+| HiddenDays | `IReadOnlyList<DayOfWeek>?` | null | | Gets or sets the weekdays the calendar does not show, for example Saturday and Sunday. An event on a hidden day is not drawn; an event that covers several days keeps its part on the days that are shown. | 4.1.0 |
+| Holidays | `IReadOnlyList<CalendarHoliday>?` | null | | Gets or sets the holidays. The calendar labels each with its name and shades it as a non-working day in every view. | 4.1.0 |
+| MonthText | `string` | `"Month"` | | Gets or sets the text of the Month view button. | 4.1.0 |
+| MoreTextFormat | `string` | `"+{0} more"` | | Gets or sets the format of the text shown on a Month day with more events than fit. &#123;0&#125; is the number of hidden events. | 4.1.0 |
+| NextText | `string` | `"Next"` | | Gets or sets the accessible name of the next button. | 4.1.0 |
+| PreviousText | `string` | `"Previous"` | | Gets or sets the accessible name of the previous button. | 4.1.0 |
+| SelectedDate | `DateOnly?` | null | | Gets or sets the selected day. Clicking a day selects it. | 4.1.0 |
+| ShowWeekNumbers | `bool` | false | | Gets or sets whether the calendar shows week numbers: beside each week in the Month view, and in the corner of the Week, Work week, and Day views. | 4.1.0 |
+| SlotMinutes | `int` | 30 | | Gets or sets the length of a time slot in the Week, Work week, and Day views: 15, 30, or 60 minutes. Any other value means 30. | 4.1.0 |
+| StartField | `Func<TItem, DateTime>?` | null | | Gets or sets a function that returns the start of an event. | 4.1.0 |
+| TimeFormat | `CalendarTimeFormat` | `CalendarTimeFormat.Culture` | | Gets or sets how times of day are shown: in the culture's format, on a 12-hour clock, or on a 24-hour clock. It overrides the culture's time format without changing the culture. | 4.1.0 |
+| TitleField | `Func<TItem, string?>?` | null | | Gets or sets a function that returns the title of an event. | 4.1.0 |
+| TodayText | `string` | `"Today"` | | Gets or sets the text of the Today button. | 4.1.0 |
+| View | `CalendarView` | `CalendarView.Month` | | Gets or sets the view the calendar shows. | 4.1.0 |
+| ViewText | `string` | `"View"` | | Gets or sets the accessible name of the view switch. | 4.1.0 |
+| WeekNumberRule | `CalendarWeekNumberRule` | `CalendarWeekNumberRule.Culture` | | Gets or sets how weeks are numbered: by the culture's rule, or by ISO 8601. | 4.1.0 |
+| WeekNumberText | `string` | `"Wk"` | | Gets or sets the short text that heads the week numbers. | 4.1.0 |
+| WeekText | `string` | `"Week"` | | Gets or sets the text of the Week view button. | 4.1.0 |
+| WorkDayEnd | `TimeOnly` | 17:00 | | Gets or sets the time the working day ends at. Time after it is shaded in the Week, Work week, and Day views. Default value is 17:00. | 4.1.0 |
+| WorkDayStart | `TimeOnly` | 09:00 | | Gets or sets the time the working day starts at. Time before it is shaded in the Week, Work week, and Day views, and the hourly grid opens there when today is not shown. Default value is 09:00. | 4.1.0 |
+| WorkDays | `IReadOnlyList<DayOfWeek>?` | null | | Gets or sets the working days the Work week view shows. When null, Monday to Friday. | 4.1.0 |
+| WorkWeekText | `string` | `"Work week"` | | Gets or sets the text of the Work week view button. | 4.1.0 |
+
+## Calendar callbacks
+
+| Name | Type | Description | Added Version |
+|:--|:--|:--|:--|
+| DateChanged | `EventCallback<DateOnly>` | This event fires when navigation changes the date the calendar shows. | 4.1.0 |
+| OnDayClick | `EventCallback<CalendarDayClickEventArgs>` | This event fires when the user clicks a day. | 4.1.0 |
+| OnEventClick | `EventCallback<CalendarEventClickEventArgs<TItem>>` | This event fires when the user clicks an event. Open your own form here; the calendar shows none. | 4.1.0 |
+| OnEventMoved | `EventCallback<CalendarEventChangedEventArgs<TItem>>` | This event fires when the user moved an event by dragging it. It carries the event and its new start and end. Update your list to apply the move; if you do not, the event stays where it was. | 4.1.0 |
+| OnEventResized | `EventCallback<CalendarEventChangedEventArgs<TItem>>` | This event fires when the user resized an event by dragging one of its ends. It carries the event and its new start and end. Update your list to apply the change; if you do not, the event stays as it was. | 4.1.0 |
+| OnRangeSelected | `EventCallback<CalendarRangeSelectedEventArgs>` | This event fires when the user selected a range of days or time slots by dragging. Open your own form here to create an event in the range. | 4.1.0 |
+| OnSlotClick | `EventCallback<CalendarSlotClickEventArgs>` | This event fires when the user clicks an empty time slot in the Week, Work week, or Day view. | 4.1.0 |
+| OnVisibleRangeChanged | `EventCallback<CalendarVisibleRangeChangedEventArgs>` | This event fires after the first render and whenever navigation or a view switch changes the dates the calendar shows. Use it to load the events of the visible range. | 4.1.0 |
+| SelectedDateChanged | `EventCallback<DateOnly?>` | This event fires when the user selects a day. | 4.1.0 |
+| ViewChanged | `EventCallback<CalendarView>` | This event fires when the user switches the view. | 4.1.0 |
+
+## Callback arguments
+
+| Type | Properties |
+|:--|:--|
+| `CalendarEventClickEventArgs<TItem>` | `Item` |
+| `CalendarDayClickEventArgs` | `Date` |
+| `CalendarSlotClickEventArgs` | `Start`, `End` |
+| `CalendarRangeSelectedEventArgs` | `Start`, `End`, `IsAllDay` |
+| `CalendarEventChangedEventArgs<TItem>` | `Item`, `NewStart`, `NewEnd` |
+| `CalendarVisibleRangeChangedEventArgs` | `Start`, `End`, `View` |
+
+## Supporting types
+
+| Type | Members |
+|:--|:--|
+| `CalendarView` | `Month`, `Week`, `WorkWeek`, `Day`, `Agenda` |
+| `CalendarColor` | `None`, `Primary`, `Secondary`, `Success`, `Danger`, `Warning`, `Info`, `Light`, `Dark` |
+| `CalendarCompactBreakpoint` | `None`, `Small`, `Medium`, `Large`, `ExtraLarge`, `ExtraExtraLarge` |
+| `CalendarTimeFormat` | `Culture`, `TwelveHour`, `TwentyFourHour` |
+| `CalendarWeekNumberRule` | `Culture`, `Iso8601` |
+| `CalendarHoliday` | `Date`, `Name` |
+| `CalendarDayMark` | `Label`, `Color`, `IsNonWorking` |
+| `CalendarEventContext<TItem>` | `Item`, `Title`, `Start`, `End`, `IsAllDay`, `View` |
+
+## Examples
+
+### Basic usage
+
+Bind a list and tell the calendar how to read each item. The title opens a small month grid to jump to any date.
+
+```cshtml {} showLineNumbers
+<Calendar TItem="Appointment"
+          AriaLabel="Team calendar"
+          Data="appointments"
+          @bind-View="view"
+          @bind-Date="date"
+          StartField="a => a.Start"
+          EndField="a => a.End"
+          TitleField="a => a.Title"
+          AllDayField="a => a.IsAllDay"
+          ColorField="a => a.Color" />
+```
+
+```cs {} showLineNumbers
+@code {
+    private CalendarView view = CalendarView.Month;
+    private DateOnly date = DateOnly.FromDateTime(DateTime.Today);
+
+    private readonly List<Appointment> appointments = new()
+    {
+        new() { Title = "Standup", Start = DateTime.Today.AddHours(9), End = DateTime.Today.AddHours(9.5), Color = CalendarColor.Primary },
+        new() { Title = "Conference", Start = DateTime.Today.AddDays(2), End = DateTime.Today.AddDays(5), IsAllDay = true, Color = CalendarColor.Success }
+    };
+
+    private class Appointment
+    {
+        public string Title { get; set; } = "";
+        public DateTime Start { get; set; }
+        public DateTime End { get; set; }
+        public bool IsAllDay { get; set; }
+        public CalendarColor Color { get; set; }
+    }
+}
+```
+
+[See demo here](https://demos.blazorbootstrap.com/calendar#navigation)
+
+### Time grid settings
+
+Set the slot length, the hours shown, the working hours, and the height of the hourly grid.
+
+```cshtml {} showLineNumbers
+<Calendar TItem="Appointment"
+          Data="appointments"
+          View="CalendarView.Week"
+          SlotMinutes="15"
+          DayStart="new TimeOnly(7, 0)"
+          DayEnd="new TimeOnly(19, 0)"
+          WorkDayStart="new TimeOnly(8, 0)"
+          WorkDayEnd="new TimeOnly(16, 0)"
+          Height="480"
+          StartField="a => a.Start"
+          EndField="a => a.End"
+          TitleField="a => a.Title" />
+```
+
+[See demo here](https://demos.blazorbootstrap.com/calendar#time-grid-settings)
+
+### Drag to select, move, and resize
+
+The calendar reports what the user did. Apply the change to your own list, after any check your app needs. This is also the place to reject a change the user is not allowed to make.
+
+```cshtml {} showLineNumbers
+<Calendar TItem="Appointment"
+          Data="appointments"
+          StartField="a => a.Start"
+          EndField="a => a.End"
+          TitleField="a => a.Title"
+          OnRangeSelected="OnRangeSelected"
+          OnEventMoved="OnEventChanged"
+          OnEventResized="OnEventChanged" />
+```
+
+```cs {} showLineNumbers
+@code {
+    private void OnEventChanged(CalendarEventChangedEventArgs<Appointment> args)
+    {
+        // Validate here. Without this change, the event stays where it was.
+        args.Item.Start = args.NewStart;
+        args.Item.End = args.NewEnd;
+    }
+
+    private void OnRangeSelected(CalendarRangeSelectedEventArgs args) =>
+        appointments.Add(new Appointment { Title = "New event", Start = args.Start, End = args.End, IsAllDay = args.IsAllDay });
+}
+```
+
+Set `AllowRangeSelection`, `AllowEventMove`, or `AllowEventResize` to `false` to switch one of them off. On a touch screen, a drag starts after a press and hold, so swiping still scrolls the page.
+
+[See demo here](https://demos.blazorbootstrap.com/calendar#drag-to-select-move-and-resize)
+
+### Create and edit with a form
+
+Open your own form from the callbacks and change the list when the form is saved.
+
+```cshtml {} showLineNumbers
+<Calendar TItem="Appointment"
+          Data="appointments"
+          StartField="a => a.Start"
+          EndField="a => a.End"
+          TitleField="a => a.Title"
+          OnEventClick="args => ShowFormAsync(args.Item, args.Item.Start, args.Item.End)"
+          OnSlotClick="args => ShowFormAsync(null, args.Start, args.End)"
+          OnRangeSelected="args => ShowFormAsync(null, args.Start, args.End)" />
+
+<Modal @ref="modal" Title="Event">
+    <BodyTemplate>
+        <EditForm Model="model" OnValidSubmit="SaveAsync">
+            ...
+        </EditForm>
+    </BodyTemplate>
+</Modal>
+```
+
+[See demo here](https://demos.blazorbootstrap.com/calendar#create-and-edit-with-a-form)
+
+### Customizing
+
+Use `EventTemplate` for the inside of an event, `DayMarkProvider` to label, tint, or shade a day, and `HiddenDays` to leave weekdays out.
+
+```cshtml {} showLineNumbers
+<Calendar TItem="Appointment"
+          Data="appointments"
+          HiddenDays="@(new[] { DayOfWeek.Saturday, DayOfWeek.Sunday })"
+          DayMarkProvider="GetDayMark"
+          StartField="a => a.Start"
+          EndField="a => a.End"
+          TitleField="a => a.Title">
+    <EventTemplate Context="item">
+        <Icon Name="IconName.CameraVideo" /> @item.Title
+    </EventTemplate>
+</Calendar>
+```
+
+```cs {} showLineNumbers
+@code {
+    private CalendarDayMark? GetDayMark(DateOnly date) =>
+        date.Day == 25 ? new CalendarDayMark { Label = "Payday", Color = CalendarColor.Success } : null;
+}
+```
+
+[See demo here](https://demos.blazorbootstrap.com/calendar#customizing)
+
+### Holidays and week numbers
+
+The calendar holds no holiday data; you supply the dates and names. A holiday is labelled and shaded as a non-working day. Week numbers follow the culture's rule or ISO 8601.
+
+```cshtml {} showLineNumbers
+<Calendar TItem="Appointment"
+          Data="appointments"
+          Holidays="holidays"
+          ShowWeekNumbers="true"
+          WeekNumberRule="CalendarWeekNumberRule.Iso8601"
+          StartField="a => a.Start"
+          EndField="a => a.End"
+          TitleField="a => a.Title" />
+```
+
+```cs {} showLineNumbers
+@code {
+    private readonly List<CalendarHoliday> holidays = new()
+    {
+        new(new DateOnly(2027, 1, 1), "New Year's Day")
+    };
+}
+```
+
+[See demo here](https://demos.blazorbootstrap.com/calendar#holidays-and-week-numbers)
+
+### Localization
+
+Month and day names, date and time formats, and the first day of the week follow `Culture`, or the app's current culture when it is not set. Translate the built-in text with the text parameters.
+
+```cshtml {} showLineNumbers
+<Calendar TItem="Appointment"
+          Data="appointments"
+          Culture="@(CultureInfo.GetCultureInfo("fr-FR"))"
+          FirstDayOfWeek="DayOfWeek.Monday"
+          TimeFormat="CalendarTimeFormat.TwentyFourHour"
+          TodayText="Aujourd'hui"
+          MonthText="Mois"
+          WeekText="Semaine"
+          WorkWeekText="Semaine de travail"
+          DayText="Jour"
+          AgendaText="Planning"
+          AllDayText="Toute la journée"
+          MoreTextFormat="+{0} de plus"
+          EmptyText="Aucun événement"
+          StartField="a => a.Start"
+          EndField="a => a.End"
+          TitleField="a => a.Title" />
+```
+
+[See demo here](https://demos.blazorbootstrap.com/calendar#localization)
+
+### Calendar systems
+
+With a culture whose calendar is not Gregorian, such as Persian (fa-IR) or Umm al-Qura (ar-SA), the title, the month grid, the day numbers, the agenda, and the jump-to-date picker follow that calendar. Your events keep their ordinary `DateTime` values.
+
+```cshtml {} showLineNumbers
+<Calendar TItem="Appointment"
+          Data="appointments"
+          Culture="@(CultureInfo.GetCultureInfo("fa-IR"))"
+          StartField="a => a.Start"
+          EndField="a => a.End"
+          TitleField="a => a.Title" />
+```
+
+:::info Blazor WebAssembly
+A Blazor WebAssembly app loads only part of .NET's culture data by default. To use these cultures, add this to the project file:
+
+```xml
+<BlazorWebAssemblyLoadAllGlobalizationData>true</BlazorWebAssemblyLoadAllGlobalizationData>
+```
+
+The month names and date formats come from .NET's culture data, which is not the same on a server and in the browser. In Blazor WebAssembly, the month names of these calendars can appear in English, and the title can include the era. The days, months, and years shown are the same in both.
+:::
+
+[See demo here](https://demos.blazorbootstrap.com/calendar#calendar-systems)
+
+### Right to left
+
+In a right-to-left page the calendar is mirrored: the days run from right to left, the toolbar and the time column swap sides, and dragging follows the mirrored layout. Set `dir="rtl"` on the page or on an element around the calendar. For a whole right-to-left page, also load Bootstrap's right-to-left stylesheet (`bootstrap.rtl.min.css`).
+
+```cshtml {} showLineNumbers
+<div dir="rtl">
+    <Calendar TItem="Appointment"
+              Data="appointments"
+              Culture="@(CultureInfo.GetCultureInfo("ar-EG"))"
+              StartField="a => a.Start"
+              EndField="a => a.End"
+              TitleField="a => a.Title" />
+</div>
+```
+
+[See demo here](https://demos.blazorbootstrap.com/calendar#right-to-left)
+
+### Inside a modal, an offcanvas, and tabs
+
+A calendar can sit inside a `Modal`, an `Offcanvas`, or a `Tab`. When it is rendered while hidden, it takes its size and scrolls to its opening time when it is first shown. The compact layout follows the width of the screen, not of the container, so in a narrow container choose the Day or Agenda view.
+
+[See demo here](https://demos.blazorbootstrap.com/calendar#inside-a-modal-an-offcanvas-and-tabs)
+
+## Theming
+
+Override the `--bb-calendar-*` CSS properties on the calendar (or a parent) to change its measurements.
+
+| Property | Use |
+|:--|:--|
+| `--bb-calendar-slot-height` | Height of one time slot in the Week, Work week, and Day views. |
+| `--bb-calendar-time-column-width` | Width of the column that shows the hours. |
+| `--bb-calendar-event-height` | Height of an event row in the Month view and the all-day row. |
+| `--bb-calendar-event-gap` | Space between event rows. |
+| `--bb-calendar-event-font-size` | Font size of the text in an event. |
+| `--bb-calendar-day-number-height` | Height of the row that holds the day number in a Month cell. |
+| `--bb-calendar-line-color` | Color of the grid lines. Follows `--bs-border-color` by default. |

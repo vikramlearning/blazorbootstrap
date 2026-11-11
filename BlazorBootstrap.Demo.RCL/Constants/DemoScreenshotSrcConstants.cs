@@ -47,6 +47,7 @@ public class DemoScreenshotSrcConstants
     public const string Demos_URL_Breadcrumb = DemoScreenshotSrcPrefix + "breadcrumb.png";
     public const string Demos_URL_ButtonGroup = DemoScreenshotSrcPrefix + "button-group.png";
     public const string Demos_URL_Buttons = DemoScreenshotSrcPrefix + "buttons.png";
+    public const string Demos_URL_Calendar = DemoScreenshotSrcPrefix + "calendar.png";
     public const string Demos_URL_Callout = DemoScreenshotSrcPrefix + "callout.png";
     public const string Demos_URL_Card = DemoScreenshotSrcPrefix + "card.png";
     public const string Demos_URL_Carousel = DemoScreenshotSrcPrefix + "carousel.png";

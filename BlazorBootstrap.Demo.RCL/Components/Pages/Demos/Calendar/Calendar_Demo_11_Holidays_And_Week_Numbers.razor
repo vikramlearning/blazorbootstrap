@@ -1,0 +1,48 @@
+<div class="d-flex flex-wrap align-items-center gap-3 mb-3">
+    <Switch @bind-Value="showHolidays" Label="Holidays" />
+    <Switch @bind-Value="showWeekNumbers" Label="Week numbers" />
+    <label class="d-flex align-items-center gap-2">
+        Week number rule
+        <select class="form-select form-select-sm w-auto" @bind="rule">
+            <option value="@CalendarWeekNumberRule.Culture">Culture</option>
+            <option value="@CalendarWeekNumberRule.Iso8601">ISO 8601</option>
+        </select>
+    </label>
+</div>
+
+<Calendar TItem="Appointment"
+          AriaLabel="Holiday calendar"
+          Data="appointments"
+          Date="@(new DateOnly(2027, 1, 5))"
+          Culture="@english"
+          Height="420"
+          Holidays="@(showHolidays ? holidays : null)"
+          ShowWeekNumbers="showWeekNumbers"
+          WeekNumberRule="rule"
+          StartField="a => a.Start"
+          EndField="a => a.End"
+          TitleField="a => a.Title" />
+
+@code {
+    private record Appointment(string Title, DateTime Start, DateTime End);
+
+    private readonly List<Appointment> appointments = new()
+    {
+        new("Planning", new DateTime(2027, 1, 4, 10, 0, 0), new DateTime(2027, 1, 4, 11, 0, 0)),
+        new("Kick-off", new DateTime(2027, 1, 6, 14, 0, 0), new DateTime(2027, 1, 6, 15, 0, 0))
+    };
+
+    private readonly System.Globalization.CultureInfo english = System.Globalization.CultureInfo.GetCultureInfo("en-US");
+
+    // The calendar holds no holiday data; you supply the dates and names.
+    private readonly List<CalendarHoliday> holidays = new()
+    {
+        new(new DateOnly(2026, 12, 31), "New Year's Eve"),
+        new(new DateOnly(2027, 1, 1), "New Year's Day"),
+        new(new DateOnly(2027, 1, 18), "Martin Luther King Jr. Day")
+    };
+
+    private CalendarWeekNumberRule rule = CalendarWeekNumberRule.Culture;
+    private bool showHolidays = true;
+    private bool showWeekNumbers = true;
+}
