@@ -210,6 +210,782 @@ window.blazorBootstrap = {
                 bodyEl[0].style['overflow'] = 'auto';
         }
     },
+    calendar: {
+        // Pixels a mouse must move before a press becomes a drag, so a plain click stays a click.
+        dragThreshold: 4,
+        // Pixels from an event's edge that resize it instead of moving it.
+        edgeSize: 6,
+        // Milliseconds a finger must rest before a touch becomes a drag; moving sooner scrolls the page instead.
+        holdDelay: 500,
+        instances: {},
+        // Bootstrap events that tell a hidden container has been shown. They bubble to the document.
+        shownEvents: ['shown.bs.tab', 'shown.bs.modal', 'shown.bs.offcanvas', 'shown.bs.collapse'],
+        addDays: (dateText, days) => {
+            let parts = dateText.split('-');
+            let date = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]) + days);
+
+            return window.blazorBootstrap.calendar.formatDate(date);
+        },
+        cancelDrag: (instance) => {
+            let drag = instance.drag;
+            if (!drag)
+                return;
+
+            // The press that was dragging still ends in a click; that click must not select a day or open an event.
+            if (drag.active)
+                instance.suppressClickUntil = Date.now() + 60000;
+
+            window.blazorBootstrap.calendar.endDrag(instance);
+        },
+        clearPreview: (instance) => {
+            if (instance.highlighted) {
+                instance.highlighted.forEach(el => el.classList.remove('bb-calendar-drop-target'));
+                instance.highlighted = null;
+            }
+
+            if (instance.previewEl) {
+                instance.previewEl.remove();
+                instance.previewEl = null;
+            }
+        },
+        dayDifference: (fromText, toText) => {
+            let from = fromText.split('-');
+            let to = toText.split('-');
+
+            return Math.round((Date.UTC(parseInt(to[0]), parseInt(to[1]) - 1, parseInt(to[2])) - Date.UTC(parseInt(from[0]), parseInt(from[1]) - 1, parseInt(from[2]))) / 86400000);
+        },
+        dispose: (elementId) => {
+            let instance = window.blazorBootstrap.calendar.instances[elementId];
+            if (!instance)
+                return;
+
+            window.blazorBootstrap.calendar.endDrag(instance);
+            clearInterval(instance.timer);
+            instance.resizeObserver?.disconnect();
+
+            if (instance.root) {
+                instance.root.removeEventListener('pointerdown', instance.onPointerDown);
+                instance.root.removeEventListener('pointermove', instance.onPointerMove);
+                instance.root.removeEventListener('pointerup', instance.onPointerUp);
+                instance.root.removeEventListener('pointercancel', instance.onPointerCancel);
+                instance.root.removeEventListener('click', instance.onClickCapture, true);
+                instance.root.removeEventListener('touchmove', instance.onTouchMove);
+                instance.root.removeEventListener('contextmenu', instance.onContextMenu);
+                instance.root.removeEventListener('keydown', instance.onGridKeyDown);
+            }
+
+            document.removeEventListener('keydown', instance.onKeyDown, true);
+            window.blazorBootstrap.calendar.shownEvents.forEach(name => document.removeEventListener(name, instance.onContainerShown));
+            delete window.blazorBootstrap.calendar.instances[elementId];
+        },
+        endDrag: (instance) => {
+            let drag = instance.drag;
+            if (!drag)
+                return;
+
+            clearTimeout(drag.holdTimer);
+            window.blazorBootstrap.calendar.clearPreview(instance);
+            drag.eventEl?.classList.remove('bb-calendar-event-dragging');
+
+            if (instance.root) {
+                instance.root.classList.remove('bb-calendar-dragging');
+
+                try {
+                    instance.root.releasePointerCapture(drag.pointerId);
+                } catch {
+                    // The pointer was not captured, or is already gone.
+                }
+            }
+
+            instance.drag = null;
+        },
+        finishDrag: (instance) => {
+            let drag = instance.drag;
+            if (!drag)
+                return;
+
+            let result = drag.active ? drag.result : null;
+            let wasActive = drag.active;
+
+            window.blazorBootstrap.calendar.endDrag(instance);
+
+            if (!wasActive)
+                return;
+
+            // The press that was dragging still ends in a click; that click must not select a day or open an event.
+            instance.suppressClickUntil = Date.now() + 400;
+
+            if (!result || !instance.dotNetHelper)
+                return;
+
+            // The calendar never changes an event itself: it reports what the user did, and the app applies or ignores it.
+            // The event's times as read when the drag started go with its key, so .NET can tell whether the key still means that event.
+            let call = drag.mode === 'select'
+                ? instance.dotNetHelper.invokeMethodAsync('OnRangeSelectedJS', result.start, result.end, result.allDay)
+                : drag.mode === 'move'
+                    ? instance.dotNetHelper.invokeMethodAsync('OnEventMovedJS', drag.key, drag.start, drag.end, result.start)
+                    : instance.dotNetHelper.invokeMethodAsync('OnEventResizedJS', drag.key, drag.start, drag.end, result.start, result.end);
+
+            call.catch(() => { });
+        },
+        focusIn: (elementId, selector) => {
+            // Moves keyboard focus into a part of the calendar that has just opened or closed, such as the jump-to-date picker.
+            let target = document.getElementById(elementId)?.querySelector(selector);
+
+            if (target != null && typeof target.focus === 'function')
+                target.focus();
+        },
+        formatDate: (date) =>
+            `${String(date.getFullYear()).padStart(4, '0')}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`,
+        formatDateTime: (dateText, minutes) => {
+            // Minutes may reach or pass 24 hours (an end at midnight); the date moves on with them.
+            let date = window.blazorBootstrap.calendar.addDays(dateText, Math.floor(minutes / 1440));
+            let rest = ((minutes % 1440) + 1440) % 1440;
+
+            return `${date}T${String(Math.floor(rest / 60)).padStart(2, '0')}:${String(rest % 60).padStart(2, '0')}:00`;
+        },
+        getEventDragMode: (instance, eventEl, isBlock, event) => {
+            let options = instance.options;
+            let edge = window.blazorBootstrap.calendar.edgeSize;
+            let rect = eventEl.getBoundingClientRect();
+
+            if (options.allowEventResize) {
+                if (isBlock) {
+                    if (event.clientY - rect.top <= edge) return 'resize-start';
+                    if (rect.bottom - event.clientY <= edge) return 'resize-end';
+                } else if (eventEl.dataset.bbBar === 'true') {
+                    // The start edge is on the left, or on the right in a right-to-left page.
+                    // An edge that continues in another week row is not an end of the event, so it does not resize.
+                    let isRtl = getComputedStyle(eventEl).direction === 'rtl';
+                    let atLeft = event.clientX - rect.left <= edge;
+                    let atRight = rect.right - event.clientX <= edge;
+
+                    if ((isRtl ? atRight : atLeft) && !eventEl.classList.contains('bb-calendar-event-continues-before')) return 'resize-start';
+                    if ((isRtl ? atLeft : atRight) && !eventEl.classList.contains('bb-calendar-event-continues-after')) return 'resize-end';
+                }
+            }
+
+            return options.allowEventMove ? 'move' : null;
+        },
+        getResult: (instance, drag, target) => {
+            let calendar = window.blazorBootstrap.calendar;
+            let slot = instance.options.slotMinutes;
+
+            if (drag.mode === 'select') {
+                if (drag.origin.kind === 'day') {
+                    if (!target || target.kind !== 'day')
+                        return null;
+
+                    // Dragging backward gives the same range as dragging forward.
+                    let first = drag.origin.date < target.date ? drag.origin.date : target.date;
+                    let last = drag.origin.date < target.date ? target.date : drag.origin.date;
+
+                    return { allDay: true, firstDay: first, lastDay: last, start: `${first}T00:00:00`, end: `${calendar.addDays(last, 1)}T00:00:00` };
+                }
+
+                if (!target || target.kind !== 'slot')
+                    return null;
+
+                let from = Math.min(drag.origin.minutes, target.minutes);
+                let to = Math.max(drag.origin.minutes, target.minutes) + slot;
+
+                return { allDay: false, column: drag.origin.column, fromMinutes: from, toMinutes: to, start: calendar.formatDateTime(drag.origin.date, from), end: calendar.formatDateTime(drag.origin.date, to) };
+            }
+
+            if (!drag.isBlock) {
+                // An event drawn across days moves and resizes by whole days and keeps its times of day.
+                if (!target || target.kind !== 'day' || drag.origin.kind !== 'day')
+                    return null;
+
+                // The pointer is still on the day it started on: nothing has changed, wherever the event's own ends are.
+                if (target.date === drag.origin.date)
+                    return null;
+
+                let firstDay = drag.firstDay;
+                let lastDay = drag.lastDay;
+                let startShift = 0;
+                let endShift = 0;
+
+                if (drag.mode === 'move') {
+                    startShift = endShift = calendar.dayDifference(drag.origin.date, target.date);
+                } else if (drag.mode === 'resize-start') {
+                    startShift = calendar.dayDifference(firstDay, target.date > lastDay ? lastDay : target.date);
+                } else {
+                    endShift = calendar.dayDifference(lastDay, target.date < firstDay ? firstDay : target.date);
+                }
+
+                if (startShift === 0 && endShift === 0)
+                    return null;
+
+                return {
+                    allDay: true,
+                    firstDay: calendar.addDays(firstDay, startShift),
+                    lastDay: calendar.addDays(lastDay, endShift),
+                    start: calendar.shiftDateTime(drag.start, startShift),
+                    end: calendar.shiftDateTime(drag.end, endShift)
+                };
+            }
+
+            // A timed event in a day column moves and resizes by whole slots.
+            if (!target || target.kind !== 'slot')
+                return null;
+
+            // The pointer is still in the slot it started in: nothing has changed, even for an event that does not
+            // start or end on a slot. Without this a click with a small wobble would snap such an event to the slot.
+            if (drag.origin.kind === 'slot' && target.minutes === drag.origin.minutes && (drag.mode !== 'move' || target.date === drag.origin.date))
+                return null;
+
+            let startMinutes = calendar.minutesOfDay(drag.start);
+            let endMinutes = drag.end.substring(0, 10) > drag.start.substring(0, 10) ? 1440 : calendar.minutesOfDay(drag.end);
+            let date = drag.start.substring(0, 10);
+
+            if (drag.mode === 'move') {
+                // The slot the user grabbed stays under the pointer.
+                let grabbedSlot = drag.origin.kind === 'slot' ? drag.origin.minutes : startMinutes - startMinutes % slot;
+                let newStart = Math.max(instance.options.dayStart, target.minutes - (grabbedSlot - (startMinutes - startMinutes % slot)));
+                let length = Math.max(slot, endMinutes - startMinutes);
+
+                if (target.date === date && newStart === startMinutes)
+                    return null;
+
+                return { allDay: false, column: target.column, fromMinutes: newStart, toMinutes: newStart + length, start: calendar.formatDateTime(target.date, newStart), end: calendar.formatDateTime(target.date, newStart + length) };
+            }
+
+            if (drag.mode === 'resize-start') {
+                let newStart = Math.min(target.minutes, endMinutes - slot);
+
+                if (newStart === startMinutes)
+                    return null;
+
+                return { allDay: false, column: drag.column, fromMinutes: newStart, toMinutes: endMinutes, start: calendar.formatDateTime(date, newStart), end: drag.end };
+            }
+
+            let newEnd = Math.max(target.minutes + slot, startMinutes - startMinutes % slot + slot);
+
+            if (newEnd === endMinutes)
+                return null;
+
+            return { allDay: false, column: drag.column, fromMinutes: startMinutes, toMinutes: newEnd, start: drag.start, end: calendar.formatDateTime(date, newEnd) };
+        },
+        hitTest: (root, x, y, column) => {
+            // Inside one day column (a selection or a resize stays in its column), the slot is found by height alone,
+            // so the pointer may wander sideways.
+            if (column) {
+                let slots = [...column.querySelectorAll('.bb-calendar-slot')];
+                if (slots.length === 0)
+                    return null;
+
+                let slotEl = slots.find(el => y < el.getBoundingClientRect().bottom) ?? slots[slots.length - 1];
+
+                return { kind: 'slot', date: column.dataset.bbDate, minutes: parseInt(slotEl.dataset.bbMinutes), column: column };
+            }
+
+            // Events lie on top of the cells, so every element under the point is checked, not only the top one.
+            for (let el of document.elementsFromPoint(x, y)) {
+                if (!root.contains(el))
+                    continue;
+
+                if (el.classList.contains('bb-calendar-slot'))
+                    return { kind: 'slot', date: el.parentElement.dataset.bbDate, minutes: parseInt(el.dataset.bbMinutes), column: el.parentElement };
+
+                if (el.classList.contains('bb-calendar-day') || el.classList.contains('bb-calendar-allday-cell'))
+                    return { kind: 'day', date: el.dataset.bbDate };
+            }
+
+            return null;
+        },
+        initialize: (elementId, dotNetHelper, options) => {
+            let calendar = window.blazorBootstrap.calendar;
+
+            calendar.dispose(elementId);
+
+            let root = document.getElementById(elementId);
+            let instance = {
+                clockDate: null, dotNetHelper: dotNetHelper, drag: null, elementId: elementId, highlighted: null, options: null,
+                pendingScrollMinutes: null, previewEl: null, resizeObserver: null, root: root, scrollAttempts: 0, scrollKey: null,
+                suppressClickUntil: 0, timer: null
+            };
+
+            instance.onPointerDown = (event) => calendar.onPointerDown(instance, event);
+            instance.onPointerMove = (event) => calendar.onPointerMove(instance, event);
+            instance.onPointerUp = (event) => {
+                if (instance.drag && event.pointerId === instance.drag.pointerId)
+                    calendar.finishDrag(instance);
+            };
+            instance.onPointerCancel = (event) => {
+                if (instance.drag && event.pointerId === instance.drag.pointerId)
+                    calendar.endDrag(instance);
+            };
+            instance.onClickCapture = (event) => {
+                if (Date.now() >= instance.suppressClickUntil)
+                    return;
+
+                instance.suppressClickUntil = 0;
+                event.stopPropagation();
+                event.preventDefault();
+            };
+            // Escape belongs to the calendar while it has a drag to cancel or a popup to close. The listener runs in the
+            // capture phase and stops the key there, so a modal or an offcanvas that holds the calendar does not close too.
+            instance.onKeyDown = (event) => {
+                if (event.key !== 'Escape')
+                    return;
+
+                if (instance.drag && instance.drag.active) {
+                    event.stopPropagation();
+                    event.preventDefault();
+                    calendar.cancelDrag(instance);
+
+                    return;
+                }
+
+                if (root == null || !(event.target instanceof Node) || !root.contains(event.target))
+                    return;
+
+                let closeButton = root.querySelector('.bb-calendar-more-list .btn-close');
+                let titleEl = root.querySelector('.bb-calendar-date-popup') == null ? null : root.querySelector('.bb-calendar-title');
+
+                if (closeButton == null && titleEl == null)
+                    return;
+
+                event.stopPropagation();
+                event.preventDefault();
+
+                // The day list's close button closes it and returns focus to "+N more". The title closes the picker it opened.
+                if (closeButton != null) {
+                    closeButton.click();
+                } else {
+                    titleEl.click();
+                    titleEl.focus();
+                }
+            };
+            instance.onGridKeyDown = (event) => calendar.onGridKeyDown(instance, event);
+            // A tab, modal, offcanvas, or collapse that holds the calendar has just been shown: the calendar now has a size to scroll in.
+            instance.onContainerShown = () => calendar.retryScroll(instance);
+            // Once a touch drag has begun, the finger moves the selection or the event, not the page.
+            instance.onTouchMove = (event) => {
+                if (instance.drag && instance.drag.active)
+                    event.preventDefault();
+            };
+            // A long press must start a drag, not open the browser's menu.
+            instance.onContextMenu = (event) => {
+                if (instance.drag && instance.drag.touch)
+                    event.preventDefault();
+            };
+
+            if (root != null) {
+                root.addEventListener('pointerdown', instance.onPointerDown);
+                root.addEventListener('pointermove', instance.onPointerMove);
+                root.addEventListener('pointerup', instance.onPointerUp);
+                root.addEventListener('pointercancel', instance.onPointerCancel);
+                root.addEventListener('click', instance.onClickCapture, true);
+                root.addEventListener('touchmove', instance.onTouchMove, { passive: false });
+                root.addEventListener('contextmenu', instance.onContextMenu);
+                root.addEventListener('keydown', instance.onGridKeyDown);
+
+                // A calendar that starts hidden, for example in an inactive tab or a closed modal, has no size to scroll in.
+                // The scroll waits until the calendar gets a size.
+                if (typeof ResizeObserver !== 'undefined') {
+                    instance.resizeObserver = new ResizeObserver(() => calendar.retryScroll(instance));
+                    instance.resizeObserver.observe(root);
+                }
+            }
+
+            document.addEventListener('keydown', instance.onKeyDown, true);
+            calendar.shownEvents.forEach(name => document.addEventListener(name, instance.onContainerShown));
+
+            // The current-time line follows the clock; a check every half minute keeps it within a minute of the time.
+            // The same check tells .NET when the day has changed, so "today" moves on.
+            instance.timer = setInterval(() => {
+                calendar.updateNowLine(instance);
+                calendar.retryScroll(instance);
+
+                if (calendar.formatDate(new Date()) !== instance.clockDate)
+                    calendar.reportClock(instance);
+            }, 30000);
+            calendar.instances[elementId] = instance;
+            calendar.update(elementId, options);
+            calendar.reportClock(instance);
+        },
+        millisecondsOfDay: () => {
+            let now = new Date();
+
+            return ((now.getHours() * 60 + now.getMinutes()) * 60 + now.getSeconds()) * 1000 + now.getMilliseconds();
+        },
+        minutesOfDay: (dateTimeText) => parseInt(dateTimeText.substring(11, 13)) * 60 + parseInt(dateTimeText.substring(14, 16)),
+        navigate: (instance, direction) => {
+            let root = instance.root;
+            let button = root.querySelector(`.bb-calendar-toolbar [data-bb-nav="${direction}"]`);
+            if (button == null)
+                return;
+
+            button.click();
+
+            // The new period can have fewer cells; if the focused one is gone, focus goes to the cell the Tab key stops at.
+            let restoreFocus = () => {
+                if (window.blazorBootstrap.calendar.instances[instance.elementId] === instance && !root.contains(document.activeElement))
+                    root.querySelector('.bb-calendar-body [tabindex="0"]')?.focus();
+            };
+
+            setTimeout(restoreFocus, 200);
+            setTimeout(restoreFocus, 800);
+        },
+        onGridKeyDown: (instance, event) => {
+            let calendar = window.blazorBootstrap.calendar;
+            let root = instance.root;
+            let el = event.target;
+
+            if (root == null || !(el instanceof Element) || event.altKey || event.ctrlKey || event.metaKey || event.shiftKey)
+                return;
+
+            // Only the cells themselves are handled here: a day, an all-day cell, a time slot, or a day of the jump-to-date picker.
+            // Buttons inside the calendar (events, the toolbar) keep the browser's own keys.
+            let isDay = el.classList.contains('bb-calendar-day');
+            let isAllDay = el.classList.contains('bb-calendar-allday-cell');
+            let isSlot = el.classList.contains('bb-calendar-slot');
+            let isPickerDay = el.dataset.bbDate != null && el.parentElement != null && el.parentElement.classList.contains('bb-calendar-date-picker-grid');
+
+            if (!isDay && !isAllDay && !isSlot && !isPickerDay)
+                return;
+
+            let key = event.key;
+
+            if (key === 'Enter' || key === ' ') {
+                // A picker day is a button, which the browser activates itself. The other cells do what a click does.
+                if (isPickerDay)
+                    return;
+
+                event.preventDefault();
+                el.click();
+
+                return;
+            }
+
+            if ((key === 'PageUp' || key === 'PageDown') && !isPickerDay) {
+                event.preventDefault();
+                calendar.navigate(instance, key === 'PageDown' ? 'next' : 'previous');
+
+                return;
+            }
+
+            let horizontal = key === 'ArrowLeft' ? -1 : key === 'ArrowRight' ? 1 : 0;
+            let vertical = key === 'ArrowUp' ? -1 : key === 'ArrowDown' ? 1 : 0;
+            let edge = key === 'Home' ? -1 : key === 'End' ? 1 : 0;
+
+            if (horizontal === 0 && vertical === 0 && edge === 0)
+                return;
+
+            // The keys are handled here, so the page does not scroll.
+            event.preventDefault();
+
+            // In a right-to-left page the next day is on the left.
+            if (getComputedStyle(el).direction === 'rtl')
+                horizontal = -horizontal;
+
+            let target = null;
+
+            if (isDay || isPickerDay) {
+                // Days are in date order; a row is one week. Home and End go to the ends of the week.
+                let cells = isDay
+                    ? [...root.querySelectorAll('.bb-calendar-month .bb-calendar-day')]
+                    : [...el.parentElement.querySelectorAll('button[data-bb-date]')];
+                let columns = isDay ? el.parentElement.querySelectorAll('.bb-calendar-day').length : 7;
+                let index = cells.indexOf(el);
+                let rowStart = index - index % columns;
+
+                target = edge !== 0
+                    ? cells[edge < 0 ? rowStart : Math.min(rowStart + columns, cells.length) - 1]
+                    : cells[index + horizontal + vertical * columns];
+            } else if (isAllDay) {
+                let cells = [...root.querySelectorAll('.bb-calendar-allday-cell')];
+                let index = cells.indexOf(el);
+
+                if (vertical > 0) {
+                    // Down from the all-day row goes to the first time slot in view on that day.
+                    let slots = [...root.querySelectorAll(`.bb-calendar-day-column[data-bb-date="${el.dataset.bbDate}"] .bb-calendar-slot`)];
+                    let scrollEl = root.querySelector('.bb-calendar-timegrid-scroll');
+                    let top = scrollEl == null ? 0 : scrollEl.getBoundingClientRect().top;
+
+                    target = slots.find(slot => slot.getBoundingClientRect().top >= top - 1) ?? slots[0];
+                } else if (vertical === 0) {
+                    target = edge !== 0 ? cells[edge < 0 ? 0 : cells.length - 1] : cells[index + horizontal];
+                }
+            } else {
+                let column = el.parentElement;
+                let slots = [...column.querySelectorAll('.bb-calendar-slot')];
+                let index = slots.indexOf(el);
+
+                if (edge !== 0) {
+                    target = slots[edge < 0 ? 0 : slots.length - 1];
+                } else if (vertical !== 0) {
+                    // Up from the first slot goes to the day's all-day cell.
+                    target = index + vertical < 0
+                        ? root.querySelector(`.bb-calendar-allday-cell[data-bb-date="${column.dataset.bbDate}"]`)
+                        : slots[index + vertical];
+                } else {
+                    let columns = [...root.querySelectorAll('.bb-calendar-day-column')];
+
+                    target = columns[columns.indexOf(column) + horizontal]?.querySelector(`.bb-calendar-slot[data-bb-minutes="${el.dataset.bbMinutes}"]`);
+                }
+            }
+
+            if (target != null)
+                target.focus();
+        },
+        onPointerDown: (instance, event) => {
+            let calendar = window.blazorBootstrap.calendar;
+            let options = instance.options;
+            let root = instance.root;
+
+            instance.suppressClickUntil = 0;
+
+            if (!options || root == null || instance.drag || event.button !== 0 || !(event.target instanceof Element))
+                return;
+
+            // The toolbar, the popups, and the event lists are not places to drag.
+            if (event.target.closest('.bb-calendar-toolbar, .bb-calendar-more, .bb-calendar-more-list, .bb-calendar-more-backdrop, .bb-calendar-day-list, .bb-calendar-agenda'))
+                return;
+
+            let drag;
+            let eventEl = event.target.closest('[data-bb-event-key]');
+
+            if (eventEl != null && root.contains(eventEl)) {
+                let parent = eventEl.parentElement;
+                let isBlock = parent.classList.contains('bb-calendar-day-column');
+
+                if (!isBlock && !parent.classList.contains('bb-calendar-month-week') && !parent.classList.contains('bb-calendar-allday'))
+                    return;
+
+                let mode = calendar.getEventDragMode(instance, eventEl, isBlock, event);
+                if (mode == null)
+                    return;
+
+                drag = {
+                    column: isBlock ? parent : null, end: eventEl.dataset.bbEnd, eventEl: eventEl, firstDay: eventEl.dataset.bbFirstDay, isBlock: isBlock,
+                    key: parseInt(eventEl.dataset.bbEventKey), lastDay: eventEl.dataset.bbLastDay, mode: mode, start: eventEl.dataset.bbStart
+                };
+            } else {
+                if (!options.allowRangeSelection)
+                    return;
+
+                drag = { mode: 'select' };
+            }
+
+            drag.origin = calendar.hitTest(root, event.clientX, event.clientY);
+            if (drag.origin == null)
+                return;
+
+            drag.active = false;
+            drag.pointerId = event.pointerId;
+            drag.result = null;
+            drag.touch = event.pointerType === 'touch';
+            drag.x = event.clientX;
+            drag.y = event.clientY;
+            instance.drag = drag;
+
+            if (drag.touch) {
+                drag.holdTimer = setTimeout(() => {
+                    if (instance.drag === drag && !drag.active) {
+                        calendar.startDrag(instance);
+                        calendar.updateDrag(instance, drag.x, drag.y);
+                    }
+                }, calendar.holdDelay);
+            }
+        },
+        onPointerMove: (instance, event) => {
+            let calendar = window.blazorBootstrap.calendar;
+            let drag = instance.drag;
+
+            if (!drag || event.pointerId !== drag.pointerId)
+                return;
+
+            if (!drag.active) {
+                let distance = Math.hypot(event.clientX - drag.x, event.clientY - drag.y);
+
+                if (drag.touch) {
+                    // The finger moved before the hold ended: it is scrolling, not dragging.
+                    if (distance > 10)
+                        calendar.endDrag(instance);
+
+                    return;
+                }
+
+                if (distance < calendar.dragThreshold)
+                    return;
+
+                calendar.startDrag(instance);
+            }
+
+            event.preventDefault();
+            calendar.updateDrag(instance, event.clientX, event.clientY);
+        },
+        reportClock: (instance) => {
+            // "Today" and "now" are the user's: the browser tells .NET what its clock says, so a Server app
+            // does not show the server's day and time to a user in another time zone.
+            let calendar = window.blazorBootstrap.calendar;
+            let now = new Date();
+
+            instance.clockDate = calendar.formatDate(now);
+
+            if (!instance.dotNetHelper)
+                return;
+
+            let time = [now.getHours(), now.getMinutes(), now.getSeconds()].map(part => String(part).padStart(2, '0')).join(':');
+
+            instance.dotNetHelper.invokeMethodAsync('OnClockJS', `${instance.clockDate}T${time}`).catch(() => { });
+        },
+        retryScroll: (instance) => {
+            if (instance.pendingScrollMinutes == null)
+                return;
+
+            instance.scrollAttempts = 0;
+            window.blazorBootstrap.calendar.scrollToTime(instance.elementId, instance.pendingScrollMinutes);
+        },
+        scrollToTime: (elementId, minutes) => {
+            let instance = window.blazorBootstrap.calendar.instances[elementId];
+            let root = document.getElementById(elementId);
+            if (!instance || !instance.options || root == null)
+                return;
+
+            let scrollEl = root.querySelector('.bb-calendar-timegrid-scroll');
+            let slotEl = root.querySelector('.bb-calendar-slot');
+            let slotHeight = slotEl == null ? 0 : slotEl.getBoundingClientRect().height;
+
+            // No time grid, or a hidden one: keep the request. It is tried again a few times shortly after
+            // (a tab pane is often shown right after it renders), and whenever the calendar gets a size.
+            if (scrollEl == null || slotHeight === 0) {
+                instance.pendingScrollMinutes = instance.options.hasGrid ? minutes : null;
+
+                if (instance.pendingScrollMinutes != null && instance.scrollAttempts < 20) {
+                    instance.scrollAttempts++;
+                    setTimeout(() => {
+                        if (window.blazorBootstrap.calendar.instances[elementId] === instance && instance.pendingScrollMinutes != null)
+                            window.blazorBootstrap.calendar.scrollToTime(elementId, instance.pendingScrollMinutes);
+                    }, 250);
+                }
+
+                return;
+            }
+
+            instance.pendingScrollMinutes = null;
+            instance.scrollAttempts = 0;
+            scrollEl.scrollTop = (minutes - instance.options.dayStart) / instance.options.slotMinutes * slotHeight;
+        },
+        shiftDateTime: (dateTimeText, days) =>
+            `${window.blazorBootstrap.calendar.addDays(dateTimeText.substring(0, 10), days)}${dateTimeText.substring(10)}`,
+        showPreview: (instance, result) => {
+            let calendar = window.blazorBootstrap.calendar;
+
+            calendar.clearPreview(instance);
+
+            if (!result)
+                return;
+
+            if (result.allDay) {
+                // Dates in the yyyy-MM-dd form compare correctly as text.
+                instance.highlighted = [...instance.root.querySelectorAll('.bb-calendar-day[data-bb-date], .bb-calendar-allday-cell[data-bb-date]')]
+                    .filter(el => el.dataset.bbDate >= result.firstDay && el.dataset.bbDate <= result.lastDay);
+                instance.highlighted.forEach(el => el.classList.add('bb-calendar-drop-target'));
+
+                return;
+            }
+
+            // The preview of a timed range is the calendar's own element on the page body, placed over the slots it covers.
+            // It is built with DOM methods and holds no text, so nothing from an event title can run as markup.
+            let slots = [...result.column.querySelectorAll('.bb-calendar-slot')];
+            let firstSlot = slots.find(el => parseInt(el.dataset.bbMinutes) >= result.fromMinutes);
+            let lastSlot = slots.filter(el => parseInt(el.dataset.bbMinutes) < result.toMinutes).pop();
+            if (!firstSlot || !lastSlot)
+                return;
+
+            let top = firstSlot.getBoundingClientRect().top;
+            let bottom = lastSlot.getBoundingClientRect().bottom;
+            let columnRect = result.column.getBoundingClientRect();
+            let scrollEl = result.column.closest('.bb-calendar-timegrid-scroll');
+
+            // Slots scrolled out of the grid are not shown.
+            if (scrollEl != null) {
+                let scrollRect = scrollEl.getBoundingClientRect();
+                top = Math.max(top, scrollRect.top);
+                bottom = Math.min(bottom, scrollRect.bottom);
+            }
+
+            if (bottom <= top)
+                return;
+
+            let previewEl = document.createElement('div');
+            previewEl.className = 'bb-calendar-drag-preview';
+            previewEl.style.left = `${columnRect.left + 1}px`;
+            previewEl.style.top = `${top}px`;
+            previewEl.style.width = `${Math.max(0, columnRect.width - 2)}px`;
+            previewEl.style.height = `${bottom - top}px`;
+            document.body.appendChild(previewEl);
+            instance.previewEl = previewEl;
+        },
+        startDrag: (instance) => {
+            let drag = instance.drag;
+
+            drag.active = true;
+            clearTimeout(drag.holdTimer);
+            instance.root.classList.add('bb-calendar-dragging');
+            drag.eventEl?.classList.add('bb-calendar-event-dragging');
+
+            try {
+                instance.root.setPointerCapture(drag.pointerId);
+            } catch {
+                // Without capture the drag still works while the pointer stays over the calendar.
+            }
+        },
+        update: (elementId, options) => {
+            let instance = window.blazorBootstrap.calendar.instances[elementId];
+            if (!instance)
+                return;
+
+            instance.options = options;
+            window.blazorBootstrap.calendar.updateNowLine(instance);
+
+            if (!options.hasGrid) {
+                instance.scrollKey = null;
+                return;
+            }
+
+            // Scroll to the opening time once per visible period, not each time a setting changes.
+            if (options.scrollKey !== instance.scrollKey) {
+                instance.scrollKey = options.scrollKey;
+                window.blazorBootstrap.calendar.scrollToTime(elementId, options.scrollToMinutes);
+            }
+        },
+        updateDrag: (instance, x, y) => {
+            let calendar = window.blazorBootstrap.calendar;
+            let drag = instance.drag;
+
+            // A timed selection and a timed resize stay in their own day column; everything else follows the pointer.
+            let column = drag.mode === 'select'
+                ? (drag.origin.kind === 'slot' ? drag.origin.column : null)
+                : (drag.isBlock && drag.mode !== 'move' ? drag.column : null);
+            let target = calendar.hitTest(instance.root, x, y, column);
+
+            drag.result = calendar.getResult(instance, drag, target);
+            calendar.showPreview(instance, drag.result);
+        },
+        updateNowLine: (instance) => {
+            let root = document.getElementById(instance.elementId);
+            if (root == null || !instance.options || !instance.options.hasGrid)
+                return;
+
+            let lineEl = root.querySelector('.bb-calendar-now-line');
+            if (lineEl == null)
+                return;
+
+            // The line shows the time on the user's device.
+            let minutes = window.blazorBootstrap.calendar.millisecondsOfDay() / 60000;
+            let isVisible = minutes >= instance.options.dayStart && minutes < instance.options.dayEnd;
+
+            // The place is given in slots, as the calendar renders it, so it needs no measured size and is right even while the calendar is hidden.
+            lineEl.style.display = isVisible ? '' : 'none';
+            if (isVisible)
+                lineEl.style.top = `calc(var(--bb-calendar-slot-height) * ${((minutes - instance.options.dayStart) / instance.options.slotMinutes).toFixed(4)})`;
+        }
+    },
     carousel: {
         cycle: (elementId) => {
             let carouselEl = document.getElementById(elementId);

@@ -1,0 +1,125 @@
+@using System.Globalization
+
+<div class="d-flex flex-wrap align-items-center gap-3 mb-3">
+    <label class="d-flex align-items-center gap-2">
+        View
+        <select class="form-select form-select-sm w-auto" @bind="view">
+            <option value="@CalendarView.Month">Month</option>
+            <option value="@CalendarView.Week">Week</option>
+            <option value="@CalendarView.Agenda">Agenda</option>
+        </select>
+    </label>
+    <label class="d-flex align-items-center gap-2">
+        First day of week
+        <select class="form-select form-select-sm w-auto" @bind="firstDay">
+            <option value="">From the culture</option>
+            <option value="Monday">Monday</option>
+            <option value="Sunday">Sunday</option>
+            <option value="Saturday">Saturday</option>
+        </select>
+    </label>
+    <label class="d-flex align-items-center gap-2">
+        Time format
+        <select class="form-select form-select-sm w-auto" @bind="timeFormat">
+            <option value="@CalendarTimeFormat.Culture">From the culture</option>
+            <option value="@CalendarTimeFormat.TwelveHour">12-hour</option>
+            <option value="@CalendarTimeFormat.TwentyFourHour">24-hour</option>
+        </select>
+    </label>
+</div>
+
+<h6>en-US, built-in text</h6>
+<Calendar TItem="Appointment"
+          AriaLabel="Calendar in English"
+          Culture="@english"
+          Data="appointments"
+          Date="@date"
+          @bind-View="view"
+          Height="320"
+          FirstDayOfWeek="FirstDay"
+          TimeFormat="timeFormat"
+          ShowWeekNumbers="true"
+          StartField="a => a.Start"
+          EndField="a => a.End"
+          TitleField="a => a.Title"
+          AllDayField="a => a.IsAllDay" />
+
+<h6 class="mt-4">de-DE, some text translated</h6>
+<Calendar TItem="Appointment"
+          AriaLabel="Kalender auf Deutsch"
+          Culture="@german"
+          Data="appointments"
+          Date="@date"
+          @bind-View="view"
+          Height="320"
+          FirstDayOfWeek="FirstDay"
+          TimeFormat="timeFormat"
+          ShowWeekNumbers="true"
+          TodayText="Heute"
+          MonthText="Monat"
+          WeekText="Woche"
+          WorkWeekText="Arbeitswoche"
+          DayText="Tag"
+          AllDayText="Ganztägig"
+          WeekNumberText="KW"
+          StartField="a => a.Start"
+          EndField="a => a.End"
+          TitleField="a => a.Title"
+          AllDayField="a => a.IsAllDay" />
+
+<h6 class="mt-4">fr-FR, every text translated</h6>
+<Calendar TItem="Appointment"
+          AriaLabel="Calendrier en français"
+          Culture="@french"
+          Data="appointments"
+          Date="@date"
+          @bind-View="view"
+          Height="320"
+          FirstDayOfWeek="FirstDay"
+          TimeFormat="timeFormat"
+          ShowWeekNumbers="true"
+          TodayText="Aujourd'hui"
+          PreviousText="Précédent"
+          NextText="Suivant"
+          ViewText="Vue"
+          MonthText="Mois"
+          WeekText="Semaine"
+          WorkWeekText="Semaine de travail"
+          DayText="Jour"
+          AgendaText="Planning"
+          AllDayText="Toute la journée"
+          MoreTextFormat="+{0} de plus"
+          EmptyText="Aucun événement"
+          WeekNumberText="Sem."
+          CloseText="Fermer"
+          StartField="a => a.Start"
+          EndField="a => a.End"
+          TitleField="a => a.Title"
+          AllDayField="a => a.IsAllDay" />
+
+@code {
+    private record Appointment(string Title, DateTime Start, DateTime End, bool IsAllDay = false);
+
+    private static DateTime At(int day, int hour = 0, int minute = 0) => new(2024, 11, day, hour, minute, 0);
+
+    private readonly List<Appointment> appointments = new()
+    {
+        new("Atelier", At(4), At(6), true),
+        new("Standup", At(5, 9), At(5, 9, 30)),
+        new("Design review", At(5, 14), At(5, 15, 30)),
+        new("Lunch", At(5, 12), At(5, 13)),
+        new("Demo", At(5, 16), At(5, 17)),
+        new("Retro", At(5, 17), At(5, 18))
+    };
+
+    private readonly DateOnly date = new(2024, 11, 5);
+    private readonly CultureInfo english = CultureInfo.GetCultureInfo("en-US");
+    private string firstDay = "";
+    private readonly CultureInfo french = CultureInfo.GetCultureInfo("fr-FR");
+    private readonly CultureInfo german = CultureInfo.GetCultureInfo("de-DE");
+    private CalendarTimeFormat timeFormat = CalendarTimeFormat.Culture;
+    private CalendarView view = CalendarView.Month;
+
+    // An empty choice leaves the first day to each calendar's culture.
+    private DayOfWeek? FirstDay => Enum.TryParse<DayOfWeek>(firstDay, out var day) ? day : null;
+}

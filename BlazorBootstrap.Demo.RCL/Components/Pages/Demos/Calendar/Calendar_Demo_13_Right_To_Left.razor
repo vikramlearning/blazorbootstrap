@@ -1,0 +1,67 @@
+@using System.Globalization
+
+<div dir="rtl">
+    <Calendar TItem="Appointment"
+              AriaLabel="Right-to-left calendar"
+              Culture="@arabic"
+              Data="appointments"
+              Date="@(new DateOnly(2024, 11, 5))"
+              Height="360"
+              TodayText="اليوم"
+              PreviousText="السابق"
+              NextText="التالي"
+              ViewText="العرض"
+              MonthText="شهر"
+              WeekText="أسبوع"
+              WorkWeekText="أسبوع العمل"
+              DayText="يوم"
+              AgendaText="جدول"
+              AllDayText="طوال اليوم"
+              MoreTextFormat="+{0} أخرى"
+              EmptyText="لا توجد أحداث"
+              CloseText="إغلاق"
+              StartField="a => a.Start"
+              EndField="a => a.End"
+              TitleField="a => a.Title"
+              AllDayField="a => a.IsAllDay"
+              ColorField="a => a.Color"
+              OnRangeSelected="OnRangeSelected"
+              OnEventMoved="OnEventChanged"
+              OnEventResized="OnEventChanged" />
+</div>
+
+<div class="mt-3">Last drag: <b>@lastDrag</b></div>
+
+@code {
+    private class Appointment
+    {
+        public string Title { get; set; } = "";
+        public DateTime Start { get; set; }
+        public DateTime End { get; set; }
+        public bool IsAllDay { get; set; }
+        public CalendarColor Color { get; set; }
+    }
+
+    private static DateTime At(int day, int hour = 0, int minute = 0) => new(2024, 11, day, hour, minute, 0);
+
+    private readonly List<Appointment> appointments = new()
+    {
+        new() { Title = "رحلة", Start = At(3), End = At(6), IsAllDay = true, Color = CalendarColor.Success },
+        new() { Title = "اجتماع", Start = At(5, 9), End = At(5, 10), Color = CalendarColor.Primary },
+        new() { Title = "ورشة عمل", Start = At(12), End = At(15), IsAllDay = true, Color = CalendarColor.Warning }
+    };
+
+    // Arabic (Egypt) is written right to left and uses the Gregorian calendar, so this demo shows the mirrored layout on its own.
+    private readonly CultureInfo arabic = CultureInfo.GetCultureInfo("ar-EG");
+    private string lastDrag = "none";
+
+    private void OnEventChanged(CalendarEventChangedEventArgs<Appointment> args)
+    {
+        lastDrag = $"{args.NewStart:yyyy-MM-dd HH:mm} - {args.NewEnd:yyyy-MM-dd HH:mm}";
+        args.Item.Start = args.NewStart;
+        args.Item.End = args.NewEnd;
+    }
+
+    private void OnRangeSelected(CalendarRangeSelectedEventArgs args) =>
+        lastDrag = $"selected {args.Start:yyyy-MM-dd HH:mm} - {args.End:yyyy-MM-dd HH:mm}";
+}

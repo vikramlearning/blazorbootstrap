@@ -1,0 +1,40 @@
+@namespace BlazorBootstrap
+@inherits BlazorBootstrapComponentBase
+
+@{
+    var days = Days;
+
+    // The Tab key stops at one day: the chosen date, or the first day of the month shown. The arrow keys move focus from it.
+    var focusDay = days.Contains(Date) ? Date : days.FirstOrDefault(day => CalendarLayout.IsSameMonth(day, displayDate, EffectiveCulture));
+}
+
+<div @ref="@Element" id="@Id" class="@ClassNames" style="@StyleNames" @attributes="@AdditionalAttributes">
+    <div class="d-flex align-items-center gap-1 mb-1">
+        <button type="button" class="btn btn-sm btn-outline-secondary border-0" aria-label="@PreviousText" title="@PreviousText" @onclick="() => MoveMonth(-1)">
+            <Icon Name="IconName.ChevronLeft" Class="bb-calendar-direction-icon" />
+        </button>
+        <span class="small fw-semibold mx-auto" aria-live="polite">@displayDate.ToString("Y", EffectiveCulture)</span>
+        <button type="button" class="btn btn-sm btn-outline-secondary border-0" aria-label="@NextText" title="@NextText" @onclick="() => MoveMonth(1)">
+            <Icon Name="IconName.ChevronRight" Class="bb-calendar-direction-icon" />
+        </button>
+    </div>
+    @* Each day button carries its full date as its name, so the short weekday names above are for sighted users only. *@
+    <div class="bb-calendar-date-picker-grid" role="group" aria-label="@displayDate.ToString("Y", EffectiveCulture)">
+        @foreach (var day in days.Take(7))
+        {
+            <span class="small text-body-secondary" aria-hidden="true">@EffectiveCulture.DateTimeFormat.GetShortestDayName(day.DayOfWeek)</span>
+        }
+        @foreach (var day in days)
+        {
+            <button type="button"
+                    class="@GetDayClass(day)"
+                    tabindex="@(day == focusDay ? 0 : -1)"
+                    aria-pressed="@(day == Date ? "true" : "false")"
+                    aria-label="@day.ToString("D", EffectiveCulture)"
+                    data-bb-date="@day.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)"
+                    @onclick="() => OnDateSelected.InvokeAsync(day)">
+                @CalendarLayout.GetDayOfMonth(day, EffectiveCulture)
+            </button>
+        }
+    </div>
+</div>

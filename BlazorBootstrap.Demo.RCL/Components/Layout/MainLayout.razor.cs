@@ -45,6 +45,7 @@ public partial class MainLayout : MainLayoutBase
             new (){ Id = "503", Text = "Breadcrumb", Href = DemoRouteConstants.Demos_URL_Breadcrumb, IconName = IconName.SegmentedNav, ParentId = "5" },
             new (){ Id = "504", Text = "Buttons", Href = DemoRouteConstants.Demos_URL_Buttons, IconName = IconName.ToggleOn, ParentId = "5" },
             new (){ Id = "5041", Text = "Button Group", Href = DemoRouteConstants.Demos_URL_ButtonGroup, IconName = IconName.Toggles, ParentId = "5" },
+            new (){ Id = "5045", Text = "Calendar", Href = DemoRouteConstants.Demos_URL_Calendar, IconName = IconName.CalendarEvent, ParentId = "5" },
             new (){ Id = "505", Text = "Callout", Href = DemoRouteConstants.Demos_URL_Callout, IconName = IconName.StickyFill, ParentId = "5" },
             new (){ Id = "506", Text = "Card", Href = DemoRouteConstants.Demos_URL_Card, IconName = IconName.CardHeading, ParentId = "5" },
             new (){ Id = "507", Text = "Carousel", Href = DemoRouteConstants.Demos_URL_Carousel, IconName = IconName.CollectionPlayFill, ParentId = "5" },

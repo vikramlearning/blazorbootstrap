@@ -1,0 +1,156 @@
+@namespace BlazorBootstrap
+@inherits BlazorBootstrapComponentBase
+@typeparam TItem
+
+@if (Owner.TimeGridLayout is { } grid)
+{
+    var allDayRows = Math.Max(1, grid.AllDayLaneCount);
+
+    // The Tab key stops at one slot: the opening time on the calendar's date. The arrow keys move focus from it.
+    var focusDay = grid.Days.Contains(Owner.CurrentDate) || grid.Days.Length == 0 ? Owner.CurrentDate : grid.Days[0];
+    var focusMinutes = Owner.OpeningMinutes;
+
+    <div @ref="@Element" id="@Id" class="@ClassNames" style="@StyleNames" role="grid" @attributes="@AdditionalAttributes">
+        <div class="bb-calendar-timegrid-header" role="row">
+            @if (Owner.ShowWeekNumbers && grid.Days.Length > 0)
+            {
+                <div class="bb-calendar-time-gutter bb-calendar-week-number small text-body-secondary text-truncate" role="presentation">
+                    @($"{Owner.WeekNumberText} {Owner.GetWeekNumber(CalendarLayout.GetWeekStart(grid.Days[0], Owner.EffectiveFirstDayOfWeek))}")
+                </div>
+            }
+            else
+            {
+                <div class="bb-calendar-time-gutter" role="presentation"></div>
+            }
+            @foreach (var day in grid.Days)
+            {
+                var info = Owner.GetDayInfo(day);
+
+                <div class="@GetDayHeaderClass(day, info)"
+                     role="columnheader"
+                     aria-selected="@(Owner.SelectedDay == day ? "true" : "false")"
+                     data-bb-date="@day.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)">
+                    <span class="small fw-semibold text-body-secondary">@GetWeekdayName(day, grid.Days.Length)</span>
+                    <span class="@GetDayNumberClass(day)">@CalendarLayout.GetDayOfMonth(day, Owner.EffectiveCulture)</span>
+                    @if (info.Label is not null)
+                    {
+                        <span class="bb-calendar-timegrid-day-label d-block small text-truncate @info.LabelClass" title="@info.Label">@info.Label</span>
+                    }
+                </div>
+            }
+        </div>
+        <div class="bb-calendar-allday" role="row">
+            <div class="bb-calendar-time-gutter bb-calendar-allday-label small text-body-secondary text-truncate"
+                 style="grid-column: 1; grid-row: 1 / span @allDayRows;"
+                 role="rowheader">
+                @Owner.AllDayText
+            </div>
+            @for (var column = 0; column < grid.Days.Length; column++)
+            {
+                var day = grid.Days[column];
+
+                <div class="@GetAllDayCellClass(day)"
+                     style="grid-column: @(column + 2); grid-row: 1 / span @allDayRows;"
+                     role="gridcell"
+                     tabindex="-1"
+                     aria-selected="@(Owner.SelectedDay == day ? "true" : "false")"
+                     aria-label="@($"{Owner.AllDayText}, {Owner.GetDayAriaLabel(day)}")"
+                     data-bb-date="@day.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)"
+                     @onclick="() => Owner.HandleDayClickAsync(day)"></div>
+            }
+            @foreach (var segment in grid.AllDaySegments)
+            {
+                var entry = Owner.Entries[segment.Key];
+
+                @* The data attributes are what the browser script reads when the user drags the event. *@
+                <button type="button"
+                        class="@GetSegmentClass(entry, segment)"
+                        style="grid-column: @(segment.Column + 2) / span @segment.Span; grid-row: @(segment.Lane + 1);"
+                        title="@entry.Title"
+                        aria-label="@Owner.GetEventAriaLabel(entry)"
+                        data-bb-event-key="@entry.Key"
+                        data-bb-start="@entry.StartText"
+                        data-bb-end="@entry.EndText"
+                        data-bb-first-day="@entry.FirstDayText"
+                        data-bb-last-day="@entry.LastDayText"
+                        data-bb-bar="true"
+                        @onclick="() => Owner.HandleEventClickAsync(entry)">
+                    @if (Owner.EventTemplate is not null)
+                    {
+                        @Owner.RenderEventTemplate(entry)
+                    }
+                    else
+                    {
+                        @if (!entry.IsAllDay && !segment.ContinuesBefore)
+                        {
+                            <span class="bb-calendar-event-time">@Owner.FormatTime(entry.Start)</span>
+                        }
+                        <span class="bb-calendar-event-title text-truncate">@entry.Title</span>
+                    }
+                </button>
+            }
+        </div>
+        @* The hourly grid is the one area that scrolls; the header and the all-day row stay in place above it. *@
+        <div class="bb-calendar-timegrid-scroll" style="@ScrollStyle">
+            <div class="bb-calendar-timegrid-body" role="row">
+                <div class="bb-calendar-time-gutter" role="presentation">
+                    @foreach (var minutes in SlotStarts)
+                    {
+                        <div class="bb-calendar-time-label small text-body-secondary">@(minutes % 60 == 0 ? Owner.FormatHour(minutes) : null)</div>
+                    }
+                </div>
+                @for (var column = 0; column < grid.Days.Length; column++)
+                {
+                    var day = grid.Days[column];
+
+                    <div class="@GetColumnClass(day)"
+                         role="gridcell"
+                         aria-label="@Owner.GetDayAriaLabel(day)"
+                         data-bb-date="@day.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)">
+                        @foreach (var minutes in SlotStarts)
+                        {
+                            <div class="@GetSlotClass(day, minutes)"
+                                 role="button"
+                                 tabindex="@(day == focusDay && minutes == focusMinutes ? 0 : -1)"
+                                 aria-label="@Owner.GetSlotAriaLabel(day, minutes)"
+                                 data-bb-minutes="@minutes"
+                                 @onclick="() => Owner.HandleSlotClickAsync(day, minutes)"></div>
+                        }
+                        @if (day == Owner.Today)
+                        {
+                            @* The browser script moves the line as time passes, and hides it outside the visible hours; this is its place when the view renders. *@
+                            <div class="bb-calendar-now-line" style="@NowLineStyle" aria-hidden="true"></div>
+                        }
+                        @foreach (var block in grid.DayBlocks[column])
+                        {
+                            var entry = Owner.Entries[block.Key];
+
+                            <button type="button"
+                                    class="@GetBlockClass(entry)"
+                                    style="@GetBlockStyle(block)"
+                                    title="@entry.Title"
+                                    aria-label="@Owner.GetEventAriaLabel(entry)"
+                                    data-bb-event-key="@entry.Key"
+                                    data-bb-start="@entry.StartText"
+                                    data-bb-end="@entry.EndText"
+                                    data-bb-first-day="@entry.FirstDayText"
+                                    data-bb-last-day="@entry.LastDayText"
+                                    data-bb-bar="false"
+                                    @onclick="() => Owner.HandleEventClickAsync(entry)">
+                                @if (Owner.EventTemplate is not null)
+                                {
+                                    @Owner.RenderEventTemplate(entry)
+                                }
+                                else
+                                {
+                                    <span class="bb-calendar-event-title d-block text-truncate">@entry.Title</span>
+                                    <span class="bb-calendar-event-time d-block text-truncate">@Owner.FormatTime(entry.Start) &ndash; @Owner.FormatTime(entry.End)</span>
+                                }
+                            </button>
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+}

@@ -1,0 +1,89 @@
+<div class="d-flex flex-wrap align-items-center gap-3 mb-3">
+    <Switch @bind-Value="allowRangeSelection" Label="Select by dragging" />
+    <Switch @bind-Value="allowEventMove" Label="Move events" />
+    <Switch @bind-Value="allowEventResize" Label="Resize events" />
+    <Switch @bind-Value="applyChanges" Label="Apply moves and resizes" />
+</div>
+
+<Calendar TItem="Appointment"
+          AriaLabel="Planning calendar"
+          Data="appointments"
+          Date="@(new DateOnly(2024, 11, 5))"
+          @bind-View="view"
+          Height="420"
+          AllowRangeSelection="allowRangeSelection"
+          AllowEventMove="allowEventMove"
+          AllowEventResize="allowEventResize"
+          StartField="a => a.Start"
+          EndField="a => a.End"
+          TitleField="a => a.Title"
+          AllDayField="a => a.IsAllDay"
+          ColorField="a => a.Color"
+          OnRangeSelected="OnRangeSelected"
+          OnEventMoved="OnEventMoved"
+          OnEventResized="OnEventResized" />
+
+<div class="mt-3">
+    <div>Last drag: <b>@lastDrag</b></div>
+    <div>Events in the list: <b>@appointments.Count</b></div>
+</div>
+
+@code {
+    private class Appointment
+    {
+        public string Title { get; set; } = "";
+        public DateTime Start { get; set; }
+        public DateTime End { get; set; }
+        public bool IsAllDay { get; set; }
+        public CalendarColor Color { get; set; }
+    }
+
+    private static DateTime At(int day, int hour = 0, int minute = 0) => new(2024, 11, day, hour, minute, 0);
+
+    private readonly List<Appointment> appointments = new()
+    {
+        new() { Title = "Trip to London", Start = At(1), End = At(5), IsAllDay = true, Color = CalendarColor.Success },
+        new() { Title = "Workshop", Start = At(12), End = At(15), IsAllDay = true, Color = CalendarColor.Warning },
+        new() { Title = "Standup", Start = At(5, 9), End = At(5, 10), Color = CalendarColor.Primary },
+        new() { Title = "Design review", Start = At(6, 11), End = At(6, 12, 30), Color = CalendarColor.Info }
+    };
+
+    private bool allowEventMove = true;
+    private bool allowEventResize = true;
+    private bool allowRangeSelection = true;
+    private bool applyChanges = true;
+    private string lastDrag = "none";
+    private int newEventNumber;
+    private CalendarView view = CalendarView.Month;
+
+    // The calendar only reports the move. The event moves when you change your own data, so you can validate or reject it here.
+    private void OnEventMoved(CalendarEventChangedEventArgs<Appointment> args)
+    {
+        lastDrag = $"moved \"{args.Item.Title}\" to {args.NewStart:yyyy-MM-dd HH:mm} - {args.NewEnd:yyyy-MM-dd HH:mm}" + (applyChanges ? "" : " (not applied)");
+
+        if (!applyChanges)
+            return;
+
+        args.Item.Start = args.NewStart;
+        args.Item.End = args.NewEnd;
+    }
+
+    private void OnEventResized(CalendarEventChangedEventArgs<Appointment> args)
+    {
+        lastDrag = $"resized \"{args.Item.Title}\" to {args.NewStart:yyyy-MM-dd HH:mm} - {args.NewEnd:yyyy-MM-dd HH:mm}" + (applyChanges ? "" : " (not applied)");
+
+        if (!applyChanges)
+            return;
+
+        args.Item.Start = args.NewStart;
+        args.Item.End = args.NewEnd;
+    }
+
+    // Open your own form here; this demo adds an event for the selected range at once.
+    private void OnRangeSelected(CalendarRangeSelectedEventArgs args)
+    {
+        lastDrag = $"selected {args.Start:yyyy-MM-dd HH:mm} - {args.End:yyyy-MM-dd HH:mm}" + (args.IsAllDay ? " (whole days)" : "");
+        newEventNumber++;
+        appointments.Add(new Appointment { Title = $"New event {newEventNumber}", Start = args.Start, End = args.End, IsAllDay = args.IsAllDay, Color = CalendarColor.Secondary });
+    }
+}

@@ -1,0 +1,40 @@
+<Calendar TItem="Appointment"
+          AriaLabel="Keyboard calendar"
+          Data="appointments"
+          Date="@(new DateOnly(2024, 11, 5))"
+          @bind-View="view"
+          @bind-SelectedDate="selectedDate"
+          Height="360"
+          StartField="a => a.Start"
+          EndField="a => a.End"
+          TitleField="a => a.Title"
+          AllDayField="a => a.IsAllDay"
+          ColorField="a => a.Color"
+          OnDayClick="@(args => Log($"Day {args.Date:yyyy-MM-dd}"))"
+          OnSlotClick="@(args => Log($"Slot {args.Start:yyyy-MM-dd HH:mm} to {args.End:HH:mm}"))"
+          OnEventClick="@(args => Log($"Event \"{args.Item.Title}\""))" />
+
+<div class="mt-3">
+    <div>Selected day: <b>@(selectedDate?.ToString("yyyy-MM-dd") ?? "none")</b></div>
+    <div>Last activated: <b>@lastActivated</b></div>
+</div>
+
+@code {
+    private record Appointment(string Title, DateTime Start, DateTime End, bool IsAllDay = false, CalendarColor Color = CalendarColor.Primary);
+
+    private static DateTime At(int day, int hour = 0, int minute = 0) => new(2024, 11, day, hour, minute, 0);
+
+    private readonly List<Appointment> appointments = new()
+    {
+        new("Trip to London", At(3), At(6), true, CalendarColor.Success),
+        new("Standup", At(5, 9), At(5, 9, 30)),
+        new("Design review", At(6, 11), At(6, 12, 30), false, CalendarColor.Info)
+    };
+
+    private string lastActivated = "nothing yet";
+    private DateOnly? selectedDate;
+    private CalendarView view = CalendarView.Month;
+
+    // Enter and Space raise the same callbacks as a click, so one handler serves the mouse, touch, and the keyboard.
+    private void Log(string text) => lastActivated = text;
+}

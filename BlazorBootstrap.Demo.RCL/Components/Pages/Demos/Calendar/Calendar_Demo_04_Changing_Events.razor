@@ -1,0 +1,74 @@
+<div class="d-flex flex-wrap gap-2 mb-3">
+    <Button Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="AddEvent">Add event</Button>
+    <Button Color="ButtonColor.Secondary" Outline="true" Size="ButtonSize.Small" @onclick="MoveFirst">Move first event one day later</Button>
+    <Button Color="ButtonColor.Secondary" Outline="true" Size="ButtonSize.Small" @onclick="RemoveFirst">Remove first event</Button>
+    <Button Color="ButtonColor.Secondary" Outline="true" Size="ButtonSize.Small" @onclick="Clear">Clear</Button>
+    <Button Color="ButtonColor.Secondary" Outline="true" Size="ButtonSize.Small" @onclick="SetNull">Set Data to null</Button>
+    <Button Color="ButtonColor.Secondary" Outline="true" Size="ButtonSize.Small" @onclick="Reset">Reset</Button>
+</div>
+
+<Calendar TItem="Appointment"
+          AriaLabel="Project calendar"
+          Data="appointments"
+          Date="@(new DateOnly(2024, 11, 5))"
+          StartField="a => a.Start"
+          EndField="a => a.End"
+          TitleField="a => a.Title"
+          ColorField="a => a.Color" />
+
+<div class="mt-3">Events in the list: <b>@(appointments?.Count.ToString() ?? "null")</b></div>
+
+@code {
+    private class Appointment
+    {
+        public string Title { get; set; } = "";
+        public DateTime Start { get; set; }
+        public DateTime End { get; set; }
+        public CalendarColor Color { get; set; }
+    }
+
+    private List<Appointment>? appointments;
+    private int nextNumber;
+
+    protected override void OnInitialized() => Reset();
+
+    private void AddEvent()
+    {
+        appointments ??= new();
+        nextNumber++;
+
+        var start = new DateTime(2024, 11, 3 + nextNumber % 20, 9, 0, 0);
+
+        appointments.Add(new Appointment { Title = $"Event {nextNumber}", Start = start, End = start.AddHours(1), Color = CalendarColor.Primary });
+    }
+
+    private void Clear() => appointments?.Clear();
+
+    // Changing an item in place is enough: the calendar reads the list again each time it renders.
+    private void MoveFirst()
+    {
+        if (appointments is not { Count: > 0 })
+            return;
+
+        appointments[0].Start = appointments[0].Start.AddDays(1);
+        appointments[0].End = appointments[0].End.AddDays(1);
+    }
+
+    private void RemoveFirst()
+    {
+        if (appointments is { Count: > 0 })
+            appointments.RemoveAt(0);
+    }
+
+    private void Reset()
+    {
+        nextNumber = 0;
+        appointments = new()
+        {
+            new Appointment { Title = "Kick-off", Start = new DateTime(2024, 11, 4, 10, 0, 0), End = new DateTime(2024, 11, 4, 11, 0, 0), Color = CalendarColor.Success },
+            new Appointment { Title = "Sprint", Start = new DateTime(2024, 11, 11, 9, 0, 0), End = new DateTime(2024, 11, 15, 17, 0, 0), Color = CalendarColor.Info }
+        };
+    }
+
+    private void SetNull() => appointments = null;
+}

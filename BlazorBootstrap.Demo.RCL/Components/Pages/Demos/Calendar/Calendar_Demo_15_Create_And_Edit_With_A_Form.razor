@@ -1,0 +1,191 @@
+@using System.ComponentModel.DataAnnotations
+
+<div class="d-flex flex-wrap align-items-center gap-3 mb-3">
+    <Button Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="OnNewClickAsync">New event</Button>
+    <span class="small text-body-secondary">Select an event to edit it. Select a time slot, or drag over days or slots, to create one.</span>
+</div>
+
+<Calendar TItem="Appointment"
+          AriaLabel="Appointments calendar"
+          Data="appointments"
+          Date="@(new DateOnly(2024, 11, 5))"
+          @bind-View="view"
+          @bind-SelectedDate="selectedDate"
+          Height="420"
+          StartField="a => a.Start"
+          EndField="a => a.End"
+          TitleField="a => a.Title"
+          AllDayField="a => a.IsAllDay"
+          OnEventClick="OnEventClickAsync"
+          OnSlotClick="OnSlotClickAsync"
+          OnRangeSelected="OnRangeSelectedAsync"
+          OnEventMoved="OnEventChangedAsync"
+          OnEventResized="OnEventChangedAsync" />
+
+<h6 class="mt-4">The same list in a Grid</h6>
+<Grid @ref="grid"
+      TItem="Appointment"
+      Class="table table-hover table-bordered table-striped"
+      Data="appointments"
+      Responsive="true">
+    <GridColumns>
+        <GridColumn TItem="Appointment" HeaderText="Title" PropertyName="Title">
+            @context.Title
+        </GridColumn>
+        <GridColumn TItem="Appointment" HeaderText="Start" PropertyName="Start">
+            @context.Start.ToString("yyyy-MM-dd HH:mm")
+        </GridColumn>
+        <GridColumn TItem="Appointment" HeaderText="End" PropertyName="End">
+            @context.End.ToString("yyyy-MM-dd HH:mm")
+        </GridColumn>
+        <GridColumn TItem="Appointment" HeaderText="All day" PropertyName="IsAllDay">
+            @(context.IsAllDay ? "Yes" : "No")
+        </GridColumn>
+    </GridColumns>
+</Grid>
+
+<Modal @ref="modal" Title="@(editing is null ? "New event" : "Edit event")">
+    <BodyTemplate>
+        <EditForm Model="model" OnValidSubmit="SaveAsync">
+            <DataAnnotationsValidator />
+
+            <div class="mb-3">
+                <label class="form-label" for="calendar-form-title">Title <span class="text-danger">*</span></label>
+                <TextInput Id="calendar-form-title" @bind-Value="model.Title" Placeholder="Enter a title" />
+                <ValidationMessage For="@(() => model.Title)" />
+            </div>
+            <div class="mb-3">
+                <label class="form-label" for="calendar-form-start">Start <span class="text-danger">*</span></label>
+                <InputDate id="calendar-form-start" class="form-control" Type="InputDateType.DateTimeLocal" @bind-Value="model.Start" />
+                <ValidationMessage For="@(() => model.Start)" />
+            </div>
+            <div class="mb-3">
+                <label class="form-label" for="calendar-form-end">End <span class="text-danger">*</span></label>
+                <InputDate id="calendar-form-end" class="form-control" Type="InputDateType.DateTimeLocal" @bind-Value="model.End" />
+                <ValidationMessage For="@(() => model.End)" />
+            </div>
+            <div class="mb-3">
+                <Switch @bind-Value="model.IsAllDay" Label="All day" />
+            </div>
+
+            <div class="d-flex gap-2">
+                <Button Type="ButtonType.Submit" Color="ButtonColor.Primary">Save</Button>
+                @if (editing is not null)
+                {
+                    <Button Type="ButtonType.Button" Color="ButtonColor.Danger" Outline="true" @onclick="DeleteAsync">Delete</Button>
+                }
+                <Button Type="ButtonType.Button" Color="ButtonColor.Secondary" Class="ms-auto" @onclick="() => modal.HideAsync()">Cancel</Button>
+            </div>
+        </EditForm>
+    </BodyTemplate>
+</Modal>
+
+@code {
+    private class Appointment
+    {
+        public string Title { get; set; } = "";
+        public DateTime Start { get; set; }
+        public DateTime End { get; set; }
+        public bool IsAllDay { get; set; }
+    }
+
+    private class AppointmentModel : IValidatableObject
+    {
+        [Required(ErrorMessage = "Enter a title.")]
+        public string? Title { get; set; }
+
+        [Required(ErrorMessage = "Enter the start.")]
+        public DateTime? Start { get; set; }
+
+        [Required(ErrorMessage = "Enter the end.")]
+        public DateTime? End { get; set; }
+
+        public bool IsAllDay { get; set; }
+
+        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+        {
+            if (Start.HasValue && End.HasValue && End <= Start)
+                yield return new ValidationResult("The end must be after the start.", new[] { nameof(End) });
+        }
+    }
+
+    private static DateTime At(int day, int hour = 0, int minute = 0) => new(2024, 11, day, hour, minute, 0);
+
+    private readonly List<Appointment> appointments = new()
+    {
+        new() { Title = "Standup", Start = At(5, 9), End = At(5, 9, 30) },
+        new() { Title = "Design review", Start = At(6, 11), End = At(6, 12, 30) },
+        new() { Title = "Conference", Start = At(12), End = At(15), IsAllDay = true }
+    };
+
+    // The event being edited, or null while a new one is created.
+    private Appointment? editing;
+    private Grid<Appointment> grid = default!;
+    private Modal modal = default!;
+    private AppointmentModel model = new();
+    private DateOnly? selectedDate;
+    private CalendarView view = CalendarView.Month;
+
+    // The calendar shows no form of its own. Each callback opens this page's form with the times the user chose.
+    private Task OnEventClickAsync(CalendarEventClickEventArgs<Appointment> args) =>
+        ShowFormAsync(args.Item, args.Item.Title, args.Item.Start, args.Item.End, args.Item.IsAllDay);
+
+    private Task OnSlotClickAsync(CalendarSlotClickEventArgs args) =>
+        ShowFormAsync(null, null, args.Start, args.End, false);
+
+    private Task OnRangeSelectedAsync(CalendarRangeSelectedEventArgs args) =>
+        ShowFormAsync(null, null, args.Start, args.End, args.IsAllDay);
+
+    private Task OnNewClickAsync()
+    {
+        // Starts at 9:00 on the selected day, so a new event needs no dragging.
+        var start = (selectedDate ?? new DateOnly(2024, 11, 5)).ToDateTime(new TimeOnly(9, 0));
+
+        return ShowFormAsync(null, null, start, start.AddHours(1), false);
+    }
+
+    // A move or a resize needs no form: the app applies it, and both the calendar and the grid show the result.
+    private async Task OnEventChangedAsync(CalendarEventChangedEventArgs<Appointment> args)
+    {
+        args.Item.Start = args.NewStart;
+        args.Item.End = args.NewEnd;
+
+        await grid.RefreshDataAsync();
+    }
+
+    private async Task ShowFormAsync(Appointment? appointment, string? title, DateTime start, DateTime end, bool isAllDay)
+    {
+        editing = appointment;
+        model = new AppointmentModel { Title = title, Start = start, End = end, IsAllDay = isAllDay };
+
+        await modal.ShowAsync();
+    }
+
+    private async Task SaveAsync()
+    {
+        var appointment = editing;
+
+        if (appointment is null)
+        {
+            appointment = new Appointment();
+            appointments.Add(appointment);
+        }
+
+        appointment.Title = model.Title!;
+        appointment.Start = model.Start!.Value;
+        appointment.End = model.End!.Value;
+        appointment.IsAllDay = model.IsAllDay;
+
+        await modal.HideAsync();
+        await grid.RefreshDataAsync();
+    }
+
+    private async Task DeleteAsync()
+    {
+        if (editing is not null)
+            appointments.Remove(editing);
+
+        await modal.HideAsync();
+        await grid.RefreshDataAsync();
+    }
+}

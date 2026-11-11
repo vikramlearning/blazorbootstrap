@@ -1,0 +1,333 @@
+@attribute [Route(pageUrl)]
+@layout DemosMainLayout
+
+<DemosPageHeadSection PageUrl="@pageUrl"
+                      PageTitle="@pageTitle"
+                      PageDescription="@pageDescription"
+                      MetaTitle="@metaTitle"
+                      MetaDescription="@metaDescription"
+                      ImageUrl="@imageUrl" />
+
+<DocsLink Href="@DemoRouteConstants.Docs_URL_Calendar" />
+
+<Callout Color="CalloutColor.Info">
+    Bootstrap 5.3 has no calendar component. <b>Calendar</b> is built from Bootstrap classes (buttons, button groups, <code>text-bg-*</code> colors)
+    and a small set of <code>--bb-calendar-*</code> CSS properties, so it follows the light and dark themes.
+    Your app binds a list of events and reacts to callbacks; the calendar never changes an event itself.
+</Callout>
+
+<Section Size="HeadingSize.H2" Name="Navigation" PageUrl="@pageUrl" Link="navigation">
+    <div class="mb-3">
+        Move through time with previous, next, and Today, and switch between the Month, Week, Work week, Day, and Agenda views.
+        The title shows the visible period. Select the title to open a small month grid and jump to any date.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Add <code>Calendar</code> and set <code>TItem</code> to your event type.</li>
+                <li>Bind <code>View</code> (<code>CalendarView</code>) and <code>Date</code> with <code>@@bind-View</code> and <code>@@bind-Date</code> to read or set what the calendar shows. Both are optional: without them the calendar keeps its own state.</li>
+                <li>Handle <code>OnVisibleRangeChanged</code> to load the events of the visible range. It fires after the first render and whenever navigation or a view switch changes the range.</li>
+                <li>Set <code>AriaLabel</code> to name the calendar for screen readers.</li>
+            </ol>
+        </div>
+    </div>
+    <Demo Type="typeof(Calendar_Demo_01_Navigation)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Event kinds" PageUrl="@pageUrl" Link="event-kinds">
+    <div class="mb-3">
+        The Month view shows all-day, multi-day, and timed events, each in its own color. An event that crosses a week row continues on the next row.
+        A timed event shows its start time. A day with more events than fit shows <b>+N more</b>; select it to see the whole day.
+        Times are shown exactly as you supply them, with no time-zone conversion.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Set <code>Data</code> to your list of events.</li>
+                <li>Set <code>StartField</code>, <code>EndField</code>, and <code>TitleField</code> to functions that read an event. For an all-day event, set the end to the start of the day after its last day.</li>
+                <li>Set <code>AllDayField</code> to mark all-day events and <code>ColorField</code> (<code>CalendarColor</code>) to color them.</li>
+                <li>Handle <code>OnEventClick</code> and <code>OnDayClick</code> to react to clicks, for example by opening your own form in a <code>Modal</code>. The calendar shows no form of its own.</li>
+                <li>Bind <code>SelectedDate</code> with <code>@@bind-SelectedDate</code> to read or set the selected day.</li>
+            </ol>
+        </div>
+    </div>
+    <Demo Type="typeof(Calendar_Demo_03_Event_Kinds)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Week, Work week, and Day" PageUrl="@pageUrl" Link="week-work-week-and-day">
+    <div class="mb-3">
+        The Week, Work week, and Day views show day columns with an all-day row above an hourly grid.
+        All-day and multi-day events sit in the all-day row. A timed event is placed by its start and end, and events that overlap in time sit side by side.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Set or bind <code>View</code> to <code>CalendarView.Week</code>, <code>CalendarView.WorkWeek</code>, or <code>CalendarView.Day</code>, or let the user pick the view in the toolbar.</li>
+                <li>Set <code>WorkDays</code> to the days the Work week view shows. The default is Monday to Friday.</li>
+                <li>Handle <code>OnSlotClick</code> to react to a click on an empty time slot, for example by opening your own form with the slot's start and end.</li>
+                <li>Set <code>AllDayText</code> to change the label of the all-day row.</li>
+            </ol>
+        </div>
+    </div>
+    <Demo Type="typeof(Calendar_Demo_05_Week_Work_Week_And_Day)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Time grid settings" PageUrl="@pageUrl" Link="time-grid-settings">
+    <div class="mb-3">
+        Set the slot length, the visible hours, and the working hours of the Week, Work week, and Day views.
+        Time outside working hours is shaded, and today's column shows a line at the current time on the user's device.
+        The hourly grid scrolls inside a set height and opens an hour before the current time when today is shown, otherwise at the start of the working day.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Set <code>SlotMinutes</code> to 15, 30, or 60.</li>
+                <li>Set <code>DayStart</code> and <code>DayEnd</code> (<code>TimeOnly</code>) to limit the hours the grid shows. Leave both at their default to show the whole day.</li>
+                <li>Set <code>WorkDayStart</code>, <code>WorkDayEnd</code>, and <code>WorkDays</code> to choose the hours and days that are not shaded.</li>
+                <li>Set <code>Height</code> to the height of the hourly grid in pixels. Set it to 0 to show the whole grid and let the page scroll.</li>
+            </ol>
+        </div>
+    </div>
+    <Demo Type="typeof(Calendar_Demo_06_Time_Grid_Settings)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Drag to select, move, and resize" PageUrl="@pageUrl" Link="drag-to-select-move-and-resize">
+    <div class="mb-3">
+        Drag across days or time slots to select a range. Drag an event to move it, or drag one of its ends to resize it.
+        In the Week, Work week, and Day views a timed event snaps to the slot length. In the Month view an event moves by whole days and keeps its time of day.
+        Press Escape during a drag to cancel it. On a touch screen, press and hold before dragging; a quick swipe scrolls.
+        <br />
+        The calendar never changes your data. Each drag raises a callback with the new times, and the event moves only when you update your list, so you can validate or reject a change.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Handle <code>OnRangeSelected</code> to react to a selected range, for example by opening your own form to create an event.</li>
+                <li>Handle <code>OnEventMoved</code> and <code>OnEventResized</code>, and set the event's start and end from <code>NewStart</code> and <code>NewEnd</code> to apply the change. Do nothing to leave the event where it was.</li>
+                <li>Set <code>AllowRangeSelection</code>, <code>AllowEventMove</code>, or <code>AllowEventResize</code> to <code>false</code> to turn an action off.</li>
+                <li>Check that the user is allowed to make the change in your own handler; the calendar does not know your rules.</li>
+            </ol>
+        </div>
+    </div>
+    <Demo Type="typeof(Calendar_Demo_09_Drag_To_Select_Move_And_Resize)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Customizing" PageUrl="@pageUrl" Link="customizing">
+    <div class="mb-3">
+        Draw the inside of every event with your own template, mark days with a label, a highlight, or non-working shading, and hide weekdays you do not need.
+        The calendar follows the Bootstrap theme, so it changes with light and dark mode and with your theme's colors.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Set <code>EventTemplate</code> to replace the content of every event. Its context carries your item, the title, the start and end, and the view.</li>
+                <li>Set <code>DayMarkProvider</code> to a function that returns a <code>CalendarDayMark</code> for a day: a <code>Label</code>, a <code>Color</code> that tints the day, and <code>IsNonWorking</code> to shade it. Return <code>null</code> for other days.</li>
+                <li>Set <code>HiddenDays</code> to the weekdays to leave out, for example Saturday and Sunday. An event that covers a hidden day keeps its part on the days that are shown.</li>
+            </ol>
+        </div>
+    </div>
+    <Demo Type="typeof(Calendar_Demo_10_Customizing)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Holidays and week numbers" PageUrl="@pageUrl" Link="holidays-and-week-numbers">
+    <div class="mb-3">
+        Pass a list of holidays and the calendar labels each with its name and shades it as a non-working day in every view.
+        Week numbers show beside each week in the Month view and in the corner of the Week, Work week, and Day views.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Set <code>Holidays</code> to a list of <code>CalendarHoliday</code> items, each with a date and a name. The calendar holds no holiday data of its own.</li>
+                <li>Set <code>ShowWeekNumbers</code> to <code>true</code> to show week numbers. When it is <code>false</code>, they are not rendered at all.</li>
+                <li>Set <code>WeekNumberRule</code> to <code>Culture</code> to number weeks by the culture's rule, or to <code>Iso8601</code>. The two differ around the new year: in January 2027 with the en-US culture, the week of 3 January is week 2 by the culture's rule and week 1 by ISO 8601.</li>
+                <li>Set <code>WeekNumberText</code> to change the short heading of the week numbers.</li>
+            </ol>
+        </div>
+    </div>
+    <Demo Type="typeof(Calendar_Demo_11_Holidays_And_Week_Numbers)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Agenda" PageUrl="@pageUrl" Link="agenda">
+    <div class="mb-3">
+        The Agenda view lists the events of a period, grouped by day. Days without events are left out. All-day events come first, then timed events by start time.
+        An event that covers several days appears on each of them.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Set or bind <code>View</code> to <code>CalendarView.Agenda</code>, or let the user pick it in the toolbar.</li>
+                <li>Set <code>AgendaDays</code> to the number of days the list covers. The default is 7. Previous and next move by that many days.</li>
+                <li>Set <code>EmptyText</code> to the text shown for a period without events.</li>
+            </ol>
+        </div>
+    </div>
+    <Demo Type="typeof(Calendar_Demo_07_Agenda)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Compact layout" PageUrl="@pageUrl" Link="compact-layout">
+    <div class="mb-3">
+        Below a breakpoint the calendar shows a compact layout for small screens. The view switch becomes a list.
+        The Month view shows a marker on each day that has events and lists the selected day's events below the grid.
+        The Week and Work week views keep readable day columns and scroll sideways inside the calendar, so the page itself never scrolls sideways.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Set <code>CompactBreakpoint</code> (<code>CalendarCompactBreakpoint</code>) to the width below which the compact layout shows. The default is <code>Medium</code> (768px).</li>
+                <li>Set it to <code>None</code> to keep the full layout at every width.</li>
+                <li>Bind <code>SelectedDate</code> to choose the day whose events the compact Month view lists.</li>
+            </ol>
+        </div>
+    </div>
+    <Demo Type="typeof(Calendar_Demo_08_Compact_Layout)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Changing events" PageUrl="@pageUrl" Link="changing-events">
+    <div class="mb-3">
+        The calendar reads your list each time it renders, so adding, changing, or removing an event shows at once. A <code>null</code> or empty list shows an empty calendar.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Keep your events in a list and pass it to <code>Data</code>.</li>
+                <li>Add, change, or remove items in your own code, for example in a button handler or after saving a form.</li>
+                <li>No refresh call is needed when the change happens in an event handler of the component that holds the list.</li>
+            </ol>
+        </div>
+    </div>
+    <Demo Type="typeof(Calendar_Demo_04_Changing_Events)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Localization" PageUrl="@pageUrl" Link="localization">
+    <div class="mb-3">
+        Month and day names, date and time formats, the 12 or 24 hour clock, and the first day of the week follow the calendar's culture.
+        By default that is the app's current culture. You can show one calendar in another culture, and override the first day of the week and the time format without changing the culture.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Set <code>Culture</code> to a <code>CultureInfo</code> to show one calendar in another culture. Leave it unset to follow the app.</li>
+                <li>Set <code>FirstDayOfWeek</code> to start weeks on another day, and <code>TimeFormat</code> (<code>CalendarTimeFormat</code>) to force a 12-hour or 24-hour clock.</li>
+                <li>Translate the built-in text with the text parameters: <code>TodayText</code>, <code>PreviousText</code>, <code>NextText</code>, <code>ViewText</code>, <code>MonthText</code>, <code>WeekText</code>, <code>WorkWeekText</code>, <code>DayText</code>, <code>AgendaText</code>, <code>AllDayText</code>, <code>MoreTextFormat</code>, <code>EmptyText</code>, <code>WeekNumberText</code>, and <code>CloseText</code>. Each has an English default.</li>
+                <li>Set <code>AriaLabel</code> in the same language to name the calendar for screen readers.</li>
+            </ol>
+        </div>
+    </div>
+    <Demo Type="typeof(Calendar_Demo_02_Localization)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Calendar systems" PageUrl="@pageUrl" Link="calendar-systems">
+    <div class="mb-3">
+        With a culture whose calendar is not Gregorian, such as Persian (fa-IR) or Umm al-Qura (ar-SA), the title, the month grid, the day numbers, the agenda, and the jump-to-date picker follow that calendar.
+        Your events keep their ordinary <code>DateTime</code> values, and each one still sits on its actual day.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Set <code>Culture</code> to a culture that uses the calendar you need, or run your app in that culture.</li>
+                <li>In a Blazor WebAssembly app, add <code>&lt;BlazorWebAssemblyLoadAllGlobalizationData&gt;true&lt;/BlazorWebAssemblyLoadAllGlobalizationData&gt;</code> to the project file. Without it the browser loads only part of the culture data, and these cultures may not be available.</li>
+            </ol>
+        </div>
+    </div>
+    <Callout Color="CalloutColor.Info">
+        The month names and date formats come from .NET's culture data, which is not the same on a server and in the browser.
+        In Blazor WebAssembly, the month names of these calendars can appear in English (for example <b>Aban</b>), and the title can include the era.
+        The days, months, and years shown are the same in both.
+    </Callout>
+    <Demo Type="typeof(Calendar_Demo_12_Calendar_Systems)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Right to left" PageUrl="@pageUrl" Link="right-to-left">
+    <div class="mb-3">
+        In a right-to-left page the calendar is mirrored: the days run from right to left, the toolbar and the time column swap sides, and dragging follows the mirrored layout.
+        The calendar's own styles use start and end instead of left and right, so no extra setting is needed.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Set <code>dir="rtl"</code> on the page (usually on the <code>html</code> element) or on an element around the calendar.</li>
+                <li>For a whole right-to-left page, load Bootstrap's right-to-left stylesheet (<code>bootstrap.rtl.min.css</code>) so Bootstrap's own parts, such as button groups, are mirrored too.</li>
+                <li>Set <code>Culture</code> and the text parameters for the language, as in the Localization section.</li>
+            </ol>
+        </div>
+    </div>
+    <Demo Type="typeof(Calendar_Demo_13_Right_To_Left)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Keyboard" PageUrl="@pageUrl" Link="keyboard">
+    <div class="mb-3">
+        Every view works without a mouse, except moving and resizing an event by dragging. To change an event's times from the keyboard, open your own form from <code>OnEventClick</code>.
+        Days, time slots, and events carry their full date, time, and title as their accessible name, so a screen reader announces them.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Press <kbd>Tab</kbd> to reach the toolbar, one day or time slot of the grid, and each event.</li>
+                <li>On a day or a time slot, press the arrow keys to move, <kbd>Home</kbd> and <kbd>End</kbd> to go to the ends of the week or the day, and <kbd>Page Up</kbd> and <kbd>Page Down</kbd> to show the previous or next period.</li>
+                <li>Press <kbd>Enter</kbd> or <kbd>Space</kbd> to activate a day, a time slot, or an event. This raises <code>OnDayClick</code>, <code>OnSlotClick</code>, or <code>OnEventClick</code>, the same as a click.</li>
+                <li>Press <kbd>Esc</kbd> to close the jump-to-date picker or a day's event list. Focus returns to the button that opened it.</li>
+                <li>Set <code>AriaLabel</code> to name the calendar for screen readers.</li>
+            </ol>
+        </div>
+    </div>
+    <Demo Type="typeof(Calendar_Demo_17_Keyboard)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Create and edit with a form" PageUrl="@pageUrl" Link="create-and-edit-with-a-form">
+    <div class="mb-3">
+        The calendar has no editor of its own. Open your own form, for example a <code>Modal</code> with an <code>EditForm</code>, from the calendar's callbacks, and change your list when the form is saved.
+        A <code>Grid</code> bound to the same list shows the same events.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Handle <code>OnEventClick</code> to open the form with the event, and <code>OnSlotClick</code> and <code>OnRangeSelected</code> to open it with the chosen start and end.</li>
+                <li>On save, add or change the item in the list bound to <code>Data</code>. The calendar shows the change on its next render.</li>
+                <li>Handle <code>OnEventMoved</code> and <code>OnEventResized</code> to apply a drag, after any check your app needs. This is also the place to reject a change the user is not allowed to make.</li>
+                <li>A <code>Grid</code> keeps its own copy of the rows, so call its <code>RefreshDataAsync</code> method after each change.</li>
+            </ol>
+        </div>
+    </div>
+    <Demo Type="typeof(Calendar_Demo_15_Create_And_Edit_With_A_Form)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Inside a modal, an offcanvas, and tabs" PageUrl="@pageUrl" Link="inside-a-modal-an-offcanvas-and-tabs">
+    <div class="mb-3">
+        A calendar can sit inside a <code>Modal</code>, an <code>Offcanvas</code>, or a <code>Tab</code>. When it is rendered while hidden, it takes its size and scrolls to its opening time when it is first shown.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Put the <code>Calendar</code> in the <code>BodyTemplate</code> of a <code>Modal</code> or an <code>Offcanvas</code>, or in the <code>Content</code> of a <code>Tab</code>.</li>
+                <li>Use a large modal (<code>ModalSize.ExtraLarge</code>) for the Month and Week views.</li>
+                <li>The compact layout follows the width of the screen, not of the container. In a narrow container, such as an offcanvas, choose the Day or Agenda view.</li>
+            </ol>
+        </div>
+    </div>
+    <Demo Type="typeof(Calendar_Demo_14_Inside_Modal_Offcanvas_And_Tabs)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Changing settings at runtime" PageUrl="@pageUrl" Link="changing-settings-at-runtime">
+    <div class="mb-3">
+        Every setting is an ordinary parameter. Change the value it is bound to at any time and the calendar renders again with it: the view, the date, the culture, the time grid, holidays, hidden days, and the drag switches.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Bind each parameter to a field or property of your page.</li>
+                <li>Change the field in an event handler. No method call on the calendar is needed.</li>
+                <li>Use <code>@@bind-View</code> and <code>@@bind-Date</code> when the user and your code both change the view or the date.</li>
+            </ol>
+        </div>
+    </div>
+    <Demo Type="typeof(Calendar_Demo_16_Changing_Settings_At_Runtime)" Tabs="true" />
+</Section>
+
+@code {
+    private const string pageUrl = DemoRouteConstants.Demos_URL_Calendar;
+    private const string pageTitle = "Blazor Calendar";
+    private const string pageDescription = "The Blazor Bootstrap Calendar component is an event calendar with Month, Week, Work week, Day, and Agenda views.";
+    private const string metaTitle = "Blazor Calendar Component";
+    private const string metaDescription = "The Blazor Bootstrap Calendar component is an event calendar with Month, Week, Work week, Day, and Agenda views.";
+    private const string imageUrl = DemoScreenshotSrcConstants.Demos_URL_Calendar;
+}

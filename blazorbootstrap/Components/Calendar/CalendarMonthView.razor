@@ -1,0 +1,169 @@
+@namespace BlazorBootstrap
+@inherits BlazorBootstrapComponentBase
+@typeparam TItem
+
+@{
+    // With week numbers shown, the first grid column holds them and the days start in the second.
+    var firstDayColumn = Owner.ShowWeekNumbers ? 2 : 1;
+    var rowSpan = Owner.MonthLaneCount + 2;
+    var focusDay = FocusDay;
+
+    // The inside of an event: the app's template, or a color dot for a timed event, its start time, and its title.
+    // Blazor encodes the title as text.
+    RenderFragment<(CalendarEntry<TItem> Entry, bool ShowTime)> eventContent = context =>
+        @<text>
+            @if (Owner.EventTemplate is not null)
+            {
+                @Owner.RenderEventTemplate(context.Entry)
+            }
+            else
+            {
+                @if (!context.Entry.IsBar)
+                {
+                    <span class="bb-calendar-event-dot rounded-circle @GetDotClass(context.Entry)" aria-hidden="true"></span>
+                }
+                @if (context.ShowTime)
+                {
+                    <span class="bb-calendar-event-time">@Owner.FormatTime(context.Entry.Start)</span>
+                }
+                <span class="bb-calendar-event-title text-truncate">@context.Entry.Title</span>
+            }
+        </text>;
+}
+
+<div @ref="@Element" id="@Id" class="@ClassNames" style="@StyleNames" role="grid" @attributes="@AdditionalAttributes">
+    @if (Owner.MonthWeeks.Count > 0)
+    {
+        <div class="bb-calendar-month-header" role="row">
+            @if (Owner.ShowWeekNumbers)
+            {
+                <div class="bb-calendar-week-number small text-body-secondary text-truncate" role="columnheader">@Owner.WeekNumberText</div>
+            }
+            @foreach (var day in Owner.MonthWeeks[0].Days)
+            {
+                <div class="bb-calendar-weekday small fw-semibold text-body-secondary text-center text-truncate" role="columnheader">@GetWeekdayName(day)</div>
+            }
+        </div>
+    }
+    @foreach (var week in Owner.MonthWeeks)
+    {
+        <div class="bb-calendar-month-week" role="row">
+            @if (Owner.ShowWeekNumbers)
+            {
+                <div class="bb-calendar-week-number small text-body-secondary"
+                     style="grid-column: 1; grid-row: 1 / span @rowSpan;"
+                     role="rowheader">
+                    @Owner.GetWeekNumber(week.WeekStart)
+                </div>
+            }
+            @for (var column = 0; column < week.Days.Length; column++)
+            {
+                var date = week.Days[column];
+                var info = Owner.GetDayInfo(date);
+                var isEndColumn = column >= week.Days.Length - 3;
+
+                <div class="@GetDayClass(date, info)"
+                     style="grid-column: @(column + firstDayColumn); grid-row: 1 / span @rowSpan;"
+                     role="gridcell"
+                     tabindex="@(date == focusDay ? 0 : -1)"
+                     aria-label="@Owner.GetDayAriaLabel(date)"
+                     aria-selected="@(Owner.SelectedDay == date ? "true" : "false")"
+                     aria-current="@(date == Owner.Today ? "date" : null)"
+                     data-bb-date="@date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)"
+                     @onclick="() => Owner.HandleDayClickAsync(date)">
+                    @if (info.Label is not null)
+                    {
+                        <span class="bb-calendar-day-label small text-truncate @info.LabelClass" title="@info.Label">@info.Label</span>
+                    }
+                    <span class="@GetDayNumberClass(date)">@CalendarLayout.GetDayOfMonth(date, Owner.EffectiveCulture)</span>
+                    @if (HasEvents(week, column))
+                    {
+                        @* Shown only in the compact layout, where the event bars are hidden. *@
+                        <span class="bb-calendar-day-marker rounded-circle bg-primary" aria-hidden="true"></span>
+                    }
+                    @if (moreListDate == date)
+                    {
+                        <div class="bb-calendar-more-backdrop" @onclick="CloseMoreList" @onclick:stopPropagation="true"></div>
+                        <div class="bb-calendar-more-list position-absolute bg-body text-body border rounded shadow p-2 @(isEndColumn ? "bb-calendar-more-list-end" : "")"
+                             role="dialog"
+                             aria-label="@date.ToString("D", Owner.EffectiveCulture)"
+                             @onclick:stopPropagation="true">
+                            <div class="d-flex align-items-center gap-2 mb-1">
+                                <span class="small fw-semibold flex-grow-1">@date.ToString("D", Owner.EffectiveCulture)</span>
+                                @* The browser script clicks this button on Escape, before a modal that holds the calendar sees the key. *@
+                                <button type="button" class="btn-close" aria-label="@Owner.CloseText" @onclick="CloseMoreListAndFocus"></button>
+                            </div>
+                            @foreach (var entry in CalendarLayout.GetEntriesOfDay(Owner.Entries, date))
+                            {
+                                <button type="button"
+                                        class="@GetEventClass(entry, false, false) w-100 mb-1"
+                                        title="@entry.Title"
+                                        aria-label="@Owner.GetEventAriaLabel(entry)"
+                                        data-bb-event-key="@entry.Key"
+                                        @onclick="() => Owner.HandleEventClickAsync(entry)">
+                                    @eventContent((entry, !entry.IsAllDay))
+                                </button>
+                            }
+                        </div>
+                    }
+                </div>
+            }
+            @foreach (var segment in week.Segments)
+            {
+                var entry = Owner.Entries[segment.Key];
+
+                @* The data attributes are what the browser script reads when the user drags the event. *@
+                <button type="button"
+                        class="@GetEventClass(entry, segment.ContinuesBefore, segment.ContinuesAfter)"
+                        style="grid-column: @(segment.Column + firstDayColumn) / span @segment.Span; grid-row: @(segment.Lane + 2);"
+                        title="@entry.Title"
+                        aria-label="@Owner.GetEventAriaLabel(entry)"
+                        data-bb-event-key="@entry.Key"
+                        data-bb-start="@entry.StartText"
+                        data-bb-end="@entry.EndText"
+                        data-bb-first-day="@entry.FirstDayText"
+                        data-bb-last-day="@entry.LastDayText"
+                        data-bb-bar="@(entry.IsBar ? "true" : "false")"
+                        @onclick="() => Owner.HandleEventClickAsync(entry)">
+                    @eventContent((entry, !entry.IsAllDay && !segment.ContinuesBefore))
+                </button>
+            }
+            @for (var column = 0; column < week.Days.Length; column++)
+            {
+                var date = week.Days[column];
+                var hiddenCount = week.HiddenCounts[column];
+
+                if (hiddenCount > 0)
+                {
+                    <button type="button"
+                            class="bb-calendar-more btn btn-link btn-sm text-truncate"
+                            style="grid-column: @(column + firstDayColumn); grid-row: @rowSpan;"
+                            aria-haspopup="dialog"
+                            aria-expanded="@(moreListDate == date ? "true" : "false")"
+                            data-bb-more-date="@date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)"
+                            @onclick="() => ToggleMoreList(date)">
+                        @Owner.GetMoreText(hiddenCount)
+                    </button>
+                }
+            }
+        </div>
+    }
+    @* Shown only in the compact layout: the events of the selected day, or of the calendar's date when no day is selected. *@
+    <section class="bb-calendar-day-list" data-bb-date="@ListDay.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)">
+        <div class="small fw-semibold px-2 py-1 bg-body-tertiary">
+            @ListDay.ToString("D", Owner.EffectiveCulture)
+            @if (Owner.GetDayInfo(ListDay).Label is { } listLabel)
+            {
+                <span class="bb-calendar-agenda-label fw-normal @Owner.GetDayInfo(ListDay).LabelClass">@listLabel</span>
+            }
+        </div>
+        @if (CalendarLayout.GetEntriesOfDay(Owner.Entries, ListDay).Count == 0)
+        {
+            <div class="text-body-secondary small px-2 py-2">@Owner.EmptyText</div>
+        }
+        else
+        {
+            @Owner.DayEventList(ListDay)
+        }
+    </section>
+</div>

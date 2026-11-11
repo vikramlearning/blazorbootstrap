@@ -1,0 +1,73 @@
+@namespace BlazorBootstrap
+@inherits BlazorBootstrapComponentBase
+@typeparam TItem
+
+<div @ref="@Element" id="@Id" class="@ClassNames" style="@StyleNames" role="group" aria-label="@AriaLabel" @attributes="@AdditionalAttributes">
+    <CalendarToolbar Title="@title"
+                     View="@currentView"
+                     Date="@currentDate"
+                     Today="@Today"
+                     Culture="@EffectiveCulture"
+                     FirstDayOfWeek="@FirstDayOfWeek"
+                     PreviousText="@PreviousText"
+                     NextText="@NextText"
+                     TodayText="@TodayText"
+                     ViewText="@ViewText"
+                     MonthText="@MonthText"
+                     WeekText="@WeekText"
+                     WorkWeekText="@WorkWeekText"
+                     DayText="@DayText"
+                     AgendaText="@AgendaText"
+                     OnPreviousClick="@(() => NavigateAsync(-1))"
+                     OnNextClick="@(() => NavigateAsync(1))"
+                     OnTodayClick="GoToTodayAsync"
+                     OnViewClick="SetViewAsync"
+                     OnDateSelected="SetDateAsync" />
+    <div class="bb-calendar-body border rounded" data-bb-view="@currentView" data-bb-range-start="@visibleRange.Start.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)" data-bb-range-end="@visibleRange.End.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)">
+        @* The calendar cascades itself (not fixed), so each view part re-renders whenever the calendar does. *@
+        <CascadingValue Value="this">
+            @if (currentView == CalendarView.Month)
+            {
+                <CalendarMonthView TItem="TItem" />
+            }
+            else if (currentView is CalendarView.Week or CalendarView.WorkWeek or CalendarView.Day)
+            {
+                <CalendarTimeGridView TItem="TItem" />
+            }
+            else
+            {
+                <CalendarAgendaView TItem="TItem" />
+            }
+        </CascadingValue>
+    </div>
+</div>
+
+@code {
+    /// <summary>
+    /// Renders the events of one day as a list: a color dot, the time, and the title of each, or the app's template in place of the title.
+    /// The Agenda view and the compact Month view share it. Blazor encodes the title as text.
+    /// </summary>
+    internal RenderFragment DayEventList(DateOnly day) =>
+        @<div class="bb-calendar-day-events list-group list-group-flush">
+            @foreach (var entry in CalendarLayout.GetEntriesOfDay(entries, day))
+            {
+                <button type="button"
+                        class="list-group-item list-group-item-action d-flex align-items-center gap-2 px-2 py-1"
+                        title="@entry.Title"
+                        aria-label="@GetEventAriaLabel(entry)"
+                        data-bb-event-key="@entry.Key"
+                        @onclick="() => HandleEventClickAsync(entry)">
+                    <span class="bb-calendar-event-dot rounded-circle @GetDotClass(entry)" aria-hidden="true"></span>
+                    <span class="bb-calendar-agenda-time small text-body-secondary">@GetEventTimeText(entry, day)</span>
+                    @if (EventTemplate is not null)
+                    {
+                        <span class="bb-calendar-agenda-content d-flex align-items-center gap-1 text-truncate">@RenderEventTemplate(entry)</span>
+                    }
+                    else
+                    {
+                        <span class="text-truncate">@entry.Title</span>
+                    }
+                </button>
+            }
+        </div>;
+}

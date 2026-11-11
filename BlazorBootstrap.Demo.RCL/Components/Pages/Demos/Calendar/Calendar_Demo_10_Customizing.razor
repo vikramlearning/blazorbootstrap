@@ -1,0 +1,57 @@
+<div class="d-flex flex-wrap align-items-center gap-3 mb-3">
+    <Switch @bind-Value="useTemplate" Label="Event template" />
+    <Switch @bind-Value="useDayMarks" Label="Day marks" />
+    <Switch @bind-Value="hideWeekend" Label="Hide Saturday and Sunday" />
+</div>
+
+<Calendar TItem="Appointment"
+          AriaLabel="Office calendar"
+          Data="appointments"
+          Date="@(new DateOnly(2024, 11, 5))"
+          Height="420"
+          HiddenDays="@(hideWeekend ? weekend : null)"
+          DayMarkProvider="@(useDayMarks ? MarkDay : null)"
+          StartField="a => a.Start"
+          EndField="a => a.End"
+          TitleField="a => a.Title"
+          AllDayField="a => a.IsAllDay"
+          ColorField="a => a.Color"
+          EventTemplate="@(useTemplate ? eventTemplate : null)" />
+
+@code {
+    private record Appointment(string Title, DateTime Start, DateTime End, bool IsAllDay, CalendarColor Color, IconName Icon);
+
+    private static readonly DayOfWeek[] weekend = { DayOfWeek.Saturday, DayOfWeek.Sunday };
+
+    private static DateTime At(int day, int hour = 0, int minute = 0) => new(2024, 11, day, hour, minute, 0);
+
+    private readonly List<Appointment> appointments = new()
+    {
+        new("Trip to London", At(1), At(5), true, CalendarColor.Success, IconName.Airplane),
+        new("Standup", At(5, 9), At(5, 9, 30), false, CalendarColor.Primary, IconName.CameraVideo),
+        new("Design review", At(6, 11), At(6, 12, 30), false, CalendarColor.Warning, IconName.People),
+        new("Weekend hike", At(9, 8), At(9, 12), false, CalendarColor.Info, IconName.Tree),
+        new("Team offsite", At(8), At(12), true, CalendarColor.Secondary, IconName.GeoAlt)
+    };
+
+    // The template draws the inside of every event; the calendar still draws the event's box, color, and position.
+    private readonly RenderFragment<CalendarEventContext<Appointment>> eventTemplate = context =>
+        @<text>
+            <Icon Name="@context.Item.Icon" />
+            <span class="text-truncate">@context.Title</span>
+        </text>;
+
+    private bool hideWeekend;
+    private bool useDayMarks = true;
+    private bool useTemplate = true;
+
+    // Called for each day the calendar shows. Return null for a day with no mark.
+    private static CalendarDayMark? MarkDay(DateOnly date) =>
+        date switch
+        {
+            { Month: 11, Day: 15 } => new CalendarDayMark { Label = "Payday", Color = CalendarColor.Success },
+            { Month: 11, Day: 20 } => new CalendarDayMark { Label = "Office closed", IsNonWorking = true },
+            { Month: 11, Day: 7 } => new CalendarDayMark { Color = CalendarColor.Info },
+            _ => null
+        };
+}
