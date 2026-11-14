@@ -1,0 +1,127 @@
+@page "/showcase/restaurant/checkout"
+@layout RestaurantLayout
+
+<PageTitle>Checkout · @RestaurantSeedData.RestaurantName</PageTitle>
+
+<div class="container-xl pb-4">
+    <Breadcrumb Items="breadcrumbItems" Class="mb-3" />
+    <h1 class="rs-title mb-4">Checkout</h1>
+
+    @if (State.Cart.Count == 0)
+    {
+        <div class="rs-panel text-center py-5">
+            <span class="rs-icon fs-4" aria-hidden="true"><Icon Name="IconName.Basket2" /></span>
+            <p class="mt-3 mb-4 text-body-secondary">Your order is empty, so there is nothing to check out.</p>
+            <Button Type="ButtonType.Link" To="@RestaurantLayout.Base" Color="ButtonColor.Primary">Browse the menu</Button>
+        </div>
+    }
+    else
+    {
+        <div class="row g-4">
+            <div class="col-lg-7">
+                <div class="rs-panel" data-clarity-mask="true">
+                    <ShowcaseDemoNotice Class="mb-4" Text="Demo only: nothing is cooked, delivered, or charged. The order stays in this browser tab until you reload." />
+                    <EditForm EditContext="editContext" OnValidSubmit="PlaceOrder" FormName="rs-checkout">
+                        <DataAnnotationsValidator />
+
+                        <fieldset class="mb-4">
+                            <legend class="form-label fw-semibold fs-6" id="rs-fulfillment-label">How would you like it?</legend>
+                            <RadioButtonGroup TValue="RestaurantFulfillment" Value="form.Fulfillment" ValueExpression="() => form.Fulfillment" ValueChanged="OnFulfillmentChanged"
+                                              AriaLabel="How would you like it?" aria-labelledby="rs-fulfillment-label">
+                                <ButtonGroupItem Value="RestaurantFulfillment.Delivery" Id="rs-delivery"><Icon Name="IconName.Truck" class="me-1" aria-hidden="true" />Delivery</ButtonGroupItem>
+                                <ButtonGroupItem Value="RestaurantFulfillment.Pickup" Id="rs-pickup"><Icon Name="IconName.Shop" class="me-1" aria-hidden="true" />Pickup</ButtonGroupItem>
+                            </RadioButtonGroup>
+                        </fieldset>
+
+                        @if (form.Fulfillment == RestaurantFulfillment.Delivery)
+                        {
+                            <div class="row g-3 mb-4">
+                                <div class="col-md-6">
+                                    <label class="form-label fw-semibold" for="rs-address">Deliver to</label>
+                                    <InputSelect id="rs-address" class="form-select" Value="form.AddressId" ValueExpression="() => form.AddressId" ValueChanged="(string value) => OnAddressChanged(value)">
+                                        <option value="">Choose an address</option>
+                                        @foreach (var address in State.Addresses)
+                                        {
+                                            <option value="@address.Id">@address.Label: @address.Street, @address.Neighborhood</option>
+                                        }
+                                    </InputSelect>
+                                    <ValidationMessage For="() => form.AddressId" />
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-semibold" for="rs-address-note">Apartment or gate code <span class="fw-normal text-body-secondary">(optional)</span></label>
+                                    <TextInput Id="rs-address-note" @bind-Value="form.AddressNote" MaxLength="60" />
+                                    <ValidationMessage For="() => form.AddressNote" />
+                                </div>
+                            </div>
+                        }
+
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold" for="rs-name">Name for the order</label>
+                                <TextInput Id="rs-name" @bind-Value="form.Name" MaxLength="40" />
+                                <ValidationMessage For="() => form.Name" />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold" for="rs-phone">Phone</label>
+                                <TextInput Id="rs-phone" @bind-Value="form.Phone" MaxLength="20" />
+                                <div class="form-text">Use any made-up number; nobody calls.</div>
+                                <ValidationMessage For="() => form.Phone" />
+                            </div>
+                        </div>
+
+                        <fieldset class="mb-4">
+                            <legend class="form-label fw-semibold fs-6" id="rs-tip-label">Tip for the team</legend>
+                            <RadioButtonGroup TValue="int" Value="form.TipPercent" ValueExpression="() => form.TipPercent" ValueChanged="OnTipChanged"
+                                              AriaLabel="Tip for the team" aria-labelledby="rs-tip-label" Size="ButtonGroupSize.Small">
+                                @foreach (var percent in tipChoices)
+                                {
+                                    <ButtonGroupItem Value="percent" Id="@($"rs-tip-{percent}")">@(percent == 0 ? "No tip" : $"{percent}%")</ButtonGroupItem>
+                                }
+                            </RadioButtonGroup>
+                        </fieldset>
+
+                        <p class="small text-body-secondary"><Icon Name="IconName.CashCoin" class="me-1" aria-hidden="true" />Pay on @(form.Fulfillment == RestaurantFulfillment.Delivery ? "delivery" : "pickup") by card or cash. No card details are needed in this demo.</p>
+
+                        <Button Type="ButtonType.Submit" Color="ButtonColor.Primary" Size="ButtonSize.Large" Class="w-100 rounded-pill">
+                            Place order · @RestaurantDisplay.Money(Totals.Total)
+                        </Button>
+                    </EditForm>
+                </div>
+            </div>
+
+            <div class="col-lg-5">
+                <div class="rs-panel mb-4">
+                    <h2 class="rs-section-title fs-5">@(form.Fulfillment == RestaurantFulfillment.Delivery ? "Delivery map" : "Pickup location")</h2>
+                    @* Without a Google Maps key, the placeholder shows the same places as a numbered list (AC-30). *@
+                    <ShowcaseMapOrPlaceholder Locations="MapLocations" Height="240" Zoom="14" AriaLabel="@MapLabel" />
+                    <p class="small text-body-secondary mt-2 mb-0">@ArrivalText</p>
+                </div>
+                <div class="rs-panel">
+                    <h2 class="rs-section-title fs-5">Order summary</h2>
+                    <ul class="list-unstyled small mb-3">
+                        @foreach (var line in State.Cart)
+                        {
+                            var item = State.FindItem(line.ItemId)!;
+                            <li class="d-flex justify-content-between gap-2 py-1" @key="line.ItemId"><span>@line.Quantity × @item.Name</span><span class="fw-semibold">@RestaurantDisplay.Money(item.Price * line.Quantity)</span></li>
+                        }
+                    </ul>
+                    <dl class="rs-summary row small mb-0">
+                        <dt class="col-7">Subtotal</dt>
+                        <dd class="col-5">@RestaurantDisplay.Money(Totals.Subtotal)</dd>
+                        @if (form.Fulfillment == RestaurantFulfillment.Delivery)
+                        {
+                            <dt class="col-7">Delivery</dt>
+                            <dd class="col-5">@(Totals.DeliveryFee == 0 ? "Free" : RestaurantDisplay.Money(Totals.DeliveryFee))</dd>
+                        }
+                        <dt class="col-7">Tax</dt>
+                        <dd class="col-5">@RestaurantDisplay.Money(Totals.Tax)</dd>
+                        <dt class="col-7">Tip</dt>
+                        <dd class="col-5">@RestaurantDisplay.Money(Totals.Tip)</dd>
+                        <dt class="col-7 rs-total">Total</dt>
+                        <dd class="col-5 rs-total">@RestaurantDisplay.Money(Totals.Total)</dd>
+                    </dl>
+                </div>
+            </div>
+        </div>
+    }
+</div>

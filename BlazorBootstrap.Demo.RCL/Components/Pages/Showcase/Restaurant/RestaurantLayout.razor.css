@@ -1,0 +1,282 @@
+.sc-restaurant {
+    --sc-primary: #b45309;
+    --sc-primary-rgb: 180, 83, 9;
+    --sc-primary-hover: #92400e;
+    --sc-primary-contrast: #fff;
+    --sc-font-body: "Nunito Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --sc-font-heading: "Playfair Display", Georgia, "Times New Roman", serif;
+    --sc-page-bg: #fdf8f3;
+    --rs-ink: #2a1a0e;
+    --rs-surface: #fff;
+    --rs-border: #f0e2d2;
+    --rs-hero: linear-gradient(120deg, #431407 0%, #7c2d12 55%, #9a3412 100%);
+}
+
+[data-bs-theme=dark] .sc-restaurant {
+    --sc-primary: #fbbf24;
+    --sc-primary-rgb: 251, 191, 36;
+    --sc-primary-hover: #fcd34d;
+    --sc-primary-contrast: #1c1300;
+    --sc-page-bg: #14100c;
+    --rs-ink: #fbf3e8;
+    --rs-surface: #1e1812;
+    --rs-border: #3a2e22;
+    --rs-hero: linear-gradient(120deg, #2a0f05 0%, #431407 55%, #5c1f0a 100%);
+}
+
+/* Bootstrap keeps white text on primary fills; on the light dark-mode amber that fails contrast. */
+[data-bs-theme=dark] .sc-restaurant ::deep .text-bg-primary,
+[data-bs-theme=dark] .sc-restaurant ::deep .progress-bar {
+    color: var(--sc-primary-contrast) !important;
+}
+
+/* Header: the Navbar component renders the nav and its links, so they need ::deep. */
+.sc-restaurant ::deep .rs-header {
+    min-height: 4rem;
+    background: var(--rs-surface);
+    border-bottom: 1px solid var(--rs-border);
+}
+
+.sc-restaurant ::deep .rs-header .nav-link {
+    color: var(--rs-ink);
+    font-weight: 700;
+    border-radius: .5rem;
+    padding-inline: .75rem !important;
+}
+
+    .sc-restaurant ::deep .rs-header .nav-link:hover {
+        color: var(--sc-primary);
+    }
+
+    /* The hover shade keeps the active link above 4.5:1 on its tint. */
+    .sc-restaurant ::deep .rs-header .nav-link.active {
+        color: var(--sc-primary-hover);
+        background: rgba(var(--sc-primary-rgb), .1);
+    }
+
+.sc-restaurant ::deep .rs-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: .5rem;
+    font-family: var(--sc-font-heading);
+    font-weight: 700;
+    font-size: 1.375rem;
+    color: var(--rs-ink);
+    text-decoration: none;
+}
+
+.sc-restaurant ::deep .rs-brand-mark {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    background: var(--sc-primary);
+    color: var(--sc-primary-contrast);
+}
+
+.sc-restaurant ::deep .rs-cart-btn {
+    border-radius: 999px;
+    font-weight: 700;
+}
+
+/* On phones the brand, cart, and toggler share one row: the word "Cart" stays in the button's name but not on screen. */
+@media (max-width: 575.98px) {
+    .sc-restaurant ::deep .rs-cart-word {
+        position: absolute !important;
+        width: 1px !important;
+        height: 1px !important;
+        padding: 0 !important;
+        margin: -1px !important;
+        overflow: hidden !important;
+        clip: rect(0, 0, 0, 0) !important;
+        white-space: nowrap !important;
+        border: 0 !important;
+    }
+
+    .sc-restaurant ::deep .rs-cart-btn .bi {
+        margin-inline-end: .25rem !important;
+    }
+}
+
+.rs-content {
+    padding-block: 1.5rem 1rem;
+}
+
+.rs-footer {
+    margin-top: 2rem;
+    padding-block: 1.25rem;
+    border-top: 1px solid var(--rs-border);
+    color: var(--bs-secondary-color);
+    font-size: .8125rem;
+}
+
+/* Shared page styles: page markup is child content of the layout, so it needs ::deep. */
+.sc-restaurant ::deep .rs-title {
+    margin: 0;
+    font-size: clamp(1.75rem, 3.2vw, 2.375rem);
+    font-weight: 700;
+    color: var(--rs-ink);
+}
+
+.sc-restaurant ::deep .rs-lead {
+    margin: .375rem 0 0;
+    font-size: 1.0625rem;
+    color: var(--bs-secondary-color);
+}
+
+.sc-restaurant ::deep .rs-section-title {
+    margin: 0 0 .75rem;
+    font-size: 1.375rem;
+    font-weight: 700;
+    color: var(--rs-ink);
+}
+
+.sc-restaurant ::deep .rs-hero {
+    padding: clamp(1.5rem, 4vw, 2.75rem);
+    border-radius: 1.25rem;
+    background: var(--rs-hero);
+    color: #fff7ed;
+}
+
+    .sc-restaurant ::deep .rs-hero .rs-title {
+        color: #fff;
+    }
+
+    .sc-restaurant ::deep .rs-hero .rs-lead {
+        color: #fed7aa;
+    }
+
+.sc-restaurant ::deep .rs-hero-fact {
+    display: inline-flex;
+    align-items: center;
+    gap: .375rem;
+    font-weight: 700;
+    color: #fff7ed;
+}
+
+.sc-restaurant ::deep .rs-card {
+    --bs-card-bg: var(--rs-surface);
+    --bs-card-border-color: var(--rs-border);
+    border-radius: 1rem;
+    overflow: hidden;
+}
+
+.sc-restaurant ::deep .rs-panel {
+    padding: 1.25rem;
+    border: 1px solid var(--rs-border);
+    border-radius: 1rem;
+    background: var(--rs-surface);
+}
+
+.sc-restaurant ::deep .rs-item-title {
+    margin: 0 0 .25rem;
+    font-family: var(--sc-font-body);
+    font-size: 1.0625rem;
+    font-weight: 800;
+}
+
+    .sc-restaurant ::deep .rs-item-title a {
+        color: var(--rs-ink);
+        text-decoration: none;
+    }
+
+        .sc-restaurant ::deep .rs-item-title a:hover,
+        .sc-restaurant ::deep .rs-item-title a:focus-visible {
+            color: var(--sc-primary);
+            text-decoration: underline;
+        }
+
+.sc-restaurant ::deep .rs-price {
+    font-size: 1.125rem;
+    font-weight: 800;
+    color: var(--rs-ink);
+}
+
+.sc-restaurant ::deep .rs-line {
+    padding-block: .75rem;
+    border-bottom: 1px solid var(--rs-border);
+}
+
+.sc-restaurant ::deep .rs-line-name {
+    font-weight: 700;
+    color: var(--rs-ink);
+    text-decoration: none;
+}
+
+    .sc-restaurant ::deep .rs-line-name:hover,
+    .sc-restaurant ::deep .rs-line-name:focus-visible {
+        color: var(--sc-primary);
+        text-decoration: underline;
+    }
+
+.sc-restaurant ::deep .rs-summary dt {
+    font-weight: 500;
+    color: var(--bs-secondary-color);
+}
+
+.sc-restaurant ::deep .rs-summary dd {
+    font-weight: 700;
+    color: var(--rs-ink);
+    text-align: end;
+}
+
+.sc-restaurant ::deep .rs-total {
+    border-top: 1px solid var(--rs-border);
+    padding-top: .75rem;
+    font-size: 1.125rem;
+}
+
+.sc-restaurant ::deep .rs-step {
+    display: flex;
+    gap: .75rem;
+    align-items: flex-start;
+    padding-block: .5rem;
+}
+
+.sc-restaurant ::deep .rs-step-mark {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    border: 2px solid var(--rs-border);
+    color: var(--bs-secondary-color);
+    background: var(--rs-surface);
+}
+
+.sc-restaurant ::deep .rs-step-done .rs-step-mark {
+    border-color: var(--sc-primary);
+    background: var(--sc-primary);
+    color: var(--sc-primary-contrast);
+}
+
+.sc-restaurant ::deep .rs-step-current .rs-step-mark {
+    border-color: var(--sc-primary);
+    color: var(--sc-primary-hover);
+}
+
+.sc-restaurant ::deep .rs-sticky {
+    position: sticky;
+    top: 5rem;
+}
+
+.sc-restaurant ::deep .rs-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 3rem;
+    height: 3rem;
+    border-radius: 50%;
+    color: var(--sc-primary-hover);
+    background: rgba(var(--sc-primary-rgb), .12);
+}
+
+.sc-restaurant ::deep .rs-not-found {
+    max-width: 32rem;
+    margin: 4rem auto;
+    text-align: center;
+}

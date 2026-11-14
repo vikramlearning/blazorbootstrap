@@ -1,0 +1,104 @@
+@page "/showcase/restaurant"
+@layout RestaurantLayout
+
+<PageTitle>Menu · @RestaurantSeedData.RestaurantName</PageTitle>
+
+<div class="container-xl pb-4">
+    <section class="rs-hero mb-4" aria-labelledby="rs-menu-title">
+        <h1 class="rs-title" id="rs-menu-title">@RestaurantSeedData.RestaurantName</h1>
+        <p class="rs-lead mb-3">Persian-inspired kitchen and wood-fired pizza, delivered hot or ready to collect.</p>
+        <div class="d-flex flex-wrap gap-3">
+            <span class="rs-hero-fact"><Icon Name="IconName.StarFill" aria-hidden="true" />4.8 (1,240 reviews)</span>
+            <span class="rs-hero-fact"><Icon Name="IconName.Truck" aria-hidden="true" />Delivery in 25–40 min</span>
+            <span class="rs-hero-fact"><Icon Name="IconName.Clock" aria-hidden="true" />Open until 10:00 PM</span>
+            <span class="rs-hero-fact"><Icon Name="IconName.Basket2" aria-hidden="true" />Free delivery from @RestaurantDisplay.Money(RestaurantSeedData.FreeDeliveryFrom)</span>
+        </div>
+    </section>
+
+    <div class="rs-panel mb-4" role="search" aria-label="Filter the menu">
+        <div class="row g-3 align-items-end">
+            <div class="col-md-5">
+                <label class="form-label small fw-semibold" for="rs-search">Search the menu</label>
+                <InputGroup>
+                    <InputGroupText><Icon Name="IconName.Search" aria-hidden="true" /></InputGroupText>
+                    @* The bound value changes only on change; @oninput filters live, and the box keeps its own value so no keystroke is lost. *@
+                    <TextInput Id="rs-search" Value="@searchBoxValue" ValueExpression="() => searchBoxValue" ValueChanged="OnSearchChanged"
+                               @oninput="OnSearchInput" Placeholder="Dish or ingredient" />
+                </InputGroup>
+            </div>
+            <div class="col-md-4">
+                <Switch Value="State.Filter.VegetarianOnly" ValueExpression="() => State.Filter.VegetarianOnly" ValueChanged="OnVegetarianChanged" Label="Vegetarian and vegan only" />
+            </div>
+            <div class="col-md-3 text-md-end">
+                <Button Color="ButtonColor.Secondary" Outline="true" Size="ButtonSize.Small" @onclick="ClearFiltersAsync" Disabled="!State.Filter.IsActive">Clear filters</Button>
+            </div>
+            <div class="col-12">
+                <span class="form-label small fw-semibold d-block" id="rs-category-label">Category</span>
+                <RadioButtonGroup TValue="string" Value="State.Filter.CategoryId" ValueExpression="() => State.Filter.CategoryId" ValueChanged="OnCategoryChanged"
+                                  AriaLabel="Category" aria-labelledby="rs-category-label" Size="ButtonGroupSize.Small" Class="flex-wrap">
+                    <ButtonGroupItem Value="@string.Empty" Id="rs-category-all">Everything</ButtonGroupItem>
+                    @foreach (var category in State.Categories)
+                    {
+                        <ButtonGroupItem Value="category.Id" Id="@($"rs-category-{category.Id}")">@category.Name</ButtonGroupItem>
+                    }
+                </RadioButtonGroup>
+            </div>
+        </div>
+    </div>
+
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+        <p class="fw-semibold mb-0" id="rs-count" aria-live="polite" tabindex="-1" @ref="countRegion">@CountText</p>
+        @* Always rendered, so adding an item is announced. *@
+        <p class="small text-success-emphasis fw-semibold mb-0" role="status">@addedMessage</p>
+    </div>
+
+    @if (Items.Count == 0)
+    {
+        <div class="rs-panel text-center py-5">
+            <span class="rs-icon fs-4" aria-hidden="true"><Icon Name="IconName.Search" /></span>
+            <h2 class="h5 fw-bold mt-3">Nothing matches</h2>
+            <p class="text-body-secondary mb-0">Try another word or category, or use "Clear filters".</p>
+        </div>
+    }
+    else
+    {
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 row-cols-xl-4 g-3">
+            @foreach (var item in Items)
+            {
+                var category = State.FindCategory(item.CategoryId);
+                <div class="col" @key="item.Id">
+                    <Card Class="rs-card h-100">
+                        <a href="@RestaurantDisplay.ItemUrl(item.Id)" tabindex="-1" aria-hidden="true">
+                            <ShowcaseImage Src="@item.ImagePath" Alt="" Width="800" Height="600" Accent="@category.Accent" PlaceholderIcon="@category.IconName" Caption="@category.Name" />
+                        </a>
+                        <CardBody Class="d-flex flex-column">
+                            <div class="d-flex flex-wrap gap-1 mb-2">
+                                @if (item.IsPopular)
+                                {
+                                    <Badge Color="BadgeColor.Warning" Class="rounded-pill">Popular</Badge>
+                                }
+                                @foreach (var (label, color) in RestaurantDisplay.DietLabels(item.Diet))
+                                {
+                                    <Badge Color="color" Class="rounded-pill">@label</Badge>
+                                }
+                            </div>
+                            <h2 class="rs-item-title"><a href="@RestaurantDisplay.ItemUrl(item.Id)">@item.Name</a></h2>
+                            <p class="small text-body-secondary mb-3">@item.Description</p>
+                            <div class="mt-auto d-flex justify-content-between align-items-center gap-2">
+                                <span class="rs-price">@RestaurantDisplay.Money(item.Price)</span>
+                                <Button Color="ButtonColor.Primary" Size="ButtonSize.Small" Class="rounded-pill px-3" @onclick="() => Add(item)">
+                                    <Icon Name="IconName.Plus" aria-hidden="true" />Add<span class="visually-hidden">@($" {item.Name}")</span>
+                                </Button>
+                            </div>
+                        </CardBody>
+                    </Card>
+                </div>
+            }
+        </div>
+    }
+
+    <p class="small text-body-secondary mt-4 mb-0">
+        <Icon Name="IconName.Receipt" class="me-1" aria-hidden="true" />Ordered before?
+        <a href="@RestaurantDisplay.OrderUrl(State.LastOrderId ?? State.Orders[^1].Id)">Track your last order</a>
+    </p>
+</div>

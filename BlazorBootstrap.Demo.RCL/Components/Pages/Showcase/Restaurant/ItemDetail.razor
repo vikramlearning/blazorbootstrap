@@ -1,0 +1,73 @@
+@page "/showcase/restaurant/menu/{Id:int}"
+@layout RestaurantLayout
+
+@if (Item is null)
+{
+    <RestaurantNotFound />
+}
+else
+{
+    <PageTitle>@Item.Name · @RestaurantSeedData.RestaurantName</PageTitle>
+
+    <div class="container-xl pb-4">
+        <Breadcrumb Items="BreadcrumbItems" Class="mb-3" />
+
+        <div class="row g-4 g-lg-5">
+            <div class="col-md-6">
+                <ShowcaseImage Src="@Item.ImagePath" Alt="@Item.Name" Width="900" Height="700" Eager="true" Accent="@Category.Accent" PlaceholderIcon="@Category.IconName"
+                               Caption="@Category.Name" Class="rounded-4" />
+            </div>
+            <div class="col-md-6">
+                <div class="d-flex flex-wrap gap-1 mb-2">
+                    @if (Item.IsPopular)
+                    {
+                        <Badge Color="BadgeColor.Warning" Class="rounded-pill">Popular</Badge>
+                    }
+                    @foreach (var (label, color) in RestaurantDisplay.DietLabels(Item.Diet))
+                    {
+                        <Badge Color="color" Class="rounded-pill">@label</Badge>
+                    }
+                </div>
+                <h1 class="rs-title">@Item.Name</h1>
+                <p class="rs-lead">@Item.Description</p>
+                <p class="rs-price fs-4 mt-3 mb-1">@RestaurantDisplay.Money(Item.Price)</p>
+                <p class="small text-body-secondary mb-4">@(Item.Calories == 0 ? "0 kcal" : FormattableString.Invariant($"{Item.Calories} kcal")) · ready in about @Item.PrepMinutes min</p>
+
+                <div class="rs-panel" data-clarity-mask="true">
+                    <div class="row g-3">
+                        <div class="col-sm-4">
+                            <label class="form-label fw-semibold" for="rs-quantity">Quantity</label>
+                            <NumberInput TValue="int" Id="rs-quantity" Value="quantity" ValueExpression="() => quantity" ValueChanged="OnQuantityChanged"
+                                         Min="1" Max="RestaurantSeedData.MaxQuantity" EnableMinMax="true" />
+                            <div class="form-text">Up to @RestaurantSeedData.MaxQuantity.</div>
+                        </div>
+                        <div class="col-sm-8">
+                            <label class="form-label fw-semibold" for="rs-note">Special instructions <span class="fw-normal text-body-secondary">(optional)</span></label>
+                            <TextInput Id="rs-note" Value="@note" ValueExpression="() => note" ValueChanged="OnNoteChanged" MaxLength="80" Placeholder="No onions, extra sauce…" />
+                        </div>
+                    </div>
+                    <p class="text-danger small mt-2 mb-0" role="alert">@error</p>
+                    <div class="d-flex flex-wrap align-items-center gap-3 mt-3">
+                        <Button Color="ButtonColor.Primary" Size="ButtonSize.Large" Class="rounded-pill px-4" @onclick="Add">
+                            <Icon Name="IconName.Basket2" class="me-2" aria-hidden="true" />Add to order · @RestaurantDisplay.Money(Item.Price * Math.Clamp(quantity, 1, RestaurantSeedData.MaxQuantity))
+                        </Button>
+                        <span class="small text-success-emphasis fw-semibold" role="status">@addedMessage</span>
+                    </div>
+                </div>
+
+                @if (Related.Count > 0)
+                {
+                    <section class="mt-4" aria-labelledby="rs-related">
+                        <h2 class="rs-section-title fs-5" id="rs-related">More @Category.Name.ToLowerInvariant()</h2>
+                        <ul class="list-unstyled mb-0">
+                            @foreach (var other in Related)
+                            {
+                                <li class="d-flex justify-content-between gap-2 py-1"><a href="@RestaurantDisplay.ItemUrl(other.Id)">@other.Name</a><span class="small fw-semibold">@RestaurantDisplay.Money(other.Price)</span></li>
+                            }
+                        </ul>
+                    </section>
+                }
+            </div>
+        </div>
+    </div>
+}

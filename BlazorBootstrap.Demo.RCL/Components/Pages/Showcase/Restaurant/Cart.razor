@@ -1,0 +1,79 @@
+@page "/showcase/restaurant/cart"
+@layout RestaurantLayout
+
+<PageTitle>Your order · @RestaurantSeedData.RestaurantName</PageTitle>
+
+<div class="container-xl pb-4">
+    <Breadcrumb Items="breadcrumbItems" Class="mb-3" />
+    <h1 class="rs-title mb-1" tabindex="-1" @ref="heading">Your order</h1>
+    <p class="rs-lead mb-4">@(State.CartCount == 0 ? "Nothing added yet." : State.CartCount == 1 ? "1 item" : $"{State.CartCount} items")</p>
+    <p class="visually-hidden" role="status">@statusMessage</p>
+
+    @if (State.Cart.Count == 0)
+    {
+        <div class="rs-panel text-center py-5">
+            <span class="rs-icon fs-4" aria-hidden="true"><Icon Name="IconName.Basket2" /></span>
+            <p class="mt-3 mb-4 text-body-secondary">Your order is empty.</p>
+            <Button Type="ButtonType.Link" To="@RestaurantLayout.Base" Color="ButtonColor.Primary">Browse the menu</Button>
+        </div>
+    }
+    else
+    {
+        var totals = State.CartTotals(RestaurantFulfillment.Delivery, 0);
+        <div class="row g-4">
+            <div class="col-lg-8">
+                <div class="rs-panel">
+                    <ul class="list-unstyled mb-0">
+                        @foreach (var line in State.Cart)
+                        {
+                            var item = State.FindItem(line.ItemId)!;
+                            var category = State.FindCategory(item.CategoryId);
+                            <li class="rs-line d-flex flex-wrap align-items-center gap-3" @key="line.ItemId">
+                                <ShowcaseImage Src="@item.ImagePath" Alt="" Width="96" Height="72" Accent="@category.Accent" PlaceholderIcon="@category.IconName" Class="rounded-3" />
+                                <div class="flex-grow-1" style="min-width: 10rem;">
+                                    <a class="rs-line-name" href="@RestaurantDisplay.ItemUrl(item.Id)">@item.Name</a>
+                                    <span class="d-block small text-body-secondary">@RestaurantDisplay.Money(item.Price) each</span>
+                                    @if (line.Note is not null)
+                                    {
+                                        <span class="d-block small text-body-secondary">Note: @line.Note</span>
+                                    }
+                                </div>
+                                <div style="width: 6.5rem;">
+                                    <label class="form-label small mb-1" for="@($"rs-qty-{item.Id}")">Quantity<span class="visually-hidden">@($" of {item.Name}")</span></label>
+                                    <NumberInput TValue="int" Id="@($"rs-qty-{item.Id}")" Value="line.Quantity" ValueExpression="() => line.Quantity"
+                                                 ValueChanged="value => OnQuantityChanged(item, value)" Min="1" Max="RestaurantSeedData.MaxQuantity" EnableMinMax="true" />
+                                </div>
+                                <span class="fw-bold text-end" style="min-width: 5rem;">@RestaurantDisplay.Money(item.Price * line.Quantity)</span>
+                                <Button Color="ButtonColor.Link" Size="ButtonSize.Small" Class="text-body-secondary" @onclick="() => RemoveAsync(item)">
+                                    <Icon Name="IconName.Trash3" class="me-1" aria-hidden="true" />Remove<span class="visually-hidden">@($" {item.Name}")</span>
+                                </Button>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="rs-panel rs-sticky">
+                    <h2 class="rs-section-title fs-5">Summary</h2>
+                    <dl class="rs-summary row small mb-2">
+                        <dt class="col-7">Subtotal</dt>
+                        <dd class="col-5">@RestaurantDisplay.Money(totals.Subtotal)</dd>
+                        <dt class="col-7">Delivery</dt>
+                        <dd class="col-5">@(totals.DeliveryFee == 0 ? "Free" : RestaurantDisplay.Money(totals.DeliveryFee))</dd>
+                        <dt class="col-7">Tax</dt>
+                        <dd class="col-5">@RestaurantDisplay.Money(totals.Tax)</dd>
+                        <dt class="col-7 rs-total">Total before tip</dt>
+                        <dd class="col-5 rs-total">@RestaurantDisplay.Money(totals.Total)</dd>
+                    </dl>
+                    <p class="small text-body-secondary">
+                        @(totals.DeliveryFee > 0 ? $"Add {RestaurantDisplay.Money(RestaurantSeedData.FreeDeliveryFrom - totals.Subtotal)} more for free delivery. " : null)Pickup has no delivery fee; choose it at checkout.
+                    </p>
+                    <div class="d-grid gap-2">
+                        <Button Type="ButtonType.Link" To="@($"{RestaurantLayout.Base}/checkout")" Color="ButtonColor.Primary">Checkout</Button>
+                        <Button Type="ButtonType.Link" To="@RestaurantLayout.Base" Color="ButtonColor.Primary" Outline="true">Add more dishes</Button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
