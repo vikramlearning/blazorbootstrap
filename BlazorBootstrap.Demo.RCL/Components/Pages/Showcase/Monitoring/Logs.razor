@@ -1,0 +1,96 @@
+@page "/showcase/monitoring/logs"
+@layout MonitoringLayout
+
+<PageTitle>Logs · @MonitoringSeedData.ProductName</PageTitle>
+
+<div class="container-fluid px-lg-4">
+    <div class="mw-page-head">
+        <div>
+            <h1 class="mw-title">Logs</h1>
+            <p class="mw-lead">The last two hours from every service, newest first.</p>
+        </div>
+        <Button Color="ButtonColor.Primary" Outline="true" @onclick="RefreshAsync">
+            <Icon Name="IconName.ArrowClockwise" class="me-2" aria-hidden="true" />Refresh
+        </Button>
+    </div>
+
+    <Card Class="mw-card">
+        <CardBody Class="p-3 p-lg-4">
+            <div class="row g-2 align-items-end mb-3" role="search" aria-label="Filter logs">
+                <div class="col-md-4">
+                    <label class="form-label small fw-semibold" for="mw-log-search">Search</label>
+                    <InputGroup>
+                        <InputGroupText><Icon Name="IconName.Search" aria-hidden="true" /></InputGroupText>
+                        @* The bound value changes only on change; @oninput filters live, and the box keeps its own value so no keystroke is lost. *@
+                        <TextInput Id="mw-log-search" Value="@searchBoxValue" ValueExpression="() => searchBoxValue" ValueChanged="OnSearchChangedAsync"
+                                   @oninput="OnSearchInputAsync" Placeholder="Message or trace ID" />
+                    </InputGroup>
+                </div>
+                <div class="col-sm-6 col-md-3">
+                    <label class="form-label small fw-semibold" for="mw-log-service">Service</label>
+                    <select id="mw-log-service" class="form-select" value="@serviceFilter" @onchange="OnServiceChangedAsync">
+                        <option value="">All services</option>
+                        @foreach (var service in State.Services)
+                        {
+                            <option value="@service.Id">@service.Name</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-sm-6 col-md-5">
+                    <span class="form-label small fw-semibold d-block" id="mw-level-label">Level</span>
+                    <RadioButtonGroup TValue="string" Value="levelFilter" ValueExpression="() => levelFilter" ValueChanged="OnLevelChangedAsync"
+                                      AriaLabel="Level" aria-labelledby="mw-level-label" Size="ButtonGroupSize.Small">
+                        <ButtonGroupItem Value="@string.Empty" Id="mw-level-all">All</ButtonGroupItem>
+                        @foreach (var level in Enum.GetValues<MonitoringLogLevel>())
+                        {
+                            <ButtonGroupItem Value="level.ToString()" Id="@($"mw-level-{level}")">@level</ButtonGroupItem>
+                        }
+                    </RadioButtonGroup>
+                </div>
+            </div>
+            <p class="small text-body-secondary mb-2" aria-live="polite">@(loading ? "Loading logs…" : CountText)</p>
+
+            @if (loading)
+            {
+                <div class="mw-loading">
+                    <Spinner Color="SpinnerColor.Success" VisuallyHiddenText="Loading logs" />
+                    <span aria-hidden="true">Loading logs…</span>
+                </div>
+            }
+            else
+            {
+                <Grid @ref="grid"
+                      TItem="MonitoringLogEntry"
+                      Class="table table-hover"
+                      GridContainerClass="mw-grid"
+                      DataProvider="LogsDataProvider"
+                      RowKeySelector="item => item.Id"
+                      AllowSorting="true"
+                      AllowPaging="true"
+                      PageSize="20"
+                      PaginationItemsTextFormat="{0}–{1} of {2} lines"
+                      Responsive="true"
+                      EmptyText="No log lines match these filters.">
+                    <GridColumns>
+                        <GridColumn TItem="MonitoringLogEntry" HeaderText="Time" PropertyName="Time" SortKeySelector="item => item.Time"
+                                    IsDefaultSortColumn="true" SortDirection="SortDirection.Descending" TextNoWrap="true">
+                            <span class="mw-mono">@MonitoringDisplay.Time(context.Time)</span>
+                        </GridColumn>
+                        <GridColumn TItem="MonitoringLogEntry" HeaderText="Level" PropertyName="Level" SortKeySelector="item => item.Level" TextNoWrap="true">
+                            <Badge Color="@MonitoringDisplay.LevelColor(context.Level)">@context.Level</Badge>
+                        </GridColumn>
+                        <GridColumn TItem="MonitoringLogEntry" HeaderText="Service" PropertyName="ServiceId" SortKeySelector="item => item.ServiceId" TextNoWrap="true">
+                            <a class="mw-row-link fw-normal" href="@MonitoringDisplay.ServiceUrl(context.ServiceId)">@State.FindService(context.ServiceId)?.Name</a>
+                        </GridColumn>
+                        <GridColumn TItem="MonitoringLogEntry" HeaderText="Message" PropertyName="Message" Sortable="false">
+                            @context.Message
+                        </GridColumn>
+                        <GridColumn TItem="MonitoringLogEntry" HeaderText="Trace" PropertyName="TraceId" Sortable="false" TextNoWrap="true">
+                            <span class="mw-mono small text-body-secondary">@context.TraceId</span>
+                        </GridColumn>
+                    </GridColumns>
+                </Grid>
+            }
+        </CardBody>
+    </Card>
+</div>

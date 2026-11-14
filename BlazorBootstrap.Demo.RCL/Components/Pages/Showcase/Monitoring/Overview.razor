@@ -1,0 +1,118 @@
+@page "/showcase/monitoring"
+@layout MonitoringLayout
+
+<PageTitle>Overview · @MonitoringSeedData.ProductName</PageTitle>
+
+<div class="container-fluid px-lg-4">
+    <div class="mw-page-head">
+        <div>
+            <h1 class="mw-title">System overview</h1>
+            <p class="mw-lead">Live metrics from @State.Services.Count services, sampled every @MonitoringSeedData.TickSeconds seconds. Last sample <span class="mw-mono">@MonitoringDisplay.Time(State.CurrentTime)</span>.</p>
+        </div>
+        <LivePauseButton />
+    </div>
+
+    @foreach (var incident in ActiveIncidents)
+    {
+        var service = State.FindService(incident.ServiceId);
+        <Alert Color="@(incident.Severity == MonitoringSeverity.Critical ? AlertColor.Danger : AlertColor.Warning)" Class="d-flex flex-wrap align-items-center gap-2" @key="incident.Id">
+            <Icon Name="@(incident.Severity == MonitoringSeverity.Critical ? IconName.ExclamationOctagon : IconName.ExclamationTriangleFill)" aria-hidden="true" />
+            @* A fixed start time: Alert is a live region, so text that changed with each tick would be announced again. *@
+            <span class="flex-grow-1"><strong>@incident.Severity, @incident.Status.ToString().ToLowerInvariant():</strong> @incident.Title (@service?.Name, since @MonitoringDisplay.Stamp(incident.StartedAt))</span>
+            <a class="alert-link" href="@MonitoringDisplay.IncidentUrl(incident.Id)">View incident #@incident.Id</a>
+        </Alert>
+    }
+
+    <section aria-label="Summary" class="row row-cols-2 row-cols-lg-4 g-3 mb-4">
+        <div class="col">
+            <Card Class="mw-card h-100"><CardBody Class="p-3">
+                <span class="mw-label">Services operational</span>
+                <span class="mw-value">@OperationalCount / @State.Services.Count</span>
+            </CardBody></Card>
+        </div>
+        <div class="col">
+            <Card Class="mw-card h-100"><CardBody Class="p-3">
+                <span class="mw-label">Gateway traffic</span>
+                <span class="mw-value">@MonitoringDisplay.Number(Gateway.Requests)<span class="fs-6"> req/s</span></span>
+            </CardBody></Card>
+        </div>
+        <div class="col">
+            <Card Class="mw-card h-100"><CardBody Class="p-3">
+                <span class="mw-label">
+                    API error rate
+                    <Tooltip Title="Share of API requests that failed in the last sample, weighted by traffic." Class="mw-help ms-1" tabindex="0" role="img" aria-label="Share of API requests that failed in the last sample, weighted by traffic.">
+                        <Icon Name="IconName.InfoCircle" aria-hidden="true" />
+                    </Tooltip>
+                </span>
+                <span class="mw-value">@MonitoringDisplay.ErrorRate(ApiErrorRate)</span>
+            </CardBody></Card>
+        </div>
+        <div class="col">
+            <Card Class="mw-card h-100"><CardBody Class="p-3">
+                <span class="mw-label">Active incidents</span>
+                <span class="mw-value">@ActiveIncidents.Count</span>
+            </CardBody></Card>
+        </div>
+    </section>
+
+    <div class="row g-4 mb-4">
+        <div class="col-xl-6">
+            <Card Class="mw-card h-100">
+                <CardHeader><h2 class="mw-card-title">Gateway traffic</h2><span class="small text-body-secondary">requests per second</span></CardHeader>
+                <CardBody>
+                    <div class="mw-chart" role="img" aria-label="@TrafficLabel">
+                        <LineChart @ref="trafficChart" Height="260" HeightUnit="Unit.Px" Width="100" WidthUnit="Unit.Percentage" />
+                    </div>
+                </CardBody>
+            </Card>
+        </div>
+        <div class="col-xl-6">
+            <Card Class="mw-card h-100">
+                <CardHeader>
+                    <h2 class="mw-card-title">
+                        p95 latency
+                        <Tooltip Title="95% of requests were faster than this time." Class="mw-help ms-1" tabindex="0" role="img" aria-label="95% of requests were faster than this time.">
+                            <Icon Name="IconName.InfoCircle" aria-hidden="true" />
+                        </Tooltip>
+                    </h2>
+                    <span class="small text-body-secondary">milliseconds</span>
+                </CardHeader>
+                <CardBody>
+                    <div class="mw-chart" role="img" aria-label="@LatencyLabel">
+                        <LineChart @ref="latencyChart" Height="260" HeightUnit="Unit.Px" Width="100" WidthUnit="Unit.Percentage" />
+                    </div>
+                </CardBody>
+            </Card>
+        </div>
+    </div>
+
+    <Card Class="mw-card">
+        <CardHeader><h2 class="mw-card-title">Service health</h2><span class="small text-body-secondary">latest sample</span></CardHeader>
+        <CardBody Class="pt-2">
+            <ul class="list-unstyled mb-0">
+                @foreach (var service in State.Services)
+                {
+                    var latest = State.Latest(service.Id);
+                    var status = State.Status(service);
+                    <li class="mw-row flex-wrap" @key="service.Id">
+                        <span class="mw-icon" aria-hidden="true"><Icon Name="@MonitoringDisplay.KindIcon(service.Kind)" /></span>
+                        <span class="flex-grow-1" style="min-width: 12rem;">
+                            <a class="mw-row-link" href="@MonitoringDisplay.ServiceUrl(service.Id)">@service.Name</a>
+                            <span class="d-block small text-body-secondary">@service.Kind · @service.Region · @service.Team</span>
+                        </span>
+                        <Badge Color="@MonitoringDisplay.StatusColor(status)"><Icon Name="@MonitoringDisplay.StatusIcon(status)" class="me-1" aria-hidden="true" />@status</Badge>
+                        <span class="mw-mono small text-end" style="min-width: 6rem;">@MonitoringDisplay.Latency(latest.LatencyMs)<span class="d-block text-body-secondary">p95</span></span>
+                        <span class="mw-mono small text-end" style="min-width: 5rem;">@MonitoringDisplay.ErrorRate(latest.ErrorRate)<span class="d-block text-body-secondary">errors</span></span>
+                        <span style="width: 8rem;">
+                            <span class="small text-body-secondary d-flex justify-content-between"><span>CPU</span><span class="mw-mono">@MonitoringDisplay.Percent(latest.Cpu)</span></span>
+                            <Progress Height="6">
+                                <ProgressBar Width="Math.Round(latest.Cpu)" Color="@(latest.Cpu >= 80 ? ProgressColor.Danger : latest.Cpu >= 65 ? ProgressColor.Warning : ProgressColor.Success)"
+                                             aria-label="@($"{service.Name} CPU")" aria-valuenow="@((int)Math.Round(latest.Cpu))" aria-valuemin="0" aria-valuemax="100" />
+                            </Progress>
+                        </span>
+                    </li>
+                }
+            </ul>
+        </CardBody>
+    </Card>
+</div>

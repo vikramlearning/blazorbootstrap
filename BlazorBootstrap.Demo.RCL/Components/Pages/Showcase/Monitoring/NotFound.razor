@@ -1,0 +1,8 @@
+@page "/showcase/monitoring/{*path}"
+@layout MonitoringLayout
+
+<MonitoringNotFound />
+
+@code {
+    [Parameter] public string? Path { get; set; }
+}

@@ -1,0 +1,150 @@
+@page "/showcase/monitoring/services/{Id}"
+@layout MonitoringLayout
+
+@if (Service is null)
+{
+    <MonitoringNotFound />
+}
+else
+{
+    var latest = State.Latest(Service.Id);
+    var status = State.Status(Service);
+    var incident = State.ActiveIncident(Service.Id);
+
+    <PageTitle>@Service.Name · @MonitoringSeedData.ProductName</PageTitle>
+
+    <div class="container-fluid px-lg-4">
+        <Breadcrumb Items="BreadcrumbItems" Class="mb-3" />
+
+        <div class="mw-page-head">
+            <div class="d-flex align-items-start gap-3">
+                <span class="mw-icon fs-5" aria-hidden="true"><Icon Name="@MonitoringDisplay.KindIcon(Service.Kind)" /></span>
+                <div>
+                    <h1 class="mw-title">@Service.Name</h1>
+                    <p class="mw-lead mb-2">@Service.Description</p>
+                    <div class="d-flex flex-wrap align-items-center gap-2 small">
+                        <Badge Color="@MonitoringDisplay.StatusColor(status)"><Icon Name="@MonitoringDisplay.StatusIcon(status)" class="me-1" aria-hidden="true" />@status</Badge>
+                        <span class="text-body-secondary">@Service.Kind · @Service.Region · @Service.Team team · last sample <span class="mw-mono">@MonitoringDisplay.Time(latest.Time)</span></span>
+                    </div>
+                </div>
+            </div>
+            <LivePauseButton />
+        </div>
+
+        @if (incident is not null)
+        {
+            <Callout Color="@(incident.Severity == MonitoringSeverity.Critical ? CalloutColor.Danger : CalloutColor.Warning)" Heading="@($"Incident #{incident.Id}: {incident.Title}")" Class="mb-4">
+                <p class="mb-2">@incident.Summary</p>
+                <p class="mb-0 small">@incident.Severity · @incident.Status · started @MonitoringDisplay.Ago(incident.StartedAt, State.CurrentTime). <a href="@MonitoringDisplay.IncidentUrl(incident.Id)">Open the incident</a></p>
+            </Callout>
+        }
+        else
+        {
+            <Callout Color="CalloutColor.Info" Heading="No active incidents" Class="mb-4">
+                <p class="mb-0">@Service.Name has no open incidents. Uptime over the last 30 days: @Service.Uptime30Days.ToString("0.00", CultureInfo.InvariantCulture)%.</p>
+            </Callout>
+        }
+
+        <section aria-label="Latest values" class="row row-cols-2 row-cols-lg-4 g-3 mb-4">
+            <div class="col"><Card Class="mw-card h-100"><CardBody Class="p-3">
+                <span class="mw-label">Throughput</span>
+                <span class="mw-value">@MonitoringDisplay.Number(latest.Requests)</span>
+                <span class="small text-body-secondary">@MonitoringDisplay.RequestUnit(Service.Kind)</span>
+            </CardBody></Card></div>
+            <div class="col"><Card Class="mw-card h-100"><CardBody Class="p-3">
+                <span class="mw-label">p95 latency</span>
+                <span class="mw-value">@MonitoringDisplay.Latency(latest.LatencyMs)</span>
+                <span class="small text-body-secondary">normal: @MonitoringDisplay.Latency(Service.BaseLatencyMs)</span>
+            </CardBody></Card></div>
+            <div class="col"><Card Class="mw-card h-100"><CardBody Class="p-3">
+                <span class="mw-label">Error rate</span>
+                <span class="mw-value">@MonitoringDisplay.ErrorRate(latest.ErrorRate)</span>
+                <span class="small text-body-secondary">normal: @MonitoringDisplay.ErrorRate(Service.BaseErrorRate)</span>
+            </CardBody></Card></div>
+            <div class="col"><Card Class="mw-card h-100"><CardBody Class="p-3">
+                <span class="mw-label">@(Service.Kind == MonitoringServiceKind.Devices ? "Devices online" : "Instances")</span>
+                <span class="mw-value">@MonitoringDisplay.Number(Service.Instances)</span>
+                <span class="small text-body-secondary">@Service.Uptime30Days.ToString("0.00", CultureInfo.InvariantCulture)% uptime, 30 days</span>
+            </CardBody></Card></div>
+        </section>
+
+        <div class="row g-4 mb-4" @key="Service.Id">
+            <div class="col-xl-6">
+                <Card Class="mw-card h-100">
+                    <CardHeader><h2 class="mw-card-title">p95 latency</h2><span class="small text-body-secondary">milliseconds</span></CardHeader>
+                    <CardBody>
+                        <div class="mw-chart" role="img" aria-label="@($"Line chart of {Service.Name} p95 latency over the last minute. Latest: {MonitoringDisplay.Latency(latest.LatencyMs)}.")">
+                            <LineChart @ref="latencyChart" Height="240" HeightUnit="Unit.Px" Width="100" WidthUnit="Unit.Percentage" />
+                        </div>
+                    </CardBody>
+                </Card>
+            </div>
+            <div class="col-xl-6">
+                <Card Class="mw-card h-100">
+                    <CardHeader><h2 class="mw-card-title">Error rate</h2><span class="small text-body-secondary">percent of requests</span></CardHeader>
+                    <CardBody>
+                        <div class="mw-chart" role="img" aria-label="@($"Line chart of {Service.Name} error rate over the last minute. Latest: {MonitoringDisplay.ErrorRate(latest.ErrorRate)}.")">
+                            <LineChart @ref="errorChart" Height="240" HeightUnit="Unit.Px" Width="100" WidthUnit="Unit.Percentage" />
+                        </div>
+                    </CardBody>
+                </Card>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-lg-5">
+                <Card Class="mw-card h-100">
+                    <CardHeader><h2 class="mw-card-title">Resources</h2></CardHeader>
+                    <CardBody>
+                        @foreach (var (label, value, help) in Resources(latest))
+                        {
+                            <div class="mb-3">
+                                <div class="d-flex justify-content-between small mb-1">
+                                    <span class="fw-semibold">
+                                        @label
+                                        <Tooltip Title="@help" Class="mw-help ms-1" tabindex="0" role="img" aria-label="@help">
+                                            <Icon Name="IconName.InfoCircle" aria-hidden="true" />
+                                        </Tooltip>
+                                    </span>
+                                    <span class="mw-mono">@MonitoringDisplay.Percent(value) <span class="text-body-secondary">(@(value >= 85 ? "high" : value >= 70 ? "elevated" : "normal"))</span></span>
+                                </div>
+                                <Progress Height="10">
+                                    <ProgressBar Width="Math.Round(value)" Color="@(value >= 85 ? ProgressColor.Danger : value >= 70 ? ProgressColor.Warning : ProgressColor.Success)"
+                                                 aria-label="@label" aria-valuenow="@((int)Math.Round(value))" aria-valuemin="0" aria-valuemax="100"
+                                                 aria-valuetext="@($"{MonitoringDisplay.Percent(value)}, {(value >= 85 ? "high" : value >= 70 ? "elevated" : "normal")}")" />
+                                </Progress>
+                            </div>
+                        }
+                    </CardBody>
+                </Card>
+            </div>
+            <div class="col-lg-7">
+                <Card Class="mw-card h-100">
+                    <CardHeader>
+                        <h2 class="mw-card-title">Recent logs</h2>
+                        <a class="small" href="@($"{MonitoringLayout.Base}/logs?service={Service.Id}")">All @Service.Name logs</a>
+                    </CardHeader>
+                    <CardBody Class="pt-2">
+                        @if (RecentLogs.Count == 0)
+                        {
+                            <p class="text-body-secondary mb-0">No log lines in the last two hours.</p>
+                        }
+                        else
+                        {
+                            <ul class="list-unstyled mb-0">
+                                @foreach (var entry in RecentLogs)
+                                {
+                                    <li class="mw-row align-items-start" @key="entry.Id">
+                                        <span class="mw-mono small text-body-secondary">@MonitoringDisplay.Time(entry.Time)</span>
+                                        <Badge Color="@MonitoringDisplay.LevelColor(entry.Level)">@entry.Level</Badge>
+                                        <span class="small">@entry.Message</span>
+                                    </li>
+                                }
+                            </ul>
+                        }
+                    </CardBody>
+                </Card>
+            </div>
+        </div>
+    </div>
+}
