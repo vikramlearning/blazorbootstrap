@@ -1,0 +1,127 @@
+@page "/showcase/learning/courses/{Id:int}/learn/{LessonId:int}"
+@layout LearningLayout
+
+@if (Course is null || Lesson is null)
+{
+    <LearningNotFound />
+}
+else
+{
+    <PageTitle>@Lesson.Title · @Course.Title · @LearningSeedData.SchoolName</PageTitle>
+
+    <div class="container-xl pb-4">
+        <Breadcrumb Items="BreadcrumbItems" Class="mb-3" />
+
+        <div class="row g-4">
+            <div class="col-lg-8 order-lg-2">
+                <span class="sc-eyebrow">Module @(ModuleIndex + 1) · @LearningDisplay.KindLabel(Lesson.Kind) · @Lesson.Minutes min</span>
+                <h1 class="qp-title mt-1 mb-3" tabindex="-1" @ref="heading">@Lesson.Title</h1>
+
+                @if (!IsEnrolled)
+                {
+                    <div class="qp-panel">
+                        <h2 class="h5 fw-bold">Enroll to open this lesson</h2>
+                        <p class="text-body-secondary">@Course.Title is free for members. Enrolling tracks your progress and unlocks the handout and certificate.</p>
+                        <Button Color="ButtonColor.Primary" @onclick="Enroll">
+                            <Icon Name="IconName.PlusCircle" class="me-2" aria-hidden="true" />Enroll for free
+                        </Button>
+                    </div>
+                }
+                else
+                {
+                    @if (Lesson.Kind == LearningLessonKind.Video)
+                    {
+                        <div class="qp-video mb-4" role="img" aria-label="Video placeholder. The transcript follows.">
+                            <Icon Name="IconName.PlayCircleFill" class="fs-1" aria-hidden="true" />
+                            <span class="small">Videos are not part of this demo. The transcript is below.</span>
+                        </div>
+                    }
+
+                    @* Lesson bodies are seeded content from LearningSeedData. Markdown renders raw HTML, so it never shows user input. *@
+                    <Markdown @key="Lesson.Id" Class="qp-lesson-body mb-4">@Lesson.Body</Markdown>
+
+                    <div class="qp-panel d-flex flex-wrap align-items-center gap-3 mb-4">
+                        @* One button whose text and color change, so focus stays on it after each press. *@
+                        <Button Color="@(IsLessonComplete ? ButtonColor.Success : ButtonColor.Primary)" Outline="IsLessonComplete" @onclick="ToggleComplete"
+                                aria-label="@(IsLessonComplete ? "Completed. Mark as not complete" : null)">
+                            <Icon Name="@(IsLessonComplete ? IconName.CheckCircleFill : IconName.Circle)" class="me-2" aria-hidden="true" />@(IsLessonComplete ? "Completed" : "Mark as complete")
+                        </Button>
+                        <span class="small text-body-secondary flex-grow-1" role="status">@statusMessage</span>
+                        <div class="d-flex gap-2">
+                            @if (Previous is not null)
+                            {
+                                @* No extra attributes on link Buttons: a parent re-render replaces them and drops the Button's own href and role. *@
+                                <Button Type="ButtonType.Link" To="@LearningDisplay.LessonUrl(Course.Id, Previous.Id)" Color="ButtonColor.Secondary" Outline="true">
+                                    <Icon Name="IconName.ArrowLeft" class="me-1" aria-hidden="true" />Previous<span class="visually-hidden"> lesson: @Previous.Title</span>
+                                </Button>
+                            }
+                            @if (Next is not null)
+                            {
+                                <Button Type="ButtonType.Link" To="@LearningDisplay.LessonUrl(Course.Id, Next.Id)" Color="ButtonColor.Primary">
+                                    Next<span class="visually-hidden"> lesson: @Next.Title</span><Icon Name="IconName.ArrowRight" class="ms-1" aria-hidden="true" />
+                                </Button>
+                            }
+                            else if (State.IsComplete(Course.Id))
+                            {
+                                <Button Type="ButtonType.Link" To="@($"{LearningLayout.Base}/certificates/{Course.Id}")" Color="ButtonColor.Primary">
+                                    <Icon Name="IconName.Award" class="me-1" aria-hidden="true" />View certificate
+                                </Button>
+                            }
+                        </div>
+                    </div>
+
+                    <section aria-labelledby="qp-handout-heading">
+                        <div class="d-flex flex-wrap justify-content-between align-items-baseline gap-2 mb-2">
+                            <h2 class="qp-section-title mb-0" id="qp-handout-heading">Course handout</h2>
+                            @* The viewer's toolbar is mouse-only, so the PDF is also a plain link. *@
+                            <a href="@HandoutUrl" target="_blank" rel="noopener">
+                                <Icon Name="IconName.FileEarmarkPdf" class="me-1" aria-hidden="true" />Open the handout (PDF, new tab)
+                            </a>
+                        </div>
+                        @if (handoutError is not null)
+                        {
+                            <Alert Color="AlertColor.Warning">@handoutError</Alert>
+                        }
+                        @* Keyed by course: the viewer reads Url only on first render. pdf.js resolves a relative URL against the page,
+                           not the app base, so the URL is absolute. *@
+                        <PdfViewer @key="Course.Id" Url="@HandoutUrl" Class="qp-pdf" OnDocumentLoadError="OnHandoutError"
+                                   role="img" aria-label="@($"{Course.Title} handout, page view")" />
+                    </section>
+                }
+            </div>
+
+            <aside class="col-lg-4 order-lg-1" aria-label="Course contents">
+                <div class="qp-panel">
+                    <a class="fw-bold d-block mb-2" href="@LearningDisplay.CourseUrl(Course.Id)">@Course.Title</a>
+                    @if (IsEnrolled)
+                    {
+                        var percent = State.ProgressPercent(Course.Id);
+                        <Progress Height="10" Class="mb-1">
+                            <ProgressBar Width="percent"
+                                         aria-label="Course progress" aria-valuenow="@percent" aria-valuemin="0" aria-valuemax="100"
+                                         aria-valuetext="@($"{State.CompletedCount(Course.Id)} of {Course.Lessons.Count} lessons complete")" />
+                        </Progress>
+                        <p class="small text-body-secondary mb-3">@State.CompletedCount(Course.Id) of @Course.Lessons.Count lessons complete (@percent%)</p>
+                    }
+                    <nav aria-label="Lessons">
+                        @foreach (var (module, index) in Course.Modules.Select((module, index) => (module, index)))
+                        {
+                            <h2 class="qp-filter-heading mt-3">Module @(index + 1): @module.Title</h2>
+                            <ListGroup TItem="LearningLesson" Flush="true" Class="qp-lessons">
+                                @foreach (var lesson in module.Lessons)
+                                {
+                                    var done = State.IsLessonComplete(Course.Id, lesson.Id);
+                                    <ListGroupItem @key="lesson.Id" Value="lesson" Href="@LearningDisplay.LessonUrl(Course.Id, lesson.Id)" Active="lesson.Id == Lesson.Id"
+                                                   Class="d-flex align-items-center gap-2">
+                                        <Icon Name="@(done ? IconName.CheckCircleFill : LearningDisplay.KindIcon(lesson.Kind))" class="@(done ? "qp-lesson-done" : "text-body-secondary")" aria-hidden="true" />
+                                        <span class="flex-grow-1">@lesson.Title<span class="visually-hidden">@(done ? ", completed" : null)</span></span>
+                                    </ListGroupItem>
+                                }
+                            </ListGroup>
+                        }
+                    </nav>
+                </div>
+            </aside>
+        </div>
+    </div>
+}

@@ -1,0 +1,340 @@
+.sc-learning {
+    --sc-primary: #a16207;
+    --sc-primary-rgb: 161, 98, 7;
+    --sc-primary-hover: #854d0e;
+    --sc-primary-contrast: #fff;
+    --sc-font-body: "Source Sans 3", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --sc-font-heading: "Lora", Georgia, "Times New Roman", serif;
+    --sc-page-bg: #fbf8f1;
+    --qp-ink: #2b2112;
+    --qp-surface: #fff;
+    --qp-border: #eadfca;
+    --qp-hero: linear-gradient(135deg, #fef3c7 0%, #fde68a 55%, #fcd34d 100%);
+    --qp-hero-ink: #422006;
+}
+
+[data-bs-theme=dark] .sc-learning {
+    --sc-primary: #facc15;
+    --sc-primary-rgb: 250, 204, 21;
+    --sc-primary-hover: #fde047;
+    --sc-primary-contrast: #1c1400;
+    --sc-page-bg: #13110c;
+    --qp-ink: #fdf6e3;
+    --qp-surface: #1c1912;
+    --qp-border: #3a3222;
+    --qp-hero: linear-gradient(135deg, #2a210d 0%, #3b2d0c 55%, #4a3509 100%);
+    --qp-hero-ink: #fef3c7;
+}
+
+/* Bootstrap keeps white text on primary fills; on the light dark-mode yellow that fails contrast. */
+[data-bs-theme=dark] .sc-learning ::deep .text-bg-primary,
+[data-bs-theme=dark] .sc-learning ::deep .progress-bar {
+    color: var(--sc-primary-contrast) !important;
+}
+
+.sc-learning ::deep h1,
+.sc-learning ::deep h2,
+.sc-learning ::deep h3 {
+    font-family: var(--sc-font-heading);
+}
+
+/* Header: the Navbar component renders the nav and its links, so they need ::deep. */
+.sc-learning ::deep .qp-header {
+    min-height: 4rem;
+    background: var(--qp-surface);
+    border-bottom: 1px solid var(--qp-border);
+}
+
+.sc-learning ::deep .qp-header .nav-link {
+    color: var(--qp-ink);
+    font-weight: 600;
+    border-radius: .5rem;
+    padding-inline: .75rem !important;
+}
+
+    .sc-learning ::deep .qp-header .nav-link:hover {
+        color: var(--sc-primary);
+    }
+
+    /* The hover shade: the primary amber on its own tint is about 4.2:1, under the 4.5:1 text minimum. */
+    .sc-learning ::deep .qp-header .nav-link.active {
+        color: var(--sc-primary-hover);
+        background: rgba(var(--sc-primary-rgb), .12);
+    }
+
+.sc-learning ::deep .qp-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: .5rem;
+    font-family: var(--sc-font-heading);
+    font-weight: 700;
+    font-size: 1.25rem;
+    color: var(--qp-ink);
+    text-decoration: none;
+}
+
+.sc-learning ::deep .qp-brand-mark {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    background: var(--sc-primary);
+    color: var(--sc-primary-contrast);
+}
+
+.sc-learning ::deep .qp-user {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    font-weight: 600;
+    font-size: .9375rem;
+    color: var(--qp-ink);
+}
+
+.qp-content {
+    padding-block: 1.75rem 1rem;
+}
+
+.qp-footer {
+    margin-top: 2rem;
+    padding-block: 1.25rem;
+    border-top: 1px solid var(--qp-border);
+    color: var(--bs-secondary-color);
+    font-size: .875rem;
+}
+
+/* Shared page styles: page markup is child content of the layout, so it needs ::deep. */
+.sc-learning ::deep .qp-title {
+    margin: 0;
+    font-size: clamp(1.625rem, 3vw, 2.25rem);
+    font-weight: 700;
+    color: var(--qp-ink);
+}
+
+.sc-learning ::deep .qp-lead {
+    margin: .375rem 0 0;
+    font-size: 1.0625rem;
+    color: var(--bs-secondary-color);
+}
+
+.sc-learning ::deep .qp-section-title {
+    margin: 0 0 .75rem;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--qp-ink);
+}
+
+.sc-learning ::deep .qp-hero {
+    padding: clamp(1.25rem, 4vw, 2.5rem);
+    border-radius: 1.25rem;
+    background: var(--qp-hero);
+    color: var(--qp-hero-ink);
+}
+
+    .sc-learning ::deep .qp-hero .qp-title,
+    .sc-learning ::deep .qp-hero .qp-lead {
+        color: var(--qp-hero-ink);
+    }
+
+    /* The primary amber is under 4.5:1 on the hero's yellow stops; the hover shade passes on all of them. */
+    .sc-learning ::deep .qp-hero .sc-eyebrow {
+        color: var(--sc-primary-hover);
+    }
+
+/* The open accordion header uses the primary color on an 8% tint (4.42:1); the hover shade is about 6:1. */
+.sc-learning ::deep .accordion {
+    --bs-accordion-active-color: var(--sc-primary-hover);
+}
+
+.sc-learning ::deep .qp-card {
+    --bs-card-bg: var(--qp-surface);
+    --bs-card-border-color: var(--qp-border);
+    --bs-card-cap-bg: transparent;
+    border-radius: 1rem;
+    overflow: hidden;
+}
+
+.sc-learning ::deep .qp-panel {
+    padding: 1.25rem;
+    border: 1px solid var(--qp-border);
+    border-radius: 1rem;
+    background: var(--qp-surface);
+}
+
+.sc-learning ::deep .qp-card-title {
+    margin: .25rem 0 .25rem;
+    font-size: 1.125rem;
+    font-weight: 700;
+    line-height: 1.3;
+}
+
+    .sc-learning ::deep .qp-card-title a {
+        color: var(--qp-ink);
+        text-decoration: none;
+    }
+
+        .sc-learning ::deep .qp-card-title a:hover,
+        .sc-learning ::deep .qp-card-title a:focus-visible {
+            color: var(--sc-primary);
+            text-decoration: underline;
+        }
+
+.sc-learning ::deep .qp-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .25rem .875rem;
+    font-size: .875rem;
+    color: var(--bs-secondary-color);
+}
+
+.sc-learning ::deep .qp-stars {
+    color: #b45309;
+}
+
+[data-bs-theme=dark] .sc-learning ::deep .qp-stars {
+    color: #fbbf24;
+}
+
+.sc-learning ::deep .qp-filter-heading {
+    margin-bottom: .5rem;
+    font-family: var(--sc-font-body);
+    font-size: .8125rem;
+    font-weight: 700;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    color: var(--bs-secondary-color);
+}
+
+.sc-learning ::deep .qp-lesson-done {
+    color: var(--bs-success-text-emphasis);
+}
+
+.sc-learning ::deep .qp-curriculum-row {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    padding-block: .5rem;
+    border-top: 1px solid var(--qp-border);
+}
+
+    .sc-learning ::deep .qp-curriculum-row:first-child {
+        border-top: 0;
+    }
+
+.sc-learning ::deep .qp-lessons .list-group-item {
+    --bs-list-group-bg: transparent;
+    padding-inline: .5rem;
+    border-radius: .5rem;
+    color: var(--qp-ink);
+}
+
+    .sc-learning ::deep .qp-lessons .list-group-item.active {
+        --bs-list-group-active-bg: rgba(var(--sc-primary-rgb), .14);
+        --bs-list-group-active-border-color: transparent;
+        --bs-list-group-active-color: var(--qp-ink);
+        font-weight: 600;
+        box-shadow: inset .25rem 0 0 var(--sc-primary);
+    }
+
+.sc-learning ::deep .qp-lesson-body {
+    font-size: 1.0625rem;
+    line-height: 1.65;
+    max-width: 46rem;
+}
+
+    .sc-learning ::deep .qp-lesson-body h2 {
+        font-size: 1.375rem;
+        margin-top: .5rem;
+    }
+
+    .sc-learning ::deep .qp-lesson-body h3 {
+        font-size: 1.125rem;
+        margin-top: 1.25rem;
+    }
+
+    .sc-learning ::deep .qp-lesson-body .blockquote {
+        font-size: 1rem;
+        padding: .75rem 1rem;
+        border-left: .25rem solid var(--sc-primary);
+        background: rgba(var(--sc-primary-rgb), .08);
+        border-radius: 0 .5rem .5rem 0;
+    }
+
+.sc-learning ::deep .qp-video {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: .5rem;
+    aspect-ratio: 16 / 9;
+    border-radius: 1rem;
+    background: linear-gradient(135deg, #1c1917, #44403c);
+    color: #fafaf9;
+    text-align: center;
+    padding: 1rem;
+}
+
+.sc-learning ::deep .qp-pdf {
+    border: 1px solid var(--qp-border);
+    border-radius: .75rem;
+    overflow: hidden;
+}
+
+    .sc-learning ::deep .qp-pdf canvas {
+        max-width: 100%;
+    }
+
+.sc-learning ::deep .qp-certificate {
+    max-width: 52rem;
+    margin-inline: auto;
+    padding: clamp(1.5rem, 5vw, 3.5rem);
+    border: .5rem double var(--sc-primary);
+    border-radius: 1rem;
+    background: var(--qp-surface);
+    text-align: center;
+    color: var(--qp-ink);
+}
+
+.sc-learning ::deep .qp-certificate-name {
+    font-family: var(--sc-font-heading);
+    font-size: clamp(1.75rem, 5vw, 2.75rem);
+    font-weight: 700;
+    color: var(--sc-primary);
+}
+
+.sc-learning ::deep .qp-not-found {
+    max-width: 32rem;
+    margin: 4rem auto;
+    text-align: center;
+}
+
+.sc-learning ::deep .qp-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 3rem;
+    height: 3rem;
+    border-radius: 50%;
+    color: var(--sc-primary);
+    background: rgba(var(--sc-primary-rgb), .14);
+}
+
+/* Browsers drop backgrounds when printing, so the certificate prints in the light colors even from the dark theme. */
+@media print {
+    .sc-learning ::deep .qp-certificate,
+    .sc-learning ::deep .qp-certificate * {
+        color: #2b2112 !important;
+        background: transparent !important;
+    }
+
+    .sc-learning ::deep .qp-certificate {
+        border-color: #a16207 !important;
+    }
+
+        .sc-learning ::deep .qp-certificate .qp-certificate-name,
+        .sc-learning ::deep .qp-certificate .sc-eyebrow {
+            color: #854d0e !important;
+        }
+}

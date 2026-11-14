@@ -1,0 +1,90 @@
+%PDF-1.4
+%‚„œ”
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [5 0 R 7 0 R] /Count 2 >>
+endobj
+3 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>
+endobj
+4 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>
+endobj
+5 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents 6 0 R >>
+endobj
+6 0 obj
+<< /Length 2040 >>
+stream
+0.63 0.38 0.03 rg BT /F2 11 Tf 56 790 Td (QUILLPATH ACADEMY  |  COURSE HANDOUT) Tj ET
+0.17 0.13 0.07 rg BT /F2 24 Tf 56 750 Td (Accessible Interfaces) Tj ET
+0.35 0.35 0.35 rg BT /F1 12 Tf 56 728 Td (Instructor: Rowan Pemberton  |  A fictitious course created for the Blazor Bootstrap showcase) Tj ET
+0.17 0.13 0.07 rg BT /F2 15 Tf 56 680 Td (How to use this handout) Tj ET
+0.17 0.13 0.07 rg BT /F1 12 Tf 56 660 Td (Keep it open next to the lessons. Each module has key ideas and a short checklist.) Tj ET
+0.17 0.13 0.07 rg BT /F1 12 Tf 56 644 Td (Work through one module per evening and tick the checklist before moving on.) Tj ET
+0.63 0.38 0.03 rg BT /F2 14 Tf 56 600 Td (Module 1: Semantics and landmarks) Tj ET
+0.17 0.13 0.07 rg BT /F1 12 Tf 72 580 Td (- Key idea: semantics and landmarks is easiest to learn on one small, real task.) Tj ET
+0.17 0.13 0.07 rg BT /F1 12 Tf 72 564 Td (- Key idea: change one thing at a time and check the result.) Tj ET
+0.17 0.13 0.07 rg BT /F1 12 Tf 72 548 Td (- Watch for: copying the example without adapting it to your case.) Tj ET
+0.63 0.38 0.03 rg BT /F2 14 Tf 56 508 Td (Module 2: Keyboard and focus) Tj ET
+0.17 0.13 0.07 rg BT /F1 12 Tf 72 488 Td (- Key idea: keyboard and focus is easiest to learn on one small, real task.) Tj ET
+0.17 0.13 0.07 rg BT /F1 12 Tf 72 472 Td (- Key idea: change one thing at a time and check the result.) Tj ET
+0.17 0.13 0.07 rg BT /F1 12 Tf 72 456 Td (- Watch for: copying the example without adapting it to your case.) Tj ET
+0.63 0.38 0.03 rg BT /F2 14 Tf 56 416 Td (Module 3: Color and contrast) Tj ET
+0.17 0.13 0.07 rg BT /F1 12 Tf 72 396 Td (- Key idea: color and contrast is easiest to learn on one small, real task.) Tj ET
+0.17 0.13 0.07 rg BT /F1 12 Tf 72 380 Td (- Key idea: change one thing at a time and check the result.) Tj ET
+0.17 0.13 0.07 rg BT /F1 12 Tf 72 364 Td (- Watch for: copying the example without adapting it to your case.) Tj ET
+0.35 0.35 0.35 rg BT /F1 10 Tf 56 60 Td (Page 1 of 2  |  Handout 202  |  Demo content, not a real course.) Tj ET
+endstream
+endobj
+7 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents 8 0 R >>
+endobj
+8 0 obj
+<< /Length 2115 >>
+stream
+0.63 0.38 0.03 rg BT /F2 11 Tf 56 790 Td (QUILLPATH ACADEMY  |  COURSE HANDOUT) Tj ET
+0.17 0.13 0.07 rg BT /F2 20 Tf 56 752 Td (Checklist) Tj ET
+0.17 0.13 0.07 rg BT /F2 13 Tf 56 716 Td (Module 1: Semantics and landmarks) Tj ET
+0.17 0.13 0.07 rg BT /F1 12 Tf 72 696 Td ([ ]  I watched the overview and paused to try each step.) Tj ET
+0.17 0.13 0.07 rg BT /F1 12 Tf 72 680 Td ([ ]  I applied the reading to one small task of my own.) Tj ET
+0.17 0.13 0.07 rg BT /F1 12 Tf 72 664 Td ([ ]  I answered the self-check in my own words.) Tj ET
+0.17 0.13 0.07 rg BT /F2 13 Tf 56 626 Td (Module 2: Keyboard and focus) Tj ET
+0.17 0.13 0.07 rg BT /F1 12 Tf 72 606 Td ([ ]  I watched the overview and paused to try each step.) Tj ET
+0.17 0.13 0.07 rg BT /F1 12 Tf 72 590 Td ([ ]  I applied the reading to one small task of my own.) Tj ET
+0.17 0.13 0.07 rg BT /F1 12 Tf 72 574 Td ([ ]  I answered the self-check in my own words.) Tj ET
+0.17 0.13 0.07 rg BT /F2 13 Tf 56 536 Td (Module 3: Color and contrast) Tj ET
+0.17 0.13 0.07 rg BT /F1 12 Tf 72 516 Td ([ ]  I watched the overview and paused to try each step.) Tj ET
+0.17 0.13 0.07 rg BT /F1 12 Tf 72 500 Td ([ ]  I applied the reading to one small task of my own.) Tj ET
+0.17 0.13 0.07 rg BT /F1 12 Tf 72 484 Td ([ ]  I answered the self-check in my own words.) Tj ET
+0.17 0.13 0.07 rg BT /F2 13 Tf 56 440 Td (Notes) Tj ET
+0.75 0.75 0.75 rg BT /F1 12 Tf 56 412 Td (______________________________________________________________________________) Tj ET
+0.75 0.75 0.75 rg BT /F1 12 Tf 56 390 Td (______________________________________________________________________________) Tj ET
+0.75 0.75 0.75 rg BT /F1 12 Tf 56 368 Td (______________________________________________________________________________) Tj ET
+0.75 0.75 0.75 rg BT /F1 12 Tf 56 346 Td (______________________________________________________________________________) Tj ET
+0.75 0.75 0.75 rg BT /F1 12 Tf 56 324 Td (______________________________________________________________________________) Tj ET
+0.35 0.35 0.35 rg BT /F1 10 Tf 56 60 Td (Page 2 of 2  |  Handout 202  |  Demo content, not a real course.) Tj ET
+endstream
+endobj
+9 0 obj
+<< /Title (Accessible Interfaces handout) /Author (Quillpath Academy, fictitious) /Producer (Blazor Bootstrap showcase) >>
+endobj
+xref
+0 10
+0000000000 65535 f 
+0000000015 00000 n 
+0000000064 00000 n 
+0000000127 00000 n 
+0000000224 00000 n 
+0000000326 00000 n 
+0000000462 00000 n 
+0000002554 00000 n 
+0000002690 00000 n 
+0000004857 00000 n 
+trailer
+<< /Size 10 /Root 1 0 R /Info 9 0 R >>
+startxref
+4995
+%%EOF

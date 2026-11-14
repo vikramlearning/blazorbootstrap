@@ -638,6 +638,14 @@ pre[class*=language-] {
     }
 }
 
+/* Printing a showcase page (for example the Learning certificate) keeps only the page content. */
+@media print {
+    .sc-site > :not(.sc-main),
+    .sc-site .sc-no-print {
+        display: none !important;
+    }
+}
+
 /* popover demos: a popover themed through Bootstrap's popover CSS variables, and a wider popover for table content */
 .bb-demo-custom-popover {
     --bs-popover-max-width: 200px;

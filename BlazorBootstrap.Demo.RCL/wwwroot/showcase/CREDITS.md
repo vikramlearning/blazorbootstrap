@@ -55,3 +55,19 @@ Until a file is listed here and in `ShowcaseCatalog`, the showcase renders a siz
 | `ecommerce/hero-1.webp` | E-commerce: Home hero slide 1 (Living) | [Magnific #433750868](https://www.magnific.com/premium-photo/warm-modern-living-room-with-cozy-chair-arched-window_433750868.htm) | Magnific Premium subscription (Premium asset), downloaded 2026-11-14 | Not required (Premium subscription) |
 | `ecommerce/hero-2.webp` | E-commerce: Home hero slide 2 (Kitchen sale) | [Magnific #9226203](https://www.magnific.com/free-photo/kitchen-shelf-with-various-herbs-spices-seeds-legumes-cutting-boards-utensils-white_9226203.htm) | Magnific Premium subscription (Free asset), downloaded 2026-11-14 | Not required (Premium subscription) |
 | `ecommerce/hero-3.webp` | E-commerce: Home hero slide 3 (Outdoor) | [Magnific #9147162](https://www.magnific.com/free-photo/how-is-rich-people-have-supper-prepared-desk-waiting-food-visitors-evening-time_9147162.htm) | Magnific Premium subscription (Free asset), downloaded 2026-11-14 | Not required (Premium subscription) |
+
+## Original documents
+
+These files were written for the showcase and are part of this repository under its Apache-2.0 license. Their
+courses, people, and text are fictitious.
+
+| File | Used for | Source |
+|---|---|---|
+| `learning/handout-201.pdf` | Online Learning: course 201 handout (PdfViewer) | Generated for the showcase from plain text (Helvetica, two pages) |
+| `learning/handout-202.pdf` | Online Learning: course 202 handout (PdfViewer) | Generated for the showcase from plain text (Helvetica, two pages) |
+| `learning/handout-203.pdf` | Online Learning: course 203 handout (PdfViewer) | Generated for the showcase from plain text (Helvetica, two pages) |
+| `learning/handout-204.pdf` | Online Learning: course 204 handout (PdfViewer) | Generated for the showcase from plain text (Helvetica, two pages) |
+| `learning/handout-205.pdf` | Online Learning: course 205 handout (PdfViewer) | Generated for the showcase from plain text (Helvetica, two pages) |
+| `learning/handout-206.pdf` | Online Learning: course 206 handout (PdfViewer) | Generated for the showcase from plain text (Helvetica, two pages) |
+| `learning/handout-207.pdf` | Online Learning: course 207 handout (PdfViewer) | Generated for the showcase from plain text (Helvetica, two pages) |
+| `learning/handout-208.pdf` | Online Learning: course 208 handout (PdfViewer) | Generated for the showcase from plain text (Helvetica, two pages) |

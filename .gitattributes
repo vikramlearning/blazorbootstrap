@@ -3,6 +3,9 @@
 ###############################################################################
 * text=auto
 
+# PDFs carry byte offsets (xref, /Length); line-ending conversion would corrupt them.
+*.pdf binary
+
 ###############################################################################
 # Set default behavior for command prompt diff.
 #

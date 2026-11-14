@@ -1,0 +1,45 @@
+@* A catalog card. The image link repeats the title link, so it is hidden from assistive tech and the tab order. *@
+<Card Class="qp-card h-100">
+    <a href="@LearningDisplay.CourseUrl(Course.Id)" tabindex="-1" aria-hidden="true">
+        <ShowcaseImage Src="@Course.ImagePath" Alt="" Width="800" Height="450"
+                       Accent="@Category.Accent" PlaceholderIcon="@Category.IconName" Caption="@Category.Name" />
+    </a>
+    <CardBody Class="d-flex flex-column">
+        <div class="d-flex flex-wrap align-items-center gap-2">
+            <span class="sc-eyebrow">@Category.Name</span>
+            <Badge Color="@LearningDisplay.LevelColor(Course.Level)" Class="rounded-pill">@Course.Level</Badge>
+            @if (Course.IsPopular)
+            {
+                <Badge Color="BadgeColor.Warning" Class="rounded-pill">Popular</Badge>
+            }
+        </div>
+        <h3 class="qp-card-title"><a href="@LearningDisplay.CourseUrl(Course.Id)">@Course.Title</a></h3>
+        <p class="small text-body-secondary mb-2">@Course.Instructor</p>
+        <div class="qp-stars small mb-2">
+            <span class="visually-hidden">Rated @LearningDisplay.Rating(Rating) out of 5 from @ReviewCount reviews</span>
+            <span aria-hidden="true">
+                @foreach (var star in LearningDisplay.Stars(Rating))
+                {
+                    <Icon Name="star" />
+                }
+                <span class="text-body-secondary ms-1">@LearningDisplay.Rating(Rating) (@ReviewCount)</span>
+            </span>
+        </div>
+        <div class="qp-meta mt-auto">
+            <span><Icon Name="IconName.Clock" class="me-1" aria-hidden="true" />@LearningDisplay.Duration(Course.Minutes)</span>
+            <span><Icon Name="IconName.Journal" class="me-1" aria-hidden="true" />@Course.Lessons.Count lessons</span>
+        </div>
+        @if (State.IsEnrolled(Course.Id))
+        {
+            var percent = State.ProgressPercent(Course.Id);
+            <div class="mt-3">
+                <Progress Height="8">
+                    <ProgressBar Width="percent"
+                                 aria-label="@($"{Course.Title} progress")" aria-valuenow="@percent" aria-valuemin="0" aria-valuemax="100"
+                                 aria-valuetext="@($"{percent}% complete")" />
+                </Progress>
+                <p class="small text-body-secondary mt-1 mb-0">@(percent == 100 ? "Completed" : $"{percent}% complete")</p>
+            </div>
+        }
+    </CardBody>
+</Card>

@@ -1,0 +1,68 @@
+@page "/showcase/learning/progress"
+@layout LearningLayout
+
+<PageTitle>My learning · @LearningSeedData.SchoolName</PageTitle>
+
+<div class="container-xl pb-4">
+    <div class="mb-4">
+        <h1 class="qp-title">My learning</h1>
+        <p class="qp-lead">@Summary</p>
+    </div>
+
+    @if (State.EnrolledCourses.Count == 0)
+    {
+        <div class="qp-panel text-center py-5">
+            <span class="qp-icon fs-4" aria-hidden="true"><Icon Name="IconName.Mortarboard" /></span>
+            <h2 class="h5 fw-bold mt-3">You haven't enrolled in a course yet</h2>
+            <Button Type="ButtonType.Link" To="@LearningLayout.Base" Color="ButtonColor.Primary" Class="mt-2">Browse courses</Button>
+        </div>
+    }
+    else
+    {
+        <div class="row g-3">
+            @foreach (var course in State.EnrolledCourses)
+            {
+                var percent = State.ProgressPercent(course.Id);
+                var complete = State.IsComplete(course.Id);
+                var category = State.FindCategory(course.CategoryId);
+                <div class="col-md-6" @key="course.Id">
+                    <Card Class="qp-card h-100">
+                        <CardBody>
+                            <div class="d-flex align-items-start gap-3">
+                                <span class="qp-icon flex-shrink-0" aria-hidden="true"><Icon Name="@category.IconName" /></span>
+                                <div class="flex-grow-1 min-w-0">
+                                    <span class="sc-eyebrow">@category.Name</span>
+                                    <h2 class="qp-card-title"><a href="@LearningDisplay.CourseUrl(course.Id)">@course.Title</a></h2>
+                                    <p class="small text-body-secondary mb-2">@course.Instructor · @LearningDisplay.Duration(course.Minutes)</p>
+                                    <Progress Height="10" Class="mb-1">
+                                        <ProgressBar Width="percent" Color="@(complete ? ProgressColor.Success : ProgressColor.Primary)"
+                                                     aria-label="@($"{course.Title} progress")" aria-valuenow="@percent" aria-valuemin="0" aria-valuemax="100"
+                                                     aria-valuetext="@($"{State.CompletedCount(course.Id)} of {course.Lessons.Count} lessons complete")" />
+                                    </Progress>
+                                    <p class="small text-body-secondary mb-3">@State.CompletedCount(course.Id) of @course.Lessons.Count lessons complete (@percent%)</p>
+                                    @if (complete)
+                                    {
+                                        <Badge Color="BadgeColor.Success" Class="me-2">Completed</Badge>
+                                        @* No extra attributes on link Buttons: a parent re-render replaces them and drops the Button's own href and role. *@
+                                        <Button Type="ButtonType.Link" To="@($"{LearningLayout.Base}/certificates/{course.Id}")" Color="ButtonColor.Primary" Size="ButtonSize.Small">
+                                            <Icon Name="IconName.Award" class="me-1" aria-hidden="true" />View certificate<span class="visually-hidden"> for @course.Title</span>
+                                        </Button>
+                                    }
+                                    else
+                                    {
+                                        var next = State.NextLesson(course);
+                                        <Button Type="ButtonType.Link" To="@LearningDisplay.LessonUrl(course.Id, next.Id)" Color="ButtonColor.Primary" Size="ButtonSize.Small">
+                                            <Icon Name="IconName.PlayFill" class="me-1" aria-hidden="true" />@(percent == 0 ? "Start" : "Continue")<span class="visually-hidden"> @course.Title</span>
+                                        </Button>
+                                        <span class="small text-body-secondary ms-2">Next: @next.Title</span>
+                                    }
+                                </div>
+                            </div>
+                        </CardBody>
+                    </Card>
+                </div>
+            }
+        </div>
+    }
+</div>
+

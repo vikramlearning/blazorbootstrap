@@ -1,0 +1,12 @@
+@* The site's not-found screen, shown by the catch-all route and for unknown courses, lessons, and certificates. *@
+<PageTitle>Page not found · Quillpath Academy</PageTitle>
+
+<section class="qp-not-found">
+    <span class="qp-icon fs-4" aria-hidden="true"><Icon Name="IconName.SignpostSplit" /></span>
+    <h1 class="qp-title fs-3 mt-3 mb-2">We couldn't find that page</h1>
+    <p class="text-body-secondary mb-4">The course or lesson may have moved. Your progress is safe.</p>
+    <div class="d-flex justify-content-center flex-wrap gap-2">
+        <Button Type="ButtonType.Link" To="@LearningLayout.Base" Color="ButtonColor.Primary">Browse courses</Button>
+        <Button Type="ButtonType.Link" To="@($"{LearningLayout.Base}/progress")" Color="ButtonColor.Primary" Outline="true">My learning</Button>
+    </div>
+</section>

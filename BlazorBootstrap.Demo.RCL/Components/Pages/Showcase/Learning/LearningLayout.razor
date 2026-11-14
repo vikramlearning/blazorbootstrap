@@ -1,0 +1,49 @@
+@inherits LayoutComponentBase
+
+<HeadContent>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lora:wght@500;600;700&family=Source+Sans+3:wght@400;600;700&display=swap" />
+</HeadContent>
+
+<div class="sc-site sc-learning">
+    <ShowcaseSiteBar Site="@site" />
+
+    <Navbar Class="qp-header"
+            Placement="NavbarPlacement.StickyTop"
+            Container="NavbarContainer.ExtraLarge"
+            AriaLabel="Quillpath Academy"
+            TogglerAriaLabel="Menu">
+        <Brand>
+            <NavbarBrand Href="@Base" Class="qp-brand">
+                <span class="qp-brand-mark" aria-hidden="true"><Icon Name="IconName.Feather" /></span>
+                <span>@LearningSeedData.SchoolName</span>
+            </NavbarBrand>
+        </Brand>
+        <ChildContent>
+            <NavbarNav Class="me-auto ms-lg-4 mb-3 mb-lg-0">
+                <NavbarItem Href="@Base" Match="NavLinkMatch.All">Courses</NavbarItem>
+                <NavbarItem Href="@($"{Base}/progress")">My learning</NavbarItem>
+            </NavbarNav>
+            <div class="qp-user mb-3 mb-lg-0">
+                <Avatar Name="@LearningSeedData.LearnerName" Initials="JA" Color="AvatarColor.Warning" Size="AvatarSize.Small" />
+                <span>@LearningSeedData.LearnerName</span>
+            </div>
+        </ChildContent>
+    </Navbar>
+
+    <main class="sc-main qp-content" id="qp-main">
+        @Body
+    </main>
+
+    <div class="container-xl">
+        <CarbonAds Class="sc-ad" />
+    </div>
+
+    <footer class="qp-footer">
+        <div class="container-xl d-flex flex-wrap justify-content-between gap-2">
+            <span>© 2026 @LearningSeedData.SchoolName (fictitious). Courses, people, reviews, and certificates on this site are made up.</span>
+            <span class="d-none d-lg-inline">Built with Card, Accordion, Progress, Markdown, PdfViewer, RatingInput, ListGroup, and Badge.</span>
+        </div>
+    </footer>
+</div>
