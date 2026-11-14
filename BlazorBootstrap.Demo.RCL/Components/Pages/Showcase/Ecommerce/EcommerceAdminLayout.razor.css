@@ -1,0 +1,232 @@
+/* The store's palette, repeated here: scoped CSS ties EcommerceLayout's variables to that layout's own elements. */
+.sc-ecommerce {
+    --sc-primary: #c2410c;
+    --sc-primary-rgb: 194, 65, 12;
+    --sc-primary-hover: #9a3412;
+    --sc-primary-contrast: #fff;
+    --sc-font-body: "DM Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --sc-font-heading: "Fraunces", Georgia, "Times New Roman", serif;
+    --sc-page-bg: #f7f4f0;
+    --ec-ink: #2b1d14;
+    --ec-surface: #fff;
+    --ec-border: #eadfd3;
+    --ea-sidebar-bg: #2b1d14;
+    --ea-sidebar-text: #e7dccf;
+}
+
+[data-bs-theme=dark] .sc-ecommerce {
+    --sc-primary: #fb923c;
+    --sc-primary-rgb: 251, 146, 60;
+    --sc-primary-hover: #fdba74;
+    --sc-primary-contrast: #1c1009;
+    --sc-page-bg: #16110d;
+    --ec-ink: #f8efe6;
+    --ec-surface: #211912;
+    --ec-border: #3a2d22;
+    --ea-sidebar-bg: #0f0b08;
+    --ea-sidebar-text: #cdbfb1;
+}
+
+.sc-ecommerce ::deep h1,
+.sc-ecommerce ::deep h2,
+.sc-ecommerce ::deep h3 {
+    font-family: var(--sc-font-heading);
+}
+
+/* Shell: sidebar beside the main column from 641px (the Sidebar component's own breakpoint), stacked below it. */
+.ea-shell {
+    display: flex;
+    flex-direction: column;
+    flex: 1 0 auto;
+    min-width: 0;
+}
+
+@media (min-width: 641px) {
+    .ea-shell {
+        flex-direction: row;
+        align-items: flex-start;
+    }
+}
+
+.ea-main {
+    flex: 1 1 auto;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    min-height: calc(100vh - 2.5rem);
+}
+
+/* Sidebar: re-themed through the component's own --bb-sidebar-* variables (dark espresso in both modes). */
+.sc-ecommerce ::deep .ea-sidebar {
+    --bb-sidebar-width: 15rem;
+    --bb-sidebar-background-color: var(--ea-sidebar-bg);
+    --bb-sidebar-top-row-background-color: var(--ea-sidebar-bg);
+    --bb-sidebar-top-row-border-color: rgba(255, 255, 255, .08);
+    --bb-sidebar-content-border-color: rgba(255, 255, 255, .08);
+    --bb-sidebar-title-text-color: #fff;
+    --bb-sidebar-brand-icon-color: #fdba74;
+    --bb-sidebar-title-badge-text-color: #fed7aa;
+    --bb-sidebar-title-badge-background-color: rgba(251, 146, 60, .2);
+    --bb-sidebar-navbar-toggler-background-color: transparent;
+    --bb-sidebar-navbar-toggler-icon-color: #fff;
+    --bb-sidebar-nav-item-text-color: var(--ea-sidebar-text);
+    --bb-sidebar-nav-item-text-hover-color: #fff;
+    --bb-sidebar-nav-item-text-active-color: #fff;
+    --bb-sidebar-nav-item-background-hover-color: rgba(251, 146, 60, .16);
+    --bb-sidebar-nav-item-group-background-color: rgba(251, 146, 60, .1);
+    font-family: var(--sc-font-body);
+    flex: 0 0 auto;
+    z-index: 2;
+}
+
+@media (min-width: 641px) {
+    .sc-ecommerce ::deep .ea-sidebar {
+        align-self: stretch;
+        top: 0;
+        max-height: 100vh;
+    }
+}
+
+.sc-ecommerce ::deep .ea-sidebar .nav-link {
+    border-radius: .5rem;
+    margin: .125rem .5rem;
+}
+
+    .sc-ecommerce ::deep .ea-sidebar .nav-link.active {
+        box-shadow: inset 3px 0 0 #fdba74;
+    }
+
+/* Top bar */
+.ea-topbar {
+    position: sticky;
+    top: 0;
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    min-height: 3.5rem;
+    padding: .5rem 1.5rem;
+    background: var(--ec-surface);
+    border-bottom: 1px solid var(--ec-border);
+}
+
+.ea-topbar-title {
+    font-weight: 700;
+    color: var(--ec-ink);
+}
+
+.ea-topbar-actions {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+}
+
+.ea-view-store {
+    border: 1px solid var(--ec-border);
+    border-radius: 999px;
+    color: var(--ec-ink);
+    font-weight: 600;
+}
+
+    .ea-view-store:hover,
+    .ea-view-store:focus-visible {
+        border-color: var(--sc-primary);
+        color: var(--sc-primary-hover);
+    }
+
+[data-bs-theme=dark] .ea-view-store:hover,
+[data-bs-theme=dark] .ea-view-store:focus-visible {
+    color: var(--sc-primary);
+}
+
+.ea-content {
+    flex: 1 0 auto;
+    padding: 1.5rem;
+}
+
+.ea-ad-row {
+    padding: 0 1.5rem;
+}
+
+.ea-footer {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: .5rem;
+    padding: 1rem 1.5rem;
+    border-top: 1px solid var(--ec-border);
+    color: var(--bs-secondary-color);
+    font-size: .8125rem;
+}
+
+/* Shared admin page styles: page markup is child content of the layout, so it needs ::deep. */
+.sc-ecommerce ::deep .ea-title {
+    margin: 0;
+    font-size: clamp(1.5rem, 2.5vw, 2rem);
+    font-weight: 700;
+    color: var(--ec-ink);
+}
+
+.sc-ecommerce ::deep .ea-lead {
+    margin: .25rem 0 0;
+    color: var(--bs-secondary-color);
+}
+
+.sc-ecommerce ::deep .ea-panel {
+    height: 100%;
+    padding: 1.25rem;
+    border: 1px solid var(--ec-border);
+    border-radius: 1rem;
+    background: var(--ec-surface);
+}
+
+.sc-ecommerce ::deep .ea-section-title {
+    margin: 0 0 .75rem;
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: var(--ec-ink);
+}
+
+.sc-ecommerce ::deep .ea-kpi-label {
+    display: block;
+    font-size: .8125rem;
+    font-weight: 600;
+    letter-spacing: .02em;
+    color: var(--bs-secondary-color);
+}
+
+.sc-ecommerce ::deep .ea-kpi-value {
+    display: block;
+    margin-top: .25rem;
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--ec-ink);
+    font-variant-numeric: tabular-nums;
+}
+
+.sc-ecommerce ::deep .ea-kpi-note {
+    display: block;
+    font-size: .8125rem;
+    color: var(--bs-secondary-color);
+}
+
+.sc-ecommerce ::deep .ea-table {
+    --bs-table-bg: transparent;
+    margin-bottom: 0;
+    font-size: .9375rem;
+}
+
+    .sc-ecommerce ::deep .ea-table th {
+        font-size: .8125rem;
+        font-weight: 600;
+        color: var(--bs-secondary-color);
+    }
+
+.sc-ecommerce ::deep .ea-empty {
+    padding: 1.5rem 1rem;
+    border: 1px dashed var(--ec-border);
+    border-radius: .75rem;
+    color: var(--bs-secondary-color);
+    text-align: center;
+}

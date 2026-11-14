@@ -6,7 +6,11 @@
 <div class="container-xl pt-4 pb-5">
     <h1 class="ec-page-title mb-4">Checkout</h1>
 
-    @if (State.Cart.Count == 0)
+    @if (State.IsStaff)
+    {
+        <EcommerceStaffNotice />
+    }
+    else if (State.Cart.Count == 0)
     {
         <div class="ec-panel text-center py-5">
             <span class="ec-empty-icon" aria-hidden="true"><Icon Name="IconName.Bag" /></span>

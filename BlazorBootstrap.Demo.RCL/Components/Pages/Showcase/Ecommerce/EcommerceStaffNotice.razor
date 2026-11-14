@@ -1,0 +1,11 @@
+@* Shown on shopping screens (product purchase box, cart, checkout) to a signed-in retailer: staff see the shop but don't buy (D-032). *@
+<div class="ec-staff-notice @Class" role="note">
+    <Icon Name="IconName.ShopWindow" class="ec-staff-notice-icon" aria-hidden="true" />
+    <div>
+        <p class="mb-2">@Text</p>
+        <div class="d-flex flex-wrap gap-2">
+            <a class="btn btn-primary btn-sm" href="@EcommerceAdminLayout.Base">Back to admin</a>
+            <a class="btn btn-outline-primary btn-sm" href="@EcommerceLayout.SignInPath">Sign in as a customer</a>
+        </div>
+    </div>
+</div>

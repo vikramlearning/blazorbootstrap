@@ -1,12 +1,124 @@
 @page "/showcase/ecommerce/admin"
-@layout EcommerceLayout
+@layout EcommerceAdminLayout
 
-<PageTitle>Store admin · @EcommerceSeedData.StoreName</PageTitle>
+<PageTitle>Dashboard · @EcommerceSeedData.StoreName admin</PageTitle>
 
-<div class="container-xl pt-4 pb-5">
-    <ShowcaseRoleGuard Roles="@EcommerceSeedData.RetailerRole" SignInPath="@EcommerceLayout.SignInPath">
-        <h1 class="ec-page-title mb-1">Store admin</h1>
-        <p class="text-body-secondary mb-4">Your retailer account. The sales dashboard, orders, inventory, pricing, and offers come next in this demo.</p>
-        <ShowcaseAccountProfile />
-    </ShowcaseRoleGuard>
+<div class="mb-4">
+    <h1 class="ea-title">Dashboard</h1>
+    <p class="ea-lead">@EcommerceSeedData.StoreName · @State.Clock.Now.ToString("dddd, MMM d", CultureInfo.InvariantCulture)</p>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-sm-6 col-xl-3">
+        <section class="ea-panel" aria-labelledby="ea-kpi-revenue">
+            <span class="ea-kpi-label" id="ea-kpi-revenue">Revenue</span>
+            <span class="ea-kpi-value">@EcommerceDisplay.Money(Revenue)</span>
+            <span class="ea-kpi-note">From @OrderCountText</span>
+        </section>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+        <section class="ea-panel" aria-labelledby="ea-kpi-orders">
+            <span class="ea-kpi-label" id="ea-kpi-orders">Orders</span>
+            <span class="ea-kpi-value">@State.Orders.Count</span>
+            <span class="ea-kpi-note">@ItemsSoldText</span>
+        </section>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+        <section class="ea-panel" aria-labelledby="ea-kpi-aov">
+            <span class="ea-kpi-label" id="ea-kpi-aov">Average order value</span>
+            <span class="ea-kpi-value">@(State.Orders.Count == 0 ? "—" : EcommerceDisplay.Money(Revenue / State.Orders.Count))</span>
+            <span class="ea-kpi-note">Total including shipping and tax</span>
+        </section>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+        <section class="ea-panel" aria-labelledby="ea-kpi-stock">
+            <span class="ea-kpi-label" id="ea-kpi-stock">Stock alerts</span>
+            <span class="ea-kpi-value">@StockAlerts.Count</span>
+            <span class="ea-kpi-note">@OutOfStockCount out of stock, @(StockAlerts.Count - OutOfStockCount) running low</span>
+        </section>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-xl-8">
+        <section class="ea-panel" aria-labelledby="ea-recent-title">
+            <h2 class="ea-section-title" id="ea-recent-title">Recent orders</h2>
+            @if (State.Orders.Count == 0)
+            {
+                <p class="ea-empty mb-0">
+                    No orders yet. Orders customers place in this tab appear here: switch to the customer account, check out, then come back.
+                </p>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table ea-table align-middle">
+                        <caption class="visually-hidden">The five most recent orders</caption>
+                        <thead>
+                            <tr>
+                                <th scope="col">Order</th>
+                                <th scope="col">Placed</th>
+                                <th scope="col">Customer</th>
+                                <th scope="col" class="text-end">Items</th>
+                                <th scope="col" class="text-end">Total</th>
+                                <th scope="col">Paid with</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var order in RecentOrders)
+                            {
+                                <tr @key="order.Id">
+                                    <th scope="row">#@order.Id</th>
+                                    <td>@order.PlacedOn.ToString("MMM d, h:mm tt", CultureInfo.InvariantCulture)</td>
+                                    <td>@order.ShipTo.FullName</td>
+                                    <td class="text-end">@order.Totals.ItemCount</td>
+                                    <td class="text-end">@EcommerceDisplay.Money(order.Totals.Total)</td>
+                                    <td>@order.CardBrand ···· @order.CardLast4</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </section>
+    </div>
+
+    <div class="col-xl-4 d-grid gap-4">
+        <section class="ea-panel" aria-labelledby="ea-stock-title">
+            <h2 class="ea-section-title" id="ea-stock-title">Stock alerts</h2>
+            @if (StockAlerts.Count == 0)
+            {
+                <p class="ea-empty mb-0">Every product has more than @LowStockLimit in stock.</p>
+            }
+            else
+            {
+                <ul class="list-unstyled d-grid gap-2 mb-0">
+                    @foreach (var product in StockAlerts)
+                    {
+                        <li class="d-flex justify-content-between gap-2" @key="product.Id">
+                            <a href="@($"{EcommerceLayout.Base}/products/{product.Id}")">@product.Name</a>
+                            <Badge Color="@(product.Stock == 0 ? BadgeColor.Danger : BadgeColor.Warning)">@(product.Stock == 0 ? "Out of stock" : $"{product.Stock} left")</Badge>
+                        </li>
+                    }
+                </ul>
+            }
+        </section>
+
+        <section class="ea-panel" aria-labelledby="ea-best-title">
+            <h2 class="ea-section-title" id="ea-best-title">Best sellers</h2>
+            @if (BestSellers.Count == 0)
+            {
+                <p class="ea-empty mb-0">Best sellers appear once orders come in.</p>
+            }
+            else
+            {
+                <ol class="mb-0 ps-3 d-grid gap-1">
+                    @foreach (var (name, units) in BestSellers)
+                    {
+                        <li @key="name"><span class="fw-semibold">@name</span> <span class="text-body-secondary">· @units sold</span></li>
+                    }
+                </ol>
+            }
+        </section>
+    </div>
 </div>

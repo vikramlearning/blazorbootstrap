@@ -31,6 +31,10 @@
         {
             <span class="small text-body-secondary mt-2">Out of stock</span>
         }
+        else if (State.IsStaff)
+        {
+            <span class="small text-body-secondary mt-2">@Product.Stock in stock</span>
+        }
         else
         {
             <Button Color="ButtonColor.Primary" Outline="true" Size="ButtonSize.Small" Class="mt-2 align-self-start" @onclick="Add"

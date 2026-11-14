@@ -51,7 +51,8 @@ public sealed class EcommerceState : IShowcaseSiteState
     /// <returns>The quantity actually added (0 when the product is unknown or out of stock).</returns>
     public int AddToCart(int productId, string color, int quantity)
     {
-        if (FindProduct(productId) is not { } product || product.Stock == 0 || quantity <= 0)
+        // Staff accounts don't shop (D-032); the storefront hides the controls, and the state refuses too.
+        if (IsStaff || FindProduct(productId) is not { } product || product.Stock == 0 || quantity <= 0)
             return 0;
 
         var index = cart.FindIndex(line => line.ProductId == productId && line.Color == color);
@@ -339,6 +340,12 @@ public sealed class EcommerceState : IShowcaseSiteState
 
     /// <summary>Gets the demo sign-in: a customer and a retailer account.</summary>
     public ShowcaseIdentity Identity { get; }
+
+    /// <summary>Gets whether the signed-in account is store staff (the retailer), who see the shop but don't buy.</summary>
+    public bool IsStaff => Identity.IsInRole(new[] { EcommerceSeedData.RetailerRole });
+
+    /// <summary>Gets the orders placed in this tab, oldest first.</summary>
+    public IReadOnlyList<EcommerceOrder> Orders => orders;
 
     /// <summary>Gets the catalog.</summary>
     public IReadOnlyList<EcommerceProduct> Products { get; } = EcommerceSeedData.Products();

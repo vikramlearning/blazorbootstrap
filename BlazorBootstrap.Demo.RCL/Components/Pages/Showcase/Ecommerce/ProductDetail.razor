@@ -71,6 +71,10 @@ else
                         <Icon Name="IconName.InfoCircle" class="me-2" aria-hidden="true" />Out of stock. This item is back in a few weeks.
                     </Alert>
                 }
+                else if (State.IsStaff)
+                {
+                    <EcommerceStaffNotice Class="mb-3" Text="@($"Staff view: {Product.Stock} in stock. Shoppers see the quantity and Add to cart here.")" />
+                }
                 else
                 {
                     <div class="d-flex flex-wrap align-items-end gap-3 mb-2">

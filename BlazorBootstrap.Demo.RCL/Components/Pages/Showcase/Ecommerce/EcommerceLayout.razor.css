@@ -530,3 +530,28 @@
     color: var(--bs-danger-text-emphasis);
     font-weight: 600;
 }
+
+/* Staff bar on the storefront (D-032): the same dark bar in both themes, so its contrast is fixed. */
+.ec-staff-bar {
+    padding-block: .5rem;
+    background-color: #1c1917;
+    color: #fafaf9;
+    font-size: .875rem;
+    font-weight: 600;
+}
+
+.ec-staff-bar-link {
+    color: #fdba74;
+    text-decoration: underline;
+    text-underline-offset: .2em;
+}
+
+    .ec-staff-bar-link:hover,
+    .ec-staff-bar-link:focus-visible {
+        color: #fff;
+    }
+
+    .ec-staff-bar-link:focus-visible {
+        outline: 2px solid #fdba74;
+        outline-offset: 2px;
+    }

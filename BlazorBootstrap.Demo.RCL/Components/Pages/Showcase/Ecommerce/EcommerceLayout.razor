@@ -10,6 +10,17 @@
 <div class="sc-site sc-ecommerce">
     <ShowcaseSiteBar Site="@site" />
 
+    @if (State.IsStaff)
+    {
+        @* Staff see the shop as customers do, minus buying (D-032). *@
+        <div class="ec-staff-bar">
+            <div class="container-xl d-flex flex-wrap align-items-center justify-content-between gap-2">
+                <span><Icon Name="IconName.ShopWindow" class="me-2" aria-hidden="true" />Viewing your store as @State.Identity.Current!.Name (Retailer)</span>
+                <a class="ec-staff-bar-link" href="@EcommerceAdminLayout.Base"><Icon Name="IconName.ArrowLeft" class="me-1" aria-hidden="true" />Back to admin</a>
+            </div>
+        </div>
+    }
+
     <p class="ec-announce mb-0">
         <Icon Name="IconName.Truck" class="me-1" aria-hidden="true" />
         Free standard shipping over @EcommerceDisplay.Money(EcommerceSeedData.FreeShippingThreshold)
@@ -27,13 +38,16 @@
                 <span>@EcommerceSeedData.StoreName</span>
             </NavbarBrand>
             <ShowcaseAccountMenu SiteBase="@Base" SignInPath="@SignInPath" Class="ms-auto me-2 order-lg-last" />
-            <Button @ref="cartButton" Class="ec-cart-btn me-2 me-lg-0 order-lg-last" @onclick="OpenCartAsync" aria-label="@CartLabel">
-                <Icon Name="IconName.Bag" aria-hidden="true" />
-                @if (State.CartCount > 0)
-                {
-                    <span class="ec-cart-count" aria-hidden="true">@State.CartCount</span>
-                }
-            </Button>
+            @if (!State.IsStaff)
+            {
+                <Button @ref="cartButton" Class="ec-cart-btn me-2 me-lg-0 order-lg-last" @onclick="OpenCartAsync" aria-label="@CartLabel">
+                    <Icon Name="IconName.Bag" aria-hidden="true" />
+                    @if (State.CartCount > 0)
+                    {
+                        <span class="ec-cart-count" aria-hidden="true">@State.CartCount</span>
+                    }
+                </Button>
+            }
         </Brand>
         <ChildContent>
             <NavbarNav Class="me-auto ms-lg-4 mb-3 mb-lg-0">
@@ -47,7 +61,10 @@
                     <DropdownDivider />
                     <DropdownItem Type="DropdownItemType.Link" To="@($"{Base}/products?sale=1")">Sale</DropdownItem>
                 </NavbarDropdown>
-                <NavbarItem Href="@($"{Base}/cart")">Cart</NavbarItem>
+                @if (!State.IsStaff)
+                {
+                    <NavbarItem Href="@($"{Base}/cart")">Cart</NavbarItem>
+                }
             </NavbarNav>
         </ChildContent>
     </Navbar>

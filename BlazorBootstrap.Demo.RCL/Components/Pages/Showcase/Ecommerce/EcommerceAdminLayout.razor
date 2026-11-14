@@ -1,0 +1,53 @@
+@inherits LayoutComponentBase
+
+<HeadContent>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=DM+Sans:wght@400;500;600;700&display=swap" />
+</HeadContent>
+
+@* The retailer's back office (D-031): its own layout with the modules in a sidebar, separate from the storefront. *@
+<ShowcaseSessionHost State="State" SiteBase="@EcommerceLayout.Base" SiteName="@EcommerceSeedData.StoreName">
+<div class="sc-site sc-ecommerce ea-admin">
+    <ShowcaseSiteBar Site="@site" />
+
+    <div class="ea-shell">
+        @if (State.IsStaff)
+        {
+            <Sidebar Class="ea-sidebar"
+                     Href="@Base"
+                     IconName="IconName.Flower2"
+                     Title="@EcommerceSeedData.StoreName"
+                     BadgeText="Admin"
+                     DataProvider="SidebarDataProvider" />
+        }
+
+        <div class="ea-main">
+            <header class="ea-topbar">
+                <span class="ea-topbar-title">Store admin</span>
+                <div class="ea-topbar-actions">
+                    <a class="btn btn-sm ea-view-store" href="@EcommerceLayout.Base">
+                        <Icon Name="IconName.ShopWindow" class="me-1" aria-hidden="true" />View store
+                    </a>
+                    <ShowcaseAccountMenu SiteBase="@EcommerceLayout.Base" SignInPath="@EcommerceLayout.SignInPath" />
+                </div>
+            </header>
+
+            <main class="sc-main ea-content" id="ea-main">
+                <ShowcaseRoleGuard Roles="@EcommerceSeedData.RetailerRole" SignInPath="@EcommerceLayout.SignInPath">
+                    @Body
+                </ShowcaseRoleGuard>
+            </main>
+
+            <div class="ea-ad-row">
+                <CarbonAds Class="sc-ad" />
+            </div>
+
+            <footer class="ea-footer">
+                <span>© 2026 @EcommerceSeedData.StoreName (fictitious). Orders, customers, and figures here are made up and stay in this browser tab.</span>
+                <span class="d-none d-lg-inline">Built with Sidebar, Card, Badge, Dropdown, Modal, and form inputs.</span>
+            </footer>
+        </div>
+    </div>
+</div>
+</ShowcaseSessionHost>

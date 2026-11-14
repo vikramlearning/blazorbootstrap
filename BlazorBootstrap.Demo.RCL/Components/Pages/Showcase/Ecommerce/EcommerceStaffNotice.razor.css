@@ -1,0 +1,16 @@
+.ec-staff-notice {
+    display: flex;
+    gap: .75rem;
+    align-items: flex-start;
+    padding: 1rem 1.25rem;
+    border: 1px solid rgba(var(--sc-primary-rgb), .35);
+    border-radius: .75rem;
+    background-color: rgba(var(--sc-primary-rgb), .07);
+}
+
+.ec-staff-notice ::deep .ec-staff-notice-icon {
+    flex-shrink: 0;
+    margin-top: .125rem;
+    font-size: 1.25rem;
+    color: var(--sc-primary);
+}

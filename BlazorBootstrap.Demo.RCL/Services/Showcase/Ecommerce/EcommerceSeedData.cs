@@ -80,7 +80,7 @@ public static class EcommerceSeedData
     public static IReadOnlyList<ShowcaseRole> Roles() => new List<ShowcaseRole>
     {
         new(CustomerRole, "Customer", $"{DemoRouteConstants.Showcase_URL_Ecommerce}/account", $"{DemoRouteConstants.Showcase_URL_Ecommerce}/account", "Shops, checks out, and tracks orders."),
-        new(RetailerRole, "Retailer", $"{DemoRouteConstants.Showcase_URL_Ecommerce}/admin", $"{DemoRouteConstants.Showcase_URL_Ecommerce}/admin", "Runs the store: orders, inventory, pricing, and sales."),
+        new(RetailerRole, "Retailer", $"{DemoRouteConstants.Showcase_URL_Ecommerce}/admin", $"{DemoRouteConstants.Showcase_URL_Ecommerce}/admin/account", "Runs the store from its admin: orders, inventory, pricing, and sales."),
     };
 
     /// <summary>The product categories.</summary>
