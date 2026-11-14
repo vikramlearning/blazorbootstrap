@@ -1,0 +1,50 @@
+@inherits LayoutComponentBase
+
+<HeadContent>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" />
+</HeadContent>
+
+<div class="sc-site sc-monitoring">
+    <ShowcaseSiteBar Site="@site" OnThemeChanged="OnThemeChanged" />
+
+    <Navbar Class="mw-header"
+            Placement="NavbarPlacement.StickyTop"
+            Container="NavbarContainer.Fluid"
+            AriaLabel="Stackwatch"
+            TogglerAriaLabel="Menu">
+        <Brand>
+            <NavbarBrand Href="@Base" Class="mw-brand">
+                <span class="mw-brand-mark" aria-hidden="true"><Icon Name="IconName.Activity" /></span>
+                <span>@MonitoringSeedData.ProductName</span>
+            </NavbarBrand>
+        </Brand>
+        <ChildContent>
+            <NavbarNav Class="me-auto ms-lg-4 mb-3 mb-lg-0">
+                <NavbarItem Href="@Base" Match="NavLinkMatch.All">Overview</NavbarItem>
+                <NavbarItem Href="@($"{Base}/incidents")">Incidents</NavbarItem>
+                <NavbarItem Href="@($"{Base}/logs")">Logs</NavbarItem>
+            </NavbarNav>
+            <div class="mw-user mb-3 mb-lg-0">
+                <Avatar Name="@MonitoringSeedData.UserName" Initials="JA" Color="AvatarColor.Success" Size="AvatarSize.Small" />
+                <span>@MonitoringSeedData.UserName <span class="mw-user-role">On call</span></span>
+            </div>
+        </ChildContent>
+    </Navbar>
+
+    <main class="sc-main mw-content" id="mw-main">
+        @Body
+    </main>
+
+    <div class="container-fluid px-lg-4">
+        <CarbonAds Class="sc-ad" />
+    </div>
+
+    <footer class="mw-footer">
+        <div class="container-fluid px-lg-4 d-flex flex-wrap justify-content-between gap-2">
+            <span>© 2026 @MonitoringSeedData.ProductName (fictitious). Services, devices, incidents, and metrics are simulated in your browser session.</span>
+            <span class="d-none d-lg-inline">Built with Charts, Progress, Alert, Callout, Grid, Spinner, and Tooltip.</span>
+        </div>
+    </footer>
+</div>

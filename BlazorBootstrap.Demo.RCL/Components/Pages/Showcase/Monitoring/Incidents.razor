@@ -1,0 +1,90 @@
+@page "/showcase/monitoring/incidents"
+@layout MonitoringLayout
+
+<PageTitle>Incidents · @MonitoringSeedData.ProductName</PageTitle>
+
+<div class="container-fluid px-lg-4">
+    <div class="mw-page-head">
+        <div>
+            <h1 class="mw-title">Incidents</h1>
+            <p class="mw-lead">Alerts that need someone, and what happened before.</p>
+        </div>
+    </div>
+
+    @if (Active.Count == 0)
+    {
+        <Alert Color="AlertColor.Success" Class="d-flex align-items-center gap-2">
+            <Icon Name="IconName.CheckCircleFill" aria-hidden="true" />All systems operational. There are no active incidents.
+        </Alert>
+    }
+    else
+    {
+        <Alert Color="AlertColor.Danger" Class="d-flex align-items-center gap-2">
+            <Icon Name="IconName.BellFill" aria-hidden="true" />@(Active.Count == 1 ? "1 active incident needs attention." : $"{Active.Count} active incidents need attention.")
+        </Alert>
+    }
+
+    @* Always rendered and focusable, so an action is announced and focus has somewhere to go when its button disappears. *@
+    <p class="fw-semibold" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
+
+    <section class="mb-5" aria-labelledby="mw-active-heading">
+        <h2 class="mw-card-title fs-5 mb-3" id="mw-active-heading">Active (@Active.Count)</h2>
+        @if (Active.Count == 0)
+        {
+            <p class="text-body-secondary">Nothing is open right now.</p>
+        }
+        <div class="d-grid gap-3">
+            @foreach (var incident in Active)
+            {
+                var service = State.FindService(incident.ServiceId);
+                <Card Class="mw-card" id="@($"incident-{incident.Id}")" @key="incident.Id">
+                    <CardBody>
+                        <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
+                            <Badge Color="@MonitoringDisplay.SeverityColor(incident.Severity)">@incident.Severity</Badge>
+                            <Badge Color="@MonitoringDisplay.IncidentStatusColor(incident.Status)">@incident.Status</Badge>
+                            <span class="small text-body-secondary">#@incident.Id · started @MonitoringDisplay.Stamp(incident.StartedAt) (@MonitoringDisplay.Ago(incident.StartedAt, State.CurrentTime))</span>
+                        </div>
+                        <h3 class="h5 fw-bold mb-1">@incident.Title</h3>
+                        <p class="mb-2">@incident.Summary <a href="@MonitoringDisplay.ServiceUrl(incident.ServiceId)">@service?.Name</a></p>
+                        <ol class="list-unstyled small border-start ps-3 mb-3" aria-label="@($"Timeline of incident {incident.Id}")">
+                            @foreach (var update in incident.Updates)
+                            {
+                                <li class="mb-1"><span class="mw-mono text-body-secondary">@MonitoringDisplay.Stamp(update.Time)</span> <strong>@update.Author</strong>: @update.Text</li>
+                            }
+                        </ol>
+                        <div class="d-flex flex-wrap gap-2">
+                            @if (incident.Status == MonitoringIncidentStatus.Open)
+                            {
+                                <Button Color="ButtonColor.Warning" Size="ButtonSize.Small" @onclick="() => AcknowledgeAsync(incident)">
+                                    <Icon Name="IconName.Bell" class="me-1" aria-hidden="true" />Acknowledge<span class="visually-hidden">@($" incident {incident.Id}")</span>
+                                </Button>
+                            }
+                            <Button Color="ButtonColor.Success" Size="ButtonSize.Small" @onclick="() => ResolveAsync(incident)">
+                                <Icon Name="IconName.CheckCircleFill" class="me-1" aria-hidden="true" />Resolve<span class="visually-hidden">@($" incident {incident.Id}")</span>
+                            </Button>
+                        </div>
+                    </CardBody>
+                </Card>
+            }
+        </div>
+    </section>
+
+    <section aria-labelledby="mw-resolved-heading">
+        <h2 class="mw-card-title fs-5 mb-3" id="mw-resolved-heading">Resolved (@Resolved.Count)</h2>
+        <div class="d-grid gap-3">
+            @foreach (var incident in Resolved)
+            {
+                var service = State.FindService(incident.ServiceId);
+                <div id="@($"incident-{incident.Id}")" @key="incident.Id">
+                    <Callout Color="CalloutColor.Default" Heading="@($"#{incident.Id} {incident.Title}")">
+                        <p class="mb-1">@incident.Summary</p>
+                        <p class="small text-body-secondary mb-2">
+                            @incident.Severity · @service?.Name · @MonitoringDisplay.Stamp(incident.StartedAt), resolved after @MonitoringDisplay.Duration((incident.ResolvedAt ?? incident.StartedAt) - incident.StartedAt)
+                        </p>
+                        <p class="small mb-0"><strong>@incident.Updates[^1].Author:</strong> @incident.Updates[^1].Text</p>
+                    </Callout>
+                </div>
+            }
+        </div>
+    </section>
+</div>

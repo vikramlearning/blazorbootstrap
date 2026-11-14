@@ -1,0 +1,266 @@
+.sc-monitoring {
+    --sc-primary: #15803d;
+    --sc-primary-rgb: 21, 128, 61;
+    --sc-primary-hover: #166534;
+    --sc-primary-contrast: #fff;
+    --sc-font-body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --sc-font-heading: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --sc-page-bg: #f4f6f5;
+    --mw-font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    --mw-ink: #111a15;
+    --mw-surface: #fff;
+    --mw-border: #dfe6e2;
+}
+
+[data-bs-theme=dark] .sc-monitoring {
+    --sc-primary: #4ade80;
+    --sc-primary-rgb: 74, 222, 128;
+    --sc-primary-hover: #86efac;
+    --sc-primary-contrast: #052e16;
+    --sc-page-bg: #0a0f0c;
+    --mw-ink: #e9f5ee;
+    --mw-surface: #121a15;
+    --mw-border: #23302a;
+}
+
+/* Bootstrap keeps white text on primary fills; on the light dark-mode green that fails contrast. */
+[data-bs-theme=dark] .sc-monitoring ::deep .text-bg-primary,
+[data-bs-theme=dark] .sc-monitoring ::deep .progress-bar.bg-primary {
+    color: var(--sc-primary-contrast) !important;
+}
+
+/* Header: the Navbar component renders the nav and its links, so they need ::deep. */
+.sc-monitoring ::deep .mw-header {
+    min-height: 3.75rem;
+    background: var(--mw-surface);
+    border-bottom: 1px solid var(--mw-border);
+}
+
+.sc-monitoring ::deep .mw-header .nav-link {
+    color: var(--mw-ink);
+    font-weight: 600;
+    border-radius: .5rem;
+    padding-inline: .75rem !important;
+}
+
+    .sc-monitoring ::deep .mw-header .nav-link:hover {
+        color: var(--sc-primary);
+    }
+
+    /* The hover shade keeps the active link above 4.5:1 on its tint. */
+    .sc-monitoring ::deep .mw-header .nav-link.active {
+        color: var(--sc-primary-hover);
+        background: rgba(var(--sc-primary-rgb), .1);
+    }
+
+.sc-monitoring ::deep .mw-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: .5rem;
+    font-weight: 700;
+    font-size: 1.25rem;
+    color: var(--mw-ink);
+    text-decoration: none;
+}
+
+.sc-monitoring ::deep .mw-brand-mark {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    border-radius: .5rem;
+    background: var(--sc-primary);
+    color: var(--sc-primary-contrast);
+}
+
+.sc-monitoring ::deep .mw-user {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    font-weight: 600;
+    font-size: .875rem;
+    line-height: 1.2;
+    color: var(--mw-ink);
+}
+
+.sc-monitoring ::deep .mw-user-role {
+    display: block;
+    font-weight: 400;
+    font-size: .75rem;
+    color: var(--bs-secondary-color);
+}
+
+.mw-content {
+    padding-block: 1.5rem 1rem;
+}
+
+.mw-footer {
+    margin-top: 2rem;
+    padding-block: 1.25rem;
+    border-top: 1px solid var(--mw-border);
+    color: var(--bs-secondary-color);
+    font-size: .8125rem;
+}
+
+/* Shared page styles: page markup is child content of the layout, so it needs ::deep. */
+.sc-monitoring ::deep .mw-page-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+}
+
+.sc-monitoring ::deep .mw-title {
+    margin: 0;
+    font-size: clamp(1.375rem, 2.4vw, 1.75rem);
+    font-weight: 700;
+    color: var(--mw-ink);
+}
+
+.sc-monitoring ::deep .mw-lead {
+    margin: .25rem 0 0;
+    color: var(--bs-secondary-color);
+}
+
+.sc-monitoring ::deep .mw-card {
+    --bs-card-bg: var(--mw-surface);
+    --bs-card-border-color: var(--mw-border);
+    --bs-card-cap-bg: transparent;
+    border-radius: .75rem;
+}
+
+    .sc-monitoring ::deep .mw-card .card-header {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: .5rem;
+        padding: 1rem 1.25rem .25rem;
+        border-bottom: 0;
+    }
+
+.sc-monitoring ::deep .mw-card-title {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--mw-ink);
+}
+
+.sc-monitoring ::deep .mw-label {
+    font-size: .8125rem;
+    font-weight: 600;
+    color: var(--bs-secondary-color);
+}
+
+.sc-monitoring ::deep .mw-value {
+    display: block;
+    font-family: var(--mw-font-mono);
+    font-size: clamp(1.375rem, 2.4vw, 1.75rem);
+    font-weight: 600;
+    color: var(--mw-ink);
+    font-variant-numeric: tabular-nums;
+}
+
+.sc-monitoring ::deep .mw-mono {
+    font-family: var(--mw-font-mono);
+    font-variant-numeric: tabular-nums;
+}
+
+.sc-monitoring ::deep .mw-chart {
+    position: relative;
+    width: 100%;
+}
+
+.sc-monitoring ::deep .mw-row {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    padding-block: .625rem;
+    border-top: 1px solid var(--mw-border);
+}
+
+    .sc-monitoring ::deep .mw-row:first-child {
+        border-top: 0;
+    }
+
+.sc-monitoring ::deep .mw-row-link {
+    font-weight: 600;
+    color: var(--mw-ink);
+    text-decoration: none;
+}
+
+    .sc-monitoring ::deep .mw-row-link:hover,
+    .sc-monitoring ::deep .mw-row-link:focus-visible {
+        color: var(--sc-primary);
+        text-decoration: underline;
+    }
+
+.sc-monitoring ::deep .mw-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: .5rem;
+    color: var(--sc-primary-hover);
+    background: rgba(var(--sc-primary-rgb), .1);
+}
+
+.sc-monitoring ::deep .mw-help {
+    display: inline-flex;
+    align-items: center;
+    color: var(--bs-secondary-color);
+    border-radius: 50%;
+    cursor: help;
+}
+
+    .sc-monitoring ::deep .mw-help:focus-visible {
+        outline: 2px solid var(--sc-primary);
+        outline-offset: 2px;
+    }
+
+/* Positioned, so absolutely positioned descendants (visually hidden header text) stay inside the scroll box. */
+.sc-monitoring ::deep .mw-grid {
+    position: relative;
+}
+
+    .sc-monitoring ::deep .mw-grid .table {
+        --bs-table-bg: var(--mw-surface);
+        margin-bottom: 0;
+        vertical-align: middle;
+        font-size: .875rem;
+    }
+
+        .sc-monitoring ::deep .mw-grid .table > thead th {
+            font-size: .75rem;
+            font-weight: 700;
+            letter-spacing: .04em;
+            text-transform: uppercase;
+            color: var(--bs-secondary-color);
+            white-space: nowrap;
+        }
+
+/* The grid's pager can hold many page buttons; on narrow screens they wrap instead of widening the page. */
+.sc-monitoring ::deep .pagination {
+    flex-wrap: wrap;
+    row-gap: .25rem;
+}
+
+.sc-monitoring ::deep .mw-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: .75rem;
+    min-height: 12rem;
+    color: var(--bs-secondary-color);
+}
+
+.sc-monitoring ::deep .mw-not-found {
+    max-width: 32rem;
+    margin: 4rem auto;
+    text-align: center;
+}

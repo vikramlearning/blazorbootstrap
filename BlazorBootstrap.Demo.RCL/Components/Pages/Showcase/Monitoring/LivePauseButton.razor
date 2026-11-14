@@ -1,0 +1,6 @@
+@* Pauses and resumes the live updates (WCAG 2.2.2). One button whose text changes, so focus stays on it. *@
+<Button Color="ButtonColor.Primary" Outline="true" @onclick="Toggle">
+    <Icon Name="@(State.IsPaused ? IconName.PlayFill : IconName.PauseFill)" class="me-2" aria-hidden="true" />@(State.IsPaused ? "Resume live updates" : "Pause live updates")
+</Button>
+<span class="visually-hidden" role="status">@statusMessage</span>
+
