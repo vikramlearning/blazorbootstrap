@@ -1,13 +1,15 @@
 using System.ComponentModel.DataAnnotations;
 using BlazorBootstrap.Demo.RCL.Models.Showcase.Ecommerce;
 using BlazorBootstrap.Demo.RCL.Services.Showcase.Ecommerce;
+using BlazorBootstrap.Demo.RCL.Services.Showcase.Foundation;
 using Microsoft.AspNetCore.Components.Forms;
 
 namespace BlazorBootstrap.Demo.RCL.Components.Pages.Showcase.Ecommerce;
 
 /// <summary>
-/// Checkout: contact and shipping form, delivery choice, a fixed placeholder card, and the order summary.
-/// Placing the order stores it in <see cref="EcommerceState" />, empties the cart, and opens the confirmation.
+/// Checkout: contact and shipping form, delivery choice, the test-card payment form, and the order summary. A declined
+/// test card shows an error and keeps the cart; an approved one stores the order in <see cref="EcommerceState" /> with the
+/// card's brand and last four digits only, empties the cart, and opens the confirmation.
 /// </summary>
 public partial class Checkout : ComponentBase, IDisposable
 {
@@ -15,9 +17,15 @@ public partial class Checkout : ComponentBase, IDisposable
 
     private readonly string[] countries = { "United States", "Canada", "United Kingdom", "Germany", "India", "Australia" };
 
+    private ShowcaseCardInput card = new();
+
+    private int declines;
+
     private EditContext editContext = default!;
 
     private CheckoutForm form = new();
+
+    private string? paymentError;
 
     private bool placing;
 
@@ -64,12 +72,26 @@ public partial class Checkout : ComponentBase, IDisposable
         if (placing || State.Cart.Count == 0)
             return;
 
+        var charge = ShowcaseCards.Charge(card);
+
+        if (!charge.IsApproved)
+        {
+            // A different text each attempt, so the alert is announced again.
+            declines++;
+            paymentError = declines == 1 ? charge.FailureMessage : $"{charge.FailureMessage} (attempt {declines})";
+
+            return;
+        }
+
         placing = true;
+        paymentError = null;
 
         var order = State.PlaceOrder(
             new EcommerceAddress(form.FullName.Trim(), form.Email.Trim(), form.Street.Trim(), form.City.Trim(), form.PostalCode.Trim(), form.Country),
-            form.Delivery);
+            form.Delivery,
+            charge);
 
+        card = new ShowcaseCardInput();
         Navigation.NavigateTo($"{EcommerceLayout.Base}/orders/{order.Id}");
     }
 
@@ -78,9 +100,6 @@ public partial class Checkout : ComponentBase, IDisposable
     #endregion
 
     #region Properties, Indexers
-
-    /// <summary>Gets the bound field for the read-only placeholder card inputs.</summary>
-    private string DemoCard { get; } = string.Empty;
 
     [Inject] private NavigationManager Navigation { get; set; } = default!;
 

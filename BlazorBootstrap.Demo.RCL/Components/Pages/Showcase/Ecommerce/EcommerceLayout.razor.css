@@ -70,6 +70,14 @@
     text-decoration: none;
 }
 
+/* Small phones: the brand, account menu, cart, and toggler stay on one row. */
+@media (max-width: 399.98px) {
+    .sc-ecommerce ::deep .ec-header .ec-brand {
+        font-size: 1.125rem;
+        gap: .375rem;
+    }
+}
+
 .sc-ecommerce ::deep .ec-brand-mark {
     display: inline-flex;
     align-items: center;
@@ -515,4 +523,10 @@
     max-width: 34rem;
     margin: 4rem auto;
     text-align: center;
+}
+
+/* Payment failure from a declined test card; the region is always present so the alert is announced. */
+.sc-ecommerce ::deep .ec-payment-error {
+    color: var(--bs-danger-text-emphasis);
+    font-weight: 600;
 }

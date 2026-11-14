@@ -1,0 +1,17 @@
+@page "/showcase/ecommerce/sign-in"
+@layout EcommerceLayout
+
+<PageTitle>Sign in · @EcommerceSeedData.StoreName</PageTitle>
+
+<div class="container-xl pt-4 pb-5">
+    <ShowcaseSignIn SiteBase="@EcommerceLayout.Base" SiteName="@EcommerceSeedData.StoreName" ReturnUrl="@ReturnUrl"
+                    RegisterRoleId="@EcommerceSeedData.CustomerRole" StartWithRegister="@(Mode == "register")" />
+</div>
+
+@code {
+    /// <summary>Gets or sets <c>?mode=register</c>, which opens the register form.</summary>
+    [SupplyParameterFromQuery(Name = "mode")] public string? Mode { get; set; }
+
+    /// <summary>Gets or sets the page to return to after signing in; only a page inside the store is used.</summary>
+    [SupplyParameterFromQuery(Name = "returnUrl")] public string? ReturnUrl { get; set; }
+}

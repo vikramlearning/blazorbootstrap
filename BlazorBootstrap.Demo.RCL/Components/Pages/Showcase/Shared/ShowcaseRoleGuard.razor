@@ -1,0 +1,29 @@
+@if (!Session.IsRestored)
+{
+    <div class="sc-guard" role="status">
+        <Spinner Size="SpinnerSize.Small" Class="me-2" aria-hidden="true" />Loading your demo session…
+    </div>
+}
+else if (!Identity.IsSignedIn)
+{
+    <div class="sc-guard" role="status">Taking you to sign in…</div>
+}
+else if (!IsAllowed)
+{
+    <PageTitle>Access denied</PageTitle>
+    <section class="sc-guard-denied" aria-labelledby="sc-denied-title">
+        <span class="sc-guard-icon" aria-hidden="true"><Icon Name="IconName.ShieldLock" /></span>
+        <h1 class="sc-guard-title" id="sc-denied-title">This page is for @AllowedLabels</h1>
+        <p class="text-body-secondary">
+            You're signed in as <strong>@Identity.Current!.Name</strong> (@Identity.CurrentRole?.Label). Switch to an account with the right role to open it.
+        </p>
+        <div class="d-flex flex-wrap justify-content-center gap-2">
+            <Button Color="ButtonColor.Primary" @onclick="SwitchAccount">Switch account</Button>
+            <Button Color="ButtonColor.Primary" Outline="true" @onclick="GoHome">Go to your start page</Button>
+        </div>
+    </section>
+}
+else
+{
+    @ChildContent
+}

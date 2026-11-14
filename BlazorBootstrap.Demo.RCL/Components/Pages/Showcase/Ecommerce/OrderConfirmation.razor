@@ -16,7 +16,7 @@ else
             <h1 class="ec-page-title mt-3">Thank you, @FirstName!</h1>
             <p class="mb-1">Order <strong>#@Order.Id</strong> is confirmed.</p>
             <p class="small text-body-secondary mb-0">
-                In a real store a confirmation would go to @Order.ShipTo.Email. Here nothing was sent or charged, and the order is gone after a reload.
+                In a real store a confirmation would go to @Order.ShipTo.Email. Here nothing was sent or charged; the order stays in this browser tab until you close it or reset the demo.
             </p>
         </div>
 
@@ -62,7 +62,8 @@ else
                         @Order.ShipTo.City @Order.ShipTo.PostalCode<br />
                         @Order.ShipTo.Country
                     </address>
-                    <p class="small mb-0">@Order.Delivery delivery, @EcommerceDisplay.DeliveryWindow(Order.Delivery).</p>
+                    <p class="small mb-2">@Order.Delivery delivery, @EcommerceDisplay.DeliveryWindow(Order.Delivery).</p>
+                    <p class="small mb-0"><Icon Name="IconName.CreditCard" class="me-1" aria-hidden="true" />Paid with @Order.CardBrand ending in @Order.CardLast4 (test card).</p>
                 </div>
                 <Button Type="ButtonType.Link" To="@($"{EcommerceLayout.Base}/products?category=all")" Color="ButtonColor.Primary" Class="w-100 mt-4 rounded-pill">
                     Continue shopping

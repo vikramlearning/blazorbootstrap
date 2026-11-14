@@ -1,0 +1,12 @@
+@page "/showcase/ecommerce/account"
+@layout EcommerceLayout
+
+<PageTitle>Your account · @EcommerceSeedData.StoreName</PageTitle>
+
+<div class="container-xl pt-4 pb-5">
+    <ShowcaseRoleGuard Roles="@EcommerceSeedData.CustomerRole" SignInPath="@EcommerceLayout.SignInPath">
+        <h1 class="ec-page-title mb-1">Your account</h1>
+        <p class="text-body-secondary mb-4">Your profile and password. Orders, addresses, and your wishlist come next in this demo.</p>
+        <ShowcaseAccountProfile />
+    </ShowcaseRoleGuard>
+</div>

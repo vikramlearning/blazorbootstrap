@@ -75,7 +75,7 @@ public sealed record EcommerceOrderLine(int ProductId, string Name, string Color
 /// <summary>Money totals of a cart or order.</summary>
 public sealed record EcommerceTotals(int ItemCount, decimal Subtotal, decimal Discount, decimal Shipping, decimal Tax, decimal Total);
 
-/// <summary>An order placed in this session.</summary>
+/// <summary>An order placed in this session. Only the card's brand and last four digits are kept.</summary>
 public sealed record EcommerceOrder(
     int Id,
     DateTime PlacedOn,
@@ -83,7 +83,9 @@ public sealed record EcommerceOrder(
     EcommerceAddress ShipTo,
     EcommerceDelivery Delivery,
     string? PromoCode,
-    EcommerceTotals Totals);
+    EcommerceTotals Totals,
+    string CardBrand,
+    string CardLast4);
 
 /// <summary>The catalog filters, kept in the site state so they survive a visit to a product page.</summary>
 public sealed class EcommerceCatalogFilter

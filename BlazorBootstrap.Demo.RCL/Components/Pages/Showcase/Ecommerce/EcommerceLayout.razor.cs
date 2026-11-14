@@ -16,6 +16,9 @@ public partial class EcommerceLayout : LayoutComponentBase, IDisposable
     /// <summary>Base route of the storefront.</summary>
     public const string Base = DemoRouteConstants.Showcase_URL_Ecommerce;
 
+    /// <summary>The storefront's sign-in page.</summary>
+    public const string SignInPath = Base + "/sign-in";
+
     private Button cartButton = default!;
 
     private Offcanvas cartDrawer = default!;

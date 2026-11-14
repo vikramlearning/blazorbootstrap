@@ -1,0 +1,57 @@
+@if (Identity.Current is { } account)
+{
+    <div class="row g-4" data-clarity-mask="true">
+        <div class="col-lg-6">
+            <section class="sc-profile-panel" aria-labelledby="sc-profile-title">
+                <h2 class="sc-profile-title" id="sc-profile-title">Profile</h2>
+                <EditForm Model="profileForm" OnValidSubmit="SaveProfile" FormName="@($"sc-profile-{Session.State.SiteSlug}")">
+                    <DataAnnotationsValidator />
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold" for="sc-profile-name">Full name</label>
+                        <TextInput Id="sc-profile-name" @bind-Value="profileForm.Name" MaxLength="80" />
+                        <ValidationMessage For="() => profileForm.Name" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold" for="sc-profile-email">Email</label>
+                        <TextInput Id="sc-profile-email" @bind-Value="profileForm.Email" MaxLength="120" />
+                        <ValidationMessage For="() => profileForm.Email" />
+                    </div>
+                    <p class="small text-body-secondary mb-3">Role: @Identity.CurrentRole?.Label</p>
+                    <div class="d-flex flex-wrap align-items-center gap-3">
+                        <Button Type="ButtonType.Submit" Color="ButtonColor.Primary">Save profile</Button>
+                        <span class="small" role="status">@profileStatus</span>
+                    </div>
+                </EditForm>
+            </section>
+        </div>
+        <div class="col-lg-6">
+            <section class="sc-profile-panel" aria-labelledby="sc-password-title">
+                <h2 class="sc-profile-title" id="sc-password-title">Change password</h2>
+                <ShowcaseDemoNotice Class="mb-3" Text="Demo only: make up a password. It's kept as a hash in this browser tab and never sent." />
+                <EditForm EditContext="passwordContext" OnValidSubmit="ChangePassword" FormName="@($"sc-password-{Session.State.SiteSlug}")">
+                    <DataAnnotationsValidator />
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold" for="sc-password-current">Current password</label>
+                        <ShowcasePasswordInput Id="sc-password-current" @bind-Value="passwordForm.Current" />
+                        <ValidationMessage For="() => passwordForm.Current" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold" for="sc-password-new">New password</label>
+                        <ShowcasePasswordInput Id="sc-password-new" @bind-Value="passwordForm.New" aria-describedby="sc-password-new-help" />
+                        <div class="form-text" id="sc-password-new-help">At least @ShowcaseIdentity.MinPasswordLength characters.</div>
+                        <ValidationMessage For="() => passwordForm.New" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold" for="sc-password-confirm">Confirm new password</label>
+                        <ShowcasePasswordInput Id="sc-password-confirm" @bind-Value="passwordForm.Confirm" />
+                        <ValidationMessage For="() => passwordForm.Confirm" />
+                    </div>
+                    <div class="d-flex flex-wrap align-items-center gap-3">
+                        <Button Type="ButtonType.Submit" Color="ButtonColor.Primary">Change password</Button>
+                        <span class="small" role="status">@passwordStatus</span>
+                    </div>
+                </EditForm>
+            </section>
+        </div>
+    </div>
+}

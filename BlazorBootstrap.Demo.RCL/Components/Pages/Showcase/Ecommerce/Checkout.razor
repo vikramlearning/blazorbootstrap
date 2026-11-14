@@ -19,7 +19,7 @@
         <div class="row g-4">
             <div class="col-lg-7">
                 <div class="ec-panel" data-clarity-mask="true">
-                    <ShowcaseDemoNotice Class="mb-4" Text="Demo only: nothing you enter here is sent, stored, or charged. The card below is a fixed placeholder." />
+                    <ShowcaseDemoNotice Class="mb-4" Text="Demo only: nothing you enter here is sent or charged. Use one of the listed test cards; real cards are never accepted." />
 
                     <EditForm EditContext="editContext" OnValidSubmit="PlaceOrder" FormName="ec-checkout">
                         <DataAnnotationsValidator />
@@ -78,24 +78,14 @@
                         </RadioButtonGroup>
 
                         <h2 class="h5 fw-bold mt-4 mb-3">Payment</h2>
-                        @* The card fields are fixed placeholders and read-only: the demo never accepts real card details (AC-27). *@
-                        <div class="row g-3">
-                            <div class="col-12">
-                                <label class="form-label" for="ec-card">Card number</label>
-                                <InputGroup>
-                                    <InputGroupText><Icon Name="IconName.CreditCard" aria-hidden="true" /></InputGroupText>
-                                    <TextInput Id="ec-card" Value="4242 4242 4242 4242" ValueExpression="() => DemoCard" Disabled="true" aria-describedby="ec-card-help" />
-                                </InputGroup>
-                                <div class="form-text" id="ec-card-help">Placeholder test card. You can't type a real card here.</div>
-                            </div>
-                            <div class="col-6">
-                                <label class="form-label" for="ec-expiry">Expiry</label>
-                                <TextInput Id="ec-expiry" Value="12 / 34" ValueExpression="() => DemoCard" Disabled="true" />
-                            </div>
-                            <div class="col-6">
-                                <label class="form-label" for="ec-cvc">Security code</label>
-                                <TextInput Id="ec-cvc" Value="123" ValueExpression="() => DemoCard" Disabled="true" />
-                            </div>
+                        @* Only the published test cards pass; only the brand and last four digits are kept (CR-001-AC-11). *@
+                        <ShowcaseCardForm Card="card" Today="State.Clock.Today" IdPrefix="ec" />
+
+                        <div class="ec-payment-error mt-3" role="alert">
+                            @if (paymentError is not null)
+                            {
+                                <Icon Name="IconName.ExclamationTriangleFill" class="me-2" aria-hidden="true" />@paymentError
+                            }
                         </div>
 
                         <Button Type="ButtonType.Submit" Color="ButtonColor.Primary" Size="ButtonSize.Large" Class="w-100 mt-4 rounded-pill" Disabled="placing">

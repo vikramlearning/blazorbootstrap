@@ -1,0 +1,12 @@
+@page "/showcase/ecommerce/admin"
+@layout EcommerceLayout
+
+<PageTitle>Store admin · @EcommerceSeedData.StoreName</PageTitle>
+
+<div class="container-xl pt-4 pb-5">
+    <ShowcaseRoleGuard Roles="@EcommerceSeedData.RetailerRole" SignInPath="@EcommerceLayout.SignInPath">
+        <h1 class="ec-page-title mb-1">Store admin</h1>
+        <p class="text-body-secondary mb-4">Your retailer account. The sales dashboard, orders, inventory, pricing, and offers come next in this demo.</p>
+        <ShowcaseAccountProfile />
+    </ShowcaseRoleGuard>
+</div>

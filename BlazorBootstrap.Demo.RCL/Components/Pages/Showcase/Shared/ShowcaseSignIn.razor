@@ -1,0 +1,108 @@
+<div class="row g-4">
+    <div class="col-lg-6">
+        <section class="sc-auth-panel" aria-labelledby="sc-auth-title" data-clarity-mask="true">
+            @if (Identity.Current is { } account && !IsBusy)
+            {
+                <h1 class="sc-auth-title" id="sc-auth-title" tabindex="-1" @ref="heading">You're signed in</h1>
+                <p>You're signed in to @SiteName as <strong>@account.Name</strong> (@Identity.CurrentRole?.Label).</p>
+                <div class="d-flex flex-wrap gap-2">
+                    <Button Color="ButtonColor.Primary" @onclick="Continue">Continue</Button>
+                    <Button Color="ButtonColor.Primary" Outline="true" @onclick="SignOutAsync">Sign out</Button>
+                </div>
+            }
+            else if (registering)
+            {
+                <h1 class="sc-auth-title" id="sc-auth-title" tabindex="-1" @ref="heading">Create an account</h1>
+                <p class="text-body-secondary">A demo @RegisterRoleLabel account. It lives only in this browser tab.</p>
+                <ShowcaseDemoNotice Class="mb-3" Text="Demo only: don't use a real password. Nothing is sent anywhere." />
+                <EditForm Model="registerForm" OnValidSubmit="Register" FormName="@($"sc-register-{SiteSlug}")">
+                    <DataAnnotationsValidator />
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold" for="sc-register-name">Full name</label>
+                        <TextInput Id="sc-register-name" @bind-Value="registerForm.Name" MaxLength="80" />
+                        <ValidationMessage For="() => registerForm.Name" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold" for="sc-register-email">Email</label>
+                        <TextInput Id="sc-register-email" @bind-Value="registerForm.Email" MaxLength="120" />
+                        <div class="form-text">Use a made-up address, for example you@example.com.</div>
+                        <ValidationMessage For="() => registerForm.Email" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold" for="sc-register-password">Password</label>
+                        <ShowcasePasswordInput Id="sc-register-password" @bind-Value="registerForm.Password" aria-describedby="sc-register-password-help" />
+                        <div class="form-text" id="sc-register-password-help">At least @ShowcaseIdentity.MinPasswordLength characters. Make one up.</div>
+                        <ValidationMessage For="() => registerForm.Password" />
+                    </div>
+                    <p class="sc-auth-error" role="alert">@registerError</p>
+                    <div class="d-flex flex-wrap align-items-center gap-3">
+                        <Button Type="ButtonType.Submit" Color="ButtonColor.Primary">Create account</Button>
+                        <Button Color="ButtonColor.Link" Class="px-0" @onclick="() => SwitchModeAsync(false)">I already have an account</Button>
+                    </div>
+                </EditForm>
+            }
+            else
+            {
+                <h1 class="sc-auth-title" id="sc-auth-title" tabindex="-1" @ref="heading">Sign in to @SiteName</h1>
+                <p class="text-body-secondary">Use a demo account from the list, or type its email and password.</p>
+                <ShowcaseDemoNotice Class="mb-3" Text="Demo only: these are made-up accounts. Don't use a real password. Nothing is sent anywhere." />
+                <EditForm Model="signInForm" OnValidSubmit="SignIn" FormName="@($"sc-sign-in-{SiteSlug}")">
+                    <DataAnnotationsValidator />
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold" for="sc-signin-email">Email</label>
+                        <TextInput Id="sc-signin-email" @bind-Value="signInForm.Email" MaxLength="120" />
+                        <ValidationMessage For="() => signInForm.Email" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold" for="sc-signin-password">Password</label>
+                        <ShowcasePasswordInput Id="sc-signin-password" @bind-Value="signInForm.Password" />
+                        <ValidationMessage For="() => signInForm.Password" />
+                    </div>
+                    <p class="sc-auth-error" role="alert">@signInError</p>
+                    <div class="d-flex flex-wrap align-items-center gap-3">
+                        <Button Type="ButtonType.Submit" Color="ButtonColor.Primary">Sign in</Button>
+                        @if (RegisterRoleId is not null)
+                        {
+                            <Button Color="ButtonColor.Link" Class="px-0" @onclick="() => SwitchModeAsync(true)">Create an account</Button>
+                        }
+                    </div>
+                </EditForm>
+            }
+        </section>
+    </div>
+
+    <div class="col-lg-6">
+        <section class="sc-auth-panel sc-auth-demo" aria-labelledby="sc-auth-demo-title">
+            <h2 class="sc-auth-subtitle" id="sc-auth-demo-title">Demo accounts</h2>
+            <p class="small text-body-secondary">
+                Pick a role to try @SiteName from that side. Each browser tab keeps its own demo data, so to see both sides of a flow, switch accounts in this tab.
+            </p>
+            <ul class="list-unstyled d-grid gap-3 mb-0">
+                @foreach (var demo in Identity.DemoAccounts)
+                {
+                    var role = Identity.FindRole(demo.RoleId);
+                    <li class="sc-auth-account" @key="demo.Id">
+                        <div class="d-flex align-items-start gap-3">
+                            <Avatar Name="@demo.Name" Initials="@demo.Initials" Size="AvatarSize.Small" Color="AvatarColor.Primary" />
+                            <div class="flex-grow-1 min-w-0">
+                                <h3 class="sc-auth-role">@role?.Label</h3>
+                                <p class="small text-body-secondary mb-2">@role?.Description</p>
+                                <dl class="sc-auth-credentials">
+                                    <dt>Name</dt>
+                                    <dd>@demo.Name</dd>
+                                    <dt>Email</dt>
+                                    <dd>@demo.Email</dd>
+                                    <dt>Password</dt>
+                                    <dd>@demo.Password</dd>
+                                </dl>
+                                <Button Color="ButtonColor.Primary" Outline="true" Size="ButtonSize.Small" @onclick="() => SignInAs(demo)">
+                                    Sign in as @role?.Label<span class="visually-hidden">@($" ({demo.Name})")</span>
+                                </Button>
+                            </div>
+                        </div>
+                    </li>
+                }
+            </ul>
+        </section>
+    </div>
+</div>

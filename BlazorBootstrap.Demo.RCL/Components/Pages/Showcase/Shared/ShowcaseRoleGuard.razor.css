@@ -1,0 +1,32 @@
+.sc-guard {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 12rem;
+    color: var(--bs-secondary-color);
+}
+
+.sc-guard-denied {
+    max-width: 34rem;
+    margin: 3rem auto;
+    padding-inline: 1rem;
+    text-align: center;
+}
+
+.sc-guard-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 3rem;
+    height: 3rem;
+    border-radius: 50%;
+    font-size: 1.5rem;
+    color: var(--sc-primary, var(--bs-primary));
+    background-color: rgba(var(--sc-primary-rgb, var(--bs-primary-rgb)), .14);
+}
+
+.sc-guard-title {
+    margin: 1rem 0 .5rem;
+    font-size: 1.5rem;
+    font-weight: 700;
+}

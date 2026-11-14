@@ -1,0 +1,5 @@
+@* Re-keyed once a stored snapshot is applied, so every page below renders again from the restored state
+   (a page that only reads state on first render, such as an order page loaded by URL, would otherwise keep the seed view). *@
+<CascadingValue Value="session" @key="generation">
+    @ChildContent
+</CascadingValue>

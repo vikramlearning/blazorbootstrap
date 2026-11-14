@@ -1,0 +1,45 @@
+@if (!Identity.IsSignedIn)
+{
+    <Button Type="ButtonType.Link" To="@SignInPath" Color="ButtonColor.Primary" Outline="true" Size="ButtonSize.Small" Class="@Class">Sign in</Button>
+}
+else
+{
+    var account = Identity.Current!;
+    @* The wrapper carries this component's CSS scope; the Dropdown's own root element doesn't. *@
+    <div class="sc-account-menu @Class">
+    <Dropdown Color="DropdownColor.None">
+        <DropdownToggleButton @ref="toggle" Class="sc-account-toggle" aria-label="@($"Account menu for {account.Name}, {Identity.CurrentRole?.Label}")">
+            <Avatar Name="@account.Name" Initials="@account.Initials" Color="AvatarColor.Primary" Size="AvatarSize.Small" />
+            <span class="sc-account-name d-none d-xl-inline" aria-hidden="true">@account.Name</span>
+        </DropdownToggleButton>
+        <DropdownMenu Position="DropdownMenuPosition.End">
+            <DropdownHeader>
+                <span class="d-block fw-semibold text-body">@account.Name</span>
+                <span class="d-block small">@Identity.CurrentRole?.Label · @account.Email</span>
+            </DropdownHeader>
+            @if (Identity.CurrentRole is { } role && role.HomePath != role.AccountPath)
+            {
+                <DropdownItem Type="DropdownItemType.Link" To="@role.HomePath">@HomeLabel(role)</DropdownItem>
+            }
+            <DropdownItem Type="DropdownItemType.Link" To="@(Identity.CurrentRole?.AccountPath ?? SignInPath)">Your account</DropdownItem>
+            <DropdownItem @onclick="SwitchAccount">Switch account</DropdownItem>
+            <DropdownDivider />
+            <DropdownItem @onclick="AskResetAsync">Reset demo data</DropdownItem>
+            <DropdownItem @onclick="SignOut">Sign out</DropdownItem>
+        </DropdownMenu>
+    </Dropdown>
+    </div>
+}
+
+<Modal @ref="resetModal" IsVerticallyCentered="true" ShowCloseButton="false" aria-labelledby="sc-reset-title" OnHidden="OnResetHiddenAsync">
+    <HeaderTemplate>
+        <h2 class="modal-title h5" id="sc-reset-title">Reset the demo data?</h2>
+    </HeaderTemplate>
+    <BodyTemplate>
+        <p class="mb-0">This clears everything you changed in @SiteName in this tab (orders, accounts, edits), signs you out, and reloads the site with its starting data.</p>
+    </BodyTemplate>
+    <FooterTemplate>
+        <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => resetModal.HideAsync()">Cancel</Button>
+        <Button Color="ButtonColor.Danger" @onclick="ResetAsync">Reset demo data</Button>
+    </FooterTemplate>
+</Modal>

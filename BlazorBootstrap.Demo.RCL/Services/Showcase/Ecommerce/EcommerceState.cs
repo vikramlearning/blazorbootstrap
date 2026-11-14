@@ -1,14 +1,25 @@
+using System.Text.Json;
 using BlazorBootstrap.Demo.RCL.Models.Showcase.Ecommerce;
+using BlazorBootstrap.Demo.RCL.Services.Showcase.Foundation;
 
 namespace BlazorBootstrap.Demo.RCL.Services.Showcase.Ecommerce;
 
 /// <summary>
-/// In-memory state of the storefront for the current session: catalog filters, cart, reviews written here, and placed orders.
-/// Nothing is persisted, sent, or charged.
+/// State of the storefront for the current browser tab: catalog filters, cart, reviews written here, placed orders, and
+/// the demo sign-in. It is kept in the tab's <c>sessionStorage</c> through the showcase foundation, so it survives a
+/// reload in the tab; nothing is sent or charged.
 /// </summary>
-public sealed class EcommerceState
+public sealed class EcommerceState : IShowcaseSiteState
 {
     #region Fields and Constants
+
+    private const int FirstOrderId = 10481;
+
+    private const int MaxOrders = 200;
+
+    private const int MaxSessionReviews = 200;
+
+    private static readonly string[] cardBrands = ShowcaseCards.TestCards.Select(card => card.Brand).Distinct().ToArray();
 
     private readonly List<EcommerceCartLine> cart = new();
 
@@ -16,14 +27,19 @@ public sealed class EcommerceState
 
     private readonly List<EcommerceReview> reviews;
 
-    private int nextOrderId = 10481;
+    private int nextOrderId = FirstOrderId;
 
     #endregion
 
     #region Constructors and Finalizers
 
-    /// <summary>Seeds a fresh session.</summary>
-    public EcommerceState() => reviews = EcommerceSeedData.Reviews(Products);
+    /// <summary>Seeds a fresh session, signed out.</summary>
+    public EcommerceState()
+    {
+        reviews = EcommerceSeedData.Reviews(Products);
+        Identity = new ShowcaseIdentity(EcommerceSeedData.Roles(), EcommerceSeedData.DemoAccounts());
+        Identity.Changed += () => Changed?.Invoke();
+    }
 
     #endregion
 
@@ -58,7 +74,7 @@ public sealed class EcommerceState
     /// <summary>Adds a review written in this session and returns it.</summary>
     public EcommerceReview AddReview(int productId, string author, int rating, string title, string body)
     {
-        var review = new EcommerceReview(productId, author.Trim(), Math.Clamp(rating, 1, 5), title.Trim(), body.Trim(), EcommerceSeedData.Today, IsFromThisSession: true);
+        var review = new EcommerceReview(productId, author.Trim(), Math.Clamp(rating, 1, 5), title.Trim(), body.Trim(), Clock.Today, IsFromThisSession: true);
         reviews.Add(review);
         Changed?.Invoke();
 
@@ -86,6 +102,16 @@ public sealed class EcommerceState
 
         return ratings.Count == 0 ? 0 : ratings.Average();
     }
+
+    /// <summary>Returns the snapshot of the tab's changes: cart, promo code, orders, and reviews written here.</summary>
+    public object CaptureData() => new EcommerceSnapshot
+    {
+        Cart = cart.ToList(),
+        PromoCode = AppliedPromoCode,
+        Orders = orders.ToList(),
+        Reviews = reviews.Where(review => review.IsFromThisSession).ToList(),
+        NextOrderId = nextOrderId,
+    };
 
     /// <summary>Returns the totals of the current cart for a delivery speed.</summary>
     public EcommerceTotals CartTotals(EcommerceDelivery delivery = EcommerceDelivery.Standard) =>
@@ -137,15 +163,14 @@ public sealed class EcommerceState
         return Math.Max(0, Math.Min(product.Stock - inOtherLines, EcommerceSeedData.MaxQuantity));
     }
 
-    /// <summary>Returns how many more of a product, in any color, the cart can take before stock runs out.</summary>
-    public int RemainingStockFor(EcommerceProduct product) =>
-        Math.Max(0, product.Stock - cart.Where(line => line.ProductId == product.Id).Sum(line => line.Quantity));
-
     /// <summary>Raises <see cref="Changed" /> after the catalog filter was edited in place.</summary>
     public void NotifyFilterChanged() => Changed?.Invoke();
 
-    /// <summary>Turns the cart into an order, empties the cart, and returns the order.</summary>
-    public EcommerceOrder PlaceOrder(EcommerceAddress shipTo, EcommerceDelivery delivery)
+    /// <summary>Raises <see cref="Changed" /> after a stored snapshot was applied.</summary>
+    public void NotifyRestored() => Changed?.Invoke();
+
+    /// <summary>Turns the cart into an order paid with an approved test card, empties the cart, and returns the order.</summary>
+    public EcommerceOrder PlaceOrder(EcommerceAddress shipTo, EcommerceDelivery delivery, ShowcaseCardCharge payment)
     {
         var lines = new List<EcommerceOrderLine>(cart.Count);
 
@@ -155,14 +180,7 @@ public sealed class EcommerceState
             lines.Add(new EcommerceOrderLine(product.Id, product.Name, line.Color, line.Quantity, product.Price));
         }
 
-        var order = new EcommerceOrder(
-            nextOrderId++,
-            EcommerceSeedData.Today.AddHours(10).AddMinutes(orders.Count * 7),
-            lines,
-            shipTo,
-            delivery,
-            AppliedPromoCode,
-            CartTotals(delivery));
+        var order = new EcommerceOrder(nextOrderId++, Clock.Now, lines, shipTo, delivery, AppliedPromoCode, CartTotals(delivery), payment.Brand, payment.Last4);
 
         orders.Add(order);
         cart.Clear();
@@ -171,6 +189,10 @@ public sealed class EcommerceState
 
         return order;
     }
+
+    /// <summary>Returns how many more of a product, in any color, the cart can take before stock runs out.</summary>
+    public int RemainingStockFor(EcommerceProduct product) =>
+        Math.Max(0, product.Stock - cart.Where(line => line.ProductId == product.Id).Sum(line => line.Quantity));
 
     /// <summary>Removes the applied promo code.</summary>
     public void RemovePromoCode()
@@ -202,9 +224,68 @@ public sealed class EcommerceState
         Changed?.Invoke();
     }
 
+    /// <summary>Validates a stored snapshot and applies it only when every part is valid.</summary>
+    public bool TryRestoreData(JsonElement data)
+    {
+        var snapshot = data.Deserialize<EcommerceSnapshot>(new JsonSerializerOptions(JsonSerializerDefaults.Web) { MaxDepth = 32 });
+
+        if (snapshot?.Cart is not { Count: <= 50 } cartLines
+            || snapshot.Orders is not { Count: <= MaxOrders } placed
+            || snapshot.Reviews is not { Count: <= MaxSessionReviews } written
+            || snapshot.NextOrderId is < FirstOrderId or > FirstOrderId + 100_000
+            || (snapshot.PromoCode is not null && snapshot.PromoCode != EcommerceSeedData.PromoCode))
+            return false;
+
+        // Cart: known products and colors, sane quantities, no duplicate lines, within stock per product.
+        if (cartLines.Any(line => line is null || FindProduct(line.ProductId) is not { } product || line.Color is null || !product.Colors.Contains(line.Color) || line.Quantity is < 1 or > EcommerceSeedData.MaxQuantity)
+            || cartLines.GroupBy(line => (line.ProductId, line.Color)).Any(group => group.Count() > 1)
+            || cartLines.GroupBy(line => line.ProductId).Any(group => group.Sum(line => line.Quantity) > FindProduct(group.Key)!.Stock))
+            return false;
+
+        if (placed.Any(order => !IsValidOrder(order, snapshot.NextOrderId)) || placed.Select(order => order.Id).Distinct().Count() != placed.Count)
+            return false;
+
+        if (written.Any(review => review is null || FindProduct(review.ProductId) is null || !review.IsFromThisSession || review.Rating is < 1 or > 5
+                || !IsText(review.Author, 60) || !IsText(review.Title, 120) || !IsText(review.Body, 2000) || !IsPlausibleDate(review.PostedOn)))
+            return false;
+
+        cart.Clear();
+        cart.AddRange(cartLines);
+        AppliedPromoCode = snapshot.PromoCode;
+        orders.Clear();
+        orders.AddRange(placed);
+        reviews.RemoveAll(review => review.IsFromThisSession);
+        reviews.AddRange(written);
+        nextOrderId = snapshot.NextOrderId;
+
+        return true;
+    }
+
     #endregion
 
     #region Private Methods
+
+    private static bool IsPlausibleDate(DateTime value) => value >= EcommerceSeedData.Today.AddYears(-1) && value <= EcommerceSeedData.Today.AddYears(2);
+
+    private static bool IsText(string? value, int maxLength) => !string.IsNullOrWhiteSpace(value) && value.Length <= maxLength;
+
+    private static bool IsMoney(decimal value) => value is >= 0 and <= 1_000_000;
+
+    private bool IsValidOrder(EcommerceOrder? order, int nextId) =>
+        order is not null
+        && order.Id >= FirstOrderId && order.Id < nextId
+        && IsPlausibleDate(order.PlacedOn)
+        && Enum.IsDefined(order.Delivery)
+        && (order.PromoCode is null || order.PromoCode == EcommerceSeedData.PromoCode)
+        && order.CardBrand is not null && cardBrands.Contains(order.CardBrand)
+        && order.CardLast4 is { Length: 4 } last4 && last4.All(char.IsAsciiDigit)
+        && order.Lines is { Count: >= 1 and <= 50 }
+        && order.Lines.All(line => line is not null && FindProduct(line.ProductId) is not null && IsText(line.Name, 120) && IsText(line.Color, 40)
+            && line.Quantity is >= 1 and <= EcommerceSeedData.MaxQuantity && IsMoney(line.UnitPrice))
+        && order.ShipTo is { } address
+        && IsText(address.FullName, 60) && IsText(address.Email, 120) && IsText(address.Street, 100) && IsText(address.City, 60) && IsText(address.PostalCode, 10) && IsText(address.Country, 60)
+        && order.Totals is { } totals
+        && totals.ItemCount is >= 1 and <= 500 && IsMoney(totals.Subtotal) && IsMoney(totals.Discount) && IsMoney(totals.Shipping) && IsMoney(totals.Tax) && IsMoney(totals.Total);
 
     private static EcommerceTotals Totals(IEnumerable<(decimal Price, int Quantity)> lines, bool hasPromo, EcommerceDelivery delivery)
     {
@@ -241,18 +322,52 @@ public sealed class EcommerceState
     /// <summary>Gets the product categories.</summary>
     public IReadOnlyList<EcommerceCategory> Categories { get; } = EcommerceSeedData.Categories();
 
+    /// <summary>Gets the site clock, which starts at <see cref="EcommerceSeedData.SeedTime" />.</summary>
+    public ShowcaseClock Clock { get; } = new(EcommerceSeedData.SeedTime);
+
     /// <summary>Gets the catalog filters.</summary>
     public EcommerceCatalogFilter Filter { get; } = new();
 
+    /// <summary>Gets the demo sign-in: a customer and a retailer account.</summary>
+    public ShowcaseIdentity Identity { get; }
+
     /// <summary>Gets the catalog.</summary>
     public IReadOnlyList<EcommerceProduct> Products { get; } = EcommerceSeedData.Products();
+
+    /// <summary>Gets the site slug used in the storage key.</summary>
+    public string SiteSlug => "ecommerce";
+
+    /// <summary>Gets the snapshot format version.</summary>
+    public int SnapshotVersion => 1;
 
     #endregion
 
     #region Events
 
-    /// <summary>Raised when the cart, filters, reviews, or orders change.</summary>
+    /// <summary>Raised when the cart, filters, reviews, orders, or sign-in change.</summary>
     public event Action? Changed;
+
+    #endregion
+
+    #region Nested Types
+
+    /// <summary>The storefront's part of the tab snapshot.</summary>
+    private sealed class EcommerceSnapshot
+    {
+        #region Properties, Indexers
+
+        public List<EcommerceCartLine>? Cart { get; set; }
+
+        public int NextOrderId { get; set; }
+
+        public List<EcommerceOrder>? Orders { get; set; }
+
+        public string? PromoCode { get; set; }
+
+        public List<EcommerceReview>? Reviews { get; set; }
+
+        #endregion
+    }
 
     #endregion
 }

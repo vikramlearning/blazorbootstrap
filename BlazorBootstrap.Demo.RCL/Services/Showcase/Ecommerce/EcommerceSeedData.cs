@@ -1,4 +1,5 @@
 using BlazorBootstrap.Demo.RCL.Models.Showcase.Ecommerce;
+using BlazorBootstrap.Demo.RCL.Services.Showcase.Foundation;
 
 namespace BlazorBootstrap.Demo.RCL.Services.Showcase.Ecommerce;
 
@@ -34,8 +35,17 @@ public static class EcommerceSeedData
     /// <summary>Sales tax rate applied after discounts.</summary>
     public const decimal TaxRate = .08m;
 
+    /// <summary>The role ID of shoppers.</summary>
+    public const string CustomerRole = "customer";
+
+    /// <summary>The role ID of the store team.</summary>
+    public const string RetailerRole = "retailer";
+
     /// <summary>The fixed "today" all dates on the site are relative to.</summary>
     public static readonly DateTime Today = new(2026, 11, 9);
+
+    /// <summary>The site clock's start: 10:00 on <see cref="Today" />; the clock then moves with real time.</summary>
+    public static readonly DateTime SeedTime = Today.AddHours(10);
 
     private static readonly string[] authors =
     {
@@ -58,6 +68,20 @@ public static class EcommerceSeedData
     #region Methods
 
     #region Public Methods
+
+    /// <summary>The demo accounts listed on the sign-in page, one per role. Fictitious people with <c>.example</c> addresses.</summary>
+    public static IReadOnlyList<ShowcaseDemoAccount> DemoAccounts() => new List<ShowcaseDemoAccount>
+    {
+        new("maya", CustomerRole, "Maya Lindqvist", "maya@kindredgoods.example", "shop-demo-24", "ML"),
+        new("owen", RetailerRole, "Owen Hart", "owen@kindredgoods.example", "store-demo-24", "OH"),
+    };
+
+    /// <summary>The site's roles.</summary>
+    public static IReadOnlyList<ShowcaseRole> Roles() => new List<ShowcaseRole>
+    {
+        new(CustomerRole, "Customer", $"{DemoRouteConstants.Showcase_URL_Ecommerce}/account", $"{DemoRouteConstants.Showcase_URL_Ecommerce}/account", "Shops, checks out, and tracks orders."),
+        new(RetailerRole, "Retailer", $"{DemoRouteConstants.Showcase_URL_Ecommerce}/admin", $"{DemoRouteConstants.Showcase_URL_Ecommerce}/admin", "Runs the store: orders, inventory, pricing, and sales."),
+    };
 
     /// <summary>The product categories.</summary>
     public static IReadOnlyList<EcommerceCategory> Categories() => new List<EcommerceCategory>
