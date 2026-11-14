@@ -1,0 +1,8 @@
+@page "/showcase/saas-dashboard/{*path}"
+@layout SaasDashboardLayout
+
+<SaasNotFound />
+
+@code {
+    [Parameter] public string? Path { get; set; }
+}

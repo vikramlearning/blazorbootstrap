@@ -1,0 +1,100 @@
+@page "/showcase/ecommerce/orders/{Id:int}"
+@layout EcommerceLayout
+@inject EcommerceState State
+
+@if (Order is null)
+{
+    <EcommerceNotFound />
+}
+else
+{
+    <PageTitle>Order #@Order.Id confirmed · @EcommerceSeedData.StoreName</PageTitle>
+
+    <div class="container-xl pt-4 pb-5">
+        <div class="ec-panel text-center mb-4">
+            <span class="ec-empty-icon" aria-hidden="true"><Icon Name="IconName.BagCheckFill" /></span>
+            <h1 class="ec-page-title mt-3">Thank you, @FirstName!</h1>
+            <p class="mb-1">Order <strong>#@Order.Id</strong> is confirmed.</p>
+            <p class="small text-body-secondary mb-0">
+                In a real store a confirmation would go to @Order.ShipTo.Email. Here nothing was sent or charged, and the order is gone after a reload.
+            </p>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-lg-7">
+                <div class="ec-panel mb-4">
+                    <h2 class="h5 fw-bold mb-3">Order status</h2>
+                    <Timeline AriaLabel="@($"Status of order {Order.Id}")">
+                        @foreach (var step in Steps)
+                        {
+                            <TimelineItem Title="@step.Title" Subtitle="@step.When" IconName="@step.Icon"
+                                          Color="@(step.IsDone ? TimelineColor.Success : TimelineColor.Secondary)" Current="step.IsCurrent">
+                                <span class="small text-body-secondary">@step.Detail</span>
+                            </TimelineItem>
+                        }
+                    </Timeline>
+                </div>
+
+                <div class="ec-panel">
+                    <h2 class="h5 fw-bold mb-3">Items</h2>
+                    <ul class="list-unstyled mb-0">
+                        @foreach (var line in Order.Lines)
+                        {
+                            <li class="d-flex justify-content-between gap-3 py-2 border-bottom" @key="@($"{line.ProductId}-{line.Color}")">
+                                <span>
+                                    <a class="ec-line-name" href="@($"{EcommerceLayout.Base}/products/{line.ProductId}")">@line.Name</a>
+                                    <span class="d-block small text-body-secondary">@line.Color · @line.Quantity × @EcommerceDisplay.Money(line.UnitPrice)</span>
+                                </span>
+                                <span class="fw-semibold">@EcommerceDisplay.Money(line.UnitPrice * line.Quantity)</span>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+
+            <div class="col-lg-5">
+                <EcommerceOrderSummary Totals="Order.Totals" PromoCode="@Order.PromoCode" Title="Payment summary" Class="mb-4" />
+                <div class="ec-panel">
+                    <h2 class="h5 fw-bold mb-3">Shipping to</h2>
+                    <address class="mb-3">
+                        @Order.ShipTo.FullName<br />
+                        @Order.ShipTo.Street<br />
+                        @Order.ShipTo.City @Order.ShipTo.PostalCode<br />
+                        @Order.ShipTo.Country
+                    </address>
+                    <p class="small mb-0">@Order.Delivery delivery, @EcommerceDisplay.DeliveryWindow(Order.Delivery).</p>
+                </div>
+                <Button Type="ButtonType.Link" To="@($"{EcommerceLayout.Base}/products?category=all")" Color="ButtonColor.Primary" Class="w-100 mt-4 rounded-pill">
+                    Continue shopping
+                </Button>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    /// <summary>Gets or sets the order ID from the route.</summary>
+    [Parameter] public int Id { get; set; }
+
+    private string FirstName => Order!.ShipTo.FullName.Split(' ', StringSplitOptions.RemoveEmptyEntries).FirstOrDefault() ?? Order.ShipTo.FullName;
+
+    private EcommerceOrder? Order => State.FindOrder(Id);
+
+    private IEnumerable<(string Title, string When, string Detail, IconName Icon, bool IsDone, bool IsCurrent)> Steps
+    {
+        get
+        {
+            var placed = Order!.PlacedOn;
+            var fast = Order.Delivery == EcommerceDelivery.Express;
+            string Day(int days) => placed.AddDays(days).ToString("ddd, MMM d", CultureInfo.InvariantCulture);
+
+            return new[]
+            {
+                ("Order placed", placed.ToString("MMM d, h:mm tt", CultureInfo.InvariantCulture), "We've received your order.", IconName.BagCheck, true, true),
+                ("Packed", $"Expected {Day(1)}", "Our team packs it in plastic-free materials.", IconName.Box2, false, false),
+                ("Shipped", $"Expected {Day(fast ? 1 : 2)}", "You'll get a tracking link by email.", IconName.Truck, false, false),
+                ("Delivered", $"Expected {Day(fast ? 2 : 5)}", $"{Order.Delivery} delivery to {Order.ShipTo.City}.", IconName.HouseCheck, false, false),
+            };
+        }
+    }
+}

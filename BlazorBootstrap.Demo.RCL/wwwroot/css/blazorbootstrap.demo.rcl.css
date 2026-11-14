@@ -593,8 +593,11 @@ pre[class*=language-] {
         --bs-accordion-btn-focus-box-shadow: 0 0 0 .25rem rgba(var(--sc-primary-rgb), .25);
     }
 
+/* The library styles every <main> as a 100vh scroll box for BlazorBootstrapLayout; showcase pages scroll with the document instead. */
 .sc-main {
     flex: 1 0 auto;
+    height: auto;
+    overflow: visible;
 }
 
 /* One Carbon Ad per showcase page; the slot collapses when no ad renders (localhost, blockers). */

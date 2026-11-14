@@ -1,0 +1,111 @@
+@page "/showcase/saas-dashboard/users/{Id:int}"
+@layout SaasDashboardLayout
+
+@if (Account is null)
+{
+    <SaasNotFound />
+}
+else
+{
+    <PageTitle>@Account.Name · Users · Pulseboard</PageTitle>
+
+    <Breadcrumb Items="BreadcrumbItems" Class="sd-breadcrumb mb-2" />
+
+    <div class="sd-page-head">
+        <div class="sd-person">
+            <Avatar Name="@Account.Name" Color="SaasDisplay.AvatarColorFor(Account)" Size="AvatarSize.Large"
+                    Status="@(Account.Status == SaasAccountStatus.Suspended ? AvatarStatus.Offline : AvatarStatus.Online)" />
+            <div class="sd-person-text">
+                <h1 class="sd-page-title">@Account.Name</h1>
+                <span class="sd-person-email">@Account.Email · @Account.Role at @Account.Company</span>
+            </div>
+        </div>
+        <div class="d-flex flex-wrap gap-2">
+            @* One button whose text changes, so keyboard focus stays on it after the status flips. *@
+            <Button Color="@(IsSuspended ? ButtonColor.Success : ButtonColor.Danger)" Outline="true"
+                    @onclick="() => SetStatus(IsSuspended ? SaasAccountStatus.Active : SaasAccountStatus.Suspended)">
+                <Icon Name="@(IsSuspended ? IconName.ArrowCounterclockwise : IconName.SlashCircle)" class="me-1" aria-hidden="true" />@(IsSuspended ? "Reactivate" : "Suspend")
+            </Button>
+            <Button @ref="editButton" Color="ButtonColor.Primary" @onclick="EditAsync">
+                <Icon Name="IconName.Pencil" class="me-1" aria-hidden="true" />Edit user
+            </Button>
+        </div>
+    </div>
+
+    @if (savedMessage is not null)
+    {
+        <Alert Color="AlertColor.Success" Dismissable="true" Class="mb-3" role="status">
+            <Icon Name="IconName.CheckCircleFill" class="me-2" aria-hidden="true" />@savedMessage
+        </Alert>
+    }
+
+    <div class="row g-3">
+        <div class="col-lg-4">
+            <Card Class="sd-card mb-3">
+                <CardHeader><h2 class="sd-card-title">Account</h2></CardHeader>
+                <CardBody Class="pt-0">
+                    <dl class="row sd-dl small mb-0">
+                        <dt class="col-5">Status</dt>
+                        <dd class="col-7"><Badge Color="SaasDisplay.StatusColor(Account.Status)" Class="rounded-pill">@Account.Status</Badge></dd>
+                        <dt class="col-5">Plan</dt>
+                        <dd class="col-7"><Badge Color="SaasDisplay.PlanColor(Account.PlanId)" Class="rounded-pill">@Plan.Name</Badge></dd>
+                        <dt class="col-5">Seats</dt>
+                        <dd class="col-7 sd-mono">@Account.Seats</dd>
+                        <dt class="col-5">Monthly revenue</dt>
+                        <dd class="col-7 sd-mono">@SaasDisplay.Money(State.MonthlyRevenueFor(Account))</dd>
+                        <dt class="col-5">Country</dt>
+                        <dd class="col-7">@Account.Country</dd>
+                        <dt class="col-5">Customer since</dt>
+                        <dd class="col-7">@Account.JoinedOn.ToString("MMM d, yyyy", CultureInfo.InvariantCulture)</dd>
+                        <dt class="col-5">Last seen</dt>
+                        <dd class="col-7 mb-0">@SaasDisplay.LastSeen(Account)</dd>
+                    </dl>
+                </CardBody>
+            </Card>
+            <Card Class="sd-card">
+                <CardHeader><h2 class="sd-card-title">Usage this period</h2></CardHeader>
+                <CardBody Class="pt-0">
+                    <div class="sd-meter mb-3">
+                        <div class="sd-meter-label"><span>API calls</span><span class="sd-mono">@Account.ApiUsagePercent% of @Plan.ApiQuota.ToString("#,0", CultureInfo.InvariantCulture)</span></div>
+                        <Progress Height="8">
+                            <ProgressBar Width="Account.ApiUsagePercent" Color="SaasDisplay.QuotaColor(Account.ApiUsagePercent)"
+                                         aria-label="API calls used" aria-valuenow="@Account.ApiUsagePercent" aria-valuemin="0" aria-valuemax="100" />
+                        </Progress>
+                    </div>
+                    <div class="sd-meter">
+                        <div class="sd-meter-label"><span>Storage</span><span class="sd-mono">@Account.StorageUsagePercent% of @Plan.StorageQuotaGb GB</span></div>
+                        <Progress Height="8">
+                            <ProgressBar Width="Account.StorageUsagePercent" Color="SaasDisplay.QuotaColor(Account.StorageUsagePercent)"
+                                         aria-label="Storage used" aria-valuenow="@Account.StorageUsagePercent" aria-valuemin="0" aria-valuemax="100" />
+                        </Progress>
+                    </div>
+                </CardBody>
+            </Card>
+        </div>
+        <div class="col-lg-8">
+            <Card Class="sd-card h-100">
+                <CardHeader>
+                    <div>
+                        <h2 class="sd-card-title">Activity</h2>
+                        <p class="sd-card-sub">Newest first, including changes made in this session</p>
+                    </div>
+                </CardHeader>
+                <CardBody Class="pt-1">
+                    <Timeline AriaLabel="@($"Activity of {Account.Name}")">
+                        @foreach (var activity in State.ActivityFor(Account.Id))
+                        {
+                            <TimelineItem Title="@activity.Title"
+                                          Subtitle="@activity.At.ToString("MMM d, yyyy · h:mm tt", CultureInfo.InvariantCulture)"
+                                          IconName="@activity.IconName"
+                                          Color="TimelineColor.Primary">
+                                <span class="small text-body-secondary">@activity.Detail</span>
+                            </TimelineItem>
+                        }
+                    </Timeline>
+                </CardBody>
+            </Card>
+        </div>
+    </div>
+
+    <SaasAccountEditor @ref="editor" OnSaved="OnSaved" />
+}

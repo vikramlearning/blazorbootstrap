@@ -1,0 +1,42 @@
+<Card Class="ec-product-card h-100">
+    <a href="@ProductUrl" class="ec-product-media" tabindex="-1" aria-hidden="true">
+        <ShowcaseImage Src="@Product.ImagePath" Alt="" Width="600" Height="600"
+                       Accent="@Category?.Accent" PlaceholderIcon="@(Category?.IconName ?? IconName.Image)" />
+    </a>
+    @if (Product.IsOnSale)
+    {
+        <Badge Color="BadgeColor.Danger" Class="ec-sale-badge rounded-pill">Sale −@Product.DiscountPercent%</Badge>
+    }
+    <CardBody Class="d-flex flex-column">
+        <span class="ec-card-category">@Category?.Name</span>
+        <h3 class="ec-card-title"><a href="@ProductUrl">@Product.Name</a></h3>
+        <div class="ec-stars small mb-2">
+            <span class="visually-hidden">Rated @EcommerceDisplay.Rating(Rating) out of 5 from @ReviewCount reviews</span>
+            <span aria-hidden="true">
+                @foreach (var star in EcommerceDisplay.Stars(Rating))
+                {
+                    <Icon Name="star" />
+                }
+                <span class="text-body-secondary ms-1">(@ReviewCount)</span>
+            </span>
+        </div>
+        <div class="d-flex align-items-baseline gap-2 mt-auto">
+            <span class="ec-price">@EcommerceDisplay.Money(Product.Price)</span>
+            @if (Product.IsOnSale)
+            {
+                <span class="ec-compare"><span class="visually-hidden">was </span>@EcommerceDisplay.Money(Product.CompareAtPrice!.Value)</span>
+            }
+        </div>
+        @if (Product.Stock == 0)
+        {
+            <span class="small text-body-secondary mt-2">Out of stock</span>
+        }
+        else
+        {
+            <Button Color="ButtonColor.Primary" Outline="true" Size="ButtonSize.Small" Class="mt-2 align-self-start" @onclick="Add"
+                    aria-label="@($"Add {Product.Name} to cart")">
+                <Icon Name="IconName.BagPlus" class="me-1" aria-hidden="true" />Add to cart
+            </Button>
+        }
+    </CardBody>
+</Card>

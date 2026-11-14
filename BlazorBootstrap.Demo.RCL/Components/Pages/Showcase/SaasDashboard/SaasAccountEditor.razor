@@ -1,0 +1,71 @@
+<Modal @ref="modal"
+       Title="@(editingId is null ? "Add user" : "Edit user")"
+       IsVerticallyCentered="true"
+       IsScrollable="true"
+       Size="ModalSize.Large"
+       OnHidden="OnHidden">
+    <BodyTemplate>
+        <div data-clarity-mask="true">
+            <ShowcaseDemoNotice Class="mb-3" Text="Demo only: changes stay in this browser tab and are gone after a reload." />
+            <EditForm id="sd-account-form" EditContext="editContext" OnValidSubmit="SaveAsync" FormName="sd-account">
+                <DataAnnotationsValidator />
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label" for="sd-name">Full name</label>
+                        <TextInput Id="sd-name" @bind-Value="form.Name" Placeholder="Jordan Ashdown" />
+                        <ValidationMessage For="() => form.Name" />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="sd-email">Email</label>
+                        <TextInput Id="sd-email" @bind-Value="form.Email" Placeholder="jordan@company.example" />
+                        <ValidationMessage For="() => form.Email" />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="sd-company">Company</label>
+                        <TextInput Id="sd-company" @bind-Value="form.Company" Placeholder="Example Inc." />
+                        <ValidationMessage For="() => form.Company" />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="sd-role">Role</label>
+                        <InputSelect id="sd-role" class="form-select" @bind-Value="form.Role">
+                            @foreach (var role in Enum.GetValues<SaasAccountRole>())
+                            {
+                                <option value="@role">@role</option>
+                            }
+                        </InputSelect>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="sd-plan">Plan</label>
+                        <InputSelect id="sd-plan" class="form-select" @bind-Value="form.PlanId">
+                            @foreach (var plan in State.Plans)
+                            {
+                                <option value="@plan.Id">@plan.Name (@(plan.PricePerSeat == 0 ? "free" : $"${plan.PricePerSeat:0} / seat"))</option>
+                            }
+                        </InputSelect>
+                        <ValidationMessage For="() => form.PlanId" />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="sd-seats">Seats</label>
+                        <NumberInput TValue="int" Id="sd-seats" @bind-Value="form.Seats" Min="1" Max="500" EnableMinMax="true" />
+                        <ValidationMessage For="() => form.Seats" />
+                    </div>
+                    <div class="col-12">
+                        <span class="form-label d-block" id="sd-status-label">Status</span>
+                        <RadioButtonGroup TValue="SaasAccountStatus" @bind-Value="form.Status" AriaLabel="Status" aria-labelledby="sd-status-label" Size="ButtonGroupSize.Small">
+                            @foreach (var status in Enum.GetValues<SaasAccountStatus>())
+                            {
+                                <ButtonGroupItem Value="status" Id="@($"sd-status-{status}")">@status</ButtonGroupItem>
+                            }
+                        </RadioButtonGroup>
+                    </div>
+                </div>
+            </EditForm>
+        </div>
+    </BodyTemplate>
+    <FooterTemplate>
+        <Button Color="ButtonColor.Secondary" Outline="true" @onclick="HideAsync">Cancel</Button>
+        <Button Type="ButtonType.Submit" Color="ButtonColor.Primary" form="sd-account-form">
+            @(editingId is null ? "Add user" : "Save changes")
+        </Button>
+    </FooterTemplate>
+</Modal>

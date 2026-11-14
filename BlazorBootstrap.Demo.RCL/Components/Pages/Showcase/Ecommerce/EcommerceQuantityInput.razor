@@ -1,0 +1,19 @@
+@* A quantity stepper built from InputGroup, Button, and NumberInput (the NumberInput spin-button enhancement is a separate work item). *@
+<InputGroup Class="@($"ec-qty {Class}")" Size="@(Small ? InputGroupSize.Small : InputGroupSize.Default)" NoWrap="true">
+    <Button Color="ButtonColor.Secondary" Outline="true" @onclick="DecreaseAsync" aria-label="@($"Decrease quantity of {ItemName}")">
+        <Icon Name="IconName.Dash" aria-hidden="true" />
+    </Button>
+    <NumberInput TValue="int"
+                 Id="@Id"
+                 Value="Value"
+                 ValueExpression="() => Value"
+                 ValueChanged="SetAsync"
+                 Min="1"
+                 Max="Max"
+                 EnableMinMax="true"
+                 TextAlignment="Alignment.Center"
+                 aria-label="@($"Quantity of {ItemName}")" />
+    <Button Color="ButtonColor.Secondary" Outline="true" @onclick="IncreaseAsync" aria-label="@($"Increase quantity of {ItemName}")">
+        <Icon Name="IconName.Plus" aria-hidden="true" />
+    </Button>
+</InputGroup>

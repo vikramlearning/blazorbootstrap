@@ -1,0 +1,30 @@
+@* Money totals shared by the cart, checkout, and confirmation screens. *@
+<div class="ec-panel @Class">
+    <h2 class="h5 fw-bold mb-3">@Title</h2>
+    <div class="ec-summary-row"><span>Subtotal (@Totals.ItemCount @(Totals.ItemCount == 1 ? "item" : "items"))</span><span>@EcommerceDisplay.Money(Totals.Subtotal)</span></div>
+    @if (Totals.Discount > 0)
+    {
+        <div class="ec-summary-row ec-sale-text"><span>Discount (@PromoCode)</span><span>−@EcommerceDisplay.Money(Totals.Discount)</span></div>
+    }
+    <div class="ec-summary-row"><span>Shipping</span><span>@(Totals.Shipping == 0 ? "Free" : EcommerceDisplay.Money(Totals.Shipping))</span></div>
+    <div class="ec-summary-row"><span>Tax (8%)</span><span>@EcommerceDisplay.Money(Totals.Tax)</span></div>
+    <div class="ec-summary-total"><span>Total</span><span>@EcommerceDisplay.Money(Totals.Total)</span></div>
+    @ChildContent
+</div>
+
+@code {
+    /// <summary>Gets or sets content below the total, such as a checkout button.</summary>
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    /// <summary>Gets or sets extra CSS classes for the panel.</summary>
+    [Parameter] public string? Class { get; set; }
+
+    /// <summary>Gets or sets the applied promo code shown with the discount.</summary>
+    [Parameter] public string? PromoCode { get; set; }
+
+    /// <summary>Gets or sets the panel heading.</summary>
+    [Parameter] public string Title { get; set; } = "Order summary";
+
+    /// <summary>Gets or sets the totals shown.</summary>
+    [Parameter, EditorRequired] public EcommerceTotals Totals { get; set; } = default!;
+}

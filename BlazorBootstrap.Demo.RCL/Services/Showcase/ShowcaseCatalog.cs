@@ -9,12 +9,17 @@ public static class ShowcaseCatalog
 {
     #region Fields and Constants
 
+    private const string AssetPrefix = "_content/BlazorBootstrap.Demo.RCL/showcase";
+
     /// <summary>
-    /// Static asset paths (relative to the app base) that are committed to the repository.
-    /// <see cref="Components.Pages.Showcase.Shared.ShowcaseImage" /> shows a placeholder for any path not listed here,
-    /// so a site keeps working until its licensed assets are supplied.
+    /// Static asset paths (relative to the app base) that are committed to the repository; each is listed in
+    /// <c>wwwroot/showcase/CREDITS.md</c>. <see cref="Components.Pages.Showcase.Shared.ShowcaseImage" /> shows a
+    /// placeholder for any path not listed here, so a site keeps working until its licensed assets are supplied.
     /// </summary>
-    private static readonly HashSet<string> committedAssets = new(StringComparer.OrdinalIgnoreCase);
+    private static readonly HashSet<string> committedAssets = new(
+        Enumerable.Range(101, 31).Select(id => $"{AssetPrefix}/ecommerce/products/{id}.webp")
+            .Concat(Enumerable.Range(1, 3).Select(slide => $"{AssetPrefix}/ecommerce/hero-{slide}.webp")),
+        StringComparer.OrdinalIgnoreCase);
 
     private static readonly IReadOnlyList<ShowcaseSite> sites = new List<ShowcaseSite>
     {

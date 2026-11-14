@@ -1,0 +1,125 @@
+@page "/showcase/ecommerce/checkout"
+@layout EcommerceLayout
+
+<PageTitle>Checkout · @EcommerceSeedData.StoreName</PageTitle>
+
+<div class="container-xl pt-4 pb-5">
+    <h1 class="ec-page-title mb-4">Checkout</h1>
+
+    @if (State.Cart.Count == 0)
+    {
+        <div class="ec-panel text-center py-5">
+            <span class="ec-empty-icon" aria-hidden="true"><Icon Name="IconName.Bag" /></span>
+            <p class="mt-3 mb-4">Your cart is empty, so there's nothing to check out yet.</p>
+            <Button Type="ButtonType.Link" To="@($"{EcommerceLayout.Base}/products?category=all")" Color="ButtonColor.Primary">Start shopping</Button>
+        </div>
+    }
+    else
+    {
+        <div class="row g-4">
+            <div class="col-lg-7">
+                <div class="ec-panel" data-clarity-mask="true">
+                    <ShowcaseDemoNotice Class="mb-4" Text="Demo only: nothing you enter here is sent, stored, or charged. The card below is a fixed placeholder." />
+
+                    <EditForm EditContext="editContext" OnValidSubmit="PlaceOrder" FormName="ec-checkout">
+                        <DataAnnotationsValidator />
+
+                        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+                            <h2 class="h5 fw-bold mb-0">Contact and shipping</h2>
+                            <Button Color="ButtonColor.Link" Size="ButtonSize.Small" Class="p-0" @onclick="FillSample">Fill with sample details</Button>
+                        </div>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label" for="ec-name">Full name</label>
+                                <TextInput Id="ec-name" @bind-Value="form.FullName" />
+                                <ValidationMessage For="() => form.FullName" />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label" for="ec-email">Email</label>
+                                <TextInput Id="ec-email" @bind-Value="form.Email" />
+                                <ValidationMessage For="() => form.Email" />
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label" for="ec-street">Street address</label>
+                                <TextInput Id="ec-street" @bind-Value="form.Street" />
+                                <ValidationMessage For="() => form.Street" />
+                            </div>
+                            <div class="col-md-5">
+                                <label class="form-label" for="ec-city">City</label>
+                                <TextInput Id="ec-city" @bind-Value="form.City" />
+                                <ValidationMessage For="() => form.City" />
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label" for="ec-postal">Postal code</label>
+                                <TextInput Id="ec-postal" @bind-Value="form.PostalCode" />
+                                <ValidationMessage For="() => form.PostalCode" />
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label" for="ec-country">Country</label>
+                                <InputSelect id="ec-country" class="form-select" @bind-Value="form.Country">
+                                    @foreach (var country in countries)
+                                    {
+                                        <option value="@country">@country</option>
+                                    }
+                                </InputSelect>
+                            </div>
+                        </div>
+
+                        <h2 class="h5 fw-bold mt-4 mb-3" id="ec-delivery-label">Delivery</h2>
+                        <RadioButtonGroup TValue="EcommerceDelivery" @bind-Value="form.Delivery" AriaLabel="Delivery" aria-labelledby="ec-delivery-label" Class="w-100 flex-wrap">
+                            <ButtonGroupItem Value="EcommerceDelivery.Standard" Id="ec-delivery-standard" Class="text-start">
+                                <span class="d-block fw-semibold">Standard · @StandardPrice</span>
+                                <small>@EcommerceDisplay.DeliveryWindow(EcommerceDelivery.Standard)</small>
+                            </ButtonGroupItem>
+                            <ButtonGroupItem Value="EcommerceDelivery.Express" Id="ec-delivery-express" Class="text-start">
+                                <span class="d-block fw-semibold">Express · @EcommerceDisplay.Money(EcommerceSeedData.ExpressShipping)</span>
+                                <small>@EcommerceDisplay.DeliveryWindow(EcommerceDelivery.Express)</small>
+                            </ButtonGroupItem>
+                        </RadioButtonGroup>
+
+                        <h2 class="h5 fw-bold mt-4 mb-3">Payment</h2>
+                        @* The card fields are fixed placeholders and read-only: the demo never accepts real card details (AC-27). *@
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <label class="form-label" for="ec-card">Card number</label>
+                                <InputGroup>
+                                    <InputGroupText><Icon Name="IconName.CreditCard" aria-hidden="true" /></InputGroupText>
+                                    <TextInput Id="ec-card" Value="4242 4242 4242 4242" ValueExpression="() => DemoCard" Disabled="true" aria-describedby="ec-card-help" />
+                                </InputGroup>
+                                <div class="form-text" id="ec-card-help">Placeholder test card. You can't type a real card here.</div>
+                            </div>
+                            <div class="col-6">
+                                <label class="form-label" for="ec-expiry">Expiry</label>
+                                <TextInput Id="ec-expiry" Value="12 / 34" ValueExpression="() => DemoCard" Disabled="true" />
+                            </div>
+                            <div class="col-6">
+                                <label class="form-label" for="ec-cvc">Security code</label>
+                                <TextInput Id="ec-cvc" Value="123" ValueExpression="() => DemoCard" Disabled="true" />
+                            </div>
+                        </div>
+
+                        <Button Type="ButtonType.Submit" Color="ButtonColor.Primary" Size="ButtonSize.Large" Class="w-100 mt-4 rounded-pill" Disabled="placing">
+                            Place order · @EcommerceDisplay.Money(Totals.Total)
+                        </Button>
+                    </EditForm>
+                </div>
+            </div>
+
+            <div class="col-lg-5">
+                <EcommerceOrderSummary Totals="Totals" PromoCode="@State.AppliedPromoCode">
+                    <ul class="list-unstyled small mt-3 mb-0">
+                        @foreach (var line in State.Cart)
+                        {
+                            var product = State.FindProduct(line.ProductId)!;
+                            <li class="d-flex justify-content-between gap-2 py-1" @key="@($"{line.ProductId}-{line.Color}")">
+                                <span>@line.Quantity × @product.Name <span class="text-body-secondary">(@line.Color)</span></span>
+                                <span>@EcommerceDisplay.Money(product.Price * line.Quantity)</span>
+                            </li>
+                        }
+                    </ul>
+                    <Button Type="ButtonType.Link" To="@($"{EcommerceLayout.Base}/cart")" Color="ButtonColor.Link" Size="ButtonSize.Small" Class="px-0 mt-2">Edit cart</Button>
+                </EcommerceOrderSummary>
+            </div>
+        </div>
+    }
+</div>

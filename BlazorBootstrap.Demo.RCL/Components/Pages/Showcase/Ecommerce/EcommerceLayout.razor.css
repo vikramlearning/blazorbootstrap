@@ -1,0 +1,518 @@
+.sc-ecommerce {
+    --sc-primary: #c2410c;
+    --sc-primary-rgb: 194, 65, 12;
+    --sc-primary-hover: #9a3412;
+    --sc-primary-contrast: #fff;
+    --sc-font-body: "DM Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --sc-font-heading: "Fraunces", Georgia, "Times New Roman", serif;
+    --sc-page-bg: #fdfaf6;
+    --ec-ink: #2b1d14;
+    --ec-surface: #fff;
+    --ec-soft: #f6eee5;
+    --ec-border: #eadfd3;
+    --ec-sale: #b91c1c;
+    --ec-star: #b45309;
+}
+
+[data-bs-theme=dark] .sc-ecommerce {
+    --sc-primary: #fb923c;
+    --sc-primary-rgb: 251, 146, 60;
+    --sc-primary-hover: #fdba74;
+    --sc-primary-contrast: #1c1009;
+    --sc-page-bg: #16110d;
+    --ec-ink: #f8efe6;
+    --ec-surface: #211912;
+    --ec-soft: #2a2018;
+    --ec-border: #3a2d22;
+    --ec-sale: #fca5a5;
+    --ec-star: #fbbf24;
+}
+
+/* Bootstrap's text-bg-primary keeps white text; on the light dark-mode orange that fails contrast. */
+[data-bs-theme=dark] .sc-ecommerce ::deep .text-bg-primary {
+    color: var(--sc-primary-contrast) !important;
+}
+
+.ec-announce {
+    padding: .5rem 1rem;
+    background: var(--ec-ink);
+    color: var(--sc-page-bg);
+    font-size: .8125rem;
+    text-align: center;
+}
+
+/* Header: the Navbar component renders the nav, brand link, and nav links, so they need ::deep. */
+.sc-ecommerce ::deep .ec-header {
+    min-height: 4.25rem;
+    background: color-mix(in srgb, var(--sc-page-bg) 92%, transparent);
+    backdrop-filter: saturate(160%) blur(10px);
+    border-bottom: 1px solid var(--ec-border);
+}
+
+.sc-ecommerce ::deep .ec-header .nav-link {
+    color: var(--ec-ink);
+    font-weight: 500;
+}
+
+    .sc-ecommerce ::deep .ec-header .nav-link:hover,
+    .sc-ecommerce ::deep .ec-header .nav-link.active {
+        color: var(--sc-primary);
+    }
+
+.sc-ecommerce ::deep .ec-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: .5rem;
+    font-family: var(--sc-font-heading);
+    font-weight: 700;
+    font-size: 1.375rem;
+    color: var(--ec-ink);
+    text-decoration: none;
+}
+
+.sc-ecommerce ::deep .ec-brand-mark {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.125rem;
+    height: 2.125rem;
+    border-radius: 50%;
+    background: var(--sc-primary);
+    color: var(--sc-primary-contrast);
+    font-size: 1rem;
+}
+
+.sc-ecommerce ::deep .ec-cart-btn {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: 50%;
+    border: 1px solid var(--ec-border);
+    background: var(--ec-surface);
+    color: var(--ec-ink);
+    font-size: 1.125rem;
+}
+
+    .sc-ecommerce ::deep .ec-cart-btn:hover {
+        border-color: var(--sc-primary);
+        color: var(--sc-primary);
+    }
+
+    .sc-ecommerce ::deep .ec-cart-btn:focus-visible {
+        outline: 2px solid var(--sc-primary);
+        outline-offset: 2px;
+    }
+
+.sc-ecommerce ::deep .ec-cart-count {
+    position: absolute;
+    top: -.25rem;
+    right: -.25rem;
+    min-width: 1.25rem;
+    height: 1.25rem;
+    padding: 0 .3rem;
+    border-radius: 999px;
+    background: var(--sc-primary);
+    color: var(--sc-primary-contrast);
+    font-size: .75rem;
+    font-weight: 700;
+    line-height: 1.25rem;
+}
+
+/* Footer */
+.ec-footer {
+    margin-top: 3rem;
+    padding-block: 3rem 2rem;
+    background: var(--ec-soft);
+    border-top: 1px solid var(--ec-border);
+}
+
+    .ec-footer a {
+        color: var(--bs-secondary-color);
+        text-decoration: none;
+    }
+
+        .ec-footer a:hover {
+            color: var(--sc-primary);
+        }
+
+    .ec-footer li + li {
+        margin-top: .375rem;
+    }
+
+.ec-footer-heading {
+    font-family: var(--sc-font-body);
+    font-size: .8125rem;
+    font-weight: 700;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    color: var(--ec-ink);
+    margin-bottom: .75rem;
+}
+
+.ec-footer-note {
+    color: var(--bs-secondary-color);
+    font-size: .9375rem;
+}
+
+.ec-footer-legal {
+    margin: 2rem 0 0;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--ec-border);
+    color: var(--bs-secondary-color);
+    font-size: .8125rem;
+}
+
+/* Cart drawer */
+.sc-ecommerce ::deep .ec-drawer-line {
+    display: flex;
+    gap: .75rem;
+    padding-block: .875rem;
+    border-bottom: 1px solid var(--ec-border);
+}
+
+.sc-ecommerce ::deep .ec-thumb {
+    flex: 0 0 4.5rem;
+    width: 4.5rem;
+    border-radius: .5rem;
+    overflow: hidden;
+}
+
+.sc-ecommerce ::deep .ec-line-name {
+    font-weight: 600;
+    color: var(--ec-ink);
+    text-decoration: none;
+}
+
+    .sc-ecommerce ::deep .ec-line-name:hover {
+        color: var(--sc-primary);
+        text-decoration: underline;
+    }
+
+.sc-ecommerce ::deep .min-w-0 {
+    min-width: 0;
+}
+
+.sc-ecommerce ::deep .ec-empty-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 4rem;
+    height: 4rem;
+    border-radius: 50%;
+    background: var(--ec-soft);
+    color: var(--sc-primary);
+    font-size: 1.75rem;
+}
+
+.sc-ecommerce ::deep .ec-qty {
+    width: auto;
+}
+
+    .sc-ecommerce ::deep .ec-qty .form-control {
+        width: 3.5rem;
+        flex: 0 0 3.5rem;
+    }
+
+    .sc-ecommerce ::deep .ec-qty.input-group-sm .form-control {
+        width: 3rem;
+        flex: 0 0 3rem;
+    }
+
+/* Shared page styles: page markup is child content of the layout, so it needs ::deep. */
+.sc-ecommerce ::deep .ec-section {
+    padding-block: 3rem;
+}
+
+.sc-ecommerce ::deep .ec-section-title {
+    font-weight: 700;
+    font-size: clamp(1.625rem, 3vw, 2.25rem);
+    letter-spacing: -.01em;
+    color: var(--ec-ink);
+    margin: .25rem 0 .5rem;
+}
+
+.sc-ecommerce ::deep .ec-page-title {
+    font-weight: 700;
+    font-size: clamp(1.75rem, 3.2vw, 2.5rem);
+    color: var(--ec-ink);
+    margin: 0;
+}
+
+.sc-ecommerce ::deep .ec-panel {
+    border: 1px solid var(--ec-border);
+    border-radius: 1rem;
+    background: var(--ec-surface);
+    padding: 1.5rem;
+}
+
+.sc-ecommerce ::deep .ec-hero {
+    position: relative;
+    overflow: hidden;
+    border-radius: 1.5rem;
+    background: linear-gradient(120deg, #fde7d4 0%, #f8d9c4 45%, #f2e6d8 100%);
+}
+
+[data-bs-theme=dark] .sc-ecommerce ::deep .ec-hero {
+    background: linear-gradient(120deg, #3a2213 0%, #2c1a10 50%, #241911 100%);
+}
+
+.sc-ecommerce ::deep .ec-hero-slide {
+    display: grid;
+    grid-template-columns: 1fr;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 2.5rem 2rem 3.5rem;
+}
+
+@media (min-width: 768px) {
+    .sc-ecommerce ::deep .ec-hero-slide {
+        grid-template-columns: 1.1fr 1fr;
+        padding: 3.5rem 4.5rem 4rem;
+    }
+}
+
+.sc-ecommerce ::deep .ec-hero-title {
+    font-size: clamp(2rem, 4.5vw, 3.25rem);
+    font-weight: 700;
+    line-height: 1.08;
+    color: var(--ec-ink);
+    margin-bottom: 1rem;
+}
+
+.sc-ecommerce ::deep .ec-hero-lead {
+    font-size: 1.125rem;
+    color: color-mix(in srgb, var(--ec-ink) 78%, transparent);
+    max-width: 30rem;
+    margin-bottom: 1.5rem;
+}
+
+.sc-ecommerce ::deep .ec-hero .carousel-control-prev,
+.sc-ecommerce ::deep .ec-hero .carousel-control-next {
+    width: 3rem;
+}
+
+.sc-ecommerce ::deep .ec-hero .carousel-control-prev-icon,
+.sc-ecommerce ::deep .ec-hero .carousel-control-next-icon {
+    filter: invert(1) grayscale(100);
+}
+
+[data-bs-theme=dark] .sc-ecommerce ::deep .ec-hero .carousel-control-prev-icon,
+[data-bs-theme=dark] .sc-ecommerce ::deep .ec-hero .carousel-control-next-icon {
+    filter: none;
+}
+
+.sc-ecommerce ::deep .ec-hero .carousel-indicators [data-bs-target] {
+    background-color: var(--ec-ink);
+}
+
+.sc-ecommerce ::deep .ec-category-tile {
+    display: flex;
+    flex-direction: column;
+    gap: .5rem;
+    height: 100%;
+    padding: 1.25rem;
+    border: 1px solid var(--ec-border);
+    border-radius: 1rem;
+    background: var(--ec-surface);
+    color: var(--ec-ink);
+    text-decoration: none;
+    transition: border-color .2s ease, transform .2s ease;
+}
+
+    .sc-ecommerce ::deep .ec-category-tile:hover {
+        border-color: var(--sc-primary);
+        transform: translateY(-2px);
+    }
+
+    .sc-ecommerce ::deep .ec-category-tile strong {
+        font-family: var(--sc-font-heading);
+        font-size: 1.25rem;
+    }
+
+    .sc-ecommerce ::deep .ec-category-tile span {
+        color: var(--bs-secondary-color);
+        font-size: .875rem;
+    }
+
+.sc-ecommerce ::deep .ec-category-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: .75rem;
+    font-size: 1.25rem;
+    color: #fff;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .sc-ecommerce ::deep .ec-category-tile,
+    .sc-ecommerce ::deep .ec-category-tile:hover {
+        transition: none;
+        transform: none;
+    }
+}
+
+.sc-ecommerce ::deep .ec-perks {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+    gap: 1rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+    .sc-ecommerce ::deep .ec-perks li {
+        display: flex;
+        gap: .75rem;
+        align-items: flex-start;
+        padding: 1.25rem;
+        border-radius: 1rem;
+        background: var(--ec-soft);
+    }
+
+    .sc-ecommerce ::deep .ec-perks .bi {
+        color: var(--sc-primary);
+        font-size: 1.375rem;
+    }
+
+/* Product card */
+.sc-ecommerce ::deep .ec-product-card {
+    position: relative;
+    overflow: hidden;
+    border-color: var(--ec-border);
+    border-radius: 1rem;
+    background: var(--ec-surface);
+}
+
+.sc-ecommerce ::deep .ec-product-media {
+    display: block;
+}
+
+.sc-ecommerce ::deep .ec-sale-badge {
+    position: absolute;
+    top: .75rem;
+    left: .75rem;
+}
+
+.sc-ecommerce ::deep .ec-card-category {
+    font-size: .75rem;
+    font-weight: 600;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    color: var(--bs-secondary-color);
+}
+
+.sc-ecommerce ::deep .ec-card-title {
+    font-family: var(--sc-font-body);
+    font-size: 1rem;
+    font-weight: 600;
+    margin: .25rem 0 .375rem;
+}
+
+    .sc-ecommerce ::deep .ec-card-title a {
+        color: var(--ec-ink);
+        text-decoration: none;
+    }
+
+        .sc-ecommerce ::deep .ec-card-title a:hover {
+            color: var(--sc-primary);
+            text-decoration: underline;
+        }
+
+.sc-ecommerce ::deep .ec-stars {
+    color: var(--ec-star);
+}
+
+.sc-ecommerce ::deep .ec-price {
+    font-weight: 700;
+    font-size: 1.0625rem;
+    color: var(--ec-ink);
+}
+
+.sc-ecommerce ::deep .ec-compare {
+    color: var(--bs-secondary-color);
+    text-decoration: line-through;
+    font-size: .875rem;
+}
+
+.sc-ecommerce ::deep .ec-sale-text {
+    color: var(--ec-sale);
+    font-weight: 600;
+}
+
+/* Catalog filters */
+.sc-ecommerce ::deep .ec-filter-heading {
+    font-family: var(--sc-font-body);
+    font-size: .8125rem;
+    font-weight: 700;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    color: var(--ec-ink);
+    margin-bottom: .5rem;
+}
+
+.sc-ecommerce ::deep .ec-results-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: .75rem;
+    margin-bottom: 1rem;
+}
+
+/* The catalog filters collapse only below lg; from lg they are always shown, whatever the Collapse state. */
+@media (min-width: 992px) {
+    .sc-ecommerce ::deep .ec-filters.collapse:not(.show) {
+        display: block;
+    }
+}
+
+/* Product page */
+.sc-ecommerce ::deep .ec-gallery-main {
+    border-radius: 1.25rem;
+    overflow: hidden;
+}
+
+.sc-ecommerce ::deep .ec-detail-price {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--ec-ink);
+}
+
+.sc-ecommerce ::deep .ec-summary-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    padding-block: .25rem;
+}
+
+.sc-ecommerce ::deep .ec-summary-total {
+    display: flex;
+    justify-content: space-between;
+    margin-top: .5rem;
+    padding-top: .75rem;
+    border-top: 1px solid var(--ec-border);
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: var(--ec-ink);
+}
+
+.sc-ecommerce ::deep .ec-review {
+    padding-block: 1rem;
+    border-bottom: 1px solid var(--ec-border);
+}
+
+.sc-ecommerce ::deep .ec-breadcrumb .breadcrumb {
+    margin-bottom: 0;
+    font-size: .875rem;
+}
+
+.sc-ecommerce ::deep .ec-not-found {
+    max-width: 34rem;
+    margin: 4rem auto;
+    text-align: center;
+}

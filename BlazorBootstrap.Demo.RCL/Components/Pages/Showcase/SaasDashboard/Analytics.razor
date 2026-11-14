@@ -1,0 +1,135 @@
+@page "/showcase/saas-dashboard/analytics"
+@layout SaasDashboardLayout
+
+<PageTitle>Analytics · Pulseboard</PageTitle>
+
+<div class="sd-page-head">
+    <div>
+        <span class="sc-eyebrow">Analytics</span>
+        <h1 class="sd-page-title">Traffic and conversion</h1>
+        <p class="sd-page-lead">Sessions, sign-ups, and where visitors come from.</p>
+    </div>
+    <RadioButtonGroup TValue="SaasAnalyticsRange"
+                      Value="State.AnalyticsRange"
+                      ValueExpression="() => State.AnalyticsRange"
+                      ValueChanged="OnRangeChanged"
+                      AriaLabel="Date range"
+                      Size="ButtonGroupSize.Small"
+                      Class="sd-range">
+        @foreach (var range in ranges)
+        {
+            <ButtonGroupItem Value="range.Value" Id="@($"sd-range-{range.Value}")">@range.Text</ButtonGroupItem>
+        }
+    </RadioButtonGroup>
+</div>
+
+<p class="visually-hidden" aria-live="polite">Showing @CurrentRangeText</p>
+
+<section aria-label="Totals for the selected period" class="row row-cols-2 row-cols-lg-4 g-3 mb-4">
+    @foreach (var total in Totals)
+    {
+        <div class="col" @key="total.Label">
+            <Card Class="sd-card h-100">
+                <CardBody Class="p-3 p-lg-4">
+                    <div class="sd-kpi-label"><span>@total.Label</span></div>
+                    <span class="sd-kpi-value">@total.Value</span>
+                    <span class="small text-body-secondary">@total.Note</span>
+                </CardBody>
+            </Card>
+        </div>
+    }
+</section>
+
+<div class="row g-3 mb-4">
+    <div class="col-xl-8">
+        <Card Class="sd-card h-100">
+            <CardHeader>
+                <div>
+                    <h2 class="sd-card-title">Sessions</h2>
+                    <p class="sd-card-sub">@CurrentRangeText</p>
+                </div>
+            </CardHeader>
+            <CardBody Class="pt-0">
+                <div class="sd-chart" role="img" aria-label="@SessionsChartLabel">
+                    <LineChart @ref="sessionsChart" Height="300" HeightUnit="Unit.Px" Width="100" WidthUnit="Unit.Percentage" />
+                </div>
+            </CardBody>
+        </Card>
+    </div>
+    <div class="col-xl-4">
+        <Card Class="sd-card h-100">
+            <CardHeader>
+                <div>
+                    <h2 class="sd-card-title">Traffic sources</h2>
+                    <p class="sd-card-sub">Share of sessions</p>
+                </div>
+            </CardHeader>
+            <CardBody Class="pt-0">
+                <div class="sd-chart" role="img" aria-label="@SourcesChartLabel">
+                    <DoughnutChart @ref="sourcesChart" Height="300" HeightUnit="Unit.Px" Width="100" WidthUnit="Unit.Percentage" />
+                </div>
+            </CardBody>
+        </Card>
+    </div>
+</div>
+
+<div class="row g-3">
+    <div class="col-xl-6">
+        <Card Class="sd-card h-100">
+            <CardHeader>
+                <div>
+                    <h2 class="sd-card-title">Sign-ups</h2>
+                    <p class="sd-card-sub">New workspaces created</p>
+                </div>
+            </CardHeader>
+            <CardBody Class="pt-0">
+                <div class="sd-chart" role="img" aria-label="@SignupsChartLabel">
+                    <BarChart @ref="signupsChart" Height="260" HeightUnit="Unit.Px" Width="100" WidthUnit="Unit.Percentage" />
+                </div>
+            </CardBody>
+        </Card>
+    </div>
+    <div class="col-xl-6">
+        <Card Class="sd-card h-100">
+            <CardHeader>
+                <div>
+                    <h2 class="sd-card-title">Top pages</h2>
+                    <p class="sd-card-sub">Views and the share that converted to a sign-up</p>
+                </div>
+            </CardHeader>
+            <CardBody Class="pt-0">
+                <div class="table-responsive">
+                    <table class="table align-middle mb-0">
+                        <caption class="visually-hidden">Top pages for @CurrentRangeText</caption>
+                        <thead>
+                            <tr>
+                                <th scope="col" class="small text-body-secondary">Page</th>
+                                <th scope="col" class="small text-body-secondary text-end">Views</th>
+                                <th scope="col" class="small text-body-secondary" style="min-width: 9rem;">Conversion</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var topPage in Snapshot.TopPages)
+                            {
+                                <tr @key="topPage.Path">
+                                    <th scope="row" class="fw-medium sd-mono small">@topPage.Path</th>
+                                    <td class="text-end sd-mono small">@topPage.Views.ToString("#,0", CultureInfo.InvariantCulture)</td>
+                                    <td>
+                                        <div class="d-flex align-items-center gap-2">
+                                            <Progress Height="6" Class="flex-grow-1">
+                                                <ProgressBar Width="Math.Min(100, topPage.ConversionPercent * 10)"
+                                                             aria-label="@($"{topPage.Path} conversion")" aria-valuenow="@topPage.ConversionPercent" aria-valuemin="0" aria-valuemax="10"
+                                                             aria-valuetext="@($"{topPage.ConversionPercent.ToString("0.0", CultureInfo.InvariantCulture)}%")" />
+                                            </Progress>
+                                            <span class="small sd-mono">@topPage.ConversionPercent.ToString("0.0", CultureInfo.InvariantCulture)%</span>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </CardBody>
+        </Card>
+    </div>
+</div>

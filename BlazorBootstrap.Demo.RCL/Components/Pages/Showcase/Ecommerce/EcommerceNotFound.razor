@@ -1,0 +1,12 @@
+@* The storefront's not-found screen, shown by the catch-all route and by product and order routes with an unknown ID. *@
+<PageTitle>Page not found · @EcommerceSeedData.StoreName</PageTitle>
+
+<section class="ec-not-found">
+    <span class="ec-empty-icon mb-3" aria-hidden="true"><Icon Name="IconName.Compass" /></span>
+    <h1 class="ec-page-title mb-2 mt-3">We couldn't find that page</h1>
+    <p class="text-body-secondary mb-4">The product may be sold out for good, or the link may be old.</p>
+    <div class="d-flex justify-content-center flex-wrap gap-2">
+        <Button Type="ButtonType.Link" To="@EcommerceLayout.Base" Color="ButtonColor.Primary">Back to the store</Button>
+        <Button Type="ButtonType.Link" To="@($"{EcommerceLayout.Base}/products?category=all")" Color="ButtonColor.Primary" Outline="true">Shop all products</Button>
+    </div>
+</section>
