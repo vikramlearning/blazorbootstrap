@@ -1,0 +1,13 @@
+.ec-return {
+    padding: .75rem 1rem;
+    border: 1px solid var(--bs-border-color);
+    border-radius: .75rem;
+}
+
+.ec-return-qty {
+    width: 5.5rem;
+}
+
+#ec-returns-title:focus {
+    outline: none;
+}

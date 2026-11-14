@@ -1,0 +1,172 @@
+@page "/showcase/ecommerce/admin/customers"
+@layout EcommerceAdminLayout
+
+<PageTitle>Customers · @EcommerceSeedData.StoreName admin</PageTitle>
+
+<div class="mb-4">
+    <h1 class="ea-title">Customers</h1>
+    <p class="ea-lead">@LeadText</p>
+</div>
+
+<div class="row g-4">
+    <div class="@(selectedEmail is null ? "col-12" : "col-xxl-7")">
+        <section class="ea-panel" aria-labelledby="ea-customers-title">
+            <h2 class="ea-section-title" id="ea-customers-title" tabindex="-1" @ref="listHeading">All customers</h2>
+
+            <div class="row g-2 align-items-end mb-3" role="search" aria-label="Filter customers">
+                <div class="col-md-7">
+                    <label class="form-label small fw-semibold" for="ea-customer-search">Search</label>
+                    <InputGroup>
+                        <InputGroupText><Icon Name="IconName.Search" aria-hidden="true" /></InputGroupText>
+                        @* TextInput raises ValueChanged on change (blur or Enter); @oninput keeps the list filtering while typing. *@
+                        <TextInput Id="ea-customer-search" Value="@searchBoxValue" ValueExpression="() => searchBoxValue" ValueChanged="OnSearchChanged"
+                                   @oninput="OnSearchInput" Placeholder="Name or email" />
+                    </InputGroup>
+                </div>
+                <div class="col-md-5">
+                    <label class="form-label small fw-semibold" for="ea-customer-sort">Sort by</label>
+                    <select id="ea-customer-sort" class="form-select" value="@sort" @onchange="OnSortChanged">
+                        <option value="@CustomerSort.LastOrderNewest">Last order, newest first</option>
+                        <option value="@CustomerSort.LastOrderOldest">Last order, oldest first</option>
+                        <option value="@CustomerSort.SpentHighest">Total spent, highest first</option>
+                        <option value="@CustomerSort.SpentLowest">Total spent, lowest first</option>
+                    </select>
+                </div>
+            </div>
+
+            <p class="small text-body-secondary" role="status">@MatchText</p>
+
+            @if (Matches.Count == 0)
+            {
+                <p class="ea-empty mb-0">
+                    @(State.Customers().Count == 0 ? "No customers yet. Shoppers appear here once they register or place an order." : "No customers match this search. Try part of a name or an email address.")
+                </p>
+            }
+            else
+            {
+                <div class="table-responsive" data-clarity-mask="true">
+                    <table class="table ea-table ea-customer-table align-middle">
+                        <caption class="visually-hidden">Customers, @SortText</caption>
+                        <thead>
+                            <tr>
+                                <th scope="col">Customer</th>
+                                <th scope="col">Account</th>
+                                <th scope="col" class="text-end">Orders</th>
+                                <th scope="col" class="text-end">Total spent</th>
+                                <th scope="col">Last order</th>
+                                <th scope="col"><span class="visually-hidden">Actions</span></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var customer in PageItems)
+                            {
+                                var isSelected = IsSelected(customer);
+                                <tr @key="customer.Email" class="@(isSelected ? "table-active" : null)" aria-current="@(isSelected ? "true" : null)">
+                                    <th scope="row">
+                                        <span class="d-block">@customer.Name</span>
+                                        <span class="d-block small fw-normal text-body-secondary text-break">@customer.Email</span>
+                                    </th>
+                                    <td>
+                                        @if (customer.AccountId is not null)
+                                        {
+                                            <Badge Color="BadgeColor.Primary">Registered</Badge>
+                                        }
+                                        else
+                                        {
+                                            <Badge Color="BadgeColor.Secondary">Guest</Badge>
+                                        }
+                                    </td>
+                                    <td class="text-end">@customer.OrderCount</td>
+                                    <td class="text-end">@EcommerceDisplay.Money(customer.Spent)</td>
+                                    <td class="text-nowrap">@(customer.LastOrderOn is { } last ? EcommerceDisplay.DateTimeShort(last) : "No orders")</td>
+                                    <td class="text-end">
+                                        <Button @ref="viewButtons[customer.Email]" Color="ButtonColor.Secondary" Outline="true" Size="ButtonSize.Small" @onclick="() => Select(customer)">
+                                            View orders<span class="visually-hidden"> of @customer.Name</span>
+                                        </Button>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                @if (TotalPages > 1)
+                {
+                    <nav class="mt-3" aria-label="Customer pages">
+                        <Pagination ActivePageNumber="CurrentPage" TotalPages="TotalPages" PageChanged="OnPageChanged" Alignment="Alignment.Center"
+                                    PreviousLinkIcon="IconName.ChevronLeft" NextLinkIcon="IconName.ChevronRight" />
+                    </nav>
+                }
+            }
+        </section>
+    </div>
+
+    @if (selectedEmail is not null)
+    {
+        <div class="col-xxl-5">
+            <section class="ea-panel" aria-labelledby="ea-customer-detail-title" data-clarity-mask="true">
+                <div class="d-flex flex-wrap justify-content-between align-items-start gap-2 mb-2">
+                    <h2 class="ea-section-title mb-0" id="ea-customer-detail-title" tabindex="-1" @ref="detailHeading">
+                        @(SelectedCustomer?.Name ?? "Customer not found")
+                    </h2>
+                    <Button Color="ButtonColor.Secondary" Outline="true" Size="ButtonSize.Small" @onclick="CloseDetail">
+                        Close<span class="visually-hidden"> customer details</span>
+                    </Button>
+                </div>
+
+                @if (SelectedCustomer is { } customer)
+                {
+                    <p class="small text-body-secondary text-break mb-1">@customer.Email</p>
+                    <p class="small mb-3">
+                        @if (customer.AccountId is not null)
+                        {
+                            <Badge Color="BadgeColor.Primary" Class="me-1">Registered</Badge>
+                        }
+                        else
+                        {
+                            <Badge Color="BadgeColor.Secondary" Class="me-1">Guest</Badge>
+                        }
+                        @OrderCountText(customer.OrderCount) · @EcommerceDisplay.Money(customer.Spent) spent
+                    </p>
+
+                    <h3 class="h6 fw-bold">Orders</h3>
+                    @if (SelectedOrders.Count == 0)
+                    {
+                        <p class="ea-empty mb-0">@customer.Name hasn't placed an order yet.</p>
+                    }
+                    else
+                    {
+                        <div class="table-responsive">
+                            <table class="table ea-table align-middle">
+                                <caption class="visually-hidden">Orders placed by @customer.Name, newest first</caption>
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Order</th>
+                                        <th scope="col">Placed</th>
+                                        <th scope="col">Status</th>
+                                        <th scope="col" class="text-end">Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var order in SelectedOrders)
+                                    {
+                                        <tr @key="order.Id">
+                                            <th scope="row"><a href="@($"{EcommerceAdminLayout.Base}/orders/{order.Id}")">#@order.Id</a></th>
+                                            <td class="text-nowrap">@EcommerceDisplay.DateTimeShort(order.PlacedOn)</td>
+                                            <td><Badge Color="@EcommerceDisplay.StatusColor(order.Status)">@order.Status</Badge></td>
+                                            <td class="text-end">@EcommerceDisplay.Money(order.Totals.Total)</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <p class="ea-empty mb-0">No customer uses the email address @selectedEmail. They may not have ordered or registered yet.</p>
+                }
+            </section>
+        </div>
+    }
+</div>

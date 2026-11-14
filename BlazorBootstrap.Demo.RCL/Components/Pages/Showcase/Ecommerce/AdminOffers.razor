@@ -1,0 +1,174 @@
+@page "/showcase/ecommerce/admin/offers"
+@layout EcommerceAdminLayout
+
+<PageTitle>Offers & coupons · @EcommerceSeedData.StoreName admin</PageTitle>
+
+<div class="ea-offers-head mb-4">
+    <div>
+        <h1 class="ea-title">Offers & coupons</h1>
+        <p class="ea-lead">@LeadText</p>
+    </div>
+    <Button @ref="newButton" Color="ButtonColor.Primary" @onclick="NewAsync">
+        <Icon Name="IconName.Plus" class="me-1" aria-hidden="true" />New coupon
+    </Button>
+</div>
+
+@* Always rendered and focusable, so a change is announced and focus has somewhere to go when its button is gone. *@
+<p class="ea-status fw-semibold" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
+
+<section class="ea-panel" aria-labelledby="ea-coupons-title">
+    <h2 class="ea-section-title" id="ea-coupons-title">Coupons</h2>
+    @if (State.Coupons.Count == 0)
+    {
+        <p class="ea-empty mb-0">No coupons yet. Choose "New coupon" to offer shoppers a code at checkout.</p>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table ea-table ea-coupon-table align-middle">
+                <caption class="visually-hidden">Coupons with their discount, rules, and status</caption>
+                <thead>
+                    <tr>
+                        <th scope="col">Code</th>
+                        <th scope="col">Discount</th>
+                        <th scope="col">Rules</th>
+                        <th scope="col">Status</th>
+                        <th scope="col" class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var coupon in SortedCoupons)
+                    {
+                        var status = StatusOf(coupon);
+                        <tr @key="coupon.Code">
+                            <th scope="row">
+                                <span class="ea-coupon-code">@coupon.Code</span>
+                                <span class="d-block small fw-normal text-body-secondary">@coupon.Description</span>
+                            </th>
+                            <td class="text-nowrap">@DiscountText(coupon)</td>
+                            <td>
+                                <ul class="ea-coupon-rules list-unstyled mb-0 small">
+                                    @foreach (var rule in Rules(coupon))
+                                    {
+                                        <li>@rule</li>
+                                    }
+                                </ul>
+                            </td>
+                            <td><Badge Color="@StatusColor(status)">@StatusLabel(status)</Badge></td>
+                            <td class="text-end">
+                                <div class="ea-row-actions">
+                                    <Button @ref="editButtons[coupon.Code]" Color="ButtonColor.Secondary" Outline="true" Size="ButtonSize.Small" @onclick="() => EditAsync(coupon)">
+                                        Edit<span class="visually-hidden"> coupon @coupon.Code</span>
+                                    </Button>
+                                    <Button Color="ButtonColor.Secondary" Outline="true" Size="ButtonSize.Small" @onclick="() => ToggleActive(coupon)">
+                                        @(coupon.IsActive ? "Pause" : "Resume")<span class="visually-hidden"> coupon @coupon.Code</span>
+                                    </Button>
+                                    <Button @ref="deleteButtons[coupon.Code]" Color="ButtonColor.Danger" Outline="true" Size="ButtonSize.Small" @onclick="() => AskDeleteAsync(coupon)">
+                                        Delete<span class="visually-hidden"> coupon @coupon.Code</span>
+                                    </Button>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</section>
+
+<Modal @ref="editorModal"
+       IsVerticallyCentered="true"
+       IsScrollable="true"
+       Size="ModalSize.Large"
+       ShowCloseButton="false"
+       aria-labelledby="ea-coupon-editor-title"
+       OnHidden="OnEditorHiddenAsync">
+    <HeaderTemplate>
+        <h2 class="modal-title h5" id="ea-coupon-editor-title">@(editingCode is null ? "New coupon" : $"Edit coupon {editingCode}")</h2>
+    </HeaderTemplate>
+    <BodyTemplate>
+        <ShowcaseDemoNotice Class="mb-3" Text="Demo only: coupons stay in this browser tab and are gone when it closes." />
+        <EditForm id="ea-coupon-form" EditContext="editContext" OnValidSubmit="SaveAsync" FormName="ea-coupon">
+            <DataAnnotationsValidator />
+            <div class="row g-3">
+                <div class="col-md-5">
+                    <label class="form-label" for="ea-coupon-code">Code</label>
+                    <TextInput @ref="codeInput" Id="ea-coupon-code" @bind-Value="form.Code" MaxLength="20" Class="ea-code-input" aria-describedby="ea-coupon-code-help" />
+                    <div class="form-text" id="ea-coupon-code-help">3 to 20 letters and digits. Saved in capitals.</div>
+                    <ValidationMessage For="() => form.Code" />
+                </div>
+                <div class="col-md-7">
+                    <label class="form-label" for="ea-coupon-description">Description</label>
+                    <TextInput Id="ea-coupon-description" @bind-Value="form.Description" MaxLength="120" />
+                    <ValidationMessage For="() => form.Description" />
+                </div>
+                <div class="col-md-5">
+                    <span class="form-label d-block" id="ea-coupon-kind-label">Discount type</span>
+                    <RadioButtonGroup TValue="EcommerceCouponKind" @bind-Value="form.Kind" AriaLabel="Discount type" aria-labelledby="ea-coupon-kind-label" Size="ButtonGroupSize.Small">
+                        <ButtonGroupItem TValue="EcommerceCouponKind" Value="EcommerceCouponKind.Percent" Id="ea-coupon-kind-percent">Percent off</ButtonGroupItem>
+                        <ButtonGroupItem TValue="EcommerceCouponKind" Value="EcommerceCouponKind.Amount" Id="ea-coupon-kind-amount">Amount off</ButtonGroupItem>
+                    </RadioButtonGroup>
+                </div>
+                <div class="col-md-7">
+                    <label class="form-label" for="ea-coupon-value">@(form.Kind == EcommerceCouponKind.Percent ? "Percent off" : "Amount off")</label>
+                    <InputGroup>
+                        @if (form.Kind == EcommerceCouponKind.Amount)
+                        {
+                            <InputGroupText>$</InputGroupText>
+                        }
+                        <NumberInput TValue="decimal" Id="ea-coupon-value" @bind-Value="form.Value" Step="@(form.Kind == EcommerceCouponKind.Percent ? 1 : 0.01)" aria-describedby="ea-coupon-value-help" />
+                        @if (form.Kind == EcommerceCouponKind.Percent)
+                        {
+                            <InputGroupText>%</InputGroupText>
+                        }
+                    </InputGroup>
+                    <div class="form-text" id="ea-coupon-value-help">@(form.Kind == EcommerceCouponKind.Percent ? "1 to 100 percent of the subtotal." : "$0.01 to $10,000.00, never more than the subtotal.")</div>
+                    <ValidationMessage For="() => form.Value" />
+                </div>
+                <div class="col-md-5">
+                    <label class="form-label" for="ea-coupon-minimum">Minimum subtotal</label>
+                    <InputGroup>
+                        <InputGroupText>$</InputGroupText>
+                        <NumberInput TValue="decimal" Id="ea-coupon-minimum" @bind-Value="form.MinSubtotal" Step="0.01" aria-describedby="ea-coupon-minimum-help" />
+                    </InputGroup>
+                    <div class="form-text" id="ea-coupon-minimum-help">0 for any order.</div>
+                    <ValidationMessage For="() => form.MinSubtotal" />
+                </div>
+                <div class="col-md-7">
+                    <label class="form-label" for="ea-coupon-limit">Usage limit</label>
+                    <NumberInput TValue="int?" Id="ea-coupon-limit" @bind-Value="form.UsageLimit" aria-describedby="ea-coupon-limit-help" />
+                    <div class="form-text" id="ea-coupon-limit-help">Leave empty for unlimited uses.</div>
+                    <ValidationMessage For="() => form.UsageLimit" />
+                </div>
+                <div class="col-md-5">
+                    <label class="form-label" for="ea-coupon-expires">Expiry date</label>
+                    <DateInput TValue="DateTime?" Id="ea-coupon-expires" @bind-Value="form.ExpiresOn" aria-describedby="ea-coupon-expires-help" />
+                    <div class="form-text" id="ea-coupon-expires-help">Optional. The code works through the end of this day.</div>
+                    <ValidationMessage For="() => form.ExpiresOn" />
+                </div>
+                <div class="col-md-7 d-grid gap-2 align-content-start pt-md-4">
+                    <Switch Id="ea-coupon-first" @bind-Value="form.FirstOrderOnly" Label="First order only" />
+                    <Switch Id="ea-coupon-active" @bind-Value="form.IsActive" Label="Active (shoppers can use it)" />
+                </div>
+            </div>
+        </EditForm>
+    </BodyTemplate>
+    <FooterTemplate>
+        <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => editorModal.HideAsync()">Cancel</Button>
+        <Button Type="ButtonType.Submit" Color="ButtonColor.Primary" form="ea-coupon-form">@(editingCode is null ? "Create coupon" : "Save changes")</Button>
+    </FooterTemplate>
+</Modal>
+
+<Modal @ref="deleteModal" IsVerticallyCentered="true" ShowCloseButton="false" aria-labelledby="ea-coupon-delete-title" OnHidden="OnDeleteHiddenAsync">
+    <HeaderTemplate>
+        <h2 class="modal-title h5" id="ea-coupon-delete-title">Delete coupon @deletingCode?</h2>
+    </HeaderTemplate>
+    <BodyTemplate>
+        <p class="mb-2">Shoppers can no longer use this code at checkout, and it can't be brought back.</p>
+        <p class="small text-body-secondary mb-0">Past orders keep the code they used. To stop the code for a while instead, pause it.</p>
+    </BodyTemplate>
+    <FooterTemplate>
+        <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => deleteModal.HideAsync()">Keep coupon</Button>
+        <Button Color="ButtonColor.Danger" @onclick="ConfirmDeleteAsync">Delete coupon</Button>
+    </FooterTemplate>
+</Modal>

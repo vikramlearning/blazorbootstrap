@@ -78,6 +78,10 @@
                                 <span><Icon Name="IconName.TagFill" class="me-1" aria-hidden="true" />@State.AppliedPromoCode applied</span>
                                 <Button Color="ButtonColor.Link" Size="ButtonSize.Small" @onclick="RemovePromoAsync">Remove code</Button>
                             </div>
+                            @if (State.CheckCoupon(State.AppliedPromoCode) is var check && check != EcommerceCouponCheck.Applied)
+                            {
+                                <div class="small text-danger mt-1">@EcommerceDisplay.CouponProblem(check, State.AppliedCoupon) No discount is applied.</div>
+                            }
                         }
                     </div>
                     <Button Type="ButtonType.Link" To="@($"{EcommerceLayout.Base}/checkout")" Color="ButtonColor.Primary" Size="ButtonSize.Large" Class="w-100 mt-3 rounded-pill">
@@ -92,6 +96,7 @@
 
 @code {
     private string promoCode = string.Empty;
+    private int promoAttempts;
     private string? promoError;
     private string? removedMessage;
     private ElementReference promoRegion;
@@ -103,8 +108,10 @@
 
     private async Task ApplyPromoAsync()
     {
-        var accepted = State.ApplyPromoCode(promoCode);
-        promoError = accepted ? null : $"That code isn't valid. Try {EcommerceSeedData.PromoCode}.";
+        var check = State.ApplyPromoCode(promoCode);
+        var accepted = check == EcommerceCouponCheck.Applied;
+        promoAttempts++;
+        promoError = accepted ? null : $"{EcommerceDisplay.CouponProblem(check, State.FindCoupon(promoCode))}{(promoAttempts > 1 ? $" (attempt {promoAttempts})" : null)}";
         promoCode = string.Empty;
 
         if (accepted)

@@ -10,7 +10,6 @@ public static class DemoRouteConstants
     #region Showcase
 
     public const string Showcase_URL_AiAssistant = Showcase_URL_Prefix + "/ai-assistant";
-    public const string Showcase_URL_CreatorBlog = Showcase_URL_Prefix + "/creator-blog";
     public const string Showcase_URL_Crm = Showcase_URL_Prefix + "/crm";
     public const string Showcase_URL_Ecommerce = Showcase_URL_Prefix + "/ecommerce";
     public const string Showcase_URL_Fintech = Showcase_URL_Prefix + "/fintech";
@@ -21,7 +20,6 @@ public static class DemoRouteConstants
     public const string Showcase_URL_Marketing = Showcase_URL_Prefix + "/marketing";
     public const string Showcase_URL_Monitoring = Showcase_URL_Prefix + "/monitoring";
     public const string Showcase_URL_ProjectBoard = Showcase_URL_Prefix + "/project-board";
-    public const string Showcase_URL_Restaurant = Showcase_URL_Prefix + "/restaurant";
     public const string Showcase_URL_SaasDashboard = Showcase_URL_Prefix + "/saas-dashboard";
     public const string Showcase_URL_Travel = Showcase_URL_Prefix + "/travel";
 

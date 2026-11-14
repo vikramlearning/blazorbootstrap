@@ -1,0 +1,219 @@
+@page "/showcase/ecommerce/admin/analytics"
+@layout EcommerceAdminLayout
+@using BlazorExpress.ChartJS
+@using Unit = BlazorExpress.ChartJS.Unit
+
+<PageTitle>Analytics · @EcommerceSeedData.StoreName admin</PageTitle>
+
+<div class="aa-head mb-4">
+    <div>
+        <h1 class="ea-title">Sales analytics</h1>
+        <p class="ea-lead">Revenue, orders, and refunds for the @RangeDescription, compared with the @rangeDays days before.</p>
+    </div>
+    <div class="aa-range">
+        <span class="aa-range-label" id="aa-range-label">Date range</span>
+        <RadioButtonGroup TValue="int" Value="rangeDays" ValueExpression="() => rangeDays" ValueChanged="OnRangeChangedAsync"
+                          AriaLabel="Date range" aria-labelledby="aa-range-label" Size="ButtonGroupSize.Small" Class="flex-wrap">
+            @foreach (var range in ranges)
+            {
+                <ButtonGroupItem Value="range.Days" Id="@($"aa-range-{range.Days}")">@range.Text</ButtonGroupItem>
+            }
+        </RadioButtonGroup>
+    </div>
+</div>
+
+<p class="visually-hidden" role="status">@rangeMessage</p>
+
+<div class="row row-cols-1 row-cols-sm-2 row-cols-xl-5 g-3 mb-4">
+    @foreach (var kpi in Kpis)
+    {
+        <div class="col" @key="kpi.Id">
+            <section class="ea-panel" aria-labelledby="@($"aa-kpi-{kpi.Id}")">
+                <span class="ea-kpi-label" id="@($"aa-kpi-{kpi.Id}")">@kpi.Label</span>
+                <span class="ea-kpi-value">@kpi.Value</span>
+                <span class="ea-kpi-note">@kpi.Note</span>
+                <span class="aa-change"><Icon Name="kpi.Change.Icon" class="me-1" aria-hidden="true" />@kpi.Change.Text</span>
+            </section>
+        </div>
+    }
+</div>
+
+<div class="row g-4 mb-4">
+    <div class="col-12">
+        <section class="ea-panel" aria-labelledby="aa-revenue-title">
+            <h2 class="ea-section-title" id="aa-revenue-title">Net revenue per day</h2>
+            <p class="aa-summary">@RevenueSummary</p>
+            @* The canvas carries no information a screen reader can use; the summary and the table below stand in for it. *@
+            <div class="aa-chart aa-chart-line" aria-hidden="true">
+                <LineChart @ref="revenueChart" Height="280" HeightUnit="Unit.Px" Width="100" WidthUnit="Unit.Percentage" />
+            </div>
+            @* A table can't shrink below its content, so the clipping wrapper keeps the hidden table from widening the page. *@
+            <div class="position-relative overflow-hidden">
+            <table class="visually-hidden">
+                <caption>Net revenue per day, @RangeDates</caption>
+                <thead>
+                    <tr>
+                        <th scope="col">Day</th>
+                        <th scope="col">Net revenue</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var day in report.Daily)
+                    {
+                        <tr @key="day.Day">
+                            <th scope="row">@DayLabel(day.Day)</th>
+                            <td>@EcommerceDisplay.Money(day.Net)</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+            </div>
+        </section>
+    </div>
+
+    <div class="col-lg-7">
+        <section class="ea-panel" aria-labelledby="aa-category-title">
+            <h2 class="ea-section-title" id="aa-category-title">Revenue by category</h2>
+            <p class="aa-summary">@CategorySummary <span class="text-body-secondary">Merchandise sales are item prices × quantities, before discounts, shipping, tax, and refunds.</span></p>
+            <div class="aa-chart aa-chart-bar @(report.Current.Orders == 0 ? "d-none" : null)" aria-hidden="true">
+                <BarChart @ref="categoryChart" Height="260" HeightUnit="Unit.Px" Width="100" WidthUnit="Unit.Percentage" />
+            </div>
+            @if (report.Current.Orders == 0)
+            {
+                <p class="ea-empty mb-0">No sales in this period, so there's no revenue to split by category.</p>
+            }
+            @* A table can't shrink below its content, so the clipping wrapper keeps the hidden table from widening the page. *@
+            <div class="position-relative overflow-hidden">
+            <table class="visually-hidden">
+                <caption>Merchandise sales by category, @RangeDates</caption>
+                <thead>
+                    <tr>
+                        <th scope="col">Category</th>
+                        <th scope="col">Revenue</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var category in report.Categories)
+                    {
+                        <tr @key="category.Name">
+                            <th scope="row">@category.Name</th>
+                            <td>@EcommerceDisplay.Money(category.Revenue)</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+            </div>
+        </section>
+    </div>
+
+    <div class="col-lg-5">
+        <section class="ea-panel" aria-labelledby="aa-status-title">
+            <h2 class="ea-section-title" id="aa-status-title">Orders by status</h2>
+            <p class="aa-summary">@StatusSummary <span class="text-body-secondary">Includes cancelled orders.</span></p>
+            <div class="aa-chart aa-chart-doughnut @(report.Statuses.Count == 0 ? "d-none" : null)" aria-hidden="true">
+                <DoughnutChart @ref="statusChart" Height="260" HeightUnit="Unit.Px" Width="100" WidthUnit="Unit.Percentage" />
+            </div>
+            @if (report.Statuses.Count == 0)
+            {
+                <p class="ea-empty mb-0">No orders were placed in this period.</p>
+            }
+            @* A table can't shrink below its content, so the clipping wrapper keeps the hidden table from widening the page. *@
+            <div class="position-relative overflow-hidden">
+            <table class="visually-hidden">
+                <caption>Orders placed by status, @RangeDates</caption>
+                <thead>
+                    <tr>
+                        <th scope="col">Status</th>
+                        <th scope="col">Orders</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var status in report.Statuses)
+                    {
+                        <tr @key="status.Status">
+                            <th scope="row">@StatusName(status.Status)</th>
+                            <td>@Count(status.Orders)</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+            </div>
+        </section>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-xl-7">
+        <section class="ea-panel" aria-labelledby="aa-products-title">
+            <h2 class="ea-section-title" id="aa-products-title">Top products</h2>
+            @if (report.TopProducts.Count == 0)
+            {
+                <p class="ea-empty mb-0">No products sold in the @RangeDescription.</p>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table ea-table align-middle">
+                        <caption class="visually-hidden">Top @report.TopProducts.Count products by units sold, @RangeDates, not counting cancelled orders</caption>
+                        <thead>
+                            <tr>
+                                <th scope="col" class="text-end">Rank</th>
+                                <th scope="col">Product</th>
+                                <th scope="col" class="text-end">Units</th>
+                                <th scope="col" class="text-end">Revenue</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (var index = 0; index < report.TopProducts.Count; index++)
+                            {
+                                var product = report.TopProducts[index];
+
+                                <tr @key="product.ProductId">
+                                    <td class="text-end text-body-secondary">@(index + 1)</td>
+                                    <th scope="row" class="fw-semibold">@product.Name</th>
+                                    <td class="text-end">@Count(product.Units)</td>
+                                    <td class="text-end">@EcommerceDisplay.Money(product.Revenue)</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </section>
+    </div>
+
+    <div class="col-xl-5">
+        <section class="ea-panel" aria-labelledby="aa-coupons-title">
+            <h2 class="ea-section-title" id="aa-coupons-title">Coupon usage</h2>
+            @if (report.Coupons.Count == 0)
+            {
+                <p class="ea-empty mb-0">No coupons were used in the @RangeDescription.</p>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table ea-table align-middle">
+                        <caption class="visually-hidden">Coupons used, @RangeDates, not counting cancelled orders</caption>
+                        <thead>
+                            <tr>
+                                <th scope="col">Code</th>
+                                <th scope="col" class="text-end">Orders</th>
+                                <th scope="col" class="text-end">Total discount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var coupon in report.Coupons)
+                            {
+                                <tr @key="coupon.Code">
+                                    <th scope="row"><code class="aa-code">@coupon.Code</code></th>
+                                    <td class="text-end">@Count(coupon.Orders)</td>
+                                    <td class="text-end">@EcommerceDisplay.Money(coupon.Discount)</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </section>
+    </div>
+</div>

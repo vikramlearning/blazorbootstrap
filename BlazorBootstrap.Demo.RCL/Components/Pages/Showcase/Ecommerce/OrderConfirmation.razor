@@ -6,19 +6,51 @@
 {
     <EcommerceNotFound />
 }
+else if (State.IsStaff)
+{
+    <PageTitle>Order #@Order.Id · @EcommerceSeedData.StoreName</PageTitle>
+    <div class="container-xl pt-4 pb-5" data-clarity-mask="true">
+        <h1 class="ec-page-title mb-3">Order #@Order.Id</h1>
+        <EcommerceStaffNotice Text="This is the customer's order page. Manage the order from the admin." />
+        <a class="btn btn-primary mt-3" href="@($"{EcommerceAdminLayout.Base}/orders/{Order.Id}")">Open order #@Order.Id in the admin</a>
+    </div>
+}
+else if (Order.CustomerId is { } owner && State.Identity.Current?.Id != owner)
+{
+    @* An order linked to an account is shown only to that customer; a guest order is reachable from its confirmation link. *@
+    <PageTitle>Order #@Order.Id · @EcommerceSeedData.StoreName</PageTitle>
+    <div class="container-xl pt-4 pb-5" data-clarity-mask="true">
+        <div class="ec-panel text-center py-5">
+            <h1 class="ec-page-title">Sign in to see this order</h1>
+            <p class="text-body-secondary">Order #@Order.Id belongs to a customer account.</p>
+            <a class="btn btn-primary" href="@($"{EcommerceLayout.SignInPath}?returnUrl={Uri.EscapeDataString($"{EcommerceLayout.Base}/orders/{Order.Id}")}")">Sign in</a>
+        </div>
+    </div>
+}
 else
 {
-    <PageTitle>Order #@Order.Id confirmed · @EcommerceSeedData.StoreName</PageTitle>
+    <PageTitle>Order #@Order.Id · @EcommerceSeedData.StoreName</PageTitle>
 
-    <div class="container-xl pt-4 pb-5">
-        <div class="ec-panel text-center mb-4">
-            <span class="ec-empty-icon" aria-hidden="true"><Icon Name="IconName.BagCheckFill" /></span>
-            <h1 class="ec-page-title mt-3">Thank you, @FirstName!</h1>
-            <p class="mb-1">Order <strong>#@Order.Id</strong> is confirmed.</p>
-            <p class="small text-body-secondary mb-0">
-                In a real store a confirmation would go to @Order.ShipTo.Email. Here nothing was sent or charged; the order stays in this browser tab until you close it or reset the demo.
-            </p>
-        </div>
+    <div class="container-xl pt-4 pb-5" data-clarity-mask="true">
+        @if (IsJustPlaced)
+        {
+            <div class="ec-panel text-center mb-4">
+                <span class="ec-empty-icon" aria-hidden="true"><Icon Name="IconName.BagCheckFill" /></span>
+                <h1 class="ec-page-title mt-3">Thank you, @FirstName!</h1>
+                <p class="mb-1">Order <strong>#@Order.Id</strong> is confirmed.</p>
+                <p class="small text-body-secondary mb-0">
+                    In a real store a confirmation would go to @Order.ShipTo.Email. Here nothing was sent or charged; the order stays in this browser tab until you close it or reset the demo.
+                </p>
+            </div>
+        }
+        else
+        {
+            <div class="d-flex flex-wrap align-items-center gap-3 mb-4">
+                <h1 class="ec-page-title mb-0">Order #@Order.Id</h1>
+                <Badge Color="EcommerceDisplay.StatusColor(Order.Status)" Class="rounded-pill">@Order.Status</Badge>
+                <span class="text-body-secondary small">Placed @EcommerceDisplay.DateTimeShort(Order.PlacedOn)</span>
+            </div>
+        }
 
         <div class="row g-4">
             <div class="col-lg-7">
@@ -50,6 +82,8 @@ else
                         }
                     </ul>
                 </div>
+
+                <EcommerceOrderReturns Order="Order" />
             </div>
 
             <div class="col-lg-5">
@@ -79,23 +113,51 @@ else
 
     private string FirstName => Order!.ShipTo.FullName.Split(' ', StringSplitOptions.RemoveEmptyEntries).FirstOrDefault() ?? Order.ShipTo.FullName;
 
+    /// <summary>Gets whether the order was placed in the last half hour and hasn't moved on: the "thank you" view.</summary>
+    private bool IsJustPlaced => Order!.Status == EcommerceOrderStatus.Placed && State.Clock.Now - Order.PlacedOn < TimeSpan.FromMinutes(30);
+
     private EcommerceOrder? Order => State.FindOrder(Id);
 
+    /// <summary>
+    /// The fulfilment steps from the order's real history: done steps show when they happened, the next ones an expected
+    /// day; a step counts as done only when it is in the history (a refund in transit never shows "Delivered"). A cancelled or
+    /// refunded order ends with that step, in standard wording: the store's internal notes are not shown. The admin moves the order on.
+    /// </summary>
     private IEnumerable<(string Title, string When, string Detail, IconName Icon, bool IsDone, bool IsCurrent)> Steps
     {
         get
         {
-            var placed = Order!.PlacedOn;
-            var fast = Order.Delivery == EcommerceDelivery.Express;
+            var order = Order!;
+            var placed = order.PlacedOn;
+            var fast = order.Delivery == EcommerceDelivery.Express;
             string Day(int days) => placed.AddDays(days).ToString("ddd, MMM d", CultureInfo.InvariantCulture);
+            DateTime? At(EcommerceOrderStatus status) => order.History.LastOrDefault(change => change.Status == status)?.At;
+            string When(EcommerceOrderStatus status, string expected) => At(status) is { } at ? EcommerceDisplay.DateTimeShort(at) : expected;
 
-            return new[]
+            var steps = new List<(string, string, string, IconName, bool, bool)>
             {
-                ("Order placed", placed.ToString("MMM d, h:mm tt", CultureInfo.InvariantCulture), "We've received your order.", IconName.BagCheck, true, true),
-                ("Packed", $"Expected {Day(1)}", "Our team packs it in plastic-free materials.", IconName.Box2, false, false),
-                ("Shipped", $"Expected {Day(fast ? 1 : 2)}", "You'll get a tracking link by email.", IconName.Truck, false, false),
-                ("Delivered", $"Expected {Day(fast ? 2 : 5)}", $"{Order.Delivery} delivery to {Order.ShipTo.City}.", IconName.HouseCheck, false, false),
+                ("Order placed", EcommerceDisplay.DateTimeShort(placed), "We've received your order.", IconName.BagCheck, true, order.Status == EcommerceOrderStatus.Placed),
             };
+
+            if (order.Status == EcommerceOrderStatus.Cancelled)
+            {
+                steps.Add(("Cancelled", When(EcommerceOrderStatus.Cancelled, string.Empty), $"The order was cancelled before it shipped. {EcommerceDisplay.Money(order.RefundedAmount)} was refunded to your {order.CardBrand} card.", IconName.XCircle, true, true));
+
+                return steps;
+            }
+
+            steps.Add(("Packed", When(EcommerceOrderStatus.Packed, $"Expected {Day(1)}"), "Our team packs it in plastic-free materials.", IconName.Box2,
+                At(EcommerceOrderStatus.Packed) is not null, order.Status == EcommerceOrderStatus.Packed));
+            steps.Add(("Shipped", When(EcommerceOrderStatus.Shipped, $"Expected {Day(fast ? 1 : 2)}"),
+                order.TrackingNumber is { } tracking ? $"Tracking number {tracking}." : "You'll get a tracking number when it ships.", IconName.Truck,
+                At(EcommerceOrderStatus.Shipped) is not null, order.Status == EcommerceOrderStatus.Shipped));
+            steps.Add(("Delivered", When(EcommerceOrderStatus.Delivered, $"Expected {Day(fast ? 2 : 5)}"), $"{order.Delivery} delivery to {order.ShipTo.City}.", IconName.HouseCheck,
+                At(EcommerceOrderStatus.Delivered) is not null, order.Status == EcommerceOrderStatus.Delivered));
+
+            if (order.Status == EcommerceOrderStatus.Refunded)
+                steps.Add(("Refunded", When(EcommerceOrderStatus.Refunded, string.Empty), $"{EcommerceDisplay.Money(order.RefundedAmount)} was refunded to your {order.CardBrand} card ending in {order.CardLast4}.", IconName.ArrowCounterclockwise, true, true));
+
+            return steps;
         }
     }
 }

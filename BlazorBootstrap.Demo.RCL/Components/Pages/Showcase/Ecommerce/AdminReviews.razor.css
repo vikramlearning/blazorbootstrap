@@ -1,0 +1,42 @@
+.ea-status:empty {
+    margin: 0;
+}
+
+.ea-status:focus {
+    outline: none;
+}
+
+.ea-status:focus-visible {
+    outline: 2px solid var(--sc-primary);
+    outline-offset: 2px;
+}
+
+/* The stars are decoration next to the visually hidden "Rated N out of 5"; amber reads on both themes. */
+.ea-stars {
+    color: #b45309;
+    letter-spacing: .0625rem;
+}
+
+[data-bs-theme=dark] .ea-stars {
+    color: #fbbf24;
+}
+
+/* Review text keeps the author's line breaks and long words wrap instead of widening the page. */
+.ea-review-body {
+    white-space: pre-line;
+    overflow-wrap: anywhere;
+}
+
+.ea-reply {
+    padding: .75rem 1rem;
+    border-left: 3px solid var(--sc-primary);
+    border-radius: 0 .5rem .5rem 0;
+    background: rgba(var(--sc-primary-rgb), .06);
+}
+
+.ea-reply-context {
+    margin: 0;
+    padding: .75rem 1rem;
+    border: 1px solid var(--ec-border);
+    border-radius: .5rem;
+}

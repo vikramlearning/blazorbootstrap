@@ -1,0 +1,20 @@
+/* Row headers hold the name and email, so they read as body text rather than as small column headings. */
+.ea-customer-table.ea-table th[scope=row] {
+    font-size: inherit;
+    color: var(--ec-ink);
+    min-width: 11rem;
+}
+
+/* The selected customer's row: table-active shades it, and a bar on its first cell marks it without relying on color alone. */
+.ea-customer-table tr[aria-current=true] th[scope=row] {
+    box-shadow: inset 3px 0 0 var(--sc-primary);
+}
+
+h2[tabindex="-1"]:focus {
+    outline: none;
+}
+
+h2[tabindex="-1"]:focus-visible {
+    outline: 2px solid var(--sc-primary);
+    outline-offset: 2px;
+}

@@ -1,0 +1,39 @@
+/* Status and error lines take no space until they have text; they stay rendered so changes are announced. */
+.ao-status,
+.ao-error {
+    margin: 0;
+}
+
+    .ao-status:not(:empty),
+    .ao-error:not(:empty) {
+        margin-bottom: 1rem;
+    }
+
+    .ao-status:focus {
+        outline: none;
+    }
+
+    .ao-status:focus-visible {
+        outline: 2px solid var(--sc-primary);
+        outline-offset: 2px;
+    }
+
+/* Board cards */
+.ao-card {
+    padding: .875rem 1rem;
+    border: 1px solid var(--ec-border);
+    border-radius: .75rem;
+    background: var(--sc-page-bg);
+    overflow-wrap: anywhere;
+}
+
+.ao-card-title {
+    margin: 0 0 .25rem;
+    font-size: 1rem;
+    font-weight: 700;
+}
+
+/* The view switcher wraps below the title on small screens. */
+::deep .btn-group {
+    flex-wrap: wrap;
+}

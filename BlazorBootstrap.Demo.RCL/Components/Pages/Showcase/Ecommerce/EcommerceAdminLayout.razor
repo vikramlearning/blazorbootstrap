@@ -9,7 +9,7 @@
 @* The retailer's back office (D-031): its own layout with the modules in a sidebar, separate from the storefront. *@
 <ShowcaseSessionHost State="State" SiteBase="@EcommerceLayout.Base" SiteName="@EcommerceSeedData.StoreName">
 <div class="sc-site sc-ecommerce ea-admin">
-    <ShowcaseSiteBar Site="@site" />
+    <ShowcaseSiteBar Site="@site" OnThemeChanged="State.SetTheme" />
 
     <div class="ea-shell">
         @if (State.IsStaff)
@@ -33,7 +33,9 @@
                 </div>
             </header>
 
-            <main class="sc-main ea-content" id="ea-main">
+            @* The back office shows shoppers' names, emails, and addresses as page text, so the whole content area is masked from
+               session recording (Clarity masks inputs by default, not text). *@
+            <main class="sc-main ea-content" id="ea-main" data-clarity-mask="true">
                 <ShowcaseRoleGuard Roles="@EcommerceSeedData.RetailerRole" SignInPath="@EcommerceLayout.SignInPath">
                     @Body
                 </ShowcaseRoleGuard>

@@ -181,6 +181,7 @@ public static class EcommerceSeedData
                 var (title, body) = reviewsByRating[rating - 1];
 
                 reviews.Add(new EcommerceReview(
+                    reviews.Count + 1,
                     product.Id,
                     authors[(product.Id * 3 + i) % authors.Length],
                     rating,
@@ -193,6 +194,167 @@ public static class EcommerceSeedData
 
         return reviews;
     }
+
+    /// <summary>The store's coupons: the welcome code, a spend-and-save code, an expired seasonal code, and one switched off.</summary>
+    public static List<EcommerceCoupon> Coupons() => new()
+    {
+        new(PromoCode, "10% off a first order", EcommerceCouponKind.Percent, 10m, 0m, FirstOrderOnly: true, ExpiresOn: null, IsActive: true, UsageLimit: null, Uses: 9),
+        new("TAKE20", "$20 off orders of $150 or more", EcommerceCouponKind.Amount, 20m, 150m, FirstOrderOnly: false, ExpiresOn: Today.AddDays(40), IsActive: true, UsageLimit: 50, Uses: 12),
+        new("AUTUMN15", "15% off the autumn edit", EcommerceCouponKind.Percent, 15m, 60m, FirstOrderOnly: false, ExpiresOn: Today.AddDays(-3), IsActive: true, UsageLimit: null, Uses: 31),
+        new("STAFF30", "30% off for the team (paused)", EcommerceCouponKind.Percent, 30m, 0m, FirstOrderOnly: false, ExpiresOn: null, IsActive: false, UsageLimit: 20, Uses: 4),
+    };
+
+    /// <summary>
+    /// The last four weeks of orders (IDs 10445 to 10480) from fictitious customers, so the dashboard, order list, and
+    /// analytics start with history. Status follows age: today's are placed, then packed, shipped, and delivered, with a
+    /// few cancelled and refunded. Prices and totals use the same rules as checkout.
+    /// </summary>
+    public static List<EcommerceOrder> HistoryOrders(IReadOnlyList<EcommerceProduct> products)
+    {
+        var customers = new (string Name, string Email, string Street, string City, string PostalCode, string Country, string? AccountId)[]
+        {
+            ("Maya Lindqvist", "maya@kindredgoods.example", "18 Alder Row", "Fairbank", "10482", "United States", "maya"),
+            ("Theo Ramsay", "theo.ramsay@example.com", "7 Willow Court", "Brookhaven", "20931", "United States", null),
+            ("Priya Shah", "priya.shah@example.com", "52 Orchard Lane", "Maple Falls", "30417", "Canada", null),
+            ("Jonah Wells", "jonah.wells@example.com", "3 Harbor Street", "Saltmere", "41820", "United Kingdom", null),
+            ("Elena Vargas", "elena.vargas@example.com", "90 Cedar Avenue", "Fairbank", "10488", "United States", null),
+            ("Sam Kowalski", "sam.k@example.com", "14 Birch Close", "Northwick", "55102", "Germany", null),
+            ("Ines Moreau", "ines.moreau@example.com", "21 Linden Road", "Clearwater", "60231", "Australia", null),
+            ("Callum Byrne", "callum.byrne@example.com", "6 Heather Way", "Brookhaven", "20944", "United States", null),
+            ("Noor Aziz", "noor.aziz@example.com", "33 Juniper Street", "Maple Falls", "30422", "Canada", null),
+            ("Hana Tanaka", "hana.tanaka@example.com", "11 Cypress Lane", "Saltmere", "41833", "India", null),
+        };
+        var cards = new (string Brand, string Last4)[] { ("Visa", "4242"), ("Mastercard", "4444"), ("American Express", "0005") };
+        var orders = new List<EcommerceOrder>();
+
+        for (var index = 0; index < 36; index++)
+        {
+            var id = 10445 + index;
+            var daysAgo = (35 - index) * 4 / 5;
+            var placed = SeedTime.AddDays(-daysAgo).AddHours(-(index * 5 % 9)).AddMinutes(index * 13 % 60);
+            var customer = customers[index * 7 % customers.Length];
+            var delivery = index % 5 == 0 ? EcommerceDelivery.Express : EcommerceDelivery.Standard;
+            var promo = index % 9 == 0 ? PromoCode : null;
+            var lines = new List<EcommerceOrderLine>();
+
+            for (var line = 0; line < 1 + (index % 3); line++)
+            {
+                var product = products[(index * 11 + line * 5) % products.Count];
+
+                if (lines.Any(existing => existing.ProductId == product.Id))
+                    continue;
+
+                lines.Add(new EcommerceOrderLine(product.Id, product.Name, product.Colors[(index + line) % product.Colors.Count], 1 + ((index + line) % 2), product.Price));
+            }
+
+            var subtotal = lines.Sum(line => line.UnitPrice * line.Quantity);
+            var discount = promo is null ? 0m : Math.Round(subtotal * PromoRate, 2, MidpointRounding.AwayFromZero);
+            var totals = Totals(lines.Sum(line => line.Quantity), subtotal, discount, delivery);
+
+            var status = index % 13 == 7 ? EcommerceOrderStatus.Cancelled
+                : index % 17 == 9 ? EcommerceOrderStatus.Refunded
+                : daysAgo == 0 ? EcommerceOrderStatus.Placed
+                : daysAgo <= 2 ? EcommerceOrderStatus.Packed
+                : daysAgo <= 5 ? EcommerceOrderStatus.Shipped
+                : EcommerceOrderStatus.Delivered;
+
+            var history = new List<EcommerceStatusChange> { new(EcommerceOrderStatus.Placed, placed, null) };
+
+            if (status == EcommerceOrderStatus.Cancelled)
+            {
+                history.Add(new(EcommerceOrderStatus.Cancelled, placed.AddHours(3), "Customer asked to cancel before packing."));
+            }
+            else
+            {
+                if (status >= EcommerceOrderStatus.Packed)
+                    history.Add(new(EcommerceOrderStatus.Packed, placed.AddHours(20), null));
+
+                if (status >= EcommerceOrderStatus.Shipped)
+                    history.Add(new(EcommerceOrderStatus.Shipped, placed.AddDays(1).AddHours(6), null));
+
+                if (status >= EcommerceOrderStatus.Delivered)
+                    history.Add(new(EcommerceOrderStatus.Delivered, placed.AddDays(delivery == EcommerceDelivery.Express ? 2 : 4), null));
+
+                if (status == EcommerceOrderStatus.Refunded)
+                    history.Add(new(EcommerceOrderStatus.Refunded, placed.AddDays(6), "Arrived damaged; refunded in full."));
+            }
+
+            var card = cards[index % cards.Length];
+            var tracking = status is EcommerceOrderStatus.Shipped or EcommerceOrderStatus.Delivered or EcommerceOrderStatus.Refunded
+                ? TrackingNumberFor(id)
+                : null;
+
+            orders.Add(new EcommerceOrder(
+                id,
+                placed,
+                lines,
+                new EcommerceAddress(customer.Name, customer.Email, customer.Street, customer.City, customer.PostalCode, customer.Country),
+                delivery,
+                promo,
+                totals,
+                card.Brand,
+                card.Last4,
+                status,
+                history,
+                tracking,
+                customer.AccountId,
+                status is EcommerceOrderStatus.Refunded or EcommerceOrderStatus.Cancelled ? totals.Total : 0m));
+        }
+
+        return orders;
+    }
+
+    /// <summary>Three return requests on delivered history orders: one waiting, one approved, one declined.</summary>
+    public static List<EcommerceReturn> Returns(IReadOnlyList<EcommerceOrder> orders)
+    {
+        var delivered = orders.Where(order => order.Status == EcommerceOrderStatus.Delivered).OrderBy(order => order.PlacedOn).ToList();
+        var returns = new List<EcommerceReturn>();
+        var reasons = new[] { ("Doesn't match the photos", "The color is warmer than on screen."), ("Arrived damaged", "One corner was chipped in transit."), ("Changed my mind", null as string) };
+        var statuses = new[] { EcommerceReturnStatus.Approved, EcommerceReturnStatus.Rejected, EcommerceReturnStatus.Requested };
+        var picks = new[] { delivered[0], delivered[delivered.Count / 2], delivered[^1] };
+
+        for (var index = 0; index < picks.Length; index++)
+        {
+            var order = picks[index];
+            var line = order.Lines[0];
+            var status = statuses[index];
+            var requested = order.History.Last(change => change.Status == EcommerceOrderStatus.Delivered).At.AddDays(2);
+
+            returns.Add(new EcommerceReturn(
+                index + 1,
+                order.Id,
+                new[] { new EcommerceReturnLine(line.ProductId, line.Name, line.Color, 1, line.UnitPrice) },
+                reasons[index].Item1,
+                reasons[index].Item2,
+                status,
+                requested,
+                status == EcommerceReturnStatus.Requested ? null : requested.AddDays(1),
+                status switch
+                {
+                    EcommerceReturnStatus.Approved => "Refunded to the original card; item restocked.",
+                    EcommerceReturnStatus.Rejected => "Outside our 30-day return window.",
+                    _ => null,
+                }));
+        }
+
+        return returns;
+    }
+
+    /// <summary>Computes the totals of an order the way checkout does: discount, then shipping, then tax on the discounted subtotal.</summary>
+    public static EcommerceTotals Totals(int itemCount, decimal subtotal, decimal discount, EcommerceDelivery delivery)
+    {
+        var afterDiscount = subtotal - discount;
+        var shipping = itemCount == 0 ? 0m
+            : delivery == EcommerceDelivery.Express ? ExpressShipping
+            : afterDiscount >= FreeShippingThreshold ? 0m
+            : StandardShipping;
+        var tax = Math.Round(afterDiscount * TaxRate, 2, MidpointRounding.AwayFromZero);
+
+        return new EcommerceTotals(itemCount, subtotal, discount, shipping, tax, afterDiscount + shipping + tax);
+    }
+
+    /// <summary>Returns the fictitious carrier tracking number of an order.</summary>
+    public static string TrackingNumberFor(int orderId) => FormattableString.Invariant($"KG{orderId}{orderId * 37 % 10000:0000}US");
 
     #endregion
 

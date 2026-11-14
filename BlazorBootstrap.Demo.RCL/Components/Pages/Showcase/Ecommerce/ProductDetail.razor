@@ -142,11 +142,18 @@ else
                                         <p class="mb-1">@review.Body</p>
                                         <p class="small text-body-secondary mb-0">
                                             @review.Author · @review.PostedOn.ToString("MMM d, yyyy", CultureInfo.InvariantCulture)
-                                            @if (review.IsFromThisSession)
+                                            @if (review.IsFromThisSession && review.AuthorAccountId == State.Identity.Current?.Id)
                                             {
                                                 <Badge Color="BadgeColor.Secondary" Class="ms-1">Your review</Badge>
                                             }
                                         </p>
+                                        @if (review.Reply is { } reply)
+                                        {
+                                            <div class="ec-review-reply mt-2">
+                                                <p class="small fw-semibold mb-1">Reply from @EcommerceSeedData.StoreName</p>
+                                                <p class="small mb-0">@reply</p>
+                                            </div>
+                                        }
                                     </article>
                                 }
                             </div>

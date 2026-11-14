@@ -1,0 +1,46 @@
+/* Page header: title on the left, range selector on the right; stacked on narrow screens. */
+.aa-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.aa-range {
+    display: flex;
+    flex-direction: column;
+    gap: .25rem;
+}
+
+.aa-range-label {
+    font-size: .8125rem;
+    font-weight: 600;
+    color: var(--bs-secondary-color);
+}
+
+/* KPI comparison with the previous period: words and an arrow, never color alone. */
+.aa-change {
+    display: flex;
+    align-items: baseline;
+    margin-top: .5rem;
+    font-size: .8125rem;
+    font-weight: 600;
+    color: var(--ec-ink);
+}
+
+.aa-summary {
+    margin: 0 0 .75rem;
+    font-size: .9375rem;
+}
+
+/* Chart.js sizes the canvas to its container; min-width: 0 lets it shrink inside the grid columns. */
+.aa-chart {
+    position: relative;
+    min-width: 0;
+}
+
+.aa-code {
+    color: var(--ec-ink);
+    font-size: .875rem;
+}

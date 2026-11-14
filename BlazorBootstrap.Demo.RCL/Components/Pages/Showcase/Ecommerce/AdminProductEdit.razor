@@ -1,0 +1,259 @@
+@page "/showcase/ecommerce/admin/products/new"
+@page "/showcase/ecommerce/admin/products/{Id:int}"
+@layout EcommerceAdminLayout
+
+<div class="ea-product-edit">
+    <a class="ea-back-link small" href="@ProductsUrl"><Icon Name="IconName.ArrowLeft" class="me-1" aria-hidden="true" />All products</a>
+
+    @if (IsMissing)
+    {
+        <PageTitle>Product not found · @EcommerceSeedData.StoreName admin</PageTitle>
+
+        <section class="ea-panel text-center py-5 mt-3" aria-labelledby="ea-product-missing-title">
+            <span class="ea-missing-icon" aria-hidden="true"><Icon Name="IconName.BoxSeam" /></span>
+            <h1 class="ea-title mt-3" id="ea-product-missing-title">Product not found</h1>
+            <p class="ea-lead mb-4">No product has ID @Id. It may have been deleted, or the link may be old.</p>
+            <a class="btn btn-primary" href="@ProductsUrl">Back to products</a>
+        </section>
+    }
+    else
+    {
+        <PageTitle>@(Product is null ? "Add product" : $"Edit {Product.Name}") · @EcommerceSeedData.StoreName admin</PageTitle>
+
+        <div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mt-2 mb-3">
+            <div>
+                <h1 class="ea-title">@(Product is null ? "Add product" : Product.Name)</h1>
+                @if (Product is null)
+                {
+                    <p class="ea-lead">A new product starts in the store as soon as you add it.</p>
+                }
+                else
+                {
+                    <p class="ea-lead">
+                        Product #@Product.Id · @CategoryName · added @Product.AddedOn.ToString("MMM d, yyyy", CultureInfo.InvariantCulture) ·
+                        @if (Product.IsArchived)
+                        {
+                            <Badge Color="BadgeColor.Secondary">Archived</Badge>
+                        }
+                        else
+                        {
+                            <Badge Color="BadgeColor.Success">Active</Badge>
+                        }
+                    </p>
+                }
+            </div>
+            @if (Product is { IsArchived: false })
+            {
+                <a class="btn btn-outline-secondary" href="@($"{EcommerceLayout.Base}/products/{Product.Id}")">
+                    <Icon Name="IconName.ShopWindow" class="me-1" aria-hidden="true" />View in store
+                </a>
+            }
+        </div>
+
+        @* Always rendered and focusable: saves, archive, and restore are announced here. *@
+        <p class="fw-semibold ea-edit-message" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
+
+        <div class="row g-4">
+            <div class="col-xl-8">
+                <section class="ea-panel" aria-labelledby="ea-product-form-title">
+                    <h2 class="ea-section-title" id="ea-product-form-title">Details</h2>
+
+                    <EditForm EditContext="editContext" OnValidSubmit="Save" OnInvalidSubmit="OnInvalidSubmit" FormName="ea-product">
+                        <DataAnnotationsValidator />
+
+                        <div role="alert" class="ea-form-error">
+                            @if (formError is not null)
+                            {
+                                <p class="alert alert-danger mb-3">@formError</p>
+                            }
+                        </div>
+
+                        <div class="row g-3">
+                            <div class="col-md-7">
+                                <label class="form-label" for="ea-name">Name</label>
+                                <TextInput Id="ea-name" @bind-Value="form.Name" MaxLength="80" />
+                                <ValidationMessage For="() => form.Name" />
+                            </div>
+                            <div class="col-md-5">
+                                <label class="form-label" for="ea-category">Category</label>
+                                <InputSelect id="ea-category" class="form-select" @bind-Value="form.CategoryId">
+                                    <option value="">Choose a category</option>
+                                    @foreach (var category in State.Categories)
+                                    {
+                                        <option value="@category.Id">@category.Name</option>
+                                    }
+                                </InputSelect>
+                                <ValidationMessage For="() => form.CategoryId" />
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label" for="ea-description">Description</label>
+                                <TextAreaInput Id="ea-description" @bind-Value="form.Description" Rows="5" MaxLength="1000" aria-describedby="ea-description-help" />
+                                <div class="form-text" id="ea-description-help">10 to 1,000 characters, shown on the product page.</div>
+                                <ValidationMessage For="() => form.Description" />
+                            </div>
+                            <div class="col-md-7">
+                                <label class="form-label" for="ea-highlights">Highlights</label>
+                                <TextAreaInput Id="ea-highlights" @bind-Value="form.Highlights" Rows="4" MaxLength="@HighlightsMaxLength" aria-describedby="ea-highlights-help" />
+                                <div class="form-text" id="ea-highlights-help">One per line, up to 6 lines of 80 characters each. Optional.</div>
+                                <ValidationMessage For="() => form.Highlights" />
+                            </div>
+                            <div class="col-md-5">
+                                <label class="form-label" for="ea-colors">Colors</label>
+                                <TextInput Id="ea-colors" @bind-Value="form.Colors" MaxLength="@ColorsMaxLength" Placeholder="Oat, Charcoal" aria-describedby="ea-colors-help" />
+                                <div class="form-text" id="ea-colors-help">Separate with commas: 1 to 6 colors of up to 20 characters.</div>
+                                <ValidationMessage For="() => form.Colors" />
+                            </div>
+                            <div class="col-sm-6 col-md-4">
+                                <label class="form-label" for="ea-price">Price</label>
+                                <InputGroup>
+                                    <InputGroupText>$</InputGroupText>
+                                    <NumberInput TValue="decimal?" Id="ea-price" @bind-Value="form.Price" Step="0.01" Placeholder="0.00" aria-describedby="ea-price-help" />
+                                </InputGroup>
+                                <div class="form-text" id="ea-price-help">$0.01 to $100,000.</div>
+                                <ValidationMessage For="() => form.Price" />
+                            </div>
+                            <div class="col-sm-6 col-md-4">
+                                <label class="form-label" for="ea-compare-at">Compare-at price</label>
+                                <InputGroup>
+                                    <InputGroupText>$</InputGroupText>
+                                    <NumberInput TValue="decimal?" Id="ea-compare-at" @bind-Value="form.CompareAtPrice" Step="0.01" aria-describedby="ea-compare-at-help" />
+                                </InputGroup>
+                                <div class="form-text" id="ea-compare-at-help">The "was" price. Leave empty when not on sale; otherwise more than the price.</div>
+                                <ValidationMessage For="() => form.CompareAtPrice" />
+                            </div>
+                            <div class="col-sm-6 col-md-4">
+                                <label class="form-label" for="ea-stock">Units in stock</label>
+                                <NumberInput TValue="int" Id="ea-stock" @bind-Value="form.Stock" Step="1" aria-describedby="ea-stock-help" />
+                                <div class="form-text" id="ea-stock-help">0 to 9,999.</div>
+                                <ValidationMessage For="() => form.Stock" />
+                            </div>
+                            <div class="col-12">
+                                <Switch Id="ea-featured" @bind-Value="form.IsFeatured" Label="Featured on the store's home page" />
+                            </div>
+                        </div>
+
+                        <div class="d-flex flex-wrap gap-2 mt-4">
+                            <Button Type="ButtonType.Submit" Color="ButtonColor.Primary">@(Product is null ? "Add product" : "Save changes")</Button>
+                            <a class="btn btn-outline-secondary" href="@ProductsUrl">@(Product is null ? "Cancel" : "Back to products")</a>
+                        </div>
+                    </EditForm>
+                </section>
+            </div>
+
+            <div class="col-xl-4 d-grid gap-4 align-content-start">
+                <section class="ea-panel" aria-labelledby="ea-product-image-title">
+                    <h2 class="ea-section-title" id="ea-product-image-title">Image</h2>
+                    <ShowcaseImage Src="@Product?.ImagePath" Alt="@(Product is null ? string.Empty : $"Photo of {Product.Name}")" Width="600" Height="600"
+                                   Class="ea-edit-image" Accent="@CategoryAccent" PlaceholderIcon="@CategoryIcon"
+                                   Caption="@(Product is null ? "Photo to come" : null)" />
+                    <p class="small text-body-secondary mt-3 mb-0">
+                        In this demo, product photos come from the store's licensed photo library, so they can't be uploaded here.
+                        @(Product is null ? "A new product shows a placeholder until its photo is added to the library." : string.Empty)
+                    </p>
+                </section>
+
+                @if (Product is not null)
+                {
+                    <section class="ea-panel" aria-labelledby="ea-product-sales-title">
+                        <h2 class="ea-section-title" id="ea-product-sales-title">Sales and rating</h2>
+                        <dl class="ea-facts mb-0">
+                            <div>
+                                <dt>Units sold</dt>
+                                <dd>@UnitsSold <span class="text-body-secondary small">in @OrderCountText (cancelled orders not counted)</span></dd>
+                            </div>
+                            <div>
+                                <dt>In stock now</dt>
+                                <dd>
+                                    @if (Product.Stock == 0)
+                                    {
+                                        <Badge Color="BadgeColor.Danger">Out of stock</Badge>
+                                    }
+                                    else if (Product.Stock <= LowStockLimit)
+                                    {
+                                        <Badge Color="BadgeColor.Warning">@Product.Stock left</Badge>
+                                    }
+                                    else
+                                    {
+                                        @Product.Stock
+                                    }
+                                </dd>
+                            </div>
+                            <div>
+                                <dt>Average rating</dt>
+                                <dd>
+                                    @if (ReviewCount == 0)
+                                    {
+                                        <span class="text-body-secondary">No published reviews yet</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="ea-stars" aria-hidden="true">
+                                            @foreach (var star in EcommerceDisplay.Stars(Rating))
+                                            {
+                                                <Icon Name="@star" />
+                                            }
+                                        </span>
+                                        <span>@EcommerceDisplay.Rating(Rating) out of 5 from @ReviewCount @(ReviewCount == 1 ? "review" : "reviews")</span>
+                                    }
+                                </dd>
+                            </div>
+                        </dl>
+                    </section>
+
+                    <section class="ea-panel" aria-labelledby="ea-product-visibility-title">
+                        <h2 class="ea-section-title" id="ea-product-visibility-title">In the store</h2>
+                        <p class="small mb-3">
+                            @(Product.IsArchived
+                                ? "Archived: hidden from the store. Past orders still show it."
+                                : "Active: shoppers can find and buy it.")
+                        </p>
+                        <div class="d-flex flex-wrap gap-2">
+                            <Button @ref="archiveButton" Color="ButtonColor.Secondary" Outline="true" @onclick="ToggleArchiveAsync">
+                                <Icon Name="@(Product.IsArchived ? IconName.ArrowCounterclockwise : IconName.Archive)" class="me-1" aria-hidden="true" />@(Product.IsArchived ? "Restore" : "Archive")
+                            </Button>
+                            @if (CanDelete)
+                            {
+                                <Button @ref="deleteButton" Color="ButtonColor.Danger" Outline="true" @onclick="AskDeleteAsync">
+                                    <Icon Name="IconName.Trash" class="me-1" aria-hidden="true" />Delete
+                                </Button>
+                            }
+                        </div>
+                        @if (!CanDelete)
+                        {
+                            <p class="small text-body-secondary mt-3 mb-0">@CannotDeleteText</p>
+                        }
+                    </section>
+                }
+            </div>
+        </div>
+    }
+</div>
+
+@* The dialogs stay outside the conditional content, so they are still on the page when they finish closing. *@
+<Modal @ref="archiveModal" IsVerticallyCentered="true" ShowCloseButton="false" aria-labelledby="ea-archive-title" OnHidden="OnArchiveHiddenAsync">
+    <HeaderTemplate>
+        <h2 class="modal-title h5" id="ea-archive-title">Archive @(Product?.Name)?</h2>
+    </HeaderTemplate>
+    <BodyTemplate>
+        <p class="mb-2">It's hidden from the store and removed from shoppers' carts. Orders that include it keep it.</p>
+        <p class="small text-body-secondary mb-0">You can restore it at any time.</p>
+    </BodyTemplate>
+    <FooterTemplate>
+        <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => archiveModal.HideAsync()">Keep it in the store</Button>
+        <Button Color="ButtonColor.Primary" @onclick="ConfirmArchiveAsync">Archive product</Button>
+    </FooterTemplate>
+</Modal>
+
+<Modal @ref="deleteModal" IsVerticallyCentered="true" ShowCloseButton="false" aria-labelledby="ea-delete-title" OnHidden="OnDeleteHiddenAsync">
+    <HeaderTemplate>
+        <h2 class="modal-title h5" id="ea-delete-title">Delete @(Product?.Name)?</h2>
+    </HeaderTemplate>
+    <BodyTemplate>
+        <p class="mb-2">The product and its reviews are removed for good. This can't be undone.</p>
+        <p class="small text-body-secondary mb-0">To hide it but keep it, archive it instead.</p>
+    </BodyTemplate>
+    <FooterTemplate>
+        <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => deleteModal.HideAsync()">Keep product</Button>
+        <Button Color="ButtonColor.Danger" @onclick="ConfirmDeleteAsync">Delete product</Button>
+    </FooterTemplate>
+</Modal>

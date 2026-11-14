@@ -44,7 +44,8 @@ public sealed record EcommerceProduct(
     IReadOnlyList<string> Colors,
     bool IsFeatured,
     int Stock,
-    DateTime AddedOn)
+    DateTime AddedOn,
+    bool IsArchived = false)
 {
     #region Properties, Indexers
 
@@ -60,8 +61,8 @@ public sealed record EcommerceProduct(
     #endregion
 }
 
-/// <summary>A customer review of a product.</summary>
-public sealed record EcommerceReview(int ProductId, string Author, int Rating, string Title, string Body, DateTime PostedOn, bool IsFromThisSession);
+/// <summary>A customer review of a product, with the store's moderation status and optional public reply.</summary>
+public sealed record EcommerceReview(int Id, int ProductId, string Author, int Rating, string Title, string Body, DateTime PostedOn, bool IsFromThisSession, EcommerceReviewStatus Status = EcommerceReviewStatus.Published, string? Reply = null, string? AuthorAccountId = null);
 
 /// <summary>One product and color in the cart.</summary>
 public sealed record EcommerceCartLine(int ProductId, string Color, int Quantity);
@@ -75,7 +76,7 @@ public sealed record EcommerceOrderLine(int ProductId, string Name, string Color
 /// <summary>Money totals of a cart or order.</summary>
 public sealed record EcommerceTotals(int ItemCount, decimal Subtotal, decimal Discount, decimal Shipping, decimal Tax, decimal Total);
 
-/// <summary>An order placed in this session. Only the card's brand and last four digits are kept.</summary>
+/// <summary>An order with its fulfilment status and history. Only the card's brand and last four digits are kept.</summary>
 public sealed record EcommerceOrder(
     int Id,
     DateTime PlacedOn,
@@ -85,7 +86,12 @@ public sealed record EcommerceOrder(
     string? PromoCode,
     EcommerceTotals Totals,
     string CardBrand,
-    string CardLast4);
+    string CardLast4,
+    EcommerceOrderStatus Status,
+    IReadOnlyList<EcommerceStatusChange> History,
+    string? TrackingNumber = null,
+    string? CustomerId = null,
+    decimal RefundedAmount = 0m);
 
 /// <summary>The catalog filters, kept in the site state so they survive a visit to a product page.</summary>
 public sealed class EcommerceCatalogFilter
@@ -118,6 +124,163 @@ public sealed class EcommerceCatalogFilter
 
     /// <summary>Gets or sets the sort order.</summary>
     public EcommerceSort Sort { get; set; } = EcommerceSort.Featured;
+
+    #endregion
+}
+
+/// <summary>Where an order is in fulfilment. Placed → Packed → Shipped → Delivered; Cancelled before shipping; Refunded after.</summary>
+public enum EcommerceOrderStatus
+{
+    /// <summary>Paid and waiting to be packed.</summary>
+    Placed,
+
+    /// <summary>Packed and waiting for the carrier.</summary>
+    Packed,
+
+    /// <summary>With the carrier, with a tracking number.</summary>
+    Shipped,
+
+    /// <summary>Delivered to the customer.</summary>
+    Delivered,
+
+    /// <summary>Cancelled before it shipped; stock went back.</summary>
+    Cancelled,
+
+    /// <summary>Refunded in full after it shipped.</summary>
+    Refunded,
+}
+
+/// <summary>One step in an order's history.</summary>
+public sealed record EcommerceStatusChange(EcommerceOrderStatus Status, DateTime At, string? Note);
+
+/// <summary>Whether a review shows on the product page.</summary>
+public enum EcommerceReviewStatus
+{
+    /// <summary>Shown to shoppers and counted in the rating.</summary>
+    Published,
+
+    /// <summary>Hidden by the store; not counted in the rating.</summary>
+    Hidden,
+}
+
+/// <summary>How a coupon discounts the subtotal.</summary>
+public enum EcommerceCouponKind
+{
+    /// <summary>A percentage of the subtotal.</summary>
+    Percent,
+
+    /// <summary>A fixed amount, at most the subtotal.</summary>
+    Amount,
+}
+
+/// <summary>A coupon the store offers.</summary>
+public sealed record EcommerceCoupon(
+    string Code,
+    string Description,
+    EcommerceCouponKind Kind,
+    decimal Value,
+    decimal MinSubtotal,
+    bool FirstOrderOnly,
+    DateTime? ExpiresOn,
+    bool IsActive,
+    int? UsageLimit,
+    int Uses);
+
+/// <summary>The outcome of checking a coupon code against the cart.</summary>
+public enum EcommerceCouponCheck
+{
+    /// <summary>The coupon applies.</summary>
+    Applied,
+
+    /// <summary>No coupon has this code.</summary>
+    NotFound,
+
+    /// <summary>The store turned the coupon off.</summary>
+    Inactive,
+
+    /// <summary>The coupon has expired.</summary>
+    Expired,
+
+    /// <summary>The coupon has been used as many times as allowed.</summary>
+    UsedUp,
+
+    /// <summary>The cart subtotal is below the coupon's minimum.</summary>
+    BelowMinimum,
+
+    /// <summary>The coupon is for a first order, and this customer has ordered before.</summary>
+    NotFirstOrder,
+}
+
+/// <summary>Where a return request is.</summary>
+public enum EcommerceReturnStatus
+{
+    /// <summary>Waiting for the store.</summary>
+    Requested,
+
+    /// <summary>Approved: the items went back into stock and the amount was refunded.</summary>
+    Approved,
+
+    /// <summary>Declined by the store, with a note.</summary>
+    Rejected,
+}
+
+/// <summary>One line of a return request.</summary>
+public sealed record EcommerceReturnLine(int ProductId, string Name, string Color, int Quantity, decimal UnitPrice);
+
+/// <summary>A customer's request to return items from a delivered order.</summary>
+public sealed record EcommerceReturn(
+    int Id,
+    int OrderId,
+    IReadOnlyList<EcommerceReturnLine> Lines,
+    string Reason,
+    string? Comment,
+    EcommerceReturnStatus Status,
+    DateTime RequestedOn,
+    DateTime? DecidedOn = null,
+    string? DecisionNote = null)
+{
+    #region Properties, Indexers
+
+    /// <summary>Gets the amount refunded when the return is approved.</summary>
+    public decimal Amount => Lines.Sum(line => line.UnitPrice * line.Quantity);
+
+    #endregion
+}
+
+/// <summary>A customer as the store sees one: from accounts and from orders placed as a guest.</summary>
+public sealed record EcommerceCustomerSummary(string Email, string Name, string? AccountId, int OrderCount, decimal Spent, DateTime? LastOrderOn);
+
+/// <summary>The product editor's form: everything the retailer can change about a product.</summary>
+public sealed class EcommerceProductDraft
+{
+    #region Properties, Indexers
+
+    /// <summary>Gets or sets the category ID.</summary>
+    public string CategoryId { get; set; } = string.Empty;
+
+    /// <summary>Gets or sets the colors, comma-separated.</summary>
+    public string Colors { get; set; } = string.Empty;
+
+    /// <summary>Gets or sets the compare-at ("was") price, or <see langword="null" /> when not on sale.</summary>
+    public decimal? CompareAtPrice { get; set; }
+
+    /// <summary>Gets or sets the description.</summary>
+    public string Description { get; set; } = string.Empty;
+
+    /// <summary>Gets or sets the highlights, one per line.</summary>
+    public string Highlights { get; set; } = string.Empty;
+
+    /// <summary>Gets or sets whether the product is featured on the home page.</summary>
+    public bool IsFeatured { get; set; }
+
+    /// <summary>Gets or sets the name.</summary>
+    public string Name { get; set; } = string.Empty;
+
+    /// <summary>Gets or sets the price.</summary>
+    public decimal Price { get; set; }
+
+    /// <summary>Gets or sets the units in stock.</summary>
+    public int Stock { get; set; }
 
     #endregion
 }

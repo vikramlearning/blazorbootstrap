@@ -45,6 +45,14 @@ public partial class EcommerceAdminLayout : LayoutComponentBase, IDisposable
         var items = new List<NavItem>
         {
             new() { Id = "dashboard", Href = Base, IconName = IconName.Speedometer2, Text = "Dashboard", Match = NavLinkMatch.All },
+            new() { Id = "orders", Href = $"{Base}/orders", IconName = IconName.Receipt, Text = "Orders" },
+            new() { Id = "products", Href = $"{Base}/products", IconName = IconName.BoxSeam, Text = "Products" },
+            new() { Id = "pricing", Href = $"{Base}/pricing", IconName = IconName.CurrencyDollar, Text = "Pricing" },
+            new() { Id = "offers", Href = $"{Base}/offers", IconName = IconName.Tags, Text = "Offers & coupons" },
+            new() { Id = "customers", Href = $"{Base}/customers", IconName = IconName.People, Text = "Customers" },
+            new() { Id = "returns", Href = $"{Base}/returns", IconName = IconName.ArrowCounterclockwise, Text = "Returns" },
+            new() { Id = "reviews", Href = $"{Base}/reviews", IconName = IconName.ChatSquareText, Text = "Reviews" },
+            new() { Id = "analytics", Href = $"{Base}/analytics", IconName = IconName.GraphUp, Text = "Analytics" },
             new() { Id = "account", Href = $"{Base}/account", IconName = IconName.PersonGear, Text = "Account" },
         };
 

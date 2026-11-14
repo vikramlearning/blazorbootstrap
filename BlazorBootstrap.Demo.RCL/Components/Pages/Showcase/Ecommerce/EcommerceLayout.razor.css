@@ -555,3 +555,11 @@
         outline: 2px solid #fdba74;
         outline-offset: 2px;
     }
+
+/* The store's public reply under a review. */
+.sc-ecommerce ::deep .ec-review-reply {
+    padding: .625rem .875rem;
+    border-left: 3px solid var(--sc-primary);
+    border-radius: 0 .5rem .5rem 0;
+    background-color: var(--ec-soft);
+}

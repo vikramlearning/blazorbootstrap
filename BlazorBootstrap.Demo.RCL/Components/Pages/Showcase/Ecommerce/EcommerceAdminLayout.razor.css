@@ -217,11 +217,22 @@
     font-size: .9375rem;
 }
 
-    .sc-ecommerce ::deep .ea-table th {
+    .sc-ecommerce ::deep .ea-table thead th {
         font-size: .8125rem;
         font-weight: 600;
         color: var(--bs-secondary-color);
     }
+
+/* Visually hidden text (absolutely positioned) inside a scrolling table must stay inside the scroll box; otherwise it
+   widens the page on phones. */
+.sc-ecommerce ::deep .table-responsive {
+    position: relative;
+}
+
+/* Pagers wrap on narrow screens. */
+.sc-ecommerce ::deep .pagination {
+    flex-wrap: wrap;
+}
 
 .sc-ecommerce ::deep .ea-empty {
     padding: 1.5rem 1rem;
