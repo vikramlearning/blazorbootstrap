@@ -1,0 +1,52 @@
+@inherits LayoutComponentBase
+
+<HeadContent>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@500&display=swap" />
+</HeadContent>
+
+<div class="sc-site sc-helpdesk">
+    <ShowcaseSiteBar Site="@site" />
+
+    <Navbar Class="hd-header"
+            Placement="NavbarPlacement.StickyTop"
+            Container="NavbarContainer.Fluid"
+            AriaLabel="Beacon Desk"
+            TogglerAriaLabel="Menu">
+        <Brand>
+            <NavbarBrand Href="@Base" Class="hd-brand">
+                <span class="hd-brand-mark" aria-hidden="true"><Icon Name="IconName.LifePreserver" /></span>
+                <span>@HelpDeskSeedData.ProductName</span>
+            </NavbarBrand>
+        </Brand>
+        <ChildContent>
+            <NavbarNav Class="me-auto ms-lg-4 mb-3 mb-lg-0">
+                <NavbarItem Href="@Base" Match="NavLinkMatch.All">Queue</NavbarItem>
+                <NavbarItem Href="@($"{Base}/tickets/new")">New ticket</NavbarItem>
+                <NavbarItem Href="@($"{Base}/kb")">Knowledge base</NavbarItem>
+            </NavbarNav>
+            <div class="hd-user mb-3 mb-lg-0">
+                <Avatar Name="@HelpDeskSeedData.AgentName" Initials="JA" Color="AvatarColor.Danger" Size="AvatarSize.Small" />
+                <span>@HelpDeskSeedData.AgentName <span class="hd-user-role">Support agent</span></span>
+            </div>
+        </ChildContent>
+    </Navbar>
+
+    <main class="sc-main hd-content" id="hd-main">
+        @Body
+    </main>
+
+    <div class="container-fluid px-lg-4">
+        <CarbonAds Class="sc-ad" />
+    </div>
+
+    <footer class="hd-footer">
+        <div class="container-fluid px-lg-4 d-flex flex-wrap justify-content-between gap-2">
+            <span>© 2026 @HelpDeskSeedData.ProductName (fictitious). Customers, companies, and tickets are made up; no email is sent.</span>
+            <span class="d-none d-lg-inline">Built with Grid, Tabs, RichTextEditor, Badge, Breadcrumb, Toasts, and Markdown.</span>
+        </div>
+    </footer>
+
+    <Toasts class="p-3" AutoHide="true" Delay="5000" Placement="ToastsPlacement.BottomRight" />
+</div>

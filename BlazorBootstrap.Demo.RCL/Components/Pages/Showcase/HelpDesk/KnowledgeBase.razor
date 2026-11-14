@@ -1,0 +1,71 @@
+@page "/showcase/help-desk/kb"
+@layout HelpDeskLayout
+
+<PageTitle>Knowledge base · @HelpDeskSeedData.ProductName</PageTitle>
+
+<div class="container-fluid px-lg-4">
+    <div class="hd-page-head">
+        <div>
+            <h1 class="hd-title">Knowledge base</h1>
+            <p class="hd-lead">Answers you can share with customers or link in a reply.</p>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <aside class="col-lg-3" aria-label="Filters">
+            <div class="hd-panel">
+                <label class="form-label small fw-semibold" for="hd-kb-search">Search articles</label>
+                <InputGroup Class="mb-4">
+                    <InputGroupText><Icon Name="IconName.Search" aria-hidden="true" /></InputGroupText>
+                    <TextInput Id="hd-kb-search" Value="@searchBoxValue" ValueExpression="() => searchBoxValue" ValueChanged="OnSearchChanged"
+                               @oninput="OnSearchInput" Placeholder="Title or topic" />
+                </InputGroup>
+                <h2 class="small fw-semibold mb-2" id="hd-kb-category">Category</h2>
+                <RadioButtonGroup TValue="string" Value="categoryId" ValueExpression="() => categoryId" ValueChanged="OnCategoryChanged"
+                                  AriaLabel="Category" aria-labelledby="hd-kb-category" Vertical="true" Size="ButtonGroupSize.Small" Class="w-100">
+                    <ButtonGroupItem Value="@string.Empty" Id="hd-kb-all">All categories</ButtonGroupItem>
+                    @foreach (var category in State.Categories)
+                    {
+                        <ButtonGroupItem Value="category.Id" Id="@($"hd-kb-{category.Id}")">@category.Name</ButtonGroupItem>
+                    }
+                </RadioButtonGroup>
+            </div>
+        </aside>
+
+        <section class="col-lg-9" aria-labelledby="hd-kb-count">
+            <p class="fw-semibold mb-3" id="hd-kb-count" aria-live="polite">@(Results.Count == 1 ? "1 article" : $"{Results.Count} articles")</p>
+            @if (Results.Count == 0)
+            {
+                <div class="hd-panel text-center py-5">
+                    <h2 class="h5 fw-bold">No articles match</h2>
+                    <p class="text-body-secondary mb-0">Try another word or category.</p>
+                </div>
+            }
+            else
+            {
+                <div class="row row-cols-1 row-cols-md-2 g-3">
+                    @foreach (var article in Results)
+                    {
+                        var category = State.FindCategory(article.CategoryId);
+                        <div class="col" @key="article.Id">
+                            <Card Class="hd-card h-100">
+                                <CardBody>
+                                    <div class="d-flex align-items-start gap-3">
+                                        <span class="hd-icon" aria-hidden="true"><Icon Name="@category.IconName" /></span>
+                                        <div>
+                                            <span class="small text-body-secondary">@category.Name</span>
+                                            <h2 class="h6 fw-bold mt-1 mb-1"><a class="hd-ticket-link" href="@HelpDeskDisplay.ArticleUrl(article.Id)">@article.Title</a></h2>
+                                            <p class="small text-body-secondary mb-2">@article.Summary</p>
+                                            <span class="small text-body-secondary">@article.ReadingMinutes min read · @article.Views.ToString("#,0", CultureInfo.InvariantCulture) views</span>
+                                        </div>
+                                    </div>
+                                </CardBody>
+                            </Card>
+                        </div>
+                    }
+                </div>
+            }
+        </section>
+    </div>
+</div>
+

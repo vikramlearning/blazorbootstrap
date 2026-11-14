@@ -1,0 +1,114 @@
+@page "/showcase/help-desk"
+@layout HelpDeskLayout
+
+<PageTitle>Ticket queue · @HelpDeskSeedData.ProductName</PageTitle>
+
+<div class="container-fluid px-lg-4">
+    <div class="hd-page-head">
+        <div>
+            <h1 class="hd-title">Ticket queue</h1>
+            <p class="hd-lead">Most urgent first: overdue, then at risk, then by due time.</p>
+        </div>
+        <Button Type="ButtonType.Link" To="@($"{HelpDeskLayout.Base}/tickets/new")" Color="ButtonColor.Primary">
+            <Icon Name="IconName.PlusCircle" class="me-2" aria-hidden="true" />New ticket
+        </Button>
+    </div>
+
+    <section aria-label="Queue summary" class="row row-cols-2 row-cols-lg-4 g-3 mb-4">
+        @foreach (var (label, value, icon) in Summary)
+        {
+            <div class="col">
+                <Card Class="hd-card h-100">
+                    <CardBody Class="d-flex align-items-center gap-3 p-3">
+                        <span class="hd-icon" aria-hidden="true"><Icon Name="icon" /></span>
+                        <span>
+                            <span class="hd-kpi-label">@label</span>
+                            <span class="hd-kpi-value">@value</span>
+                        </span>
+                    </CardBody>
+                </Card>
+            </div>
+        }
+    </section>
+
+    <Card Class="hd-card">
+        <CardBody Class="p-3 p-lg-4">
+            <div class="row g-2 align-items-end mb-3" role="search" aria-label="Filter tickets">
+                <div class="col-md-4">
+                    <label class="form-label small fw-semibold" for="hd-search">Search</label>
+                    <InputGroup>
+                        <InputGroupText><Icon Name="IconName.Search" aria-hidden="true" /></InputGroupText>
+                        @* The bound value changes only on change; @oninput filters live, and the box keeps its own value so no keystroke is lost. *@
+                        <TextInput Id="hd-search" Value="@searchBoxValue" ValueExpression="() => searchBoxValue" ValueChanged="OnSearchChangedAsync"
+                                   @oninput="OnSearchInputAsync" Placeholder="Number, subject, or customer" />
+                    </InputGroup>
+                </div>
+                <div class="col-6 col-md-3">
+                    <label class="form-label small fw-semibold" for="hd-status">Status</label>
+                    <select id="hd-status" class="form-select" value="@State.Filter.Status" @onchange="OnStatusChangedAsync">
+                        <option value="@HelpDeskFilter.StatusAllOpen">All unresolved</option>
+                        @foreach (var status in Enum.GetValues<HelpDeskStatus>())
+                        {
+                            <option value="@status">@status</option>
+                        }
+                        <option value="@HelpDeskFilter.StatusAll">All tickets</option>
+                    </select>
+                </div>
+                <div class="col-6 col-md-2">
+                    <label class="form-label small fw-semibold" for="hd-priority">Priority</label>
+                    <select id="hd-priority" class="form-select" value="@State.Filter.Priority" @onchange="OnPriorityChangedAsync">
+                        <option value="">Any</option>
+                        @foreach (var priority in Enum.GetValues<HelpDeskPriority>().Reverse())
+                        {
+                            <option value="@priority">@priority</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-3 d-flex flex-wrap align-items-center gap-3">
+                    <Switch Value="State.Filter.AssignedToMe" ValueExpression="() => State.Filter.AssignedToMe" ValueChanged="OnAssignedToMeChangedAsync" Label="Assigned to me" />
+                    <Button Color="ButtonColor.Secondary" Outline="true" Size="ButtonSize.Small" @onclick="ClearFiltersAsync" Disabled="!State.Filter.IsActive">Clear filters</Button>
+                </div>
+            </div>
+            <p class="small text-body-secondary mb-2" id="hd-count" aria-live="polite" tabindex="-1" @ref="countRegion">@CountText</p>
+
+            <Grid @ref="grid"
+                  TItem="HelpDeskTicket"
+                  Class="table table-hover"
+                  GridContainerClass="hd-grid"
+                  DataProvider="TicketsDataProvider"
+                  RowKeySelector="item => item.Id"
+                  AllowSorting="true"
+                  AllowPaging="true"
+                  PageSize="10"
+                  PaginationItemsTextFormat="{0}–{1} of {2} tickets"
+                  Responsive="true"
+                  EmptyText="No tickets match these filters.">
+                <GridColumns>
+                    <GridColumn TItem="HelpDeskTicket" HeaderText="Ticket" PropertyName="Id" SortKeySelector="item => item.Id" TextNoWrap="true">
+                        <span class="hd-mono small">#@context.Id</span>
+                    </GridColumn>
+                    <GridColumn TItem="HelpDeskTicket" HeaderText="Subject" PropertyName="Subject" SortKeySelector="item => item.Subject">
+                        <a class="hd-ticket-link" href="@HelpDeskDisplay.TicketUrl(context.Id)">@context.Subject</a>
+                        <span class="d-block small text-body-secondary">@context.CustomerName@(context.Company is null ? null : $" · {context.Company}")</span>
+                    </GridColumn>
+                    <GridColumn TItem="HelpDeskTicket" HeaderText="Priority" PropertyName="Priority" SortKeySelector="item => item.Priority" TextNoWrap="true">
+                        <Badge Color="@HelpDeskDisplay.PriorityColor(context.Priority)">@context.Priority</Badge>
+                    </GridColumn>
+                    <GridColumn TItem="HelpDeskTicket" HeaderText="Status" PropertyName="Status" SortKeySelector="item => item.Status" TextNoWrap="true">
+                        <Badge Color="@HelpDeskDisplay.StatusColor(context.Status)">@context.Status</Badge>
+                    </GridColumn>
+                    @* No default sort column: until a header is clicked, the state's urgency order (overdue, at risk, on track, paused) applies. *@
+                    <GridColumn TItem="HelpDeskTicket" HeaderText="SLA" PropertyName="CreatedAt" SortKeySelector="item => HelpDeskState.DueAt(item)" TextNoWrap="true">
+                        <Badge Color="@HelpDeskDisplay.SlaColor(HelpDeskState.Sla(context))">@HelpDeskDisplay.SlaText(context)</Badge>
+                    </GridColumn>
+                    <GridColumn TItem="HelpDeskTicket" HeaderText="Assignee" PropertyName="Assignee" SortKeySelector="item => item.Assignee ?? string.Empty" TextNoWrap="true">
+                        @(context.Assignee ?? "Unassigned")
+                    </GridColumn>
+                    <GridColumn TItem="HelpDeskTicket" HeaderText="Updated" PropertyName="UpdatedAt" SortKeySelector="item => item.UpdatedAt" TextNoWrap="true">
+                        <span class="small" title="@HelpDeskDisplay.Stamp(context.UpdatedAt)">@HelpDeskDisplay.Ago(context.UpdatedAt)</span>
+                    </GridColumn>
+                </GridColumns>
+            </Grid>
+        </CardBody>
+    </Card>
+</div>
