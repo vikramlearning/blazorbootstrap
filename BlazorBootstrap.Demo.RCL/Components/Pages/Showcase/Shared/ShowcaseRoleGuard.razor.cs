@@ -69,6 +69,8 @@ public partial class ShowcaseRoleGuard : ComponentBase
 
     [Inject] private NavigationManager Navigation { get; set; } = default!;
 
+    private bool ShowsContent => Session.IsRestored && Identity.IsSignedIn;
+
     private IEnumerable<string> RoleIds => Roles.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
 
     /// <summary>Gets or sets the allowed role IDs, comma-separated, such as <c>customer</c> or <c>agent,admin</c>.</summary>

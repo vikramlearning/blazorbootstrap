@@ -66,7 +66,7 @@ public sealed record EcommerceReview(int ProductId, string Author, int Rating, s
 /// <summary>One product and color in the cart.</summary>
 public sealed record EcommerceCartLine(int ProductId, string Color, int Quantity);
 
-/// <summary>Where an order ships, as typed at checkout. Kept only in memory.</summary>
+/// <summary>Where an order ships, as typed at checkout. Kept in the tab's state and its <c>sessionStorage</c> snapshot only.</summary>
 public sealed record EcommerceAddress(string FullName, string Email, string Street, string City, string PostalCode, string Country);
 
 /// <summary>One line of a placed order, with the price paid.</summary>

@@ -52,10 +52,13 @@ public partial class ShowcaseCardForm : ComponentBase, IDisposable
             return;
 
         var errors = ShowcaseCards.Validate(Card, Today);
-        messages!.Clear(args.FieldIdentifier);
+        Recheck(args.FieldIdentifier, errors);
 
-        if (errors.TryGetValue(args.FieldIdentifier.FieldName, out var message))
-            messages.Add(args.FieldIdentifier, message);
+        // The brand decides the security-code length, so a shown code message is re-checked when the number changes.
+        var cvc = new FieldIdentifier(Card, nameof(ShowcaseCardInput.Cvc));
+
+        if (args.FieldIdentifier.FieldName == nameof(ShowcaseCardInput.Number) && EditContext.GetValidationMessages(cvc).Any())
+            Recheck(cvc, errors);
 
         EditContext.NotifyValidationStateChanged();
     }
@@ -66,6 +69,14 @@ public partial class ShowcaseCardForm : ComponentBase, IDisposable
 
         foreach (var (field, message) in ShowcaseCards.Validate(Card, Today))
             messages.Add(new FieldIdentifier(Card, field), message);
+    }
+
+    private void Recheck(FieldIdentifier field, Dictionary<string, string> errors)
+    {
+        messages!.Clear(field);
+
+        if (errors.TryGetValue(field.FieldName, out var message))
+            messages.Add(field, message);
     }
 
     private void Unsubscribe()

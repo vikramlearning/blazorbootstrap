@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=DM+Sans:wght@400;500;600;700&display=swap" />
 </HeadContent>
 
-<ShowcaseSessionHost State="State">
+<ShowcaseSessionHost State="State" SiteBase="@Base" SiteName="@EcommerceSeedData.StoreName">
 <div class="sc-site sc-ecommerce">
     <ShowcaseSiteBar Site="@site" />
 
@@ -26,7 +26,7 @@
                 <span class="ec-brand-mark" aria-hidden="true"><Icon Name="IconName.Flower2" /></span>
                 <span>@EcommerceSeedData.StoreName</span>
             </NavbarBrand>
-            <ShowcaseAccountMenu SiteBase="@Base" SiteName="@EcommerceSeedData.StoreName" SignInPath="@SignInPath" Class="ms-auto me-2 order-lg-last" />
+            <ShowcaseAccountMenu SiteBase="@Base" SignInPath="@SignInPath" Class="ms-auto me-2 order-lg-last" />
             <Button @ref="cartButton" Class="ec-cart-btn me-2 me-lg-0 order-lg-last" @onclick="OpenCartAsync" aria-label="@CartLabel">
                 <Icon Name="IconName.Bag" aria-hidden="true" />
                 @if (State.CartCount > 0)

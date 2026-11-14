@@ -61,7 +61,10 @@ public partial class Checkout : ComponentBase, IDisposable
         form.City = "Fairbank";
         form.PostalCode = "10481";
         form.Country = countries[0];
-        editContext.Validate();
+
+        // Re-check only the filled fields: a full Validate() would also flag the still-empty card fields.
+        foreach (var field in new[] { nameof(CheckoutForm.FullName), nameof(CheckoutForm.Email), nameof(CheckoutForm.Street), nameof(CheckoutForm.City), nameof(CheckoutForm.PostalCode) })
+            editContext.NotifyFieldChanged(editContext.Field(field));
     }
 
     private void OnStateChanged() => InvokeAsync(StateHasChanged);

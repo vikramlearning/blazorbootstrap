@@ -227,7 +227,16 @@ public sealed class EcommerceState : IShowcaseSiteState
     /// <summary>Validates a stored snapshot and applies it only when every part is valid.</summary>
     public bool TryRestoreData(JsonElement data)
     {
-        var snapshot = data.Deserialize<EcommerceSnapshot>(new JsonSerializerOptions(JsonSerializerDefaults.Web) { MaxDepth = 32 });
+        EcommerceSnapshot? snapshot;
+
+        try
+        {
+            snapshot = data.Deserialize<EcommerceSnapshot>(new JsonSerializerOptions(JsonSerializerDefaults.Web) { MaxDepth = 32 });
+        }
+        catch (Exception ex) when (ex is JsonException or NotSupportedException or InvalidOperationException)
+        {
+            return false;
+        }
 
         if (snapshot?.Cart is not { Count: <= 50 } cartLines
             || snapshot.Orders is not { Count: <= MaxOrders } placed

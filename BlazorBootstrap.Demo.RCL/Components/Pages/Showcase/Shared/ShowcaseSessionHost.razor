@@ -3,3 +3,17 @@
 <CascadingValue Value="session" @key="generation">
     @ChildContent
 </CascadingValue>
+
+@* Outside the site's markup, so no sticky header (its own stacking context) traps the dialog under Bootstrap's backdrop. *@
+<Modal @ref="resetModal" IsVerticallyCentered="true" ShowCloseButton="false" aria-labelledby="sc-reset-title" OnHidden="OnResetHiddenAsync">
+    <HeaderTemplate>
+        <h2 class="modal-title h5" id="sc-reset-title">Reset the demo data?</h2>
+    </HeaderTemplate>
+    <BodyTemplate>
+        <p class="mb-0">This clears everything you changed in @SiteName in this tab (orders, accounts, edits), signs you out, and reloads the site with its starting data.</p>
+    </BodyTemplate>
+    <FooterTemplate>
+        <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => resetModal.HideAsync()">Cancel</Button>
+        <Button Color="ButtonColor.Danger" @onclick="ResetAsync">Reset demo data</Button>
+    </FooterTemplate>
+</Modal>

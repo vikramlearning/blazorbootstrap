@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -50,13 +51,24 @@ public sealed partial class ShowcaseIdentity
 
     #region Public Methods
 
+    /// <summary>Applies a snapshot that <see cref="TryValidate" /> accepted.</summary>
+    public void Apply(ShowcaseIdentitySnapshot validated)
+    {
+        accounts.Clear();
+        accounts.AddRange(validated.Accounts!);
+        Current = FindAccount(validated.CurrentId);
+    }
+
     /// <summary>Returns the snapshot of the accounts and the signed-in account.</summary>
     public ShowcaseIdentitySnapshot Capture() => new() { Accounts = accounts.ToList(), CurrentId = Current?.Id };
 
-    /// <summary>Changes the signed-in account's password after checking the current one.</summary>
+    /// <summary>
+    /// Changes the signed-in account's password after checking the current one. Seeded demo accounts keep the password the
+    /// sign-in page lists.
+    /// </summary>
     public ShowcaseAccountResult ChangePassword(string currentPassword, string newPassword)
     {
-        if (Current is not { } account)
+        if (Current is not { IsSeeded: false } account)
             return ShowcaseAccountResult.NotAllowed;
 
         if (!Matches(account, currentPassword))
@@ -88,7 +100,7 @@ public sealed partial class ShowcaseIdentity
         if (IsEmailTaken(email, exceptId: null))
             return ShowcaseAccountResult.EmailInUse;
 
-        var number = accounts.Select(existing => RegisteredIdPattern().Match(existing.Id)).Where(match => match.Success).Select(match => int.Parse(match.Groups[1].Value)).DefaultIfEmpty(0).Max() + 1;
+        var number = accounts.Select(existing => RegisteredIdPattern().Match(existing.Id)).Where(match => match.Success).Select(match => int.Parse(match.Groups[1].Value, CultureInfo.InvariantCulture)).DefaultIfEmpty(0).Max() + 1;
         var salt = NewSalt();
         account = new ShowcaseAccount($"u-{number}", roleId, name.Trim(), email.Trim(), InitialsOf(name), salt, Hash(salt, password), IsSeeded: false);
         accounts.Add(account);
@@ -162,6 +174,10 @@ public sealed partial class ShowcaseIdentity
                 return false;
         }
 
+        // Seeded accounts keep the email the sign-in page lists.
+        if (DemoAccounts.Any(demo => list.FirstOrDefault(account => account.Id == demo.Id) is not { } seeded || !string.Equals(seeded.Email, demo.Email, StringComparison.OrdinalIgnoreCase)))
+            return false;
+
         if (DemoAccounts.Any(demo => !ids.Contains(demo.Id)) || (snapshot.CurrentId is not null && !ids.Contains(snapshot.CurrentId)))
             return false;
 
@@ -170,18 +186,10 @@ public sealed partial class ShowcaseIdentity
         return true;
     }
 
-    /// <summary>Applies a snapshot that <see cref="TryValidate" /> accepted.</summary>
-    public void Apply(ShowcaseIdentitySnapshot validated)
-    {
-        accounts.Clear();
-        accounts.AddRange(validated.Accounts!);
-        Current = FindAccount(validated.CurrentId);
-    }
-
-    /// <summary>Updates the signed-in account's name and email address.</summary>
+    /// <summary>Updates the signed-in account's name and email address. Seeded demo accounts keep the email the sign-in page lists.</summary>
     public ShowcaseAccountResult UpdateProfile(string name, string email)
     {
-        if (Current is not { } account)
+        if (Current is not { } account || (account.IsSeeded && !string.Equals(account.Email, email.Trim(), StringComparison.OrdinalIgnoreCase)))
             return ShowcaseAccountResult.NotAllowed;
 
         if (IsEmailTaken(email, account.Id))

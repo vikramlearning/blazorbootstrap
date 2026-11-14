@@ -30,6 +30,8 @@ public partial class ShowcaseAccountProfile : ComponentBase
 
     private ValidationMessageStore passwordMessages = default!;
 
+    private int wrongPasswordAttempts;
+
     #endregion
 
     #region Methods
@@ -65,13 +67,18 @@ public partial class ShowcaseAccountProfile : ComponentBase
     {
         var result = Identity.ChangePassword(passwordForm.Current!, passwordForm.New!);
 
-        if (result == ShowcaseAccountResult.WrongPassword)
+        if (result != ShowcaseAccountResult.Success)
         {
             var field = passwordContext.Field(nameof(PasswordForm.Current));
             passwordMessages.Clear(field);
             passwordMessages.Add(field, "The current password is incorrect.");
             passwordContext.NotifyValidationStateChanged();
-            passwordStatus = null;
+
+            // The status region is announced; a different text each attempt makes it announce again.
+            wrongPasswordAttempts++;
+            passwordStatus = wrongPasswordAttempts == 1
+                ? "Password not changed: the current password is incorrect."
+                : $"Password not changed: the current password is still incorrect (attempt {wrongPasswordAttempts}).";
 
             return;
         }
@@ -85,10 +92,14 @@ public partial class ShowcaseAccountProfile : ComponentBase
     {
         var result = Identity.UpdateProfile(profileForm.Name, profileForm.Email);
 
+        // Each message carries a count, so a repeat is announced again.
         profileSaves++;
-        profileStatus = result == ShowcaseAccountResult.EmailInUse
-            ? $"Another account already uses {profileForm.Email.Trim()}."
-            : profileSaves == 1 ? "Profile saved." : $"Profile saved ({profileSaves} times this visit).";
+        profileStatus = result switch
+        {
+            ShowcaseAccountResult.EmailInUse => $"Not saved: another account already uses {profileForm.Email.Trim()} (attempt {profileSaves}).",
+            ShowcaseAccountResult.NotAllowed => $"Not saved: demo accounts keep their listed email (attempt {profileSaves}).",
+            _ => profileSaves == 1 ? "Profile saved." : $"Profile saved ({profileSaves} times this visit).",
+        };
     }
 
     #endregion

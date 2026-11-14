@@ -13,7 +13,11 @@
                     </div>
                     <div class="mb-3">
                         <label class="form-label fw-semibold" for="sc-profile-email">Email</label>
-                        <TextInput Id="sc-profile-email" @bind-Value="profileForm.Email" MaxLength="120" />
+                        <TextInput Id="sc-profile-email" @bind-Value="profileForm.Email" MaxLength="120" Disabled="account.IsSeeded" aria-describedby="sc-profile-email-help" />
+                        @if (account.IsSeeded)
+                        {
+                            <div class="form-text" id="sc-profile-email-help">Demo accounts keep the email listed on the sign-in page. Create your own account to change it.</div>
+                        }
                         <ValidationMessage For="() => profileForm.Email" />
                     </div>
                     <p class="small text-body-secondary mb-3">Role: @Identity.CurrentRole?.Label</p>
@@ -27,6 +31,12 @@
         <div class="col-lg-6">
             <section class="sc-profile-panel" aria-labelledby="sc-password-title">
                 <h2 class="sc-profile-title" id="sc-password-title">Change password</h2>
+                @if (account.IsSeeded)
+                {
+                    <p class="text-body-secondary mb-0">Demo accounts keep the password listed on the sign-in page, so everyone can sign in with it. Create your own account to try changing a password.</p>
+                }
+                else
+                {
                 <ShowcaseDemoNotice Class="mb-3" Text="Demo only: make up a password. It's kept as a hash in this browser tab and never sent." />
                 <EditForm EditContext="passwordContext" OnValidSubmit="ChangePassword" FormName="@($"sc-password-{Session.State.SiteSlug}")">
                     <DataAnnotationsValidator />
@@ -51,6 +61,7 @@
                         <span class="small" role="status">@passwordStatus</span>
                     </div>
                 </EditForm>
+                }
             </section>
         </div>
     </div>

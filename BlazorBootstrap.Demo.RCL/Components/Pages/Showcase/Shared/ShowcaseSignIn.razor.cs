@@ -16,6 +16,8 @@ public partial class ShowcaseSignIn : ComponentBase
 
     private bool navigating;
 
+    private int registerAttempts;
+
     private bool registering;
 
     private string? registerError;
@@ -63,9 +65,12 @@ public partial class ShowcaseSignIn : ComponentBase
             return;
         }
 
+        // A count in the text makes a repeated alert announce again.
+        registerAttempts++;
+        var attempt = registerAttempts == 1 ? string.Empty : $" (attempt {registerAttempts})";
         registerError = result == ShowcaseAccountResult.EmailInUse
-            ? $"An account already uses {registerForm.Email.Trim()}. Sign in instead, or use another email."
-            : "This demo can't create more accounts in this tab. Reset the demo data to start over.";
+            ? $"An account already uses {registerForm.Email.Trim()}. Sign in instead, or use another email.{attempt}"
+            : $"This demo can't create more accounts in this tab. Reset the demo data to start over.{attempt}";
     }
 
     private void SignIn()

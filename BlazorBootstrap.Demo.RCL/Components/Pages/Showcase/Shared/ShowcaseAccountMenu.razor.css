@@ -14,7 +14,24 @@
         border-color: var(--sc-primary, var(--bs-primary));
     }
 
-/* On phones the header shares one row with the brand, cart, and menu toggler: the button is just the avatar. */
+.sc-account-menu ::deep .sc-account-signed-out {
+    gap: 0;
+    padding-inline: .625rem;
+    font-size: .9375rem;
+}
+
+    .sc-account-menu ::deep .sc-account-signed-out .bi {
+        font-size: 1.25rem;
+    }
+
+.sc-account-header {
+    padding: .5rem 1rem .625rem;
+    border-bottom: 1px solid var(--bs-border-color);
+    margin-bottom: .25rem;
+    font-size: .875rem;
+}
+
+/* On phones the header shares one row with the brand, cart, and menu toggler: the button is just the avatar or icon. */
 @media (max-width: 575.98px) {
     .sc-account-menu ::deep .sc-account-toggle {
         padding: 0;
