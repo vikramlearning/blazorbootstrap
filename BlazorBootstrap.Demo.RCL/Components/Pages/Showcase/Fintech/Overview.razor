@@ -1,0 +1,143 @@
+@page "/showcase/fintech"
+@layout FintechLayout
+
+<PageTitle>Overview · Tallymint</PageTitle>
+
+<div class="container-xl">
+    <div class="tm-page-head">
+        <div>
+            <span class="sc-eyebrow">@FintechSeedData.Today.ToString("dddd, MMMM d", CultureInfo.InvariantCulture)</span>
+            <h1 class="tm-title">Hi Jordan, here's your money</h1>
+            <p class="tm-lead">Balances, this month's spending, and how your budgets are tracking.</p>
+        </div>
+        <Button Type="ButtonType.Link" To="@($"{FintechLayout.Base}/transfer")" Color="ButtonColor.Primary">
+            <Icon Name="IconName.ArrowLeftRight" class="me-1" aria-hidden="true" />Move money
+        </Button>
+    </div>
+
+    <section aria-label="Accounts" class="row row-cols-1 row-cols-md-2 row-cols-xl-4 g-3 mb-4">
+        <div class="col">
+            <Card Class="tm-hero-card h-100">
+                <CardBody Class="p-4">
+                    <span class="tm-label">Net worth</span>
+                    <span class="tm-amount">@(State.NetWorth < 0 ? "−" : string.Empty)@FintechDisplay.Money(State.NetWorth)</span>
+                    <span class="small">@FintechDisplay.SignedMoney(MonthChange) since last month</span>
+                </CardBody>
+            </Card>
+        </div>
+        @foreach (var account in State.Accounts)
+        {
+            <div class="col" @key="account.Id">
+                <Card Class="tm-card h-100">
+                    <CardBody Class="p-4">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <span class="tm-label">@account.Name</span>
+                            <span class="tm-icon" aria-hidden="true"><Icon Name="@AccountIcon(account.Kind)" /></span>
+                        </div>
+                        <span class="tm-amount">@(account.Balance < 0 ? "−" : string.Empty)@FintechDisplay.Money(account.Balance)</span>
+                        <span class="small text-body-secondary">
+                            @FintechDisplay.KindLabel(account.Kind) · @account.MaskedNumber
+                            @if (account.CreditLimit is decimal limit)
+                            {
+                                <text> · @FintechDisplay.Money(limit + account.Balance) available</text>
+                            }
+                        </span>
+                    </CardBody>
+                </Card>
+            </div>
+        }
+    </section>
+
+    <div class="row g-3 mb-4">
+        <div class="col-xl-7">
+            <Card Class="tm-card h-100">
+                <CardHeader>
+                    <div>
+                        <h2 class="tm-card-title">Net worth</h2>
+                        <p class="tm-card-sub">Last 12 months, all accounts combined</p>
+                    </div>
+                </CardHeader>
+                <CardBody Class="pt-0">
+                    <div class="tm-chart" role="img" aria-label="@NetWorthChartLabel">
+                        <LineChart @ref="netWorthChart" Height="280" HeightUnit="Unit.Px" Width="100" WidthUnit="Unit.Percentage" />
+                    </div>
+                </CardBody>
+            </Card>
+        </div>
+        <div class="col-xl-5">
+            <Card Class="tm-card h-100">
+                <CardHeader>
+                    <div>
+                        <h2 class="tm-card-title">Spending this month</h2>
+                        <p class="tm-card-sub">@FintechDisplay.Money(TotalSpent) across @Spending.Count categories</p>
+                    </div>
+                </CardHeader>
+                <CardBody Class="pt-0">
+                    <div class="tm-chart" role="img" aria-label="@SpendingChartLabel">
+                        <DoughnutChart @ref="spendingChart" Height="280" HeightUnit="Unit.Px" Width="100" WidthUnit="Unit.Percentage" />
+                    </div>
+                </CardBody>
+            </Card>
+        </div>
+    </div>
+
+    <div class="row g-3">
+        <div class="col-lg-7">
+            <Card Class="tm-card h-100">
+                <CardHeader>
+                    <h2 class="tm-card-title">Recent activity</h2>
+                    <a class="small fw-semibold" href="@($"{FintechLayout.Base}/transactions")">All transactions</a>
+                </CardHeader>
+                <CardBody Class="pt-0">
+                    <ul class="list-unstyled mb-0">
+                        @foreach (var item in State.Transactions.Take(6))
+                        {
+                            var category = State.FindCategory(item.CategoryId);
+                            <li class="tm-row" @key="item.Id">
+                                <span class="tm-icon" aria-hidden="true"><Icon Name="@category.IconName" /></span>
+                                <span class="tm-row-text">
+                                    <span class="tm-row-title">@item.Description</span>
+                                    <span class="tm-row-sub">
+                                        @FintechDisplay.Day(item.Date) · @category.Name
+                                        @if (item.IsPending)
+                                        {
+                                            <Badge Color="BadgeColor.Secondary" Class="ms-1">Pending</Badge>
+                                        }
+                                    </span>
+                                </span>
+                                <span class="tm-mono fw-semibold @FintechDisplay.AmountClass(item.Amount)">@FintechDisplay.SignedMoney(item.Amount)</span>
+                            </li>
+                        }
+                    </ul>
+                </CardBody>
+            </Card>
+        </div>
+        <div class="col-lg-5">
+            <Card Class="tm-card h-100">
+                <CardHeader>
+                    <h2 class="tm-card-title">Budgets to watch</h2>
+                    <a class="small fw-semibold" href="@($"{FintechLayout.Base}/budgets")">All budgets</a>
+                </CardHeader>
+                <CardBody Class="pt-0">
+                    @foreach (var budget in BudgetsToWatch)
+                    {
+                        var category = State.FindCategory(budget.CategoryId);
+                        var spent = State.SpentThisMonth(budget.CategoryId);
+                        var percent = (double)(spent / budget.Limit * 100);
+                        <div class="py-2 border-top" @key="budget.CategoryId">
+                            <div class="tm-meter-label mb-1">
+                                <span class="fw-semibold text-body">@category.Name</span>
+                                <span class="tm-mono">@FintechDisplay.Money(spent) of @FintechDisplay.Money(budget.Limit)</span>
+                            </div>
+                            <Progress Height="8">
+                                <ProgressBar Width="Math.Min(100, percent)" Color="BudgetColor(percent)"
+                                             aria-label="@($"{category.Name} budget used")" aria-valuenow="@((int)Math.Round(percent))" aria-valuemin="0" aria-valuemax="100"
+                                             aria-valuetext="@($"{FintechDisplay.Money(spent)} of {FintechDisplay.Money(budget.Limit)}")" />
+                            </Progress>
+                        </div>
+                    }
+                </CardBody>
+            </Card>
+        </div>
+    </div>
+</div>

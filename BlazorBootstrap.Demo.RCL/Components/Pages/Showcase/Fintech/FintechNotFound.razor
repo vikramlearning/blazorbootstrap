@@ -1,0 +1,12 @@
+@* The site's not-found screen, shown by the catch-all route. *@
+<PageTitle>Page not found · Tallymint</PageTitle>
+
+<section class="tm-not-found">
+    <span class="tm-icon fs-4" aria-hidden="true"><Icon Name="IconName.SignpostSplit" /></span>
+    <h1 class="tm-title fs-3 mt-3 mb-2">We couldn't find that page</h1>
+    <p class="text-body-secondary mb-4">The link may be old. Your accounts are safe.</p>
+    <div class="d-flex justify-content-center flex-wrap gap-2">
+        <Button Type="ButtonType.Link" To="@FintechLayout.Base" Color="ButtonColor.Primary">Back to the overview</Button>
+        <Button Type="ButtonType.Link" To="@($"{FintechLayout.Base}/transactions")" Color="ButtonColor.Primary" Outline="true">View transactions</Button>
+    </div>
+</section>

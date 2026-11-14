@@ -1,0 +1,107 @@
+@page "/showcase/fintech/transfer"
+@layout FintechLayout
+
+<PageTitle>Move money · Tallymint</PageTitle>
+
+<div class="container-xl">
+    <div class="tm-page-head">
+        <div>
+            <span class="sc-eyebrow">Move money</span>
+            <h1 class="tm-title">Send a transfer</h1>
+            <p class="tm-lead">Between your accounts or to someone you've paid before. You'll review it before anything moves.</p>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-7">
+            <Card Class="tm-card">
+                <CardBody Class="p-4" data-clarity-mask="true">
+                    <ShowcaseDemoNotice Class="mb-4" Text="Demo only: no money moves. Transfers change this demo's balances until you reload." />
+
+                    <EditForm EditContext="editContext" OnValidSubmit="Review" FormName="tm-transfer">
+                        <DataAnnotationsValidator />
+
+                        <fieldset class="mb-4">
+                            <legend class="form-label fw-semibold fs-6" id="tm-from-label">From</legend>
+                            <RadioButtonGroup TValue="string" @bind-Value="form.FromAccountId" AriaLabel="From" aria-labelledby="tm-from-label" Class="w-100 flex-wrap">
+                                @foreach (var account in SourceAccounts)
+                                {
+                                    <ButtonGroupItem Value="account.Id" Id="@($"tm-from-{account.Id}")" Class="text-start">
+                                        <span class="d-block fw-semibold">@account.Name</span>
+                                        <small class="tm-mono">@FintechDisplay.Money(account.Available) available</small>
+                                    </ButtonGroupItem>
+                                }
+                            </RadioButtonGroup>
+                        </fieldset>
+
+                        <div class="row g-3">
+                            <div class="col-md-7">
+                                <label class="form-label fw-semibold" for="tm-to">To</label>
+                                <InputSelect id="tm-to" class="form-select" @bind-Value="form.ToId">
+                                    <option value="">Choose a recipient</option>
+                                    <optgroup label="Your accounts">
+                                        @foreach (var account in State.Accounts.Where(account => account.Id != form.FromAccountId))
+                                        {
+                                            <option value="@account.Id">@account.Name (@account.MaskedNumber)</option>
+                                        }
+                                    </optgroup>
+                                    <optgroup label="Saved payees">
+                                        @foreach (var payee in State.Payees)
+                                        {
+                                            <option value="@payee.Id">@payee.Name (@payee.MaskedAccount)</option>
+                                        }
+                                    </optgroup>
+                                </InputSelect>
+                                <ValidationMessage For="() => form.ToId" />
+                            </div>
+                            <div class="col-md-5">
+                                <label class="form-label fw-semibold" for="tm-amount">Amount</label>
+                                <CurrencyInput TValue="decimal" Id="tm-amount" @bind-Value="form.Amount" Locale="en-US" Placeholder="$0.00" />
+                                <ValidationMessage For="() => form.Amount" />
+                            </div>
+                            <div class="col-md-5">
+                                <label class="form-label fw-semibold" for="tm-date">Date</label>
+                                <DateInput TValue="DateOnly" Id="tm-date" @bind-Value="form.Date" Min="Today" Max="Today.AddDays(60)" EnableMinMax="true" />
+                                <div class="form-text">Today sends at once; a later date schedules it.</div>
+                            </div>
+                            <div class="col-md-7">
+                                <label class="form-label fw-semibold" for="tm-note">Note <span class="fw-normal text-body-secondary">(optional)</span></label>
+                                <TextInput Id="tm-note" @bind-Value="form.Note" MaxLength="40" Placeholder="Rent for December" />
+                                <ValidationMessage For="() => form.Note" />
+                            </div>
+                        </div>
+
+                        @if (ruleError is not null)
+                        {
+                            <Alert Color="AlertColor.Danger" Class="mt-4 mb-0" role="alert">
+                                <Icon Name="IconName.ExclamationTriangleFill" class="me-2" aria-hidden="true" />@ruleError
+                            </Alert>
+                        }
+
+                        <Button Type="ButtonType.Submit" Color="ButtonColor.Primary" Size="ButtonSize.Large" Class="w-100 mt-4">
+                            Review transfer
+                        </Button>
+                    </EditForm>
+                </CardBody>
+            </Card>
+        </div>
+        <div class="col-lg-5">
+            <Card Class="tm-card">
+                <CardHeader><h2 class="tm-card-title">Your balances</h2></CardHeader>
+                <CardBody Class="pt-0">
+                    @foreach (var account in State.Accounts)
+                    {
+                        <div class="tm-row" @key="account.Id">
+                            <span class="tm-row-text">
+                                <span class="tm-row-title">@account.Name</span>
+                                <span class="tm-row-sub">@FintechDisplay.KindLabel(account.Kind) · @account.MaskedNumber</span>
+                            </span>
+                            <span class="tm-mono fw-semibold">@(account.Balance < 0 ? "−" : string.Empty)@FintechDisplay.Money(account.Balance)</span>
+                        </div>
+                    }
+                    <p class="small text-body-secondary mt-3 mb-0">Transfers to the credit card count as a card payment and lower what you owe.</p>
+                </CardBody>
+            </Card>
+        </div>
+    </div>
+</div>

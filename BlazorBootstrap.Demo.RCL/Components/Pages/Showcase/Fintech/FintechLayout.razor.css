@@ -1,0 +1,287 @@
+.sc-fintech {
+    --sc-primary: #047857;
+    --sc-primary-rgb: 4, 120, 87;
+    --sc-primary-hover: #065f46;
+    --sc-primary-contrast: #fff;
+    --sc-font-body: "Manrope", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --sc-font-heading: "Manrope", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --sc-page-bg: #f3f7f5;
+    --tm-font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    --tm-ink: #0b1f19;
+    --tm-surface: #fff;
+    --tm-border: #dbe7e1;
+    --tm-in: #047857;
+    --tm-out: #b42318;
+    --tm-hero: linear-gradient(135deg, #064e3b 0%, #047857 60%, #0f766e 100%);
+}
+
+[data-bs-theme=dark] .sc-fintech {
+    --sc-primary: #34d399;
+    --sc-primary-rgb: 52, 211, 153;
+    --sc-primary-hover: #6ee7b7;
+    --sc-primary-contrast: #052e22;
+    --sc-page-bg: #08110e;
+    --tm-ink: #ecfdf5;
+    --tm-surface: #0f1a17;
+    --tm-border: #1d2e28;
+    --tm-in: #34d399;
+    --tm-out: #fca5a5;
+    --tm-hero: linear-gradient(135deg, #022c22 0%, #064e3b 60%, #134e4a 100%);
+}
+
+/* Bootstrap's text-bg-primary keeps white text; on the light dark-mode green that fails contrast. */
+[data-bs-theme=dark] .sc-fintech ::deep .text-bg-primary {
+    color: var(--sc-primary-contrast) !important;
+}
+
+/* Header: the Navbar component renders the nav and its links, so they need ::deep. */
+.sc-fintech ::deep .tm-header {
+    min-height: 4rem;
+    background: var(--tm-surface);
+    border-bottom: 1px solid var(--tm-border);
+}
+
+.sc-fintech ::deep .tm-header .nav-link {
+    color: var(--tm-ink);
+    font-weight: 600;
+    border-radius: .5rem;
+    padding-inline: .75rem !important;
+}
+
+    .sc-fintech ::deep .tm-header .nav-link:hover {
+        color: var(--sc-primary);
+    }
+
+    .sc-fintech ::deep .tm-header .nav-link.active {
+        color: var(--sc-primary);
+        background: rgba(var(--sc-primary-rgb), .1);
+    }
+
+.sc-fintech ::deep .tm-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: .5rem;
+    font-weight: 800;
+    font-size: 1.25rem;
+    letter-spacing: -.02em;
+    color: var(--tm-ink);
+    text-decoration: none;
+}
+
+.sc-fintech ::deep .tm-brand-mark {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    border-radius: .625rem;
+    background: var(--tm-hero);
+    color: #fff;
+}
+
+.sc-fintech ::deep .tm-user {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    font-weight: 600;
+    font-size: .875rem;
+    color: var(--tm-ink);
+}
+
+.tm-content {
+    padding-block: 1.75rem 1rem;
+}
+
+.tm-footer {
+    margin-top: 2rem;
+    padding-block: 1.25rem;
+    border-top: 1px solid var(--tm-border);
+    color: var(--bs-secondary-color);
+    font-size: .8125rem;
+}
+
+/* Shared page styles: page markup is child content of the layout, so it needs ::deep. */
+.sc-fintech ::deep .tm-page-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.sc-fintech ::deep .tm-title {
+    margin: 0;
+    font-size: clamp(1.5rem, 2.6vw, 2rem);
+    font-weight: 800;
+    letter-spacing: -.02em;
+    color: var(--tm-ink);
+}
+
+.sc-fintech ::deep .tm-lead {
+    margin: .25rem 0 0;
+    color: var(--bs-secondary-color);
+}
+
+.sc-fintech ::deep .tm-card {
+    --bs-card-bg: var(--tm-surface);
+    --bs-card-border-color: var(--tm-border);
+    --bs-card-cap-bg: transparent;
+    border-radius: 1rem;
+}
+
+    .sc-fintech ::deep .tm-card .card-header {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: .5rem;
+        padding: 1rem 1.25rem .5rem;
+        border-bottom: 0;
+    }
+
+.sc-fintech ::deep .tm-card-title {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--tm-ink);
+}
+
+.sc-fintech ::deep .tm-card-sub {
+    margin: 0;
+    font-size: .8125rem;
+    color: var(--bs-secondary-color);
+}
+
+.sc-fintech ::deep .tm-hero-card {
+    --bs-card-bg: transparent;
+    --bs-card-border-color: transparent;
+    background: var(--tm-hero);
+    color: #ecfdf5;
+    border-radius: 1rem;
+}
+
+    .sc-fintech ::deep .tm-hero-card .tm-amount {
+        color: #fff;
+    }
+
+.sc-fintech ::deep .tm-label {
+    font-size: .8125rem;
+    font-weight: 600;
+    color: var(--bs-secondary-color);
+}
+
+.sc-fintech ::deep .tm-hero-card .tm-label {
+    color: #a7f3d0;
+}
+
+.sc-fintech ::deep .tm-amount {
+    display: block;
+    font-family: var(--tm-font-mono);
+    font-size: clamp(1.375rem, 2.4vw, 1.75rem);
+    font-weight: 600;
+    letter-spacing: -.02em;
+    color: var(--tm-ink);
+}
+
+.sc-fintech ::deep .tm-mono {
+    font-family: var(--tm-font-mono);
+}
+
+.sc-fintech ::deep .tm-in {
+    color: var(--tm-in);
+}
+
+.sc-fintech ::deep .tm-out {
+    color: var(--tm-out);
+}
+
+.sc-fintech ::deep .tm-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: .625rem;
+    color: var(--sc-primary);
+    background: rgba(var(--sc-primary-rgb), .12);
+}
+
+.sc-fintech ::deep .tm-row {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    padding-block: .625rem;
+    border-top: 1px solid var(--tm-border);
+}
+
+.sc-fintech ::deep .tm-row-text {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    flex: 1 1 auto;
+    line-height: 1.3;
+}
+
+.sc-fintech ::deep .tm-row-title {
+    font-weight: 600;
+    color: var(--tm-ink);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.sc-fintech ::deep .tm-row-sub {
+    font-size: .8125rem;
+    color: var(--bs-secondary-color);
+}
+
+.sc-fintech ::deep .tm-chart {
+    position: relative;
+    width: 100%;
+}
+
+/* Positioned, so absolutely positioned descendants (visually hidden header text) stay inside the scroll box. */
+.sc-fintech ::deep .tm-grid {
+    position: relative;
+}
+
+    .sc-fintech ::deep .tm-grid .table {
+        --bs-table-bg: var(--tm-surface);
+        margin-bottom: 0;
+        vertical-align: middle;
+    }
+
+        .sc-fintech ::deep .tm-grid .table > thead th {
+            font-size: .75rem;
+            font-weight: 700;
+            letter-spacing: .04em;
+            text-transform: uppercase;
+            color: var(--bs-secondary-color);
+            white-space: nowrap;
+        }
+
+.sc-fintech ::deep .tm-meter-label {
+    display: flex;
+    justify-content: space-between;
+    gap: .5rem;
+    font-size: .8125rem;
+    color: var(--bs-secondary-color);
+}
+
+.sc-fintech ::deep .tm-summary dt {
+    font-weight: 500;
+    color: var(--bs-secondary-color);
+}
+
+.sc-fintech ::deep .tm-summary dd {
+    font-weight: 700;
+    color: var(--tm-ink);
+}
+
+.sc-fintech ::deep .tm-not-found {
+    max-width: 32rem;
+    margin: 4rem auto;
+    text-align: center;
+}

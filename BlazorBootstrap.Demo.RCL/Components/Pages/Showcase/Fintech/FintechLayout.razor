@@ -1,0 +1,51 @@
+@inherits LayoutComponentBase
+
+<HeadContent>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@500;600&display=swap" />
+</HeadContent>
+
+<div class="sc-site sc-fintech">
+    <ShowcaseSiteBar Site="@site" OnThemeChanged="OnThemeChanged" />
+
+    <Navbar Class="tm-header"
+            Placement="NavbarPlacement.StickyTop"
+            Container="NavbarContainer.ExtraLarge"
+            AriaLabel="Tallymint"
+            TogglerAriaLabel="Menu">
+        <Brand>
+            <NavbarBrand Href="@Base" Class="tm-brand">
+                <span class="tm-brand-mark" aria-hidden="true"><Icon Name="IconName.Coin" /></span>
+                <span>@FintechSeedData.ProductName</span>
+            </NavbarBrand>
+        </Brand>
+        <ChildContent>
+            <NavbarNav Class="me-auto ms-lg-4 mb-3 mb-lg-0">
+                <NavbarItem Href="@Base" Match="NavLinkMatch.All">Overview</NavbarItem>
+                <NavbarItem Href="@($"{Base}/transactions")">Transactions</NavbarItem>
+                <NavbarItem Href="@($"{Base}/budgets")">Budgets</NavbarItem>
+                <NavbarItem Href="@($"{Base}/transfer")">Move money</NavbarItem>
+            </NavbarNav>
+            <div class="tm-user mb-3 mb-lg-0">
+                <Avatar Name="Jordan Ashdown" Initials="JA" Color="AvatarColor.Success" Size="AvatarSize.Small" />
+                <span class="tm-user-name">Jordan Ashdown</span>
+            </div>
+        </ChildContent>
+    </Navbar>
+
+    <main class="sc-main tm-content" id="tm-main">
+        @Body
+    </main>
+
+    <div class="container-xl">
+        <CarbonAds Class="sc-ad" />
+    </div>
+
+    <footer class="tm-footer">
+        <div class="container-xl d-flex flex-wrap justify-content-between gap-2">
+            <span>© 2026 @FintechSeedData.ProductName (fictitious). Accounts, people, and amounts on this site are made up; no money moves.</span>
+            <span class="d-none d-lg-inline">Built with Navbar, Card, Charts, Grid, Progress, CurrencyInput, ConfirmDialog, and Alert.</span>
+        </div>
+    </footer>
+</div>

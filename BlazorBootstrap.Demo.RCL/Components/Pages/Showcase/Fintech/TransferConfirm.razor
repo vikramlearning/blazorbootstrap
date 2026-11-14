@@ -1,0 +1,99 @@
+@page "/showcase/fintech/transfer/confirm"
+@layout FintechLayout
+
+<PageTitle>Confirm transfer · Tallymint</PageTitle>
+
+<div class="container-xl" style="max-width: 46rem;">
+    @if (result is not null)
+    {
+        <div tabindex="-1" @ref="resultRegion">
+            <Alert Color="@(result.IsScheduled ? AlertColor.Info : AlertColor.Success)" Class="mb-4">
+                <h1 class="h4 fw-bold mb-2">
+                    <Icon Name="@(result.IsScheduled ? IconName.CalendarCheck : IconName.CheckCircleFill)" class="me-2" aria-hidden="true" />
+                    @(result.IsScheduled ? "Transfer scheduled" : "Transfer sent")
+                </h1>
+                <p class="mb-1">
+                    @FintechDisplay.Money(result.Draft.Amount) from @State.FindAccount(result.Draft.FromAccountId)?.Name to @State.DestinationName(result.Draft.ToId)
+                    @(result.IsScheduled ? $"will go on {result.Draft.Date.ToString("MMMM d", CultureInfo.InvariantCulture)}." : "has been sent.")
+                </p>
+                <p class="small mb-0">Reference <span class="tm-mono fw-semibold">@result.Reference</span>. This is a demo: no real money moved.</p>
+            </Alert>
+        </div>
+        <div class="d-flex flex-wrap gap-2">
+            <Button Type="ButtonType.Link" To="@($"{FintechLayout.Base}/transactions?account={result.Draft.FromAccountId}")" Color="ButtonColor.Primary">View transactions</Button>
+            <Button Type="ButtonType.Link" To="@($"{FintechLayout.Base}/transfer")" Color="ButtonColor.Primary" Outline="true">Make another transfer</Button>
+            <Button Type="ButtonType.Link" To="@FintechLayout.Base" Color="ButtonColor.Link">Back to overview</Button>
+        </div>
+    }
+    else if (State.PendingTransfer is not { } draft)
+    {
+        <div class="tm-not-found">
+            <span class="tm-icon fs-4 mb-3" aria-hidden="true"><Icon Name="IconName.ArrowLeftRight" /></span>
+            <h1 class="tm-title fs-3 mt-3">Nothing to confirm</h1>
+            <p class="text-body-secondary">There's no transfer waiting for review. Start a new one to continue.</p>
+            <Button Type="ButtonType.Link" To="@($"{FintechLayout.Base}/transfer")" Color="ButtonColor.Primary">Move money</Button>
+        </div>
+    }
+    else
+    {
+        <div class="tm-page-head">
+            <div>
+                <span class="sc-eyebrow">Step 2 of 2</span>
+                <h1 class="tm-title">Review your transfer</h1>
+                <p class="tm-lead">Check the details. Nothing moves until you confirm.</p>
+            </div>
+        </div>
+
+        <Card Class="tm-card mb-3">
+            <CardBody Class="p-4" data-clarity-mask="true">
+                <span class="tm-label">Amount</span>
+                <span class="tm-amount mb-3">@FintechDisplay.Money(draft.Amount)</span>
+                <dl class="row tm-summary mb-0">
+                    <dt class="col-sm-4">From</dt>
+                    <dd class="col-sm-8">@State.FindAccount(draft.FromAccountId)?.Name</dd>
+                    <dt class="col-sm-4">To</dt>
+                    <dd class="col-sm-8">@State.DestinationName(draft.ToId)</dd>
+                    <dt class="col-sm-4">Date</dt>
+                    <dd class="col-sm-8">@(draft.Date == Today ? "Today" : draft.Date.ToString("dddd, MMMM d", CultureInfo.InvariantCulture))</dd>
+                    <dt class="col-sm-4">Note</dt>
+                    <dd class="col-sm-8">@(draft.Note ?? "None")</dd>
+                    <dt class="col-sm-4">Balance after</dt>
+                    <dd class="col-sm-8 tm-mono">@FintechDisplay.Money((State.FindAccount(draft.FromAccountId)?.Balance ?? 0) - draft.Amount)</dd>
+                </dl>
+            </CardBody>
+        </Card>
+
+        @if (errorMessage is not null)
+        {
+            <Alert Color="AlertColor.Danger" role="alert">@errorMessage</Alert>
+        }
+
+        <div class="d-flex flex-wrap gap-2">
+            <Button @ref="confirmButton" Color="ButtonColor.Primary" Size="ButtonSize.Large" @onclick="ConfirmAsync">
+                <Icon Name="IconName.ShieldCheck" class="me-2" aria-hidden="true" />Confirm transfer
+            </Button>
+            <Button Type="ButtonType.Link" To="@($"{FintechLayout.Base}/transfer")" Color="ButtonColor.Secondary" Outline="true" Size="ButtonSize.Large">Edit</Button>
+        </div>
+    }
+</div>
+
+@* A Modal rather than ConfirmDialog: ConfirmDialog only toggles a CSS class, so it has no dialog role, focus trap, or Escape.
+   Modal runs Bootstrap's modal (role, aria-modal, focus trap, Escape); the heading names it through aria-labelledby. *@
+<Modal @ref="confirmModal" IsVerticallyCentered="true" ShowCloseButton="false" aria-labelledby="tm-confirm-title" OnHidden="OnConfirmHiddenAsync">
+    <HeaderTemplate>
+        <h2 class="modal-title h5" id="tm-confirm-title">Send @FintechDisplay.Money(confirming?.Amount ?? 0)?</h2>
+    </HeaderTemplate>
+    <BodyTemplate>
+        @if (confirming is not null)
+        {
+            <p class="mb-2">To @State.DestinationName(confirming.ToId), from @State.FindAccount(confirming.FromAccountId)?.Name@(confirming.Date > Today ? $", on {confirming.Date.ToString("MMMM d", CultureInfo.InvariantCulture)}" : string.Empty).</p>
+            <p class="small text-body-secondary mb-0">This is a demo: no real money moves.</p>
+        }
+    </BodyTemplate>
+    <FooterTemplate>
+        <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => confirmModal.HideAsync()">Cancel</Button>
+        <Button Color="ButtonColor.Primary" @onclick="SendAsync" Disabled="sending">
+            @(confirming?.Date > Today ? "Schedule transfer" : "Send money")
+        </Button>
+    </FooterTemplate>
+</Modal>
