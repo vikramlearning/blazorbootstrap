@@ -1,0 +1,136 @@
+@page "/showcase/travel/stays/{Id:int}"
+@layout TravelLayout
+
+@if (Stay is null)
+{
+    <TravelNotFound />
+}
+else
+{
+    <PageTitle>@Stay.Name · @TravelSeedData.SiteName</PageTitle>
+
+    <div class="container-xl pb-4">
+        <Breadcrumb Items="BreadcrumbItems" Class="mb-3" />
+
+        <div class="mb-3">
+            <span class="sc-eyebrow">@TravelDisplay.TypeLabel(Stay.Type) · @Stay.Neighborhood, @Destination.Name</span>
+            <h1 class="ds-title mt-1">@Stay.Name</h1>
+            <div class="d-flex flex-wrap align-items-center gap-2 mt-2">
+                @* The value is rounded to one decimal, so the label, the library's description, and the checked star agree. *@
+                <RatingInput TValue="decimal" Value="AverageRating" ValueExpression="() => AverageRating" ReadOnly="true" AllowHalf="true"
+                             Size="RatingInputSize.Small" aria-label="@($"Average rating {TravelDisplay.Rating((double)AverageRating)} out of 5")" />
+                <span class="small">@TravelDisplay.Rating((double)AverageRating) · <a href="@($"{TravelDisplay.StayUrl(Stay.Id)}#ds-reviews")">@Reviews.Count reviews</a></span>
+            </div>
+        </div>
+
+        <div class="row g-4 g-lg-5">
+            <div class="col-lg-7">
+                @* Autoplay stays off, so the gallery never moves on its own (WCAG 2.2.2). *@
+                <Carousel ShowIndicators="true" Autoplay="CarouselAutoPlay.None" Class="ds-gallery mb-4" @key="Stay.Id">
+                    @for (var number = 1; number <= TravelStay.PhotoCount; number++)
+                    {
+                        @* The slide content renders after the loop ends, so it must not read the loop variable. *@
+                        var photo = number;
+                        <CarouselItem Active="photo == 1" Label="@($"Photo {photo} of {TravelStay.PhotoCount}")">
+                            <ShowcaseImage Src="@Stay.PhotoPath(photo)" Alt="@($"{Stay.Name}, photo {photo} of {TravelStay.PhotoCount}")" Width="1200" Height="800"
+                                           Eager="photo == 1" Accent="@Destination.Accent" PlaceholderIcon="IconName.HouseHeart" Caption="@($"Photo {photo} of {TravelStay.PhotoCount}")" />
+                        </CarouselItem>
+                    }
+                </Carousel>
+
+                <h2 class="ds-section-title">About this place</h2>
+                <p>@Stay.Description</p>
+                <p class="ds-meta mb-4">
+                    <span><Icon Name="IconName.People" class="me-1" aria-hidden="true" />Sleeps @Stay.MaxGuests</span>
+                    <span><Icon Name="IconName.House" class="me-1" aria-hidden="true" />@Stay.Bedrooms @(Stay.Bedrooms == 1 ? "bedroom" : "bedrooms")</span>
+                    @if (Stay.FreeCancellation)
+                    {
+                        <span><Icon Name="IconName.ShieldCheck" class="me-1" aria-hidden="true" />Free cancellation until 48 hours before check-in</span>
+                    }
+                </p>
+
+                <h2 class="ds-section-title">What this place offers</h2>
+                <ul class="row row-cols-1 row-cols-sm-2 list-unstyled g-2 mb-4">
+                    @foreach (var amenity in Stay.Amenities)
+                    {
+                        <li class="col"><Icon Name="IconName.Check2" class="me-2 text-success-emphasis" aria-hidden="true" />@amenity</li>
+                    }
+                </ul>
+
+                <h2 class="ds-section-title">Where you'll be</h2>
+                <ShowcaseMapOrPlaceholder Locations="Location" Height="260" Zoom="14" AriaLabel="@($"Map preview showing {Stay.Name} in {Stay.Neighborhood}")" />
+
+                <section class="mt-5" aria-labelledby="ds-reviews">
+                    <h2 class="ds-section-title" id="ds-reviews" tabindex="-1">Reviews</h2>
+                    @foreach (var review in Reviews)
+                    {
+                        <article class="py-3 border-bottom">
+                            <div class="ds-stars small">
+                                <span class="visually-hidden">Rated @review.Rating out of 5</span>
+                                <span aria-hidden="true">
+                                    @for (var star = 1; star <= 5; star++)
+                                    {
+                                        <Icon Name="@(star <= review.Rating ? IconName.StarFill : IconName.Star)" />
+                                    }
+                                </span>
+                            </div>
+                            <p class="mt-1 mb-1">@review.Body</p>
+                            <p class="small text-body-secondary mb-0">@review.Author · @review.PostedOn.ToString("MMM yyyy", CultureInfo.InvariantCulture)</p>
+                        </article>
+                    }
+                </section>
+            </div>
+
+            <div class="col-lg-5">
+                <div class="ds-panel ds-sticky">
+                    <p class="mb-3"><span class="ds-price">@TravelDisplay.Money(Stay.NightlyRate)</span> <span class="text-body-secondary">a night</span></p>
+                    <div class="row g-2">
+                        <div class="col-6">
+                            <label class="form-label small fw-semibold" for="ds-detail-in">Check-in</label>
+                            <DateInput TValue="DateOnly" Id="ds-detail-in" Value="State.Search.CheckIn" ValueExpression="() => State.Search.CheckIn" ValueChanged="OnCheckInChanged"
+                                       Min="TravelSeedData.Today" Max="TravelSeedData.Today.AddDays(365)" EnableMinMax="true" />
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label small fw-semibold" for="ds-detail-out">Check-out</label>
+                            <DateInput TValue="DateOnly" Id="ds-detail-out" Value="State.Search.CheckOut" ValueExpression="() => State.Search.CheckOut" ValueChanged="OnCheckOutChanged"
+                                       Min="State.Search.CheckIn.AddDays(1)" Max="TravelSeedData.Today.AddDays(365 + TravelSeedData.MaxNights)" EnableMinMax="true" />
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label small fw-semibold" for="ds-detail-guests">Guests</label>
+                            <NumberInput TValue="int" Id="ds-detail-guests" Value="State.Search.Guests" ValueExpression="() => State.Search.Guests" ValueChanged="OnGuestsChanged"
+                                         Min="1" Max="TravelSeedData.MaxGuests" EnableMinMax="true" />
+                        </div>
+                    </div>
+
+                    @* Always rendered, so a screen reader announces the new price or a rule error. *@
+                    <div aria-live="polite">
+                        @if (RuleError is not null)
+                        {
+                            <p class="text-danger small mt-3 mb-0"><Icon Name="IconName.ExclamationCircle" class="me-1" aria-hidden="true" />@RuleError</p>
+                        }
+                        else
+                        {
+                            <dl class="ds-summary row small mt-3 mb-0">
+                                <dt class="col-7">@TravelDisplay.Money(Quote.NightlyRate) × @TravelDisplay.Nights(Quote.Nights)</dt>
+                                <dd class="col-5">@TravelDisplay.Money(Quote.Subtotal)</dd>
+                                <dt class="col-7">Cleaning fee</dt>
+                                <dd class="col-5">@TravelDisplay.Money(Quote.CleaningFee)</dd>
+                                <dt class="col-7">Taxes and fees</dt>
+                                <dd class="col-5">@TravelDisplay.Money(Quote.Taxes)</dd>
+                                <dt class="col-7 ds-total">Total</dt>
+                                <dd class="col-5 ds-total">@TravelDisplay.Money(Quote.Total)</dd>
+                            </dl>
+                        }
+                    </div>
+
+                    @* No extra attributes on link Buttons: a parent re-render replaces them and drops the Button's own href and role. *@
+                    <Button Type="ButtonType.Link" To="@($"{TravelDisplay.StayUrl(Stay.Id)}/book")" Color="ButtonColor.Primary" Size="ButtonSize.Large" Class="w-100 mt-3"
+                            Disabled="RuleError is not null">
+                        Reserve
+                    </Button>
+                    <p class="small text-body-secondary text-center mt-2 mb-0">You won't be charged: this is a demo.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+}

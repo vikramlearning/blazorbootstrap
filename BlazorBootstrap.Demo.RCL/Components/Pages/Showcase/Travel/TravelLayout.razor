@@ -1,0 +1,50 @@
+@inherits LayoutComponentBase
+
+<HeadContent>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@400;500;600;700&display=swap" />
+</HeadContent>
+
+<div class="sc-site sc-travel">
+    <ShowcaseSiteBar Site="@site" />
+
+    <Navbar Class="ds-header"
+            Placement="NavbarPlacement.StickyTop"
+            Container="NavbarContainer.ExtraLarge"
+            AriaLabel="Driftwood Stays"
+            TogglerAriaLabel="Menu">
+        <Brand>
+            <NavbarBrand Href="@Base" Class="ds-brand">
+                <span class="ds-brand-mark" aria-hidden="true"><Icon Name="IconName.Compass" /></span>
+                <span>@TravelSeedData.SiteName</span>
+            </NavbarBrand>
+        </Brand>
+        <ChildContent>
+            <NavbarNav Class="me-auto ms-lg-4 mb-3 mb-lg-0">
+                <NavbarItem Href="@Base" Match="NavLinkMatch.All">Search</NavbarItem>
+                <NavbarItem Href="@($"{Base}/stays")">Stays</NavbarItem>
+                <NavbarItem Href="@($"{Base}/trips")">Trips</NavbarItem>
+            </NavbarNav>
+            <div class="ds-user mb-3 mb-lg-0">
+                <Avatar Name="@TravelSeedData.TravelerName" Initials="JA" Color="AvatarColor.Info" Size="AvatarSize.Small" />
+                <span>@TravelSeedData.TravelerName</span>
+            </div>
+        </ChildContent>
+    </Navbar>
+
+    <main class="sc-main ds-content" id="ds-main">
+        @Body
+    </main>
+
+    <div class="container-xl">
+        <CarbonAds Class="sc-ad" />
+    </div>
+
+    <footer class="ds-footer">
+        <div class="container-xl d-flex flex-wrap justify-content-between gap-2">
+            <span>© 2026 @TravelSeedData.SiteName (fictitious). The cities are real; every stay, host, review, and booking is made up.</span>
+            <span class="d-none d-lg-inline">Built with GoogleMap, Carousel, DateInput, NumberInput, RangeInput, RatingInput, and Modal.</span>
+        </div>
+    </footer>
+</div>

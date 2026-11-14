@@ -1,0 +1,85 @@
+@page "/showcase/travel"
+@layout TravelLayout
+
+<PageTitle>Find a stay · @TravelSeedData.SiteName</PageTitle>
+
+<div class="container-xl pb-4">
+    <section class="ds-hero mb-5" aria-labelledby="ds-search-title">
+        <div class="row g-4 align-items-center">
+            <div class="col-lg-5">
+                <span class="sc-eyebrow">Stays for every kind of trip</span>
+                <h1 class="ds-title mt-2" id="ds-search-title">Find a place that feels like yours</h1>
+                <p class="ds-lead">Lofts, cabins, and small hotels in four cities. Compare them on a map and book in a minute.</p>
+            </div>
+            <div class="col-lg-7">
+                <div class="ds-search">
+                    <EditForm EditContext="editContext" OnValidSubmit="Search" FormName="ds-search">
+                        <DataAnnotationsValidator />
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold" for="ds-destination">Where to?</label>
+                                <InputSelect id="ds-destination" class="form-select" @bind-Value="form.DestinationId">
+                                    @foreach (var destination in State.Destinations)
+                                    {
+                                        <option value="@destination.Id">@destination.Name, @destination.Country</option>
+                                    }
+                                </InputSelect>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold" for="ds-guests">Guests</label>
+                                <NumberInput TValue="int" Id="ds-guests" @bind-Value="form.Guests" Min="1" Max="TravelSeedData.MaxGuests" EnableMinMax="true" />
+                                <ValidationMessage For="() => form.Guests" />
+                            </div>
+                            <div class="col-sm-6">
+                                <label class="form-label fw-semibold" for="ds-check-in">Check-in</label>
+                                <DateInput TValue="DateOnly" Id="ds-check-in" @bind-Value="form.CheckIn" Min="TravelSeedData.Today" Max="TravelSeedData.Today.AddDays(365)" EnableMinMax="true" />
+                            </div>
+                            <div class="col-sm-6">
+                                <label class="form-label fw-semibold" for="ds-check-out">Check-out</label>
+                                <DateInput TValue="DateOnly" Id="ds-check-out" @bind-Value="form.CheckOut" Min="TravelSeedData.Today.AddDays(1)" Max="TravelSeedData.Today.AddDays(365 + TravelSeedData.MaxNights)" EnableMinMax="true" />
+                            </div>
+                        </div>
+                        @* Always rendered, so a screen reader announces a rule error when it appears. *@
+                        <p class="text-danger small mt-3 mb-0" role="alert">@ruleError</p>
+                        <Button Type="ButtonType.Submit" Color="ButtonColor.Primary" Size="ButtonSize.Large" Class="w-100 mt-3">
+                            <Icon Name="IconName.Search" class="me-2" aria-hidden="true" />Search stays
+                        </Button>
+                    </EditForm>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    @if (NextTrip is { } trip && State.FindStay(trip.StayId) is { } tripStay)
+    {
+        <section class="ds-panel d-flex flex-wrap align-items-center gap-3 mb-5" aria-labelledby="ds-next-trip">
+            <span class="ds-icon" aria-hidden="true"><Icon Name="IconName.Luggage" /></span>
+            <div class="flex-grow-1">
+                <h2 class="h6 fw-bold mb-1" id="ds-next-trip">Your next trip</h2>
+                <p class="mb-0">@tripStay.Name, @State.FindDestination(tripStay.DestinationId).Name · @TravelDisplay.Dates(trip.CheckIn, trip.CheckOut) · @TravelDisplay.Guests(trip.Guests)</p>
+            </div>
+            <Button Type="ButtonType.Link" To="@($"{TravelLayout.Base}/trips")" Color="ButtonColor.Primary" Outline="true">View trips</Button>
+        </section>
+    }
+
+    <section aria-labelledby="ds-destinations-title">
+        <h2 class="ds-section-title" id="ds-destinations-title">Popular destinations</h2>
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-4 g-3">
+            @foreach (var destination in State.Destinations)
+            {
+                var count = State.Stays.Count(stay => stay.DestinationId == destination.Id);
+                <div class="col" @key="destination.Id">
+                    @* A link: the results page reads ?destination= and keeps the current dates and guests. *@
+                    <a class="ds-destination" href="@($"{TravelLayout.Base}/stays?destination={destination.Id}")">
+                        <ShowcaseImage Src="@($"_content/BlazorBootstrap.Demo.RCL/showcase/travel/destinations/{destination.Id}.webp")" Alt=""
+                                       Width="800" Height="600" Accent="@destination.Accent" PlaceholderIcon="@destination.IconName" />
+                        <span class="ds-destination-label">
+                            <span class="d-block fs-5 fw-bold">@destination.Name</span>
+                            <span class="d-block small">@destination.Tagline · @count stays</span>
+                        </span>
+                    </a>
+                </div>
+            }
+        </div>
+    </section>
+</div>
