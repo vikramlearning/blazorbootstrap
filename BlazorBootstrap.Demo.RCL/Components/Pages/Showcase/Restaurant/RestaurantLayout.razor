@@ -1,0 +1,110 @@
+@inherits LayoutComponentBase
+
+<HeadContent>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Nunito+Sans:wght@400;600;700;800&display=swap" />
+</HeadContent>
+
+<div class="sc-site sc-restaurant">
+    <ShowcaseSiteBar Site="@site" />
+
+    <Navbar Class="rs-header"
+            Placement="NavbarPlacement.StickyTop"
+            Container="NavbarContainer.ExtraLarge"
+            AriaLabel="Saffron Table"
+            TogglerAriaLabel="Site navigation">
+        <Brand>
+            <NavbarBrand Href="@Base" Class="rs-brand">
+                <span class="rs-brand-mark" aria-hidden="true"><Icon Name="IconName.CupHot" /></span>
+                <span>@RestaurantSeedData.RestaurantName</span>
+            </NavbarBrand>
+            @* Outside the collapsed area, so the cart and its count stay visible at every width. The count is visible text, so
+               the button's name ("Cart 3 items") matches what sighted users see. *@
+            <Button @ref="cartButton" Color="ButtonColor.Primary" Class="rs-cart-btn ms-auto me-2 me-lg-0 order-lg-last" @onclick="OpenCartAsync">
+                <Icon Name="IconName.Basket2" class="me-2" aria-hidden="true" /><span class="rs-cart-word">Cart </span><Badge Color="BadgeColor.Light" Class="ms-1 rounded-pill">@State.CartCount</Badge><span class="visually-hidden">@(State.CartCount == 1 ? " item" : " items")</span>
+            </Button>
+        </Brand>
+        <ChildContent>
+            <NavbarNav Class="me-auto ms-lg-4 mb-3 mb-lg-0">
+                <NavbarItem Href="@Base" Match="NavLinkMatch.All">Menu</NavbarItem>
+                <NavbarItem Href="@($"{Base}/cart")">Your order</NavbarItem>
+                <NavbarItem Href="@RestaurantDisplay.OrderUrl(State.LastOrderId ?? State.Orders[^1].Id)">Track order</NavbarItem>
+            </NavbarNav>
+        </ChildContent>
+    </Navbar>
+
+    <main class="sc-main rs-content" id="rs-main">
+        @Body
+    </main>
+
+    <div class="container-xl">
+        <CarbonAds Class="sc-ad" />
+    </div>
+
+    <footer class="rs-footer">
+        <div class="container-xl d-flex flex-wrap justify-content-between gap-2">
+            <span>© 2026 @RestaurantSeedData.RestaurantName (fictitious). Dishes, prices, addresses, and orders are made up; nothing is cooked, delivered, or charged.</span>
+            <span class="d-none d-lg-inline">Built with Card, NumberInput, Offcanvas, GoogleMap, Progress, and Toasts.</span>
+        </div>
+    </footer>
+
+    @* HeaderTemplate rather than Title: Offcanvas reads Title once, so a live count would go stale; aria-labelledby names the drawer. *@
+    <Offcanvas @ref="cartDrawer" Placement="Placement.End" OnHidden="OnCartHiddenAsync" aria-labelledby="rs-cart-title">
+        <HeaderTemplate>
+            <h2 class="offcanvas-title h5 mb-0" id="rs-cart-title">Your order (@State.CartCount)</h2>
+        </HeaderTemplate>
+        <BodyTemplate>
+            @if (State.Cart.Count == 0)
+            {
+                <div class="text-center py-5">
+                    <span class="rs-icon fs-4" aria-hidden="true"><Icon Name="IconName.Basket2" /></span>
+                    <p class="mt-3 mb-4 text-body-secondary">Your order is empty.</p>
+                    <Button Type="ButtonType.Link" To="@Base" Color="ButtonColor.Primary">Browse the menu</Button>
+                </div>
+            }
+            else
+            {
+                <ul class="list-unstyled mb-0">
+                    @foreach (var line in State.Cart)
+                    {
+                        var item = State.FindItem(line.ItemId)!;
+                        <li class="rs-line" @key="line.ItemId">
+                            <div class="d-flex justify-content-between gap-2">
+                                <a class="rs-line-name" href="@RestaurantDisplay.ItemUrl(item.Id)">@line.Quantity × @item.Name</a>
+                                <span class="fw-semibold">@RestaurantDisplay.Money(item.Price * line.Quantity)</span>
+                            </div>
+                            @if (line.Note is not null)
+                            {
+                                <p class="small text-body-secondary mb-1">Note: @line.Note</p>
+                            }
+                            <Button Color="ButtonColor.Link" Size="ButtonSize.Small" Class="p-0 text-body-secondary" @onclick="() => RemoveAsync(item)">
+                                <Icon Name="IconName.Trash3" class="me-1" aria-hidden="true" />Remove<span class="visually-hidden">@($" {item.Name}")</span>
+                            </Button>
+                        </li>
+                    }
+                </ul>
+            }
+        </BodyTemplate>
+        <FooterTemplate>
+            @if (State.Cart.Count > 0)
+            {
+                var totals = State.CartTotals(RestaurantFulfillment.Delivery, 0);
+                <div class="w-100">
+                    <div class="d-flex justify-content-between fw-semibold mb-1"><span>Subtotal</span><span>@RestaurantDisplay.Money(totals.Subtotal)</span></div>
+                    <p class="small text-body-secondary">
+                        @(totals.Subtotal >= RestaurantSeedData.FreeDeliveryFrom
+                            ? "Free delivery. Tax and tip are added at checkout."
+                            : $"Add {RestaurantDisplay.Money(RestaurantSeedData.FreeDeliveryFrom - totals.Subtotal)} more for free delivery. Tax and tip are added at checkout.")
+                    </p>
+                    <div class="d-grid gap-2">
+                        <Button Type="ButtonType.Link" To="@($"{Base}/checkout")" Color="ButtonColor.Primary">Checkout</Button>
+                        <Button Type="ButtonType.Link" To="@($"{Base}/cart")" Color="ButtonColor.Primary" Outline="true">View order</Button>
+                    </div>
+                </div>
+            }
+        </FooterTemplate>
+    </Offcanvas>
+
+    <Toasts class="p-3" AutoHide="true" Delay="4000" Placement="ToastsPlacement.BottomRight" />
+</div>

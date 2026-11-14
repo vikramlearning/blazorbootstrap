@@ -1,0 +1,12 @@
+@* The site's not-found screen, shown by the catch-all route and for unknown menu items and orders. *@
+<PageTitle>Page not found · @RestaurantSeedData.RestaurantName</PageTitle>
+
+<section class="rs-not-found">
+    <span class="rs-icon fs-4" aria-hidden="true"><Icon Name="IconName.SignpostSplit" /></span>
+    <h1 class="rs-title fs-3 mt-3 mb-2">We couldn't find that page</h1>
+    <p class="text-body-secondary mb-4">The dish may be off the menu today, or the order number is wrong.</p>
+    <div class="d-flex justify-content-center flex-wrap gap-2">
+        <Button Type="ButtonType.Link" To="@RestaurantLayout.Base" Color="ButtonColor.Primary">See the menu</Button>
+        <Button Type="ButtonType.Link" To="@($"{RestaurantLayout.Base}/cart")" Color="ButtonColor.Primary" Outline="true">Your order</Button>
+    </div>
+</section>

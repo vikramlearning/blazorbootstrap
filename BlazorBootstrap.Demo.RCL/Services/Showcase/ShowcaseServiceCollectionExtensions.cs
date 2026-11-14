@@ -21,6 +21,7 @@ public static class ShowcaseServiceCollectionExtensions
         services.AddScoped<Learning.LearningState>();
         services.AddScoped<Marketing.MarketingState>();
         services.AddScoped<Monitoring.MonitoringState>();
+        services.AddScoped<Restaurant.RestaurantState>();
         services.AddScoped<SaasDashboard.SaasDashboardState>();
         services.AddScoped<Travel.TravelState>();
 

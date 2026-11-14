@@ -529,6 +529,13 @@ pre[class*=language-] {
         --bs-btn-focus-shadow-rgb: var(--sc-primary-rgb);
     }
 
+    /* Bootstrap's outline-secondary text (#6c757d) is about 3.7:1 on the dark site surfaces; a lighter gray is above 4.5:1. */
+    [data-bs-theme=dark] .sc-site .btn-outline-secondary {
+        --bs-btn-color: #adb5bd;
+        --bs-btn-border-color: #6c757d;
+        --bs-btn-disabled-color: #adb5bd;
+    }
+
     .sc-site .form-control:focus,
     .sc-site .form-select:focus,
     .sc-site .form-check-input:focus {

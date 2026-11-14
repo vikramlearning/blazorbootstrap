@@ -1,0 +1,118 @@
+@page "/showcase/restaurant/orders/{Id:int}"
+@layout RestaurantLayout
+
+@if (Order is null)
+{
+    <RestaurantNotFound />
+}
+else
+{
+    var stepCount = Enum.GetValues<RestaurantOrderStatus>().Length;
+    var step = (int)Order.Status + 1;
+    var percent = step * 100 / stepCount;
+
+    <PageTitle>Order #@Order.Id · @RestaurantSeedData.RestaurantName</PageTitle>
+
+    <div class="container-xl pb-4">
+        <Breadcrumb Items="BreadcrumbItems" Class="mb-3" />
+
+        <div class="row g-4">
+            <div class="col-lg-7">
+                <div class="rs-panel">
+                    <span class="small text-body-secondary">Order #@Order.Id · placed @RestaurantDisplay.Time(Order.PlacedAt)@(Order.PlacedAt.Date < RestaurantSeedData.Now.Date ? " yesterday" : null)</span>
+                    <h1 class="rs-title mt-1">@RestaurantDisplay.StatusLabel(Order.Status, Order.Fulfillment)</h1>
+                    <p class="rs-lead mb-4">
+                        @(Order.Status == RestaurantOrderStatus.Completed
+                            ? $"{(Order.Fulfillment == RestaurantFulfillment.Delivery ? "Delivered" : "Collected")} at {RestaurantDisplay.Time(Order.StatusTimes[RestaurantOrderStatus.Completed])}. Enjoy your meal!"
+                            : $"{(Order.Fulfillment == RestaurantFulfillment.Delivery ? "Arriving" : "Ready")} by about {RestaurantDisplay.Time(Order.ReadyBy)}.")
+                    </p>
+
+                    <Progress Height="12" Class="mb-3">
+                        <ProgressBar Width="percent" aria-label="Order progress" aria-valuenow="@percent" aria-valuemin="0" aria-valuemax="100"
+                                     aria-valuetext="@($"Step {step} of {stepCount}: {RestaurantDisplay.StatusLabel(Order.Status, Order.Fulfillment)}")" />
+                    </Progress>
+
+                    <ol class="list-unstyled mb-4" aria-label="Order steps">
+                        @foreach (var status in Enum.GetValues<RestaurantOrderStatus>())
+                        {
+                            var done = status < Order.Status || Order.Status == RestaurantOrderStatus.Completed;
+                            var current = status == Order.Status && !done;
+                            <li class="rs-step @(done ? "rs-step-done" : current ? "rs-step-current" : null)" aria-current="@(current ? "step" : null)">
+                                <span class="rs-step-mark" aria-hidden="true"><Icon Name="@(done ? IconName.CheckLg : StepIcon(status))" /></span>
+                                <span>
+                                    <span class="fw-bold d-block">@RestaurantDisplay.StatusLabel(status, Order.Fulfillment)</span>
+                                    <span class="small text-body-secondary">
+                                        @(Order.StatusTimes.TryGetValue(status, out var time) ? RestaurantDisplay.Time(time) : "Not yet")@(done ? ", done" : current ? ", in progress" : null)
+                                    </span>
+                                </span>
+                            </li>
+                        }
+                    </ol>
+
+                    <div class="d-flex flex-wrap align-items-center gap-3">
+                        @if (Order.Status != RestaurantOrderStatus.Completed)
+                        {
+                            @* A demo control: real orders would update on their own. One button that stays in place, so focus stays on it. *@
+                            <Button Color="ButtonColor.Primary" Outline="true" @onclick="AdvanceAsync">
+                                <Icon Name="IconName.ArrowRepeat" class="me-2" aria-hidden="true" />Simulate the next update
+                            </Button>
+                        }
+                        else
+                        {
+                            <Button Type="ButtonType.Link" To="@RestaurantLayout.Base" Color="ButtonColor.Primary">Order again</Button>
+                        }
+                        <span class="small text-body-secondary" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-5">
+                <div class="rs-panel">
+                    <h2 class="rs-section-title fs-5">@(Order.Fulfillment == RestaurantFulfillment.Delivery ? "Delivering to" : "Collect from")</h2>
+                    @if (Order.Address is { } address)
+                    {
+                        <p class="mb-1 fw-semibold">@Order.CustomerName</p>
+                        <p class="mb-1">@address.Street, @address.Neighborhood</p>
+                        @if (Order.AddressNote is not null)
+                        {
+                            <p class="small text-body-secondary mb-3">Note for the courier: @Order.AddressNote</p>
+                        }
+                    }
+                    else
+                    {
+                        <p class="mb-3">@RestaurantSeedData.RestaurantName, 9 Curtain Road, Shoreditch. Ask for the order for @Order.CustomerName.</p>
+                    }
+
+                    <h2 class="rs-section-title fs-5 mt-3">Items</h2>
+                    <ul class="list-unstyled small mb-3">
+                        @foreach (var line in Order.Lines)
+                        {
+                            var item = State.FindItem(line.ItemId);
+                            <li class="py-1">
+                                <span class="d-flex justify-content-between gap-2"><span>@line.Quantity × @item?.Name</span><span class="fw-semibold">@RestaurantDisplay.Money((item?.Price ?? 0) * line.Quantity)</span></span>
+                                @if (line.Note is not null)
+                                {
+                                    <span class="text-body-secondary">Note: @line.Note</span>
+                                }
+                            </li>
+                        }
+                    </ul>
+                    <dl class="rs-summary row small mb-0">
+                        <dt class="col-7">Subtotal</dt>
+                        <dd class="col-5">@RestaurantDisplay.Money(Order.Totals.Subtotal)</dd>
+                        @if (Order.Fulfillment == RestaurantFulfillment.Delivery)
+                        {
+                            <dt class="col-7">Delivery</dt>
+                            <dd class="col-5">@(Order.Totals.DeliveryFee == 0 ? "Free" : RestaurantDisplay.Money(Order.Totals.DeliveryFee))</dd>
+                        }
+                        <dt class="col-7">Tax</dt>
+                        <dd class="col-5">@RestaurantDisplay.Money(Order.Totals.Tax)</dd>
+                        <dt class="col-7">Tip</dt>
+                        <dd class="col-5">@RestaurantDisplay.Money(Order.Totals.Tip)</dd>
+                        <dt class="col-7 rs-total">Total</dt>
+                        <dd class="col-5 rs-total">@RestaurantDisplay.Money(Order.Totals.Total)</dd>
+                    </dl>
+                </div>
+            </div>
+        </div>
+    </div>
+}
