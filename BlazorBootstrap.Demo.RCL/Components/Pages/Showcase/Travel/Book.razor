@@ -1,0 +1,117 @@
+@page "/showcase/travel/stays/{Id:int}/book"
+@layout TravelLayout
+
+@if (Stay is null)
+{
+    <TravelNotFound />
+}
+else
+{
+    <PageTitle>Book @Stay.Name · @TravelSeedData.SiteName</PageTitle>
+
+    <div class="container-xl pb-4">
+        <Breadcrumb Items="BreadcrumbItems" Class="mb-3" />
+        <h1 class="ds-title mb-4">Confirm and book</h1>
+
+        <div class="row g-4 g-lg-5">
+            <div class="col-lg-7">
+                <div class="ds-panel" data-clarity-mask="true">
+                    <ShowcaseDemoNotice Class="mb-4" Text="Demo only: nothing is booked or charged. The booking stays in this browser tab until you reload." />
+
+                    <EditForm EditContext="editContext" OnValidSubmit="Submit" FormName="ds-book">
+                        <DataAnnotationsValidator />
+
+                        <h2 class="h5 fw-bold">Your trip</h2>
+                        <div class="row g-3 mb-4">
+                            <div class="col-sm-4">
+                                <label class="form-label fw-semibold" for="ds-book-in">Check-in</label>
+                                <DateInput TValue="DateOnly" Id="ds-book-in" @bind-Value="form.CheckIn" Min="TravelSeedData.Today" Max="TravelSeedData.Today.AddDays(365)" EnableMinMax="true" />
+                            </div>
+                            <div class="col-sm-4">
+                                <label class="form-label fw-semibold" for="ds-book-out">Check-out</label>
+                                <DateInput TValue="DateOnly" Id="ds-book-out" @bind-Value="form.CheckOut" Min="TravelSeedData.Today.AddDays(1)" Max="TravelSeedData.Today.AddDays(365 + TravelSeedData.MaxNights)" EnableMinMax="true" />
+                            </div>
+                            <div class="col-sm-4">
+                                <label class="form-label fw-semibold" for="ds-book-guests">Guests</label>
+                                <NumberInput TValue="int" Id="ds-book-guests" @bind-Value="form.Guests" Min="1" Max="Stay.MaxGuests" EnableMinMax="true" />
+                                <div class="form-text">Sleeps up to @Stay.MaxGuests.</div>
+                            </div>
+                        </div>
+
+                        <h2 class="h5 fw-bold">Who's coming</h2>
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold" for="ds-book-name">Full name</label>
+                                <TextInput Id="ds-book-name" @bind-Value="form.FullName" MaxLength="60" />
+                                <ValidationMessage For="() => form.FullName" />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold" for="ds-book-email">Email</label>
+                                <TextInput Id="ds-book-email" @bind-Value="form.Email" MaxLength="80" />
+                                <div class="form-text">Use any made-up address; nothing is sent.</div>
+                                <ValidationMessage For="() => form.Email" />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold" for="ds-book-arrival">Arrival time</label>
+                                <InputSelect id="ds-book-arrival" class="form-select" @bind-Value="form.Arrival">
+                                    <option value="">Choose a time</option>
+                                    <option value="afternoon">Afternoon (2–6 PM)</option>
+                                    <option value="evening">Evening (6–10 PM)</option>
+                                    <option value="late">Late (after 10 PM)</option>
+                                </InputSelect>
+                                <ValidationMessage For="() => form.Arrival" />
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label fw-semibold" for="ds-book-note">Message to the host <span class="fw-normal text-body-secondary">(optional)</span></label>
+                                <TextAreaInput Id="ds-book-note" @bind-Value="form.Note" Rows="3" MaxLength="300" />
+                                <ValidationMessage For="() => form.Note" />
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <CheckboxInput Id="ds-book-rules" @bind-Value="form.AcceptsRules" Label="I agree to the house rules: no parties, and quiet hours from 10 PM." />
+                            <ValidationMessage For="() => form.AcceptsRules" />
+                        </div>
+
+                        @if (ruleError is not null)
+                        {
+                            <Alert Color="AlertColor.Danger" Class="mt-3 mb-0" role="alert">
+                                <Icon Name="IconName.ExclamationTriangleFill" class="me-2" aria-hidden="true" />@ruleError
+                            </Alert>
+                        }
+
+                        <Button Type="ButtonType.Submit" Color="ButtonColor.Primary" Size="ButtonSize.Large" Class="w-100 mt-4">
+                            Book for @TravelDisplay.Money(Quote.Total)
+                        </Button>
+                        <p class="small text-body-secondary text-center mt-2 mb-0">Pay at the property. No card details are needed in this demo.</p>
+                    </EditForm>
+                </div>
+            </div>
+
+            <div class="col-lg-5">
+                <Card Class="ds-card ds-sticky">
+                    <ShowcaseImage Src="@Stay.PhotoPath(1)" Alt="" Width="800" Height="450" Accent="@Destination.Accent" PlaceholderIcon="IconName.HouseHeart" />
+                    <CardBody>
+                        <span class="small text-body-secondary">@TravelDisplay.TypeLabel(Stay.Type) · @Stay.Neighborhood, @Destination.Name</span>
+                        <h2 class="ds-card-title">@Stay.Name</h2>
+                        <p class="small mb-3">@TravelDisplay.Dates(form.CheckIn, form.CheckOut) · @TravelDisplay.Guests(form.Guests)</p>
+                        <dl class="ds-summary row small mb-0">
+                            <dt class="col-7">@TravelDisplay.Money(Quote.NightlyRate) × @TravelDisplay.Nights(Quote.Nights)</dt>
+                            <dd class="col-5">@TravelDisplay.Money(Quote.Subtotal)</dd>
+                            <dt class="col-7">Cleaning fee</dt>
+                            <dd class="col-5">@TravelDisplay.Money(Quote.CleaningFee)</dd>
+                            <dt class="col-7">Taxes and fees</dt>
+                            <dd class="col-5">@TravelDisplay.Money(Quote.Taxes)</dd>
+                            <dt class="col-7 ds-total">Total</dt>
+                            <dd class="col-5 ds-total">@TravelDisplay.Money(Quote.Total)</dd>
+                        </dl>
+                        @if (Stay.FreeCancellation)
+                        {
+                            <p class="small text-success-emphasis fw-semibold mt-3 mb-0"><Icon Name="IconName.ShieldCheck" class="me-1" aria-hidden="true" />Free cancellation until 48 hours before check-in</p>
+                        }
+                    </CardBody>
+                </Card>
+            </div>
+        </div>
+    </div>
+}

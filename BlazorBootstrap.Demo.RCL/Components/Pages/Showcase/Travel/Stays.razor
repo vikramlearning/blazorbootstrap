@@ -1,0 +1,142 @@
+@page "/showcase/travel/stays"
+@layout TravelLayout
+
+<PageTitle>Stays in @Destination.Name · @TravelSeedData.SiteName</PageTitle>
+
+<div class="container-xl pb-4">
+    <div class="d-flex flex-wrap justify-content-between align-items-end gap-3 mb-4">
+        <div>
+            <h1 class="ds-title">Stays in @Destination.Name</h1>
+            <p class="ds-lead">@TravelDisplay.Dates(State.Search.CheckIn, State.Search.CheckOut) · @TravelDisplay.Nights(Nights) · @TravelDisplay.Guests(State.Search.Guests)</p>
+            @if (SearchError is not null)
+            {
+                <p class="text-danger small mt-2 mb-0"><Icon Name="IconName.ExclamationCircle" class="me-1" aria-hidden="true" />@SearchError Use "Change search" to fix the dates or guests.</p>
+            }
+        </div>
+        <Button Type="ButtonType.Link" To="@TravelLayout.Base" Color="ButtonColor.Primary" Outline="true">
+            <Icon Name="IconName.Search" class="me-2" aria-hidden="true" />Change search
+        </Button>
+    </div>
+
+    <div class="row g-4">
+        <aside class="col-lg-3" aria-label="Filters">
+            <div class="ds-panel">
+                <div class="mb-4">
+                    <label class="ds-filter-heading d-block" for="ds-max-price">Price a night: <span class="text-body">up to @TravelDisplay.Money(State.Filter.MaxPrice)</span></label>
+                    <RangeInput TValue="int" Id="ds-max-price" Value="State.Filter.MaxPrice" ValueExpression="() => State.Filter.MaxPrice" ValueChanged="OnMaxPriceChanged"
+                                Min="TravelFilterLimits.MinPrice" Max="TravelFilterLimits.MaxPrice" Step="10" aria-valuetext="@($"Up to {State.Filter.MaxPrice} dollars a night")" />
+                    <div class="d-flex justify-content-between small text-body-secondary"><span>$@TravelFilterLimits.MinPrice</span><span>$@TravelFilterLimits.MaxPrice</span></div>
+                </div>
+
+                <div class="mb-4">
+                    <h2 class="ds-filter-heading" id="ds-type-heading">Type of place</h2>
+                    <RadioButtonGroup TValue="string" Value="State.Filter.Type" ValueExpression="() => State.Filter.Type" ValueChanged="OnTypeChanged"
+                                      AriaLabel="Type of place" aria-labelledby="ds-type-heading" Vertical="true" Size="ButtonGroupSize.Small" Class="w-100">
+                        <ButtonGroupItem Value="@string.Empty" Id="ds-type-any">Any type</ButtonGroupItem>
+                        @foreach (var type in Enum.GetValues<TravelStayType>())
+                        {
+                            <ButtonGroupItem Value="type.ToString()" Id="@($"ds-type-{type}")">@TravelDisplay.TypeLabel(type)</ButtonGroupItem>
+                        }
+                    </RadioButtonGroup>
+                </div>
+
+                <div class="mb-4">
+                    <h2 class="ds-filter-heading" id="ds-sort-heading">Sort by</h2>
+                    <RadioButtonGroup TValue="TravelSort" Value="State.Filter.Sort" ValueExpression="() => State.Filter.Sort" ValueChanged="OnSortChanged"
+                                      AriaLabel="Sort by" aria-labelledby="ds-sort-heading" Vertical="true" Size="ButtonGroupSize.Small" Class="w-100">
+                        <ButtonGroupItem Value="TravelSort.Rating" Id="ds-sort-rating">Top rated</ButtonGroupItem>
+                        <ButtonGroupItem Value="TravelSort.PriceLow" Id="ds-sort-low">Lowest price</ButtonGroupItem>
+                        <ButtonGroupItem Value="TravelSort.PriceHigh" Id="ds-sort-high">Highest price</ButtonGroupItem>
+                    </RadioButtonGroup>
+                </div>
+
+                <div class="mb-3">
+                    <Switch Value="State.Filter.FreeCancellationOnly" ValueExpression="() => State.Filter.FreeCancellationOnly" ValueChanged="OnFreeCancellationChanged" Label="Free cancellation only" />
+                </div>
+
+                <Button Color="ButtonColor.Secondary" Outline="true" Size="ButtonSize.Small" Class="w-100" @onclick="ClearFiltersAsync" Disabled="!State.Filter.IsActive">
+                    Clear filters
+                </Button>
+            </div>
+        </aside>
+
+        <div class="col-lg-9">
+            <div class="row g-4">
+                <section class="col-xl-7" aria-labelledby="ds-results-count">
+                    <p class="fw-semibold mb-3" id="ds-results-count" aria-live="polite" tabindex="-1" @ref="resultsCount">@ResultsText</p>
+
+                    @if (Results.Count == 0)
+                    {
+                        <div class="ds-panel text-center py-5">
+                            <span class="ds-icon fs-4" aria-hidden="true"><Icon Name="IconName.HouseHeart" /></span>
+                            <h2 class="h5 fw-bold mt-3">No stays match</h2>
+                            <p class="text-body-secondary mb-0">Raise the price limit, choose another type, or use "Clear filters". Fewer guests also show more places.</p>
+                        </div>
+                    }
+                    else
+                    {
+                        <ol class="list-unstyled d-grid gap-3 mb-0">
+                            @for (var index = 0; index < Results.Count; index++)
+                            {
+                                var stay = Results[index];
+                                var number = index + 1;
+                                var rating = State.AverageRating(stay.Id);
+                                var quote = State.Quote(stay, State.Search.CheckIn, State.Search.CheckOut);
+                                <li @key="stay.Id">
+                                    <Card Class="ds-card">
+                                        <div class="row g-0">
+                                            <div class="col-sm-5">
+                                                <a href="@TravelDisplay.StayUrl(stay.Id)" tabindex="-1" aria-hidden="true">
+                                                    <ShowcaseImage Src="@stay.PhotoPath(1)" Alt="" Width="800" Height="600" Accent="@Destination.Accent" PlaceholderIcon="IconName.HouseHeart" Class="h-100" />
+                                                </a>
+                                            </div>
+                                            <div class="col-sm-7">
+                                                <CardBody Class="h-100 d-flex flex-column">
+                                                    <div class="d-flex align-items-start gap-2">
+                                                        <span class="ds-pin-number" aria-hidden="true">@number</span>
+                                                        <div class="min-w-0">
+                                                            <span class="small text-body-secondary">@TravelDisplay.TypeLabel(stay.Type) · @stay.Neighborhood</span>
+                                                            <h2 class="ds-card-title"><a href="@TravelDisplay.StayUrl(stay.Id)"><span class="visually-hidden">Map pin @number: </span>@stay.Name</a></h2>
+                                                        </div>
+                                                    </div>
+                                                    <div class="ds-stars small mb-2">
+                                                        <span class="visually-hidden">Rated @TravelDisplay.Rating(rating) out of 5 from @State.ReviewsFor(stay.Id).Count reviews</span>
+                                                        <span aria-hidden="true">
+                                                            <Icon Name="IconName.StarFill" class="me-1" />@TravelDisplay.Rating(rating)
+                                                            <span class="text-body-secondary">(@State.ReviewsFor(stay.Id).Count)</span>
+                                                        </span>
+                                                    </div>
+                                                    <p class="small text-body-secondary mb-2">Sleeps @stay.MaxGuests · @stay.Bedrooms @(stay.Bedrooms == 1 ? "bedroom" : "bedrooms") · @string.Join(", ", stay.Amenities.Take(2))</p>
+                                                    @if (stay.FreeCancellation)
+                                                    {
+                                                        <span class="small text-success-emphasis fw-semibold mb-2"><Icon Name="IconName.ShieldCheck" class="me-1" aria-hidden="true" />Free cancellation</span>
+                                                    }
+                                                    <div class="mt-auto d-flex flex-wrap justify-content-between align-items-baseline gap-2">
+                                                        <span><span class="ds-price">@TravelDisplay.Money(stay.NightlyRate)</span> <span class="small text-body-secondary">a night</span></span>
+                                                        @if (SearchError is null)
+                                                        {
+                                                            <span class="small text-body-secondary">@TravelDisplay.Money(quote.Total) total</span>
+                                                        }
+                                                    </div>
+                                                </CardBody>
+                                            </div>
+                                        </div>
+                                    </Card>
+                                </li>
+                            }
+                        </ol>
+                    }
+                </section>
+
+                <section class="col-xl-5" aria-labelledby="ds-map-title">
+                    <div class="ds-sticky">
+                        <h2 class="ds-filter-heading" id="ds-map-title">Map</h2>
+                        @* Without a Google Maps key, the placeholder shows numbered pins and lists the same stays (AC-30). *@
+                        <ShowcaseMapOrPlaceholder Locations="Locations" Height="380" Zoom="13"
+                                                  AriaLabel="@($"Map preview with {Results.Count} numbered pins for the stays listed in {Destination.Name}")" />
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+</div>

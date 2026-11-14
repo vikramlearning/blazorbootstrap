@@ -1,0 +1,92 @@
+@page "/showcase/travel/trips"
+@layout TravelLayout
+
+<PageTitle>Your trips · @TravelSeedData.SiteName</PageTitle>
+
+<div class="container-xl pb-4">
+    <h1 class="ds-title mb-1">Your trips</h1>
+    <p class="ds-lead mb-4">@Summary</p>
+
+    @if (confirmed is not null && State.FindStay(confirmed.StayId) is { } confirmedStay)
+    {
+        <div tabindex="-1" @ref="confirmation" class="mb-4">
+            <Alert Color="AlertColor.Success" Class="mb-0">
+                <h2 class="h5 fw-bold alert-heading"><Icon Name="IconName.CheckCircleFill" class="me-2" aria-hidden="true" />Booking confirmed</h2>
+                <p class="mb-0">@confirmedStay.Name, @TravelDisplay.Dates(confirmed.CheckIn, confirmed.CheckOut), @TravelDisplay.Guests(confirmed.Guests). Reference <strong>@confirmed.Reference</strong>, total @TravelDisplay.Money(confirmed.Total). Nothing was charged: this is a demo.</p>
+            </Alert>
+        </div>
+    }
+
+    @* Always rendered and focusable, so a cancellation is announced and focus has somewhere to go. *@
+    <p class="fw-semibold" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
+
+    @foreach (var (status, title) in sections)
+    {
+        var trips = State.Bookings.Where(booking => booking.Status == status).ToList();
+        <section class="mb-5" aria-labelledby="@($"ds-trips-{status}")">
+            <h2 class="ds-section-title" id="@($"ds-trips-{status}")">@title <span class="text-body-secondary fs-6">(@trips.Count)</span></h2>
+            @if (trips.Count == 0)
+            {
+                <p class="text-body-secondary">@(status == TravelBookingStatus.Upcoming ? "No upcoming trips. Search for a stay to plan one." : "Nothing here yet.")</p>
+            }
+            else
+            {
+                <div class="row row-cols-1 row-cols-md-2 g-3">
+                    @foreach (var trip in trips)
+                    {
+                        var stay = State.FindStay(trip.StayId);
+                        if (stay is null)
+                            continue;
+
+                        var destination = State.FindDestination(stay.DestinationId);
+                        <div class="col" @key="trip.Reference">
+                            <Card Class="ds-card h-100">
+                                <div class="row g-0 h-100">
+                                    <div class="col-4">
+                                        <ShowcaseImage Src="@stay.PhotoPath(1)" Alt="" Width="600" Height="600" Accent="@destination.Accent" PlaceholderIcon="IconName.HouseHeart" Class="h-100" />
+                                    </div>
+                                    <div class="col-8">
+                                        <CardBody Class="h-100 d-flex flex-column">
+                                            <div class="d-flex justify-content-between align-items-start gap-2">
+                                                <span class="small text-body-secondary">@destination.Name · @trip.Reference</span>
+                                                <Badge Color="@StatusColor(trip.Status)">@StatusLabel(trip.Status)</Badge>
+                                            </div>
+                                            <h3 class="ds-card-title"><a href="@TravelDisplay.StayUrl(stay.Id)">@stay.Name</a></h3>
+                                            <p class="small mb-1">@TravelDisplay.Dates(trip.CheckIn, trip.CheckOut) · @TravelDisplay.Nights(trip.CheckOut.DayNumber - trip.CheckIn.DayNumber)</p>
+                                            <p class="small text-body-secondary mb-3">@TravelDisplay.Guests(trip.Guests) · @TravelDisplay.Money(trip.Total)</p>
+                                            @if (trip.Status == TravelBookingStatus.Upcoming)
+                                            {
+                                                <div class="mt-auto">
+                                                    <Button @ref="cancelButtons[trip.Reference]" Color="ButtonColor.Danger" Outline="true" Size="ButtonSize.Small" @onclick="() => AskCancelAsync(trip)">
+                                                        Cancel booking<span class="visually-hidden">@($" {trip.Reference} at {stay.Name}")</span>
+                                                    </Button>
+                                                </div>
+                                            }
+                                        </CardBody>
+                                    </div>
+                                </div>
+                            </Card>
+                        </div>
+                    }
+                </div>
+            }
+        </section>
+    }
+</div>
+
+<Modal @ref="cancelModal" IsVerticallyCentered="true" ShowCloseButton="false" aria-labelledby="ds-cancel-title" OnHidden="OnCancelHiddenAsync">
+    <HeaderTemplate>
+        <h2 class="modal-title h5" id="ds-cancel-title">Cancel your stay at @(State.FindStay(cancelling?.StayId ?? 0)?.Name)?</h2>
+    </HeaderTemplate>
+    <BodyTemplate>
+        @if (cancelling is not null)
+        {
+            <p class="mb-2">@TravelDisplay.Dates(cancelling.CheckIn, cancelling.CheckOut), @TravelDisplay.Guests(cancelling.Guests). Reference @cancelling.Reference.</p>
+            <p class="small text-body-secondary mb-0">This is a demo: nothing is refunded or charged.</p>
+        }
+    </BodyTemplate>
+    <FooterTemplate>
+        <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => cancelModal.HideAsync()">Keep booking</Button>
+        <Button Color="ButtonColor.Danger" @onclick="ConfirmCancelAsync">Cancel booking</Button>
+    </FooterTemplate>
+</Modal>

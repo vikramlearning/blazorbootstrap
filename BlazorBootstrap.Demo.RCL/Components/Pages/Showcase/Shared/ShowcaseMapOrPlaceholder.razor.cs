@@ -14,6 +14,7 @@ public partial class ShowcaseMapOrPlaceholder : ComponentBase
     private const string ApiKeyPlaceholder = "<<ApiKey>>";
 
     private string? apiKey;
+    private string locationsKey = string.Empty;
     private List<GoogleMapMarker> markers = new();
 
     #endregion
@@ -30,13 +31,16 @@ public partial class ShowcaseMapOrPlaceholder : ComponentBase
 
     protected override void OnParametersSet()
     {
+        // Numbered like the placeholder's pins and list, so "pin 2" means the same place with or without a key.
         markers = Locations
-            .Select(location => new GoogleMapMarker
+            .Select((location, index) => new GoogleMapMarker
             {
+                PinElement = new PinElement { GlyphText = (index + 1).ToString(CultureInfo.InvariantCulture) },
                 Position = new GoogleMapMarkerPosition(location.Latitude, location.Longitude),
                 Title = location.Name
             })
             .ToList();
+        locationsKey = string.Join("|", Locations.Select(location => string.Create(CultureInfo.InvariantCulture, $"{location.Name}:{location.Latitude}:{location.Longitude}")));
     }
 
     #endregion

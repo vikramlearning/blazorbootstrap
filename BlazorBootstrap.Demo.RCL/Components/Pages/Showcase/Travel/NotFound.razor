@@ -1,0 +1,8 @@
+@page "/showcase/travel/{*path}"
+@layout TravelLayout
+
+<TravelNotFound />
+
+@code {
+    [Parameter] public string? Path { get; set; }
+}

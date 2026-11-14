@@ -18,7 +18,10 @@ public static class ShowcaseCatalog
     /// </summary>
     private static readonly HashSet<string> committedAssets = new(
         Enumerable.Range(101, 31).Select(id => $"{AssetPrefix}/ecommerce/products/{id}.webp")
-            .Concat(Enumerable.Range(1, 3).Select(slide => $"{AssetPrefix}/ecommerce/hero-{slide}.webp")),
+            .Concat(Enumerable.Range(1, 3).Select(slide => $"{AssetPrefix}/ecommerce/hero-{slide}.webp"))
+            .Concat(Enumerable.Range(201, 8).Select(id => $"{AssetPrefix}/learning/course-{id}.webp"))
+            .Concat(new[] { "cape-town", "kyoto", "lisbon", "vancouver" }.Select(id => $"{AssetPrefix}/travel/destinations/{id}.webp"))
+            .Concat(Enumerable.Range(301, 18).SelectMany(id => Enumerable.Range(1, 3).Select(photo => $"{AssetPrefix}/travel/stays/{id}-{photo}.webp"))),
         StringComparer.OrdinalIgnoreCase);
 
     private static readonly IReadOnlyList<ShowcaseSite> sites = new List<ShowcaseSite>

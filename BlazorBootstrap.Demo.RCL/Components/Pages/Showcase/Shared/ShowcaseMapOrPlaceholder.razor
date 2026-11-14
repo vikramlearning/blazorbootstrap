@@ -1,6 +1,8 @@
 @if (HasApiKey)
 {
-    <GoogleMap ApiKey="@apiKey"
+    @* GoogleMap reads its markers only on first render, so a new set of locations gets a new map. *@
+    <GoogleMap @key="locationsKey"
+               ApiKey="@apiKey"
                Center="@(Center ?? DefaultCenter)"
                Height="@Height"
                Width="100"
