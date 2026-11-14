@@ -62,6 +62,12 @@ public partial class ShowcaseAccountMenu : ComponentBase
 
     [Inject] private NavigationManager Navigation { get; set; } = default!;
 
+    /// <summary>Gets or sets the number of unread notices; above zero, the button shows a count and names it.</summary>
+    [Parameter] public int NoticeCount { get; set; }
+
+    /// <summary>Gets or sets where the account's notices are; <see langword="null" /> hides the menu item.</summary>
+    [Parameter] public string? NoticesPath { get; set; }
+
     [CascadingParameter] private ShowcaseSession Session { get; set; } = default!;
 
     /// <summary>Gets or sets the site's public start page, where Sign out goes.</summary>

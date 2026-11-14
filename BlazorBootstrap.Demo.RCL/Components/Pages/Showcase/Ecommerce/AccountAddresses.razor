@@ -1,0 +1,185 @@
+@page "/showcase/ecommerce/account/addresses"
+@layout EcommerceLayout
+
+<PageTitle>Your addresses · @EcommerceSeedData.StoreName</PageTitle>
+
+<div class="container-xl pt-4 pb-5">
+    <ShowcaseRoleGuard Roles="@EcommerceSeedData.CustomerRole" SignInPath="@EcommerceLayout.SignInPath">
+        @if (State.Identity.Current is { } account)
+        {
+            var addresses = State.AddressesFor(account.Id);
+
+            <EcommerceAccountNav />
+
+            <div class="d-flex flex-wrap align-items-end justify-content-between gap-3 mb-3">
+                <div>
+                    <h1 class="ec-page-title mb-1">Your addresses</h1>
+                    <p class="text-body-secondary mb-0">
+                        @addresses.Count of @MaxAddresses addresses saved.
+                        @if (addresses.Count >= MaxAddresses)
+                        {
+                            <span>Your address book is full; delete one to add another.</span>
+                        }
+                    </p>
+                </div>
+                <Button @ref="addButton" Color="ButtonColor.Primary" @onclick="() => AddAsync(addresses.Count)">
+                    <Icon Name="IconName.Plus" class="me-1" aria-hidden="true" />Add address
+                </Button>
+            </div>
+
+            <p class="ec-address-error" role="alert">@pageError</p>
+            @* Always rendered and focusable, so a change is announced and focus has somewhere to go when its button is gone. *@
+            <p class="ec-address-status" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
+
+            @if (addresses.Count == 0)
+            {
+                <div class="ec-panel text-center py-5">
+                    <span class="ec-empty-icon" aria-hidden="true"><Icon Name="IconName.GeoAlt" /></span>
+                    <p class="mt-3 mb-0 text-body-secondary">No saved addresses yet. Choose "Add address" to keep one ready for checkout.</p>
+                </div>
+            }
+            else
+            {
+                <ul class="row g-3 list-unstyled mb-0" data-clarity-mask="true" aria-label="Saved addresses">
+                    @foreach (var address in addresses)
+                    {
+                        <li class="col-md-6 col-xl-4" @key="address.Id">
+                            <article class="ec-panel ec-address-card h-100" aria-labelledby="@($"ec-address-{address.Id}-title")">
+                                <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
+                                    <h2 class="ec-address-title" id="@($"ec-address-{address.Id}-title")">@address.Label</h2>
+                                    @if (address.IsDefault)
+                                    {
+                                        <Badge Color="BadgeColor.Success" Class="rounded-pill">Default</Badge>
+                                    }
+                                </div>
+                                <address class="ec-address-lines mb-2">
+                                    @address.FullName<br />
+                                    @address.Street<br />
+                                    @address.City @address.PostalCode<br />
+                                    @address.Country
+                                    @if (!string.IsNullOrWhiteSpace(address.Phone))
+                                    {
+                                        <br /><span class="visually-hidden">Phone: </span>@address.Phone
+                                    }
+                                </address>
+                                @if (EcommerceState.IsLocalDeliveryCity(address.City, address.Country))
+                                {
+                                    <p class="small mb-2"><Icon Name="IconName.Truck" class="me-1" aria-hidden="true" />Same-day delivery available</p>
+                                }
+                                <div class="ec-address-actions">
+                                    <Button @ref="editButtons[address.Id]" Color="ButtonColor.Secondary" Outline="true" Size="ButtonSize.Small" @onclick="() => EditAsync(address)">
+                                        <Icon Name="IconName.PencilSquare" class="me-1" aria-hidden="true" />Edit<span class="visually-hidden"> @address.Label</span>
+                                    </Button>
+                                    @if (!address.IsDefault)
+                                    {
+                                        <Button Color="ButtonColor.Secondary" Outline="true" Size="ButtonSize.Small" @onclick="() => SetDefaultAsync(address)">
+                                            Set as default<span class="visually-hidden"> (@address.Label)</span>
+                                        </Button>
+                                    }
+                                    <Button @ref="deleteButtons[address.Id]" Color="ButtonColor.Danger" Outline="true" Size="ButtonSize.Small" @onclick="() => AskDeleteAsync(address)">
+                                        <Icon Name="IconName.Trash3" class="me-1" aria-hidden="true" />Delete<span class="visually-hidden"> @address.Label</span>
+                                    </Button>
+                                </div>
+                            </article>
+                        </li>
+                    }
+                </ul>
+            }
+        }
+    </ShowcaseRoleGuard>
+</div>
+
+<Modal @ref="editorModal"
+       IsVerticallyCentered="true"
+       IsScrollable="true"
+       Size="ModalSize.Large"
+       ShowCloseButton="false"
+       aria-labelledby="ec-address-editor-title"
+       OnShown="OnEditorShownAsync"
+       OnHidden="OnEditorHiddenAsync">
+    <HeaderTemplate>
+        <h2 class="modal-title h5" id="ec-address-editor-title">@(editingId == 0 ? "Add an address" : "Edit address")</h2>
+    </HeaderTemplate>
+    <BodyTemplate>
+        <div data-clarity-mask="true">
+            <ShowcaseDemoNotice Class="mb-3" Text="Demo only: addresses stay in this browser tab and are gone when it closes. Nothing is sent." />
+            <EditForm id="ec-address-form" EditContext="editContext" OnValidSubmit="SaveAsync" FormName="ec-address">
+                <DataAnnotationsValidator />
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label class="form-label" for="ec-address-label">Label</label>
+                        <InputText @ref="labelInput" id="ec-address-label" class="form-control" @bind-Value="form.Label" maxlength="30" autocomplete="off" aria-describedby="ec-address-label-help" />
+                        <div class="form-text" id="ec-address-label-help">For example Home, Studio, or Work.</div>
+                        <ValidationMessage For="() => form.Label" />
+                    </div>
+                    <div class="col-md-8">
+                        <label class="form-label" for="ec-address-name">Full name</label>
+                        <InputText id="ec-address-name" class="form-control" @bind-Value="form.FullName" maxlength="60" autocomplete="name" />
+                        <ValidationMessage For="() => form.FullName" />
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label" for="ec-address-street">Street address</label>
+                        <InputText id="ec-address-street" class="form-control" @bind-Value="form.Street" maxlength="100" autocomplete="street-address" />
+                        <ValidationMessage For="() => form.Street" />
+                    </div>
+                    <div class="col-md-5">
+                        <label class="form-label" for="ec-address-city">City</label>
+                        <InputText id="ec-address-city" class="form-control" @bind-Value="form.City" maxlength="60" autocomplete="address-level2" aria-describedby="ec-address-city-help" />
+                        <div class="form-text" id="ec-address-city-help">Same-day delivery reaches @string.Join(" and ", EcommerceSeedData.LocalDeliveryCities).</div>
+                        <ValidationMessage For="() => form.City" />
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label" for="ec-address-postal">Postal code</label>
+                        <InputText id="ec-address-postal" class="form-control" @bind-Value="form.PostalCode" maxlength="10" autocomplete="postal-code" />
+                        <ValidationMessage For="() => form.PostalCode" />
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label" for="ec-address-country">Country</label>
+                        <InputSelect id="ec-address-country" class="form-select" @bind-Value="form.Country" autocomplete="country-name">
+                            @foreach (var country in countries)
+                            {
+                                <option value="@country">@country</option>
+                            }
+                        </InputSelect>
+                        <ValidationMessage For="() => form.Country" />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="ec-address-phone">Phone <span class="text-body-secondary">(optional)</span></label>
+                        <InputText id="ec-address-phone" type="tel" class="form-control" @bind-Value="form.Phone" maxlength="20" autocomplete="tel" aria-describedby="ec-address-phone-help" />
+                        <div class="form-text" id="ec-address-phone-help">For the courier, if they need to reach you.</div>
+                        <ValidationMessage For="() => form.Phone" />
+                    </div>
+                    <div class="col-md-6 pt-md-4">
+                        <Switch Id="ec-address-default" @bind-Value="form.IsDefault" Label="Use as my default address" Disabled="DefaultLocked" aria-describedby="ec-address-default-help" />
+                        <div class="form-text" id="ec-address-default-help">@DefaultHelp</div>
+                    </div>
+                </div>
+                <p class="ec-address-error mt-3 mb-0" role="alert">@formError</p>
+            </EditForm>
+        </div>
+    </BodyTemplate>
+    <FooterTemplate>
+        <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => editorModal.HideAsync()">Cancel</Button>
+        <Button Type="ButtonType.Submit" Color="ButtonColor.Primary" form="ec-address-form">@(editingId == 0 ? "Add address" : "Save changes")</Button>
+    </FooterTemplate>
+</Modal>
+
+<Modal @ref="deleteModal" IsVerticallyCentered="true" ShowCloseButton="false" aria-labelledby="ec-address-delete-title" OnHidden="OnDeleteHiddenAsync">
+    <HeaderTemplate>
+        <h2 class="modal-title h5" id="ec-address-delete-title">Delete the address "@(deleting?.Label)"?</h2>
+    </HeaderTemplate>
+    <BodyTemplate>
+        @if (deleting is not null)
+        {
+            <p class="mb-2">It's removed from your address book and can't be brought back. Orders already placed keep the address they ship to.</p>
+            @if (deleting.IsDefault)
+            {
+                <p class="small text-body-secondary mb-0">This is your default address. Another saved address becomes the default.</p>
+            }
+        }
+    </BodyTemplate>
+    <FooterTemplate>
+        <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => deleteModal.HideAsync()">Keep address</Button>
+        <Button Color="ButtonColor.Danger" @onclick="ConfirmDeleteAsync">Delete address</Button>
+    </FooterTemplate>
+</Modal>

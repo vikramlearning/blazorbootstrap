@@ -1,0 +1,78 @@
+.ec-wish-status {
+    margin-bottom: 1rem;
+    font-weight: 600;
+}
+
+    .ec-wish-status:empty {
+        margin-bottom: 0;
+    }
+
+    .ec-wish-status:focus {
+        outline: none;
+    }
+
+.ec-wish-list {
+    padding-block: .25rem;
+}
+
+.ec-wish-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: .75rem 1rem;
+    padding-block: 1rem;
+    border-bottom: 1px solid var(--ec-border);
+}
+
+    .ec-wish-row:last-child {
+        border-bottom: 0;
+    }
+
+.ec-wish-body {
+    display: grid;
+    gap: .25rem;
+    flex: 1 1 14rem;
+    min-width: 0;
+}
+
+.ec-wish-name {
+    margin: 0;
+    font-family: var(--sc-font-body);
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--ec-ink);
+    overflow-wrap: anywhere;
+}
+
+.ec-wish-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: .5rem 1rem;
+    flex: 0 1 auto;
+}
+
+/* Phones: the actions take their own row under the product. */
+@media (max-width: 575.98px) {
+    .ec-wish-actions {
+        flex-basis: 100%;
+    }
+}
+
+/* Stock state is said in words with an icon; color only reinforces it. */
+.ec-stock {
+    font-weight: 600;
+}
+
+.ec-stock-in {
+    color: var(--bs-success-text-emphasis);
+}
+
+.ec-stock-low {
+    color: var(--bs-warning-text-emphasis);
+}
+
+.ec-stock-out,
+.ec-stock-gone {
+    color: var(--bs-secondary-color);
+}

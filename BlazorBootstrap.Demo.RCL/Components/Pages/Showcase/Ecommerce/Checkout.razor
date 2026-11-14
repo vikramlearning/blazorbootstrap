@@ -32,6 +32,44 @@
                             <h2 class="h5 fw-bold mb-0">Contact and shipping</h2>
                             <Button Color="ButtonColor.Link" Size="ButtonSize.Small" Class="p-0" @onclick="FillSample">Fill with sample details</Button>
                         </div>
+
+                        @if (SavedAddresses.Count > 0)
+                        {
+                            @* Choosing a saved address fills the fields below; editing them afterwards switches to "Use a new address". *@
+                            <fieldset class="mb-3">
+                                <legend class="form-label fw-semibold fs-6 mb-2">Ship to</legend>
+                                <div class="ec-address-options">
+                                    @foreach (var address in SavedAddresses)
+                                    {
+                                        var inputId = $"ec-ship-to-{address.Id}";
+                                        <div class="form-check ec-address-option" @key="address.Id">
+                                            <input class="form-check-input" type="radio" name="ec-ship-to" id="@inputId"
+                                                   checked="@(selectedAddressId == address.Id)" @onchange="() => ChooseAddress(address)" />
+                                            <label class="form-check-label" for="@inputId">
+                                                <span class="d-block fw-semibold">
+                                                    @address.Label
+                                                    @if (address.IsDefault)
+                                                    {
+                                                        <Badge Color="BadgeColor.Secondary" Class="ms-1">Default</Badge>
+                                                    }
+                                                </span>
+                                                <span class="d-block small">@address.Street</span>
+                                                <span class="d-block small text-body-secondary">@address.City</span>
+                                            </label>
+                                        </div>
+                                    }
+                                    <div class="form-check ec-address-option">
+                                        <input class="form-check-input" type="radio" name="ec-ship-to" id="ec-ship-to-new"
+                                               checked="@(selectedAddressId is null)" @onchange="UseNewAddress" />
+                                        <label class="form-check-label" for="ec-ship-to-new">
+                                            <span class="d-block fw-semibold">Use a new address</span>
+                                            <span class="d-block small text-body-secondary">Type it in below</span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </fieldset>
+                        }
+
                         <div class="row g-3">
                             <div class="col-md-6">
                                 <label class="form-label" for="ec-name">Full name</label>
@@ -61,13 +99,38 @@
                             <div class="col-md-4">
                                 <label class="form-label" for="ec-country">Country</label>
                                 <InputSelect id="ec-country" class="form-select" @bind-Value="form.Country">
-                                    @foreach (var country in countries)
+                                    @foreach (var country in CountryOptions)
                                     {
                                         <option value="@country">@country</option>
                                     }
                                 </InputSelect>
                             </div>
                         </div>
+
+                        @if (Customer is not null && selectedAddressId is null)
+                        {
+                            <div class="mt-3">
+                                @if (SavedAddresses.Count >= MaxSavedAddresses)
+                                {
+                                    <p class="small text-body-secondary mb-0">
+                                        <Icon Name="IconName.InfoCircle" class="me-1" aria-hidden="true" />Your address book is full (@MaxSavedAddresses addresses), so this address can't be saved to it.
+                                    </p>
+                                }
+                                else
+                                {
+                                    <CheckboxInput Id="ec-save-address" @bind-Value="form.SaveAddress" Label="Save this address to my address book" />
+                                    @if (form.SaveAddress)
+                                    {
+                                        <div class="ec-address-label mt-2">
+                                            <label class="form-label" for="ec-address-label">Address label</label>
+                                            <TextInput Id="ec-address-label" @bind-Value="form.AddressLabel" MaxLength="30" aria-describedby="ec-address-label-help" />
+                                            <div class="form-text" id="ec-address-label-help">For example Home, Work, or Studio.</div>
+                                            <ValidationMessage For="() => form.AddressLabel" />
+                                        </div>
+                                    }
+                                }
+                            </div>
+                        }
 
                         <h2 class="h5 fw-bold mt-4 mb-3" id="ec-delivery-label">Delivery</h2>
                         <RadioButtonGroup TValue="EcommerceDelivery" @bind-Value="form.Delivery" AriaLabel="Delivery" aria-labelledby="ec-delivery-label" Class="w-100 flex-wrap">
@@ -79,7 +142,30 @@
                                 <span class="d-block fw-semibold">Express · @EcommerceDisplay.Money(EcommerceSeedData.ExpressShipping)</span>
                                 <small>@EcommerceDisplay.DeliveryWindow(EcommerceDelivery.Express)</small>
                             </ButtonGroupItem>
+                            <ButtonGroupItem Value="EcommerceDelivery.Local" Id="ec-delivery-local" Class="text-start" Disabled="!IsLocalAvailable"
+                                             aria-describedby="@(IsLocalAvailable ? null : "ec-delivery-local-note")">
+                                <span class="d-block fw-semibold">Local delivery · @EcommerceDisplay.Money(EcommerceSeedData.LocalDeliveryFee)</span>
+                                <small>@(IsLocalAvailable ? EcommerceDisplay.DeliveryWindow(EcommerceDelivery.Local) : "Not available for this address")</small>
+                            </ButtonGroupItem>
                         </RadioButtonGroup>
+                        @if (!IsLocalAvailable)
+                        {
+                            <p class="small text-body-secondary mt-2 mb-0" id="ec-delivery-local-note">
+                                <Icon Name="IconName.InfoCircle" class="me-1" aria-hidden="true" />@LocalAreaNote
+                            </p>
+                        }
+                        @* Always rendered, so a screen reader announces it when Local delivery is switched back to Standard. *@
+                        <p class="small fw-semibold mt-2 mb-0" role="status">@deliveryStatus</p>
+
+                        @if (form.Delivery == EcommerceDelivery.Local)
+                        {
+                            <div class="ec-local-delivery mt-3">
+                                <ShowcaseMapOrPlaceholder Locations="DeliveryLocations" Height="240" Zoom="12" AriaLabel="@DeliveryMapLabel" />
+                                <p class="fw-semibold mt-3 mb-0">
+                                    <Icon Name="IconName.Clock" class="me-2" aria-hidden="true" />@ArrivalText
+                                </p>
+                            </div>
+                        }
 
                         <h2 class="h5 fw-bold mt-4 mb-3">Payment</h2>
                         @* Only the published test cards pass; only the brand and last four digits are kept (CR-001-AC-11). *@

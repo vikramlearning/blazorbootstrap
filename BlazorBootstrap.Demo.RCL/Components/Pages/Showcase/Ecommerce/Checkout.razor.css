@@ -1,0 +1,53 @@
+/* Saved addresses as radio cards: the whole card is the radio's label, and the checked card has a thicker border as well as the filled radio. */
+.ec-address-options {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(12rem, 1fr));
+    gap: .75rem;
+}
+
+.ec-address-option {
+    position: relative;
+    margin: 0;
+    padding: .75rem .875rem .75rem 2.5rem;
+    border: 1px solid var(--ec-border);
+    border-radius: .75rem;
+    background: var(--ec-surface);
+}
+
+    .ec-address-option .form-check-input {
+        margin-left: -1.625rem;
+    }
+
+    /* The label covers the card, so a click anywhere on it chooses the address. */
+    .ec-address-option .form-check-label {
+        display: block;
+        cursor: pointer;
+    }
+
+        .ec-address-option .form-check-label::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+        }
+
+    .ec-address-option:has(.form-check-input:checked) {
+        border: 2px solid var(--sc-primary);
+        padding: calc(.75rem - 1px) calc(.875rem - 1px) calc(.75rem - 1px) calc(2.5rem - 1px);
+        background: var(--ec-soft);
+    }
+
+    .ec-address-option:has(.form-check-input:focus-visible) {
+        outline: 2px solid var(--sc-primary);
+        outline-offset: 2px;
+    }
+
+.ec-address-label {
+    max-width: 20rem;
+}
+
+.ec-local-delivery {
+    padding: 1rem;
+    border: 1px solid var(--ec-border);
+    border-radius: .75rem;
+    background: var(--ec-soft);
+}

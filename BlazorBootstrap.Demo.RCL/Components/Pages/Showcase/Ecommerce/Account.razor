@@ -5,8 +5,162 @@
 
 <div class="container-xl pt-4 pb-5">
     <ShowcaseRoleGuard Roles="@EcommerceSeedData.CustomerRole" SignInPath="@EcommerceLayout.SignInPath">
-        <h1 class="ec-page-title mb-1">Your account</h1>
-        <p class="text-body-secondary mb-4">Your profile and password. Orders, addresses, and your wishlist come next in this demo.</p>
-        <ShowcaseAccountProfile />
+        @if (State.Identity.Current is { } account)
+        {
+            var notices = State.NoticesFor(account.Id);
+            var unread = notices.Count(notice => !notice.IsRead);
+            var orders = State.OrdersFor(account.Id);
+            var defaultAddress = State.AddressesFor(account.Id).FirstOrDefault(address => address.IsDefault);
+            var wishCount = State.WishlistFor(account.Id).Count(item => State.FindAnyProduct(item.ProductId) is not null);
+
+            <EcommerceAccountNav />
+
+            <div data-clarity-mask="true">
+                <h1 class="ec-page-title mb-1">Hello, @FirstName(account.Name)</h1>
+            </div>
+            <p class="text-body-secondary mb-4">Your notices, recent orders, default address, and wishlist at a glance.</p>
+
+            <div class="row g-4">
+                <div class="col-lg-7">
+                    <section class="ec-panel mb-4" aria-labelledby="ec-notices-title">
+                        <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-2">
+                            <h2 class="h5 fw-bold mb-0" id="ec-notices-title">
+                                Notices
+                                @if (unread > 0)
+                                {
+                                    <span class="small fw-normal text-body-secondary">· @unread new</span>
+                                }
+                            </h2>
+                            @if (unread > 0)
+                            {
+                                <Button Color="ButtonColor.Primary" Outline="true" Size="ButtonSize.Small" @onclick="() => MarkAllReadAsync(account.Id)">
+                                    <Icon Name="IconName.CheckCircle" class="me-1" aria-hidden="true" />Mark all as read
+                                </Button>
+                            }
+                        </div>
+
+                        @* Always rendered and focusable: "Mark all as read" disappears once used, so focus moves here. *@
+                        <p class="ec-account-status small fw-semibold" role="status" tabindex="-1" @ref="noticeStatus">@noticeStatusMessage</p>
+
+                        @if (notices.Count == 0)
+                        {
+                            <div class="text-center py-3">
+                                <span class="ec-empty-icon" aria-hidden="true"><Icon Name="IconName.Bell" /></span>
+                                <p class="mt-3 mb-0 text-body-secondary">No notices yet. We'll tell you here when an order moves on or a product on your wishlist is back in stock.</p>
+                            </div>
+                        }
+                        else
+                        {
+                            <ul class="list-unstyled mb-0">
+                                @foreach (var notice in notices.Take(MaxNotices))
+                                {
+                                    <li class="@(notice.IsRead ? "ec-notice" : "ec-notice is-unread")" @key="notice.Id">
+                                        <div class="d-flex flex-wrap align-items-center gap-2 mb-1">
+                                            @if (!notice.IsRead)
+                                            {
+                                                <Badge Color="BadgeColor.Primary" Class="rounded-pill">New</Badge>
+                                            }
+                                            <span class="fw-semibold">@notice.Title</span>
+                                        </div>
+                                        <p class="small mb-1">@notice.Text</p>
+                                        <div class="d-flex flex-wrap align-items-center gap-2 small text-body-secondary">
+                                            <span>@EcommerceDisplay.DateTimeShort(notice.CreatedOn)</span>
+                                            @if (SafeLink(notice.Link) is { } link)
+                                            {
+                                                <span aria-hidden="true">·</span>
+                                                <a href="@link">@LinkText(link)<span class="visually-hidden">: @notice.Title</span></a>
+                                            }
+                                        </div>
+                                    </li>
+                                }
+                            </ul>
+                            @if (notices.Count > MaxNotices)
+                            {
+                                <p class="small text-body-secondary mt-3 mb-0">Showing the newest @MaxNotices of @notices.Count notices.</p>
+                            }
+                        }
+                    </section>
+
+                    <section class="ec-panel" aria-labelledby="ec-recent-orders-title">
+                        <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
+                            <h2 class="h5 fw-bold mb-0" id="ec-recent-orders-title">Recent orders</h2>
+                            @if (orders.Count > 0)
+                            {
+                                <a class="small fw-semibold" href="@EcommerceAccountNav.OrdersPath">All orders (@orders.Count)</a>
+                            }
+                        </div>
+
+                        @if (orders.Count == 0)
+                        {
+                            <div class="text-center py-3">
+                                <span class="ec-empty-icon" aria-hidden="true"><Icon Name="IconName.BoxSeam" /></span>
+                                <p class="mt-3 mb-4 text-body-secondary">You haven't placed an order yet.</p>
+                                <a class="btn btn-primary" href="@($"{EcommerceLayout.Base}/products?category=all")">Start shopping</a>
+                            </div>
+                        }
+                        else
+                        {
+                            <ul class="list-unstyled mb-0">
+                                @foreach (var order in orders.Take(3))
+                                {
+                                    <li class="ec-recent-order" @key="order.Id">
+                                        <div class="ec-recent-order-main">
+                                            <a class="ec-line-name" href="@($"{EcommerceLayout.Base}/orders/{order.Id}")">Order #@order.Id</a>
+                                            <span class="d-block small text-body-secondary">Placed @EcommerceDisplay.DateTimeShort(order.PlacedOn)</span>
+                                        </div>
+                                        <Badge Color="EcommerceDisplay.StatusColor(order.Status)" Class="rounded-pill">@order.Status</Badge>
+                                        <span class="fw-semibold ec-recent-order-total">@EcommerceDisplay.Money(order.Totals.Total)</span>
+                                    </li>
+                                }
+                            </ul>
+                        }
+                    </section>
+                </div>
+
+                <div class="col-lg-5">
+                    <section class="ec-panel mb-4" aria-labelledby="ec-default-address-title" data-clarity-mask="true">
+                        <h2 class="h5 fw-bold mb-3" id="ec-default-address-title">Default address</h2>
+                        @if (defaultAddress is null)
+                        {
+                            <p class="text-body-secondary">Save an address so it's ready when you check out.</p>
+                            <a class="btn btn-primary btn-sm" href="@EcommerceAccountNav.AddressesPath">Add an address</a>
+                        }
+                        else
+                        {
+                            <address class="mb-3">
+                                <span class="fw-semibold d-block">@defaultAddress.Label</span>
+                                @defaultAddress.FullName<br />
+                                @defaultAddress.Street<br />
+                                @defaultAddress.City @defaultAddress.PostalCode<br />
+                                @defaultAddress.Country
+                                @if (!string.IsNullOrWhiteSpace(defaultAddress.Phone))
+                                {
+                                    <br />@defaultAddress.Phone
+                                }
+                            </address>
+                            @if (EcommerceState.IsLocalDeliveryCity(defaultAddress.City, defaultAddress.Country))
+                            {
+                                <p class="small mb-3"><Icon Name="IconName.Truck" class="me-1" aria-hidden="true" />Same-day delivery available</p>
+                            }
+                            <a class="small fw-semibold" href="@EcommerceAccountNav.AddressesPath">Manage addresses</a>
+                        }
+                    </section>
+
+                    <section class="ec-panel" aria-labelledby="ec-wishlist-summary-title">
+                        <h2 class="h5 fw-bold mb-3" id="ec-wishlist-summary-title">Wishlist</h2>
+                        @if (wishCount == 0)
+                        {
+                            <p class="text-body-secondary">Nothing saved yet. Save products you like from their product page to find them here.</p>
+                            <a class="btn btn-primary btn-sm" href="@($"{EcommerceLayout.Base}/products?category=all")">Browse products</a>
+                        }
+                        else
+                        {
+                            <p class="mb-3">@(wishCount == 1 ? "1 product" : $"{wishCount} products") saved for later.</p>
+                            <a class="small fw-semibold" href="@EcommerceAccountNav.WishlistPath">View your wishlist</a>
+                        }
+                    </section>
+                </div>
+            </div>
+        }
     </ShowcaseRoleGuard>
 </div>

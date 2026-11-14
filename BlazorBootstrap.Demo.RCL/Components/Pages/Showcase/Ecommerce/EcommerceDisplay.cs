@@ -29,7 +29,12 @@ public static class EcommerceDisplay
     public static string DateTimeShort(DateTime value) => value.ToString("MMM d, h:mm tt", CultureInfo.InvariantCulture);
 
     /// <summary>Returns the delivery window text for a delivery speed.</summary>
-    public static string DeliveryWindow(EcommerceDelivery delivery) => delivery == EcommerceDelivery.Express ? "1–2 business days" : "3–5 business days";
+    public static string DeliveryWindow(EcommerceDelivery delivery) => delivery switch
+    {
+        EcommerceDelivery.Express => "1–2 business days",
+        EcommerceDelivery.Local => "within 3 hours by courier",
+        _ => "3–5 business days",
+    };
 
     /// <summary>
     /// Moves focus to an element, ignoring one that has left the page or a closed circuit.

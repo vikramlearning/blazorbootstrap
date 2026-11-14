@@ -20,6 +20,12 @@ public static class EcommerceSeedData
     /// <summary>Highest quantity of one line in the cart.</summary>
     public const int MaxQuantity = 10;
 
+    /// <summary>The most addresses one customer can keep in their address book.</summary>
+    public const int MaxSavedAddresses = 10;
+
+    /// <summary>The countries checkout and the address book offer.</summary>
+    public static readonly IReadOnlyList<string> Countries = new[] { "United States", "Canada", "United Kingdom", "Germany", "India", "Australia" };
+
     /// <summary>The demo promo code.</summary>
     public const string PromoCode = "WELCOME10";
 
@@ -40,6 +46,18 @@ public static class EcommerceSeedData
 
     /// <summary>The role ID of the store team.</summary>
     public const string RetailerRole = "retailer";
+
+    /// <summary>Same-day local delivery price.</summary>
+    public const decimal LocalDeliveryFee = 9.95m;
+
+    /// <summary>The cities the store's couriers reach the same day.</summary>
+    /// <summary>The country of the local delivery area.</summary>
+    public const string LocalDeliveryCountry = "United States";
+
+    public static readonly IReadOnlyList<string> LocalDeliveryCities = new[] { "Fairbank", "Brookhaven" };
+
+    /// <summary>Where the store ships from: the fictitious Kindred Goods workshop in Fairbank.</summary>
+    public static readonly (string Name, string Street, double Latitude, double Longitude) Store = ("Kindred Goods workshop", "120 Mill Street, Fairbank", 45.5231, -122.6765);
 
     /// <summary>The fixed "today" all dates on the site are relative to.</summary>
     public static readonly DateTime Today = new(2026, 11, 9);
@@ -195,6 +213,33 @@ public static class EcommerceSeedData
         return reviews;
     }
 
+    /// <summary>The demo customer's address book: home (the default) and a studio, both in the local delivery area.</summary>
+    public static List<EcommerceSavedAddress> Addresses() => new()
+    {
+        new(1, "maya", "Home", "Maya Lindqvist", "18 Alder Row", "Fairbank", "10482", "United States", "+1 555 0142", IsDefault: true),
+        new(2, "maya", "Studio", "Maya Lindqvist", "5 Kiln Street, Unit 3", "Brookhaven", "20936", "United States", null, IsDefault: false),
+    };
+
+    /// <summary>The demo customer's wishlist: one product in stock and one out of stock, with a back-in-stock notice requested.</summary>
+    public static List<EcommerceWishItem> Wishlist() => new()
+    {
+        new("maya", 108, Today.AddDays(-12), NotifyWhenInStock: false),
+        new("maya", 113, Today.AddDays(-5), NotifyWhenInStock: true),
+    };
+
+    /// <summary>Returns a map position for an address: the city's center (known cities) plus a small fixed offset from the street.</summary>
+    public static (double Latitude, double Longitude) PositionFor(string city, string street)
+    {
+        var (latitude, longitude) = city.Trim().ToUpperInvariant() switch
+        {
+            "BROOKHAVEN" => (45.4870, -122.8040),
+            _ => (Store.Latitude, Store.Longitude),
+        };
+        var hash = street.Aggregate(17, (current, ch) => unchecked((current * 31) + char.ToUpperInvariant(ch)));
+
+        return (latitude + ((hash % 100) / 10000.0), longitude + (((hash / 100) % 100) / 10000.0));
+    }
+
     /// <summary>The store's coupons: the welcome code, a spend-and-save code, an expired seasonal code, and one switched off.</summary>
     public static List<EcommerceCoupon> Coupons() => new()
     {
@@ -345,6 +390,7 @@ public static class EcommerceSeedData
     {
         var afterDiscount = subtotal - discount;
         var shipping = itemCount == 0 ? 0m
+            : delivery == EcommerceDelivery.Local ? LocalDeliveryFee
             : delivery == EcommerceDelivery.Express ? ExpressShipping
             : afterDiscount >= FreeShippingThreshold ? 0m
             : StandardShipping;

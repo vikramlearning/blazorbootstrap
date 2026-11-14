@@ -42,3 +42,24 @@
             display: none;
         }
 }
+
+/* Unread notices: a small count on the avatar; the button's name carries the same number. */
+.sc-account-menu ::deep .sc-account-toggle {
+    position: relative;
+}
+
+.sc-account-dot {
+    position: absolute;
+    top: -.25rem;
+    left: 1.375rem;
+    min-width: 1.125rem;
+    height: 1.125rem;
+    padding: 0 .25rem;
+    border-radius: 999px;
+    background: #b91c1c;
+    color: #fff;
+    font-size: .6875rem;
+    font-weight: 700;
+    line-height: 1.125rem;
+    text-align: center;
+}

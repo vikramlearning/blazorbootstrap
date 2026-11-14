@@ -1,0 +1,51 @@
+.ec-account-status:empty {
+    margin: 0;
+}
+
+.ec-account-status:focus {
+    outline: none;
+}
+
+.ec-notice {
+    padding: .75rem 0;
+    border-bottom: 1px solid var(--ec-border);
+}
+
+    .ec-notice:last-child {
+        border-bottom: 0;
+        padding-bottom: 0;
+    }
+
+    /* New notices also carry the "New" badge, so the accent bar is not the only cue. */
+    .ec-notice.is-unread {
+        padding-left: .75rem;
+        border-left: 3px solid var(--sc-primary);
+    }
+
+.ec-recent-order {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: .5rem 1rem;
+    padding-block: .75rem;
+    border-bottom: 1px solid var(--ec-border);
+}
+
+    .ec-recent-order:last-child {
+        border-bottom: 0;
+        padding-bottom: 0;
+    }
+
+.ec-recent-order-main {
+    flex: 1 1 12rem;
+    min-width: 0;
+}
+
+.ec-recent-order-total {
+    min-width: 5rem;
+    text-align: end;
+}
+
+address {
+    font-style: normal;
+}

@@ -37,7 +37,8 @@
                 <span class="ec-brand-mark" aria-hidden="true"><Icon Name="IconName.Flower2" /></span>
                 <span>@EcommerceSeedData.StoreName</span>
             </NavbarBrand>
-            <ShowcaseAccountMenu SiteBase="@Base" SignInPath="@SignInPath" Class="ms-auto me-2 order-lg-last" />
+            <ShowcaseAccountMenu SiteBase="@Base" SignInPath="@SignInPath" Class="ms-auto me-2 order-lg-last"
+                                 NoticeCount="@(State.IsStaff ? 0 : State.UnreadNoticeCount(State.Identity.Current?.Id))" NoticesPath="@(State.IsStaff ? null : $"{Base}/account")" />
             @if (!State.IsStaff)
             {
                 <Button @ref="cartButton" Class="ec-cart-btn me-2 me-lg-0 order-lg-last" @onclick="OpenCartAsync" aria-label="@CartLabel">

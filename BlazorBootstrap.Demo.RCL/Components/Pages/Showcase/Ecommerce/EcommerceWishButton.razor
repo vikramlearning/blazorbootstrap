@@ -1,0 +1,20 @@
+@* Staff don't shop, so they get no wishlist control. Signed out, the button leads to sign-in and back to this page. *@
+@if (!State.IsStaff)
+{
+    <span class="ec-wish @(Compact ? "ec-wish-compact" : null) @Class">
+        <button type="button"
+                class="btn @(Compact ? "ec-wish-btn-compact" : "btn-lg rounded-pill ec-wish-btn") @(IsWished ? "ec-wish-on" : null)"
+                aria-label="@AccessibleName"
+                title="@(Compact ? AccessibleName : null)"
+                @onclick="Toggle">
+            <Icon Name="@(IsWished ? IconName.HeartFill : IconName.Heart)" aria-hidden="true" />
+            @if (!Compact)
+            {
+                @* The visible word starts the accessible name, so speech users can say what they see (WCAG 2.5.3). *@
+                <span class="ms-2">@(IsWished ? "Remove" : "Save")</span>
+            }
+        </button>
+        @* Always rendered, so a screen reader announces the change when the text appears. *@
+        <span class="visually-hidden" role="status">@statusMessage</span>
+    </span>
+}

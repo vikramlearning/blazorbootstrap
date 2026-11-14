@@ -25,9 +25,13 @@ public sealed class EcommerceState : IShowcaseSiteState
 
     private static readonly JsonSerializerOptions snapshotOptions = new(JsonSerializerDefaults.Web) { MaxDepth = 32 };
 
+    private readonly List<EcommerceSavedAddress> addresses;
+
     private readonly List<EcommerceCartLine> cart = new();
 
     private readonly List<EcommerceCoupon> coupons;
+
+    private readonly List<EcommerceNotice> notices = new();
 
     private readonly List<EcommerceOrder> orders;
 
@@ -36,6 +40,12 @@ public sealed class EcommerceState : IShowcaseSiteState
     private readonly List<EcommerceReturn> returns;
 
     private readonly List<EcommerceReview> reviews;
+
+    private readonly List<EcommerceWishItem> wishlist;
+
+    private int nextAddressId;
+
+    private int nextNoticeId = 1;
 
     private int nextOrderId = FirstNewOrderId;
 
@@ -57,6 +67,9 @@ public sealed class EcommerceState : IShowcaseSiteState
         coupons = EcommerceSeedData.Coupons();
         orders = EcommerceSeedData.HistoryOrders(products);
         returns = EcommerceSeedData.Returns(orders);
+        addresses = EcommerceSeedData.Addresses();
+        wishlist = EcommerceSeedData.Wishlist();
+        nextAddressId = addresses.Max(address => address.Id) + 1;
         nextProductId = products.Max(product => product.Id) + 1;
         nextReviewId = reviews.Max(review => review.Id) + 1;
         nextReturnId = returns.Max(item => item.Id) + 1;
@@ -74,6 +87,199 @@ public sealed class EcommerceState : IShowcaseSiteState
     #region Methods
 
     #region Public Methods
+
+    /// <summary>Returns an account's saved addresses, the default first.</summary>
+    public IReadOnlyList<EcommerceSavedAddress> AddressesFor(string? accountId) =>
+        addresses.Where(address => address.AccountId == accountId).OrderByDescending(address => address.IsDefault).ThenBy(address => address.Label).ToList();
+
+    /// <summary>Returns whether the signed-in customer may cancel an order: their own, and not packed yet.</summary>
+    public bool CanCustomerCancel(EcommerceOrder order) =>
+        order.Status == EcommerceOrderStatus.Placed && order.CustomerId is not null && order.CustomerId == Identity.Current?.Id;
+
+    /// <summary>Deletes one of the signed-in customer's addresses; when it was the default, the next one becomes the default.</summary>
+    public bool DeleteAddress(int addressId)
+    {
+        if (OwnAddress(addressId) is not { } address)
+            return false;
+
+        addresses.Remove(address);
+
+        if (address.IsDefault && addresses.FirstOrDefault(other => other.AccountId == address.AccountId) is { } next)
+            addresses[addresses.IndexOf(next)] = next with { IsDefault = true };
+
+        Changed?.Invoke();
+
+        return true;
+    }
+
+    /// <summary>Deletes the signed-in customer's own review.</summary>
+    public bool DeleteOwnReview(int reviewId)
+    {
+        if (OwnReview(reviewId) is not { } review)
+            return false;
+
+        reviews.Remove(review);
+        Changed?.Invoke();
+
+        return true;
+    }
+
+    /// <summary>Returns whether an address (city and country) is in the same-day local delivery area.</summary>
+    public static bool IsLocalDeliveryCity(string? city, string? country) =>
+        string.Equals(country?.Trim(), EcommerceSeedData.LocalDeliveryCountry, StringComparison.OrdinalIgnoreCase)
+        && EcommerceSeedData.LocalDeliveryCities.Any(local => string.Equals(local, city?.Trim(), StringComparison.OrdinalIgnoreCase));
+
+    /// <summary>Returns whether a product is on the signed-in customer's wishlist.</summary>
+    public bool IsWished(int productId) => Identity.Current is { } account && wishlist.Any(item => item.AccountId == account.Id && item.ProductId == productId);
+
+    /// <summary>Marks every notice of an account as read.</summary>
+    public void MarkNoticesRead(string accountId)
+    {
+        var changed = false;
+
+        for (var index = 0; index < notices.Count; index++)
+        {
+            if (notices[index].AccountId == accountId && !notices[index].IsRead)
+            {
+                notices[index] = notices[index] with { IsRead = true };
+                changed = true;
+            }
+        }
+
+        if (changed)
+            Changed?.Invoke();
+    }
+
+    /// <summary>Returns an account's notices, newest first.</summary>
+    public IReadOnlyList<EcommerceNotice> NoticesFor(string? accountId) =>
+        notices.Where(notice => notice.AccountId == accountId).OrderByDescending(notice => notice.CreatedOn).ThenByDescending(notice => notice.Id).ToList();
+
+    /// <summary>
+    /// Adds the lines of a past order to the cart, as far as the products are still sold and in stock, at today's prices.
+    /// Returns how many items were added and how many couldn't be.
+    /// </summary>
+    public (int Added, int Skipped) Reorder(int orderId)
+    {
+        if (Identity.Current is not { RoleId: EcommerceSeedData.CustomerRole } account || FindOrder(orderId) is not { } order || order.CustomerId != account.Id)
+            return (0, 0);
+
+        var added = 0;
+        var skipped = 0;
+
+        foreach (var line in order.Lines)
+        {
+            var got = AddToCart(line.ProductId, line.Color, line.Quantity);
+            added += got;
+            skipped += line.Quantity - got;
+        }
+
+        return (added, skipped);
+    }
+
+    /// <summary>
+    /// Saves an address for the signed-in customer: <paramref name="address" /> with ID 0 adds one (up to <see cref="EcommerceSeedData.MaxSavedAddresses" />), otherwise it
+    /// updates that address. A default address replaces the previous default; an account's first address is the default.
+    /// </summary>
+    public EcommerceSavedAddress? SaveAddress(EcommerceSavedAddress address)
+    {
+        if (Identity.Current is not { RoleId: EcommerceSeedData.CustomerRole } account)
+            return null;
+
+        var own = AddressesFor(account.Id);
+        var isNew = address.Id == 0;
+
+        if ((isNew && own.Count >= EcommerceSeedData.MaxSavedAddresses) || (!isNew && own.All(existing => existing.Id != address.Id)))
+            return null;
+
+        var saved = address with
+        {
+            Id = isNew ? nextAddressId++ : address.Id,
+            AccountId = account.Id,
+            Label = address.Label.Trim(),
+            FullName = address.FullName.Trim(),
+            Street = address.Street.Trim(),
+            City = address.City.Trim(),
+            PostalCode = address.PostalCode.Trim(),
+            Country = address.Country.Trim(),
+            Phone = Clean(address.Phone, 20),
+            IsDefault = address.IsDefault || own.Count == 0 || own.All(existing => existing.Id == address.Id),
+        };
+
+        if (saved.IsDefault)
+        {
+            for (var index = 0; index < addresses.Count; index++)
+            {
+                if (addresses[index].AccountId == account.Id && addresses[index].Id != saved.Id && addresses[index].IsDefault)
+                    addresses[index] = addresses[index] with { IsDefault = false };
+            }
+        }
+        else if (!isNew && own.First(existing => existing.Id == saved.Id).IsDefault)
+        {
+            // The default can only move to another address, not be switched off.
+            saved = saved with { IsDefault = true };
+        }
+
+        if (isNew)
+            addresses.Add(saved);
+        else
+            addresses[addresses.FindIndex(existing => existing.Id == saved.Id)] = saved;
+
+        Changed?.Invoke();
+
+        return saved;
+    }
+
+    /// <summary>Makes one of the signed-in customer's addresses the default.</summary>
+    public bool SetDefaultAddress(int addressId) => OwnAddress(addressId) is { } address && SaveAddress(address with { IsDefault = true }) is not null;
+
+    /// <summary>Turns the back-in-stock notice for a wished-for product on or off.</summary>
+    public bool SetWishNotify(int productId, bool notify)
+    {
+        if (Identity.Current is not { } account || wishlist.FindIndex(item => item.AccountId == account.Id && item.ProductId == productId) is var index && index < 0)
+            return false;
+
+        wishlist[index] = wishlist[index] with { NotifyWhenInStock = notify };
+        Changed?.Invoke();
+
+        return true;
+    }
+
+    /// <summary>
+    /// Adds a product to the signed-in customer's wishlist, or removes it. Returns whether it is on the list afterwards.
+    /// An out-of-stock product is added with a back-in-stock notice requested.
+    /// </summary>
+    public bool ToggleWish(int productId)
+    {
+        if (Identity.Current is not { RoleId: EcommerceSeedData.CustomerRole } account || FindAnyProduct(productId) is not { } product)
+            return false;
+
+        var removed = wishlist.RemoveAll(item => item.AccountId == account.Id && item.ProductId == productId) > 0;
+
+        if (!removed && wishlist.Count(item => item.AccountId == account.Id) < 100)
+            wishlist.Add(new EcommerceWishItem(account.Id, productId, Clock.Today, NotifyWhenInStock: product.Stock == 0));
+
+        Changed?.Invoke();
+
+        return IsWished(productId);
+    }
+
+    /// <summary>Returns the number of unread notices of an account.</summary>
+    public int UnreadNoticeCount(string? accountId) => notices.Count(notice => notice.AccountId == accountId && !notice.IsRead);
+
+    /// <summary>Edits the signed-in customer's own review; it keeps its moderation status, so editing never undoes a hide.</summary>
+    public bool UpdateOwnReview(int reviewId, int rating, string title, string body)
+    {
+        if (OwnReview(reviewId) is not { } review)
+            return false;
+
+        ReplaceReview(review with { Rating = Math.Clamp(rating, 1, 5), Title = title.Trim(), Body = body.Trim(), PostedOn = Clock.Today });
+
+        return true;
+    }
+
+    /// <summary>Returns an account's wishlist, newest first.</summary>
+    public IReadOnlyList<EcommerceWishItem> WishlistFor(string? accountId) =>
+        wishlist.Where(item => item.AccountId == accountId).OrderByDescending(item => item.AddedOn).ThenByDescending(item => item.ProductId).ToList();
 
     /// <summary>Adds a quantity of a product in one color, merging with an existing line and capping at stock and <see cref="EcommerceSeedData.MaxQuantity" />.</summary>
     /// <returns>The quantity actually added (0 for staff, an unknown or archived product, or no stock).</returns>
@@ -219,6 +425,11 @@ public sealed class EcommerceState : IShowcaseSiteState
         NextProductId = nextProductId,
         NextReviewId = nextReviewId,
         NextReturnId = nextReturnId,
+        Addresses = addresses.ToList(),
+        Wishlist = wishlist.ToList(),
+        Notices = notices.ToList(),
+        NextAddressId = nextAddressId,
+        NextNoticeId = nextNoticeId,
     };
 
     /// <summary>Returns the totals of the current cart for a delivery speed; a coupon that no longer applies gives no discount.</summary>
@@ -313,6 +524,8 @@ public sealed class EcommerceState : IShowcaseSiteState
             return false;
 
         reviews.RemoveAll(review => review.ProductId == productId);
+        // A wish item for a missing product would make the next restore discard the whole snapshot.
+        wishlist.RemoveAll(item => item.ProductId == productId);
         Changed?.Invoke();
 
         return true;
@@ -407,6 +620,10 @@ public sealed class EcommerceState : IShowcaseSiteState
     /// </summary>
     public EcommerceOrder PlaceOrder(EcommerceAddress shipTo, EcommerceDelivery delivery, ShowcaseCardCharge payment)
     {
+        // Same-day courier delivery only reaches the local area; checkout offers it only there.
+        if (delivery == EcommerceDelivery.Local && !IsLocalDeliveryCity(shipTo.City, shipTo.Country))
+            delivery = EcommerceDelivery.Standard;
+
         var totals = CartTotals(delivery);
         var coupon = totals.Discount > 0 ? AppliedCoupon : null;
         var lines = cart.Select(line =>
@@ -698,6 +915,26 @@ public sealed class EcommerceState : IShowcaseSiteState
             || storedReturns.Select(item => item.Id).Distinct().Count() != storedReturns.Count)
             return false;
 
+        if (snapshot is not { Addresses: { Count: <= 2000 } storedAddresses, Wishlist: { Count: <= 5000 } storedWishlist, Notices: { Count: <= 5000 } storedNotices }
+            || snapshot.NextAddressId is < 1 or > 1_000_000 || snapshot.NextNoticeId is < 1 or > 1_000_000)
+            return false;
+
+        if (storedAddresses.Any(address => address is null || address.Id < 1 || address.Id >= snapshot.NextAddressId || !IsAccountId(address.AccountId)
+                || !IsText(address.Label, 30) || !IsText(address.FullName, 60) || !IsText(address.Street, 100) || !IsText(address.City, 60)
+                || !IsText(address.PostalCode, 10) || !IsText(address.Country, 60) || (address.Phone is not null && address.Phone.Length > 20))
+            || storedAddresses.Select(address => address.Id).Distinct().Count() != storedAddresses.Count
+            || storedAddresses.GroupBy(address => address.AccountId).Any(group => group.Count() > 10 || group.Count(address => address.IsDefault) != 1))
+            return false;
+
+        if (storedWishlist.Any(item => item is null || !IsAccountId(item.AccountId) || !byId.ContainsKey(item.ProductId) || !IsPlausibleDate(item.AddedOn))
+            || storedWishlist.GroupBy(item => (item.AccountId, item.ProductId)).Any(group => group.Count() > 1))
+            return false;
+
+        if (storedNotices.Any(notice => notice is null || notice.Id < 1 || notice.Id >= snapshot.NextNoticeId || !IsAccountId(notice.AccountId)
+                || !IsText(notice.Title, 120) || !IsText(notice.Text, 300) || !IsPlausibleDate(notice.CreatedOn)
+                || (notice.Link is not null && (notice.Link.Length > 200 || !notice.Link.StartsWith(DemoRouteConstants.Showcase_URL_Ecommerce + "/", StringComparison.Ordinal))))
+            || storedNotices.Select(notice => notice.Id).Distinct().Count() != storedNotices.Count)
+            return false;
         products.Clear();
         products.AddRange(storedProducts);
         cart.Clear();
@@ -715,6 +952,14 @@ public sealed class EcommerceState : IShowcaseSiteState
         nextProductId = snapshot.NextProductId;
         nextReviewId = snapshot.NextReviewId;
         nextReturnId = snapshot.NextReturnId;
+        addresses.Clear();
+        addresses.AddRange(storedAddresses);
+        wishlist.Clear();
+        wishlist.AddRange(storedWishlist);
+        notices.Clear();
+        notices.AddRange(storedNotices);
+        nextAddressId = snapshot.NextAddressId;
+        nextNoticeId = snapshot.NextNoticeId;
 
         return true;
     }
@@ -763,6 +1008,20 @@ public sealed class EcommerceState : IShowcaseSiteState
 
     #region Private Methods
 
+    private void AddNotice(string accountId, string title, string text, string? link)
+    {
+        notices.Add(new EcommerceNotice(nextNoticeId++, accountId, title, text, link, Clock.Now, IsRead: false));
+
+        // Keep each account's newest 50 notices.
+        var old = notices.Where(notice => notice.AccountId == accountId).OrderByDescending(notice => notice.Id).Skip(50).ToList();
+        notices.RemoveAll(old.Contains);
+    }
+
+    private EcommerceSavedAddress? OwnAddress(int addressId) =>
+        Identity.Current is { } account ? addresses.FirstOrDefault(address => address.Id == addressId && address.AccountId == account.Id) : null;
+
+    private EcommerceReview? OwnReview(int reviewId) =>
+        Identity.Current is { } account ? reviews.FirstOrDefault(review => review.Id == reviewId && review.AuthorAccountId == account.Id) : null;
     private static IReadOnlyList<EcommerceStatusChange> Append(EcommerceOrder order, EcommerceOrderStatus status, string? note) =>
         order.History.Append(new EcommerceStatusChange(status, DateTime.MinValue, note)).ToList();
 
@@ -792,6 +1051,9 @@ public sealed class EcommerceState : IShowcaseSiteState
             colors.Count == 0 ? new List<string> { "Natural" } : colors, draft.IsFeatured, Math.Clamp(draft.Stock, 0, 9999), addedOn, isArchived);
     }
 
+    /// <summary>Checks an account ID's shape: a seeded demo account or one registered in the tab (identity validates the accounts themselves).</summary>
+    private bool IsAccountId(string? accountId) => accountId is not null && (Identity.DemoAccounts.Any(demo => demo.Id == accountId) || (accountId.StartsWith("u-", StringComparison.Ordinal) && accountId.Length <= 12));
+
     /// <summary>Checks a money amount; the cap is above anything checkout can produce (50 lines × 10 × $100,000, plus tax).</summary>
     private static bool IsMoney(decimal value) => value is >= 0 and <= 100_000_000;
 
@@ -814,7 +1076,13 @@ public sealed class EcommerceState : IShowcaseSiteState
             ? order with { History = order.History.Select(change => change.At == DateTime.MinValue ? change with { At = Clock.Now } : change).ToList() }
             : order;
 
-        orders[orders.FindIndex(existing => existing.Id == order.Id)] = stamped;
+        var index = orders.FindIndex(existing => existing.Id == order.Id);
+        var previous = orders[index];
+        orders[index] = stamped;
+
+        // The customer hears about every step the store takes on their order (CR-001-AC-07), but not about their own cancel.
+        if (stamped.CustomerId is { } customer && previous.Status != stamped.Status && Identity.Current?.Id != customer)
+            AddNotice(customer, $"Order #{stamped.Id} {StatusVerb(stamped.Status)}", NoticeText(stamped), $"{DemoRouteConstants.Showcase_URL_Ecommerce}/orders/{stamped.Id}");
 
         if (notify)
             Changed?.Invoke();
@@ -822,7 +1090,22 @@ public sealed class EcommerceState : IShowcaseSiteState
 
     private void ReplaceProduct(EcommerceProduct product, bool notify = true)
     {
-        products[products.FindIndex(existing => existing.Id == product.Id)] = product;
+        var productIndex = products.FindIndex(existing => existing.Id == product.Id);
+        var before = products[productIndex];
+        products[productIndex] = product;
+
+        // Back in stock: everyone who asked to hear about it gets a notice, once.
+        if (before.Stock == 0 && product.Stock > 0 && !product.IsArchived)
+        {
+            for (var wishIndex = 0; wishIndex < wishlist.Count; wishIndex++)
+            {
+                if (wishlist[wishIndex].ProductId == product.Id && wishlist[wishIndex].NotifyWhenInStock)
+                {
+                    AddNotice(wishlist[wishIndex].AccountId, $"{product.Name} is back in stock", $"{product.Stock} available now.", $"{DemoRouteConstants.Showcase_URL_Ecommerce}/products/{product.Id}");
+                    wishlist[wishIndex] = wishlist[wishIndex] with { NotifyWhenInStock = false };
+                }
+            }
+        }
 
         // Stock or archive changes can leave cart lines over what's left.
         foreach (var line in cart.Where(line => line.ProductId == product.Id).ToList())
@@ -852,6 +1135,25 @@ public sealed class EcommerceState : IShowcaseSiteState
         Changed?.Invoke();
     }
 
+    private static string NoticeText(EcommerceOrder order) => order.Status switch
+    {
+        EcommerceOrderStatus.Packed => "It's packed and waiting for the carrier.",
+        EcommerceOrderStatus.Shipped => $"It's on its way. Tracking number {order.TrackingNumber}.",
+        EcommerceOrderStatus.Delivered => "It was delivered. Enjoy, and tell us what you think in a review.",
+        EcommerceOrderStatus.Cancelled => "It was cancelled before it shipped, and the payment was refunded.",
+        EcommerceOrderStatus.Refunded => "It was refunded in full to your card.",
+        _ => "We've received it.",
+    };
+
+    private static string StatusVerb(EcommerceOrderStatus status) => status switch
+    {
+        EcommerceOrderStatus.Packed => "is packed",
+        EcommerceOrderStatus.Shipped => "has shipped",
+        EcommerceOrderStatus.Delivered => "was delivered",
+        EcommerceOrderStatus.Cancelled => "was cancelled",
+        EcommerceOrderStatus.Refunded => "was refunded",
+        _ => "was placed",
+    };
     private static bool ValidCoupons(List<EcommerceCoupon> list) =>
         list.All(coupon => coupon is not null && IsText(coupon.Code, 20) && coupon.Code.All(ch => char.IsAsciiLetterOrDigit(ch)) && coupon.Code == coupon.Code.ToUpperInvariant()
             && IsText(coupon.Description, 120) && Enum.IsDefined(coupon.Kind) && coupon.Value is > 0 and <= 10_000 && (coupon.Kind != EcommerceCouponKind.Percent || coupon.Value <= 100)
@@ -945,8 +1247,8 @@ public sealed class EcommerceState : IShowcaseSiteState
     /// <summary>Gets the site slug used in the storage key.</summary>
     public string SiteSlug => "ecommerce";
 
-    /// <summary>Gets the snapshot format version (2: orders with status, editable catalog, coupons, moderation, returns).</summary>
-    public int SnapshotVersion => 2;
+    /// <summary>Gets the snapshot format version (3: adds address books, wishlists, and account notices).</summary>
+    public int SnapshotVersion => 3;
 
     #endregion
 
@@ -967,11 +1269,19 @@ public sealed class EcommerceState : IShowcaseSiteState
     {
         #region Properties, Indexers
 
+        public List<EcommerceSavedAddress>? Addresses { get; set; }
+
         public List<EcommerceCartLine>? Cart { get; set; }
 
         public List<EcommerceCoupon>? Coupons { get; set; }
 
+        public int NextAddressId { get; set; }
+
+        public int NextNoticeId { get; set; }
+
         public int NextOrderId { get; set; }
+
+        public List<EcommerceNotice>? Notices { get; set; }
 
         public int NextProductId { get; set; }
 
@@ -988,6 +1298,8 @@ public sealed class EcommerceState : IShowcaseSiteState
         public List<EcommerceReturn>? Returns { get; set; }
 
         public List<EcommerceReview>? Reviews { get; set; }
+
+        public List<EcommerceWishItem>? Wishlist { get; set; }
 
         #endregion
     }

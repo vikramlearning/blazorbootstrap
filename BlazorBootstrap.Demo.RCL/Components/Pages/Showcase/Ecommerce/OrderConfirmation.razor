@@ -146,12 +146,18 @@ else
                 return steps;
             }
 
-            steps.Add(("Packed", When(EcommerceOrderStatus.Packed, $"Expected {Day(1)}"), "Our team packs it in plastic-free materials.", IconName.Box2,
+            // Local delivery is same day (checkout promises "within 3 hours"), so its steps are times today, not days ahead.
+            var local = order.Delivery == EcommerceDelivery.Local;
+            string Expected(int days, double localHours) => local
+                ? $"Expected by about {EcommerceDisplay.DateTimeShort(placed.AddHours(localHours))}"
+                : $"Expected {Day(days)}";
+
+            steps.Add(("Packed", When(EcommerceOrderStatus.Packed, Expected(1, 0.5)), "Our team packs it in plastic-free materials.", IconName.Box2,
                 At(EcommerceOrderStatus.Packed) is not null, order.Status == EcommerceOrderStatus.Packed));
-            steps.Add(("Shipped", When(EcommerceOrderStatus.Shipped, $"Expected {Day(fast ? 1 : 2)}"),
+            steps.Add(("Shipped", When(EcommerceOrderStatus.Shipped, Expected(fast ? 1 : 2, 1)),
                 order.TrackingNumber is { } tracking ? $"Tracking number {tracking}." : "You'll get a tracking number when it ships.", IconName.Truck,
                 At(EcommerceOrderStatus.Shipped) is not null, order.Status == EcommerceOrderStatus.Shipped));
-            steps.Add(("Delivered", When(EcommerceOrderStatus.Delivered, $"Expected {Day(fast ? 2 : 5)}"), $"{order.Delivery} delivery to {order.ShipTo.City}.", IconName.HouseCheck,
+            steps.Add(("Delivered", When(EcommerceOrderStatus.Delivered, Expected(fast ? 2 : 5, 3)), $"{order.Delivery} delivery to {order.ShipTo.City}.", IconName.HouseCheck,
                 At(EcommerceOrderStatus.Delivered) is not null, order.Status == EcommerceOrderStatus.Delivered));
 
             if (order.Status == EcommerceOrderStatus.Refunded)

@@ -1,0 +1,30 @@
+.ec-orders-status {
+    margin-bottom: 1rem;
+    font-weight: 600;
+}
+
+    .ec-orders-status:empty {
+        margin-bottom: 0;
+    }
+
+    .ec-orders-status:focus {
+        outline: none;
+    }
+
+.ec-order-filter {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .5rem;
+}
+
+.ec-order-filter-count {
+    font-weight: 400;
+}
+
+.ec-order {
+    padding: 1.25rem;
+}
+
+    .ec-order h2 {
+        font-family: var(--sc-font-body);
+    }

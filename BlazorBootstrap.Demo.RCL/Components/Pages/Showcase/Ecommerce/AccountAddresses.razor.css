@@ -1,0 +1,45 @@
+.ec-address-status,
+.ec-address-error {
+    font-weight: 600;
+}
+
+    .ec-address-status:empty,
+    .ec-address-error:empty {
+        margin: 0;
+    }
+
+    .ec-address-status:focus {
+        outline: none;
+    }
+
+.ec-address-error {
+    color: var(--bs-danger-text-emphasis);
+}
+
+.ec-address-card {
+    display: flex;
+    flex-direction: column;
+    padding: 1.25rem;
+}
+
+.ec-address-title {
+    margin: 0;
+    font-family: var(--sc-font-body);
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--ec-ink);
+    overflow-wrap: anywhere;
+}
+
+.ec-address-lines {
+    font-style: normal;
+    overflow-wrap: anywhere;
+}
+
+.ec-address-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .5rem;
+    margin-top: auto;
+    padding-top: .5rem;
+}

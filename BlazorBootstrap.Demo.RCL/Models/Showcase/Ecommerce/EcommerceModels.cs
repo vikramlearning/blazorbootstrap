@@ -8,6 +8,9 @@ public enum EcommerceDelivery
 
     /// <summary>1–2 business days; always charged.</summary>
     Express,
+
+    /// <summary>Same day by courier from the store, for addresses in the local delivery area; always charged.</summary>
+    Local,
 }
 
 /// <summary>Catalog sort order.</summary>
@@ -284,3 +287,12 @@ public sealed class EcommerceProductDraft
 
     #endregion
 }
+
+/// <summary>An address in a customer's address book.</summary>
+public sealed record EcommerceSavedAddress(int Id, string AccountId, string Label, string FullName, string Street, string City, string PostalCode, string Country, string? Phone, bool IsDefault);
+
+/// <summary>A product on a customer's wishlist; <c>NotifyWhenInStock</c> asks for a notice when an out-of-stock product returns.</summary>
+public sealed record EcommerceWishItem(string AccountId, int ProductId, DateTime AddedOn, bool NotifyWhenInStock);
+
+/// <summary>A notice in a customer's account: an order moved on, or a wished-for product is back in stock.</summary>
+public sealed record EcommerceNotice(int Id, string AccountId, string Title, string Text, string? Link, DateTime CreatedOn, bool IsRead);
