@@ -20,7 +20,7 @@ public partial class Products : ComponentBase, IDisposable
 
     private bool filtersOpen;
 
-    private (string? Category, string? Sale)? loadedQuery;
+    private ElementReference resultsCount;
 
     private string searchBoxValue = string.Empty;
 
@@ -34,15 +34,13 @@ public partial class Products : ComponentBase, IDisposable
 
     protected override void OnParametersSet()
     {
-        // Act only on a new query string, so a re-render never resets filters the user set afterwards.
-        if (loadedQuery == (Category, SaleQuery))
-            return;
+        // Only a query different from the last one applied starts a fresh filter; returning to the same URL keeps the user's filters.
+        var query = Category is null && Sale == 0 ? null : $"{Category}|{Sale}";
 
-        loadedQuery = (Category, SaleQuery);
-
-        if (Category is not null || Sale == 1)
+        if (query is not null && query != Filter.AppliedQuery)
         {
             ResetFilter();
+            Filter.AppliedQuery = query;
 
             if (State.FindCategory(Category) is { } category)
                 Filter.CategoryIds.Add(category.Id);
@@ -75,31 +73,44 @@ public partial class Products : ComponentBase, IDisposable
         State.NotifyFilterChanged();
     }
 
-    private void ClearFilters()
+    /// <summary>Both "Clear all filters" buttons disappear or turn disabled afterwards, so focus moves to the results count.</summary>
+    private async Task ClearFiltersAsync()
     {
         ResetFilter();
         searchBoxValue = string.Empty;
         State.NotifyFilterChanged();
+        StateHasChanged();
+        await Task.Yield();
+        await EcommerceDisplay.FocusAsync(resultsCount);
     }
 
     private void OnCategoriesChanged(IEnumerable<EcommerceCategory> categories)
     {
+        var ids = categories.Select(category => category.Id).ToHashSet();
+
+        if (ids.SetEquals(Filter.CategoryIds))
+            return;
+
         Filter.CategoryIds.Clear();
-
-        foreach (var category in categories)
-            Filter.CategoryIds.Add(category.Id);
-
+        Filter.CategoryIds.UnionWith(ids);
         Apply();
     }
 
+    /// <summary>RangeInput reports its value on first render; an unchanged value must not send the user back to page 1.</summary>
     private void OnMaxPriceChanged(int value)
     {
+        if (Filter.MaxPrice == value)
+            return;
+
         Filter.MaxPrice = value;
         Apply();
     }
 
     private void OnMinRatingChanged(int value)
     {
+        if (Filter.MinRating == value)
+            return;
+
         Filter.MinRating = value;
         Apply();
     }
@@ -112,6 +123,9 @@ public partial class Products : ComponentBase, IDisposable
 
     private void OnSaleOnlyChanged(bool value)
     {
+        if (Filter.OnSaleOnly == value)
+            return;
+
         Filter.OnSaleOnly = value;
         Apply();
     }
@@ -126,6 +140,9 @@ public partial class Products : ComponentBase, IDisposable
 
     private void OnSortChanged(EcommerceSort sort)
     {
+        if (Filter.Sort == sort)
+            return;
+
         Filter.Sort = sort;
         Apply();
     }

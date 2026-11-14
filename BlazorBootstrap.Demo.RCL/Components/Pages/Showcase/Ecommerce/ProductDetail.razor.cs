@@ -97,8 +97,13 @@ public partial class ProductDetail : ComponentBase, IDisposable
             return;
 
         State.AddReview(Product.Id, reviewForm.Name, reviewForm.Rating, reviewForm.Title, reviewForm.Body);
-        reviewForm = new ReviewForm();
-        reviewContext = new EditContext(reviewForm);
+
+        // Reset the fields on the same model: a new EditContext would rebuild the whole form and drop focus from "Post review".
+        reviewForm.Body = string.Empty;
+        reviewForm.Name = string.Empty;
+        reviewForm.Rating = 0;
+        reviewForm.Title = string.Empty;
+        reviewContext.MarkAsUnmodified();
         reviewPosted = true;
     }
 

@@ -90,6 +90,12 @@ public sealed class EcommerceCatalogFilter
 {
     #region Properties, Indexers
 
+    /// <summary>
+    /// Gets or sets the last <c>?category=</c> / <c>?sale=</c> query applied to the filter. Kept in the state, so coming back
+    /// to the same URL (browser Back, the breadcrumb) keeps the filters set since; only a different query starts fresh.
+    /// </summary>
+    public string? AppliedQuery { get; set; }
+
     /// <summary>Gets the selected category IDs; empty means all categories.</summary>
     public HashSet<string> CategoryIds { get; } = new();
 

@@ -113,7 +113,7 @@
                                 <a class="ec-line-name" href="@($"{Base}/products/{product.Id}")">@product.Name</a>
                                 <div class="small text-body-secondary">@line.Color · @EcommerceDisplay.Money(product.Price)</div>
                                 <div class="d-flex align-items-center gap-2 mt-2">
-                                    <EcommerceQuantityInput Small="true" ItemName="@product.Name" Value="line.Quantity" Max="State.MaxQuantityFor(product)"
+                                    <EcommerceQuantityInput Small="true" ItemName="@product.Name" Value="line.Quantity" Max="State.MaxQuantityFor(product, line.Color)"
                                                             ValueChanged="quantity => State.SetQuantity(line.ProductId, line.Color, quantity)" />
                                     <Button Color="ButtonColor.Link" Size="ButtonSize.Small" Class="text-body-secondary"
                                             @onclick="() => RemoveLineAsync(line)" aria-label="@($"Remove {product.Name} ({line.Color})")">

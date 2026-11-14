@@ -40,7 +40,7 @@ public sealed class EcommerceState
 
         var index = cart.FindIndex(line => line.ProductId == productId && line.Color == color);
         var current = index < 0 ? 0 : cart[index].Quantity;
-        var updated = Math.Min(current + quantity, MaxQuantityFor(product));
+        var updated = Math.Min(current + quantity, MaxQuantityFor(product, color));
 
         if (updated == current)
             return 0;
@@ -126,8 +126,20 @@ public sealed class EcommerceState
     /// <summary>Finds a product by its ID, or returns <see langword="null" />.</summary>
     public EcommerceProduct? FindProduct(int productId) => Products.FirstOrDefault(product => product.Id == productId);
 
-    /// <summary>Returns the highest quantity of one cart line for a product.</summary>
-    public int MaxQuantityFor(EcommerceProduct product) => Math.Min(product.Stock, EcommerceSeedData.MaxQuantity);
+    /// <summary>
+    /// Returns the highest quantity one cart line (a product in one color) may hold: the stock left after the product's
+    /// other color lines, capped at <see cref="EcommerceSeedData.MaxQuantity" />. Stock is per product, not per color.
+    /// </summary>
+    public int MaxQuantityFor(EcommerceProduct product, string color)
+    {
+        var inOtherLines = cart.Where(line => line.ProductId == product.Id && line.Color != color).Sum(line => line.Quantity);
+
+        return Math.Max(0, Math.Min(product.Stock - inOtherLines, EcommerceSeedData.MaxQuantity));
+    }
+
+    /// <summary>Returns how many more of a product, in any color, the cart can take before stock runs out.</summary>
+    public int RemainingStockFor(EcommerceProduct product) =>
+        Math.Max(0, product.Stock - cart.Where(line => line.ProductId == product.Id).Sum(line => line.Quantity));
 
     /// <summary>Raises <see cref="Changed" /> after the catalog filter was edited in place.</summary>
     public void NotifyFilterChanged() => Changed?.Invoke();
@@ -185,7 +197,7 @@ public sealed class EcommerceState
         if (quantity <= 0)
             cart.RemoveAt(index);
         else
-            cart[index] = cart[index] with { Quantity = Math.Min(quantity, MaxQuantityFor(product)) };
+            cart[index] = cart[index] with { Quantity = Math.Min(quantity, MaxQuantityFor(product, cart[index].Color)) };
 
         Changed?.Invoke();
     }

@@ -77,7 +77,7 @@ else
                         <div>
                             <label class="form-label fw-semibold d-block" for="ec-detail-qty">Quantity</label>
                             <EcommerceQuantityInput Id="ec-detail-qty" ItemName="@Product.Name" Value="quantity" ValueChanged="OnQuantityChanged"
-                                                    Max="State.MaxQuantityFor(Product)" />
+                                                    Max="Math.Clamp(Math.Min(State.MaxQuantityFor(Product, selectedColor), State.RemainingStockFor(Product)), 1, EcommerceSeedData.MaxQuantity)" />
                         </div>
                         <Button Color="ButtonColor.Primary" Size="ButtonSize.Large" Class="rounded-pill px-4" @onclick="AddToCart">
                             <Icon Name="IconName.BagPlus" class="me-2" aria-hidden="true" />Add to cart
@@ -174,10 +174,8 @@ else
                                         </div>
                                         <Button Type="ButtonType.Submit" Color="ButtonColor.Primary">Post review</Button>
                                     </EditForm>
-                                    @if (reviewPosted)
-                                    {
-                                        <p class="small text-success mt-3 mb-0" role="status">Thanks! Your review is at the top of the list.</p>
-                                    }
+                                    @* Always rendered, so a screen reader announces the text when it appears. *@
+                                    <p class="small text-success mt-3 mb-0" role="status">@(reviewPosted ? "Thanks! Your review is at the top of the list." : null)</p>
                                 </div>
                             </div>
                         </div>

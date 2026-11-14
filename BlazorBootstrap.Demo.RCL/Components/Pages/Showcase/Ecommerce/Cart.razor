@@ -6,7 +6,10 @@
 <PageTitle>Your cart · @EcommerceSeedData.StoreName</PageTitle>
 
 <div class="container-xl pt-4 pb-5">
-    <h1 class="ec-page-title mb-4">Your cart</h1>
+    <h1 class="ec-page-title mb-2">Your cart</h1>
+    @* Outside the empty/non-empty branches, so it survives removing the last item: removing a line removes its buttons,
+       so focus moves here and the status is read out. *@
+    <p class="small text-body-secondary mb-3" role="status" tabindex="-1" @ref="statusMessage">@removedMessage</p>
 
     @if (State.Cart.Count == 0)
     {
@@ -38,7 +41,7 @@
                                     <span class="fw-semibold">@EcommerceDisplay.Money(product.Price * line.Quantity)</span>
                                 </div>
                                 <div class="d-flex align-items-center gap-2 mt-2">
-                                    <EcommerceQuantityInput Small="true" ItemName="@product.Name" Value="line.Quantity" Max="State.MaxQuantityFor(product)"
+                                    <EcommerceQuantityInput Small="true" ItemName="@product.Name" Value="line.Quantity" Max="State.MaxQuantityFor(product, line.Color)"
                                                             ValueChanged="value => State.SetQuantity(line.ProductId, line.Color, value)" />
                                     <Button Color="ButtonColor.Link" Size="ButtonSize.Small" @onclick="() => Remove(line)"
                                             aria-label="@($"Remove {product.Name} ({line.Color})")">Remove</Button>
@@ -47,19 +50,18 @@
                         </li>
                     }
                 </ul>
-                @* Removing a line removes its buttons, so focus moves here and the status is read out. *@
-                <p class="small text-body-secondary mt-2" role="status" tabindex="-1" @ref="statusMessage">@removedMessage</p>
             </div>
 
             <div class="col-lg-4">
                 <EcommerceOrderSummary Totals="State.CartTotals()" PromoCode="@State.AppliedPromoCode">
-                    <div class="mt-3" data-clarity-mask="true">
+                    @* Applying or removing a code swaps the controls inside, so focus moves to this stable region. *@
+                    <div class="mt-3" data-clarity-mask="true" tabindex="-1" @ref="promoRegion" aria-label="Promo code">
                         @if (State.AppliedPromoCode is null)
                         {
                             <label class="form-label small fw-semibold" for="ec-promo">Promo code</label>
                             <InputGroup>
                                 <TextInput Id="ec-promo" @bind-Value="promoCode" Placeholder="@EcommerceSeedData.PromoCode" />
-                                <Button Color="ButtonColor.Secondary" Outline="true" @onclick="ApplyPromo">Apply</Button>
+                                <Button Color="ButtonColor.Secondary" Outline="true" @onclick="ApplyPromoAsync">Apply</Button>
                             </InputGroup>
                             @if (promoError is not null)
                             {
@@ -70,7 +72,7 @@
                         {
                             <div class="d-flex justify-content-between align-items-center small">
                                 <span><Icon Name="IconName.TagFill" class="me-1" aria-hidden="true" />@State.AppliedPromoCode applied</span>
-                                <Button Color="ButtonColor.Link" Size="ButtonSize.Small" @onclick="State.RemovePromoCode">Remove code</Button>
+                                <Button Color="ButtonColor.Link" Size="ButtonSize.Small" @onclick="RemovePromoAsync">Remove code</Button>
                             </div>
                         }
                     </div>
@@ -88,16 +90,28 @@
     private string promoCode = string.Empty;
     private string? promoError;
     private string? removedMessage;
+    private ElementReference promoRegion;
     private ElementReference statusMessage;
 
     protected override void OnInitialized() => State.Changed += OnStateChanged;
 
     public void Dispose() => State.Changed -= OnStateChanged;
 
-    private void ApplyPromo()
+    private async Task ApplyPromoAsync()
     {
-        promoError = State.ApplyPromoCode(promoCode) ? null : $"That code isn't valid. Try {EcommerceSeedData.PromoCode}.";
+        var accepted = State.ApplyPromoCode(promoCode);
+        promoError = accepted ? null : $"That code isn't valid. Try {EcommerceSeedData.PromoCode}.";
         promoCode = string.Empty;
+
+        if (accepted)
+            await FocusAfterRenderAsync(promoRegion);
+    }
+
+    private async Task FocusAfterRenderAsync(ElementReference target)
+    {
+        StateHasChanged();
+        await Task.Yield();
+        await EcommerceDisplay.FocusAsync(target);
     }
 
     private void OnStateChanged() => InvokeAsync(StateHasChanged);
@@ -107,8 +121,12 @@
         var name = State.FindProduct(line.ProductId)?.Name;
         State.SetQuantity(line.ProductId, line.Color, 0);
         removedMessage = $"Removed {name} ({line.Color}) from your cart.";
-        StateHasChanged();
-        await Task.Yield();
-        await EcommerceDisplay.FocusAsync(statusMessage);
+        await FocusAfterRenderAsync(statusMessage);
+    }
+
+    private async Task RemovePromoAsync()
+    {
+        State.RemovePromoCode();
+        await FocusAfterRenderAsync(promoRegion);
     }
 }
