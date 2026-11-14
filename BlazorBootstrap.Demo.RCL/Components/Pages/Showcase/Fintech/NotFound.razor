@@ -1,0 +1,8 @@
+@page "/showcase/fintech/{*path}"
+@layout FintechLayout
+
+<FintechNotFound />
+
+@code {
+    [Parameter] public string? Path { get; set; }
+}

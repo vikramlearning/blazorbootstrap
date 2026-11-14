@@ -1,0 +1,92 @@
+@page "/showcase/fintech/budgets"
+@layout FintechLayout
+
+<PageTitle>Budgets · Tallymint</PageTitle>
+
+<div class="container-xl">
+    <div class="tm-page-head">
+        <div>
+            <span class="sc-eyebrow">Budgets</span>
+            <h1 class="tm-title">@FintechSeedData.Today.ToString("MMMM", CultureInfo.InvariantCulture) budgets</h1>
+            <p class="tm-lead">@DaysLeft days left this month. Set a monthly limit per category and see how you're tracking.</p>
+        </div>
+    </div>
+
+    <section aria-label="Budget summary" class="row row-cols-1 row-cols-sm-3 g-3 mb-4">
+        <div class="col">
+            <Card Class="tm-card h-100"><CardBody Class="p-3">
+                <span class="tm-label">Budgeted</span>
+                <span class="tm-amount">@FintechDisplay.Money(TotalLimit)</span>
+            </CardBody></Card>
+        </div>
+        <div class="col">
+            <Card Class="tm-card h-100"><CardBody Class="p-3">
+                <span class="tm-label">Spent so far</span>
+                <span class="tm-amount">@FintechDisplay.Money(TotalSpent)</span>
+            </CardBody></Card>
+        </div>
+        <div class="col">
+            <Card Class="tm-card h-100"><CardBody Class="p-3">
+                <span class="tm-label">@(TotalLimit >= TotalSpent ? "Left to spend" : "Over budget by")</span>
+                <span class="tm-amount @(TotalLimit >= TotalSpent ? "tm-in" : "tm-out")">@FintechDisplay.Money(TotalLimit - TotalSpent)</span>
+            </CardBody></Card>
+        </div>
+    </section>
+
+    <p class="visually-hidden" role="status">@savedMessage</p>
+
+    <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-3">
+        @foreach (var budget in State.Budgets)
+        {
+            var category = State.FindCategory(budget.CategoryId);
+            var spent = State.SpentThisMonth(budget.CategoryId);
+            var percent = (double)(spent / budget.Limit * 100);
+            var status = Status(percent);
+            <div class="col" @key="budget.CategoryId">
+                <Card Class="tm-card h-100">
+                    <CardBody Class="p-4">
+                        <div class="d-flex align-items-center gap-3 mb-3">
+                            <span class="tm-icon" aria-hidden="true"><Icon Name="@category.IconName" /></span>
+                            <div class="flex-grow-1">
+                                <h2 class="h6 fw-bold mb-0">@category.Name</h2>
+                                <Badge Color="status.Color" Class="rounded-pill mt-1">@status.Text</Badge>
+                            </div>
+                            <Button @ref="editButtons[budget.CategoryId]" Color="ButtonColor.Secondary" Outline="true" Size="ButtonSize.Small"
+                                    @onclick="() => EditAsync(budget)" aria-label="@($"Edit the {category.Name} budget")">Edit</Button>
+                        </div>
+                        <div class="tm-meter-label mb-1">
+                            <span class="tm-mono text-body">@FintechDisplay.Money(spent) spent</span>
+                            <span class="tm-mono">of @FintechDisplay.Money(budget.Limit)</span>
+                        </div>
+                        <Progress Height="10">
+                            <ProgressBar Width="Math.Min(100, percent)" Color="status.Bar"
+                                         aria-label="@($"{category.Name} budget used")" aria-valuenow="@((int)Math.Round(percent))" aria-valuemin="0" aria-valuemax="100"
+                                         aria-valuetext="@($"{FintechDisplay.Money(spent)} of {FintechDisplay.Money(budget.Limit)}, {status.Text}")" />
+                        </Progress>
+                        <p class="small text-body-secondary mt-2 mb-0">
+                            @(spent <= budget.Limit
+                                ? $"{FintechDisplay.Money(budget.Limit - spent)} left, about {FintechDisplay.Money((budget.Limit - spent) / Math.Max(1, DaysLeft))} a day."
+                                : $"{FintechDisplay.Money(spent - budget.Limit)} over the limit.")
+                        </p>
+                    </CardBody>
+                </Card>
+            </div>
+        }
+    </div>
+</div>
+
+<Modal @ref="editModal" Title="@($"Edit the {editingName} budget")" IsVerticallyCentered="true" OnHidden="OnEditHiddenAsync">
+    <BodyTemplate>
+        <EditForm id="tm-budget-form" EditContext="editContext" OnValidSubmit="SaveAsync" FormName="tm-budget">
+            <DataAnnotationsValidator />
+            <label class="form-label" for="tm-budget-limit">Monthly limit</label>
+            <CurrencyInput TValue="decimal" Id="tm-budget-limit" @bind-Value="form.Limit" Locale="en-US" />
+            <ValidationMessage For="() => form.Limit" />
+            <div class="form-text">Spent so far this month: @FintechDisplay.Money(editingSpent).</div>
+        </EditForm>
+    </BodyTemplate>
+    <FooterTemplate>
+        <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => editModal.HideAsync()">Cancel</Button>
+        <Button Type="ButtonType.Submit" Color="ButtonColor.Primary" form="tm-budget-form">Save limit</Button>
+    </FooterTemplate>
+</Modal>

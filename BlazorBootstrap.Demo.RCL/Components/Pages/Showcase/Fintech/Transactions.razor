@@ -1,0 +1,118 @@
+@page "/showcase/fintech/transactions"
+@layout FintechLayout
+
+<PageTitle>Transactions · Tallymint</PageTitle>
+
+<div class="container-xl">
+    <div class="tm-page-head">
+        <div>
+            <span class="sc-eyebrow">Transactions</span>
+            <h1 class="tm-title">Every payment, in one place</h1>
+            <p class="tm-lead">Search and filter the last 90 days across all accounts.</p>
+        </div>
+        <RadioButtonGroup TValue="FintechPeriod" Value="period" ValueExpression="() => period" ValueChanged="OnPeriodChangedAsync"
+                          AriaLabel="Period" Size="ButtonGroupSize.Small">
+            <ButtonGroupItem Value="FintechPeriod.Last30Days" Id="tm-period-30">30 days</ButtonGroupItem>
+            <ButtonGroupItem Value="FintechPeriod.Last60Days" Id="tm-period-60">60 days</ButtonGroupItem>
+            <ButtonGroupItem Value="FintechPeriod.Last90Days" Id="tm-period-90">90 days</ButtonGroupItem>
+        </RadioButtonGroup>
+    </div>
+
+    <section aria-label="Totals for the current filter" class="row row-cols-1 row-cols-sm-3 g-3 mb-3">
+        <div class="col">
+            <Card Class="tm-card h-100"><CardBody Class="p-3">
+                <span class="tm-label">Money in</span>
+                <span class="tm-amount tm-in">@FintechDisplay.SignedMoney(MoneyIn)</span>
+            </CardBody></Card>
+        </div>
+        <div class="col">
+            <Card Class="tm-card h-100"><CardBody Class="p-3">
+                <span class="tm-label">Money out</span>
+                <span class="tm-amount tm-out">@FintechDisplay.SignedMoney(-MoneyOut)</span>
+            </CardBody></Card>
+        </div>
+        <div class="col">
+            <Card Class="tm-card h-100"><CardBody Class="p-3">
+                <span class="tm-label">Net</span>
+                <span class="tm-amount @FintechDisplay.AmountClass(MoneyIn - MoneyOut)">@FintechDisplay.SignedMoney(MoneyIn - MoneyOut)</span>
+            </CardBody></Card>
+        </div>
+    </section>
+
+    <Card Class="tm-card">
+        <CardBody Class="p-3 p-lg-4">
+            <div class="row g-2 align-items-end mb-3" role="search" aria-label="Filter transactions">
+                <div class="col-md-5">
+                    <label class="form-label small fw-semibold" for="tm-search">Search</label>
+                    <InputGroup>
+                        <InputGroupText><Icon Name="IconName.Search" aria-hidden="true" /></InputGroupText>
+                        @* The bound value changes only on change; @oninput filters live without writing older text back into the box. *@
+                        <TextInput Id="tm-search" Value="@searchBoxValue" ValueExpression="() => searchBoxValue" ValueChanged="OnSearchChangedAsync"
+                                   @oninput="OnSearchInputAsync" Placeholder="Merchant or description" />
+                    </InputGroup>
+                </div>
+                <div class="col-6 col-md-3">
+                    <label class="form-label small fw-semibold" for="tm-account">Account</label>
+                    <select id="tm-account" class="form-select" value="@accountFilter" @onchange="OnAccountChangedAsync">
+                        <option value="">All accounts</option>
+                        @foreach (var account in State.Accounts)
+                        {
+                            <option value="@account.Id">@account.Name</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-6 col-md-3">
+                    <label class="form-label small fw-semibold" for="tm-category">Category</label>
+                    <select id="tm-category" class="form-select" value="@categoryFilter" @onchange="OnCategoryChangedAsync">
+                        <option value="">All categories</option>
+                        @foreach (var category in State.Categories)
+                        {
+                            <option value="@category.Id">@category.Name</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-1 text-md-end">
+                    <span class="small text-body-secondary" aria-live="polite">@MatchText</span>
+                </div>
+            </div>
+
+            <Grid @ref="grid"
+                  TItem="FintechTransaction"
+                  Class="table table-hover"
+                  GridContainerClass="tm-grid"
+                  DataProvider="TransactionsDataProvider"
+                  RowKeySelector="item => item.Id"
+                  AllowSorting="true"
+                  AllowPaging="true"
+                  PageSize="15"
+                  PaginationItemsTextFormat="{0}–{1} of {2} transactions"
+                  Responsive="true"
+                  EmptyText="No transactions match these filters.">
+                <GridColumns>
+                    <GridColumn TItem="FintechTransaction" HeaderText="Date" PropertyName="Date" SortKeySelector="item => item.Date"
+                                IsDefaultSortColumn="true" SortDirection="SortDirection.Descending" TextNoWrap="true">
+                        <span class="tm-mono small">@FintechDisplay.Day(context.Date)</span>
+                    </GridColumn>
+                    <GridColumn TItem="FintechTransaction" HeaderText="Description" PropertyName="Description" SortKeySelector="item => item.Description">
+                        <span class="fw-semibold">@context.Description</span>
+                        @if (context.IsPending)
+                        {
+                            <Badge Color="BadgeColor.Secondary" Class="ms-1">@(context.Date.Date > FintechSeedData.Today ? "Scheduled" : "Pending")</Badge>
+                        }
+                    </GridColumn>
+                    <GridColumn TItem="FintechTransaction" HeaderText="Category" PropertyName="CategoryId" SortKeySelector="item => item.CategoryId" TextNoWrap="true">
+                        @{ var category = State.FindCategory(context.CategoryId); }
+                        <Icon Name="@category.IconName" class="me-1 text-body-secondary" aria-hidden="true" />@category.Name
+                    </GridColumn>
+                    <GridColumn TItem="FintechTransaction" HeaderText="Account" PropertyName="AccountId" SortKeySelector="item => item.AccountId" TextNoWrap="true">
+                        @State.FindAccount(context.AccountId)?.Name
+                    </GridColumn>
+                    <GridColumn TItem="FintechTransaction" HeaderText="Amount" PropertyName="Amount" SortKeySelector="item => item.Amount"
+                                TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" TextNoWrap="true">
+                        <span class="tm-mono fw-semibold @FintechDisplay.AmountClass(context.Amount)">@FintechDisplay.SignedMoney(context.Amount)</span>
+                    </GridColumn>
+                </GridColumns>
+            </Grid>
+        </CardBody>
+    </Card>
+</div>
