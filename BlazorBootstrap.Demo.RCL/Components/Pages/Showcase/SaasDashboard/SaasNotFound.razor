@@ -1,0 +1,12 @@
+@* The not-found screen of the dashboard, shown by the catch-all route and by detail routes with an unknown ID. *@
+<PageTitle>Page not found · Pulseboard</PageTitle>
+
+<section class="sd-not-found">
+    <span class="sd-kpi-icon fs-3 mb-3" aria-hidden="true"><Icon Name="IconName.SignpostSplit" /></span>
+    <h1 class="sd-page-title mb-2">We couldn't find that page</h1>
+    <p class="text-body-secondary mb-4">The link may be old, or the user may no longer exist.</p>
+    <div class="d-flex justify-content-center flex-wrap gap-2">
+        <Button Type="ButtonType.Link" To="@SaasDashboardLayout.Base" Color="ButtonColor.Primary">Back to the overview</Button>
+        <Button Type="ButtonType.Link" To="@($"{SaasDashboardLayout.Base}/users")" Color="ButtonColor.Primary" Outline="true">Browse users</Button>
+    </div>
+</section>

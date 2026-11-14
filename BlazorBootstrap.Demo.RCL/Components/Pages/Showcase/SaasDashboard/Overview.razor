@@ -1,0 +1,150 @@
+@page "/showcase/saas-dashboard"
+@layout SaasDashboardLayout
+
+<PageTitle>Overview · Pulseboard</PageTitle>
+
+<div class="sd-page-head">
+    <div>
+        <span class="sc-eyebrow">Overview</span>
+        <h1 class="sd-page-title">Good morning, Alex</h1>
+        <p class="sd-page-lead">Here is how @State.Settings.WorkspaceName is doing on @SaasDashboardSeedData.Today.ToString("dddd, MMMM d", CultureInfo.InvariantCulture).</p>
+    </div>
+    <div class="d-flex flex-wrap gap-2">
+        <Button Type="ButtonType.Link" To="@($"{SaasDashboardLayout.Base}/analytics")" Color="ButtonColor.Primary" Outline="true">
+            <Icon Name="IconName.BarChartLine" class="me-1" aria-hidden="true" />View analytics
+        </Button>
+        <Button Type="ButtonType.Link" To="@($"{SaasDashboardLayout.Base}/users?new=1")" Color="ButtonColor.Primary">
+            <Icon Name="IconName.PersonPlus" class="me-1" aria-hidden="true" />Add user
+        </Button>
+    </div>
+</div>
+
+<section aria-label="Key metrics" class="row row-cols-1 row-cols-sm-2 row-cols-xl-4 g-3 mb-4">
+    @foreach (var kpi in Kpis)
+    {
+        <div class="col" @key="kpi.Label">
+            <Card Class="sd-card h-100">
+                <CardBody Class="p-3 p-lg-4">
+                    <div class="sd-kpi-label">
+                        <span>@kpi.Label</span>
+                        <span class="sd-kpi-icon" aria-hidden="true"><Icon Name="@kpi.IconName" /></span>
+                    </div>
+                    <span class="sd-kpi-value">@kpi.Value</span>
+                    <span class="sd-trend @(kpi.IsUp ? "is-up" : "is-down")">
+                        <Icon Name="@(kpi.IsUp ? IconName.ArrowUpRight : IconName.ArrowDownRight)" aria-hidden="true" />
+                        @kpi.Trend
+                    </span>
+                    <span class="text-body-secondary small ms-1">@kpi.TrendNote</span>
+                </CardBody>
+            </Card>
+        </div>
+    }
+</section>
+
+<div class="row g-3 mb-4">
+    <div class="col-xl-8">
+        <Card Class="sd-card h-100">
+            <CardHeader>
+                <div>
+                    <h2 class="sd-card-title">Monthly recurring revenue</h2>
+                    <p class="sd-card-sub">Last 12 months against the plan target</p>
+                </div>
+                <Badge Color="@(IsOnTarget ? BadgeColor.Success : BadgeColor.Warning)" Class="rounded-pill">@(IsOnTarget ? "On track" : "Below target")</Badge>
+            </CardHeader>
+            <CardBody Class="pt-0">
+                <div class="sd-chart" role="img" aria-label="@RevenueChartLabel">
+                    <LineChart @ref="revenueChart" Height="300" HeightUnit="Unit.Px" Width="100" WidthUnit="Unit.Percentage" />
+                </div>
+            </CardBody>
+        </Card>
+    </div>
+    <div class="col-xl-4">
+        <Card Class="sd-card h-100">
+            <CardHeader>
+                <div>
+                    <h2 class="sd-card-title">Revenue by plan</h2>
+                    <p class="sd-card-sub">Share of this month's MRR</p>
+                </div>
+            </CardHeader>
+            <CardBody Class="pt-0">
+                <div class="sd-chart" role="img" aria-label="@PlanChartLabel">
+                    <DoughnutChart @ref="planChart" Height="300" HeightUnit="Unit.Px" Width="100" WidthUnit="Unit.Percentage" />
+                </div>
+            </CardBody>
+        </Card>
+    </div>
+</div>
+
+<div class="row g-3">
+    <div class="col-xl-7">
+        <Card Class="sd-card h-100">
+            <CardHeader>
+                <div>
+                    <h2 class="sd-card-title">Newest accounts</h2>
+                    <p class="sd-card-sub">The five most recent sign-ups</p>
+                </div>
+                <a class="small fw-semibold" href="@($"{SaasDashboardLayout.Base}/users")">All users</a>
+            </CardHeader>
+            <CardBody Class="pt-0">
+                <ul class="list-unstyled mb-0">
+                    @foreach (var account in NewestAccounts)
+                    {
+                        <li class="d-flex align-items-center justify-content-between gap-3 py-2 border-top" @key="account.Id">
+                            <div class="sd-person">
+                                <Avatar Name="@account.Name" Color="SaasDisplay.AvatarColorFor(account)" Size="AvatarSize.Small" />
+                                <span class="sd-person-text">
+                                    <a class="sd-person-name" href="@($"{SaasDashboardLayout.Base}/users/{account.Id}")">@account.Name</a>
+                                    <span class="sd-person-email">@account.Company · joined @account.JoinedOn.ToString("MMM d", CultureInfo.InvariantCulture)</span>
+                                </span>
+                            </div>
+                            <div class="text-end">
+                                <Badge Color="SaasDisplay.StatusColor(account.Status)" Class="rounded-pill">@account.Status</Badge>
+                                <span class="d-block small text-body-secondary mt-1">@State.PlanFor(account).Name</span>
+                            </div>
+                        </li>
+                    }
+                </ul>
+            </CardBody>
+        </Card>
+    </div>
+    <div class="col-xl-5">
+        <Card Class="sd-card mb-3">
+            <CardHeader>
+                <div>
+                    <h2 class="sd-card-title">Workspace usage</h2>
+                    <p class="sd-card-sub">Business plan quotas this billing period</p>
+                </div>
+            </CardHeader>
+            <CardBody Class="pt-0">
+                @foreach (var quota in Quotas)
+                {
+                    <div class="sd-meter mb-3" @key="quota.Label">
+                        <div class="sd-meter-label"><span>@quota.Label</span><span class="sd-mono">@quota.Text</span></div>
+                        <Progress Height="8">
+                            <ProgressBar Width="quota.Percent" Color="SaasDisplay.QuotaColor(quota.Percent)"
+                                         aria-label="@quota.Label" aria-valuenow="@quota.Percent" aria-valuemin="0" aria-valuemax="100" aria-valuetext="@quota.Text" />
+                        </Progress>
+                    </div>
+                }
+            </CardBody>
+        </Card>
+        <Card Class="sd-card">
+            <CardHeader>
+                <h2 class="sd-card-title">Recent activity</h2>
+            </CardHeader>
+            <CardBody Class="pt-1">
+                <Timeline AriaLabel="Recent account activity">
+                    @foreach (var activity in State.RecentActivity)
+                    {
+                        <TimelineItem Title="@activity.Title"
+                                      Subtitle="@($"{NameOf(activity.AccountId)} · {activity.At.ToString("MMM d, h:mm tt", CultureInfo.InvariantCulture)}")"
+                                      IconName="@activity.IconName"
+                                      Color="TimelineColor.Primary">
+                            <span class="small text-body-secondary">@activity.Detail</span>
+                        </TimelineItem>
+                    }
+                </Timeline>
+            </CardBody>
+        </Card>
+    </div>
+</div>

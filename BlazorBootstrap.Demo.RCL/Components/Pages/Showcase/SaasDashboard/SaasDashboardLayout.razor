@@ -1,0 +1,85 @@
+@inherits LayoutComponentBase
+
+<HeadContent>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" />
+</HeadContent>
+
+<div class="sc-site sc-saas">
+    <ShowcaseSiteBar Site="@site" OnThemeChanged="OnThemeChanged" />
+
+    <div class="sd-shell">
+        <Sidebar Class="sd-sidebar"
+                 Href="@Base"
+                 IconName="IconName.Activity"
+                 Title="@SaasDashboardSeedData.ProductName"
+                 BadgeText="Admin"
+                 DataProvider="SidebarDataProvider" />
+
+        <div class="sd-main">
+            <header class="sd-topbar">
+                <div class="sd-workspace">
+                    <span class="sd-workspace-mark" aria-hidden="true">@State.Settings.WorkspaceName[..1]</span>
+                    <div class="sd-workspace-text">
+                        <span class="sd-workspace-name">@State.Settings.WorkspaceName</span>
+                        <span class="sd-workspace-plan">Business plan · @State.Settings.TimeZone</span>
+                    </div>
+                </div>
+
+                <div class="sd-topbar-actions">
+                    <Dropdown Color="DropdownColor.None" Class="sd-notify" AutoCloseBehavior="DropdownAutoCloseBehavior.Outside" OnShown="OnNotificationsShown">
+                        <DropdownToggleButton Class="sd-icon-btn" aria-label="@NotificationsLabel">
+                            <Icon Name="IconName.Bell" aria-hidden="true" />
+                            @if (State.UnreadNotificationCount > 0)
+                            {
+                                <span class="sd-dot" aria-hidden="true">@State.UnreadNotificationCount</span>
+                            }
+                        </DropdownToggleButton>
+                        <DropdownMenu Position="DropdownMenuPosition.End" Class="sd-notify-menu">
+                            <DropdownHeader>Notifications</DropdownHeader>
+                            @foreach (var notification in State.Notifications)
+                            {
+                                <div class="sd-notify-item @(notification.IsRead ? string.Empty : "is-unread")" @key="notification.Id">
+                                    <span class="sd-notify-icon" aria-hidden="true"><Icon Name="@notification.IconName" /></span>
+                                    <span class="sd-notify-body">
+                                        <span class="sd-notify-title">@notification.Title</span>
+                                        <span class="sd-notify-detail">@notification.Detail</span>
+                                        <span class="sd-notify-time">@notification.At.ToString("MMM d, h:mm tt", CultureInfo.InvariantCulture)</span>
+                                    </span>
+                                </div>
+                            }
+                        </DropdownMenu>
+                    </Dropdown>
+
+                    <Dropdown Color="DropdownColor.None" Class="sd-profile">
+                        <DropdownToggleButton Class="sd-profile-btn" aria-label="Account menu for Alex Rivera">
+                            <Avatar Name="Alex Rivera" Initials="AR" Color="AvatarColor.Primary" Size="AvatarSize.Small" Status="AvatarStatus.Online" />
+                            <span class="sd-profile-name d-none d-md-inline">Alex Rivera</span>
+                        </DropdownToggleButton>
+                        <DropdownMenu Position="DropdownMenuPosition.End">
+                            <DropdownHeader>Signed in as alex.rivera@pulseboard.example</DropdownHeader>
+                            <DropdownItem To="@($"{Base}/settings")" Type="DropdownItemType.Link">Workspace settings</DropdownItem>
+                            <DropdownItem To="@($"{Base}/users")" Type="DropdownItemType.Link">Manage users</DropdownItem>
+                            <DropdownDivider />
+                            <DropdownItem To="@DemoRouteConstants.Showcase_URL_Prefix" Type="DropdownItemType.Link">Leave the demo</DropdownItem>
+                        </DropdownMenu>
+                    </Dropdown>
+                </div>
+            </header>
+
+            <main class="sc-main sd-content" id="sd-main">
+                @Body
+            </main>
+
+            <div class="sd-ad-row">
+                <CarbonAds Class="sc-ad" />
+            </div>
+
+            <footer class="sd-footer">
+                <span>© 2026 @SaasDashboardSeedData.ProductName (fictitious). Every account, figure, and email on this site is made up.</span>
+                <span class="d-none d-lg-inline">Built with Sidebar, Card, Grid, Modal, Tabs, Dropdown, Progress, and Charts.</span>
+            </footer>
+        </div>
+    </div>
+</div>

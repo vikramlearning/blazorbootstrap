@@ -1,0 +1,140 @@
+@page "/showcase/saas-dashboard/settings"
+@layout SaasDashboardLayout
+
+<PageTitle>Settings · Pulseboard</PageTitle>
+
+<div class="sd-page-head">
+    <div>
+        <span class="sc-eyebrow">Settings</span>
+        <h1 class="sd-page-title">Workspace settings</h1>
+        <p class="sd-page-lead">Changes apply to everyone in @State.Settings.WorkspaceName.</p>
+    </div>
+</div>
+
+@if (savedMessage is not null)
+{
+    <Alert Color="AlertColor.Success" Dismissable="true" Class="mb-3" role="status">
+        <Icon Name="IconName.CheckCircleFill" class="me-2" aria-hidden="true" />@savedMessage
+    </Alert>
+}
+
+<Card Class="sd-card">
+    <CardBody Class="p-3 p-lg-4">
+        <Tabs NavStyle="NavStyle.Underline" Class="mb-4">
+            <Tab Title="General" Active="true">
+                <Content>
+                    <EditForm EditContext="editContext" OnValidSubmit="SaveGeneral" FormName="sd-settings-general" class="pt-4" data-clarity-mask="true">
+                        <DataAnnotationsValidator />
+                        <div class="row g-3" style="max-width: 48rem;">
+                            <div class="col-md-6">
+                                <label class="form-label" for="sd-ws-name">Workspace name</label>
+                                <TextInput Id="sd-ws-name" @bind-Value="general.WorkspaceName" />
+                                <ValidationMessage For="() => general.WorkspaceName" />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label" for="sd-ws-email">Support email</label>
+                                <TextInput Id="sd-ws-email" @bind-Value="general.SupportEmail" />
+                                <ValidationMessage For="() => general.SupportEmail" />
+                                <div class="form-text">Shown to customers on invoices and in the help widget.</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label" for="sd-ws-tz">Time zone</label>
+                                <InputSelect id="sd-ws-tz" class="form-select" @bind-Value="general.TimeZone">
+                                    @foreach (var zone in SaasDashboardSeedData.TimeZones)
+                                    {
+                                        <option value="@zone">@zone</option>
+                                    }
+                                </InputSelect>
+                            </div>
+                            <div class="col-md-6">
+                                <span class="form-label d-block" id="sd-ws-week">Week starts on</span>
+                                <RadioButtonGroup TValue="string" @bind-Value="general.WeekStartsOn" AriaLabel="Week starts on" aria-labelledby="sd-ws-week">
+                                    <ButtonGroupItem Value="@("Sunday")" Id="sd-week-sunday">Sunday</ButtonGroupItem>
+                                    <ButtonGroupItem Value="@("Monday")" Id="sd-week-monday">Monday</ButtonGroupItem>
+                                </RadioButtonGroup>
+                            </div>
+                        </div>
+                        <div class="d-flex flex-wrap gap-2 mt-4">
+                            <Button Type="ButtonType.Submit" Color="ButtonColor.Primary">Save changes</Button>
+                            <Button Color="ButtonColor.Secondary" Outline="true" @onclick="ResetGeneral">Discard</Button>
+                        </div>
+                    </EditForm>
+                </Content>
+            </Tab>
+            <Tab Title="Notifications">
+                <Content>
+                    <div class="pt-4" style="max-width: 40rem;">
+                        <p class="text-body-secondary">Choose which emails workspace admins receive. Changes save as you switch them.</p>
+                        <ul class="list-unstyled mb-0">
+                            @foreach (var option in notificationOptions)
+                            {
+                                <li class="d-flex justify-content-between align-items-start gap-3 py-3 border-top" @key="option.Key">
+                                    <div>
+                                        <span class="fw-semibold d-block" id="@($"sd-n-{option.Key}-label")">@option.Title</span>
+                                        <span class="small text-body-secondary">@option.Description</span>
+                                    </div>
+                                    <Switch Value="option.Value"
+                                            ValueExpression="() => option.Value"
+                                            ValueChanged="(bool value) => ToggleNotification(option, value)"
+                                            aria-labelledby="@($"sd-n-{option.Key}-label")" />
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                </Content>
+            </Tab>
+            <Tab Title="Billing">
+                <Content>
+                    <div class="row g-4 pt-4">
+                        <div class="col-lg-5">
+                            <div class="p-3 p-lg-4 rounded-3 border">
+                                <span class="sc-eyebrow">Current plan</span>
+                                <h2 class="h4 fw-bold mt-1 mb-1">Business</h2>
+                                <p class="text-body-secondary small">$79 per seat / month · renews on Dec 1, 2026</p>
+                                <div class="sd-meter mb-3">
+                                    <div class="sd-meter-label"><span>Seats in use</span><span class="sd-mono">@State.PaidSeats.ToString("#,0", CultureInfo.InvariantCulture) of 1,500</span></div>
+                                    <Progress Height="8">
+                                        <ProgressBar Width="Math.Min(100, State.PaidSeats / 15d)"
+                                                     aria-label="Seats in use" aria-valuenow="@State.PaidSeats" aria-valuemin="0" aria-valuemax="1500" />
+                                    </Progress>
+                                </div>
+                                <Button Color="ButtonColor.Primary" Outline="true" Size="ButtonSize.Small" @onclick="ShowPlanNotice">Change plan</Button>
+                                @if (planNotice)
+                                {
+                                    <p class="small text-body-secondary mt-2 mb-0" role="status">Plan changes are disabled in this demo.</p>
+                                }
+                            </div>
+                        </div>
+                        <div class="col-lg-7">
+                            <h2 class="h6 fw-bold">Invoices</h2>
+                            <div class="table-responsive">
+                                <table class="table align-middle small">
+                                    <caption class="visually-hidden">Last six invoices</caption>
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">Invoice</th>
+                                            <th scope="col">Date</th>
+                                            <th scope="col" class="text-end">Amount</th>
+                                            <th scope="col">Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var invoice in State.Invoices)
+                                        {
+                                            <tr @key="invoice.Number">
+                                                <th scope="row" class="sd-mono fw-medium">@invoice.Number</th>
+                                                <td>@invoice.IssuedOn.ToString("MMM d, yyyy", CultureInfo.InvariantCulture)</td>
+                                                <td class="text-end sd-mono">@invoice.Amount.ToString("$#,0.00", CultureInfo.InvariantCulture)</td>
+                                                <td><Badge Color="@(invoice.IsPaid ? BadgeColor.Success : BadgeColor.Warning)" Class="rounded-pill">@(invoice.IsPaid ? "Paid" : "Due Dec 1")</Badge></td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </Content>
+            </Tab>
+        </Tabs>
+    </CardBody>
+</Card>

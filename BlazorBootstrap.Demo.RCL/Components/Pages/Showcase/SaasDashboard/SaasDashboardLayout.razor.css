@@ -1,0 +1,506 @@
+.sc-saas {
+    --sc-primary: #2563eb;
+    --sc-primary-rgb: 37, 99, 235;
+    --sc-primary-hover: #1d4ed8;
+    --sc-primary-contrast: #fff;
+    --sc-font-body: "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --sc-font-heading: "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --sc-page-bg: #f4f6fb;
+    --sd-font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    --sd-ink: #0f172a;
+    --sd-surface: #fff;
+    --sd-border: #e3e8f2;
+    --sd-sidebar-bg: #0f172a;
+    --sd-sidebar-text: #cbd5e1;
+    --sd-up: #047857;
+    --sd-down: #b91c1c;
+}
+
+[data-bs-theme=dark] .sc-saas {
+    --sc-primary: #60a5fa;
+    --sc-primary-rgb: 96, 165, 250;
+    --sc-primary-hover: #93c5fd;
+    --sc-primary-contrast: #0b1220;
+    --sc-page-bg: #0b1220;
+    --sd-ink: #f1f5f9;
+    --sd-surface: #111827;
+    --sd-border: #1f2a3d;
+    --sd-sidebar-bg: #070d19;
+    --sd-sidebar-text: #94a3b8;
+    --sd-up: #34d399;
+    --sd-down: #f87171;
+}
+
+/* Shell: sidebar beside the main column from 641px (the Sidebar component's own breakpoint), stacked below it. */
+.sd-shell {
+    display: flex;
+    flex-direction: column;
+    flex: 1 0 auto;
+    min-width: 0;
+}
+
+@media (min-width: 641px) {
+    .sd-shell {
+        flex-direction: row;
+        align-items: flex-start;
+    }
+}
+
+.sd-main {
+    flex: 1 1 auto;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    min-height: calc(100vh - 2.5rem);
+}
+
+/* Sidebar: re-themed through the component's own --bb-sidebar-* variables (dark navy in both modes). */
+.sc-saas ::deep .sd-sidebar {
+    --bb-sidebar-width: 15rem;
+    --bb-sidebar-background-color: var(--sd-sidebar-bg);
+    --bb-sidebar-top-row-background-color: var(--sd-sidebar-bg);
+    --bb-sidebar-top-row-border-color: rgba(255, 255, 255, .08);
+    --bb-sidebar-content-border-color: rgba(255, 255, 255, .08);
+    --bb-sidebar-title-text-color: #fff;
+    --bb-sidebar-brand-icon-color: #60a5fa;
+    --bb-sidebar-title-badge-text-color: #bfdbfe;
+    --bb-sidebar-title-badge-background-color: rgba(96, 165, 250, .18);
+    --bb-sidebar-navbar-toggler-background-color: transparent;
+    --bb-sidebar-navbar-toggler-icon-color: #fff;
+    --bb-sidebar-nav-item-text-color: var(--sd-sidebar-text);
+    --bb-sidebar-nav-item-text-hover-color: #fff;
+    --bb-sidebar-nav-item-text-active-color: #fff;
+    --bb-sidebar-nav-item-background-hover-color: rgba(96, 165, 250, .16);
+    --bb-sidebar-nav-item-group-background-color: rgba(96, 165, 250, .1);
+    font-family: var(--sc-font-body);
+    flex: 0 0 auto;
+    z-index: 2;
+}
+
+@media (min-width: 641px) {
+    .sc-saas ::deep .sd-sidebar {
+        align-self: stretch;
+        top: 0;
+        max-height: 100vh;
+    }
+}
+
+.sc-saas ::deep .sd-sidebar .navbar-brand-text {
+    font-weight: 800 !important;
+    letter-spacing: -.01em;
+}
+
+.sc-saas ::deep .sd-sidebar .nav-link {
+    border-radius: .5rem;
+    margin: .125rem .5rem;
+}
+
+.sc-saas ::deep .sd-sidebar .nav-link.active {
+    box-shadow: inset 3px 0 0 #60a5fa;
+}
+
+/* Top bar */
+.sd-topbar {
+    position: sticky;
+    top: 0;
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    min-height: 3.5rem;
+    padding: .5rem 1.5rem;
+    background: color-mix(in srgb, var(--sd-surface) 90%, transparent);
+    backdrop-filter: saturate(180%) blur(10px);
+    border-bottom: 1px solid var(--sd-border);
+}
+
+.sd-workspace {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    min-width: 0;
+}
+
+.sd-workspace-mark {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    width: 2rem;
+    height: 2rem;
+    border-radius: .5rem;
+    background: linear-gradient(135deg, #2563eb, #7c3aed);
+    color: #fff;
+    font-weight: 800;
+}
+
+.sd-workspace-text {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    line-height: 1.2;
+}
+
+.sd-workspace-name {
+    font-weight: 700;
+    color: var(--sd-ink);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.sd-workspace-plan {
+    font-size: .75rem;
+    color: var(--bs-secondary-color);
+    white-space: nowrap;
+}
+
+.sd-topbar-actions {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+}
+
+.sc-saas ::deep .sd-icon-btn {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    border: 1px solid var(--sd-border);
+    background: var(--sd-surface);
+    color: var(--sd-ink);
+    font-size: 1.125rem;
+}
+
+    .sc-saas ::deep .sd-icon-btn::after {
+        display: none;
+    }
+
+    .sc-saas ::deep .sd-icon-btn:hover {
+        border-color: rgba(var(--sc-primary-rgb), .5);
+        color: var(--sc-primary);
+    }
+
+/* The custom top-bar toggles drop Bootstrap's button focus shadow, so they get an explicit focus ring. */
+.sc-saas ::deep .sd-icon-btn:focus-visible,
+.sc-saas ::deep .sd-profile-btn:focus-visible {
+    outline: 2px solid var(--sc-primary);
+    outline-offset: 2px;
+}
+
+.sd-dot {
+    position: absolute;
+    top: -.25rem;
+    right: -.25rem;
+    min-width: 1.125rem;
+    height: 1.125rem;
+    padding: 0 .25rem;
+    border-radius: 999px;
+    background: #dc2626;
+    color: #fff;
+    font-size: .6875rem;
+    font-weight: 700;
+    line-height: 1.125rem;
+    text-align: center;
+}
+
+.sc-saas ::deep .sd-notify-menu {
+    width: min(22rem, calc(100vw - 2rem));
+    padding-bottom: .25rem;
+}
+
+.sd-notify-item {
+    display: flex;
+    gap: .75rem;
+    padding: .625rem 1rem;
+    border-top: 1px solid var(--bs-border-color-translucent);
+    font-size: .875rem;
+}
+
+    .sd-notify-item.is-unread {
+        background: rgba(var(--sc-primary-rgb), .06);
+    }
+
+.sd-notify-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    width: 2rem;
+    height: 2rem;
+    border-radius: .5rem;
+    color: var(--sc-primary);
+    background: rgba(var(--sc-primary-rgb), .12);
+}
+
+.sd-notify-body {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.sd-notify-title {
+    font-weight: 600;
+}
+
+.sd-notify-detail,
+.sd-notify-time {
+    color: var(--bs-secondary-color);
+}
+
+.sd-notify-time {
+    font-size: .75rem;
+}
+
+.sc-saas ::deep .sd-profile-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: .5rem;
+    padding: .25rem .625rem .25rem .25rem;
+    border-radius: 999px;
+    border: 1px solid var(--sd-border);
+    background: var(--sd-surface);
+    color: var(--sd-ink);
+    font-weight: 600;
+    font-size: .875rem;
+}
+
+.sd-content {
+    padding: 1.5rem;
+}
+
+@media (max-width: 575.98px) {
+    .sd-topbar,
+    .sd-content {
+        padding-inline: 1rem;
+    }
+
+    .sd-workspace-plan {
+        display: none;
+    }
+}
+
+.sd-ad-row {
+    padding-inline: 1.5rem;
+}
+
+.sd-footer {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: .5rem 1.5rem;
+    margin-top: auto;
+    padding: 1rem 1.5rem;
+    border-top: 1px solid var(--sd-border);
+    color: var(--bs-secondary-color);
+    font-size: .8125rem;
+}
+
+/* Shared page styles: page markup is child content of the layout, so it needs ::deep. */
+.sc-saas ::deep .sd-page-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.sc-saas ::deep .sd-breadcrumb .breadcrumb {
+    margin-bottom: 0;
+    font-size: .875rem;
+}
+
+.sc-saas ::deep .sd-page-title {
+    margin: 0;
+    font-size: clamp(1.375rem, 2.2vw, 1.75rem);
+    font-weight: 800;
+    letter-spacing: -.02em;
+    color: var(--sd-ink);
+}
+
+.sc-saas ::deep .sd-page-lead {
+    margin: .25rem 0 0;
+    color: var(--bs-secondary-color);
+}
+
+.sc-saas ::deep .sd-card {
+    --bs-card-bg: var(--sd-surface);
+    --bs-card-border-color: var(--sd-border);
+    --bs-card-cap-bg: transparent;
+    border-radius: .875rem;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, .04);
+}
+
+    .sc-saas ::deep .sd-card .card-header {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: .5rem;
+        padding: 1rem 1.25rem .5rem;
+        border-bottom: 0;
+    }
+
+.sc-saas ::deep .sd-card-title {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--sd-ink);
+}
+
+.sc-saas ::deep .sd-card-sub {
+    margin: 0;
+    font-size: .8125rem;
+    color: var(--bs-secondary-color);
+}
+
+.sc-saas ::deep .sd-kpi-label {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: var(--bs-secondary-color);
+    font-size: .8125rem;
+    font-weight: 600;
+}
+
+.sc-saas ::deep .sd-kpi-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: .625rem;
+    font-size: 1.125rem;
+    color: var(--sc-primary);
+    background: rgba(var(--sc-primary-rgb), .12);
+}
+
+.sc-saas ::deep .sd-kpi-value {
+    display: block;
+    margin-top: .5rem;
+    font-family: var(--sd-font-mono);
+    font-size: clamp(1.375rem, 2.4vw, 1.75rem);
+    font-weight: 600;
+    letter-spacing: -.02em;
+    color: var(--sd-ink);
+}
+
+.sc-saas ::deep .sd-mono {
+    font-family: var(--sd-font-mono);
+}
+
+.sc-saas ::deep .sd-trend {
+    display: inline-flex;
+    align-items: center;
+    gap: .25rem;
+    font-size: .8125rem;
+    font-weight: 600;
+}
+
+    .sc-saas ::deep .sd-trend.is-up {
+        color: var(--sd-up);
+    }
+
+    .sc-saas ::deep .sd-trend.is-down {
+        color: var(--sd-down);
+    }
+
+.sc-saas ::deep .sd-chart {
+    position: relative;
+    width: 100%;
+}
+
+.sc-saas ::deep .sd-range {
+    flex-wrap: wrap;
+}
+
+.sc-saas ::deep .sd-person {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    min-width: 0;
+}
+
+.sc-saas ::deep .sd-person-text {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    line-height: 1.25;
+}
+
+.sc-saas ::deep .sd-person-name {
+    font-weight: 600;
+    color: var(--sd-ink);
+    text-decoration: none;
+}
+
+    .sc-saas ::deep .sd-person-name:hover {
+        color: var(--sc-primary);
+        text-decoration: underline;
+    }
+
+.sc-saas ::deep .sd-person-email {
+    font-size: .8125rem;
+    color: var(--bs-secondary-color);
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Positioned, so absolutely positioned descendants (visually-hidden header text) stay inside the scroll box instead of widening the page. */
+.sc-saas ::deep .sd-grid {
+    position: relative;
+}
+
+.sc-saas ::deep .sd-grid .table {
+    --bs-table-bg: var(--sd-surface);
+    margin-bottom: 0;
+    vertical-align: middle;
+}
+
+    .sc-saas ::deep .sd-grid .table > thead th {
+        font-size: .75rem;
+        font-weight: 700;
+        letter-spacing: .04em;
+        text-transform: uppercase;
+        color: var(--bs-secondary-color);
+        white-space: nowrap;
+    }
+
+.sc-saas ::deep .sd-meter {
+    display: flex;
+    flex-direction: column;
+    gap: .25rem;
+}
+
+.sc-saas ::deep .sd-meter-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: .8125rem;
+    color: var(--bs-secondary-color);
+}
+
+.sc-saas ::deep .sd-dl dt {
+    font-weight: 500;
+    color: var(--bs-secondary-color);
+}
+
+.sc-saas ::deep .sd-dl dd {
+    color: var(--sd-ink);
+    font-weight: 600;
+}
+
+.sc-saas ::deep .sd-not-found {
+    max-width: 32rem;
+    margin: 4rem auto;
+    text-align: center;
+}
+
+/* Bootstrap's text-bg-primary keeps white text; on the light dark-mode blue that fails contrast, so use dark text there. */
+[data-bs-theme=dark] .sc-saas ::deep .text-bg-primary {
+    color: var(--sc-primary-contrast) !important;
+}

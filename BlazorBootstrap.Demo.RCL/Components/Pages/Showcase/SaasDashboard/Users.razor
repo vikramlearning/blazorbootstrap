@@ -1,0 +1,123 @@
+@page "/showcase/saas-dashboard/users"
+@layout SaasDashboardLayout
+
+<PageTitle>Users · Pulseboard</PageTitle>
+
+<div class="sd-page-head">
+    <div>
+        <span class="sc-eyebrow">Users</span>
+        <h1 class="sd-page-title">Customer accounts</h1>
+        <p class="sd-page-lead">@State.Accounts.Count accounts · @State.ActiveCount active · @State.TrialCount in trial · @State.SuspendedCount suspended</p>
+    </div>
+    <Button @ref="addButton" Color="ButtonColor.Primary" @onclick="AddAsync">
+        <Icon Name="IconName.PersonPlus" class="me-1" aria-hidden="true" />Add user
+    </Button>
+</div>
+
+<Card Class="sd-card">
+    <CardBody Class="p-3 p-lg-4">
+        <div class="row g-2 align-items-end mb-3" role="search" aria-label="Filter users">
+            <div class="col-md-6 col-lg-5">
+                <label class="form-label small fw-semibold" for="sd-user-search">Search</label>
+                <InputGroup>
+                    <InputGroupText><Icon Name="IconName.Search" aria-hidden="true" /></InputGroupText>
+                    @* TextInput raises ValueChanged on change (blur or Enter); @oninput keeps filtering live while typing.
+                       The bound value changes only on change, so renders during typing never write an older value back into the box. *@
+                    <TextInput Id="sd-user-search" Value="@searchBoxValue" ValueExpression="() => searchBoxValue" ValueChanged="OnSearchChanged"
+                               @oninput="OnSearchInput" Placeholder="Name, email, or company" />
+                </InputGroup>
+            </div>
+            <div class="col-6 col-md-3 col-lg-2">
+                <label class="form-label small fw-semibold" for="sd-user-status">Status</label>
+                <select id="sd-user-status" class="form-select" value="@statusFilter" @onchange="OnStatusChanged">
+                    <option value="">All</option>
+                    @foreach (var status in Enum.GetValues<SaasAccountStatus>())
+                    {
+                        <option value="@status">@status</option>
+                    }
+                </select>
+            </div>
+            <div class="col-6 col-md-3 col-lg-2">
+                <label class="form-label small fw-semibold" for="sd-user-plan">Plan</label>
+                <select id="sd-user-plan" class="form-select" value="@planFilter" @onchange="OnPlanChanged">
+                    <option value="">All</option>
+                    @foreach (var plan in State.Plans)
+                    {
+                        <option value="@plan.Id">@plan.Name</option>
+                    }
+                </select>
+            </div>
+            <div class="col-lg-3 text-lg-end">
+                <span class="small text-body-secondary" aria-live="polite">@MatchText</span>
+            </div>
+        </div>
+
+        <Grid @ref="grid"
+              TItem="SaasAccount"
+              Class="table table-hover"
+              GridContainerClass="sd-grid"
+              DataProvider="AccountsDataProvider"
+              RowKeySelector="account => account.Id"
+              AllowSorting="true"
+              AllowPaging="true"
+              PageSize="10"
+              PageSizeSelectorVisible="true"
+              PageSizeSelectorItems="@(new[] { 10, 25, 50 })"
+              PaginationItemsTextFormat="{0}–{1} of {2} accounts"
+              ItemsPerPageText="Rows per page"
+              Responsive="true"
+              EmptyText="No accounts match these filters.">
+            <GridColumns>
+                <GridColumn TItem="SaasAccount" HeaderText="User" PropertyName="Name" SortKeySelector="item => item.Name" IsDefaultSortColumn="false">
+                    <div class="sd-person">
+                        <Avatar Name="@context.Name" Color="SaasDisplay.AvatarColorFor(context)" Size="AvatarSize.Small" />
+                        <span class="sd-person-text">
+                            <a class="sd-person-name" href="@($"{SaasDashboardLayout.Base}/users/{context.Id}")">@context.Name</a>
+                            <span class="sd-person-email">@context.Email</span>
+                        </span>
+                    </div>
+                </GridColumn>
+                <GridColumn TItem="SaasAccount" HeaderText="Company" PropertyName="Company" SortKeySelector="item => item.Company">
+                    @context.Company
+                </GridColumn>
+                <GridColumn TItem="SaasAccount" HeaderText="Plan" PropertyName="PlanId" SortKeySelector="item => item.PlanId">
+                    <Badge Color="SaasDisplay.PlanColor(context.PlanId)" Class="rounded-pill">@State.PlanFor(context).Name</Badge>
+                </GridColumn>
+                <GridColumn TItem="SaasAccount" HeaderText="Seats" PropertyName="Seats" SortKeySelector="item => item.Seats" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End">
+                    <span class="sd-mono">@context.Seats</span>
+                </GridColumn>
+                <GridColumn TItem="SaasAccount" HeaderText="Status" PropertyName="Status" SortKeySelector="item => item.Status">
+                    <Badge Color="SaasDisplay.StatusColor(context.Status)" Class="rounded-pill">@context.Status</Badge>
+                </GridColumn>
+                <GridColumn TItem="SaasAccount" HeaderText="Last seen" PropertyName="LastSeenOn" SortKeySelector="item => item.LastSeenOn" SortDirection="SortDirection.Descending" IsDefaultSortColumn="true" TextNoWrap="true">
+                    @SaasDisplay.LastSeen(context)
+                </GridColumn>
+                <GridColumn TItem="SaasAccount" HeaderText="Actions" Sortable="false" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End">
+                    <HeaderContent><span class="visually-hidden">Actions</span></HeaderContent>
+                    <ChildContent>
+                        <Dropdown Color="DropdownColor.None" Size="DropdownSize.Small">
+                            <DropdownToggleButton @ref="actionToggles[context.Id]" Class="btn btn-sm btn-outline-secondary border-0" aria-label="@($"Actions for {context.Name}")">
+                                <Icon Name="IconName.ThreeDots" aria-hidden="true" />
+                            </DropdownToggleButton>
+                            <DropdownMenu Position="DropdownMenuPosition.End">
+                                <DropdownItem To="@($"{SaasDashboardLayout.Base}/users/{context.Id}")" Type="DropdownItemType.Link">View profile</DropdownItem>
+                                <DropdownItem @onclick="() => EditAsync(context)">Edit…</DropdownItem>
+                                <DropdownDivider />
+                                @if (context.Status == SaasAccountStatus.Suspended)
+                                {
+                                    <DropdownItem @onclick="() => SetStatusAsync(context, SaasAccountStatus.Active)">Reactivate</DropdownItem>
+                                }
+                                else
+                                {
+                                    <DropdownItem Class="text-danger" @onclick="() => SetStatusAsync(context, SaasAccountStatus.Suspended)">Suspend</DropdownItem>
+                                }
+                            </DropdownMenu>
+                        </Dropdown>
+                    </ChildContent>
+                </GridColumn>
+            </GridColumns>
+        </Grid>
+    </CardBody>
+</Card>
+
+<SaasAccountEditor @ref="editor" OnSaved="OnSavedAsync" />
