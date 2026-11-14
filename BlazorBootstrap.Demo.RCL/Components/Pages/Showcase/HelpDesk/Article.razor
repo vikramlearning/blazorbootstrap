@@ -1,0 +1,56 @@
+@page "/showcase/help-desk/kb/{Id:int}"
+@layout HelpDeskLayout
+
+@if (Item is null)
+{
+    <HelpDeskNotFound />
+}
+else
+{
+    <PageTitle>@Item.Title · @HelpDeskSeedData.ProductName</PageTitle>
+
+    <div class="container-fluid px-lg-4">
+        <Breadcrumb Items="BreadcrumbItems" Class="mb-3" />
+        <div class="row g-4">
+            <article class="col-xl-8" aria-labelledby="hd-article-title">
+                <span class="small text-body-secondary">@Category.Name · updated @Item.UpdatedOn.ToString("MMM d, yyyy", CultureInfo.InvariantCulture) · @Item.ReadingMinutes min read</span>
+                <h1 class="hd-title mt-1 mb-2" id="hd-article-title">@Item.Title</h1>
+                <p class="hd-lead mb-4">@Item.Summary</p>
+                @* Article bodies are seeded content from HelpDeskSeedData. Markdown renders raw HTML, so it never shows user input. *@
+                <Markdown @key="Item.Id" Class="hd-article-body mb-4">@Item.Body</Markdown>
+
+                <section class="hd-panel" aria-labelledby="hd-helpful">
+                    <h2 class="hd-section-title" id="hd-helpful">Was this article helpful?</h2>
+                    <div class="d-flex flex-wrap align-items-center gap-2">
+                        <Button Color="ButtonColor.Success" Outline="true" Size="ButtonSize.Small" @onclick="() => Vote(true)">
+                            <Icon Name="IconName.HandThumbsUp" class="me-1" aria-hidden="true" />Yes
+                        </Button>
+                        <Button Color="ButtonColor.Secondary" Outline="true" Size="ButtonSize.Small" @onclick="() => Vote(false)">
+                            <Icon Name="IconName.HandThumbsDown" class="me-1" aria-hidden="true" />No
+                        </Button>
+                        <span class="small text-body-secondary" role="status">@VoteText</span>
+                    </div>
+                </section>
+            </article>
+            <aside class="col-xl-4" aria-labelledby="hd-related">
+                <div class="hd-panel">
+                    <h2 class="hd-section-title" id="hd-related">Related articles</h2>
+                    @if (Related.Count == 0)
+                    {
+                        <p class="small text-body-secondary mb-0">No other articles in @Category.Name yet.</p>
+                    }
+                    else
+                    {
+                        <ul class="list-unstyled small d-grid gap-2 mb-0">
+                            @foreach (var article in Related)
+                            {
+                                <li><Icon Name="IconName.JournalText" class="me-2 text-body-secondary" aria-hidden="true" /><a href="@HelpDeskDisplay.ArticleUrl(article.Id)">@article.Title</a></li>
+                            }
+                        </ul>
+                    }
+                </div>
+            </aside>
+        </div>
+    </div>
+}
+

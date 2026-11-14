@@ -1,0 +1,279 @@
+.sc-helpdesk {
+    --sc-primary: #b91c1c;
+    --sc-primary-rgb: 185, 28, 28;
+    --sc-primary-hover: #991b1b;
+    --sc-primary-contrast: #fff;
+    --sc-font-body: "Figtree", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --sc-font-heading: "Figtree", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --sc-page-bg: #f7f7f8;
+    --hd-font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    --hd-ink: #18181b;
+    --hd-surface: #fff;
+    --hd-border: #e4e4e7;
+    --hd-agent-bg: #fef2f2;
+    --hd-note-bg: #fffbeb;
+    --hd-note-border: #fcd34d;
+}
+
+[data-bs-theme=dark] .sc-helpdesk {
+    --sc-primary: #f87171;
+    --sc-primary-rgb: 248, 113, 113;
+    --sc-primary-hover: #fca5a5;
+    --sc-primary-contrast: #2a0a0a;
+    --sc-page-bg: #0f0f12;
+    --hd-ink: #f4f4f5;
+    --hd-surface: #18181b;
+    --hd-border: #2e2e33;
+    --hd-agent-bg: #2a1214;
+    --hd-note-bg: #2a2310;
+    --hd-note-border: #a16207;
+}
+
+/* Bootstrap keeps white text on primary fills; on the light dark-mode red that fails contrast. */
+[data-bs-theme=dark] .sc-helpdesk ::deep .text-bg-primary {
+    color: var(--sc-primary-contrast) !important;
+}
+
+/* Header: the Navbar component renders the nav and its links, so they need ::deep. */
+.sc-helpdesk ::deep .hd-header {
+    min-height: 3.75rem;
+    background: var(--hd-surface);
+    border-bottom: 1px solid var(--hd-border);
+}
+
+.sc-helpdesk ::deep .hd-header .nav-link {
+    color: var(--hd-ink);
+    font-weight: 600;
+    border-radius: .5rem;
+    padding-inline: .75rem !important;
+}
+
+    .sc-helpdesk ::deep .hd-header .nav-link:hover {
+        color: var(--sc-primary);
+    }
+
+    /* The hover shade keeps the active link above 4.5:1 on its tint. */
+    .sc-helpdesk ::deep .hd-header .nav-link.active {
+        color: var(--sc-primary-hover);
+        background: rgba(var(--sc-primary-rgb), .1);
+    }
+
+.sc-helpdesk ::deep .hd-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: .5rem;
+    font-weight: 800;
+    font-size: 1.25rem;
+    color: var(--hd-ink);
+    text-decoration: none;
+}
+
+.sc-helpdesk ::deep .hd-brand-mark {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    border-radius: .5rem;
+    background: var(--sc-primary);
+    color: var(--sc-primary-contrast);
+}
+
+.sc-helpdesk ::deep .hd-user {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    font-weight: 600;
+    font-size: .875rem;
+    line-height: 1.2;
+    color: var(--hd-ink);
+}
+
+.sc-helpdesk ::deep .hd-user-role {
+    display: block;
+    font-weight: 400;
+    font-size: .75rem;
+    color: var(--bs-secondary-color);
+}
+
+.hd-content {
+    padding-block: 1.5rem 1rem;
+}
+
+.hd-footer {
+    margin-top: 2rem;
+    padding-block: 1.25rem;
+    border-top: 1px solid var(--hd-border);
+    color: var(--bs-secondary-color);
+    font-size: .8125rem;
+}
+
+/* Shared page styles: page markup is child content of the layout, so it needs ::deep. */
+.sc-helpdesk ::deep .hd-title {
+    margin: 0;
+    font-size: clamp(1.375rem, 2.4vw, 1.75rem);
+    font-weight: 800;
+    color: var(--hd-ink);
+}
+
+.sc-helpdesk ::deep .hd-lead {
+    margin: .25rem 0 0;
+    color: var(--bs-secondary-color);
+}
+
+.sc-helpdesk ::deep .hd-page-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+}
+
+.sc-helpdesk ::deep .hd-card {
+    --bs-card-bg: var(--hd-surface);
+    --bs-card-border-color: var(--hd-border);
+    --bs-card-cap-bg: transparent;
+    border-radius: .75rem;
+}
+
+.sc-helpdesk ::deep .hd-panel {
+    padding: 1.25rem;
+    border: 1px solid var(--hd-border);
+    border-radius: .75rem;
+    background: var(--hd-surface);
+}
+
+.sc-helpdesk ::deep .hd-kpi-label {
+    font-size: .8125rem;
+    font-weight: 600;
+    color: var(--bs-secondary-color);
+}
+
+.sc-helpdesk ::deep .hd-kpi-value {
+    display: block;
+    font-size: 1.75rem;
+    font-weight: 800;
+    color: var(--hd-ink);
+}
+
+.sc-helpdesk ::deep .hd-mono {
+    font-family: var(--hd-font-mono);
+}
+
+.sc-helpdesk ::deep .hd-section-title {
+    margin: 0 0 .75rem;
+    font-size: 1.0625rem;
+    font-weight: 700;
+    color: var(--hd-ink);
+}
+
+/* Positioned, so absolutely positioned descendants (visually hidden header text) stay inside the scroll box. */
+.sc-helpdesk ::deep .hd-grid {
+    position: relative;
+}
+
+    .sc-helpdesk ::deep .hd-grid .table {
+        --bs-table-bg: var(--hd-surface);
+        margin-bottom: 0;
+        vertical-align: middle;
+    }
+
+        .sc-helpdesk ::deep .hd-grid .table > thead th {
+            font-size: .75rem;
+            font-weight: 700;
+            letter-spacing: .04em;
+            text-transform: uppercase;
+            color: var(--bs-secondary-color);
+            white-space: nowrap;
+        }
+
+.sc-helpdesk ::deep .hd-ticket-link {
+    font-weight: 600;
+    color: var(--hd-ink);
+    text-decoration: none;
+}
+
+    .sc-helpdesk ::deep .hd-ticket-link:hover,
+    .sc-helpdesk ::deep .hd-ticket-link:focus-visible {
+        color: var(--sc-primary);
+        text-decoration: underline;
+    }
+
+.sc-helpdesk ::deep .hd-message {
+    padding: 1rem 1.25rem;
+    border: 1px solid var(--hd-border);
+    border-radius: .75rem;
+    background: var(--hd-surface);
+}
+
+    .sc-helpdesk ::deep .hd-message.hd-message-agent {
+        background: var(--hd-agent-bg);
+    }
+
+    .sc-helpdesk ::deep .hd-message.hd-message-note {
+        background: var(--hd-note-bg);
+        border-color: var(--hd-note-border);
+        border-style: dashed;
+    }
+
+.sc-helpdesk ::deep .hd-message-body > :last-child {
+    margin-bottom: 0;
+}
+
+.sc-helpdesk ::deep .hd-message-body {
+    overflow-wrap: anywhere;
+    white-space: normal;
+}
+
+    .sc-helpdesk ::deep .hd-message-body.hd-plain {
+        white-space: pre-line;
+    }
+
+.sc-helpdesk ::deep .hd-summary dt {
+    font-weight: 500;
+    color: var(--bs-secondary-color);
+}
+
+.sc-helpdesk ::deep .hd-summary dd {
+    font-weight: 600;
+    color: var(--hd-ink);
+}
+
+.sc-helpdesk ::deep .hd-article-body {
+    max-width: 46rem;
+    font-size: 1.0625rem;
+    line-height: 1.65;
+}
+
+    .sc-helpdesk ::deep .hd-article-body h2 {
+        font-size: 1.25rem;
+        font-weight: 700;
+        margin-top: 1.25rem;
+    }
+
+    .sc-helpdesk ::deep .hd-article-body .blockquote {
+        font-size: 1rem;
+        padding: .75rem 1rem;
+        border-left: .25rem solid var(--sc-primary);
+        background: rgba(var(--sc-primary-rgb), .06);
+        border-radius: 0 .5rem .5rem 0;
+    }
+
+.sc-helpdesk ::deep .hd-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: .5rem;
+    color: var(--sc-primary-hover);
+    background: rgba(var(--sc-primary-rgb), .1);
+}
+
+.sc-helpdesk ::deep .hd-not-found {
+    max-width: 32rem;
+    margin: 4rem auto;
+    text-align: center;
+}

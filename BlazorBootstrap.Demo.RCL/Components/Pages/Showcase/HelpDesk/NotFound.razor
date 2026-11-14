@@ -1,0 +1,8 @@
+@page "/showcase/help-desk/{*path}"
+@layout HelpDeskLayout
+
+<HelpDeskNotFound />
+
+@code {
+    [Parameter] public string? Path { get; set; }
+}

@@ -1,0 +1,96 @@
+@page "/showcase/help-desk/tickets/new"
+@layout HelpDeskLayout
+
+<PageTitle>New ticket · @HelpDeskSeedData.ProductName</PageTitle>
+
+<div class="container-fluid px-lg-4">
+    <Breadcrumb Items="breadcrumbItems" Class="mb-3" />
+    <div class="hd-page-head">
+        <div>
+            <h1 class="hd-title">New ticket</h1>
+            <p class="hd-lead">Log a request on a customer's behalf, for example after a phone call.</p>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-xl-8">
+            <div class="hd-panel" data-clarity-mask="true">
+                <ShowcaseDemoNotice Class="mb-4" Text="Demo only: the ticket stays in this browser tab until you reload, and no email is sent." />
+                <EditForm EditContext="editContext" OnValidSubmit="Create" FormName="hd-new-ticket">
+                    <DataAnnotationsValidator />
+                    <h2 class="hd-section-title">Customer</h2>
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold" for="hd-name">Name</label>
+                            <TextInput Id="hd-name" @bind-Value="form.CustomerName" MaxLength="60" />
+                            <ValidationMessage For="() => form.CustomerName" />
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold" for="hd-email">Email</label>
+                            <TextInput Id="hd-email" @bind-Value="form.Email" MaxLength="80" />
+                            <div class="form-text">Use a made-up address; nothing is sent.</div>
+                            <ValidationMessage For="() => form.Email" />
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold" for="hd-company">Company <span class="fw-normal text-body-secondary">(optional)</span></label>
+                            <TextInput Id="hd-company" @bind-Value="form.Company" MaxLength="60" />
+                            <ValidationMessage For="() => form.Company" />
+                        </div>
+                    </div>
+
+                    <h2 class="hd-section-title">Request</h2>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold" for="hd-category">Category</label>
+                            <InputSelect id="hd-category" class="form-select" @bind-Value="form.CategoryId">
+                                <option value="">Choose a category</option>
+                                @foreach (var category in State.Categories)
+                                {
+                                    <option value="@category.Id">@category.Name</option>
+                                }
+                            </InputSelect>
+                            <ValidationMessage For="() => form.CategoryId" />
+                        </div>
+                        <div class="col-md-6">
+                            <span class="form-label fw-semibold d-block" id="hd-priority-label">Priority</span>
+                            <RadioButtonGroup TValue="HelpDeskPriority" @bind-Value="form.Priority" AriaLabel="Priority" aria-labelledby="hd-priority-label" Class="flex-wrap">
+                                @foreach (var priority in Enum.GetValues<HelpDeskPriority>())
+                                {
+                                    <ButtonGroupItem Value="priority" Id="@($"hd-priority-{priority}")">@priority</ButtonGroupItem>
+                                }
+                            </RadioButtonGroup>
+                            <div class="form-text">Resolve within @HelpDeskState.TargetHours(form.Priority) hours.</div>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label fw-semibold" for="hd-subject">Subject</label>
+                            <TextInput Id="hd-subject" @bind-Value="form.Subject" MaxLength="100" />
+                            <ValidationMessage For="() => form.Subject" />
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label fw-semibold" for="hd-description">Description</label>
+                            <TextAreaInput Id="hd-description" @bind-Value="form.Description" Rows="5" MaxLength="2000" />
+                            <ValidationMessage For="() => form.Description" />
+                        </div>
+                    </div>
+
+                    <div class="d-flex flex-wrap gap-2 mt-4">
+                        <Button Type="ButtonType.Submit" Color="ButtonColor.Primary">Create ticket</Button>
+                        <Button Type="ButtonType.Link" To="@HelpDeskLayout.Base" Color="ButtonColor.Secondary" Outline="true">Cancel</Button>
+                    </div>
+                </EditForm>
+            </div>
+        </div>
+        <div class="col-xl-4">
+            <div class="hd-panel">
+                <h2 class="hd-section-title">Before you create a ticket</h2>
+                <p class="small text-body-secondary">Check whether a knowledge base article already answers the question.</p>
+                <ul class="list-unstyled small d-grid gap-2 mb-0">
+                    @foreach (var article in State.Articles.Take(4))
+                    {
+                        <li><Icon Name="IconName.JournalText" class="me-2 text-body-secondary" aria-hidden="true" /><a href="@HelpDeskDisplay.ArticleUrl(article.Id)">@article.Title</a></li>
+                    }
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>

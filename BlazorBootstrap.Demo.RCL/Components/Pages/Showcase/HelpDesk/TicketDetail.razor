@@ -1,0 +1,179 @@
+@page "/showcase/help-desk/tickets/{Id:int}"
+@layout HelpDeskLayout
+
+@if (Ticket is null)
+{
+    <HelpDeskNotFound />
+}
+else
+{
+    <PageTitle>#@Ticket.Id @Ticket.Subject · @HelpDeskSeedData.ProductName</PageTitle>
+
+    <div class="container-fluid px-lg-4">
+        <Breadcrumb Items="BreadcrumbItems" Class="mb-3" />
+
+        <div class="hd-page-head">
+            <div>
+                <span class="hd-mono small text-body-secondary">#@Ticket.Id · @Category.Name</span>
+                <h1 class="hd-title mt-1">@Ticket.Subject</h1>
+                <div class="d-flex flex-wrap align-items-center gap-2 mt-2">
+                    <Badge Color="@HelpDeskDisplay.PriorityColor(Ticket.Priority)">@Ticket.Priority priority</Badge>
+                    <Badge Color="@HelpDeskDisplay.StatusColor(Ticket.Status)">@Ticket.Status</Badge>
+                    <Badge Color="@HelpDeskDisplay.SlaColor(HelpDeskState.Sla(Ticket))">@HelpDeskDisplay.SlaText(Ticket)</Badge>
+                    <span class="small text-body-secondary">@Ticket.CustomerName@(Ticket.Company is null ? null : $", {Ticket.Company}") · opened @HelpDeskDisplay.Ago(Ticket.CreatedAt)</span>
+                </div>
+            </div>
+            <div class="d-flex flex-wrap gap-2">
+                <Button Color="ButtonColor.Secondary" Outline="true" @onclick="AssignToMeAsync" Disabled="IsMine">
+                    <Icon Name="IconName.PersonCheck" class="me-2" aria-hidden="true" />@(IsMine ? "Assigned to you" : "Assign to me")
+                </Button>
+                @* One button whose text changes, so focus stays on it after each press. *@
+                <Button Color="@(Ticket.Status == HelpDeskStatus.Resolved ? ButtonColor.Secondary : ButtonColor.Success)" @onclick="ToggleResolved">
+                    <Icon Name="@(Ticket.Status == HelpDeskStatus.Resolved ? IconName.ArrowCounterclockwise : IconName.CheckCircle)" class="me-2" aria-hidden="true" />@(Ticket.Status == HelpDeskStatus.Resolved ? "Reopen" : "Resolve")
+                </Button>
+            </div>
+        </div>
+
+        @* Always rendered and focusable, so an action is announced and focus has somewhere to go. *@
+        <p class="small fw-semibold mb-3" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
+
+        @* Static tab titles: Tabs does not re-render titles, so a live count would go stale. *@
+        <Tabs NavStyle="NavStyle.Underline" @key="Ticket.Id">
+            <Tab Title="Conversation" Name="conversation" Active="true">
+                <Content>
+                    <div class="row g-4 pt-4">
+                        <div class="col-xl-8">
+                            <ol class="list-unstyled d-grid gap-3 mb-4" aria-label="Messages">
+                                @foreach (var message in Ticket.Messages)
+                                {
+                                    <li>
+                                        <article class="hd-message @(message.IsInternalNote ? "hd-message-note" : message.IsAgent ? "hd-message-agent" : null)">
+                                            <header class="d-flex flex-wrap align-items-center gap-2 mb-2">
+                                                <span class="fw-bold">@message.Author</span>
+                                                @if (message.IsInternalNote)
+                                                {
+                                                    <Badge Color="BadgeColor.Warning"><Icon Name="IconName.Lock" class="me-1" aria-hidden="true" />Internal note</Badge>
+                                                }
+                                                else if (message.IsAgent)
+                                                {
+                                                    <Badge Color="BadgeColor.Secondary">Agent</Badge>
+                                                }
+                                                else
+                                                {
+                                                    <Badge Color="BadgeColor.Light">Customer</Badge>
+                                                }
+                                                <span class="small text-body-secondary ms-auto" title="@HelpDeskDisplay.Stamp(message.PostedAt)">@HelpDeskDisplay.Ago(message.PostedAt)</span>
+                                            </header>
+                                            @if (message.IsRichText)
+                                            {
+                                                @* Editor HTML is decoded once, then encoded again; only allow-listed formatting tags come back (OWASP A05). *@
+                                                <div class="hd-message-body">@ShowcaseHtml.FromEditorHtml(message.Body)</div>
+                                            }
+                                            else
+                                            {
+                                                <div class="hd-message-body hd-plain">@message.Body</div>
+                                            }
+                                        </article>
+                                    </li>
+                                }
+                            </ol>
+
+                            @if (Ticket.Status == HelpDeskStatus.Resolved)
+                            {
+                                <div class="hd-panel text-body-secondary">This ticket is resolved. Reopen it to reply.</div>
+                            }
+                            else
+                            {
+                                <section class="hd-panel" aria-labelledby="hd-reply-heading" data-clarity-mask="true">
+                                    <h2 class="hd-section-title" id="hd-reply-heading">@(isInternalNote ? "Add an internal note" : $"Reply to {Ticket.CustomerName}")</h2>
+                                    <ShowcaseDemoNotice Class="mb-3" Text="Demo only: replies stay in this browser tab, and no email is sent." />
+                                    <div class="mb-3">
+                                        <Switch Value="isInternalNote" ValueExpression="() => isInternalNote" ValueChanged="OnInternalNoteChanged" Label="Internal note (only agents see it)" />
+                                    </div>
+                                    @* The editor keeps its own content; Value is only the starting paragraph. An empty paragraph (not an empty
+                                       value) gives lists, code blocks, and quotes a real block to work on, and Enter makes p lines. Its
+                                       ClearAsync does nothing (library finding), so a new key after each send rebuilds it empty. *@
+                                    <RichTextEditor @key="(Ticket.Id, editorVersion)"
+                                                    Value="@EmptyReply"
+                                                    ValueChanged="OnReplyChanged"
+                                                    ToolbarItems="toolbarItems"
+                                                    AriaLabel="@(isInternalNote ? "Internal note" : "Reply")"
+                                                    Placeholder="Write your reply…"
+                                                    ShowFooter="false" />
+                                    @* Always rendered, so a screen reader announces the error when it appears. *@
+                                    <p class="text-danger small mt-2 mb-0" role="alert">@replyError</p>
+                                    <div class="d-flex flex-wrap align-items-center gap-2 mt-3">
+                                        <Button Color="ButtonColor.Primary" @onclick="Send">
+                                            <Icon Name="@(isInternalNote ? IconName.Lock : IconName.Send)" class="me-2" aria-hidden="true" />@(isInternalNote ? "Add note" : "Send reply")
+                                        </Button>
+                                        <span class="small text-body-secondary">@(isInternalNote ? "The status stays as it is." : "The ticket moves to Pending until the customer answers.")</span>
+                                    </div>
+                                </section>
+                            }
+                        </div>
+                        <div class="col-xl-4">
+                            <div class="hd-panel">
+                                <h2 class="hd-section-title">Customer</h2>
+                                <p class="mb-1 fw-semibold">@Ticket.CustomerName</p>
+                                <p class="mb-1 small"><Icon Name="IconName.Envelope" class="me-2 text-body-secondary" aria-hidden="true" />@Ticket.CustomerEmail</p>
+                                <p class="mb-0 small"><Icon Name="IconName.Building" class="me-2 text-body-secondary" aria-hidden="true" />@(Ticket.Company ?? "No company")</p>
+                            </div>
+                        </div>
+                    </div>
+                </Content>
+            </Tab>
+            <Tab Title="Details" Name="details">
+                <Content>
+                    <div class="pt-4" style="max-width: 40rem;">
+                        <dl class="row hd-summary mb-4">
+                            <dt class="col-sm-4">Category</dt>
+                            <dd class="col-sm-8">@Category.Name</dd>
+                            <dt class="col-sm-4">Priority</dt>
+                            <dd class="col-sm-8">@Ticket.Priority (resolve within @HelpDeskState.TargetHours(Ticket.Priority) h)</dd>
+                            <dt class="col-sm-4">Opened</dt>
+                            <dd class="col-sm-8">@HelpDeskDisplay.Stamp(Ticket.CreatedAt)</dd>
+                            <dt class="col-sm-4">Due</dt>
+                            <dd class="col-sm-8">@HelpDeskDisplay.Stamp(HelpDeskState.DueAt(Ticket)) (@HelpDeskDisplay.SlaText(Ticket))</dd>
+                            @if (Ticket.ResolvedAt is { } resolvedAt)
+                            {
+                                <dt class="col-sm-4">Resolved</dt>
+                                <dd class="col-sm-8">@HelpDeskDisplay.Stamp(resolvedAt)</dd>
+                            }
+                        </dl>
+                        <label class="form-label fw-semibold" for="hd-assignee">Assignee</label>
+                        <select id="hd-assignee" class="form-select" style="max-width: 20rem;" value="@(Ticket.Assignee ?? string.Empty)" @onchange="OnAssigneeChanged">
+                            <option value="">Unassigned</option>
+                            @foreach (var agent in State.Agents)
+                            {
+                                <option value="@agent">@agent</option>
+                            }
+                        </select>
+                    </div>
+                </Content>
+            </Tab>
+            <Tab Title="Related articles" Name="articles">
+                <Content>
+                    <div class="pt-4" style="max-width: 40rem;">
+                        @if (Related.Count == 0)
+                        {
+                            <p class="text-body-secondary">No articles in this category yet.</p>
+                        }
+                        else
+                        {
+                            <p class="text-body-secondary">Articles in @Category.Name you can link in a reply.</p>
+                            <ul class="list-unstyled d-grid gap-2 mb-0">
+                                @foreach (var article in Related)
+                                {
+                                    <li class="hd-panel py-2">
+                                        <a class="fw-semibold" href="@HelpDeskDisplay.ArticleUrl(article.Id)">@article.Title</a>
+                                        <span class="d-block small text-body-secondary">@article.Summary</span>
+                                    </li>
+                                }
+                            </ul>
+                        }
+                    </div>
+                </Content>
+            </Tab>
+        </Tabs>
+    </div>
+}
