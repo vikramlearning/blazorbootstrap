@@ -1,0 +1,146 @@
+@inherits LayoutComponentBase
+
+<HeadContent>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=DM+Sans:wght@400;500;600;700&display=swap" />
+</HeadContent>
+
+<div class="sc-site sc-ecommerce">
+    <ShowcaseSiteBar Site="@site" />
+
+    <p class="ec-announce mb-0">
+        <Icon Name="IconName.Truck" class="me-1" aria-hidden="true" />
+        Free standard shipping over @EcommerceDisplay.Money(EcommerceSeedData.FreeShippingThreshold)
+        <span class="d-none d-sm-inline">· Use <strong>@EcommerceSeedData.PromoCode</strong> for 10% off your first order</span>
+    </p>
+
+    <Navbar Class="ec-header"
+            Placement="NavbarPlacement.StickyTop"
+            Container="NavbarContainer.ExtraLarge"
+            AriaLabel="Kindred Goods"
+            TogglerAriaLabel="Menu">
+        <Brand>
+            <NavbarBrand Href="@Base" Class="ec-brand">
+                <span class="ec-brand-mark" aria-hidden="true"><Icon Name="IconName.Flower2" /></span>
+                <span>@EcommerceSeedData.StoreName</span>
+            </NavbarBrand>
+            <Button @ref="cartButton" Class="ec-cart-btn ms-auto me-2 me-lg-0 order-lg-last" @onclick="OpenCartAsync" aria-label="@CartLabel">
+                <Icon Name="IconName.Bag" aria-hidden="true" />
+                @if (State.CartCount > 0)
+                {
+                    <span class="ec-cart-count" aria-hidden="true">@State.CartCount</span>
+                }
+            </Button>
+        </Brand>
+        <ChildContent>
+            <NavbarNav Class="me-auto ms-lg-4 mb-3 mb-lg-0">
+                @* NavLink matching ignores the query string, so only "Shop all" is a NavbarItem on /products; Sale lives in the menu. *@
+                <NavbarItem Href="@($"{Base}/products?category=all")" Match="NavLinkMatch.All">Shop all</NavbarItem>
+                <NavbarDropdown Text="Categories">
+                    @foreach (var category in State.Categories)
+                    {
+                        <DropdownItem Type="DropdownItemType.Link" To="@($"{Base}/products?category={category.Id}")">@category.Name</DropdownItem>
+                    }
+                    <DropdownDivider />
+                    <DropdownItem Type="DropdownItemType.Link" To="@($"{Base}/products?sale=1")">Sale</DropdownItem>
+                </NavbarDropdown>
+                <NavbarItem Href="@($"{Base}/cart")">Cart</NavbarItem>
+            </NavbarNav>
+        </ChildContent>
+    </Navbar>
+
+    <main class="sc-main" id="ec-main">
+        @Body
+    </main>
+
+    <div class="container-xl">
+        <CarbonAds Class="sc-ad" />
+    </div>
+
+    <footer class="ec-footer">
+        <div class="container-xl">
+            <div class="row g-4">
+                <div class="col-lg-5">
+                    <a class="ec-brand mb-2" href="@Base">
+                        <span class="ec-brand-mark" aria-hidden="true"><Icon Name="IconName.Flower2" /></span>
+                        <span>@EcommerceSeedData.StoreName</span>
+                    </a>
+                    <p class="ec-footer-note">Thoughtful goods for everyday rooms. A fictitious store created for the Blazor Bootstrap Showcase: nothing is sold, shipped, or charged.</p>
+                </div>
+                <div class="col-6 col-lg-3">
+                    <h2 class="ec-footer-heading">Shop</h2>
+                    <ul class="list-unstyled">
+                        @foreach (var category in State.Categories)
+                        {
+                            <li><a href="@($"{Base}/products?category={category.Id}")">@category.Name</a></li>
+                        }
+                    </ul>
+                </div>
+                <div class="col-6 col-lg-4">
+                    <h2 class="ec-footer-heading">Built with</h2>
+                    <p class="ec-footer-note mb-0">Navbar, Carousel, Card, ListGroup, RangeInput, Pagination, RatingInput, InputGroup, Offcanvas, Toasts, Timeline, and form inputs from Blazor Bootstrap.</p>
+                </div>
+            </div>
+            <p class="ec-footer-legal">© 2026 @EcommerceSeedData.StoreName (fictitious). Products, prices, reviews, and people on this site are made up.</p>
+        </div>
+    </footer>
+
+    @* HeaderTemplate rather than Title: Offcanvas reads Title once, so a live count would go stale; aria-labelledby names the drawer. *@
+    <Offcanvas @ref="cartDrawer" Placement="Placement.End" OnHidden="OnCartHiddenAsync" BodyCssClass="ec-drawer-body" aria-labelledby="ec-cart-title">
+        <HeaderTemplate>
+            <h2 class="offcanvas-title h5 mb-0" id="ec-cart-title">Your cart (@State.CartCount)</h2>
+        </HeaderTemplate>
+        <BodyTemplate>
+            @if (State.Cart.Count == 0)
+            {
+                <div class="text-center py-5">
+                    <span class="ec-empty-icon" aria-hidden="true"><Icon Name="IconName.Bag" /></span>
+                    <p class="mt-3 mb-4 text-body-secondary">Your cart is empty.</p>
+                    <Button Type="ButtonType.Link" To="@($"{Base}/products")" Color="ButtonColor.Primary">Start shopping</Button>
+                </div>
+            }
+            else
+            {
+                <ul class="list-unstyled mb-0">
+                    @foreach (var line in State.Cart)
+                    {
+                        var product = State.FindProduct(line.ProductId)!;
+                        <li class="ec-drawer-line" @key="@($"{line.ProductId}-{line.Color}")">
+                            <ShowcaseImage Src="@product.ImagePath" Alt="" Width="96" Height="96" Class="ec-thumb"
+                                           Accent="@State.FindCategory(product.CategoryId)?.Accent" PlaceholderIcon="IconName.Image" />
+                            <div class="flex-grow-1 min-w-0">
+                                <a class="ec-line-name" href="@($"{Base}/products/{product.Id}")">@product.Name</a>
+                                <div class="small text-body-secondary">@line.Color · @EcommerceDisplay.Money(product.Price)</div>
+                                <div class="d-flex align-items-center gap-2 mt-2">
+                                    <EcommerceQuantityInput Small="true" ItemName="@product.Name" Value="line.Quantity" Max="State.MaxQuantityFor(product)"
+                                                            ValueChanged="quantity => State.SetQuantity(line.ProductId, line.Color, quantity)" />
+                                    <Button Color="ButtonColor.Link" Size="ButtonSize.Small" Class="text-body-secondary"
+                                            @onclick="() => RemoveLineAsync(line)" aria-label="@($"Remove {product.Name} ({line.Color})")">
+                                        <Icon Name="IconName.Trash3" aria-hidden="true" />
+                                    </Button>
+                                </div>
+                            </div>
+                        </li>
+                    }
+                </ul>
+            }
+        </BodyTemplate>
+        <FooterTemplate>
+            @if (State.Cart.Count > 0)
+            {
+                var totals = State.CartTotals();
+                <div class="w-100">
+                    <div class="d-flex justify-content-between fw-semibold mb-1"><span>Subtotal</span><span>@EcommerceDisplay.Money(totals.Subtotal - totals.Discount)</span></div>
+                    <p class="small text-body-secondary">@ShippingNote(totals)</p>
+                    <div class="d-grid gap-2">
+                        <Button Type="ButtonType.Link" To="@($"{Base}/checkout")" Color="ButtonColor.Primary">Checkout</Button>
+                        <Button Type="ButtonType.Link" To="@($"{Base}/cart")" Color="ButtonColor.Primary" Outline="true">View cart</Button>
+                    </div>
+                </div>
+            }
+        </FooterTemplate>
+    </Offcanvas>
+
+    <Toasts class="p-3" AutoHide="true" Delay="4000" Placement="ToastsPlacement.BottomRight" />
+</div>

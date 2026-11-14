@@ -1,0 +1,114 @@
+@page "/showcase/ecommerce/cart"
+@layout EcommerceLayout
+@implements IDisposable
+@inject EcommerceState State
+
+<PageTitle>Your cart · @EcommerceSeedData.StoreName</PageTitle>
+
+<div class="container-xl pt-4 pb-5">
+    <h1 class="ec-page-title mb-4">Your cart</h1>
+
+    @if (State.Cart.Count == 0)
+    {
+        <div class="ec-panel text-center py-5">
+            <span class="ec-empty-icon" aria-hidden="true"><Icon Name="IconName.Bag" /></span>
+            <p class="mt-3 mb-4">Your cart is empty. Find something you love.</p>
+            <Button Type="ButtonType.Link" To="@($"{EcommerceLayout.Base}/products?category=all")" Color="ButtonColor.Primary">Start shopping</Button>
+        </div>
+    }
+    else
+    {
+        <div class="row g-4">
+            <div class="col-lg-8">
+                <ul class="list-unstyled ec-panel py-2 mb-0" aria-label="Items in your cart">
+                    @foreach (var line in State.Cart)
+                    {
+                        var product = State.FindProduct(line.ProductId)!;
+                        <li class="ec-drawer-line" @key="@($"{line.ProductId}-{line.Color}")">
+                            <a href="@($"{EcommerceLayout.Base}/products/{product.Id}")" tabindex="-1" aria-hidden="true">
+                                <ShowcaseImage Src="@product.ImagePath" Alt="" Width="160" Height="160" Class="ec-thumb"
+                                               Accent="@State.FindCategory(product.CategoryId)?.Accent" />
+                            </a>
+                            <div class="flex-grow-1 min-w-0">
+                                <div class="d-flex flex-wrap justify-content-between gap-2">
+                                    <div>
+                                        <a class="ec-line-name" href="@($"{EcommerceLayout.Base}/products/{product.Id}")">@product.Name</a>
+                                        <div class="small text-body-secondary">@line.Color · @EcommerceDisplay.Money(product.Price) each</div>
+                                    </div>
+                                    <span class="fw-semibold">@EcommerceDisplay.Money(product.Price * line.Quantity)</span>
+                                </div>
+                                <div class="d-flex align-items-center gap-2 mt-2">
+                                    <EcommerceQuantityInput Small="true" ItemName="@product.Name" Value="line.Quantity" Max="State.MaxQuantityFor(product)"
+                                                            ValueChanged="value => State.SetQuantity(line.ProductId, line.Color, value)" />
+                                    <Button Color="ButtonColor.Link" Size="ButtonSize.Small" @onclick="() => Remove(line)"
+                                            aria-label="@($"Remove {product.Name} ({line.Color})")">Remove</Button>
+                                </div>
+                            </div>
+                        </li>
+                    }
+                </ul>
+                @* Removing a line removes its buttons, so focus moves here and the status is read out. *@
+                <p class="small text-body-secondary mt-2" role="status" tabindex="-1" @ref="statusMessage">@removedMessage</p>
+            </div>
+
+            <div class="col-lg-4">
+                <EcommerceOrderSummary Totals="State.CartTotals()" PromoCode="@State.AppliedPromoCode">
+                    <div class="mt-3" data-clarity-mask="true">
+                        @if (State.AppliedPromoCode is null)
+                        {
+                            <label class="form-label small fw-semibold" for="ec-promo">Promo code</label>
+                            <InputGroup>
+                                <TextInput Id="ec-promo" @bind-Value="promoCode" Placeholder="@EcommerceSeedData.PromoCode" />
+                                <Button Color="ButtonColor.Secondary" Outline="true" @onclick="ApplyPromo">Apply</Button>
+                            </InputGroup>
+                            @if (promoError is not null)
+                            {
+                                <div class="small text-danger mt-1" role="alert">@promoError</div>
+                            }
+                        }
+                        else
+                        {
+                            <div class="d-flex justify-content-between align-items-center small">
+                                <span><Icon Name="IconName.TagFill" class="me-1" aria-hidden="true" />@State.AppliedPromoCode applied</span>
+                                <Button Color="ButtonColor.Link" Size="ButtonSize.Small" @onclick="State.RemovePromoCode">Remove code</Button>
+                            </div>
+                        }
+                    </div>
+                    <Button Type="ButtonType.Link" To="@($"{EcommerceLayout.Base}/checkout")" Color="ButtonColor.Primary" Size="ButtonSize.Large" Class="w-100 mt-3 rounded-pill">
+                        Checkout
+                    </Button>
+                    <Button Type="ButtonType.Link" To="@($"{EcommerceLayout.Base}/products")" Color="ButtonColor.Link" Class="w-100 mt-1">Continue shopping</Button>
+                </EcommerceOrderSummary>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    private string promoCode = string.Empty;
+    private string? promoError;
+    private string? removedMessage;
+    private ElementReference statusMessage;
+
+    protected override void OnInitialized() => State.Changed += OnStateChanged;
+
+    public void Dispose() => State.Changed -= OnStateChanged;
+
+    private void ApplyPromo()
+    {
+        promoError = State.ApplyPromoCode(promoCode) ? null : $"That code isn't valid. Try {EcommerceSeedData.PromoCode}.";
+        promoCode = string.Empty;
+    }
+
+    private void OnStateChanged() => InvokeAsync(StateHasChanged);
+
+    private async Task Remove(EcommerceCartLine line)
+    {
+        var name = State.FindProduct(line.ProductId)?.Name;
+        State.SetQuantity(line.ProductId, line.Color, 0);
+        removedMessage = $"Removed {name} ({line.Color}) from your cart.";
+        StateHasChanged();
+        await Task.Yield();
+        await EcommerceDisplay.FocusAsync(statusMessage);
+    }
+}

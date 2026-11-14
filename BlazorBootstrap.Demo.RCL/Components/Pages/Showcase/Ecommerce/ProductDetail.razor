@@ -1,0 +1,211 @@
+@page "/showcase/ecommerce/products/{Id:int}"
+@layout EcommerceLayout
+
+@if (Product is null)
+{
+    <EcommerceNotFound />
+}
+else
+{
+    <PageTitle>@Product.Name · @EcommerceSeedData.StoreName</PageTitle>
+
+    <div class="container-xl pt-4 pb-5">
+        <Breadcrumb Items="BreadcrumbItems" Class="ec-breadcrumb mb-3" />
+
+        <div class="row g-4 g-lg-5">
+            <div class="col-md-6">
+                <div class="position-relative">
+                    <ShowcaseImage Src="@Product.ImagePath" Alt="@Product.Name" Width="900" Height="900" Eager="true"
+                                   Accent="@Category?.Accent" PlaceholderIcon="@(Category?.IconName ?? IconName.Image)" Class="ec-gallery-main" />
+                    @if (Product.IsOnSale)
+                    {
+                        <Badge Color="BadgeColor.Danger" Class="ec-sale-badge rounded-pill fs-6">Sale −@Product.DiscountPercent%</Badge>
+                    }
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <span class="sc-eyebrow">@Category?.Name</span>
+                <h1 class="ec-page-title mb-2">@Product.Name</h1>
+
+                <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
+                    <RatingInput TValue="decimal" Value="AverageRating" ValueExpression="() => AverageRating" ReadOnly="true" AllowHalf="true"
+                                 Size="RatingInputSize.Small" aria-label="@($"Average rating {EcommerceDisplay.Rating((double)AverageRating)} out of 5")" />
+                    <span class="small">@EcommerceDisplay.Rating((double)AverageRating)</span>
+                    <Button Color="ButtonColor.Link" Size="ButtonSize.Small" Class="p-0" @onclick="ShowReviewsAsync">@Reviews.Count reviews</Button>
+                </div>
+
+                <div class="d-flex align-items-baseline gap-2 mb-1">
+                    <span class="ec-detail-price">@EcommerceDisplay.Money(Product.Price)</span>
+                    @if (Product.IsOnSale)
+                    {
+                        <span class="ec-compare fs-6"><span class="visually-hidden">was </span>@EcommerceDisplay.Money(Product.CompareAtPrice!.Value)</span>
+                        <span class="ec-sale-text small">Save @EcommerceDisplay.Money(Product.CompareAtPrice!.Value - Product.Price)</span>
+                    }
+                </div>
+                <p class="small text-body-secondary">Tax included at checkout. Free standard shipping over @EcommerceDisplay.Money(EcommerceSeedData.FreeShippingThreshold).</p>
+
+                <p>@Product.Description</p>
+
+                @if (Product.Colors.Count > 1)
+                {
+                    <div class="mb-3">
+                        <span class="form-label d-block fw-semibold" id="ec-color-label">Color: <span class="fw-normal">@selectedColor</span></span>
+                        <RadioButtonGroup TValue="string" Value="selectedColor" ValueExpression="() => selectedColor" ValueChanged="OnColorChanged"
+                                          AriaLabel="Color" aria-labelledby="ec-color-label" Class="flex-wrap">
+                            @foreach (var color in Product.Colors)
+                            {
+                                <ButtonGroupItem Value="color" Id="@($"ec-color-{color}")">@color</ButtonGroupItem>
+                            }
+                        </RadioButtonGroup>
+                    </div>
+                }
+                else
+                {
+                    <p class="mb-3"><span class="fw-semibold">Color:</span> @selectedColor</p>
+                }
+
+                @if (Product.Stock == 0)
+                {
+                    <Alert Color="AlertColor.Secondary" Class="mb-3">
+                        <Icon Name="IconName.InfoCircle" class="me-2" aria-hidden="true" />Out of stock. This item is back in a few weeks.
+                    </Alert>
+                }
+                else
+                {
+                    <div class="d-flex flex-wrap align-items-end gap-3 mb-2">
+                        <div>
+                            <label class="form-label fw-semibold d-block" for="ec-detail-qty">Quantity</label>
+                            <EcommerceQuantityInput Id="ec-detail-qty" ItemName="@Product.Name" Value="quantity" ValueChanged="OnQuantityChanged"
+                                                    Max="State.MaxQuantityFor(Product)" />
+                        </div>
+                        <Button Color="ButtonColor.Primary" Size="ButtonSize.Large" Class="rounded-pill px-4" @onclick="AddToCart">
+                            <Icon Name="IconName.BagPlus" class="me-2" aria-hidden="true" />Add to cart
+                        </Button>
+                    </div>
+                    @if (Product.Stock <= 5)
+                    {
+                        <p class="small ec-sale-text mb-3">Only @Product.Stock left in stock.</p>
+                    }
+                    <p class="small text-body-secondary" role="status">@addedMessage</p>
+                }
+
+                <ul class="list-unstyled small mt-3 mb-0">
+                    @foreach (var highlight in Product.Highlights)
+                    {
+                        <li class="mb-1"><Icon Name="IconName.Check2" class="me-2 text-success" aria-hidden="true" />@highlight</li>
+                    }
+                </ul>
+            </div>
+        </div>
+
+        <div class="mt-5">
+            <Tabs @ref="tabs" NavStyle="NavStyle.Underline">
+                <Tab Title="Details" Name="details" Active="true">
+                    <Content>
+                        <div class="pt-4" style="max-width: 46rem;">
+                            <p>@Product.Description</p>
+                            <dl class="row small mb-0">
+                                <dt class="col-sm-4">Category</dt>
+                                <dd class="col-sm-8">@Category?.Name</dd>
+                                <dt class="col-sm-4">Colors</dt>
+                                <dd class="col-sm-8">@string.Join(", ", Product.Colors)</dd>
+                                <dt class="col-sm-4">Item number</dt>
+                                <dd class="col-sm-8">KG-@Product.Id</dd>
+                            </dl>
+                        </div>
+                    </Content>
+                </Tab>
+                @* A static title: Tabs does not re-render titles, so a live count would go stale. *@
+                <Tab Title="Reviews" Name="reviews">
+                    <Content>
+                        <div class="row g-4 pt-4">
+                            <div class="col-lg-7">
+                                <h2 class="h5 fw-bold">What customers say</h2>
+                                @foreach (var review in Reviews)
+                                {
+                                    <article class="ec-review">
+                                        <div class="ec-stars small">
+                                            <span class="visually-hidden">Rated @review.Rating out of 5</span>
+                                            <span aria-hidden="true">
+                                                @foreach (var star in EcommerceDisplay.Stars(review.Rating))
+                                                {
+                                                    <Icon Name="star" />
+                                                }
+                                            </span>
+                                        </div>
+                                        <h3 class="h6 fw-bold mt-1 mb-1">@review.Title</h3>
+                                        <p class="mb-1">@review.Body</p>
+                                        <p class="small text-body-secondary mb-0">
+                                            @review.Author · @review.PostedOn.ToString("MMM d, yyyy", CultureInfo.InvariantCulture)
+                                            @if (review.IsFromThisSession)
+                                            {
+                                                <Badge Color="BadgeColor.Secondary" Class="ms-1">Your review</Badge>
+                                            }
+                                        </p>
+                                    </article>
+                                }
+                            </div>
+                            <div class="col-lg-5">
+                                <div class="ec-panel" data-clarity-mask="true">
+                                    <h2 class="h5 fw-bold">Write a review</h2>
+                                    <ShowcaseDemoNotice Class="mb-3" Text="Demo only: your review stays in this browser tab and is gone after a reload." />
+                                    <EditForm EditContext="reviewContext" OnValidSubmit="SubmitReview" FormName="ec-review">
+                                        <DataAnnotationsValidator />
+                                        <div class="mb-3">
+                                            <span class="form-label d-block" id="ec-review-rating-label">Your rating</span>
+                                            <RatingInput TValue="int" @bind-Value="reviewForm.Rating" aria-labelledby="ec-review-rating-label" />
+                                            <ValidationMessage For="() => reviewForm.Rating" />
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label" for="ec-review-name">Name</label>
+                                            <TextInput Id="ec-review-name" @bind-Value="reviewForm.Name" MaxLength="40" />
+                                            <ValidationMessage For="() => reviewForm.Name" />
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label" for="ec-review-title">Title</label>
+                                            <TextInput Id="ec-review-title" @bind-Value="reviewForm.Title" MaxLength="60" />
+                                            <ValidationMessage For="() => reviewForm.Title" />
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label" for="ec-review-body">Review</label>
+                                            <TextAreaInput Id="ec-review-body" @bind-Value="reviewForm.Body" Rows="4" MaxLength="600" />
+                                            <ValidationMessage For="() => reviewForm.Body" />
+                                        </div>
+                                        <Button Type="ButtonType.Submit" Color="ButtonColor.Primary">Post review</Button>
+                                    </EditForm>
+                                    @if (reviewPosted)
+                                    {
+                                        <p class="small text-success mt-3 mb-0" role="status">Thanks! Your review is at the top of the list.</p>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </Content>
+                </Tab>
+                <Tab Title="Shipping &amp; returns" Name="shipping">
+                    <Content>
+                        <div class="pt-4" style="max-width: 46rem;">
+                            <p><strong>Standard</strong>: 3–5 business days, @EcommerceDisplay.Money(EcommerceSeedData.StandardShipping), free over @EcommerceDisplay.Money(EcommerceSeedData.FreeShippingThreshold).</p>
+                            <p><strong>Express</strong>: 1–2 business days, @EcommerceDisplay.Money(EcommerceSeedData.ExpressShipping).</p>
+                            <p class="mb-0">Returns are free within 30 days of delivery. Nothing on this demo site is actually shipped.</p>
+                        </div>
+                    </Content>
+                </Tab>
+            </Tabs>
+        </div>
+
+        @if (Related.Count > 0)
+        {
+            <section class="mt-5" aria-labelledby="ec-related-heading">
+                <h2 class="ec-section-title" id="ec-related-heading">You might also like</h2>
+                <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-4 g-3 mt-1">
+                    @foreach (var product in Related)
+                    {
+                        <div class="col" @key="product.Id"><EcommerceProductCard Product="product" /></div>
+                    }
+                </div>
+            </section>
+        }
+    </div>
+}

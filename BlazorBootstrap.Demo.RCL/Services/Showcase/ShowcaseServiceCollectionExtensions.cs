@@ -15,6 +15,7 @@ public static class ShowcaseServiceCollectionExtensions
     /// </summary>
     public static IServiceCollection AddShowcaseServices(this IServiceCollection services)
     {
+        services.AddScoped<Ecommerce.EcommerceState>();
         services.AddScoped<Marketing.MarketingState>();
         services.AddScoped<SaasDashboard.SaasDashboardState>();
 

@@ -1,0 +1,8 @@
+@page "/showcase/ecommerce/{*path}"
+@layout EcommerceLayout
+
+<EcommerceNotFound />
+
+@code {
+    [Parameter] public string? Path { get; set; }
+}

@@ -1,0 +1,96 @@
+@page "/showcase/ecommerce"
+@layout EcommerceLayout
+@inject EcommerceState State
+
+<PageTitle>@EcommerceSeedData.StoreName · Thoughtful goods for everyday rooms</PageTitle>
+
+<div class="container-xl pt-4">
+    <h1 class="visually-hidden">@EcommerceSeedData.StoreName</h1>
+    <section class="ec-hero" aria-label="Featured collections">
+        <Carousel ShowIndicators="true" Autoplay="CarouselAutoPlay.None">
+            @for (var index = 0; index < slides.Length; index++)
+            {
+                @* The slide content renders after the loop ends, so it must not read the shared loop variable. *@
+                var slide = slides[index];
+                var number = index + 1;
+                <CarouselItem Active="number == 1" Label="@slide.Title">
+                    <div class="ec-hero-slide">
+                        <div>
+                            <span class="sc-eyebrow">@slide.Eyebrow</span>
+                            <h2 class="ec-hero-title">@slide.Title</h2>
+                            <p class="ec-hero-lead">@slide.Lead</p>
+                            <Button Type="ButtonType.Link" To="@slide.Href" Color="ButtonColor.Primary" Size="ButtonSize.Large" Class="rounded-pill px-4">@slide.Cta</Button>
+                        </div>
+                        <ShowcaseImage Src="@($"_content/BlazorBootstrap.Demo.RCL/showcase/ecommerce/hero-{number}.webp")"
+                                       Alt="@slide.ImageAlt" Width="1200" Height="900" Eager="number == 1"
+                                       Accent="@slide.Accent" PlaceholderIcon="@slide.Icon" Class="rounded-4" />
+                    </div>
+                </CarouselItem>
+            }
+        </Carousel>
+    </section>
+</div>
+
+<section class="container-xl ec-section" aria-labelledby="ec-categories-heading">
+    <span class="sc-eyebrow">Shop by room</span>
+    <h2 class="ec-section-title" id="ec-categories-heading">Find what fits your space</h2>
+    <div class="row row-cols-2 row-cols-md-3 row-cols-lg-5 g-3 mt-2">
+        @foreach (var category in State.Categories)
+        {
+            <div class="col" @key="category.Id">
+                <a class="ec-category-tile" href="@($"{EcommerceLayout.Base}/products?category={category.Id}")">
+                    <span class="ec-category-icon" style="background: @category.Accent;" aria-hidden="true"><Icon Name="@category.IconName" /></span>
+                    <strong>@category.Name</strong>
+                    <span>@category.Tagline</span>
+                </a>
+            </div>
+        }
+    </div>
+</section>
+
+<section class="container-xl pb-5" aria-labelledby="ec-sale-heading">
+    <div class="d-flex flex-wrap align-items-end justify-content-between gap-2">
+        <div>
+            <span class="sc-eyebrow">Limited time</span>
+            <h2 class="ec-section-title" id="ec-sale-heading">On sale now</h2>
+        </div>
+        <a class="fw-semibold" href="@($"{EcommerceLayout.Base}/products?sale=1")">Shop all sale items</a>
+    </div>
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-4 g-3 mt-1">
+        @foreach (var product in State.Products.Where(product => product.IsOnSale).Take(4))
+        {
+            <div class="col" @key="product.Id"><EcommerceProductCard Product="product" /></div>
+        }
+    </div>
+</section>
+
+<section class="container-xl pb-5" aria-labelledby="ec-new-heading">
+    <span class="sc-eyebrow">Just landed</span>
+    <h2 class="ec-section-title" id="ec-new-heading">New arrivals</h2>
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-4 g-3 mt-1">
+        @foreach (var product in State.Products.OrderByDescending(product => product.AddedOn).ThenBy(product => product.Id).Take(4))
+        {
+            <div class="col" @key="product.Id"><EcommerceProductCard Product="product" /></div>
+        }
+    </div>
+</section>
+
+<section class="container-xl pb-4" aria-label="Why shop with us">
+    <ul class="ec-perks">
+        <li><Icon Name="IconName.Truck" aria-hidden="true" /><div><strong>Free shipping over @EcommerceDisplay.Money(EcommerceSeedData.FreeShippingThreshold)</strong><br /><span class="small text-body-secondary">Standard delivery in 3–5 business days.</span></div></li>
+        <li><Icon Name="IconName.ArrowCounterclockwise" aria-hidden="true" /><div><strong>30-day returns</strong><br /><span class="small text-body-secondary">Changed your mind? Send it back for free.</span></div></li>
+        <li><Icon Name="IconName.Recycle" aria-hidden="true" /><div><strong>Made to last</strong><br /><span class="small text-body-secondary">Natural materials, plastic-free packaging.</span></div></li>
+    </ul>
+</section>
+
+@code {
+    private readonly (string Eyebrow, string Title, string Lead, string Cta, string Href, string ImageAlt, string Accent, IconName Icon)[] slides =
+    {
+        ("Autumn edit", "Warm up every room", "Wool throws, soft lighting, and textures that make the evenings feel longer.", "Shop Living",
+            $"{EcommerceLayout.Base}/products?category=living", "A reading corner with a wool throw over an accent chair", "#a16207", IconName.Lamp),
+        ("Up to 20% off", "The kitchen sale", "Hand-finished boards, stoneware, and copper cookware, while stock lasts.", "Shop the sale",
+            $"{EcommerceLayout.Base}/products?sale=1", "Wooden cutting boards and copper pans on a kitchen counter", "#c2410c", IconName.CupHot),
+        ("New season", "Outdoor living, extended", "String lights, teak chairs, and a fire bowl for cooler nights on the porch.", "Shop Outdoor",
+            $"{EcommerceLayout.Base}/products?category=outdoor", "A porch at dusk lit by string lights and a fire bowl", "#15803d", IconName.Tree),
+    };
+}
