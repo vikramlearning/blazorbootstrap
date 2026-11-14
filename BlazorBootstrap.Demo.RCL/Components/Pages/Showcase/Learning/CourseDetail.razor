@@ -1,0 +1,193 @@
+@page "/showcase/learning/courses/{Id:int}"
+@layout LearningLayout
+
+@if (Course is null)
+{
+    <LearningNotFound />
+}
+else
+{
+    <PageTitle>@Course.Title · @LearningSeedData.SchoolName</PageTitle>
+
+    <div class="container-xl pb-4">
+        <Breadcrumb Items="BreadcrumbItems" Class="mb-3" />
+
+        <div class="row g-4 g-lg-5">
+            <div class="col-lg-8">
+                <div class="d-flex flex-wrap align-items-center gap-2 mb-1">
+                    <span class="sc-eyebrow">@Category.Name</span>
+                    <Badge Color="@LearningDisplay.LevelColor(Course.Level)" Class="rounded-pill">@Course.Level</Badge>
+                </div>
+                <h1 class="qp-title">@Course.Title</h1>
+                <p class="qp-lead mb-3">@Course.Subtitle</p>
+
+                <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
+                    <RatingInput TValue="decimal" Value="AverageRating" ValueExpression="() => AverageRating" ReadOnly="true" AllowHalf="true"
+                                 Size="RatingInputSize.Small" aria-label="@($"Average rating {LearningDisplay.Rating(State.AverageRating(Course.Id))} out of 5")" />
+                    <span class="small">@LearningDisplay.Rating(State.AverageRating(Course.Id)) from @Reviews.Count reviews</span>
+                </div>
+
+                <div class="qp-meta mb-4">
+                    <span><Icon Name="IconName.PersonVideo3" class="me-1" aria-hidden="true" />@Course.Instructor, @Course.InstructorRole</span>
+                    <span><Icon Name="IconName.Clock" class="me-1" aria-hidden="true" />@LearningDisplay.Duration(Course.Minutes)</span>
+                    <span><Icon Name="IconName.Journal" class="me-1" aria-hidden="true" />@Course.Modules.Count modules, @Course.Lessons.Count lessons</span>
+                </div>
+
+                <p>@Course.Description</p>
+
+                <h2 class="qp-section-title mt-4">What you'll learn</h2>
+                <ul class="list-unstyled mb-4">
+                    @foreach (var outcome in Course.Outcomes)
+                    {
+                        <li class="mb-1"><Icon Name="IconName.Check2" class="me-2 qp-lesson-done" aria-hidden="true" />@outcome</li>
+                    }
+                </ul>
+
+                <h2 class="qp-section-title" id="qp-curriculum">Curriculum</h2>
+                @* AlwaysOpen: learners compare modules, so opening one does not close another. *@
+                <Accordion AlwaysOpen="true" Class="mb-5">
+                    @foreach (var (module, index) in Course.Modules.Select((module, index) => (module, index)))
+                    {
+                        <AccordionItem @key="module.Title" Name="@($"module-{index + 1}")" Active="index == 0">
+                            <TitleTemplate>
+                                <span class="d-flex flex-wrap justify-content-between w-100 gap-2 me-2">
+                                    <span class="fw-semibold">Module @(index + 1): @module.Title</span>
+                                    <span class="small text-body-secondary">
+                                        @module.Lessons.Count lessons · @LearningDisplay.Duration(module.Lessons.Sum(lesson => lesson.Minutes))@(IsEnrolled ? $" · {module.Lessons.Count(lesson => State.IsLessonComplete(Course.Id, lesson.Id))} done" : null)
+                                    </span>
+                                </span>
+                            </TitleTemplate>
+                            <Content>
+                                <ol class="list-unstyled mb-0">
+                                    @foreach (var lesson in module.Lessons)
+                                    {
+                                        var done = State.IsLessonComplete(Course.Id, lesson.Id);
+                                        <li class="qp-curriculum-row" @key="lesson.Id">
+                                            <Icon Name="@(done ? IconName.CheckCircleFill : LearningDisplay.KindIcon(lesson.Kind))" class="@(done ? "qp-lesson-done" : "text-body-secondary")" aria-hidden="true" />
+                                            <span class="flex-grow-1">
+                                                @if (IsEnrolled)
+                                                {
+                                                    <a href="@LearningDisplay.LessonUrl(Course.Id, lesson.Id)">@lesson.Title</a>
+                                                }
+                                                else
+                                                {
+                                                    @lesson.Title
+                                                }
+                                                <span class="d-block small text-body-secondary">@LearningDisplay.KindLabel(lesson.Kind) · @lesson.Minutes min@(done ? " · Completed" : null)</span>
+                                            </span>
+                                        </li>
+                                    }
+                                </ol>
+                            </Content>
+                        </AccordionItem>
+                    }
+                </Accordion>
+
+                <section aria-labelledby="qp-reviews-heading">
+                    <h2 class="qp-section-title" id="qp-reviews-heading">Reviews</h2>
+                    <div class="row g-4">
+                        <div class="col-md-7">
+                            @foreach (var review in Reviews)
+                            {
+                                <article class="py-3 border-bottom">
+                                    <div class="qp-stars small">
+                                        <span class="visually-hidden">Rated @review.Rating out of 5</span>
+                                        <span aria-hidden="true">
+                                            @foreach (var star in LearningDisplay.Stars(review.Rating))
+                                            {
+                                                <Icon Name="star" />
+                                            }
+                                        </span>
+                                    </div>
+                                    <p class="mt-1 mb-1">@review.Body</p>
+                                    <p class="small text-body-secondary mb-0">
+                                        @review.Author · @LearningDisplay.Date(review.PostedOn)
+                                        @if (review.IsFromThisSession)
+                                        {
+                                            <Badge Color="BadgeColor.Secondary" Class="ms-1">Your review</Badge>
+                                        }
+                                    </p>
+                                </article>
+                            }
+                        </div>
+                        <div class="col-md-5">
+                            <div class="qp-panel" data-clarity-mask="true">
+                                <h3 class="h5 fw-bold">Rate this course</h3>
+                                @if (IsEnrolled)
+                                {
+                                    <ShowcaseDemoNotice Class="mb-3" Text="Demo only: your review stays in this browser tab and is gone after a reload." />
+                                    <EditForm EditContext="reviewContext" OnValidSubmit="SubmitReview" FormName="qp-review">
+                                        <DataAnnotationsValidator />
+                                        <div class="mb-3">
+                                            <span class="form-label d-block" id="qp-review-rating-label">Your rating</span>
+                                            <RatingInput TValue="int" @bind-Value="reviewForm.Rating" aria-labelledby="qp-review-rating-label" />
+                                            <ValidationMessage For="() => reviewForm.Rating" />
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label" for="qp-review-body">Your review</label>
+                                            <TextAreaInput Id="qp-review-body" @bind-Value="reviewForm.Body" Rows="4" MaxLength="500" />
+                                            <ValidationMessage For="() => reviewForm.Body" />
+                                        </div>
+                                        <Button Type="ButtonType.Submit" Color="ButtonColor.Primary">Post review</Button>
+                                    </EditForm>
+                                    @* Always rendered, so a screen reader announces the text when it appears. *@
+                                    <p class="small text-success mt-3 mb-0" role="status">@(reviewPosted ? "Thanks! Your review is at the top of the list." : null)</p>
+                                }
+                                else
+                                {
+                                    <p class="text-body-secondary mb-0">Enroll to rate this course and share what you thought.</p>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <div class="col-lg-4">
+                <Card Class="qp-card sticky-lg-top" Style="top: 5rem;">
+                    <ShowcaseImage Src="@Course.ImagePath" Alt="" Width="800" Height="450" Eager="true"
+                                   Accent="@Category.Accent" PlaceholderIcon="@Category.IconName" Caption="@Category.Name" />
+                    <CardBody>
+                        @if (IsEnrolled)
+                        {
+                            var percent = State.ProgressPercent(Course.Id);
+                            <p class="fw-semibold mb-1">Your progress</p>
+                            <Progress Height="10" Class="mb-1">
+                                <ProgressBar Width="percent"
+                                             aria-label="Course progress" aria-valuenow="@percent" aria-valuemin="0" aria-valuemax="100"
+                                             aria-valuetext="@($"{State.CompletedCount(Course.Id)} of {Course.Lessons.Count} lessons complete")" />
+                            </Progress>
+                            <p class="small text-body-secondary">@State.CompletedCount(Course.Id) of @Course.Lessons.Count lessons complete (@percent%)</p>
+
+                            @if (State.IsComplete(Course.Id))
+                            {
+                                <Button Type="ButtonType.Link" To="@CertificateUrl" Color="ButtonColor.Primary" Class="w-100 mb-2" @ref="primaryAction">
+                                    <Icon Name="IconName.Award" class="me-2" aria-hidden="true" />View certificate
+                                </Button>
+                                <Button Type="ButtonType.Link" To="@LearningDisplay.LessonUrl(Course.Id, Course.Lessons[0].Id)" Color="ButtonColor.Primary" Outline="true" Class="w-100">Review lessons</Button>
+                            }
+                            else
+                            {
+                                <Button Type="ButtonType.Link" To="@LearningDisplay.LessonUrl(Course.Id, State.NextLesson(Course).Id)" Color="ButtonColor.Primary" Class="w-100" @ref="primaryAction">
+                                    <Icon Name="IconName.PlayFill" class="me-2" aria-hidden="true" />@(State.CompletedCount(Course.Id) == 0 ? "Start the course" : "Continue learning")
+                                </Button>
+                            }
+                        }
+                        else
+                        {
+                            <p class="fw-semibold mb-1">Free for members</p>
+                            <p class="small text-body-secondary">Enroll to track your progress, open every lesson, and earn a certificate.</p>
+                            <Button Color="ButtonColor.Primary" Class="w-100" @onclick="Enroll">
+                                <Icon Name="IconName.PlusCircle" class="me-2" aria-hidden="true" />Enroll for free
+                            </Button>
+                        }
+                        <p class="small text-success mt-2 mb-0" role="status">@(justEnrolled ? $"You're enrolled in {Course.Title}." : null)</p>
+                        <hr />
+                        <p class="small mb-1"><Icon Name="IconName.FileEarmarkPdf" class="me-2" aria-hidden="true" />Course handout (PDF) in every lesson</p>
+                        <p class="small mb-0"><Icon Name="IconName.Award" class="me-2" aria-hidden="true" />Certificate when you finish</p>
+                    </CardBody>
+                </Card>
+            </div>
+        </div>
+    </div>
+}

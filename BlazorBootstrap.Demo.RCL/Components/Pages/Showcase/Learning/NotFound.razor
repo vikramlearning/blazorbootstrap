@@ -1,0 +1,8 @@
+@page "/showcase/learning/{*path}"
+@layout LearningLayout
+
+<LearningNotFound />
+
+@code {
+    [Parameter] public string? Path { get; set; }
+}

@@ -17,6 +17,7 @@ public static class ShowcaseServiceCollectionExtensions
     {
         services.AddScoped<Ecommerce.EcommerceState>();
         services.AddScoped<Fintech.FintechState>();
+        services.AddScoped<Learning.LearningState>();
         services.AddScoped<Marketing.MarketingState>();
         services.AddScoped<SaasDashboard.SaasDashboardState>();
 

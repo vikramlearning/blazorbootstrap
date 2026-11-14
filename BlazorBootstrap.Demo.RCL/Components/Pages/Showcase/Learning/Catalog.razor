@@ -1,0 +1,98 @@
+@page "/showcase/learning"
+@layout LearningLayout
+
+<PageTitle>Courses · @LearningSeedData.SchoolName</PageTitle>
+
+<div class="container-xl pb-4">
+    <section class="qp-hero mb-4" aria-labelledby="qp-catalog-title">
+        <div class="row align-items-center g-4">
+            <div class="col-lg-7">
+                <span class="sc-eyebrow">Welcome back, @LearningSeedData.LearnerName.Split(' ')[0]</span>
+                <h1 class="qp-title mt-1" id="qp-catalog-title">Learn something useful this week</h1>
+                <p class="qp-lead">Short, practical courses with videos, readings, self-checks, and a handout for every course.</p>
+            </div>
+            @if (InProgress.Count > 0)
+            {
+                <div class="col-lg-5">
+                    <h2 class="h6 fw-bold mb-2">Continue learning</h2>
+                    <ul class="list-unstyled mb-0 d-grid gap-2">
+                        @foreach (var course in InProgress)
+                        {
+                            var next = State.NextLesson(course);
+                            <li @key="course.Id" class="qp-panel py-2 px-3">
+                                <a class="fw-semibold d-block" href="@LearningDisplay.LessonUrl(course.Id, next.Id)">@course.Title</a>
+                                <span class="small text-body-secondary">Next: @next.Title · @State.ProgressPercent(course.Id)% complete</span>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            }
+        </div>
+    </section>
+
+    <div class="row g-4">
+        <aside class="col-lg-3" aria-label="Filters">
+            <div class="qp-panel">
+                <div class="mb-4">
+                    <label class="qp-filter-heading d-block" for="qp-search">Search</label>
+                    <InputGroup>
+                        <InputGroupText><Icon Name="IconName.Search" aria-hidden="true" /></InputGroupText>
+                        @* Bound value changes only on change; @oninput filters live, and the box keeps its own value so no keystroke is lost. *@
+                        <TextInput Id="qp-search" Value="@searchBoxValue" ValueExpression="() => searchBoxValue" ValueChanged="OnSearchChanged"
+                                   @oninput="OnSearchInput" Placeholder="Title or instructor" />
+                    </InputGroup>
+                </div>
+
+                <div class="mb-4">
+                    <h2 class="qp-filter-heading" id="qp-category-heading">Category</h2>
+                    <RadioButtonGroup TValue="string" Value="State.Filter.CategoryId" ValueExpression="() => State.Filter.CategoryId" ValueChanged="OnCategoryChanged"
+                                      AriaLabel="Category" aria-labelledby="qp-category-heading" Vertical="true" Size="ButtonGroupSize.Small" Class="w-100">
+                        <ButtonGroupItem Value="@string.Empty" Id="qp-category-all">All categories</ButtonGroupItem>
+                        @foreach (var category in State.Categories)
+                        {
+                            <ButtonGroupItem Value="category.Id" Id="@($"qp-category-{category.Id}")">@category.Name</ButtonGroupItem>
+                        }
+                    </RadioButtonGroup>
+                </div>
+
+                <div class="mb-4">
+                    <h2 class="qp-filter-heading" id="qp-level-heading">Level</h2>
+                    <RadioButtonGroup TValue="string" Value="State.Filter.Level" ValueExpression="() => State.Filter.Level" ValueChanged="OnLevelChanged"
+                                      AriaLabel="Level" aria-labelledby="qp-level-heading" Vertical="true" Size="ButtonGroupSize.Small" Class="w-100">
+                        <ButtonGroupItem Value="@string.Empty" Id="qp-level-all">All levels</ButtonGroupItem>
+                        @foreach (var level in Enum.GetValues<LearningLevel>())
+                        {
+                            <ButtonGroupItem Value="level.ToString()" Id="@($"qp-level-{level}")">@level</ButtonGroupItem>
+                        }
+                    </RadioButtonGroup>
+                </div>
+
+                <Button Color="ButtonColor.Secondary" Outline="true" Size="ButtonSize.Small" Class="w-100" @onclick="ClearFiltersAsync" Disabled="!State.Filter.IsActive">
+                    Clear all filters
+                </Button>
+            </div>
+        </aside>
+
+        <section class="col-lg-9" aria-labelledby="qp-results-count">
+            <p class="fw-semibold mb-3" id="qp-results-count" aria-live="polite" tabindex="-1" @ref="resultsCount">@ResultsText</p>
+
+            @if (Results.Count == 0)
+            {
+                <div class="qp-panel text-center py-5">
+                    <span class="qp-icon fs-4" aria-hidden="true"><Icon Name="IconName.Search" /></span>
+                    <h2 class="h5 fw-bold mt-3">No courses match</h2>
+                    <p class="text-body-secondary mb-0">Try another word, or use "Clear all filters" to see every course.</p>
+                </div>
+            }
+            else
+            {
+                <div class="row row-cols-1 row-cols-sm-2 row-cols-xl-3 g-3">
+                    @foreach (var course in Results)
+                    {
+                        <div class="col" @key="course.Id"><LearningCourseCard Course="course" /></div>
+                    }
+                </div>
+            }
+        </section>
+    </div>
+</div>
