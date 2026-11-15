@@ -1,0 +1,16 @@
+@page "/showcase/saas/{*path}"
+@layout SaasLayout
+
+<PageTitle>Page not found · @SaasSeedData.ProductName</PageTitle>
+
+<section class="container-xl mk-not-found">
+    <span class="mk-feature-icon fs-3 mb-3" aria-hidden="true"><Icon Name="IconName.Compass" /></span>
+    <h1 class="mk-section-title">We couldn't find that page</h1>
+    <p class="text-body-secondary mb-4">The link may be old, or the page may have moved.</p>
+    <a class="btn btn-primary btn-lg mk-cta-lg" href="@SaasLayout.Base">Back to @SaasSeedData.ProductName home</a>
+</section>
+
+@code {
+    /// <summary>Gets or sets the unknown path on the public site.</summary>
+    [Parameter] public string? Path { get; set; }
+}

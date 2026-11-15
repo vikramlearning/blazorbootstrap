@@ -1,0 +1,61 @@
+/* The printable invoice. The shell around it is not this page's to hide, so print styles cover the page's own parts. */
+
+.lu-invoice-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: .75rem 1rem;
+    margin-bottom: 1.25rem;
+}
+
+.lu-invoice {
+    max-width: 52rem;
+}
+
+.lu-invoice-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.lu-invoice-seller {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: .25rem;
+    font-weight: 700;
+}
+
+.lu-invoice-facts {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+    gap: .75rem 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+    .lu-invoice-facts dt {
+        font-size: .8125rem;
+    }
+
+    .lu-invoice-facts dd {
+        margin: 0;
+    }
+
+.lu-invoice-description {
+    min-width: 12rem;
+}
+
+.lu-invoice-payment {
+    font-weight: 600;
+}
+
+@media print {
+    .lu-invoice {
+        max-width: none;
+        border: 0;
+        box-shadow: none;
+    }
+}

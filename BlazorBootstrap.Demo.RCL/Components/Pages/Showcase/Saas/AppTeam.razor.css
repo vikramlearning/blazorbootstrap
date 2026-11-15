@@ -1,0 +1,96 @@
+/* The team page. Shell styles (sd-*) come from SaasShell.razor.css; these cover the page's own elements. */
+
+.lu-seats {
+    display: flex;
+    flex-direction: column;
+    gap: .5rem;
+    max-width: 40rem;
+}
+
+.lu-note {
+    display: flex;
+    align-items: flex-start;
+    gap: .5rem;
+    padding: .75rem 1rem;
+    border: 1px solid var(--bs-border-color);
+    border-radius: .75rem;
+    background: var(--bs-tertiary-bg);
+}
+
+.lu-error {
+    color: var(--bs-danger-text-emphasis);
+    font-weight: 500;
+}
+
+.lu-status:empty,
+.lu-error:empty {
+    margin: 0;
+}
+
+.lu-status:focus {
+    outline: 2px solid rgba(var(--bs-primary-rgb), .5);
+    outline-offset: 2px;
+}
+
+.lu-members {
+    border-top: 1px solid var(--bs-border-color);
+}
+
+.lu-member {
+    display: grid;
+    gap: .75rem;
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid var(--bs-border-color);
+    min-width: 0;
+}
+
+    .lu-member:last-child {
+        border-bottom: 0;
+    }
+
+.lu-member-person {
+    min-width: 0;
+}
+
+.lu-member-name {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+    font-weight: 600;
+    overflow-wrap: anywhere;
+}
+
+.lu-member-facts {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(7.5rem, 1fr));
+    gap: .5rem 1rem;
+    margin: 0;
+    font-size: .875rem;
+}
+
+    .lu-member-facts dt {
+        font-size: .75rem;
+        font-weight: 600;
+        color: var(--bs-secondary-color);
+    }
+
+    .lu-member-facts dd {
+        margin: 0;
+    }
+
+.lu-member-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .5rem;
+}
+
+@media (min-width: 992px) {
+    .lu-member {
+        grid-template-columns: minmax(0, 1.4fr) minmax(0, 2fr) auto;
+        align-items: center;
+    }
+
+    .lu-member-actions {
+        justify-content: flex-end;
+    }
+}

@@ -1,0 +1,36 @@
+/* Column headers are buttons that look like the header text. */
+.sd-sort {
+    display: inline-flex;
+    align-items: center;
+    gap: .25rem;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: inherit;
+    font: inherit;
+    letter-spacing: inherit;
+    text-transform: inherit;
+    white-space: nowrap;
+}
+
+    .sd-sort:hover {
+        color: var(--sd-ink);
+    }
+
+    .sd-sort:focus-visible {
+        outline: 2px solid var(--sc-primary);
+        outline-offset: 2px;
+        border-radius: .25rem;
+    }
+
+th[aria-sort] .sd-sort {
+    color: var(--sd-ink);
+}
+
+/* On a phone the hidden columns are summed up under the tenant's name. */
+.sd-tenant-compact {
+    display: flex;
+    flex-direction: column;
+    gap: .125rem;
+    margin-top: .25rem;
+}

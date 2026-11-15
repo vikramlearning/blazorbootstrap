@@ -1,0 +1,19 @@
+.sd-tenant-statuses {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(12rem, 1fr));
+    gap: .5rem 1rem;
+}
+
+.sd-tenant-error,
+.sd-tenant-note {
+    font-weight: 600;
+}
+
+    .sd-tenant-error:empty,
+    .sd-tenant-note:empty {
+        margin: 0 !important;
+    }
+
+.sd-tenant-error {
+    color: var(--bs-danger-text-emphasis);
+}

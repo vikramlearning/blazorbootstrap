@@ -1,0 +1,9 @@
+@page "/showcase/saas/app/{*path}"
+@layout SaasAppLayout
+
+<SaasNotFound BackPath="@SaasAppLayout.Base" BackText="Back to the dashboard" />
+
+@code {
+    /// <summary>Gets or sets the unknown path inside the workspace.</summary>
+    [Parameter] public string? Path { get; set; }
+}

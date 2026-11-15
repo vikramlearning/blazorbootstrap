@@ -1,0 +1,147 @@
+@page "/showcase/saas/signup"
+@layout SaasLayout
+
+<PageTitle>Start your trial · @SaasSeedData.ProductName</PageTitle>
+
+<section class="mk-page-hero pb-4">
+    <div class="container-xl">
+        <span class="sc-eyebrow">Free trial</span>
+        <h1 class="mk-section-title">Start your @SaasSeedData.TrialDays-day trial</h1>
+        <p>Growth is free for @SaasSeedData.TrialDays days with no card needed. Starter is free for as long as you like.</p>
+    </div>
+</section>
+
+<section class="container-xl pb-5">
+    <div class="row g-4 justify-content-center">
+        <div class="col-lg-7">
+            @if (State.Identity.Current is { } account && !busy)
+            {
+                <div class="mk-signup-panel" data-clarity-mask="true">
+                    <h2 class="h4 fw-bold" tabindex="-1" @ref="signedInHeading">You're already signed in</h2>
+                    <p>
+                        You're signed in as <strong>@account.Name</strong> (@account.Email).
+                        To start another workspace, sign out first, here or from the account menu at the top of the page.
+                    </p>
+                    <div class="d-flex flex-wrap gap-2">
+                        <a class="btn btn-primary mk-cta-lg" href="@WorkspacePath">@WorkspaceText</a>
+                        <Button Color="ButtonColor.Secondary" Outline="true" Class="mk-cta-lg" @onclick="SignOutAsync">Sign out</Button>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="mk-signup-panel" data-clarity-mask="true">
+                    <h2 class="h4 fw-bold" tabindex="-1" @ref="formHeading">Create your workspace</h2>
+                    <p class="text-body-secondary">You become the owner of a new @SaasSeedData.ProductName workspace and go straight to it, signed in.</p>
+                    <ShowcaseDemoNotice Class="mb-4" Text="Demo only: make up every detail and don't use a real password. The account and workspace live only in this browser tab. Nothing is sent or charged." />
+
+                    @if (requestedSalesPlan is { } salesPlan)
+                    {
+                        <p class="su-note">
+                            <Icon Name="IconName.InfoCircle" class="me-1" aria-hidden="true" />
+                            @salesPlan.Name is set up with our sales team. <a href="@ContactPath">Contact sales</a>, or start with one of these plans.
+                        </p>
+                    }
+
+                    <EditForm Model="form" OnValidSubmit="Submit" FormName="saas-signup">
+                        <DataAnnotationsValidator />
+                        <fieldset class="mb-4">
+                            <legend class="h6 fw-bold" id="su-plan-legend">Choose a plan</legend>
+                            @* The layout's picker has three columns; this one shows only the self-serve plans. *@
+                            <div class="su-plans" style="@($"--su-plan-count: {Math.Max(1, SelfServePlans.Count)}")">
+                                <RadioButtonGroup @bind-Value="form.PlanId" AriaLabel="Choose a plan" aria-labelledby="su-plan-legend" aria-describedby="su-plan-help" Class="mk-plan-picker su-plan-picker">
+                                    @foreach (var plan in SelfServePlans)
+                                    {
+                                        <ButtonGroupItem Value="@plan.Id" Id="@($"su-plan-{plan.Id}")" Class="text-start py-2" @key="plan.Id">
+                                            <span class="d-block fw-semibold">@plan.Name</span>
+                                            <small>@PlanPriceText(plan)</small>
+                                        </ButtonGroupItem>
+                                    }
+                                </RadioButtonGroup>
+                            </div>
+                            <p class="form-text mb-0 mt-2" id="su-plan-help">@PlanHelp</p>
+                            <ValidationMessage For="() => form.PlanId" />
+                            @if (SelectedPlan is { MonthlyPricePerSeat: > 0 })
+                            {
+                                <div class="mt-3">
+                                    <Switch Value="State.AnnualBilling" ValueExpression="() => State.AnnualBilling" ValueChanged="OnBillingChanged" Label="@($"Bill annually (save {DiscountPercent}%)")" />
+                                </div>
+                            }
+                        </fieldset>
+
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label" for="su-name">Full name</label>
+                                <InputText id="su-name" class="form-control" @bind-Value="form.Name" maxlength="@ShowcaseIdentity.MaxNameLength" autocomplete="name" />
+                                <ValidationMessage For="() => form.Name" />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label" for="su-email">Work email</label>
+                                <InputText id="su-email" type="email" class="form-control" @bind-Value="form.Email" maxlength="@ShowcaseIdentity.MaxEmailLength" autocomplete="email" aria-describedby="su-email-help" />
+                                <div class="form-text" id="su-email-help">Use a made-up address, for example you@example.com. You sign in with it.</div>
+                                <ValidationMessage For="() => form.Email" />
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label" for="su-password">Password</label>
+                                <ShowcasePasswordInput Id="su-password" @bind-Value="form.Password" aria-describedby="su-password-help" />
+                                <div class="form-text" id="su-password-help">At least @ShowcaseIdentity.MinPasswordLength characters. Make one up.</div>
+                                <ValidationMessage For="() => form.Password" />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label" for="su-company">Company</label>
+                                <InputText id="su-company" class="form-control" @bind-Value="form.Company" maxlength="@SaasState.MaxWorkspaceNameLength" autocomplete="organization" aria-describedby="su-company-help" />
+                                <div class="form-text" id="su-company-help">This becomes your workspace's name. You can change it later in Settings.</div>
+                                <ValidationMessage For="() => form.Company" />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label" for="su-country">Country</label>
+                                <InputSelect id="su-country" class="form-select" @bind-Value="form.Country" autocomplete="country-name">
+                                    <option value="">Select a country</option>
+                                    @foreach (var country in SaasSeedData.Countries)
+                                    {
+                                        <option value="@country">@country</option>
+                                    }
+                                </InputSelect>
+                                <ValidationMessage For="() => form.Country" />
+                            </div>
+                        </div>
+
+                        @* Always rendered, so a new message is announced; the attempt count makes a repeat announce again. *@
+                        <div class="su-error" role="alert">
+                            @if (emailInUse is { } usedEmail)
+                            {
+                                <span>That email already has an account. <a href="@signInHref">Sign in as @usedEmail</a>, or use another email.@(AttemptSuffix)</span>
+                            }
+                            else if (error is not null)
+                            {
+                                <span>@error@(AttemptSuffix)</span>
+                            }
+                        </div>
+
+                        <Button Type="ButtonType.Submit" Color="ButtonColor.Primary" Size="ButtonSize.Large" Class="w-100 mk-cta-lg">
+                            @SubmitText
+                        </Button>
+                        <p class="text-center small mt-3 mb-0">Already have an account? <a href="@signInHref">Sign in</a></p>
+                    </EditForm>
+                </div>
+            }
+        </div>
+        <div class="col-lg-4">
+            <Card Class="mk-feature-card">
+                <CardBody Class="p-4">
+                    <h2 class="h6 fw-bold mb-3">@IncludedHeading</h2>
+                    <ul class="list-unstyled mk-plan-list mb-4">
+                        @foreach (var highlight in SelectedPlan?.Highlights ?? Array.Empty<string>())
+                        {
+                            <li><Icon Name="IconName.Check2Circle" aria-hidden="true" />@highlight</li>
+                        }
+                    </ul>
+                    <figure class="mb-0 small">
+                        <blockquote class="mb-2">&ldquo;@quote.Quote&rdquo;</blockquote>
+                        <figcaption class="text-body-secondary">@quote.Person, @quote.Company</figcaption>
+                    </figure>
+                </CardBody>
+            </Card>
+        </div>
+    </div>
+</section>

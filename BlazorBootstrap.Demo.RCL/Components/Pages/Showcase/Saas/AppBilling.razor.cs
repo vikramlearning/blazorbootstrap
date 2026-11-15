@@ -1,0 +1,386 @@
+using System.Globalization;
+using BlazorBootstrap.Demo.RCL.Models.Showcase.Saas;
+using BlazorBootstrap.Demo.RCL.Services.Showcase.Foundation;
+using BlazorBootstrap.Demo.RCL.Services.Showcase.Saas;
+
+namespace BlazorBootstrap.Demo.RCL.Components.Pages.Showcase.Saas;
+
+/// <summary>
+/// The workspace's billing: the current plan, a plan picker (self-serve plans, monthly or annual, and seats) with a live
+/// prorated quote from <see cref="SaasState.QuotePlan" />, the card on file with a test-card form to add or replace it,
+/// and the invoices. On trial, the same picker converts the trial. Owners and billing members make changes; everyone else
+/// sees the plan and invoices read-only. Every action ends in a status message or an error, and focus returns to the
+/// button that opened the card form.
+/// </summary>
+public partial class AppBilling : ComponentBase, IDisposable
+{
+    #region Fields and Constants
+
+    /// <summary>Where Enterprise is sold.</summary>
+    internal const string ContactPath = SaasLayout.Base + "/contact";
+
+    /// <summary>The annual discount, such as ", save 20%".</summary>
+    private static readonly string annualSavingText = $", save {(SaasPricing.AnnualDiscount * 100).ToString("0", CultureInfo.InvariantCulture)}%";
+
+    private ShowcaseCardInput card = new();
+
+    private Button? cardButton;
+
+    private string? cardError;
+
+    private int cardErrors;
+
+    private ElementReference cardFormHeading;
+
+    private bool cardFormOpen;
+
+    /// <summary>Whether the card form was opened because a plan change needed a card, so focus goes back to the plan's button.</summary>
+    private bool cardOpenedFromPlan;
+
+    private Button? confirmButton;
+
+    private SaasBillingPeriod period = SaasBillingPeriod.Annual;
+
+    private int? pickerWorkspaceId;
+
+    private string planError = string.Empty;
+
+    private int planErrors;
+
+    private string planId = string.Empty;
+
+    private int seats = 1;
+
+    private int statusCount;
+
+    private string? statusMessage;
+
+    private ElementReference statusRegion;
+
+    private string? statusText;
+
+    #endregion
+
+    #region Methods
+
+    #region Protected Override Methods
+
+    protected override void OnInitialized()
+    {
+        EnsurePicker();
+        State.Changed += OnStateChanged;
+    }
+
+    #endregion
+
+    #region Public Methods
+
+    /// <summary>Stops listening to state changes.</summary>
+    public void Dispose() => State.Changed -= OnStateChanged;
+
+    #endregion
+
+    #region Internal Methods
+
+    /// <summary>Returns the badge color of an invoice status.</summary>
+    internal static BadgeColor InvoiceColor(SaasInvoiceStatus status) => status switch
+    {
+        SaasInvoiceStatus.Paid => BadgeColor.Success,
+        SaasInvoiceStatus.Open => BadgeColor.Warning,
+        _ => BadgeColor.Secondary,
+    };
+
+    /// <summary>Returns "Visa ending in 4242", or <see langword="null" /> without a card.</summary>
+    internal static string? CardText(string? brand, string? last4) => last4 is null ? null : $"{brand ?? "Card"} ending in {last4}";
+
+    #endregion
+
+    #region Private Methods
+
+    private static string AmountText(SaasPlan plan, SaasBillingPeriod period, int seats) => plan.MonthlyPricePerSeat == 0
+        ? "Free"
+        : $"{SaasDisplay.MoneyCents(SaasPricing.PeriodAmount(plan, period, seats))} per {(period == SaasBillingPeriod.Annual ? "year" : "month")}";
+
+    private static bool IsExpired(SaasWorkspace workspace, DateTime today) =>
+        workspace.CardLast4 is not null && (workspace.CardExpiryYear < today.Year || (workspace.CardExpiryYear == today.Year && workspace.CardExpiryMonth < today.Month));
+
+    private static string SeatPriceText(SaasPlan plan, SaasBillingPeriod period) => plan.MonthlyPricePerSeat == 0
+        ? "Free"
+        : $"{SaasDisplay.Money(SaasPricing.MonthlySeatPrice(plan, period))} per seat / month";
+
+    private static string SeatsWord(int count) => string.Create(CultureInfo.InvariantCulture, $"{count} {(count == 1 ? "seat" : "seats")}");
+
+    private static bool TryParseExpiry(string expiry, out int month, out int year)
+    {
+        month = 0;
+        year = 0;
+        var parts = expiry.Trim().Split('/');
+
+        if (parts.Length != 2
+            || !int.TryParse(parts[0], NumberStyles.None, CultureInfo.InvariantCulture, out month)
+            || !int.TryParse(parts[1], NumberStyles.None, CultureInfo.InvariantCulture, out var shortYear))
+            return false;
+
+        year = 2000 + shortYear;
+
+        return month is >= 1 and <= 12;
+    }
+
+    private async Task CancelCardAsync()
+    {
+        cardFormOpen = false;
+        card = new ShowcaseCardInput();
+        cardError = null;
+        StateHasChanged();
+
+        await Task.Yield();
+        await FocusCardOpenerAsync();
+    }
+
+    private async Task ConfirmPlanAsync()
+    {
+        if (State.CurrentWorkspace is not { } before || State.FindPlan(planId) is not { } plan)
+            return;
+
+        var wasTrial = before.Status == SaasWorkspaceStatus.Trial;
+        var quote = State.QuotePlan(planId, period, seats);
+        var result = State.ChangePlan(planId, period, seats);
+
+        if (result == SaasResult.Ok)
+        {
+            planError = string.Empty;
+            SetStatus(PlanChangedText(before, plan, quote, wasTrial));
+            ResetPicker();
+            StateHasChanged();
+
+            await Task.Yield();
+            await SaasDisplay.FocusAsync(statusRegion);
+
+            return;
+        }
+
+        var (min, max) = SeatRange(plan, before);
+        SetPlanError(result switch
+        {
+            SaasResult.CardRequired => $"Add a card first: {plan.Name} is a paid plan, so it needs a card on file. The card form is open below; once the card is saved, confirm the change again.",
+            SaasResult.NoChange => "That's already your plan, billing period, and number of seats. Change one of them to see a new price.",
+            SaasResult.SeatsOutOfRange => min > max
+                ? $"{plan.Name} allows up to {SeatsWord(max)}, fewer than your {State.SeatsUsed(before.Id)} members and open invitations."
+                : string.Create(CultureInfo.InvariantCulture, $"Choose between {min} and {max} seats for {plan.Name}."),
+            SaasResult.NotFound => "That plan can't be chosen here. For Enterprise, talk to sales.",
+            _ => "Only owners and billing members change the plan, and not while the workspace is suspended or archived.",
+        });
+
+        if (result == SaasResult.CardRequired)
+            await OpenCardFormAsync(fromPlan: true);
+    }
+
+    /// <summary>Starts the picker from the workspace's plan once the workspace is known (the tab's state may be restored after the first render).</summary>
+    private void EnsurePicker()
+    {
+        if (State.CurrentWorkspace is { } workspace && pickerWorkspaceId != workspace.Id)
+            ResetPicker();
+    }
+
+    private async Task FocusCardOpenerAsync()
+    {
+        if (cardOpenedFromPlan && confirmButton is not null)
+            await SaasDisplay.FocusAsync(confirmButton.Element);
+        else if (cardButton is not null)
+            await SaasDisplay.FocusAsync(cardButton.Element);
+        else
+            await SaasDisplay.FocusAsync(statusRegion);
+
+        cardOpenedFromPlan = false;
+    }
+
+    private void OnSeatsChanged(int value)
+    {
+        // NumberInput raises ValueChanged on its first render too.
+        if (value == seats)
+            return;
+
+        seats = value;
+        planError = string.Empty;
+    }
+
+    private void OnStateChanged() => InvokeAsync(() =>
+    {
+        EnsurePicker();
+        StateHasChanged();
+    });
+
+    private Task OpenCardAsync() => OpenCardFormAsync(fromPlan: false);
+
+    private async Task OpenCardFormAsync(bool fromPlan)
+    {
+        cardOpenedFromPlan = fromPlan;
+        cardError = null;
+        cardErrors = 0;
+
+        if (!cardFormOpen)
+            card = new ShowcaseCardInput();
+
+        cardFormOpen = true;
+        StateHasChanged();
+
+        await Task.Yield();
+        await SaasDisplay.FocusAsync(cardFormHeading);
+    }
+
+    private string PlanChangedText(SaasWorkspace before, SaasPlan plan, SaasPlanQuote? quote, bool wasTrial)
+    {
+        var paid = plan.MonthlyPricePerSeat > 0;
+        var summary = $"{plan.Name}, {SeatsWord(seats)}{(paid ? $", {SaasSeedData.PeriodLabel(period)}" : string.Empty)}";
+        var text = wasTrial ? $"Your trial is over and your plan is now {summary}." : $"Your plan is now {summary}.";
+
+        if (quote is null)
+            return text;
+
+        if (quote.ChargeToday > 0)
+            text += $" An invoice for {SaasDisplay.MoneyCents(quote.ChargeToday)}, paid with the {CardText(before.CardBrand, before.CardLast4)}, is in your invoices. Nothing real is charged in this demo.";
+        else
+            text += " Nothing is due today.";
+
+        if (quote.CreditAfter > before.CreditBalance)
+            text += $" {SaasDisplay.MoneyCents(quote.CreditAfter - before.CreditBalance)} is credited to the workspace.";
+
+        return text;
+    }
+
+    private void ResetPicker()
+    {
+        if (State.CurrentWorkspace is not { } workspace)
+            return;
+
+        pickerWorkspaceId = workspace.Id;
+        var current = State.PlanOf(workspace);
+        planId = current.IsSelfServe ? current.Id : State.Plans.FirstOrDefault(plan => plan.IsSelfServe)?.Id ?? current.Id;
+        period = workspace.Period;
+        seats = workspace.Seats;
+    }
+
+    private async Task SaveCardAsync()
+    {
+        if (ShowcaseCards.Validate(card, State.Clock.Today).Count > 0)
+            return;
+
+        var charge = ShowcaseCards.Charge(card);
+
+        if (!charge.IsApproved)
+        {
+            SetCardError(charge.FailureMessage ?? "The card was declined. Try another card.");
+
+            return;
+        }
+
+        if (!TryParseExpiry(card.Expiry, out var month, out var year))
+        {
+            SetCardError("Enter the expiry as MM/YY, for example 08/29.");
+
+            return;
+        }
+
+        var result = State.UpdatePaymentMethod(charge, month, year);
+
+        if (result != SaasResult.Ok)
+        {
+            SetCardError(result switch
+            {
+                SaasResult.CardDeclined => "The card was declined. Try another card.",
+                SaasResult.Invalid => "This card can't be saved. Use one of the listed test cards with a future expiry.",
+                _ => "Only owners and billing members change the payment method, and not while the workspace is suspended or archived.",
+            });
+
+            return;
+        }
+
+        var fromPlan = cardOpenedFromPlan;
+        SetStatus(fromPlan
+            ? $"The {CardText(charge.Brand, charge.Last4)} is saved as the payment method. Confirm the plan change to continue."
+            : $"The {CardText(charge.Brand, charge.Last4)} is saved as the payment method and pays the next invoices. It was checked with a zero-amount test charge; nothing real is charged.");
+
+        if (fromPlan)
+            planError = string.Empty;
+
+        card = new ShowcaseCardInput();
+        cardError = null;
+        cardFormOpen = false;
+        StateHasChanged();
+
+        await Task.Yield();
+        await FocusCardOpenerAsync();
+    }
+
+    /// <summary>Returns the seats a plan allows for the workspace: from its members and open invitations to the plan's limit.</summary>
+    private (int Min, int Max) SeatRange(SaasPlan plan, SaasWorkspace workspace) =>
+        (Math.Max(1, State.SeatsUsed(workspace.Id)), plan.SeatLimit == 0 ? SaasSeedData.MaxSeats : plan.SeatLimit);
+
+    private void SelectPeriod(SaasBillingPeriod value)
+    {
+        period = value;
+        planError = string.Empty;
+    }
+
+    /// <summary>Chooses a plan and keeps the seats inside its range.</summary>
+    private void SelectPlan(SaasPlan plan, SaasWorkspace workspace)
+    {
+        planId = plan.Id;
+        planError = string.Empty;
+        var (min, max) = SeatRange(plan, workspace);
+
+        if (min <= max)
+            seats = Math.Clamp(seats, min, max);
+    }
+
+    private void SetCardError(string message)
+    {
+        cardErrors++;
+        cardError = cardErrors == 1 ? message : $"{message} (attempt {cardErrors})";
+    }
+
+    private void SetPlanError(string message)
+    {
+        planErrors++;
+        planError = planErrors == 1 ? message : $"{message} ({planErrors})";
+    }
+
+    /// <summary>Shows a status message; the same message again gets a counter, so a screen reader announces it again.</summary>
+    private void SetStatus(string message)
+    {
+        statusCount = message == statusText ? statusCount + 1 : 1;
+        statusText = message;
+        statusMessage = statusCount == 1 ? message : $"{message} ({statusCount})";
+    }
+
+    /// <summary>Explains why <see cref="SaasState.QuotePlan" /> returned no quote for the chosen plan and seats.</summary>
+    private string UnavailableText(SaasPlan plan, SaasWorkspace workspace)
+    {
+        var used = State.SeatsUsed(workspace.Id);
+        var (min, max) = SeatRange(plan, workspace);
+
+        if (!plan.IsSelfServe)
+            return $"{plan.Name} is sold through sales.";
+
+        if (min > max)
+            return $"{plan.Name} allows up to {SeatsWord(max)}, fewer than your {used} members and open invitations. Remove someone or cancel an invitation first.";
+
+        if (seats < min)
+            return $"{SeatsWord(seats)} is fewer than your {used} members and open invitations. Choose at least {SeatsWord(min)}, or remove someone first.";
+
+        if (seats > max)
+            return $"{plan.Name} allows up to {SeatsWord(max)}.";
+
+        return "This choice isn't available.";
+    }
+
+    #endregion
+
+    #endregion
+
+    #region Properties, Indexers
+
+    [Inject] private SaasState State { get; set; } = default!;
+
+    #endregion
+}

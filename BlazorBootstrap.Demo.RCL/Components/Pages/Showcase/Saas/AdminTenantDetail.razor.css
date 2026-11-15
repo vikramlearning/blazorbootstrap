@@ -1,0 +1,13 @@
+.sd-tenant-status {
+    margin-bottom: 1rem;
+    font-weight: 600;
+}
+
+    .sd-tenant-status:empty {
+        margin: 0;
+    }
+
+/* Keeps the invoice description readable when the table scrolls sideways on a phone. */
+.sd-tenant-description {
+    min-width: 14rem;
+}

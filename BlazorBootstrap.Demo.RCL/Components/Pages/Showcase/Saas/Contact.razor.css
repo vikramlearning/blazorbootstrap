@@ -1,0 +1,18 @@
+/* Focused from code after a send; it shows no outline of its own, only its content. */
+.ct-status:focus {
+    outline: none;
+}
+
+.ct-summary {
+    max-width: 22rem;
+}
+
+.ct-error {
+    margin: 1.5rem 0 1rem;
+    color: var(--bs-danger-text-emphasis);
+    font-weight: 600;
+}
+
+    .ct-error:empty {
+        margin: 1.5rem 0 0;
+    }

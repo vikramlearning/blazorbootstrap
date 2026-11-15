@@ -1,0 +1,233 @@
+@page "/showcase/saas/admin/tenants/{Id:int}"
+@layout SaasAdminLayout
+
+@if (Workspace is not { } workspace)
+{
+    <SaasNotFound BackPath="@($"{SaasAdminLayout.Base}/tenants")" BackText="Back to tenants" />
+}
+else
+{
+    var plan = State.PlanOf(workspace);
+    var owner = State.OwnerOf(workspace.Id);
+    var members = State.MembersOf(workspace.Id);
+    var invoices = State.InvoicesOf(workspace.Id);
+    var activity = State.ActivityOf(workspace.Id);
+    var seatsUsed = State.SeatsUsed(workspace.Id);
+    var mrr = State.MonthlyRevenueFor(workspace);
+    var now = State.Clock.Now;
+
+    <PageTitle>@workspace.Name · Tenants · @SaasSeedData.ProductName</PageTitle>
+
+    <Breadcrumb Items="BreadcrumbItems" Class="sd-breadcrumb mb-2" />
+
+    <div class="sd-page-head">
+        <div class="sd-person">
+            <Avatar Name="@workspace.Name" Color="SaasDisplay.AvatarColorFor(workspace.Id)" Size="AvatarSize.Large" />
+            <div class="sd-person-text">
+                <div class="d-flex flex-wrap align-items-center gap-2">
+                    <h1 class="sd-page-title">@workspace.Name</h1>
+                    <Badge Color="SaasDisplay.StatusColor(workspace.Status)" Class="rounded-pill">@SaasDisplay.StatusName(workspace.Status)</Badge>
+                </div>
+                <span class="sd-person-email">
+                    @if (owner is null)
+                    {
+                        <text>No owner on record</text>
+                    }
+                    else
+                    {
+                        <text>Owner: @owner.Name · @owner.Email</text>
+                    }
+                </span>
+            </div>
+        </div>
+        <Button @ref="editButton" Color="ButtonColor.Primary" @onclick="EditAsync">
+            <Icon Name="IconName.Pencil" class="me-1" aria-hidden="true" />Edit tenant
+        </Button>
+    </div>
+
+    @* Always rendered, so a saved change is announced. *@
+    <p class="sd-tenant-status" role="status">@statusMessage</p>
+
+    <div class="row g-3">
+        <div class="col-xl-4">
+            <Card Class="sd-card mb-3">
+                <CardHeader><h2 class="sd-card-title">Summary</h2></CardHeader>
+                <CardBody Class="pt-0">
+                    <dl class="row sd-dl small mb-0">
+                        <dt class="col-5">Plan</dt>
+                        <dd class="col-7"><Badge Color="SaasDisplay.PlanColor(workspace.PlanId)" Class="rounded-pill">@plan.Name</Badge></dd>
+                        <dt class="col-5">Billing period</dt>
+                        <dd class="col-7">@(workspace.Period == SaasBillingPeriod.Annual ? "Annual" : "Monthly")</dd>
+                        <dt class="col-5">Seats</dt>
+                        <dd class="col-7"><span class="sd-mono">@seatsUsed / @workspace.Seats</span> used<span class="d-block fw-normal text-body-secondary">@PlanSeatText(plan)</span></dd>
+                        <dt class="col-5">Status</dt>
+                        <dd class="col-7"><Badge Color="SaasDisplay.StatusColor(workspace.Status)" Class="rounded-pill">@SaasDisplay.StatusName(workspace.Status)</Badge></dd>
+                        <dt class="col-5">Country</dt>
+                        <dd class="col-7">@workspace.Country</dd>
+                        <dt class="col-5">Created</dt>
+                        <dd class="col-7">@SaasDisplay.Date(workspace.CreatedOn)</dd>
+                        @if (workspace.Status == SaasWorkspaceStatus.Trial && workspace.TrialEndsOn is { } trialEndsOn)
+                        {
+                            <dt class="col-5">Trial ends</dt>
+                            <dd class="col-7">@SaasDisplay.Date(trialEndsOn)<span class="d-block fw-normal text-body-secondary">@DaysLeftText(workspace)</span></dd>
+                        }
+                        else
+                        {
+                            <dt class="col-5">Renews on</dt>
+                            <dd class="col-7">@SaasDisplay.Date(workspace.RenewsOn)</dd>
+                        }
+                        <dt class="col-5">Card on file</dt>
+                        <dd class="col-7">@(workspace.CardLast4 is null ? "None" : $"{workspace.CardBrand} ending in {workspace.CardLast4}")</dd>
+                        <dt class="col-5">MRR</dt>
+                        <dd class="col-7"><span class="sd-mono">@SaasDisplay.Money(mrr)</span><span class="d-block fw-normal text-body-secondary">@MrrNote(workspace, plan, mrr)</span></dd>
+                    </dl>
+                    <div class="sd-meter mt-3">
+                        <div class="sd-meter-label"><span id="sd-tenant-events-label">Events this month</span><span class="sd-mono">@EventsText(workspace, plan)</span></div>
+                        @if (plan.EventLimit > 0)
+                        {
+                            var percent = EventsPercent(workspace, plan);
+
+                            <Progress Height="8">
+                                <ProgressBar Width="Math.Min(100, percent)" Color="SaasDisplay.QuotaColor(percent)"
+                                             aria-labelledby="sd-tenant-events-label" aria-valuenow="@Math.Round(percent)" aria-valuemin="0" aria-valuemax="100"
+                                             aria-valuetext="@EventsText(workspace, plan)" />
+                            </Progress>
+                        }
+                    </div>
+                </CardBody>
+            </Card>
+            <Card Class="sd-card">
+                <CardHeader>
+                    <div>
+                        <h2 class="sd-card-title">Activity</h2>
+                        <p class="sd-card-sub">Newest first, including changes made in this tab</p>
+                    </div>
+                </CardHeader>
+                <CardBody Class="pt-1">
+                    @if (activity.Count == 0)
+                    {
+                        <p class="small text-body-secondary mb-0">No activity yet.</p>
+                    }
+                    else
+                    {
+                        <Timeline AriaLabel="@($"Activity of {workspace.Name}")">
+                            @foreach (var entry in activity)
+                            {
+                                <TimelineItem Title="@entry.Title"
+                                              Subtitle="@SaasDisplay.DateTimeShort(entry.At)"
+                                              IconName="@entry.IconName"
+                                              Color="TimelineColor.Primary">
+                                    <span class="small text-body-secondary">@entry.Detail</span>
+                                </TimelineItem>
+                            }
+                        </Timeline>
+                    }
+                </CardBody>
+            </Card>
+        </div>
+        <div class="col-xl-8">
+            <Card Class="sd-card mb-3">
+                <CardHeader>
+                    <div>
+                        <h2 class="sd-card-title">Members</h2>
+                        <p class="sd-card-sub">@MembersText(members)</p>
+                    </div>
+                </CardHeader>
+                <CardBody Class="pt-0">
+                    <div class="table-responsive sd-grid">
+                        <table class="table align-middle">
+                            <caption class="visually-hidden">Members and invitations of @workspace.Name</caption>
+                            <thead>
+                                <tr>
+                                    <th scope="col">Name</th>
+                                    <th scope="col">Role</th>
+                                    <th scope="col">Status</th>
+                                    <th scope="col">Added</th>
+                                    <th scope="col">Last active</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var member in members)
+                                {
+                                    <tr @key="member.Id">
+                                        <th scope="row" class="fw-normal">
+                                            <div class="sd-person">
+                                                <Avatar Name="@member.Name" Color="SaasDisplay.AvatarColorFor(member.Id)" Size="AvatarSize.Small" />
+                                                <span class="sd-person-text">
+                                                    <span class="sd-person-name">@member.Name</span>
+                                                    <span class="sd-person-email">@member.Email</span>
+                                                </span>
+                                            </div>
+                                        </th>
+                                        <td>@SaasDisplay.RoleName(member.Role)</td>
+                                        <td>
+                                            <Badge Color="@(member.Status == SaasMemberStatus.Active ? BadgeColor.Success : BadgeColor.Warning)" Class="rounded-pill">@member.Status</Badge>
+                                        </td>
+                                        <td class="text-nowrap">@SaasDisplay.Date(member.AddedOn)</td>
+                                        <td class="text-nowrap">@SaasDisplay.LastSeen(member.LastActiveOn, now)</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </CardBody>
+            </Card>
+            <Card Class="sd-card">
+                <CardHeader>
+                    <div>
+                        <h2 class="sd-card-title">Invoices</h2>
+                        <p class="sd-card-sub">Newest first. Only the card brand and last four digits are kept.</p>
+                    </div>
+                </CardHeader>
+                <CardBody Class="pt-0">
+                    @if (invoices.Count == 0)
+                    {
+                        <p class="small text-body-secondary mb-0">@NoInvoicesText(workspace, plan)</p>
+                    }
+                    else
+                    {
+                        <div class="table-responsive sd-grid">
+                            <table class="table align-middle">
+                                <caption class="visually-hidden">Invoices of @workspace.Name</caption>
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Invoice</th>
+                                        <th scope="col">Issued</th>
+                                        <th scope="col">Description</th>
+                                        <th scope="col" class="text-end">Amount</th>
+                                        <th scope="col">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var invoice in invoices)
+                                    {
+                                        <tr @key="invoice.Number">
+                                            <th scope="row" class="sd-mono small text-nowrap">@invoice.Number</th>
+                                            <td class="text-nowrap">@SaasDisplay.Date(invoice.IssuedOn)</td>
+                                            <td class="sd-tenant-description">
+                                                @invoice.Description
+                                                <span class="d-block small text-body-secondary">
+                                                    @SaasDisplay.Date(invoice.PeriodStart) to @SaasDisplay.Date(invoice.PeriodEnd)@(invoice.CardLast4 is null ? string.Empty : $" · {invoice.CardBrand} ending in {invoice.CardLast4}")
+                                                </span>
+                                            </td>
+                                            <td class="text-end text-nowrap">
+                                                <span class="sd-mono">@SaasDisplay.MoneyCents(invoice.Amount)</span>
+                                                @if (invoice.RefundedAmount > 0)
+                                                {
+                                                    <span class="d-block small text-body-secondary">@SaasDisplay.MoneyCents(invoice.RefundedAmount) refunded</span>
+                                                }
+                                            </td>
+                                            <td><Badge Color="InvoiceColor(invoice.Status)" Class="rounded-pill">@invoice.Status</Badge></td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                </CardBody>
+            </Card>
+        </div>
+    </div>
+
+    <SaasTenantEditor @ref="editor" OnSaved="OnSaved" />
+}

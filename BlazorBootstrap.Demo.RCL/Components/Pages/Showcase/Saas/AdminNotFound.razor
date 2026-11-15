@@ -1,0 +1,9 @@
+@page "/showcase/saas/admin/{*path}"
+@layout SaasAdminLayout
+
+<SaasNotFound BackPath="@SaasAdminLayout.Base" BackText="Back to the overview" />
+
+@code {
+    /// <summary>Gets or sets the unknown path inside the console.</summary>
+    [Parameter] public string? Path { get; set; }
+}

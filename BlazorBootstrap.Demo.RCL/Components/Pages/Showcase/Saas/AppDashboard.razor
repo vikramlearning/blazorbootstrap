@@ -1,0 +1,306 @@
+@page "/showcase/saas/app"
+@layout SaasAppLayout
+
+<PageTitle>Dashboard · @SaasSeedData.ProductName</PageTitle>
+
+@if (State.CurrentWorkspace is { } workspace && State.CurrentMember is { } member)
+{
+    var plan = State.PlanOf(workspace);
+    var hasEvents = workspace.EventsThisMonth > 0;
+    var snapshot = Snapshot(workspace);
+    var activity = State.ActivityOf(workspace.Id).Take(6).ToList();
+    var notices = State.NoticesFor(State.Identity.Current?.Id).Take(3).ToList();
+
+    <div class="sd-page-head">
+        <div>
+            <span class="sc-eyebrow">Dashboard</span>
+            <h1 class="sd-page-title">@Greeting(member)</h1>
+            <p class="sd-page-lead">Here's how @workspace.Name is doing on @State.Clock.Today.ToString("dddd, MMMM d", CultureInfo.InvariantCulture).</p>
+        </div>
+        <nav class="d-flex flex-wrap gap-2" aria-label="Quick actions">
+            <a class="btn btn-outline-primary" href="@($"{SaasAppLayout.Base}/team")">
+                <Icon Name="IconName.PersonPlus" class="me-1" aria-hidden="true" />@(State.CanManageTeam ? "Invite a teammate" : "See your team")
+            </a>
+            <a class="btn btn-primary" href="@($"{SaasAppLayout.Base}/billing")">
+                <Icon Name="IconName.ArrowLeftRight" class="me-1" aria-hidden="true" />@(State.CanManageBilling ? "Change plan" : "See your plan")
+            </a>
+        </nav>
+    </div>
+
+    @if (!hasEvents)
+    {
+        <section class="app-first-events mb-4" aria-labelledby="app-first-events-title">
+            <span class="app-first-events-icon" aria-hidden="true"><Icon Name="IconName.Send" /></span>
+            <div>
+                <h2 class="h6 fw-bold mb-1" id="app-first-events-title">Send your first events</h2>
+                <p class="mb-0 small">
+                    Add the @SaasSeedData.ProductName snippet to your product and its traffic shows up here: sessions, top pages, and where
+                    visitors come from. This is a demo, so no events arrive and the usage stays at zero.
+                </p>
+            </div>
+        </section>
+    }
+
+    <div class="row g-3 mb-4">
+        <div class="col-xl-7">
+            <Card Class="sd-card h-100">
+                <CardHeader>
+                    <div>
+                        <h2 class="sd-card-title">Usage this month</h2>
+                        <p class="sd-card-sub">Against the @plan.Name plan's limits</p>
+                    </div>
+                </CardHeader>
+                <CardBody Class="pt-0">
+                    @foreach (var quota in Quotas(workspace, plan))
+                    {
+                        <div class="sd-meter mb-3" @key="quota.Id">
+                            <div class="sd-meter-label">
+                                <span id="@($"app-quota-{quota.Id}")">@quota.Label</span>
+                                <span class="sd-mono">@quota.Amount</span>
+                            </div>
+                            @if (quota.Percent is { } percent)
+                            {
+                                <Progress Height="8">
+                                    <ProgressBar Width="Math.Min(100, percent)" Color="SaasDisplay.QuotaColor(percent)"
+                                                 aria-labelledby="@($"app-quota-{quota.Id}")" aria-valuenow="@Math.Round(Math.Min(100, percent))" aria-valuemin="0" aria-valuemax="100"
+                                                 aria-valuetext="@quota.Note" />
+                                </Progress>
+                            }
+                            <span class="app-quota-note @(quota.IsHigh ? "is-high" : null)">
+                                @if (quota.IsHigh)
+                                {
+                                    <Icon Name="IconName.ExclamationTriangle" class="me-1" aria-hidden="true" />
+                                }
+                                @quota.Note
+                            </span>
+                        </div>
+                    }
+                </CardBody>
+            </Card>
+        </div>
+        <div class="col-xl-5">
+            <Card Class="sd-card h-100">
+                <CardHeader>
+                    <div>
+                        <h2 class="sd-card-title">Plan and renewal</h2>
+                        <p class="sd-card-sub">What @workspace.Name pays for</p>
+                    </div>
+                    <Badge Color="SaasDisplay.StatusColor(workspace.Status)" Class="rounded-pill">@SaasDisplay.StatusName(workspace.Status)</Badge>
+                </CardHeader>
+                <CardBody Class="pt-0">
+                    <dl class="sd-dl app-plan-list mb-3">
+                        <dt>Plan</dt>
+                        <dd>@plan.Name</dd>
+                        <dt>Seats</dt>
+                        <dd>@SeatText(workspace.Seats)</dd>
+                        <dt>Billing period</dt>
+                        <dd>@(plan.MonthlyPricePerSeat == 0 ? "None (free plan)" : workspace.Period == SaasBillingPeriod.Annual ? "Yearly" : "Monthly")</dd>
+                        <dt>@(State.TrialDaysLeft(workspace) is null ? "Renewal" : "Trial")</dt>
+                        <dd>@RenewalText(workspace, plan)</dd>
+                        <dt>Card on file</dt>
+                        <dd>@CardText(workspace)</dd>
+                    </dl>
+                    <a class="fw-semibold small" href="@($"{SaasAppLayout.Base}/billing")">Go to billing<Icon Name="IconName.ArrowRight" class="ms-1" aria-hidden="true" /></a>
+                </CardBody>
+            </Card>
+        </div>
+    </div>
+
+    <Card Class="sd-card mb-4">
+        <CardHeader>
+            <div>
+                <h2 class="sd-card-title" id="app-traffic-title">Product traffic</h2>
+                <p class="sd-card-sub">Sessions in your product over @RangeDescription</p>
+            </div>
+            <RadioButtonGroup TValue="SaasAnalyticsRange" Value="range" ValueExpression="() => range" ValueChanged="OnRangeChangedAsync"
+                              AriaLabel="Traffic period" Size="ButtonGroupSize.Small" Class="sd-range">
+                @foreach (var option in ranges)
+                {
+                    <ButtonGroupItem Value="option.Value" Id="@($"app-range-{option.Value}")">@option.Text</ButtonGroupItem>
+                }
+            </RadioButtonGroup>
+        </CardHeader>
+        <CardBody Class="pt-0">
+            <p class="visually-hidden" role="status">@rangeMessage</p>
+            @if (hasEvents)
+            {
+                <p class="app-summary">@TrafficSummary(snapshot)</p>
+            }
+            else
+            {
+                <p class="app-summary text-body-secondary">No traffic yet. Once your product sends events, sessions over @RangeDescription show up here.</p>
+            }
+            @* The canvas carries nothing a screen reader can use; the summary above and the table below stand in for it. It stays in
+               the page while empty, so the chart keeps its instance. *@
+            <div class="app-chart @(hasEvents ? null : "d-none")" aria-hidden="true">
+                <LineChart @ref="trafficChart" Height="280" HeightUnit="Unit.Px" Width="100" WidthUnit="Unit.Percentage" />
+            </div>
+            @if (hasEvents)
+            {
+                @* A table can't shrink below its content, so the clipping wrapper keeps the hidden table from widening the page. *@
+                <div class="position-relative overflow-hidden">
+                    <table class="visually-hidden">
+                        <caption>Sessions over @RangeDescription</caption>
+                        <thead>
+                            <tr>
+                                <th scope="col">@(range == SaasAnalyticsRange.Last90Days ? "Week of" : range == SaasAnalyticsRange.Last12Months ? "Month" : "Day")</th>
+                                <th scope="col">Sessions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var point in snapshot.Sessions)
+                            {
+                                <tr>
+                                    <th scope="row">@point.Label</th>
+                                    <td>@Count(point.Value)</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </CardBody>
+    </Card>
+
+    <div class="row g-3 mb-4">
+        <div class="col-lg-6">
+            <Card Class="sd-card h-100">
+                <CardHeader>
+                    <div>
+                        <h2 class="sd-card-title">Top pages</h2>
+                        <p class="sd-card-sub">Views and the share that converted, over @RangeDescription</p>
+                    </div>
+                </CardHeader>
+                <CardBody Class="pt-0">
+                    @if (hasEvents)
+                    {
+                        <ol class="app-rank-list">
+                            @foreach (var topPage in snapshot.TopPages)
+                            {
+                                <li @key="topPage.Path">
+                                    <span class="app-rank-name sd-mono">@topPage.Path</span>
+                                    <span class="app-rank-value">
+                                        @Count(topPage.Views) views · @topPage.ConversionPercent.ToString("0.0", CultureInfo.InvariantCulture)% converted
+                                    </span>
+                                </li>
+                            }
+                        </ol>
+                    }
+                    else
+                    {
+                        <p class="small text-body-secondary mb-0">Your most visited pages show up here once events arrive.</p>
+                    }
+                </CardBody>
+            </Card>
+        </div>
+        <div class="col-lg-6">
+            <Card Class="sd-card h-100">
+                <CardHeader>
+                    <div>
+                        <h2 class="sd-card-title">Traffic sources</h2>
+                        <p class="sd-card-sub">Share of sessions, over @RangeDescription</p>
+                    </div>
+                </CardHeader>
+                <CardBody Class="pt-0">
+                    @if (hasEvents)
+                    {
+                        var total = snapshot.Sources.Sum(source => source.Sessions);
+
+                        <ul class="app-rank-list">
+                            @foreach (var source in snapshot.Sources)
+                            {
+                                var share = total > 0 ? source.Sessions / total * 100 : 0;
+
+                                <li @key="source.Name">
+                                    <span class="app-rank-name">@source.Name</span>
+                                    <span class="app-rank-value">@share.ToString("0", CultureInfo.InvariantCulture)% · @Count(source.Sessions) sessions</span>
+                                    <span class="app-share" aria-hidden="true"><span style="@($"width: {share.ToString("0.#", CultureInfo.InvariantCulture)}%")"></span></span>
+                                </li>
+                            }
+                        </ul>
+                    }
+                    else
+                    {
+                        <p class="small text-body-secondary mb-0">Where your visitors come from shows up here once events arrive.</p>
+                    }
+                </CardBody>
+            </Card>
+        </div>
+    </div>
+
+    <div class="row g-3">
+        <div class="col-lg-7">
+            <Card Class="sd-card h-100">
+                <CardHeader>
+                    <div>
+                        <h2 class="sd-card-title">Recent activity</h2>
+                        <p class="sd-card-sub">The latest changes in @workspace.Name</p>
+                    </div>
+                </CardHeader>
+                <CardBody Class="pt-1">
+                    @if (activity.Count == 0)
+                    {
+                        <p class="small text-body-secondary mb-0">Nothing has happened in this workspace yet.</p>
+                    }
+                    else
+                    {
+                        <Timeline AriaLabel="Recent workspace activity">
+                            @foreach (var entry in activity)
+                            {
+                                <TimelineItem Title="@entry.Title" Subtitle="@SaasDisplay.DateTimeShort(entry.At)" IconName="@entry.IconName" Color="TimelineColor.Primary">
+                                    <span class="small text-body-secondary">@entry.Detail</span>
+                                </TimelineItem>
+                            }
+                        </Timeline>
+                    }
+                </CardBody>
+            </Card>
+        </div>
+        <div class="col-lg-5">
+            <Card Class="sd-card h-100">
+                <CardHeader>
+                    <div>
+                        <h2 class="sd-card-title">Notifications</h2>
+                        <p class="sd-card-sub">Your newest three</p>
+                    </div>
+                    <a class="small fw-semibold" href="@SaasLayout.NoticesPath">All notifications</a>
+                </CardHeader>
+                <CardBody Class="pt-0">
+                    @if (notices.Count == 0)
+                    {
+                        <p class="small text-body-secondary mb-0">You're all caught up: there are no notifications.</p>
+                    }
+                    else
+                    {
+                        <ul class="app-notice-list">
+                            @foreach (var notice in notices)
+                            {
+                                <li class="@(notice.IsRead ? null : "is-unread")" @key="notice.Id">
+                                    <span class="app-notice-icon" aria-hidden="true"><Icon Name="notice.IconName" /></span>
+                                    <span class="app-notice-body">
+                                        <span class="app-notice-title">
+                                            @if (AppNotifications.SafeLink(notice.Link) is { } link)
+                                            {
+                                                <a href="@link">@notice.Title</a>
+                                            }
+                                            else
+                                            {
+                                                @notice.Title
+                                            }
+                                            @if (!notice.IsRead)
+                                            {
+                                                <Badge Color="BadgeColor.Primary" Class="rounded-pill ms-1">New</Badge>
+                                            }
+                                        </span>
+                                        <span class="app-notice-text">@notice.Text</span>
+                                        <span class="app-notice-time">@SaasDisplay.DateTimeShort(notice.CreatedOn)</span>
+                                    </span>
+                                </li>
+                            }
+                        </ul>
+                    }
+                </CardBody>
+            </Card>
+        </div>
+    </div>
+}

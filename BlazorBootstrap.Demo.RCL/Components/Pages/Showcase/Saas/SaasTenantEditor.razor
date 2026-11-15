@@ -1,0 +1,67 @@
+@* The operator's tenant editor: plan, seats, and status of one workspace. Opened from the tenant detail screen. *@
+<Modal @ref="modal"
+       IsVerticallyCentered="true"
+       IsScrollable="true"
+       Size="ModalSize.Large"
+       ShowCloseButton="false"
+       aria-labelledby="sd-tenant-editor-title"
+       OnShown="OnShownAsync"
+       OnHidden="OnHiddenAsync">
+    <HeaderTemplate>
+        <h2 class="modal-title h5" id="sd-tenant-editor-title">Edit @(Workspace?.Name ?? "tenant")</h2>
+    </HeaderTemplate>
+    <BodyTemplate>
+        @if (Workspace is { } workspace)
+        {
+            var plan = SelectedPlan;
+
+            <ShowcaseDemoNotice Class="mb-3" Text="Demo only: changes stay in this browser tab. No one is emailed and no card is charged." />
+            <EditForm id="sd-tenant-form" EditContext="editContext" OnSubmit="SaveAsync" FormName="sd-tenant">
+                <div class="row g-3">
+                    <div class="col-md-7">
+                        <label class="form-label" for="sd-tenant-plan">Plan</label>
+                        <InputSelect @ref="planSelect" id="sd-tenant-plan" class="form-select" @bind-Value="form.PlanId" aria-describedby="sd-tenant-plan-help">
+                            @foreach (var option in State.Plans)
+                            {
+                                <option value="@option.Id">@PlanOptionText(option)</option>
+                            }
+                        </InputSelect>
+                        <div class="form-text" id="sd-tenant-plan-help">The billing period (@PeriodName(workspace.Period)) stays as it is, and no invoice is issued.</div>
+                    </div>
+                    <div class="col-md-5">
+                        <label class="form-label" for="sd-tenant-seats">Seats</label>
+                        <NumberInput TValue="int" Id="sd-tenant-seats" Value="form.Seats" ValueExpression="() => form.Seats" ValueChanged="OnSeatsChanged"
+                                     Min="1" Max="SaasSeedData.MaxSeats" EnableMinMax="true" Step="1" aria-describedby="sd-tenant-seats-help" />
+                        <div class="form-text" id="sd-tenant-seats-help">@SeatsHelp(workspace, plan)</div>
+                    </div>
+                    <div class="col-12">
+                        <fieldset aria-describedby="sd-tenant-status-note">
+                            <legend class="form-label fs-6 mb-2">Status</legend>
+                            <InputRadioGroup @bind-Value="form.Status">
+                                <div class="sd-tenant-statuses">
+                                    @foreach (var status in Enum.GetValues<SaasWorkspaceStatus>())
+                                    {
+                                        <div class="form-check" @key="status">
+                                            <InputRadio class="form-check-input" id="@($"sd-tenant-status-{status}")" Value="status" />
+                                            <label class="form-check-label" for="@($"sd-tenant-status-{status}")">
+                                                <span class="fw-semibold">@SaasDisplay.StatusName(status)</span>
+                                                <span class="d-block small text-body-secondary">@StatusHint(status)</span>
+                                            </label>
+                                        </div>
+                                    }
+                                </div>
+                            </InputRadioGroup>
+                        </fieldset>
+                        <p class="small mt-2 mb-0" id="sd-tenant-status-note">@StatusNote(workspace)</p>
+                    </div>
+                </div>
+                <p class="sd-tenant-error mt-3 mb-0" role="alert">@errorMessage</p>
+                <p class="sd-tenant-note mt-3 mb-0" role="status">@noteMessage</p>
+            </EditForm>
+        }
+    </BodyTemplate>
+    <FooterTemplate>
+        <Button Color="ButtonColor.Secondary" Outline="true" @onclick="HideAsync">Cancel</Button>
+        <Button Type="ButtonType.Submit" Color="ButtonColor.Primary" form="sd-tenant-form">Save changes</Button>
+    </FooterTemplate>
+</Modal>

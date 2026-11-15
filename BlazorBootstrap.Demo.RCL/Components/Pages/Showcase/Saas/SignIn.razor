@@ -1,0 +1,10 @@
+@page "/showcase/saas/sign-in"
+@layout SaasLayout
+
+<PageTitle>Sign in · @SaasSeedData.ProductName</PageTitle>
+
+<div class="container-xl pt-4 pb-5">
+    @* New customers start from the trial sign-up, which creates their workspace, so there's no separate register form. *@
+    <ShowcaseSignIn SiteBase="@SaasLayout.Base" SiteName="@SaasSeedData.ProductName" ReturnUrl="@ReturnUrl" />
+    <p class="text-center mt-4 mb-0">New to @SaasSeedData.ProductName? <a href="@($"{SaasLayout.Base}/signup")">Start a free trial</a></p>
+</div>

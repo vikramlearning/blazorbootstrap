@@ -1,0 +1,173 @@
+@page "/showcase/saas/admin/tenants"
+@layout SaasAdminLayout
+
+<PageTitle>Tenants · @SaasSeedData.ProductName</PageTitle>
+
+@{
+    var rows = FilteredRows();
+    var totalPages = TotalPages(rows.Count);
+    var page = Math.Clamp(pageNumber, 1, totalPages);
+    var pageRows = rows.Skip((page - 1) * pageSize).Take(pageSize).ToList();
+}
+
+<div class="sd-page-head">
+    <div>
+        <span class="sc-eyebrow">Tenants</span>
+        <h1 class="sd-page-title">Customer workspaces</h1>
+        <p class="sd-page-lead">@Count(State.Workspaces.Count) tenants · @Count(State.ActiveCount) active · @Count(State.TrialCount) on trial · @Count(State.SuspendedCount) suspended</p>
+    </div>
+</div>
+
+<Card Class="sd-card">
+    <CardBody Class="p-3 p-lg-4">
+        <div class="row g-2 align-items-end mb-3" role="search" aria-label="Filter tenants">
+            <div class="col-md-6 col-xl-5">
+                <label class="form-label small fw-semibold" for="sd-tenant-search">Search</label>
+                <InputGroup>
+                    <InputGroupText><Icon Name="IconName.Search" aria-hidden="true" /></InputGroupText>
+                    @* TextInput raises ValueChanged on change (blur or Enter); @oninput keeps filtering live while typing.
+                       The bound value changes only on change, so renders during typing never write an older value back into the box. *@
+                    <TextInput @ref="searchInput" Id="sd-tenant-search" Value="@searchBoxValue" ValueExpression="() => searchBoxValue" ValueChanged="OnSearchChanged"
+                               @oninput="OnSearchInput" Placeholder="Tenant, owner name, or email" />
+                </InputGroup>
+            </div>
+            <div class="col-6 col-md-3 col-xl-2">
+                <label class="form-label small fw-semibold" for="sd-tenant-status">Status</label>
+                <select id="sd-tenant-status" class="form-select" value="@statusFilter" @onchange="OnStatusChanged">
+                    <option value="">All</option>
+                    @foreach (var status in Enum.GetValues<SaasWorkspaceStatus>())
+                    {
+                        <option value="@status">@SaasDisplay.StatusName(status)</option>
+                    }
+                </select>
+            </div>
+            <div class="col-6 col-md-3 col-xl-2">
+                <label class="form-label small fw-semibold" for="sd-tenant-plan">Plan</label>
+                <select id="sd-tenant-plan" class="form-select" value="@planFilter" @onchange="OnPlanChanged">
+                    <option value="">All</option>
+                    @foreach (var plan in State.Plans)
+                    {
+                        <option value="@plan.Id">@plan.Name</option>
+                    }
+                </select>
+            </div>
+            @* Column headers sort on wider screens; on a phone most columns are folded into the tenant cell, so this picks the order. *@
+            <div class="col-12 d-lg-none">
+                <label class="form-label small fw-semibold" for="sd-tenant-sort">Sort by</label>
+                <select id="sd-tenant-sort" class="form-select" value="@SortValue(sortKey, sortDescending)" @onchange="OnSortChanged">
+                    @foreach (var key in Enum.GetValues<SortKey>())
+                    {
+                        <option value="@SortValue(key, DefaultDescending(key))">@SortLabel(key, DefaultDescending(key))</option>
+                        <option value="@SortValue(key, !DefaultDescending(key))">@SortLabel(key, !DefaultDescending(key))</option>
+                    }
+                </select>
+            </div>
+            @if (HasFilters)
+            {
+                <div class="col-12 col-xl-auto">
+                    <Button Color="ButtonColor.Secondary" Outline="true" @onclick="ClearFiltersAsync">Clear filters</Button>
+                </div>
+            }
+        </div>
+
+        <p class="small text-body-secondary mb-3" role="status">@SummaryText(rows.Count, page, pageRows.Count)</p>
+
+        <div class="table-responsive sd-grid">
+            <table class="table table-hover align-middle">
+                <caption class="visually-hidden">Tenants, @SortLabel(sortKey, sortDescending)</caption>
+                <thead>
+                    <tr>
+                        @foreach (var column in columns)
+                        {
+                            <th scope="col" class="@column.Class" aria-sort="@AriaSort(column.Key)" @key="column.Key">
+                                <button type="button" class="sd-sort" @onclick="() => SortBy(column.Key)">
+                                    @(column.Text)<Icon Name="@SortIcon(column.Key)" aria-hidden="true" />
+                                </button>
+                            </th>
+                        }
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (pageRows.Count == 0)
+                    {
+                        <tr>
+                            <td colspan="@columns.Length" class="text-center text-body-secondary py-5">No tenants match these filters.</td>
+                        </tr>
+                    }
+                    @foreach (var row in pageRows)
+                    {
+                        var workspace = row.Workspace;
+
+                        <tr @key="workspace.Id">
+                            <th scope="row" class="fw-normal">
+                                <div class="sd-person">
+                                    <Avatar Name="@workspace.Name" Color="SaasDisplay.AvatarColorFor(workspace.Id)" Size="AvatarSize.Small" />
+                                    <span class="sd-person-text">
+                                        <a class="sd-person-name" href="@($"{SaasAdminLayout.Base}/tenants/{workspace.Id}")">@workspace.Name</a>
+                                        <span class="sd-person-email">@workspace.Country</span>
+                                        @* On a phone the hidden columns are summed up here. *@
+                                        <span class="sd-tenant-compact d-lg-none">
+                                            <span class="sd-person-email">Owner: @(row.Owner?.Name ?? "none")</span>
+                                            <span class="d-flex flex-wrap align-items-center gap-1 mt-1">
+                                                <Badge Color="SaasDisplay.PlanColor(workspace.PlanId)" Class="rounded-pill">@row.Plan.Name</Badge>
+                                                <Badge Color="SaasDisplay.StatusColor(workspace.Status)" Class="rounded-pill">@SaasDisplay.StatusName(workspace.Status)</Badge>
+                                                <span class="small text-body-secondary">@row.SeatsUsed/@workspace.Seats seats</span>
+                                            </span>
+                                            <span class="sd-person-email">Created @SaasDisplay.Date(workspace.CreatedOn) · @RenewalText(workspace)</span>
+                                        </span>
+                                    </span>
+                                </div>
+                            </th>
+                            <td class="d-none d-lg-table-cell">
+                                @if (row.Owner is { } owner)
+                                {
+                                    <span class="sd-person-text">
+                                        <span class="fw-semibold">@owner.Name</span>
+                                        <span class="sd-person-email">@owner.Email</span>
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="text-body-secondary">None</span>
+                                }
+                            </td>
+                            <td class="d-none d-lg-table-cell"><Badge Color="SaasDisplay.PlanColor(workspace.PlanId)" Class="rounded-pill">@row.Plan.Name</Badge></td>
+                            <td class="d-none d-lg-table-cell text-end text-nowrap"><span class="sd-mono">@row.SeatsUsed/@workspace.Seats</span></td>
+                            <td class="d-none d-lg-table-cell"><Badge Color="SaasDisplay.StatusColor(workspace.Status)" Class="rounded-pill">@SaasDisplay.StatusName(workspace.Status)</Badge></td>
+                            <td class="text-end text-nowrap"><span class="sd-mono">@SaasDisplay.Money(row.Mrr)</span></td>
+                            <td class="d-none d-lg-table-cell text-nowrap">@SaasDisplay.Date(workspace.CreatedOn)</td>
+                            <td class="d-none d-lg-table-cell text-nowrap">
+                                @SaasDisplay.Date(RenewalDate(workspace))
+                                @if (workspace.Status == SaasWorkspaceStatus.Trial)
+                                {
+                                    <span class="d-block small text-body-secondary">Trial ends</span>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mt-3">
+            <div class="d-flex align-items-center gap-2">
+                <label class="small fw-semibold text-nowrap" for="sd-tenant-page-size">Rows per page</label>
+                <select id="sd-tenant-page-size" class="form-select form-select-sm w-auto" value="@pageSize" @onchange="OnPageSizeChanged">
+                    @foreach (var size in pageSizes)
+                    {
+                        <option value="@size">@size</option>
+                    }
+                </select>
+            </div>
+            <nav class="d-flex align-items-center gap-2" aria-label="Tenant pages">
+                <Button @ref="previousButton" Color="ButtonColor.Secondary" Outline="true" Size="ButtonSize.Small" Disabled="@(page <= 1)" @onclick="() => GoToPageAsync(page - 1, totalPages)">
+                    <Icon Name="IconName.ChevronLeft" class="me-1" aria-hidden="true" />Previous
+                </Button>
+                <span class="small text-body-secondary text-nowrap">Page @(page) of @totalPages</span>
+                <Button @ref="nextButton" Color="ButtonColor.Secondary" Outline="true" Size="ButtonSize.Small" Disabled="@(page >= totalPages)" @onclick="() => GoToPageAsync(page + 1, totalPages)">
+                    Next<Icon Name="IconName.ChevronRight" class="ms-1" aria-hidden="true" />
+                </Button>
+            </nav>
+        </div>
+    </CardBody>
+</Card>
