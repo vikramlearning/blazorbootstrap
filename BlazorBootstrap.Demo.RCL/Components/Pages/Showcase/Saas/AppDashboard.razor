@@ -139,7 +139,9 @@
             {
                 @* A table can't shrink below its content, so the clipping wrapper keeps the hidden table from widening the page. *@
                 <div class="position-relative overflow-hidden">
-                    <table class="visually-hidden">
+                    @* The wrapper hides the table: a hidden table itself can't shrink below its content and would widen the page. *@
+                    <div class="visually-hidden">
+                    <table>
                         <caption>Sessions over @RangeDescription</caption>
                         <thead>
                             <tr>
@@ -157,6 +159,7 @@
                             }
                         </tbody>
                     </table>
+                    </div>
                 </div>
             }
         </CardBody>

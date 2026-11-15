@@ -19,6 +19,25 @@
     background: rgba(var(--bs-warning-rgb), .1);
 }
 
+/* Open invoices waiting for payment. */
+.lu-due {
+    display: flex;
+    align-items: flex-start;
+    gap: .75rem;
+    padding: 1rem 1.25rem;
+    border: 1px solid rgba(var(--bs-danger-rgb), .5);
+    border-left-width: .375rem;
+    border-radius: .75rem;
+    background: rgba(var(--bs-danger-rgb), .08);
+}
+
+/* The icon is a library component, so the scoped style reaches it through ::deep. */
+.lu-due ::deep .lu-due-icon {
+    margin-top: .25rem;
+    font-size: 1.25rem;
+    color: var(--bs-danger-text-emphasis);
+}
+
 .lu-error {
     color: var(--bs-danger-text-emphasis);
     font-weight: 500;

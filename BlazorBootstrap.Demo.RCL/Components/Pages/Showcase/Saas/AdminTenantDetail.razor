@@ -1,7 +1,14 @@
 @page "/showcase/saas/admin/tenants/{Id:int}"
 @layout SaasAdminLayout
 
-@if (Workspace is not { } workspace)
+@if (deletedName is not null)
+{
+    @* The tenant is gone while the dialog closes; the page then moves to the tenant list. *@
+    <PageTitle>Tenant deleted · Tenants · @SaasSeedData.ProductName</PageTitle>
+
+    <p class="sd-tenant-status" role="status">@deletedName is deleted. Opening the tenant list…</p>
+}
+else if (Workspace is not { } workspace)
 {
     <SaasNotFound BackPath="@($"{SaasAdminLayout.Base}/tenants")" BackText="Back to tenants" />
 }
@@ -40,9 +47,17 @@ else
                 </span>
             </div>
         </div>
-        <Button @ref="editButton" Color="ButtonColor.Primary" @onclick="EditAsync">
-            <Icon Name="IconName.Pencil" class="me-1" aria-hidden="true" />Edit tenant
-        </Button>
+        <div class="d-flex flex-wrap gap-2">
+            <Button @ref="editButton" Color="ButtonColor.Primary" @onclick="EditAsync">
+                <Icon Name="IconName.Pencil" class="me-1" aria-hidden="true" />Edit tenant
+            </Button>
+            @if (workspace.Status == SaasWorkspaceStatus.Archived)
+            {
+                <Button @ref="deleteButton" Color="ButtonColor.Danger" Outline="true" @onclick="AskDeleteAsync">
+                    <Icon Name="IconName.Trash3" class="me-1" aria-hidden="true" />Delete tenant
+                </Button>
+            }
+        </div>
     </div>
 
     @* Always rendered, so a saved change is announced. *@
@@ -231,3 +246,26 @@ else
 
     <SaasTenantEditor @ref="editor" OnSaved="OnSaved" />
 }
+
+@* Outside the tenant markup, so the dialog stays on the page while it closes after the tenant is deleted. *@
+<Modal @ref="deleteModal" IsVerticallyCentered="true" ShowCloseButton="false" aria-labelledby="sd-tenant-delete-title" OnHidden="OnDeleteHiddenAsync">
+    <HeaderTemplate>
+        <h2 class="modal-title h5" id="sd-tenant-delete-title">Delete @(deleting?.Name ?? "this tenant") for good?</h2>
+    </HeaderTemplate>
+    <BodyTemplate>
+        @if (deleting is { } info)
+        {
+            <p class="mb-2">
+                This removes @info.Name from this tab with its team (@CountWords(info.Members, "member or invitation", "members and invitations")),
+                its invoices (@CountWords(info.Invoices, "invoice", "invoices")), and its activity history. It can't be undone.
+            </p>
+            <p class="small text-body-secondary mb-0">The audit log keeps a "Tenant deleted" entry. A tenant that someone signs in to in this demo is kept.</p>
+            @* Always rendered, so a refusal is announced; a counter makes a repeat announce again. *@
+            <p class="fw-semibold text-danger-emphasis mb-0 @(deleteError is null ? string.Empty : "mt-3")" role="alert">@deleteError</p>
+        }
+    </BodyTemplate>
+    <FooterTemplate>
+        <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => deleteModal.HideAsync()">Keep tenant</Button>
+        <Button Color="ButtonColor.Danger" @onclick="ConfirmDeleteAsync">Delete tenant</Button>
+    </FooterTemplate>
+</Modal>

@@ -11,6 +11,7 @@
     var isTrial = workspace.Status == SaasWorkspaceStatus.Trial;
     var isFree = plan.MonthlyPricePerSeat == 0;
     var invoices = State.InvoicesOf(workspace.Id);
+    var openInvoices = invoices.Where(invoice => invoice.Status == SaasInvoiceStatus.Open).ToList();
     var cardText = CardText(workspace.CardBrand, workspace.CardLast4);
 
     <div class="sd-page-head">
@@ -35,6 +36,34 @@
 
     @* Always rendered and focusable, so each change is announced and focus has somewhere to go. *@
     <p class="lu-status" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
+
+    @* Payment due: open invoices (a renewal without a card, or a workspace set up by Lumora) wait for payment here. *@
+    @if (openInvoices.Count > 0)
+    {
+        var openTotal = openInvoices.Sum(invoice => invoice.Amount);
+
+        <section class="lu-due mb-4" aria-labelledby="lu-due-title">
+            <Icon Name="IconName.ExclamationTriangleFill" class="lu-due-icon flex-shrink-0" aria-hidden="true" />
+            <div class="flex-grow-1">
+                <h2 class="h5 fw-bold mb-1" id="lu-due-title">Payment due</h2>
+                <p class="mb-2">
+                    @(openInvoices.Count == 1 ? "1 invoice is" : $"{openInvoices.Count.ToString(CultureInfo.InvariantCulture)} invoices are") open, <strong class="sd-mono">@SaasDisplay.MoneyCents(openTotal)</strong> in total.
+                    @(canManage
+                        ? (cardText is null ? "There's no card on file: Pay now opens the card form first." : $"Pay now charges the {cardText}.")
+                        : (me.Role is SaasMemberRole.Owner or SaasMemberRole.Billing
+                            ? "Payments are turned off while the workspace is suspended or archived."
+                            : "An owner or billing member can pay them."))
+                </p>
+                @if (canManage)
+                {
+                    <Button @ref="payButton" Color="ButtonColor.Danger" @onclick="PayNowAsync">
+                        <Icon Name="IconName.CreditCard" class="me-1" aria-hidden="true" />Pay now<span class="visually-hidden">, @SaasDisplay.MoneyCents(openTotal)</span>
+                    </Button>
+                }
+                <p class="lu-error mt-2 mb-0" role="alert">@payError</p>
+            </div>
+        </section>
+    }
 
     <div class="row g-4">
         @* Current plan *@
@@ -392,7 +421,7 @@
                                 <td class="text-nowrap">@SaasDisplay.Date(invoice.IssuedOn)</td>
                                 <td class="lu-invoice-description">@invoice.Description</td>
                                 <td class="text-end sd-mono text-nowrap">@SaasDisplay.MoneyCents(invoice.Amount)</td>
-                                <td><Badge Color="InvoiceColor(invoice.Status)" Class="rounded-pill">@invoice.Status</Badge></td>
+                                <td class="text-nowrap"><Badge Color="InvoiceColor(invoice.Status)" Class="rounded-pill">@InvoiceStatusText(invoice)</Badge></td>
                                 <td class="text-nowrap">
                                     @if (CardText(invoice.CardBrand, invoice.CardLast4) is { } invoiceCard)
                                     {

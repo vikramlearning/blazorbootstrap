@@ -1,0 +1,114 @@
+.ap-status {
+    margin-bottom: 1rem;
+    font-weight: 600;
+}
+
+    .ap-status:empty {
+        margin: 0;
+    }
+
+/* How a change takes effect: a quiet panel above the plan cards. */
+.ap-effect {
+    padding: 1rem 1.25rem;
+    border: 1px solid var(--bs-info-border-subtle);
+    border-radius: .75rem;
+    background: var(--bs-info-bg-subtle);
+    color: var(--bs-info-text-emphasis);
+}
+
+    .ap-effect ul {
+        padding-left: 1.25rem;
+    }
+
+.ap-badges {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: .25rem;
+}
+
+.ap-price {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: .5rem;
+}
+
+.ap-subhead {
+    margin-bottom: .5rem;
+    font-size: .75rem;
+    font-weight: 700;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    color: var(--bs-secondary-color);
+}
+
+.ap-highlights {
+    display: grid;
+    gap: .25rem;
+    padding: 0;
+    list-style: none;
+}
+
+    .ap-highlights li {
+        display: flex;
+        gap: .5rem;
+        overflow-wrap: anywhere;
+    }
+
+    .ap-highlights ::deep .bi {
+        flex-shrink: 0;
+        color: var(--bs-success);
+    }
+
+/* The dialog's preview column. */
+.ap-preview {
+    height: 100%;
+    padding: 1rem;
+    border: 1px solid var(--bs-border-color);
+    border-radius: .75rem;
+    background: var(--bs-tertiary-bg);
+}
+
+/* A small echo of the plan's card on the public pricing page (decorative; the figures follow in text). */
+.ap-mock {
+    padding: 1rem;
+    border: 1px solid var(--bs-border-color);
+    border-radius: .75rem;
+    background: var(--bs-body-bg);
+    overflow-wrap: anywhere;
+}
+
+.ap-mock-price {
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.ap-mock-cta {
+    display: inline-block;
+    max-width: 100%;
+    padding: .25rem .75rem;
+    border-radius: 999px;
+    background: var(--sc-primary);
+    color: var(--sc-primary-contrast);
+    font-size: .875rem;
+    font-weight: 600;
+}
+
+    .ap-mock-cta:empty {
+        display: none;
+    }
+
+.ap-error,
+.ap-note {
+    font-weight: 600;
+}
+
+    .ap-error:empty,
+    .ap-note:empty {
+        margin: 0 !important;
+    }
+
+.ap-error {
+    color: var(--bs-danger-text-emphasis);
+}

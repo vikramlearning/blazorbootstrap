@@ -240,8 +240,21 @@ public enum SaasLeadStatus
     Closed,
 }
 
-/// <summary>A message sent from the public "Contact sales" form.</summary>
-public sealed record SaasLead(int Id, string Name, string Email, string Company, string TeamSize, string Message, DateTime CreatedOn, SaasLeadStatus Status);
+/// <summary>A message sent from the public "Contact sales" form; <see cref="Note" /> is the sales team's own note.</summary>
+public sealed record SaasLead(int Id, string Name, string Email, string Company, string TeamSize, string Message, DateTime CreatedOn, SaasLeadStatus Status, string? Note = null);
+
+#endregion
+
+#region Operations
+
+/// <summary>
+/// One entry in the operator's audit log: who did what to which record. <see cref="ActorId" /> is an account ID, or
+/// <c>system</c> for automatic billing.
+/// </summary>
+public sealed record SaasAuditEntry(int Id, DateTime At, string ActorId, string ActorName, string Action, string Target, string Detail, string? Link);
+
+/// <summary>Money collected and refunded in one calendar month, from the invoices.</summary>
+public sealed record SaasMonthRevenue(DateTime Month, decimal Collected, decimal Refunded);
 
 #endregion
 

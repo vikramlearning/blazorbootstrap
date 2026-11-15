@@ -71,19 +71,21 @@
                 <thead>
                     <tr>
                         <th scope="col">Feature</th>
-                        <th scope="col">Starter</th>
-                        <th scope="col">Growth</th>
-                        <th scope="col">Enterprise</th>
+                        @foreach (var plan in State.Plans)
+                        {
+                            <th scope="col" @key="plan.Id">@plan.Name</th>
+                        }
                     </tr>
                 </thead>
                 <tbody>
                     @foreach (var row in comparison)
                     {
-                        <tr>
+                        <tr @key="row.Feature">
                             <th scope="row" class="fw-medium">@row.Feature</th>
-                            <td>@row.Starter</td>
-                            <td>@row.Growth</td>
-                            <td>@row.Enterprise</td>
+                            @foreach (var plan in State.Plans)
+                            {
+                                <td @key="plan.Id">@CompareValue(row, plan)</td>
+                            }
                         </tr>
                     }
                 </tbody>
@@ -99,6 +101,14 @@
 @code {
     private const string ContactPath = SaasLayout.Base + "/contact";
 
+    // Comparison rows that read the plans' limits, so an operator's change in Plans & prices shows here too.
+    private const string DashboardsRow = "Dashboards";
+
+    private const string EventsRow = "Tracked events / month";
+
+    private const string SeatsRow = "Team seats";
+
+    /// <summary>The comparison's rows; the limit rows take their values from the plans, the others from the seed.</summary>
     private static readonly IReadOnlyList<SaasComparisonRow> comparison = SaasSeedData.Comparison();
 
     private bool comparisonOpen;
@@ -144,6 +154,24 @@
             ? $"Billed annually ({SaasDisplay.Money(price * 12)} per seat / year)."
             : $"Billed monthly. Switch to annual to save {DiscountPercent}%.";
     }
+
+    /// <summary>
+    /// A plan's value in a comparison row: events, dashboards, and seats from the plan's limits (0 is unlimited), the other
+    /// rows from the seed's column for the plan.
+    /// </summary>
+    private static string CompareValue(SaasComparisonRow row, SaasPlan plan) => row.Feature switch
+    {
+        EventsRow => plan.EventLimit == 0 ? "Unlimited" : SaasDisplay.Events(plan.EventLimit),
+        DashboardsRow => plan.DashboardLimit == 0 ? "Unlimited" : plan.DashboardLimit.ToString("#,0", CultureInfo.InvariantCulture),
+        SeatsRow => plan.SeatLimit == 0 ? "Unlimited" : plan.SeatLimit.ToString("#,0", CultureInfo.InvariantCulture),
+        _ => plan.Id switch
+        {
+            "starter" => row.Starter,
+            "growth" => row.Growth,
+            "enterprise" => row.Enterprise,
+            _ => "—",
+        },
+    };
 
     private async Task ToggleComparisonAsync() => await comparisonCollapse.ToggleAsync();
 }

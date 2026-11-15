@@ -107,6 +107,28 @@ public static class SaasSeedData
         return activities;
     }
 
+    /// <summary>
+    /// The operator's audit log at seed time: the suspensions of the seeded suspended workspaces and the work on the seeded
+    /// leads, oldest first, so it agrees with the seeded data.
+    /// </summary>
+    public static List<SaasAuditEntry> Audit(IEnumerable<SaasWorkspace> workspaces)
+    {
+        var audit = new List<SaasAuditEntry>();
+        const string OperatorId = "sam";
+        const string OperatorName = "Sam Ortega";
+
+        foreach (var workspace in workspaces.Where(workspace => workspace.Status == SaasWorkspaceStatus.Suspended))
+        {
+            audit.Add(new SaasAuditEntry(0, Today.AddDays(-(10 + workspace.Id % 7)).AddHours(11), OperatorId, OperatorName, "Tenant suspended", workspace.Name,
+                "The renewal invoice is unpaid and the card on file failed.", $"/showcase/saas/admin/tenants/{workspace.Id}"));
+        }
+
+        audit.Add(new SaasAuditEntry(0, Today.AddDays(-9).AddHours(17), OperatorId, OperatorName, "Lead updated", "Lumen Retail", "New → Closed", "/showcase/saas/admin/leads"));
+        audit.Add(new SaasAuditEntry(0, Today.AddDays(-3).AddHours(10), OperatorId, OperatorName, "Lead updated", "Coral Bank", "New → Contacted", "/showcase/saas/admin/leads"));
+
+        return audit.OrderBy(entry => entry.At).Select((entry, index) => entry with { Id = index + 1 }).ToList();
+    }
+
     /// <summary>Customer stories.</summary>
     public static IReadOnlyList<SaasCaseStudy> CaseStudies() => new List<SaasCaseStudy>
     {
@@ -229,8 +251,8 @@ public static class SaasSeedData
     public static List<SaasLead> Leads() => new()
     {
         new(1, "Hiro Tanaka", "hiro.tanaka@meridianair.example", "Meridian Air", "501–2,000", "We need SSO and an EU data region for 900 analysts. Can we talk this week?", Today.AddDays(-1).AddHours(14), SaasLeadStatus.New),
-        new(2, "Grace Mbeki", "grace@coralbank.example", "Coral Bank", "101–500", "Looking at Enterprise for a security review in December.", Today.AddDays(-4).AddHours(11), SaasLeadStatus.Contacted),
-        new(3, "Tomás Ruiz", "tomas@lumenretail.example", "Lumen Retail", "26–100", "Is real-time warehouse sync available on a smaller plan?", Today.AddDays(-9).AddHours(16), SaasLeadStatus.Closed),
+        new(2, "Grace Mbeki", "grace@coralbank.example", "Coral Bank", "101–500", "Looking at Enterprise for a security review in December.", Today.AddDays(-4).AddHours(11), SaasLeadStatus.Contacted, "Called Nov 6. Security questionnaire sent; follow up on Nov 16."),
+        new(3, "Tomás Ruiz", "tomas@lumenretail.example", "Lumen Retail", "26–100", "Is real-time warehouse sync available on a smaller plan?", Today.AddDays(-9).AddHours(16), SaasLeadStatus.Closed, "Not a fit: they need real-time sync on 30 seats. Pointed them to Growth with daily sync."),
     };
 
     /// <summary>Members of every workspace: the owner first, then teammates; the demo workspace's team is spelled out.</summary>

@@ -8,7 +8,8 @@ namespace BlazorBootstrap.Demo.RCL.Components.Pages.Showcase.Saas;
 /// <summary>
 /// The workspace's billing: the current plan, a plan picker (self-serve plans, monthly or annual, and seats) with a live
 /// prorated quote from <see cref="SaasState.QuotePlan" />, the card on file with a test-card form to add or replace it,
-/// and the invoices. On trial, the same picker converts the trial. Owners and billing members make changes; everyone else
+/// and the invoices. Open invoices show a "Payment due" panel whose "Pay now" calls <see cref="SaasState.PayOpenInvoices" />
+/// (without a card it opens the card form first). On trial, the same picker converts the trial. Owners and billing members make changes; everyone else
 /// sees the plan and invoices read-only. Every action ends in a status message or an error, and focus returns to the
 /// button that opened the card form.
 /// </summary>
@@ -37,7 +38,16 @@ public partial class AppBilling : ComponentBase, IDisposable
     /// <summary>Whether the card form was opened because a plan change needed a card, so focus goes back to the plan's button.</summary>
     private bool cardOpenedFromPlan;
 
+    /// <summary>Whether the card form was opened because paying the open invoices needed a card, so focus goes back to "Pay now".</summary>
+    private bool cardOpenedFromPay;
+
     private Button? confirmButton;
+
+    private Button? payButton;
+
+    private string payError = string.Empty;
+
+    private int payErrors;
 
     private SaasBillingPeriod period = SaasBillingPeriod.Annual;
 
@@ -92,6 +102,11 @@ public partial class AppBilling : ComponentBase, IDisposable
 
     /// <summary>Returns "Visa ending in 4242", or <see langword="null" /> without a card.</summary>
     internal static string? CardText(string? brand, string? last4) => last4 is null ? null : $"{brand ?? "Card"} ending in {last4}";
+
+    /// <summary>Returns "Paid", "Open", "Refunded", or "Partially refunded ($12.50)".</summary>
+    internal static string InvoiceStatusText(SaasInvoice invoice) => invoice is { Status: SaasInvoiceStatus.Paid, RefundedAmount: > 0 }
+        ? $"Partially refunded ({SaasDisplay.MoneyCents(invoice.RefundedAmount)})"
+        : invoice.Status.ToString();
 
     #endregion
 
@@ -186,12 +201,14 @@ public partial class AppBilling : ComponentBase, IDisposable
     {
         if (cardOpenedFromPlan && confirmButton is not null)
             await SaasDisplay.FocusAsync(confirmButton.Element);
+        else if (cardOpenedFromPay && payButton is not null)
+            await SaasDisplay.FocusAsync(payButton.Element);
         else if (cardButton is not null)
             await SaasDisplay.FocusAsync(cardButton.Element);
         else
             await SaasDisplay.FocusAsync(statusRegion);
 
-        cardOpenedFromPlan = false;
+        cardOpenedFromPlan = cardOpenedFromPay = false;
     }
 
     private void OnSeatsChanged(int value)
@@ -212,9 +229,10 @@ public partial class AppBilling : ComponentBase, IDisposable
 
     private Task OpenCardAsync() => OpenCardFormAsync(fromPlan: false);
 
-    private async Task OpenCardFormAsync(bool fromPlan)
+    private async Task OpenCardFormAsync(bool fromPlan, bool fromPay = false)
     {
         cardOpenedFromPlan = fromPlan;
+        cardOpenedFromPay = fromPay;
         cardError = null;
         cardErrors = 0;
 
@@ -226,6 +244,47 @@ public partial class AppBilling : ComponentBase, IDisposable
 
         await Task.Yield();
         await SaasDisplay.FocusAsync(cardFormHeading);
+    }
+
+    /// <summary>Pays the open invoices with the card on file; without a card, opens the card form the way a plan change does.</summary>
+    private async Task PayNowAsync()
+    {
+        if (State.CurrentWorkspace is not { } before)
+            return;
+
+        var open = State.InvoicesOf(before.Id).Where(invoice => invoice.Status == SaasInvoiceStatus.Open).ToList();
+        var result = State.PayOpenInvoices();
+
+        if (result == SaasResult.Ok)
+        {
+            payError = string.Empty;
+            var total = SaasDisplay.MoneyCents(open.Sum(invoice => invoice.Amount));
+            var text = open.Count == 1
+                ? $"Invoice {open[0].Number} is paid: {total} with the {CardText(before.CardBrand, before.CardLast4)}."
+                : $"{open.Count.ToString(CultureInfo.InvariantCulture)} invoices are paid: {total} with the {CardText(before.CardBrand, before.CardLast4)}.";
+
+            if (before.Status == SaasWorkspaceStatus.PastDue && State.CurrentWorkspace is { Status: SaasWorkspaceStatus.Active })
+                text += " The workspace is no longer past due.";
+
+            SetStatus(text + " Nothing real is charged in this demo.");
+            StateHasChanged();
+
+            // The panel and its button are gone once nothing is open.
+            await Task.Yield();
+            await SaasDisplay.FocusAsync(statusRegion);
+
+            return;
+        }
+
+        SetPayError(result switch
+        {
+            SaasResult.CardRequired => "Add a card first: there's no card on file to pay with. The card form is open below; once the card is saved, select Pay now again.",
+            SaasResult.NoChange => "There's nothing to pay: no invoice is open.",
+            _ => "Only owners and billing members pay invoices, and not while the workspace is suspended or archived.",
+        });
+
+        if (result == SaasResult.CardRequired)
+            await OpenCardFormAsync(fromPlan: false, fromPay: true);
     }
 
     private string PlanChangedText(SaasWorkspace before, SaasPlan plan, SaasPlanQuote? quote, bool wasTrial)
@@ -296,12 +355,18 @@ public partial class AppBilling : ComponentBase, IDisposable
         }
 
         var fromPlan = cardOpenedFromPlan;
+        var fromPay = cardOpenedFromPay;
         SetStatus(fromPlan
             ? $"The {CardText(charge.Brand, charge.Last4)} is saved as the payment method. Confirm the plan change to continue."
-            : $"The {CardText(charge.Brand, charge.Last4)} is saved as the payment method and pays the next invoices. It was checked with a zero-amount test charge; nothing real is charged.");
+            : fromPay
+                ? $"The {CardText(charge.Brand, charge.Last4)} is saved as the payment method. Select Pay now to pay the open invoices."
+                : $"The {CardText(charge.Brand, charge.Last4)} is saved as the payment method and pays the next invoices. It was checked with a zero-amount test charge; nothing real is charged.");
 
         if (fromPlan)
             planError = string.Empty;
+
+        if (fromPay)
+            payError = string.Empty;
 
         card = new ShowcaseCardInput();
         cardError = null;
@@ -337,6 +402,12 @@ public partial class AppBilling : ComponentBase, IDisposable
     {
         cardErrors++;
         cardError = cardErrors == 1 ? message : $"{message} (attempt {cardErrors})";
+    }
+
+    private void SetPayError(string message)
+    {
+        payErrors++;
+        payError = payErrors == 1 ? message : $"{message} ({payErrors})";
     }
 
     private void SetPlanError(string message)

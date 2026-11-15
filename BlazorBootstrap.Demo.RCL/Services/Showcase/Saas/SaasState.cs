@@ -20,12 +20,28 @@ public sealed class SaasState : IShowcaseSiteState
     /// <summary>The customer workspace's billing page.</summary>
     public const string BillingPath = AppPath + "/billing";
 
+    /// <summary>The operator's leads inbox.</summary>
+    public const string LeadsPath = "/showcase/saas/admin/leads";
+
+    /// <summary>The operator's plan editor.</summary>
+    public const string PlansPath = "/showcase/saas/admin/plans";
+
     /// <summary>The longest workspace name.</summary>
     public const int MaxWorkspaceNameLength = 60;
 
-    private const int MaxActivities = 5000;
+    /// <summary>The ID the audit log uses for automatic billing.</summary>
+    public const string SystemActorId = "system";
 
-    private const int MaxInvoices = 10_000;
+    /// <summary>The lowest price of a paid plan per seat a month; lower prices would round to $0 on annual billing.</summary>
+    public const decimal MinPaidSeatPrice = 1m;
+
+    private const int MaxActivities = 2000;
+
+    private const int MaxAudit = 1000;
+
+    private const int MaxInvoices = 3000;
+
+    private const int MaxRenewalsPerRun = 24;
 
     private const int MaxLeads = 500;
 
@@ -40,6 +56,8 @@ public sealed class SaasState : IShowcaseSiteState
     private static readonly JsonSerializerOptions snapshotOptions = new(JsonSerializerDefaults.Web) { MaxDepth = 32 };
 
     private readonly List<SaasActivity> activities;
+
+    private readonly List<SaasAuditEntry> audit;
 
     private readonly List<SaasInvoice> invoices;
 
@@ -60,6 +78,8 @@ public sealed class SaasState : IShowcaseSiteState
     private SaasAnalyticsRange analyticsRange = SaasAnalyticsRange.Last30Days;
 
     private bool isDarkTheme;
+
+    private int nextAuditId;
 
     private int nextLeadId;
 
@@ -83,6 +103,8 @@ public sealed class SaasState : IShowcaseSiteState
         activities = SaasSeedData.Activities(workspaces);
         notices = SaasSeedData.Notices();
         leads = SaasSeedData.Leads();
+        audit = SaasSeedData.Audit(workspaces);
+        nextAuditId = audit.Count + 1;
         nextWorkspaceId = workspaces.Max(workspace => workspace.Id) + 1;
         nextMemberId = members.Max(member => member.Id) + 1;
         nextNoticeId = notices.Max(notice => notice.Id) + 1;
@@ -90,7 +112,11 @@ public sealed class SaasState : IShowcaseSiteState
         seedMrr = Mrr;
 
         Identity = new ShowcaseIdentity(SaasSeedData.Roles(), SaasSeedData.DemoAccounts());
-        Identity.Changed += () => Changed?.Invoke();
+        Identity.Changed += () =>
+        {
+            SyncMemberProfile();
+            Changed?.Invoke();
+        };
     }
 
     #endregion
@@ -98,6 +124,277 @@ public sealed class SaasState : IShowcaseSiteState
     #region Methods
 
     #region Public Methods
+
+    /// <summary>Returns the audit log, newest first.</summary>
+    public IReadOnlyList<SaasAuditEntry> AuditLog() => audit.OrderByDescending(entry => entry.At).ThenByDescending(entry => entry.Id).ToList();
+
+    /// <summary>
+    /// Bills whatever has come due since the tab's clock last looked: trials that ended and renewals that passed. A card on
+    /// file pays the invoice; without one the invoice stays open and the workspace is past due. Pages call this when they
+    /// open; it does nothing on a fresh tab, where every date is in the future.
+    /// </summary>
+    public void CatchUpBilling()
+    {
+        var today = Clock.Today;
+        var changed = false;
+
+        foreach (var original in workspaces.ToList())
+        {
+            var workspace = original;
+
+            for (var run = 0; run < MaxRenewalsPerRun && workspace.Status is SaasWorkspaceStatus.Trial or SaasWorkspaceStatus.Active or SaasWorkspaceStatus.PastDue
+                 && workspace.RenewsOn.Date <= today; run++)
+            {
+                workspace = Renew(workspace);
+                changed = true;
+            }
+        }
+
+        if (changed)
+            Changed?.Invoke();
+    }
+
+    /// <summary>Charges the card on file for an open invoice (operator "Retry payment"); a past-due workspace with nothing else open becomes active.</summary>
+    public SaasResult CollectInvoice(string number)
+    {
+        if (!IsOperator)
+            return SaasResult.NotAllowed;
+
+        if (invoices.FirstOrDefault(invoice => invoice.Number == number) is not { Status: SaasInvoiceStatus.Open } invoice || FindWorkspace(invoice.WorkspaceId) is not { } workspace)
+            return SaasResult.NotFound;
+
+        if (workspace.CardLast4 is null)
+            return SaasResult.CardRequired;
+
+        Pay(invoice, workspace);
+        AddAudit("Payment collected", workspace.Name, $"{invoice.Number}: {Money(invoice.Amount)} from the {workspace.CardBrand} ending in {workspace.CardLast4}", InvoicePath(invoice.Number));
+        Changed?.Invoke();
+
+        return SaasResult.Ok;
+    }
+
+    /// <summary>Returns the money collected and refunded per calendar month, oldest first, for the last <paramref name="months" /> months.</summary>
+    public IReadOnlyList<SaasMonthRevenue> CollectedByMonth(int months)
+    {
+        var first = new DateTime(Clock.Today.Year, Clock.Today.Month, 1).AddMonths(-(Math.Clamp(months, 1, 36) - 1));
+
+        return Enumerable.Range(0, Math.Clamp(months, 1, 36))
+            .Select(offset => first.AddMonths(offset))
+            .Select(month => new SaasMonthRevenue(month,
+                invoices.Where(invoice => invoice.Status != SaasInvoiceStatus.Open && invoice.IssuedOn.Year == month.Year && invoice.IssuedOn.Month == month.Month).Sum(invoice => invoice.Amount),
+                invoices.Where(invoice => invoice.RefundedAmount > 0 && invoice.IssuedOn.Year == month.Year && invoice.IssuedOn.Month == month.Month).Sum(invoice => invoice.RefundedAmount)))
+            .ToList();
+    }
+
+    /// <summary>
+    /// Creates a tenant from the operator console: the workspace and its owner (who has no demo sign-in). A trial runs 14 days
+    /// on a self-serve plan; an active paid tenant gets its first invoice, open until the owner pays it. A lead it came from is
+    /// closed with a note.
+    /// </summary>
+    /// <returns>The result and the new workspace's ID on success.</returns>
+    public (SaasResult Result, int? WorkspaceId) CreateWorkspaceAsOperator(string name, string ownerName, string ownerEmail, string planId, SaasBillingPeriod period, int seats,
+        string country, bool startTrial, int? leadId)
+    {
+        if (!IsOperator)
+            return (SaasResult.NotAllowed, null);
+
+        if (FindPlan(planId) is not { } plan || !Enum.IsDefined(period) || (startTrial && (plan.MonthlyPricePerSeat == 0 || !plan.IsSelfServe)))
+            return (SaasResult.NotFound, null);
+
+        if (!IsText(name?.Trim(), MaxWorkspaceNameLength) || !IsText(ownerName?.Trim(), ShowcaseIdentity.MaxNameLength) || !IsEmail(ownerEmail?.Trim())
+            || !SaasSeedData.Countries.Contains(country) || workspaces.Count >= MaxWorkspaces || members.Count >= MaxMembers)
+            return (SaasResult.Invalid, null);
+
+        if (seats < 1 || seats > (plan.SeatLimit == 0 ? SaasSeedData.MaxSeats : plan.SeatLimit))
+            return (SaasResult.SeatsOutOfRange, null);
+
+        var today = Clock.Today;
+        var paid = plan.MonthlyPricePerSeat > 0;
+        var billing = paid ? period : SaasBillingPeriod.Monthly;
+        DateTime? trialEndsOn = startTrial ? today.AddDays(SaasSeedData.TrialDays) : null;
+        var renewsOn = trialEndsOn ?? (paid ? SaasPricing.PeriodEnd(today, billing) : today.AddMonths(1));
+        var workspace = new SaasWorkspace(nextWorkspaceId++, name!.Trim(), plan.Id, billing, seats, startTrial ? SaasWorkspaceStatus.Trial : SaasWorkspaceStatus.Active,
+            today, trialEndsOn, renewsOn, country, 0, 0, 0m, null, null, 0, 0, SaasSeedData.DefaultSettings(country));
+        workspaces.Add(workspace);
+        members.Add(new SaasMember(nextMemberId++, workspace.Id, null, ownerName!.Trim(), ownerEmail!.Trim(), SaasMemberRole.Owner, SaasMemberStatus.Invited, Clock.Now, null));
+        Log(workspace.Id, "Workspace created by Lumora", startTrial ? $"{plan.Name} trial, {SaasSeedData.TrialDays} days" : $"{plan.Name} plan, {seats} seats", IconName.Flag);
+
+        if (!startTrial && paid)
+        {
+            AddInvoice(workspace.Id, today, renewsOn, $"{plan.Name} plan, {seats} seats, {SaasSeedData.PeriodLabel(billing)}", SaasPricing.PeriodAmount(plan, billing, seats), null, null,
+                SaasInvoiceStatus.Open);
+        }
+
+        if (leadId is { } id && leads.FindIndex(lead => lead.Id == id) is var index and >= 0)
+            leads[index] = leads[index] with { Status = SaasLeadStatus.Closed, Note = Trim($"Won: tenant {workspace.Name} created on {today:MMM d}. {leads[index].Note}", 1000) };
+
+        AddAudit("Tenant created", workspace.Name, startTrial ? $"{plan.Name} trial for {ownerName.Trim()}" : $"{plan.Name}, {seats} seats, {SaasSeedData.PeriodLabel(billing)}, owner {ownerName.Trim()}",
+            TenantPath(workspace.Id));
+        Changed?.Invoke();
+
+        return (SaasResult.Ok, workspace.Id);
+    }
+
+    /// <summary>
+    /// Deletes an archived tenant for good: its members, invoices, and activity. A tenant whose members can sign in to this
+    /// demo is kept, so nobody loses the workspace they're using.
+    /// </summary>
+    public SaasResult DeleteWorkspaceAsOperator(int workspaceId)
+    {
+        if (!IsOperator)
+            return SaasResult.NotAllowed;
+
+        if (FindWorkspace(workspaceId) is not { } workspace)
+            return SaasResult.NotFound;
+
+        if (workspace.Status != SaasWorkspaceStatus.Archived || members.Any(member => member.WorkspaceId == workspaceId && member.AccountId is not null))
+            return SaasResult.NotAllowed;
+
+        workspaces.Remove(workspace);
+        members.RemoveAll(member => member.WorkspaceId == workspaceId);
+        invoices.RemoveAll(invoice => invoice.WorkspaceId == workspaceId);
+        activities.RemoveAll(activity => activity.WorkspaceId == workspaceId);
+        AddAudit("Tenant deleted", workspace.Name, "Archived tenant removed with its members, invoices, and activity.", null);
+        Changed?.Invoke();
+
+        return SaasResult.Ok;
+    }
+
+    /// <summary>Returns a lead by its ID, or <see langword="null" />.</summary>
+    public SaasLead? FindLead(int leadId) => leads.FirstOrDefault(lead => lead.Id == leadId);
+
+    /// <summary>Pays every open invoice of the signed-in member's workspace with the card on file; a past-due workspace becomes active.</summary>
+    public SaasResult PayOpenInvoices()
+    {
+        if (!CanManageBilling || CurrentWorkspace is not { } workspace)
+            return SaasResult.NotAllowed;
+
+        var open = invoices.Where(invoice => invoice.WorkspaceId == workspace.Id && invoice.Status == SaasInvoiceStatus.Open).ToList();
+
+        if (open.Count == 0)
+            return SaasResult.NoChange;
+
+        if (workspace.CardLast4 is null)
+            return SaasResult.CardRequired;
+
+        foreach (var invoice in open)
+            Pay(invoice, FindWorkspace(workspace.Id)!);
+
+        Log(workspace.Id, "Invoices paid", $"{open.Count} open {(open.Count == 1 ? "invoice" : "invoices")}, {Money(open.Sum(invoice => invoice.Amount))}", IconName.Receipt);
+        Changed?.Invoke();
+
+        return SaasResult.Ok;
+    }
+
+    /// <summary>
+    /// Refunds part or all of a paid invoice to the card it was paid with (operator). A full refund marks it refunded; the
+    /// workspace's owners who can sign in get a notice.
+    /// </summary>
+    public SaasResult RefundInvoice(string number, decimal amount, string reason)
+    {
+        if (!IsOperator)
+            return SaasResult.NotAllowed;
+
+        if (invoices.FirstOrDefault(invoice => invoice.Number == number) is not { } invoice || invoice.Status == SaasInvoiceStatus.Open || FindWorkspace(invoice.WorkspaceId) is not { } workspace)
+            return SaasResult.NotFound;
+
+        amount = SaasPricing.Cents(amount);
+
+        if (amount <= 0 || amount > invoice.Amount - invoice.RefundedAmount || !IsText(reason?.Trim(), 200))
+            return SaasResult.Invalid;
+
+        var refunded = invoice.RefundedAmount + amount;
+        var updated = invoice with { RefundedAmount = refunded, Status = refunded >= invoice.Amount ? SaasInvoiceStatus.Refunded : SaasInvoiceStatus.Paid };
+        invoices[invoices.IndexOf(invoice)] = updated;
+        Log(workspace.Id, "Refund issued", $"{Money(amount)} on {invoice.Number}", IconName.ArrowCounterclockwise);
+
+        foreach (var owner in OthersToTell(workspace.Id, member => member.Role is SaasMemberRole.Owner or SaasMemberRole.Billing))
+        {
+            AddNotice(owner, $"{Money(amount)} refunded", $"Lumora refunded {Money(amount)} on invoice {invoice.Number} to the {invoice.CardBrand ?? "card"} ending in {invoice.CardLast4 ?? "----"}.",
+                $"{BillingPath}/invoices/{invoice.Number}", IconName.ArrowCounterclockwise);
+        }
+
+        AddAudit("Refund issued", workspace.Name, $"{invoice.Number}: {Money(amount)}. {reason!.Trim()}", InvoicePath(invoice.Number));
+        Changed?.Invoke();
+
+        return SaasResult.Ok;
+    }
+
+    /// <summary>Changes a lead's status and the sales team's note (operator).</summary>
+    public SaasResult UpdateLead(int leadId, SaasLeadStatus status, string? note)
+    {
+        if (!IsOperator)
+            return SaasResult.NotAllowed;
+
+        if (leads.FindIndex(lead => lead.Id == leadId) is not (var index and >= 0) || !Enum.IsDefined(status))
+            return SaasResult.NotFound;
+
+        note = string.IsNullOrWhiteSpace(note) ? null : note.Trim();
+
+        if (note is { Length: > 1000 })
+            return SaasResult.Invalid;
+
+        var lead = leads[index];
+
+        if (lead.Status == status && lead.Note == note)
+            return SaasResult.NoChange;
+
+        leads[index] = lead with { Status = status, Note = note };
+        AddAudit("Lead updated", lead.Company, lead.Status == status ? "Note changed" : $"{lead.Status} → {status}", LeadsPath);
+        Changed?.Invoke();
+
+        return SaasResult.Ok;
+    }
+
+    /// <summary>
+    /// Saves a plan from the operator's plan editor. The public pricing page, sign-up, and billing follow it right away, and
+    /// workspaces on the plan pay the new price from their next invoice. A free plan stays free and a paid plan stays paid;
+    /// a seat limit can't drop below the seats a workspace on the plan already has; one plan at most is marked popular.
+    /// </summary>
+    public SaasResult UpdatePlan(SaasPlan edited)
+    {
+        if (!IsOperator)
+            return SaasResult.NotAllowed;
+
+        if (edited is null || plans.FindIndex(plan => plan.Id == edited.Id) is not (var index and >= 0))
+            return SaasResult.NotFound;
+
+        var current = plans[index];
+        edited = edited with
+        {
+            Name = edited.Name?.Trim() ?? string.Empty,
+            Description = edited.Description?.Trim() ?? string.Empty,
+            CallToAction = edited.CallToAction?.Trim() ?? string.Empty,
+            MonthlyPricePerSeat = SaasPricing.Cents(edited.MonthlyPricePerSeat),
+            Highlights = (edited.Highlights ?? Array.Empty<string>()).Select(line => line?.Trim() ?? string.Empty).Where(line => line.Length > 0).ToList(),
+        };
+
+        if (!ValidPlan(edited) || (edited.MonthlyPricePerSeat == 0) != (current.MonthlyPricePerSeat == 0)
+            || (edited.MonthlyPricePerSeat is > 0 and < MinPaidSeatPrice)
+            || (!edited.IsSelfServe && !plans.Any(plan => plan.Id != edited.Id && plan.IsSelfServe)))
+            return SaasResult.Invalid;
+
+        if (edited.SeatLimit > 0 && workspaces.Any(workspace => workspace.PlanId == edited.Id && workspace.Seats > edited.SeatLimit))
+            return SaasResult.SeatsOutOfRange;
+
+        if (edited == current || (edited.Highlights.SequenceEqual(current.Highlights) && edited with { Highlights = current.Highlights } == current))
+            return SaasResult.NoChange;
+
+        if (edited.IsPopular)
+        {
+            for (var other = 0; other < plans.Count; other++)
+            {
+                if (other != index && plans[other].IsPopular)
+                    plans[other] = plans[other] with { IsPopular = false };
+            }
+        }
+
+        plans[index] = edited;
+        AddAudit("Plan updated", edited.Name, PlanChanges(current, edited), PlansPath);
+        Changed?.Invoke();
+
+        return SaasResult.Ok;
+    }
 
     /// <summary>Returns a workspace's activity, newest first.</summary>
     public IReadOnlyList<SaasActivity> ActivityOf(int workspaceId) =>
@@ -108,6 +405,8 @@ public sealed class SaasState : IShowcaseSiteState
     {
         Activities = activities.ToList(),
         AnnualBilling = annualBilling,
+        Audit = audit.ToList(),
+        NextAuditId = nextAuditId,
         Invoices = invoices.ToList(),
         Leads = leads.ToList(),
         Members = members.ToList(),
@@ -153,7 +452,7 @@ public sealed class SaasState : IShowcaseSiteState
             PlanId = plan.Id,
             Period = paid ? period : SaasBillingPeriod.Monthly,
             Seats = seats,
-            Status = isTrial || (workspace.Status == SaasWorkspaceStatus.PastDue && quote.ChargeToday > 0) ? SaasWorkspaceStatus.Active : workspace.Status,
+            Status = isTrial ? SaasWorkspaceStatus.Active : workspace.Status,
             TrialEndsOn = null,
             RenewsOn = quote.NextRenewal,
             CreditBalance = quote.CreditAfter,
@@ -164,8 +463,7 @@ public sealed class SaasState : IShowcaseSiteState
 
         if (quote.ChargeToday > 0)
         {
-            var start = isTrial || PeriodRestarts(workspace, plan, period) ? today : PeriodStart(workspace);
-            AddInvoice(workspace.Id, start, quote.NextRenewal, isTrial ? $"{summary} (trial ended)" : $"Change to {summary}, prorated", quote.ChargeToday, workspace.CardBrand, workspace.CardLast4);
+            AddInvoice(workspace.Id, today, quote.NextRenewal, isTrial ? $"{summary} (trial ended)" : $"Change to {summary}, prorated", quote.ChargeToday, workspace.CardBrand, workspace.CardLast4);
         }
 
         Log(workspace.Id, isTrial ? "Trial converted" : "Plan changed", summary, IconName.ArrowUpCircle);
@@ -283,7 +581,11 @@ public sealed class SaasState : IShowcaseSiteState
         notices.Where(notice => notice.AccountId == accountId).OrderByDescending(notice => notice.CreatedOn).ThenByDescending(notice => notice.Id).ToList();
 
     /// <summary>Raises <see cref="Changed" /> after a snapshot was restored.</summary>
-    public void NotifyRestored() => Changed?.Invoke();
+    public void NotifyRestored()
+    {
+        CatchUpBilling();
+        Changed?.Invoke();
+    }
 
     /// <summary>Returns the owner shown for a workspace (its first owner), or <see langword="null" />.</summary>
     public SaasMember? OwnerOf(int workspaceId) => MembersOf(workspaceId).FirstOrDefault(member => member.Role == SaasMemberRole.Owner);
@@ -473,11 +775,19 @@ public sealed class SaasState : IShowcaseSiteState
             TrialEndsOn = status == SaasWorkspaceStatus.Trial ? workspace.TrialEndsOn ?? Clock.Today.AddDays(SaasSeedData.TrialDays) : null,
         };
 
+        // A trial bills when it ends, so the renewal date follows the trial's end.
+        if (updated.TrialEndsOn is { } trialEndsOn)
+            updated = updated with { RenewsOn = trialEndsOn };
+
         if (updated == workspace)
             return SaasResult.NoChange;
 
         Replace(updated);
         Log(workspace.Id, "Changed by Lumora", $"{plan.Name}, {seats} seats, {status}", IconName.ShieldCheck);
+        AddAudit(status != workspace.Status ? StatusAction(status) : "Tenant updated", workspace.Name,
+            Changes(("Plan", PlanOf(workspace).Name, plan.Name), ("Seats", workspace.Seats.ToString(System.Globalization.CultureInfo.InvariantCulture), seats.ToString(System.Globalization.CultureInfo.InvariantCulture)),
+                ("Status", workspace.Status.ToString(), status.ToString())),
+            TenantPath(workspace.Id));
 
         if (NotifiesOwner(workspace.Status, status))
         {
@@ -517,17 +827,20 @@ public sealed class SaasState : IShowcaseSiteState
                 Notices: { Count: <= MaxNotices } storedNotices,
                 Leads: { Count: <= MaxLeads } storedLeads,
                 Activities: { Count: <= MaxActivities } storedActivities,
+                Audit: { Count: <= MaxAudit } storedAudit,
             }
             || snapshot.NextWorkspaceId is < 2 or > 100_000
             || snapshot.NextMemberId is < 2 or > 1_000_000
             || snapshot.NextNoticeId is < 1 or > 1_000_000
-            || snapshot.NextLeadId is < 1 or > 100_000)
+            || snapshot.NextLeadId is < 1 or > 100_000
+            || snapshot.NextAuditId is < 1 or > 1_000_000)
             return false;
 
-        if (storedPlans.Any(plan => plan is null || !IsText(plan.Id, 20) || !IsText(plan.Name, 40) || !IsText(plan.Description, 200) || !IsMoney(plan.MonthlyPricePerSeat)
-                || plan.Highlights is not { Count: <= 8 } || plan.Highlights.Any(line => !IsText(line, 80)) || !IsText(plan.CallToAction, 40)
-                || plan.SeatLimit is < 0 or > SaasSeedData.MaxSeats || plan.EventLimit is < 0 or > 10_000_000_000 || plan.DashboardLimit is < 0 or > 10_000)
-            || storedPlans.Select(plan => plan.Id).Distinct(StringComparer.OrdinalIgnoreCase).Count() != storedPlans.Count)
+        var seededPlanIds = SaasSeedData.Plans().Select(plan => plan.Id).ToList();
+
+        if (!storedPlans.Select(plan => plan?.Id).SequenceEqual(seededPlanIds) || storedPlans.Any(plan => !ValidPlan(plan))
+            || storedPlans.Count(plan => plan.IsPopular) > 1 || !storedPlans.Any(plan => plan.IsSelfServe)
+            || storedPlans.Zip(SaasSeedData.Plans()).Any(pair => (pair.First.MonthlyPricePerSeat == 0) != (pair.Second.MonthlyPricePerSeat == 0)))
             return false;
 
         var planById = storedPlans.ToDictionary(plan => plan.Id, StringComparer.OrdinalIgnoreCase);
@@ -560,7 +873,8 @@ public sealed class SaasState : IShowcaseSiteState
             return false;
 
         if (storedLeads.Any(lead => lead is null || lead.Id < 1 || lead.Id >= snapshot.NextLeadId || !IsText(lead.Name, 60) || !IsEmail(lead.Email) || !IsText(lead.Company, 60)
-                || !SaasSeedData.TeamSizes.Contains(lead.TeamSize) || !IsText(lead.Message, 1000) || !IsPlausibleDate(lead.CreatedOn) || !Enum.IsDefined(lead.Status))
+                || !SaasSeedData.TeamSizes.Contains(lead.TeamSize) || !IsText(lead.Message, 1000) || !IsPlausibleDate(lead.CreatedOn) || !Enum.IsDefined(lead.Status)
+                || (lead.Note is not null && !IsText(lead.Note, 1000)))
             || storedLeads.Select(lead => lead.Id).Distinct().Count() != storedLeads.Count)
             return false;
 
@@ -568,7 +882,15 @@ public sealed class SaasState : IShowcaseSiteState
                 || !IsText(activity.Detail, 200) || !Enum.IsDefined(activity.IconName)))
             return false;
 
+        if (storedAudit.Any(entry => entry is null || entry.Id < 1 || entry.Id >= snapshot.NextAuditId || !IsPlausibleDate(entry.At)
+                || (entry.ActorId != SystemActorId && !IsAccountId(entry.ActorId)) || !IsText(entry.ActorName, ShowcaseIdentity.MaxNameLength)
+                || !IsText(entry.Action, 60) || !IsText(entry.Target, 120) || !IsText(entry.Detail, 300) || (entry.Link is not null && !IsAdminOrAppPath(entry.Link)))
+            || storedAudit.Select(entry => entry.Id).Distinct().Count() != storedAudit.Count)
+            return false;
+
         Reload(plans, storedPlans);
+        Reload(audit, storedAudit);
+        nextAuditId = snapshot.NextAuditId;
         Reload(workspaces, storedWorkspaces);
         Reload(members, storedMembers);
         Reload(invoices, storedInvoices);
@@ -627,9 +949,6 @@ public sealed class SaasState : IShowcaseSiteState
         return local.Length == 0 ? email : string.Join(' ', local.Split(' ', StringSplitOptions.RemoveEmptyEntries).Select(part => char.ToUpperInvariant(part[0]) + part[1..]));
     }
 
-    private static DateTime PeriodStart(SaasWorkspace workspace) =>
-        workspace.Period == SaasBillingPeriod.Annual ? workspace.RenewsOn.AddYears(-1) : workspace.RenewsOn.AddMonths(-1);
-
     private static void Reload<T>(List<T> target, List<T> source)
     {
         target.Clear();
@@ -649,7 +968,174 @@ public sealed class SaasState : IShowcaseSiteState
         settings is not null && SaasSeedData.TimeZones.Contains(settings.TimeZone) && settings.WeekStartsOn is "Monday" or "Sunday"
         && SaasSeedData.DataRegions.Contains(settings.DataRegion);
 
-    private void AddInvoice(int workspaceId, DateTime start, DateTime end, string description, decimal amount, string? brand, string? last4)
+    private static string Money(decimal amount) => amount.ToString("$#,0.00", System.Globalization.CultureInfo.InvariantCulture);
+
+    private static string Changes(params (string Name, string Before, string After)[] fields)
+    {
+        var changed = fields.Where(field => field.Before != field.After).Select(field => $"{field.Name} {field.Before} → {field.After}").ToList();
+
+        return changed.Count == 0 ? "No change" : string.Join("; ", changed);
+    }
+
+    private static string InvoicePath(string number) => $"/showcase/saas/admin/invoices/{number}";
+
+    private static bool IsAdminOrAppPath(string value) =>
+        value.Length <= 200 && (value.StartsWith("/showcase/saas/admin", StringComparison.Ordinal) || value.StartsWith(AppPath, StringComparison.Ordinal));
+
+    private static string PlanChanges(SaasPlan before, SaasPlan after)
+    {
+        string Limit(long value) => value == 0 ? "unlimited" : value.ToString("#,0", System.Globalization.CultureInfo.InvariantCulture);
+
+        var text = Changes(
+            ("Name", before.Name, after.Name),
+            ("Price", Money(before.MonthlyPricePerSeat), Money(after.MonthlyPricePerSeat)),
+            ("Seat limit", Limit(before.SeatLimit), Limit(after.SeatLimit)),
+            ("Event limit", Limit(before.EventLimit), Limit(after.EventLimit)),
+            ("Dashboard limit", Limit(before.DashboardLimit), Limit(after.DashboardLimit)),
+            ("Self-serve", before.IsSelfServe ? "yes" : "no", after.IsSelfServe ? "yes" : "no"),
+            ("Popular", before.IsPopular ? "yes" : "no", after.IsPopular ? "yes" : "no"));
+
+        if (before.Description != after.Description || before.CallToAction != after.CallToAction || !before.Highlights.SequenceEqual(after.Highlights))
+            text = text == "No change" ? "Copy changed" : $"{text}; copy changed";
+
+        return Trim(text, 300);
+    }
+
+    private static string StatusAction(SaasWorkspaceStatus status) => status switch
+    {
+        SaasWorkspaceStatus.Suspended => "Tenant suspended",
+        SaasWorkspaceStatus.Archived => "Tenant archived",
+        SaasWorkspaceStatus.Active => "Tenant activated",
+        SaasWorkspaceStatus.PastDue => "Tenant marked past due",
+        _ => "Tenant put on trial",
+    };
+
+    private static string TenantPath(int workspaceId) => $"/showcase/saas/admin/tenants/{workspaceId}";
+
+    private static string Trim(string value, int maxLength) => value.Length <= maxLength ? value.Trim() : value[..maxLength].Trim();
+
+    private static bool ValidPlan(SaasPlan? plan) =>
+        plan is not null && IsText(plan.Id, 20) && IsText(plan.Name, 40) && plan.Name.Trim().Length >= 2 && IsText(plan.Description, 200) && IsMoney(plan.MonthlyPricePerSeat)
+        && plan.MonthlyPricePerSeat <= 10_000 && plan.MonthlyPricePerSeat == SaasPricing.Cents(plan.MonthlyPricePerSeat)
+        && plan.Highlights is { Count: >= 1 and <= 8 } && plan.Highlights.All(line => IsText(line, 80)) && IsText(plan.CallToAction, 40)
+        && plan.SeatLimit is >= 0 and <= SaasSeedData.MaxSeats && plan.EventLimit is 0 or (>= 1000 and <= 10_000_000_000) && plan.DashboardLimit is >= 0 and <= 10_000;
+
+    private void AddAudit(string action, string target, string detail, string? link)
+    {
+        var actor = Identity.Current;
+        audit.Add(new SaasAuditEntry(nextAuditId++, Clock.Now, actor?.Id ?? SystemActorId, actor?.Name ?? "Automatic billing", action, Trim(target, 120), Trim(detail, 300), link));
+
+        if (audit.Count > MaxAudit)
+            audit.RemoveAt(0);
+    }
+
+    private void AddSystemAudit(string action, string target, string detail, string? link)
+    {
+        audit.Add(new SaasAuditEntry(nextAuditId++, Clock.Now, SystemActorId, "Automatic billing", action, Trim(target, 120), Trim(detail, 300), link));
+
+        if (audit.Count > MaxAudit)
+            audit.RemoveAt(0);
+    }
+
+    private void Pay(SaasInvoice invoice, SaasWorkspace workspace)
+    {
+        invoices[invoices.IndexOf(invoice)] = invoice with { Status = SaasInvoiceStatus.Paid, CardBrand = workspace.CardBrand, CardLast4 = workspace.CardLast4 };
+
+        if (workspace.Status == SaasWorkspaceStatus.PastDue && !invoices.Any(other => other.WorkspaceId == workspace.Id && other.Status == SaasInvoiceStatus.Open))
+            Replace(workspace with { Status = SaasWorkspaceStatus.Active });
+    }
+
+    /// <summary>Bills one due date of a workspace: the end of a trial or a renewal. Returns the updated workspace.</summary>
+    private SaasWorkspace Renew(SaasWorkspace workspace)
+    {
+        var plan = PlanOf(workspace);
+        var dueOn = workspace.RenewsOn.Date;
+        var wasTrial = workspace.Status == SaasWorkspaceStatus.Trial;
+
+        if (plan.MonthlyPricePerSeat == 0)
+        {
+            var free = workspace with { Status = SaasWorkspaceStatus.Active, TrialEndsOn = null, Period = SaasBillingPeriod.Monthly, RenewsOn = dueOn.AddMonths(1) };
+            Replace(free);
+
+            return free;
+        }
+
+        var nextRenewal = SaasPricing.PeriodEnd(dueOn, workspace.Period);
+        var amount = SaasPricing.PeriodAmount(plan, workspace.Period, workspace.Seats);
+        var fromCredit = Math.Min(workspace.CreditBalance, amount);
+        var due = amount - fromCredit;
+        var hasCard = workspace.CardLast4 is not null;
+        var description = $"{plan.Name} plan, {workspace.Seats} seats, {SaasSeedData.PeriodLabel(workspace.Period)}{(wasTrial ? " (trial ended)" : string.Empty)}"
+            + (fromCredit > 0 ? $", {Money(fromCredit)} paid from credit" : string.Empty);
+
+        if (due > 0)
+            AddInvoice(workspace.Id, dueOn, nextRenewal, description, due, hasCard ? workspace.CardBrand : null, hasCard ? workspace.CardLast4 : null, hasCard ? SaasInvoiceStatus.Paid : SaasInvoiceStatus.Open);
+
+        var stillOpen = invoices.Any(invoice => invoice.WorkspaceId == workspace.Id && invoice.Status == SaasInvoiceStatus.Open);
+        var renewed = workspace with
+        {
+            Status = stillOpen ? SaasWorkspaceStatus.PastDue : SaasWorkspaceStatus.Active,
+            TrialEndsOn = null,
+            RenewsOn = nextRenewal,
+            CreditBalance = workspace.CreditBalance - fromCredit,
+        };
+        Replace(renewed);
+
+        var paidOrCovered = hasCard || due == 0;
+        var title = wasTrial ? (paidOrCovered ? "Your trial ended and the plan started" : "Your trial ended: add a card to keep going")
+            : paidOrCovered ? "Your plan renewed" : "Your renewal payment is due";
+        var text = due == 0
+            ? $"Your credit balance paid the {Money(amount)} renewal. Next renewal: {nextRenewal:MMM d, yyyy}."
+            : hasCard
+                ? $"{Money(due)} was charged to the {workspace.CardBrand} ending in {workspace.CardLast4}. Next renewal: {nextRenewal:MMM d, yyyy}."
+                : $"{Money(due)} is due. Add a card in Billing and pay the open invoice.";
+        Log(workspace.Id, wasTrial ? "Trial ended" : "Renewed", description, wasTrial ? IconName.HourglassBottom : IconName.ArrowRepeat);
+
+        foreach (var owner in members.Where(member => member.WorkspaceId == workspace.Id && member.AccountId is not null && member.Role is SaasMemberRole.Owner or SaasMemberRole.Billing)
+                     .Select(member => member.AccountId!).Distinct().ToList())
+            AddNotice(owner, title, text, BillingPath, paidOrCovered ? IconName.Receipt : IconName.ExclamationTriangle);
+
+        if (!hasCard && due > 0)
+            AddSystemAudit("Payment failed", workspace.Name, $"{Money(due)} due on {dueOn:MMM d}; no card on file. The tenant is past due.", TenantPath(workspace.Id));
+
+        return renewed;
+    }
+
+    /// <summary>
+    /// What the workspace paid for its current period: its paid invoices ending at the renewal, less refunds. Proration values
+    /// unused time at this amount, so an operator's later price change never credits more than was paid. A period with no
+    /// invoice (one paid entirely from credit) is valued at the plan's price.
+    /// </summary>
+    private decimal PaidForCurrentPeriod(SaasWorkspace workspace)
+    {
+        var paid = invoices.Where(invoice => invoice.WorkspaceId == workspace.Id && invoice.Status != SaasInvoiceStatus.Open && invoice.PeriodEnd.Date == workspace.RenewsOn.Date)
+            .Sum(invoice => invoice.Amount - invoice.RefundedAmount);
+
+        return paid > 0 ? paid : SaasPricing.PeriodAmount(PlanOf(workspace), workspace.Period, workspace.Seats);
+    }
+
+    /// <summary>A profile change on the account page also renames the member it signs in as (T26-F2).</summary>
+    private void SyncMemberProfile()
+    {
+        if (Identity.Current is not { } account)
+            return;
+
+        for (var index = 0; index < members.Count; index++)
+        {
+            if (members[index].AccountId != account.Id)
+                continue;
+
+            // Only values the snapshot restore accepts are copied, so a profile edit can never make the tab's data unloadable.
+            var name = IsText(account.Name, ShowcaseIdentity.MaxNameLength) ? account.Name.Trim() : members[index].Name;
+            var email = IsEmail(account.Email) ? account.Email.Trim() : members[index].Email;
+
+            if (members[index].Name != name || members[index].Email != email)
+                members[index] = members[index] with { Name = name, Email = email };
+        }
+    }
+
+    private void AddInvoice(int workspaceId, DateTime start, DateTime end, string description, decimal amount, string? brand, string? last4,
+        SaasInvoiceStatus status = SaasInvoiceStatus.Paid)
     {
         var sequence = invoices.Count(invoice => invoice.WorkspaceId == workspaceId) + 1;
 
@@ -657,7 +1143,8 @@ public sealed class SaasState : IShowcaseSiteState
             sequence++;
 
         if (invoices.Count < MaxInvoices)
-            invoices.Add(new SaasInvoice(SaasSeedData.InvoiceNumber(workspaceId, sequence), workspaceId, Clock.Now, start, end, description, amount, SaasInvoiceStatus.Paid, brand, last4, 0m));
+            invoices.Add(new SaasInvoice(SaasSeedData.InvoiceNumber(workspaceId, sequence), workspaceId, Clock.Now, start, end, Trim(description, 120), amount, status,
+                status == SaasInvoiceStatus.Paid ? brand : null, status == SaasInvoiceStatus.Paid ? last4 : null, 0m));
     }
 
     private void AddNotice(string accountId, string title, string text, string? link, IconName iconName)
@@ -697,7 +1184,7 @@ public sealed class SaasState : IShowcaseSiteState
         var today = Clock.Today;
         var credit = workspace.CreditBalance;
         var isTrial = workspace.Status == SaasWorkspaceStatus.Trial;
-        var oldAmount = isTrial ? 0m : SaasPricing.PeriodAmount(PlanOf(workspace), workspace.Period, workspace.Seats);
+        var oldAmount = isTrial ? 0m : PaidForCurrentPeriod(workspace);
         var share = isTrial ? 0m : SaasPricing.RemainingShare(today, workspace.RenewsOn, workspace.Period);
         var unused = SaasPricing.Cents(oldAmount * share);
 
@@ -821,6 +1308,9 @@ public sealed class SaasState : IShowcaseSiteState
     /// <summary>Gets whether the signed-in account is a Lumora operator.</summary>
     public bool IsOperator => Identity.Current?.RoleId == SaasSeedData.OperatorRole;
 
+    /// <summary>Gets every invoice, newest first, for the operator console.</summary>
+    public IReadOnlyList<SaasInvoice> AllInvoices => invoices.OrderByDescending(invoice => invoice.IssuedOn).ThenByDescending(invoice => invoice.Number).ToList();
+
     /// <summary>Gets the sales leads, newest first.</summary>
     public IReadOnlyList<SaasLead> Leads => leads.OrderByDescending(lead => lead.CreatedOn).ToList();
 
@@ -858,7 +1348,7 @@ public sealed class SaasState : IShowcaseSiteState
     public string SiteSlug => "saas";
 
     /// <summary>Gets the snapshot format version.</summary>
-    public int SnapshotVersion => 1;
+    public int SnapshotVersion => 2;
 
     /// <summary>Gets the number of suspended workspaces.</summary>
     public int SuspendedCount => workspaces.Count(workspace => workspace.Status == SaasWorkspaceStatus.Suspended);
@@ -893,6 +1383,10 @@ public sealed class SaasState : IShowcaseSiteState
         public List<SaasActivity>? Activities { get; set; }
 
         public bool AnnualBilling { get; set; }
+
+        public List<SaasAuditEntry>? Audit { get; set; }
+
+        public int NextAuditId { get; set; }
 
         public List<SaasInvoice>? Invoices { get; set; }
 

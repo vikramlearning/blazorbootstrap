@@ -7,8 +7,9 @@ namespace BlazorBootstrap.Demo.RCL.Components.Pages.Showcase.Saas;
 
 /// <summary>
 /// Home of the operator console, the MRR and trials dashboard: KPI tiles, the 12-month revenue chart against its target,
-/// the plan mix by MRR or by tenant count, the trials that end soonest, the newest sales leads (read-only), and recent
-/// activity across tenants. Charts use <see cref="SaasChartTheme" /> and redraw when the data or the theme changes.
+/// the plan mix by MRR or by tenant count, the trials that end soonest, the newest sales leads (each opens in the leads
+/// inbox), and recent activity across tenants. Charts use <see cref="SaasChartTheme" /> and redraw when the data or the
+/// theme changes.
 /// </summary>
 public partial class AdminOverview : ComponentBase, IDisposable
 {
@@ -94,13 +95,8 @@ public partial class AdminOverview : ComponentBase, IDisposable
         return message[..(cut > 40 ? cut : Length)].TrimEnd(',', '.', ';', ':') + "…";
     }
 
-    private static BadgeColor LeadColor(SaasLeadStatus status) => status switch
-    {
-        SaasLeadStatus.New => BadgeColor.Primary,
-        SaasLeadStatus.Contacted => BadgeColor.Info,
-        SaasLeadStatus.Qualified => BadgeColor.Success,
-        _ => BadgeColor.Secondary,
-    };
+    /// <summary>The leads inbox with one lead open.</summary>
+    private static string LeadPath(int leadId) => string.Create(CultureInfo.InvariantCulture, $"{SaasState.LeadsPath}?lead={leadId}");
 
     private static string Percent(double value) => value.ToString("0", CultureInfo.InvariantCulture) + "%";
 

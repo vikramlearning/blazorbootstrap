@@ -6,11 +6,29 @@ namespace BlazorBootstrap.Demo.RCL.Components.Pages.Showcase.Saas;
 
 /// <summary>
 /// Tenant detail in the operator console: the workspace's subscription summary, members, invoices, and activity, with an
-/// "Edit tenant" action that opens <see cref="SaasTenantEditor" />. An unknown ID renders the not-found screen.
+/// "Edit tenant" action that opens <see cref="SaasTenantEditor" />. An archived tenant can be deleted after a confirmation
+/// (<see cref="SaasState.DeleteWorkspaceAsOperator" />), which opens the tenant list; a tenant someone signs in to in this
+/// demo is kept, and the dialog says why. An unknown ID renders the not-found screen.
 /// </summary>
 public partial class AdminTenantDetail : ComponentBase, IDisposable
 {
     #region Fields and Constants
+
+    private Button? deleteButton;
+
+    private int deleteCount;
+
+    /// <summary>The name of the tenant just deleted, shown while the dialog closes and the page moves to the tenant list.</summary>
+    private string? deletedName;
+
+    private string? deleteError;
+
+    private string? deleteErrorText;
+
+    /// <summary>The tenant the delete dialog is about, captured when it opens.</summary>
+    private DeleteInfo? deleting;
+
+    private Modal deleteModal = default!;
 
     private Button? editButton;
 
@@ -41,6 +59,7 @@ public partial class AdminTenantDetail : ComponentBase, IDisposable
         shownId = Id;
         statusMessage = statusText = null;
         statusCount = 0;
+        deletedName = null;
     }
 
     #endregion
@@ -55,6 +74,11 @@ public partial class AdminTenantDetail : ComponentBase, IDisposable
     #region Private Methods
 
     private static string Count(int value) => value.ToString("#,0", CultureInfo.InvariantCulture);
+
+    private static string CountWords(int count, string one, string many) => count == 1 ? $"1 {one}" : $"{Count(count)} {many}";
+
+    private static string JoinNames(IReadOnlyList<string> names) =>
+        names.Count <= 2 ? string.Join(" and ", names) : $"{string.Join(", ", names.Take(names.Count - 1))}, and {names[^1]}";
 
     private static double EventsPercent(SaasWorkspace workspace, SaasPlan plan) =>
         plan.EventLimit == 0 ? 0 : workspace.EventsThisMonth * 100d / plan.EventLimit;
@@ -83,6 +107,55 @@ public partial class AdminTenantDetail : ComponentBase, IDisposable
     private static string PlanSeatText(SaasPlan plan) =>
         plan.SeatLimit == 0 ? $"{plan.Name} has no seat limit" : $"{plan.Name} allows up to {Count(plan.SeatLimit)}";
 
+    private async Task AskDeleteAsync()
+    {
+        if (Workspace is not { } workspace)
+            return;
+
+        deleting = new DeleteInfo(workspace.Id, workspace.Name, State.SeatsUsed(workspace.Id), State.InvoicesOf(workspace.Id).Count);
+        deleteError = deleteErrorText = null;
+        deleteCount = 0;
+
+        await deleteModal.ShowAsync();
+    }
+
+    /// <summary>Deletes the tenant; on success the dialog closes and <see cref="OnDeleteHiddenAsync" /> opens the tenant list.</summary>
+    private async Task ConfirmDeleteAsync()
+    {
+        if (deleting is not { } info || deletedName is not null)
+            return;
+
+        var result = State.DeleteWorkspaceAsOperator(info.Id);
+
+        if (result == SaasResult.Ok)
+        {
+            deletedName = info.Name;
+            await deleteModal.HideAsync();
+
+            return;
+        }
+
+        ShowDeleteError(DeleteErrorFor(result, info));
+    }
+
+    private string DeleteErrorFor(SaasResult result, DeleteInfo info)
+    {
+        if (result == SaasResult.NotFound)
+            return $"{info.Name} is no longer in this tab. Close the dialog and go back to the tenant list.";
+
+        var signsIn = State.MembersOf(info.Id).Where(member => member.AccountId is not null).Select(member => member.Name).ToList();
+
+        if (signsIn.Count > 0)
+        {
+            return $"{info.Name} is kept: {JoinNames(signsIn)} {(signsIn.Count == 1 ? "signs" : "sign")} in to this workspace in the demo, "
+                + "so deleting it would take away the workspace they use. It stays archived.";
+        }
+
+        return result == SaasResult.NotAllowed
+            ? $"{info.Name} can't be deleted: only an archived tenant can be, by a signed-in Lumora operator."
+            : $"{info.Name} couldn't be deleted. Close the dialog and try again.";
+    }
+
     private string DaysLeftText(SaasWorkspace workspace) => State.TrialDaysLeft(workspace) switch
     {
         null => string.Empty,
@@ -108,6 +181,26 @@ public partial class AdminTenantDetail : ComponentBase, IDisposable
         ? "No invoices yet: trials aren't billed."
         : plan.MonthlyPricePerSeat == 0 ? $"No invoices: the {plan.Name} plan is free." : "No invoices yet.";
 
+    /// <summary>
+    /// After a delete the page moves to the tenant list once the dialog is closed (so Bootstrap's backdrop is gone);
+    /// otherwise focus returns to "Delete tenant", since a dialog opened from code doesn't get Bootstrap's focus return.
+    /// </summary>
+    private async Task OnDeleteHiddenAsync()
+    {
+        deleting = null;
+        deleteError = deleteErrorText = null;
+        deleteCount = 0;
+
+        if (deletedName is not null)
+        {
+            Navigation.NavigateTo($"{SaasAdminLayout.Base}/tenants");
+
+            return;
+        }
+
+        await SaasDisplay.FocusAsync(deleteButton?.Element);
+    }
+
     private void OnSaved(SaasTenantSavedEventArgs args)
     {
         statusCount = args.Message == statusText ? statusCount + 1 : 1;
@@ -116,6 +209,14 @@ public partial class AdminTenantDetail : ComponentBase, IDisposable
     }
 
     private void OnStateChanged() => InvokeAsync(StateHasChanged);
+
+    /// <summary>Shows why the delete was refused; the same message again gets a counter, so a screen reader announces it again.</summary>
+    private void ShowDeleteError(string message)
+    {
+        deleteCount = message == deleteErrorText ? deleteCount + 1 : 1;
+        deleteErrorText = message;
+        deleteError = deleteCount == 1 ? message : $"{message} ({deleteCount})";
+    }
 
     #endregion
 
@@ -133,9 +234,18 @@ public partial class AdminTenantDetail : ComponentBase, IDisposable
     /// <summary>Gets or sets the tenant (workspace) ID from the route.</summary>
     [Parameter] public int Id { get; set; }
 
+    [Inject] private NavigationManager Navigation { get; set; } = default!;
+
     [Inject] private SaasState State { get; set; } = default!;
 
     private SaasWorkspace? Workspace => State.FindWorkspace(Id);
+
+    #endregion
+
+    #region Nested Types
+
+    /// <summary>What the delete dialog says about the tenant: its members and invitations, and its invoices.</summary>
+    private sealed record DeleteInfo(int Id, string Name, int Members, int Invoices);
 
     #endregion
 }
