@@ -1,4 +1,5 @@
 using BlazorBootstrap.Demo.RCL.Models.Showcase.HelpDesk;
+using BlazorBootstrap.Demo.RCL.Services.Showcase.Foundation;
 
 namespace BlazorBootstrap.Demo.RCL.Services.Showcase.HelpDesk;
 
@@ -10,13 +11,25 @@ public static class HelpDeskSeedData
 {
     #region Fields and Constants
 
-    /// <summary>The fictitious signed-in agent.</summary>
+    /// <summary>The role of a support agent (the agent desk).</summary>
+    public const string AgentRole = "agent";
+
+    /// <summary>The demo agent.</summary>
     public const string AgentName = "Jordan Ashdown";
+
+    /// <summary>The role of a customer (the help center's requests).</summary>
+    public const string CustomerRole = "customer";
+
+    /// <summary>The ID of the seeded customer account.</summary>
+    public const string SeededCustomerId = "ana";
+
+    /// <summary>The seeded customer's email; tickets from it belong to the account.</summary>
+    public const string SeededCustomerEmail = "ana.ruiz@example.com";
 
     /// <summary>The fictitious product name.</summary>
     public const string ProductName = "Beacon Desk";
 
-    /// <summary>The fixed "now" every time on the site is relative to.</summary>
+    /// <summary>When a fresh tab's clock starts; the seeded times are relative to it, and the clock moves on from there (D-029).</summary>
     public static readonly DateTime Now = new(2026, 11, 24, 10, 30, 0);
 
     #endregion
@@ -47,6 +60,29 @@ public static class HelpDeskSeedData
             "Read the `X-Beacon-Signature` header.", "Compute an HMAC-SHA256 of the raw body with your signing secret.", "Compare the two values with a constant-time comparison."), new DateOnly(2026, 11, 12), 870),
         new(508, "How we handle feature requests", "features", "Where requests go, and how we decide what to build.", Steps("feature requests",
             "Describe the problem you want solved, not only the solution.", "We group similar requests and review them monthly.", "You'll get an update on the ticket when something ships."), new DateOnly(2026, 7, 21), 640),
+    };
+
+    /// <summary>The demo accounts: a customer with tickets of her own, and the agent.</summary>
+    public static IReadOnlyList<ShowcaseDemoAccount> DemoAccounts() => new List<ShowcaseDemoAccount>
+    {
+        new(SeededCustomerId, CustomerRole, "Ana Ruiz", SeededCustomerEmail, "help-demo-26", "AR"),
+        new("jordan", AgentRole, AgentName, "jordan@beacondesk.example", "desk-demo-26", "JA"),
+    };
+
+    /// <summary>The roles of the site.</summary>
+    public static IReadOnlyList<ShowcaseRole> Roles() => new List<ShowcaseRole>
+    {
+        new(CustomerRole, "Customer", "/showcase/help-desk/requests", "/showcase/help-desk/account", "Searches the help center, submits requests, and follows them up."),
+        new(AgentRole, "Support agent", "/showcase/help-desk/agent", "/showcase/help-desk/agent/account", "Works the ticket queue: replies, notes, priorities, and saved replies."),
+    };
+
+    /// <summary>The agents' saved replies.</summary>
+    public static List<HelpDeskSavedReply> SavedReplies() => new()
+    {
+        new(1, "Thanks, looking into it", "<p>Hi, thanks for getting in touch. I'm looking into this now and will update this ticket as soon as I know more.</p>"),
+        new(2, "Need more details", "<p>Thanks for the report. Could you tell us:</p><ul><li>the steps that lead to the problem</li><li>what you expected to happen</li><li>a screenshot, if you can</li></ul>"),
+        new(3, "Refund issued", "<p>I've issued the refund. It reaches your card within 5 to 10 business days, depending on your bank.</p>"),
+        new(4, "Fixed, please confirm", "<p>We've released a fix for this. Could you try again and let us know if it works for you?</p>"),
     };
 
     /// <summary>The ticket and article categories.</summary>
@@ -100,6 +136,8 @@ public static class HelpDeskSeedData
                 "Small thing: the welcome email says \"recieve\" in the second line."),
             ("Calendar sync duplicates events", "Rosa Diaz", "rosa.diaz@example.com", "Kite Travel", "integrations", HelpDeskPriority.High, HelpDeskStatus.Open, AgentName, 2, null,
                 "Since this morning every event shows up twice in Google Calendar."),
+            ("Add a PO number to our invoices", "Ana Ruiz", SeededCustomerEmail, "Fernwood Studio", "billing", HelpDeskPriority.Normal, HelpDeskStatus.Resolved, "Priya Nair", 75, 70,
+                "Our finance team needs a purchase order number on every invoice. Can you add one?"),
         };
 
         var tickets = new List<HelpDeskTicket>(rows.Length);
@@ -120,8 +158,17 @@ public static class HelpDeskSeedData
                 Status = row.Status,
                 Assignee = row.Assignee,
                 CreatedAt = created,
+                CustomerAccountId = row.Email == SeededCustomerEmail ? SeededCustomerId : null,
                 ResolvedAt = row.ResolvedHoursAgo is { } hours ? Now.AddHours(-hours) : null,
             };
+
+            ticket.Activity.Add(new HelpDeskActivity(created, row.Customer, "Submitted the request"));
+
+            if (row.Assignee is { } assignee)
+                ticket.Activity.Add(new HelpDeskActivity(created.AddMinutes(15), assignee, $"Assigned to {assignee}"));
+
+            if (ticket.ResolvedAt is { } resolvedAt)
+                ticket.Activity.Add(new HelpDeskActivity(resolvedAt, row.Assignee ?? AgentName, "Resolved the ticket"));
 
             ticket.Messages.Add(new HelpDeskMessage(row.Customer, IsAgent: false, IsInternalNote: false, IsRichText: false, row.Question, created));
 

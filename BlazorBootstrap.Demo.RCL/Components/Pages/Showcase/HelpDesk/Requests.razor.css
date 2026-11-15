@@ -1,0 +1,23 @@
+.hd-requests-filter {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .5rem;
+}
+
+.hd-requests-filter-count {
+    font-weight: 400;
+}
+
+.hd-request {
+    padding-block: 1rem;
+}
+
+    /* A bar as well as the badge, so an unread request stands out without relying on color alone. */
+    .hd-request.hd-request-unread {
+        border-left: .25rem solid var(--sc-primary);
+    }
+
+.hd-request-main {
+    min-width: 0;
+    overflow-wrap: anywhere;
+}

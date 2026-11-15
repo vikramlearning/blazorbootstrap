@@ -63,6 +63,25 @@ public sealed record HelpDeskCategory(string Id, string Name, IconName IconName)
 /// </summary>
 public sealed record HelpDeskMessage(string Author, bool IsAgent, bool IsInternalNote, bool IsRichText, string Body, DateTime PostedAt);
 
+/// <summary>One entry in a ticket's activity log.</summary>
+public sealed record HelpDeskActivity(DateTime At, string Actor, string Text);
+
+/// <summary>A customer's rating of how a resolved ticket was handled.</summary>
+public enum HelpDeskSatisfaction
+{
+    /// <summary>Good, I'm satisfied.</summary>
+    Good,
+
+    /// <summary>Bad, I'm unsatisfied.</summary>
+    Bad,
+}
+
+/// <summary>A saved reply (macro) an agent inserts into a reply. <see cref="Html" /> is editor HTML, shown through <c>ShowcaseHtml</c>.</summary>
+public sealed record HelpDeskSavedReply(int Id, string Title, string Html);
+
+/// <summary>Helpful and not-helpful votes on one article.</summary>
+public sealed record HelpDeskArticleVotes(int ArticleId, int Helpful, int NotHelpful);
+
 /// <summary>A support ticket.</summary>
 public sealed class HelpDeskTicket
 {
@@ -71,14 +90,20 @@ public sealed class HelpDeskTicket
     /// <summary>Gets or sets the agent the ticket is assigned to, or <see langword="null" /> when unassigned.</summary>
     public string? Assignee { get; set; }
 
-    /// <summary>Gets the category ID.</summary>
-    public string CategoryId { get; init; } = string.Empty;
+    /// <summary>Gets or sets the category ID.</summary>
+    public string CategoryId { get; set; } = string.Empty;
 
     /// <summary>Gets the customer's company, if any.</summary>
     public string? Company { get; init; }
 
     /// <summary>Gets when the ticket was created.</summary>
     public DateTime CreatedAt { get; init; }
+
+    /// <summary>Gets the customer's demo account, or <see langword="null" /> for a customer who wrote in by email.</summary>
+    public string? CustomerAccountId { get; init; }
+
+    /// <summary>Gets or sets whether the customer has an agent reply they haven't opened yet.</summary>
+    public bool CustomerUnread { get; set; }
 
     /// <summary>Gets the customer's email address.</summary>
     public string CustomerEmail { get; init; } = string.Empty;
@@ -89,6 +114,9 @@ public sealed class HelpDeskTicket
     /// <summary>Gets the ticket number.</summary>
     public int Id { get; init; }
 
+    /// <summary>Gets the activity log, oldest first: status, priority, category, and assignee changes and who made them.</summary>
+    public List<HelpDeskActivity> Activity { get; init; } = new();
+
     /// <summary>Gets the thread, oldest first.</summary>
     public List<HelpDeskMessage> Messages { get; init; } = new();
 
@@ -98,11 +126,21 @@ public sealed class HelpDeskTicket
     /// <summary>Gets or sets when the ticket was resolved.</summary>
     public DateTime? ResolvedAt { get; set; }
 
+    /// <summary>Gets or sets the customer's rating of a resolved ticket.</summary>
+    public HelpDeskSatisfaction? Satisfaction { get; set; }
+
+    /// <summary>Gets or sets the customer's comment with the rating.</summary>
+    public string? SatisfactionComment { get; set; }
+
     /// <summary>Gets or sets the status.</summary>
     public HelpDeskStatus Status { get; set; }
 
     /// <summary>Gets the subject line.</summary>
     public string Subject { get; init; } = string.Empty;
+
+    /// <summary>Gets when the last message the customer can see was posted (internal notes don't count), or the creation time.</summary>
+    [System.Text.Json.Serialization.JsonIgnore]
+    public DateTime CustomerUpdatedAt => Messages.LastOrDefault(message => !message.IsInternalNote)?.PostedAt ?? CreatedAt;
 
     /// <summary>Gets when the last message was posted, or the creation time.</summary>
     public DateTime UpdatedAt => Messages.Count == 0 ? CreatedAt : Messages[^1].PostedAt;

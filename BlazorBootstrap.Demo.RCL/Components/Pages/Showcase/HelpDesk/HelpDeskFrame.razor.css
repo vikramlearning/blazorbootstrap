@@ -277,3 +277,67 @@
     margin: 4rem auto;
     text-align: center;
 }
+
+/* Agent desk (D-031): the sidebar beside the page from 641px (the Sidebar component's own breakpoint), stacked below it. */
+.hd-shell {
+    display: flex;
+    flex-direction: column;
+    flex: 1 0 auto;
+    min-width: 0;
+}
+
+.hd-shell-main {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+@media (min-width: 641px) {
+    .hd-shell {
+        flex-direction: row;
+        align-items: flex-start;
+    }
+}
+
+.sc-helpdesk ::deep .hd-sidebar {
+    --bb-sidebar-width: 15rem;
+    --bb-sidebar-background-color: #1c1b2e;
+    --bb-sidebar-top-row-background-color: #1c1b2e;
+    --bb-sidebar-top-row-border-color: rgba(255, 255, 255, .08);
+    --bb-sidebar-title-text-color: #fff;
+    --bb-sidebar-brand-icon-color: #fda4af;
+    --bb-sidebar-title-badge-text-color: #1c1b2e;
+    --bb-sidebar-title-badge-background-color: #fda4af;
+    --bb-sidebar-navbar-toggler-icon-color: #fff;
+    --bb-sidebar-navbar-toggler-background-color: rgba(255, 255, 255, .1);
+    --bb-sidebar-content-border-color: rgba(255, 255, 255, .08);
+    --bb-sidebar-nav-item-text-color: #d4d4e0;
+    --bb-sidebar-nav-item-text-active-color-rgb: 255, 255, 255;
+    --bb-sidebar-nav-item-text-hover-color: rgba(255, 255, 255, .95);
+    --bb-sidebar-nav-item-background-hover-color: rgba(255, 255, 255, .08);
+    --bb-sidebar-nav-item-group-background-color: rgba(255, 255, 255, .06);
+    position: sticky;
+    top: 0;
+}
+
+.sc-helpdesk ::deep .hd-agent-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: .75rem;
+    padding: .625rem 1.5rem;
+    border-bottom: 1px solid var(--hd-border);
+    background: var(--bs-body-bg);
+}
+
+.sc-helpdesk ::deep .hd-agent-bar-title {
+    font-weight: 700;
+    color: var(--hd-ink);
+}
+
+.sc-helpdesk ::deep .hd-agent-bar-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: .5rem;
+}

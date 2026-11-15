@@ -1,0 +1,172 @@
+@page "/showcase/help-desk/requests/new"
+@layout HelpDeskLayout
+
+<PageTitle>Submit a request · @HelpDeskSeedData.ProductName</PageTitle>
+
+<div class="container-fluid px-lg-4">
+    <Breadcrumb Items="breadcrumbItems" Class="mb-3" />
+    <div class="hd-page-head">
+        <div>
+            <h1 class="hd-title">Submit a request</h1>
+            <p class="hd-lead">Tell the support team what's going on. Replies show up under My requests.</p>
+        </div>
+    </div>
+
+    @* Always rendered, so "Loading…" is announced and then replaced. *@
+    <div class="@(Session.IsRestored ? "visually-hidden" : "d-flex align-items-center text-body-secondary")" role="status">
+        @if (!Session.IsRestored)
+        {
+            <Spinner Size="SpinnerSize.Small" Class="me-2" aria-hidden="true" /><span>Loading your demo session…</span>
+        }
+    </div>
+
+    @* Nothing else until the tab's session is restored, so a signed-in customer doesn't see the sign-in prompt first. *@
+    @if (!Session.IsRestored)
+    {
+    }
+    else if (State.IsAgent)
+    {
+        <div class="hd-panel" style="max-width: 44rem;">
+            <span class="hd-icon mb-3" aria-hidden="true"><Icon Name="IconName.Headset" /></span>
+            <h2 class="hd-section-title">You're signed in as a support agent</h2>
+            <p class="text-body-secondary">Requests here come from customers' own accounts. To log a request for a customer, for example after a call, use New ticket in the agent desk.</p>
+            <a class="btn btn-primary" href="@($"{HelpDeskAgentLayout.Base}/tickets/new")">New ticket in the agent desk</a>
+        </div>
+    }
+    else if (!State.IsCustomer)
+    {
+        <div class="hd-panel" style="max-width: 44rem;">
+            <span class="hd-icon mb-3" aria-hidden="true"><Icon Name="IconName.PersonLock" /></span>
+            <h2 class="hd-section-title">Sign in to submit a request</h2>
+            <p class="text-body-secondary">
+                Requests belong to your account, so you can read the team's replies and answer them under My requests.
+                Use the demo customer on the sign-in page, or create an account; it only lives in this browser tab.
+            </p>
+            <div class="d-flex flex-wrap gap-2">
+                <a class="btn btn-primary" href="@SignInUrl(register: false)">Sign in</a>
+                <a class="btn btn-outline-primary" href="@SignInUrl(register: true)">Create an account</a>
+            </div>
+            <p class="small text-body-secondary mt-3 mb-0">Looking for a quick answer? <a href="@($"{HelpDeskLayout.Base}/kb")">Search the knowledge base</a>.</p>
+        </div>
+    }
+    else
+    {
+        var account = State.Identity.Current!;
+        <div class="row g-4">
+            <div class="col-xl-8">
+                <div class="hd-panel" data-clarity-mask="true">
+                    <ShowcaseDemoNotice Class="mb-4" Text="Demo only: the request stays in this browser tab, and no email is sent." />
+
+                    <h2 class="hd-section-title">Your details</h2>
+                    <dl class="row hd-summary small mb-1">
+                        <dt class="col-sm-3">Name</dt>
+                        <dd class="col-sm-9">@account.Name</dd>
+                        <dt class="col-sm-3">Email</dt>
+                        <dd class="col-sm-9 text-break">@account.Email</dd>
+                    </dl>
+                    <p class="small text-body-secondary mb-4">From your account. <a href="@($"{HelpDeskLayout.Base}/account")">Change them in your account</a>.</p>
+
+                    <EditForm EditContext="editContext" OnValidSubmit="Submit" FormName="hd-request-new">
+                        <DataAnnotationsValidator />
+                        <h2 class="hd-section-title">Your request</h2>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold" for="hd-request-category">Category</label>
+                                <InputSelect id="hd-request-category" class="form-select" @bind-Value="form.CategoryId">
+                                    <option value="">Choose a category</option>
+                                    @foreach (var category in State.Categories)
+                                    {
+                                        <option value="@category.Id">@category.Name</option>
+                                    }
+                                </InputSelect>
+                                <ValidationMessage For="() => form.CategoryId" />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold" for="hd-request-company">Company <span class="fw-normal text-body-secondary">(optional)</span></label>
+                                <InputText id="hd-request-company" class="form-control" @bind-Value="form.Company" autocomplete="organization" maxlength="@MaxCompanyLength" />
+                                <ValidationMessage For="() => form.Company" />
+                            </div>
+                            <div class="col-12">
+                                <fieldset>
+                                    <legend class="form-label fw-semibold fs-6 mb-2">How urgent is it?</legend>
+                                    <InputRadioGroup TValue="HelpDeskPriority" @bind-Value="form.Priority" Name="hd-request-priority">
+                                        <div class="hd-request-urgency">
+                                            @foreach (var option in urgencies)
+                                            {
+                                                <div class="form-check">
+                                                    <InputRadio class="form-check-input" id="@($"hd-request-priority-{option.Priority}")" Value="option.Priority"
+                                                                aria-describedby="@($"hd-request-priority-{option.Priority}-help")" />
+                                                    <label class="form-check-label fw-semibold" for="@($"hd-request-priority-{option.Priority}")">@option.Priority</label>
+                                                    <span class="d-block small text-body-secondary" id="@($"hd-request-priority-{option.Priority}-help")">@option.Help @TargetText(option.Priority)</span>
+                                                </div>
+                                            }
+                                        </div>
+                                    </InputRadioGroup>
+                                </fieldset>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label fw-semibold" for="hd-request-subject">Subject</label>
+                                <InputText id="hd-request-subject" class="form-control" @bind-Value="form.Subject" @oninput="OnSubjectInput"
+                                           maxlength="@HelpDeskState.MaxSubjectLength" autocomplete="off" aria-describedby="hd-request-subject-help" />
+                                <div class="form-text" id="hd-request-subject-help">A short summary, like “Charged twice for my invoice”.</div>
+                                <ValidationMessage For="() => form.Subject" />
+                            </div>
+
+                            @* Live help: articles that match the subject in the chosen category. Only the count is a status, so it is
+                               announced as the suggestions change without reading every title on each keystroke. *@
+                            <div class="@(Suggestions.Count == 0 ? "visually-hidden" : "col-12")">
+                                <div class="@(Suggestions.Count == 0 ? null : "hd-request-suggestions")">
+                                    @if (Suggestions.Count > 0)
+                                    {
+                                        <h3 class="h6 fw-bold mb-1">These might help</h3>
+                                    }
+                                    <p class="small text-body-secondary mb-2" role="status">@SuggestionsText</p>
+                                    @if (Suggestions.Count > 0)
+                                    {
+                                        <ul class="list-unstyled d-grid gap-2 mb-0">
+                                            @foreach (var article in Suggestions)
+                                            {
+                                                <li @key="article.Id">
+                                                    <a class="fw-semibold" href="@HelpDeskDisplay.ArticleUrl(article.Id)" target="_blank" rel="noopener">
+                                                        @article.Title<Icon Name="IconName.BoxArrowUpRight" class="ms-1 small" aria-hidden="true" /><span class="visually-hidden"> (opens in a new tab)</span>
+                                                    </a>
+                                                    <span class="d-block small text-body-secondary">@article.Summary</span>
+                                                </li>
+                                            }
+                                        </ul>
+                                    }
+                                </div>
+                            </div>
+
+                            <div class="col-12">
+                                <label class="form-label fw-semibold" for="hd-request-description">Description</label>
+                                <InputTextArea id="hd-request-description" class="form-control" rows="6" @bind-Value="form.Description"
+                                               maxlength="@HelpDeskState.MaxCustomerMessageLength" aria-describedby="hd-request-description-help" />
+                                <div class="form-text" id="hd-request-description-help">What happened, what you expected, and any steps to see it again. Up to 4,000 characters.</div>
+                                <ValidationMessage For="() => form.Description" />
+                            </div>
+                        </div>
+
+                        @* Always rendered, so a screen reader announces the error when it appears. *@
+                        <p class="text-danger small mt-3 mb-0" role="alert">@submitError</p>
+
+                        <div class="d-flex flex-wrap gap-2 mt-3">
+                            <Button Type="ButtonType.Submit" Color="ButtonColor.Primary"><Icon Name="IconName.Send" class="me-2" aria-hidden="true" />Submit request</Button>
+                            <a class="btn btn-outline-secondary" href="@HelpDeskLayout.Base">Cancel</a>
+                        </div>
+                    </EditForm>
+                </div>
+            </div>
+            <div class="col-xl-4">
+                <div class="hd-panel">
+                    <h2 class="hd-section-title">What happens next</h2>
+                    <ol class="small ps-3 d-grid gap-2 mb-0">
+                        <li>Your request goes to the support team's queue as received.</li>
+                        <li>An agent replies on the request's page; My requests shows a "New reply" badge.</li>
+                        <li>Answer there, or mark it as solved when you're done.</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    }
+</div>

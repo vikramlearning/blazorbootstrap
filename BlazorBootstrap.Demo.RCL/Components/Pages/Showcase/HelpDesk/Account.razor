@@ -1,0 +1,18 @@
+@page "/showcase/help-desk/account"
+@layout HelpDeskLayout
+
+<PageTitle>Your account · @HelpDeskSeedData.ProductName</PageTitle>
+
+@* The customer's profile and password. New requests use the name and email saved here. *@
+<div class="container-fluid px-lg-4">
+    <ShowcaseRoleGuard Roles="@HelpDeskSeedData.CustomerRole" SignInPath="@HelpDeskLayout.SignInPath">
+        <div class="hd-page-head">
+            <div>
+                <h1 class="hd-title">Your account</h1>
+                <p class="hd-lead">Your name, email, and password for this demo help center. New requests use the name and email saved here.</p>
+            </div>
+            <a class="btn btn-outline-primary" href="@($"{HelpDeskLayout.Base}/requests")"><Icon Name="IconName.Inbox" class="me-2" aria-hidden="true" />My requests</a>
+        </div>
+        <ShowcaseAccountProfile />
+    </ShowcaseRoleGuard>
+</div>

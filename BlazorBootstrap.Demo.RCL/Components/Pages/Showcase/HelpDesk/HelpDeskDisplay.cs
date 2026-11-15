@@ -14,10 +14,10 @@ public static class HelpDeskDisplay
 
     #region Public Methods
 
-    /// <summary>Formats a time relative to the fixed "now", like "35 min ago", "3 h ago", or "Nov 21".</summary>
-    public static string Ago(DateTime time)
+    /// <summary>Formats a time relative to the site's clock, like "35 min ago", "3 h ago", or "Nov 21".</summary>
+    public static string Ago(DateTime time, DateTime now)
     {
-        var age = HelpDeskSeedData.Now - time;
+        var age = now - time;
 
         return age.TotalMinutes < 1 ? "just now"
             : age.TotalMinutes < 60 ? FormattableString.Invariant($"{(int)age.TotalMinutes} min ago")
@@ -66,10 +66,10 @@ public static class HelpDeskDisplay
     };
 
     /// <summary>Returns the SLA text of a ticket, like "Overdue by 2 h", "Due in 1 h 30 min", "Paused", or "Met".</summary>
-    public static string SlaText(HelpDeskTicket ticket)
+    public static string SlaText(HelpDeskState helpDesk, HelpDeskTicket ticket)
     {
-        var state = HelpDeskState.Sla(ticket);
-        var left = HelpDeskState.DueAt(ticket) - HelpDeskSeedData.Now;
+        var state = helpDesk.Sla(ticket);
+        var left = HelpDeskState.DueAt(ticket) - helpDesk.Now;
 
         return state switch
         {
@@ -102,7 +102,19 @@ public static class HelpDeskDisplay
     };
 
     /// <summary>Returns the route of a ticket.</summary>
-    public static string TicketUrl(int ticketId) => FormattableString.Invariant($"{HelpDeskLayout.Base}/tickets/{ticketId}");
+    public static string TicketUrl(int ticketId) => FormattableString.Invariant($"{HelpDeskAgentLayout.Base}/tickets/{ticketId}");
+
+    /// <summary>Returns the customer's page for one of their requests.</summary>
+    public static string RequestUrl(int ticketId) => FormattableString.Invariant($"{HelpDeskLayout.Base}/requests/{ticketId}");
+
+    /// <summary>Returns the customer-facing name of a status: "Awaiting your reply" for Pending, "Solved" for Resolved.</summary>
+    public static string CustomerStatus(HelpDeskStatus status) => status switch
+    {
+        HelpDeskStatus.New => "Received",
+        HelpDeskStatus.Open => "In progress",
+        HelpDeskStatus.Pending => "Awaiting your reply",
+        _ => "Solved",
+    };
 
     #endregion
 

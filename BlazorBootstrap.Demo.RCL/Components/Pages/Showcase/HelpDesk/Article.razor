@@ -32,7 +32,7 @@ else
                     </div>
                 </section>
             </article>
-            <aside class="col-xl-4" aria-labelledby="hd-related">
+            <aside class="col-xl-4" aria-label="More help">
                 <div class="hd-panel">
                     <h2 class="hd-section-title" id="hd-related">Related articles</h2>
                     @if (Related.Count == 0)
@@ -48,6 +48,11 @@ else
                             }
                         </ul>
                     }
+                </div>
+                <div class="hd-panel mt-3">
+                    <h2 class="hd-section-title">Didn't find an answer?</h2>
+                    <p class="small text-body-secondary">Ask the support team. Mention this article, so they can pick up where you left off.</p>
+                    <a class="btn btn-sm btn-primary" href="@($"{HelpDeskLayout.Base}/requests/new")">Submit a request</a>
                 </div>
             </aside>
         </div>

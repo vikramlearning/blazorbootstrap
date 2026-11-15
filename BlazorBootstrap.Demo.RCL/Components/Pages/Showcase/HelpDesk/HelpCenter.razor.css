@@ -1,0 +1,72 @@
+.hd-home-hero {
+    padding: clamp(1.5rem, 5vw, 3.5rem) clamp(1rem, 4vw, 3rem);
+    border: 1px solid var(--hd-border);
+    border-radius: 1rem;
+    background: linear-gradient(135deg, rgba(var(--sc-primary-rgb), .1), rgba(var(--sc-primary-rgb), .02));
+    text-align: center;
+}
+
+.hd-home-title {
+    font-size: clamp(1.75rem, 4vw, 2.5rem);
+}
+
+.hd-home-search {
+    max-width: 40rem;
+    margin-inline: auto;
+}
+
+    .hd-home-search .form-control {
+        min-width: 0;
+    }
+
+/* The placeholder is long; on a phone it is cut rather than pushing the button off the page. */
+@media (max-width: 575.98px) {
+    .hd-home-search .input-group-lg > * {
+        font-size: 1rem;
+    }
+}
+
+.hd-home-result {
+    padding-block: .875rem;
+}
+
+.hd-home-tile {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    height: 100%;
+    padding: 1rem;
+    border: 1px solid var(--hd-border);
+    border-radius: .75rem;
+    background: var(--hd-surface);
+    color: var(--hd-ink);
+    text-decoration: none;
+}
+
+    .hd-home-tile:hover,
+    .hd-home-tile:focus-visible {
+        border-color: var(--sc-primary);
+        box-shadow: 0 0 0 .2rem rgba(var(--sc-primary-rgb), .15);
+    }
+
+        .hd-home-tile:hover .hd-home-tile-name,
+        .hd-home-tile:focus-visible .hd-home-tile-name {
+            text-decoration: underline;
+        }
+
+.hd-home-tile-name {
+    display: block;
+    font-weight: 700;
+}
+
+.hd-home-tile-count {
+    display: block;
+    font-size: .8125rem;
+    color: var(--bs-secondary-color);
+}
+
+.hd-home-popular {
+    display: grid;
+    gap: .75rem;
+    padding-left: 1.25rem;
+}

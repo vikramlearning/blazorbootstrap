@@ -1,0 +1,22 @@
+.hd-request-head {
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+.hd-request-status {
+    margin-bottom: 1rem;
+    font-weight: 600;
+}
+
+    .hd-request-status:empty {
+        margin-bottom: 0;
+    }
+
+    .hd-request-status:focus {
+        outline: none;
+    }
+
+.hd-request-comment {
+    white-space: pre-line;
+    overflow-wrap: anywhere;
+}

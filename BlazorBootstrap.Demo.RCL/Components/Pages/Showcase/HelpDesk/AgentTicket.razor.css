@@ -1,0 +1,44 @@
+.hd-details {
+    max-width: 40rem;
+}
+
+/* While writing an internal note, the panel wears the note's colors, so it is never mistaken for a reply. */
+section.hd-panel.hd-reply-note {
+    background: var(--hd-note-bg);
+    border-color: var(--hd-note-border);
+    border-style: dashed;
+}
+
+.hd-saved-reply-select {
+    flex: 1 1 12rem;
+    min-width: 0;
+    max-width: 24rem;
+}
+
+.hd-activity {
+    border-left: 2px solid var(--hd-border);
+    padding-left: 1rem;
+}
+
+.hd-activity-entry {
+    display: flex;
+    flex-wrap: wrap;
+    column-gap: .75rem;
+    padding-block: .375rem;
+    overflow-wrap: anywhere;
+}
+
+.hd-activity-time {
+    flex: 0 0 auto;
+    min-width: 11rem;
+    font-size: .8125rem;
+    color: var(--bs-secondary-color);
+}
+
+.hd-satisfaction-comment {
+    padding: .5rem .75rem;
+    border-left: .25rem solid var(--hd-border);
+    font-style: italic;
+    white-space: pre-line;
+    overflow-wrap: anywhere;
+}

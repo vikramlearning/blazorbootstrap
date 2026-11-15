@@ -6,18 +6,24 @@ using Microsoft.AspNetCore.Components.Forms;
 namespace BlazorBootstrap.Demo.RCL.Components.Pages.Showcase.HelpDesk;
 
 /// <summary>
-/// New ticket: customer and request details with validation. A valid ticket is added to the top of the queue, a toast
-/// confirms it, and the ticket page opens.
+/// The agent's "New ticket", opened on a customer's behalf (for example after a phone call): customer and request
+/// details with validation. A valid ticket is added to the top of the queue, a toast confirms it, and the agent ticket page
+/// opens. A ticket from the email of a customer account belongs to that account, so it also shows in the customer's
+/// requests.
 /// </summary>
-public partial class NewTicket : ComponentBase
+public partial class AgentNewTicket : ComponentBase
 {
     #region Fields and Constants
 
     private readonly List<BreadcrumbItem> breadcrumbItems = new()
     {
-        new() { Text = "Queue", Href = HelpDeskLayout.Base },
+        new() { Text = "Queue", Href = HelpDeskAgentLayout.Base },
         new() { Text = "New ticket", IsCurrentPage = true },
     };
+
+    private string? createError;
+
+    private int createErrors;
 
     private EditContext editContext = default!;
 
@@ -37,9 +43,20 @@ public partial class NewTicket : ComponentBase
 
     private void Create()
     {
-        var ticket = State.Create(form.CustomerName, form.Email, form.Company, form.CategoryId, form.Priority, form.Subject, form.Description);
+        if (State.Create(form.CustomerName, form.Email, form.Company, form.CategoryId, form.Priority, form.Subject, form.Description) is not { } ticket)
+        {
+            createErrors++;
+            const string message = "The ticket couldn't be created. Check the email address (no spaces) and try again.";
+            createError = createErrors == 1 ? message : FormattableString.Invariant($"{message} ({createErrors})");
 
-        Toasts.Notify(new ToastMessage(ToastType.Success, IconName.CheckCircle, "Ticket created", $"Ticket #{ticket.Id} is in the queue."));
+            return;
+        }
+
+        var text = ticket.CustomerAccountId is null
+            ? $"Ticket #{ticket.Id} is in the queue."
+            : $"Ticket #{ticket.Id} is in the queue and in {ticket.CustomerName}'s requests.";
+
+        Toasts.Notify(new ToastMessage(ToastType.Success, IconName.CheckCircle, "Ticket created", text));
         Navigation.NavigateTo(HelpDeskDisplay.TicketUrl(ticket.Id));
     }
 

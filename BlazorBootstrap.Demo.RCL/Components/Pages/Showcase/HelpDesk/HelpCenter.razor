@@ -1,0 +1,127 @@
+@page "/showcase/help-desk"
+@layout HelpDeskLayout
+
+<PageTitle>Help center · @HelpDeskSeedData.ProductName</PageTitle>
+
+<div class="container-fluid px-lg-4">
+    <section class="hd-home-hero" aria-labelledby="hd-home-title">
+        <h1 class="hd-title hd-home-title" id="hd-home-title">How can we help?</h1>
+        <p class="hd-lead mb-4">Search the knowledge base for step-by-step answers, or browse a topic below.</p>
+        <form class="hd-home-search" role="search" aria-label="Help center" @onsubmit="SearchAsync" @onsubmit:preventDefault="true">
+            <label class="visually-hidden" for="hd-home-search">Search the help center</label>
+            <div class="input-group input-group-lg">
+                <span class="input-group-text"><Icon Name="IconName.Search" aria-hidden="true" /></span>
+                <input id="hd-home-search" type="search" class="form-control" value="@search" @oninput="OnSearchInput"
+                       placeholder="Try “refund” or “two-factor”" autocomplete="off" maxlength="@MaxSearchLength" aria-describedby="hd-home-results-count" />
+                <button type="submit" class="btn btn-primary">Search</button>
+            </div>
+        </form>
+    </section>
+
+    @* Always rendered, so a screen reader announces how many articles match as the search changes. *@
+    <p class="@(Term.Length == 0 ? "visually-hidden" : "fw-semibold mt-4 mb-3")" id="hd-home-results-count" role="status" tabindex="-1" @ref="resultsCount">@ResultsText</p>
+
+    @if (Term.Length > 0)
+    {
+        <section aria-labelledby="hd-home-results-count" class="mb-5">
+            @if (Results.Count == 0)
+            {
+                <div class="hd-panel text-center py-4">
+                    <p class="text-body-secondary mb-3">Try other words, browse a topic below, or ask the support team.</p>
+                    <a class="btn btn-primary" href="@RequestNewPath">Submit a request</a>
+                </div>
+            }
+            else
+            {
+                <ul class="list-unstyled d-grid gap-2 mb-0">
+                    @foreach (var article in Results)
+                    {
+                        var category = State.FindCategory(article.CategoryId);
+                        <li class="hd-panel hd-home-result" @key="article.Id">
+                            <span class="small text-body-secondary">@category.Name · @article.ReadingMinutes min read</span>
+                            <h2 class="h6 fw-bold mt-1 mb-1"><a class="hd-ticket-link" href="@HelpDeskDisplay.ArticleUrl(article.Id)">@article.Title</a></h2>
+                            <p class="small text-body-secondary mb-0">@article.Summary</p>
+                        </li>
+                    }
+                </ul>
+            }
+        </section>
+    }
+
+    <section class="mt-5" aria-labelledby="hd-home-topics">
+        <h2 class="hd-section-title" id="hd-home-topics">Browse by topic</h2>
+        <ul class="list-unstyled row row-cols-1 row-cols-sm-2 row-cols-xl-5 g-3 mb-0">
+            @foreach (var category in State.Categories)
+            {
+                var count = State.Articles.Count(article => article.CategoryId == category.Id);
+                <li class="col" @key="category.Id">
+                    <a class="hd-home-tile" href="@($"{HelpDeskLayout.Base}/kb?category={Uri.EscapeDataString(category.Id)}")">
+                        <span class="hd-icon" aria-hidden="true"><Icon Name="@category.IconName" /></span>
+                        <span>
+                            <span class="hd-home-tile-name">@category.Name</span>
+                            <span class="hd-home-tile-count">@(count == 1 ? "1 article" : $"{count} articles")</span>
+                        </span>
+                    </a>
+                </li>
+            }
+        </ul>
+    </section>
+
+    <div class="row g-4 mt-4">
+        <section class="col-lg-7" aria-labelledby="hd-home-popular">
+            <div class="hd-panel h-100">
+                <h2 class="hd-section-title" id="hd-home-popular">Popular articles</h2>
+                <ol class="hd-home-popular mb-0">
+                    @foreach (var article in Popular)
+                    {
+                        <li @key="article.Id">
+                            <a class="hd-ticket-link" href="@HelpDeskDisplay.ArticleUrl(article.Id)">@article.Title</a>
+                            <span class="d-block small text-body-secondary">@State.FindCategory(article.CategoryId).Name · @article.Views.ToString("#,0", CultureInfo.InvariantCulture) views</span>
+                        </li>
+                    }
+                </ol>
+                <a class="d-inline-block mt-3 small fw-semibold" href="@($"{HelpDeskLayout.Base}/kb")">See all articles</a>
+            </div>
+        </section>
+
+        <section class="col-lg-5" aria-labelledby="hd-home-help">
+            <div class="hd-panel h-100">
+                <span class="hd-icon mb-3" aria-hidden="true"><Icon Name="IconName.ChatDots" /></span>
+                <h2 class="hd-section-title" id="hd-home-help">Still need help?</h2>
+                @if (!Session.IsRestored)
+                {
+                    <p class="text-body-secondary">Ask the support team. Your request and their replies stay in this browser tab.</p>
+                    <a class="btn btn-primary" href="@RequestNewPath">Submit a request</a>
+                }
+                else if (State.IsAgent)
+                {
+                    <p class="text-body-secondary">You're signed in as a support agent. Customers' requests are in the agent desk, where you can also open a ticket for a customer.</p>
+                    <a class="btn btn-primary" href="@HelpDeskAgentLayout.Base">Open agent desk</a>
+                }
+                else if (State.IsCustomer)
+                {
+                    <p class="text-body-secondary">Ask the support team, or follow up on a request you've already sent.</p>
+                    <div class="d-flex flex-wrap gap-2">
+                        <a class="btn btn-primary" href="@RequestNewPath">Submit a request</a>
+                        <a class="btn btn-outline-primary" href="@($"{HelpDeskLayout.Base}/requests")">
+                            My requests
+                            @if (State.UnreadRequestCount > 0)
+                            {
+                                <span class="badge text-bg-primary rounded-pill ms-1">@State.UnreadRequestCount<span class="visually-hidden">@(State.UnreadRequestCount == 1 ? " new reply" : " new replies")</span></span>
+                            }
+                        </a>
+                    </div>
+                }
+                else
+                {
+                    <p class="text-body-secondary">Ask the support team and follow their replies here.</p>
+                    <a class="btn btn-primary" href="@SignInForRequestPath">Submit a request</a>
+                    <p class="small text-body-secondary mt-3 mb-0">
+                        You need an account to submit a request, so you can follow it under My requests. Sign in, or
+                        <a href="@RegisterForRequestPath">create an account</a>; it only lives in this browser tab.
+                    </p>
+                }
+            </div>
+        </section>
+    </div>
+</div>

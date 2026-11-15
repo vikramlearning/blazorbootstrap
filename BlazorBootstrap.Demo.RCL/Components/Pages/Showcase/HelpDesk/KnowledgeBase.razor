@@ -7,7 +7,7 @@
     <div class="hd-page-head">
         <div>
             <h1 class="hd-title">Knowledge base</h1>
-            <p class="hd-lead">Answers you can share with customers or link in a reply.</p>
+            <p class="hd-lead">Step-by-step answers to common questions. Search, or pick a category.</p>
         </div>
     </div>
 
@@ -65,6 +65,11 @@
                     }
                 </div>
             }
+            <p class="hd-panel d-flex flex-wrap align-items-center gap-2 mt-4 mb-0">
+                <Icon Name="IconName.ChatDots" class="text-body-secondary" aria-hidden="true" />
+                <span>Didn't find an answer?</span>
+                <a class="fw-semibold" href="@($"{HelpDeskLayout.Base}/requests/new")">Submit a request</a>
+            </p>
         </section>
     </div>
 </div>
