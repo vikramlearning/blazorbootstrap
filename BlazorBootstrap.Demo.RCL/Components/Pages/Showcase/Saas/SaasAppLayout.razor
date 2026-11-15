@@ -1,0 +1,54 @@
+@inherits LayoutComponentBase
+
+@* The customer workspace: the app a Lumora customer signs in to, with its own sidebar (D-031), separate from the public site. *@
+<ShowcaseSessionHost State="State" SiteBase="@SaasLayout.Base" SiteName="@SaasSeedData.ProductName">
+    <SaasShell Home="@Base" BadgeText="Workspace" DataProvider="SidebarDataProvider" ShowSidebar="@(State.CurrentWorkspace is not null)"
+               FooterText="© 2026 Lumora Analytics (fictitious). Workspaces, people, and invoices here are made up and stay in this browser tab.">
+        <TopbarStart>
+            @if (State.CurrentWorkspace is { } workspace)
+            {
+                <div class="sd-workspace">
+                    <span class="sd-workspace-mark" aria-hidden="true">@workspace.Name[..1]</span>
+                    <div class="sd-workspace-text">
+                        <span class="sd-workspace-name">@workspace.Name</span>
+                        <span class="sd-workspace-plan">@PlanLine(workspace)</span>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <span class="sd-workspace-name">Workspace</span>
+            }
+        </TopbarStart>
+        <TopbarEnd>
+            <a class="btn btn-sm btn-outline-secondary" href="@SaasLayout.Base">
+                <Icon Name="IconName.BoxArrowUpRight" class="me-1" aria-hidden="true" />Lumora site
+            </a>
+            <ShowcaseAccountMenu SiteBase="@SaasLayout.Base" SignInPath="@SaasLayout.SignInPath"
+                                 NoticeCount="@State.UnreadNoticeCount(State.Identity.Current?.Id)" NoticesPath="@SaasLayout.NoticesPath" />
+        </TopbarEnd>
+        <ChildContent>
+            <ShowcaseRoleGuard Roles="@SaasSeedData.CustomerRole" SignInPath="@SaasLayout.SignInPath">
+                @if (State.CurrentWorkspace is { } current)
+                {
+                    @if (current.Status is SaasWorkspaceStatus.Suspended or SaasWorkspaceStatus.Archived)
+                    {
+                        <Alert Color="AlertColor.Danger" Class="d-flex align-items-start gap-2">
+                            <Icon Name="IconName.SlashCircle" class="mt-1" aria-hidden="true" />
+                            <span>@current.Name is @(current.Status == SaasWorkspaceStatus.Suspended ? "suspended" : "archived") by Lumora, so changes are turned off. Contact support to restore it.</span>
+                        </Alert>
+                    }
+                    else if (State.TrialDaysLeft(current) is { } daysLeft)
+                    {
+                        <div class="sd-trial-bar">
+                            <Icon Name="IconName.HourglassSplit" aria-hidden="true" />
+                            <span>@TrialText(daysLeft) Your data and settings carry over when you choose a plan.</span>
+                            <a class="btn btn-sm btn-primary ms-sm-auto" href="@($"{Base}/billing")">Choose a plan</a>
+                        </div>
+                    }
+                }
+                @Body
+            </ShowcaseRoleGuard>
+        </ChildContent>
+    </SaasShell>
+</ShowcaseSessionHost>

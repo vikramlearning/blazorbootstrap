@@ -1,0 +1,274 @@
+@page "/showcase/saas/app/team"
+@layout SaasAppLayout
+
+<PageTitle>Team · @SaasSeedData.ProductName</PageTitle>
+
+@if (State.CurrentMember is { } me && State.CurrentWorkspace is { } workspace)
+{
+    var team = State.MembersOf(workspace.Id);
+    var used = State.SeatsUsed(workspace.Id);
+    var canManage = State.CanManageTeam;
+
+    <div class="sd-page-head">
+        <div>
+            <span class="sc-eyebrow">Team</span>
+            <h1 class="sd-page-title">Team</h1>
+            <p class="sd-page-lead">The people in @workspace.Name and what each of them can do.</p>
+        </div>
+        @if (canManage)
+        {
+            <Button @ref="inviteButton" Color="ButtonColor.Primary" @onclick="OpenInviteAsync">
+                <Icon Name="IconName.PersonPlus" class="me-1" aria-hidden="true" />Invite teammate
+            </Button>
+        }
+    </div>
+
+    <div class="lu-seats mb-3">
+        <div class="sd-meter flex-grow-1">
+            <div class="sd-meter-label">
+                <span id="lu-seats-label">Seats</span>
+                <span class="sd-mono">@SeatsText(used, workspace.Seats)</span>
+            </div>
+            <Progress Height="8">
+                <ProgressBar Width="@SeatPercent(used, workspace.Seats)" Color="@(used >= workspace.Seats ? ProgressColor.Warning : ProgressColor.Primary)"
+                             aria-labelledby="lu-seats-label" aria-valuetext="@SeatsText(used, workspace.Seats)"
+                             aria-valuenow="@used" aria-valuemin="0" aria-valuemax="@workspace.Seats" />
+            </Progress>
+        </div>
+        <p class="small text-body-secondary mb-0">
+            Members and open invitations each hold a seat.
+            @if (State.CanManageBilling)
+            {
+                <a href="@SaasState.BillingPath">Add seats in Billing</a>
+            }
+            else
+            {
+                <span>Owners and billing members add seats in <a href="@SaasState.BillingPath">Billing</a>.</span>
+            }
+        </p>
+    </div>
+
+    @if (!canManage)
+    {
+        <div class="lu-note mb-3" role="note">
+            <Icon Name="IconName.InfoCircle" class="flex-shrink-0 mt-1" aria-hidden="true" />
+            <span>@ReadOnlyNote(me)</span>
+        </div>
+    }
+
+    <p class="lu-error" role="alert">@pageError</p>
+    @* Always rendered and focusable, so each change is announced and focus has somewhere to go when its button is gone. *@
+    <p class="lu-status" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
+
+    <section class="sd-card card" aria-labelledby="lu-team-title">
+        <div class="card-header">
+            <h2 class="sd-card-title" id="lu-team-title">Members</h2>
+            <p class="sd-card-sub">@MemberCountText(team)</p>
+        </div>
+        <ul class="lu-members list-unstyled mb-0">
+            @foreach (var member in team)
+            {
+                var isMe = member.Id == me.Id;
+                var canAct = CanActOn(me, member);
+                var invited = member.Status == SaasMemberStatus.Invited;
+
+                <li class="lu-member" @key="member.Id">
+                    <div class="sd-person lu-member-person">
+                        <Avatar Name="@member.Name" Color="SaasDisplay.AvatarColorFor(member.Id)" Size="AvatarSize.Small" aria-hidden="true" />
+                        <span class="sd-person-text">
+                            <span class="lu-member-name">
+                                @member.Name
+                                @if (isMe)
+                                {
+                                    <Badge Color="BadgeColor.Primary" Class="rounded-pill ms-1">You</Badge>
+                                }
+                            </span>
+                            <span class="sd-person-email">@member.Email</span>
+                        </span>
+                    </div>
+                    <dl class="lu-member-facts">
+                        <div>
+                            <dt>Role</dt>
+                            <dd><Badge Color="@RoleColor(member.Role)" Class="rounded-pill">@SaasDisplay.RoleName(member.Role)</Badge></dd>
+                        </div>
+                        <div>
+                            <dt>Status</dt>
+                            <dd>
+                                @if (invited)
+                                {
+                                    <span>Invited on @SaasDisplay.Date(member.AddedOn)</span>
+                                }
+                                else
+                                {
+                                    <span>Active</span>
+                                }
+                            </dd>
+                        </div>
+                        <div>
+                            <dt>Last active</dt>
+                            <dd>@SaasDisplay.LastSeen(member.LastActiveOn, State.Clock.Now)</dd>
+                        </div>
+                    </dl>
+                    @if (canAct)
+                    {
+                        <div class="lu-member-actions">
+                            @if (invited)
+                            {
+                                <Button Color="ButtonColor.Secondary" Outline="true" Size="ButtonSize.Small" @onclick="() => Resend(member)">
+                                    <Icon Name="IconName.Envelope" class="me-1" aria-hidden="true" />Resend<span class="visually-hidden"> the invitation to @member.Name</span>
+                                </Button>
+                            }
+                            <Button @ref="roleButtons[member.Id]" Color="ButtonColor.Secondary" Outline="true" Size="ButtonSize.Small" @onclick="() => OpenRoleAsync(member)">
+                                <Icon Name="IconName.PersonGear" class="me-1" aria-hidden="true" />Change role<span class="visually-hidden"> of @member.Name</span>
+                            </Button>
+                            <Button @ref="removeButtons[member.Id]" Color="ButtonColor.Danger" Outline="true" Size="ButtonSize.Small" @onclick="() => AskRemoveAsync(member)">
+                                @if (invited)
+                                {
+                                    <Icon Name="IconName.XCircle" class="me-1" aria-hidden="true" />@("Cancel invitation")<span class="visually-hidden"> for @member.Name</span>
+                                }
+                                else
+                                {
+                                    <Icon Name="IconName.PersonDash" class="me-1" aria-hidden="true" />@("Remove")<span class="visually-hidden"> @member.Name</span>
+                                }
+                            </Button>
+                        </div>
+                    }
+                </li>
+            }
+        </ul>
+    </section>
+}
+
+@* The invite dialog. *@
+<Modal @ref="inviteModal"
+       IsVerticallyCentered="true"
+       IsScrollable="true"
+       ShowCloseButton="false"
+       aria-labelledby="lu-invite-title"
+       OnShown="OnInviteShownAsync"
+       OnHidden="OnInviteHiddenAsync">
+    <HeaderTemplate>
+        <h2 class="modal-title h5" id="lu-invite-title">Invite a teammate</h2>
+    </HeaderTemplate>
+    <BodyTemplate>
+        @if (State.CurrentWorkspace is { } inviteWorkspace)
+        {
+            var free = inviteWorkspace.Seats - State.SeatsUsed(inviteWorkspace.Id);
+
+            <ShowcaseDemoNotice Class="mb-3" Text="Demo only: no email is sent. The invitation appears in your team list and holds a seat until it's cancelled." />
+            <EditForm id="lu-invite-form" EditContext="inviteContext" OnValidSubmit="InviteAsync" FormName="lu-invite">
+                <DataAnnotationsValidator />
+                <div class="mb-3">
+                    <label class="form-label" for="lu-invite-email">Email</label>
+                    <InputText @ref="emailInput" id="lu-invite-email" type="email" class="form-control" @bind-Value="inviteForm.Email" maxlength="120" autocomplete="email" />
+                    <ValidationMessage For="() => inviteForm.Email" />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label" for="lu-invite-name">Name <span class="text-body-secondary">(optional)</span></label>
+                    <InputText id="lu-invite-name" class="form-control" @bind-Value="inviteForm.Name" maxlength="60" autocomplete="off" aria-describedby="lu-invite-name-help" />
+                    <div class="form-text" id="lu-invite-name-help">Left empty, the name is taken from the email address.</div>
+                    <ValidationMessage For="() => inviteForm.Name" />
+                </div>
+                <fieldset>
+                    <legend class="form-label fs-6">Role</legend>
+                    <InputRadioGroup @bind-Value="inviteForm.Role">
+                        @foreach (var role in RolesFor(State.CurrentMember))
+                        {
+                            <div class="form-check mb-2" @key="role">
+                                <InputRadio class="form-check-input" id="@($"lu-invite-role-{role}")" Value="role" aria-describedby="@($"lu-invite-role-{role}-help")" />
+                                <label class="form-check-label fw-semibold" for="@($"lu-invite-role-{role}")">@SaasDisplay.RoleName(role)</label>
+                                <div class="form-text mt-0" id="@($"lu-invite-role-{role}-help")">@SaasDisplay.RoleSummary(role)</div>
+                            </div>
+                        }
+                    </InputRadioGroup>
+                </fieldset>
+                <p class="small text-body-secondary mb-0">
+                    @(free > 0 ? $"{FreeSeatsText(free)} The invitation uses one." : "All seats are in use: add seats in Billing, or cancel an invitation, before you invite someone.")
+                </p>
+                <div class="lu-error mt-3 mb-0" role="alert">
+                    @if (inviteError is not null)
+                    {
+                        <span>@inviteError</span>
+                        @if (inviteErrorLinksBilling)
+                        {
+                            <span> <a href="@SaasState.BillingPath">Add seats in Billing</a></span>
+                        }
+                    }
+                </div>
+            </EditForm>
+        }
+    </BodyTemplate>
+    <FooterTemplate>
+        <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => inviteModal.HideAsync()">Close</Button>
+        <Button Type="ButtonType.Submit" Color="ButtonColor.Primary" form="lu-invite-form">Send invitation</Button>
+    </FooterTemplate>
+</Modal>
+
+@* The change-role dialog. *@
+<Modal @ref="roleModal"
+       IsVerticallyCentered="true"
+       ShowCloseButton="false"
+       aria-labelledby="lu-role-title"
+       OnHidden="OnRoleHiddenAsync">
+    <HeaderTemplate>
+        <h2 class="modal-title h5" id="lu-role-title">Change the role of @(roleTarget?.Name)</h2>
+    </HeaderTemplate>
+    <BodyTemplate>
+        @if (roleTarget is not null)
+        {
+            <EditForm id="lu-role-form" EditContext="roleContext" OnValidSubmit="SaveRoleAsync" FormName="lu-role">
+                <fieldset>
+                    <legend class="form-label fs-6">Role</legend>
+                    <InputRadioGroup @bind-Value="roleForm.Role">
+                        @foreach (var role in RolesFor(State.CurrentMember))
+                        {
+                            <div class="form-check mb-2" @key="role">
+                                <InputRadio class="form-check-input" id="@($"lu-role-{role}")" Value="role" aria-describedby="@($"lu-role-{role}-help")" />
+                                <label class="form-check-label fw-semibold" for="@($"lu-role-{role}")">
+                                    @SaasDisplay.RoleName(role)
+                                    @if (role == roleTarget.Role)
+                                    {
+                                        <span class="fw-normal text-body-secondary"> (current)</span>
+                                    }
+                                </label>
+                                <div class="form-text mt-0" id="@($"lu-role-{role}-help")">@SaasDisplay.RoleSummary(role)</div>
+                            </div>
+                        }
+                    </InputRadioGroup>
+                </fieldset>
+                <p class="lu-error mt-3 mb-0" role="alert">@roleError</p>
+            </EditForm>
+        }
+    </BodyTemplate>
+    <FooterTemplate>
+        <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => roleModal.HideAsync()">Cancel</Button>
+        <Button Type="ButtonType.Submit" Color="ButtonColor.Primary" form="lu-role-form">Save role</Button>
+    </FooterTemplate>
+</Modal>
+
+@* The remove or cancel-invitation confirmation. *@
+<Modal @ref="removeModal" IsVerticallyCentered="true" ShowCloseButton="false" aria-labelledby="lu-remove-title" OnHidden="OnRemoveHiddenAsync">
+    <HeaderTemplate>
+        <h2 class="modal-title h5" id="lu-remove-title">
+            @(removeTarget?.Status == SaasMemberStatus.Invited ? $"Cancel the invitation for {removeTarget.Name}?" : $"Remove {removeTarget?.Name}?")
+        </h2>
+    </HeaderTemplate>
+    <BodyTemplate>
+        @if (removeTarget is not null)
+        {
+            <p class="mb-0">
+                @(removeTarget.Status == SaasMemberStatus.Invited
+                    ? $"{removeTarget.Email} can no longer join, and the seat the invitation holds becomes free."
+                    : $"{removeTarget.Name} loses access to {State.CurrentWorkspace?.Name}, and their seat becomes free. You can invite them again later.")
+            </p>
+        }
+    </BodyTemplate>
+    <FooterTemplate>
+        <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => removeModal.HideAsync()">
+            @(removeTarget?.Status == SaasMemberStatus.Invited ? "Keep invitation" : "Keep member")
+        </Button>
+        <Button Color="ButtonColor.Danger" @onclick="ConfirmRemoveAsync">
+            @(removeTarget?.Status == SaasMemberStatus.Invited ? "Cancel invitation" : "Remove member")
+        </Button>
+    </FooterTemplate>
+</Modal>

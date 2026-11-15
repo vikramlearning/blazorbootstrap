@@ -1,0 +1,413 @@
+@page "/showcase/saas/app/billing"
+@layout SaasAppLayout
+
+<PageTitle>Billing · @SaasSeedData.ProductName</PageTitle>
+
+@if (State.CurrentMember is { } me && State.CurrentWorkspace is { } workspace)
+{
+    var plan = State.PlanOf(workspace);
+    var used = State.SeatsUsed(workspace.Id);
+    var canManage = State.CanManageBilling;
+    var isTrial = workspace.Status == SaasWorkspaceStatus.Trial;
+    var isFree = plan.MonthlyPricePerSeat == 0;
+    var invoices = State.InvoicesOf(workspace.Id);
+    var cardText = CardText(workspace.CardBrand, workspace.CardLast4);
+
+    <div class="sd-page-head">
+        <div>
+            <span class="sc-eyebrow">Billing</span>
+            <h1 class="sd-page-title">Billing</h1>
+            <p class="sd-page-lead">The plan, payment method, and invoices of @workspace.Name.</p>
+        </div>
+    </div>
+
+    @if (!canManage)
+    {
+        <div class="lu-note mb-3" role="note">
+            <Icon Name="IconName.InfoCircle" class="flex-shrink-0 mt-1" aria-hidden="true" />
+            <span>
+                @(me.Role is SaasMemberRole.Owner or SaasMemberRole.Billing
+                    ? "Billing changes are turned off while the workspace is suspended or archived. You can still see the plan and invoices."
+                    : "Only owners and billing members manage billing. You can see the plan and invoices; ask an owner or billing member to change them.")
+            </span>
+        </div>
+    }
+
+    @* Always rendered and focusable, so each change is announced and focus has somewhere to go. *@
+    <p class="lu-status" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
+
+    <div class="row g-4">
+        @* Current plan *@
+        <div class="col-lg-7">
+            <section class="sd-card card h-100" aria-labelledby="lu-plan-title">
+                <div class="card-header">
+                    <h2 class="sd-card-title" id="lu-plan-title">Current plan</h2>
+                    <Badge Color="SaasDisplay.StatusColor(workspace.Status)" Class="rounded-pill">@SaasDisplay.StatusName(workspace.Status)</Badge>
+                </div>
+                <div class="card-body pt-2">
+                    <p class="lu-plan-name mb-1">
+                        <Badge Color="SaasDisplay.PlanColor(plan.Id)" Class="rounded-pill me-2">@plan.Name</Badge>
+                        <span class="text-body-secondary small">@plan.Description</span>
+                    </p>
+                    @if (isTrial && workspace.TrialEndsOn is { } trialEndsOn)
+                    {
+                        <div class="lu-trial mt-3">
+                            <Icon Name="IconName.HourglassSplit" class="flex-shrink-0 mt-1" aria-hidden="true" />
+                            <span>
+                                You're on a free @plan.Name trial until @SaasDisplay.Date(trialEndsOn).
+                                @(canManage
+                                    ? "Choosing a plan below ends the trial today: a paid plan starts billing now and needs a card on file. Your data and settings carry over."
+                                    : "An owner or billing member can choose a plan; doing so ends the trial and starts billing.")
+                            </span>
+                        </div>
+                    }
+                    <dl class="sd-dl lu-facts mt-3 mb-0">
+                        <div>
+                            <dt>Seats</dt>
+                            <dd>@SeatsWord(workspace.Seats) <span class="fw-normal text-body-secondary">(@used in use)</span></dd>
+                        </div>
+                        <div>
+                            <dt>Billing period</dt>
+                            <dd>@(isFree ? "None (free plan)" : workspace.Period == SaasBillingPeriod.Annual ? "Annual" : "Monthly")</dd>
+                        </div>
+                        <div>
+                            <dt>Price per seat</dt>
+                            <dd>@SeatPriceText(plan, workspace.Period)</dd>
+                        </div>
+                        <div>
+                            <dt>@(isTrial ? "Amount after the trial" : "Amount per period")</dt>
+                            <dd class="sd-mono">@AmountText(plan, workspace.Period, workspace.Seats)</dd>
+                        </div>
+                        <div>
+                            @if (isTrial && workspace.TrialEndsOn is { } endsOn)
+                            {
+                                <dt>Trial ends on</dt>
+                                <dd>@SaasDisplay.Date(endsOn)</dd>
+                            }
+                            else if (isFree)
+                            {
+                                <dt>Renewal</dt>
+                                <dd>Nothing is billed on a free plan</dd>
+                            }
+                            else
+                            {
+                                <dt>Renews on</dt>
+                                <dd>@SaasDisplay.Date(workspace.RenewsOn)</dd>
+                            }
+                        </div>
+                        @if (workspace.CreditBalance > 0)
+                        {
+                            <div>
+                                <dt>Credit balance</dt>
+                                <dd><span class="sd-mono">@SaasDisplay.MoneyCents(workspace.CreditBalance)</span> <span class="fw-normal text-body-secondary">pays towards the next invoices</span></dd>
+                            </div>
+                        }
+                    </dl>
+                    @if (workspace.Status == SaasWorkspaceStatus.PastDue)
+                    {
+                        <p class="small text-danger-emphasis mt-3 mb-0">
+                            <Icon Name="IconName.ExclamationTriangleFill" class="me-1" aria-hidden="true" />The last renewal payment failed. Check the payment method.
+                        </p>
+                    }
+                </div>
+            </section>
+        </div>
+
+        @* Payment method *@
+        <div class="col-lg-5">
+            <section class="sd-card card h-100" aria-labelledby="lu-card-title">
+                <div class="card-header">
+                    <h2 class="sd-card-title" id="lu-card-title">Payment method</h2>
+                </div>
+                <div class="card-body pt-2">
+                    @if (cardText is not null)
+                    {
+                        <div class="lu-card-on-file">
+                            <span class="sd-kpi-icon" aria-hidden="true"><Icon Name="IconName.CreditCard2Front" /></span>
+                            <div>
+                                <p class="fw-semibold mb-0">@cardText</p>
+                                <p class="small text-body-secondary mb-0">
+                                    Expires @workspace.CardExpiryMonth.ToString("00", CultureInfo.InvariantCulture)/@((workspace.CardExpiryYear % 100).ToString("00", CultureInfo.InvariantCulture))
+                                    @if (IsExpired(workspace, State.Clock.Today))
+                                    {
+                                        <Badge Color="BadgeColor.Danger" Class="rounded-pill ms-1">Expired</Badge>
+                                    }
+                                </p>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-body-secondary mb-0">No card on file.@(isFree ? " The free plan doesn't need one." : string.Empty)</p>
+                    }
+
+                    @if (canManage)
+                    {
+                        @if (!cardFormOpen)
+                        {
+                            <Button @ref="cardButton" Color="ButtonColor.Primary" Outline="true" Size="ButtonSize.Small" Class="mt-3" @onclick="OpenCardAsync">
+                                <Icon Name="IconName.CreditCard" class="me-1" aria-hidden="true" />@(cardText is null ? "Add card" : "Replace card")
+                            </Button>
+                        }
+                        else
+                        {
+                            <div class="lu-card-form mt-3">
+                                <h3 class="h6 fw-bold" id="lu-card-form-title" tabindex="-1" @ref="cardFormHeading">@(cardText is null ? "Add a card" : "Replace the card")</h3>
+                                <ShowcaseDemoNotice Class="mb-3" Text="Demo only: use one of the listed test cards; real cards are never accepted. The card is checked with a zero-amount test charge, and only its brand, last four digits, and expiry are kept." />
+                                <EditForm Model="card" OnValidSubmit="SaveCardAsync" FormName="lu-card" aria-labelledby="lu-card-form-title">
+                                    <ShowcaseCardForm Card="card" Today="State.Clock.Today" IdPrefix="lu" />
+                                    <div class="lu-error mt-3" role="alert">
+                                        @if (cardError is not null)
+                                        {
+                                            <Icon Name="IconName.ExclamationTriangleFill" class="me-2" aria-hidden="true" />@cardError
+                                        }
+                                    </div>
+                                    <div class="d-flex flex-wrap gap-2 mt-3">
+                                        <Button Type="ButtonType.Submit" Color="ButtonColor.Primary">Save card</Button>
+                                        <Button Color="ButtonColor.Secondary" Outline="true" @onclick="CancelCardAsync">Cancel</Button>
+                                    </div>
+                                </EditForm>
+                            </div>
+                        }
+                    }
+                </div>
+            </section>
+        </div>
+    </div>
+
+    @* Change plan *@
+    @if (canManage)
+    {
+        <section class="sd-card card mt-4" aria-labelledby="lu-change-title">
+            <div class="card-header">
+                <div>
+                    <h2 class="sd-card-title" id="lu-change-title">@(isTrial ? "Choose a plan" : "Change plan")</h2>
+                    <p class="sd-card-sub">Changes are prorated to the day: you pay the difference now, or the unused part is credited.</p>
+                    @if (!plan.IsSelfServe)
+                    {
+                        <p class="sd-card-sub mt-1">Your @plan.Name plan is managed with Lumora sales. Choosing a self-serve plan here moves the workspace off it.</p>
+                    }
+                </div>
+            </div>
+            <div class="card-body pt-2">
+                @{
+                    var selected = State.FindPlan(planId);
+                }
+                <fieldset>
+                    <legend class="lu-legend">Plan</legend>
+                    <div class="row g-3">
+                        @foreach (var option in State.Plans)
+                        {
+                            <div class="col-md-4" @key="option.Id">
+                                @if (option.IsSelfServe)
+                                {
+                                    var (optionMin, optionMax) = SeatRange(option, workspace);
+                                    var fits = optionMin <= optionMax;
+                                    var radioId = $"lu-plan-{option.Id}";
+
+                                    <div class="lu-plan-option @(option.Id == planId ? "is-selected" : null) @(fits ? null : "is-unavailable")">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="lu-plan" id="@radioId" value="@option.Id"
+                                                   checked="@(option.Id == planId)" disabled="@(!fits)" aria-describedby="@($"{radioId}-help")"
+                                                   @onchange="() => SelectPlan(option, workspace)" />
+                                            <label class="form-check-label fw-semibold" for="@radioId">
+                                                @option.Name
+                                                @if (option.Id == workspace.PlanId)
+                                                {
+                                                    <span class="fw-normal text-body-secondary"> (current)</span>
+                                                }
+                                            </label>
+                                        </div>
+                                        <div id="@($"{radioId}-help")" class="small mt-1">
+                                            <span class="d-block fw-semibold">@SeatPriceText(option, period)</span>
+                                            <span class="d-block text-body-secondary">@option.Description</span>
+                                            <span class="d-block text-body-secondary">Up to @SeatsWord(optionMax)</span>
+                                            @if (!fits)
+                                            {
+                                                <span class="d-block text-danger-emphasis mt-1">Not available: it allows fewer seats than your @used members and open invitations.</span>
+                                            }
+                                        </div>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="lu-plan-option">
+                                        <p class="fw-semibold mb-0">
+                                            @option.Name
+                                            @if (option.Id == workspace.PlanId)
+                                            {
+                                                <span class="fw-normal text-body-secondary"> (current)</span>
+                                            }
+                                        </p>
+                                        <p class="small text-body-secondary mt-1 mb-2">@option.Description</p>
+                                        <a class="btn btn-sm btn-outline-primary" href="@ContactPath">Talk to sales<span class="visually-hidden"> about @option.Name</span></a>
+                                    </div>
+                                }
+                            </div>
+                        }
+                    </div>
+                </fieldset>
+
+                @if (selected is { IsSelfServe: true } choice)
+                {
+                    var (min, max) = SeatRange(choice, workspace);
+                    var choiceIsFree = choice.MonthlyPricePerSeat == 0;
+                    var quote = State.QuotePlan(choice.Id, period, seats);
+
+                    <div class="row g-3 mt-1">
+                        <div class="col-md-6">
+                            @if (choiceIsFree)
+                            {
+                                <p class="lu-legend mb-1">Billing period</p>
+                                <p class="small text-body-secondary mb-0">@choice.Name is free, so there's no billing period.</p>
+                            }
+                            else
+                            {
+                                <fieldset>
+                                    <legend class="lu-legend">Billing period</legend>
+                                    @foreach (var option in new[] { SaasBillingPeriod.Monthly, SaasBillingPeriod.Annual })
+                                    {
+                                        var periodId = $"lu-period-{option}";
+
+                                        <div class="form-check" @key="option">
+                                            <input class="form-check-input" type="radio" name="lu-period" id="@periodId" value="@option"
+                                                   checked="@(option == period)" @onchange="() => SelectPeriod(option)" />
+                                            <label class="form-check-label" for="@periodId">
+                                                @(option == SaasBillingPeriod.Annual ? "Annual" : "Monthly")
+                                                <span class="text-body-secondary">
+                                                    · @SeatPriceText(choice, option)@(option == SaasBillingPeriod.Annual ? annualSavingText : string.Empty)
+                                                </span>
+                                            </label>
+                                        </div>
+                                    }
+                                </fieldset>
+                            }
+                        </div>
+                        <div class="col-md-6">
+                            @if (min <= max)
+                            {
+                                <label class="lu-legend form-label" for="lu-seats-input">Seats</label>
+                                <div class="lu-seats-input">
+                                    <NumberInput TValue="int" Id="lu-seats-input" Value="seats" ValueExpression="() => seats" ValueChanged="OnSeatsChanged"
+                                                 Min="min" Max="max" EnableMinMax="true" Step="1" aria-describedby="lu-seats-help" />
+                                </div>
+                                <div class="form-text" id="lu-seats-help">
+                                    @(min == max
+                                        ? $"Exactly {SeatsWord(min)}: your members and open invitations fill the plan."
+                                        : string.Create(CultureInfo.InvariantCulture, $"From {min} (your members and open invitations) to {max} ({choice.Name}'s limit)."))
+                                </div>
+                            }
+                        </div>
+                    </div>
+
+                    <div class="lu-quote mt-4" aria-live="polite" aria-atomic="true">
+                        @if (quote is null)
+                        {
+                            <p class="mb-0">
+                                <Icon Name="IconName.InfoCircle" class="me-2" aria-hidden="true" />@UnavailableText(choice, workspace)
+                            </p>
+                        }
+                        else
+                        {
+                            <h3 class="h6 fw-bold mb-2">Your quote: @choice.Name, @SeatsWord(seats)@(choiceIsFree ? string.Empty : $", {SaasSeedData.PeriodLabel(period)}")</h3>
+                            <ul class="lu-quote-lines list-unstyled mb-0">
+                                <li>
+                                    @if (quote.ChargeToday > 0)
+                                    {
+                                        <span>You pay <strong class="sd-mono">@SaasDisplay.MoneyCents(quote.ChargeToday)</strong> today@(cardText is null ? string.Empty : $", charged to the {cardText}").</span>
+                                    }
+                                    else
+                                    {
+                                        <span>Nothing to pay today.</span>
+                                    }
+                                </li>
+                                @if (quote.CreditAfter > workspace.CreditBalance)
+                                {
+                                    <li><strong class="sd-mono">@SaasDisplay.MoneyCents(quote.CreditAfter - workspace.CreditBalance)</strong> is credited to the workspace for the next invoices.</li>
+                                }
+                                else if (quote.CreditAfter < workspace.CreditBalance)
+                                {
+                                    <li><strong class="sd-mono">@SaasDisplay.MoneyCents(workspace.CreditBalance - quote.CreditAfter)</strong> of your credit balance is used.</li>
+                                }
+                                <li>
+                                    @if (choiceIsFree)
+                                    {
+                                        <span>Next renewal: free, nothing is billed.</span>
+                                    }
+                                    else
+                                    {
+                                        <span>Next renewal: <strong class="sd-mono">@SaasDisplay.MoneyCents(quote.NextAmount)</strong> on @SaasDisplay.Date(quote.NextRenewal).</span>
+                                    }
+                                </li>
+                            </ul>
+                            @if (!choiceIsFree && cardText is null)
+                            {
+                                <p class="small text-body-secondary mt-2 mb-0">A paid plan needs a card on file. Add one under Payment method first.</p>
+                            }
+                        }
+                    </div>
+                }
+
+                <p class="lu-error mt-3" role="alert">@planError</p>
+                <Button @ref="confirmButton" Color="ButtonColor.Primary" @onclick="ConfirmPlanAsync">
+                    @(isTrial ? "Choose this plan" : "Confirm change")
+                </Button>
+            </div>
+        </section>
+    }
+
+    @* Invoices *@
+    <section class="sd-card card mt-4" aria-labelledby="lu-invoices-title">
+        <div class="card-header">
+            <h2 class="sd-card-title" id="lu-invoices-title">Invoices</h2>
+        </div>
+        @if (invoices.Count == 0)
+        {
+            <div class="card-body pt-2">
+                <p class="text-body-secondary mb-0">No invoices yet. An invoice appears here each time a paid plan is charged.</p>
+            </div>
+        }
+        else
+        {
+            <div class="table-responsive sd-grid">
+                <table class="table align-middle">
+                    <caption class="visually-hidden">Invoices of @workspace.Name, newest first</caption>
+                    <thead>
+                        <tr>
+                            <th scope="col">Number</th>
+                            <th scope="col">Date</th>
+                            <th scope="col">Description</th>
+                            <th scope="col" class="text-end">Amount</th>
+                            <th scope="col">Status</th>
+                            <th scope="col">Card</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var invoice in invoices)
+                        {
+                            <tr @key="invoice.Number">
+                                <th scope="row" class="sd-mono fw-medium text-nowrap">
+                                    <a href="@($"{SaasState.BillingPath}/invoices/{Uri.EscapeDataString(invoice.Number)}")">@invoice.Number</a>
+                                </th>
+                                <td class="text-nowrap">@SaasDisplay.Date(invoice.IssuedOn)</td>
+                                <td class="lu-invoice-description">@invoice.Description</td>
+                                <td class="text-end sd-mono text-nowrap">@SaasDisplay.MoneyCents(invoice.Amount)</td>
+                                <td><Badge Color="InvoiceColor(invoice.Status)" Class="rounded-pill">@invoice.Status</Badge></td>
+                                <td class="text-nowrap">
+                                    @if (CardText(invoice.CardBrand, invoice.CardLast4) is { } invoiceCard)
+                                    {
+                                        @invoiceCard
+                                    }
+                                    else
+                                    {
+                                        <span aria-hidden="true">—</span><span class="visually-hidden">None</span>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </section>
+}

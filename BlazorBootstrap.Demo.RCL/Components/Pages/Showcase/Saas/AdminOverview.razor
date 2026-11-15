@@ -1,0 +1,215 @@
+@page "/showcase/saas/admin"
+@layout SaasAdminLayout
+
+<PageTitle>Overview · @SaasSeedData.ProductName</PageTitle>
+
+@{
+    var trials = Trials;
+    var leads = State.Leads;
+    var newLeads = leads.Count(lead => lead.Status == SaasLeadStatus.New);
+}
+
+<div class="sd-page-head">
+    <div>
+        <span class="sc-eyebrow">Overview</span>
+        <h1 class="sd-page-title">@Greeting</h1>
+        <p class="sd-page-lead">Here is how @SaasSeedData.ProductName is doing on @State.Clock.Today.ToString("dddd, MMMM d", CultureInfo.InvariantCulture).</p>
+    </div>
+    <div class="d-flex flex-wrap gap-2">
+        <Button Type="ButtonType.Link" To="@($"{SaasAdminLayout.Base}/analytics")" Color="ButtonColor.Primary" Outline="true">
+            <Icon Name="IconName.BarChartLine" class="me-1" aria-hidden="true" />Site analytics
+        </Button>
+        <Button Type="ButtonType.Link" To="@($"{SaasAdminLayout.Base}/tenants")" Color="ButtonColor.Primary">
+            <Icon Name="IconName.Buildings" class="me-1" aria-hidden="true" />All tenants
+        </Button>
+    </div>
+</div>
+
+<section aria-label="Key metrics" class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 row-cols-xxl-5 g-3 mb-4">
+    @foreach (var kpi in Kpis)
+    {
+        <div class="col" @key="kpi.Label">
+            <Card Class="sd-card h-100">
+                <CardBody Class="p-3 p-lg-4">
+                    <div class="sd-kpi-label">
+                        <span>@kpi.Label</span>
+                        <span class="sd-kpi-icon" aria-hidden="true"><Icon Name="@kpi.IconName" /></span>
+                    </div>
+                    <span class="sd-kpi-value">@kpi.Value</span>
+                    @if (kpi.Trend is not null)
+                    {
+                        <span class="sd-trend @(kpi.IsUp ? "is-up" : "is-down")">
+                            <Icon Name="@(kpi.IsUp ? IconName.ArrowUpRight : IconName.ArrowDownRight)" aria-hidden="true" />
+                            @kpi.Trend
+                        </span>
+                    }
+                    <span class="text-body-secondary small @(kpi.Trend is null ? string.Empty : "ms-1")">@kpi.Note</span>
+                </CardBody>
+            </Card>
+        </div>
+    }
+</section>
+
+<div class="row g-3 mb-4">
+    <div class="col-xl-8">
+        <Card Class="sd-card h-100">
+            <CardHeader>
+                <div>
+                    <h2 class="sd-card-title">Monthly recurring revenue</h2>
+                    <p class="sd-card-sub">Last 12 months against the target</p>
+                </div>
+                <Badge Color="@(IsOnTarget ? BadgeColor.Success : BadgeColor.Warning)" Class="rounded-pill">@(IsOnTarget ? "On track" : "Below target")</Badge>
+            </CardHeader>
+            <CardBody Class="pt-0">
+                <div class="sd-chart" role="img" aria-label="@RevenueChartLabel">
+                    <LineChart @ref="revenueChart" Height="300" HeightUnit="Unit.Px" Width="100" WidthUnit="Unit.Percentage" />
+                </div>
+            </CardBody>
+        </Card>
+    </div>
+    <div class="col-xl-4">
+        <Card Class="sd-card h-100">
+            <CardHeader>
+                <div>
+                    <h2 class="sd-card-title">Plan mix</h2>
+                    <p class="sd-card-sub">@(planMixByTenants ? "Tenants on each plan, trials included" : "Share of this month's MRR")</p>
+                </div>
+                <div class="btn-group btn-group-sm" role="group" aria-label="Measure the plan mix by">
+                    <button type="button" class="btn @(planMixByTenants ? "btn-outline-primary" : "btn-primary")" aria-pressed="@(planMixByTenants ? "false" : "true")"
+                            @onclick="() => SetPlanMixAsync(byTenants: false)">By MRR</button>
+                    <button type="button" class="btn @(planMixByTenants ? "btn-primary" : "btn-outline-primary")" aria-pressed="@(planMixByTenants ? "true" : "false")"
+                            @onclick="() => SetPlanMixAsync(byTenants: true)">By tenants</button>
+                </div>
+            </CardHeader>
+            <CardBody Class="pt-0">
+                <div class="sd-chart" role="img" aria-label="@PlanChartLabel">
+                    <DoughnutChart @ref="planChart" Height="300" HeightUnit="Unit.Px" Width="100" WidthUnit="Unit.Percentage" />
+                </div>
+            </CardBody>
+        </Card>
+    </div>
+</div>
+
+<div class="row g-3">
+    <div class="col-lg-6 col-xl-4">
+        <Card Class="sd-card h-100">
+            <CardHeader>
+                <div>
+                    <h2 class="sd-card-title">Trials ending soon</h2>
+                    <p class="sd-card-sub">@TrialsSubtitle(trials.Count)</p>
+                </div>
+                @if (trials.Count > 0)
+                {
+                    <a class="small fw-semibold" href="@($"{SaasAdminLayout.Base}/tenants?status={SaasWorkspaceStatus.Trial}")">All trials</a>
+                }
+            </CardHeader>
+            <CardBody Class="pt-0">
+                @if (trials.Count == 0)
+                {
+                    <p class="small text-body-secondary mb-0">No tenants are on trial right now.</p>
+                }
+                else
+                {
+                    <ul class="list-unstyled mb-0">
+                        @foreach (var trial in trials.Take(MaxTrials))
+                        {
+                            var daysLeft = State.TrialDaysLeft(trial) ?? 0;
+
+                            <li class="d-flex align-items-center justify-content-between gap-3 py-2 border-top" @key="trial.Id">
+                                <div class="sd-person">
+                                    <Avatar Name="@trial.Name" Color="SaasDisplay.AvatarColorFor(trial.Id)" Size="AvatarSize.Small" />
+                                    <span class="sd-person-text">
+                                        <a class="sd-person-name" href="@($"{SaasAdminLayout.Base}/tenants/{trial.Id}")">@trial.Name</a>
+                                        <span class="sd-person-email">@State.PlanOf(trial).Name · @(trial.CardLast4 is null ? "no card yet" : "card on file")</span>
+                                    </span>
+                                </div>
+                                <div class="text-end text-nowrap">
+                                    <Badge Color="@(daysLeft <= 3 ? BadgeColor.Danger : BadgeColor.Warning)" Class="rounded-pill">@DaysLeftText(daysLeft)</Badge>
+                                    <span class="d-block small text-body-secondary mt-1">@(trial.TrialEndsOn is { } endsOn ? SaasDisplay.Date(endsOn) : string.Empty)</span>
+                                </div>
+                            </li>
+                        }
+                    </ul>
+                }
+            </CardBody>
+        </Card>
+    </div>
+    <div class="col-lg-6 col-xl-4">
+        <Card Class="sd-card h-100">
+            <CardHeader>
+                <div>
+                    <h2 class="sd-card-title">Sales leads</h2>
+                    <p class="sd-card-sub">The newest messages from the "Contact sales" form</p>
+                </div>
+                <Badge Color="@(newLeads > 0 ? BadgeColor.Primary : BadgeColor.Secondary)" Class="rounded-pill">@Count(newLeads) new</Badge>
+            </CardHeader>
+            <CardBody Class="pt-0">
+                @if (leads.Count == 0)
+                {
+                    <p class="small text-body-secondary mb-0">No messages from the contact form yet.</p>
+                }
+                else
+                {
+                    <ul class="list-unstyled mb-0">
+                        @foreach (var lead in leads.Take(MaxLeads))
+                        {
+                            <li class="py-2 border-top" @key="lead.Id">
+                                <div class="d-flex align-items-start justify-content-between gap-2">
+                                    <span class="sd-person-text">
+                                        <span class="fw-semibold">@lead.Name</span>
+                                        <span class="sd-person-email">@lead.Company · @lead.TeamSize people</span>
+                                    </span>
+                                    <Badge Color="LeadColor(lead.Status)" Class="rounded-pill">@lead.Status</Badge>
+                                </div>
+                                <p class="small text-body-secondary mb-0 mt-1">@Excerpt(lead.Message)</p>
+                                <span class="small text-body-secondary">Received @SaasDisplay.DateTimeShort(lead.CreatedOn)</span>
+                            </li>
+                        }
+                    </ul>
+                }
+            </CardBody>
+        </Card>
+    </div>
+    <div class="col-lg-12 col-xl-4">
+        <Card Class="sd-card h-100">
+            <CardHeader>
+                <div>
+                    <h2 class="sd-card-title">Recent activity</h2>
+                    <p class="sd-card-sub">Across every tenant, newest first</p>
+                </div>
+            </CardHeader>
+            <CardBody Class="pt-1">
+                @if (State.RecentActivity is { Count: > 0 } activity)
+                {
+                    <Timeline AriaLabel="Recent tenant activity">
+                        @foreach (var entry in activity)
+                        {
+                            var tenant = State.FindWorkspace(entry.WorkspaceId);
+
+                            <TimelineItem Title="@entry.Title"
+                                          Subtitle="@SaasDisplay.DateTimeShort(entry.At)"
+                                          IconName="@entry.IconName"
+                                          Color="TimelineColor.Primary">
+                                <span class="small text-body-secondary">
+                                    @if (tenant is null)
+                                    {
+                                        <text>Unknown tenant</text>
+                                    }
+                                    else
+                                    {
+                                        <a class="fw-semibold" href="@($"{SaasAdminLayout.Base}/tenants/{tenant.Id}")">@tenant.Name</a>
+                                    }
+                                    · @entry.Detail
+                                </span>
+                            </TimelineItem>
+                        }
+                    </Timeline>
+                }
+                else
+                {
+                    <p class="small text-body-secondary mb-0">No activity yet.</p>
+                }
+            </CardBody>
+        </Card>
+    </div>
+</div>

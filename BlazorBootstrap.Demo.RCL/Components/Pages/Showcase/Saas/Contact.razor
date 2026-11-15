@@ -1,0 +1,125 @@
+@page "/showcase/saas/contact"
+@layout SaasLayout
+
+<PageTitle>Contact sales · @SaasSeedData.ProductName</PageTitle>
+
+<section class="mk-page-hero pb-4">
+    <div class="container-xl">
+        <span class="sc-eyebrow">Contact sales</span>
+        <h1 class="mk-section-title">Talk to us about @(EnterprisePlan?.Name ?? "Enterprise")</h1>
+        <p>Tell us about your team, and our (fictitious) sales team picks it up from there.</p>
+    </div>
+</section>
+
+<section class="container-xl pb-5">
+    <div class="row g-4 justify-content-center">
+        <div class="col-lg-7">
+            <div class="mk-signup-panel" data-clarity-mask="true">
+                @* Always rendered, so the confirmation is announced; focus moves here once the form is gone. *@
+                <div class="ct-status" role="status" tabindex="-1" @ref="statusRegion">
+                    @if (sent is { } lead)
+                    {
+                        <div class="text-center py-3">
+                            <span class="mk-feature-icon fs-3 mb-3" aria-hidden="true"><Icon Name="IconName.EnvelopeCheck" /></span>
+                            <h2 class="h3 fw-bold">Thanks, @FirstName(lead.Name). Your message is in.</h2>
+                            <p class="text-body-secondary mb-0">
+                                In this demo nothing is emailed: your message waits in @SaasSeedData.ProductName's sales inbox in this browser tab.
+                            </p>
+                        </div>
+                    }
+                </div>
+
+                @if (sent is { } sentLead)
+                {
+                    <dl class="ct-summary row small mx-auto mt-3">
+                        <dt class="col-5">Company</dt>
+                        <dd class="col-7">@sentLead.Company</dd>
+                        <dt class="col-5">Team size</dt>
+                        <dd class="col-7">@sentLead.TeamSize</dd>
+                        <dt class="col-5">Reply to</dt>
+                        <dd class="col-7 text-break">@sentLead.Email</dd>
+                    </dl>
+                    <div class="d-flex flex-wrap justify-content-center gap-2 mt-3">
+                        <Button Color="ButtonColor.Primary" Class="mk-cta-lg" @onclick="SendAnotherAsync">Send another</Button>
+                        <a class="btn btn-outline-secondary mk-cta-lg" href="@($"{SaasLayout.Base}/pricing")">Back to pricing</a>
+                    </div>
+                }
+                else
+                {
+                    <h2 class="h4 fw-bold">Send us a message</h2>
+                    <ShowcaseDemoNotice Class="mb-4" Text="Demo only: make up every detail. Nothing is emailed; the message stays in this browser tab." />
+
+                    <EditForm Model="form" OnValidSubmit="Submit" FormName="saas-contact">
+                        <DataAnnotationsValidator />
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label" for="ct-name">Full name</label>
+                                <InputText @ref="nameInput" id="ct-name" class="form-control" @bind-Value="form.Name" maxlength="@MaxTextLength" autocomplete="name" />
+                                <ValidationMessage For="() => form.Name" />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label" for="ct-email">Work email</label>
+                                <InputText id="ct-email" type="email" class="form-control" @bind-Value="form.Email" maxlength="@ShowcaseIdentity.MaxEmailLength" autocomplete="email" aria-describedby="ct-email-help" />
+                                <div class="form-text" id="ct-email-help">Use a made-up address, for example you@example.com.</div>
+                                <ValidationMessage For="() => form.Email" />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label" for="ct-company">Company</label>
+                                <InputText id="ct-company" class="form-control" @bind-Value="form.Company" maxlength="@MaxTextLength" autocomplete="organization" />
+                                <ValidationMessage For="() => form.Company" />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label" for="ct-size">Team size</label>
+                                <InputSelect id="ct-size" class="form-select" @bind-Value="form.TeamSize">
+                                    <option value="">Select a team size</option>
+                                    @foreach (var size in SaasSeedData.TeamSizes)
+                                    {
+                                        <option value="@size">@size people</option>
+                                    }
+                                </InputSelect>
+                                <ValidationMessage For="() => form.TeamSize" />
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label" for="ct-message">How can we help?</label>
+                                <InputTextArea id="ct-message" class="form-control" rows="5" @bind-Value="form.Message" maxlength="@MaxMessageLength" aria-describedby="ct-message-help" />
+                                <div class="form-text" id="ct-message-help">Up to @MaxMessageLength.ToString("#,0", CultureInfo.InvariantCulture) characters. For example: seats, security review, or data region.</div>
+                                <ValidationMessage For="() => form.Message" />
+                            </div>
+                        </div>
+
+                        <p class="ct-error" role="alert">@error</p>
+
+                        <Button Type="ButtonType.Submit" Color="ButtonColor.Primary" Size="ButtonSize.Large" Class="w-100 mk-cta-lg">Send message</Button>
+                    </EditForm>
+                }
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <Card Class="mk-feature-card">
+                <CardBody Class="p-4">
+                    @if (EnterprisePlan is { } plan)
+                    {
+                        <h2 class="h6 fw-bold mb-1">@plan.Name</h2>
+                        <p class="small text-body-secondary">@plan.Description</p>
+                        <ul class="list-unstyled mk-plan-list mb-3">
+                            @foreach (var highlight in plan.Highlights)
+                            {
+                                <li><Icon Name="IconName.Check2Circle" aria-hidden="true" />@highlight</li>
+                            }
+                        </ul>
+                        <p class="small mb-0">
+                            @SaasDisplay.Money(SaasPricing.MonthlySeatPrice(plan, SaasBillingPeriod.Monthly)) per seat / month, or
+                            @SaasDisplay.Money(SaasPricing.MonthlySeatPrice(plan, SaasBillingPeriod.Annual)) billed annually.
+                            <a href="@($"{SaasLayout.Base}/pricing")">Compare plans</a>
+                        </p>
+                    }
+                    else
+                    {
+                        <h2 class="h6 fw-bold mb-1">Not sure which plan fits?</h2>
+                        <p class="small mb-0">Tell us about your team. <a href="@($"{SaasLayout.Base}/pricing")">Compare plans</a></p>
+                    }
+                </CardBody>
+            </Card>
+        </div>
+    </div>
+</section>

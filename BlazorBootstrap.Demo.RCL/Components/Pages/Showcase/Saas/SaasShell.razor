@@ -1,0 +1,47 @@
+<HeadContent>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" />
+</HeadContent>
+
+@* The app shell shared by the customer workspace and the operator console (D-031): a sidebar with the modules, a top bar,
+   and the page. The pages' sd-* classes are styled here through ::deep, so both layouts share one stylesheet. *@
+<div class="sc-site sc-saas">
+    <ShowcaseSiteBar Site="@site" OnThemeChanged="State.SetTheme" />
+
+    <div class="sd-shell">
+        @if (ShowSidebar)
+        {
+            <Sidebar Class="sd-sidebar"
+                     Href="@Home"
+                     IconName="IconName.Lightning"
+                     Title="@SaasSeedData.ProductName"
+                     BadgeText="@BadgeText"
+                     DataProvider="DataProvider" />
+        }
+
+        <div class="sd-main">
+            <header class="sd-topbar">
+                @TopbarStart
+                <div class="sd-topbar-actions">
+                    @TopbarEnd
+                </div>
+            </header>
+
+            @* Both areas show people's names and emails as page text, so the content is masked from session recording
+               (Clarity masks inputs by default, not text). *@
+            <main class="sc-main sd-content" id="sd-main" data-clarity-mask="true">
+                @ChildContent
+            </main>
+
+            <div class="sd-ad-row">
+                <CarbonAds Class="sc-ad" />
+            </div>
+
+            <footer class="sd-footer">
+                <span>@FooterText</span>
+                <span class="d-none d-lg-inline">Built with Sidebar, Card, Modal, Tabs, Dropdown, Progress, Charts, and form inputs.</span>
+            </footer>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,61 @@
+/* Workspace settings. The sd-* classes come from SaasShell.razor.css; these are the page's own pieces. */
+
+.app-settings-note {
+    display: flex;
+    align-items: flex-start;
+    max-width: 48rem;
+    margin-bottom: 1rem;
+    padding: .75rem 1rem;
+    border: 1px solid var(--bs-border-color);
+    border-radius: .75rem;
+    background: var(--bs-secondary-bg);
+    font-size: .9375rem;
+}
+
+    .app-settings-note ::deep .bi {
+        margin-top: .2rem;
+    }
+
+/* The fieldset only groups the fields so they can be turned off together; it draws nothing. */
+.app-settings-fieldset {
+    min-width: 0;
+    max-width: 56rem;
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+
+.app-switch-row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: .875rem 0;
+    border-top: 1px solid var(--bs-border-color-translucent);
+}
+
+    .app-switch-row:first-child {
+        border-top: 0;
+        padding-top: 0;
+    }
+
+.app-settings-status:not(:empty),
+.app-settings-error:not(:empty) {
+    max-width: 56rem;
+    margin-top: 1rem;
+    padding: .75rem 1rem;
+    border-radius: .75rem;
+    font-size: .9375rem;
+}
+
+.app-settings-status:not(:empty) {
+    border: 1px solid var(--bs-success-border-subtle);
+    background: var(--bs-success-bg-subtle);
+    color: var(--bs-success-text-emphasis);
+}
+
+.app-settings-error:not(:empty) {
+    border: 1px solid var(--bs-danger-border-subtle);
+    background: var(--bs-danger-bg-subtle);
+    color: var(--bs-danger-text-emphasis);
+}

@@ -1,0 +1,22 @@
+@inherits LayoutComponentBase
+
+@* Lumora's operator console: its own sidebar (D-031), for the people who run the product. *@
+<ShowcaseSessionHost State="State" SiteBase="@SaasLayout.Base" SiteName="@SaasSeedData.ProductName">
+    <SaasShell Home="@Base" BadgeText="Operator" DataProvider="SidebarDataProvider" ShowSidebar="@State.IsOperator"
+               FooterText="© 2026 Lumora Analytics (fictitious). Tenants, people, and revenue here are made up and stay in this browser tab.">
+        <TopbarStart>
+            <span class="sd-workspace-name">Operator console</span>
+        </TopbarStart>
+        <TopbarEnd>
+            <a class="btn btn-sm btn-outline-secondary" href="@SaasLayout.Base">
+                <Icon Name="IconName.BoxArrowUpRight" class="me-1" aria-hidden="true" />View site
+            </a>
+            <ShowcaseAccountMenu SiteBase="@SaasLayout.Base" SignInPath="@SaasLayout.SignInPath" />
+        </TopbarEnd>
+        <ChildContent>
+            <ShowcaseRoleGuard Roles="@SaasSeedData.OperatorRole" SignInPath="@SaasLayout.SignInPath">
+                @Body
+            </ShowcaseRoleGuard>
+        </ChildContent>
+    </SaasShell>
+</ShowcaseSessionHost>

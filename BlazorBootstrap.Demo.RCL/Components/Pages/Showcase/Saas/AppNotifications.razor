@@ -1,0 +1,74 @@
+@page "/showcase/saas/app/notifications"
+@layout SaasAppLayout
+
+<PageTitle>Notifications · @SaasSeedData.ProductName</PageTitle>
+
+@if (State.CurrentWorkspace is { } workspace && State.CurrentMember is not null && State.Identity.Current is { } account)
+{
+    var notices = State.NoticesFor(account.Id);
+    var unread = notices.Count(notice => !notice.IsRead);
+
+    <div class="sd-page-head">
+        <div>
+            <span class="sc-eyebrow">Notifications</span>
+            <h1 class="sd-page-title">Notifications</h1>
+            <p class="sd-page-lead">
+                Updates about @workspace.Name and your account, newest first. In this demo they only show up here; nothing is emailed.
+            </p>
+        </div>
+        @if (unread > 0)
+        {
+            <Button Color="ButtonColor.Primary" Outline="true" @onclick="MarkAllRead">
+                <Icon Name="IconName.Check2All" class="me-1" aria-hidden="true" />Mark all as read
+            </Button>
+        }
+    </div>
+
+    @* Always rendered and focusable: "Mark all as read" goes away once it's used, so focus moves here. *@
+    <div class="app-notices-status" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</div>
+
+    @if (notices.Count == 0)
+    {
+        <Card Class="sd-card">
+            <CardBody Class="text-center py-5">
+                <span class="app-notices-empty-icon" aria-hidden="true"><Icon Name="IconName.BellSlash" /></span>
+                <h2 class="h6 fw-bold mt-3 mb-1">No notifications</h2>
+                <p class="text-body-secondary mb-0">Invitations, plan changes, and other updates about your workspace show up here.</p>
+            </CardBody>
+        </Card>
+    }
+    else
+    {
+        <Card Class="sd-card">
+            <CardBody Class="p-0">
+                <p class="app-notices-count">@CountText(notices.Count, unread)</p>
+                <ul class="app-notices" aria-label="Notifications">
+                    @foreach (var notice in notices)
+                    {
+                        <li class="app-notice @(notice.IsRead ? null : "is-unread")" @key="notice.Id">
+                            <span class="app-notice-icon" aria-hidden="true"><Icon Name="notice.IconName" /></span>
+                            <div class="app-notice-body">
+                                <h2 class="app-notice-title">
+                                    @if (SafeLink(notice.Link) is { } link)
+                                    {
+                                        <a href="@link">@notice.Title</a>
+                                    }
+                                    else
+                                    {
+                                        @notice.Title
+                                    }
+                                    @if (!notice.IsRead)
+                                    {
+                                        <Badge Color="BadgeColor.Primary" Class="rounded-pill ms-2">New</Badge>
+                                    }
+                                </h2>
+                                <p class="app-notice-text">@notice.Text</p>
+                                <time class="app-notice-time" datetime="@(notice.CreatedOn.ToString("yyyy-MM-ddTHH:mm", CultureInfo.InvariantCulture))">@SaasDisplay.DateTimeShort(notice.CreatedOn)</time>
+                            </div>
+                        </li>
+                    }
+                </ul>
+            </CardBody>
+        </Card>
+    }
+}

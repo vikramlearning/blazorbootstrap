@@ -1,0 +1,55 @@
+@page "/showcase/saas/app/account"
+@layout SaasAppLayout
+@implements IDisposable
+@inject SaasState State
+
+<PageTitle>Your account · @SaasSeedData.ProductName</PageTitle>
+
+@* The signed-in customer's own profile and password, and what this account is in the workspace. *@
+@if (State.CurrentWorkspace is { } workspace && State.CurrentMember is { } member)
+{
+    <div class="sd-page-head">
+        <div>
+            <span class="sc-eyebrow">Account</span>
+            <h1 class="sd-page-title">Your account</h1>
+            <p class="sd-page-lead">Your name, email, and password for this demo.</p>
+        </div>
+    </div>
+
+    <Card Class="sd-card mb-4">
+        <CardBody Class="d-flex align-items-start gap-3 p-3 p-lg-4">
+            <Avatar Name="@member.Name" Color="SaasDisplay.AvatarColorFor(member.Id)" Size="AvatarSize.Small" aria-hidden="true" />
+            <div>
+                <h2 class="sd-card-title mb-1">Your role in @workspace.Name</h2>
+                <p class="mb-1">
+                    <Badge Color="BadgeColor.Secondary" Class="rounded-pill me-1">@SaasDisplay.RoleName(member.Role)</Badge>
+                    @RoleText(member.Role)
+                </p>
+                <p class="small text-body-secondary mb-0">
+                    Owners and admins change roles on the <a href="@($"{SaasAppLayout.Base}/team")">Team</a> page. Changes to your name or email
+                    here stay in this browser tab.
+                </p>
+            </div>
+        </CardBody>
+    </Card>
+
+    <ShowcaseAccountProfile />
+}
+
+@code {
+    /// <inheritdoc />
+    protected override void OnInitialized() => State.Changed += OnStateChanged;
+
+    /// <summary>Stops listening to state changes.</summary>
+    public void Dispose() => State.Changed -= OnStateChanged;
+
+    private static string RoleText(SaasMemberRole role) => role switch
+    {
+        SaasMemberRole.Owner => "As an owner, you can do everything, including billing and managing other owners.",
+        SaasMemberRole.Admin => "As an admin, you manage the team and the workspace settings.",
+        SaasMemberRole.Billing => "With the billing role, you manage the plan, the payment method, and invoices.",
+        _ => "As a member, you use the workspace's dashboards and reports.",
+    };
+
+    private void OnStateChanged() => InvokeAsync(StateHasChanged);
+}

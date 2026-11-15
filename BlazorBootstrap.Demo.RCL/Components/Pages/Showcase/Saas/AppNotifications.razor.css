@@ -1,0 +1,94 @@
+/* The notifications list. The sd-* classes come from SaasShell.razor.css; these are the page's own pieces. */
+
+.app-notices-status:not(:empty) {
+    margin-bottom: 1rem;
+    padding: .75rem 1rem;
+    border: 1px solid var(--bs-success-border-subtle);
+    border-radius: .75rem;
+    background: var(--bs-success-bg-subtle);
+    color: var(--bs-success-text-emphasis);
+    font-size: .9375rem;
+}
+
+.app-notices-status:focus {
+    outline: none;
+}
+
+.app-notices-status:focus-visible {
+    outline: 2px solid var(--sc-primary);
+    outline-offset: 2px;
+}
+
+.app-notices-empty-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 3rem;
+    height: 3rem;
+    border-radius: 50%;
+    background: rgba(var(--sc-primary-rgb), .12);
+    color: var(--sc-primary);
+    font-size: 1.25rem;
+}
+
+.app-notices-count {
+    margin: 0;
+    padding: .875rem 1.25rem;
+    color: var(--bs-secondary-color);
+    font-size: .875rem;
+}
+
+.app-notices {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.app-notice {
+    display: flex;
+    gap: .875rem;
+    padding: 1rem 1.25rem;
+    border-top: 1px solid var(--bs-border-color-translucent);
+}
+
+    .app-notice.is-unread {
+        background: rgba(var(--sc-primary-rgb), .06);
+    }
+
+.app-notice-icon {
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 50%;
+    background: rgba(var(--sc-primary-rgb), .12);
+    color: var(--sc-primary);
+}
+
+.app-notice-body {
+    display: flex;
+    flex-direction: column;
+    gap: .125rem;
+    min-width: 0;
+}
+
+.app-notice-title {
+    margin: 0;
+    font-size: .9375rem;
+    font-weight: 600;
+    overflow-wrap: anywhere;
+}
+
+.app-notice-text {
+    margin: 0;
+    color: var(--bs-secondary-color);
+    font-size: .875rem;
+    overflow-wrap: anywhere;
+}
+
+.app-notice-time {
+    color: var(--bs-secondary-color);
+    font-size: .75rem;
+}

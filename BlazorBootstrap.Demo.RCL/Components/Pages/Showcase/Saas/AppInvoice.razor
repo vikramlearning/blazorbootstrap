@@ -1,0 +1,102 @@
+@page "/showcase/saas/app/billing/invoices/{Number}"
+@layout SaasAppLayout
+
+<PageTitle>Invoice · @SaasSeedData.ProductName</PageTitle>
+
+@if (State.CurrentMember is not null && State.CurrentWorkspace is not null)
+{
+    @if (State.FindInvoice(Number) is not { } invoice)
+    {
+        <SaasNotFound BackPath="@SaasState.BillingPath" BackText="Back to billing"
+                      Message="There's no invoice with that number in your workspace. It may belong to another workspace, or the link may be old." />
+    }
+    else
+    {
+        var buyer = State.FindWorkspace(invoice.WorkspaceId);
+        var cardText = AppBilling.CardText(invoice.CardBrand, invoice.CardLast4);
+
+        <PageTitle>Invoice @invoice.Number · @SaasSeedData.ProductName</PageTitle>
+
+        <div class="lu-invoice-actions d-print-none">
+            <a class="btn btn-sm btn-outline-secondary" href="@SaasState.BillingPath">
+                <Icon Name="IconName.ArrowLeft" class="me-1" aria-hidden="true" />Back to billing
+            </a>
+            <p class="small text-body-secondary mb-0">
+                <Icon Name="IconName.Printer" class="me-1" aria-hidden="true" />To print it or save it as a PDF, use your browser's print command (Ctrl+P, or Cmd+P on a Mac).
+            </p>
+        </div>
+
+        <article class="sd-card card lu-invoice" aria-labelledby="lu-invoice-title">
+            <div class="card-body p-3 p-md-4 p-lg-5">
+                <header class="lu-invoice-head">
+                    <div>
+                        <p class="lu-invoice-seller mb-1">
+                            <Icon Name="IconName.Receipt" class="me-2" aria-hidden="true" />Lumora Analytics <span class="fw-normal text-body-secondary">(fictitious)</span>
+                        </p>
+                        <h1 class="sd-page-title" id="lu-invoice-title">Invoice @invoice.Number</h1>
+                    </div>
+                    <Badge Color="AppBilling.InvoiceColor(invoice.Status)" Class="rounded-pill fs-6">@invoice.Status</Badge>
+                </header>
+
+                <dl class="sd-dl lu-invoice-facts">
+                    <div>
+                        <dt>Billed to</dt>
+                        <dd>@(buyer?.Name ?? "Unknown workspace")</dd>
+                    </div>
+                    <div>
+                        <dt>Invoice number</dt>
+                        <dd class="sd-mono">@invoice.Number</dd>
+                    </div>
+                    <div>
+                        <dt>Issued on</dt>
+                        <dd>@SaasDisplay.Date(invoice.IssuedOn)</dd>
+                    </div>
+                    <div>
+                        <dt>Service period</dt>
+                        <dd>@PeriodText(invoice)</dd>
+                    </div>
+                </dl>
+
+                <div class="table-responsive sd-grid">
+                    <table class="table align-middle mb-0">
+                        <caption class="visually-hidden">What invoice @invoice.Number charges</caption>
+                        <thead>
+                            <tr>
+                                <th scope="col">Description</th>
+                                <th scope="col">Period</th>
+                                <th scope="col" class="text-end">Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="lu-invoice-description">@invoice.Description</td>
+                                <td class="text-nowrap">@PeriodText(invoice)</td>
+                                <td class="text-end sd-mono text-nowrap">@SaasDisplay.MoneyCents(invoice.Amount)</td>
+                            </tr>
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <th scope="row" colspan="2" class="text-end">Total</th>
+                                <td class="text-end sd-mono fw-bold text-nowrap">@SaasDisplay.MoneyCents(invoice.Amount)</td>
+                            </tr>
+                            @if (invoice.RefundedAmount > 0)
+                            {
+                                <tr>
+                                    <th scope="row" colspan="2" class="text-end">Refunded</th>
+                                    <td class="text-end sd-mono text-nowrap">−@SaasDisplay.MoneyCents(invoice.RefundedAmount)</td>
+                                </tr>
+                            }
+                        </tfoot>
+                    </table>
+                </div>
+
+                <p class="lu-invoice-payment mt-4 mb-0">
+                    @PaymentText(invoice, cardText)
+                </p>
+                <p class="small text-body-secondary mt-3 mb-0">
+                    Lumora and this invoice are made up for a demo. Nothing was charged, and the invoice exists only in this browser tab.
+                </p>
+            </div>
+        </article>
+    }
+}

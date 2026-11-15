@@ -1,0 +1,119 @@
+@page "/showcase/saas/app/settings"
+@layout SaasAppLayout
+
+<PageTitle>Settings · @SaasSeedData.ProductName</PageTitle>
+
+@if (State.CurrentWorkspace is { } workspace && State.CurrentMember is { } member)
+{
+    var readOnly = !State.CanManageSettings;
+
+    <div class="sd-page-head">
+        <div>
+            <span class="sc-eyebrow">Settings</span>
+            <h1 class="sd-page-title">Workspace settings</h1>
+            <p class="sd-page-lead">These settings apply to everyone in @workspace.Name.</p>
+        </div>
+    </div>
+
+    @if (readOnly)
+    {
+        <p class="app-settings-note" id="app-settings-readonly">
+            <Icon Name="IconName.Lock" class="me-2" aria-hidden="true" />@ReadOnlyText(workspace, member)
+        </p>
+    }
+
+    <EditForm EditContext="editContext" OnValidSubmit="Save" FormName="app-settings">
+        <DataAnnotationsValidator />
+        @* A disabled fieldset turns every field inside it off at once for members who can only read the settings. *@
+        <fieldset class="app-settings-fieldset" disabled="@readOnly" aria-describedby="@(readOnly ? "app-settings-readonly" : null)">
+            <legend class="visually-hidden">Workspace settings</legend>
+
+            <Card Class="sd-card mb-3">
+                <CardHeader>
+                    <h2 class="sd-card-title">General</h2>
+                </CardHeader>
+                <CardBody Class="p-3 p-lg-4 pt-lg-2">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label" for="app-ws-name">Workspace name</label>
+                            <TextInput Id="app-ws-name" @bind-Value="form.Name" MaxLength="SaasState.MaxWorkspaceNameLength" Disabled="readOnly" />
+                            <ValidationMessage For="() => form.Name" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" for="app-ws-tz">Time zone</label>
+                            <InputSelect id="app-ws-tz" class="form-select" @bind-Value="form.TimeZone" disabled="@readOnly" aria-describedby="app-ws-tz-help">
+                                @foreach (var zone in SaasSeedData.TimeZones)
+                                {
+                                    <option value="@zone">@zone</option>
+                                }
+                            </InputSelect>
+                            <div class="form-text" id="app-ws-tz-help">Days and reports start at midnight in this time zone.</div>
+                        </div>
+                        <div class="col-md-6">
+                            <span class="form-label d-block" id="app-ws-week">Week starts on</span>
+                            <RadioButtonGroup TValue="string" @bind-Value="form.WeekStartsOn" AriaLabel="Week starts on" aria-labelledby="app-ws-week" Disabled="readOnly" Size="ButtonGroupSize.Small">
+                                <ButtonGroupItem Value="@("Monday")" Id="app-week-monday">Monday</ButtonGroupItem>
+                                <ButtonGroupItem Value="@("Sunday")" Id="app-week-sunday">Sunday</ButtonGroupItem>
+                            </RadioButtonGroup>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" for="app-ws-region">Data region</label>
+                            <InputSelect id="app-ws-region" class="form-select" @bind-Value="form.DataRegion" disabled="@readOnly" aria-describedby="app-ws-region-help">
+                                @foreach (var region in SaasSeedData.DataRegions)
+                                {
+                                    <option value="@region">@region</option>
+                                }
+                            </InputSelect>
+                            <div class="form-text" id="app-ws-region-help">Where the workspace's events are kept. In this demo, everything stays in this browser tab.</div>
+                        </div>
+                    </div>
+                </CardBody>
+            </Card>
+
+            <Card Class="sd-card mb-3">
+                <CardHeader>
+                    <div>
+                        <h2 class="sd-card-title">Email notifications</h2>
+                        <p class="sd-card-sub">Which emails the workspace's owners and admins get. This is a demo, so no email is sent.</p>
+                    </div>
+                </CardHeader>
+                <CardBody Class="p-3 p-lg-4 pt-lg-2">
+                    <ul class="list-unstyled mb-0">
+                        @foreach (var option in emailOptions)
+                        {
+                            <li class="app-switch-row" @key="option.Key">
+                                <div>
+                                    <label class="fw-semibold d-block" for="@($"app-email-{option.Key}")">@option.Title</label>
+                                    <span class="small text-body-secondary" id="@($"app-email-{option.Key}-help")">@option.Description</span>
+                                </div>
+                                @* No ValueExpression: the switch only needs it for validation, and it can't name a field through a method call. *@
+                                <Switch Id="@($"app-email-{option.Key}")"
+                                        Value="option.Get(form)"
+                                        ValueChanged="(bool value) => option.Set(form, value)"
+                                        Disabled="readOnly"
+                                        aria-describedby="@($"app-email-{option.Key}-help")" />
+                            </li>
+                        }
+                    </ul>
+                </CardBody>
+            </Card>
+        </fieldset>
+
+        @if (!readOnly)
+        {
+            <div class="d-flex flex-wrap align-items-center gap-2">
+                <Button Type="ButtonType.Submit" Color="ButtonColor.Primary">Save changes</Button>
+                <Button Color="ButtonColor.Secondary" Outline="true" @onclick="Discard">Discard changes</Button>
+            </div>
+        }
+
+        @* Always rendered, so a result is announced; the same result again gets a counter so it is announced again. *@
+        <div class="app-settings-status" role="status">@statusMessage</div>
+        <div class="app-settings-error" role="alert">
+            @if (errorMessage is not null)
+            {
+                <Icon Name="IconName.ExclamationTriangleFill" class="me-2" aria-hidden="true" />@errorMessage
+            }
+        </div>
+    </EditForm>
+}
