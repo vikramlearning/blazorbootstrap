@@ -1,0 +1,53 @@
+.ec-wish {
+    display: inline-flex;
+}
+
+/* Over a product card's image, in the top-right corner (the sale badge sits top-left). */
+.ec-wish-corner {
+    position: absolute;
+    top: .625rem;
+    right: .625rem;
+    z-index: 2;
+}
+
+.ec-wish-btn-compact,
+.ec-wish-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--ec-border);
+    background: var(--ec-surface);
+    color: var(--ec-ink);
+}
+
+    .ec-wish-btn-compact:hover,
+    .ec-wish-btn-compact:active,
+    .ec-wish-btn:hover,
+    .ec-wish-btn:active {
+        border-color: var(--sc-primary);
+        background: var(--ec-soft);
+        color: var(--ec-ink);
+    }
+
+    .ec-wish-btn-compact:focus-visible,
+    .ec-wish-btn:focus-visible {
+        outline: 3px solid var(--sc-primary);
+        outline-offset: 2px;
+        box-shadow: none;
+    }
+
+/* Round icon-only button: 2.5rem, so it is an easy target on touch screens. */
+.ec-wish-btn-compact {
+    width: 2.5rem;
+    height: 2.5rem;
+    padding: 0;
+    border-radius: 50%;
+    font-size: 1.125rem;
+    line-height: 1;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, .15);
+}
+
+/* Saved shows a filled heart (and on the product page the word changes), so the state is never told by color alone. */
+.ec-wish-on ::deep .bi {
+    color: var(--ec-sale);
+}

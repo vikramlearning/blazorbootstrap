@@ -1,0 +1,90 @@
+@* The customer's side of returns on their order page: the order's return requests with the store's decision, and for a
+   delivered order a form to ask for a return. The store decides in the admin's Returns queue (CR-001-AC-07). *@
+<section class="ec-panel mt-4" aria-labelledby="ec-returns-title" data-clarity-mask="true">
+    <h2 class="h5 fw-bold mb-3" id="ec-returns-title" tabindex="-1" @ref="heading">Returns</h2>
+
+    @if (Requests.Count > 0)
+    {
+        <ul class="list-unstyled d-grid gap-3 mb-3">
+            @foreach (var request in Requests)
+            {
+                <li class="ec-return" @key="request.Id">
+                    <div class="d-flex flex-wrap justify-content-between gap-2">
+                        <span class="fw-semibold">Return R-@request.Id.ToString("0000", CultureInfo.InvariantCulture)</span>
+                        <Badge Color="@StatusColor(request.Status)">@StatusText(request.Status)</Badge>
+                    </div>
+                    <p class="small mb-1">@string.Join(", ", request.Lines.Select(line => $"{line.Quantity} × {line.Name} ({line.Color})")) · @EcommerceDisplay.Money(request.Amount)</p>
+                    <p class="small text-body-secondary mb-0">
+                        Requested @EcommerceDisplay.DateTimeShort(request.RequestedOn) · Reason: @request.Reason
+                        @if (request.DecisionNote is { } note)
+                        {
+                            <br />@($"Note from {EcommerceSeedData.StoreName}: {note}")
+                        }
+                    </p>
+                </li>
+            }
+        </ul>
+    }
+
+    @if (Order.Status is EcommerceOrderStatus.Cancelled or EcommerceOrderStatus.Refunded)
+    {
+        <p class="small text-body-secondary mb-0">This order was @(Order.Status == EcommerceOrderStatus.Cancelled ? "cancelled" : "refunded in full"), so there is nothing to return.</p>
+    }
+    else if (Order.Status != EcommerceOrderStatus.Delivered)
+    {
+        <p class="small text-body-secondary mb-0">You can ask to return items once the order is delivered.</p>
+    }
+    else if (ReturnableLines.Count == 0)
+    {
+        <p class="small text-body-secondary mb-0">Every item of this order is already in a return request.</p>
+    }
+    else if (!showForm)
+    {
+        <Button Color="ButtonColor.Primary" Outline="true" @onclick="OpenFormAsync">Return items</Button>
+    }
+    else
+    {
+        <ShowcaseDemoNotice Class="mb-3" Text="Demo only: the store's admin decides on the request in this browser tab; nothing is shipped or refunded." />
+        <EditForm Model="form" OnValidSubmit="Submit" FormName="ec-return-request">
+            <DataAnnotationsValidator />
+            <fieldset class="mb-3">
+                <legend class="form-label fw-semibold fs-6">What are you returning?</legend>
+                @foreach (var (line, max) in ReturnableLines)
+                {
+                    var key = Key(line);
+                    <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 py-1" @key="key">
+                        <label class="small" for="@($"ec-return-qty-{key}")">@line.Name (@line.Color) · up to @max</label>
+                        <select id="@($"ec-return-qty-{key}")" class="form-select form-select-sm ec-return-qty" value="@Quantity(key)" @onchange="args => SetQuantity(key, args.Value)">
+                            @for (var count = 0; count <= max; count++)
+                            {
+                                <option value="@count">@count</option>
+                            }
+                        </select>
+                    </div>
+                }
+            </fieldset>
+            <div class="mb-3">
+                <label class="form-label fw-semibold" for="ec-return-reason">Reason</label>
+                <InputSelect id="ec-return-reason" class="form-select" @bind-Value="form.Reason">
+                    <option value="">Choose a reason</option>
+                    @foreach (var reason in reasons)
+                    {
+                        <option value="@reason">@reason</option>
+                    }
+                </InputSelect>
+                <ValidationMessage For="() => form.Reason" />
+            </div>
+            <div class="mb-3">
+                <label class="form-label fw-semibold" for="ec-return-comment">Anything else? <span class="fw-normal text-body-secondary">(optional)</span></label>
+                <TextAreaInput Id="ec-return-comment" @bind-Value="form.Comment" Rows="2" MaxLength="500" />
+                <ValidationMessage For="() => form.Comment" />
+            </div>
+            <p class="small text-danger fw-semibold" role="alert">@error</p>
+            <div class="d-flex flex-wrap gap-2">
+                <Button Type="ButtonType.Submit" Color="ButtonColor.Primary">Send return request</Button>
+                <Button Color="ButtonColor.Secondary" Outline="true" @onclick="CloseFormAsync">Cancel</Button>
+            </div>
+        </EditForm>
+    }
+    <p class="small mb-0 mt-2" role="status">@status</p>
+</section>

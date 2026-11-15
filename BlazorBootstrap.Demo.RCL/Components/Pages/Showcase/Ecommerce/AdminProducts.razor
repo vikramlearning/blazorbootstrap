@@ -1,0 +1,160 @@
+@page "/showcase/ecommerce/admin/products"
+@layout EcommerceAdminLayout
+
+<PageTitle>Products · @EcommerceSeedData.StoreName admin</PageTitle>
+
+<div class="ea-products">
+    <div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-4">
+        <div>
+            <h1 class="ea-title">Products</h1>
+            <p class="ea-lead">Inventory, prices, and what shows in the store.</p>
+        </div>
+        <a class="btn btn-primary" href="@($"{EcommerceAdminLayout.Base}/products/new")">
+            <Icon Name="IconName.PlusLg" class="me-1" aria-hidden="true" />Add product
+        </a>
+    </div>
+
+    <section class="ea-panel" aria-labelledby="ea-products-list-title">
+        <h2 class="visually-hidden" id="ea-products-list-title">Product list</h2>
+
+        <div class="row g-2 align-items-end mb-3" role="search" aria-label="Filter products">
+            <div class="col-md-6 col-xl-4">
+                <label class="form-label small fw-semibold" for="ea-product-search">Search by name</label>
+                <InputGroup>
+                    <InputGroupText><Icon Name="IconName.Search" aria-hidden="true" /></InputGroupText>
+                    @* TextInput raises ValueChanged on change only; @oninput keeps the filter live while typing. *@
+                    <TextInput Id="ea-product-search" Value="@searchBoxValue" ValueExpression="() => searchBoxValue" ValueChanged="OnSearchChanged"
+                               @oninput="OnSearchInput" Placeholder="Product name" />
+                </InputGroup>
+            </div>
+            <div class="col-6 col-md-3 col-xl-2">
+                <label class="form-label small fw-semibold" for="ea-product-category">Category</label>
+                <select id="ea-product-category" class="form-select" value="@categoryFilter" @onchange="OnCategoryChanged">
+                    <option value="">All categories</option>
+                    @foreach (var category in State.Categories)
+                    {
+                        <option value="@category.Id">@category.Name</option>
+                    }
+                </select>
+            </div>
+            <div class="col-6 col-md-3 col-xl-2">
+                <label class="form-label small fw-semibold" for="ea-product-status">Status</label>
+                <select id="ea-product-status" class="form-select" value="@statusFilter" @onchange="OnStatusChanged">
+                    <option value="@StatusActive">Active</option>
+                    <option value="@StatusArchived">Archived</option>
+                    <option value="@StatusAll">All</option>
+                </select>
+            </div>
+            <div class="col-6 col-md-3 col-xl-2">
+                <label class="form-label small fw-semibold" for="ea-product-stock">Stock</label>
+                <select id="ea-product-stock" class="form-select" value="@stockFilter" @onchange="OnStockChanged">
+                    <option value="@StockAll">All</option>
+                    <option value="@StockLow">Low (@LowStockLimit or fewer)</option>
+                    <option value="@StockOut">Out of stock</option>
+                </select>
+            </div>
+        </div>
+
+        <p class="small text-body-secondary mb-3" role="status">@SummaryText</p>
+
+        @* Always rendered and focusable: a stock change is announced here, and focus lands here when its row leaves the list. *@
+        <p class="fw-semibold mb-3 ea-products-message" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
+
+        <Grid @ref="grid"
+              TItem="EcommerceProduct"
+              Class="table table-hover align-middle ea-table"
+              DataProvider="ProductsDataProvider"
+              RowKeySelector="product => product.Id"
+              AllowSorting="true"
+              AllowPaging="true"
+              PageSize="10"
+              PaginationItemsTextFormat="{0}–{1} of {2} products"
+              Responsive="true"
+              EmptyText="No products match these filters."
+              aria-label="Products">
+            <GridColumns>
+                <GridColumn TItem="EcommerceProduct" HeaderText="Image" Sortable="false">
+                    <HeaderContent><span class="visually-hidden">Image</span></HeaderContent>
+                    <ChildContent>
+                        <ShowcaseImage Src="@context.ImagePath" Alt="" Width="96" Height="96" Class="ea-product-thumb"
+                                       Accent="@State.FindCategory(context.CategoryId)?.Accent" PlaceholderIcon="@CategoryIcon(context)" />
+                    </ChildContent>
+                </GridColumn>
+                <GridColumn TItem="EcommerceProduct" HeaderText="Name" PropertyName="Name" SortKeySelector="item => item.Name" IsDefaultSortColumn="true">
+                    <a class="fw-semibold" href="@($"{EcommerceAdminLayout.Base}/products/{context.Id}")">@context.Name</a>
+                </GridColumn>
+                <GridColumn TItem="EcommerceProduct" HeaderText="Category" PropertyName="CategoryId" SortKeySelector="item => CategoryName(item)">
+                    @CategoryName(context)
+                </GridColumn>
+                <GridColumn TItem="EcommerceProduct" HeaderText="Price" PropertyName="Price" SortKeySelector="item => item.Price" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" TextNoWrap="true">
+                    <span class="fw-semibold">@EcommerceDisplay.Money(context.Price)</span>
+                    @if (context.IsOnSale)
+                    {
+                        <s class="d-block small text-body-secondary"><span class="visually-hidden">Was </span>@EcommerceDisplay.Money(context.CompareAtPrice!.Value)</s>
+                    }
+                </GridColumn>
+                <GridColumn TItem="EcommerceProduct" HeaderText="Stock" PropertyName="Stock" SortKeySelector="item => item.Stock" TextNoWrap="true">
+                    @if (context.Stock == 0)
+                    {
+                        <Badge Color="BadgeColor.Danger">Out of stock</Badge>
+                    }
+                    else if (context.Stock <= LowStockLimit)
+                    {
+                        <Badge Color="BadgeColor.Warning">@context.Stock left</Badge>
+                    }
+                    else
+                    {
+                        <span class="ea-number">@context.Stock</span>
+                    }
+                </GridColumn>
+                <GridColumn TItem="EcommerceProduct" HeaderText="Status" PropertyName="IsArchived" SortKeySelector="item => item.IsArchived">
+                    @if (context.IsArchived)
+                    {
+                        <Badge Color="BadgeColor.Secondary">Archived</Badge>
+                    }
+                    else
+                    {
+                        <Badge Color="BadgeColor.Success">Active</Badge>
+                    }
+                </GridColumn>
+                <GridColumn TItem="EcommerceProduct" HeaderText="Featured" PropertyName="IsFeatured" SortKeySelector="item => item.IsFeatured">
+                    @if (context.IsFeatured)
+                    {
+                        <span class="ea-featured"><Icon Name="IconName.StarFill" class="me-1" aria-hidden="true" />Featured</span>
+                    }
+                    else
+                    {
+                        <span class="text-body-secondary" aria-hidden="true">—</span><span class="visually-hidden">Not featured</span>
+                    }
+                </GridColumn>
+                <GridColumn TItem="EcommerceProduct" HeaderText="Actions" Sortable="false" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End">
+                    <HeaderContent><span class="visually-hidden">Actions</span></HeaderContent>
+                    <ChildContent>
+                        <Button @ref="stockButtons[context.Id]" Color="ButtonColor.Secondary" Outline="true" Size="ButtonSize.Small" Class="text-nowrap" @onclick="() => AskStockAsync(context)">
+                            Adjust stock<span class="visually-hidden">@($" for {context.Name}")</span>
+                        </Button>
+                    </ChildContent>
+                </GridColumn>
+            </GridColumns>
+        </Grid>
+    </section>
+</div>
+
+<Modal @ref="stockModal" IsVerticallyCentered="true" ShowCloseButton="false" aria-labelledby="ea-stock-title" OnShown="OnStockShownAsync" OnHidden="OnStockHiddenAsync">
+    <HeaderTemplate>
+        <h2 class="modal-title h5" id="ea-stock-title">Adjust stock</h2>
+    </HeaderTemplate>
+    <BodyTemplate>
+        <form id="ea-stock-form" @onsubmit="SaveStockAsync">
+            <p class="mb-3">@adjusting?.Name</p>
+            <label class="form-label" for="ea-stock-input">Units in stock (0 to 9,999)</label>
+            <NumberInput @ref="stockInput" TValue="int" Id="ea-stock-input" Value="@stockValue" ValueExpression="() => stockValue" ValueChanged="OnStockValueChanged"
+                         Min="0" Max="9999" EnableMinMax="true" Step="1" />
+            <p class="small text-body-secondary mt-2 mb-0">Shoppers can't add more than this to their carts; carts above it shrink to fit.</p>
+        </form>
+    </BodyTemplate>
+    <FooterTemplate>
+        <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => stockModal.HideAsync()">Cancel</Button>
+        <Button Type="ButtonType.Submit" Color="ButtonColor.Primary" form="ea-stock-form">Save stock</Button>
+    </FooterTemplate>
+</Modal>

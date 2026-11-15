@@ -1,0 +1,79 @@
+/* Status and error lines take no space until they have text; they stay rendered so changes are announced. */
+.aod-status,
+.aod-error {
+    margin: 0;
+}
+
+    .aod-status:not(:empty),
+    .aod-error:not(:empty) {
+        margin-bottom: .75rem;
+    }
+
+    .aod-status:focus {
+        outline: none;
+    }
+
+    .aod-status:focus-visible {
+        outline: 2px solid var(--sc-primary);
+        outline-offset: 2px;
+    }
+
+.aod-missing-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 3.5rem;
+    height: 3.5rem;
+    border-radius: 999px;
+    background: rgba(var(--sc-primary-rgb), .12);
+    color: var(--sc-primary);
+    font-size: 1.5rem;
+}
+
+.aod-subtitle {
+    margin: 0 0 .25rem;
+    font-size: .8125rem;
+    font-weight: 600;
+    letter-spacing: .02em;
+    color: var(--bs-secondary-color);
+}
+
+/* Totals: label and amount on one line each. */
+.aod-totals > div {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: .375rem 0;
+}
+
+.aod-totals dt {
+    font-weight: 400;
+}
+
+.aod-totals dd {
+    margin: 0;
+    font-variant-numeric: tabular-nums;
+    text-align: end;
+}
+
+.aod-totals .aod-total {
+    margin-top: .25rem;
+    border-top: 1px solid var(--ec-border);
+    padding-top: .625rem;
+    font-weight: 700;
+}
+
+    .aod-totals .aod-total dt {
+        font-weight: 700;
+    }
+
+.aod-totals .aod-refunded {
+    color: var(--bs-danger-text-emphasis);
+}
+
+.aod-return {
+    padding: .75rem 1rem;
+    border: 1px solid var(--ec-border);
+    border-radius: .75rem;
+    overflow-wrap: anywhere;
+}

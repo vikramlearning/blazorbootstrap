@@ -1,0 +1,191 @@
+@page "/showcase/ecommerce/admin/pricing"
+@layout EcommerceAdminLayout
+
+<PageTitle>Pricing · @EcommerceSeedData.StoreName admin</PageTitle>
+
+<div class="ea-pricing">
+    <div class="mb-4">
+        <h1 class="ea-title">Pricing</h1>
+        <p class="ea-lead">Change prices in bulk, start or end a sale, or set one product's price.</p>
+    </div>
+
+    @* Always rendered and focusable: bulk and single-product updates are announced here. *@
+    <p class="fw-semibold ea-pricing-message" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
+
+    <section class="ea-panel mb-4" aria-labelledby="ea-bulk-title">
+        <h2 class="ea-section-title" id="ea-bulk-title">Bulk price change</h2>
+        <p class="small text-body-secondary">Archived products are left out. Placed orders keep the prices customers paid; carts use the new prices.</p>
+
+        <div class="row g-3 align-items-end">
+            <div class="col-sm-6 col-lg-3">
+                <label class="form-label small fw-semibold" for="ea-bulk-category">Products</label>
+                <select id="ea-bulk-category" class="form-select" value="@bulkCategory" @onchange="OnBulkCategoryChanged">
+                    <option value="">All categories</option>
+                    @foreach (var category in State.Categories)
+                    {
+                        <option value="@category.Id">@category.Name</option>
+                    }
+                </select>
+            </div>
+            <div class="col-sm-6 col-lg-2">
+                <CheckboxInput Id="ea-bulk-sale-only" @bind-Value="onSaleOnly" Label="On sale only" />
+            </div>
+            <div class="col-sm-8 col-lg-5">
+                <label class="form-label small fw-semibold" for="ea-bulk-action">Adjustment</label>
+                <select id="ea-bulk-action" class="form-select" value="@bulkAction" @onchange="OnBulkActionChanged">
+                    <option value="@BulkAction.Increase">Increase by %</option>
+                    <option value="@BulkAction.Decrease">Decrease by %</option>
+                    <option value="@BulkAction.StartSale">Set sale: compare-at = current price, new price = current minus %</option>
+                    <option value="@BulkAction.EndSale">End sale (remove compare-at)</option>
+                </select>
+            </div>
+            <div class="col-sm-4 col-lg-2">
+                <label class="form-label small fw-semibold" for="ea-bulk-percent">Percent (1 to 90)</label>
+                <InputGroup>
+                    <NumberInput TValue="int" Id="ea-bulk-percent" Value="@percent" ValueExpression="() => percent" ValueChanged="OnPercentChanged"
+                                 Min="1" Max="90" EnableMinMax="true" Step="1" Disabled="@(!UsesPercent)" aria-describedby="ea-bulk-percent-error" />
+                    <InputGroupText>%</InputGroupText>
+                </InputGroup>
+            </div>
+        </div>
+
+        <div role="alert" id="ea-bulk-percent-error">
+            @if (PercentError is not null)
+            {
+                <p class="text-danger small mt-2 mb-0">@PercentError</p>
+            }
+        </div>
+
+        <h3 class="h6 fw-bold mt-4 mb-2" id="ea-preview-title">Preview</h3>
+        @if (Preview.Count == 0)
+        {
+            <p class="ea-empty mb-0">@EmptyPreviewText</p>
+        }
+        else
+        {
+            <div class="table-responsive ea-preview">
+                <table class="table ea-table align-middle" aria-labelledby="ea-preview-title">
+                    <caption class="visually-hidden">Prices before and after the change, one row per affected product</caption>
+                    <thead>
+                        <tr>
+                            <th scope="col">Product</th>
+                            <th scope="col" class="text-end">Current price</th>
+                            <th scope="col" class="text-end">New price</th>
+                            <th scope="col" class="text-end">Current compare-at</th>
+                            <th scope="col" class="text-end">New compare-at</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var row in Preview)
+                        {
+                            <tr @key="row.Product.Id">
+                                <th scope="row" class="fw-semibold">@row.Product.Name</th>
+                                <td class="text-end">@EcommerceDisplay.Money(row.Product.Price)</td>
+                                <td class="text-end fw-semibold">@EcommerceDisplay.Money(row.NewPrice)</td>
+                                <td class="text-end">@MoneyOrNone(row.Product.CompareAtPrice)</td>
+                                <td class="text-end fw-semibold">@MoneyOrNone(row.NewCompareAt)</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+
+        <div class="mt-3">
+            <Button @ref="applyButton" Color="ButtonColor.Primary" Disabled="@(Preview.Count == 0 || PercentError is not null)" @onclick="AskApplyAsync">
+                @ApplyText
+            </Button>
+        </div>
+    </section>
+
+    <section class="ea-panel" aria-labelledby="ea-single-title">
+        <h2 class="ea-section-title" id="ea-single-title">Product prices</h2>
+        <p class="small text-body-secondary">Set a product's price and compare-at ("was") price. Leave compare-at empty when it isn't on sale.</p>
+
+        <div class="row g-2 mb-3">
+            <div class="col-md-6 col-xl-4">
+                <label class="form-label small fw-semibold" for="ea-price-search">Search by name</label>
+                <InputGroup>
+                    <InputGroupText><Icon Name="IconName.Search" aria-hidden="true" /></InputGroupText>
+                    @* TextInput raises ValueChanged on change only; @oninput keeps the filter live while typing. *@
+                    <TextInput Id="ea-price-search" Value="@searchBoxValue" ValueExpression="() => searchBoxValue" ValueChanged="OnSearchChanged"
+                               @oninput="OnSearchInput" Placeholder="Product name" />
+                </InputGroup>
+            </div>
+        </div>
+
+        <p class="small text-body-secondary" role="status">@ListSummary</p>
+
+        @if (Listed.Count == 0)
+        {
+            <p class="ea-empty mb-0">No products match "@search.Trim()".</p>
+        }
+        else
+        {
+            <ul class="list-unstyled mb-0 ea-price-list">
+                @foreach (var product in Listed)
+                {
+                    var row = RowFor(product);
+                    var errorId = $"ea-row-error-{product.Id}";
+                    <li class="ea-price-row" @key="product.Id">
+                        <div class="ea-price-row-name">
+                            <span class="fw-semibold">@product.Name</span>
+                            <span class="small text-body-secondary d-block">
+                                @(State.FindCategory(product.CategoryId)?.Name ?? product.CategoryId)
+                                @if (product.IsArchived)
+                                {
+                                    <Badge Color="BadgeColor.Secondary" Class="ms-1">Archived</Badge>
+                                }
+                                @if (product.IsOnSale)
+                                {
+                                    <Badge Color="BadgeColor.Danger" Class="ms-1">On sale · @product.DiscountPercent% off</Badge>
+                                }
+                            </span>
+                        </div>
+                        <div class="ea-price-row-field">
+                            <label class="form-label small mb-1" for="@($"ea-row-price-{product.Id}")">Price</label>
+                            <InputGroup Size="InputGroupSize.Small">
+                                <InputGroupText>$</InputGroupText>
+                                <NumberInput TValue="decimal?" Id="@($"ea-row-price-{product.Id}")" Value="@row.Price" ValueExpression="() => row.Price"
+                                             ValueChanged="value => OnRowPriceChanged(row, value)" Step="0.01" aria-describedby="@errorId" />
+                            </InputGroup>
+                        </div>
+                        <div class="ea-price-row-field">
+                            <label class="form-label small mb-1" for="@($"ea-row-compare-{product.Id}")">Compare-at</label>
+                            <InputGroup Size="InputGroupSize.Small">
+                                <InputGroupText>$</InputGroupText>
+                                <NumberInput TValue="decimal?" Id="@($"ea-row-compare-{product.Id}")" Value="@row.CompareAt" ValueExpression="() => row.CompareAt"
+                                             ValueChanged="value => OnRowCompareAtChanged(row, value)" Step="0.01" Placeholder="None" aria-describedby="@errorId" />
+                            </InputGroup>
+                        </div>
+                        <div class="ea-price-row-action">
+                            <Button Color="ButtonColor.Primary" Outline="true" Size="ButtonSize.Small" @onclick="() => SaveRow(product.Id)">
+                                Save<span class="visually-hidden">@($" prices for {product.Name}")</span>
+                            </Button>
+                        </div>
+                        <div class="ea-price-row-error" role="alert" id="@errorId">
+                            @if (row.Error is not null)
+                            {
+                                <span class="text-danger small">@row.Error</span>
+                            }
+                        </div>
+                    </li>
+                }
+            </ul>
+        }
+    </section>
+</div>
+
+<Modal @ref="applyModal" IsVerticallyCentered="true" ShowCloseButton="false" aria-labelledby="ea-apply-title" OnHidden="OnApplyHiddenAsync">
+    <HeaderTemplate>
+        <h2 class="modal-title h5" id="ea-apply-title">Update prices for @(ProductCountText(pendingChanges.Count))?</h2>
+    </HeaderTemplate>
+    <BodyTemplate>
+        <p class="mb-2">@ActionDescription</p>
+        <p class="small text-body-secondary mb-0">Shoppers see the new prices right away. Placed orders keep the prices customers paid.</p>
+    </BodyTemplate>
+    <FooterTemplate>
+        <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => applyModal.HideAsync()">Cancel</Button>
+        <Button Color="ButtonColor.Primary" @onclick="ConfirmApplyAsync">Update @(ProductCountText(pendingChanges.Count))</Button>
+    </FooterTemplate>
+</Modal>

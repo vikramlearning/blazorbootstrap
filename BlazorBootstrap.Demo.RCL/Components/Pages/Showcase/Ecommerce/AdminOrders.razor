@@ -1,0 +1,170 @@
+@page "/showcase/ecommerce/admin/orders"
+@layout EcommerceAdminLayout
+
+<PageTitle>Orders · @EcommerceSeedData.StoreName admin</PageTitle>
+
+<div class="d-flex flex-wrap justify-content-between align-items-end gap-3 mb-4">
+    <div>
+        <h1 class="ea-title">Orders</h1>
+        <p class="ea-lead">@OrdersSummary</p>
+    </div>
+    <div>
+        <span class="form-label small fw-semibold d-block" id="ao-view-label">View</span>
+        <RadioButtonGroup TValue="bool" @bind-Value="showBoard" AriaLabel="View" aria-labelledby="ao-view-label" Size="ButtonGroupSize.Small">
+            <ButtonGroupItem Value="false" Id="ao-view-list"><Icon Name="IconName.ListUl" class="me-1" aria-hidden="true" />List</ButtonGroupItem>
+            <ButtonGroupItem Value="true" Id="ao-view-board"><Icon Name="IconName.Kanban" class="me-1" aria-hidden="true" />Fulfilment board</ButtonGroupItem>
+        </RadioButtonGroup>
+    </div>
+</div>
+
+@* Always rendered and focusable: a board action is announced here, and focus lands here when the card's button is gone. *@
+<p class="ao-status fw-semibold" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
+<p class="ao-error text-danger fw-semibold" role="alert">@errorMessage</p>
+
+@* Both views stay rendered (one hidden), so the grid keeps its sort and page while the board is open. *@
+<section class="ea-panel" aria-labelledby="ao-list-title" hidden="@showBoard">
+    <h2 class="ea-section-title" id="ao-list-title">All orders</h2>
+
+    <div class="row g-2 align-items-end mb-3" role="search" aria-label="Filter orders">
+        <div class="col-md-6 col-lg-5">
+            <label class="form-label small fw-semibold" for="ao-search">Search</label>
+            <InputGroup>
+                <InputGroupText><Icon Name="IconName.Search" aria-hidden="true" /></InputGroupText>
+                @* TextInput raises ValueChanged on change only; @oninput keeps filtering live while typing without rebinding the box. *@
+                <TextInput Id="ao-search" Value="@searchBoxValue" ValueExpression="() => searchBoxValue" ValueChanged="OnSearchChanged"
+                           @oninput="OnSearchInput" Placeholder="Order number, name, or email" MaxLength="80" />
+            </InputGroup>
+        </div>
+        <div class="col-sm-6 col-md-3 col-lg-3">
+            <label class="form-label small fw-semibold" for="ao-status-filter">Status</label>
+            <select id="ao-status-filter" class="form-select" value="@statusFilter" @onchange="OnStatusChanged">
+                <option value="">All (@State.Orders.Count)</option>
+                @foreach (var status in Enum.GetValues<EcommerceOrderStatus>())
+                {
+                    <option value="@status">@status (@CountOf(status))</option>
+                }
+            </select>
+        </div>
+        <div class="col-sm-6 col-md-3 col-lg-4 text-md-end">
+            <span class="small text-body-secondary" role="status">@MatchText</span>
+        </div>
+    </div>
+
+    <Grid @ref="grid"
+          TItem="EcommerceOrder"
+          Class="table table-hover align-middle ea-table"
+          DataProvider="OrdersDataProvider"
+          RowKeySelector="order => order.Id"
+          AllowSorting="true"
+          AllowPaging="true"
+          PageSize="10"
+          PaginationItemsTextFormat="{0}–{1} of {2} orders"
+          Responsive="true"
+          EmptyText="No orders match these filters."
+          aria-label="Orders">
+        <GridColumns>
+            <GridColumn TItem="EcommerceOrder" HeaderText="Order" Sortable="false" TextNoWrap="true">
+                <a class="fw-semibold" href="@OrderUrl(context.Id)">#@context.Id</a>
+            </GridColumn>
+            <GridColumn TItem="EcommerceOrder" HeaderText="Placed" PropertyName="PlacedOn" SortKeySelector="item => item.PlacedOn"
+                        SortDirection="SortDirection.Descending" IsDefaultSortColumn="true" TextNoWrap="true">
+                @EcommerceDisplay.DateTimeShort(context.PlacedOn)
+            </GridColumn>
+            <GridColumn TItem="EcommerceOrder" HeaderText="Customer" Sortable="false">
+                <span class="d-block">@context.ShipTo.FullName</span>
+                <span class="d-block small text-body-secondary text-break">@context.ShipTo.Email</span>
+            </GridColumn>
+            <GridColumn TItem="EcommerceOrder" HeaderText="Items" Sortable="false" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End">
+                @context.Totals.ItemCount
+            </GridColumn>
+            <GridColumn TItem="EcommerceOrder" HeaderText="Total" SortKeySelector="item => item.Totals.Total"
+                        TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" TextNoWrap="true">
+                @EcommerceDisplay.Money(context.Totals.Total)
+            </GridColumn>
+            <GridColumn TItem="EcommerceOrder" HeaderText="Status" Sortable="false">
+                <Badge Color="@EcommerceDisplay.StatusColor(context.Status)">@context.Status</Badge>
+            </GridColumn>
+        </GridColumns>
+    </Grid>
+</section>
+
+<div hidden="@(!showBoard)">
+    <p class="text-body-secondary mb-3">Oldest orders first in each column, so they leave in the order they came in.</p>
+    <div class="row g-3">
+        @foreach (var column in boardColumns)
+        {
+            var orders = BoardOrders(column.Status);
+            var titleId = $"ao-col-{column.Status}";
+            <div class="col-lg-4" @key="column.Status">
+                <section class="ea-panel" aria-labelledby="@titleId">
+                    <h2 class="ea-section-title d-flex align-items-center gap-2" id="@titleId">
+                        @column.Title <Badge Color="BadgeColor.Secondary" Class="rounded-pill">@orders.Count<span class="visually-hidden"> @(orders.Count == 1 ? "order" : "orders")</span></Badge>
+                    </h2>
+                    @if (orders.Count == 0)
+                    {
+                        <p class="ea-empty mb-0">@column.EmptyText</p>
+                    }
+                    else
+                    {
+                        <ul class="list-unstyled d-grid gap-2 mb-0">
+                            @foreach (var order in orders)
+                            {
+                                <li class="ao-card" @key="order.Id">
+                                    <div class="d-flex justify-content-between align-items-baseline gap-2">
+                                        <h3 class="ao-card-title"><a href="@OrderUrl(order.Id)">Order #@order.Id</a></h3>
+                                        <span class="fw-semibold text-nowrap">@EcommerceDisplay.Money(order.Totals.Total)</span>
+                                    </div>
+                                    <p class="mb-1">@order.ShipTo.FullName</p>
+                                    <p class="small text-body-secondary mb-2">
+                                        @(order.Totals.ItemCount == 1 ? "1 item" : $"{order.Totals.ItemCount} items") · Placed @EcommerceDisplay.DateTimeShort(order.PlacedOn)
+                                    </p>
+                                    @switch (order.Status)
+                                    {
+                                        case EcommerceOrderStatus.Placed:
+                                            <Button Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="() => AdvanceAsync(order, EcommerceOrderStatus.Placed)">
+                                                Mark packed<span class="visually-hidden"> order #@order.Id</span>
+                                            </Button>
+                                            break;
+                                        case EcommerceOrderStatus.Packed:
+                                            <Button @ref="shipButtons[order.Id]" Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="() => OpenShipAsync(order)">
+                                                Ship…<span class="visually-hidden"> order #@order.Id</span>
+                                            </Button>
+                                            break;
+                                        default:
+                                            <Button Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="() => AdvanceAsync(order, EcommerceOrderStatus.Shipped)">
+                                                Mark delivered<span class="visually-hidden"> order #@order.Id</span>
+                                            </Button>
+                                            break;
+                                    }
+                                </li>
+                            }
+                        </ul>
+                    }
+                </section>
+            </div>
+        }
+    </div>
+</div>
+
+<Modal @ref="shipModal" IsVerticallyCentered="true" ShowCloseButton="false" aria-labelledby="ao-ship-title" OnShown="OnShipShownAsync" OnHidden="OnShipHiddenAsync">
+    <HeaderTemplate>
+        <h2 class="modal-title h5" id="ao-ship-title">Ship order #@(shipping?.Id)</h2>
+    </HeaderTemplate>
+    <BodyTemplate>
+        @if (shipping is not null)
+        {
+            <p class="mb-3">@shipping.ShipTo.FullName · @shipping.ShipTo.City, @shipping.ShipTo.Country · @shipping.Delivery delivery</p>
+            <EditForm id="ao-ship-form" EditContext="shipContext" OnValidSubmit="ConfirmShipAsync" FormName="ao-ship">
+                <DataAnnotationsValidator />
+                <label class="form-label" for="ao-tracking">Tracking number</label>
+                <TextInput @ref="trackingInput" Id="ao-tracking" @bind-Value="shipForm.TrackingNumber" MaxLength="40" aria-describedby="ao-tracking-help" />
+                <div class="form-text" id="ao-tracking-help">4 to 40 letters, digits, spaces, or dashes. The customer sees it on their order.</div>
+                <div role="alert"><ValidationMessage For="() => shipForm.TrackingNumber" /></div>
+            </EditForm>
+        }
+    </BodyTemplate>
+    <FooterTemplate>
+        <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => shipModal.HideAsync()">Cancel</Button>
+        <Button Type="ButtonType.Submit" Color="ButtonColor.Primary" form="ao-ship-form">Ship order</Button>
+    </FooterTemplate>
+</Modal>

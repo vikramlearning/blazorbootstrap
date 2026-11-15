@@ -1,0 +1,19 @@
+@* The account area's sub-navigation; the current page is marked with aria-current and a filled pill, not color alone. *@
+<nav class="ec-account-nav" aria-label="Your account">
+    <ul class="ec-account-nav-list">
+        @foreach (var item in items)
+        {
+            var isCurrent = IsCurrent(item.Path);
+            <li @key="item.Path">
+                <a class="@(isCurrent ? "ec-account-nav-link is-current" : "ec-account-nav-link")" href="@item.Path" aria-current="@(isCurrent ? "page" : null)">
+                    <Icon Name="@item.Icon" aria-hidden="true" />
+                    <span>@item.Label</span>
+                    @if (item.Path == OverviewPath && UnreadCount > 0)
+                    {
+                        <span class="ec-account-nav-count">@UnreadCount<span class="visually-hidden"> new @(UnreadCount == 1 ? "notice" : "notices")</span></span>
+                    }
+                </a>
+            </li>
+        }
+    </ul>
+</nav>

@@ -1,0 +1,49 @@
+@* Card fields inside a page's EditForm. Masked from session recording and only test numbers pass (CR-001-AC-11).
+   InputText rather than the library's TextInput: TextInput's boolean AutoComplete parameter renders autocomplete="true"/"false"
+   (not valid tokens) and captures any autocomplete attribute, so it can't ask the browser not to offer saved real cards. *@
+<div class="sc-card-form" data-clarity-mask="true">
+    <div class="row g-3">
+        <div class="col-12">
+            <label class="form-label" for="@($"{IdPrefix}-card-name")">Name on card</label>
+            <InputText id="@($"{IdPrefix}-card-name")" class="form-control" @bind-Value="Card.Name" maxlength="60" autocomplete="off" />
+            <ValidationMessage For="() => Card.Name" />
+        </div>
+        <div class="col-12">
+            <label class="form-label" for="@($"{IdPrefix}-card-number")">Card number</label>
+            <InputGroup>
+                <InputGroupText><Icon Name="IconName.CreditCard" aria-hidden="true" /></InputGroupText>
+                <InputText id="@($"{IdPrefix}-card-number")" class="form-control" @bind-Value="Card.Number" maxlength="23" autocomplete="off" inputmode="numeric"
+                           aria-describedby="@($"{IdPrefix}-card-brand")" />
+                <InputGroupText><span id="@($"{IdPrefix}-card-brand")">@BrandText</span></InputGroupText>
+            </InputGroup>
+            <ValidationMessage For="() => Card.Number" />
+        </div>
+        <div class="col-6">
+            <label class="form-label" for="@($"{IdPrefix}-card-expiry")">Expiry (MM/YY)</label>
+            <InputText id="@($"{IdPrefix}-card-expiry")" class="form-control" @bind-Value="Card.Expiry" maxlength="5" autocomplete="off" inputmode="numeric" placeholder="MM/YY" />
+            <ValidationMessage For="() => Card.Expiry" />
+        </div>
+        <div class="col-6">
+            <label class="form-label" for="@($"{IdPrefix}-card-cvc")">Security code</label>
+            <InputText id="@($"{IdPrefix}-card-cvc")" class="form-control" @bind-Value="Card.Cvc" maxlength="4" autocomplete="off" inputmode="numeric" />
+            <ValidationMessage For="() => Card.Cvc" />
+        </div>
+    </div>
+
+    <details class="sc-test-cards mt-3">
+        <summary>Test cards you can use</summary>
+        <p class="small text-body-secondary mt-2 mb-2">Any future expiry works, with any 3-digit security code (4 digits for American Express). Real cards are never accepted.</p>
+        <ul class="list-unstyled small mb-0">
+            @foreach (var test in ShowcaseCards.TestCards)
+            {
+                <li class="sc-test-card" @key="test.Number">
+                    <span class="sc-test-card-number">@test.Display</span>
+                    <span class="text-body-secondary">@test.Brand · @test.OutcomeText</span>
+                    <Button Color="ButtonColor.Link" Size="ButtonSize.Small" Class="p-0 ms-auto" @onclick="() => Use(test)">
+                        Use<span class="visually-hidden">@($" {test.Display}, {test.OutcomeText.ToLowerInvariant()}")</span>
+                    </Button>
+                </li>
+            }
+        </ul>
+    </details>
+</div>

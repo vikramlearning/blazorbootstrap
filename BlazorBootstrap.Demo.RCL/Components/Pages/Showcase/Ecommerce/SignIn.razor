@@ -1,0 +1,9 @@
+@page "/showcase/ecommerce/sign-in"
+@layout EcommerceLayout
+
+<PageTitle>Sign in · @EcommerceSeedData.StoreName</PageTitle>
+
+<div class="container-xl pt-4 pb-5">
+    <ShowcaseSignIn SiteBase="@EcommerceLayout.Base" SiteName="@EcommerceSeedData.StoreName" ReturnUrl="@ReturnUrl"
+                    RegisterRoleId="@EcommerceSeedData.CustomerRole" StartWithRegister="@(Mode == "register")" />
+</div>

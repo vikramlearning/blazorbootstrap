@@ -1,0 +1,20 @@
+.sc-test-cards > summary {
+    width: fit-content;
+    color: var(--sc-primary, var(--bs-primary));
+    font-size: .875rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.sc-test-card {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: .25rem .75rem;
+    padding-block: .375rem;
+    border-top: 1px solid var(--bs-border-color);
+}
+
+.sc-test-card-number {
+    font-family: var(--bs-font-monospace);
+}

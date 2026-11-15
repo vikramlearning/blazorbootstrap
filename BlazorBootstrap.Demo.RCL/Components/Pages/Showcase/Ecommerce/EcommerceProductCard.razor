@@ -3,6 +3,8 @@
         <ShowcaseImage Src="@Product.ImagePath" Alt="" Width="600" Height="600"
                        Accent="@Category?.Accent" PlaceholderIcon="@(Category?.IconName ?? IconName.Image)" />
     </a>
+    @* Outside the image link (which is hidden from keyboard and screen readers), so the heart has its own tab stop. *@
+    <EcommerceWishButton Product="Product" Compact="true" Class="ec-wish-corner" />
     @if (Product.IsOnSale)
     {
         <Badge Color="BadgeColor.Danger" Class="ec-sale-badge rounded-pill">Sale −@Product.DiscountPercent%</Badge>
@@ -30,6 +32,10 @@
         @if (Product.Stock == 0)
         {
             <span class="small text-body-secondary mt-2">Out of stock</span>
+        }
+        else if (State.IsStaff)
+        {
+            <span class="small text-body-secondary mt-2">@Product.Stock in stock</span>
         }
         else
         {

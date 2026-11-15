@@ -70,6 +70,14 @@
     text-decoration: none;
 }
 
+/* Small phones: the brand, account menu, cart, and toggler stay on one row. */
+@media (max-width: 399.98px) {
+    .sc-ecommerce ::deep .ec-header .ec-brand {
+        font-size: 1.125rem;
+        gap: .375rem;
+    }
+}
+
 .sc-ecommerce ::deep .ec-brand-mark {
     display: inline-flex;
     align-items: center;
@@ -515,4 +523,43 @@
     max-width: 34rem;
     margin: 4rem auto;
     text-align: center;
+}
+
+/* Payment failure from a declined test card; the region is always present so the alert is announced. */
+.sc-ecommerce ::deep .ec-payment-error {
+    color: var(--bs-danger-text-emphasis);
+    font-weight: 600;
+}
+
+/* Staff bar on the storefront (D-032): the same dark bar in both themes, so its contrast is fixed. */
+.ec-staff-bar {
+    padding-block: .5rem;
+    background-color: #1c1917;
+    color: #fafaf9;
+    font-size: .875rem;
+    font-weight: 600;
+}
+
+.ec-staff-bar-link {
+    color: #fdba74;
+    text-decoration: underline;
+    text-underline-offset: .2em;
+}
+
+    .ec-staff-bar-link:hover,
+    .ec-staff-bar-link:focus-visible {
+        color: #fff;
+    }
+
+    .ec-staff-bar-link:focus-visible {
+        outline: 2px solid #fdba74;
+        outline-offset: 2px;
+    }
+
+/* The store's public reply under a review. */
+.sc-ecommerce ::deep .ec-review-reply {
+    padding: .625rem .875rem;
+    border-left: 3px solid var(--sc-primary);
+    border-radius: 0 .5rem .5rem 0;
+    background-color: var(--ec-soft);
 }

@@ -70,6 +70,17 @@ else
                     <Alert Color="AlertColor.Secondary" Class="mb-3">
                         <Icon Name="IconName.InfoCircle" class="me-2" aria-hidden="true" />Out of stock. This item is back in a few weeks.
                     </Alert>
+                    @if (!State.IsStaff)
+                    {
+                        <div class="d-flex flex-wrap align-items-center gap-3 mb-3">
+                            <EcommerceWishButton Product="Product" />
+                            <span class="small text-body-secondary">Save it to your wishlist and turn on its back-in-stock notice there to hear when it returns.</span>
+                        </div>
+                    }
+                }
+                else if (State.IsStaff)
+                {
+                    <EcommerceStaffNotice Class="mb-3" Text="@($"Staff view: {Product.Stock} in stock. Shoppers see the quantity and Add to cart here.")" />
                 }
                 else
                 {
@@ -82,6 +93,7 @@ else
                         <Button Color="ButtonColor.Primary" Size="ButtonSize.Large" Class="rounded-pill px-4" @onclick="AddToCart">
                             <Icon Name="IconName.BagPlus" class="me-2" aria-hidden="true" />Add to cart
                         </Button>
+                        <EcommerceWishButton Product="Product" />
                     </div>
                     @if (Product.Stock <= 5)
                     {
@@ -121,10 +133,17 @@ else
                     <Content>
                         <div class="row g-4 pt-4">
                             <div class="col-lg-7">
-                                <h2 class="h5 fw-bold">What customers say</h2>
+                                @* Focusable, so focus has somewhere to go when a deleted review's buttons are gone. *@
+                                <h2 class="h5 fw-bold" id="ec-reviews-heading" tabindex="-1" @ref="reviewsHeading">What customers say</h2>
+                                @* Always rendered, so a screen reader announces an edit or delete of the customer's own review. *@
+                                <p class="small fw-semibold mb-0" role="status">@reviewStatus</p>
+                                @if (Reviews.Count == 0)
+                                {
+                                    <p class="text-body-secondary py-3 mb-0">No reviews yet. Be the first to tell other shoppers what you think.</p>
+                                }
                                 @foreach (var review in Reviews)
                                 {
-                                    <article class="ec-review">
+                                    <article class="ec-review" @key="review.Id">
                                         <div class="ec-stars small">
                                             <span class="visually-hidden">Rated @review.Rating out of 5</span>
                                             <span aria-hidden="true">
@@ -136,20 +155,38 @@ else
                                         </div>
                                         <h3 class="h6 fw-bold mt-1 mb-1">@review.Title</h3>
                                         <p class="mb-1">@review.Body</p>
-                                        <p class="small text-body-secondary mb-0">
+                                        <p class="small text-body-secondary mb-0" data-clarity-mask="true">
                                             @review.Author · @review.PostedOn.ToString("MMM d, yyyy", CultureInfo.InvariantCulture)
-                                            @if (review.IsFromThisSession)
+                                            @if (IsOwnReview(review) || (review.IsFromThisSession && review.AuthorAccountId == State.Identity.Current?.Id))
                                             {
                                                 <Badge Color="BadgeColor.Secondary" Class="ms-1">Your review</Badge>
                                             }
                                         </p>
+                                        @if (review.Reply is { } reply)
+                                        {
+                                            <div class="ec-review-reply mt-2">
+                                                <p class="small fw-semibold mb-1">Reply from @EcommerceSeedData.StoreName</p>
+                                                <p class="small mb-0">@reply</p>
+                                            </div>
+                                        }
+                                        @if (IsOwnReview(review))
+                                        {
+                                            <div class="d-flex flex-wrap gap-2 mt-2">
+                                                <Button @ref="editReviewButtons[review.Id]" Color="ButtonColor.Secondary" Outline="true" Size="ButtonSize.Small" @onclick="() => EditReviewAsync(review)">
+                                                    <Icon Name="IconName.Pencil" class="me-1" aria-hidden="true" />Edit<span class="visually-hidden"> your review "@review.Title"</span>
+                                                </Button>
+                                                <Button @ref="deleteReviewButtons[review.Id]" Color="ButtonColor.Danger" Outline="true" Size="ButtonSize.Small" @onclick="() => AskDeleteReviewAsync(review)">
+                                                    <Icon Name="IconName.Trash" class="me-1" aria-hidden="true" />Delete<span class="visually-hidden"> your review "@review.Title"</span>
+                                                </Button>
+                                            </div>
+                                        }
                                     </article>
                                 }
                             </div>
                             <div class="col-lg-5">
                                 <div class="ec-panel" data-clarity-mask="true">
                                     <h2 class="h5 fw-bold">Write a review</h2>
-                                    <ShowcaseDemoNotice Class="mb-3" Text="Demo only: your review stays in this browser tab and is gone after a reload." />
+                                    <ShowcaseDemoNotice Class="mb-3" Text="Demo only: your review stays in this browser tab until you close it or reset the demo." />
                                     <EditForm EditContext="reviewContext" OnValidSubmit="SubmitReview" FormName="ec-review">
                                         <DataAnnotationsValidator />
                                         <div class="mb-3">
@@ -206,4 +243,58 @@ else
             </section>
         }
     </div>
+
+    <Modal @ref="editReviewModal"
+           IsVerticallyCentered="true"
+           IsScrollable="true"
+           ShowCloseButton="false"
+           aria-labelledby="ec-edit-review-title"
+           OnHidden="OnEditReviewHiddenAsync">
+        <HeaderTemplate>
+            <h2 class="modal-title h5" id="ec-edit-review-title">Edit your review</h2>
+        </HeaderTemplate>
+        <BodyTemplate>
+            <div data-clarity-mask="true">
+                <EditForm id="ec-edit-review-form" EditContext="editReviewContext" OnValidSubmit="SaveReviewEditAsync" FormName="ec-edit-review">
+                    <DataAnnotationsValidator />
+                    <div class="mb-3">
+                        <span class="form-label d-block" id="ec-edit-review-rating-label">Your rating</span>
+                        <RatingInput TValue="int" Id="ec-edit-review-rating" @bind-Value="editReviewForm.Rating" aria-labelledby="ec-edit-review-rating-label" />
+                        <ValidationMessage For="() => editReviewForm.Rating" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="ec-edit-review-title-input">Title</label>
+                        <TextInput Id="ec-edit-review-title-input" @bind-Value="editReviewForm.Title" MaxLength="60" />
+                        <ValidationMessage For="() => editReviewForm.Title" />
+                    </div>
+                    <div class="mb-0">
+                        <label class="form-label" for="ec-edit-review-body">Review</label>
+                        <TextAreaInput Id="ec-edit-review-body" @bind-Value="editReviewForm.Body" Rows="5" MaxLength="600" />
+                        <ValidationMessage For="() => editReviewForm.Body" />
+                    </div>
+                </EditForm>
+                <p class="small text-body-secondary mt-3 mb-0">Saving changes the review's date to today.</p>
+            </div>
+        </BodyTemplate>
+        <FooterTemplate>
+            <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => editReviewModal.HideAsync()">Cancel</Button>
+            <Button Type="ButtonType.Submit" Color="ButtonColor.Primary" form="ec-edit-review-form">Save changes</Button>
+        </FooterTemplate>
+    </Modal>
+
+    <Modal @ref="deleteReviewModal" IsVerticallyCentered="true" ShowCloseButton="false" aria-labelledby="ec-delete-review-title" OnHidden="OnDeleteReviewHiddenAsync">
+        <HeaderTemplate>
+            <h2 class="modal-title h5" id="ec-delete-review-title">Delete your review?</h2>
+        </HeaderTemplate>
+        <BodyTemplate>
+            <p class="mb-2">Your review <strong>@deletingReview?.Title</strong> is removed from this product page and can't be brought back.</p>
+            <p class="small text-body-secondary mb-0">
+                @(deletingReview?.Reply is not null ? $"The reply from {EcommerceSeedData.StoreName} under it is removed too. " : null)To change what it says instead, choose Edit.
+            </p>
+        </BodyTemplate>
+        <FooterTemplate>
+            <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => deleteReviewModal.HideAsync()">Keep review</Button>
+            <Button Color="ButtonColor.Danger" @onclick="ConfirmDeleteReviewAsync">Delete review</Button>
+        </FooterTemplate>
+    </Modal>
 }

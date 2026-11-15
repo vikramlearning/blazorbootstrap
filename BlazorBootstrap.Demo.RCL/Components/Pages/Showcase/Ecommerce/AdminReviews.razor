@@ -1,0 +1,197 @@
+@page "/showcase/ecommerce/admin/reviews"
+@layout EcommerceAdminLayout
+
+<PageTitle>Reviews · @EcommerceSeedData.StoreName admin</PageTitle>
+
+<div class="mb-4">
+    <h1 class="ea-title">Reviews</h1>
+    <p class="ea-lead">@SummaryText</p>
+</div>
+
+<section class="ea-panel mb-3" aria-labelledby="ea-review-filters-title">
+    <h2 class="visually-hidden" id="ea-review-filters-title">Filter reviews</h2>
+    <div class="row g-2 align-items-end" role="search" aria-label="Filter reviews">
+        <div class="col-6 col-md-3 col-xl-2">
+            <label class="form-label small fw-semibold" for="ea-review-status">Status</label>
+            <select id="ea-review-status" class="form-select" value="@statusFilter" @onchange="OnStatusFilterChanged">
+                <option value="">All</option>
+                <option value="@EcommerceReviewStatus.Published">Published</option>
+                <option value="@EcommerceReviewStatus.Hidden">Hidden</option>
+            </select>
+        </div>
+        <div class="col-6 col-md-3 col-xl-2">
+            <label class="form-label small fw-semibold" for="ea-review-rating">Rating</label>
+            <select id="ea-review-rating" class="form-select" value="@ratingFilter" @onchange="OnRatingFilterChanged">
+                <option value="0">All</option>
+                @for (var stars = 5; stars >= 1; stars--)
+                {
+                    <option value="@stars">@(stars == 1 ? "1 star" : $"{stars} stars")</option>
+                }
+            </select>
+        </div>
+        <div class="col-md-6 col-xl-4">
+            <label class="form-label small fw-semibold" for="ea-review-product">Product</label>
+            <select id="ea-review-product" class="form-select" value="@productFilter" @onchange="OnProductFilterChanged">
+                <option value="0">All products</option>
+                @foreach (var product in ReviewedProducts)
+                {
+                    <option value="@product.Id">@(product.IsArchived ? $"{product.Name} (archived)" : product.Name)</option>
+                }
+            </select>
+        </div>
+        <div class="col-md-6 col-xl-2 pb-md-2">
+            <Switch Id="ea-review-needs-reply" Value="needsReply" ValueExpression="() => needsReply" ValueChanged="OnNeedsReplyChanged" Label="Needs a reply" />
+        </div>
+        <div class="col-md-6 col-xl-2 text-md-end pb-md-2">
+            <span class="small text-body-secondary" aria-live="polite">@MatchText</span>
+        </div>
+    </div>
+</section>
+
+@* Always rendered and focusable, so a change is announced and focus has somewhere to go when a review leaves the list. *@
+<p class="ea-status fw-semibold" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
+
+<section aria-labelledby="ea-reviews-title">
+    <h2 class="visually-hidden" id="ea-reviews-title">Reviews, newest first</h2>
+    @if (Matches.Count == 0)
+    {
+        <p class="ea-empty">
+            @(State.AllReviews.Count == 0 ? "No reviews yet. Reviews customers write on product pages appear here." : "No reviews match these filters.")
+        </p>
+    }
+    else
+    {
+        <ul class="list-unstyled d-grid gap-3 mb-0">
+            @foreach (var review in PageItems)
+            {
+                var product = State.FindAnyProduct(review.ProductId);
+                var isLive = State.FindProduct(review.ProductId) is not null;
+                <li @key="review.Id">
+                    <article class="ea-panel ea-review" aria-labelledby="@($"ea-review-{review.Id}")">
+                        <div class="d-flex flex-wrap justify-content-between align-items-start gap-2 mb-1">
+                            <p class="small fw-semibold mb-0">
+                                @if (product is not null && isLive)
+                                {
+                                    <a href="@($"{EcommerceLayout.Base}/products/{product.Id}")">@product.Name</a>
+                                }
+                                else
+                                {
+                                    <span>@(product?.Name ?? "Removed product")</span>
+                                    <span class="fw-normal text-body-secondary"> (not in the store)</span>
+                                }
+                            </p>
+                            <Badge Color="@(review.Status == EcommerceReviewStatus.Published ? BadgeColor.Success : BadgeColor.Secondary)">@review.Status</Badge>
+                        </div>
+
+                        <div class="ea-stars small">
+                            <span class="visually-hidden">Rated @review.Rating out of 5</span>
+                            <span aria-hidden="true">
+                                @foreach (var star in EcommerceDisplay.Stars(review.Rating))
+                                {
+                                    <Icon Name="star" />
+                                }
+                            </span>
+                        </div>
+                        <h3 class="h6 fw-bold mt-1 mb-1" id="@($"ea-review-{review.Id}")">@review.Title</h3>
+                        <p class="mb-1 ea-review-body">@review.Body</p>
+                        <p class="small text-body-secondary mb-0">
+                            <span data-clarity-mask="true">@review.Author</span> · @review.PostedOn.ToString("MMM d, yyyy", CultureInfo.InvariantCulture)
+                        </p>
+
+                        @if (review.Reply is { } reply)
+                        {
+                            <div class="ea-reply mt-3">
+                                <p class="small fw-semibold mb-1">Reply from @EcommerceSeedData.StoreName</p>
+                                <p class="mb-0 ea-review-body">@reply</p>
+                            </div>
+                        }
+
+                        <div class="d-flex flex-wrap gap-2 mt-3">
+                            <Button @ref="statusButtons[review.Id]" Color="ButtonColor.Secondary" Outline="true" Size="ButtonSize.Small" @onclick="() => ToggleStatusAsync(review)">
+                                @(review.Status == EcommerceReviewStatus.Published ? "Hide" : "Publish")<span class="visually-hidden"> review “@review.Title”</span>
+                            </Button>
+                            <Button @ref="replyButtons[review.Id]" Color="ButtonColor.Primary" Outline="true" Size="ButtonSize.Small" @onclick="() => OpenReplyAsync(review)">
+                                @(review.Reply is null ? "Reply" : "Edit reply")<span class="visually-hidden"> to review “@review.Title”</span>
+                            </Button>
+                            @if (review.Reply is not null)
+                            {
+                                <Button @ref="removeButtons[review.Id]" Color="ButtonColor.Danger" Outline="true" Size="ButtonSize.Small" @onclick="() => AskRemoveReplyAsync(review)">
+                                    Remove reply<span class="visually-hidden"> to review “@review.Title”</span>
+                                </Button>
+                            }
+                        </div>
+                    </article>
+                </li>
+            }
+        </ul>
+
+        @if (TotalPages > 1)
+        {
+            <nav class="mt-4" aria-label="Review pages">
+                <Pagination ActivePageNumber="CurrentPage" TotalPages="TotalPages" PageChanged="OnPageChanged" Alignment="Alignment.Center"
+                            PreviousLinkIcon="IconName.ChevronLeft" NextLinkIcon="IconName.ChevronRight" />
+            </nav>
+        }
+    }
+</section>
+
+<Modal @ref="hideModal" IsVerticallyCentered="true" ShowCloseButton="false" aria-labelledby="ea-hide-title" OnHidden="OnHideHidden">
+    <HeaderTemplate>
+        <h2 class="modal-title h5" id="ea-hide-title">Hide this review?</h2>
+    </HeaderTemplate>
+    <BodyTemplate>
+        @if (acting is not null)
+        {
+            <p class="mb-2">“@acting.Title” by <span data-clarity-mask="true">@acting.Author</span> leaves the @(State.FindAnyProduct(acting.ProductId)?.Name ?? "product") page and no longer counts toward the product's rating.</p>
+            <p class="small text-body-secondary mb-0">The review stays here, and you can publish it again at any time.</p>
+        }
+    </BodyTemplate>
+    <FooterTemplate>
+        <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => hideModal.HideAsync()">Keep it published</Button>
+        <Button Color="ButtonColor.Danger" @onclick="ConfirmHideAsync">Hide review</Button>
+    </FooterTemplate>
+</Modal>
+
+<Modal @ref="replyModal" IsVerticallyCentered="true" IsScrollable="true" ShowCloseButton="false" aria-labelledby="ea-reply-title" OnHidden="OnReplyHidden">
+    <HeaderTemplate>
+        <h2 class="modal-title h5" id="ea-reply-title">@(acting?.Reply is null ? "Reply to this review" : "Edit the store's reply")</h2>
+    </HeaderTemplate>
+    <BodyTemplate>
+        @if (acting is not null)
+        {
+            <blockquote class="ea-reply-context small mb-3">
+                <p class="fw-semibold mb-1">@acting.Title</p>
+                <p class="mb-1 ea-review-body">@acting.Body</p>
+                <footer class="text-body-secondary"><span data-clarity-mask="true">@acting.Author</span>, rated @acting.Rating out of 5</footer>
+            </blockquote>
+            <EditForm id="ea-reply-form" EditContext="replyContext" OnValidSubmit="SaveReplyAsync" FormName="ea-reply">
+                <DataAnnotationsValidator />
+                <label class="form-label" for="ea-reply-text">Your reply</label>
+                <TextAreaInput Id="ea-reply-text" @bind-Value="replyForm.Text" Rows="5" MaxLength="600" aria-describedby="ea-reply-help" />
+                <div class="form-text" id="ea-reply-help">2 to 600 characters. Shown publicly under the review on the product page.</div>
+                <ValidationMessage For="() => replyForm.Text" />
+            </EditForm>
+        }
+    </BodyTemplate>
+    <FooterTemplate>
+        <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => replyModal.HideAsync()">Cancel</Button>
+        <Button Type="ButtonType.Submit" Color="ButtonColor.Primary" form="ea-reply-form">@(acting?.Reply is null ? "Post reply" : "Save reply")</Button>
+    </FooterTemplate>
+</Modal>
+
+<Modal @ref="removeModal" IsVerticallyCentered="true" ShowCloseButton="false" aria-labelledby="ea-remove-title" OnHidden="OnRemoveHidden">
+    <HeaderTemplate>
+        <h2 class="modal-title h5" id="ea-remove-title">Remove the store's reply?</h2>
+    </HeaderTemplate>
+    <BodyTemplate>
+        @if (acting is not null)
+        {
+            <p class="mb-2">Shoppers no longer see it under “@acting.Title” on the product page. The text is deleted and can't be brought back.</p>
+            <p class="small text-body-secondary mb-0">You can write a new reply afterwards.</p>
+        }
+    </BodyTemplate>
+    <FooterTemplate>
+        <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => removeModal.HideAsync()">Keep reply</Button>
+        <Button Color="ButtonColor.Danger" @onclick="ConfirmRemoveReplyAsync">Remove reply</Button>
+    </FooterTemplate>
+</Modal>

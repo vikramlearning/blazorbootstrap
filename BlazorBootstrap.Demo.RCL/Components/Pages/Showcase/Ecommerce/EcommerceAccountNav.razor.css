@@ -1,0 +1,66 @@
+.ec-account-nav {
+    margin-bottom: 1.5rem;
+    padding-bottom: .75rem;
+    border-bottom: 1px solid var(--ec-border);
+}
+
+.ec-account-nav-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .375rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.ec-account-nav-link {
+    display: inline-flex;
+    align-items: center;
+    gap: .375rem;
+    min-height: 2.75rem;
+    padding: .5rem .875rem;
+    border: 1px solid transparent;
+    border-radius: 999px;
+    color: var(--ec-ink);
+    font-weight: 500;
+    text-decoration: none;
+}
+
+    .ec-account-nav-link:hover {
+        border-color: var(--ec-border);
+        background-color: var(--ec-soft);
+        color: var(--sc-primary);
+    }
+
+    .ec-account-nav-link:focus-visible {
+        outline: 2px solid var(--sc-primary);
+        outline-offset: 2px;
+    }
+
+    /* The current page is a filled pill in bold, so it doesn't rely on color alone. */
+    .ec-account-nav-link.is-current {
+        border-color: var(--sc-primary);
+        background-color: var(--sc-primary);
+        color: var(--sc-primary-contrast);
+        font-weight: 700;
+    }
+
+.ec-account-nav-count {
+    min-width: 1.375rem;
+    padding: 0 .375rem;
+    border-radius: 999px;
+    background-color: var(--ec-ink);
+    color: var(--sc-page-bg);
+    font-size: .75rem;
+    font-weight: 700;
+    line-height: 1.375rem;
+    text-align: center;
+}
+
+/* Phones: smaller pills so the five links take two rows at most. */
+@media (max-width: 575.98px) {
+    .ec-account-nav-link {
+        padding: .5rem .75rem;
+        font-size: .9375rem;
+    }
+}

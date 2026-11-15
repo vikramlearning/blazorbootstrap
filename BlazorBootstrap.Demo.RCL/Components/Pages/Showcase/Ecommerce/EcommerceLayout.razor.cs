@@ -16,7 +16,10 @@ public partial class EcommerceLayout : LayoutComponentBase, IDisposable
     /// <summary>Base route of the storefront.</summary>
     public const string Base = DemoRouteConstants.Showcase_URL_Ecommerce;
 
-    private Button cartButton = default!;
+    /// <summary>The storefront's sign-in page.</summary>
+    public const string SignInPath = Base + "/sign-in";
+
+    private Button? cartButton;
 
     private Offcanvas cartDrawer = default!;
 
@@ -64,7 +67,7 @@ public partial class EcommerceLayout : LayoutComponentBase, IDisposable
             return;
         }
 
-        await EcommerceDisplay.FocusAsync(cartButton.Element);
+        await EcommerceDisplay.FocusAsync(cartButton?.Element);
     }
 
     private void OnLocationChanged(object? sender, LocationChangedEventArgs args)

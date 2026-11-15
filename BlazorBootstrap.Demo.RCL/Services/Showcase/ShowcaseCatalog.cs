@@ -52,10 +52,6 @@ public static class ShowcaseCatalog
             new[] { "Charts", "Progress", "Alert", "Callout", "Grid", "Spinner", "Tooltip" }),
         new("hr-portal", "HR & Employee Portal", "Directory, org chart, leave requests, and onboarding.", "Extras", IconName.People, "#9333ea", "HrPortal",
             new[] { "Grid", "Avatar", "Tabs", "MindMap", "DateInput", "CheckboxInput", "Progress" }),
-        new("restaurant", "Restaurant Ordering", "Menu, quantity picker, cart, delivery map, and order tracking.", "Extras", IconName.CupHot, "#b45309", "Restaurant",
-            new[] { "Card", "NumberInput", "Offcanvas", "GoogleMap", "Progress", "Toasts" }),
-        new("creator-blog", "Creator Portfolio & Blog", "Markdown posts, image gallery, and pagination.", "Extras", IconName.PenFill, "#e11d48", "CreatorBlog",
-            new[] { "Markdown", "Image", "Card", "Pagination", "Modal" }),
     };
 
     #endregion

@@ -4,8 +4,8 @@ using BlazorBootstrap.Demo.RCL.Services.Showcase.Ecommerce;
 namespace BlazorBootstrap.Demo.RCL.Components.Pages.Showcase.Ecommerce;
 
 /// <summary>
-/// A catalog card: image, category, name, star rating, price with sale badge, and a quick "Add to cart" in the first color.
-/// Stars are plain icons with a text alternative, so a grid of cards adds no extra tab stops.
+/// A catalog card: image with a wishlist heart, category, name, star rating, price with sale badge, and a quick
+/// "Add to cart" in the first color. Stars are plain icons with a text alternative, so a grid of cards adds no extra tab stops.
 /// </summary>
 public partial class EcommerceProductCard : ComponentBase
 {

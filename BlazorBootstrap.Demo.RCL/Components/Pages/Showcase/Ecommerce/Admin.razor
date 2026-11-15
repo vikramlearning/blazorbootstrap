@@ -1,0 +1,126 @@
+@page "/showcase/ecommerce/admin"
+@layout EcommerceAdminLayout
+
+<PageTitle>Dashboard · Kindred Goods admin</PageTitle>
+
+<div class="mb-4">
+    <h1 class="ea-title">Dashboard</h1>
+    <p class="ea-lead">@EcommerceSeedData.StoreName · @State.Clock.Now.ToString("dddd, MMM d", CultureInfo.InvariantCulture) · last 30 days</p>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-sm-6 col-xl-3">
+        <section class="ea-panel" aria-labelledby="ea-kpi-revenue">
+            <span class="ea-kpi-label" id="ea-kpi-revenue">Net revenue</span>
+            <span class="ea-kpi-value">@EcommerceDisplay.Money(Revenue)</span>
+            <span class="ea-kpi-note">From @OrderCountText, after refunds</span>
+        </section>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+        <section class="ea-panel" aria-labelledby="ea-kpi-fulfil">
+            <span class="ea-kpi-label" id="ea-kpi-fulfil">Orders to fulfil</span>
+            <span class="ea-kpi-value">@ToFulfil</span>
+            <span class="ea-kpi-note"><a href="@($"{EcommerceAdminLayout.Base}/orders")">Open the fulfilment board</a></span>
+        </section>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+        <section class="ea-panel" aria-labelledby="ea-kpi-aov">
+            <span class="ea-kpi-label" id="ea-kpi-aov">Average order value</span>
+            <span class="ea-kpi-value">@(RecentPaid.Count == 0 ? "—" : EcommerceDisplay.Money(Revenue / RecentPaid.Count))</span>
+            <span class="ea-kpi-note">@ItemsSoldText</span>
+        </section>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+        <section class="ea-panel" aria-labelledby="ea-kpi-stock">
+            <span class="ea-kpi-label" id="ea-kpi-stock">Stock alerts</span>
+            <span class="ea-kpi-value">@StockAlerts.Count</span>
+            <span class="ea-kpi-note">@OutOfStockCount out of stock, @(StockAlerts.Count - OutOfStockCount) running low</span>
+        </section>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-xl-8">
+        <section class="ea-panel" aria-labelledby="ea-recent-title">
+            <div class="d-flex flex-wrap justify-content-between align-items-baseline gap-2">
+                <h2 class="ea-section-title" id="ea-recent-title">Recent orders</h2>
+                <a class="small" href="@($"{EcommerceAdminLayout.Base}/orders")">All orders</a>
+            </div>
+            @if (State.Orders.Count == 0)
+            {
+                <p class="ea-empty mb-0">No orders yet. Orders customers place appear here.</p>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table ea-table align-middle">
+                        <caption class="visually-hidden">The six most recent orders</caption>
+                        <thead>
+                            <tr>
+                                <th scope="col">Order</th>
+                                <th scope="col">Placed</th>
+                                <th scope="col">Customer</th>
+                                <th scope="col">Status</th>
+                                <th scope="col" class="text-end">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var order in RecentOrders)
+                            {
+                                <tr @key="order.Id">
+                                    <th scope="row"><a href="@($"{EcommerceAdminLayout.Base}/orders/{order.Id}")">#@order.Id</a></th>
+                                    <td>@EcommerceDisplay.DateTimeShort(order.PlacedOn)</td>
+                                    <td>@order.ShipTo.FullName</td>
+                                    <td><Badge Color="EcommerceDisplay.StatusColor(order.Status)">@order.Status</Badge></td>
+                                    <td class="text-end">@EcommerceDisplay.Money(order.Totals.Total)</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </section>
+    </div>
+
+    <div class="col-xl-4 d-grid gap-4">
+        <section class="ea-panel" aria-labelledby="ea-stock-title">
+            <div class="d-flex flex-wrap justify-content-between align-items-baseline gap-2">
+                <h2 class="ea-section-title" id="ea-stock-title">Stock alerts</h2>
+                <a class="small" href="@($"{EcommerceAdminLayout.Base}/products")">Products</a>
+            </div>
+            @if (StockAlerts.Count == 0)
+            {
+                <p class="ea-empty mb-0">Every product has more than @LowStockLimit in stock.</p>
+            }
+            else
+            {
+                <ul class="list-unstyled d-grid gap-2 mb-0">
+                    @foreach (var product in StockAlerts)
+                    {
+                        <li class="d-flex justify-content-between gap-2" @key="product.Id">
+                            <a href="@($"{EcommerceAdminLayout.Base}/products/{product.Id}")">@product.Name</a>
+                            <Badge Color="@(product.Stock == 0 ? BadgeColor.Danger : BadgeColor.Warning)">@(product.Stock == 0 ? "Out of stock" : $"{product.Stock} left")</Badge>
+                        </li>
+                    }
+                </ul>
+            }
+        </section>
+
+        <section class="ea-panel" aria-labelledby="ea-best-title">
+            <h2 class="ea-section-title" id="ea-best-title">Best sellers, last 30 days</h2>
+            @if (BestSellers.Count == 0)
+            {
+                <p class="ea-empty mb-0">Best sellers appear once orders come in.</p>
+            }
+            else
+            {
+                <ol class="mb-0 ps-3 d-grid gap-1">
+                    @foreach (var (name, units) in BestSellers)
+                    {
+                        <li @key="name"><span class="fw-semibold">@name</span> <span class="text-body-secondary">· @units sold</span></li>
+                    }
+                </ol>
+            }
+        </section>
+    </div>
+</div>

@@ -13,8 +13,28 @@ public static class EcommerceDisplay
 
     #region Public Methods
 
+    /// <summary>Explains why a coupon doesn't apply, in a shopper's words.</summary>
+    public static string CouponProblem(EcommerceCouponCheck check, EcommerceCoupon? coupon) => check switch
+    {
+        EcommerceCouponCheck.Inactive => "This code isn't active right now.",
+        EcommerceCouponCheck.Expired => "This code has expired.",
+        EcommerceCouponCheck.UsedUp => "This code has been used as many times as allowed.",
+        EcommerceCouponCheck.BelowMinimum => $"This code needs a subtotal of {Money(coupon?.MinSubtotal ?? 0m)} or more.",
+        EcommerceCouponCheck.NotFirstOrder => "This code is for a first order only.",
+        EcommerceCouponCheck.Applied => "The code is applied.",
+        _ => "That code isn't valid.",
+    };
+
+    /// <summary>Formats a date and time like "Nov 9, 2:15 PM".</summary>
+    public static string DateTimeShort(DateTime value) => value.ToString("MMM d, h:mm tt", CultureInfo.InvariantCulture);
+
     /// <summary>Returns the delivery window text for a delivery speed.</summary>
-    public static string DeliveryWindow(EcommerceDelivery delivery) => delivery == EcommerceDelivery.Express ? "1–2 business days" : "3–5 business days";
+    public static string DeliveryWindow(EcommerceDelivery delivery) => delivery switch
+    {
+        EcommerceDelivery.Express => "1–2 business days",
+        EcommerceDelivery.Local => "within 3 hours by courier",
+        _ => "3–5 business days",
+    };
 
     /// <summary>
     /// Moves focus to an element, ignoring one that has left the page or a closed circuit.
@@ -37,6 +57,17 @@ public static class EcommerceDisplay
 
     /// <summary>Formats an amount in US dollars with cents.</summary>
     public static string Money(decimal value) => value.ToString("$#,0.00", CultureInfo.InvariantCulture);
+
+    /// <summary>Returns the badge color of an order status; the status name is always shown with it.</summary>
+    public static BadgeColor StatusColor(EcommerceOrderStatus status) => status switch
+    {
+        EcommerceOrderStatus.Placed => BadgeColor.Warning,
+        EcommerceOrderStatus.Packed => BadgeColor.Info,
+        EcommerceOrderStatus.Shipped => BadgeColor.Primary,
+        EcommerceOrderStatus.Delivered => BadgeColor.Success,
+        EcommerceOrderStatus.Refunded => BadgeColor.Secondary,
+        _ => BadgeColor.Danger,
+    };
 
     /// <summary>Formats an average rating with one decimal.</summary>
     public static string Rating(double value) => value.ToString("0.0", CultureInfo.InvariantCulture);

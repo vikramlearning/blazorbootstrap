@@ -1,0 +1,48 @@
+@* The wrapper carries this component's CSS scope; the Dropdown's own root element doesn't.
+   Plain list markup for the header and links: the library's DropdownHeader renders an <h6> and a link DropdownItem gets role="button". *@
+<div class="sc-account-menu @Class">
+    <Dropdown Color="DropdownColor.None">
+        @if (Identity.Current is { } account)
+        {
+            <DropdownToggleButton @ref="toggle" Class="sc-account-toggle" aria-label="@($"Account menu for {account.Name}, {Identity.CurrentRole?.Label}{(NoticeCount > 0 ? $", {NoticeCount} new {(NoticeCount == 1 ? "notice" : "notices")}" : null)}")">
+                <Avatar Name="@account.Name" Initials="@account.Initials" Color="AvatarColor.Primary" Size="AvatarSize.Small" />
+                <span class="sc-account-name d-none d-xl-inline" aria-hidden="true">@account.Name</span>
+                @if (NoticeCount > 0)
+                {
+                    <span class="sc-account-dot" aria-hidden="true">@(NoticeCount > 9 ? "9+" : NoticeCount.ToString(System.Globalization.CultureInfo.InvariantCulture))</span>
+                }
+            </DropdownToggleButton>
+            <DropdownMenu Position="DropdownMenuPosition.End">
+                <li class="sc-account-header">
+                    <span class="d-block fw-semibold text-body">@account.Name</span>
+                    <span class="d-block small text-body-secondary">@Identity.CurrentRole?.Label · @account.Email</span>
+                </li>
+                @if (Identity.CurrentRole is { } role && role.HomePath != role.AccountPath)
+                {
+                    <li><a class="dropdown-item" href="@role.HomePath">@($"{role.Label} home")</a></li>
+                }
+                <li><a class="dropdown-item" href="@(Identity.CurrentRole?.AccountPath ?? SignInPath)">Your account</a></li>
+                @if (NoticesPath is not null)
+                {
+                    <li><a class="dropdown-item" href="@NoticesPath">Notices@(NoticeCount > 0 ? $" ({NoticeCount} new)" : null)</a></li>
+                }
+                <DropdownItem @onclick="SwitchAccount">Switch account</DropdownItem>
+                <DropdownDivider />
+                <DropdownItem @onclick="AskResetAsync">Reset demo data</DropdownItem>
+                <DropdownItem @onclick="SignOut">Sign out</DropdownItem>
+            </DropdownMenu>
+        }
+        else
+        {
+            <DropdownToggleButton @ref="toggle" Class="sc-account-toggle sc-account-signed-out" aria-label="Account menu, signed out">
+                <Icon Name="IconName.PersonCircle" aria-hidden="true" /><span class="d-none d-sm-inline ms-1" aria-hidden="true">Sign in</span>
+            </DropdownToggleButton>
+            <DropdownMenu Position="DropdownMenuPosition.End">
+                <li><a class="dropdown-item" href="@SignInPath">Sign in</a></li>
+                <li><a class="dropdown-item" href="@($"{SignInPath}?mode=register")">Create an account</a></li>
+                <DropdownDivider />
+                <DropdownItem @onclick="AskResetAsync">Reset demo data</DropdownItem>
+            </DropdownMenu>
+        }
+    </Dropdown>
+</div>

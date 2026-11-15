@@ -1,0 +1,292 @@
+@page "/showcase/ecommerce/admin/orders/{Id:int}"
+@layout EcommerceAdminLayout
+
+@if (Order is not { } order)
+{
+    <PageTitle>Order not found · @EcommerceSeedData.StoreName admin</PageTitle>
+
+    <section class="ea-panel text-center py-5" aria-labelledby="aod-missing-title">
+        <span class="aod-missing-icon" aria-hidden="true"><Icon Name="IconName.Receipt" /></span>
+        <h1 class="ea-title mt-3" id="aod-missing-title">Order not found</h1>
+        <p class="ea-lead mb-4">There's no order #@Id in this store. It may be from another browser tab, or the link may be old.</p>
+        <a class="btn btn-primary" href="@OrdersUrl">Back to orders</a>
+    </section>
+}
+else
+{
+    <PageTitle>Order #@order.Id · @EcommerceSeedData.StoreName admin</PageTitle>
+
+    <div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-4">
+        <div>
+            <div class="d-flex flex-wrap align-items-center gap-2">
+                <h1 class="ea-title">Order #@order.Id</h1>
+                <Badge Color="@EcommerceDisplay.StatusColor(order.Status)">@order.Status</Badge>
+            </div>
+            <p class="ea-lead">Placed @EcommerceDisplay.DateTimeShort(order.PlacedOn) · @ItemsText(order.Totals.ItemCount) · @EcommerceDisplay.Money(order.Totals.Total)</p>
+        </div>
+        <a class="btn btn-sm btn-outline-secondary" href="@OrdersUrl"><Icon Name="IconName.ArrowLeft" class="me-1" aria-hidden="true" />Back to orders</a>
+    </div>
+
+    <section class="ea-panel mb-4" aria-labelledby="aod-actions-title">
+        <h2 class="ea-section-title" id="aod-actions-title">Actions</h2>
+        @* Always rendered and focusable: an action is announced here, and focus lands here when the clicked button is gone. *@
+        <p class="aod-status fw-semibold" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
+        <p class="aod-error text-danger fw-semibold" role="alert">@errorMessage</p>
+
+        @if (HasActions(order))
+        {
+            <div class="d-flex flex-wrap gap-2">
+                @switch (order.Status)
+                {
+                    case EcommerceOrderStatus.Placed:
+                        <Button @key="order.Status" Color="ButtonColor.Primary" @onclick="() => AdvanceAsync(EcommerceOrderStatus.Placed)">
+                            <Icon Name="IconName.BoxSeam" class="me-1" aria-hidden="true" />Mark packed
+                        </Button>
+                        break;
+                    case EcommerceOrderStatus.Packed:
+                        <Button @key="order.Status" @ref="shipButton" Color="ButtonColor.Primary" @onclick="OpenShipAsync">
+                            <Icon Name="IconName.Truck" class="me-1" aria-hidden="true" />Ship…
+                        </Button>
+                        break;
+                    case EcommerceOrderStatus.Shipped:
+                        <Button @key="order.Status" Color="ButtonColor.Primary" @onclick="() => AdvanceAsync(EcommerceOrderStatus.Shipped)">
+                            <Icon Name="IconName.HouseCheck" class="me-1" aria-hidden="true" />Mark delivered
+                        </Button>
+                        break;
+                }
+                @if (order.Status is EcommerceOrderStatus.Placed or EcommerceOrderStatus.Packed)
+                {
+                    <Button @ref="cancelButton" Color="ButtonColor.Danger" Outline="true" @onclick="OpenCancelAsync">Cancel order</Button>
+                }
+                @if (CanRefund(order))
+                {
+                    <Button @ref="refundButton" Color="ButtonColor.Danger" Outline="true" @onclick="OpenRefundAsync">Refund order</Button>
+                }
+            </div>
+        }
+        else
+        {
+            <p class="text-body-secondary mb-0">@NoActionsText(order)</p>
+        }
+    </section>
+
+    <div class="row g-4">
+        <div class="col-xl-8 d-grid gap-4 align-content-start">
+            <section class="ea-panel" aria-labelledby="aod-items-title">
+                <h2 class="ea-section-title" id="aod-items-title">Items</h2>
+                @if (order.Lines.Count == 0)
+                {
+                    <p class="ea-empty mb-0">This order has no items.</p>
+                }
+                else
+                {
+                    <div class="table-responsive">
+                        <table class="table ea-table align-middle">
+                            <caption class="visually-hidden">Items in order #@order.Id</caption>
+                            <thead>
+                                <tr>
+                                    <th scope="col">Item</th>
+                                    <th scope="col">Color</th>
+                                    <th scope="col" class="text-end">Qty</th>
+                                    <th scope="col" class="text-end">Unit price</th>
+                                    <th scope="col" class="text-end">Line total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var line in order.Lines)
+                                {
+                                    <tr>
+                                        <th scope="row" class="fw-normal">
+                                            @if (State.FindAnyProduct(line.ProductId) is not null)
+                                            {
+                                                <a href="@($"{EcommerceAdminLayout.Base}/products/{line.ProductId}")">@line.Name</a>
+                                            }
+                                            else
+                                            {
+                                                <span>@line.Name</span> <span class="small text-body-secondary">(no longer in the catalog)</span>
+                                            }
+                                        </th>
+                                        <td>@line.Color</td>
+                                        <td class="text-end">@line.Quantity</td>
+                                        <td class="text-end text-nowrap">@EcommerceDisplay.Money(line.UnitPrice)</td>
+                                        <td class="text-end text-nowrap">@EcommerceDisplay.Money(line.UnitPrice * line.Quantity)</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+            </section>
+
+            <section class="ea-panel" aria-labelledby="aod-history-title">
+                <h2 class="ea-section-title" id="aod-history-title">History</h2>
+                @if (order.History.Count == 0)
+                {
+                    <p class="ea-empty mb-0">No status changes recorded.</p>
+                }
+                else
+                {
+                    <Timeline AriaLabel="@($"History of order #{order.Id}")">
+                        @for (var index = 0; index < order.History.Count; index++)
+                        {
+                            var change = order.History[index];
+                            <TimelineItem Title="@change.Status.ToString()"
+                                          Subtitle="@EcommerceDisplay.DateTimeShort(change.At)"
+                                          Color="@TimelineColorFor(change.Status)"
+                                          Current="@(index == order.History.Count - 1)"
+                                          ChildContent="@NoteContent(change.Note)" />
+                        }
+                    </Timeline>
+                }
+            </section>
+
+            <section class="ea-panel" aria-labelledby="aod-returns-title">
+                <div class="d-flex flex-wrap justify-content-between align-items-baseline gap-2">
+                    <h2 class="ea-section-title" id="aod-returns-title">Return requests</h2>
+                    <a class="small" href="@($"{EcommerceAdminLayout.Base}/returns")">Go to Returns</a>
+                </div>
+                @if (RelatedReturns(order) is { Count: > 0 } requests)
+                {
+                    <ul class="list-unstyled d-grid gap-2 mb-0">
+                        @foreach (var request in requests)
+                        {
+                            <li class="aod-return" @key="request.Id">
+                                <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
+                                    <span class="fw-semibold">Return #@request.Id</span>
+                                    <Badge Color="@ReturnColor(request.Status)">@request.Status</Badge>
+                                </div>
+                                <p class="small text-body-secondary mb-1">
+                                    Requested @EcommerceDisplay.DateTimeShort(request.RequestedOn) · @ItemsText(request.Lines.Sum(item => item.Quantity)) · @EcommerceDisplay.Money(request.Amount)
+                                </p>
+                                <p class="small mb-0">Reason: @request.Reason</p>
+                            </li>
+                        }
+                    </ul>
+                }
+                else
+                {
+                    <p class="ea-empty mb-0">No return requests for this order. Customers can ask to return items from a delivered order.</p>
+                }
+            </section>
+        </div>
+
+        <div class="col-xl-4 d-grid gap-4 align-content-start">
+            <section class="ea-panel" aria-labelledby="aod-totals-title">
+                <h2 class="ea-section-title" id="aod-totals-title">Totals</h2>
+                <dl class="aod-totals mb-0">
+                    <div><dt>Subtotal</dt><dd>@EcommerceDisplay.Money(order.Totals.Subtotal)</dd></div>
+                    @if (order.Totals.Discount > 0)
+                    {
+                        <div><dt>@DiscountLabel(order)</dt><dd>−@EcommerceDisplay.Money(order.Totals.Discount)</dd></div>
+                    }
+                    <div><dt>Shipping</dt><dd>@(order.Totals.Shipping == 0 ? "Free" : EcommerceDisplay.Money(order.Totals.Shipping))</dd></div>
+                    <div><dt>Tax</dt><dd>@EcommerceDisplay.Money(order.Totals.Tax)</dd></div>
+                    <div class="aod-total"><dt>Total</dt><dd>@EcommerceDisplay.Money(order.Totals.Total)</dd></div>
+                    @if (order.RefundedAmount > 0)
+                    {
+                        <div class="aod-refunded"><dt>Refunded</dt><dd>−@EcommerceDisplay.Money(order.RefundedAmount)</dd></div>
+                    }
+                </dl>
+            </section>
+
+            <section class="ea-panel" aria-labelledby="aod-customer-title">
+                <h2 class="ea-section-title" id="aod-customer-title">Customer</h2>
+                <p class="fw-semibold mb-0">@order.ShipTo.FullName</p>
+                <p class="text-break mb-2">@order.ShipTo.Email</p>
+                <p class="small text-body-secondary mb-3">@(order.CustomerId is null ? "Guest checkout" : "Has an account")</p>
+
+                <h3 class="aod-subtitle">Ship to</h3>
+                <address class="mb-3">
+                    @order.ShipTo.Street<br />
+                    @order.ShipTo.City @order.ShipTo.PostalCode<br />
+                    @order.ShipTo.Country
+                </address>
+
+                <h3 class="aod-subtitle">Delivery</h3>
+                <p class="mb-3">@order.Delivery (@EcommerceDisplay.DeliveryWindow(order.Delivery))</p>
+
+                <h3 class="aod-subtitle">Paid with</h3>
+                <p class="mb-0">@order.CardBrand ···· @order.CardLast4</p>
+
+                @if (!string.IsNullOrEmpty(order.TrackingNumber))
+                {
+                    <h3 class="aod-subtitle mt-3">Tracking number</h3>
+                    <p class="mb-0 font-monospace text-break">@order.TrackingNumber</p>
+                }
+            </section>
+        </div>
+    </div>
+
+    <Modal @ref="shipModal" IsVerticallyCentered="true" ShowCloseButton="false" aria-labelledby="aod-ship-title" OnShown="OnShipShownAsync" OnHidden="OnShipHiddenAsync">
+        <HeaderTemplate>
+            <h2 class="modal-title h5" id="aod-ship-title">Ship order #@order.Id</h2>
+        </HeaderTemplate>
+        <BodyTemplate>
+            <p class="mb-3">@order.ShipTo.FullName · @order.ShipTo.City, @order.ShipTo.Country · @order.Delivery delivery</p>
+            <EditForm id="aod-ship-form" EditContext="shipContext" OnValidSubmit="ConfirmShipAsync" FormName="aod-ship">
+                <DataAnnotationsValidator />
+                <label class="form-label" for="aod-tracking">Tracking number</label>
+                <TextInput @ref="trackingInput" Id="aod-tracking" @bind-Value="shipForm.TrackingNumber" MaxLength="40" aria-describedby="aod-tracking-help" />
+                <div class="form-text" id="aod-tracking-help">4 to 40 letters, digits, spaces, or dashes. The customer sees it on their order.</div>
+                <div role="alert"><ValidationMessage For="() => shipForm.TrackingNumber" /></div>
+            </EditForm>
+        </BodyTemplate>
+        <FooterTemplate>
+            <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => shipModal.HideAsync()">Cancel</Button>
+            <Button Type="ButtonType.Submit" Color="ButtonColor.Primary" form="aod-ship-form">Ship order</Button>
+        </FooterTemplate>
+    </Modal>
+
+    <Modal @ref="cancelModal" IsVerticallyCentered="true" ShowCloseButton="false" aria-labelledby="aod-cancel-title" OnHidden="OnCancelHiddenAsync">
+        <HeaderTemplate>
+            <h2 class="modal-title h5" id="aod-cancel-title">Cancel order #@(order.Id)?</h2>
+        </HeaderTemplate>
+        <BodyTemplate>
+            <p>
+                @(order.Totals.ItemCount == 1 ? "The item goes" : $"All {order.Totals.ItemCount} items go") back into stock, @EcommerceDisplay.Money(order.Totals.Total) is refunded to the @order.CardBrand card, and the order closes without shipping.
+                A cancelled order can't be reopened.
+            </p>
+            <EditForm id="aod-cancel-form" EditContext="cancelContext" OnValidSubmit="ConfirmCancelAsync" FormName="aod-cancel">
+                <DataAnnotationsValidator />
+                <label class="form-label" for="aod-cancel-reason">Reason (optional)</label>
+                <TextAreaInput Id="aod-cancel-reason" @bind-Value="cancelForm.Reason" Rows="3" MaxLength="200" aria-describedby="aod-cancel-help" />
+                <div class="form-text" id="aod-cancel-help">Up to 200 characters, for the store only: it's kept in the order's history and the customer doesn't see it.</div>
+                <div role="alert"><ValidationMessage For="() => cancelForm.Reason" /></div>
+            </EditForm>
+        </BodyTemplate>
+        <FooterTemplate>
+            <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => cancelModal.HideAsync()">Keep order</Button>
+            <Button Type="ButtonType.Submit" Color="ButtonColor.Danger" form="aod-cancel-form">Cancel order</Button>
+        </FooterTemplate>
+    </Modal>
+
+    <Modal @ref="refundModal" IsVerticallyCentered="true" ShowCloseButton="false" aria-labelledby="aod-refund-title" OnHidden="OnRefundHiddenAsync">
+        <HeaderTemplate>
+            <h2 class="modal-title h5" id="aod-refund-title">Refund order #@(order.Id)?</h2>
+        </HeaderTemplate>
+        <BodyTemplate>
+            <p class="mb-2">
+                <strong>@EcommerceDisplay.Money(RefundDue(order))</strong> goes back to the customer's @order.CardBrand ···· @order.CardLast4.
+                @if (order.RefundedAmount > 0)
+                {
+                    <text>@EcommerceDisplay.Money(order.RefundedAmount) was already refunded through returns.</text>
+                }
+            </p>
+            <p>
+                Stock is not returned: the items stay with the customer. To take single items back into stock, approve a return
+                in <a href="@($"{EcommerceAdminLayout.Base}/returns")">Returns</a> instead. A refunded order can't be reopened.
+            </p>
+            <EditForm id="aod-refund-form" EditContext="refundContext" OnValidSubmit="ConfirmRefundAsync" FormName="aod-refund">
+                <DataAnnotationsValidator />
+                <label class="form-label" for="aod-refund-reason">Reason</label>
+                <TextAreaInput Id="aod-refund-reason" @bind-Value="refundForm.Reason" Rows="3" MaxLength="200" aria-describedby="aod-refund-help" />
+                <div class="form-text" id="aod-refund-help">3 to 200 characters, for the store only: it's kept in the order's history and the customer doesn't see it.</div>
+                <div role="alert"><ValidationMessage For="() => refundForm.Reason" /></div>
+            </EditForm>
+        </BodyTemplate>
+        <FooterTemplate>
+            <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => refundModal.HideAsync()">Keep order</Button>
+            <Button Type="ButtonType.Submit" Color="ButtonColor.Danger" form="aod-refund-form">Refund @EcommerceDisplay.Money(RefundDue(order))</Button>
+        </FooterTemplate>
+    </Modal>
+}

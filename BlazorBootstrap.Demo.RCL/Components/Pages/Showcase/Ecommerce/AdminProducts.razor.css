@@ -1,0 +1,36 @@
+/* Thumbnails are rendered by ShowcaseImage inside the Grid, so they need ::deep. */
+.ea-products ::deep .ea-product-thumb {
+    width: 3rem;
+    min-width: 3rem;
+    height: 3rem;
+    border-radius: .5rem;
+    overflow: hidden;
+    object-fit: cover;
+}
+
+.ea-products ::deep .ea-number {
+    font-variant-numeric: tabular-nums;
+}
+
+.ea-products ::deep .ea-featured {
+    color: var(--sc-primary-hover);
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+[data-bs-theme=dark] .ea-products ::deep .ea-featured {
+    color: var(--sc-primary);
+}
+
+.ea-products-message:empty {
+    margin: 0 !important;
+}
+
+.ea-products-message:focus {
+    outline: none;
+}
+
+.ea-products-message:focus-visible {
+    outline: 2px solid var(--sc-primary);
+    outline-offset: 2px;
+}
