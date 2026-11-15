@@ -1,0 +1,301 @@
+@page "/showcase/saas/admin/revenue"
+@layout SaasAdminLayout
+
+<PageTitle>Revenue · @SaasSeedData.ProductName</PageTitle>
+
+@{
+    var months = CollectedMonths;
+    var planMrr = PlanMrr;
+    var totalMrr = State.Mrr;
+    var statusCounts = StatusCounts;
+    var top = TopTenants;
+    var trials = Trials;
+}
+
+<div class="sd-page-head">
+    <div>
+        <span class="sc-eyebrow">Revenue</span>
+        <h1 class="sd-page-title">Revenue</h1>
+        <p class="sd-page-lead">Recurring revenue, collections, and trials, from this tab's tenants and invoices.</p>
+        <p class="small text-body-secondary mb-0 mt-1">MRR counts active and past-due tenants on a paid plan; annual plans count at their monthly price. Trials, suspended, and archived tenants count as $0.</p>
+    </div>
+    <a class="btn btn-primary" href="@($"{SaasAdminLayout.Base}/tenants")">
+        <Icon Name="IconName.Buildings" class="me-1" aria-hidden="true" />All tenants
+    </a>
+</div>
+
+<section aria-label="Key revenue metrics" class="row row-cols-1 row-cols-sm-2 row-cols-lg-4 g-3 mb-4">
+    @foreach (var kpi in Kpis)
+    {
+        <div class="col" @key="kpi.Label">
+            <Card Class="sd-card h-100">
+                <CardBody Class="p-3 p-lg-4">
+                    <div class="sd-kpi-label">
+                        <span>@kpi.Label</span>
+                        <span class="sd-kpi-icon" aria-hidden="true"><Icon Name="@kpi.IconName" /></span>
+                    </div>
+                    <span class="sd-kpi-value">@kpi.Value</span>
+                    <span class="text-body-secondary small">@kpi.Note</span>
+                </CardBody>
+            </Card>
+        </div>
+    }
+</section>
+
+<div class="row g-3 mb-4">
+    <div class="col-xl-8">
+        <Card Class="sd-card h-100">
+            <CardHeader>
+                <div>
+                    <h2 class="sd-card-title">Collected and refunded</h2>
+                    <p class="sd-card-sub">Paid invoices by the month they were issued, last 12 months. Refunds count in the month of the invoice they refund.</p>
+                </div>
+            </CardHeader>
+            <CardBody Class="pt-0">
+                <div class="sd-chart" role="img" aria-label="@CollectionChartLabel">
+                    <BarChart @ref="collectionChart" Height="300" HeightUnit="Unit.Px" Width="100" WidthUnit="Unit.Percentage" />
+                </div>
+                @* The wrapper hides the table: a hidden table itself can't shrink below its content and would widen the page. *@
+                <div class="visually-hidden">
+                <table>
+                    <caption>Money collected and refunded per month, @(MonthName(months[0].Month)) to @(MonthName(months[^1].Month))</caption>
+                    <thead>
+                        <tr>
+                            <th scope="col">Month</th>
+                            <th scope="col">Collected</th>
+                            <th scope="col">Refunded</th>
+                            <th scope="col">Net</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var month in months)
+                        {
+                            <tr @key="month.Month">
+                                <th scope="row">@MonthName(month.Month)</th>
+                                <td>@SaasDisplay.MoneyCents(month.Collected)</td>
+                                <td>@SaasDisplay.MoneyCents(month.Refunded)</td>
+                                <td>@SaasDisplay.MoneyCents(month.Collected - month.Refunded)</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+                </div>
+            </CardBody>
+        </Card>
+    </div>
+    <div class="col-xl-4">
+        <Card Class="sd-card h-100">
+            <CardHeader>
+                <div>
+                    <h2 class="sd-card-title">MRR by plan</h2>
+                    <p class="sd-card-sub">Share of this month's @SaasDisplay.Money(totalMrr)</p>
+                </div>
+            </CardHeader>
+            <CardBody Class="pt-0">
+                <div class="sd-chart" role="img" aria-label="@PlanChartLabel">
+                    <DoughnutChart @ref="planChart" Height="300" HeightUnit="Unit.Px" Width="100" WidthUnit="Unit.Percentage" />
+                </div>
+                @if (totalMrr == 0)
+                {
+                    <p class="small text-body-secondary mb-0">No tenant pays right now, so there is no MRR to split.</p>
+                }
+                @* The wrapper hides the table: a hidden table itself can't shrink below its content and would widen the page. *@
+                <div class="visually-hidden">
+                <table>
+                    <caption>MRR by plan</caption>
+                    <thead>
+                        <tr>
+                            <th scope="col">Plan</th>
+                            <th scope="col">MRR</th>
+                            <th scope="col">Share</th>
+                            <th scope="col">Paying tenants</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var entry in planMrr)
+                        {
+                            <tr @key="entry.Plan.Id">
+                                <th scope="row">@entry.Plan.Name</th>
+                                <td>@SaasDisplay.Money(entry.Mrr)</td>
+                                <td>@(totalMrr == 0 ? "0%" : Percent((double)(entry.Mrr / totalMrr * 100)))</td>
+                                <td>@Count(entry.Paying)</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+                </div>
+            </CardBody>
+        </Card>
+    </div>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-xl-4">
+        <Card Class="sd-card h-100">
+            <CardHeader>
+                <div>
+                    <h2 class="sd-card-title">Tenants by status</h2>
+                    <p class="sd-card-sub">@Plural(State.Workspaces.Count, "tenant", "tenants") in all</p>
+                </div>
+            </CardHeader>
+            <CardBody Class="pt-0">
+                <div class="sd-chart" role="img" aria-label="@StatusChartLabel">
+                    <BarChart @ref="statusChart" Height="260" HeightUnit="Unit.Px" Width="100" WidthUnit="Unit.Percentage" />
+                </div>
+                @* The wrapper hides the table: a hidden table itself can't shrink below its content and would widen the page. *@
+                <div class="visually-hidden">
+                <table>
+                    <caption>Tenants by status</caption>
+                    <thead>
+                        <tr>
+                            <th scope="col">Status</th>
+                            <th scope="col">Tenants</th>
+                            <th scope="col">MRR</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var entry in statusCounts)
+                        {
+                            <tr @key="entry.Status">
+                                <th scope="row">@SaasDisplay.StatusName(entry.Status)</th>
+                                <td>@Count(entry.Tenants)</td>
+                                <td>@SaasDisplay.Money(entry.Mrr)</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+                </div>
+            </CardBody>
+        </Card>
+    </div>
+    <div class="col-xl-8">
+        <Card Class="sd-card h-100">
+            <CardHeader>
+                <div>
+                    <h2 class="sd-card-title">Top @TopCount tenants by MRR</h2>
+                    <p class="sd-card-sub">Paying tenants, highest MRR first</p>
+                </div>
+            </CardHeader>
+            <CardBody Class="pt-0">
+                @if (top.Count == 0)
+                {
+                    <p class="small text-body-secondary mb-0">No tenant pays right now.</p>
+                }
+                else
+                {
+                    <div class="table-responsive sd-grid">
+                        <table class="table align-middle">
+                            <caption class="visually-hidden">Top @TopCount tenants by MRR, highest first</caption>
+                            <thead>
+                                <tr>
+                                    <th scope="col" class="text-end">Rank</th>
+                                    <th scope="col">Tenant</th>
+                                    <th scope="col">Plan</th>
+                                    <th scope="col" class="text-end">Seats</th>
+                                    <th scope="col">Status</th>
+                                    <th scope="col" class="text-end">MRR</th>
+                                    <th scope="col" class="text-end">Share</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @for (var index = 0; index < top.Count; index++)
+                                {
+                                    var workspace = top[index];
+                                    var mrr = State.MonthlyRevenueFor(workspace);
+
+                                    <tr @key="workspace.Id">
+                                        <td class="text-end sd-mono">@(index + 1)</td>
+                                        <th scope="row" class="fw-normal">
+                                            <div class="sd-person">
+                                                <Avatar Name="@workspace.Name" Color="SaasDisplay.AvatarColorFor(workspace.Id)" Size="AvatarSize.Small" />
+                                                <span class="sd-person-text">
+                                                    <a class="sd-person-name" href="@($"{SaasAdminLayout.Base}/tenants/{workspace.Id}")">@workspace.Name</a>
+                                                    <span class="sd-person-email">@(workspace.Period == SaasBillingPeriod.Annual ? "Billed annually" : "Billed monthly")</span>
+                                                </span>
+                                            </div>
+                                        </th>
+                                        <td><Badge Color="SaasDisplay.PlanColor(workspace.PlanId)" Class="rounded-pill">@State.PlanOf(workspace).Name</Badge></td>
+                                        <td class="text-end sd-mono">@Count(workspace.Seats)</td>
+                                        <td><Badge Color="SaasDisplay.StatusColor(workspace.Status)" Class="rounded-pill">@SaasDisplay.StatusName(workspace.Status)</Badge></td>
+                                        <td class="text-end text-nowrap sd-mono">@SaasDisplay.Money(mrr)</td>
+                                        <td class="text-end text-nowrap sd-mono">@(totalMrr == 0 ? "0%" : Percent((double)(mrr / totalMrr * 100)))</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+            </CardBody>
+        </Card>
+    </div>
+</div>
+
+<Card Class="sd-card">
+    <CardHeader>
+        <div>
+            <h2 class="sd-card-title">Trial funnel</h2>
+            <p class="sd-card-sub">Trials running now, and what became of the trials that ended</p>
+        </div>
+        @if (trials.Running > 0)
+        {
+            <a class="small fw-semibold" href="@($"{SaasAdminLayout.Base}/tenants?status={SaasWorkspaceStatus.Trial}")">All trials</a>
+        }
+    </CardHeader>
+    <CardBody Class="pt-0">
+        <ol class="ar-funnel list-unstyled mb-3">
+            <li class="ar-stage">
+                <span class="ar-stage-label">Trials running</span>
+                <span class="sd-kpi-value">@Count(trials.Running)</span>
+                <span class="small text-body-secondary">
+                    @(trials.Running == 0 ? "No tenant is on trial right now" : $"{Count(trials.RunningWithCard)} with a card on file, {Count(trials.Running - trials.RunningWithCard)} without")
+                </span>
+            </li>
+            <li class="ar-stage">
+                <span class="ar-stage-label">Ending within 7 days</span>
+                <span class="sd-kpi-value">@Count(trials.EndingSoon)</span>
+                <span class="small text-body-secondary">
+                    @if (trials.Soonest is { } soonest)
+                    {
+                        <text>Soonest: <a href="@($"{SaasAdminLayout.Base}/tenants/{soonest.Id}")">@soonest.Name</a>@(soonest.TrialEndsOn is { } endsOn ? $" on {SaasDisplay.Date(endsOn)}" : string.Empty)</text>
+                    }
+                    else
+                    {
+                        <text>None end this week</text>
+                    }
+                </span>
+            </li>
+            <li class="ar-stage">
+                <span class="ar-stage-label">Trials ended</span>
+                <span class="sd-kpi-value">@Count(trials.Ended)</span>
+                <span class="small text-body-secondary">@Count(trials.Converted) upgraded early, @Count(trials.RanOut) ran to the end</span>
+            </li>
+            <li class="ar-stage">
+                <span class="ar-stage-label">Paying now</span>
+                <span class="sd-kpi-value">@Count(trials.PayingNow)</span>
+                <span class="small text-body-secondary">
+                    @(trials.Ended == 0 ? "No trial has ended yet" : $"{Percent(trials.PayingNow * 100d / trials.Ended)} of the ended trials")
+                </span>
+            </li>
+        </ol>
+
+        @if (trials.Ended > 0)
+        {
+            <dl class="row sd-dl small mb-3">
+                <dt class="col-sm-5 col-lg-3">Upgraded during the trial</dt>
+                <dd class="col-sm-7 col-lg-9">@Plural(trials.Converted, "tenant", "tenants") <span class="fw-normal text-body-secondary">(“@ConvertedTitle” in their activity)</span></dd>
+                <dt class="col-sm-5 col-lg-3">Ran to the end and billed</dt>
+                <dd class="col-sm-7 col-lg-9">@Plural(trials.RanOut, "tenant", "tenants") <span class="fw-normal text-body-secondary">(“@EndedTitle” in their activity)</span></dd>
+                <dt class="col-sm-5 col-lg-3">Where they are now</dt>
+                <dd class="col-sm-7 col-lg-9">
+                    @OutcomeText(trials)
+                </dd>
+            </dl>
+        }
+
+        <p class="small text-body-secondary mb-0">
+            Ended trials are counted from each tenant's activity: “@ConvertedTitle” when the customer upgraded in Billing during the trial, and “@EndedTitle”
+            when the trial ran out and the plan was billed (paid with a card on file, or left open, which makes the tenant past due). Seeded tenants carry no
+            trial history, so only trials that end or convert in this tab are counted.
+        </p>
+    </CardBody>
+</Card>

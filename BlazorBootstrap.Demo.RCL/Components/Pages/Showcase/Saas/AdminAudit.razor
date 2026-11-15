@@ -1,0 +1,130 @@
+@page "/showcase/saas/admin/audit"
+@layout SaasAdminLayout
+
+<PageTitle>Audit log · @SaasSeedData.ProductName</PageTitle>
+
+@{
+    var log = State.AuditLog();
+    var actions = log.Select(entry => entry.Action).Distinct().Order(StringComparer.OrdinalIgnoreCase).ToList();
+    var actors = Actors(log);
+    var rows = FilteredRows(log);
+    var totalPages = TotalPages(rows.Count);
+    var page = Math.Clamp(pageNumber, 1, totalPages);
+    var pageRows = rows.Skip((page - 1) * PageSize).Take(PageSize).ToList();
+}
+
+<div class="sd-page-head">
+    <div>
+        <span class="sc-eyebrow">Audit log</span>
+        <h1 class="sd-page-title">Audit log</h1>
+        <p class="sd-page-lead">
+            Who changed what, newest first. It records the actions of Lumora operators (tenants, plans, leads, refunds, and payments)
+            and of automatic billing (failed renewal payments). Customers' own changes are in each tenant's activity.
+        </p>
+    </div>
+</div>
+
+<Card Class="sd-card">
+    <CardBody Class="p-3 p-lg-4">
+        <div class="row g-2 align-items-end mb-3" role="search" aria-label="Filter the audit log">
+            <div class="col-md-6 col-xl-4">
+                <label class="form-label small fw-semibold" for="sd-audit-search">Search</label>
+                <InputGroup>
+                    <InputGroupText><Icon Name="IconName.Search" aria-hidden="true" /></InputGroupText>
+                    @* As on the tenant list: @oninput filters while typing, and the bound value changes only on change. *@
+                    <TextInput @ref="searchInput" Id="sd-audit-search" Value="@searchBoxValue" ValueExpression="() => searchBoxValue" ValueChanged="OnSearchChanged"
+                               @oninput="OnSearchInput" Placeholder="Target or detail" />
+                </InputGroup>
+            </div>
+            <div class="col-6 col-md-3 col-xl-3">
+                <label class="form-label small fw-semibold" for="sd-audit-action">Action</label>
+                <select id="sd-audit-action" class="form-select" value="@actionFilter" @onchange="OnActionChanged">
+                    <option value="">All</option>
+                    @foreach (var action in actions)
+                    {
+                        <option value="@action">@action</option>
+                    }
+                </select>
+            </div>
+            <div class="col-6 col-md-3 col-xl-3">
+                <label class="form-label small fw-semibold" for="sd-audit-actor">Actor</label>
+                <select id="sd-audit-actor" class="form-select" value="@actorFilter" @onchange="OnActorChanged">
+                    <option value="">All</option>
+                    @foreach (var actor in actors)
+                    {
+                        <option value="@actor.Id">@actor.Name</option>
+                    }
+                </select>
+            </div>
+            @if (HasFilters)
+            {
+                <div class="col-12 col-xl-auto">
+                    <Button Color="ButtonColor.Secondary" Outline="true" @onclick="ClearFiltersAsync">Clear filters</Button>
+                </div>
+            }
+        </div>
+
+        <p class="small text-body-secondary mb-3" role="status">@SummaryText(rows.Count, log.Count, page, pageRows.Count)</p>
+
+        <div class="table-responsive sd-grid">
+            <table class="table table-hover align-middle">
+                <caption class="visually-hidden">Audit log, newest first</caption>
+                <thead>
+                    <tr>
+                        <th scope="col">Time</th>
+                        <th scope="col">Actor</th>
+                        <th scope="col">Action</th>
+                        <th scope="col">Target</th>
+                        <th scope="col">Detail</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (pageRows.Count == 0)
+                    {
+                        <tr>
+                            <td colspan="5" class="text-center text-body-secondary py-5">@(log.Count == 0 ? "Nothing has been recorded yet." : "No entries match these filters.")</td>
+                        </tr>
+                    }
+                    @foreach (var entry in pageRows)
+                    {
+                        <tr @key="entry.Id">
+                            <td class="text-nowrap">@SaasDisplay.DateTimeShort(entry.At)</td>
+                            <td class="text-nowrap">
+                                @if (entry.ActorId == SaasState.SystemActorId)
+                                {
+                                    <span class="d-inline-flex align-items-center gap-1"><Icon Name="IconName.Gear" aria-hidden="true" />@entry.ActorName</span>
+                                }
+                                else
+                                {
+                                    @entry.ActorName
+                                }
+                            </td>
+                            <th scope="row" class="fw-semibold text-nowrap">@entry.Action</th>
+                            <td class="sd-audit-target">
+                                @if (entry.Link is { } link)
+                                {
+                                    <a href="@link">@entry.Target</a>
+                                }
+                                else
+                                {
+                                    @entry.Target
+                                }
+                            </td>
+                            <td class="sd-audit-detail">@entry.Detail</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <nav class="d-flex flex-wrap align-items-center justify-content-end gap-2 mt-3" aria-label="Audit log pages">
+            <Button @ref="previousButton" Color="ButtonColor.Secondary" Outline="true" Size="ButtonSize.Small" Disabled="@(page <= 1)" @onclick="() => GoToPageAsync(page - 1, totalPages)">
+                <Icon Name="IconName.ChevronLeft" class="me-1" aria-hidden="true" />Previous
+            </Button>
+            <span class="small text-body-secondary text-nowrap">Page @(page) of @totalPages</span>
+            <Button @ref="nextButton" Color="ButtonColor.Secondary" Outline="true" Size="ButtonSize.Small" Disabled="@(page >= totalPages)" @onclick="() => GoToPageAsync(page + 1, totalPages)">
+                Next<Icon Name="IconName.ChevronRight" class="ms-1" aria-hidden="true" />
+            </Button>
+        </nav>
+    </CardBody>
+</Card>

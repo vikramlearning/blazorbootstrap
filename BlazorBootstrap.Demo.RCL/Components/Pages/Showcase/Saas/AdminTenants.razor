@@ -16,6 +16,9 @@
         <h1 class="sd-page-title">Customer workspaces</h1>
         <p class="sd-page-lead">@Count(State.Workspaces.Count) tenants · @Count(State.ActiveCount) active · @Count(State.TrialCount) on trial · @Count(State.SuspendedCount) suspended</p>
     </div>
+    <Button Type="ButtonType.Link" To="@($"{SaasAdminLayout.Base}/tenants/new")" Color="ButtonColor.Primary">
+        <Icon Name="IconName.BuildingAdd" class="me-1" aria-hidden="true" />New tenant
+    </Button>
 </div>
 
 <Card Class="sd-card">

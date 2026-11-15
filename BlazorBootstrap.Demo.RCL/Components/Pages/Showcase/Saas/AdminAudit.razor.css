@@ -1,0 +1,10 @@
+/* The audit log. Shell styles (sd-*) come from SaasShell.razor.css; these cover the page's own elements. */
+
+/* Keep the target and detail readable when the table scrolls sideways on a phone. */
+.sd-audit-target {
+    min-width: 10rem;
+}
+
+.sd-audit-detail {
+    min-width: 16rem;
+}

@@ -22,6 +22,9 @@ public partial class SaasAppLayout : LayoutComponentBase, IDisposable
 
     protected override void OnInitialized() => State.Changed += OnStateChanged;
 
+    /// <summary>Each page opened bills whatever came due on the tab's clock (renewals and ended trials).</summary>
+    protected override void OnParametersSet() => State.CatchUpBilling();
+
     #endregion
 
     #region Public Methods

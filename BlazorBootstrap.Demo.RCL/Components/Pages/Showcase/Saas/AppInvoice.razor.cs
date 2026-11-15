@@ -5,7 +5,8 @@ namespace BlazorBootstrap.Demo.RCL.Components.Pages.Showcase.Saas;
 
 /// <summary>
 /// A printable invoice of the signed-in customer's workspace: Lumora (fictitious) as the seller, the workspace as the
-/// buyer, the number, dates, period, description, amount, status, and how it was paid. An invoice of another workspace,
+/// buyer, the number, dates, period, description, amount, status, how it was paid, and any refund; an open invoice links to
+/// Billing to pay it. An invoice of another workspace,
 /// or an unknown number, shows the not-found screen with a way back to billing.
 /// </summary>
 public partial class AppInvoice : ComponentBase, IDisposable
@@ -27,14 +28,23 @@ public partial class AppInvoice : ComponentBase, IDisposable
 
     #region Private Methods
 
-    private static string PaymentText(SaasInvoice invoice, string? cardText) => invoice.Status switch
+    /// <summary>How the invoice was paid and what was refunded. The state keeps no refund date, so none is shown.</summary>
+    private static string PaymentText(SaasInvoice invoice, string? cardText)
     {
-        SaasInvoiceStatus.Open => "Open: this invoice isn't paid yet.",
-        SaasInvoiceStatus.Refunded => cardText is null
-            ? $"Refunded: {SaasDisplay.MoneyCents(invoice.RefundedAmount)} of {SaasDisplay.MoneyCents(invoice.Amount)}."
-            : $"Paid with {cardText}. {SaasDisplay.MoneyCents(invoice.RefundedAmount)} was refunded to the same card.",
-        _ => cardText is null ? "Paid." : $"Paid with {cardText}.",
-    };
+        if (invoice.Status == SaasInvoiceStatus.Open)
+            return "Open: this invoice isn't paid yet. Pay it in Billing.";
+
+        var paid = cardText is null ? "Paid." : $"Paid with the {cardText}.";
+
+        if (invoice.RefundedAmount <= 0)
+            return paid;
+
+        var refunded = $"{SaasDisplay.MoneyCents(invoice.RefundedAmount)} refunded to the card";
+
+        return invoice.Status == SaasInvoiceStatus.Refunded
+            ? $"{paid} {refunded}: the invoice is fully refunded."
+            : $"{paid} {refunded}; {SaasDisplay.MoneyCents(invoice.Amount - invoice.RefundedAmount)} stays paid.";
+    }
 
     private static string PeriodText(SaasInvoice invoice) => $"{SaasDisplay.Date(invoice.PeriodStart)} to {SaasDisplay.Date(invoice.PeriodEnd)}";
 

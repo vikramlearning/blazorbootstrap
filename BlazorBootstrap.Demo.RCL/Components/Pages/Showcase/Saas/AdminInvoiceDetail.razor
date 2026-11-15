@@ -1,0 +1,243 @@
+@page "/showcase/saas/admin/invoices/{Number}"
+@layout SaasAdminLayout
+
+@if (Invoice is not { } invoice)
+{
+    <SaasNotFound BackPath="@InvoicesPath" BackText="Back to invoices"
+                  Message="There's no invoice with that number. The link may be old, or the tenant it belonged to was deleted." />
+}
+else
+{
+    var tenant = State.FindWorkspace(invoice.WorkspaceId);
+    var owner = tenant is null ? null : State.OwnerOf(tenant.Id);
+    var plan = tenant is null ? null : State.PlanOf(tenant);
+    var remaining = invoice.Amount - invoice.RefundedAmount;
+    var canRefund = invoice.Status == SaasInvoiceStatus.Paid && remaining > 0;
+    var canCollect = invoice.Status == SaasInvoiceStatus.Open;
+    var history = History(invoice);
+    var cardText = AppBilling.CardText(invoice.CardBrand, invoice.CardLast4);
+
+    <PageTitle>Invoice @invoice.Number · Invoices · @SaasSeedData.ProductName</PageTitle>
+
+    <Breadcrumb Items="BreadcrumbItems" Class="sd-breadcrumb mb-2" />
+
+    <div class="sd-page-head">
+        <div>
+            <div class="d-flex flex-wrap align-items-center gap-2">
+                <h1 class="sd-page-title">Invoice @invoice.Number</h1>
+                <Badge Color="AdminInvoices.StatusColor(invoice)" Class="rounded-pill">@AdminInvoices.StatusName(invoice)</Badge>
+            </div>
+            <p class="sd-page-lead">@(tenant?.Name ?? "Unknown tenant") · @SaasDisplay.MoneyCents(invoice.Amount) issued @SaasDisplay.Date(invoice.IssuedOn)</p>
+        </div>
+        @if (canRefund || canCollect)
+        {
+            <div class="d-flex flex-wrap gap-2">
+                @if (canRefund)
+                {
+                    <Button @ref="refundButton" Color="ButtonColor.Primary" Outline="true" @onclick="OpenRefundAsync">
+                        <Icon Name="IconName.ArrowCounterclockwise" class="me-1" aria-hidden="true" />Refund
+                    </Button>
+                }
+                @if (canCollect)
+                {
+                    <Button Color="ButtonColor.Primary" @onclick="CollectAsync">
+                        <Icon Name="IconName.CreditCard" class="me-1" aria-hidden="true" />Retry payment
+                    </Button>
+                }
+            </div>
+        }
+    </div>
+
+    @* Always rendered, so each result is announced; focusable, so focus has somewhere to go when the button that was used is gone. *@
+    <p class="sd-invoice-status" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
+    <p class="sd-invoice-error" role="alert">@errorMessage</p>
+
+    <div class="row g-3">
+        <div class="col-xl-7">
+            <Card Class="sd-card h-100">
+                <CardHeader><h2 class="sd-card-title">Invoice</h2></CardHeader>
+                <CardBody Class="pt-0">
+                    <dl class="row sd-dl small mb-0">
+                        <dt class="col-sm-4">Seller</dt>
+                        <dd class="col-sm-8">Lumora Analytics <span class="fw-normal text-body-secondary">(fictitious)</span></dd>
+                        <dt class="col-sm-4">Billed to</dt>
+                        <dd class="col-sm-8">
+                            @if (tenant is null)
+                            {
+                                <text>Unknown tenant</text>
+                            }
+                            else
+                            {
+                                <a href="@TenantPath(tenant.Id)">@tenant.Name</a>
+                            }
+                        </dd>
+                        <dt class="col-sm-4">Number</dt>
+                        <dd class="col-sm-8 sd-mono">@invoice.Number</dd>
+                        <dt class="col-sm-4">Issued on</dt>
+                        <dd class="col-sm-8">@SaasDisplay.Date(invoice.IssuedOn)</dd>
+                        <dt class="col-sm-4">Service period</dt>
+                        <dd class="col-sm-8">@SaasDisplay.Date(invoice.PeriodStart) to @SaasDisplay.Date(invoice.PeriodEnd)</dd>
+                        <dt class="col-sm-4">Description</dt>
+                        <dd class="col-sm-8">@invoice.Description</dd>
+                        <dt class="col-sm-4">Amount</dt>
+                        <dd class="col-sm-8 sd-mono">@SaasDisplay.MoneyCents(invoice.Amount)</dd>
+                        <dt class="col-sm-4">Refunded</dt>
+                        <dd class="col-sm-8">
+                            <span class="sd-mono">@SaasDisplay.MoneyCents(invoice.RefundedAmount)</span>
+                            @if (invoice.Status != SaasInvoiceStatus.Open && invoice.RefundedAmount > 0 && remaining > 0)
+                            {
+                                <span class="d-block fw-normal text-body-secondary">@SaasDisplay.MoneyCents(remaining) can still be refunded</span>
+                            }
+                        </dd>
+                        <dt class="col-sm-4">Status</dt>
+                        <dd class="col-sm-8"><Badge Color="AdminInvoices.StatusColor(invoice)" Class="rounded-pill">@AdminInvoices.StatusName(invoice)</Badge></dd>
+                        <dt class="col-sm-4">Card</dt>
+                        <dd class="col-sm-8">@(cardText ?? (invoice.Status == SaasInvoiceStatus.Open ? "Not paid yet" : "None on record"))</dd>
+                    </dl>
+                </CardBody>
+            </Card>
+        </div>
+        <div class="col-xl-5">
+            <Card Class="sd-card h-100">
+                <CardHeader><h2 class="sd-card-title">Tenant</h2></CardHeader>
+                <CardBody Class="pt-0">
+                    @if (tenant is null)
+                    {
+                        <p class="small text-body-secondary mb-0">The tenant of this invoice no longer exists.</p>
+                    }
+                    else
+                    {
+                        <div class="sd-person mb-3">
+                            <Avatar Name="@tenant.Name" Color="SaasDisplay.AvatarColorFor(tenant.Id)" Size="AvatarSize.Small" />
+                            <span class="sd-person-text">
+                                <a class="sd-person-name" href="@TenantPath(tenant.Id)">@tenant.Name</a>
+                                <span class="sd-person-email">@tenant.Country</span>
+                            </span>
+                        </div>
+                        <dl class="row sd-dl small mb-0">
+                            <dt class="col-sm-4">Status</dt>
+                            <dd class="col-sm-8"><Badge Color="SaasDisplay.StatusColor(tenant.Status)" Class="rounded-pill">@SaasDisplay.StatusName(tenant.Status)</Badge></dd>
+                            <dt class="col-sm-4">Owner</dt>
+                            <dd class="col-sm-8">
+                                @if (owner is null)
+                                {
+                                    <text>None on record</text>
+                                }
+                                else
+                                {
+                                    @owner.Name<span class="d-block fw-normal text-body-secondary">@owner.Email</span>
+                                    <span class="d-block fw-normal text-body-secondary">@(owner.AccountId is null ? "No sign-in in this demo" : "Can sign in to this demo")</span>
+                                }
+                            </dd>
+                            <dt class="col-sm-4">Plan</dt>
+                            <dd class="col-sm-8">
+                                <Badge Color="SaasDisplay.PlanColor(tenant.PlanId)" Class="rounded-pill">@plan!.Name</Badge>
+                                <span class="fw-normal text-body-secondary ms-1">@(tenant.Period == SaasBillingPeriod.Annual ? "Annual" : "Monthly"), @tenant.Seats @(tenant.Seats == 1 ? "seat" : "seats")</span>
+                            </dd>
+                            <dt class="col-sm-4">Card on file</dt>
+                            <dd class="col-sm-8">@(AppBilling.CardText(tenant.CardBrand, tenant.CardLast4) ?? "None")</dd>
+                        </dl>
+                    }
+                </CardBody>
+            </Card>
+        </div>
+        <div class="col-12">
+            <Card Class="sd-card">
+                <CardHeader>
+                    <div>
+                        <h2 class="sd-card-title">History</h2>
+                        <p class="sd-card-sub">Refunds and payments on this invoice from the audit log, newest first</p>
+                    </div>
+                </CardHeader>
+                <CardBody Class="pt-0">
+                    @if (history.Count == 0)
+                    {
+                        <p class="small text-body-secondary mb-0">Nothing has been done to this invoice from the console yet.</p>
+                    }
+                    else
+                    {
+                        <div class="table-responsive sd-grid">
+                            <table class="table align-middle">
+                                <caption class="visually-hidden">History of invoice @invoice.Number, newest first</caption>
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Time</th>
+                                        <th scope="col">By</th>
+                                        <th scope="col">Action</th>
+                                        <th scope="col">Detail</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var entry in history)
+                                    {
+                                        <tr @key="entry.Id">
+                                            <td class="text-nowrap">@SaasDisplay.DateTimeShort(entry.At)</td>
+                                            <td class="text-nowrap">@entry.ActorName</td>
+                                            <th scope="row" class="fw-semibold text-nowrap">@entry.Action</th>
+                                            <td class="sd-invoice-detail">@entry.Detail</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                </CardBody>
+            </Card>
+        </div>
+    </div>
+}
+
+<Modal @ref="refundModal"
+       IsVerticallyCentered="true"
+       IsScrollable="true"
+       ShowCloseButton="false"
+       aria-labelledby="sd-refund-title"
+       OnShown="OnRefundShownAsync"
+       OnHidden="OnRefundHiddenAsync">
+    <HeaderTemplate>
+        <h2 class="modal-title h5" id="sd-refund-title">Refund invoice @Number</h2>
+    </HeaderTemplate>
+    <BodyTemplate>
+        @if (Invoice is { } refundable)
+        {
+            var left = refundable.Amount - refundable.RefundedAmount;
+
+            <ShowcaseDemoNotice Class="mb-3" Text="Demo only: the refund stays in this browser tab. No money moves and no one is emailed." />
+            <EditForm id="sd-refund-form" Model="refund" OnSubmit="RefundAsync" FormName="sd-refund">
+                <div class="mb-3">
+                    <label class="form-label" for="sd-refund-amount">Amount to refund (USD)</label>
+                    <div class="d-flex flex-wrap align-items-center gap-2">
+                        <input @ref="amountInput" id="sd-refund-amount" class="form-control sd-refund-amount" type="number" inputmode="decimal" min="0.01" step="0.01"
+                               max="@(left.ToString("0.00", CultureInfo.InvariantCulture))" aria-describedby="sd-refund-amount-help"
+                               @bind="refund.Amount" @bind:after="ClearMessages" />
+                        <div class="d-flex gap-2" role="group" aria-label="Quick amounts">
+                            <Button Color="ButtonColor.Secondary" Outline="true" Size="ButtonSize.Small" @onclick="() => SetAmount(left)">
+                                Full<span class="visually-hidden"> amount, @SaasDisplay.MoneyCents(left)</span>
+                            </Button>
+                            <Button Color="ButtonColor.Secondary" Outline="true" Size="ButtonSize.Small" @onclick="() => SetAmount(SaasPricing.Cents(left / 2))">
+                                Half<span class="visually-hidden">, @SaasDisplay.MoneyCents(SaasPricing.Cents(left / 2))</span>
+                            </Button>
+                        </div>
+                    </div>
+                    <div class="form-text" id="sd-refund-amount-help">
+                        Up to @SaasDisplay.MoneyCents(left)@(refundable.RefundedAmount > 0 ? $", what's left after {SaasDisplay.MoneyCents(refundable.RefundedAmount)} already refunded" : string.Empty).
+                        It goes back to the @(AppBilling.CardText(refundable.CardBrand, refundable.CardLast4) ?? "card it was paid with").
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label" for="sd-refund-reason">Reason</label>
+                    @* A plain textarea bound on input, so the character count follows the typing. *@
+                    <textarea id="sd-refund-reason" class="form-control" rows="3" maxlength="@MaxReasonLength" aria-describedby="sd-refund-reason-help" aria-required="true"
+                              @bind="refund.Reason" @bind:event="oninput" @bind:after="ClearMessages"></textarea>
+                    <div class="form-text" id="sd-refund-reason-help">Required, up to @MaxReasonLength characters (@refund.Reason.Length used). It is kept in the audit log.</div>
+                </div>
+                <p class="small mb-0">@NotifySentence(refundable, done: false)</p>
+                <p class="sd-invoice-error mt-3 mb-0" role="alert">@refundError</p>
+            </EditForm>
+        }
+    </BodyTemplate>
+    <FooterTemplate>
+        <Button Color="ButtonColor.Secondary" Outline="true" @onclick="HideRefundAsync">Cancel</Button>
+        <Button Type="ButtonType.Submit" Color="ButtonColor.Primary" form="sd-refund-form">Refund</Button>
+    </FooterTemplate>
+</Modal>

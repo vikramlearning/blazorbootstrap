@@ -7,8 +7,9 @@ namespace BlazorBootstrap.Demo.RCL.Components.Pages.Showcase.Saas;
 /// <summary>
 /// Tenant list of the operator console: every customer workspace with its owner, plan, seats, status, MRR, and dates,
 /// searchable by name or owner, filtered by status and plan, sortable by any column, and paged. Each row links to the
-/// tenant's detail screen. On a phone the table folds most columns into the tenant cell and a "Sort by" list replaces the
-/// column headers. <c>?status=Trial</c> (or another status) opens the list filtered.
+/// tenant's detail screen, and "New tenant" opens the form that creates one. On a phone the table folds most columns into
+/// the tenant cell and a "Sort by" list replaces the column headers. <c>?status=Trial</c> (or another status) opens the list
+/// filtered.
 /// </summary>
 public partial class AdminTenants : ComponentBase, IDisposable
 {

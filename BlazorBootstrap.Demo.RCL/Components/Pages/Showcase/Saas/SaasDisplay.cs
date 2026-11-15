@@ -28,9 +28,10 @@ public static class SaasDisplay
     /// <summary>Formats a date and time, such as "Nov 9, 9:05 AM".</summary>
     public static string DateTimeShort(DateTime value) => value.ToString("MMM d, h:mm tt", CultureInfo.InvariantCulture);
 
-    /// <summary>Formats an event count, such as "3.6M", "820k", or "940".</summary>
+    /// <summary>Formats an event count, such as "10B", "3.6M", "820k", or "940".</summary>
     public static string Events(long value) => value switch
     {
+        >= 1_000_000_000 => (value / 1_000_000_000d).ToString("0.#", CultureInfo.InvariantCulture) + "B",
         >= 1_000_000 => (value / 1_000_000d).ToString("0.#", CultureInfo.InvariantCulture) + "M",
         >= 1_000 => (value / 1_000d).ToString("0.#", CultureInfo.InvariantCulture) + "k",
         _ => value.ToString(CultureInfo.InvariantCulture),
@@ -72,8 +73,20 @@ public static class SaasDisplay
         };
     }
 
-    /// <summary>Formats an amount as whole US dollars, such as "$1,250", for prices and revenue.</summary>
-    public static string Money(decimal value) => value.ToString("$#,0", CultureInfo.InvariantCulture);
+    /// <summary>Returns the badge color of a sales lead's status.</summary>
+    public static BadgeColor LeadColor(SaasLeadStatus status) => status switch
+    {
+        SaasLeadStatus.New => BadgeColor.Primary,
+        SaasLeadStatus.Contacted => BadgeColor.Info,
+        SaasLeadStatus.Qualified => BadgeColor.Success,
+        _ => BadgeColor.Secondary,
+    };
+
+    /// <summary>
+    /// Formats an amount in US dollars for prices and revenue: whole dollars, such as "$1,250", or with cents when it has any,
+    /// such as "$49.50" (the plan editor allows cents).
+    /// </summary>
+    public static string Money(decimal value) => value.ToString(value == decimal.Truncate(value) ? "$#,0" : "$#,0.00", CultureInfo.InvariantCulture);
 
     /// <summary>Formats an amount with cents, such as "$1,249.50", for invoices and charges.</summary>
     public static string MoneyCents(decimal value) => value.ToString("$#,0.00", CultureInfo.InvariantCulture);

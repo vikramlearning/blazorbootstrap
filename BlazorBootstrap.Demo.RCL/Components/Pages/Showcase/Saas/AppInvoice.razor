@@ -35,7 +35,7 @@
                         </p>
                         <h1 class="sd-page-title" id="lu-invoice-title">Invoice @invoice.Number</h1>
                     </div>
-                    <Badge Color="AppBilling.InvoiceColor(invoice.Status)" Class="rounded-pill fs-6">@invoice.Status</Badge>
+                    <Badge Color="AppBilling.InvoiceColor(invoice.Status)" Class="rounded-pill fs-6">@AppBilling.InvoiceStatusText(invoice)</Badge>
                 </header>
 
                 <dl class="sd-dl lu-invoice-facts">
@@ -93,6 +93,12 @@
                 <p class="lu-invoice-payment mt-4 mb-0">
                     @PaymentText(invoice, cardText)
                 </p>
+                @if (invoice.Status == SaasInvoiceStatus.Open)
+                {
+                    <a class="btn btn-primary btn-sm mt-3 d-print-none" href="@SaasState.BillingPath">
+                        <Icon Name="IconName.CreditCard" class="me-1" aria-hidden="true" />Pay in Billing
+                    </a>
+                }
                 <p class="small text-body-secondary mt-3 mb-0">
                     Lumora and this invoice are made up for a demo. Nothing was charged, and the invoice exists only in this browser tab.
                 </p>

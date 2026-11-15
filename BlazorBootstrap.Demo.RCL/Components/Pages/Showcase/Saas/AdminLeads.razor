@@ -1,0 +1,159 @@
+@page "/showcase/saas/admin/leads"
+@layout SaasAdminLayout
+
+<PageTitle>Leads · @SaasSeedData.ProductName</PageTitle>
+
+@{
+    var leads = State.Leads;
+    var shown = FilteredLeads(leads);
+}
+
+<div class="sd-page-head">
+    <div>
+        <span class="sc-eyebrow">Leads</span>
+        <h1 class="sd-page-title">Sales inbox</h1>
+        <p class="sd-page-lead">Messages from the public "Contact sales" form, newest first. @CountText(leads.Count(lead => lead.Status == SaasLeadStatus.New), "new lead", "new leads").</p>
+    </div>
+</div>
+
+@* Always rendered and focusable, so a saved lead is announced and focus has somewhere to go when its row is filtered away. *@
+<p class="sd-leads-status" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
+
+<Card Class="sd-card">
+    <CardBody Class="p-3 p-lg-4">
+        <div class="sd-leads-controls mb-3" role="search" aria-label="Filter leads">
+            <div class="sd-leads-filters" role="group" aria-label="Show leads by status">
+                @foreach (var option in filters)
+                {
+                    var isSelected = option == filter;
+
+                    <button type="button" class="btn btn-sm rounded-pill @(isSelected ? "btn-primary" : "btn-outline-primary")" aria-pressed="@(isSelected ? "true" : "false")"
+                            @onclick="() => SelectFilter(option)" @key="option">
+                        @FilterLabel(option) <span class="sd-leads-filter-count">(@CountIn(leads, option))</span>
+                    </button>
+                }
+            </div>
+            <div class="sd-leads-search">
+                <label class="form-label small fw-semibold" for="sd-lead-search">Search</label>
+                <div class="input-group">
+                    <span class="input-group-text"><Icon Name="IconName.Search" aria-hidden="true" /></span>
+                    @* Filters on every keystroke; the bound value changes only on change, so a render during typing never writes an older value back. *@
+                    <input @ref="searchInput" id="sd-lead-search" type="search" class="form-control" value="@searchBoxValue" placeholder="Name, company, or email"
+                           autocomplete="off" maxlength="120" @oninput="OnSearchInput" @onchange="OnSearchChanged" />
+                </div>
+            </div>
+        </div>
+
+        <p class="small text-body-secondary mb-3" role="status">@SummaryText(shown.Count, leads.Count)</p>
+
+        @if (shown.Count == 0)
+        {
+            <div class="text-center py-5">
+                <span class="sd-leads-empty-icon" aria-hidden="true"><Icon Name="IconName.Inbox" /></span>
+                @if (leads.Count == 0)
+                {
+                    <h2 class="h6 fw-bold mt-3 mb-1">No leads yet</h2>
+                    <p class="text-body-secondary mb-0">Messages sent from the public "Contact sales" form show up here.</p>
+                }
+                else
+                {
+                    <h2 class="h6 fw-bold mt-3 mb-1">No leads match</h2>
+                    <p class="text-body-secondary mb-3">@EmptyText</p>
+                    <Button Color="ButtonColor.Secondary" Outline="true" Size="ButtonSize.Small" @onclick="ClearFiltersAsync">Show all leads</Button>
+                }
+            </div>
+        }
+        else
+        {
+            <ul class="sd-leads" aria-label="Leads">
+                @foreach (var lead in shown)
+                {
+                    <li class="sd-lead" @key="lead.Id">
+                        <div class="sd-lead-main">
+                            <div class="d-flex flex-wrap align-items-center gap-2">
+                                <button type="button" class="sd-lead-open" @ref="openButtons[lead.Id]" @onclick="() => OpenAsync(lead.Id)">
+                                    @lead.Name<span class="visually-hidden">, @lead.Company. Open the lead</span>
+                                </button>
+                                <Badge Color="SaasDisplay.LeadColor(lead.Status)" Class="rounded-pill">@lead.Status</Badge>
+                            </div>
+                            <span class="sd-person-email">@lead.Company · @lead.TeamSize people · Received @SaasDisplay.DateTimeShort(lead.CreatedOn)</span>
+                            <p class="sd-lead-excerpt">@FirstLine(lead.Message)</p>
+                        </div>
+                        @if (lead.Status != SaasLeadStatus.Closed)
+                        {
+                            <a class="btn btn-sm btn-outline-primary sd-lead-create" href="@CreateTenantPath(lead.Id)">
+                                <Icon Name="IconName.BuildingAdd" class="me-1" aria-hidden="true" />Create tenant<span class="visually-hidden"> from the lead of @lead.Name, @lead.Company</span>
+                            </a>
+                        }
+                    </li>
+                }
+            </ul>
+        }
+    </CardBody>
+</Card>
+
+<Modal @ref="leadModal"
+       IsVerticallyCentered="true"
+       IsScrollable="true"
+       Size="ModalSize.Large"
+       ShowCloseButton="false"
+       aria-labelledby="sd-lead-title"
+       OnShown="OnShownAsync"
+       OnHidden="OnHiddenAsync">
+    <HeaderTemplate>
+        <h2 class="modal-title h5" id="sd-lead-title">@(OpenLead is { } title ? $"{title.Name}, {title.Company}" : "Lead")</h2>
+    </HeaderTemplate>
+    <BodyTemplate>
+        @if (OpenLead is { } lead)
+        {
+            <ShowcaseDemoNotice Class="mb-3" Text="Demo only: the lead and your note stay in this browser tab. No email is sent from here." />
+            <dl class="row sd-dl small mb-3">
+                <dt class="col-sm-4">Email</dt>
+                <dd class="col-sm-8"><a href="@($"mailto:{lead.Email}")">@lead.Email</a></dd>
+                <dt class="col-sm-4">Company</dt>
+                <dd class="col-sm-8">@lead.Company</dd>
+                <dt class="col-sm-4">Team size</dt>
+                <dd class="col-sm-8">@lead.TeamSize people</dd>
+                <dt class="col-sm-4">Received</dt>
+                <dd class="col-sm-8">@SaasDisplay.DateTimeShort(lead.CreatedOn)</dd>
+                <dt class="col-sm-4">Status</dt>
+                <dd class="col-sm-8"><Badge Color="SaasDisplay.LeadColor(lead.Status)" Class="rounded-pill">@lead.Status</Badge></dd>
+            </dl>
+            <h3 class="h6 fw-bold mb-2">Message</h3>
+            <p class="sd-lead-message">@lead.Message</p>
+
+            <EditForm id="sd-lead-form" EditContext="editContext" OnSubmit="SaveAsync" FormName="sd-lead">
+                <div class="row g-3">
+                    <div class="col-md-5">
+                        <label class="form-label" for="sd-lead-status">Status</label>
+                        <InputSelect @ref="statusSelect" id="sd-lead-status" class="form-select" @bind-Value="form.Status" aria-describedby="sd-lead-status-help">
+                            @foreach (var status in Enum.GetValues<SaasLeadStatus>())
+                            {
+                                <option value="@status">@status</option>
+                            }
+                        </InputSelect>
+                        <div class="form-text" id="sd-lead-status-help">@StatusHint(form.Status)</div>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label" for="sd-lead-note">Sales note</label>
+                        <InputTextArea id="sd-lead-note" class="form-control" rows="4" @bind-Value="form.Note" @oninput="OnNoteInput" maxlength="@MaxNoteLength"
+                                       aria-describedby="sd-lead-note-help" />
+                        <div class="form-text" id="sd-lead-note-help">For the sales team only; the lead never sees it. @NoteLengthText</div>
+                    </div>
+                </div>
+                <p class="sd-lead-error mt-3 mb-0" role="alert">@errorMessage</p>
+                <p class="sd-lead-note-message mt-3 mb-0" role="status">@noteMessage</p>
+            </EditForm>
+        }
+    </BodyTemplate>
+    <FooterTemplate>
+        @if (OpenLead is { Status: not SaasLeadStatus.Closed } current)
+        {
+            <a class="btn btn-outline-primary me-auto" href="@CreateTenantPath(current.Id)">
+                <Icon Name="IconName.BuildingAdd" class="me-1" aria-hidden="true" />Create tenant from this lead
+            </a>
+        }
+        <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => leadModal.HideAsync()">Close</Button>
+        <Button Type="ButtonType.Submit" Color="ButtonColor.Primary" form="sd-lead-form">Save</Button>
+    </FooterTemplate>
+</Modal>

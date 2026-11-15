@@ -141,7 +141,10 @@
                     <h2 class="sd-card-title">Sales leads</h2>
                     <p class="sd-card-sub">The newest messages from the "Contact sales" form</p>
                 </div>
-                <Badge Color="@(newLeads > 0 ? BadgeColor.Primary : BadgeColor.Secondary)" Class="rounded-pill">@Count(newLeads) new</Badge>
+                <div class="d-flex flex-wrap align-items-center justify-content-end gap-2">
+                    <Badge Color="@(newLeads > 0 ? BadgeColor.Primary : BadgeColor.Secondary)" Class="rounded-pill">@Count(newLeads) new</Badge>
+                    <a class="small fw-semibold text-nowrap" href="@SaasState.LeadsPath">Open inbox</a>
+                </div>
             </CardHeader>
             <CardBody Class="pt-0">
                 @if (leads.Count == 0)
@@ -156,10 +159,10 @@
                             <li class="py-2 border-top" @key="lead.Id">
                                 <div class="d-flex align-items-start justify-content-between gap-2">
                                     <span class="sd-person-text">
-                                        <span class="fw-semibold">@lead.Name</span>
+                                        <a class="sd-person-name" href="@LeadPath(lead.Id)">@lead.Name</a>
                                         <span class="sd-person-email">@lead.Company · @lead.TeamSize people</span>
                                     </span>
-                                    <Badge Color="LeadColor(lead.Status)" Class="rounded-pill">@lead.Status</Badge>
+                                    <Badge Color="SaasDisplay.LeadColor(lead.Status)" Class="rounded-pill">@lead.Status</Badge>
                                 </div>
                                 <p class="small text-body-secondary mb-0 mt-1">@Excerpt(lead.Message)</p>
                                 <span class="small text-body-secondary">Received @SaasDisplay.DateTimeShort(lead.CreatedOn)</span>

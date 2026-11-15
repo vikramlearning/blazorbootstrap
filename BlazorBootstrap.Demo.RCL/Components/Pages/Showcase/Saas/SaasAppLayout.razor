@@ -38,6 +38,21 @@
                             <span>@current.Name is @(current.Status == SaasWorkspaceStatus.Suspended ? "suspended" : "archived") by Lumora, so changes are turned off. Contact support to restore it.</span>
                         </Alert>
                     }
+                    else if (current.Status == SaasWorkspaceStatus.PastDue)
+                    {
+                        <div class="sd-trial-bar">
+                            <Icon Name="IconName.ExclamationTriangle" aria-hidden="true" />
+                            @if (State.InvoicesOf(current.Id).Any(invoice => invoice.Status == SaasInvoiceStatus.Open))
+                            {
+                                <span>A payment for @current.Name is due. Pay the open invoice in Billing to keep the workspace in good standing.</span>
+                            }
+                            else
+                            {
+                                <span>Lumora marked @current.Name as past due. Check your payment method in Billing, or contact support.</span>
+                            }
+                            <a class="btn btn-sm btn-primary ms-sm-auto" href="@($"{Base}/billing")">Go to billing</a>
+                        </div>
+                    }
                     else if (State.TrialDaysLeft(current) is { } daysLeft)
                     {
                         <div class="sd-trial-bar">

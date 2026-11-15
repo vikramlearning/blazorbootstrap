@@ -1,0 +1,378 @@
+@page "/showcase/saas/admin/plans"
+@layout SaasAdminLayout
+
+<PageTitle>Plans & prices · @SaasSeedData.ProductName</PageTitle>
+
+<div class="sd-page-head">
+    <div>
+        <span class="sc-eyebrow">Plans & prices</span>
+        <h1 class="sd-page-title">Plans and prices</h1>
+        <p class="sd-page-lead">What each plan costs and includes, and who is on it. Plans can't be added or removed.</p>
+    </div>
+    <a class="btn btn-outline-primary" href="@PricingPath">
+        <Icon Name="IconName.Eye" class="me-1" aria-hidden="true" />View the pricing page
+    </a>
+</div>
+
+@* Always rendered, so a saved change is announced. *@
+<p class="ap-status" role="status">@statusMessage</p>
+
+<section class="ap-effect mb-4" aria-labelledby="ap-effect-title">
+    <h2 class="h6 fw-bold mb-2" id="ap-effect-title"><Icon Name="IconName.InfoCircle" class="me-1" aria-hidden="true" />How a change takes effect</h2>
+    <ul class="small mb-0">
+        <li>The public pricing page, trial sign-up, and Billing show a saved change right away.</li>
+        <li>Workspaces on the plan pay the new price from their next invoice. Invoices already issued don't change; the MRR figures in this console use the new price at once.</li>
+        <li>A plan can't switch between free and paid: a free plan stays free and a paid plan stays paid.</li>
+    </ul>
+</section>
+
+<section aria-label="Plans" class="row row-cols-1 row-cols-lg-2 row-cols-xxl-3 g-3">
+    @foreach (var plan in State.Plans)
+    {
+        var planId = plan.Id;
+        var summary = Summary(plan);
+
+        <div class="col" @key="plan.Id">
+            <Card Class="sd-card h-100">
+                <CardHeader>
+                    <div>
+                        <h2 class="sd-card-title">@plan.Name</h2>
+                        <p class="sd-card-sub">@plan.Description</p>
+                    </div>
+                    <div class="ap-badges">
+                        @if (plan.IsPopular)
+                        {
+                            <Badge Color="BadgeColor.Primary" Class="rounded-pill">Most popular</Badge>
+                        }
+                        <Badge Color="@(plan.IsSelfServe ? BadgeColor.Success : BadgeColor.Secondary)" Class="rounded-pill">@(plan.IsSelfServe ? "Self-serve" : "Sales only")</Badge>
+                    </div>
+                </CardHeader>
+                <CardBody Class="pt-0 d-flex flex-column">
+                    <div class="ap-price">
+                        <span class="sd-kpi-value">@PriceText(plan)</span>
+                        @if (plan.MonthlyPricePerSeat > 0)
+                        {
+                            <span class="small text-body-secondary">per seat a month</span>
+                        }
+                    </div>
+                    <p class="small text-body-secondary mb-3">@AnnualText(plan)</p>
+
+                    <h3 class="ap-subhead">Workspaces on this plan</h3>
+                    <dl class="row sd-dl small mb-3">
+                        <dt class="col-6">Workspaces</dt>
+                        <dd class="col-6"><span class="sd-mono">@Count(summary.Workspaces)</span><span class="d-block fw-normal text-body-secondary">@WorkspacesNote(plan, summary)</span></dd>
+                        <dt class="col-6">MRR</dt>
+                        <dd class="col-6"><span class="sd-mono">@SaasDisplay.Money(summary.Mrr)</span></dd>
+                        <dt class="col-6">Largest seat count</dt>
+                        <dd class="col-6">
+                            <span class="sd-mono">@(summary.Workspaces == 0 ? "None" : Count(summary.LargestSeats))</span>
+                            <span class="d-block fw-normal text-body-secondary">@(summary.Workspaces == 0 ? "Any seat limit is allowed" : "The lowest seat limit allowed")</span>
+                        </dd>
+                    </dl>
+
+                    <h3 class="ap-subhead">Limits and sign-up</h3>
+                    <dl class="row sd-dl small mb-3">
+                        <dt class="col-6">Seats</dt>
+                        <dd class="col-6">@SeatsText(plan.SeatLimit)</dd>
+                        <dt class="col-6">Tracked events a month</dt>
+                        <dd class="col-6">@EventsText(plan.EventLimit)</dd>
+                        <dt class="col-6">Dashboards</dt>
+                        <dd class="col-6">@DashboardsText(plan.DashboardLimit)</dd>
+                        <dt class="col-6">Sign-up</dt>
+                        <dd class="col-6">@(plan.IsSelfServe ? "Visitors sign up themselves" : "Through Contact sales")</dd>
+                        <dt class="col-6">Button text</dt>
+                        <dd class="col-6">“@plan.CallToAction”</dd>
+                    </dl>
+
+                    <h3 class="ap-subhead">Highlights</h3>
+                    <ul class="ap-highlights small">
+                        @foreach (var highlight in plan.Highlights)
+                        {
+                            <li><Icon Name="IconName.Check2Circle" aria-hidden="true" />@highlight</li>
+                        }
+                    </ul>
+
+                    <div class="mt-auto pt-2">
+                        <button type="button" class="btn btn-primary" @ref="editButtons[planId]" @onclick="() => EditAsync(planId)">
+                            <Icon Name="IconName.Pencil" class="me-1" aria-hidden="true" />Edit @plan.Name
+                        </button>
+                    </div>
+                </CardBody>
+            </Card>
+        </div>
+    }
+</section>
+
+<Modal @ref="modal"
+       IsVerticallyCentered="true"
+       IsScrollable="true"
+       Size="ModalSize.ExtraLarge"
+       ShowCloseButton="false"
+       aria-labelledby="ap-editor-title"
+       OnShown="OnShownAsync"
+       OnHidden="OnHiddenAsync">
+    <HeaderTemplate>
+        <h2 class="modal-title h5" id="ap-editor-title">Edit @(Editing?.Name ?? "plan")</h2>
+    </HeaderTemplate>
+    <BodyTemplate>
+        @if (draft is { } form && Editing is { } plan)
+        {
+            var summary = Summary(plan);
+            var isFree = plan.MonthlyPricePerSeat == 0;
+            var otherPopular = OtherPopular(plan.Id);
+
+            <ShowcaseDemoNotice Class="mb-3" Text="Demo only: changes stay in this browser tab. No one is emailed and no card is charged." />
+            <EditForm id="ap-plan-form" Model="form" OnSubmit="SaveAsync" FormName="ap-plan">
+                <div class="row g-4">
+                    <div class="col-lg-7">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label" for="ap-name">Name</label>
+                                <input @ref="nameInput" id="ap-name" class="form-control @InvalidClass(nameof(SaasPlanDraft.Name))" maxlength="@SaasPlanDraft.MaxNameLength" autocomplete="off"
+                                       @bind="form.Name" @bind:after="() => Edited(nameof(SaasPlanDraft.Name))"
+                                       aria-invalid="@AriaInvalid(nameof(SaasPlanDraft.Name))" aria-describedby="@Describe(nameof(SaasPlanDraft.Name), "ap-name-help")" />
+                                <div class="form-text" id="ap-name-help">@SaasPlanDraft.MinNameLength to @SaasPlanDraft.MaxNameLength characters.</div>
+                                @if (ErrorOf(nameof(SaasPlanDraft.Name)) is { } nameError)
+                                {
+                                    <div class="invalid-feedback d-block" id="ap-name-help-error">@nameError</div>
+                                }
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label" for="ap-price">Price per seat a month (US dollars)</label>
+                                <div class="input-group">
+                                    <span class="input-group-text" aria-hidden="true">$</span>
+                                    <input @ref="priceInput" id="ap-price" class="form-control @InvalidClass(nameof(SaasPlanDraft.Price))" inputmode="decimal" autocomplete="off" disabled="@isFree"
+                                           @bind="form.Price" @bind:event="oninput" @bind:after="() => Edited(nameof(SaasPlanDraft.Price))"
+                                           aria-invalid="@AriaInvalid(nameof(SaasPlanDraft.Price))" aria-describedby="@Describe(nameof(SaasPlanDraft.Price), "ap-price-help")" />
+                                </div>
+                                <div class="form-text" id="ap-price-help">
+                                    @(isFree ? $"{plan.Name} is free and stays free." : $"Dollars and cents, from {SaasDisplay.Money(SaasState.MinPaidSeatPrice)} to {SaasDisplay.Money(SaasPlanDraft.MaxPrice)}. A paid plan stays paid.")
+                                </div>
+                                @if (ErrorOf(nameof(SaasPlanDraft.Price)) is { } priceError)
+                                {
+                                    <div class="invalid-feedback d-block" id="ap-price-help-error">@priceError</div>
+                                }
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label" for="ap-description">Description</label>
+                                <textarea @ref="descriptionInput" id="ap-description" class="form-control @InvalidClass(nameof(SaasPlanDraft.Description))" rows="2" maxlength="@SaasPlanDraft.MaxDescriptionLength"
+                                          @bind="form.Description" @bind:after="() => Edited(nameof(SaasPlanDraft.Description))"
+                                          aria-invalid="@AriaInvalid(nameof(SaasPlanDraft.Description))" aria-describedby="@Describe(nameof(SaasPlanDraft.Description), "ap-description-help")"></textarea>
+                                <div class="form-text" id="ap-description-help">Up to @SaasPlanDraft.MaxDescriptionLength characters, shown under the plan's name.</div>
+                                @if (ErrorOf(nameof(SaasPlanDraft.Description)) is { } descriptionError)
+                                {
+                                    <div class="invalid-feedback d-block" id="ap-description-help-error">@descriptionError</div>
+                                }
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label" for="ap-highlights">Highlights</label>
+                                <textarea @ref="highlightsInput" id="ap-highlights" class="form-control @InvalidClass(nameof(SaasPlanDraft.Highlights))" rows="5"
+                                          @bind="form.Highlights" @bind:after="() => Edited(nameof(SaasPlanDraft.Highlights))"
+                                          aria-invalid="@AriaInvalid(nameof(SaasPlanDraft.Highlights))" aria-describedby="@Describe(nameof(SaasPlanDraft.Highlights), "ap-highlights-help")"></textarea>
+                                <div class="form-text" id="ap-highlights-help">One per line: 1 to @SaasPlanDraft.MaxHighlights lines of up to @SaasPlanDraft.MaxHighlightLength characters. Empty lines are dropped.</div>
+                                @if (ErrorOf(nameof(SaasPlanDraft.Highlights)) is { } highlightsError)
+                                {
+                                    <div class="invalid-feedback d-block" id="ap-highlights-help-error">@highlightsError</div>
+                                }
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label" for="ap-cta">Button text</label>
+                                <input @ref="callToActionInput" id="ap-cta" class="form-control @InvalidClass(nameof(SaasPlanDraft.CallToAction))" maxlength="@SaasPlanDraft.MaxCallToActionLength" autocomplete="off"
+                                       @bind="form.CallToAction" @bind:after="() => Edited(nameof(SaasPlanDraft.CallToAction))"
+                                       aria-invalid="@AriaInvalid(nameof(SaasPlanDraft.CallToAction))" aria-describedby="@Describe(nameof(SaasPlanDraft.CallToAction), "ap-cta-help")" />
+                                <div class="form-text" id="ap-cta-help">The call to action on the pricing page, up to @SaasPlanDraft.MaxCallToActionLength characters.</div>
+                                @if (ErrorOf(nameof(SaasPlanDraft.CallToAction)) is { } callToActionError)
+                                {
+                                    <div class="invalid-feedback d-block" id="ap-cta-help-error">@callToActionError</div>
+                                }
+                            </div>
+
+                            <fieldset class="col-12">
+                                <legend class="form-label fs-6 mb-2">Limits</legend>
+                                <div class="row g-3">
+                                    <div class="col-sm-4">
+                                        <label class="form-label small fw-semibold" for="ap-seats">Seat limit</label>
+                                        <input @ref="seatInput" id="ap-seats" class="form-control @InvalidClass(nameof(SaasPlanDraft.SeatLimit))" inputmode="numeric" autocomplete="off" disabled="@form.SeatsUnlimited"
+                                               @bind="form.SeatLimit" @bind:event="oninput" @bind:after="() => Edited(nameof(SaasPlanDraft.SeatLimit))"
+                                               aria-invalid="@AriaInvalid(nameof(SaasPlanDraft.SeatLimit))" aria-describedby="@Describe(nameof(SaasPlanDraft.SeatLimit), "ap-seats-help")" />
+                                        <div class="form-check mt-2">
+                                            <input class="form-check-input" type="checkbox" id="ap-seats-unlimited"
+                                                   @bind="form.SeatsUnlimited" @bind:after="() => Edited(nameof(SaasPlanDraft.SeatLimit))" />
+                                            <label class="form-check-label small" for="ap-seats-unlimited">Unlimited seats</label>
+                                        </div>
+                                        <div class="form-text" id="ap-seats-help">@SeatsHelp(plan, summary)</div>
+                                        @if (ErrorOf(nameof(SaasPlanDraft.SeatLimit)) is { } seatError)
+                                        {
+                                            <div class="invalid-feedback d-block" id="ap-seats-help-error">@seatError</div>
+                                        }
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <label class="form-label small fw-semibold" for="ap-events">Tracked events a month</label>
+                                        <input @ref="eventInput" id="ap-events" class="form-control @InvalidClass(nameof(SaasPlanDraft.EventLimit))" inputmode="numeric" autocomplete="off" disabled="@form.EventsUnlimited"
+                                               @bind="form.EventLimit" @bind:event="oninput" @bind:after="() => Edited(nameof(SaasPlanDraft.EventLimit))"
+                                               aria-invalid="@AriaInvalid(nameof(SaasPlanDraft.EventLimit))" aria-describedby="@Describe(nameof(SaasPlanDraft.EventLimit), "ap-events-help")" />
+                                        <div class="form-check mt-2">
+                                            <input class="form-check-input" type="checkbox" id="ap-events-unlimited"
+                                                   @bind="form.EventsUnlimited" @bind:after="() => Edited(nameof(SaasPlanDraft.EventLimit))" />
+                                            <label class="form-check-label small" for="ap-events-unlimited">Unlimited events</label>
+                                        </div>
+                                        <div class="form-text" id="ap-events-help">@Count(SaasPlanDraft.MinEvents) to @Count(SaasPlanDraft.MaxEvents).</div>
+                                        @if (ErrorOf(nameof(SaasPlanDraft.EventLimit)) is { } eventError)
+                                        {
+                                            <div class="invalid-feedback d-block" id="ap-events-help-error">@eventError</div>
+                                        }
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <label class="form-label small fw-semibold" for="ap-dashboards">Dashboards</label>
+                                        <input @ref="dashboardInput" id="ap-dashboards" class="form-control @InvalidClass(nameof(SaasPlanDraft.DashboardLimit))" inputmode="numeric" autocomplete="off" disabled="@form.DashboardsUnlimited"
+                                               @bind="form.DashboardLimit" @bind:event="oninput" @bind:after="() => Edited(nameof(SaasPlanDraft.DashboardLimit))"
+                                               aria-invalid="@AriaInvalid(nameof(SaasPlanDraft.DashboardLimit))" aria-describedby="@Describe(nameof(SaasPlanDraft.DashboardLimit), "ap-dashboards-help")" />
+                                        <div class="form-check mt-2">
+                                            <input class="form-check-input" type="checkbox" id="ap-dashboards-unlimited"
+                                                   @bind="form.DashboardsUnlimited" @bind:after="() => Edited(nameof(SaasPlanDraft.DashboardLimit))" />
+                                            <label class="form-check-label small" for="ap-dashboards-unlimited">Unlimited dashboards</label>
+                                        </div>
+                                        <div class="form-text" id="ap-dashboards-help">1 to @Count(SaasPlanDraft.MaxDashboards).</div>
+                                        @if (ErrorOf(nameof(SaasPlanDraft.DashboardLimit)) is { } dashboardError)
+                                        {
+                                            <div class="invalid-feedback d-block" id="ap-dashboards-help-error">@dashboardError</div>
+                                        }
+                                    </div>
+                                </div>
+                            </fieldset>
+
+                            <div class="col-12">
+                                <div class="form-check form-switch">
+                                    <input @ref="selfServeInput" class="form-check-input @InvalidClass(nameof(SaasPlanDraft.IsSelfServe))" type="checkbox" role="switch" id="ap-self-serve"
+                                           @bind="form.IsSelfServe" @bind:after="() => Edited(nameof(SaasPlanDraft.IsSelfServe))"
+                                           aria-invalid="@AriaInvalid(nameof(SaasPlanDraft.IsSelfServe))" aria-describedby="@Describe(nameof(SaasPlanDraft.IsSelfServe), "ap-self-serve-help")" />
+                                    <label class="form-check-label fw-semibold" for="ap-self-serve">Self-serve</label>
+                                </div>
+                                <div class="form-text mt-0" id="ap-self-serve-help">
+                                    On: visitors choose @plan.Name at sign-up and customers switch to it in Billing. Off: its button on the pricing page goes to Contact sales.
+                                </div>
+                                @if (ErrorOf(nameof(SaasPlanDraft.IsSelfServe)) is { } selfServeError)
+                                {
+                                    <div class="invalid-feedback d-block" id="ap-self-serve-help-error">@selfServeError</div>
+                                }
+                            </div>
+                            <div class="col-12">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" role="switch" id="ap-popular"
+                                           @bind="form.IsPopular" @bind:after="() => Edited(nameof(SaasPlanDraft.IsPopular))" aria-describedby="ap-popular-help" />
+                                    <label class="form-check-label fw-semibold" for="ap-popular">Most popular</label>
+                                </div>
+                                <div class="form-text mt-0" id="ap-popular-help">
+                                    @PopularHelp(otherPopular)
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-5">
+                        <aside class="ap-preview" aria-labelledby="ap-preview-title">
+                            <h3 class="h6 fw-bold mb-1" id="ap-preview-title">Preview</h3>
+                            <p class="small text-body-secondary mb-3">What the public pricing shows once you save.</p>
+
+                            @{
+                                var parsedPrice = PreviewPrice(plan, form);
+                                var previewPrice = parsedPrice ?? plan.MonthlyPricePerSeat;
+                                var previewPlan = plan with { MonthlyPricePerSeat = previewPrice };
+                                var monthly = SaasPricing.MonthlySeatPrice(previewPlan, SaasBillingPeriod.Monthly);
+                                var annual = SaasPricing.MonthlySeatPrice(previewPlan, SaasBillingPeriod.Annual);
+                                var lines = form.HighlightLines();
+                            }
+
+                            <div class="ap-mock" aria-hidden="true">
+                                <div class="d-flex flex-wrap align-items-center gap-2 mb-1">
+                                    <span class="fw-bold">@(string.IsNullOrWhiteSpace(form.Name) ? plan.Name : form.Name.Trim())</span>
+                                    @if (form.IsPopular)
+                                    {
+                                        <span class="badge rounded-pill text-bg-primary">Most popular</span>
+                                    }
+                                </div>
+                                <span class="ap-mock-price">@SeatPrice(monthly)</span><span class="small text-body-secondary"> / seat / month</span>
+                                <p class="small text-body-secondary mb-2">@form.Description</p>
+                                <ul class="ap-highlights small mb-2">
+                                    @foreach (var line in lines.Take(3))
+                                    {
+                                        <li><Icon Name="IconName.Check2Circle" />@line</li>
+                                    }
+                                    @if (lines.Count > 3)
+                                    {
+                                        <li class="text-body-secondary">and @(lines.Count - 3) more</li>
+                                    }
+                                </ul>
+                                <span class="ap-mock-cta">@form.CallToAction</span>
+                            </div>
+
+                            @if (isFree)
+                            {
+                                <p class="small mt-3 mb-0">@plan.Name is free on monthly and annual billing, so its MRR stays @SaasDisplay.Money(0).</p>
+                            }
+                            else if (parsedPrice is null)
+                            {
+                                <p class="small mt-3 mb-0">Enter a valid price to see the new prices and the MRR change.</p>
+                            }
+                            else
+                            {
+                                var mrr = MrrAt(plan, previewPrice);
+                                var changed = previewPrice != plan.MonthlyPricePerSeat;
+                                var currentAnnual = SaasPricing.MonthlySeatPrice(plan, SaasBillingPeriod.Annual);
+
+                                <dl class="row sd-dl small mt-3 mb-2">
+                                    <dt class="col-5">Monthly billing</dt>
+                                    <dd class="col-7">
+                                        <span class="sd-mono">@SeatPrice(monthly)</span> per seat a month
+                                        @if (changed)
+                                        {
+                                            <span class="d-block fw-normal text-body-secondary">Now @SeatPrice(plan.MonthlyPricePerSeat)</span>
+                                        }
+                                    </dd>
+                                    <dt class="col-5">Annual billing</dt>
+                                    <dd class="col-7">
+                                        <span class="sd-mono">@SaasDisplay.Money(annual)</span> per seat a month
+                                        <span class="d-block fw-normal text-body-secondary">
+                                            @AnnualPreviewNote(annual, changed ? currentAnnual : (decimal?)null)
+                                        </span>
+                                    </dd>
+                                </dl>
+                                <p class="small text-body-secondary mb-3">Annual billing is @AnnualDiscountPercent% off, rounded to whole dollars.</p>
+
+                                <h4 class="ap-subhead">MRR from @plan.Name</h4>
+                                @if (mrr.Paying == 0)
+                                {
+                                    <p class="small mb-0">No workspace on @plan.Name pays yet, so MRR doesn't change.</p>
+                                }
+                                else
+                                {
+                                    <p class="small mb-0">
+                                        <span class="sd-mono">@SaasDisplay.Money(mrr.Before)</span> → <span class="sd-mono">@SaasDisplay.Money(mrr.After)</span>
+                                        (@SignedMoney(mrr.After - mrr.Before)) across @Plural(mrr.Paying, "paying workspace", "paying workspaces"), from their next invoice.
+                                    </p>
+                                }
+                                @if (summary.Trials > 0)
+                                {
+                                    <p class="small mt-1 mb-0">@Plural(summary.Trials, "workspace on trial pays", "workspaces on trial pay") the new price when the trial ends.</p>
+                                }
+                            }
+
+                            <h4 class="ap-subhead mt-3">When you save</h4>
+                            <ul class="small ps-3 mb-0">
+                                <li>The pricing page, sign-up, and Billing show the change right away.</li>
+                                <li>Workspaces on @plan.Name pay the new price from their next invoice; invoices already issued don't change.</li>
+                                <li>@plan.Name is a @(isFree ? "free" : "paid") plan and stays @(isFree ? "free" : "paid").</li>
+                            </ul>
+                        </aside>
+                    </div>
+                </div>
+                <p class="ap-error mt-3 mb-0" role="alert">@errorMessage</p>
+                <p class="ap-note mt-3 mb-0" role="status">@noteMessage</p>
+            </EditForm>
+        }
+    </BodyTemplate>
+    <FooterTemplate>
+        <Button Color="ButtonColor.Secondary" Outline="true" @onclick="HideAsync">Cancel</Button>
+        <Button Type="ButtonType.Submit" Color="ButtonColor.Primary" form="ap-plan-form">Save changes</Button>
+    </FooterTemplate>
+</Modal>

@@ -1,0 +1,145 @@
+@page "/showcase/saas/admin/invoices"
+@layout SaasAdminLayout
+
+<PageTitle>Invoices · @SaasSeedData.ProductName</PageTitle>
+
+@{
+    var all = State.AllInvoices;
+    var rows = FilteredRows(all);
+    var totalPages = TotalPages(rows.Count);
+    var page = Math.Clamp(pageNumber, 1, totalPages);
+    var pageRows = rows.Skip((page - 1) * PageSize).Take(PageSize).ToList();
+    var billed = rows.Sum(invoice => invoice.Amount);
+    var refunded = rows.Sum(invoice => invoice.RefundedAmount);
+    var open = rows.Where(invoice => invoice.Status == SaasInvoiceStatus.Open).Sum(invoice => invoice.Amount);
+}
+
+<div class="sd-page-head">
+    <div>
+        <span class="sc-eyebrow">Invoices</span>
+        <h1 class="sd-page-title">All invoices</h1>
+        <p class="sd-page-lead">Every invoice of every tenant, newest first. Open one to refund it or retry the payment.</p>
+    </div>
+</div>
+
+<Card Class="sd-card">
+    <CardBody Class="p-3 p-lg-4">
+        <div class="row g-2 align-items-end mb-3" role="search" aria-label="Filter invoices">
+            <div class="col-md-7 col-xl-5">
+                <label class="form-label small fw-semibold" for="sd-invoice-search">Search</label>
+                <InputGroup>
+                    <InputGroupText><Icon Name="IconName.Search" aria-hidden="true" /></InputGroupText>
+                    @* As on the tenant list: @oninput filters while typing, and the bound value changes only on change. *@
+                    <TextInput @ref="searchInput" Id="sd-invoice-search" Value="@searchBoxValue" ValueExpression="() => searchBoxValue" ValueChanged="OnSearchChanged"
+                               @oninput="OnSearchInput" Placeholder="Invoice number or tenant name" />
+                </InputGroup>
+            </div>
+            @if (HasFilters)
+            {
+                <div class="col-12 col-md-auto">
+                    <Button Color="ButtonColor.Secondary" Outline="true" @onclick="ClearFiltersAsync">Clear filters</Button>
+                </div>
+            }
+            <div class="col-12">
+                <div class="sd-invoice-filter" role="group" aria-label="Show invoices">
+                    @foreach (var option in Enum.GetValues<StatusFilter>())
+                    {
+                        var isSelected = option == statusFilter;
+
+                        <Button @key="option" Color="ButtonColor.Primary" Outline="!isSelected" Size="ButtonSize.Small" Class="rounded-pill"
+                                aria-pressed="@(isSelected ? "true" : "false")" @onclick="() => SelectStatus(option)">@FilterName(option)</Button>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <p class="small text-body-secondary mb-2" role="status">@SummaryText(rows.Count, all.Count, page, pageRows.Count)</p>
+
+        <dl class="sd-dl sd-invoice-totals small mb-3">
+            <div><dt>Invoices shown</dt><dd>@Count(rows.Count)</dd></div>
+            <div><dt>Billed</dt><dd class="sd-mono">@SaasDisplay.MoneyCents(billed)</dd></div>
+            <div><dt>Refunded</dt><dd class="sd-mono">@SaasDisplay.MoneyCents(refunded)</dd></div>
+            <div><dt>Still open</dt><dd class="sd-mono">@SaasDisplay.MoneyCents(open)</dd></div>
+        </dl>
+
+        <div class="table-responsive sd-grid">
+            <table class="table table-hover align-middle">
+                <caption class="visually-hidden">@(statusFilter == StatusFilter.All ? "All invoices" : $"{FilterName(statusFilter)} invoices"), newest first</caption>
+                <thead>
+                    <tr>
+                        <th scope="col">Invoice</th>
+                        <th scope="col">Tenant</th>
+                        <th scope="col">Issued</th>
+                        <th scope="col">Description</th>
+                        <th scope="col" class="text-end">Amount</th>
+                        <th scope="col" class="text-end">Refunded</th>
+                        <th scope="col">Status</th>
+                        <th scope="col">Card</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (pageRows.Count == 0)
+                    {
+                        <tr>
+                            <td colspan="8" class="text-center text-body-secondary py-5">No invoices match these filters.</td>
+                        </tr>
+                    }
+                    @foreach (var invoice in pageRows)
+                    {
+                        var tenant = State.FindWorkspace(invoice.WorkspaceId);
+
+                        <tr @key="invoice.Number">
+                            <th scope="row" class="sd-mono small text-nowrap">
+                                <a href="@DetailPath(invoice.Number)">@invoice.Number</a>
+                            </th>
+                            <td class="text-nowrap">
+                                @if (tenant is null)
+                                {
+                                    <span class="text-body-secondary">Unknown tenant</span>
+                                }
+                                else
+                                {
+                                    <a href="@($"{SaasAdminLayout.Base}/tenants/{tenant.Id}")">@tenant.Name</a>
+                                }
+                            </td>
+                            <td class="text-nowrap">@SaasDisplay.Date(invoice.IssuedOn)</td>
+                            <td class="sd-invoice-description">@invoice.Description</td>
+                            <td class="text-end text-nowrap"><span class="sd-mono">@SaasDisplay.MoneyCents(invoice.Amount)</span></td>
+                            <td class="text-end text-nowrap">
+                                @if (invoice.RefundedAmount > 0)
+                                {
+                                    <span class="sd-mono">@SaasDisplay.MoneyCents(invoice.RefundedAmount)</span>
+                                }
+                                else
+                                {
+                                    <span aria-hidden="true">—</span><span class="visually-hidden">None</span>
+                                }
+                            </td>
+                            <td class="text-nowrap"><Badge Color="StatusColor(invoice)" Class="rounded-pill">@StatusName(invoice)</Badge></td>
+                            <td class="text-nowrap">
+                                @if (invoice.CardLast4 is null)
+                                {
+                                    <span aria-hidden="true">—</span><span class="visually-hidden">None</span>
+                                }
+                                else
+                                {
+                                    @AppBilling.CardText(invoice.CardBrand, invoice.CardLast4)
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <nav class="d-flex flex-wrap align-items-center justify-content-end gap-2 mt-3" aria-label="Invoice pages">
+            <Button @ref="previousButton" Color="ButtonColor.Secondary" Outline="true" Size="ButtonSize.Small" Disabled="@(page <= 1)" @onclick="() => GoToPageAsync(page - 1, totalPages)">
+                <Icon Name="IconName.ChevronLeft" class="me-1" aria-hidden="true" />Previous
+            </Button>
+            <span class="small text-body-secondary text-nowrap">Page @(page) of @totalPages</span>
+            <Button @ref="nextButton" Color="ButtonColor.Secondary" Outline="true" Size="ButtonSize.Small" Disabled="@(page >= totalPages)" @onclick="() => GoToPageAsync(page + 1, totalPages)">
+                Next<Icon Name="IconName.ChevronRight" class="ms-1" aria-hidden="true" />
+            </Button>
+        </nav>
+    </CardBody>
+</Card>

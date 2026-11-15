@@ -1,0 +1,170 @@
+@page "/showcase/saas/admin/tenants/new"
+@layout SaasAdminLayout
+
+<PageTitle>New tenant · Tenants · @SaasSeedData.ProductName</PageTitle>
+
+@{
+    var plan = SelectedPlan;
+    var isPaid = plan.MonthlyPricePerSeat > 0;
+    var cap = SeatCap(plan);
+}
+
+<Breadcrumb Items="BreadcrumbItems" Class="sd-breadcrumb mb-2" />
+
+<div class="sd-page-head">
+    <div>
+        <span class="sc-eyebrow">Tenants</span>
+        <h1 class="sd-page-title">New tenant</h1>
+        <p class="sd-page-lead">Set up a customer workspace and its owner, for a deal closed by sales or a customer who can't sign up themselves.</p>
+    </div>
+</div>
+
+@if (leadNote is not null)
+{
+    <div class="sd-new-lead mb-3">
+        <Icon Name="@(linkedLeadId is null ? IconName.InfoCircle : IconName.Inbox)" class="flex-shrink-0 mt-1" aria-hidden="true" />
+        <p class="mb-0">@leadNote</p>
+    </div>
+}
+
+<EditForm EditContext="editContext" OnValidSubmit="Submit" FormName="sd-tenant-new">
+    <DataAnnotationsValidator />
+    <div class="row g-3">
+        <div class="col-lg-8">
+            <Card Class="sd-card mb-3">
+                <CardHeader><h2 class="sd-card-title">Workspace and owner</h2></CardHeader>
+                <CardBody Class="pt-0">
+                    <ShowcaseDemoNotice Class="mb-3" Text="Demo only: the tenant stays in this browser tab. No one is emailed and no card is charged." />
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <label class="form-label" for="sd-new-name">Workspace name</label>
+                            <InputText id="sd-new-name" class="form-control" @bind-Value="form.Name" maxlength="@SaasState.MaxWorkspaceNameLength" autocomplete="off" aria-describedby="sd-new-name-help" />
+                            <div class="form-text" id="sd-new-name-help">Usually the company's name. The owner can change it later in Settings.</div>
+                            <ValidationMessage For="() => form.Name" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" for="sd-new-owner">Owner name</label>
+                            <InputText id="sd-new-owner" class="form-control" @bind-Value="form.OwnerName" maxlength="@ShowcaseIdentity.MaxNameLength" autocomplete="off" />
+                            <ValidationMessage For="() => form.OwnerName" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" for="sd-new-email">Owner email</label>
+                            <InputText id="sd-new-email" type="email" class="form-control" @bind-Value="form.OwnerEmail" maxlength="@ShowcaseIdentity.MaxEmailLength" autocomplete="off" aria-describedby="sd-new-email-help" />
+                            <div class="form-text" id="sd-new-email-help">The owner is added as an invitation. In this demo they have no sign-in, and nothing is sent.</div>
+                            <ValidationMessage For="() => form.OwnerEmail" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" for="sd-new-country">Country</label>
+                            <InputSelect id="sd-new-country" class="form-select" @bind-Value="form.Country" autocomplete="off">
+                                @foreach (var country in SaasSeedData.Countries)
+                                {
+                                    <option value="@country">@country</option>
+                                }
+                            </InputSelect>
+                            <ValidationMessage For="() => form.Country" />
+                        </div>
+                    </div>
+                </CardBody>
+            </Card>
+
+            <Card Class="sd-card">
+                <CardHeader><h2 class="sd-card-title">Subscription</h2></CardHeader>
+                <CardBody Class="pt-0">
+                    <fieldset class="mb-3">
+                        <legend class="form-label fs-6 mb-2">Plan</legend>
+                        <InputRadioGroup @bind-Value="form.PlanId">
+                            <div class="sd-new-options">
+                                @foreach (var option in State.Plans)
+                                {
+                                    <div class="form-check" @key="option.Id">
+                                        <InputRadio class="form-check-input" id="@($"sd-new-plan-{option.Id}")" Value="option.Id" />
+                                        <label class="form-check-label" for="@($"sd-new-plan-{option.Id}")">
+                                            <span class="fw-semibold">@option.Name</span>
+                                            <span class="d-block small text-body-secondary">@PlanHint(option)</span>
+                                        </label>
+                                    </div>
+                                }
+                            </div>
+                        </InputRadioGroup>
+                        <ValidationMessage For="() => form.PlanId" />
+                    </fieldset>
+
+                    <div class="row g-3">
+                        @if (isPaid)
+                        {
+                            <div class="col-md-6">
+                                <fieldset>
+                                    <legend class="form-label fs-6 mb-2">Billing period</legend>
+                                    <InputRadioGroup @bind-Value="form.Period">
+                                        @foreach (var period in Enum.GetValues<SaasBillingPeriod>())
+                                        {
+                                            <div class="form-check" @key="period">
+                                                <InputRadio class="form-check-input" id="@($"sd-new-period-{period}")" Value="period" />
+                                                <label class="form-check-label" for="@($"sd-new-period-{period}")">
+                                                    @(period == SaasBillingPeriod.Annual ? $"Annual (save {DiscountPercent}%)" : "Monthly")
+                                                </label>
+                                            </div>
+                                        }
+                                    </InputRadioGroup>
+                                </fieldset>
+                            </div>
+                        }
+                        <div class="col-md-6">
+                            <label class="form-label" for="sd-new-seats">Seats</label>
+                            <NumberInput TValue="int" Id="sd-new-seats" Value="form.Seats" ValueExpression="() => form.Seats" ValueChanged="OnSeatsChanged"
+                                         Min="1" Max="cap" EnableMinMax="true" Step="1" aria-describedby="sd-new-seats-help" />
+                            <div class="form-text" id="sd-new-seats-help">@SeatsHelp(plan)</div>
+                        </div>
+                        @if (TrialAllowed(plan))
+                        {
+                            <div class="col-12">
+                                <div class="form-check">
+                                    <InputCheckbox id="sd-new-trial" class="form-check-input" @bind-Value="form.StartTrial" aria-describedby="sd-new-trial-help" />
+                                    <label class="form-check-label" for="sd-new-trial">Start with a @(SaasSeedData.TrialDays)-day trial</label>
+                                </div>
+                                <div class="form-text" id="sd-new-trial-help">Not billed until the trial ends on @SaasDisplay.Date(State.Clock.Today.AddDays(SaasSeedData.TrialDays)).</div>
+                            </div>
+                        }
+                    </div>
+                </CardBody>
+            </Card>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="sd-new-summary-wrap">
+                <Card Class="sd-card">
+                    <CardHeader><h2 class="sd-card-title">Summary</h2></CardHeader>
+                    <CardBody Class="pt-0">
+                        <dl class="row sd-dl small mb-3">
+                            <dt class="col-5">Plan</dt>
+                            <dd class="col-7"><Badge Color="SaasDisplay.PlanColor(plan.Id)" Class="rounded-pill">@plan.Name</Badge></dd>
+                            <dt class="col-5">Seats</dt>
+                            <dd class="col-7">@SeatsText(form.Seats)</dd>
+                            <dt class="col-5">Status</dt>
+                            <dd class="col-7">@(StartsTrial ? "Trial" : "Active")</dd>
+                            <dt class="col-5">Price</dt>
+                            <dd class="col-7">
+                                <span class="sd-mono">@PriceText(plan)</span>
+                                @if (isPaid)
+                                {
+                                    <span class="d-block fw-normal text-body-secondary">@SeatPriceText(plan)</span>
+                                }
+                            </dd>
+                        </dl>
+                        <p class="small mb-0">@BillingText(plan)</p>
+
+                        @* Always rendered, so a new error is announced; a counter makes a repeat announce again. *@
+                        <p class="sd-new-error mt-3 mb-0" role="alert">@errorMessage</p>
+
+                        <div class="d-grid gap-2 mt-3">
+                            <Button Type="ButtonType.Submit" Color="ButtonColor.Primary" Disabled="busy">
+                                <Icon Name="IconName.BuildingAdd" class="me-1" aria-hidden="true" />Create tenant
+                            </Button>
+                            <a class="btn btn-outline-secondary" href="@CancelPath">Cancel</a>
+                        </div>
+                    </CardBody>
+                </Card>
+            </div>
+        </div>
+    </div>
+</EditForm>
