@@ -164,7 +164,7 @@ else
                                                 <option value="@priority">@priority</option>
                                             }
                                         </select>
-                                        <div class="form-text" id="hd-field-priority-help">Resolve within @HelpDeskState.TargetHours(Ticket.Priority) hours of opening.</div>
+                                        <div class="form-text" id="hd-field-priority-help">Resolve within @State.TargetHours(Ticket.Priority) hours of opening.</div>
                                     </div>
                                     <div>
                                         <label class="form-label small fw-semibold" for="hd-field-category">Category</label>
@@ -183,7 +183,13 @@ else
                                             {
                                                 <option value="@agent">@agent</option>
                                             }
+                                            @if (Ticket.Assignee is { } current && !State.Agents.Contains(current))
+                                            {
+                                                @* A deactivated agent keeps the resolved tickets they worked; they can't be picked again. *@
+                                                <option value="@current" disabled>@current (inactive)</option>
+                                            }
                                         </select>
+                                        <div class="form-text">Team: @(State.TeamOf(Ticket)?.Name ?? "None")@(Ticket.Assignee is null ? " (from the category)" : null)</div>
                                     </div>
                                 </div>
                             </section>
@@ -237,13 +243,13 @@ else
                             <dt class="col-sm-4">Category</dt>
                             <dd class="col-sm-8">@Category.Name</dd>
                             <dt class="col-sm-4">Priority</dt>
-                            <dd class="col-sm-8">@Ticket.Priority (resolve within @HelpDeskState.TargetHours(Ticket.Priority) h)</dd>
+                            <dd class="col-sm-8">@Ticket.Priority (resolve within @State.TargetHours(Ticket.Priority) h)</dd>
                             <dt class="col-sm-4">Assignee</dt>
                             <dd class="col-sm-8">@(Ticket.Assignee ?? "Unassigned")</dd>
                             <dt class="col-sm-4">Opened</dt>
                             <dd class="col-sm-8">@HelpDeskDisplay.Stamp(Ticket.CreatedAt)</dd>
                             <dt class="col-sm-4">Due</dt>
-                            <dd class="col-sm-8">@HelpDeskDisplay.Stamp(HelpDeskState.DueAt(Ticket)) (@HelpDeskDisplay.SlaText(State, Ticket))</dd>
+                            <dd class="col-sm-8">@HelpDeskDisplay.Stamp(State.DueAt(Ticket)) (@HelpDeskDisplay.SlaText(State, Ticket))</dd>
                             @if (Ticket.ResolvedAt is { } resolvedAt)
                             {
                                 <dt class="col-sm-4">Resolved</dt>

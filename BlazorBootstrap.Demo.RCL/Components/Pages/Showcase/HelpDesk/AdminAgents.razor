@@ -1,0 +1,319 @@
+@page "/showcase/help-desk/agent/admin/agents"
+@layout HelpDeskAgentLayout
+
+<PageTitle>Agents &amp; teams · @HelpDeskSeedData.ProductName</PageTitle>
+
+<div class="container-fluid px-lg-4">
+    <ShowcaseRoleGuard Roles="@HelpDeskSeedData.AdminRole" SignInPath="@HelpDeskLayout.SignInPath">
+        @{
+            var roster = State.Roster;
+            var openCounts = OpenTicketCounts();
+        }
+
+        <div class="hd-page-head">
+            <div>
+                <h1 class="hd-title">Agents &amp; teams</h1>
+                <p class="hd-lead">Who works the queue, which team each agent is on, and which categories each team handles.</p>
+            </div>
+        </div>
+
+        <section class="mb-5" aria-labelledby="hd-agents-title">
+            <div class="hd-admin-head">
+                <h2 class="hd-section-title mb-0" id="hd-agents-title">Agents</h2>
+                <Button @ref="addAgentButton" Color="ButtonColor.Primary" @onclick="AddAgentAsync">
+                    <Icon Name="IconName.PersonPlus" class="me-1" aria-hidden="true" />Add agent
+                </Button>
+            </div>
+
+            <p class="hd-admin-error" role="alert">@agentError.Text</p>
+            @* Always rendered and focusable, so a change is announced and focus has somewhere to go. *@
+            <p class="hd-admin-status" role="status" tabindex="-1" @ref="agentStatusRegion">@agentStatus.Text</p>
+
+            <Card Class="hd-card">
+                <CardBody Class="p-3 p-lg-4">
+                    <div class="table-responsive hd-grid">
+                        <table class="table">
+                            <caption class="visually-hidden">Agents on the roster, by name</caption>
+                            <thead>
+                                <tr>
+                                    <th scope="col">Name</th>
+                                    <th scope="col">Email</th>
+                                    <th scope="col">Team</th>
+                                    <th scope="col">Role</th>
+                                    <th scope="col">Status</th>
+                                    <th scope="col" class="text-end">Open tickets</th>
+                                    <th scope="col">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var agent in roster)
+                                {
+                                    var open = openCounts.GetValueOrDefault(agent.Name);
+
+                                    <tr @key="agent.Id">
+                                        <th scope="row" class="fw-normal">
+                                            <span class="fw-semibold text-body">@agent.Name</span>
+                                            @if (agent.Name == State.AgentName)
+                                            {
+                                                <span class="small text-body-secondary"> (you)</span>
+                                            }
+                                            @if (agent.AccountId is not null)
+                                            {
+                                                <Badge Color="BadgeColor.Secondary" Class="ms-1">Demo sign-in</Badge>
+                                            }
+                                        </th>
+                                        <td>@agent.Email</td>
+                                        <td class="text-nowrap">@TeamName(agent.TeamId)</td>
+                                        <td>@(agent.IsAdmin ? "Admin" : "Agent")</td>
+                                        <td>
+                                            <Badge Color="@(agent.IsActive ? BadgeColor.Success : BadgeColor.Secondary)">@(agent.IsActive ? "Active" : "Inactive")</Badge>
+                                        </td>
+                                        <td class="text-end">@open</td>
+                                        <td>
+                                            <div class="hd-admin-actions">
+                                                <Button @ref="agentEditButtons[agent.Id]" Color="ButtonColor.Secondary" Outline="true" Size="ButtonSize.Small" @onclick="() => EditAgentAsync(agent)">
+                                                    <Icon Name="IconName.PencilSquare" class="me-1" aria-hidden="true" />Edit<span class="visually-hidden"> @agent.Name</span>
+                                                </Button>
+                                                @if (agent.AccountId is null)
+                                                {
+                                                    <Button @ref="agentActiveButtons[agent.Id]" Color="@(agent.IsActive ? ButtonColor.Danger : ButtonColor.Success)" Outline="true" Size="ButtonSize.Small"
+                                                            @onclick="() => ToggleActiveAsync(agent)">
+                                                        @(agent.IsActive ? "Deactivate" : "Reactivate")<span class="visually-hidden"> @agent.Name</span>
+                                                    </Button>
+                                                }
+                                                else
+                                                {
+                                                    <span class="hd-admin-note">Always active: signs in to the demo</span>
+                                                }
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </CardBody>
+            </Card>
+            <p class="small text-body-secondary mt-2 mb-0">
+                Open tickets are the agent's assigned tickets that aren't resolved. Deactivating an agent sends them back to the queue, unassigned.
+                Agents with a demo sign-in (@string.Join(" and ", State.Roster.Where(agent => agent.AccountId is not null).Select(agent => agent.Name))) always stay active.
+            </p>
+        </section>
+
+        <section aria-labelledby="hd-teams-title">
+            <div class="hd-admin-head">
+                <h2 class="hd-section-title mb-0" id="hd-teams-title">Teams</h2>
+                <Button @ref="addTeamButton" Color="ButtonColor.Primary" @onclick="AddTeamAsync">
+                    <Icon Name="IconName.Plus" class="me-1" aria-hidden="true" />Add team
+                </Button>
+            </div>
+
+            <p class="hd-admin-error" role="alert">@teamError.Text</p>
+            <p class="hd-admin-status" role="status" tabindex="-1" @ref="teamStatusRegion">@teamStatus.Text</p>
+
+            <ul class="list-unstyled row row-cols-1 row-cols-md-2 row-cols-xxl-3 g-3 mb-0" aria-label="Teams">
+                @foreach (var team in State.Teams)
+                {
+                    var titleId = $"hd-team-{team.Id}-title";
+                    var routed = CategoriesOf(team.Id);
+
+                    <li class="col" @key="team.Id">
+                        <article class="hd-panel h-100 d-flex flex-column" aria-labelledby="@titleId">
+                            <h3 class="hd-section-title mb-1 text-break" id="@titleId">@team.Name</h3>
+                            <p class="small text-body-secondary text-break">@(string.IsNullOrWhiteSpace(team.Description) ? "No description." : team.Description)</p>
+                            <dl class="hd-summary hd-team-facts">
+                                <dt>Agents</dt>
+                                <dd>@MemberText(team.Id)</dd>
+                                <dt>Categories routed here</dt>
+                                <dd>@(routed.Count == 0 ? "None" : string.Join(", ", routed.Select(category => category.Name)))</dd>
+                            </dl>
+                            <div class="hd-admin-actions mt-auto">
+                                <Button @ref="teamEditButtons[team.Id]" Color="ButtonColor.Secondary" Outline="true" Size="ButtonSize.Small" @onclick="() => EditTeamAsync(team)">
+                                    <Icon Name="IconName.PencilSquare" class="me-1" aria-hidden="true" />Edit<span class="visually-hidden"> @team.Name</span>
+                                </Button>
+                                <Button @ref="teamDeleteButtons[team.Id]" Color="ButtonColor.Danger" Outline="true" Size="ButtonSize.Small" @onclick="() => AskDeleteTeamAsync(team)">
+                                    <Icon Name="IconName.Trash3" class="me-1" aria-hidden="true" />Delete<span class="visually-hidden"> @team.Name</span>
+                                </Button>
+                            </div>
+                        </article>
+                    </li>
+                }
+            </ul>
+        </section>
+
+        <Modal @ref="agentModal"
+               IsVerticallyCentered="true"
+               IsScrollable="true"
+               ShowCloseButton="false"
+               aria-labelledby="hd-agent-editor-title"
+               OnShown="OnAgentShownAsync"
+               OnHidden="OnAgentHiddenAsync">
+            <HeaderTemplate>
+                <h2 class="modal-title h5 text-break" id="hd-agent-editor-title">@(editingAgent is null ? "Add an agent" : $"Edit {editingAgent.Name}")</h2>
+            </HeaderTemplate>
+            <BodyTemplate>
+                <div data-clarity-mask="true">
+                    <ShowcaseDemoNotice Class="mb-3" Text="Demo only: the roster stays in this browser tab. Nothing is sent." />
+                    <form id="hd-agent-form" @onsubmit="SaveAgentAsync" novalidate>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold" for="hd-agent-name">Name</label>
+                            <input @ref="agentNameInput" id="hd-agent-name" class="form-control @(agentNameError is null ? null : "is-invalid")" @bind="agentName" @bind:event="oninput" @bind:after="OnAgentNameInput"
+                                   maxlength="@ShowcaseIdentity.MaxNameLength" autocomplete="off" aria-describedby="hd-agent-name-help hd-agent-name-error" aria-invalid="@(agentNameError is null ? null : "true")" />
+                            <div class="form-text" id="hd-agent-name-help">
+                                Tickets are assigned by name, so each agent's name is unique.
+                                @if (editingAgent is not null)
+                                {
+                                    @($" Tickets assigned to {editingAgent.Name} follow a rename.")
+                                }
+                            </div>
+                            <p class="hd-field-error" id="hd-agent-name-error" role="alert">@agentNameError</p>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold" for="hd-agent-email">Email</label>
+                            <input @ref="agentEmailInput" id="hd-agent-email" type="email" class="form-control @(agentEmailError is null ? null : "is-invalid")" @bind="agentEmail" @bind:event="oninput" @bind:after="OnAgentEmailInput"
+                                   maxlength="@ShowcaseIdentity.MaxEmailLength" autocomplete="off" spellcheck="false" aria-describedby="hd-agent-email-error" aria-invalid="@(agentEmailError is null ? null : "true")" />
+                            <p class="hd-field-error" id="hd-agent-email-error" role="alert">@agentEmailError</p>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold" for="hd-agent-team">Team</label>
+                            <select @ref="agentTeamSelect" id="hd-agent-team" class="form-select @(agentTeamError is null ? null : "is-invalid")" @bind="agentTeamId" @bind:after="OnAgentTeamChanged"
+                                    aria-describedby="hd-agent-team-error" aria-invalid="@(agentTeamError is null ? null : "true")">
+                                @if (State.FindTeam(agentTeamId) is null)
+                                {
+                                    <option value="">Choose a team</option>
+                                }
+                                @foreach (var team in State.Teams)
+                                {
+                                    <option value="@team.Id">@team.Name</option>
+                                }
+                            </select>
+                            <p class="hd-field-error" id="hd-agent-team-error" role="alert">@agentTeamError</p>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="hd-agent-admin" @bind="agentIsAdmin" disabled="@IsLinked"
+                                   aria-describedby="hd-agent-admin-help" />
+                            <label class="form-check-label fw-semibold" for="hd-agent-admin">Admin</label>
+                            <div class="form-text mt-0" id="hd-agent-admin-help">
+                                @if (IsLinked)
+                                {
+                                    @($"{editingAgent!.Name}'s role comes from their demo account, so it can't change here.")
+                                }
+                                else
+                                {
+                                    @("Admins also manage agents and teams, SLA policies, and categories.")
+                                }
+                            </div>
+                        </div>
+                        @if (editingAgent is null)
+                        {
+                            <p class="small text-body-secondary mt-3 mb-0">
+                                New agents appear on the roster and can be assigned tickets, but they can't sign in to the demo.
+                            </p>
+                        }
+                    </form>
+                    <p class="hd-field-error mt-3 mb-0" role="alert">@agentFormError.Text</p>
+                </div>
+            </BodyTemplate>
+            <FooterTemplate>
+                <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => agentModal.HideAsync()">Cancel</Button>
+                <Button Type="ButtonType.Submit" Color="ButtonColor.Primary" form="hd-agent-form">@(editingAgent is null ? "Add agent" : "Save changes")</Button>
+            </FooterTemplate>
+        </Modal>
+
+        <Modal @ref="deactivateModal" IsVerticallyCentered="true" ShowCloseButton="false" aria-labelledby="hd-deactivate-title" OnHidden="OnDeactivateHiddenAsync">
+            <HeaderTemplate>
+                <h2 class="modal-title h5 text-break" id="hd-deactivate-title">Deactivate @(deactivating?.Name)?</h2>
+            </HeaderTemplate>
+            <BodyTemplate>
+                @if (deactivating is { } agent)
+                {
+                    var open = OpenTicketCounts().GetValueOrDefault(agent.Name);
+
+                    <p>@agent.Name stays on the roster, but can no longer be assigned tickets. You can reactivate them later.</p>
+                    <p class="mb-0 fw-semibold">
+                        @(open switch
+                        {
+                            0 => "They have no open tickets, so nothing is unassigned.",
+                            1 => "Their 1 open ticket becomes unassigned and goes back to the queue of its category's team.",
+                            _ => $"Their {open} open tickets become unassigned and go back to the queue, each to its category's team.",
+                        })
+                    </p>
+                }
+            </BodyTemplate>
+            <FooterTemplate>
+                <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => deactivateModal.HideAsync()">Keep active</Button>
+                <Button Color="ButtonColor.Danger" @onclick="ConfirmDeactivateAsync">Deactivate<span class="visually-hidden"> @(deactivating?.Name)</span></Button>
+            </FooterTemplate>
+        </Modal>
+
+        <Modal @ref="teamModal"
+               IsVerticallyCentered="true"
+               IsScrollable="true"
+               ShowCloseButton="false"
+               aria-labelledby="hd-team-editor-title"
+               OnShown="OnTeamShownAsync"
+               OnHidden="OnTeamHiddenAsync">
+            <HeaderTemplate>
+                <h2 class="modal-title h5 text-break" id="hd-team-editor-title">@(editingTeam is null ? "Add a team" : $"Edit {editingTeam.Name}")</h2>
+            </HeaderTemplate>
+            <BodyTemplate>
+                <div data-clarity-mask="true">
+                    <form id="hd-team-form" @onsubmit="SaveTeamAsync" novalidate>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold" for="hd-team-name">Name</label>
+                            <input @ref="teamNameInput" id="hd-team-name" class="form-control @(teamNameError is null ? null : "is-invalid")" @bind="teamName" @bind:event="oninput" @bind:after="OnTeamNameInput"
+                                   maxlength="@HelpDeskState.MaxGroupNameLength" autocomplete="off" aria-describedby="hd-team-name-help hd-team-name-error" aria-invalid="@(teamNameError is null ? null : "true")" />
+                            <div class="form-text" id="hd-team-name-help">@CharacterCount(teamName, HelpDeskState.MaxGroupNameLength)</div>
+                            <p class="hd-field-error" id="hd-team-name-error" role="alert">@teamNameError</p>
+                        </div>
+                        <label class="form-label fw-semibold" for="hd-team-description">Description <span class="fw-normal text-body-secondary">(optional)</span></label>
+                        <textarea @ref="teamDescriptionInput" id="hd-team-description" class="form-control @(teamDescriptionError is null ? null : "is-invalid")" rows="3" @bind="teamDescription" @bind:event="oninput" @bind:after="OnTeamDescriptionInput"
+                                  maxlength="@HelpDeskState.MaxTeamDescriptionLength" aria-describedby="hd-team-description-help hd-team-description-error" aria-invalid="@(teamDescriptionError is null ? null : "true")"></textarea>
+                        <div class="form-text" id="hd-team-description-help">What the team handles. @CharacterCount(teamDescription, HelpDeskState.MaxTeamDescriptionLength)</div>
+                        <p class="hd-field-error" id="hd-team-description-error" role="alert">@teamDescriptionError</p>
+                    </form>
+                    <p class="hd-field-error mt-3 mb-0" role="alert">@teamFormError.Text</p>
+                </div>
+            </BodyTemplate>
+            <FooterTemplate>
+                <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => teamModal.HideAsync()">Cancel</Button>
+                <Button Type="ButtonType.Submit" Color="ButtonColor.Primary" form="hd-team-form">@(editingTeam is null ? "Add team" : "Save changes")</Button>
+            </FooterTemplate>
+        </Modal>
+
+        <Modal @ref="deleteTeamModal" IsVerticallyCentered="true" ShowCloseButton="false" aria-labelledby="hd-team-delete-title" OnHidden="OnDeleteTeamHiddenAsync">
+            <HeaderTemplate>
+                <h2 class="modal-title h5 text-break" id="hd-team-delete-title">
+                    @if (deletingTeam is { } team)
+                    {
+                        @(TeamBlocker(team) is null ? $"Delete the team \"{team.Name}\"?" : $"{team.Name} can't be deleted yet")
+                    }
+                </h2>
+            </HeaderTemplate>
+            <BodyTemplate>
+                @if (deletingTeam is { } team)
+                {
+                    if (TeamBlocker(team) is { } blocker)
+                    {
+                        <p class="mb-0">@blocker</p>
+                    }
+                    else
+                    {
+                        <p class="mb-0">It has no agents and no categories routed to it. It's removed from the team lists and from the queue's Team filter.</p>
+                    }
+                }
+            </BodyTemplate>
+            <FooterTemplate>
+                @if (deletingTeam is { } team && TeamBlocker(team) is null)
+                {
+                    <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => deleteTeamModal.HideAsync()">Keep team</Button>
+                    <Button Color="ButtonColor.Danger" @onclick="ConfirmDeleteTeamAsync">Delete team</Button>
+                }
+                else
+                {
+                    <Button Color="ButtonColor.Primary" @onclick="() => deleteTeamModal.HideAsync()">Close</Button>
+                }
+            </FooterTemplate>
+        </Modal>
+    </ShowcaseRoleGuard>
+</div>

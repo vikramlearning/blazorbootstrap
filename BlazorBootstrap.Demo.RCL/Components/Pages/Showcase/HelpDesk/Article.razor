@@ -13,11 +13,17 @@ else
         <Breadcrumb Items="BreadcrumbItems" Class="mb-3" />
         <div class="row g-4">
             <article class="col-xl-8" aria-labelledby="hd-article-title">
-                <span class="small text-body-secondary">@Category.Name · updated @Item.UpdatedOn.ToString("MMM d, yyyy", CultureInfo.InvariantCulture) · @Item.ReadingMinutes min read</span>
+                <span class="small text-body-secondary">@Category.Name · updated @Item.UpdatedAt.ToString("MMM d, yyyy", CultureInfo.InvariantCulture) · @Item.ReadingMinutes min read</span>
                 <h1 class="hd-title mt-1 mb-2" id="hd-article-title">@Item.Title</h1>
                 <p class="hd-lead mb-4">@Item.Summary</p>
-                @* Article bodies are seeded content from HelpDeskSeedData. Markdown renders raw HTML, so it never shows user input. *@
-                <Markdown @key="Item.Id" Class="hd-article-body mb-4">@Item.Body</Markdown>
+                @* Article bodies are editor HTML, seeded or written by agents, so they always go through the allowlist (A05). *@
+                <div class="hd-article-body mb-4">@ShowcaseHtml.FromEditorHtml(Item.Html, keepHeadings: true)</div>
+                @if (State.IsAgent)
+                {
+                    <p class="small mb-4">
+                        <a href="@HelpDeskDisplay.ArticleEditUrl(Item.Id)"><Icon Name="IconName.PencilSquare" class="me-1" aria-hidden="true" />Edit this article</a>
+                    </p>
+                }
 
                 <section class="hd-panel" aria-labelledby="hd-helpful">
                     <h2 class="hd-section-title" id="hd-helpful">Was this article helpful?</h2>

@@ -1,0 +1,126 @@
+@page "/showcase/help-desk/agent/admin/sla"
+@layout HelpDeskAgentLayout
+
+<PageTitle>SLA policies · @HelpDeskSeedData.ProductName</PageTitle>
+
+<div class="container-fluid px-lg-4">
+    <ShowcaseRoleGuard Roles="@HelpDeskSeedData.AdminRole" SignInPath="@HelpDeskLayout.SignInPath">
+        <div class="hd-page-head">
+            <div>
+                <h1 class="hd-title">SLA policies</h1>
+                <p class="hd-lead">How soon each priority needs a first reply and a resolution. A change applies to open tickets right away.</p>
+            </div>
+            <a class="btn btn-outline-secondary" href="@($"{HelpDeskAgentLayout.Base}/reports/sla")">
+                <Icon Name="IconName.BarChartLine" class="me-1" aria-hidden="true" />SLA report
+            </a>
+        </div>
+
+        <p class="hd-admin-error" role="alert">@pageError</p>
+        @* Always rendered and focusable, so a save is announced. *@
+        <p class="hd-admin-status" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
+
+        @* One form per row: a form can't wrap a table row, so the row's inputs and Save button join it with the form attribute, and Enter in an input saves that row. *@
+        @foreach (var priority in priorities)
+        {
+            <form id="@FormId(priority)" @key="priority" @onsubmit="() => SaveAsync(priority)" novalidate></form>
+        }
+
+        <Card Class="hd-card">
+            <CardBody Class="p-3 p-lg-4">
+                <div class="table-responsive hd-grid">
+                    <table class="table">
+                        <caption class="visually-hidden">SLA targets by priority, most urgent first, with the open tickets of each priority now</caption>
+                        <thead>
+                            <tr>
+                                <th scope="col">Priority</th>
+                                <th scope="col">First reply (hours)</th>
+                                <th scope="col">Resolution (hours)</th>
+                                <th scope="col" class="text-end">Open tickets</th>
+                                <th scope="col" class="text-end">Breached</th>
+                                <th scope="col" class="text-end">At risk</th>
+                                <th scope="col" class="text-end">First reply overdue</th>
+                                <th scope="col"><span class="visually-hidden">Save</span></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var priority in priorities)
+                            {
+                                var key = Key(priority);
+                                var counts = Counts(priority);
+                                var firstError = firstErrors.GetValueOrDefault(priority);
+                                var resolveError = resolveErrors.GetValueOrDefault(priority);
+
+                                <tr @key="priority">
+                                    <th scope="row" class="fw-normal">
+                                        <Badge Color="@HelpDeskDisplay.PriorityColor(priority)">@priority</Badge>
+                                        @if (IsDirty(priority))
+                                        {
+                                            <span class="d-block small text-body-secondary mt-1">Not saved yet</span>
+                                        }
+                                    </th>
+                                    <td>
+                                        <label class="visually-hidden" for="@($"hd-sla-{key}-first")">@priority: first reply target, in hours</label>
+                                        <input @ref="firstInputs[priority]" id="@($"hd-sla-{key}-first")" form="@FormId(priority)" type="number" inputmode="numeric"
+                                               class="form-control form-control-sm hd-sla-input @(firstError is null ? null : "is-invalid")"
+                                               min="1" max="@HelpDeskState.MaxFirstReplyHours" step="1" value="@FirstValue(priority)" @oninput="args => OnFirstInput(priority, args)"
+                                               aria-describedby="@($"hd-sla-{key}-first-error hd-sla-ranges")" aria-invalid="@(firstError is null ? null : "true")" />
+                                        <p class="hd-field-error" id="@($"hd-sla-{key}-first-error")" role="alert">@firstError</p>
+                                    </td>
+                                    <td>
+                                        <label class="visually-hidden" for="@($"hd-sla-{key}-resolve")">@priority: resolution target, in hours</label>
+                                        <input @ref="resolveInputs[priority]" id="@($"hd-sla-{key}-resolve")" form="@FormId(priority)" type="number" inputmode="numeric"
+                                               class="form-control form-control-sm hd-sla-input @(resolveError is null ? null : "is-invalid")"
+                                               min="1" max="@HelpDeskState.MaxResolveHours" step="1" value="@ResolveValue(priority)" @oninput="args => OnResolveInput(priority, args)"
+                                               aria-describedby="@($"hd-sla-{key}-resolve-error hd-sla-ranges")" aria-invalid="@(resolveError is null ? null : "true")" />
+                                        <p class="hd-field-error" id="@($"hd-sla-{key}-resolve-error")" role="alert">@resolveError</p>
+                                    </td>
+                                    <td class="text-end">@counts.Open</td>
+                                    <td class="text-end">
+                                        @if (counts.Breached > 0)
+                                        {
+                                            <Badge Color="BadgeColor.Danger">@counts.Breached</Badge>
+                                        }
+                                        else
+                                        {
+                                            @counts.Breached
+                                        }
+                                    </td>
+                                    <td class="text-end">
+                                        @if (counts.AtRisk > 0)
+                                        {
+                                            <Badge Color="BadgeColor.Warning">@counts.AtRisk</Badge>
+                                        }
+                                        else
+                                        {
+                                            @counts.AtRisk
+                                        }
+                                    </td>
+                                    <td class="text-end">@counts.FirstReplyOverdue</td>
+                                    <td>
+                                        <Button Type="ButtonType.Submit" Color="ButtonColor.Primary" Size="ButtonSize.Small" form="@FormId(priority)">
+                                            Save<span class="visually-hidden"> @priority targets</span>
+                                        </Button>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                <p class="form-text mb-0 mt-2" id="hd-sla-ranges">
+                    First reply: 1 to @HelpDeskState.MaxFirstReplyHours hours (one week). Resolution: 1 to @HelpDeskState.MaxResolveHours hours (30 days), and not shorter than the first reply.
+                </p>
+            </CardBody>
+        </Card>
+
+        <section class="hd-panel mt-4" aria-labelledby="hd-sla-how-title">
+            <h2 class="hd-section-title" id="hd-sla-how-title">How the clocks run</h2>
+            <ul class="hd-sla-notes">
+                <li><strong>First reply</strong> counts from when the ticket is created to the first public agent reply. Internal notes don't count.</li>
+                <li><strong>Resolution</strong> counts from creation to resolved, and pauses while the ticket is Pending (waiting on the customer).</li>
+                <li><strong>At risk</strong> means 2 hours or less, or under a quarter of the resolution target, is left.</li>
+                <li>Breached, at-risk, and overdue counts are for open tickets now, on the demo's clock, and follow a saved change straight away.</li>
+            </ul>
+            <a href="@($"{HelpDeskAgentLayout.Base}/reports/sla")">See first reply and resolution performance in the SLA report</a>
+        </section>
+    </ShowcaseRoleGuard>
+</div>

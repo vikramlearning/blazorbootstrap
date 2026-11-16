@@ -1,0 +1,261 @@
+@page "/showcase/help-desk/agent/reports/satisfaction"
+@layout HelpDeskAgentLayout
+@using BlazorExpress.ChartJS
+@using Unit = BlazorExpress.ChartJS.Unit
+
+<PageTitle>Satisfaction report · @HelpDeskSeedData.ProductName</PageTitle>
+
+@{
+    var ratings = report.Good + report.Bad;
+    var comments = FilteredComments;
+}
+
+<div class="container-fluid px-lg-4">
+    <div class="hd-page-head">
+        <div>
+            <h1 class="hd-title">Satisfaction report</h1>
+            <p class="hd-lead">How customers rated their resolved tickets, and what they wrote.</p>
+        </div>
+    </div>
+
+    <div class="row g-2 align-items-end mb-3" role="group" aria-label="Report filters">
+        <div class="col-6 col-md-3 col-xl-2">
+            <label class="form-label small fw-semibold" for="hd-csat-range">Range</label>
+            <select id="hd-csat-range" class="form-select" value="@days" @onchange="OnRangeChangedAsync">
+                @foreach (var option in RangeOptions)
+                {
+                    <option value="@option">Last @option days</option>
+                }
+            </select>
+        </div>
+        <div class="col-6 col-md-3 col-xl-2">
+            <label class="form-label small fw-semibold" for="hd-csat-team">Team</label>
+            <select id="hd-csat-team" class="form-select" value="@teamId" @onchange="OnTeamChangedAsync">
+                <option value="">All teams</option>
+                @foreach (var team in State.Teams)
+                {
+                    <option value="@team.Id">@team.Name</option>
+                }
+            </select>
+        </div>
+        <div class="col-12 col-md">
+            <p class="small text-body-secondary mb-md-2" aria-live="polite">@ScopeText</p>
+        </div>
+    </div>
+
+    <section aria-label="Satisfaction summary" class="row row-cols-1 row-cols-sm-2 row-cols-xl-4 g-3 mb-4">
+        <div class="col">
+            <Card Class="hd-card h-100">
+                <CardBody Class="d-flex align-items-start gap-3 p-3">
+                    <span class="hd-icon" aria-hidden="true"><Icon Name="IconName.EmojiSmile" /></span>
+                    <span class="hd-report-kpi">
+                        <span class="hd-kpi-label">CSAT</span>
+                        <span class="hd-kpi-value">@PercentText(report.Good, ratings)</span>
+                        <span class="d-block small text-body-secondary">@(ratings == 0 ? "No ratings in this range." : "Share of ratings that were good")</span>
+                    </span>
+                </CardBody>
+            </Card>
+        </div>
+        <div class="col">
+            <Card Class="hd-card h-100">
+                <CardBody Class="d-flex align-items-start gap-3 p-3">
+                    <span class="hd-icon" aria-hidden="true"><Icon Name="IconName.StarHalf" /></span>
+                    <span class="hd-report-kpi">
+                        <span class="hd-kpi-label">Ratings</span>
+                        <span class="hd-kpi-value">@Count(ratings)</span>
+                        <span class="d-block small text-body-secondary">@Count(report.Good) good, @Count(report.Bad) bad</span>
+                    </span>
+                </CardBody>
+            </Card>
+        </div>
+        <div class="col">
+            <Card Class="hd-card h-100">
+                <CardBody Class="d-flex align-items-start gap-3 p-3">
+                    <span class="hd-icon" aria-hidden="true"><Icon Name="IconName.Reply" /></span>
+                    <span class="hd-report-kpi">
+                        <span class="hd-kpi-label">Response rate</span>
+                        <span class="hd-kpi-value">@PercentText(ratings, report.Resolved)</span>
+                        <span class="d-block small text-body-secondary">
+                            @(report.Resolved == 0 ? "No ticket was resolved in this range." : $"{Count(ratings)} of {Plural(report.Resolved, "resolved ticket", "resolved tickets")} rated")
+                        </span>
+                    </span>
+                </CardBody>
+            </Card>
+        </div>
+        <div class="col">
+            <Card Class="hd-card h-100">
+                <CardBody Class="d-flex align-items-start gap-3 p-3">
+                    <span class="hd-icon" aria-hidden="true"><Icon Name="IconName.HandThumbsDown" /></span>
+                    <span class="hd-report-kpi">
+                        <span class="hd-kpi-label">Bad ratings</span>
+                        <span class="hd-kpi-value">@Count(report.Bad)</span>
+                        <span class="d-block small text-body-secondary">
+                            @if (report.Bad == 0)
+                            {
+                                <text>No bad ratings in this range.</text>
+                            }
+                            else
+                            {
+                                @* A button, not a "#" link: the site's base href would send a fragment link to another page. *@
+                                <button type="button" class="btn btn-link btn-sm p-0 align-baseline text-start" @onclick="ShowBadCommentsAsync">Read the bad-rating comments</button>
+                            }
+                        </span>
+                    </span>
+                </CardBody>
+            </Card>
+        </div>
+    </section>
+
+    <Card Class="hd-card mb-4">
+        <CardBody Class="p-3 p-lg-4">
+            <h2 class="hd-section-title">Ratings per day</h2>
+            @if (ratings == 0)
+            {
+                <p class="small text-body-secondary mb-0">No ratings in this range.</p>
+            }
+            else
+            {
+                <p class="small text-body-secondary">A day without a bar had no ratings; it doesn't count as 0%.</p>
+            }
+            @* The wrapper's role and label stand in for the canvas, which carries nothing a screen reader can use. It stays in the
+               page while empty, so the chart keeps its instance. *@
+            <div class="hd-report-chart @(ratings == 0 ? "d-none" : null)" role="img" aria-label="@ChartLabel">
+                <BarChart @ref="dailyChart" Height="280" HeightUnit="Unit.Px" Width="100" WidthUnit="Unit.Percentage" />
+            </div>
+            @* The wrapper hides the table: a hidden table itself can't shrink below its content and would widen the page. *@
+            <div class="visually-hidden">
+                <table>
+                    <caption>Good and bad ratings per day, @RangeText</caption>
+                    <thead>
+                        <tr>
+                            <th scope="col">Day</th>
+                            <th scope="col">Good</th>
+                            <th scope="col">Bad</th>
+                            <th scope="col">CSAT</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var day in report.Days)
+                        {
+                            <tr @key="day.Date">
+                                <th scope="row">@DayLabel(day.Date)</th>
+                                <td>@Count(day.Good)</td>
+                                <td>@Count(day.Bad)</td>
+                                <td>@(day.Good + day.Bad == 0 ? "No ratings" : PercentText(day.Good, day.Good + day.Bad))</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </CardBody>
+    </Card>
+
+    <div class="row g-3 mb-4">
+        <div class="col-xl-5">
+            <Card Class="hd-card h-100">
+                <CardBody Class="p-3 p-lg-4">
+                    <h2 class="hd-section-title">By agent</h2>
+                    <div class="table-responsive hd-grid">
+                        <table class="table">
+                            <caption class="visually-hidden">Ratings by agent, @RangeText</caption>
+                            <thead>
+                                <tr>
+                                    <th scope="col">Agent</th>
+                                    <th scope="col">Team</th>
+                                    <th scope="col" class="text-end">Ratings</th>
+                                    <th scope="col" class="text-end">CSAT</th>
+                                    <th scope="col" class="text-end">Bad</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (report.ByAgent.Count == 0)
+                                {
+                                    <tr>
+                                        <td colspan="5" class="text-center text-body-secondary py-4">No agent in this team resolved or holds a ticket.</td>
+                                    </tr>
+                                }
+                                @foreach (var row in report.ByAgent)
+                                {
+                                    <tr @key="row.AgentId">
+                                        <th scope="row" class="fw-normal">
+                                            @row.Name
+                                            @if (!row.IsActive)
+                                            {
+                                                <span class="d-block small text-body-secondary">Inactive</span>
+                                            }
+                                        </th>
+                                        <td>@(row.TeamName.Length == 0 ? "No team" : row.TeamName)</td>
+                                        <td class="text-end">@Count(row.Good + row.Bad)</td>
+                                        <td class="text-end">@PercentText(row.Good, row.Good + row.Bad)</td>
+                                        <td class="text-end">@Count(row.Bad)</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </CardBody>
+            </Card>
+        </div>
+        <div class="col-xl-7">
+            <Card Class="hd-card h-100">
+                <CardBody Class="p-3 p-lg-4">
+                    <h2 class="hd-section-title" id="hd-csat-comments" tabindex="-1" @ref="commentsHeading">Recent comments</h2>
+                    <fieldset class="mb-3">
+                        <legend class="form-label small fw-semibold mb-1">Show</legend>
+                        <div class="btn-group btn-group-sm flex-wrap" role="group">
+                            @foreach (var option in CommentFilters)
+                            {
+                                var id = $"hd-csat-filter-{option.ToString().ToLowerInvariant()}";
+
+                                <input type="radio" class="btn-check" name="hd-csat-filter" id="@id" checked="@(commentFilter == option)"
+                                       @onchange="() => commentFilter = option" />
+                                <label class="btn btn-outline-secondary" for="@id">@CommentFilterLabel(option)</label>
+                            }
+                        </div>
+                    </fieldset>
+                    <p class="visually-hidden" role="status">@CommentCountText(comments.Count)</p>
+
+                    @if (comments.Count == 0)
+                    {
+                        <p class="text-body-secondary mb-0">@EmptyCommentsText</p>
+                    }
+                    else
+                    {
+                        <ul class="list-unstyled mb-0 hd-report-comments">
+                            @foreach (var comment in comments)
+                            {
+                                var isGood = comment.Satisfaction == HelpDeskSatisfaction.Good;
+
+                                <li class="hd-report-comment">
+                                    <div class="d-flex flex-wrap align-items-center column-gap-2 row-gap-1 mb-1">
+                                        <Badge Color="@(isGood ? BadgeColor.Success : BadgeColor.Danger)">
+                                            <Icon Name="@(isGood ? IconName.HandThumbsUp : IconName.HandThumbsDown)" class="me-1" aria-hidden="true" />@(isGood ? "Good" : "Bad")
+                                        </Badge>
+                                        <span class="small text-body-secondary">@HelpDeskDisplay.Stamp(comment.At)</span>
+                                    </div>
+                                    <p class="mb-1">“@comment.Comment”</p>
+                                    <p class="small text-body-secondary mb-0">
+                                        @comment.Customer · Agent: @comment.Agent ·
+                                        @if (comment.TicketId is { } ticketId)
+                                        {
+                                            <a href="@HelpDeskDisplay.TicketUrl(ticketId)">Ticket #@ticketId</a>
+                                        }
+                                        else
+                                        {
+                                            <text>Archived ticket</text>
+                                        }
+                                    </p>
+                                </li>
+                            }
+                        </ul>
+                    }
+                </CardBody>
+            </Card>
+        </div>
+    </div>
+
+    <p class="small text-body-secondary mb-0">
+        Ratings count on the day their ticket was resolved. Archived tickets keep the ratings they closed with; a reopened live
+        ticket drops out until it is resolved again. “—” means there is nothing to measure yet.
+    </p>
+</div>

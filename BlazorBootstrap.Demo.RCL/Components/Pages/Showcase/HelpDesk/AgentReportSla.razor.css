@@ -1,0 +1,10 @@
+/* A KPI's text column may shrink beside its icon, so long notes wrap instead of widening the card. */
+.hd-report-kpi {
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+.hd-report-chart {
+    position: relative;
+    width: 100%;
+}

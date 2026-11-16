@@ -235,6 +235,12 @@ public partial class AgentQueue : ComponentBase, IDisposable
         Refresh();
     }
 
+    private void OnTeamChanged(ChangeEventArgs args)
+    {
+        State.Filter.TeamId = args.Value?.ToString() ?? string.Empty;
+        Refresh();
+    }
+
     private void OnSearchChanged(string value)
     {
         searchBoxValue = value;
@@ -347,7 +353,7 @@ public partial class AgentQueue : ComponentBase, IDisposable
             SortKey.Subject => Sort(queue, ticket => ticket.Subject, StringComparer.OrdinalIgnoreCase),
             SortKey.Priority => Sort(queue, ticket => ticket.Priority),
             SortKey.Status => Sort(queue, ticket => ticket.Status),
-            SortKey.Sla => Sort(queue, ticket => HelpDeskState.DueAt(ticket)),
+            SortKey.Sla => Sort(queue, ticket => State.DueAt(ticket)),
             SortKey.Assignee => Sort(queue, ticket => ticket.Assignee ?? string.Empty, StringComparer.OrdinalIgnoreCase),
             _ => Sort(queue, ticket => ticket.UpdatedAt),
         };

@@ -101,9 +101,9 @@ public partial class RequestNew : ComponentBase, IDisposable
     private static string SignInUrl(bool register) =>
         $"{HelpDeskLayout.SignInPath}?{(register ? "mode=register&" : string.Empty)}returnUrl={Uri.EscapeDataString(HelpDeskLayout.Base + "/requests/new")}";
 
-    private static string TargetText(HelpDeskPriority priority)
+    private string TargetText(HelpDeskPriority priority)
     {
-        var hours = HelpDeskState.TargetHours(priority);
+        var hours = State.TargetHours(priority);
 
         return hours % 24 == 0 && hours >= 48
             ? $"We aim to solve it within {hours / 24} days."

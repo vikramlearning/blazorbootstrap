@@ -1,0 +1,195 @@
+@page "/showcase/help-desk/agent/kb/new"
+@page "/showcase/help-desk/agent/kb/{Id:int}"
+@layout HelpDeskAgentLayout
+
+@{
+    var article = Item;
+}
+
+@if (leaving)
+{
+    @* The article was just deleted and the list is loading: no not-found flash in between. *@
+    <p class="visually-hidden" role="status">The article is deleted. Going back to the list.</p>
+}
+else if (Id is not null && article is null)
+{
+    <HelpDeskNotFound BackPath="@ListUrl" BackText="Back to articles" Message="There's no knowledge base article with that number. It may have been deleted." />
+}
+else
+{
+    <PageTitle>@(article is null ? "New article" : $"Edit {article.Title}") · @HelpDeskSeedData.ProductName</PageTitle>
+
+    <div class="container-fluid px-lg-4">
+        <Breadcrumb Items="BreadcrumbItems" Class="mb-3" />
+
+        <div class="hd-page-head">
+            <div>
+                <h1 class="hd-title">@(article is null ? "New article" : "Edit article")</h1>
+                <p class="hd-lead">
+                    @(article is null ? "Write it, check the preview, then save a draft or publish it to the help center."
+                      : article.IsPublished ? "This article is live. Changes reach the help center when you choose Update."
+                      : "This is a draft: only agents see it until you publish it.")
+                </p>
+            </div>
+        </div>
+
+        <p class="hd-article-error" role="alert">@formError</p>
+        @* Always rendered and focusable, so a save is announced and focus has somewhere to go when the clicked button is replaced. *@
+        <p class="hd-article-status" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
+
+        <div class="row g-4">
+            <div class="col-xl-8 d-grid gap-4 align-content-start">
+                <section class="hd-panel" aria-labelledby="hd-article-form-heading" data-clarity-mask="true">
+                    <h2 class="hd-section-title" id="hd-article-form-heading">Article</h2>
+                    <ShowcaseDemoNotice Class="mb-3" Text="Demo only: articles stay in this browser tab. Nothing is sent." />
+
+                    @* Only the text fields are in the form, so Enter there saves (keeping the status); the editor's toolbar stays out of it. *@
+                    <form id="hd-article-form" @onsubmit="SaveKeepingStatusAsync" novalidate>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold" for="hd-article-title">Title</label>
+                            <input @ref="titleInput" id="hd-article-title" class="form-control @(titleError is null ? null : "is-invalid")" value="@title" @oninput="OnTitleInput"
+                                   autocomplete="off" aria-describedby="hd-article-title-count hd-article-title-error" aria-invalid="@(titleError is null ? null : "true")" />
+                            <div class="form-text @(TitleOver ? "hd-over" : null)" id="hd-article-title-count">@CounterText(title, HelpDeskState.MaxArticleTitleLength)</div>
+                            <p class="hd-field-error" id="hd-article-title-error" role="alert">@titleError</p>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold" for="hd-article-category">Category</label>
+                            <select @ref="categorySelect" id="hd-article-category" class="form-select @(categoryError is null ? null : "is-invalid")" value="@categoryId" @onchange="OnCategoryChanged"
+                                    aria-describedby="hd-article-category-help hd-article-category-error" aria-invalid="@(categoryError is null ? null : "true")">
+                                @foreach (var category in State.Categories)
+                                {
+                                    <option value="@category.Id">@category.Name</option>
+                                }
+                            </select>
+                            <div class="form-text" id="hd-article-category-help">Customers browse the help center by category.</div>
+                            <p class="hd-field-error" id="hd-article-category-error" role="alert">@categoryError</p>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold" for="hd-article-summary">Summary</label>
+                            <textarea @ref="summaryInput" id="hd-article-summary" class="form-control @(summaryError is null ? null : "is-invalid")" rows="2" value="@summary" @oninput="OnSummaryInput"
+                                      aria-describedby="hd-article-summary-count hd-article-summary-error" aria-invalid="@(summaryError is null ? null : "true")"></textarea>
+                            <div class="form-text @(SummaryOver ? "hd-over" : null)" id="hd-article-summary-count">
+                                @CounterText(summary, HelpDeskState.MaxArticleSummaryLength). Shown under the title in search results and lists.
+                            </div>
+                            <p class="hd-field-error" id="hd-article-summary-error" role="alert">@summaryError</p>
+                        </div>
+                    </form>
+
+                    <span class="form-label fw-semibold d-block" id="hd-article-body-label">Body</span>
+                    @* The editor reads Value only when it is built, so a new key per load starts it with this article's body. It renders
+                       Value as markup, so a stored body goes through the allowlist first (A05). Headings 2 and 3 are kept as section
+                       headings, as the help center shows them. *@
+                    <div class="hd-article-editor">
+                        <RichTextEditor @key="editorVersion"
+                                        Value="@editorStart"
+                                        ValueChanged="OnBodyChanged"
+                                        ToolbarItems="toolbarItems"
+                                        AriaLabel="Article body"
+                                        Placeholder="Write the article…"
+                                        ShowFooter="false" />
+                    </div>
+                    <p class="hd-field-error mt-2" role="alert">@bodyError</p>
+
+                    <div class="hd-article-actions mt-3">
+                        @if (article is { IsPublished: true })
+                        {
+                            <Button Color="ButtonColor.Primary" @onclick="() => SaveAsync(publish: true)">
+                                <Icon Name="IconName.CheckCircle" class="me-2" aria-hidden="true" />Update
+                            </Button>
+                            <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => SaveAsync(publish: false)">
+                                <Icon Name="IconName.EyeSlash" class="me-2" aria-hidden="true" />Unpublish
+                            </Button>
+                        }
+                        else
+                        {
+                            <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => SaveAsync(publish: false)">
+                                <Icon Name="IconName.Save" class="me-2" aria-hidden="true" />Save draft
+                            </Button>
+                            <Button Color="ButtonColor.Primary" @onclick="() => SaveAsync(publish: true)">
+                                <Icon Name="IconName.Globe" class="me-2" aria-hidden="true" />Publish
+                            </Button>
+                        }
+                        <a class="btn btn-link" href="@ListUrl">Cancel</a>
+                        @if (article is not null)
+                        {
+                            <Button @ref="deleteButton" Color="ButtonColor.Danger" Outline="true" Class="ms-sm-auto" @onclick="AskDeleteAsync">
+                                <Icon Name="IconName.Trash3" class="me-2" aria-hidden="true" />Delete
+                            </Button>
+                        }
+                    </div>
+                    <p class="small text-body-secondary mt-2 mb-0">
+                        @(article is { IsPublished: true }
+                            ? "Update saves your changes to the live article. Unpublish saves them and takes the article out of the help center."
+                            : "Save draft keeps it to agents. Publish saves it and adds it to the help center.")
+                    </p>
+                </section>
+
+                <section class="hd-panel" aria-labelledby="hd-article-preview-heading">
+                    <h2 class="hd-section-title" id="hd-article-preview-heading">Preview</h2>
+                    <p class="small text-body-secondary">How the help center shows the article, with only its allowed formatting.</p>
+                    <div class="hd-article-preview" data-clarity-mask="true">
+                        <span class="small text-body-secondary">@State.FindCategory(categoryId).Name</span>
+                        <p class="hd-title hd-preview-title mt-1 mb-2">@(string.IsNullOrWhiteSpace(title) ? "Untitled article" : title.Trim())</p>
+                        @if (!string.IsNullOrWhiteSpace(summary))
+                        {
+                            <p class="hd-lead mb-3">@summary.Trim()</p>
+                        }
+                        @* The same rendering as the help center's article page: editor HTML only through the allowlist (A05). *@
+                        <div class="hd-article-body">@ShowcaseHtml.FromEditorHtml(bodyHtml, keepHeadings: true)</div>
+                        @if (string.IsNullOrWhiteSpace(bodyText))
+                        {
+                            <p class="text-body-secondary fst-italic mb-0">The body shows here as you write it.</p>
+                        }
+                    </div>
+                </section>
+            </div>
+
+            <div class="col-xl-4 d-grid gap-3 align-content-start">
+                <section class="hd-panel" aria-labelledby="hd-article-details-heading">
+                    <h2 class="hd-section-title" id="hd-article-details-heading">Details</h2>
+                    @if (article is null)
+                    {
+                        <p class="small text-body-secondary mb-0">Not saved yet. Save a draft to keep it, or publish it to add it to the help center.</p>
+                    }
+                    else
+                    {
+                        var (helpful, notHelpful) = State.Votes(article.Id);
+
+                        <dl class="hd-summary small mb-0">
+                            <dt>Status</dt>
+                            <dd><Badge Color="@(article.IsPublished ? BadgeColor.Success : BadgeColor.Secondary)">@(article.IsPublished ? "Published" : "Draft")</Badge></dd>
+                            <dt>Last updated</dt>
+                            <dd>@HelpDeskDisplay.Stamp(article.UpdatedAt) (@HelpDeskDisplay.Ago(article.UpdatedAt, State.Now)) by @article.UpdatedBy</dd>
+                            <dt>Views</dt>
+                            <dd>@article.Views.ToString("#,0", CultureInfo.InvariantCulture)</dd>
+                            <dt>Was this helpful?</dt>
+                            <dd>@helpful.ToString("#,0", CultureInfo.InvariantCulture) yes, @notHelpful.ToString("#,0", CultureInfo.InvariantCulture) no</dd>
+                        </dl>
+                        @if (article.IsPublished)
+                        {
+                            <a class="btn btn-sm btn-outline-secondary mt-3" href="@HelpDeskDisplay.ArticleUrl(article.Id)">
+                                <Icon Name="IconName.BoxArrowUpRight" class="me-1" aria-hidden="true" />View in help center
+                            </a>
+                        }
+                    }
+                </section>
+            </div>
+        </div>
+    </div>
+}
+
+@* Outside the branches, so the dialog is never removed while it is open. *@
+<Modal @ref="deleteModal" IsVerticallyCentered="true" ShowCloseButton="false" aria-labelledby="hd-article-delete-title" OnHidden="OnDeleteHiddenAsync">
+    <HeaderTemplate>
+        <h2 class="modal-title h5" id="hd-article-delete-title">Delete the article "@(Item?.Title)"?</h2>
+    </HeaderTemplate>
+    <BodyTemplate>
+        <p class="mb-0">@DeleteConsequence(Item)</p>
+    </BodyTemplate>
+    <FooterTemplate>
+        <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => deleteModal.HideAsync()">Keep article</Button>
+        <Button Color="ButtonColor.Danger" @onclick="ConfirmDeleteAsync">Delete article</Button>
+    </FooterTemplate>
+</Modal>

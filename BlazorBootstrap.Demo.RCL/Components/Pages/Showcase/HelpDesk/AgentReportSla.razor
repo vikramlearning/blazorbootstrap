@@ -1,0 +1,276 @@
+@page "/showcase/help-desk/agent/reports/sla"
+@layout HelpDeskAgentLayout
+@using BlazorExpress.ChartJS
+@using Unit = BlazorExpress.ChartJS.Unit
+
+<PageTitle>SLA report · @HelpDeskSeedData.ProductName</PageTitle>
+
+<div class="container-fluid px-lg-4">
+    <div class="hd-page-head">
+        <div>
+            <h1 class="hd-title">SLA report</h1>
+            <p class="hd-lead">How quickly tickets got a first reply and a resolution, against each priority's targets.</p>
+        </div>
+    </div>
+
+    <div class="row g-2 align-items-end mb-3" role="group" aria-label="Report filters">
+        <div class="col-6 col-md-3 col-xl-2">
+            <label class="form-label small fw-semibold" for="hd-sla-range">Range</label>
+            <select id="hd-sla-range" class="form-select" value="@days" @onchange="OnRangeChangedAsync">
+                @foreach (var option in RangeOptions)
+                {
+                    <option value="@option">Last @option days</option>
+                }
+            </select>
+        </div>
+        <div class="col-6 col-md-3 col-xl-2">
+            <label class="form-label small fw-semibold" for="hd-sla-team">Team</label>
+            <select id="hd-sla-team" class="form-select" value="@teamId" @onchange="OnTeamChangedAsync">
+                <option value="">All teams</option>
+                @foreach (var team in State.Teams)
+                {
+                    <option value="@team.Id">@team.Name</option>
+                }
+            </select>
+        </div>
+        <div class="col-12 col-md">
+            <p class="small text-body-secondary mb-md-2" aria-live="polite">@ScopeText</p>
+        </div>
+    </div>
+
+    <section aria-label="SLA summary" class="row row-cols-1 row-cols-sm-2 row-cols-xl-4 g-3 mb-4">
+        <div class="col">
+            <Card Class="hd-card h-100">
+                <CardBody Class="d-flex align-items-start gap-3 p-3">
+                    <span class="hd-icon" aria-hidden="true"><Icon Name="IconName.CheckCircle" /></span>
+                    <span class="hd-report-kpi">
+                        <span class="hd-kpi-label">Resolution within SLA</span>
+                        <span class="hd-kpi-value">@PercentText(report.ResolvedInSla, report.Resolved)</span>
+                        <span class="d-block small text-body-secondary">@ResolutionNote</span>
+                    </span>
+                </CardBody>
+            </Card>
+        </div>
+        <div class="col">
+            <Card Class="hd-card h-100">
+                <CardBody Class="d-flex align-items-start gap-3 p-3">
+                    <span class="hd-icon" aria-hidden="true"><Icon Name="IconName.Reply" /></span>
+                    <span class="hd-report-kpi">
+                        <span class="hd-kpi-label">First reply within SLA</span>
+                        <span class="hd-kpi-value">@PercentText(report.FirstReplyInSla, report.FirstReplyDue)</span>
+                        <span class="d-block small text-body-secondary">@FirstReplyNote</span>
+                    </span>
+                </CardBody>
+            </Card>
+        </div>
+        <div class="col">
+            <Card Class="hd-card h-100">
+                <CardBody Class="d-flex align-items-start gap-3 p-3">
+                    <span class="hd-icon" aria-hidden="true"><Icon Name="IconName.ExclamationTriangle" /></span>
+                    <span class="hd-report-kpi">
+                        <span class="hd-kpi-label">Breached now</span>
+                        <span class="hd-kpi-value">@Count(report.OpenBreached)</span>
+                        <span class="d-block small text-body-secondary">
+                            @if (report.OpenBreached == 0)
+                            {
+                                <text>No open ticket is past its due time.</text>
+                            }
+                            else
+                            {
+                                <a href="@HelpDeskAgentLayout.Base">Open the queue</a><text>; overdue tickets are listed first.</text>
+                            }
+                        </span>
+                    </span>
+                </CardBody>
+            </Card>
+        </div>
+        <div class="col">
+            <Card Class="hd-card h-100">
+                <CardBody Class="d-flex align-items-start gap-3 p-3">
+                    <span class="hd-icon" aria-hidden="true"><Icon Name="IconName.HourglassSplit" /></span>
+                    <span class="hd-report-kpi">
+                        <span class="hd-kpi-label">At risk now</span>
+                        <span class="hd-kpi-value">@Count(report.OpenAtRisk)</span>
+                        <span class="d-block small text-body-secondary">Open tickets close to their due time.</span>
+                    </span>
+                </CardBody>
+            </Card>
+        </div>
+    </section>
+
+    <Card Class="hd-card mb-4">
+        <CardBody Class="p-3 p-lg-4">
+            <h2 class="hd-section-title">Resolved per day</h2>
+            @if (report.Resolved == 0)
+            {
+                <p class="small text-body-secondary mb-0">No ticket was resolved in this range.</p>
+            }
+            @* The wrapper's role and label stand in for the canvas, which carries nothing a screen reader can use. It stays in the
+               page while empty, so the chart keeps its instance. *@
+            <div class="hd-report-chart @(report.Resolved == 0 ? "d-none" : null)" role="img" aria-label="@ChartLabel">
+                <BarChart @ref="dailyChart" Height="280" HeightUnit="Unit.Px" Width="100" WidthUnit="Unit.Percentage" />
+            </div>
+            @* The wrapper hides the table: a hidden table itself can't shrink below its content and would widen the page. *@
+            <div class="visually-hidden">
+                <table>
+                    <caption>Tickets resolved per day, within the SLA and late, @RangeText</caption>
+                    <thead>
+                        <tr>
+                            <th scope="col">Day</th>
+                            <th scope="col">Within SLA</th>
+                            <th scope="col">Late</th>
+                            <th scope="col">Resolved</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var day in report.Days)
+                        {
+                            <tr @key="day.Date">
+                                <th scope="row">@DayLabel(day.Date)</th>
+                                <td>@Count(day.ResolvedInSla)</td>
+                                <td>@Count(day.Resolved - day.ResolvedInSla)</td>
+                                <td>@Count(day.Resolved)</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </CardBody>
+    </Card>
+
+    <Card Class="hd-card mb-4">
+        <CardBody Class="p-3 p-lg-4">
+            <div class="d-flex flex-wrap align-items-baseline justify-content-between column-gap-3">
+                <h2 class="hd-section-title" id="hd-sla-priority">By priority</h2>
+                @if (State.IsAdmin)
+                {
+                    <a class="small fw-semibold mb-2" href="@($"{HelpDeskAgentLayout.AdminBase}/sla")">Edit SLA policies</a>
+                }
+            </div>
+            <div class="table-responsive hd-grid">
+                <table class="table">
+                    <caption class="visually-hidden">SLA results by priority, @RangeText. Targets are the current policies.</caption>
+                    <thead>
+                        <tr>
+                            <th scope="col">Priority</th>
+                            <th scope="col" class="text-end">First reply target</th>
+                            <th scope="col" class="text-end">Resolution target</th>
+                            <th scope="col" class="text-end">First reply in SLA</th>
+                            <th scope="col" class="text-end">Resolution in SLA</th>
+                            <th scope="col" class="text-end">Resolved</th>
+                            <th scope="col" class="text-end">Breached now</th>
+                            <th scope="col" class="text-end">At risk now</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var row in report.ByPriority)
+                        {
+                            <tr @key="row.Priority">
+                                <th scope="row" class="fw-normal"><Badge Color="@HelpDeskDisplay.PriorityColor(row.Priority)">@row.Priority</Badge></th>
+                                <td class="text-end text-nowrap">@Hours(row.FirstReplyHours)</td>
+                                <td class="text-end text-nowrap">@Hours(row.ResolveHours)</td>
+                                <td class="text-end">@PercentText(row.FirstReplyInSla, row.FirstReplyDue)</td>
+                                <td class="text-end">@PercentText(row.ResolvedInSla, row.Resolved)</td>
+                                <td class="text-end">@Count(row.Resolved)</td>
+                                <td class="text-end">@Count(row.OpenBreached)</td>
+                                <td class="text-end">@Count(row.OpenAtRisk)</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </CardBody>
+    </Card>
+
+    <div class="row g-3 mb-4">
+        <div class="@(string.IsNullOrEmpty(teamId) ? "col-xl-7" : "col-12")">
+            <Card Class="hd-card h-100">
+                <CardBody Class="p-3 p-lg-4">
+                    <h2 class="hd-section-title">By agent</h2>
+                    <div class="table-responsive hd-grid">
+                        <table class="table">
+                            <caption class="visually-hidden">SLA results by agent, @RangeText, the most resolved first</caption>
+                            <thead>
+                                <tr>
+                                    <th scope="col">Agent</th>
+                                    <th scope="col">Team</th>
+                                    <th scope="col" class="text-end">Resolved</th>
+                                    <th scope="col" class="text-end">Within SLA</th>
+                                    <th scope="col" class="text-end">Open assigned</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (report.ByAgent.Count == 0)
+                                {
+                                    <tr>
+                                        <td colspan="5" class="text-center text-body-secondary py-4">No agent in this team resolved or holds a ticket.</td>
+                                    </tr>
+                                }
+                                @foreach (var row in report.ByAgent)
+                                {
+                                    <tr @key="row.AgentId">
+                                        <th scope="row" class="fw-normal">
+                                            @row.Name
+                                            @if (!row.IsActive)
+                                            {
+                                                <span class="d-block small text-body-secondary">Inactive</span>
+                                            }
+                                        </th>
+                                        <td>@(row.TeamName.Length == 0 ? "No team" : row.TeamName)</td>
+                                        <td class="text-end">@Count(row.Resolved)</td>
+                                        <td class="text-end">@PercentText(row.ResolvedInSla, row.Resolved)</td>
+                                        <td class="text-end">@Count(row.OpenAssigned)</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </CardBody>
+            </Card>
+        </div>
+        @if (string.IsNullOrEmpty(teamId))
+        {
+            <div class="col-xl-5">
+                <Card Class="hd-card h-100">
+                    <CardBody Class="p-3 p-lg-4">
+                        <h2 class="hd-section-title">By team</h2>
+                        <div class="table-responsive hd-grid">
+                            <table class="table">
+                                <caption class="visually-hidden">SLA results by team, @RangeText</caption>
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Team</th>
+                                        <th scope="col" class="text-end">Resolved</th>
+                                        <th scope="col" class="text-end">Within SLA</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @if (report.ByTeam.Count == 0)
+                                    {
+                                        <tr>
+                                            <td colspan="3" class="text-center text-body-secondary py-4">No teams yet.</td>
+                                        </tr>
+                                    }
+                                    @foreach (var row in report.ByTeam)
+                                    {
+                                        <tr @key="row.TeamId">
+                                            <th scope="row" class="fw-normal">@row.Name</th>
+                                            <td class="text-end">@Count(row.Resolved)</td>
+                                            <td class="text-end">@PercentText(row.ResolvedInSla, row.Resolved)</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </CardBody>
+                </Card>
+            </div>
+        }
+    </div>
+
+    <p class="small text-body-secondary mb-0">
+        Archived tickets keep the figures they closed with. Live tickets follow the current SLA policies, so a policy change moves
+        their figures. “—” means there is nothing to measure yet. Archived tickets count toward their agent's current team; live
+        tickets toward their assignee's team, or their category's team while unassigned.
+    </p>
+</div>

@@ -1,0 +1,49 @@
+.hd-article-status,
+.hd-article-error {
+    font-size: .875rem;
+    font-weight: 600;
+}
+
+    .hd-article-status:empty,
+    .hd-article-error:empty {
+        margin: 0;
+    }
+
+.hd-article-error,
+.hd-field-error,
+.hd-over {
+    color: var(--bs-danger-text-emphasis);
+}
+
+.hd-field-error {
+    margin: .25rem 0 0;
+    font-size: .875rem;
+}
+
+    .hd-field-error:empty {
+        margin: 0;
+    }
+
+/* The editor grows with the article instead of staying a few lines tall. */
+.hd-article-editor ::deep [contenteditable] {
+    min-height: 16rem;
+}
+
+.hd-article-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: .5rem;
+}
+
+/* The preview frames the article like a page of the help center. */
+.hd-article-preview {
+    padding: 1rem 1.25rem;
+    border: 1px dashed var(--hd-border);
+    border-radius: .5rem;
+    overflow-wrap: anywhere;
+}
+
+.hd-article-preview .hd-preview-title {
+    font-size: 1.5rem;
+}

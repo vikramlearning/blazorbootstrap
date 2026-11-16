@@ -1,0 +1,36 @@
+.hd-kb-status,
+.hd-kb-error {
+    font-size: .875rem;
+    font-weight: 600;
+}
+
+    .hd-kb-status:empty,
+    .hd-kb-error:empty {
+        margin: 0;
+    }
+
+.hd-kb-error {
+    color: var(--bs-danger-text-emphasis);
+}
+
+/* Long titles and summaries wrap instead of widening the table. */
+.hd-kb-title-cell {
+    min-width: 14rem;
+    max-width: 28rem;
+    overflow-wrap: anywhere;
+}
+
+.hd-kb-summary {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.hd-kb-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: .375rem;
+    min-width: 12rem;
+}

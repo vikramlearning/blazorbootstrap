@@ -1,0 +1,60 @@
+.hd-admin-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: .5rem 1rem;
+    margin-bottom: .75rem;
+}
+
+.hd-admin-status,
+.hd-admin-error {
+    font-size: .875rem;
+    font-weight: 600;
+}
+
+    .hd-admin-status:empty,
+    .hd-admin-error:empty {
+        margin: 0;
+    }
+
+.hd-admin-error,
+.hd-field-error {
+    color: var(--bs-danger-text-emphasis);
+}
+
+.hd-field-error {
+    margin: .25rem 0 0;
+    font-size: .875rem;
+}
+
+    .hd-field-error:empty {
+        margin: 0;
+    }
+
+.hd-admin-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: .5rem;
+}
+
+.hd-admin-note {
+    max-width: 12rem;
+    font-size: .8125rem;
+    line-height: 1.3;
+    color: var(--bs-secondary-color);
+}
+
+.hd-team-facts {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: .125rem;
+    margin-bottom: 1rem;
+    font-size: .875rem;
+}
+
+    .hd-team-facts dd {
+        margin-bottom: .5rem;
+        overflow-wrap: anywhere;
+    }
