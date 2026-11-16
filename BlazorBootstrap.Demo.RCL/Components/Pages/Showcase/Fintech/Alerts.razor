@@ -1,0 +1,168 @@
+@page "/showcase/fintech/alerts"
+@layout FintechLayout
+
+<PageTitle>Alerts · @FintechSeedData.ProductName</PageTitle>
+
+<div class="container-xl">
+    <div class="tm-page-head">
+        <div>
+            <span class="sc-eyebrow">Alerts</span>
+            <h1 class="tm-title">Alerts</h1>
+            <p class="tm-lead">Alerts appear here and as a count on your account menu. This demo doesn't send emails or text messages.</p>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-7">
+            <Card Class="tm-card">
+                <CardHeader>
+                    <div class="d-flex flex-wrap align-items-start justify-content-between gap-2">
+                        <div>
+                            <h2 class="tm-card-title tm-alerts-focus" id="tm-alerts-feed-title" tabindex="-1" @ref="feedTitle">Your alerts</h2>
+                            <p class="tm-card-sub mb-0">@UnreadText</p>
+                        </div>
+                        @if (State.UnreadNoticeCount > 0)
+                        {
+                            <Button Color="ButtonColor.Secondary" Outline="true" Size="ButtonSize.Small" @onclick="MarkAllReadAsync">
+                                <Icon Name="IconName.CheckAll" class="me-1" aria-hidden="true" />Mark all as read
+                            </Button>
+                        }
+                    </div>
+                </CardHeader>
+                <CardBody Class="pt-0">
+                    <p class="tm-alerts-status small fw-semibold" role="status">@feedMessage</p>
+
+                    @if (Notices.Count == 0)
+                    {
+                        <div class="tm-alerts-empty">
+                            <span class="tm-icon fs-4" aria-hidden="true"><Icon Name="IconName.Bell" /></span>
+                            <h3 class="h6 fw-bold mt-3 mb-1">No alerts yet</h3>
+                            <p class="small text-body-secondary mb-0">We'll post alerts here for the things you switch on in your alert settings.</p>
+                        </div>
+                    }
+                    else
+                    {
+                        <ul class="list-unstyled mb-0" aria-labelledby="tm-alerts-feed-title">
+                            @foreach (var notice in Notices)
+                            {
+                                <li class="tm-notice @(notice.IsRead ? null : "tm-notice-unread")" @key="notice.Id">
+                                    <span class="tm-icon" aria-hidden="true"><Icon Name="@KindIcon(notice.Kind)" /></span>
+                                    <div class="tm-notice-text">
+                                        <div class="tm-notice-meta">
+                                            <span class="fw-semibold">@KindLabel(notice.Kind)</span>
+                                            <span aria-hidden="true">·</span>
+                                            <time datetime="@notice.At.ToString("yyyy-MM-ddTHH:mm", CultureInfo.InvariantCulture)">@TimeText(notice.At)</time>
+                                            @if (!notice.IsRead)
+                                            {
+                                                <Badge Color="BadgeColor.Primary" Class="rounded-pill">Unread</Badge>
+                                            }
+                                        </div>
+                                        <h3 class="tm-notice-title tm-alerts-focus" tabindex="-1" @ref="noticeTitles[notice.Id]">@notice.Title</h3>
+                                        <p class="small mb-2">@notice.Body</p>
+                                        <div class="d-flex flex-wrap align-items-center gap-3">
+                                            @if (!string.IsNullOrEmpty(notice.Link))
+                                            {
+                                                <a class="small fw-semibold" href="@notice.Link" @onclick="() => State.MarkNoticeRead(notice.Id)">
+                                                    @LinkText(notice)<span class="visually-hidden">: @notice.Title</span>
+                                                </a>
+                                            }
+                                            @if (!notice.IsRead)
+                                            {
+                                                <button type="button" class="btn btn-link btn-sm p-0" @onclick="() => MarkReadAsync(notice)">
+                                                    Mark as read<span class="visually-hidden">: @notice.Title</span>
+                                                </button>
+                                            }
+                                        </div>
+                                    </div>
+                                </li>
+                            }
+                        </ul>
+                    }
+                </CardBody>
+            </Card>
+        </div>
+
+        <div class="col-lg-5">
+            <Card Class="tm-card">
+                <CardHeader>
+                    <h2 class="tm-card-title">Alert settings</h2>
+                    <p class="tm-card-sub mb-0">Choose what we tell you about. Changes apply to new alerts.</p>
+                </CardHeader>
+                <CardBody Class="pt-0">
+                    <EditForm EditContext="editContext" OnSubmit="SaveAsync" FormName="tm-alerts" novalidate>
+                        <fieldset class="mb-4">
+                            <legend class="tm-alerts-legend">Balances and spending</legend>
+
+                            <div class="tm-alert-setting">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" role="switch" id="tm-alert-low" @bind="settings.LowBalance" aria-describedby="tm-alert-low-help" />
+                                    <label class="form-check-label fw-semibold" for="tm-alert-low">Low balance</label>
+                                </div>
+                                <div class="form-text mt-0 mb-2" id="tm-alert-low-help">When a checking or savings balance goes below the amount.</div>
+                                <label class="form-label small" for="tm-alert-low-amount">Low-balance amount</label>
+                                <CurrencyInput @ref="lowAmountInput" TValue="decimal" Id="tm-alert-low-amount" @bind-Value="settings.LowBalanceAmount" Locale="en-US"
+                                               Class="@InvalidClass(LowAmountField)" aria-invalid="@AriaInvalid(LowAmountField)" aria-describedby="tm-alert-low-amount-help tm-alert-low-amount-error" />
+                                <div class="form-text" id="tm-alert-low-amount-help">From $0 to $1,000,000.</div>
+                                <div id="tm-alert-low-amount-error"><ValidationMessage For="() => settings.LowBalanceAmount" /></div>
+                            </div>
+
+                            <div class="tm-alert-setting">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" role="switch" id="tm-alert-large" @bind="settings.LargeTransaction" aria-describedby="tm-alert-large-help" />
+                                    <label class="form-check-label fw-semibold" for="tm-alert-large">Large transactions</label>
+                                </div>
+                                <div class="form-text mt-0 mb-2" id="tm-alert-large-help">When a payment in or out is over the amount.</div>
+                                <label class="form-label small" for="tm-alert-large-amount">Large-transaction amount</label>
+                                <CurrencyInput @ref="largeAmountInput" TValue="decimal" Id="tm-alert-large-amount" @bind-Value="settings.LargeTransactionAmount" Locale="en-US"
+                                               Class="@InvalidClass(LargeAmountField)" aria-invalid="@AriaInvalid(LargeAmountField)" aria-describedby="tm-alert-large-amount-help tm-alert-large-amount-error" />
+                                <div class="form-text" id="tm-alert-large-amount-help">From $1 to $1,000,000.</div>
+                                <div id="tm-alert-large-amount-error"><ValidationMessage For="() => settings.LargeTransactionAmount" /></div>
+                            </div>
+
+                            <div class="tm-alert-setting">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" role="switch" id="tm-alert-budget" @bind="settings.Budget" aria-describedby="tm-alert-budget-help" />
+                                    <label class="form-check-label fw-semibold" for="tm-alert-budget">Budgets</label>
+                                </div>
+                                <div class="form-text mt-0" id="tm-alert-budget-help">When a budget reaches 80% of its limit, and when it goes over.</div>
+                            </div>
+                        </fieldset>
+
+                        <fieldset class="mb-4">
+                            <legend class="tm-alerts-legend">Account activity</legend>
+
+                            <div class="tm-alert-setting">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" role="switch" id="tm-alert-transfer" @bind="settings.Transfer" aria-describedby="tm-alert-transfer-help" />
+                                    <label class="form-check-label fw-semibold" for="tm-alert-transfer">Transfers</label>
+                                </div>
+                                <div class="form-text mt-0" id="tm-alert-transfer-help">When a transfer is sent, scheduled, held for a check, rejected, or cancelled.</div>
+                            </div>
+
+                            <div class="tm-alert-setting">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" role="switch" id="tm-alert-dispute" @bind="settings.Dispute" aria-describedby="tm-alert-dispute-help" />
+                                    <label class="form-check-label fw-semibold" for="tm-alert-dispute">Disputes</label>
+                                </div>
+                                <div class="form-text mt-0" id="tm-alert-dispute-help">When a dispute is opened, and when we update or decide it.</div>
+                            </div>
+
+                            <div class="tm-alert-setting">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" role="switch" id="tm-alert-security" checked disabled aria-describedby="tm-alert-security-help" />
+                                    <label class="form-check-label fw-semibold" for="tm-alert-security">Security</label>
+                                </div>
+                                <div class="form-text mt-0" id="tm-alert-security-help">New sign-ins, new or changed payees, and card freezes. Always on, to protect your account.</div>
+                            </div>
+                        </fieldset>
+
+                        <div class="d-flex flex-wrap align-items-center gap-3">
+                            <Button Type="ButtonType.Submit" Color="ButtonColor.Primary">Save settings</Button>
+                            <p class="small fw-semibold mb-0 @(settingsError ? "text-danger-emphasis" : null)" role="status">@settingsMessage</p>
+                        </div>
+                    </EditForm>
+                </CardBody>
+            </Card>
+        </div>
+    </div>
+</div>

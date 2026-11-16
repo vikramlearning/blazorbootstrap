@@ -1,0 +1,55 @@
+/* The transfers hub. Badge and Icon render their own elements, so those need ::deep. */
+
+/* Empty until a cancellation reports, so it takes no space then. */
+.tm-tr-status {
+    font-weight: 600;
+}
+
+    .tm-tr-status:empty {
+        margin: 0;
+    }
+
+    .tm-tr-status:focus {
+        outline: none;
+    }
+
+/* The amount, status, and action wrap under the text on a phone, and sit beside it when there is room
+   (.tm-panel li outweighs the site's .tm-row rule). */
+.tm-panel li.tm-tr-row {
+    flex-wrap: wrap;
+    align-items: flex-start;
+}
+
+    /* li + :first-child outweighs the site's .tm-row rule. */
+    li.tm-tr-row:first-child {
+        border-top: 0;
+    }
+
+/* The site's .tm-row-title truncates; a recipient's name wraps here instead (the extra classes outweigh that rule). */
+.tm-tr-row .tm-row-text .tm-tr-link {
+    white-space: normal;
+    overflow-wrap: anywhere;
+    text-decoration: none;
+}
+
+    .tm-tr-row .tm-row-text .tm-tr-link:hover,
+    .tm-tr-row .tm-row-text .tm-tr-link:focus-visible {
+        text-decoration: underline;
+    }
+
+.tm-tr-side {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-end;
+    gap: .5rem;
+    margin-left: auto;
+}
+
+@media (max-width: 575.98px) {
+    .tm-tr-side {
+        width: 100%;
+        justify-content: flex-start;
+        padding-left: 3rem;
+    }
+}

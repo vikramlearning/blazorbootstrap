@@ -1,0 +1,184 @@
+@page "/showcase/fintech/transfers/{Reference}"
+@layout FintechLayout
+
+<PageTitle>Transfer @Reference · @FintechSeedData.ProductName</PageTitle>
+
+<div class="container-xl">
+    @if (Item is not { } transfer)
+    {
+        <section class="tm-not-found" aria-labelledby="tm-td-missing-title">
+            <span class="tm-icon fs-4 mb-3" aria-hidden="true"><Icon Name="IconName.Receipt" /></span>
+            <h1 class="tm-title fs-3 mt-3" id="tm-td-missing-title">We couldn't find that transfer</h1>
+            <p class="text-body-secondary">There's no transfer @Reference on your account. Check the reference, or open it from your transfers.</p>
+            <a class="btn btn-primary" href="@($"{FintechLayout.Base}/transfers")">Your transfers</a>
+        </section>
+    }
+    else
+    {
+        var source = State.FindAccount(transfer.FromAccountId);
+        var toAccount = transfer.ToOwnAccount ? State.FindAccount(transfer.ToId) : null;
+        var payee = transfer.ToOwnAccount ? null : State.FindPayee(transfer.ToId);
+        var created = State.Transactions.Where(item => item.TransferReference == transfer.Reference).ToList();
+        var canCancel = transfer.Status is FintechTransferStatus.Scheduled or FintechTransferStatus.Held;
+
+        <div class="tm-page-head sc-no-print">
+            <div>
+                <span class="sc-eyebrow">Transfers</span>
+                <h1 class="tm-title">Transfer receipt</h1>
+                <p class="tm-lead">@FintechDisplay.Money(transfer.Amount) to @transfer.ToName · reference <span class="tm-mono">@transfer.Reference</span></p>
+            </div>
+        </div>
+
+        @* Always rendered, so the one-time confirmation and a cancellation are announced, and focus has somewhere to go. *@
+        <div class="tm-td-status sc-no-print" role="status" tabindex="-1" @ref="statusRegion">
+            @if (banner is { } shown)
+            {
+                <Alert Color="@shown.Color" Class="mb-4">
+                    <h2 class="h5 fw-bold mb-1"><Icon Name="@shown.Icon" class="me-2" aria-hidden="true" />@shown.Title</h2>
+                    <p class="mb-0">@shown.Text</p>
+                </Alert>
+            }
+            else if (statusMessage is not null)
+            {
+                <p class="fw-semibold">@statusMessage</p>
+            }
+        </div>
+
+        <div class="tm-td-actions sc-no-print">
+            <a class="btn btn-outline-secondary btn-sm" href="@($"{FintechLayout.Base}/transfers")"><Icon Name="IconName.ArrowLeft" class="me-1" aria-hidden="true" />All transfers</a>
+            <Button Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="PrintAsync"><Icon Name="IconName.Printer" class="me-1" aria-hidden="true" />Print receipt</Button>
+            @if (canCancel)
+            {
+                <button type="button" class="btn btn-outline-danger btn-sm" @ref="cancelButton" @onclick="AskCancelAsync">Cancel transfer</button>
+            }
+            <span class="small text-body-secondary">To save it as a PDF, choose "Save as PDF" in the print dialog.</span>
+        </div>
+
+        <article class="tm-td-receipt" aria-labelledby="tm-td-receipt-title">
+            <header class="tm-td-head">
+                <div>
+                    <p class="tm-td-brand mb-1"><Icon Name="IconName.Coin" class="me-2" aria-hidden="true" />@FintechSeedData.ProductName</p>
+                    <h2 class="h4 fw-bold mb-0" id="tm-td-receipt-title">Transfer @transfer.Reference</h2>
+                </div>
+                <Badge Color="Transfers.StatusColor(transfer.Status)" Class="rounded-pill fs-6">@Transfers.StatusText(transfer.Status)</Badge>
+            </header>
+
+            <span class="tm-label">Amount</span>
+            <span class="tm-amount mb-3">@FintechDisplay.Money(transfer.Amount)</span>
+
+            <dl class="tm-td-facts">
+                <div>
+                    <dt>Status</dt>
+                    <dd>@Transfers.StatusText(transfer.Status)</dd>
+                </div>
+                <div>
+                    <dt>From</dt>
+                    <dd>
+                        @(source?.Name ?? "Your account")
+                        @if (source is not null)
+                        {
+                            <span class="d-block fw-normal small">@source.MaskedNumber</span>
+                        }
+                    </dd>
+                </div>
+                <div>
+                    <dt>To</dt>
+                    <dd>
+                        @transfer.ToName
+                        @if (toAccount is not null)
+                        {
+                            <span class="d-block fw-normal small">Your account · @toAccount.MaskedNumber</span>
+                        }
+                        else if (payee is not null)
+                        {
+                            <span class="d-block fw-normal small">@payee.BankName · account @payee.MaskedAccount</span>
+                        }
+                        else if (!transfer.ToOwnAccount)
+                        {
+                            <span class="d-block fw-normal small">A payee no longer saved</span>
+                        }
+                    </dd>
+                </div>
+                <div>
+                    <dt>@(transfer.Status == FintechTransferStatus.Completed ? "Sent on" : "Transfer date")</dt>
+                    <dd>@Transfers.DateText(transfer.Date)</dd>
+                </div>
+                <div>
+                    <dt>Confirmed</dt>
+                    <dd>@Transfers.StampText(transfer.CreatedAt)</dd>
+                </div>
+                @if (transfer.ClosedAt is { } closed)
+                {
+                    <div>
+                        <dt>@ClosedLabel(transfer.Status)</dt>
+                        <dd>@Transfers.StampText(closed)</dd>
+                    </div>
+                }
+                <div>
+                    <dt>Note</dt>
+                    <dd class="text-break">@(transfer.Note ?? "None")</dd>
+                </div>
+                <div>
+                    <dt>Customer</dt>
+                    <dd>@transfer.CustomerName</dd>
+                </div>
+            </dl>
+
+            @if (transfer.Status == FintechTransferStatus.Held && transfer.HoldReason is { } hold)
+            {
+                <p class="tm-td-callout"><Icon Name="IconName.ShieldExclamation" class="me-2" aria-hidden="true" /><strong>Held for a check:</strong> @hold. Our team usually checks within one business day; the money is set aside meanwhile.</p>
+            }
+            else if (transfer.Status == FintechTransferStatus.Scheduled)
+            {
+                <p class="tm-td-callout"><Icon Name="IconName.CalendarEvent" class="me-2" aria-hidden="true" />It's sent on @Transfers.DateText(transfer.Date). The money is set aside until then.</p>
+            }
+            else if (transfer.Status == FintechTransferStatus.Rejected)
+            {
+                <p class="tm-td-callout"><Icon Name="IconName.XCircle" class="me-2" aria-hidden="true" /><strong>Not sent:</strong> @(transfer.RejectReason ?? "The transfer was rejected.") No money left your account.</p>
+            }
+            else if (transfer.Status == FintechTransferStatus.Cancelled)
+            {
+                <p class="tm-td-callout"><Icon Name="IconName.SlashCircle" class="me-2" aria-hidden="true" />You cancelled this transfer before it was sent. No money left your account.</p>
+            }
+
+            <h3 class="h6 fw-bold mt-4">Transactions from this transfer</h3>
+            @if (created.Count == 0)
+            {
+                <p class="small text-body-secondary mb-3">@(transfer.Status == FintechTransferStatus.Completed ? "These transactions are no longer in your history." : "None: no money has moved.")</p>
+            }
+            else
+            {
+                <ul class="list-unstyled mb-3">
+                    @foreach (var item in created)
+                    {
+                        <li class="tm-td-txn" @key="item.Id">
+                            <a href="@($"{FintechLayout.Base}/transactions/{item.Id.ToString(CultureInfo.InvariantCulture)}")">@item.Description</a>
+                            <span class="small text-body-secondary">@(State.FindAccount(item.AccountId)?.Name) · @FintechDisplay.Day(item.Date)</span>
+                            <span class="tm-mono fw-semibold @FintechDisplay.AmountClass(item.Amount)">@FintechDisplay.SignedMoney(item.Amount)</span>
+                        </li>
+                    }
+                </ul>
+            }
+
+            <p class="tm-td-note mb-0"><Icon Name="IconName.InfoCircle" class="me-2" aria-hidden="true" />Demo receipt: no real money moved. @FintechSeedData.ProductName and its accounts are fictitious. Printed @Transfers.StampText(State.Clock.Now).</p>
+        </article>
+    }
+</div>
+
+<Modal @ref="cancelModal" IsVerticallyCentered="true" ShowCloseButton="false" aria-labelledby="tm-td-cancel-title" OnHidden="OnCancelHiddenAsync">
+    <HeaderTemplate>
+        <h2 class="modal-title h5" id="tm-td-cancel-title">Cancel the transfer to @cancelling?.ToName?</h2>
+    </HeaderTemplate>
+    <BodyTemplate>
+        @if (cancelling is { } pending)
+        {
+            <p class="mb-2">@Transfers.CancelText(pending)</p>
+            <p class="mb-0">The @FintechDisplay.Money(pending.Amount) set aside in @AccountName(pending.FromAccountId) is released and available to spend again.</p>
+        }
+        <p class="text-danger-emphasis fw-semibold small mt-2 mb-0" role="alert">@dialogError</p>
+    </BodyTemplate>
+    <FooterTemplate>
+        <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => cancelModal.HideAsync()">Keep transfer</Button>
+        <Button Color="ButtonColor.Danger" @onclick="ConfirmCancelAsync" Disabled="cancelBusy">Cancel transfer</Button>
+    </FooterTemplate>
+</Modal>

@@ -1,5 +1,6 @@
 using System.Globalization;
 using BlazorBootstrap.Demo.RCL.Models.Showcase.Fintech;
+using BlazorBootstrap.Demo.RCL.Services.Showcase.Foundation;
 
 namespace BlazorBootstrap.Demo.RCL.Services.Showcase.Fintech;
 
@@ -11,11 +12,23 @@ public static class FintechSeedData
 {
     #region Fields and Constants
 
+    /// <summary>The role of a bank customer.</summary>
+    public const string CustomerRole = "customer";
+
+    /// <summary>The demo customer's name.</summary>
+    public const string CustomerName = "Jordan Ashdown";
+
+    /// <summary>The ID of the demo customer account.</summary>
+    public const string SeededCustomerId = "jordan";
+
     /// <summary>The fictitious product name.</summary>
     public const string ProductName = "Tallymint";
 
-    /// <summary>The fixed "today" all dates on the site are relative to (late in the month, so budgets have real activity).</summary>
-    public static readonly DateTime Today = new(2026, 11, 24);
+    /// <summary>When a fresh tab's clock starts; the clock moves on from there (D-029).</summary>
+    public static readonly DateTime Now = new(2026, 11, 24, 9, 0, 0);
+
+    /// <summary>The seed's "today" all seeded dates are relative to (late in the month, so budgets have real activity).</summary>
+    public static readonly DateTime Today = Now.Date;
 
     private static readonly double[] netWorthFactors = { .78, .8, .79, .83, .85, .84, .88, .9, .92, .91, .96, 1 };
 
@@ -28,9 +41,9 @@ public static class FintechSeedData
     /// <summary>The customer's accounts and their current balances.</summary>
     public static List<FintechAccount> Accounts() => new()
     {
-        new("checking", "Everyday Checking", FintechAccountKind.Checking, "•••• 4821", 4820.55m, null),
+        new("checking", "Everyday Checking", FintechAccountKind.Checking, "•••• 4821", 4820.55m, null) { CardLast4 = "3307" },
         new("savings", "High-Yield Savings", FintechAccountKind.Savings, "•••• 7350", 18250.00m, null),
-        new("card", "Rewards Credit Card", FintechAccountKind.CreditCard, "•••• 9012", -1284.30m, 6000m),
+        new("card", "Rewards Credit Card", FintechAccountKind.CreditCard, "•••• 9012", -1284.30m, 6000m) { CardLast4 = "9012" },
     };
 
     /// <summary>Monthly limits for the spending categories.</summary>
@@ -79,13 +92,83 @@ public static class FintechSeedData
             .Select(index => Today.AddMonths(index - (netWorthFactors.Length - 1)).ToString("MMM", CultureInfo.InvariantCulture))
             .ToList();
 
-    /// <summary>Saved people and companies money can be sent to.</summary>
-    public static IReadOnlyList<FintechPayee> Payees() => new List<FintechPayee>
+    /// <summary>The demo accounts: one bank customer. There is no self-registration: banks open accounts in a branch or an app.</summary>
+    public static IReadOnlyList<ShowcaseDemoAccount> DemoAccounts() => new List<ShowcaseDemoAccount>
     {
-        new("payee-avery", "Avery Ashdown", "•••• 1188"),
-        new("payee-larkspur", "Larkspur Residences (rent)", "•••• 5402"),
-        new("payee-rowan", "Rowan Calloway", "•••• 3076"),
-        new("payee-fairbank", "Fairbank Dental", "•••• 6614"),
+        new(SeededCustomerId, CustomerRole, CustomerName, "jordan.ashdown@example.com", "bank-demo-26", "JA"),
+    };
+
+    /// <summary>The customer's disputes: one under review.</summary>
+    public static List<FintechDispute> Disputes(IReadOnlyList<FintechTransaction> transactions)
+    {
+        var charge = transactions.First(item => item.CategoryId == "dining" && item.Date < Today.AddDays(-8) && item.Date > Today.AddDays(-20));
+
+        return new List<FintechDispute>
+        {
+            new()
+            {
+                Id = 3101,
+                CustomerId = SeededCustomerId,
+                TransactionId = charge.Id,
+                Merchant = charge.Description,
+                Amount = -charge.Amount,
+                Reason = FintechDisputeReason.Duplicate,
+                Details = "I was charged twice for the same dinner; the restaurant ran the card again after the first payment went through.",
+                CreatedAt = Now.AddDays(-5).AddHours(2),
+                Status = FintechDisputeStatus.UnderReview,
+            },
+        };
+    }
+
+    /// <summary>The customer's alerts feed when the tab starts.</summary>
+    public static List<FintechNotice> Notices() => new()
+    {
+        new() { Id = 3, At = Now.AddHours(-3), Kind = FintechAlertKind.Transfer, Title = "Transfer held for a check", Body = "Your $2,400.00 transfer to Rowan Calloway is held for a routine check. We'll update you within one business day.", Link = "/showcase/fintech/transfers/TM-260412" },
+        new() { Id = 2, At = Now.AddDays(-1).AddHours(-4), Kind = FintechAlertKind.Budget, Title = "Dining is at 80% of its budget", Body = "You've spent most of this month's dining budget with a week to go.", Link = "/showcase/fintech/budgets" },
+        new() { Id = 1, At = Now.AddDays(-5).AddHours(2), Kind = FintechAlertKind.Dispute, Title = "Dispute 3101 is under review", Body = "We've contacted the merchant about the duplicate charge. Most disputes are resolved within 10 business days.", Link = "/showcase/fintech/disputes/3101", IsRead = true },
+    };
+
+    /// <summary>
+    /// The fictitious account directory the payee name check uses: account numbers and their holders. Any other account
+    /// can't be checked (the result is "unavailable").
+    /// </summary>
+    public static IReadOnlyDictionary<string, string> PayeeDirectory() => new Dictionary<string, string>(StringComparer.Ordinal)
+    {
+        ["40001001"] = "Morgan Ellis",
+        ["40001002"] = "Brightwater Plumbing",
+        ["40001003"] = "Sam Okafor",
+        ["40001004"] = "Cedar Hill Nursery School",
+    };
+
+    /// <summary>Saved people and companies money can be sent to.</summary>
+    public static List<FintechPayee> Payees() => new()
+    {
+        new("payee-avery", "Avery Ashdown", "•••• 1188") { AddedAt = Now.AddYears(-2), BankName = "Harborview Credit Union" },
+        new("payee-larkspur", "Larkspur Residences (rent)", "•••• 5402") { AddedAt = Now.AddMonths(-14), BankName = "First Meridian Bank" },
+        new("payee-rowan", "Rowan Calloway", "•••• 3076") { AddedAt = Now.AddDays(-2), BankName = "Northline Bank" },
+        new("payee-fairbank", "Fairbank Dental", "•••• 6614") { AddedAt = Now.AddMonths(-7), BankName = "First Meridian Bank", Nickname = "Dentist" },
+    };
+
+    /// <summary>The roles of the site.</summary>
+    public static IReadOnlyList<ShowcaseRole> Roles() => new List<ShowcaseRole>
+    {
+        new(CustomerRole, "Customer", "/showcase/fintech", "/showcase/fintech/profile", "Checks accounts, moves money, manages payees, budgets, and alerts."),
+    };
+
+    /// <summary>The customer's transfers when the tab starts: a savings top-up scheduled for next week, and a large payment held for a check.</summary>
+    public static List<FintechTransfer> Transfers() => new()
+    {
+        new()
+        {
+            Reference = "TM-260415", CustomerId = SeededCustomerId, CustomerName = CustomerName, FromAccountId = "checking", ToId = "savings", ToName = "High-Yield Savings",
+            ToOwnAccount = true, Amount = 250m, Date = DateOnly.FromDateTime(Today.AddDays(7)), Note = "Holiday fund", Status = FintechTransferStatus.Scheduled, CreatedAt = Now.AddDays(-3),
+        },
+        new()
+        {
+            Reference = "TM-260412", CustomerId = SeededCustomerId, CustomerName = CustomerName, FromAccountId = "checking", ToId = "payee-rowan", ToName = "Rowan Calloway",
+            Amount = 2400m, Date = DateOnly.FromDateTime(Today), Note = "Car deposit", Status = FintechTransferStatus.Held, CreatedAt = Now.AddHours(-3),
+            HoldReason = "A large payment to a payee added in the last 7 days",
+        },
     };
 
     /// <summary>Ninety days of transactions, newest first.</summary>

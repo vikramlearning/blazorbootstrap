@@ -1,0 +1,67 @@
+@page "/showcase/fintech/disputes"
+@layout FintechLayout
+
+<PageTitle>Disputes · @FintechSeedData.ProductName</PageTitle>
+
+<div class="container-xl">
+    <div class="tm-page-head">
+        <div>
+            <span class="sc-eyebrow">Disputes</span>
+            <h1 class="tm-title">Your disputes</h1>
+            <p class="tm-lead">Charges you've asked us to look into, and where each one is.</p>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-8">
+            <Card Class="tm-card">
+                <CardHeader>
+                    <h2 class="tm-card-title">Disputes</h2>
+                    <p class="tm-card-sub mb-0">@CountText</p>
+                </CardHeader>
+                <CardBody Class="pt-0">
+                    @if (MyDisputes.Count == 0)
+                    {
+                        <div class="tm-disputes-empty">
+                            <span class="tm-icon fs-4" aria-hidden="true"><Icon Name="IconName.ShieldCheck" /></span>
+                            <h3 class="h6 fw-bold mt-3 mb-1">No disputes</h3>
+                            <p class="small text-body-secondary mb-3">You haven't disputed any charges. If a payment looks wrong, open it from your transactions.</p>
+                            <a class="btn btn-sm btn-primary" href="@TransactionsPath">Go to transactions</a>
+                        </div>
+                    }
+                    else
+                    {
+                        <ul class="list-unstyled mb-0">
+                            @foreach (var dispute in MyDisputes)
+                            {
+                                <li class="tm-row tm-dispute-row" @key="dispute.Id">
+                                    <span class="tm-icon" aria-hidden="true"><Icon Name="IconName.Flag" /></span>
+                                    <span class="tm-row-text">
+                                        <a class="tm-row-title tm-dispute-link" href="@DetailPath(dispute.Id)">Dispute @dispute.Id: @dispute.Merchant</a>
+                                        <span class="tm-row-sub">@ReasonText(dispute.Reason) · Opened @DayText(dispute.CreatedAt)</span>
+                                    </span>
+                                    <span class="tm-dispute-side">
+                                        <span class="tm-mono fw-semibold">@FintechDisplay.Money(dispute.Amount)</span>
+                                        <Badge Color="StatusColor(dispute.Status)" Class="rounded-pill">@StatusText(dispute.Status)</Badge>
+                                    </span>
+                                </li>
+                            }
+                        </ul>
+                    }
+                </CardBody>
+            </Card>
+        </div>
+        <div class="col-lg-4">
+            <section class="tm-panel" aria-labelledby="tm-disputes-how-title">
+                <h2 class="tm-section-title" id="tm-disputes-how-title">How disputes work</h2>
+                <ol class="tm-disputes-steps small mb-3">
+                    <li><strong>Open a dispute</strong> from the payment in your transactions: choose a reason and tell us what happened. Posted card and account payments from the last @FintechState.DisputeDays days can be disputed.</li>
+                    <li><strong>We review it</strong> with the merchant. We usually answer within 10 business days, and we'll post updates in your alerts.</li>
+                    <li><strong>We decide.</strong> If you're right, we refund the amount to your account. If not, we explain why the charge stands.</li>
+                </ol>
+                <p class="small text-body-secondary mb-3">Transfers you made can't be disputed: cancel a scheduled transfer from Transfers instead.</p>
+                <a class="btn btn-sm btn-outline-primary" href="@TransactionsPath">Find a transaction to dispute</a>
+            </section>
+        </div>
+    </div>
+</div>

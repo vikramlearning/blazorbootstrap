@@ -1,0 +1,103 @@
+/* The printable transfer receipt. The site's header, footer, and ad are hidden in print by the showcase stylesheet
+   (.sc-site > :not(.sc-main)); the head, banner, and buttons carry .sc-no-print. Alert and Badge render their own
+   elements, so those need ::deep. */
+
+.tm-td-status:focus {
+    outline: none;
+}
+
+.tm-td-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: .75rem 1rem;
+    margin-bottom: 1.25rem;
+}
+
+.tm-td-receipt {
+    max-width: 52rem;
+    padding: clamp(1rem, 4vw, 2rem);
+    border: 1px solid var(--tm-border);
+    border-radius: 1rem;
+    background: var(--tm-surface);
+}
+
+.tm-td-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    padding-bottom: 1rem;
+    margin-bottom: 1.25rem;
+    border-bottom: 1px solid var(--tm-border);
+}
+
+.tm-td-brand {
+    font-weight: 800;
+    font-size: 1.125rem;
+    color: var(--sc-primary);
+}
+
+.tm-td-facts {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+    gap: .75rem 1.5rem;
+    margin-bottom: 1.25rem;
+}
+
+    .tm-td-facts dt {
+        font-size: .8125rem;
+        font-weight: 500;
+        color: var(--bs-secondary-color);
+    }
+
+    .tm-td-facts dd {
+        margin: 0;
+        font-weight: 600;
+        overflow-wrap: anywhere;
+    }
+
+.tm-td-callout {
+    padding: .75rem 1rem;
+    border-radius: .75rem;
+    background: rgba(var(--sc-primary-rgb), .08);
+    border: 1px solid var(--tm-border);
+}
+
+.tm-td-txn {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: .25rem 1rem;
+    padding-block: .5rem;
+    border-top: 1px solid var(--tm-border);
+}
+
+    .tm-td-txn a {
+        flex: 1 1 14rem;
+        min-width: 0;
+        overflow-wrap: anywhere;
+    }
+
+.tm-td-note {
+    font-size: .875rem;
+    color: var(--bs-secondary-color);
+}
+
+/* Browsers drop backgrounds when printing, so the receipt prints in dark ink on white, even from the dark theme. */
+@media print {
+    .tm-td-receipt {
+        max-width: none;
+        padding: 0;
+        border: 0;
+    }
+
+        .tm-td-receipt,
+        .tm-td-receipt *,
+        .tm-td-receipt ::deep * {
+            color: #111 !important;
+            background: transparent !important;
+            border-color: #bbb !important;
+        }
+}

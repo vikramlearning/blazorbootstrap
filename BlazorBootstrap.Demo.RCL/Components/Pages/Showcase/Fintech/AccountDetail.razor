@@ -1,0 +1,250 @@
+@page "/showcase/fintech/accounts/{Id}"
+@layout FintechLayout
+
+@if (CurrentAccount is not { } account)
+{
+    <PageTitle>Account not found · @FintechSeedData.ProductName</PageTitle>
+
+    <div class="container-xl">
+        <section class="tm-not-found" aria-labelledby="tm-account-missing-title">
+            <span class="tm-icon fs-4" aria-hidden="true"><Icon Name="IconName.SignpostSplit" /></span>
+            <h1 class="tm-title fs-3 mt-3 mb-2" id="tm-account-missing-title">We couldn't find that account</h1>
+            <p class="text-body-secondary mb-4">There's no account "@Id" on your profile. Open an account from the overview.</p>
+            <div class="d-flex justify-content-center flex-wrap gap-2">
+                <Button Type="ButtonType.Link" To="@FintechLayout.Base" Color="ButtonColor.Primary">Back to the overview</Button>
+                <Button Type="ButtonType.Link" To="@($"{FintechLayout.Base}/transactions")" Color="ButtonColor.Primary" Outline="true">View transactions</Button>
+            </div>
+        </section>
+    </div>
+}
+else
+{
+    var isCard = account.Kind == FintechAccountKind.CreditCard;
+    var reserved = State.Reserved(account.Id);
+
+    <PageTitle>@account.Name · @FintechSeedData.ProductName</PageTitle>
+
+    <div class="container-xl">
+        <Breadcrumb Items="BreadcrumbItems" Class="mb-3" />
+
+        <div class="tm-page-head">
+            <div>
+                <span class="sc-eyebrow">@FintechDisplay.KindLabel(account.Kind) · @account.MaskedNumber</span>
+                <h1 class="tm-title">@account.Name</h1>
+                <p class="tm-lead">
+                    @(isCard ? "What you owe, the credit left" : "Balance, money set aside")@(account.CardLast4 is null ? null : ", the card"), and the last 60 days of transactions.
+                </p>
+            </div>
+            @if (isCard)
+            {
+                <Button Type="ButtonType.Link" To="@($"{FintechLayout.Base}/transfer?to={Uri.EscapeDataString(account.Id)}")" Color="ButtonColor.Primary">
+                    <Icon Name="IconName.ArrowLeftRight" class="me-1" aria-hidden="true" />Pay this card
+                </Button>
+            }
+            else
+            {
+                <Button Type="ButtonType.Link" To="@($"{FintechLayout.Base}/transfer?from={Uri.EscapeDataString(account.Id)}")" Color="ButtonColor.Primary">
+                    <Icon Name="IconName.ArrowLeftRight" class="me-1" aria-hidden="true" />Move money
+                </Button>
+            }
+        </div>
+
+        @* Always rendered and focusable, so the outcome of a freeze or unfreeze is announced and focus has somewhere to go. *@
+        <p class="fw-semibold tm-account-status @(statusIsError ? "text-danger-emphasis" : null)" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
+
+        <section class="tm-panel mb-4" aria-labelledby="tm-account-summary-title">
+            <h2 class="visually-hidden" id="tm-account-summary-title">Summary</h2>
+            <dl class="tm-summary tm-account-figures mb-0">
+                @if (isCard)
+                {
+                    <div>
+                        <dt>Owed</dt>
+                        <dd class="tm-amount">@FintechDisplay.Money(account.Balance)</dd>
+                    </div>
+                    <div>
+                        <dt>Credit limit</dt>
+                        <dd class="tm-amount">@FintechDisplay.Money(account.CreditLimit ?? 0)</dd>
+                    </div>
+                    <div>
+                        <dt>Credit available</dt>
+                        <dd class="tm-amount">@FintechDisplay.Money(FintechState.CreditAvailable(account))</dd>
+                    </div>
+                }
+                else
+                {
+                    <div>
+                        <dt>Balance</dt>
+                        <dd class="tm-amount">@(account.Balance < 0 ? "−" : string.Empty)@FintechDisplay.Money(account.Balance)</dd>
+                    </div>
+                    <div>
+                        <dt>Available now</dt>
+                        <dd class="tm-amount">@FintechDisplay.Money(State.Available(account))</dd>
+                    </div>
+                    <div>
+                        <dt>Set aside</dt>
+                        <dd class="tm-amount">@FintechDisplay.Money(reserved)</dd>
+                    </div>
+                }
+            </dl>
+            @if (!isCard)
+            {
+                <p class="small text-body-secondary mt-3 mb-0">
+                    @(reserved > 0
+                        ? $"{FintechDisplay.Money(reserved)} is set aside for scheduled and held transfers from this account, so it can't be sent twice. It's free again if a transfer is cancelled."
+                        : "Nothing is set aside: there are no scheduled or held transfers from this account.")
+                </p>
+            }
+        </section>
+
+        <div class="row g-4">
+            @if (account.CardLast4 is { } last4)
+            {
+                var cardName = CardName(account);
+                <div class="col-lg-5">
+                    <section class="tm-panel h-100" aria-labelledby="tm-card-title">
+                        <h2 class="tm-section-title" id="tm-card-title">Your @cardName.ToLowerInvariant()</h2>
+
+                        <div class="tm-card-face @(account.CardFrozen ? "tm-card-face-frozen" : null)">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <span class="fw-bold">@FintechSeedData.ProductName</span>
+                                <span class="small">@cardName</span>
+                            </div>
+                            <span class="tm-card-number"><span aria-hidden="true">•••• </span><span class="visually-hidden">ending </span>@last4</span>
+                            <div class="d-flex justify-content-between align-items-end gap-2">
+                                <span class="small text-uppercase">@(State.Identity.Current?.Name ?? FintechSeedData.CustomerName)</span>
+                                @if (account.CardFrozen)
+                                {
+                                    <span class="tm-card-frozen-label"><Icon Name="IconName.Snow" class="me-1" aria-hidden="true" />Frozen</span>
+                                }
+                            </div>
+                        </div>
+
+                        <p class="mt-3 mb-1">
+                            <span class="fw-semibold">Status:</span>
+                            @if (account.CardFrozen)
+                            {
+                                <Badge Color="BadgeColor.Warning" Class="ms-1">Frozen</Badge>
+                            }
+                            else
+                            {
+                                <Badge Color="BadgeColor.Success" Class="ms-1">Active</Badge>
+                            }
+                        </p>
+                        <p class="small text-body-secondary mb-3">
+                            @(account.CardFrozen
+                                ? "New card payments are declined until you unfreeze it. Scheduled transfers from the account still go."
+                                : "Lost it, or see a payment you don't know? Freeze it now and unfreeze it when you're sure. Freezing doesn't cancel the card.")
+                        </p>
+                        @if (account.CardFrozen)
+                        {
+                            <Button @ref="cardButton" Color="ButtonColor.Primary" @onclick="Unfreeze">
+                                <Icon Name="IconName.Unlock" class="me-1" aria-hidden="true" />Unfreeze card
+                            </Button>
+                        }
+                        else
+                        {
+                            <Button @ref="cardButton" Color="ButtonColor.Danger" Outline="true" @onclick="AskFreezeAsync">
+                                <Icon Name="IconName.Snow" class="me-1" aria-hidden="true" />Freeze card
+                            </Button>
+                        }
+                    </section>
+                </div>
+            }
+
+            <div class="@(account.CardLast4 is null ? "col-12" : "col-lg-7")">
+                <section class="tm-panel h-100" aria-labelledby="tm-coming-title">
+                    <div class="d-flex flex-wrap justify-content-between align-items-baseline gap-2">
+                        <h2 class="tm-section-title mb-0" id="tm-coming-title">Scheduled and held transfers</h2>
+                        <a class="small fw-semibold" href="@($"{FintechLayout.Base}/transfers")">All transfers</a>
+                    </div>
+                    @if (ComingUp.Count == 0)
+                    {
+                        <p class="small text-body-secondary mt-3 mb-0">
+                            @(isCard ? "Money can't be sent from a credit card, so nothing is scheduled from it." : "Nothing scheduled or held from this account.")
+                        </p>
+                    }
+                    else
+                    {
+                        <ul class="list-unstyled mt-2 mb-0">
+                            @foreach (var transfer in ComingUp)
+                            {
+                                var held = transfer.Status == FintechTransferStatus.Held;
+                                <li class="tm-row" @key="transfer.Reference">
+                                    <span class="tm-icon" aria-hidden="true"><Icon Name="@(held ? IconName.ShieldExclamation : IconName.CalendarEvent)" /></span>
+                                    <span class="tm-row-text">
+                                        <a class="tm-row-title" href="@TransferPath(transfer.Reference)">To @transfer.ToName</a>
+                                        <span class="tm-row-sub">
+                                            <Badge Color="@(held ? BadgeColor.Warning : BadgeColor.Secondary)" Class="me-1">@(held ? "Held for a check" : "Scheduled")</Badge>
+                                            @(held ? transfer.HoldReason : $"Goes on {LongDay(transfer.Date)}") · @transfer.Reference
+                                        </span>
+                                    </span>
+                                    <span class="tm-mono fw-semibold text-nowrap tm-out">@FintechDisplay.SignedMoney(-transfer.Amount)</span>
+                                </li>
+                            }
+                        </ul>
+                    }
+                </section>
+            </div>
+        </div>
+
+        <section class="tm-panel mt-4" aria-labelledby="tm-account-transactions-title">
+            <div class="d-flex flex-wrap justify-content-between align-items-baseline gap-2">
+                <div>
+                    <h2 class="tm-section-title mb-0" id="tm-account-transactions-title">Transactions</h2>
+                    <p class="small text-body-secondary mb-0">Last 60 days, newest first</p>
+                </div>
+                <a class="small fw-semibold" href="@($"{FintechLayout.Base}/transactions?account={Uri.EscapeDataString(account.Id)}")">Search all of this account's transactions</a>
+            </div>
+            @if (RecentTransactions.Count == 0)
+            {
+                <p class="small text-body-secondary mt-3 mb-0">No transactions in the last 60 days.</p>
+            }
+            else
+            {
+                <ul class="list-unstyled mt-2 mb-0">
+                    @foreach (var item in RecentTransactions)
+                    {
+                        var category = State.FindCategory(item.CategoryId);
+                        <li class="tm-row" @key="item.Id">
+                            <span class="tm-icon" aria-hidden="true"><Icon Name="@category.IconName" /></span>
+                            <span class="tm-row-text">
+                                <a class="tm-row-title" href="@TransactionPath(item.Id)">@item.Description</a>
+                                <span class="tm-row-sub">
+                                    @FintechDisplay.Day(item.Date) · @category.Name
+                                    @if (item.IsPending)
+                                    {
+                                        <Badge Color="BadgeColor.Secondary" Class="ms-1">Pending</Badge>
+                                    }
+                                    @if (item.DisputeId is not null)
+                                    {
+                                        <Badge Color="BadgeColor.Info" Class="ms-1">Disputed</Badge>
+                                    }
+                                </span>
+                            </span>
+                            <span class="tm-mono fw-semibold text-nowrap @FintechDisplay.AmountClass(item.Amount)">@FintechDisplay.SignedMoney(item.Amount)</span>
+                        </li>
+                    }
+                </ul>
+            }
+        </section>
+
+        @if (account.CardLast4 is { } freezeLast4)
+        {
+            <Modal @ref="freezeModal" IsVerticallyCentered="true" ShowCloseButton="false" aria-labelledby="tm-freeze-title" OnHidden="OnFreezeHiddenAsync">
+                <HeaderTemplate>
+                    <h2 class="modal-title h5" id="tm-freeze-title">Freeze your @CardName(account).ToLowerInvariant() ending @freezeLast4?</h2>
+                </HeaderTemplate>
+                <BodyTemplate>
+                    <p class="mb-2">New payments with this card are declined until you unfreeze it, in shops, online, and for subscriptions billed to the card.</p>
+                    <p class="mb-2">Scheduled transfers from @account.Name still go on their dates, and you can still move money between your accounts.</p>
+                    <p class="small text-body-secondary mb-0">You can unfreeze the card here at any time. It isn't cancelled, and its number stays the same.</p>
+                    <p class="text-danger-emphasis fw-semibold small mt-2 mb-0" role="alert">@dialogError</p>
+                </BodyTemplate>
+                <FooterTemplate>
+                    <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => freezeModal.HideAsync()">Keep card active</Button>
+                    <Button Color="ButtonColor.Danger" @onclick="ConfirmFreezeAsync">Freeze card</Button>
+                </FooterTemplate>
+            </Modal>
+        }
+    </div>
+}

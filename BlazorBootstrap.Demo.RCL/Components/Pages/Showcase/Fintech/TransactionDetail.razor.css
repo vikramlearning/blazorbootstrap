@@ -1,0 +1,44 @@
+/* Status messages stay in the page for screen readers and focus; they take no room while empty. */
+.tm-transaction-message:empty {
+    margin: 0;
+}
+
+.tm-transaction-message:focus {
+    outline: none;
+}
+
+.tm-transaction-head {
+    min-width: 0;
+}
+
+.tm-transaction-amount {
+    font-size: clamp(1.75rem, 3.4vw, 2.25rem);
+}
+
+/* Label above value: reads well on a phone, and long values (an account and its number) wrap. */
+.tm-transaction-facts {
+    display: grid;
+    gap: .75rem;
+}
+
+    .tm-transaction-facts dt {
+        font-size: .8125rem;
+    }
+
+    .tm-transaction-facts dd {
+        margin: 0;
+        overflow-wrap: anywhere;
+    }
+
+.tm-transaction-select {
+    flex: 1 1 12rem;
+    max-width: 20rem;
+}
+
+.tm-dispute-open,
+.tm-dispute-next {
+    padding: .75rem 1rem;
+    border-radius: .75rem;
+    background: rgba(var(--sc-primary-rgb), .06);
+    border: 1px solid var(--tm-border);
+}

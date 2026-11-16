@@ -1,107 +1,162 @@
 @page "/showcase/fintech/transfer"
 @layout FintechLayout
 
-<PageTitle>Move money · Tallymint</PageTitle>
+<PageTitle>New transfer · @FintechSeedData.ProductName</PageTitle>
 
 <div class="container-xl">
     <div class="tm-page-head">
         <div>
-            <span class="sc-eyebrow">Move money</span>
-            <h1 class="tm-title">Send a transfer</h1>
-            <p class="tm-lead">Between your accounts or to someone you've paid before. You'll review it before anything moves.</p>
+            <span class="sc-eyebrow">Move money · Step 1 of 2</span>
+            <h1 class="tm-title">New transfer</h1>
+            <p class="tm-lead">Between your accounts or to a payee, today or on a later date. You'll review it before anything moves.</p>
         </div>
+        <a class="btn btn-outline-secondary" href="@($"{FintechLayout.Base}/transfers")"><Icon Name="IconName.ArrowLeft" class="me-2" aria-hidden="true" />Transfers</a>
     </div>
 
     <div class="row g-4">
         <div class="col-lg-7">
-            <Card Class="tm-card">
-                <CardBody Class="p-4" data-clarity-mask="true">
-                    <ShowcaseDemoNotice Class="mb-4" Text="Demo only: no money moves. Transfers change this demo's balances until you reload." />
+            <form class="tm-panel" @onsubmit="Continue" @onsubmit:preventDefault novalidate aria-label="New transfer">
+                <ShowcaseDemoNotice Class="mb-4" Text="Demo only: no money moves. Transfers change this demo's balances in this browser tab." />
 
-                    <EditForm EditContext="editContext" OnValidSubmit="Review" FormName="tm-transfer">
-                        <DataAnnotationsValidator />
-
-                        <fieldset class="mb-4">
-                            <legend class="form-label fw-semibold fs-6" id="tm-from-label">From</legend>
-                            <RadioButtonGroup TValue="string" @bind-Value="form.FromAccountId" AriaLabel="From" aria-labelledby="tm-from-label" Class="w-100 flex-wrap">
-                                @foreach (var account in SourceAccounts)
-                                {
-                                    <ButtonGroupItem Value="account.Id" Id="@($"tm-from-{account.Id}")" Class="text-start">
-                                        <span class="d-block fw-semibold">@account.Name</span>
-                                        <small class="tm-mono">@FintechDisplay.Money(account.Available) available</small>
-                                    </ButtonGroupItem>
-                                }
-                            </RadioButtonGroup>
-                        </fieldset>
-
-                        <div class="row g-3">
-                            <div class="col-md-7">
-                                <label class="form-label fw-semibold" for="tm-to">To</label>
-                                <InputSelect id="tm-to" class="form-select" @bind-Value="form.ToId">
-                                    <option value="">Choose a recipient</option>
-                                    <optgroup label="Your accounts">
-                                        @foreach (var account in State.Accounts.Where(account => account.Id != form.FromAccountId))
-                                        {
-                                            <option value="@account.Id">@account.Name (@account.MaskedNumber)</option>
-                                        }
-                                    </optgroup>
-                                    <optgroup label="Saved payees">
-                                        @foreach (var payee in State.Payees)
-                                        {
-                                            <option value="@payee.Id">@payee.Name (@payee.MaskedAccount)</option>
-                                        }
-                                    </optgroup>
-                                </InputSelect>
-                                <ValidationMessage For="() => form.ToId" />
-                            </div>
-                            <div class="col-md-5">
-                                <label class="form-label fw-semibold" for="tm-amount">Amount</label>
-                                <CurrencyInput TValue="decimal" Id="tm-amount" @bind-Value="form.Amount" Locale="en-US" Placeholder="$0.00" />
-                                <ValidationMessage For="() => form.Amount" />
-                            </div>
-                            <div class="col-md-5">
-                                <label class="form-label fw-semibold" for="tm-date">Date</label>
-                                <DateInput TValue="DateOnly" Id="tm-date" @bind-Value="form.Date" Min="Today" Max="Today.AddDays(60)" EnableMinMax="true" />
-                                <div class="form-text">Today sends at once; a later date schedules it.</div>
-                            </div>
-                            <div class="col-md-7">
-                                <label class="form-label fw-semibold" for="tm-note">Note <span class="fw-normal text-body-secondary">(optional)</span></label>
-                                <TextInput Id="tm-note" @bind-Value="form.Note" MaxLength="40" Placeholder="Rent for December" />
-                                <ValidationMessage For="() => form.Note" />
-                            </div>
-                        </div>
-
-                        @if (ruleError is not null)
+                <fieldset class="mb-4">
+                    <legend class="form-label fw-semibold fs-6">From</legend>
+                    <div class="row row-cols-1 row-cols-sm-2 g-2">
+                        @foreach (var account in SourceAccounts)
                         {
-                            <Alert Color="AlertColor.Danger" Class="mt-4 mb-0" role="alert">
-                                <Icon Name="IconName.ExclamationTriangleFill" class="me-2" aria-hidden="true" />@ruleError
-                            </Alert>
+                            var inputId = $"tm-tf-from-{account.Id}";
+                            var reserved = State.Reserved(account.Id);
+                            <div class="col" @key="account.Id"><div class="form-check border rounded-3 p-3 ps-5 h-100">
+                                <input class="form-check-input" type="radio" name="tm-tf-from" id="@inputId" value="@account.Id"
+                                       checked="@(fromId == account.Id)" @onchange="() => SelectFrom(account.Id)" />
+                                <label class="form-check-label w-100" for="@inputId">
+                                    <span class="d-block fw-semibold">@account.Name</span>
+                                    <span class="d-block small tm-mono">@FintechDisplay.Money(State.Available(account)) available</span>
+                                    @if (reserved > 0)
+                                    {
+                                        <span class="d-block small text-body-secondary">after @FintechDisplay.Money(reserved) set aside for scheduled and held transfers</span>
+                                    }
+                                </label>
+                            </div></div>
                         }
+                    </div>
+                </fieldset>
 
-                        <Button Type="ButtonType.Submit" Color="ButtonColor.Primary" Size="ButtonSize.Large" Class="w-100 mt-4">
-                            Review transfer
-                        </Button>
-                    </EditForm>
-                </CardBody>
-            </Card>
-        </div>
-        <div class="col-lg-5">
-            <Card Class="tm-card">
-                <CardHeader><h2 class="tm-card-title">Your balances</h2></CardHeader>
-                <CardBody Class="pt-0">
-                    @foreach (var account in State.Accounts)
+                <div class="mb-4">
+                    <label class="form-label fw-semibold" for="tm-tf-to">To</label>
+                    <select id="tm-tf-to" class="form-select" @bind="toId" aria-describedby="tm-tf-to-help">
+                        <option value="">Choose who to send money to</option>
+                        <optgroup label="Your accounts">
+                            @foreach (var account in State.Accounts.Where(account => account.Id != fromId))
+                            {
+                                <option value="@account.Id">@account.Name (@account.MaskedNumber)@(account.Kind == FintechAccountKind.CreditCard ? ", a card payment" : string.Empty)</option>
+                            }
+                        </optgroup>
+                        @if (State.Payees.Count > 0)
+                        {
+                            <optgroup label="Payees">
+                                @foreach (var payee in State.Payees)
+                                {
+                                    <option value="@payee.Id">@PayeeOption(payee)</option>
+                                }
+                            </optgroup>
+                        }
+                    </select>
+                    <div class="form-text" id="tm-tf-to-help">
+                        @if (SelectedPayee is { } chosen)
+                        {
+                            <span class="d-block">@chosen.BankName, account @chosen.MaskedAccount. @MatchHint(chosen)</span>
+                        }
+                        Paying someone new? <a href="@($"{FintechLayout.Base}/payees/new")">Add a payee</a> first.
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label fw-semibold" for="tm-tf-amount">Amount</label>
+                    <CurrencyInput TValue="decimal?" Id="tm-tf-amount" @bind-Value="amount" Locale="en-US" Placeholder="$0.00"
+                                   aria-describedby="tm-tf-amount-help tm-tf-amount-hint" />
+                    <div class="form-text" id="tm-tf-amount-help">
+                        @if (SelectedSource is { } source)
+                        {
+                            @($"{source.Name} has {FintechDisplay.Money(State.Available(source))} available. Transfers are up to $50,000.00 each.")
+                        }
+                        else
+                        {
+                            @("Choose an account to send from.")
+                        }
+                    </div>
+                    @* Live hints: polite, so they're read once the amount or recipient changes, without interrupting. *@
+                    <div id="tm-tf-amount-hint" aria-live="polite">
+                        @if (OverAvailable)
+                        {
+                            <p class="small fw-semibold text-danger-emphasis mb-0 mt-2"><Icon Name="IconName.ExclamationCircle" class="me-2" aria-hidden="true" />That's more than the @FintechDisplay.Money(SelectedSource is { } over ? State.Available(over) : 0) available.</p>
+                        }
+                        else if (HoldHint is { } hold)
+                        {
+                            <p class="small fw-semibold text-warning-emphasis mb-0 mt-2"><Icon Name="IconName.ShieldExclamation" class="me-2" aria-hidden="true" />@hold</p>
+                        }
+                    </div>
+                </div>
+
+                <fieldset class="mb-4">
+                    <legend class="form-label fw-semibold fs-6">When</legend>
+                    <div class="d-flex flex-wrap column-gap-4 row-gap-2">
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="tm-tf-when" id="tm-tf-when-today" checked="@(!isLater)" @onchange="() => SetLater(false)" />
+                            <label class="form-check-label" for="tm-tf-when-today">Today <span class="text-body-secondary">(sent straight away, unless held for a check)</span></label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="tm-tf-when" id="tm-tf-when-later" checked="@isLater" @onchange="() => SetLater(true)" />
+                            <label class="form-check-label" for="tm-tf-when-later">Later <span class="text-body-secondary">(on a date you choose)</span></label>
+                        </div>
+                    </div>
+                    @if (isLater)
                     {
-                        <div class="tm-row" @key="account.Id">
-                            <span class="tm-row-text">
-                                <span class="tm-row-title">@account.Name</span>
-                                <span class="tm-row-sub">@FintechDisplay.KindLabel(account.Kind) · @account.MaskedNumber</span>
-                            </span>
-                            <span class="tm-mono fw-semibold">@(account.Balance < 0 ? "−" : string.Empty)@FintechDisplay.Money(account.Balance)</span>
+                        <div class="mt-3">
+                            <label class="form-label" for="tm-tf-date">Date</label>
+                            <input id="tm-tf-date" class="form-control" type="date" @bind="laterDate" min="@IsoDate(State.Today)" max="@IsoDate(LastDate)"
+                                   aria-describedby="tm-tf-date-help" />
+                            <div class="form-text" id="tm-tf-date-help">From today up to @Transfers.DateText(LastDate). The money is set aside until then, and you can cancel it before it's sent.</div>
                         </div>
                     }
-                    <p class="small text-body-secondary mt-3 mb-0">Transfers to the credit card count as a card payment and lower what you owe.</p>
-                </CardBody>
-            </Card>
+                </fieldset>
+
+                <div class="mb-2">
+                    <label class="form-label fw-semibold" for="tm-tf-note">Note <span class="fw-normal text-body-secondary">(optional)</span></label>
+                    <input id="tm-tf-note" class="form-control" type="text" maxlength="@NoteMax" @bind="note" @bind:event="oninput" placeholder="Rent for December"
+                           aria-describedby="tm-tf-note-help" />
+                    <div class="form-text" id="tm-tf-note-help">Up to @NoteMax characters (@note.Length used). It shows on your transactions and the receipt.</div>
+                </div>
+
+                <div tabindex="-1" @ref="errorRegion">
+                    @if (error is not null)
+                    {
+                        <Alert Color="AlertColor.Danger" Class="mt-3 mb-0" role="alert">
+                            <Icon Name="IconName.ExclamationTriangleFill" class="me-2" aria-hidden="true" />@error
+                        </Alert>
+                    }
+                </div>
+
+                <Button Type="ButtonType.Submit" Color="ButtonColor.Primary" Size="ButtonSize.Large" Class="w-100 mt-4">
+                    Continue to review
+                </Button>
+            </form>
+        </div>
+
+        <div class="col-lg-5">
+            <section class="tm-panel" aria-labelledby="tm-tf-rules-title">
+                <h2 class="tm-section-title" id="tm-tf-rules-title">Before you send</h2>
+                <ul class="small d-grid gap-2 ps-3 mb-0">
+                    <li><strong>Available</strong> is the balance less money set aside for scheduled transfers and transfers held for a check.</li>
+                    <li><strong>Today</strong> sends the money straight away; once sent, it can't be cancelled.</li>
+                    <li><strong>Later</strong> schedules it. The money is set aside until the date, and you can cancel it until then.</li>
+                    <li>
+                        <strong>Checks:</strong> to protect you from scams, we hold a payment to a payee for a routine check when it's
+                        @FintechDisplay.Money(FintechState.HoldLargeAmount) or more, or @FintechDisplay.Money(FintechState.HoldNewPayeeAmount) or more to a payee added in
+                        the last @FintechState.NewPayeeDays days or whose name couldn't be confirmed. We usually check within one business day.
+                    </li>
+                    <li>Moving money between your own accounts is never held.</li>
+                </ul>
+            </section>
         </div>
     </div>
 </div>

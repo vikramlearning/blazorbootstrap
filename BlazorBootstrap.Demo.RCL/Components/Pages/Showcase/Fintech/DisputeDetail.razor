@@ -1,0 +1,130 @@
+@page "/showcase/fintech/disputes/{Id:int}"
+@layout FintechLayout
+
+<PageTitle>Dispute @Id · @FintechSeedData.ProductName</PageTitle>
+
+<div class="container-xl">
+    @if (Dispute is not { } dispute)
+    {
+        <section class="tm-not-found" aria-labelledby="tm-dispute-missing-title">
+            <span class="tm-icon fs-4" aria-hidden="true"><Icon Name="IconName.Flag" /></span>
+            <h1 class="tm-title fs-3 mt-3 mb-2" id="tm-dispute-missing-title">We couldn't find that dispute</h1>
+            <p class="text-body-secondary mb-4">There's no dispute @Id on your account. Check the number, or open it from your disputes.</p>
+            <div class="d-flex justify-content-center flex-wrap gap-2">
+                <Button Type="ButtonType.Link" To="@DisputesPath" Color="ButtonColor.Primary">Your disputes</Button>
+                <Button Type="ButtonType.Link" To="@Disputes.TransactionsPath" Color="ButtonColor.Primary" Outline="true">View transactions</Button>
+            </div>
+        </section>
+    }
+    else
+    {
+        var transaction = State.FindTransaction(dispute.TransactionId);
+        var closed = dispute.Status is FintechDisputeStatus.Refunded or FintechDisputeStatus.Declined;
+
+        <p class="mb-3">
+            <a class="small" href="@DisputesPath"><Icon Name="IconName.ArrowLeft" class="me-1" aria-hidden="true" />All disputes</a>
+        </p>
+
+        <div class="tm-page-head">
+            <div>
+                <span class="sc-eyebrow">Dispute @dispute.Id</span>
+                <h1 class="tm-title">@FintechDisplay.Money(dispute.Amount) at @dispute.Merchant</h1>
+                <p class="tm-lead">
+                    <Badge Color="Disputes.StatusColor(dispute.Status)" Class="rounded-pill me-2">@Disputes.StatusText(dispute.Status)</Badge>
+                    @StatusSentence(dispute)
+                </p>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-lg-7">
+                <Card Class="tm-card mb-4">
+                    <CardHeader><h2 class="tm-card-title">Progress</h2></CardHeader>
+                    <CardBody Class="pt-0">
+                        <ol class="tm-dispute-timeline" aria-label="Dispute progress">
+                            @foreach (var step in Steps(dispute))
+                            {
+                                <li class="tm-dispute-step @(step.Done ? "tm-dispute-step-done" : null) @(step.IsCurrent ? "tm-dispute-step-current" : null)"
+                                    aria-current="@(step.IsCurrent ? "step" : null)">
+                                    <span class="tm-dispute-dot" aria-hidden="true">
+                                        @if (step.Done)
+                                        {
+                                            <Icon Name="IconName.Check2" />
+                                        }
+                                    </span>
+                                    <span class="tm-dispute-step-text">
+                                        <span class="fw-semibold">
+                                            <span class="visually-hidden">@(step.IsCurrent ? "Current step: " : step.Done ? "Done: " : "Not yet: ")</span>@step.Title
+                                            @if (step.IsCurrent)
+                                            {
+                                                <span class="tm-dispute-now" aria-hidden="true">Now</span>
+                                            }
+                                        </span>
+                                        <span class="small text-body-secondary">@step.Note</span>
+                                    </span>
+                                </li>
+                            }
+                        </ol>
+                    </CardBody>
+                </Card>
+
+                <Card Class="tm-card">
+                    <CardHeader><h2 class="tm-card-title">What happens next</h2></CardHeader>
+                    <CardBody Class="pt-0">
+                        @if (closed)
+                        {
+                            <h3 class="h6 fw-bold">Our decision</h3>
+                            <p class="mb-3">@(string.IsNullOrWhiteSpace(dispute.Resolution) ? DefaultResolution(dispute.Status) : dispute.Resolution)</p>
+                        }
+                        <p class="mb-0">@NextText(dispute)</p>
+                    </CardBody>
+                </Card>
+            </div>
+            <div class="col-lg-5">
+                <Card Class="tm-card mb-4">
+                    <CardHeader><h2 class="tm-card-title">Details</h2></CardHeader>
+                    <CardBody Class="pt-0">
+                        <dl class="tm-summary tm-dispute-facts mb-0">
+                            <dt>Dispute number</dt>
+                            <dd class="tm-mono">@dispute.Id</dd>
+                            <dt>Merchant</dt>
+                            <dd>@dispute.Merchant</dd>
+                            <dt>Amount disputed</dt>
+                            <dd class="tm-mono">@FintechDisplay.Money(dispute.Amount)</dd>
+                            <dt>Reason</dt>
+                            <dd>@Disputes.ReasonText(dispute.Reason)</dd>
+                            <dt>Opened</dt>
+                            <dd>@Disputes.DayText(dispute.CreatedAt)</dd>
+                            @if (dispute.ClosedAt is { } closedAt)
+                            {
+                                <dt>Closed</dt>
+                                <dd>@Disputes.DayText(closedAt)</dd>
+                            }
+                            <dt>Transaction</dt>
+                            <dd>
+                                @if (transaction is not null)
+                                {
+                                    <a href="@($"{FintechLayout.Base}/transactions/{transaction.Id.ToString(CultureInfo.InvariantCulture)}")">
+                                        @transaction.Description, @FintechDisplay.Day(transaction.Date)
+                                    </a>
+                                    <span class="d-block small fw-normal text-body-secondary">
+                                        @FintechDisplay.SignedMoney(transaction.Amount)@(State.FindAccount(transaction.AccountId) is { } account ? $" from {account.Name}" : null)
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="fw-normal text-body-secondary">The transaction is no longer listed.</span>
+                                }
+                            </dd>
+                        </dl>
+                    </CardBody>
+                </Card>
+
+                <section class="tm-panel" aria-labelledby="tm-dispute-yours-title">
+                    <h2 class="tm-section-title" id="tm-dispute-yours-title">What you told us</h2>
+                    <p class="tm-dispute-details mb-0">@dispute.Details</p>
+                </section>
+            </div>
+        </div>
+    }
+</div>

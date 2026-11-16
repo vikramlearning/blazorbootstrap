@@ -1,0 +1,112 @@
+@page "/showcase/fintech/transfers"
+@layout FintechLayout
+
+<PageTitle>Transfers · @FintechSeedData.ProductName</PageTitle>
+
+<div class="container-xl">
+    <div class="tm-page-head">
+        <div>
+            <span class="sc-eyebrow">Move money</span>
+            <h1 class="tm-title">Transfers</h1>
+            <p class="tm-lead">What's coming up, what's held for a check, and what you've sent. Open a transfer for its receipt.</p>
+        </div>
+        <div class="d-flex flex-wrap gap-2">
+            <a class="btn btn-outline-secondary" href="@($"{FintechLayout.Base}/payees")"><Icon Name="IconName.People" class="me-2" aria-hidden="true" />Payees</a>
+            <a class="btn btn-primary btn-lg" href="@($"{FintechLayout.Base}/transfer")"><Icon Name="IconName.PlusLg" class="me-2" aria-hidden="true" />New transfer</a>
+        </div>
+    </div>
+
+    @* Always rendered and focusable, so a cancellation is announced and focus has somewhere to go once the dialog closes. *@
+    <p class="tm-tr-status" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
+
+    @{
+        var transfers = State.MyTransfers();
+        var upcoming = transfers.Where(IsWaiting).OrderBy(transfer => transfer.Date).ThenBy(transfer => transfer.CreatedAt).ToList();
+        var recent = transfers.Where(transfer => !IsWaiting(transfer)).OrderByDescending(transfer => transfer.ClosedAt ?? transfer.CreatedAt).ToList();
+    }
+
+    <section class="tm-panel mb-4" aria-labelledby="tm-tr-upcoming-title">
+        <h2 class="tm-section-title" id="tm-tr-upcoming-title">Coming up</h2>
+        @if (upcoming.Count == 0)
+        {
+            <p class="text-body-secondary mb-0">Nothing coming up. Transfers you schedule for a later date, and transfers held for a check, appear here until they're sent.</p>
+        }
+        else
+        {
+            <p class="small text-body-secondary">The money for these is set aside in the account they're sent from. Cancel one to release it.</p>
+            <ul class="list-unstyled mb-0">
+                @foreach (var transfer in upcoming)
+                {
+                    <li class="tm-row tm-tr-row" @key="transfer.Reference">
+                        <span class="tm-icon" aria-hidden="true"><Icon Name="@(transfer.Status == FintechTransferStatus.Held ? IconName.ShieldExclamation : IconName.CalendarEvent)" /></span>
+                        <span class="tm-row-text">
+                            <a class="tm-row-title tm-tr-link" href="@ReceiptUrl(transfer.Reference)">To @transfer.ToName</a>
+                            <span class="tm-row-sub">From @AccountName(transfer.FromAccountId) · @DateText(transfer.Date) · <span class="tm-mono">@transfer.Reference</span></span>
+                            @if (transfer.HoldReason is { } reason)
+                            {
+                                <span class="tm-row-sub">Held for a check: @reason. We usually check within one business day.</span>
+                            }
+                        </span>
+                        <span class="tm-tr-side">
+                            <span class="tm-mono fw-semibold">@FintechDisplay.Money(transfer.Amount)</span>
+                            <Badge Color="StatusColor(transfer.Status)" Class="rounded-pill">@StatusText(transfer.Status)</Badge>
+                            <button type="button" class="btn btn-sm btn-outline-danger" @ref="cancelButtons[transfer.Reference]" @onclick="() => AskCancelAsync(transfer)"
+                                    aria-label="@($"Cancel the {FintechDisplay.Money(transfer.Amount)} transfer to {transfer.ToName}")">Cancel</button>
+                        </span>
+                    </li>
+                }
+            </ul>
+        }
+    </section>
+
+    <section class="tm-panel" aria-labelledby="tm-tr-recent-title">
+        <h2 class="tm-section-title" id="tm-tr-recent-title">Recent</h2>
+        @if (recent.Count == 0)
+        {
+            <p class="text-body-secondary mb-3">No sent, rejected, or cancelled transfers yet.</p>
+            <a class="btn btn-primary" href="@($"{FintechLayout.Base}/transfer")">New transfer</a>
+        }
+        else
+        {
+            <ul class="list-unstyled mb-0">
+                @foreach (var transfer in recent)
+                {
+                    <li class="tm-row tm-tr-row" @key="transfer.Reference">
+                        <span class="tm-icon" aria-hidden="true"><Icon Name="@StatusIcon(transfer.Status)" /></span>
+                        <span class="tm-row-text">
+                            <a class="tm-row-title tm-tr-link" href="@ReceiptUrl(transfer.Reference)">To @transfer.ToName</a>
+                            <span class="tm-row-sub">From @AccountName(transfer.FromAccountId) · @ClosedText(transfer) · <span class="tm-mono">@transfer.Reference</span></span>
+                            @if (transfer.Status == FintechTransferStatus.Rejected && transfer.RejectReason is { } reason)
+                            {
+                                <span class="tm-row-sub">Not sent: @reason</span>
+                            }
+                        </span>
+                        <span class="tm-tr-side">
+                            <span class="tm-mono fw-semibold">@FintechDisplay.Money(transfer.Amount)</span>
+                            <Badge Color="StatusColor(transfer.Status)" Class="rounded-pill">@StatusText(transfer.Status)</Badge>
+                        </span>
+                    </li>
+                }
+            </ul>
+        }
+    </section>
+</div>
+
+@* Outside the lists, so the dialog is never removed while it is open. *@
+<Modal @ref="cancelModal" IsVerticallyCentered="true" ShowCloseButton="false" aria-labelledby="tm-tr-cancel-title" OnHidden="OnCancelHiddenAsync">
+    <HeaderTemplate>
+        <h2 class="modal-title h5" id="tm-tr-cancel-title">Cancel the transfer to @cancelling?.ToName?</h2>
+    </HeaderTemplate>
+    <BodyTemplate>
+        @if (cancelling is { } transfer)
+        {
+            <p class="mb-2">@CancelText(transfer)</p>
+            <p class="mb-0">The @FintechDisplay.Money(transfer.Amount) set aside in @AccountName(transfer.FromAccountId) is released and available to spend again.</p>
+        }
+        <p class="text-danger-emphasis fw-semibold small mt-2 mb-0" role="alert">@dialogError</p>
+    </BodyTemplate>
+    <FooterTemplate>
+        <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => cancelModal.HideAsync()">Keep transfer</Button>
+        <Button Color="ButtonColor.Danger" @onclick="ConfirmCancelAsync" Disabled="cancelBusy">Cancel transfer</Button>
+    </FooterTemplate>
+</Modal>

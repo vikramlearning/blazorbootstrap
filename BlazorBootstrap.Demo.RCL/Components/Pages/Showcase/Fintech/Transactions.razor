@@ -1,16 +1,16 @@
 @page "/showcase/fintech/transactions"
 @layout FintechLayout
 
-<PageTitle>Transactions · Tallymint</PageTitle>
+<PageTitle>Transactions · @FintechSeedData.ProductName</PageTitle>
 
 <div class="container-xl">
     <div class="tm-page-head">
         <div>
             <span class="sc-eyebrow">Transactions</span>
             <h1 class="tm-title">Every payment, in one place</h1>
-            <p class="tm-lead">Search and filter the last 90 days across all accounts.</p>
+            <p class="tm-lead">Search and filter the last 90 days across all accounts. Open a transaction to change its category, add a note, or dispute it.</p>
         </div>
-        <RadioButtonGroup TValue="FintechPeriod" Value="period" ValueExpression="() => period" ValueChanged="OnPeriodChangedAsync"
+        <RadioButtonGroup TValue="FintechPeriod" Value="period" ValueExpression="() => period" ValueChanged="OnPeriodChanged"
                           AriaLabel="Period" Size="ButtonGroupSize.Small">
             <ButtonGroupItem Value="FintechPeriod.Last30Days" Id="tm-period-30">30 days</ButtonGroupItem>
             <ButtonGroupItem Value="FintechPeriod.Last60Days" Id="tm-period-60">60 days</ButtonGroupItem>
@@ -42,18 +42,18 @@
     <Card Class="tm-card">
         <CardBody Class="p-3 p-lg-4">
             <div class="row g-2 align-items-end mb-3" role="search" aria-label="Filter transactions">
-                <div class="col-md-5">
-                    <label class="form-label small fw-semibold" for="tm-search">Search</label>
+                <div class="col-md-6 col-lg-5">
+                    <label class="form-label small fw-semibold" for="tm-search">Search by description</label>
                     <InputGroup>
                         <InputGroupText><Icon Name="IconName.Search" aria-hidden="true" /></InputGroupText>
                         @* The bound value changes only on change; @oninput filters live without writing older text back into the box. *@
-                        <TextInput Id="tm-search" Value="@searchBoxValue" ValueExpression="() => searchBoxValue" ValueChanged="OnSearchChangedAsync"
-                                   @oninput="OnSearchInputAsync" Placeholder="Merchant or description" />
+                        <TextInput @ref="searchInput" Id="tm-search" Value="@searchBoxValue" ValueExpression="() => searchBoxValue" ValueChanged="OnSearchChanged"
+                                   @oninput="OnSearchInput" Placeholder="Merchant or description" />
                     </InputGroup>
                 </div>
-                <div class="col-6 col-md-3">
+                <div class="col-6 col-md-3 col-lg-2">
                     <label class="form-label small fw-semibold" for="tm-account">Account</label>
-                    <select id="tm-account" class="form-select" value="@accountFilter" @onchange="OnAccountChangedAsync">
+                    <select id="tm-account" class="form-select" value="@accountFilter" @onchange="OnAccountChanged">
                         <option value="">All accounts</option>
                         @foreach (var account in State.Accounts)
                         {
@@ -61,9 +61,9 @@
                         }
                     </select>
                 </div>
-                <div class="col-6 col-md-3">
+                <div class="col-6 col-md-3 col-lg-2">
                     <label class="form-label small fw-semibold" for="tm-category">Category</label>
-                    <select id="tm-category" class="form-select" value="@categoryFilter" @onchange="OnCategoryChangedAsync">
+                    <select id="tm-category" class="form-select" value="@categoryFilter" @onchange="OnCategoryChanged">
                         <option value="">All categories</option>
                         @foreach (var category in State.Categories)
                         {
@@ -71,48 +71,90 @@
                         }
                     </select>
                 </div>
-                <div class="col-md-1 text-md-end">
-                    <span class="small text-body-secondary" aria-live="polite">@MatchText</span>
+                <div class="col-lg-3 d-flex flex-wrap align-items-center gap-2 justify-content-lg-end">
+                    @* Polite, so the count is read after typing pauses or a filter changes. *@
+                    <span class="small text-body-secondary" role="status">@MatchText</span>
+                    @if (HasFilters)
+                    {
+                        <Button Color="ButtonColor.Link" Size="ButtonSize.Small" Class="p-0" @onclick="ClearFilters">Clear filters</Button>
+                    }
                 </div>
             </div>
 
-            <Grid @ref="grid"
-                  TItem="FintechTransaction"
-                  Class="table table-hover"
-                  GridContainerClass="tm-grid"
-                  DataProvider="TransactionsDataProvider"
-                  RowKeySelector="item => item.Id"
-                  AllowSorting="true"
-                  AllowPaging="true"
-                  PageSize="15"
-                  PaginationItemsTextFormat="{0}–{1} of {2} transactions"
-                  Responsive="true"
-                  EmptyText="No transactions match these filters.">
-                <GridColumns>
-                    <GridColumn TItem="FintechTransaction" HeaderText="Date" PropertyName="Date" SortKeySelector="item => item.Date"
-                                IsDefaultSortColumn="true" SortDirection="SortDirection.Descending" TextNoWrap="true">
-                        <span class="tm-mono small">@FintechDisplay.Day(context.Date)</span>
-                    </GridColumn>
-                    <GridColumn TItem="FintechTransaction" HeaderText="Description" PropertyName="Description" SortKeySelector="item => item.Description">
-                        <span class="fw-semibold">@context.Description</span>
-                        @if (context.IsPending)
+            <div class="table-responsive tm-grid">
+                <table class="table table-hover align-middle mb-0">
+                    <caption class="caption-top small">@CaptionText</caption>
+                    <thead>
+                        <tr>
+                            <th scope="col">Date</th>
+                            <th scope="col">Description</th>
+                            <th scope="col" class="d-none d-md-table-cell">Category</th>
+                            <th scope="col" class="d-none d-lg-table-cell">Account</th>
+                            <th scope="col" class="text-end">Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Shown.Count == 0)
                         {
-                            <Badge Color="BadgeColor.Secondary" Class="ms-1">@(context.Date.Date > FintechSeedData.Today ? "Scheduled" : "Pending")</Badge>
+                            <tr>
+                                <td colspan="5" class="text-body-secondary py-4 text-center">No transactions match these filters.</td>
+                            </tr>
                         }
-                    </GridColumn>
-                    <GridColumn TItem="FintechTransaction" HeaderText="Category" PropertyName="CategoryId" SortKeySelector="item => item.CategoryId" TextNoWrap="true">
-                        @{ var category = State.FindCategory(context.CategoryId); }
-                        <Icon Name="@category.IconName" class="me-1 text-body-secondary" aria-hidden="true" />@category.Name
-                    </GridColumn>
-                    <GridColumn TItem="FintechTransaction" HeaderText="Account" PropertyName="AccountId" SortKeySelector="item => item.AccountId" TextNoWrap="true">
-                        @State.FindAccount(context.AccountId)?.Name
-                    </GridColumn>
-                    <GridColumn TItem="FintechTransaction" HeaderText="Amount" PropertyName="Amount" SortKeySelector="item => item.Amount"
-                                TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" TextNoWrap="true">
-                        <span class="tm-mono fw-semibold @FintechDisplay.AmountClass(context.Amount)">@FintechDisplay.SignedMoney(context.Amount)</span>
-                    </GridColumn>
-                </GridColumns>
-            </Grid>
+                        @foreach (var (item, index) in Shown.Select((item, index) => (item, index)))
+                        {
+                            var category = State.FindCategory(item.CategoryId);
+                            var accountName = State.FindAccount(item.AccountId)?.Name;
+                            <tr @key="item.Id">
+                                <td class="tm-mono small text-nowrap">@FintechDisplay.Day(item.Date)</td>
+                                <td class="text-break">
+                                    @if (index == firstNewIndex)
+                                    {
+                                        @* The first row "Show more" added: focus moves here, so keyboard users carry on reading. *@
+                                        <a class="fw-semibold" href="@TransactionPath(item.Id)" @ref="firstNewLink">@item.Description</a>
+                                    }
+                                    else
+                                    {
+                                        <a class="fw-semibold" href="@TransactionPath(item.Id)">@item.Description</a>
+                                    }
+                                    @if (item.IsPending)
+                                    {
+                                        <Badge Color="BadgeColor.Secondary" Class="ms-1">@(DateOnly.FromDateTime(item.Date) > State.Today ? "Scheduled" : "Pending")</Badge>
+                                    }
+                                    @if (item.DisputeId is not null)
+                                    {
+                                        <Badge Color="BadgeColor.Info" Class="ms-1">Disputed</Badge>
+                                    }
+                                    @if (!string.IsNullOrEmpty(item.Note))
+                                    {
+                                        <span class="d-block small text-body-secondary"><Icon Name="IconName.Sticky" class="me-1" aria-hidden="true" /><span class="visually-hidden">Note: </span>@item.Note</span>
+                                    }
+                                    @* Below md the category and account columns are hidden, so they show under the description instead. *@
+                                    <span class="d-block d-lg-none small text-body-secondary">
+                                        <span class="d-md-none">@category.Name · </span>@accountName
+                                    </span>
+                                </td>
+                                <td class="d-none d-md-table-cell text-nowrap small">
+                                    <Icon Name="@category.IconName" class="me-1 text-body-secondary" aria-hidden="true" />@category.Name
+                                </td>
+                                <td class="d-none d-lg-table-cell text-nowrap small">@accountName</td>
+                                <td class="text-end text-nowrap">
+                                    <span class="tm-mono fw-semibold @FintechDisplay.AmountClass(item.Amount)">@FintechDisplay.SignedMoney(item.Amount)</span>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            @if (FilteredCount > Shown.Count)
+            {
+                <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mt-3">
+                    <span class="small text-body-secondary">Showing @Shown.Count of @FilteredCount</span>
+                    <Button Color="ButtonColor.Primary" Outline="true" Size="ButtonSize.Small" @onclick="ShowMore">
+                        Show @Math.Min(PageSize, FilteredCount - Shown.Count) more
+                    </Button>
+                </div>
+            }
         </CardBody>
     </Card>
 </div>
