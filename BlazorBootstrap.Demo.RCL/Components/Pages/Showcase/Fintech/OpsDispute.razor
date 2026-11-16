@@ -1,0 +1,254 @@
+@page "/showcase/fintech/ops/disputes/{Id:int}"
+@layout FintechOpsLayout
+
+@if (Dispute is not { } dispute)
+{
+    <PageTitle>Dispute not found · Operations · @FintechSeedData.ProductName</PageTitle>
+
+    <div class="container-fluid px-lg-4">
+        <section class="tm-not-found" aria-labelledby="tm-opsdispute-missing-title">
+            <span class="tm-icon fs-4" aria-hidden="true"><Icon Name="IconName.ExclamationOctagon" /></span>
+            <h1 class="tm-title fs-3 mt-3 mb-2" id="tm-opsdispute-missing-title">We couldn't find that dispute</h1>
+            <p class="tm-lead mb-4">There's no dispute @Id. Check the number, or open it from the disputes list.</p>
+            <div class="d-flex justify-content-center flex-wrap gap-2">
+                <Button Type="ButtonType.Link" To="@DisputesPath" Color="ButtonColor.Primary">All disputes</Button>
+                <Button Type="ButtonType.Link" To="@FintechOpsLayout.Base" Color="ButtonColor.Primary" Outline="true">Operations overview</Button>
+            </div>
+        </section>
+    </div>
+}
+else
+{
+    var customer = State.FindCustomer(dispute.CustomerId);
+    var customerName = customer?.Name ?? dispute.CustomerId;
+    var open = OpsDisputes.IsOpen(dispute);
+    var transaction = Charge(dispute);
+    var account = transaction is null ? null : State.FindAccount(transaction.AccountId);
+
+    <PageTitle>Dispute @dispute.Id · Operations · @FintechSeedData.ProductName</PageTitle>
+
+    <div class="container-fluid px-lg-4">
+        <p class="mb-3">
+            <a class="small" href="@DisputesPath"><Icon Name="IconName.ArrowLeft" class="me-1" aria-hidden="true" />All disputes</a>
+        </p>
+
+        <div class="tm-page-head">
+            <div>
+                <span class="sc-eyebrow">Dispute @dispute.Id · @customerName</span>
+                <h1 class="tm-title">@FintechDisplay.Money(dispute.Amount) at @dispute.Merchant</h1>
+                <p class="tm-lead">
+                    <Badge Color="Disputes.StatusColor(dispute.Status)" Class="rounded-pill me-2">@Disputes.StatusText(dispute.Status)</Badge>
+                    @StatusSentence(dispute)
+                </p>
+            </div>
+        </div>
+
+        @* Always rendered and focusable, so an action's outcome is announced and focus has somewhere to go. *@
+        <p class="fw-semibold tm-opsdispute-status @(statusIsError ? "text-danger-emphasis" : null)" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
+
+        <div class="row g-4">
+            <div class="col-lg-7">
+                @if (open)
+                {
+                    <section class="tm-panel mb-4" aria-labelledby="tm-opsdispute-actions-title">
+                        <h2 class="tm-section-title" id="tm-opsdispute-actions-title">Decide</h2>
+                        @if (dispute.Status == FintechDisputeStatus.Submitted)
+                        {
+                            <p class="small text-body-secondary mb-2">Start the review when you contact @dispute.Merchant. @customerName gets an alert that it's under review.</p>
+                            <Button Color="ButtonColor.Primary" Class="mb-3" @onclick="StartReview">
+                                <Icon Name="IconName.Search" class="me-1" aria-hidden="true" />Start review
+                            </Button>
+                        }
+                        <p class="small text-body-secondary mb-2">
+                            Refund credits @FintechDisplay.Money(dispute.Amount) back to the customer; decline leaves the charge. Either closes the dispute, and @customerName reads your resolution.
+                        </p>
+                        <div class="d-flex flex-wrap gap-2">
+                            <Button @ref="refundButton" Color="ButtonColor.Success" @onclick="() => AskResolveAsync(true)">
+                                <Icon Name="IconName.ArrowCounterclockwise" class="me-1" aria-hidden="true" />Refund
+                            </Button>
+                            <Button @ref="declineButton" Color="ButtonColor.Danger" Outline="true" @onclick="() => AskResolveAsync(false)">
+                                <Icon Name="IconName.XCircle" class="me-1" aria-hidden="true" />Decline
+                            </Button>
+                        </div>
+                    </section>
+                }
+                else
+                {
+                    <Card Class="tm-card mb-4">
+                        <CardHeader><h2 class="tm-card-title">Resolution</h2></CardHeader>
+                        <CardBody Class="pt-0">
+                            <p class="mb-2">
+                                <span class="fw-semibold">@(dispute.Status == FintechDisputeStatus.Refunded ? "Refunded" : "Declined")</span>@(dispute.ClosedAt is { } closedAt ? $" on {Transfers.StampText(closedAt)}" : null).
+                                @(dispute.Status == FintechDisputeStatus.Refunded ? $"{FintechDisplay.Money(dispute.Amount)} was credited back to the customer." : "The charge stands.")
+                            </p>
+                            <h3 class="h6 fw-bold mt-3 mb-1">What the customer reads</h3>
+                            <p class="tm-opsdispute-text mb-0">@(string.IsNullOrWhiteSpace(dispute.Resolution) ? "No resolution was written." : dispute.Resolution)</p>
+                        </CardBody>
+                    </Card>
+                }
+
+                <Card Class="tm-card mb-4">
+                    <CardHeader><h2 class="tm-card-title">Progress</h2></CardHeader>
+                    <CardBody Class="pt-0">
+                        <ol class="tm-opsdispute-timeline" aria-label="Dispute progress">
+                            @foreach (var step in Steps(dispute, customerName))
+                            {
+                                <li class="tm-opsdispute-step @(step.Done ? "tm-opsdispute-step-done" : null) @(step.IsCurrent ? "tm-opsdispute-step-current" : null)"
+                                    aria-current="@(step.IsCurrent ? "step" : null)">
+                                    <span class="tm-opsdispute-dot" aria-hidden="true">
+                                        @if (step.Done)
+                                        {
+                                            <Icon Name="IconName.Check2" />
+                                        }
+                                    </span>
+                                    <span class="tm-opsdispute-step-text">
+                                        <span class="fw-semibold">
+                                            <span class="visually-hidden">@(step.IsCurrent ? "Current step: " : step.Done ? "Done: " : "Not yet: ")</span>@step.Title
+                                            @if (step.IsCurrent)
+                                            {
+                                                <span class="tm-opsdispute-now" aria-hidden="true">Now</span>
+                                            }
+                                        </span>
+                                        <span class="small text-body-secondary">@step.Note</span>
+                                    </span>
+                                </li>
+                            }
+                        </ol>
+                    </CardBody>
+                </Card>
+
+                <Card Class="tm-card">
+                    <CardHeader>
+                        <h2 class="tm-card-title">Audit entries</h2>
+                        <p class="tm-card-sub mb-0">What was done to this dispute, newest first.</p>
+                    </CardHeader>
+                    <CardBody Class="pt-0">
+                        @if (AuditEntries.Count == 0)
+                        {
+                            <p class="small text-body-secondary mb-0">Nothing is recorded for this dispute yet.</p>
+                        }
+                        else
+                        {
+                            <ul class="list-unstyled mb-0">
+                                @foreach (var entry in AuditEntries)
+                                {
+                                    <li class="tm-row tm-opsdispute-audit" @key="entry.Id">
+                                        <span class="tm-icon" aria-hidden="true"><Icon Name="IconName.JournalText" /></span>
+                                        <span class="tm-row-text">
+                                            <span class="tm-row-title">@entry.Action</span>
+                                            <span class="tm-row-sub">@Transfers.StampText(entry.At) · @entry.Actor (@entry.Role)</span>
+                                            @if (!string.IsNullOrWhiteSpace(entry.Details))
+                                            {
+                                                <span class="small tm-opsdispute-text">@entry.Details</span>
+                                            }
+                                        </span>
+                                    </li>
+                                }
+                            </ul>
+                        }
+                    </CardBody>
+                </Card>
+            </div>
+
+            <div class="col-lg-5">
+                <Card Class="tm-card mb-4">
+                    <CardHeader><h2 class="tm-card-title">Details</h2></CardHeader>
+                    <CardBody Class="pt-0">
+                        <dl class="tm-summary tm-opsdispute-facts mb-0">
+                            <dt>Customer</dt>
+                            <dd><a href="@OpsCustomers.CustomerPath(dispute.CustomerId)">@customerName</a></dd>
+                            <dt>Merchant</dt>
+                            <dd>@dispute.Merchant</dd>
+                            <dt>Amount disputed</dt>
+                            <dd class="tm-mono">@FintechDisplay.Money(dispute.Amount)</dd>
+                            <dt>Reason</dt>
+                            <dd>@OpsDisputes.ReasonText(dispute.Reason)</dd>
+                            <dt>Opened</dt>
+                            <dd>@Transfers.StampText(dispute.CreatedAt)</dd>
+                            @if (dispute.ClosedAt is { } closed)
+                            {
+                                <dt>Closed</dt>
+                                <dd>@Transfers.StampText(closed)</dd>
+                            }
+                            <dt>Age</dt>
+                            <dd>@OpsDisputes.AgeText(dispute, State.Clock.Now)</dd>
+                        </dl>
+                    </CardBody>
+                </Card>
+
+                <section class="tm-panel mb-4" aria-labelledby="tm-opsdispute-told-title">
+                    <h2 class="tm-section-title" id="tm-opsdispute-told-title">What the customer told us</h2>
+                    <p class="tm-opsdispute-text mb-0">@dispute.Details</p>
+                </section>
+
+                <section class="tm-panel" aria-labelledby="tm-opsdispute-charge-title">
+                    <h2 class="tm-section-title" id="tm-opsdispute-charge-title">Disputed transaction</h2>
+                    @if (transaction is not null)
+                    {
+                        <dl class="tm-summary tm-opsdispute-facts mb-0">
+                            <dt>Date</dt>
+                            <dd>@Disputes.DayText(transaction.Date)</dd>
+                            <dt>Account</dt>
+                            <dd>@(account is null ? transaction.AccountId : $"{account.Name} · {account.MaskedNumber}")</dd>
+                            <dt>Amount</dt>
+                            <dd class="tm-mono @FintechDisplay.AmountClass(transaction.Amount)">@FintechDisplay.SignedMoney(transaction.Amount)</dd>
+                            <dt>Description</dt>
+                            <dd>@transaction.Description</dd>
+                        </dl>
+                    }
+                    else if (dispute.CustomerId == FintechSeedData.SeededCustomerId)
+                    {
+                        <p class="small text-body-secondary mb-0">The transaction is no longer in the customer's ledger.</p>
+                    }
+                    else
+                    {
+                        <p class="small text-body-secondary mb-0">This customer's ledger isn't part of the demo: the merchant and amount above are what's on record.</p>
+                    }
+                </section>
+            </div>
+        </div>
+
+        @* Opened from code, so focus is returned by hand; the heading names the dialog and Cancel closes it. *@
+        <Modal @ref="resolveModal" IsVerticallyCentered="true" ShowCloseButton="false" aria-labelledby="tm-opsdispute-resolve-title"
+               OnShown="OnResolveShownAsync" OnHidden="OnResolveHiddenAsync">
+            <HeaderTemplate>
+                <h2 class="modal-title h5" id="tm-opsdispute-resolve-title">@(resolveRefund ? "Refund" : "Decline") dispute @dispute.Id?</h2>
+            </HeaderTemplate>
+            <BodyTemplate>
+                <form id="tm-opsdispute-resolve-form" @onsubmit="ConfirmResolveAsync" novalidate>
+                    @if (resolveRefund)
+                    {
+                        <p class="mb-2">@FintechDisplay.Money(dispute.Amount) is credited back to @RefundTarget(customerName, account), and the customer is told.</p>
+                    }
+                    else
+                    {
+                        <p class="mb-2">The @FintechDisplay.Money(dispute.Amount) charge at @dispute.Merchant stands, and the customer is told.</p>
+                    }
+                    <p class="small text-body-secondary mb-3">This closes the dispute and can't be undone.</p>
+
+                    <label class="form-label fw-semibold" for="tm-opsdispute-resolution">Resolution (@customerName reads this)</label>
+                    <textarea id="tm-opsdispute-resolution" class="form-control @(resolutionError is null ? null : "is-invalid")" rows="4" maxlength="@MaxResolution"
+                              @bind="resolutionText" @bind:event="oninput" @ref="resolutionInput" aria-required="true"
+                              aria-invalid="@(resolutionError is null ? null : "true")"
+                              aria-describedby="tm-opsdispute-resolution-help tm-opsdispute-resolution-count tm-opsdispute-resolution-error"></textarea>
+                    <div class="form-text" id="tm-opsdispute-resolution-help">
+                        @(resolveRefund ? "Say what you found and that the money is back." : "Say why the charge stands and what the customer can do next.") @MinResolution to @MaxResolution.ToString("#,0", CultureInfo.InvariantCulture) characters.
+                    </div>
+                    <div class="form-text text-end" id="tm-opsdispute-resolution-count">@(resolutionText?.Length ?? 0) of @MaxResolution.ToString("#,0", CultureInfo.InvariantCulture) characters</div>
+                    <p class="text-danger-emphasis fw-semibold small mb-0" id="tm-opsdispute-resolution-error" role="alert">@resolutionError</p>
+                </form>
+            </BodyTemplate>
+            <FooterTemplate>
+                <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => resolveModal.HideAsync()">Cancel</Button>
+                @if (resolveRefund)
+                {
+                    <Button Type="ButtonType.Submit" Color="ButtonColor.Success" form="tm-opsdispute-resolve-form">Refund @FintechDisplay.Money(dispute.Amount)</Button>
+                }
+                else
+                {
+                    <Button Type="ButtonType.Submit" Color="ButtonColor.Danger" form="tm-opsdispute-resolve-form">Decline dispute</Button>
+                }
+            </FooterTemplate>
+        </Modal>
+    </div>
+}

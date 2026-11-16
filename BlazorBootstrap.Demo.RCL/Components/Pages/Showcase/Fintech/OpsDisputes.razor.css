@@ -1,0 +1,12 @@
+/* The operations disputes list. Card, CardBody, and Badge render their own elements, so styles inside them need ::deep. */
+
+/* The count per status: a row of figures that wraps on narrow screens. */
+.tm-opsdisputes-counts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem 2.5rem;
+}
+
+    .tm-opsdisputes-counts dd {
+        margin-bottom: 0;
+    }

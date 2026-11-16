@@ -1,0 +1,66 @@
+/* The operations overview. Card and Icon render their own elements; the markup inside them is this page's. */
+
+.tm-ops-kpi-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: .5rem;
+    margin-bottom: .5rem;
+}
+
+/* The card's label is its link: it reads as a label, and underlines on hover and focus. */
+.tm-ops-kpi-link {
+    font-size: .875rem;
+    font-weight: 700;
+    color: var(--tm-ink);
+    text-decoration: none;
+}
+
+    .tm-ops-kpi-link:hover,
+    .tm-ops-kpi-link:focus-visible {
+        text-decoration: underline;
+    }
+
+.tm-ops-group-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: .5rem;
+    margin-bottom: .25rem;
+}
+
+.tm-ops-group-title {
+    margin: 0;
+    font-size: .8125rem;
+    font-weight: 700;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    color: var(--bs-secondary-color);
+}
+
+/* The site's .tm-row-title truncates; references and names wrap here instead (the extra class outweighs that rule). */
+.tm-row .tm-row-text .tm-ops-link {
+    white-space: normal;
+    overflow-wrap: anywhere;
+}
+
+.tm-ops-wrap {
+    overflow-wrap: anywhere;
+}
+
+/* The time sits at the top of a wrapped entry and keeps one width, so the entries line up. */
+li.tm-row.tm-ops-activity {
+    align-items: flex-start;
+}
+
+.tm-ops-time {
+    flex: 0 0 6.5rem;
+    padding-top: .125rem;
+}
+
+@media (max-width: 575.98px) {
+    .tm-ops-time {
+        flex-basis: 4.5rem;
+    }
+}

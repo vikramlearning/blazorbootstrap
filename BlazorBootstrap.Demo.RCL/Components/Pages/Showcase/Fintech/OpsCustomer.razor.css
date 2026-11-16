@@ -1,0 +1,36 @@
+/* The operations customer page. Badge, Button, and Icon render their own elements, so styles inside them need ::deep. */
+
+/* The profile: a grid of figures that wraps on narrow screens. */
+.tm-opscustomer-profile {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
+    gap: 1rem 1.5rem;
+}
+
+    .tm-opscustomer-profile dd {
+        margin-bottom: 0;
+        overflow-wrap: anywhere;
+    }
+
+.tm-opscustomer-row {
+    align-items: flex-start;
+}
+
+.tm-opscustomer-message:empty {
+    margin: 0 !important;
+}
+
+.tm-opscustomer-note {
+    padding-block: .75rem;
+    border-top: 1px solid var(--bs-border-color);
+}
+
+    .tm-opscustomer-note:last-child {
+        padding-bottom: 0;
+    }
+
+/* Notes and hold reasons keep their line breaks and never widen the page. */
+.tm-opscustomer-text {
+    white-space: pre-line;
+    overflow-wrap: anywhere;
+}

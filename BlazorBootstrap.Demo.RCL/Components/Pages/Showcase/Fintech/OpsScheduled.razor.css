@@ -1,0 +1,49 @@
+/* Scheduled postings. Badge and Icon render their own elements; the site's .tm-row and .tm-icon reach them through ::deep. */
+
+/* Empty until a run reports, so it takes no space then. */
+.tm-os-status {
+    font-weight: 600;
+}
+
+    .tm-os-status:empty {
+        display: none;
+    }
+
+.tm-os-day-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: .25rem 1rem;
+    margin-bottom: .5rem;
+}
+
+/* The amount and the Due marker wrap under the text on a phone, and sit beside it when there is room
+   (li + the extra class outweigh the site's .tm-row rule). */
+li.tm-os-row {
+    flex-wrap: wrap;
+    align-items: flex-start;
+}
+
+/* The site's .tm-row-title truncates; a name wraps here instead (the extra classes outweigh that rule). */
+.tm-os-row .tm-row-text .tm-os-link {
+    white-space: normal;
+    overflow-wrap: anywhere;
+}
+
+.tm-os-side {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-end;
+    gap: .5rem;
+    margin-left: auto;
+}
+
+@media (max-width: 575.98px) {
+    .tm-os-side {
+        width: 100%;
+        justify-content: flex-start;
+        padding-left: 3rem;
+    }
+}

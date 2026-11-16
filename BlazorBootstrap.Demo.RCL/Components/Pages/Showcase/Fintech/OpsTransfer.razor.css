@@ -1,0 +1,82 @@
+/* One transfer in the back office. Alert, Badge, and Icon render their own elements; the site classes reach them through ::deep. */
+
+.tm-ot-back {
+    display: inline-flex;
+    align-items: center;
+    margin-bottom: .75rem;
+    text-decoration: none;
+}
+
+    .tm-ot-back:hover,
+    .tm-ot-back:focus-visible {
+        text-decoration: underline;
+    }
+
+.tm-ot-status:focus {
+    outline: none;
+}
+
+.tm-ot-decide {
+    border-left: 4px solid var(--sc-primary);
+}
+
+.tm-ot-facts {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+    gap: .75rem 1.5rem;
+    margin-bottom: 1.25rem;
+}
+
+    .tm-ot-facts dt {
+        font-size: .8125rem;
+        font-weight: 500;
+        color: var(--bs-secondary-color);
+    }
+
+    .tm-ot-facts dd {
+        margin: 0;
+        font-weight: 600;
+        overflow-wrap: anywhere;
+    }
+
+.tm-ot-summary dd {
+    margin-bottom: .5rem;
+}
+
+.tm-ot-callout,
+.tm-ot-warning {
+    padding: .75rem 1rem;
+    border-radius: .75rem;
+    border: 1px solid var(--tm-border);
+}
+
+.tm-ot-callout {
+    background: rgba(var(--sc-primary-rgb), .08);
+}
+
+    .tm-ot-callout:last-child {
+        margin-bottom: 0;
+    }
+
+.tm-ot-warning {
+    background: var(--bs-warning-bg-subtle);
+    color: var(--bs-warning-text-emphasis);
+    border-color: var(--bs-warning-border-subtle);
+}
+
+.tm-ot-entry {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .25rem 1rem;
+    padding-block: .625rem;
+    border-top: 1px solid var(--tm-border);
+}
+
+.tm-ot-entry-at {
+    flex: 0 0 10.5rem;
+}
+
+.tm-ot-entry-text {
+    flex: 1 1 16rem;
+    min-width: 0;
+}

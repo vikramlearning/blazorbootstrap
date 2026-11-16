@@ -1,0 +1,6 @@
+/* The operations customer list. Card, CardBody, and Badge render their own elements, so styles inside them need ::deep. */
+
+/* Emails break anywhere rather than widening the table; keep them readable before they do. */
+::deep .tm-grid td.text-break {
+    min-width: 12rem;
+}

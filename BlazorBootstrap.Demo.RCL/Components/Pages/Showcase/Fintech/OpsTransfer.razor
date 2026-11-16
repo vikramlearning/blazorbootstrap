@@ -1,0 +1,349 @@
+@page "/showcase/fintech/ops/transfers/{Reference}"
+@layout FintechOpsLayout
+
+<PageTitle>Transfer @Reference · Operations · @FintechSeedData.ProductName</PageTitle>
+
+<div class="container-fluid px-lg-4">
+    @if (Item is not { } transfer)
+    {
+        <section class="tm-not-found" aria-labelledby="tm-ot-missing-title">
+            <span class="tm-icon fs-4 mb-3" aria-hidden="true"><Icon Name="IconName.Receipt" /></span>
+            <h1 class="tm-title fs-3 mt-3" id="tm-ot-missing-title">We couldn't find that transfer</h1>
+            <p class="tm-lead mb-3">There's no transfer @Reference at @FintechSeedData.ProductName. Check the reference, or open it from the review queue.</p>
+            <a class="btn btn-primary" href="@QueueUrl">Back to the queue</a>
+        </section>
+    }
+    else
+    {
+        var ledger = IsLedger(transfer);
+        var source = ledger ? State.FindAccount(transfer.FromAccountId) : null;
+        var toAccount = ledger && transfer.ToOwnAccount ? State.FindAccount(transfer.ToId) : null;
+        var payee = ledger && !transfer.ToOwnAccount ? State.FindPayee(transfer.ToId) : null;
+        var customer = State.FindCustomer(transfer.CustomerId);
+        var waiting = transfer.Status is FintechTransferStatus.Held or FintechTransferStatus.Scheduled;
+        var entries = AuditFor(transfer);
+
+        <a class="tm-ot-back small fw-semibold" href="@QueueUrl"><Icon Name="IconName.ArrowLeft" class="me-1" aria-hidden="true" />Back to the queue</a>
+
+        <div class="tm-page-head">
+            <div>
+                <h1 class="tm-title">Transfer <span class="tm-mono">@transfer.Reference</span></h1>
+                <p class="tm-lead">@FintechDisplay.Money(transfer.Amount) from @transfer.CustomerName to @transfer.ToName · @Transfers.DateText(transfer.Date)</p>
+            </div>
+            <Badge Color="Transfers.StatusColor(transfer.Status)" Class="rounded-pill fs-6">@StatusText(transfer.Status)</Badge>
+        </div>
+
+        @* Always rendered and focusable, so an action's result is announced and focus has somewhere to go once a dialog closes. *@
+        <div class="tm-ot-status" role="status" tabindex="-1" @ref="statusRegion">
+            @if (statusMessage is not null)
+            {
+                <Alert Color="@statusColor" Class="mb-4">
+                    <p class="mb-0 fw-semibold">@statusMessage</p>
+                    @if (NextHeld(transfer) is { } next)
+                    {
+                        <p class="mb-0 mt-2"><a href="@OpsQueue.TransferUrl(next.Reference)">Next in the queue: @next.Reference, @FintechDisplay.Money(next.Amount) from @next.CustomerName</a></p>
+                    }
+                    else if (statusColor != AlertColor.Danger)
+                    {
+                        <p class="mb-0 mt-2">Nothing else is waiting in the queue.</p>
+                    }
+                </Alert>
+            }
+        </div>
+
+        @if (transfer.Status == FintechTransferStatus.Held)
+        {
+            <section class="tm-panel tm-ot-decide mb-4" aria-labelledby="tm-ot-decide-title">
+                <h2 class="tm-section-title" id="tm-ot-decide-title">Review this transfer</h2>
+                <p class="mb-2"><strong>Held because:</strong> @Sentence(transfer.HoldReason ?? "No reason recorded")</p>
+                <p class="small text-body-secondary mb-3">
+                    Approving @(transfer.Date > State.Today ? $"schedules it for {Transfers.DateText(transfer.Date)}" : "sends the money now").
+                    Rejecting stops it for good and releases the money; @transfer.CustomerName sees your reason.
+                </p>
+                <div class="d-flex flex-wrap gap-2">
+                    <button type="button" class="btn btn-primary" @ref="approveButton" @onclick="AskApproveAsync"><Icon Name="IconName.CheckLg" class="me-1" aria-hidden="true" />Approve</button>
+                    <button type="button" class="btn btn-outline-danger" @ref="rejectButton" @onclick="AskRejectAsync"><Icon Name="IconName.XLg" class="me-1" aria-hidden="true" />Reject</button>
+                </div>
+            </section>
+        }
+        else if (transfer.Status == FintechTransferStatus.Scheduled)
+        {
+            <section class="tm-panel tm-ot-decide mb-4" aria-labelledby="tm-ot-hold-title">
+                <h2 class="tm-section-title" id="tm-ot-hold-title">Scheduled for @Transfers.DateText(transfer.Date)</h2>
+                <p class="small text-body-secondary mb-3">
+                    It posts on its date unless someone holds it. Hold it to check it first: it moves to the review queue and isn't sent until it's approved.
+                </p>
+                <button type="button" class="btn btn-outline-warning" @ref="holdButton" @onclick="AskHoldAsync"><Icon Name="IconName.ShieldExclamation" class="me-1" aria-hidden="true" />Hold for review</button>
+            </section>
+        }
+
+        <div class="row g-4">
+            <div class="col-xl-8">
+                <section class="tm-panel h-100" aria-labelledby="tm-ot-details-title">
+                    <h2 class="tm-section-title" id="tm-ot-details-title">Details</h2>
+
+                    <span class="tm-label">Amount</span>
+                    <span class="tm-amount mb-3">@FintechDisplay.Money(transfer.Amount)</span>
+
+                    <dl class="tm-ot-facts">
+                        <div>
+                            <dt>Status</dt>
+                            <dd>@StatusText(transfer.Status)</dd>
+                        </div>
+                        <div>
+                            <dt>Customer</dt>
+                            <dd>
+                                <a href="@OpsQueue.CustomerUrl(transfer.CustomerId)">@transfer.CustomerName</a>
+                                @if (customer is not null)
+                                {
+                                    <span class="d-block fw-normal small">@customer.Segment · @customer.City · @(customer.Status == FintechCustomerStatus.Watch ? "On watch" : "Active")</span>
+                                }
+                            </dd>
+                        </div>
+                        <div>
+                            <dt>From</dt>
+                            <dd>
+                                @if (source is not null)
+                                {
+                                    @source.Name
+                                    <span class="d-block fw-normal small">@source.MaskedNumber</span>
+                                }
+                                else if (ledger)
+                                {
+                                    @("An account that's no longer open")
+                                }
+                                else
+                                {
+                                    @transfer.FromAccountId
+                                }
+                            </dd>
+                        </div>
+                        <div>
+                            <dt>To</dt>
+                            <dd>
+                                @transfer.ToName
+                                @if (transfer.ToOwnAccount)
+                                {
+                                    <span class="d-block fw-normal small">The customer's own account@(toAccount is null ? null : $" · {toAccount.MaskedNumber}")</span>
+                                }
+                                else if (payee is not null)
+                                {
+                                    <span class="d-block fw-normal small">Payee · @payee.BankName · account @payee.MaskedAccount</span>
+                                    <span class="d-block fw-normal small">Added @Transfers.StampText(payee.AddedAt) · @MatchText(payee.Match)</span>
+                                }
+                                else if (ledger)
+                                {
+                                    <span class="d-block fw-normal small">Payee no longer saved</span>
+                                }
+                                else
+                                {
+                                    <span class="d-block fw-normal small">Payee · @transfer.ToId</span>
+                                }
+                            </dd>
+                        </div>
+                        <div>
+                            <dt>@(transfer.Status == FintechTransferStatus.Completed ? "Sent on" : "Transfer date")</dt>
+                            <dd>@Transfers.DateText(transfer.Date)</dd>
+                        </div>
+                        <div>
+                            <dt>Confirmed by the customer</dt>
+                            <dd>
+                                @Transfers.StampText(transfer.CreatedAt)
+                                @if (waiting)
+                                {
+                                    <span class="d-block fw-normal small">Waiting @OpsQueue.WaitText(transfer.CreatedAt, State.Clock.Now)</span>
+                                }
+                            </dd>
+                        </div>
+                        @if (transfer.ClosedAt is { } closed)
+                        {
+                            <div>
+                                <dt>@ClosedLabel(transfer.Status)</dt>
+                                <dd>@Transfers.StampText(closed)</dd>
+                            </div>
+                        }
+                        <div>
+                            <dt>Customer's note</dt>
+                            <dd class="text-break">@(transfer.Note ?? "None")</dd>
+                        </div>
+                    </dl>
+
+                    @* A held transfer's hold reason is in the review panel above; approving or rejecting clears it. *@
+                    @if (transfer.Status == FintechTransferStatus.Rejected)
+                    {
+                        <p class="tm-ot-callout"><Icon Name="IconName.XCircle" class="me-2" aria-hidden="true" /><strong>Reject reason (the customer sees it):</strong> @(transfer.RejectReason ?? "None recorded")</p>
+                    }
+                    else if (transfer.Status == FintechTransferStatus.Cancelled)
+                    {
+                        <p class="tm-ot-callout"><Icon Name="IconName.SlashCircle" class="me-2" aria-hidden="true" />The customer cancelled this transfer before it was sent. No money moved.</p>
+                    }
+                </section>
+            </div>
+
+            <div class="col-xl-4">
+                <section class="tm-panel h-100" aria-labelledby="tm-ot-source-title">
+                    <h2 class="tm-section-title" id="tm-ot-source-title">Account it's sent from</h2>
+                    @if (source is not null)
+                    {
+                        <p class="fw-semibold mb-0">@source.Name</p>
+                        <p class="small text-body-secondary">@FintechDisplay.KindLabel(source.Kind) · @source.MaskedNumber</p>
+                        <dl class="tm-summary tm-ot-summary mb-0">
+                            <dt>Balance</dt>
+                            <dd class="tm-mono">@BalanceText(source.Balance)</dd>
+                            <dt>Available</dt>
+                            <dd class="tm-mono">@FintechDisplay.Money(State.Available(source))</dd>
+                            @if (waiting)
+                            {
+                                var free = Free(source, transfer);
+                                <dt>Free for this transfer</dt>
+                                <dd>
+                                    <span class="tm-mono">@BalanceText(free)</span>
+                                    <span class="d-block small fw-normal">@(free >= transfer.Amount ? "Enough to send it" : "Not enough to send it")</span>
+                                </dd>
+                            }
+                        </dl>
+                        <p class="small text-body-secondary mt-2 mb-0">
+                            Available is the balance less every scheduled and held transfer out of the account@(waiting ? ", this one included" : null).
+                            @if (waiting)
+                            {
+                                @(" Free for this transfer leaves this one out.")
+                            }
+                        </p>
+                    }
+                    else if (ledger)
+                    {
+                        <p class="small text-body-secondary mb-0">The account this transfer was sent from is no longer open.</p>
+                    }
+                    else
+                    {
+                        <p class="fw-semibold mb-1">@transfer.FromAccountId</p>
+                        <p class="small text-body-secondary mb-0">
+                            Only @FintechSeedData.CustomerName's ledger is kept in this demo, so @transfer.CustomerName's balance isn't shown here.
+                            <a href="@OpsQueue.CustomerUrl(transfer.CustomerId)">The customer's page</a> has their accounts' summary.
+                        </p>
+                    }
+                </section>
+            </div>
+        </div>
+
+        <section class="tm-panel mt-4" aria-labelledby="tm-ot-audit-title">
+            <h2 class="tm-section-title" id="tm-ot-audit-title">History</h2>
+            <p class="small text-body-secondary">Audit log entries for @transfer.Reference, newest first.</p>
+            @if (entries.Count == 0)
+            {
+                <p class="small text-body-secondary mb-0">No audit log entries for this transfer yet.</p>
+            }
+            else
+            {
+                <ol class="list-unstyled mb-0">
+                    @foreach (var entry in entries)
+                    {
+                        <li class="tm-ot-entry" @key="entry.Id">
+                            <span class="tm-ot-entry-at small text-body-secondary">@Transfers.StampText(entry.At)</span>
+                            <span class="tm-ot-entry-text">
+                                <span class="fw-semibold">@entry.Action</span>
+                                <span class="small text-body-secondary">by @entry.Actor (@entry.Role)</span>
+                                @if (!string.IsNullOrWhiteSpace(entry.Details))
+                                {
+                                    <span class="d-block small text-break">@entry.Details</span>
+                                }
+                            </span>
+                        </li>
+                    }
+                </ol>
+            }
+        </section>
+
+        <Modal @ref="approveModal" IsVerticallyCentered="true" IsScrollable="true" ShowCloseButton="false" aria-labelledby="tm-ot-approve-title"
+               OnShown="OnApproveShownAsync" OnHidden="OnDialogHiddenAsync">
+            <HeaderTemplate>
+                <h2 class="modal-title h5" id="tm-ot-approve-title">Approve @transfer.Reference from @transfer.CustomerName?</h2>
+            </HeaderTemplate>
+            <BodyTemplate>
+                <p class="mb-2">
+                    @if (transfer.Date > State.Today)
+                    {
+                        @($"This schedules {FintechDisplay.Money(transfer.Amount)} from {FromText(transfer)} to {transfer.ToName} for {Transfers.DateText(transfer.Date)}. It's sent that morning.")
+                    }
+                    else
+                    {
+                        @($"This sends {FintechDisplay.Money(transfer.Amount)} from {FromText(transfer)} to {transfer.ToName} now.")
+                    }
+                </p>
+                <p class="mb-3">@transfer.CustomerName is told it was checked and @(transfer.Date > State.Today ? "scheduled" : "sent").</p>
+                @if (source is not null && Free(source, transfer) < transfer.Amount)
+                {
+                    <p class="tm-ot-warning small mb-3" id="tm-ot-approve-warning">
+                        <Icon Name="IconName.ExclamationTriangle" class="me-2" aria-hidden="true" /><strong>Not enough money:</strong>
+                        @source.Name has @BalanceText(Free(source, transfer)) free after its other scheduled and held transfers, so approving won't go through. Reject the transfer with a reason instead.
+                    </p>
+                }
+                <label class="form-label fw-semibold" for="tm-ot-approve-note">Internal note (optional)</label>
+                <textarea id="tm-ot-approve-note" class="form-control" rows="3" maxlength="@MaxApproveNote" @bind="approveNote" @bind:event="oninput" @ref="approveNoteInput"
+                          aria-describedby="tm-ot-approve-note-help tm-ot-approve-note-count"></textarea>
+                <div class="d-flex flex-wrap justify-content-between gap-2 form-text">
+                    <span id="tm-ot-approve-note-help">What you checked. It goes in the audit log; the customer doesn't see it.</span>
+                    <span id="tm-ot-approve-note-count">@approveNote.Length of @MaxApproveNote characters</span>
+                </div>
+                <p class="text-danger-emphasis fw-semibold small mt-2 mb-0" role="alert">@dialogError</p>
+            </BodyTemplate>
+            <FooterTemplate>
+                <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => approveModal.HideAsync()">Cancel</Button>
+                <Button Color="ButtonColor.Primary" @onclick="ConfirmApproveAsync" Disabled="busy">
+                    @(transfer.Date > State.Today ? $"Approve and schedule {FintechDisplay.Money(transfer.Amount)}" : $"Approve and send {FintechDisplay.Money(transfer.Amount)}")
+                </Button>
+            </FooterTemplate>
+        </Modal>
+
+        <Modal @ref="rejectModal" IsVerticallyCentered="true" IsScrollable="true" ShowCloseButton="false" aria-labelledby="tm-ot-reject-title"
+               OnShown="OnRejectShownAsync" OnHidden="OnDialogHiddenAsync">
+            <HeaderTemplate>
+                <h2 class="modal-title h5" id="tm-ot-reject-title">Reject @transfer.Reference from @transfer.CustomerName?</h2>
+            </HeaderTemplate>
+            <BodyTemplate>
+                <p class="mb-2">@FintechDisplay.Money(transfer.Amount) to @transfer.ToName isn't sent: nothing leaves @transfer.CustomerName's account, and the money set aside is released.</p>
+                <p class="mb-2">@transfer.CustomerName sees your reason on the transfer's receipt and in an alert.</p>
+                <p class="small text-body-secondary mb-3">This can't be undone: to send the money, @transfer.CustomerName would need to make a new transfer.</p>
+                <label class="form-label fw-semibold" for="tm-ot-reject-reason">Reason for @transfer.CustomerName</label>
+                <textarea id="tm-ot-reject-reason" class="form-control @(rejectError is null ? null : "is-invalid")" rows="4" maxlength="@MaxRejectReason"
+                          @bind="rejectReason" @bind:event="oninput" @ref="rejectReasonInput" aria-required="true" aria-invalid="@(rejectError is null ? null : "true")"
+                          aria-describedby="tm-ot-reject-reason-help tm-ot-reject-reason-count tm-ot-reject-reason-error"></textarea>
+                <div class="d-flex flex-wrap justify-content-between gap-2 form-text">
+                    <span id="tm-ot-reject-reason-help">Plain words: what you checked and why it can't go. @MinReason to @MaxRejectReason characters.</span>
+                    <span id="tm-ot-reject-reason-count">@rejectReason.Length of @MaxRejectReason characters</span>
+                </div>
+                <p class="text-danger-emphasis fw-semibold small mt-2 mb-0" id="tm-ot-reject-reason-error">@rejectError</p>
+                <p class="text-danger-emphasis fw-semibold small mt-2 mb-0" role="alert">@dialogError</p>
+            </BodyTemplate>
+            <FooterTemplate>
+                <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => rejectModal.HideAsync()">Cancel</Button>
+                <Button Color="ButtonColor.Danger" @onclick="ConfirmRejectAsync" Disabled="busy">Reject transfer</Button>
+            </FooterTemplate>
+        </Modal>
+
+        <Modal @ref="holdModal" IsVerticallyCentered="true" IsScrollable="true" ShowCloseButton="false" aria-labelledby="tm-ot-hold-dialog-title"
+               OnShown="OnHoldShownAsync" OnHidden="OnDialogHiddenAsync">
+            <HeaderTemplate>
+                <h2 class="modal-title h5" id="tm-ot-hold-dialog-title">Hold @transfer.Reference for review?</h2>
+            </HeaderTemplate>
+            <BodyTemplate>
+                <p class="mb-2">@FintechDisplay.Money(transfer.Amount) from @transfer.CustomerName to @transfer.ToName, scheduled for @Transfers.DateText(transfer.Date), isn't sent until someone approves it in the review queue.</p>
+                <p class="mb-3">@transfer.CustomerName is told it's held for a check, and sees your reason as the hold reason.</p>
+                <label class="form-label fw-semibold" for="tm-ot-hold-reason">Reason</label>
+                <textarea id="tm-ot-hold-reason" class="form-control @(holdError is null ? null : "is-invalid")" rows="2" maxlength="@MaxHoldReason"
+                          @bind="holdReason" @bind:event="oninput" @ref="holdReasonInput" aria-required="true" aria-invalid="@(holdError is null ? null : "true")"
+                          aria-describedby="tm-ot-hold-reason-help tm-ot-hold-reason-count tm-ot-hold-reason-error"></textarea>
+                <div class="d-flex flex-wrap justify-content-between gap-2 form-text">
+                    <span id="tm-ot-hold-reason-help">@MinReason to @MaxHoldReason characters, like "Checking the payee's details with the customer".</span>
+                    <span id="tm-ot-hold-reason-count">@holdReason.Length of @MaxHoldReason characters</span>
+                </div>
+                <p class="text-danger-emphasis fw-semibold small mt-2 mb-0" id="tm-ot-hold-reason-error">@holdError</p>
+                <p class="text-danger-emphasis fw-semibold small mt-2 mb-0" role="alert">@dialogError</p>
+            </BodyTemplate>
+            <FooterTemplate>
+                <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => holdModal.HideAsync()">Cancel</Button>
+                <Button Color="ButtonColor.Warning" @onclick="ConfirmHoldAsync" Disabled="busy">Hold for review</Button>
+            </FooterTemplate>
+        </Modal>
+    }
+</div>

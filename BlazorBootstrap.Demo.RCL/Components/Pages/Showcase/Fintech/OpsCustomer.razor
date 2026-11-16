@@ -1,0 +1,264 @@
+@page "/showcase/fintech/ops/customers/{Id}"
+@layout FintechOpsLayout
+
+@if (Customer is not { } customer)
+{
+    <PageTitle>Customer not found · Operations · @FintechSeedData.ProductName</PageTitle>
+
+    <div class="container-fluid px-lg-4">
+        <section class="tm-not-found" aria-labelledby="tm-opscustomer-missing-title">
+            <span class="tm-icon fs-4" aria-hidden="true"><Icon Name="IconName.People" /></span>
+            <h1 class="tm-title fs-3 mt-3 mb-2" id="tm-opscustomer-missing-title">We couldn't find that customer</h1>
+            <p class="tm-lead mb-4">There's no customer "@Id". Find them in the customer list.</p>
+            <div class="d-flex justify-content-center flex-wrap gap-2">
+                <Button Type="ButtonType.Link" To="@CustomersPath" Color="ButtonColor.Primary">All customers</Button>
+                <Button Type="ButtonType.Link" To="@FintechOpsLayout.Base" Color="ButtonColor.Primary" Outline="true">Operations overview</Button>
+            </div>
+        </section>
+    </div>
+}
+else
+{
+    var isLedger = customer.Id == FintechSeedData.SeededCustomerId;
+
+    <PageTitle>@customer.Name · Operations · @FintechSeedData.ProductName</PageTitle>
+
+    <div class="container-fluid px-lg-4">
+        <p class="mb-3">
+            <a class="small" href="@CustomersPath"><Icon Name="IconName.ArrowLeft" class="me-1" aria-hidden="true" />All customers</a>
+        </p>
+
+        <div class="tm-page-head">
+            <div>
+                <span class="sc-eyebrow">Customer · @customer.Segment</span>
+                <h1 class="tm-title">@customer.Name</h1>
+                <p class="tm-lead">
+                    <Badge Color="OpsCustomers.StatusColor(customer.Status)" Class="me-2">@OpsCustomers.StatusText(customer.Status)</Badge>
+                    @(customer.Status == FintechCustomerStatus.Watch ? "On watch: check their activity closely before approving anything." : "In good standing.")
+                </p>
+            </div>
+        </div>
+
+        <section class="tm-panel mb-4" aria-labelledby="tm-opscustomer-profile-title">
+            <h2 class="tm-section-title" id="tm-opscustomer-profile-title">Profile</h2>
+            <dl class="tm-summary tm-opscustomer-profile mb-0">
+                <div>
+                    <dt>Email</dt>
+                    <dd class="text-break">@customer.Email</dd>
+                </div>
+                <div>
+                    <dt>City</dt>
+                    <dd>@customer.City</dd>
+                </div>
+                <div>
+                    <dt>Segment</dt>
+                    <dd>@customer.Segment</dd>
+                </div>
+                <div>
+                    <dt>Customer since</dt>
+                    <dd>@OpsCustomers.SinceText(customer.Since)</dd>
+                </div>
+                <div>
+                    <dt>Status</dt>
+                    <dd>@OpsCustomers.StatusText(customer.Status)</dd>
+                </div>
+                <div>
+                    <dt>Accounts</dt>
+                    <dd class="tm-mono">@customer.AccountCount</dd>
+                </div>
+                <div>
+                    <dt>Total balance</dt>
+                    <dd class="tm-mono">@(customer.TotalBalance < 0 ? "−" : null)@FintechDisplay.Money(customer.TotalBalance)</dd>
+                </div>
+            </dl>
+            @if (!isLedger)
+            {
+                <p class="small text-body-secondary mt-3 mb-0">Only @FintechSeedData.CustomerName's accounts and transactions are in this demo; for this customer you see their summary, transfers, and disputes.</p>
+            }
+        </section>
+
+        <div class="row g-4">
+            <div class="col-xl-7">
+                @if (isLedger)
+                {
+                    <section class="tm-panel mb-4" aria-labelledby="tm-opscustomer-accounts-title">
+                        <h2 class="tm-section-title" id="tm-opscustomer-accounts-title">Accounts</h2>
+                        <div class="table-responsive">
+                            <table class="table align-middle mb-0">
+                                <caption class="caption-top small">Balance, what's available after scheduled and held transfers, and the card.</caption>
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Account</th>
+                                        <th scope="col" class="text-end">Balance</th>
+                                        <th scope="col" class="text-end">Available</th>
+                                        <th scope="col">Card</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var account in State.Accounts)
+                                    {
+                                        var isCard = account.Kind == FintechAccountKind.CreditCard;
+                                        <tr @key="account.Id">
+                                            <th scope="row" class="fw-normal">
+                                                <span class="fw-semibold d-block">@account.Name</span>
+                                                <span class="small text-body-secondary">@FintechDisplay.KindLabel(account.Kind) · @account.MaskedNumber</span>
+                                            </th>
+                                            <td class="tm-mono text-end text-nowrap">
+                                                @(account.Balance < 0 ? "−" : null)@FintechDisplay.Money(account.Balance)@(isCard && account.Balance < 0 ? " owed" : null)
+                                            </td>
+                                            <td class="tm-mono text-end text-nowrap">
+                                                @(isCard ? $"{FintechDisplay.Money(FintechState.CreditAvailable(account))} credit" : FintechDisplay.Money(State.Available(account)))
+                                            </td>
+                                            <td class="text-nowrap">
+                                                @if (account.CardLast4 is not { } last4)
+                                                {
+                                                    <span class="text-body-secondary">No card</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="d-block small">Ending @last4</span>
+                                                    <Badge Color="@(account.CardFrozen ? BadgeColor.Warning : BadgeColor.Success)">@(account.CardFrozen ? "Frozen" : "Active")</Badge>
+                                                }
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+
+                    <section class="tm-panel mb-4" aria-labelledby="tm-opscustomer-transactions-title">
+                        <h2 class="tm-section-title mb-0" id="tm-opscustomer-transactions-title">Last 10 transactions</h2>
+                        <p class="small text-body-secondary mb-0">Newest first, across all accounts.</p>
+                        @if (RecentTransactions.Count == 0)
+                        {
+                            <p class="small text-body-secondary mt-3 mb-0">No transactions.</p>
+                        }
+                        else
+                        {
+                            <ul class="list-unstyled mt-2 mb-0">
+                                @foreach (var item in RecentTransactions)
+                                {
+                                    var category = State.FindCategory(item.CategoryId);
+                                    <li class="tm-row" @key="item.Id">
+                                        <span class="tm-icon" aria-hidden="true"><Icon Name="@category.IconName" /></span>
+                                        <span class="tm-row-text">
+                                            <span class="tm-row-title">@item.Description</span>
+                                            <span class="tm-row-sub">
+                                                @FintechDisplay.Day(item.Date) · @(State.FindAccount(item.AccountId)?.Name ?? item.AccountId) · @category.Name
+                                                @if (item.IsPending)
+                                                {
+                                                    <Badge Color="BadgeColor.Secondary" Class="ms-1">Pending</Badge>
+                                                }
+                                                @if (item.DisputeId is { } disputeId)
+                                                {
+                                                    <a class="ms-1 small" href="@OpsDisputes.DisputePath(disputeId)">Disputed (@disputeId)</a>
+                                                }
+                                            </span>
+                                        </span>
+                                        <span class="tm-mono fw-semibold text-nowrap @FintechDisplay.AmountClass(item.Amount)">@FintechDisplay.SignedMoney(item.Amount)</span>
+                                    </li>
+                                }
+                            </ul>
+                        }
+                    </section>
+                }
+
+                <section class="tm-panel mb-4" aria-labelledby="tm-opscustomer-transfers-title">
+                    <h2 class="tm-section-title mb-0" id="tm-opscustomer-transfers-title">Transfers</h2>
+                    <p class="small text-body-secondary mb-0">Held and scheduled first, then the most recent.</p>
+                    @if (CustomerTransfers.Count == 0)
+                    {
+                        <p class="small text-body-secondary mt-3 mb-0">No transfers.</p>
+                    }
+                    else
+                    {
+                        <ul class="list-unstyled mt-2 mb-0">
+                            @foreach (var transfer in CustomerTransfers)
+                            {
+                                <li class="tm-row tm-opscustomer-row" @key="transfer.Reference">
+                                    <span class="tm-icon" aria-hidden="true"><Icon Name="Transfers.StatusIcon(transfer.Status)" /></span>
+                                    <span class="tm-row-text">
+                                        <a class="tm-row-title" href="@TransferPath(transfer.Reference)">@transfer.Reference to @transfer.ToName</a>
+                                        <span class="tm-row-sub">
+                                            <Badge Color="Transfers.StatusColor(transfer.Status)" Class="me-1">@Transfers.StatusText(transfer.Status)</Badge>
+                                            @TransferWhen(transfer)
+                                        </span>
+                                        @if (transfer.Status == FintechTransferStatus.Held && !string.IsNullOrWhiteSpace(transfer.HoldReason))
+                                        {
+                                            <span class="small tm-opscustomer-text">@transfer.HoldReason</span>
+                                        }
+                                    </span>
+                                    <span class="tm-mono fw-semibold text-nowrap">@FintechDisplay.Money(transfer.Amount)</span>
+                                </li>
+                            }
+                        </ul>
+                    }
+                </section>
+
+                <section class="tm-panel mb-4 mb-xl-0" aria-labelledby="tm-opscustomer-disputes-title">
+                    <h2 class="tm-section-title mb-0" id="tm-opscustomer-disputes-title">Disputes</h2>
+                    <p class="small text-body-secondary mb-0">Newest first.</p>
+                    @if (CustomerDisputes.Count == 0)
+                    {
+                        <p class="small text-body-secondary mt-3 mb-0">No disputes.</p>
+                    }
+                    else
+                    {
+                        <ul class="list-unstyled mt-2 mb-0">
+                            @foreach (var dispute in CustomerDisputes)
+                            {
+                                <li class="tm-row tm-opscustomer-row" @key="dispute.Id">
+                                    <span class="tm-icon" aria-hidden="true"><Icon Name="IconName.Flag" /></span>
+                                    <span class="tm-row-text">
+                                        <a class="tm-row-title" href="@OpsDisputes.DisputePath(dispute.Id)">Dispute @dispute.Id: @dispute.Merchant</a>
+                                        <span class="tm-row-sub">
+                                            <Badge Color="Disputes.StatusColor(dispute.Status)" Class="me-1">@Disputes.StatusText(dispute.Status)</Badge>
+                                            @OpsDisputes.ReasonText(dispute.Reason) · Opened @Disputes.DayText(dispute.CreatedAt)
+                                        </span>
+                                    </span>
+                                    <span class="tm-mono fw-semibold text-nowrap">@FintechDisplay.Money(dispute.Amount)</span>
+                                </li>
+                            }
+                        </ul>
+                    }
+                </section>
+            </div>
+
+            <div class="col-xl-5">
+                <section class="tm-panel" aria-labelledby="tm-opscustomer-notes-title">
+                    <h2 class="tm-section-title mb-1" id="tm-opscustomer-notes-title">Internal notes</h2>
+                    <p class="small text-body-secondary mb-3">For operations only: customers never see these notes. Each note is recorded in the audit log.</p>
+
+                    <form @onsubmit="AddNote" novalidate>
+                        <label class="form-label small fw-semibold" for="tm-opscustomer-note">Add a note about @customer.Name</label>
+                        <textarea id="tm-opscustomer-note" class="form-control @(noteError is null ? null : "is-invalid")" rows="3" maxlength="@MaxNote"
+                                  @bind="noteText" @bind:event="oninput" @ref="noteInput" aria-required="true"
+                                  aria-invalid="@(noteError is null ? null : "true")" aria-describedby="tm-opscustomer-note-count tm-opscustomer-note-status"></textarea>
+                        <div class="form-text text-end" id="tm-opscustomer-note-count">@(noteText?.Length ?? 0) of @MaxNote characters</div>
+                        <Button Type="ButtonType.Submit" Color="ButtonColor.Primary" Outline="true" Class="mt-1">Add note</Button>
+                    </form>
+                    <p class="small fw-semibold mt-2 mb-0 tm-opscustomer-message @(noteIsError ? "text-danger-emphasis" : null)" id="tm-opscustomer-note-status"
+                       role="status" tabindex="-1" @ref="noteStatus">@noteMessage</p>
+
+                    @if (Notes.Count == 0)
+                    {
+                        <p class="small text-body-secondary mt-3 mb-0">No notes about @customer.Name yet.</p>
+                    }
+                    else
+                    {
+                        <ul class="list-unstyled mt-3 mb-0" aria-label="Notes, newest first">
+                            @foreach (var note in Notes)
+                            {
+                                <li class="tm-opscustomer-note" @key="note.Id">
+                                    <p class="tm-opscustomer-text mb-1">@note.Text</p>
+                                    <p class="small text-body-secondary mb-0">@note.Author · @Transfers.StampText(note.At)</p>
+                                </li>
+                            }
+                        </ul>
+                    }
+                </section>
+            </div>
+        </div>
+    </div>
+}

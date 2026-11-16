@@ -1,0 +1,30 @@
+@inherits LayoutComponentBase
+
+@* The bank operations back office (D-031): its own sidebar with the operations modules, separate from the customer bank. *@
+<ShowcaseSessionHost State="State" SiteBase="@FintechLayout.Base" SiteName="@FintechSeedData.ProductName">
+    <FintechFrame>
+        <Header>
+            <div class="tm-ops-bar">
+                <span class="tm-ops-bar-title">Operations</span>
+                <ShowcaseAccountMenu SiteBase="@FintechLayout.Base" SignInPath="@FintechLayout.SignInPath" />
+            </div>
+        </Header>
+        <Sidebar>
+            @if (State.IsOps)
+            {
+                <Sidebar @key="State.Identity.Current?.Id"
+                         Class="tm-sidebar"
+                         Href="@Base"
+                         IconName="IconName.Coin"
+                         Title="@FintechSeedData.ProductName"
+                         BadgeText="Ops"
+                         DataProvider="SidebarDataProvider" />
+            }
+        </Sidebar>
+        <ChildContent>
+            <FintechGuard Role="@FintechSeedData.OpsRole">
+                @Body
+            </FintechGuard>
+        </ChildContent>
+    </FintechFrame>
+</ShowcaseSessionHost>
