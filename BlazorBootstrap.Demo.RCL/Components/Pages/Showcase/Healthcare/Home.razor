@@ -1,0 +1,75 @@
+@page "/showcase/healthcare"
+@layout HcLayout
+@implements IDisposable
+
+<PageTitle>@HcSeedData.ProductName · Family clinics</PageTitle>
+
+@* The start page: what the portal does, the next appointment for a signed-in patient, and the clinics. *@
+<div class="container-xl">
+    <section class="hc-hero mb-5" aria-labelledby="hc-home-title">
+        <span class="hc-icon mb-3" aria-hidden="true"><Icon Name="IconName.HeartPulse" class="fs-4" /></span>
+        <h1 class="hc-title fs-2 mb-2" id="hc-home-title">Care close to home, at three @HcSeedData.ProductName clinics</h1>
+        <p class="hc-lead mb-4">
+            Find a doctor and book a visit online, see your visit summaries and lab reports, ask for prescription refills, and
+            pay your bills.
+        </p>
+        <div class="d-flex flex-wrap gap-2">
+            <a class="btn btn-primary" href="@($"{HcLayout.Base}/doctors")"><Icon Name="IconName.Search" class="me-2" aria-hidden="true" />Find a doctor</a>
+            @if (State.CurrentPatient is null && !State.Identity.IsSignedIn)
+            {
+                <a class="btn btn-outline-primary" href="@($"{HcLayout.SignInPath}?mode=register")">Register as a patient</a>
+            }
+        </div>
+        @if (!State.Identity.IsSignedIn)
+        {
+            <p class="small text-body-secondary mt-3 mb-0">The sign-in page has one-click demo accounts for a patient, a doctor, and the front desk.</p>
+        }
+    </section>
+
+    @if (State.CurrentPatient is { } patient)
+    {
+        var next = State.UpcomingOf(patient.Id).FirstOrDefault();
+
+        <section class="hc-panel mb-5" aria-labelledby="hc-home-next">
+            <h2 class="hc-section-title" id="hc-home-next">Your next appointment</h2>
+            @if (next is null)
+            {
+                <p class="mb-0">You have no upcoming appointments. <a href="@($"{HcLayout.Base}/doctors")">Find a doctor</a> to book one.</p>
+            }
+            else
+            {
+                <p class="mb-2 fw-semibold">@HcDisplay.When(next.Start) with @(State.FindDoctor(next.DoctorId)?.Name) at @(State.FindClinic(next.ClinicId)?.Name)</p>
+                <a href="@HcDisplay.AppointmentUrl(next.Id)">View or change this appointment</a>
+            }
+        </section>
+    }
+
+    <section aria-labelledby="hc-home-clinics">
+        <h2 class="hc-section-title" id="hc-home-clinics">Our clinics</h2>
+        <ul class="list-unstyled row row-cols-1 row-cols-md-3 g-3 mb-0">
+            @foreach (var clinic in State.Clinics)
+            {
+                <li class="col" @key="clinic.Id">
+                    <div class="hc-panel h-100">
+                        <h3 class="h6 fw-bold">@clinic.Name</h3>
+                        <p class="small mb-1">@clinic.Address</p>
+                        <p class="small mb-1">@clinic.Hours</p>
+                        <p class="small text-body-secondary mb-0">@State.Doctors.Count(doctor => doctor.ClinicId == clinic.Id) doctors</p>
+                    </div>
+                </li>
+            }
+        </ul>
+        <p class="mt-3 mb-0"><a href="@($"{HcLayout.Base}/locations")">Map and directions</a></p>
+    </section>
+</div>
+
+@code {
+    [Inject] private HcState State { get; set; } = default!;
+
+    /// <summary>Stops listening to state changes.</summary>
+    public void Dispose() => State.Changed -= OnStateChanged;
+
+    protected override void OnInitialized() => State.Changed += OnStateChanged;
+
+    private void OnStateChanged() => InvokeAsync(StateHasChanged);
+}

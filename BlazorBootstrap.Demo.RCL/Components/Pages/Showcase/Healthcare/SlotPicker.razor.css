@@ -1,0 +1,17 @@
+/* Day buttons fill a grid that narrows to two columns at 375 px; times wrap. */
+.hc-sp-days {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(7.5rem, 100%), 1fr));
+    gap: .5rem;
+}
+
+.hc-sp-day {
+    line-height: 1.25;
+    padding-block: .5rem;
+}
+
+.hc-sp-times {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .5rem;
+}

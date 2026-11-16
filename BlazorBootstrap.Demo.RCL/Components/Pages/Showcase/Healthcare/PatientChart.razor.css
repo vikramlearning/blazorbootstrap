@@ -1,0 +1,134 @@
+/* A patient's chart: header facts, then tabbed sections of cards. */
+.hc-chart-wrap {
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+.hc-chart-head {
+    display: flex;
+    align-items: center;
+    gap: .875rem;
+}
+
+.hc-chart-head-text {
+    min-width: 0;
+}
+
+.hc-chart-facts {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr));
+    gap: .75rem 1.5rem;
+}
+
+    .hc-chart-facts dt {
+        margin-bottom: .125rem;
+        font-size: .75rem;
+        font-weight: 700;
+        letter-spacing: .02em;
+        text-transform: uppercase;
+        color: var(--bs-secondary-color);
+    }
+
+    .hc-chart-facts dd {
+        margin: 0;
+        overflow-wrap: anywhere;
+    }
+
+.hc-chart-status {
+    min-height: 1.5rem;
+    margin-bottom: .75rem;
+    overflow-wrap: anywhere;
+}
+
+    .hc-chart-status:focus {
+        outline: none;
+    }
+
+    .hc-chart-status:focus-visible {
+        outline: 2px solid var(--bs-focus-ring-color, var(--sc-primary));
+        outline-offset: 2px;
+    }
+
+.hc-chart-summary {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+    gap: 1rem;
+    align-items: start;
+}
+
+.hc-chart-items {
+    display: grid;
+    gap: .25rem;
+}
+
+    .hc-chart-items li {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: .25rem .75rem;
+        padding-block: .25rem;
+        border-bottom: 1px solid var(--hc-border);
+    }
+
+        .hc-chart-items li:last-child {
+            border-bottom: 0;
+        }
+
+.hc-chart-item-text {
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+.hc-chart-remove {
+    padding-inline: 0;
+}
+
+.hc-chart-add {
+    display: flex;
+    gap: .5rem;
+}
+
+    .hc-chart-add input {
+        min-width: 0;
+    }
+
+.hc-chart-list {
+    display: grid;
+    gap: .75rem;
+}
+
+.hc-chart-card {
+    padding: 1rem 1.25rem;
+    min-width: 0;
+}
+
+.hc-chart-stopped {
+    background: var(--hc-muted-bg);
+}
+
+.hc-chart-card-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: .25rem .75rem;
+    margin-bottom: .25rem;
+}
+
+.hc-chart-card-title {
+    margin: 0;
+    font-size: 1.0625rem;
+    font-weight: 700;
+    overflow-wrap: anywhere;
+}
+
+.hc-chart-details summary {
+    cursor: pointer;
+    font-weight: 600;
+    color: var(--sc-primary-hover);
+}
+
+[data-bs-theme=dark] .hc-chart-details summary {
+    color: var(--sc-primary);
+}

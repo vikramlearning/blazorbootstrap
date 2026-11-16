@@ -1,0 +1,69 @@
+@page "/showcase/healthcare/locations"
+@layout HcLayout
+@implements IDisposable
+
+<PageTitle>Locations · @HcSeedData.ProductName</PageTitle>
+
+<div class="container-xl">
+    <h1 class="hc-title mb-1">Our clinics</h1>
+    <p class="hc-lead mb-4">@State.Clinics.Count family clinics across the city. The numbers on the map match the clinics below.</p>
+
+    <section class="mb-4" aria-labelledby="hc-loc-map-title">
+        <h2 class="visually-hidden" id="hc-loc-map-title">Map</h2>
+        @* The cards below list the same numbered clinics, so the map's own list is left out. *@
+        <ShowcaseMapOrPlaceholder Locations="MapLocations" Height="340" Zoom="12" ShowList="false"
+                                  AriaLabel="@($"Map preview with {State.Clinics.Count} numbered pins for the {HcSeedData.ProductName} clinics listed below")" />
+    </section>
+
+    <ol class="list-unstyled row row-cols-1 row-cols-md-3 g-3 mb-0">
+        @for (var index = 0; index < State.Clinics.Count; index++)
+        {
+            var clinic = State.Clinics[index];
+            var number = index + 1;
+            var doctors = DoctorsAt(clinic.Id);
+            <li class="col" @key="clinic.Id">
+                <article class="hc-card hc-loc-card h-100" aria-labelledby="@($"hc-loc-{clinic.Id}")">
+                    <div class="d-flex align-items-start gap-2 mb-3">
+                        <span class="hc-loc-number" aria-hidden="true">@number</span>
+                        <h2 class="hc-loc-name" id="@($"hc-loc-{clinic.Id}")"><span class="visually-hidden">Map pin @number: </span>@clinic.Name</h2>
+                    </div>
+                    <dl class="hc-loc-facts">
+                        <div>
+                            <dt>Address</dt>
+                            <dd>@clinic.Address</dd>
+                        </div>
+                        <div>
+                            <dt>Phone</dt>
+                            <dd>@clinic.Phone</dd>
+                        </div>
+                        <div>
+                            <dt>Hours</dt>
+                            <dd>@clinic.Hours</dd>
+                        </div>
+                        <div>
+                            <dt>Get directions</dt>
+                            <dd>Enter “@clinic.Address” in your maps app, or call @clinic.Phone and we'll talk you through it.</dd>
+                        </div>
+                    </dl>
+                    <h3 class="hc-loc-subtitle">Doctors</h3>
+                    @if (doctors.Count == 0)
+                    {
+                        <p class="small text-body-secondary mb-0">No doctors see patients here right now.</p>
+                    }
+                    else
+                    {
+                        <ul class="list-unstyled mb-0 hc-loc-doctors">
+                            @foreach (var doctor in doctors)
+                            {
+                                <li @key="doctor.Id">
+                                    <a href="@HcDisplay.DoctorUrl(doctor.Id)">@doctor.Name</a>
+                                    <span class="small text-body-secondary">· @doctor.Specialty</span>
+                                </li>
+                            }
+                        </ul>
+                    }
+                </article>
+            </li>
+        }
+    </ol>
+</div>

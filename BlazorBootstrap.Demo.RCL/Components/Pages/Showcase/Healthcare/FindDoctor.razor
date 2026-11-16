@@ -1,0 +1,148 @@
+@page "/showcase/healthcare/doctors"
+@layout HcLayout
+@implements IDisposable
+
+<PageTitle>Find a doctor · @HcSeedData.ProductName</PageTitle>
+
+<div class="container-xl">
+    @{
+        var results = Results;
+    }
+    <h1 class="hc-title mb-1">Find a doctor</h1>
+    <p class="hc-lead mb-4">
+        @State.Doctors.Count doctors at our @State.Clinics.Count clinics. Narrow the list, then book the next open time, or open a
+        doctor's profile for more times.
+    </p>
+
+    <div class="row g-4">
+        <div class="col-lg-3">
+            <div class="hc-panel" role="search" aria-label="Filter doctors">
+                <div class="mb-3">
+                    <label class="form-label fw-semibold" for="hc-fd-name">Name</label>
+                    <input id="hc-fd-name" type="search" class="form-control" autocomplete="off" maxlength="60" placeholder="For example, Okoye"
+                           @bind="nameSearch" @bind:event="oninput" aria-describedby="hc-fd-count" />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-semibold" for="hc-fd-specialty">Specialty</label>
+                    <select id="hc-fd-specialty" class="form-select" value="@(specialty ?? string.Empty)" @onchange="OnSpecialtyChanged">
+                        <option value="">Any specialty</option>
+                        @foreach (var item in State.Specialties)
+                        {
+                            <option value="@item">@item</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-semibold" for="hc-fd-clinic">Clinic</label>
+                    <select id="hc-fd-clinic" class="form-select" value="@(clinicId ?? string.Empty)" @onchange="OnClinicChanged">
+                        <option value="">Any clinic</option>
+                        @foreach (var clinic in State.Clinics)
+                        {
+                            <option value="@clinic.Id">@clinic.Name</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-semibold" for="hc-fd-language">Language</label>
+                    <select id="hc-fd-language" class="form-select" value="@(language ?? string.Empty)" @onchange="OnLanguageChanged">
+                        <option value="">Any language</option>
+                        @foreach (var item in Languages)
+                        {
+                            <option value="@item">@item</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="form-check mb-3">
+                    <input class="form-check-input" type="checkbox" id="hc-fd-accepting" checked="@acceptingOnly" @onchange="OnAcceptingChanged" />
+                    <label class="form-check-label" for="hc-fd-accepting">Accepting new patients</label>
+                </div>
+
+                @if (HasFilters)
+                {
+                    <button type="button" class="btn btn-outline-secondary btn-sm w-100" @onclick="ClearFiltersAsync">Clear filters</button>
+                }
+            </div>
+        </div>
+
+        <div class="col-lg-9">
+            @* Always rendered, so every filter change is announced with the new count. *@
+            <p class="fw-semibold mb-3 hc-fd-count" id="hc-fd-count" role="status" tabindex="-1" @ref="countRegion">@CountText(results.Count)</p>
+
+            @if (results.Count == 0)
+            {
+                <div class="hc-panel text-center py-5">
+                    <span class="hc-icon fs-4" aria-hidden="true"><Icon Name="IconName.PersonSlash" /></span>
+                    <h2 class="h5 fw-bold mt-3">No doctors match</h2>
+                    <p class="text-body-secondary">Try another specialty, clinic, or language, or check the spelling of the name.</p>
+                    <button type="button" class="btn btn-primary" @onclick="ClearFiltersAsync">Clear filters</button>
+                </div>
+            }
+            else
+            {
+                <ul class="list-unstyled row row-cols-1 row-cols-md-2 g-3 mb-0">
+                    @foreach (var doctor in results)
+                    {
+                        var clinic = State.FindClinic(doctor.ClinicId);
+                        var next = State.NextSlot(doctor.Id);
+                        <li class="col" @key="doctor.Id">
+                            <article class="hc-card hc-fd-card h-100" aria-labelledby="@($"hc-fd-name-{doctor.Id}")">
+                                <div class="d-flex gap-3 align-items-start">
+                                    <span class="hc-avatar" aria-hidden="true">@doctor.Initials</span>
+                                    <div class="hc-fd-min">
+                                        <h2 class="hc-fd-name" id="@($"hc-fd-name-{doctor.Id}")"><a href="@HcDisplay.DoctorUrl(doctor.Id)">@doctor.Name</a></h2>
+                                        <p class="mb-0 text-body-secondary">@doctor.Specialty · @(clinic?.Name)</p>
+                                    </div>
+                                </div>
+
+                                <dl class="hc-fd-facts">
+                                    <div>
+                                        <dt>Languages</dt>
+                                        <dd>@string.Join(", ", doctor.Languages)</dd>
+                                    </div>
+                                    <div>
+                                        <dt>New patients</dt>
+                                        <dd>
+                                            @if (doctor.AcceptingNewPatients)
+                                            {
+                                                <Icon Name="IconName.CheckCircle" class="me-1 text-success-emphasis" aria-hidden="true" /><span>Accepting new patients</span>
+                                            }
+                                            else
+                                            {
+                                                <Icon Name="IconName.DashCircle" class="me-1" aria-hidden="true" /><span>Not accepting new patients; existing patients can still book</span>
+                                            }
+                                        </dd>
+                                    </div>
+                                </dl>
+
+                                <div class="hc-fd-next">
+                                    <span class="d-block small fw-semibold mb-1">Next open time</span>
+                                    @if (next is { } slot)
+                                    {
+                                        <a class="btn btn-primary btn-sm hc-slot hc-fd-slot" href="@HcDisplay.BookUrl(doctor.Id, slot.Start)">
+                                            <span class="visually-hidden">Book </span>@DoctorProfile.FullTime(slot.Start)<span class="visually-hidden"> with @doctor.Name</span>
+                                        </a>
+                                        <span class="d-block small text-body-secondary mt-1">at @(State.FindClinic(slot.ClinicId)?.Name)</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="d-block small text-body-secondary">
+                                            No open times in the next @HcState.BookingDays days. Call @(clinic?.Name) at @(clinic?.Phone).
+                                        </span>
+                                    }
+                                </div>
+
+                                <a class="btn btn-outline-primary btn-sm mt-3 align-self-start" href="@HcDisplay.DoctorUrl(doctor.Id)">
+                                    View profile<span class="visually-hidden"> of @doctor.Name</span>
+                                </a>
+                            </article>
+                        </li>
+                    }
+                </ul>
+            }
+        </div>
+    </div>
+</div>

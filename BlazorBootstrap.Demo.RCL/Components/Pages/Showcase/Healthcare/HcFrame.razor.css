@@ -1,0 +1,280 @@
+.sc-health {
+    --sc-primary: #0e7490;
+    --sc-primary-rgb: 14, 116, 144;
+    --sc-primary-hover: #155e75;
+    --sc-primary-contrast: #fff;
+    --sc-font-body: "Source Sans 3", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --sc-font-heading: "Source Sans 3", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --sc-page-bg: #f4f8fa;
+    --hc-font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    --hc-ink: #0f2530;
+    --hc-surface: #fff;
+    --hc-border: #d9e6eb;
+    --hc-soft: #e6f4f7;
+    --hc-muted-bg: #eef4f6;
+}
+
+[data-bs-theme=dark] .sc-health {
+    --sc-primary: #67e8f9;
+    --sc-primary-rgb: 103, 232, 249;
+    --sc-primary-hover: #a5f3fc;
+    --sc-primary-contrast: #062a33;
+    --sc-page-bg: #0a1519;
+    --hc-ink: #e8f4f7;
+    --hc-surface: #112127;
+    --hc-border: #23404a;
+    --hc-soft: #16323b;
+    --hc-muted-bg: #0e1c21;
+}
+
+/* Bootstrap keeps white text on primary fills; on the light dark-mode violet that fails contrast. */
+[data-bs-theme=dark] .sc-health ::deep .text-bg-primary,
+[data-bs-theme=dark] .sc-health ::deep .progress-bar {
+    color: var(--sc-primary-contrast) !important;
+}
+
+/* Header: the Navbar component renders the nav and its links, so they need ::deep. */
+.sc-health ::deep .hc-header {
+    min-height: 3.75rem;
+    background: var(--hc-surface);
+    border-bottom: 1px solid var(--hc-border);
+}
+
+.sc-health ::deep .hc-header .nav-link {
+    color: var(--hc-ink);
+    font-weight: 600;
+    border-radius: .5rem;
+    padding-inline: .75rem !important;
+}
+
+    .sc-health ::deep .hc-header .nav-link:hover {
+        color: var(--sc-primary);
+    }
+
+    .sc-health ::deep .hc-header .nav-link.active {
+        color: var(--sc-primary-hover);
+        background: rgba(var(--sc-primary-rgb), .12);
+    }
+
+[data-bs-theme=dark] .sc-health ::deep .hc-header .nav-link.active {
+    color: var(--sc-primary);
+}
+
+.sc-health ::deep .hc-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: .5rem;
+    font-weight: 700;
+    font-size: 1.25rem;
+    color: var(--hc-ink);
+    text-decoration: none;
+}
+
+.sc-health ::deep .hc-brand-mark {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    border-radius: .625rem;
+    background: var(--sc-primary);
+    color: var(--sc-primary-contrast);
+}
+
+.hc-content {
+    padding-block: 1.5rem 1rem;
+}
+
+.hc-footer {
+    margin-top: 2rem;
+    padding-block: 1.25rem;
+    border-top: 1px solid var(--hc-border);
+    color: var(--bs-secondary-color);
+    font-size: .8125rem;
+}
+
+/* Shared page styles: page markup is child content of the layout, so it needs ::deep. */
+.sc-health ::deep .hc-title {
+    margin: 0;
+    overflow-wrap: anywhere;
+    font-size: clamp(1.375rem, 2.4vw, 1.75rem);
+    font-weight: 700;
+    color: var(--hc-ink);
+}
+
+.sc-health ::deep .hc-lead {
+    color: var(--bs-secondary-color);
+    font-size: 1rem;
+}
+
+.sc-health ::deep .hc-panel {
+    padding: 1.25rem;
+    border: 1px solid var(--hc-border);
+    border-radius: .875rem;
+    background: var(--hc-surface);
+}
+
+.sc-health ::deep .hc-card {
+    border: 1px solid var(--hc-border);
+    border-radius: .875rem;
+    background: var(--hc-surface);
+}
+
+.sc-health ::deep .hc-section-title {
+    margin-bottom: .75rem;
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: var(--hc-ink);
+}
+
+.sc-health ::deep .hc-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: .75rem;
+    background: var(--hc-soft);
+    color: var(--sc-primary);
+}
+
+.sc-health ::deep .hc-mono {
+    font-family: var(--hc-font-mono);
+}
+
+.sc-health ::deep .hc-plain {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+.sc-health ::deep .hc-not-found {
+    max-width: 36rem;
+    margin: 2rem auto;
+    text-align: center;
+}
+
+/* The staff back office (D-031): a sidebar beside the page on wide screens, above it on narrow ones. */
+.hc-shell {
+    display: flex;
+    flex-direction: column;
+    flex: 1 0 auto;
+    min-width: 0;
+}
+
+.hc-shell-main {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+@media (min-width: 641px) {
+    .hc-shell {
+        flex-direction: row;
+        align-items: flex-start;
+    }
+}
+
+.sc-health ::deep .hc-sidebar {
+    --bb-sidebar-width: 15rem;
+    --bb-sidebar-background-color: #0b3440;
+    --bb-sidebar-top-row-background-color: #0b3440;
+    --bb-sidebar-top-row-border-color: rgba(255, 255, 255, .08);
+    --bb-sidebar-title-text-color: #fff;
+    --bb-sidebar-brand-icon-color: #67e8f9;
+    --bb-sidebar-title-badge-text-color: #062a33;
+    --bb-sidebar-title-badge-background-color: #67e8f9;
+    --bb-sidebar-navbar-toggler-icon-color: #fff;
+    --bb-sidebar-navbar-toggler-background-color: rgba(255, 255, 255, .1);
+    --bb-sidebar-content-border-color: rgba(255, 255, 255, .08);
+    --bb-sidebar-nav-item-text-color: #e0f5f9;
+    --bb-sidebar-nav-item-text-active-color-rgb: 255, 255, 255;
+    --bb-sidebar-nav-item-text-hover-color: rgba(255, 255, 255, .95);
+    --bb-sidebar-nav-item-background-hover-color: rgba(255, 255, 255, .08);
+    --bb-sidebar-nav-item-group-background-color: rgba(255, 255, 255, .06);
+}
+
+/* Beside the page only: above it (narrow screens), a sticky bar would sit under the page content. */
+@media (min-width: 641px) {
+    .sc-health ::deep .hc-sidebar {
+        position: sticky;
+        top: 0;
+    }
+}
+
+.sc-health ::deep .hc-app-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: .75rem;
+    padding: .625rem 1.5rem;
+    border-bottom: 1px solid var(--hc-border);
+    background: var(--hc-surface);
+}
+
+.sc-health ::deep .hc-app-bar-title {
+    font-weight: 700;
+    color: var(--hc-ink);
+}
+
+.sc-health ::deep .hc-app-bar-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: .5rem;
+}
+
+/* A table that scrolls sideways can round to one pixel taller than its box; never show a vertical scrollbar for it.
+   It is also the containing block of its visually hidden text, which is absolutely positioned: otherwise that text
+   escapes the clipping and widens the page at 375 px. */
+.sc-health ::deep .table-responsive {
+    position: relative;
+    overflow-y: hidden;
+}
+
+/* Shared clinic pieces: doctor and patient initials, status pills, and the open-time buttons. */
+.sc-health ::deep .hc-avatar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    background: var(--hc-soft);
+    color: var(--sc-primary-hover);
+    font-weight: 700;
+}
+
+[data-bs-theme=dark] .sc-health ::deep .hc-avatar {
+    color: var(--sc-primary);
+}
+
+.sc-health ::deep .hc-slot {
+    min-width: 5.5rem;
+    font-variant-numeric: tabular-nums;
+}
+
+.sc-health ::deep .hc-mono {
+    font-family: var(--hc-font-mono);
+}
+
+/* Staff viewing the patient portal (D-032): a slim bar back to the staff area. */
+.sc-health ::deep .hc-viewing-bar {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: .25rem 1rem;
+    padding: .375rem 1rem;
+    background: var(--hc-soft);
+    color: var(--hc-ink);
+    font-size: .875rem;
+}
+
+    .sc-health ::deep .hc-viewing-bar a {
+        color: var(--sc-primary-hover);
+        font-weight: 600;
+    }
+
+[data-bs-theme=dark] .sc-health ::deep .hc-viewing-bar a {
+    color: var(--sc-primary);
+}

@@ -1,0 +1,185 @@
+@page "/showcase/healthcare/doctors/{Id}"
+@layout HcLayout
+@implements IDisposable
+
+@if (Doctor is not { } doctor)
+{
+    <div class="container-xl">
+        <HcNotFound Message="There's no doctor at this link. Find a doctor to see everyone at our clinics." />
+    </div>
+}
+else
+{
+    var clinic = State.FindClinic(doctor.ClinicId);
+    var shortName = ShortName(doctor);
+    var windowStart = WindowStart;
+    var windowEnd = WindowEnd;
+    var days = OpenDays(doctor.Id, windowStart, windowEnd);
+    var awayInWindow = State.TimeOffOf(doctor.Id).Where(entry => entry.From <= windowEnd && entry.To >= windowStart).ToList();
+    var upcomingAway = State.TimeOffOf(doctor.Id).Where(entry => entry.To >= State.Clock.Today).ToList();
+    var hours = WeeklyHours(State, doctor.Id);
+
+    <PageTitle>@doctor.Name · @HcSeedData.ProductName</PageTitle>
+
+    <div class="container-xl">
+        <p class="mb-3"><a href="@($"{HcLayout.Base}/doctors")"><Icon Name="IconName.ArrowLeft" class="me-1" aria-hidden="true" />All doctors</a></p>
+
+        <div class="d-flex align-items-center gap-3 mb-4">
+            <span class="hc-avatar hc-dp-avatar" aria-hidden="true">@doctor.Initials</span>
+            <div class="hc-dp-min">
+                <h1 class="hc-title">@doctor.Name</h1>
+                <p class="hc-lead mb-0">@doctor.Specialty · @(clinic?.Name)</p>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-lg-5">
+                <section class="hc-panel mb-4" aria-labelledby="hc-dp-about">
+                    <h2 class="hc-section-title" id="hc-dp-about">About @shortName</h2>
+                    <p>@doctor.Bio</p>
+                    <dl class="hc-dp-facts mb-0">
+                        <div>
+                            <dt>Specialty</dt>
+                            <dd>@doctor.Specialty</dd>
+                        </div>
+                        <div>
+                            <dt>Languages</dt>
+                            <dd>@string.Join(", ", doctor.Languages)</dd>
+                        </div>
+                        <div>
+                            <dt>New patients</dt>
+                            <dd>@(doctor.AcceptingNewPatients ? "Accepting new patients" : "Not accepting new patients; existing patients can still book")</dd>
+                        </div>
+                    </dl>
+                </section>
+
+                @if (clinic is not null)
+                {
+                    <section class="hc-panel mb-4" aria-labelledby="hc-dp-clinic">
+                        <h2 class="hc-section-title" id="hc-dp-clinic">@clinic.Name</h2>
+                        <dl class="hc-dp-facts mb-2">
+                            <div>
+                                <dt>Address</dt>
+                                <dd>@clinic.Address</dd>
+                            </div>
+                            <div>
+                                <dt>Phone</dt>
+                                <dd>@clinic.Phone</dd>
+                            </div>
+                            <div>
+                                <dt>Clinic hours</dt>
+                                <dd>@clinic.Hours</dd>
+                            </div>
+                        </dl>
+                        <a href="@($"{HcLayout.Base}/locations")">Map of our clinics</a>
+                    </section>
+                }
+
+                <section class="hc-panel mb-4" aria-labelledby="hc-dp-hours">
+                    <h2 class="hc-section-title" id="hc-dp-hours">Weekly hours</h2>
+                    @if (hours.Count == 0)
+                    {
+                        <p class="mb-0 text-body-secondary">@shortName has no weekly hours set right now, so there are no times to book.</p>
+                    }
+                    else
+                    {
+                        <ul class="hc-dp-hours mb-0">
+                            @foreach (var line in hours)
+                            {
+                                <li @key="line.Day"><strong>@line.Day</strong> @line.Text</li>
+                            }
+                        </ul>
+                    }
+                </section>
+
+                <section class="hc-panel mb-4" aria-labelledby="hc-dp-away">
+                    <h2 class="hc-section-title" id="hc-dp-away">Time away</h2>
+                    @if (upcomingAway.Count == 0)
+                    {
+                        <p class="mb-0 text-body-secondary">No time away planned.</p>
+                    }
+                    else
+                    {
+                        <ul class="mb-0">
+                            @foreach (var entry in upcomingAway)
+                            {
+                                <li @key="entry.Id">Away @AwayText(entry)</li>
+                            }
+                        </ul>
+                    }
+                </section>
+            </div>
+
+            <div class="col-lg-7">
+                <section class="hc-panel" aria-labelledby="hc-dp-open">
+                    <h2 class="hc-section-title mb-1" id="hc-dp-open">Open times</h2>
+                    <p class="small text-body-secondary">
+                        Times are @HcState.SlotMinutes-minute visits. You can book from an hour from now up to @HcState.BookingDays days ahead.
+                    </p>
+
+                    @if (!doctor.AcceptingNewPatients)
+                    {
+                        <div class="hc-dp-note mb-3">
+                            <Icon Name="IconName.InfoCircle" class="me-2 flex-shrink-0" aria-hidden="true" />
+                            <span>@doctor.Name isn't taking new patients right now. If you've had a visit with @shortName before, you can still book one of these times.</span>
+                        </div>
+                    }
+
+                    <p class="fw-semibold hc-dp-window" tabindex="-1" @ref="windowHeading">
+                        @HcDisplay.Day(windowStart) to @HcDisplay.Day(windowEnd): @OpenTimesText(days)
+                    </p>
+
+                    @if (days.Count == 0)
+                    {
+                        <p class="text-body-secondary">
+                            @shortName has no open times between @HcDisplay.Day(windowStart) and @HcDisplay.Day(windowEnd).
+                            @(CanShowNext ? "Show the next week to see later times." : null)
+                        </p>
+                    }
+
+                    @foreach (var entry in awayInWindow)
+                    {
+                        var awayKey = FormattableString.Invariant($"away-{entry.Id}");
+                        <p class="small text-body-secondary" @key="awayKey"><Icon Name="IconName.CalendarX" class="me-1" aria-hidden="true" />Away @AwayText(entry): no appointments those days.</p>
+                    }
+
+                    @foreach (var day in days)
+                    {
+                        var dayName = FullDay(day.Date);
+                        var dayKey = $"day-{day.Date.ToString(HcDisplay.QueryDate, CultureInfo.InvariantCulture)}";
+                        <div class="hc-dp-day" @key="dayKey">
+                            <h3 class="hc-dp-day-title">@dayName</h3>
+                            @foreach (var group in day.Slots.GroupBy(slot => slot.ClinicId))
+                            {
+                                <p class="small text-body-secondary mb-1">At @(State.FindClinic(group.Key)?.Name)</p>
+                                <ul class="hc-dp-slots list-unstyled" aria-label="@($"Open times on {dayName} at {State.FindClinic(group.Key)?.Name}")">
+                                    @foreach (var slot in group)
+                                    {
+                                        <li @key="slot.Start">
+                                            <a class="btn btn-outline-primary btn-sm hc-slot" href="@HcDisplay.BookUrl(doctor.Id, slot.Start)"><span class="visually-hidden">@dayName at </span>@HcDisplay.Time(slot.Start)</a>
+                                        </li>
+                                    }
+                                </ul>
+                            }
+                        </div>
+                    }
+
+                    <div class="d-flex flex-wrap gap-2 mt-3">
+                        @if (weekOffset > 0)
+                        {
+                            <button type="button" class="btn btn-outline-secondary" @onclick="ShowPreviousWeek">
+                                <Icon Name="IconName.ChevronLeft" class="me-1" aria-hidden="true" />Show the previous week
+                            </button>
+                        }
+                        @if (CanShowNext)
+                        {
+                            <button type="button" class="btn btn-outline-primary" @onclick="ShowNextWeek">
+                                Show the next week<Icon Name="IconName.ChevronRight" class="ms-1" aria-hidden="true" />
+                            </button>
+                        }
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+}

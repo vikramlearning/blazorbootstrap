@@ -1,0 +1,55 @@
+.hc-bills-total {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.hc-bills-amount {
+    font-size: 1.75rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    color: var(--hc-ink);
+}
+
+.hc-bills-card {
+    padding: 1rem 1.25rem;
+}
+
+/* The bill's text beside its amount and Pay button; the button drops below the text at 375 px. */
+.hc-bills-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: .75rem 1rem;
+}
+
+.hc-bills-text {
+    flex: 1 1 16rem;
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+.hc-bills-pay {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+}
+
+.hc-bills-amount-sm {
+    font-size: 1.125rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    color: var(--hc-ink);
+}
+
+.hc-bills-form {
+    max-width: 34rem;
+    overflow-wrap: anywhere;
+    padding-top: 1rem;
+    border-top: 1px solid var(--hc-border);
+}
+
+.hc-bills-desc {
+    min-width: 12rem;
+}

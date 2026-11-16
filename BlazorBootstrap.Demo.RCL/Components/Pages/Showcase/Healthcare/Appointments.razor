@@ -1,0 +1,72 @@
+@page "/showcase/healthcare/appointments"
+@layout HcLayout
+
+<PageTitle>Appointments · @HcSeedData.ProductName</PageTitle>
+
+<div class="container-xl hc-appts">
+    <ShowcaseRoleGuard Roles="@HcSeedData.PatientRole" SignInPath="@HcLayout.SignInPath">
+        <div class="hc-appts-head mb-4">
+            <div>
+                <h1 class="hc-title mb-1">Appointments</h1>
+                <p class="hc-lead mb-0">Your visits at @HcSeedData.ProductName. You can hold up to @HcState.MaxUpcoming upcoming appointments, and change or cancel them online up to 2 hours before they start.</p>
+            </div>
+            <a class="btn btn-primary" href="@FindDoctorUrl"><Icon Name="IconName.CalendarPlus" class="me-2" aria-hidden="true" />Book a visit</a>
+        </div>
+
+        @foreach (var section in Sections())
+        {
+            <section class="mb-5" aria-labelledby="@($"hc-appts-{section.Key}-title")" @key="@($"section-{section.Key}")">
+                <h2 class="hc-section-title" id="@($"hc-appts-{section.Key}-title")">@section.Title (@section.Items.Count)</h2>
+                @if (section.Items.Count == 0)
+                {
+                    <div class="hc-panel">
+                        <p class="mb-0">@section.Empty <a href="@FindDoctorUrl">Find a doctor</a> to book @(section.IsPast ? "your first visit" : "one").</p>
+                    </div>
+                }
+                else
+                {
+                    <ul class="list-unstyled d-grid gap-3 mb-0">
+                        @foreach (var appointment in section.Items)
+                        {
+                            var doctor = State.FindDoctor(appointment.DoctorId);
+                            var clinic = State.FindClinic(appointment.ClinicId);
+                            var when = HcDisplay.When(appointment.Start);
+                            var titleId = $"hc-appts-{appointment.Id}-when";
+
+                            <li @key="@($"{section.Key}-{appointment.Id}")">
+                                <article class="hc-card hc-appts-card" aria-labelledby="@titleId">
+                                    <div class="hc-appts-when">
+                                        <h3 class="h6 fw-bold mb-1" id="@titleId">@HcDisplay.DayLong(appointment.Start) at @HcDisplay.Time(appointment.Start)</h3>
+                                        <span class="badge text-bg-@HcDisplay.StatusColor(appointment.Status)">@HcDisplay.StatusLabel(appointment.Status)</span>
+                                    </div>
+                                    <div class="hc-appts-who">
+                                        <span class="hc-avatar" aria-hidden="true">@doctor?.Initials</span>
+                                        <div class="hc-appts-text">
+                                            <p class="fw-semibold mb-0">@(doctor?.Name ?? "Unknown doctor")<span class="fw-normal text-body-secondary"> · @doctor?.Specialty</span></p>
+                                            <p class="small text-body-secondary mb-0">@clinic?.Name, @clinic?.Address</p>
+                                            <p class="small mb-0 hc-appts-reason"><span class="text-body-secondary">Reason:</span> @appointment.Reason</p>
+                                        </div>
+                                    </div>
+                                    <div class="hc-appts-actions">
+                                        @if (!section.IsPast)
+                                        {
+                                            <a class="btn btn-sm btn-outline-primary" href="@HcDisplay.AppointmentUrl(appointment.Id)">View or change<span class="visually-hidden">: @when with @doctor?.Name</span></a>
+                                        }
+                                        else if (appointment.Status == HcAppointmentStatus.Completed)
+                                        {
+                                            <a class="btn btn-sm btn-outline-primary" href="@HcDisplay.AppointmentUrl(appointment.Id)">Visit summary<span class="visually-hidden">: @when with @doctor?.Name</span></a>
+                                        }
+                                        else
+                                        {
+                                            <a class="btn btn-sm btn-outline-secondary" href="@HcDisplay.AppointmentUrl(appointment.Id)">Details<span class="visually-hidden">: @when with @doctor?.Name</span></a>
+                                        }
+                                    </div>
+                                </article>
+                            </li>
+                        }
+                    </ul>
+                }
+            </section>
+        }
+    </ShowcaseRoleGuard>
+</div>

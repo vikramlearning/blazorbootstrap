@@ -1,0 +1,46 @@
+/* Facts as label and value pairs: side by side on wide screens, stacked at 375 px. */
+.hc-appt-facts > div {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: .125rem 1rem;
+    padding-block: .5rem;
+    border-bottom: 1px solid var(--hc-border);
+}
+
+    .hc-appt-facts > div:last-child {
+        border-bottom: 0;
+    }
+
+@media (min-width: 576px) {
+    .hc-appt-facts > div {
+        grid-template-columns: 11rem minmax(0, 1fr);
+    }
+}
+
+.hc-appt-facts dt {
+    font-weight: 600;
+    color: var(--bs-secondary-color);
+}
+
+.hc-appt-facts dd {
+    margin: 0;
+    overflow-wrap: anywhere;
+}
+
+.hc-appt-item {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: .25rem .75rem;
+    padding: .5rem .75rem;
+    border-radius: .5rem;
+    background: var(--hc-muted-bg);
+    overflow-wrap: anywhere;
+}
+
+.hc-appt-confirm {
+    padding: 1rem;
+    border: 1px solid var(--sc-primary);
+    border-radius: .75rem;
+    background: var(--hc-soft);
+}

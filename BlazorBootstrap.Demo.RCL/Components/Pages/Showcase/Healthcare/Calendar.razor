@@ -1,0 +1,309 @@
+@page "/showcase/healthcare/staff/calendar"
+@layout HcStaffLayout
+@implements IDisposable
+
+<PageTitle>Calendar · @HcSeedData.ProductName</PageTitle>
+
+<ShowcaseRoleGuard Roles="@HcSeedData.FrontDeskRole" SignInPath="@HcLayout.SignInPath">
+    @{
+        var date = Date;
+        var today = State.Clock.Today;
+        var names = PatientNames();
+        var columns = Columns(date);
+        var dayAppointments = columns.SelectMany(column => column.Appointments).ToList();
+        var weekStart = WeekStart(date);
+    }
+
+    <div class="container-fluid px-lg-4">
+        <h1 class="hc-title mb-1">Calendar</h1>
+        <p class="hc-lead mb-3">
+            Every doctor's appointments for a day. Open an appointment to check the patient in, mark a no-show, or cancel it.
+            Bookings patients make online show up here right away.
+        </p>
+
+        @* Always rendered and focusable, so an outcome is announced and focus has somewhere to go once the panel closes. *@
+        <p class="fw-semibold hc-cal-status @(statusIsError ? "text-danger-emphasis" : null)" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
+
+        <div class="hc-panel hc-cal-toolbar mb-4">
+            <div class="btn-group" role="group" aria-label="Change the day">
+                <button type="button" class="btn btn-outline-secondary" @onclick="() => SetDate(date.AddDays(-1))">
+                    <Icon Name="IconName.ChevronLeft" class="me-1" aria-hidden="true" />Previous<span class="visually-hidden"> day</span>
+                </button>
+                <button type="button" class="btn btn-outline-secondary" @onclick="() => SetDate(null)" aria-current="@(date == today ? "date" : null)">Today</button>
+                <button type="button" class="btn btn-outline-secondary" @onclick="() => SetDate(date.AddDays(1))">
+                    Next<span class="visually-hidden"> day</span><Icon Name="IconName.ChevronRight" class="ms-1" aria-hidden="true" />
+                </button>
+            </div>
+            <div class="hc-cal-field">
+                <label class="form-label fw-semibold small mb-1" for="hc-cal-date">Date</label>
+                <input id="hc-cal-date" type="date" class="form-control" value="@QueryValue(date)" min="@QueryValue(MinDate)" max="@QueryValue(MaxDate)" @onchange="OnDateChanged" />
+            </div>
+            <div class="hc-cal-field">
+                <label class="form-label fw-semibold small mb-1" for="hc-cal-clinic">Clinic</label>
+                <select id="hc-cal-clinic" class="form-select" value="@(clinicFilter ?? string.Empty)" @onchange="OnClinicChanged">
+                    <option value="">All clinics</option>
+                    @foreach (var clinic in State.Clinics)
+                    {
+                        <option value="@clinic.Id">@clinic.Name</option>
+                    }
+                </select>
+            </div>
+            <div class="hc-cal-field">
+                <label class="form-label fw-semibold small mb-1" for="hc-cal-doctor">Doctor</label>
+                <select id="hc-cal-doctor" class="form-select" value="@(doctorFilter ?? string.Empty)" @onchange="OnDoctorChanged">
+                    <option value="">All doctors</option>
+                    @foreach (var doctor in State.Doctors)
+                    {
+                        <option value="@doctor.Id">@doctor.Name</option>
+                    }
+                </select>
+            </div>
+            @if (clinicFilter is not null || doctorFilter is not null)
+            {
+                <button type="button" class="btn btn-outline-secondary align-self-end" @onclick="ClearFilters">Clear filters</button>
+            }
+        </div>
+
+        <section class="mb-5" aria-labelledby="hc-cal-day-title">
+            <h2 class="hc-section-title mb-1" id="hc-cal-day-title">@HcDisplay.DayLong(date)@(date == today ? " (today)" : null)</h2>
+            <p class="small text-body-secondary mb-3" role="status" id="hc-cal-day-summary" tabindex="-1" @ref="daySummary">@DaySummary(dayAppointments, columns.Count)</p>
+
+            @if (columns.Count == 0)
+            {
+                <div class="hc-panel text-center py-4">
+                    <p class="mb-0 text-body-secondary">@NoDoctorsText(date)</p>
+                </div>
+            }
+            else
+            {
+                <div class="hc-cal-grid">
+                    @foreach (var column in columns)
+                    {
+                        var doctor = column.Doctor;
+                        var headingId = $"hc-cal-doc-{doctor.Id}";
+                        <section class="hc-cal-col" aria-labelledby="@headingId" @key="doctor.Id">
+                            <div class="hc-cal-col-head">
+                                <span class="hc-avatar" aria-hidden="true">@doctor.Initials</span>
+                                <div class="hc-cal-min">
+                                    <h3 class="hc-cal-doc" id="@headingId">@doctor.Name</h3>
+                                    <p class="small text-body-secondary mb-0">@HoursLine(column, date)</p>
+                                </div>
+                            </div>
+                            @if (column.Appointments.Count == 0)
+                            {
+                                <p class="small text-body-secondary mb-0 px-3 pb-3">No appointments.</p>
+                            }
+                            else
+                            {
+                                <ol class="list-unstyled hc-cal-list">
+                                    @foreach (var appointment in column.Appointments)
+                                    {
+                                        var outside = IsOutside(appointment);
+                                        <li @key="appointment.Id">
+                                            <button type="button" class="hc-cal-appt @(appointment.Status is HcAppointmentStatus.Cancelled or HcAppointmentStatus.NoShow ? "hc-cal-appt-closed" : null)"
+                                                    style="--hc-cal-accent: var(--bs-@(HcDisplay.StatusColor(appointment.Status)))" aria-haspopup="dialog"
+                                                    @ref="openers[appointment.Id]" @onclick="() => OpenAsync(appointment)">
+                                                <span class="hc-cal-time">@HcDisplay.Time(appointment.Start)–@HcDisplay.Time(appointment.Start.AddMinutes(appointment.Minutes))</span>
+                                                <span class="hc-cal-patient">@PatientName(names, appointment.PatientId)</span>
+                                                <span class="hc-cal-reason">@appointment.Reason</span>
+                                                <span class="hc-cal-meta">
+                                                    <span class="badge text-bg-@HcDisplay.StatusColor(appointment.Status)">@HcDisplay.StatusLabel(appointment.Status)</span>
+                                                    @if (clinicFilter is null && appointment.ClinicId != doctor.ClinicId)
+                                                    {
+                                                        <span class="small">at @(State.FindClinic(appointment.ClinicId)?.Name)</span>
+                                                    }
+                                                </span>
+                                                @if (outside)
+                                                {
+                                                    <span class="hc-cal-warn">
+                                                        <Icon Name="IconName.ExclamationTriangleFill" class="me-1 flex-shrink-0" aria-hidden="true" />
+                                                        <span>@OutsideText(State, appointment)</span>
+                                                    </span>
+                                                }
+                                            </button>
+                                        </li>
+                                    }
+                                </ol>
+                            }
+                        </section>
+                    }
+                </div>
+            }
+        </section>
+
+        <section aria-labelledby="hc-cal-week-title">
+            <h2 class="hc-section-title" id="hc-cal-week-title">Week of @HcDisplay.Day(weekStart) to @HcDisplay.Day(weekStart.AddDays(6))</h2>
+            <div class="hc-panel p-0">
+                <div class="table-responsive">
+                    <table class="table table-sm align-middle mb-0 hc-cal-week">
+                        <caption class="visually-hidden">
+                            Appointments per doctor and day, week of @HcDisplay.Day(weekStart)@(clinicFilter is not null ? $", at {State.FindClinic(clinicFilter)?.Name}" : null), not counting cancelled ones. Each day links to its calendar.
+                        </caption>
+                        <thead>
+                            <tr>
+                                <th scope="col">Doctor</th>
+                                @for (var offset = 0; offset < 7; offset++)
+                                {
+                                    var day = weekStart.AddDays(offset);
+                                    <th scope="col" class="text-center">
+                                        <a href="@DateUrl(day)" aria-current="@(day == date ? "date" : null)" class="@(day == date ? "fw-bold" : null)">@HcDisplay.Day(day)</a>
+                                    </th>
+                                }
+                                <th scope="col" class="text-center">Week</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var row in WeekRows(weekStart))
+                            {
+                                <tr @key="row.Doctor.Id">
+                                    <th scope="row" class="hc-cal-week-doc">@row.Doctor.Name</th>
+                                    @for (var offset = 0; offset < 7; offset++)
+                                    {
+                                        var cell = row.Cells[offset];
+                                        <td class="text-center">
+                                            @if (cell.Away)
+                                            {
+                                                <span class="small text-body-secondary">Away</span>
+                                            }
+                                            else if (!cell.Works && cell.Count == 0)
+                                            {
+                                                <span aria-hidden="true">—</span><span class="visually-hidden">No hours</span>
+                                            }
+                                            else
+                                            {
+                                                @cell.Count
+                                            }
+                                        </td>
+                                    }
+                                    <td class="text-center fw-semibold">@row.Cells.Sum(cell => cell.Count)</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <Modal @ref="panelModal" IsVerticallyCentered="true" IsScrollable="true" ShowCloseButton="false" aria-labelledby="hc-cal-panel-title"
+           OnShown="OnPanelShownAsync" OnHidden="OnPanelHidden">
+        <HeaderTemplate>
+            <h2 class="modal-title h5" id="hc-cal-panel-title">@PanelTitle(names)</h2>
+        </HeaderTemplate>
+        <BodyTemplate>
+            @if (selected is { } appointment)
+            {
+                var patient = PatientName(names, appointment.PatientId);
+                var doctor = State.FindDoctor(appointment.DoctorId);
+                <dl class="hc-cal-facts">
+                    <div>
+                        <dt>When</dt>
+                        <dd>@HcDisplay.DayLong(appointment.Start), @HcDisplay.Time(appointment.Start)–@HcDisplay.Time(appointment.Start.AddMinutes(appointment.Minutes))</dd>
+                    </div>
+                    <div>
+                        <dt>Doctor</dt>
+                        <dd>@(doctor?.Name)</dd>
+                    </div>
+                    <div>
+                        <dt>Clinic</dt>
+                        <dd>@(State.FindClinic(appointment.ClinicId)?.Name)</dd>
+                    </div>
+                    <div>
+                        <dt>Status</dt>
+                        <dd>@HcDisplay.StatusLabel(appointment.Status)@(appointment.CheckedInAt is { } checkedIn && appointment.Status != HcAppointmentStatus.Cancelled ? $" (arrived {HcDisplay.Time(checkedIn)})" : null)</dd>
+                    </div>
+                    <div>
+                        <dt>Phone</dt>
+                        <dd>@(State.FindPatient(appointment.PatientId)?.Phone is { Length: > 0 } phone ? phone : "Not on file")</dd>
+                    </div>
+                    <div>
+                        <dt>Booked</dt>
+                        <dd>@HcDisplay.When(appointment.CreatedAt)</dd>
+                    </div>
+                    <div class="hc-cal-facts-wide">
+                        <dt>Reason for the visit</dt>
+                        <dd class="hc-plain">@appointment.Reason</dd>
+                    </div>
+                    @if (appointment.Status == HcAppointmentStatus.Cancelled)
+                    {
+                        <div class="hc-cal-facts-wide">
+                            <dt>Cancelled</dt>
+                            <dd class="hc-plain">@(appointment.CancelledAt is { } cancelledAt ? HcDisplay.When(cancelledAt) : null)@(appointment.CancelReason.Length > 0 ? $": {appointment.CancelReason}" : null)</dd>
+                        </div>
+                    }
+                </dl>
+
+                @if (IsOutside(appointment))
+                {
+                    <p class="hc-cal-panel-warn">
+                        <Icon Name="IconName.ExclamationTriangleFill" class="me-2 flex-shrink-0" aria-hidden="true" />
+                        <span>@OutsideText(State, appointment). Patients can't book this time any more.</span>
+                    </p>
+                }
+
+                @switch (mode)
+                {
+                    case PanelMode.ConfirmNoShow:
+                        <div class="hc-cal-confirm">
+                            <p class="fw-semibold" tabindex="-1" @ref="confirmText">
+                                Mark @patient as a no-show for @HcDisplay.Time(appointment.Start) with @(doctor?.Name)?
+                            </p>
+                            <p class="small">The appointment closes and can't be checked in afterwards. The time stays taken.</p>
+                            <div class="d-flex flex-wrap gap-2">
+                                <button type="button" class="btn btn-danger" @onclick="ConfirmNoShowAsync">Mark as no-show</button>
+                                <button type="button" class="btn btn-outline-secondary" @onclick="() => GoBack(PanelMode.ConfirmNoShow)">Go back</button>
+                            </div>
+                        </div>
+                        break;
+
+                    case PanelMode.ConfirmCancel:
+                        <div class="hc-cal-confirm">
+                            <p class="fw-semibold" tabindex="-1" @ref="confirmText">
+                                Cancel @patient's appointment on @HcDisplay.When(appointment.Start) with @(doctor?.Name)?
+                            </p>
+                            <p class="small">The time opens for booking again. This demo doesn't notify the patient, so call them to let them know.</p>
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold" for="hc-cal-reason">Reason (optional)</label>
+                                <textarea id="hc-cal-reason" class="form-control @(cancelReasonError is null ? null : "is-invalid")" rows="2" maxlength="@HcState.MaxReasonLength"
+                                          @bind="cancelReason" @bind:event="oninput" @ref="cancelReasonInput" aria-invalid="@(cancelReasonError is null ? null : "true")"
+                                          aria-describedby="hc-cal-reason-help hc-cal-reason-error"></textarea>
+                                <div class="form-text" id="hc-cal-reason-help">For example, “Doctor away, patient will call to rebook”. @cancelReason.Length of @HcState.MaxReasonLength characters.</div>
+                                <div class="hc-cal-error" id="hc-cal-reason-error">@cancelReasonError</div>
+                            </div>
+                            <div class="d-flex flex-wrap gap-2">
+                                <button type="button" class="btn btn-danger" @onclick="ConfirmCancelAsync">Cancel the appointment</button>
+                                <button type="button" class="btn btn-outline-secondary" @onclick="() => GoBack(PanelMode.ConfirmCancel)">Keep the appointment</button>
+                            </div>
+                        </div>
+                        break;
+
+                    default:
+                        if (CanCheckIn(appointment) || CanNoShow(appointment) || CanCancel(appointment))
+                        {
+                            <div class="d-flex flex-wrap gap-2">
+                                @if (CanCheckIn(appointment))
+                                {
+                                    <button type="button" class="btn btn-primary" @ref="checkInButton" @onclick="ConfirmCheckInAsync">
+                                        <Icon Name="IconName.PersonCheck" class="me-1" aria-hidden="true" />Check in
+                                    </button>
+                                }
+                                @if (CanNoShow(appointment))
+                                {
+                                    <button type="button" class="btn btn-outline-danger" @ref="noShowButton" @onclick="() => Ask(PanelMode.ConfirmNoShow)">Mark as no-show</button>
+                                }
+                                @if (CanCancel(appointment))
+                                {
+                                    <button type="button" class="btn btn-outline-danger" @ref="cancelButton" @onclick="() => Ask(PanelMode.ConfirmCancel)">Cancel appointment</button>
+                                }
+                            </div>
+                        }
+                        <p class="small text-body-secondary mt-2 mb-0">@ActionsHint(appointment)</p>
+                        break;
+                }
+            }
+        </BodyTemplate>
+        <FooterTemplate>
+            <button type="button" class="btn btn-outline-secondary" @ref="panelClose" @onclick="() => panelModal.HideAsync()">Close</button>
+        </FooterTemplate>
+    </Modal>
+</ShowcaseRoleGuard>

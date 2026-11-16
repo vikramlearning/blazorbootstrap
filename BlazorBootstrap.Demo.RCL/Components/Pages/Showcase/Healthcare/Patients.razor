@@ -1,0 +1,88 @@
+@page "/showcase/healthcare/staff/patients"
+@layout HcStaffLayout
+
+<PageTitle>Patients · @HcSeedData.ProductName</PageTitle>
+
+@* Every patient of the clinics, searchable, with their next visit with the signed-in doctor and their last visit. *@
+<div class="container-fluid px-lg-4">
+    <ShowcaseRoleGuard Roles="@HcSeedData.DoctorRole" SignInPath="@HcLayout.SignInPath">
+        @{
+            var today = State.Clock.Today;
+            var all = State.Patients;
+            var shown = all.Where(Matches).ToList();
+            var search = query.Trim();
+        }
+
+        <h1 class="hc-title mb-1">Patients</h1>
+        <p class="hc-lead mb-3">Everyone registered at the clinics. Open a chart for visits, lab results, prescriptions, and allergies.</p>
+
+        <div class="hc-pts-search mb-2">
+            <label class="form-label fw-semibold" for="hc-pts-search">Search patients</label>
+            <input id="hc-pts-search" type="search" class="form-control" @bind="query" @bind:event="oninput" maxlength="80" autocomplete="off"
+                   aria-describedby="hc-pts-search-help" />
+            <div class="form-text" id="hc-pts-search-help">By name, record number, phone, or email.</div>
+        </div>
+
+        @* Always rendered, so the number of matches is announced as the search changes. *@
+        <p class="small fw-semibold hc-pts-count" role="status">
+            @(search.Length == 0 ? $"{Plural(all.Count)}." : shown.Count == 0 ? $"No patients match “{search}”." : $"Showing {shown.Count} of {Plural(all.Count)}.")
+        </p>
+
+        @if (shown.Count > 0)
+        {
+            <div class="table-responsive hc-card">
+                <table class="table align-middle mb-0 hc-pts-table">
+                    <caption class="visually-hidden">Patients, by name, with their next visit with you and their last visit</caption>
+                    <thead>
+                        <tr>
+                            <th scope="col">Name</th>
+                            <th scope="col">Age</th>
+                            <th scope="col">MRN</th>
+                            <th scope="col">Next visit with you</th>
+                            <th scope="col">Last visit</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var patient in shown)
+                        {
+                            var next = NextWithMe(patient.Id);
+                            var last = LastVisit(patient.Id);
+                            var age = HcDisplay.Age(patient.DateOfBirth, today);
+
+                            <tr @key="@($"patient-{patient.Id}")">
+                                <th scope="row"><a href="@HcDisplay.PatientChartUrl(patient.Id)">@patient.Name</a></th>
+                                <td class="text-nowrap">@(age is { } years ? years.ToString(CultureInfo.InvariantCulture) : "Not recorded")</td>
+                                <td class="hc-mono">@patient.Id.ToString(CultureInfo.InvariantCulture)</td>
+                                <td class="text-nowrap">
+                                    @if (next is not null)
+                                    {
+                                        <a href="@HcDisplay.StaffAppointmentUrl(next.Id)">@HcDisplay.When(next.Start)</a>
+                                        @if (next.Start.Date == today)
+                                        {
+                                            <span class="small text-body-secondary"> (today, @HcDisplay.StatusLabel(next.Status).ToLowerInvariant())</span>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <span class="text-body-secondary">None booked</span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (last is not null)
+                                    {
+                                        <span class="text-nowrap">@HcDisplay.Date(last.Start)</span>
+                                        <span class="d-block small text-body-secondary">@(State.FindDoctor(last.DoctorId)?.Name ?? "A former doctor")</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-body-secondary">No visits yet</span>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </ShowcaseRoleGuard>
+</div>

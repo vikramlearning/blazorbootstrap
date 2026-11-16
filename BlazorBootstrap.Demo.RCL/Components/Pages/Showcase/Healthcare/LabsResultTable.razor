@@ -1,0 +1,52 @@
+@* A lab order's entered values: one row per analyte with the value, the reference range, and the flag in words (an arrow
+   and color only repeat it), then the comment for the patient. *@
+@if (Order.Values.Count != Panel.Analytes.Count)
+{
+    <p class="text-body-secondary mb-0">No results entered yet.</p>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table table-sm align-middle mb-2 hc-lrt-table">
+            <caption>@Caption</caption>
+            <thead>
+                <tr>
+                    <th scope="col">Test</th>
+                    <th scope="col">Result</th>
+                    <th scope="col">Reference range</th>
+                    <th scope="col">Flag</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (var index = 0; index < Panel.Analytes.Count; index++)
+                {
+                    var analyte = Panel.Analytes[index];
+                    var value = Order.Values[index];
+                    var flag = HcState.Flag(analyte, value);
+
+                    <tr @key="@($"row-{index}")">
+                        <th scope="row" class="fw-normal">@analyte.Name</th>
+                        <td class="text-nowrap fw-semibold">@HcDisplay.Number(value) @analyte.Unit</td>
+                        <td class="text-nowrap">@Labs.RangeText(analyte)</td>
+                        <td class="@(flag == "Normal" ? "text-nowrap" : "text-nowrap fw-semibold text-danger-emphasis")">
+                            @if (flag == "High")
+                            {
+                                <Icon Name="IconName.ArrowUp" class="me-1" aria-hidden="true" />
+                            }
+                            else if (flag == "Low")
+                            {
+                                <Icon Name="IconName.ArrowDown" class="me-1" aria-hidden="true" />
+                            }
+                            @flag
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    @if (Order.Comment.Length > 0)
+    {
+        <p class="small fw-semibold mb-1">Comment for the patient</p>
+        <p class="hc-plain mb-0">@Order.Comment</p>
+    }
+}

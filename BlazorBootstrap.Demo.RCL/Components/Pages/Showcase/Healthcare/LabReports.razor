@@ -1,0 +1,82 @@
+@page "/showcase/healthcare/lab-reports"
+@layout HcLayout
+
+<PageTitle>Lab reports · @HcSeedData.ProductName</PageTitle>
+
+<div class="container-xl hc-labs">
+    <ShowcaseRoleGuard Roles="@HcSeedData.PatientRole" SignInPath="@HcLayout.SignInPath">
+        @{
+            var orders = Orders();
+            var released = orders.Where(order => order.Status == HcLabStatus.Released).OrderByDescending(order => order.ReleasedAt).ToList();
+            var waiting = orders.Where(order => order.Status != HcLabStatus.Released).ToList();
+        }
+
+        <h1 class="hc-title mb-1">Lab reports</h1>
+        <p class="hc-lead mb-2">Your blood test results, once your doctor has reviewed and released them, each with a PDF you can download.</p>
+        <p class="small text-body-secondary mb-4">Demo only: the results are made up, and nothing here is medical advice. Ask your doctor what your results mean for you.</p>
+
+        <section class="mb-5" aria-labelledby="hc-labs-ready-title">
+            <h2 class="hc-section-title" id="hc-labs-ready-title">Ready to view (@released.Count)</h2>
+            @if (released.Count == 0)
+            {
+                <div class="hc-panel">
+                    <p class="mb-0">No lab reports yet. When your doctor orders a test and releases the results, the report appears here.</p>
+                </div>
+            }
+            else
+            {
+                <ul class="list-unstyled d-grid gap-3 mb-0">
+                    @foreach (var order in released)
+                    {
+                        var panel = State.LabPanel(order.PanelId);
+                        var doctor = State.FindDoctor(order.DoctorId);
+                        var outOfRange = OutOfRange(order, panel);
+                        var titleId = $"hc-labs-{order.Id}-title";
+
+                        <li @key="@($"ready-{order.Id}")">
+                            <article class="hc-card hc-labs-card" aria-labelledby="@titleId">
+                                <span class="hc-icon" aria-hidden="true"><Icon Name="IconName.FileEarmarkMedical" /></span>
+                                <div class="hc-labs-text">
+                                    <h3 class="h6 fw-bold mb-1" id="@titleId">@(panel?.Name ?? "Lab test")</h3>
+                                    <p class="small text-body-secondary mb-1">Released @HcDisplay.Date(order.ReleasedAt ?? order.OrderedAt) · ordered by @(doctor?.Name ?? "your doctor")</p>
+                                    <p class="small mb-0 @(outOfRange > 0 ? "fw-semibold text-warning-emphasis" : "text-success-emphasis")">
+                                        <Icon Name="@(outOfRange > 0 ? IconName.ExclamationTriangleFill : IconName.CheckCircleFill)" class="me-1" aria-hidden="true" />@RangeText(outOfRange)
+                                    </p>
+                                </div>
+                                <a class="btn btn-sm btn-outline-primary hc-labs-open" href="@HcDisplay.LabUrl(order.Id)">View report<span class="visually-hidden">: @panel?.Name, released @HcDisplay.Date(order.ReleasedAt ?? order.OrderedAt)</span></a>
+                            </article>
+                        </li>
+                    }
+                </ul>
+            }
+        </section>
+
+        <section aria-labelledby="hc-labs-waiting-title">
+            <h2 class="hc-section-title" id="hc-labs-waiting-title">Waiting for results (@waiting.Count)</h2>
+            @if (waiting.Count == 0)
+            {
+                <div class="hc-panel">
+                    <p class="mb-0">No tests are waiting for results.</p>
+                </div>
+            }
+            else
+            {
+                <ul class="list-unstyled d-grid gap-3 mb-0">
+                    @foreach (var order in waiting)
+                    {
+                        var panel = State.LabPanel(order.PanelId);
+                        var doctor = State.FindDoctor(order.DoctorId);
+
+                        <li class="hc-card hc-labs-card" @key="@($"waiting-{order.Id}")">
+                            <span class="hc-icon" aria-hidden="true"><Icon Name="IconName.HourglassSplit" /></span>
+                            <div class="hc-labs-text">
+                                <p class="fw-bold mb-1">@(panel?.Name ?? "Lab test")</p>
+                                <p class="small mb-0">Waiting for results: ordered @HcDisplay.Date(order.OrderedAt) by @(doctor?.Name ?? "your doctor"). You'll see the report here once it's released.</p>
+                            </div>
+                        </li>
+                    }
+                </ul>
+            }
+        </section>
+    </ShowcaseRoleGuard>
+</div>

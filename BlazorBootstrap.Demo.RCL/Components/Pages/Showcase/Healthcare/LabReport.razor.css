@@ -1,0 +1,33 @@
+/* Results and comment beside the PDF on wide screens; one column at 375 px. Both tracks hold wide content (a table, a
+   canvas), so they can shrink (minmax(0, ...)). */
+.hc-lab-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1.5rem;
+}
+
+@media (min-width: 1200px) {
+    .hc-lab-grid {
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        align-items: start;
+    }
+}
+
+.hc-lab-unusual {
+    --bs-table-bg: var(--bs-danger-bg-subtle);
+}
+
+/* No overflow: hidden on the viewer: it would clip the toolbar's dropdown menu. */
+.hc-lab-pdf-panel ::deep .hc-pdf {
+    border: 1px solid var(--hc-border);
+}
+
+    /* The toolbar wraps rather than overflowing at 375 px. */
+    .hc-lab-pdf-panel ::deep .hc-pdf > .d-flex:first-child {
+        flex-wrap: wrap;
+        gap: .25rem;
+    }
+
+    .hc-lab-pdf-panel ::deep .hc-pdf canvas {
+        max-width: 100%;
+    }

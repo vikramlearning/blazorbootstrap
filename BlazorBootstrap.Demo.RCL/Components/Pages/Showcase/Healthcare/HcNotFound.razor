@@ -1,0 +1,17 @@
+@* The site's not-found screen, shown by the catch-all route and for unknown doctors, appointments, and reports. *@
+<PageTitle>Page not found · @HcSeedData.ProductName</PageTitle>
+
+<section class="hc-not-found">
+    <span class="hc-icon fs-4" aria-hidden="true"><Icon Name="IconName.SignpostSplit" /></span>
+    <h1 class="hc-title fs-3 mt-3 mb-2">We couldn't find that page</h1>
+    <p class="text-body-secondary mb-4">@(Message ?? "It may have been removed, or the link is wrong.")</p>
+    <div class="d-flex justify-content-center flex-wrap gap-2">
+        <Button Type="ButtonType.Link" To="@($"{HcLayout.Base}/doctors")" Color="ButtonColor.Primary">Find a doctor</Button>
+        <Button Type="ButtonType.Link" To="@HcLayout.Base" Color="ButtonColor.Primary" Outline="true">Home</Button>
+    </div>
+</section>
+
+@code {
+    /// <summary>Gets or sets what is missing, like "This appointment was cancelled, or the link is wrong."</summary>
+    [Parameter] public string? Message { get; set; }
+}

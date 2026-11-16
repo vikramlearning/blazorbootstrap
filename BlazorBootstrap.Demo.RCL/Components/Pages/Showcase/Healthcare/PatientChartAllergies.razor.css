@@ -1,0 +1,29 @@
+/* Allergies: a warning box when there are any (icon and words, not only color), a quiet one when there are none. */
+.hc-allergy {
+    display: flex;
+    align-items: flex-start;
+    gap: .625rem;
+    padding: .75rem 1rem;
+    border: 1px solid var(--hc-border);
+    border-radius: .75rem;
+    background: var(--hc-muted-bg);
+    color: var(--hc-ink);
+}
+
+.hc-allergy-alert {
+    border-color: var(--bs-danger-border-subtle);
+    border-left-width: 4px;
+    background: var(--bs-danger-bg-subtle);
+    color: var(--bs-danger-text-emphasis);
+}
+
+    .hc-allergy ::deep .hc-allergy-icon {
+        flex: 0 0 auto;
+        margin-top: .125rem;
+        font-size: 1.125rem;
+    }
+
+.hc-allergy-text {
+    min-width: 0;
+    overflow-wrap: anywhere;
+}

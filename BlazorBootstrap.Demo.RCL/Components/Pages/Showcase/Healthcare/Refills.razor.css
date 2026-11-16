@@ -1,0 +1,60 @@
+/* Refill requests: one card per request, with its facts, a note, and the two answers. */
+.hc-ref-status {
+    min-height: 1.5rem;
+    margin-bottom: .75rem;
+    overflow-wrap: anywhere;
+}
+
+    .hc-ref-status:focus {
+        outline: none;
+    }
+
+    .hc-ref-status:focus-visible {
+        outline: 2px solid var(--bs-focus-ring-color, var(--sc-primary));
+        outline-offset: 2px;
+    }
+
+.hc-ref-empty {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+}
+
+.hc-ref-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 26rem), 1fr));
+    gap: 1rem;
+    align-items: start;
+}
+
+.hc-ref-card {
+    min-width: 0;
+    padding: 1rem 1.25rem;
+}
+
+.hc-ref-title {
+    margin-bottom: .75rem;
+    font-size: 1.0625rem;
+    font-weight: 700;
+    overflow-wrap: anywhere;
+}
+
+.hc-ref-facts {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 10rem), 1fr));
+    gap: .5rem 1rem;
+    margin-bottom: .75rem;
+}
+
+    .hc-ref-facts dt {
+        font-size: .75rem;
+        font-weight: 700;
+        letter-spacing: .02em;
+        text-transform: uppercase;
+        color: var(--bs-secondary-color);
+    }
+
+    .hc-ref-facts dd {
+        margin: 0;
+        overflow-wrap: anywhere;
+    }
