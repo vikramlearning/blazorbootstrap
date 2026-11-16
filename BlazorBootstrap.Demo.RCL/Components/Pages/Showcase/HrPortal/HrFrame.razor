@@ -1,0 +1,57 @@
+@using BlazorBootstrap.Demo.RCL.Models.Showcase
+@using BlazorBootstrap.Demo.RCL.Services.Showcase
+
+<HeadContent>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" />
+</HeadContent>
+
+@* The frame both Teamhaven layouts share: the public start page and the signed-in portal (D-031). The site bar's theme
+   changes feed the chart colors. Its stylesheet styles the pages of both through ::deep. *@
+<div class="sc-site sc-hr">
+    <ShowcaseSiteBar Site="@site" OnThemeChanged="OnThemeChanged" />
+
+    @Header
+
+    <div class="@(Sidebar is null ? null : "hr-shell")">
+        @Sidebar
+
+        <div class="@(Sidebar is null ? null : "hr-shell-main")">
+            @* Pages show people's names, contact details, and leave, so the content is masked from session recording. *@
+            <main class="sc-main hr-content" id="hr-main" data-clarity-mask="true">
+                @ChildContent
+            </main>
+
+            <div class="@Container">
+                <CarbonAds Class="sc-ad" />
+            </div>
+
+            <footer class="hr-footer">
+                <div class="@Container d-flex flex-wrap justify-content-between gap-2">
+                    <span>© 2026 @HrSeedData.ProductName for @HrSeedData.CompanyName (fictitious). People and their details are made up and stay in this browser tab.</span>
+                    <span class="d-none d-lg-inline">Built with MindMap, Sidebar, Charts, Modal, and Progress.</span>
+                </div>
+            </footer>
+        </div>
+    </div>
+</div>
+
+@code {
+    private readonly ShowcaseSite site = ShowcaseCatalog.Get("hr-portal");
+
+    /// <summary>Gets or sets the page content.</summary>
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    /// <summary>Gets or sets the header above the page (the public Navbar, or the portal's top bar).</summary>
+    [Parameter] public RenderFragment? Header { get; set; }
+
+    /// <summary>Gets or sets the sidebar beside the page (the signed-in portal), or <see langword="null" /> for none.</summary>
+    [Parameter] public RenderFragment? Sidebar { get; set; }
+
+    [Inject] private HrState State { get; set; } = default!;
+
+    private string Container => Sidebar is null ? "container-xl" : "container-fluid px-lg-4";
+
+    private void OnThemeChanged(string themeName) => State.SetTheme(themeName);
+}

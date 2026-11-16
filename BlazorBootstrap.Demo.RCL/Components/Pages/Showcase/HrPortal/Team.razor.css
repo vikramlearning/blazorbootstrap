@@ -1,0 +1,74 @@
+/* My team: the HR admin's manager picker, one card per direct report with facts in words, and the "Who's away" table. */
+.hr-team-picker {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: .75rem 1.5rem;
+}
+
+.hr-team-picker-field {
+    flex: 0 1 20rem;
+    min-width: 0;
+}
+
+.hr-team-picker > p {
+    flex: 1 1 16rem;
+    min-width: 0;
+}
+
+.hr-team-people {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 20rem), 1fr));
+    gap: 1rem;
+}
+
+.hr-team-person {
+    min-width: 0;
+    padding: 1rem 1.25rem;
+}
+
+.hr-team-person-head {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    margin-bottom: .75rem;
+}
+
+.hr-team-person-text {
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+.hr-team-person-name {
+    margin: 0;
+    font-size: 1.0625rem;
+    font-weight: 700;
+}
+
+.hr-team-facts {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 9rem), 1fr));
+    gap: .5rem 1rem;
+}
+
+    .hr-team-facts dt {
+        font-size: .75rem;
+        font-weight: 700;
+        letter-spacing: .02em;
+        text-transform: uppercase;
+        color: var(--bs-secondary-color);
+    }
+
+    .hr-team-facts dd {
+        margin: 0;
+        overflow-wrap: anywhere;
+    }
+
+.hr-team-table {
+    --bs-table-bg: transparent;
+}
+
+    .hr-team-table th,
+    .hr-team-table td {
+        padding-inline: .75rem;
+    }

@@ -19,6 +19,7 @@ public static class ShowcaseServiceCollectionExtensions
         services.AddScoped<AiAssistant.AiState>();
         services.AddScoped<ProjectBoard.PbState>();
         services.AddScoped<Healthcare.HcState>();
+        services.AddScoped<HrPortal.HrState>();
         services.AddScoped<Ecommerce.EcommerceState>();
         services.AddScoped<Fintech.FintechState>();
         services.AddScoped<HelpDesk.HelpDeskState>();

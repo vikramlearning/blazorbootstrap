@@ -1,0 +1,251 @@
+@page "/showcase/hr-portal/admin/employees/new"
+@page "/showcase/hr-portal/admin/employees/{Id:int}/edit"
+@layout HrWorkLayout
+
+@{
+    var employee = Employee;
+}
+
+@if (Id is null || employee is not null || !State.IsHrAdmin)
+{
+    <PageTitle>@(employee is not null ? (employee.Status == HrEmployeeStatus.Left ? employee.Name : $"Edit {employee.Name}") : Id is null ? "Add employee" : "Person not found") · @HrSeedData.ProductName</PageTitle>
+}
+
+<div class="container-fluid px-lg-4">
+    <ShowcaseRoleGuard Roles="@HrSeedData.HrAdminRole" SignInPath="@HrLayout.SignInPath">
+        @if (Id is not null && employee is null)
+        {
+            <HrNotFound Message="There's no employee with this ID, or the link is wrong. Open them from Employees." />
+        }
+        else
+        {
+            var today = State.Clock.Today;
+
+            <p class="small mb-2">
+                <a href="@AdminHelpers.EmployeesUrl"><Icon Name="IconName.ArrowLeft" class="me-1" aria-hidden="true" />Employees</a>
+            </p>
+
+            <div class="mb-3">
+                <h1 class="hr-title hr-aee-wrap">@(employee is null ? "Add employee" : employee.Status == HrEmployeeStatus.Left ? employee.Name : $"Edit {employee.Name}")</h1>
+                <p class="hr-lead mb-0">
+                    @(employee is null
+                        ? "Add a new hire with their work email. Once they're added, start their onboarding here; they see it when they register with that email."
+                        : employee.Status == HrEmployeeStatus.Left
+                            ? "This person has left. Their record is kept for headcount analytics and can't be changed."
+                            : "Changes show in the directory, the org chart, and their manager's team as soon as you save.")
+                </p>
+            </div>
+
+            @* Always rendered and focusable, so a save is announced and focus has somewhere to go when it fails. *@
+            <p class="fw-semibold hr-aee-status @(statusIsError ? "text-danger-emphasis" : null)" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
+
+            @if (employee is { Status: HrEmployeeStatus.Left })
+            {
+                var manager = employee.ManagerId is { } leftManagerId ? State.FindEmployee(leftManagerId) : null;
+                <section class="hr-panel hr-aee-readonly" aria-labelledby="hr-aee-left-title">
+                    <h2 class="hr-section-title" id="hr-aee-left-title">Left on @(employee.EndDate is { } end ? HrDisplay.Date(end) : "an unknown day")</h2>
+                    <dl class="row mb-0">
+                        <dt class="col-sm-4">Name</dt>
+                        <dd class="col-sm-8">@employee.Name</dd>
+                        <dt class="col-sm-4">Work email</dt>
+                        <dd class="col-sm-8 hr-aee-wrap">@employee.Email</dd>
+                        <dt class="col-sm-4">Title</dt>
+                        <dd class="col-sm-8">@employee.Title</dd>
+                        <dt class="col-sm-4">Department</dt>
+                        <dd class="col-sm-8">@(State.FindDepartment(employee.DepartmentId)?.Name ?? "No department")</dd>
+                        <dt class="col-sm-4">Manager</dt>
+                        <dd class="col-sm-8">@(manager?.Name ?? "None (top of the org chart)")</dd>
+                        <dt class="col-sm-4">Location</dt>
+                        <dd class="col-sm-8">@employee.Location</dd>
+                        <dt class="col-sm-4">Worked here</dt>
+                        <dd class="col-sm-8">@HrDisplay.Date(employee.StartDate) to @(employee.EndDate is { } last ? HrDisplay.Date(last) : "unknown")</dd>
+                        <dt class="col-sm-4">Phone</dt>
+                        <dd class="col-sm-8 mb-0">@(employee.Phone.Length == 0 ? "None" : employee.Phone)</dd>
+                    </dl>
+                </section>
+            }
+            else
+            {
+                <div class="row g-4">
+                    <div class="col-xl-7">
+                        <section class="hr-panel" aria-labelledby="hr-aee-form-title">
+                            <h2 class="hr-section-title" id="hr-aee-form-title">Job details</h2>
+                            <form @onsubmit="Save" novalidate aria-labelledby="hr-aee-form-title">
+                                <div class="row g-3 mb-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold" for="hr-aee-name">Name</label>
+                                        <input id="hr-aee-name" class="form-control @(nameError is null ? null : "is-invalid")" @bind="name" @bind:event="oninput" @ref="nameInput"
+                                               maxlength="@HrState.MaxNameLength" autocomplete="off" aria-required="true" aria-invalid="@(nameError is null ? null : "true")"
+                                               aria-describedby="hr-aee-name-help hr-aee-name-error" />
+                                        <div class="form-text" id="hr-aee-name-help">Up to @HrState.MaxNameLength characters.@(employee?.AccountId is not null ? " Once they sign in, their account's name is used." : null)</div>
+                                        <div class="invalid-feedback d-block" id="hr-aee-name-error">@nameError</div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold" for="hr-aee-email">Work email</label>
+                                        <input id="hr-aee-email" type="email" class="form-control @(emailError is null ? null : "is-invalid")" @bind="email" @bind:event="oninput" @ref="emailInput"
+                                               maxlength="@AdminHelpers.MaxEmailLength" autocomplete="off" spellcheck="false" aria-required="true"
+                                               aria-invalid="@(emailError is null ? null : "true")" aria-describedby="hr-aee-email-help hr-aee-email-error" />
+                                        <div class="form-text" id="hr-aee-email-help">
+                                            @(employee?.AccountId is not null
+                                                ? "Their account is linked to this record already. Each person has their own email."
+                                                : "The person registers with this email to sign in, and their account links to this record. Each person has their own email.")
+                                        </div>
+                                        <div class="invalid-feedback d-block" id="hr-aee-email-error">@emailError</div>
+                                    </div>
+                                    <div class="col-12">
+                                        <label class="form-label fw-semibold" for="hr-aee-title">Job title</label>
+                                        <input id="hr-aee-title" class="form-control @(titleError is null ? null : "is-invalid")" @bind="title" @bind:event="oninput" @ref="titleInput"
+                                               maxlength="@HrState.MaxNameLength" autocomplete="off" aria-required="true" aria-invalid="@(titleError is null ? null : "true")"
+                                               aria-describedby="hr-aee-title-error" />
+                                        <div class="invalid-feedback d-block" id="hr-aee-title-error">@titleError</div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold" for="hr-aee-department">Department</label>
+                                        <select id="hr-aee-department" class="form-select @(departmentError is null ? null : "is-invalid")" @bind="departmentId" @ref="departmentSelect"
+                                                aria-required="true" aria-invalid="@(departmentError is null ? null : "true")" aria-describedby="hr-aee-department-error">
+                                            <option value="">Choose a department</option>
+                                            @foreach (var department in State.Departments)
+                                            {
+                                                <option value="@department.Id" @key="department.Id">@department.Name</option>
+                                            }
+                                        </select>
+                                        <div class="invalid-feedback d-block" id="hr-aee-department-error">@departmentError</div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold" for="hr-aee-location">Location</label>
+                                        <select id="hr-aee-location" class="form-select @(locationError is null ? null : "is-invalid")" @bind="location" @ref="locationSelect"
+                                                aria-required="true" aria-invalid="@(locationError is null ? null : "true")" aria-describedby="hr-aee-location-error">
+                                            @foreach (var place in State.Locations)
+                                            {
+                                                <option value="@place" @key="place">@place</option>
+                                            }
+                                        </select>
+                                        <div class="invalid-feedback d-block" id="hr-aee-location-error">@locationError</div>
+                                    </div>
+                                    <div class="col-12">
+                                        <label class="form-label fw-semibold" for="hr-aee-manager">Manager</label>
+                                        <select id="hr-aee-manager" class="form-select @(managerError is null ? null : "is-invalid")" @bind="managerValue" @ref="managerSelect"
+                                                aria-invalid="@(managerError is null ? null : "true")" aria-describedby="hr-aee-manager-help hr-aee-manager-error">
+                                            <option value="">No manager (top of the org chart)</option>
+                                            @foreach (var person in State.Directory.Where(person => person.Id != employee?.Id))
+                                            {
+                                                <option value="@person.Id.ToString(CultureInfo.InvariantCulture)" @key="person.Id">@person.Name, @person.Title</option>
+                                            }
+                                        </select>
+                                        <div class="form-text" id="hr-aee-manager-help">People who work here or are joining. They see this person in their team and approve their leave.</div>
+                                        <div class="invalid-feedback d-block" id="hr-aee-manager-error">@managerError</div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold" for="hr-aee-start">Start date</label>
+                                        <input id="hr-aee-start" type="date" class="form-control @(startError is null ? null : "is-invalid")" value="@startText"
+                                               @onchange="args => startText = args.Value as string ?? string.Empty" @ref="startInput"
+                                               min="@AdminHelpers.DateValue(AdminHelpers.MinDate)" max="@AdminHelpers.DateValue(AdminHelpers.MaxDate)" aria-required="true"
+                                               aria-invalid="@(startError is null ? null : "true")" aria-describedby="hr-aee-start-help hr-aee-start-error" />
+                                        <div class="form-text" id="hr-aee-start-help">@StartHelp(today)</div>
+                                        <div class="invalid-feedback d-block" id="hr-aee-start-error">@startError</div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold" for="hr-aee-phone">Phone <span class="fw-normal text-body-secondary">(optional)</span></label>
+                                        <input id="hr-aee-phone" type="tel" class="form-control @(phoneError is null ? null : "is-invalid")" @bind="phone" @bind:event="oninput" @ref="phoneInput"
+                                               maxlength="@HrState.MaxPhoneLength" autocomplete="off" aria-invalid="@(phoneError is null ? null : "true")"
+                                               aria-describedby="hr-aee-phone-help hr-aee-phone-error" />
+                                        <div class="form-text" id="hr-aee-phone-help">Up to @HrState.MaxPhoneLength characters. They can change it on their profile.</div>
+                                        <div class="invalid-feedback d-block" id="hr-aee-phone-error">@phoneError</div>
+                                    </div>
+                                </div>
+
+                                <div class="d-flex flex-wrap align-items-center gap-2">
+                                    <Button Type="ButtonType.Submit" Color="ButtonColor.Primary">
+                                        <Icon Name="@(employee is null ? IconName.PersonPlus : IconName.CheckLg)" class="me-1" aria-hidden="true" />@(employee is null ? "Add employee" : "Save changes")
+                                    </Button>
+                                    @if (employee is not null)
+                                    {
+                                        <a class="btn btn-outline-secondary" href="@HrDisplay.EmployeeUrl(employee.Id)">View profile</a>
+                                    }
+                                    <a class="btn btn-link" href="@AdminHelpers.EmployeesUrl">@(employee is null ? "Cancel" : "Back to employees")</a>
+                                </div>
+                            </form>
+                        </section>
+                    </div>
+
+                    <div class="col-xl-5 d-grid gap-4 align-content-start">
+                        <section class="hr-panel @(justCreated ? "hr-aee-next" : null)" aria-labelledby="hr-aee-onb-title">
+                            <h2 class="hr-section-title mb-1" id="hr-aee-onb-title">@(justCreated ? "Next: start their onboarding" : "Onboarding")</h2>
+                            @if (employee is null)
+                            {
+                                <p class="small text-body-secondary mb-0">Add the person first; then start their onboarding here from a template.</p>
+                            }
+                            else if (State.OnboardingOf(employee.Id) is { } plan)
+                            {
+                                var progress = HrState.Progress(plan);
+                                var overdue = plan.Tasks.Count(task => task.DoneAt is null && task.Due < today);
+                                <p class="small mb-2">
+                                    “@plan.TemplateName”, started @HrDisplay.Date(plan.CreatedAt). @AdminHelpers.ProgressText(progress.Done, progress.Total)@(overdue == 0 ? "." : $", {overdue} overdue.")
+                                </p>
+                                <Progress Height="6" Class="mb-2">
+                                    <ProgressBar Width="@AdminHelpers.Percent(progress.Done, progress.Total)" Color="ProgressColor.Success"
+                                                 aria-label="@($"{employee.Name}, onboarding tasks done")" aria-valuenow="@Math.Round(AdminHelpers.Percent(progress.Done, progress.Total))"
+                                                 aria-valuemin="0" aria-valuemax="100" aria-valuetext="@AdminHelpers.ProgressText(progress.Done, progress.Total)" />
+                                </Progress>
+                                <p class="small mb-0"><a href="@AdminHelpers.NewHiresUrl">Follow it on New hires</a></p>
+                            }
+                            else
+                            {
+                                var usable = State.Templates.Where(template => template.Tasks.Count > 0).ToList();
+                                var chosen = SelectedTemplate;
+                                <p class="small text-body-secondary mb-2">
+                                    They don't have an onboarding plan yet. Due dates count from their start date, @HrDisplay.Date(employee.StartDate).
+                                </p>
+                                @if (usable.Count == 0)
+                                {
+                                    <p class="small mb-0">No template has tasks yet. Add tasks in <a href="@AdminHelpers.TemplatesUrl">Onboarding templates</a> first.</p>
+                                }
+                                else
+                                {
+                                    <form @onsubmit="StartOnboarding" novalidate aria-labelledby="hr-aee-onb-title">
+                                        <label class="form-label small fw-semibold" for="hr-aee-template">Template</label>
+                                        <select id="hr-aee-template" class="form-select mb-1" @bind="templateValue" @ref="templateSelect" aria-describedby="hr-aee-template-help">
+                                            @foreach (var template in State.Templates)
+                                            {
+                                                <option value="@template.Id.ToString(CultureInfo.InvariantCulture)" disabled="@(template.Tasks.Count == 0)" @key="template.Id">@AdminHelpers.TemplateOption(template)</option>
+                                            }
+                                        </select>
+                                        <div class="form-text mb-2" id="hr-aee-template-help">
+                                            @(chosen is { Tasks.Count: > 0 } ? AdminHelpers.OwnerSplit(chosen.Tasks.Select(task => task.Owner)) + "." : null)
+                                            Their manager follows it on New hires.
+                                        </div>
+                                        <Button Type="ButtonType.Submit" Color="ButtonColor.Primary" Outline="@(!justCreated)" Size="ButtonSize.Small">
+                                            <Icon Name="IconName.ListCheck" class="me-1" aria-hidden="true" />Start onboarding
+                                        </Button>
+                                    </form>
+                                }
+                            }
+                        </section>
+
+                        <section class="hr-panel" aria-labelledby="hr-aee-account-title">
+                            <h2 class="hr-section-title mb-1" id="hr-aee-account-title">Sign-in</h2>
+                            <p class="small mb-0">
+                                @if (employee is null)
+                                {
+                                    <span>Once you add them, they register on the @HrSeedData.ProductName sign-in page with their work email, and their account links to this record.</span>
+                                }
+                                else if (employee.AccountId is not null)
+                                {
+                                    <span>@employee.Name has a @HrSeedData.ProductName account linked to this record.</span>
+                                }
+                                else if (employee.InvitePending)
+                                {
+                                    <span>Not registered yet. When @employee.Name registers with <span class="hr-aee-wrap">@employee.Email</span>, their account links to this record.</span>
+                                }
+                                else
+                                {
+                                    <span>@employee.Name has no @HrSeedData.ProductName account in this demo. Only people HR adds here are invited to register.</span>
+                                }
+                            </p>
+                        </section>
+                    </div>
+                </div>
+            }
+        }
+    </ShowcaseRoleGuard>
+</div>

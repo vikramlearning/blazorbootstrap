@@ -1,0 +1,68 @@
+@page "/showcase/hr-portal"
+@layout HrLayout
+@implements IDisposable
+
+<PageTitle>@HrSeedData.ProductName · @HrSeedData.CompanyName</PageTitle>
+
+@* The public start page: what the portal does for each role, and the way in. *@
+<div class="container-xl">
+    <section class="hr-hero mb-5" aria-labelledby="hr-start-title">
+        <span class="hr-icon mb-3" aria-hidden="true"><Icon Name="IconName.People" class="fs-4" /></span>
+        <h1 class="hr-title fs-2 mb-2" id="hr-start-title">@HrSeedData.ProductName, the people portal of @HrSeedData.CompanyName</h1>
+        <p class="hr-lead mb-4">
+            Find colleagues and see how the company fits together, plan time off, and get new people settled in, with HR
+            keeping everything up to date behind the scenes.
+        </p>
+        @if (State.CurrentEmployee is { } me)
+        {
+            <p class="mb-3">Signed in as @me.Name.</p>
+            <a class="btn btn-primary" href="@($"{HrLayout.Base}/home")"><Icon Name="IconName.BoxArrowInRight" class="me-2" aria-hidden="true" />Open the portal</a>
+        }
+        else
+        {
+            <div class="d-flex flex-wrap gap-2">
+                <a class="btn btn-primary" href="@HrLayout.SignInPath"><Icon Name="IconName.BoxArrowInRight" class="me-2" aria-hidden="true" />Sign in</a>
+                <a class="btn btn-outline-primary" href="@($"{HrLayout.SignInPath}?mode=register")">New here? Register with your work email</a>
+            </div>
+            <p class="small text-body-secondary mt-3 mb-0">The sign-in page has one-click demo accounts for an employee, a manager, and the HR admin.</p>
+        }
+    </section>
+
+    <section aria-labelledby="hr-start-roles">
+        <h2 class="hr-section-title" id="hr-start-roles">For each role</h2>
+        <ul class="list-unstyled row row-cols-1 row-cols-md-3 g-3 mb-0">
+            <li class="col">
+                <div class="hr-panel h-100">
+                    <Icon Name="IconName.PersonBadge" class="fs-4 mb-2 d-block" aria-hidden="true" />
+                    <h3 class="h6 fw-bold">Employees</h3>
+                    <p class="small text-body-secondary mb-0">Search the directory, browse the org chart, request leave and see your balance, and tick off your onboarding checklist.</p>
+                </div>
+            </li>
+            <li class="col">
+                <div class="hr-panel h-100">
+                    <Icon Name="IconName.People" class="fs-4 mb-2 d-block" aria-hidden="true" />
+                    <h3 class="h6 fw-bold">Managers</h3>
+                    <p class="small text-body-secondary mb-0">See your team and who's away, approve or reject leave, and follow how your new hires are settling in.</p>
+                </div>
+            </li>
+            <li class="col">
+                <div class="hr-panel h-100">
+                    <Icon Name="IconName.BarChart" class="fs-4 mb-2 d-block" aria-hidden="true" />
+                    <h3 class="h6 fw-bold">HR</h3>
+                    <p class="small text-body-secondary mb-0">Add and update employees, set leave policies, build onboarding templates, and follow headcount over time.</p>
+                </div>
+            </li>
+        </ul>
+    </section>
+</div>
+
+@code {
+    [Inject] private HrState State { get; set; } = default!;
+
+    /// <summary>Stops listening to state changes.</summary>
+    public void Dispose() => State.Changed -= OnStateChanged;
+
+    protected override void OnInitialized() => State.Changed += OnStateChanged;
+
+    private void OnStateChanged() => InvokeAsync(StateHasChanged);
+}

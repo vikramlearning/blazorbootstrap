@@ -1,0 +1,218 @@
+@page "/showcase/hr-portal/admin/onboarding-templates/{Id:int}"
+@layout HrWorkLayout
+
+@{
+    var template = Template;
+}
+
+@if (template is not null || !State.IsHrAdmin)
+{
+    <PageTitle>@(template?.Name ?? "Onboarding template") · @HrSeedData.ProductName</PageTitle>
+}
+
+<div class="container-fluid px-lg-4">
+    <ShowcaseRoleGuard Roles="@HrSeedData.HrAdminRole" SignInPath="@HrLayout.SignInPath">
+        @if (template is null)
+        {
+            <HrNotFound Message="This onboarding template was deleted, or the link is wrong. Open it from Onboarding templates." />
+        }
+        else
+        {
+            var editing = taskEditId == 0 ? null : template.Tasks.FirstOrDefault(item => item.Id == taskEditId);
+            var started = State.Onboardings.Count(plan => string.Equals(plan.TemplateName, template.Name, StringComparison.OrdinalIgnoreCase));
+
+            <p class="small mb-2">
+                <a href="@AdminHelpers.TemplatesUrl"><Icon Name="IconName.ArrowLeft" class="me-1" aria-hidden="true" />Onboarding templates</a>
+            </p>
+
+            <div class="hr-ate-head mb-3">
+                <div class="min-w-0">
+                    <h1 class="hr-title hr-ate-wrap">@template.Name</h1>
+                    <p class="hr-lead mb-0">
+                        @HrDisplay.Plural(template.Tasks.Count, "task"), by due day. @(started == 0 ? "No plan was started from it yet." : $"{HrDisplay.Plural(started, "plan was", "plans were")} started from it; changes here don't change them.")
+                    </p>
+                </div>
+                <button type="button" class="btn btn-outline-danger" @ref="deleteTemplateButton" @onclick="OpenDeleteTemplateAsync">
+                    <Icon Name="IconName.Trash3" class="me-1" aria-hidden="true" />Delete template
+                </button>
+            </div>
+
+            @* Always rendered and focusable, so an outcome is announced and focus has somewhere to go once a dialog closes. *@
+            <p class="fw-semibold hr-ate-status @(statusIsError ? "text-danger-emphasis" : null)" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
+
+            <div class="row g-4">
+                <div class="col-xxl-8">
+                    <section class="hr-panel mb-4" aria-labelledby="hr-ate-tasks-title">
+                        <h2 class="hr-section-title" id="hr-ate-tasks-title">Tasks (@template.Tasks.Count)</h2>
+                        @if (template.Tasks.Count == 0)
+                        {
+                            <p class="text-body-secondary mb-0">No tasks yet. Add the first one below; onboarding can start from this template once it has a task.</p>
+                        }
+                        else
+                        {
+                            <div class="table-responsive">
+                                <table class="table align-middle mb-0 hr-ate-table">
+                                    <caption class="hr-ate-caption">
+                                        The template's tasks by due day, counted from the new hire's start date (day one). @AdminHelpers.OwnerSplit(template.Tasks.Select(task => task.Owner)).
+                                    </caption>
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">Due</th>
+                                            <th scope="col">Task</th>
+                                            <th scope="col">Who does it</th>
+                                            <th scope="col"><span class="visually-hidden">Actions</span></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var task in template.Tasks)
+                                        {
+                                            var taskId = task.Id;
+                                            var editKey = "edit-" + taskId.ToString(CultureInfo.InvariantCulture);
+                                            var deleteKey = "delete-" + taskId.ToString(CultureInfo.InvariantCulture);
+                                            <tr @key="task.Id" class="@(task.Id == taskEditId ? "hr-ate-row-editing" : null)">
+                                                <td class="hr-ate-due">
+                                                    <span class="fw-semibold">@AdminHelpers.OffsetLabel(task.DueOffsetDays)</span>
+                                                    @if (task.DueOffsetDays > 0)
+                                                    {
+                                                        <span class="d-block small text-body-secondary">@AdminHelpers.OffsetPhrase(task.DueOffsetDays)</span>
+                                                    }
+                                                </td>
+                                                <th scope="row" class="hr-ate-task fw-normal">@task.Title@(task.Id == taskEditId ? " (editing)" : null)</th>
+                                                <td class="text-nowrap">@HrDisplay.OwnerLabel(task.Owner)</td>
+                                                <td>
+                                                    <div class="d-flex flex-nowrap gap-1 justify-content-end">
+                                                        <button type="button" class="btn btn-sm btn-outline-secondary" @ref="rowButtons[editKey]" @onclick="() => StartEditTask(taskId)">
+                                                            Edit<span class="visually-hidden"> @task.Title</span>
+                                                        </button>
+                                                        <button type="button" class="btn btn-sm btn-outline-danger" @ref="rowButtons[deleteKey]" @onclick="() => OpenDeleteTaskAsync(taskId)">
+                                                            Delete<span class="visually-hidden"> @task.Title</span>
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        }
+                    </section>
+
+                    <section class="hr-panel" aria-labelledby="hr-ate-task-form-title">
+                        <h2 class="hr-section-title hr-ate-wrap" id="hr-ate-task-form-title">@(editing is null ? "Add a task" : $"Edit “{editing.Title}”")</h2>
+                        @if (editing is null && template.Tasks.Count >= HrState.MaxTemplateTasks)
+                        {
+                            <p class="small text-body-secondary mb-0">This template has @HrState.MaxTemplateTasks tasks, the most it can. Delete one to add another.</p>
+                        }
+                        else
+                        {
+                            <form @onsubmit="SaveTask" novalidate aria-labelledby="hr-ate-task-form-title">
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold" for="hr-ate-task-title">What to do</label>
+                                    <input id="hr-ate-task-title" class="form-control @(taskTitleError is null ? null : "is-invalid")" @bind="taskTitle" @bind:event="oninput" @ref="taskTitleInput"
+                                           maxlength="@HrState.MaxNameLength" autocomplete="off" aria-required="true" aria-invalid="@(taskTitleError is null ? null : "true")"
+                                           aria-describedby="hr-ate-task-title-help hr-ate-task-title-error" />
+                                    <div class="form-text" id="hr-ate-task-title-help">Like “Pick an onboarding buddy”. Up to @HrState.MaxNameLength characters.</div>
+                                    <div class="invalid-feedback d-block" id="hr-ate-task-title-error">@taskTitleError</div>
+                                </div>
+                                <div class="row g-3 mb-3">
+                                    <div class="col-sm-6">
+                                        <label class="form-label fw-semibold" for="hr-ate-task-owner">Who does it</label>
+                                        <select id="hr-ate-task-owner" class="form-select" @bind="taskOwner" aria-describedby="hr-ate-task-owner-help">
+                                            @foreach (var owner in Enum.GetValues<HrTaskOwner>())
+                                            {
+                                                <option value="@owner" @key="owner">@HrDisplay.OwnerLabel(owner)</option>
+                                            }
+                                        </select>
+                                        <div class="form-text" id="hr-ate-task-owner-help">@OwnerHelp(taskOwner)</div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <label class="form-label fw-semibold" for="hr-ate-task-due">Due day, from day one</label>
+                                        <input id="hr-ate-task-due" type="number" inputmode="numeric" class="form-control @(taskDueError is null ? null : "is-invalid")" value="@taskDueText"
+                                               @oninput="args => taskDueText = args.Value as string ?? string.Empty" @ref="taskDueInput"
+                                               min="@(-HrState.MaxTaskOffsetDays)" max="@HrState.MaxTaskOffsetDays" step="1" aria-required="true"
+                                               aria-invalid="@(taskDueError is null ? null : "true")" aria-describedby="hr-ate-task-due-hint hr-ate-task-due-error" />
+                                        <div class="form-text" id="hr-ate-task-due-hint">@DueHint(taskDueText)</div>
+                                        <div class="invalid-feedback d-block" id="hr-ate-task-due-error">@taskDueError</div>
+                                    </div>
+                                </div>
+                                <div class="d-flex flex-wrap gap-2">
+                                    <Button Type="ButtonType.Submit" Color="ButtonColor.Primary" Outline="@(editing is null)">
+                                        <Icon Name="@(editing is null ? IconName.PlusLg : IconName.CheckLg)" class="me-1" aria-hidden="true" />@(editing is null ? "Add task" : "Save task")
+                                    </Button>
+                                    @if (editing is not null)
+                                    {
+                                        <Button Color="ButtonColor.Secondary" Outline="true" @onclick="CancelEditTask">Cancel</Button>
+                                    }
+                                </div>
+                            </form>
+                        }
+                    </section>
+                </div>
+
+                <div class="col-xxl-4">
+                    <section class="hr-panel" aria-labelledby="hr-ate-details-title">
+                        <h2 class="hr-section-title" id="hr-ate-details-title">Name and description</h2>
+                        <form @onsubmit="SaveDetails" novalidate aria-labelledby="hr-ate-details-title">
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold" for="hr-ate-name">Name</label>
+                                <input id="hr-ate-name" class="form-control @(nameError is null ? null : "is-invalid")" @bind="name" @bind:event="oninput" @ref="nameInput"
+                                       maxlength="@HrState.MaxNameLength" autocomplete="off" aria-required="true" aria-invalid="@(nameError is null ? null : "true")"
+                                       aria-describedby="hr-ate-name-help hr-ate-name-error" />
+                                <div class="form-text" id="hr-ate-name-help">
+                                    Unique, up to @HrState.MaxNameLength characters.@(started > 0 ? " Plans already started keep the name they were started with." : null)
+                                </div>
+                                <div class="invalid-feedback d-block" id="hr-ate-name-error">@nameError</div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold" for="hr-ate-description">Description <span class="fw-normal text-body-secondary">(optional)</span></label>
+                                <textarea id="hr-ate-description" class="form-control @(descriptionError is null ? null : "is-invalid")" rows="3" @bind="description" @bind:event="oninput"
+                                          @ref="descriptionInput" aria-invalid="@(descriptionError is null ? null : "true")" aria-describedby="hr-ate-description-help hr-ate-description-error"></textarea>
+                                <div class="form-text" id="hr-ate-description-help">
+                                    <span class="@(description.Trim().Length > HrState.MaxDescriptionLength ? "text-danger-emphasis" : null)">@AdminHelpers.Counter(description, HrState.MaxDescriptionLength)</span>
+                                </div>
+                                <div class="invalid-feedback d-block" id="hr-ate-description-error">@descriptionError</div>
+                            </div>
+                            <Button Type="ButtonType.Submit" Color="ButtonColor.Primary" Outline="true"><Icon Name="IconName.CheckLg" class="me-1" aria-hidden="true" />Save name and description</Button>
+                        </form>
+                    </section>
+                </div>
+            </div>
+
+            <Modal @ref="deleteModal" IsVerticallyCentered="true" ShowCloseButton="false" aria-labelledby="hr-ate-dialog-title" OnHidden="OnDeleteHidden">
+                <HeaderTemplate>
+                    <h2 class="modal-title h5 hr-ate-wrap" id="hr-ate-dialog-title">
+                        @(dialogTaskId == 0 ? $"Delete the template “{template.Name}”?" : DialogTask is { } target ? $"Delete the task “{target.Title}”?" : "Delete this task?")
+                    </h2>
+                </HeaderTemplate>
+                <BodyTemplate>
+                    @if (dialogTaskId == 0)
+                    {
+                        <p>
+                            It leaves the list of templates, with its @HrDisplay.Plural(template.Tasks.Count, "task").
+                            @(started == 0 ? "No plan was started from it." : $"The {HrDisplay.Plural(started, "plan")} already started from it keep their tasks.")
+                        </p>
+                        <p class="mb-0">This can't be undone.</p>
+                    }
+                    else if (DialogTask is not null)
+                    {
+                        <p>It's removed from this template, so plans started from now on won't have it. Plans already started keep it.</p>
+                        <p class="mb-0">This can't be undone.</p>
+                    }
+                    else
+                    {
+                        <p class="mb-0">This task was already deleted.</p>
+                    }
+                </BodyTemplate>
+                <FooterTemplate>
+                    <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => deleteModal.HideAsync()">Cancel</Button>
+                    @if (dialogTaskId == 0 || DialogTask is not null)
+                    {
+                        <Button Color="ButtonColor.Danger" @onclick="ConfirmDeleteAsync">
+                            <Icon Name="IconName.Trash3" class="me-1" aria-hidden="true" />@(dialogTaskId == 0 ? "Delete template" : "Delete task")
+                        </Button>
+                    }
+                </FooterTemplate>
+            </Modal>
+        }
+    </ShowcaseRoleGuard>
+</div>

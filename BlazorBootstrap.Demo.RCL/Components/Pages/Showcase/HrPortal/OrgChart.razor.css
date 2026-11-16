@@ -1,0 +1,116 @@
+/* Org chart: the controls, the mind map (a child component, so ::deep), the details panel, and the list. */
+.hr-oc-controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: .75rem 1.5rem;
+}
+
+    .hr-oc-controls > div {
+        flex: 0 1 16rem;
+        min-width: 0;
+    }
+
+.hr-oc-count {
+    flex: 1 1 14rem;
+    min-width: 0;
+    align-self: center;
+    font-weight: 600;
+    overflow-wrap: anywhere;
+}
+
+.hr-oc-note {
+    padding: .75rem 1rem;
+    border: 1px solid var(--hr-border);
+    border-radius: .625rem;
+    background: var(--hr-soft);
+    color: var(--hr-ink);
+}
+
+.hr-panel ::deep .hr-oc-map {
+    --bb-mind-map-max-height: 36rem;
+}
+
+.hr-panel ::deep .hr-oc-node {
+    display: inline-flex;
+    align-items: center;
+    gap: .5rem;
+    padding-block: .125rem;
+    text-align: left;
+}
+
+.hr-panel ::deep .hr-oc-initials {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    width: 1.75rem;
+    height: 1.75rem;
+    border-radius: 50%;
+    background: var(--hr-soft);
+    color: var(--sc-primary-hover);
+    font-size: .6875rem;
+    font-weight: 700;
+}
+
+[data-bs-theme=dark] .hr-panel ::deep .hr-oc-initials {
+    color: var(--sc-primary);
+}
+
+.hr-panel ::deep .hr-oc-text {
+    min-width: 0;
+}
+
+/* The title takes the card's own text color (light on the dark root, dark on the branches), slightly softer. */
+.hr-panel ::deep .hr-oc-sub {
+    color: inherit;
+    opacity: .8;
+    font-weight: 400;
+}
+
+.hr-panel ::deep .hr-oc-node-hit .hr-oc-initials {
+    background: var(--sc-primary);
+    color: var(--sc-primary-contrast);
+}
+
+.hr-panel ::deep .hr-oc-tag {
+    color: inherit;
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 2px;
+}
+
+.hr-oc-wrap {
+    overflow-wrap: anywhere;
+}
+
+.hr-oc-focus:focus {
+    outline: none;
+}
+
+.hr-oc-focus:focus-visible {
+    outline: 2px solid var(--bs-focus-ring-color, var(--sc-primary));
+    outline-offset: 2px;
+}
+
+.hr-oc-facts {
+    display: grid;
+    grid-template-columns: max-content minmax(0, 1fr);
+    gap: .25rem .75rem;
+    margin-bottom: 1rem;
+}
+
+    .hr-oc-facts dt {
+        font-weight: 600;
+        color: var(--bs-secondary-color);
+    }
+
+    .hr-oc-facts dd {
+        margin: 0;
+        overflow-wrap: anywhere;
+    }
+
+.hr-oc-list {
+    margin: 0;
+    padding-left: 1.25rem;
+}

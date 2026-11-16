@@ -1,0 +1,234 @@
+@page "/showcase/hr-portal/admin/analytics"
+@layout HrWorkLayout
+
+<PageTitle>Headcount analytics · @HrSeedData.ProductName</PageTitle>
+
+<div class="container-fluid px-lg-4">
+    <ShowcaseRoleGuard Roles="@HrSeedData.HrAdminRole" SignInPath="@HrLayout.SignInPath">
+        @{
+            var figures = Compute();
+            var year = figures.Today.Year;
+        }
+
+        <div class="mb-4">
+            <h1 class="hr-title">Headcount analytics</h1>
+            <p class="hr-lead mb-0">
+                Who works at @HrSeedData.CompanyName today, who joined and left over the last 12 months, and how leave is used this year.
+                Figures follow every change to employees and leave at once.
+            </p>
+        </div>
+
+        <section aria-label="Key figures" class="row row-cols-1 row-cols-sm-2 row-cols-xl-3 g-3 mb-4">
+            @foreach (var kpi in Kpis(figures))
+            {
+                <div class="col" @key="kpi.Label">
+                    <div class="hr-card hr-aa-kpi h-100">
+                        <span class="hr-aa-kpi-label">@kpi.Label</span>
+                        <span class="hr-aa-kpi-value">@kpi.Value</span>
+                        <span class="small text-body-secondary">@kpi.Note</span>
+                    </div>
+                </div>
+            }
+        </section>
+
+        <div class="hr-aa-grid mb-4">
+            <section class="hr-panel" aria-labelledby="hr-aa-dept-title">
+                <h2 class="hr-section-title mb-1" id="hr-aa-dept-title">Headcount by department</h2>
+                <p class="small text-body-secondary">People working here today</p>
+                <AdminChart Kind="AdminChartKind.HorizontalBar"
+                            AriaLabel="Horizontal bar chart of today's headcount by department. Summary and data table follow."
+                            Labels="figures.Departments.Select(row => row.Label).ToList()"
+                            Series="CountSeries(figures.Departments, 0)"
+                            Height="300" />
+                <p class="small mt-3 mb-2">@DepartmentSummary(figures)</p>
+                <details class="hr-aa-details">
+                    <summary>Headcount by department as a table</summary>
+                    <div class="table-responsive mt-2">
+                        <table class="table table-sm mb-0">
+                            <caption class="visually-hidden">People working here today and people joining, by department</caption>
+                            <thead>
+                                <tr>
+                                    <th scope="col">Department</th>
+                                    <th scope="col" class="text-end">Working here</th>
+                                    <th scope="col" class="text-end">Joining</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var row in figures.Departments)
+                                {
+                                    <tr @key="row.Label">
+                                        <th scope="row" class="fw-semibold">@row.Label</th>
+                                        <td class="text-end hr-mono">@row.Count</td>
+                                        <td class="text-end hr-mono">@row.Joining</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </details>
+            </section>
+
+            <section class="hr-panel" aria-labelledby="hr-aa-loc-title">
+                <h2 class="hr-section-title mb-1" id="hr-aa-loc-title">Headcount by location</h2>
+                <p class="small text-body-secondary">People working here today</p>
+                <AdminChart Kind="AdminChartKind.Doughnut"
+                            AriaLabel="Doughnut chart of today's headcount by location. Summary and data table follow."
+                            Labels="figures.Locations.Select(row => row.Label).ToList()"
+                            Series="CountSeries(figures.Locations, 0)"
+                            Height="300" />
+                <p class="small mt-3 mb-2">@LocationSummary(figures)</p>
+                <details class="hr-aa-details">
+                    <summary>Headcount by location as a table</summary>
+                    <div class="table-responsive mt-2">
+                        <table class="table table-sm mb-0">
+                            <caption class="visually-hidden">People working here today, their share, and people joining, by location</caption>
+                            <thead>
+                                <tr>
+                                    <th scope="col">Location</th>
+                                    <th scope="col" class="text-end">Working here</th>
+                                    <th scope="col" class="text-end">Share</th>
+                                    <th scope="col" class="text-end">Joining</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var row in figures.Locations)
+                                {
+                                    <tr @key="row.Label">
+                                        <th scope="row" class="fw-semibold">@row.Label</th>
+                                        <td class="text-end hr-mono">@row.Count</td>
+                                        <td class="text-end hr-mono">@Share(row.Count, figures.Active.Count)</td>
+                                        <td class="text-end hr-mono">@row.Joining</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </details>
+            </section>
+
+            <section class="hr-panel" aria-labelledby="hr-aa-months-title">
+                <h2 class="hr-section-title mb-1" id="hr-aa-months-title">Hires and leavers by month</h2>
+                <p class="small text-body-secondary">@MonthText(figures.WindowStart) to @MonthText(figures.Today), by start date and last day</p>
+                <AdminChart AriaLabel="@($"Bar chart of hires and leavers per month, {MonthText(figures.WindowStart)} to {MonthText(figures.Today)}. Summary and data table follow.")"
+                            Labels="MonthLabels(figures)"
+                            Series="MonthSeries(figures)"
+                            Height="280" />
+                <p class="small mt-3 mb-2">@MonthsSummary(figures)</p>
+                <details class="hr-aa-details">
+                    <summary>Hires and leavers by month as a table</summary>
+                    <div class="table-responsive mt-2">
+                        <table class="table table-sm mb-0">
+                            <caption class="visually-hidden">Hires and leavers per month, oldest first</caption>
+                            <thead>
+                                <tr>
+                                    <th scope="col">Month</th>
+                                    <th scope="col" class="text-end">Hires</th>
+                                    <th scope="col" class="text-end">Leavers</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var row in figures.Months)
+                                {
+                                    <tr @key="row.Month">
+                                        <th scope="row" class="fw-semibold text-nowrap">@MonthText(row.Month)</th>
+                                        <td class="text-end hr-mono">@row.Hires</td>
+                                        <td class="text-end hr-mono">@row.Leavers</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </details>
+            </section>
+
+            <section class="hr-panel" aria-labelledby="hr-aa-tenure-title">
+                <h2 class="hr-section-title mb-1" id="hr-aa-tenure-title">Tenure</h2>
+                <p class="small text-body-secondary">How long the people working here today have been here</p>
+                <AdminChart AriaLabel="Bar chart of the people working here today by tenure band. Summary and data table follow."
+                            Labels="figures.Tenure.Select(row => row.Label).ToList()"
+                            Series="CountSeries(figures.Tenure, 3)"
+                            Height="280" />
+                <p class="small mt-3 mb-2">@TenureSummary(figures)</p>
+                <details class="hr-aa-details">
+                    <summary>Tenure as a table</summary>
+                    <div class="table-responsive mt-2">
+                        <table class="table table-sm mb-0">
+                            <caption class="visually-hidden">People working here today by tenure band, shortest first</caption>
+                            <thead>
+                                <tr>
+                                    <th scope="col">Tenure</th>
+                                    <th scope="col" class="text-end">People</th>
+                                    <th scope="col" class="text-end">Share</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var row in figures.Tenure)
+                                {
+                                    <tr @key="row.Label">
+                                        <th scope="row" class="fw-semibold">@row.Label</th>
+                                        <td class="text-end hr-mono">@row.Count</td>
+                                        <td class="text-end hr-mono">@Share(row.Count, figures.Active.Count)</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </details>
+            </section>
+        </div>
+
+        <section class="hr-panel mb-4" aria-labelledby="hr-aa-leave-title">
+            <div class="d-flex flex-wrap justify-content-between align-items-baseline gap-2 mb-1">
+                <h2 class="hr-section-title mb-0" id="hr-aa-leave-title">Leave in @year by policy</h2>
+                <a class="small" href="@AdminHelpers.PoliciesUrl">Manage leave policies</a>
+            </div>
+            <p class="small text-body-secondary">Working days across the company, approved and waiting for approval</p>
+            @if (figures.Leave.Count == 0)
+            {
+                <p class="text-body-secondary mb-0">There are no leave policies to show.</p>
+            }
+            else
+            {
+                <AdminChart Kind="AdminChartKind.HorizontalBar"
+                            AriaLabel="@($"Horizontal bar chart of leave days in {year} by policy, approved and waiting for approval. Summary and data table follow.")"
+                            Labels="figures.Leave.Select(row => row.Policy.Name).ToList()"
+                            Series="LeaveSeries(figures)"
+                            Height="@(140 + (figures.Leave.Count * 44))" />
+                <p class="small mt-3 mb-2">@LeaveSummary(figures)</p>
+                <details class="hr-aa-details">
+                    <summary>Leave by policy as a table</summary>
+                    <div class="table-responsive mt-2">
+                        <table class="table table-sm mb-0">
+                            <caption class="visually-hidden">Leave days in @year by policy: approved, waiting for approval, and the requests behind them</caption>
+                            <thead>
+                                <tr>
+                                    <th scope="col">Policy</th>
+                                    <th scope="col" class="text-end">Approved days</th>
+                                    <th scope="col" class="text-end">Days waiting</th>
+                                    <th scope="col" class="text-end">Requests</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var row in figures.Leave)
+                                {
+                                    <tr @key="row.Policy.Id">
+                                        <th scope="row" class="fw-semibold">
+                                            @row.Policy.Name
+                                            @if (!row.Policy.IsActive)
+                                            {
+                                                <span class="d-block small fw-normal text-body-secondary">Turned off</span>
+                                            }
+                                        </th>
+                                        <td class="text-end hr-mono">@row.Approved</td>
+                                        <td class="text-end hr-mono">@row.Waiting</td>
+                                        <td class="text-end hr-mono">@row.Requests</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </details>
+            }
+        </section>
+    </ShowcaseRoleGuard>
+</div>

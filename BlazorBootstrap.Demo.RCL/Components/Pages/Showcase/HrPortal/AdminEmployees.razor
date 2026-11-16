@@ -1,0 +1,313 @@
+@page "/showcase/hr-portal/admin/employees"
+@layout HrWorkLayout
+
+<PageTitle>Employees · @HrSeedData.ProductName</PageTitle>
+
+<div class="container-fluid px-lg-4">
+    <ShowcaseRoleGuard Roles="@HrSeedData.HrAdminRole" SignInPath="@HrLayout.SignInPath">
+        @{
+            var today = State.Clock.Today;
+            var all = State.AllEmployees;
+            var narrowed = Narrowed(all);
+            var shown = narrowed.Where(employee => Matches(employee, statusFilter, today)).ToList();
+            var me = State.CurrentEmployee;
+        }
+
+        <div class="hr-ae-head mb-3">
+            <div>
+                <h1 class="hr-title">Employees</h1>
+                <p class="hr-lead mb-0">
+                    Everyone at @HrSeedData.CompanyName, including people joining soon and those who left. Add a new hire and start
+                    their onboarding, edit someone's job details, or mark someone as left.
+                </p>
+            </div>
+            <Button Type="ButtonType.Link" To="@AdminHelpers.NewEmployeeUrl" Color="ButtonColor.Primary"><Icon Name="IconName.PersonPlus" class="me-1" aria-hidden="true" />Add employee</Button>
+        </div>
+
+        @* Always rendered and focusable, so an outcome is announced and focus has somewhere to go once a dialog closes. *@
+        <p class="fw-semibold hr-ae-status @(statusIsError ? "text-danger-emphasis" : null)" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
+
+        @if (BlockedPerson is { } blocked)
+        {
+            var reports = State.DirectReports(blocked.Id);
+            var isMe = me?.Id == blocked.Id;
+            <section class="hr-ae-blocked mb-4" aria-labelledby="hr-ae-blocked-title">
+                <h2 class="hr-section-title h6 mb-1 hr-ae-wrap" id="hr-ae-blocked-title">Before @blocked.Name can be marked as left</h2>
+                @if (isMe)
+                {
+                    <p class="small mb-2">You can't mark yourself as left. Another HR admin has to do it.</p>
+                }
+                else if (reports.Count > 0)
+                {
+                    <p class="small mb-2">
+                        @HrDisplay.Plural(reports.Count, "person still reports", "people still report") to them. Give each a new manager, then mark @blocked.Name as left.
+                    </p>
+                    <ul class="list-unstyled d-grid gap-2 mb-2">
+                        @foreach (var report in reports)
+                        {
+                            <li class="hr-ae-report" @key="report.Id">
+                                <span class="min-w-0">
+                                    <a class="fw-semibold hr-ae-wrap" href="@HrDisplay.EmployeeUrl(report.Id)">@report.Name</a>
+                                    <span class="d-block small text-body-secondary hr-ae-wrap">@report.Title · @AdminHelpers.StatusText(report, today)</span>
+                                </span>
+                                <a class="btn btn-sm btn-outline-secondary flex-shrink-0" href="@AdminHelpers.EditEmployeeUrl(report.Id)">Change manager<span class="visually-hidden">: @report.Name</span></a>
+                            </li>
+                        }
+                    </ul>
+                }
+                else
+                {
+                    <p class="small mb-2">Nobody reports to @blocked.Name any more, so you can mark them as left now.</p>
+                }
+                <div class="d-flex flex-wrap gap-2">
+                    @if (!isMe && reports.Count == 0 && blocked.Status != HrEmployeeStatus.Left)
+                    {
+                        <button type="button" class="btn btn-sm btn-outline-danger" @onclick="() => OpenLeftAsync(blocked.Id)">Mark @blocked.Name as left</button>
+                    }
+                    <button type="button" class="btn btn-sm btn-link" @onclick="DismissBlocked">Dismiss</button>
+                </div>
+            </section>
+        }
+
+        <div class="hr-ae-filters mb-3">
+            <div class="hr-ae-filter-status" role="group" aria-label="Filter by status">
+                @foreach (var option in FilterOptions)
+                {
+                    var pressed = statusFilter == option.Filter;
+                    var count = narrowed.Count(employee => Matches(employee, option.Filter, today));
+                    <button type="button" class="btn btn-sm @(pressed ? "btn-primary" : "btn-outline-secondary")" aria-pressed="@(pressed ? "true" : "false")"
+                            @onclick="() => statusFilter = option.Filter" @key="option.Text">
+                        @option.Text <span class="hr-ae-count">(@count)</span>
+                    </button>
+                }
+            </div>
+            <div class="hr-ae-field">
+                <label class="form-label small fw-semibold mb-1" for="hr-ae-department">Department</label>
+                <select id="hr-ae-department" class="form-select form-select-sm" @bind="departmentId">
+                    <option value="">All departments</option>
+                    @foreach (var department in State.Departments)
+                    {
+                        <option value="@department.Id" @key="department.Id">@department.Name</option>
+                    }
+                </select>
+            </div>
+            <div class="hr-ae-field">
+                <label class="form-label small fw-semibold mb-1" for="hr-ae-search">Search by name</label>
+                <input id="hr-ae-search" type="search" class="form-control form-control-sm" @bind="search" @bind:event="oninput" autocomplete="off"
+                       maxlength="@HrState.MaxNameLength" aria-describedby="hr-ae-shown" />
+            </div>
+        </div>
+
+        <p class="small text-body-secondary mb-2" id="hr-ae-shown" role="status">@ShownText(shown.Count, all.Count)</p>
+
+        <div class="hr-panel">
+            @if (shown.Count == 0)
+            {
+                <p class="text-body-secondary mb-0">
+                    @(all.Count == 0 ? "There is nobody here yet. Add your first employee." : "Nobody matches these filters. Try another status, department, or name.")
+                </p>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table align-middle mb-0 hr-ae-table">
+                        <caption class="hr-ae-caption">@CaptionText(shown.Count), by name.</caption>
+                        <thead>
+                            <tr>
+                                <th scope="col">Name</th>
+                                <th scope="col">Title</th>
+                                <th scope="col">Department</th>
+                                <th scope="col">Manager</th>
+                                <th scope="col">Location</th>
+                                <th scope="col">Start date</th>
+                                <th scope="col">Status</th>
+                                <th scope="col">Onboarding</th>
+                                <th scope="col"><span class="visually-hidden">Actions</span></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var employee in shown)
+                            {
+                                var manager = employee.ManagerId is { } managerId ? State.FindEmployee(managerId) : null;
+                                var plan = State.OnboardingOf(employee.Id);
+                                var progress = plan is null ? default : HrState.Progress(plan);
+                                var status = AdminHelpers.EffectiveStatus(employee, today);
+                                var employeeId = employee.Id;
+                                var onboardingKey = "onb-" + employeeId.ToString(CultureInfo.InvariantCulture);
+                                var leftKey = "left-" + employeeId.ToString(CultureInfo.InvariantCulture);
+                                <tr @key="employee.Id" class="@(status == HrEmployeeStatus.Left ? "hr-ae-row-left" : null)">
+                                    <th scope="row" class="hr-ae-name">
+                                        <span class="d-flex align-items-center gap-2">
+                                            <span class="hr-avatar" aria-hidden="true">@employee.Initials</span>
+                                            <span class="min-w-0">
+                                                <a href="@HrDisplay.EmployeeUrl(employee.Id)">@employee.Name</a>@(me?.Id == employee.Id ? " (you)" : null)
+                                                <span class="d-block small fw-normal text-body-secondary hr-ae-wrap">@employee.Email</span>
+                                            </span>
+                                        </span>
+                                    </th>
+                                    <td class="hr-ae-title">@employee.Title</td>
+                                    <td class="hr-ae-dept">@(State.FindDepartment(employee.DepartmentId)?.Name ?? "No department")</td>
+                                    <td class="hr-ae-manager">
+                                        @if (manager is null)
+                                        {
+                                            <span class="text-body-secondary">None (top of the org chart)</span>
+                                        }
+                                        else
+                                        {
+                                            <a href="@HrDisplay.EmployeeUrl(manager.Id)">@manager.Name</a>
+                                        }
+                                    </td>
+                                    <td>@employee.Location</td>
+                                    <td class="text-nowrap">@HrDisplay.Date(employee.StartDate)</td>
+                                    <td class="text-nowrap"><Badge Color="@StatusBadge(status)">@AdminHelpers.StatusText(employee, today)</Badge></td>
+                                    <td class="hr-ae-progress">
+                                        @if (plan is null)
+                                        {
+                                            <span class="text-body-secondary">None</span>
+                                        }
+                                        else
+                                        {
+                                            var overdue = status == HrEmployeeStatus.Left ? 0 : plan.Tasks.Count(task => task.DoneAt is null && task.Due < today);
+                                            <Progress Height="6" Class="mb-1">
+                                                <ProgressBar Width="@AdminHelpers.Percent(progress.Done, progress.Total)" Color="ProgressColor.Success"
+                                                             aria-label="@($"{employee.Name}, onboarding tasks done")" aria-valuenow="@Math.Round(AdminHelpers.Percent(progress.Done, progress.Total))"
+                                                             aria-valuemin="0" aria-valuemax="100" aria-valuetext="@AdminHelpers.ProgressText(progress.Done, progress.Total)" />
+                                            </Progress>
+                                            <span class="small d-block">@AdminHelpers.ProgressText(progress.Done, progress.Total)</span>
+                                            @if (overdue > 0)
+                                            {
+                                                <span class="small d-block text-danger-emphasis"><Icon Name="IconName.ExclamationTriangle" class="me-1" aria-hidden="true" />@overdue overdue</span>
+                                            }
+                                        }
+                                    </td>
+                                    <td>
+                                        <div class="d-flex flex-nowrap gap-1 justify-content-end">
+                                            <a class="btn btn-sm btn-outline-secondary" href="@AdminHelpers.EditEmployeeUrl(employee.Id)">
+                                                @(status == HrEmployeeStatus.Left ? "View" : "Edit")<span class="visually-hidden"> @employee.Name</span>
+                                            </a>
+                                            @if (status != HrEmployeeStatus.Left)
+                                            {
+                                                @if (plan is null)
+                                                {
+                                                    <button type="button" class="btn btn-sm btn-outline-primary text-nowrap" @ref="actionButtons[onboardingKey]" @onclick="() => OpenOnboardingAsync(employeeId)">
+                                                        Start onboarding<span class="visually-hidden">: @employee.Name</span>
+                                                    </button>
+                                                }
+                                                <button type="button" class="btn btn-sm btn-outline-danger text-nowrap" @ref="actionButtons[leftKey]" @onclick="() => OpenLeftAsync(employeeId)">
+                                                    Mark as left<span class="visually-hidden">: @employee.Name</span>
+                                                </button>
+                                            }
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+
+        <Modal @ref="onboardingModal" IsVerticallyCentered="true" ShowCloseButton="false" aria-labelledby="hr-ae-onb-title" OnShown="OnOnboardingShown" OnHidden="OnOnboardingHidden">
+            <HeaderTemplate>
+                <h2 class="modal-title h5 hr-ae-wrap" id="hr-ae-onb-title">@(DialogPerson is { } target ? $"Start onboarding for {target.Name}" : "Start onboarding")</h2>
+            </HeaderTemplate>
+            <BodyTemplate>
+                @{
+                    var target = DialogPerson;
+                    var usable = State.Templates.Where(template => template.Tasks.Count > 0).ToList();
+                    var chosen = SelectedTemplate;
+                }
+                @if (target is null || target.Status == HrEmployeeStatus.Left)
+                {
+                    <p class="mb-0">This person has left or was removed, so onboarding can't start.</p>
+                }
+                else if (State.OnboardingOf(target.Id) is { } existing)
+                {
+                    <p class="mb-0">@target.Name already has an onboarding plan (“@existing.TemplateName”, @AdminHelpers.ProgressText(HrState.Progress(existing).Done, existing.Tasks.Count)).</p>
+                }
+                else if (usable.Count == 0)
+                {
+                    <p class="mb-0">No onboarding template has tasks yet. Add tasks to a template in <a href="@AdminHelpers.TemplatesUrl">Onboarding templates</a> first.</p>
+                }
+                else
+                {
+                    <label class="form-label fw-semibold" for="hr-ae-template">Template</label>
+                    <select id="hr-ae-template" class="form-select" @bind="templateValue" @ref="templateSelect" aria-describedby="hr-ae-template-help">
+                        @foreach (var template in State.Templates)
+                        {
+                            <option value="@template.Id.ToString(CultureInfo.InvariantCulture)" disabled="@(template.Tasks.Count == 0)" @key="template.Id">@AdminHelpers.TemplateOption(template)</option>
+                        }
+                    </select>
+                    <div class="form-text" id="hr-ae-template-help">
+                        @if (chosen is not null && chosen.Tasks.Count > 0)
+                        {
+                            <span>@AdminHelpers.OwnerSplit(chosen.Tasks.Select(task => task.Owner)).</span>
+                        }
+                        Due dates count from their start date, @HrDisplay.Date(target.StartDate). Their manager follows the plan on New hires,
+                        and @target.Name sees the checklist after registering with @target.Email.
+                    </div>
+                }
+            </BodyTemplate>
+            <FooterTemplate>
+                <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => onboardingModal.HideAsync()">Cancel</Button>
+                @if (DialogPerson is { Status: not HrEmployeeStatus.Left } person && State.OnboardingOf(person.Id) is null && SelectedTemplate is { Tasks.Count: > 0 })
+                {
+                    <Button Color="ButtonColor.Primary" @onclick="ConfirmOnboardingAsync"><Icon Name="IconName.ListCheck" class="me-1" aria-hidden="true" />Start onboarding</Button>
+                }
+            </FooterTemplate>
+        </Modal>
+
+        <Modal @ref="leftModal" IsVerticallyCentered="true" ShowCloseButton="false" aria-labelledby="hr-ae-left-title" OnShown="OnLeftShown" OnHidden="OnLeftHidden">
+            <HeaderTemplate>
+                <h2 class="modal-title h5 hr-ae-wrap" id="hr-ae-left-title">@(DialogPerson is { } target ? $"Mark {target.Name} as left?" : "Mark as left?")</h2>
+            </HeaderTemplate>
+            <BodyTemplate>
+                @{
+                    var target = DialogPerson;
+                }
+                @if (target is null || target.Status == HrEmployeeStatus.Left)
+                {
+                    <p class="mb-0">This person was already marked as left or was removed.</p>
+                }
+                else
+                {
+                    var pending = State.LeaveOf(target.Id).Where(request => request.Status == HrLeaveStatus.Pending).ToList();
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold" for="hr-ae-last-day">Last day</label>
+                        <input id="hr-ae-last-day" type="date" class="form-control @(lastDayError is null ? null : "is-invalid")" value="@lastDayText"
+                               @onchange="args => lastDayText = args.Value as string ?? string.Empty" @ref="lastDayInput"
+                               min="@AdminHelpers.DateValue(target.StartDate)" max="@AdminHelpers.DateValue(State.Clock.Today)" aria-required="true"
+                               aria-invalid="@(lastDayError is null ? null : "true")" aria-describedby="hr-ae-last-day-help hr-ae-last-day-error" />
+                        <div class="form-text" id="hr-ae-last-day-help">Their last working day: today or earlier, and on or after their start date, @HrDisplay.Date(target.StartDate).</div>
+                        <div class="invalid-feedback d-block" id="hr-ae-last-day-error">@lastDayError</div>
+                    </div>
+                    <p class="small">
+                        They leave the directory, the org chart, and their team as soon as you confirm, and can't use @HrSeedData.ProductName any more.
+                        Their record stays here as “Left” and counts in headcount analytics.
+                    </p>
+                    <p class="small mb-0">
+                        @if (pending.Count == 0)
+                        {
+                            <span>They have no leave waiting for approval.</span>
+                        }
+                        else
+                        {
+                            <span>
+                                Their @HrDisplay.Plural(pending.Count, "leave request") waiting for approval
+                                (@string.Join("; ", pending.Select(request => HrDisplay.Range(request.From, request.To))))
+                                @(pending.Count == 1 ? "is" : "are") cancelled.
+                            </span>
+                        }
+                    </p>
+                }
+            </BodyTemplate>
+            <FooterTemplate>
+                <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => leftModal.HideAsync()">Cancel</Button>
+                @if (DialogPerson is { Status: not HrEmployeeStatus.Left })
+                {
+                    <Button Color="ButtonColor.Danger" @onclick="ConfirmLeftAsync"><Icon Name="IconName.BoxArrowRight" class="me-1" aria-hidden="true" />Mark as left</Button>
+                }
+            </FooterTemplate>
+        </Modal>
+    </ShowcaseRoleGuard>
+</div>

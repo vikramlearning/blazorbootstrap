@@ -1,0 +1,54 @@
+/* Leave policies: the table of leave types, the "turn it off" offer, and the add/edit form. */
+.hr-alp-status:empty {
+    margin: 0;
+}
+
+.hr-alp-status:focus {
+    outline: none;
+}
+
+.hr-alp-status:focus-visible {
+    outline: 2px solid var(--bs-focus-ring-color, var(--sc-primary));
+    outline-offset: 2px;
+}
+
+.hr-alp-wrap {
+    overflow-wrap: anywhere;
+}
+
+.hr-alp-offer {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: .5rem .75rem;
+    padding: .75rem 1rem;
+    border: 1px solid var(--hr-border);
+    border-radius: .75rem;
+    background: var(--hr-soft);
+    color: var(--hr-ink);
+}
+
+.hr-alp-caption {
+    caption-side: top;
+    padding-top: 0;
+    font-size: .8125rem;
+    color: var(--bs-secondary-color);
+}
+
+.hr-alp-table {
+    font-size: .875rem;
+}
+
+.hr-alp-name {
+    min-width: 14rem;
+    overflow-wrap: anywhere;
+}
+
+.hr-alp-row-editing > * {
+    background-color: rgba(var(--sc-primary-rgb), .07);
+}
+
+.hr-alp-form-panel {
+    max-width: 52rem;
+}

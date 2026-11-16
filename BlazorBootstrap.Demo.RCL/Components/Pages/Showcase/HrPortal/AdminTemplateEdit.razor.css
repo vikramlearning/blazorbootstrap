@@ -1,0 +1,53 @@
+/* Onboarding template: the tasks table, the task form, and the name and description form. */
+.hr-ate-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.min-w-0 {
+    min-width: 0;
+}
+
+.hr-ate-wrap {
+    overflow-wrap: anywhere;
+}
+
+.hr-ate-status:empty {
+    margin: 0;
+}
+
+.hr-ate-status:focus {
+    outline: none;
+}
+
+.hr-ate-status:focus-visible {
+    outline: 2px solid var(--bs-focus-ring-color, var(--sc-primary));
+    outline-offset: 2px;
+}
+
+.hr-ate-caption {
+    caption-side: top;
+    padding-top: 0;
+    font-size: .8125rem;
+    color: var(--bs-secondary-color);
+}
+
+.hr-ate-table {
+    font-size: .875rem;
+}
+
+.hr-ate-due {
+    min-width: 9rem;
+}
+
+.hr-ate-task {
+    min-width: 14rem;
+    overflow-wrap: anywhere;
+}
+
+.hr-ate-row-editing > * {
+    background-color: rgba(var(--sc-primary-rgb), .07);
+}

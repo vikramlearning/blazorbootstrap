@@ -1,0 +1,27 @@
+/* Employee editor: the job details form, the onboarding and sign-in panels, and the read-only record of someone who left. */
+.hr-aee-status:empty {
+    margin: 0;
+}
+
+.hr-aee-status:focus {
+    outline: none;
+}
+
+.hr-aee-status:focus-visible {
+    outline: 2px solid var(--bs-focus-ring-color, var(--sc-primary));
+    outline-offset: 2px;
+}
+
+.hr-aee-wrap {
+    overflow-wrap: anywhere;
+}
+
+/* Right after adding someone, starting their onboarding is the next step. */
+section.hr-panel.hr-aee-next {
+    border: 2px solid var(--sc-primary);
+    background: var(--hr-soft);
+}
+
+.hr-aee-readonly dd {
+    overflow-wrap: anywhere;
+}

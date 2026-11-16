@@ -1,0 +1,106 @@
+/* Leave approvals: the status message, one card per waiting request with its facts, note, and answers, and the history table. */
+.hr-appr-status {
+    min-height: 1.5rem;
+    margin-bottom: 1rem;
+    overflow-wrap: anywhere;
+}
+
+    .hr-appr-status:focus {
+        outline: none;
+    }
+
+    .hr-appr-status:focus-visible {
+        outline: 2px solid var(--bs-focus-ring-color, var(--sc-primary));
+        outline-offset: 2px;
+    }
+
+.hr-appr-empty {
+    display: flex;
+    gap: 1rem;
+}
+
+    .hr-appr-empty > .hr-icon {
+        flex: 0 0 auto;
+    }
+
+.hr-appr-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 26rem), 1fr));
+    gap: 1rem;
+    align-items: start;
+}
+
+.hr-appr-card {
+    min-width: 0;
+    padding: 1rem 1.25rem;
+}
+
+.hr-appr-title {
+    margin-bottom: .75rem;
+    font-size: 1.0625rem;
+    font-weight: 700;
+    color: var(--hr-ink);
+    overflow-wrap: anywhere;
+}
+
+    .hr-appr-title:focus {
+        outline: none;
+    }
+
+    .hr-appr-title:focus-visible {
+        outline: 2px solid var(--bs-focus-ring-color, var(--sc-primary));
+        outline-offset: 2px;
+    }
+
+.hr-appr-facts {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 10rem), 1fr));
+    gap: .5rem 1rem;
+    margin-bottom: .75rem;
+}
+
+    .hr-appr-facts dt {
+        font-size: .75rem;
+        font-weight: 700;
+        letter-spacing: .02em;
+        text-transform: uppercase;
+        color: var(--bs-secondary-color);
+    }
+
+    .hr-appr-facts dd {
+        margin: 0;
+        overflow-wrap: anywhere;
+    }
+
+.hr-appr-wide {
+    grid-column: 1 / -1;
+}
+
+.hr-appr-warn {
+    font-weight: 600;
+    color: var(--bs-danger-text-emphasis);
+}
+
+.hr-appr-error {
+    color: var(--bs-form-invalid-color);
+    font-size: .875rem;
+    overflow-wrap: anywhere;
+}
+
+    .hr-appr-error:empty {
+        display: none;
+    }
+
+.hr-appr-table {
+    --bs-table-bg: transparent;
+}
+
+    .hr-appr-table th,
+    .hr-appr-table td {
+        padding-inline: .75rem;
+    }
+
+.hr-appr-note-cell {
+    min-width: 12rem;
+    max-width: 24rem;
+}

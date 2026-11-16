@@ -1,0 +1,93 @@
+/* New hires: the status message, one card per person (highlighted when they start soon), and the empty state. The task
+   groups are OnboardingTaskList. */
+.hr-tob-status {
+    min-height: 1.5rem;
+    margin-bottom: 1rem;
+    overflow-wrap: anywhere;
+}
+
+.hr-tob-empty {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    max-width: 48rem;
+}
+
+    .hr-tob-empty > div {
+        min-width: 0;
+    }
+
+    .hr-tob-empty > .hr-icon {
+        flex: 0 0 auto;
+    }
+
+.hr-tob-person {
+    min-width: 0;
+    margin-bottom: 1.5rem;
+    padding: 1rem 1.25rem;
+}
+
+.hr-tob-soon {
+    border-color: var(--sc-primary);
+    box-shadow: inset 4px 0 0 var(--sc-primary);
+}
+
+.hr-tob-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: .75rem;
+    margin-bottom: .75rem;
+}
+
+.hr-tob-head-text {
+    flex: 1 1 12rem;
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+.hr-tob-name {
+    margin: 0;
+    font-size: 1.125rem;
+    font-weight: 700;
+}
+
+.hr-tob-soon-badge {
+    background: var(--hr-soft);
+    color: var(--sc-primary-hover);
+    border: 1px solid var(--sc-primary);
+}
+
+[data-bs-theme=dark] .hr-tob-soon-badge {
+    color: var(--sc-primary);
+}
+
+.hr-tob-facts {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 10rem), 1fr));
+    gap: .5rem 1rem;
+    margin-bottom: .75rem;
+}
+
+    .hr-tob-facts dt {
+        font-size: .75rem;
+        font-weight: 700;
+        letter-spacing: .02em;
+        text-transform: uppercase;
+        color: var(--bs-secondary-color);
+    }
+
+    .hr-tob-facts dd {
+        margin: 0;
+        overflow-wrap: anywhere;
+    }
+
+.hr-tob-overdue {
+    display: flex;
+    align-items: flex-start;
+    padding: .625rem .75rem;
+    border-radius: .5rem;
+    background: var(--bs-danger-bg-subtle);
+    color: var(--bs-danger-text-emphasis);
+    overflow-wrap: anywhere;
+}

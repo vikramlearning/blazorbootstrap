@@ -1,0 +1,70 @@
+@* One onboarding plan's tasks in three groups by due date against the start date: before day one, the first week, and later.
+   The viewer ticks the tasks they may tick with native checkboxes; the rest are read-only and say who does them. *@
+@foreach (var group in Groups().Where(group => group.Tasks.Count > 0))
+{
+    var headingId = $"{IdPrefix}-group-{group.Id}";
+    var groupDone = group.Tasks.Count(task => task.DoneAt is not null);
+
+    <section class="hr-ob-group" aria-labelledby="@headingId" @key="@($"{IdPrefix}-group-{group.Id}")">
+        @if (HeadingLevel <= 2)
+        {
+            <h2 class="hr-section-title" id="@headingId">@group.Title <span class="text-body-secondary fw-normal small">(@groupDone of @group.Tasks.Count done)</span></h2>
+        }
+        else
+        {
+            <h3 class="hr-ob-group-title" id="@headingId">@group.Title <span class="text-body-secondary fw-normal small">(@groupDone of @group.Tasks.Count done)</span></h3>
+        }
+        <ul class="list-unstyled hr-ob-tasks">
+            @foreach (var task in group.Tasks)
+            {
+                var id = $"{IdPrefix}-task-{task.Id}";
+                var done = task.DoneAt is not null;
+                var overdue = !done && task.Due < Today;
+                var canTick = CanTick?.Invoke(task) ?? false;
+
+                <li class="hr-ob-task @(done ? "hr-ob-done" : null) @(overdue ? "hr-ob-overdue" : null)" @key="@($"{IdPrefix}-task-{task.Id}-{versions.GetValueOrDefault(task.Id)}")">
+                    @if (canTick)
+                    {
+                        <div class="form-check mb-0">
+                            <input class="form-check-input" type="checkbox" id="@id" checked="@done" @onchange="args => Toggle(task, args)" @ref="checkboxes[task.Id]"
+                                   aria-describedby="@($"{id}-meta")" />
+                            <label class="form-check-label fw-semibold" for="@id">@task.Title@if (Employee.Id != ViewerId)
+                                {<span class="visually-hidden">, for @Employee.Name</span>}</label>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="hr-ob-readonly">
+                            <span class="hr-ob-mark @(done ? "hr-ob-mark-done" : null)" aria-hidden="true"><Icon Name="@(done ? IconName.CheckCircleFill : IconName.Circle)" /></span>
+                            <span class="fw-semibold">@task.Title</span>
+                        </div>
+                    }
+                    <p class="hr-ob-meta" id="@($"{id}-meta")">
+                        <span>@OwnerText(task.Owner)</span>
+                        <span>Due @DueText(task)</span>
+                        @if (done)
+                        {
+                            <span class="hr-ob-state-done">
+                                <Icon Name="IconName.Check2" class="me-1" aria-hidden="true" />Done by @DoneByText(task)@(task.DoneAt is { } at ? $" on {HrDisplay.Date(at)}" : null)
+                            </span>
+                        }
+                        else if (overdue)
+                        {
+                            <span class="hr-ob-state-overdue">
+                                <Icon Name="IconName.ExclamationTriangleFill" class="me-1" aria-hidden="true" />Overdue by @HrDisplay.Days((int)(Today - task.Due.Date).TotalDays)
+                            </span>
+                        }
+                        else
+                        {
+                            <span>Not done yet</span>
+                        }
+                        @if (!canTick && !done)
+                        {
+                            <span class="fst-italic">@WhoDoesThis(task.Owner)</span>
+                        }
+                    </p>
+                </li>
+            }
+        </ul>
+    </section>
+}

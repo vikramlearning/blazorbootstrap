@@ -1,0 +1,233 @@
+@page "/showcase/hr-portal/home"
+@layout HrWorkLayout
+@implements IDisposable
+
+<PageTitle>Home · @HrSeedData.ProductName</PageTitle>
+
+<div class="container-fluid px-lg-4">
+    @if (State.CurrentEmployee is { } me)
+    {
+        var today = State.Clock.Today;
+        var b = HrLayout.Base;
+
+        <div class="mb-4">
+            <h1 class="hr-title mb-1">@Greeting(State.Clock.Now), @FirstName(me.Name)</h1>
+            <p class="hr-lead mb-0 hr-home-wrap">
+                @me.Title · @(State.FindDepartment(me.DepartmentId)?.Name) · @me.Location · @HrDisplay.Date(today)
+            </p>
+        </div>
+
+        <div class="hr-home-grid">
+            @* Leave balances: the main limited type (vacation) with a meter, then the other types in words. *@
+            <section class="hr-card hr-home-card" aria-labelledby="hr-home-balance-title">
+                <h2 class="hr-section-title" id="hr-home-balance-title">Your leave this year</h2>
+                @{
+                    var balances = State.Balances(me.Id);
+                    var main = balances.FirstOrDefault(item => !item.Policy.IsUnlimited);
+                }
+                @if (main is not null)
+                {
+                    <p class="hr-home-big mb-1">
+                        <span class="hr-mono">@HrDisplay.Days(main.Available)</span>
+                        <span class="fs-6 fw-normal text-body-secondary">of @main.Policy.Name available</span>
+                    </p>
+                    <Progress Height="10" Class="mb-2">
+                        <ProgressBar Width="@Percent(main.Used, main.Allowance)" Color="ProgressColor.Primary"
+                                     aria-label="@($"{main.Policy.Name} used")" aria-valuenow="@((int)Math.Round(Percent(main.Used, main.Allowance)))" aria-valuemin="0" aria-valuemax="100"
+                                     aria-valuetext="@($"{HrDisplay.Days(main.Used)} used of {main.Allowance}")" />
+                        <ProgressBar Width="@Percent(main.Pending, main.Allowance)" Color="ProgressColor.Warning"
+                                     aria-label="@($"{main.Policy.Name} waiting for approval")" aria-valuenow="@((int)Math.Round(Percent(main.Pending, main.Allowance)))" aria-valuemin="0" aria-valuemax="100"
+                                     aria-valuetext="@($"{HrDisplay.Days(main.Pending)} waiting for approval of {main.Allowance}")" />
+                    </Progress>
+                    <p class="small mb-3">@BalanceText(main)</p>
+                }
+                @{
+                    var others = balances.Where(item => item != main).ToList();
+                }
+                @if (others.Count > 0)
+                {
+                    <ul class="list-unstyled small d-grid gap-1 mb-3">
+                        @foreach (var item in others)
+                        {
+                            <li @key="@($"bal-{item.Policy.Id}")"><span class="fw-semibold">@item.Policy.Name:</span> @BalanceText(item)</li>
+                        }
+                    </ul>
+                }
+                else if (main is null)
+                {
+                    <p class="small text-body-secondary mb-3">No leave types are offered right now.</p>
+                }
+                <a class="hr-home-link" href="@($"{b}/leave")">Request leave or see your requests</a>
+            </section>
+
+            @* The next approved leave, and how many requests are still waiting. *@
+            <section class="hr-card hr-home-card" aria-labelledby="hr-home-next-title">
+                <h2 class="hr-section-title" id="hr-home-next-title">Your next time off</h2>
+                @{
+                    var mine = State.LeaveOf(me.Id);
+                    var next = mine.Where(item => item.Status == HrLeaveStatus.Approved && item.To >= today).OrderBy(item => item.From).FirstOrDefault();
+                    var waiting = mine.Count(item => item.Status == HrLeaveStatus.Pending);
+                }
+                @if (next is not null)
+                {
+                    <p class="hr-home-big mb-1">@HrDisplay.Range(next.From, next.To)</p>
+                    <p class="small mb-1">@(State.FindPolicy(next.PolicyId)?.Name ?? "Leave") · @HrDisplay.Days(next.Days) · Approved</p>
+                    <p class="small text-body-secondary mb-3">@StartsText(next, today)</p>
+                }
+                else
+                {
+                    <p class="small text-body-secondary mb-3">No approved leave coming up.</p>
+                }
+                @if (waiting > 0)
+                {
+                    <p class="small mb-3">@HrDisplay.Plural(waiting, "request") waiting for approval.</p>
+                }
+                <a class="hr-home-link" href="@($"{b}/leave")">My leave</a>
+            </section>
+
+            @if (State.OnboardingOf(me.Id) is { } plan)
+            {
+                var (done, total) = HrState.Progress(plan);
+                var overdue = plan.Tasks.Count(task => task.DoneAt is null && task.Due < today);
+                var nextTask = plan.Tasks.Where(task => task.DoneAt is null && task.Owner == HrTaskOwner.NewHire).OrderBy(task => task.Due).FirstOrDefault();
+
+                <section class="hr-card hr-home-card" aria-labelledby="hr-home-onboarding-title">
+                    <h2 class="hr-section-title" id="hr-home-onboarding-title">Your onboarding</h2>
+                    <p class="hr-home-big mb-1">@OnboardingText(done, total, overdue)</p>
+                    <Progress Height="10" Class="mb-2">
+                        <ProgressBar Width="@Percent(done, total)" Color="ProgressColor.Success"
+                                     aria-label="Onboarding tasks done" aria-valuenow="@((int)Math.Round(Percent(done, total)))" aria-valuemin="0" aria-valuemax="100"
+                                     aria-valuetext="@OnboardingText(done, total, overdue)" />
+                    </Progress>
+                    <p class="small mb-3 hr-home-wrap">
+                        @if (nextTask is not null)
+                        {
+                            <span>Your next task: @nextTask.Title, @DueText(nextTask.Due, today).</span>
+                        }
+                        else if (done == total)
+                        {
+                            <span>Everything is done. Welcome aboard!</span>
+                        }
+                        else
+                        {
+                            <span>Your own tasks are done; the rest are your manager's and HR's.</span>
+                        }
+                    </p>
+                    <a class="hr-home-link" href="@($"{b}/onboarding")">My onboarding checklist</a>
+                </section>
+            }
+
+            @* Who's away: only people whose leave the signed-in person may see (themselves, their reports, or everyone for HR). *@
+            <section class="hr-card hr-home-card" aria-labelledby="hr-home-away-title">
+                <h2 class="hr-section-title" id="hr-home-away-title">Who's away on your team</h2>
+                @{
+                    var away = AwayThisWeek(me, today);
+                }
+                <h3 class="hr-home-sub">Today</h3>
+                @if (away.Today.Count == 0)
+                {
+                    <p class="small text-body-secondary">Nobody is away today.</p>
+                }
+                else
+                {
+                    <ul class="list-unstyled small d-grid gap-2">
+                        @foreach (var entry in away.Today)
+                        {
+                            <li @key="@($"today-{entry.Request.Id}")" class="hr-home-person">
+                                <span class="hr-avatar" aria-hidden="true">@entry.Person.Initials</span>
+                                <span class="hr-home-wrap"><a href="@HrDisplay.EmployeeUrl(entry.Person.Id)">@entry.Person.Name</a>, back after @HrDisplay.Date(entry.Request.To)</span>
+                            </li>
+                        }
+                    </ul>
+                }
+                <h3 class="hr-home-sub">Later this week</h3>
+                @if (away.Later.Count == 0)
+                {
+                    <p class="small text-body-secondary">Nobody else is away this week.</p>
+                }
+                else
+                {
+                    <ul class="list-unstyled small d-grid gap-2">
+                        @foreach (var entry in away.Later)
+                        {
+                            <li @key="@($"later-{entry.Request.Id}")" class="hr-home-person">
+                                <span class="hr-avatar" aria-hidden="true">@entry.Person.Initials</span>
+                                <span class="hr-home-wrap"><a href="@HrDisplay.EmployeeUrl(entry.Person.Id)">@entry.Person.Name</a>, @HrDisplay.Range(entry.Request.From, entry.Request.To)</span>
+                            </li>
+                        }
+                    </ul>
+                }
+                @if (away.Hidden > 0)
+                {
+                    <p class="small text-body-secondary hr-home-wrap">
+                        You see leave for yourself@(State.DirectReports(me.Id).Count > 0 ? " and your reports" : null) only.
+                        @(me.ManagerId is { } managerId && State.FindEmployee(managerId) is { } manager ? $"{manager.Name}, your manager, sees the rest of the team's." : null)
+                    </p>
+                }
+                @if (State.IsManager || State.IsHrAdmin)
+                {
+                    <a class="hr-home-link" href="@($"{b}/team")">@(State.IsManager ? "My team" : "Teams")</a>
+                }
+                else
+                {
+                    <a class="hr-home-link" href="@($"{b}/people?department={Uri.EscapeDataString(me.DepartmentId)}")">Colleagues in @(State.FindDepartment(me.DepartmentId)?.Name ?? "your department")</a>
+                }
+            </section>
+
+            <section class="hr-card hr-home-card" aria-labelledby="hr-home-holidays-title">
+                <h2 class="hr-section-title" id="hr-home-holidays-title">Next company holidays</h2>
+                @{
+                    var holidays = State.Holidays.Where(item => item.Date >= today).OrderBy(item => item.Date).Take(3).ToList();
+                }
+                @if (holidays.Count == 0)
+                {
+                    <p class="small text-body-secondary mb-3">No more company holidays are planned yet.</p>
+                }
+                else
+                {
+                    <ul class="list-unstyled small d-grid gap-2 mb-3">
+                        @foreach (var holiday in holidays)
+                        {
+                            <li @key="@($"hol-{holiday.Date.Ticks}")">
+                                <span class="fw-semibold">@holiday.Name</span>
+                                <span class="d-block text-body-secondary">@holiday.Date.ToString("dddd, MMM d, yyyy", CultureInfo.InvariantCulture) · @InDays(holiday.Date, today)</span>
+                            </li>
+                        }
+                    </ul>
+                }
+                <p class="small text-body-secondary mb-3">Holidays aren't counted as leave days.</p>
+                <a class="hr-home-link" href="@($"{b}/leave")">Plan leave around them</a>
+            </section>
+
+            @if (State.IsManager || State.IsHrAdmin)
+            {
+                var pending = State.TeamLeave.Count(item => item.Status == HrLeaveStatus.Pending);
+                var plans = State.Onboardings.Where(item => HrState.Progress(item) is var progress && progress.Done < progress.Total).ToList();
+
+                <section class="hr-card hr-home-card" aria-labelledby="hr-home-decide-title">
+                    <h2 class="hr-section-title" id="hr-home-decide-title">Waiting for you</h2>
+                    <p class="hr-home-big mb-1">@(pending == 0 ? "No requests waiting" : $"{HrDisplay.Plural(pending, "request")} waiting for you")</p>
+                    <p class="small text-body-secondary mb-3">
+                        @(pending == 0 ? "No leave to approve or reject right now." : State.IsHrAdmin && !State.IsManager ? "Leave requests across the company, waiting to be approved or rejected." : "Leave requests from your team, waiting to be approved or rejected.")
+                    </p>
+                    <a class="hr-home-link d-block mb-2" href="@($"{b}/approvals")">Leave approvals</a>
+                    <p class="small mb-1">@(plans.Count == 0 ? "No new hires are onboarding." : $"{HrDisplay.Plural(plans.Count, "new hire")} onboarding.")</p>
+                    <a class="hr-home-link" href="@($"{b}/team/onboarding")">New hires</a>
+                </section>
+            }
+
+            @if (State.IsHrAdmin)
+            {
+                <section class="hr-card hr-home-card" aria-labelledby="hr-home-hr-title">
+                    <h2 class="hr-section-title" id="hr-home-hr-title">HR tools</h2>
+                    <ul class="list-unstyled d-grid gap-2 mb-0">
+                        <li><a class="hr-home-tool" href="@($"{b}/admin/employees")"><Icon Name="IconName.PersonBadge" aria-hidden="true" /><span>Employees</span></a></li>
+                        <li><a class="hr-home-tool" href="@($"{b}/admin/leave-policies")"><Icon Name="IconName.Sliders" aria-hidden="true" /><span>Leave policies</span></a></li>
+                        <li><a class="hr-home-tool" href="@($"{b}/admin/onboarding-templates")"><Icon Name="IconName.CardChecklist" aria-hidden="true" /><span>Onboarding templates</span></a></li>
+                        <li><a class="hr-home-tool" href="@($"{b}/admin/analytics")"><Icon Name="IconName.BarChart" aria-hidden="true" /><span>Headcount analytics</span></a></li>
+                    </ul>
+                </section>
+            }
+        </div>
+    }
+</div>

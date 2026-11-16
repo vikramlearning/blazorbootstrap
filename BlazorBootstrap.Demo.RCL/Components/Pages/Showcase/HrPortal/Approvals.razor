@@ -1,0 +1,179 @@
+@page "/showcase/hr-portal/approvals"
+@layout HrWorkLayout
+
+<PageTitle>Leave approvals · @HrSeedData.ProductName</PageTitle>
+
+@* Leave waiting for the manager (or HR): approve with an optional note or reject with a required one; then the decided history. *@
+<div class="container-fluid px-lg-4">
+    <ShowcaseRoleGuard Roles="@($"{HrSeedData.ManagerRole},{HrSeedData.HrAdminRole}")" SignInPath="@HrLayout.SignInPath">
+        @if (State.CurrentEmployee is { } me)
+        {
+            var today = State.Clock.Today;
+            var all = State.TeamLeave;
+            var waiting = all.Where(item => item.Status == HrLeaveStatus.Pending).ToList();
+            var decided = all.Where(item => item.Status != HrLeaveStatus.Pending).ToList();
+
+            <h1 class="hr-title mb-1">Leave approvals</h1>
+            <p class="hr-lead mb-3">
+                @(State.IsHrAdmin ? "Everyone's leave requests: as HR you can decide any of them except your own." : "Your direct reports' leave requests.")
+                Approving can come with a note; rejecting needs one, so the employee knows why. They see your decision under My leave.
+            </p>
+
+            @* Always rendered and focusable, so every decision is announced and focus has somewhere to go when the last request leaves the list. *@
+            <p class="fw-semibold hr-appr-status @(statusIsError ? "text-danger-emphasis" : null)" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
+
+            <section class="mb-5" aria-labelledby="hr-appr-waiting-title">
+                <h2 class="hr-section-title" id="hr-appr-waiting-title">Waiting for a decision <span class="text-body-secondary fw-normal">(@waiting.Count)</span></h2>
+                @if (waiting.Count == 0)
+                {
+                    <div class="hr-panel hr-appr-empty">
+                        <span class="hr-icon" aria-hidden="true"><Icon Name="IconName.CheckCircle" /></span>
+                        <p class="mb-0 align-self-center">Nothing is waiting. New requests show here, oldest first.</p>
+                    </div>
+                }
+                else
+                {
+                    <p class="text-body-secondary">Oldest first.</p>
+                    <ol class="list-unstyled hr-appr-list mb-0" aria-labelledby="hr-appr-waiting-title">
+                        @foreach (var request in waiting)
+                        {
+                            var employee = State.FindEmployee(request.EmployeeId);
+                            var name = employee?.Name ?? "A former employee";
+                            var policy = State.FindPolicy(request.PolicyId);
+                            var label = LeaveText.RequestLabel(request, policy);
+                            var noteId = $"hr-appr-note-{request.Id}";
+                            var error = noteErrors.GetValueOrDefault(request.Id);
+                            var note = notes.GetValueOrDefault(request.Id) ?? string.Empty;
+                            var balance = BalanceAfter(request, employee, policy);
+
+                            <li class="hr-card hr-appr-card" @key="@($"waiting-{request.Id}")">
+                                <h3 class="hr-appr-title" tabindex="-1" @ref="headings[request.Id]">
+                                    @name<span class="fw-normal">: @label</span>
+                                </h3>
+                                <dl class="hr-appr-facts">
+                                    <div>
+                                        <dt>Working days</dt>
+                                        <dd>@HrDisplay.Days(request.Days)</dd>
+                                    </div>
+                                    <div>
+                                        <dt>Requested</dt>
+                                        <dd>@HrDisplay.Ago(request.CreatedAt, State.Clock.Now) (@HrDisplay.Date(request.CreatedAt))</dd>
+                                    </div>
+                                    <div class="hr-appr-wide">
+                                        <dt>Balance after approval</dt>
+                                        <dd class="@(balance.Short ? "hr-appr-warn" : null)">
+                                            @if (balance.Short)
+                                            {
+                                                <Icon Name="IconName.ExclamationTriangleFill" class="me-1" aria-hidden="true" />
+                                            }
+                                            @balance.Text
+                                        </dd>
+                                    </div>
+                                    <div class="hr-appr-wide">
+                                        <dt>Teammates away then</dt>
+                                        <dd>@OverlapText(request, employee)</dd>
+                                    </div>
+                                    @if (request.Note.Length > 0)
+                                    {
+                                        <div class="hr-appr-wide">
+                                            <dt>Note from @LeaveText.FirstName(employee)</dt>
+                                            <dd class="hr-plain">@request.Note</dd>
+                                        </div>
+                                    }
+                                </dl>
+                                @if (employee is not null)
+                                {
+                                    <p class="small mb-3"><a href="@HrDisplay.EmployeeUrl(employee.Id)">@(employee.Name)'s profile</a></p>
+                                }
+
+                                <label class="form-label fw-semibold" for="@noteId">Note for @LeaveText.FirstName(employee)<span class="visually-hidden">, about @(State.FindPolicy(request.PolicyId)?.Name) @HrDisplay.Range(request.From, request.To)</span></label>
+                                <textarea id="@noteId" class="@(error is null ? "form-control" : "form-control is-invalid")" rows="2" maxlength="@HrState.MaxNoteLength"
+                                          value="@note" @oninput="args => notes[request.Id] = args.Value?.ToString() ?? string.Empty" @ref="noteInputs[request.Id]"
+                                          aria-invalid="@(error is null ? null : "true")" aria-describedby="@($"{noteId}-help {noteId}-error")"></textarea>
+                                <div class="form-text" id="@($"{noteId}-help")">
+                                    Optional when you approve; needed when you reject. @LeaveText.FirstName(employee) sees it. @note.Length of @HrState.MaxNoteLength characters.
+                                </div>
+                                <div class="hr-appr-error" id="@($"{noteId}-error")">@error</div>
+
+                                <div class="d-flex flex-wrap gap-2 mt-2">
+                                    <button type="button" class="btn btn-success" @onclick="() => Decide(request.Id, true)">
+                                        <Icon Name="IconName.CheckLg" class="me-1" aria-hidden="true" />Approve<span class="visually-hidden"> @(name)'s @label</span>
+                                    </button>
+                                    <button type="button" class="btn btn-outline-danger" @onclick="() => Decide(request.Id, false)">
+                                        <Icon Name="IconName.XLg" class="me-1" aria-hidden="true" />Reject<span class="visually-hidden"> @(name)'s @label</span>
+                                    </button>
+                                </div>
+                            </li>
+                        }
+                    </ol>
+                }
+            </section>
+
+            <section aria-labelledby="hr-appr-decided-title">
+                <h2 class="hr-section-title" id="hr-appr-decided-title">Decided <span class="text-body-secondary fw-normal">(@decided.Count)</span></h2>
+                @if (decided.Count == 0)
+                {
+                    <div class="hr-panel"><p class="mb-0 text-body-secondary">No decided requests yet.</p></div>
+                }
+                else
+                {
+                    <p class="text-body-secondary small">Most recent first. Cancelled requests were withdrawn by the employee.</p>
+                    <div class="hr-panel p-0">
+                        <div class="table-responsive">
+                            <table class="table table-sm align-middle mb-0 hr-appr-table">
+                                <caption class="visually-hidden">Decided leave requests, most recent first</caption>
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Employee</th>
+                                        <th scope="col">Leave</th>
+                                        <th scope="col">Status</th>
+                                        <th scope="col">Decided by</th>
+                                        <th scope="col">Note</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var request in decided)
+                                    {
+                                        var employee = State.FindEmployee(request.EmployeeId);
+                                        <tr @key="@($"decided-{request.Id}")">
+                                            <th scope="row">@(employee?.Name ?? "A former employee")</th>
+                                            <td>
+                                                <span class="d-block">@LeaveText.RequestLabel(request, State.FindPolicy(request.PolicyId))</span>
+                                                <span class="small text-body-secondary">@HrDisplay.Days(request.Days)</span>
+                                            </td>
+                                            <td><span class="@($"badge text-bg-{HrDisplay.LeaveColor(request.Status)}")">@HrDisplay.LeaveLabel(request.Status)</span></td>
+                                            <td>
+                                                @if (request.Status == HrLeaveStatus.Cancelled)
+                                                {
+                                                    <span>@(employee?.Name ?? "The employee") (withdrawn)</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="d-block">@DeciderName(request.DecidedById, me)</span>
+                                                    @if (request.DecidedAt is { } at)
+                                                    {
+                                                        <span class="small text-body-secondary text-nowrap">@HrDisplay.Date(at)</span>
+                                                    }
+                                                }
+                                            </td>
+                                            <td class="hr-appr-note-cell">
+                                                @if (request.DecisionNote.Length > 0)
+                                                {
+                                                    <span class="hr-plain">@request.DecisionNote</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="text-body-secondary">No note</span>
+                                                }
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                }
+            </section>
+        }
+    </ShowcaseRoleGuard>
+</div>

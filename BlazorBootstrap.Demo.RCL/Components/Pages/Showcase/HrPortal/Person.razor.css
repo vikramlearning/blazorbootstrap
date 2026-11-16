@@ -1,0 +1,73 @@
+/* A person's profile: the header with large initials, the facts list, and the reporting line. */
+.hr-person-head {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+/* Specific enough to win over the frame's ::deep .hr-avatar size. */
+.hr-person-head > .hr-avatar.hr-person-avatar {
+    width: 4rem;
+    height: 4rem;
+    font-size: 1.25rem;
+}
+
+.hr-person-min {
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+.hr-person-note {
+    padding: .75rem 1rem;
+    border: 1px solid var(--hr-border);
+    border-radius: .625rem;
+    background: var(--hr-soft);
+    color: var(--hr-ink);
+}
+
+.hr-person-facts {
+    display: grid;
+    grid-template-columns: max-content minmax(0, 1fr);
+    gap: .5rem 1rem;
+}
+
+    .hr-person-facts dt {
+        font-weight: 600;
+        color: var(--bs-secondary-color);
+    }
+
+    .hr-person-facts dd {
+        margin: 0;
+        overflow-wrap: anywhere;
+    }
+
+@media (max-width: 420px) {
+    .hr-person-facts {
+        grid-template-columns: minmax(0, 1fr);
+        gap: .125rem;
+    }
+
+        .hr-person-facts dd {
+            margin-bottom: .5rem;
+        }
+}
+
+.hr-person-sub {
+    margin-bottom: .5rem;
+    font-size: .8125rem;
+    font-weight: 700;
+    letter-spacing: .02em;
+    text-transform: uppercase;
+    color: var(--bs-secondary-color);
+}
+
+.hr-person-row {
+    display: flex;
+    align-items: center;
+    gap: .625rem;
+}
+
+.hr-person-you {
+    background: var(--hr-soft);
+    color: var(--hr-ink);
+}
