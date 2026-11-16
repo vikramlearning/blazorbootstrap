@@ -1,0 +1,16 @@
+@page "/showcase/fintech/profile"
+@layout FintechLayout
+
+<PageTitle>Profile · @FintechSeedData.ProductName</PageTitle>
+
+@* The customer's profile and password. *@
+<div class="container-xl">
+    <div class="d-flex flex-wrap align-items-end justify-content-between gap-3 mb-4">
+        <div>
+            <h1 class="tm-title mb-1">Profile</h1>
+            <p class="text-body-secondary mb-0">Your name, email, and password for this demo. One-time codes go to your phone ending 21.</p>
+        </div>
+        <a class="btn btn-outline-primary" href="@($"{FintechLayout.Base}/alerts")"><Icon Name="IconName.Bell" class="me-2" aria-hidden="true" />Alert settings</a>
+    </div>
+    <ShowcaseAccountProfile />
+</div>

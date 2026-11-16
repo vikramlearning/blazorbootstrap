@@ -1,0 +1,158 @@
+@* A one-time-code step: the (demo) text message with the code, one labelled field for the code, verify, and resend. *@
+<section class="tm-panel tm-code-step" aria-labelledby="@($"{IdPrefix}-title")">
+    <h2 class="tm-section-title" id="@($"{IdPrefix}-title")" tabindex="-1" @ref="titleElement">@Title</h2>
+    <p class="small text-body-secondary">@Lead</p>
+
+    @if (Current is { } challenge)
+    {
+        @* Demo only: a real bank texts the code; showing it here keeps people from waiting for a message that never comes. *@
+        <div class="tm-code-message mb-3" role="note" aria-label="Demo text message">
+            <span class="tm-code-message-from"><Icon Name="IconName.ChatDots" class="me-1" aria-hidden="true" />Text message to your phone ending 21 (demo)</span>
+            <span id="@($"{IdPrefix}-message")">Your @FintechSeedData.ProductName code is <strong class="tm-code-value">@challenge.Code</strong>. It expires at @challenge.ExpiresAt.ToString("HH:mm", CultureInfo.InvariantCulture). Never share it.</span>
+        </div>
+
+        <form @onsubmit="SubmitAsync" @onsubmit:preventDefault novalidate>
+            <label class="form-label fw-semibold" for="@($"{IdPrefix}-code")">One-time code</label>
+            <input id="@($"{IdPrefix}-code")" class="form-control tm-code-input @(error is null ? null : "is-invalid")" type="text" inputmode="numeric" autocomplete="one-time-code"
+                   maxlength="7" @bind="code" @bind:event="oninput" aria-invalid="@(error is null ? "false" : "true")"
+                   aria-describedby="@($"{IdPrefix}-message {IdPrefix}-help {IdPrefix}-error")" @ref="codeInput" />
+            <div class="form-text" id="@($"{IdPrefix}-help")">6 digits. @challenge.AttemptsLeft @(challenge.AttemptsLeft == 1 ? "try" : "tries") left.</div>
+            <p class="text-danger-emphasis small fw-semibold mt-1 mb-0" id="@($"{IdPrefix}-error")" role="alert">@error</p>
+            <div class="d-flex flex-wrap align-items-center gap-2 mt-3">
+                <Button Type="ButtonType.Submit" Color="ButtonColor.Primary">@SubmitText</Button>
+                <Button Color="ButtonColor.Link" @onclick="SendAsync">Send a new code</Button>
+                @if (OnCancel.HasDelegate)
+                {
+                    <Button Color="ButtonColor.Secondary" Outline="true" @onclick="OnCancel">Cancel</Button>
+                }
+            </div>
+        </form>
+    }
+    else
+    {
+        <p class="small" role="status">@(expiredNote ?? "We'll text a 6-digit code to your phone ending 21.")</p>
+        <div class="d-flex flex-wrap gap-2">
+            <Button Color="ButtonColor.Primary" @onclick="SendAsync">Send code</Button>
+            @if (OnCancel.HasDelegate)
+            {
+                <Button Color="ButtonColor.Secondary" Outline="true" @onclick="OnCancel">Cancel</Button>
+            }
+        </div>
+    }
+</section>
+
+@code {
+    private ElementReference? codeInput;
+
+    private string code = string.Empty;
+
+    private string? error;
+
+    private string? expiredNote;
+
+    private bool focusCode;
+
+    private ElementReference? titleElement;
+
+    /// <summary>Gets or sets the ID prefix of the step's elements (unique per page).</summary>
+    [Parameter] public string IdPrefix { get; set; } = "tm-code";
+
+    /// <summary>Gets or sets the explanation under the title.</summary>
+    [Parameter] public string? Lead { get; set; }
+
+    /// <summary>Gets or sets what Cancel does; without it, there is no Cancel button.</summary>
+    [Parameter] public EventCallback OnCancel { get; set; }
+
+    /// <summary>Gets or sets what the code confirms.</summary>
+    [Parameter, EditorRequired] public FintechCodePurpose Purpose { get; set; }
+
+    /// <summary>Gets or sets the action the code confirms; it checks the code and returns the result.</summary>
+    [Parameter, EditorRequired] public Func<string, FintechResult> Submit { get; set; } = default!;
+
+    /// <summary>Gets or sets the submit button's text.</summary>
+    [Parameter] public string SubmitText { get; set; } = "Verify";
+
+    /// <summary>Gets or sets the title.</summary>
+    [Parameter] public string Title { get; set; } = "Enter your one-time code";
+
+    [Inject] private FintechState State { get; set; } = default!;
+
+    private FintechCodeChallenge? Current => State.Challenge(Purpose);
+
+    protected override void OnInitialized()
+    {
+        // The sign-in step sends its first code straight away, as banks do after the password.
+        if (Purpose == FintechCodePurpose.SignIn && Current is null)
+            State.RequestCode(Purpose);
+
+        focusCode = true;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (focusCode && codeInput is ElementReference input)
+        {
+            focusCode = false;
+
+            try
+            {
+                await input.FocusAsync();
+            }
+            catch (Exception ex) when (ex is JSException or JSDisconnectedException or InvalidOperationException)
+            {
+                // Nothing to focus.
+            }
+        }
+    }
+
+    private Task SendAsync()
+    {
+        error = null;
+        expiredNote = null;
+        code = string.Empty;
+
+        if (State.RequestCode(Purpose) != FintechResult.Ok)
+            error = "Sign in again to get a code.";
+
+        focusCode = true;
+
+        return Task.CompletedTask;
+    }
+
+    private Task SubmitAsync()
+    {
+        var digits = new string(code.Where(char.IsAsciiDigit).ToArray());
+
+        if (digits.Length != 6)
+        {
+            error = "Enter the 6 digits of the code.";
+            focusCode = true;
+
+            return Task.CompletedTask;
+        }
+
+        var result = Submit(digits);
+
+        if (result == FintechResult.WrongCode)
+        {
+            code = string.Empty;
+
+            if (Current is { } challenge)
+            {
+                error = $"That code isn't right. {challenge.AttemptsLeft} {(challenge.AttemptsLeft == 1 ? "try" : "tries")} left.";
+                focusCode = true;
+            }
+            else
+            {
+                error = null;
+                expiredNote = "That code can't be used any more: it expired or had too many wrong tries. Send a new code.";
+            }
+        }
+        else if (result != FintechResult.Ok)
+        {
+            error = null;
+        }
+
+        return Task.CompletedTask;
+    }
+}

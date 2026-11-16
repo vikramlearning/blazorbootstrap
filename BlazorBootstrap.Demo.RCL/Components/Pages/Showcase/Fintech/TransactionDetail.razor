@@ -1,0 +1,243 @@
+@page "/showcase/fintech/transactions/{Id:int}"
+@layout FintechLayout
+
+@if (Item is not { } item)
+{
+    <PageTitle>Transaction not found · @FintechSeedData.ProductName</PageTitle>
+
+    <div class="container-xl">
+        <section class="tm-not-found" aria-labelledby="tm-transaction-missing-title">
+            <span class="tm-icon fs-4" aria-hidden="true"><Icon Name="IconName.SignpostSplit" /></span>
+            <h1 class="tm-title fs-3 mt-3 mb-2" id="tm-transaction-missing-title">We couldn't find that transaction</h1>
+            <p class="text-body-secondary mb-4">There's no transaction @Id on your accounts. The link may be old; your accounts are safe.</p>
+            <div class="d-flex justify-content-center flex-wrap gap-2">
+                <Button Type="ButtonType.Link" To="@TransactionsPath" Color="ButtonColor.Primary">View transactions</Button>
+                <Button Type="ButtonType.Link" To="@FintechLayout.Base" Color="ButtonColor.Primary" Outline="true">Back to the overview</Button>
+            </div>
+        </section>
+    </div>
+}
+else
+{
+    var account = State.FindAccount(item.AccountId);
+    var category = State.FindCategory(item.CategoryId);
+    var isTransfer = item.CategoryId == "transfer";
+    var moneyIn = item.Amount >= 0;
+
+    <PageTitle>@item.Description · @FintechSeedData.ProductName</PageTitle>
+
+    <div class="container-xl">
+        <Breadcrumb Items="BreadcrumbItems" Class="mb-3" />
+
+        <div class="tm-page-head">
+            <div class="tm-transaction-head">
+                <span class="sc-eyebrow">@(moneyIn ? "Money in" : "Money out") · @(account?.Name ?? "Unknown account")</span>
+                <h1 class="tm-title text-break">@item.Description</h1>
+                <p class="tm-lead">@Stamp(item.Date)</p>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-lg-5">
+                <section class="tm-panel mb-4" aria-labelledby="tm-transaction-amount-title">
+                    <h2 class="visually-hidden" id="tm-transaction-amount-title">Amount and details</h2>
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <span class="tm-icon" aria-hidden="true"><Icon Name="@(moneyIn ? IconName.ArrowDownLeft : IconName.ArrowUpRight)" /></span>
+                        <div>
+                            <span class="tm-label d-block">@(moneyIn ? "Money in" : "Money out")</span>
+                            <span class="tm-amount tm-transaction-amount @FintechDisplay.AmountClass(item.Amount)">@FintechDisplay.SignedMoney(item.Amount)</span>
+                        </div>
+                    </div>
+                    <dl class="tm-summary tm-transaction-facts mb-0">
+                        <div>
+                            <dt>Status</dt>
+                            <dd>
+                                @if (item.IsPending)
+                                {
+                                    <Badge Color="BadgeColor.Secondary">Pending</Badge>
+                                    <span class="d-block small fw-normal text-body-secondary mt-1">Not final yet: it usually posts within 2 days.</span>
+                                }
+                                else
+                                {
+                                    <Badge Color="BadgeColor.Success">Posted</Badge>
+                                }
+                                @if (item.DisputeId is not null)
+                                {
+                                    <Badge Color="BadgeColor.Info" Class="ms-1">Disputed</Badge>
+                                }
+                            </dd>
+                        </div>
+                        <div>
+                            <dt>Date and time</dt>
+                            <dd>@Stamp(item.Date)</dd>
+                        </div>
+                        <div>
+                            <dt>Account</dt>
+                            <dd>
+                                @if (account is not null)
+                                {
+                                    <a href="@AccountPath(account.Id)">@account.Name</a>
+                                    <span class="fw-normal text-body-secondary"> · @account.MaskedNumber</span>
+                                }
+                                else
+                                {
+                                    <span>Unknown account</span>
+                                }
+                            </dd>
+                        </div>
+                        <div>
+                            <dt>Category</dt>
+                            <dd><Icon Name="@category.IconName" class="me-1 text-body-secondary" aria-hidden="true" />@category.Name</dd>
+                        </div>
+                        @if (item.TransferReference is { } reference)
+                        {
+                            <div>
+                                <dt>Transfer</dt>
+                                <dd><a href="@TransferPath(reference)">Transfer @reference</a></dd>
+                            </div>
+                        }
+                        <div>
+                            <dt>Transaction number</dt>
+                            <dd class="tm-mono">@item.Id</dd>
+                        </div>
+                    </dl>
+                </section>
+            </div>
+
+            <div class="col-lg-7">
+                <section class="tm-panel mb-4" aria-labelledby="tm-category-title">
+                    <h2 class="tm-section-title" id="tm-category-title">Category</h2>
+                    @if (isTransfer)
+                    {
+                        <p class="small mb-0">
+                            Transfers keep the Transfers category, so money moved between your accounts or to people you pay isn't counted as
+                            spending in your budgets.
+                        </p>
+                    }
+                    else
+                    {
+                        <p class="small text-body-secondary">Put it in the right category, and this month's budgets count it there.</p>
+                        <div class="d-flex flex-wrap align-items-end gap-2">
+                            <div class="tm-transaction-select">
+                                <label class="form-label small fw-semibold" for="tm-category-select">Category</label>
+                                <select id="tm-category-select" class="form-select" value="@selectedCategory" @onchange="OnCategorySelected" aria-describedby="tm-category-status">
+                                    @foreach (var option in State.Categories.Where(option => option.Id != "transfer"))
+                                    {
+                                        <option value="@option.Id">@option.Name</option>
+                                    }
+                                </select>
+                            </div>
+                            <Button Color="ButtonColor.Primary" Outline="true" @onclick="SaveCategory">Save category</Button>
+                        </div>
+                    }
+                    <p class="small fw-semibold mt-2 mb-0 tm-transaction-message @(categoryIsError ? "text-danger-emphasis" : null)" id="tm-category-status" role="status">@categoryMessage</p>
+                </section>
+
+                <section class="tm-panel mb-4" aria-labelledby="tm-note-title">
+                    <h2 class="tm-section-title" id="tm-note-title">Your note</h2>
+                    <form @onsubmit="SaveNote" novalidate>
+                        <label class="form-label small fw-semibold" for="tm-note">Note (only you can see it)</label>
+                        <textarea id="tm-note" class="form-control" rows="2" maxlength="@FintechState.MaxNoteLength" @bind="noteText" @bind:event="oninput"
+                                  @ref="noteInput" aria-describedby="tm-note-count tm-note-status"></textarea>
+                        <div class="form-text text-end" id="tm-note-count">@(noteText?.Length ?? 0) of @FintechState.MaxNoteLength characters</div>
+                        <div class="d-flex flex-wrap gap-2 mt-1">
+                            <Button Type="ButtonType.Submit" Color="ButtonColor.Primary" Outline="true">Save note</Button>
+                        </div>
+                    </form>
+                    <p class="small fw-semibold mt-2 mb-0 tm-transaction-message @(noteIsError ? "text-danger-emphasis" : null)" id="tm-note-status" role="status">@noteMessage</p>
+                </section>
+
+                <section class="tm-panel mb-4" aria-labelledby="tm-dispute-title">
+                    <h2 class="tm-section-title" id="tm-dispute-title" tabindex="-1" @ref="disputeHeading">Dispute</h2>
+
+                    @* Always rendered and focusable, so a dispute's outcome is announced and focus has somewhere to go. *@
+                    <p class="fw-semibold tm-transaction-message @(disputeIsError ? "text-danger-emphasis" : null)" role="status" tabindex="-1" @ref="disputeStatus">@disputeMessage</p>
+
+                    @if (item.DisputeId is { } disputeId)
+                    {
+                        var dispute = State.FindDispute(disputeId);
+                        <div class="tm-dispute-open">
+                            <p class="mb-1">
+                                <span class="fw-semibold">Dispute @disputeId</span>
+                                @if (dispute is not null)
+                                {
+                                    <Badge Color="@DisputeColor(dispute.Status)" Class="ms-1">@DisputeStatusText(dispute.Status)</Badge>
+                                }
+                            </p>
+                            <p class="small text-body-secondary mb-2">@(dispute is null ? "You've disputed this transaction." : DisputeStatusSentence(dispute))</p>
+                            <a class="fw-semibold" href="@DisputePath(disputeId)">View dispute @disputeId</a>
+                        </div>
+                    }
+                    else if (State.CannotDispute(item) is { } reason)
+                    {
+                        <p class="small mb-0"><Icon Name="IconName.InfoCircle" class="me-1" aria-hidden="true" />@reason</p>
+                    }
+                    else if (!disputeOpen)
+                    {
+                        <p class="small text-body-secondary">
+                            Something wrong with this payment? Tell us what happened and we'll take it up with @item.Description for you.
+                        </p>
+                        <Button @ref="startDisputeButton" Color="ButtonColor.Primary" Outline="true" @onclick="StartDispute">
+                            <Icon Name="IconName.Flag" class="me-1" aria-hidden="true" />Dispute this transaction
+                        </Button>
+                    }
+                    else
+                    {
+                        <form id="tm-dispute-form" @onsubmit="SendDispute" novalidate>
+                            <fieldset class="mb-3" aria-describedby="tm-dispute-reason-error">
+                                <legend class="form-label fw-semibold fs-6">What's wrong with this payment?</legend>
+                                @foreach (var option in disputeReasons)
+                                {
+                                    var optionId = $"tm-dispute-reason-{option.Reason}";
+                                    <div class="form-check mb-2">
+                                        @if (option.Reason == disputeReasons[0].Reason)
+                                        {
+                                            <input class="form-check-input" type="radio" name="tm-dispute-reason" id="@optionId" checked="@(disputeReason == option.Reason)"
+                                                   @onchange="() => SelectReason(option.Reason)" @ref="firstReasonInput" aria-describedby="@($"{optionId}-hint")" />
+                                        }
+                                        else
+                                        {
+                                            <input class="form-check-input" type="radio" name="tm-dispute-reason" id="@optionId" checked="@(disputeReason == option.Reason)"
+                                                   @onchange="() => SelectReason(option.Reason)" aria-describedby="@($"{optionId}-hint")" />
+                                        }
+                                        <label class="form-check-label" for="@optionId">@option.Label</label>
+                                        <div class="form-text mt-0" id="@($"{optionId}-hint")">@option.Hint</div>
+                                    </div>
+                                }
+                                <p class="text-danger-emphasis fw-semibold small mb-0" id="tm-dispute-reason-error">@reasonError</p>
+                            </fieldset>
+
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold" for="tm-dispute-details">What happened?</label>
+                                <textarea id="tm-dispute-details" class="form-control @(detailsError is null ? null : "is-invalid")" rows="4" maxlength="@FintechState.MaxDisputeDetails"
+                                          @bind="disputeDetails" @bind:event="oninput" @ref="detailsInput" aria-required="true"
+                                          aria-invalid="@(detailsError is null ? null : "true")" aria-describedby="tm-dispute-details-help tm-dispute-details-count tm-dispute-details-error"></textarea>
+                                <div class="form-text" id="tm-dispute-details-help">Dates, what you expected, and anything the merchant told you. At least @MinDisputeDetails characters.</div>
+                                <div class="form-text text-end" id="tm-dispute-details-count">@(disputeDetails?.Length ?? 0) of @FintechState.MaxDisputeDetails characters</div>
+                                <p class="text-danger-emphasis fw-semibold small mb-0" id="tm-dispute-details-error">@detailsError</p>
+                            </div>
+
+                            <div class="tm-dispute-next mb-3">
+                                <h3 class="h6 fw-bold mb-2">What happens next</h3>
+                                <ul class="small mb-0">
+                                    <li>We send your dispute of @FintechDisplay.Money(item.Amount) to @item.Description and look into it, usually within 10 business days.</li>
+                                    <li>You get an alert when it's updated, and you can follow it on the dispute's page.</li>
+                                    <li>If it's resolved in your favor, @FintechDisplay.Money(item.Amount) goes back to @(account?.Name ?? "your account").</li>
+                                    @if (account?.CardLast4 is not null && disputeReason == FintechDisputeReason.NotRecognized)
+                                    {
+                                        <li>If you think someone else used your card, <a href="@AccountPath(account.Id)">freeze it on the account page</a> as well.</li>
+                                    }
+                                </ul>
+                            </div>
+
+                            <div class="d-flex flex-wrap gap-2">
+                                <Button Type="ButtonType.Submit" Color="ButtonColor.Primary">Send dispute</Button>
+                                <Button Color="ButtonColor.Secondary" Outline="true" @onclick="CancelDispute">Cancel</Button>
+                            </div>
+                        </form>
+                    }
+                </section>
+            </div>
+        </div>
+    </div>
+}

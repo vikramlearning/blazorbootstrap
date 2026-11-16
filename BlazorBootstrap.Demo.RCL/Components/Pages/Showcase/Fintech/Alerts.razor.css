@@ -1,0 +1,87 @@
+/* The alerts page. Card, CardBody, Badge, and EditForm render their own elements, so styles inside them need ::deep. */
+
+/* Headings that take focus from code (after "Mark as read") show no outline for the mouse, a ring for the keyboard. */
+::deep .tm-alerts-focus:focus {
+    outline: none;
+}
+
+    ::deep .tm-alerts-focus:focus-visible {
+        outline: 3px solid var(--sc-primary);
+        outline-offset: 2px;
+        border-radius: .25rem;
+    }
+
+/* Empty until an action reports, so it takes no space then. */
+::deep .tm-alerts-status:empty {
+    margin: 0;
+}
+
+::deep .tm-alerts-empty {
+    padding-block: 2rem;
+    text-align: center;
+}
+
+/* An alert: unread ones carry the "Unread" badge, a bold title, and an accent bar, never the bar alone. */
+::deep .tm-notice {
+    display: flex;
+    gap: .75rem;
+    padding: .875rem .75rem;
+    border-top: 1px solid var(--tm-border);
+    border-inline-start: 3px solid transparent;
+}
+
+::deep .tm-notice-unread {
+    border-inline-start-color: var(--sc-primary);
+    background: rgba(var(--sc-primary-rgb), .05);
+}
+
+::deep .tm-notice-text {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    flex: 1 1 auto;
+}
+
+::deep .tm-notice-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: .25rem .5rem;
+    font-size: .8125rem;
+    color: var(--bs-secondary-color);
+}
+
+::deep .tm-notice-title {
+    margin: .25rem 0;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--tm-ink);
+    overflow-wrap: anywhere;
+}
+
+::deep .tm-notice-unread .tm-notice-title {
+    font-weight: 800;
+}
+
+::deep .tm-alerts-legend {
+    margin-bottom: .75rem;
+    font-size: .75rem;
+    font-weight: 700;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    color: var(--bs-secondary-color);
+}
+
+::deep .tm-alert-setting {
+    padding-block: .75rem;
+    border-top: 1px solid var(--tm-border);
+}
+
+    ::deep .tm-alert-setting:first-of-type {
+        border-top: 0;
+        padding-top: 0;
+    }
+
+::deep .tm-alert-setting .form-control {
+    max-width: 14rem;
+}

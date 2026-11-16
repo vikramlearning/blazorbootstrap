@@ -285,3 +285,53 @@
     margin: 4rem auto;
     text-align: center;
 }
+
+/* A plain panel and its heading, for forms and side sections. */
+.sc-fintech ::deep .tm-panel {
+    padding: 1.25rem;
+    border: 1px solid var(--tm-border);
+    border-radius: 1rem;
+    background: var(--tm-surface);
+}
+
+.sc-fintech ::deep .tm-section-title {
+    font-size: 1.125rem;
+    font-weight: 700;
+    margin-bottom: .75rem;
+}
+
+/* The one-time-code step: the demo text message and a single code field. */
+.sc-fintech ::deep .tm-code-message {
+    display: grid;
+    gap: .25rem;
+    padding: .75rem 1rem;
+    border-radius: .75rem;
+    background: rgba(var(--sc-primary-rgb), .08);
+    border: 1px dashed rgba(var(--sc-primary-rgb), .45);
+    font-size: .9375rem;
+}
+
+.sc-fintech ::deep .tm-code-message-from {
+    font-size: .75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    color: var(--bs-secondary-color);
+}
+
+.sc-fintech ::deep .tm-code-value {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    letter-spacing: .12em;
+}
+
+.sc-fintech ::deep .tm-code-input {
+    max-width: 12rem;
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 1.375rem;
+    letter-spacing: .3em;
+}
+
+/* A table that scrolls sideways can round to one pixel taller than its box; never show a vertical scrollbar for it. */
+.sc-fintech ::deep .table-responsive {
+    overflow-y: hidden;
+}

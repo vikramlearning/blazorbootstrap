@@ -1,3 +1,4 @@
+using System.Globalization;
 using BlazorBootstrap.Demo.RCL.Models.Showcase.Fintech;
 using BlazorBootstrap.Demo.RCL.Services.Showcase.Fintech;
 using BlazorExpress.ChartJS;
@@ -5,8 +6,11 @@ using BlazorExpress.ChartJS;
 namespace BlazorBootstrap.Demo.RCL.Components.Pages.Showcase.Fintech;
 
 /// <summary>
-/// Overview: net worth and account balances, the net worth trend and this month's spending charts, recent activity,
-/// and the budgets closest to their limit.
+/// Overview: a greeting with the site's date, the unread alerts, net worth and the account cards (each opens its account
+/// page, with the balance, what is available after scheduled and held transfers, the credit available on the card, and a
+/// "Card frozen" badge), recent activity linking to each transaction, the scheduled and held transfers coming up, the net
+/// worth trend and this month's spending charts (each with a visually hidden data table), and the budgets closest to their
+/// limit.
 /// </summary>
 public partial class Overview : ComponentBase, IDisposable
 {
@@ -69,6 +73,8 @@ public partial class Overview : ComponentBase, IDisposable
         FintechAccountKind.CreditCard => IconName.CreditCard,
         _ => IconName.Wallet2,
     };
+
+    private static string AccountPath(string accountId) => $"{FintechLayout.Base}/accounts/{Uri.EscapeDataString(accountId)}";
 
     private static ProgressColor BudgetColor(double percent) => percent switch
     {
@@ -153,6 +159,9 @@ public partial class Overview : ComponentBase, IDisposable
         };
     }
 
+    /// <summary>Formats a transfer date like "Dec 1".</summary>
+    private static string ShortDay(DateOnly date) => date.ToString("MMM d", CultureInfo.InvariantCulture);
+
     private DoughnutChartOptions SpendingOptions()
     {
         var options = new DoughnutChartOptions { Responsive = true, MaintainAspectRatio = false };
@@ -161,15 +170,32 @@ public partial class Overview : ComponentBase, IDisposable
         return options;
     }
 
+    private static string TransactionPath(int transactionId) => string.Create(CultureInfo.InvariantCulture, $"{FintechLayout.Base}/transactions/{transactionId}");
+
+    private static string TransferPath(string reference) => $"{FintechLayout.Base}/transfers/{Uri.EscapeDataString(reference)}";
+
     #endregion
 
     #endregion
 
     #region Properties, Indexers
 
+    private static string AlertsPath => $"{FintechLayout.Base}/alerts";
+
     private IEnumerable<FintechBudget> BudgetsToWatch => State.Budgets
         .OrderByDescending(budget => State.SpentThisMonth(budget.CategoryId) / budget.Limit)
         .Take(4);
+
+    /// <summary>Gets the scheduled and held transfers, held ones first, then by date.</summary>
+    private IReadOnlyList<FintechTransfer> ComingUp => State.MyTransfers()
+        .Where(transfer => transfer.Status is FintechTransferStatus.Scheduled or FintechTransferStatus.Held)
+        .OrderBy(transfer => transfer.Status == FintechTransferStatus.Held ? 0 : 1)
+        .ThenBy(transfer => transfer.Date)
+        .ToList();
+
+    /// <summary>Gets the signed-in customer's first name for the greeting.</summary>
+    private string FirstName =>
+        State.Identity.Current?.Name.Split(' ', StringSplitOptions.RemoveEmptyEntries).FirstOrDefault() ?? "there";
 
     private decimal MonthChange
     {
@@ -191,6 +217,10 @@ public partial class Overview : ComponentBase, IDisposable
         }
     }
 
+    /// <summary>Gets the net worth chart's values with their month labels, for the hidden data table.</summary>
+    private IEnumerable<(string Month, decimal Value)> NetWorthRows => FintechSeedData.NetWorthMonths()
+        .Zip(State.NetWorthHistory, (month, value) => (month, (decimal)value));
+
     private IReadOnlyList<(FintechCategory Category, decimal Spent)> Spending => State.Categories
         .Where(category => category.IsSpending)
         .Select(category => (category, State.SpentThisMonth(category.Id)))
@@ -203,6 +233,13 @@ public partial class Overview : ComponentBase, IDisposable
     [Inject] private FintechState State { get; set; } = default!;
 
     private decimal TotalSpent => Spending.Sum(entry => entry.Spent);
+
+    private string UnreadText => State.UnreadNoticeCount switch
+    {
+        0 => "No unread alerts",
+        1 => "1 unread alert",
+        var count => string.Create(CultureInfo.InvariantCulture, $"{count} unread alerts"),
+    };
 
     #endregion
 }

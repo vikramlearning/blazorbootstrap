@@ -1,0 +1,133 @@
+@page "/showcase/fintech/payees"
+@layout FintechLayout
+
+<PageTitle>Payees · @FintechSeedData.ProductName</PageTitle>
+
+<div class="container-xl">
+    <div class="tm-page-head">
+        <div>
+            <span class="sc-eyebrow">Move money</span>
+            <h1 class="tm-title">Payees</h1>
+            <p class="tm-lead">People and companies you send money to. Adding or changing one takes a name check and a one-time code.</p>
+        </div>
+        <a class="btn btn-primary" href="@($"{FintechLayout.Base}/payees/new")"><Icon Name="IconName.PersonPlus" class="me-2" aria-hidden="true" />Add payee</a>
+    </div>
+
+    @* Always rendered and focusable, so an action's outcome is announced and focus has somewhere to go. *@
+    <p class="tm-py-status" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
+
+    @{
+        var payees = State.Payees;
+    }
+
+    @if (payees.Count == 0)
+    {
+        <section class="tm-panel text-center py-5" aria-labelledby="tm-py-empty-title">
+            <span class="tm-icon fs-4" aria-hidden="true"><Icon Name="IconName.People" /></span>
+            <h2 class="h5 fw-bold mt-3" id="tm-py-empty-title">No payees yet</h2>
+            <p class="text-body-secondary">Add someone you pay, like a landlord or a friend. We check their name against the account before you send anything.</p>
+            <a class="btn btn-primary" href="@($"{FintechLayout.Base}/payees/new")">Add payee</a>
+        </section>
+    }
+    else
+    {
+        <p class="small text-body-secondary">@CountText(payees.Count) A payee added or changed in the last @FintechState.NewPayeeDays days is marked New: transfers of @FintechDisplay.Money(FintechState.HoldNewPayeeAmount) or more to it are held for a check.</p>
+
+        <ul class="tm-py-list list-unstyled mb-0">
+            @foreach (var payee in payees)
+            {
+                var headingId = $"tm-py-name-{payee.Id}";
+                var isNew = Transfer.IsNewPayee(State, payee);
+                <li class="tm-panel" @key="payee.Id">
+                    <div class="tm-py-item">
+                        <span class="tm-icon" aria-hidden="true"><Icon Name="IconName.Person" /></span>
+                        <div class="tm-py-text">
+                            <h2 class="tm-py-name" id="@headingId">
+                                @payee.Name
+                                @if (isNew)
+                                {
+                                    <Badge Color="BadgeColor.Warning" Class="rounded-pill ms-1 align-middle">New</Badge>
+                                }
+                            </h2>
+                            @if (payee.Nickname is { } nickname)
+                            {
+                                <span class="d-block small">Nickname: @nickname</span>
+                            }
+                            <span class="d-block small text-body-secondary">@payee.BankName · account <span class="tm-mono">@payee.MaskedAccount</span></span>
+                            <span class="d-block small">
+                                <Icon Name="@MatchIcon(payee.Match)" class="me-1" aria-hidden="true" />@MatchText(payee.Match) · Added @payee.AddedAt.ToString("MMM d, yyyy", CultureInfo.InvariantCulture)
+                            </span>
+                            @if (isNew)
+                            {
+                                <span class="d-block small text-body-secondary">New until @payee.AddedAt.AddDays(FintechState.NewPayeeDays).ToString("MMM d", CultureInfo.InvariantCulture): transfers of @FintechDisplay.Money(FintechState.HoldNewPayeeAmount) or more are held for a check.</span>
+                            }
+                        </div>
+                    </div>
+
+                    @if (renamingId == payee.Id)
+                    {
+                        <form class="tm-py-rename" @onsubmit="SaveNickname" @onsubmit:preventDefault novalidate>
+                            <label class="form-label small fw-semibold" for="tm-py-nickname">Nickname for @payee.Name</label>
+                            <div class="d-flex flex-wrap gap-2">
+                                <input id="tm-py-nickname" class="form-control form-control-sm tm-py-nickname @(renameError is null ? null : "is-invalid")" type="text" maxlength="30"
+                                       @bind="nicknameText" @bind:event="oninput" @ref="renameInput" aria-describedby="tm-py-nickname-help tm-py-nickname-error" />
+                                <Button Type="ButtonType.Submit" Color="ButtonColor.Primary" Size="ButtonSize.Small">Save nickname</Button>
+                                <Button Color="ButtonColor.Secondary" Outline="true" Size="ButtonSize.Small" @onclick="CancelRename">Cancel</Button>
+                            </div>
+                            <div class="form-text" id="tm-py-nickname-help">Up to 30 characters; leave it empty to remove it. Only you see it, and it doesn't need a code.</div>
+                            <p class="text-danger-emphasis small fw-semibold mt-1 mb-0" id="tm-py-nickname-error" role="alert">@renameError</p>
+                        </form>
+                    }
+
+                    <div class="tm-py-actions">
+                        <a class="btn btn-primary btn-sm" href="@($"{FintechLayout.Base}/transfer?to={Uri.EscapeDataString(payee.Id)}")" aria-label="@($"Pay {payee.Name}")">
+                            <Icon Name="IconName.Send" class="me-1" aria-hidden="true" />Pay
+                        </a>
+                        <a class="btn btn-outline-secondary btn-sm" href="@PayeeEdit.EditUrl(payee.Id)" aria-label="@($"Edit {payee.Name}'s details")">Edit</a>
+                        <button type="button" class="btn btn-outline-secondary btn-sm" @ref="renameButtons[payee.Id]" @onclick="() => StartRename(payee)"
+                                aria-label="@($"{(payee.Nickname is null ? "Add a nickname for" : "Rename the nickname of")} {payee.Name}")">
+                            @(payee.Nickname is null ? "Add nickname" : "Rename nickname")
+                        </button>
+                        <button type="button" class="btn btn-outline-danger btn-sm" @ref="deleteButtons[payee.Id]" @onclick="() => AskDeleteAsync(payee)"
+                                aria-label="@($"Delete {payee.Name}")">Delete</button>
+                    </div>
+                </li>
+            }
+        </ul>
+    }
+</div>
+
+@* Outside the list, so the dialog is never removed while it is open. *@
+<Modal @ref="deleteModal" IsVerticallyCentered="true" ShowCloseButton="false" aria-labelledby="tm-py-delete-title" OnHidden="OnDeleteHiddenAsync">
+    <HeaderTemplate>
+        <h2 class="modal-title h5" id="tm-py-delete-title">@(deleteBlocked ? $"{deleting?.Name} can't be deleted yet" : $"Delete {deleting?.Name}?")</h2>
+    </HeaderTemplate>
+    <BodyTemplate>
+        @if (deleting is { } payee)
+        {
+            @if (deleteBlocked)
+            {
+                <p class="mb-2">A scheduled transfer, or a transfer held for a check, goes to @payee.Name. Cancel it on the Transfers page, or wait until it's sent; then you can delete the payee.</p>
+                <p class="small text-body-secondary mb-0">The payee stays as it is.</p>
+            }
+            else
+            {
+                <p class="mb-2">@payee.Name (account @payee.MaskedAccount at @payee.BankName) is removed from your payees. Past transfers stay in your history.</p>
+                <p class="small text-body-secondary mb-0">To pay them again, you'll add them again with a name check and a one-time code.</p>
+            }
+        }
+        <p class="text-danger-emphasis fw-semibold small mt-2 mb-0" role="alert">@dialogError</p>
+    </BodyTemplate>
+    <FooterTemplate>
+        @if (deleteBlocked)
+        {
+            <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => deleteModal.HideAsync()">Close</Button>
+            <Button Color="ButtonColor.Primary" @onclick="GoToTransfersAsync">Go to transfers</Button>
+        }
+        else
+        {
+            <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => deleteModal.HideAsync()">Keep payee</Button>
+            <Button Color="ButtonColor.Danger" @onclick="ConfirmDeleteAsync" Disabled="deleteBusy">Delete payee</Button>
+        }
+    </FooterTemplate>
+</Modal>

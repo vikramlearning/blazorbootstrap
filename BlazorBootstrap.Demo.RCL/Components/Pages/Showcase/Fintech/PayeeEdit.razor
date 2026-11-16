@@ -1,0 +1,207 @@
+@page "/showcase/fintech/payees/new"
+@page "/showcase/fintech/payees/{Id}"
+@layout FintechLayout
+
+<PageTitle>@(IsNew ? "Add payee" : "Edit payee") · @FintechSeedData.ProductName</PageTitle>
+
+<div class="container-xl">
+    @if (!IsNew && existing is null)
+    {
+        <section class="tm-not-found" aria-labelledby="tm-pe-missing-title">
+            <span class="tm-icon fs-4 mb-3" aria-hidden="true"><Icon Name="IconName.PersonX" /></span>
+            <h1 class="tm-title fs-3 mt-3" id="tm-pe-missing-title">We couldn't find that payee</h1>
+            <p class="text-body-secondary">It isn't in your payees. It may have been deleted.</p>
+            <a class="btn btn-primary" href="@ListUrl">Your payees</a>
+        </section>
+    }
+    else if (IsNew && !saved && State.Payees.Count >= FintechState.MaxPayees)
+    {
+        <section class="tm-not-found" aria-labelledby="tm-pe-full-title">
+            <span class="tm-icon fs-4 mb-3" aria-hidden="true"><Icon Name="IconName.People" /></span>
+            <h1 class="tm-title fs-3 mt-3" id="tm-pe-full-title">Your payee list is full</h1>
+            <p class="text-body-secondary">You can save up to @FintechState.MaxPayees payees. Delete one you no longer pay to add another.</p>
+            <a class="btn btn-primary" href="@ListUrl">Your payees</a>
+        </section>
+    }
+    else
+    {
+        <div class="tm-page-head">
+            <div>
+                <span class="sc-eyebrow">Payees · Step @(step == EditStep.Details ? "1" : "2") of 2</span>
+                <h1 class="tm-title">@(IsNew ? "Add a payee" : $"Edit {existing!.Name}")</h1>
+                <p class="tm-lead">
+                    @(IsNew
+                        ? "Enter their details and we'll check the name against the account. Then confirm with a one-time code."
+                        : "Changing a payee takes a new name check and a one-time code. To change only the nickname, use the payees list; that needs no code.")
+                </p>
+            </div>
+            <a class="btn btn-outline-secondary" href="@ListUrl"><Icon Name="IconName.ArrowLeft" class="me-2" aria-hidden="true" />Payees</a>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-lg-7">
+                <div tabindex="-1" @ref="errorRegion">
+                    @if (saveError is not null)
+                    {
+                        <Alert Color="AlertColor.Danger" Class="mb-3" role="alert">
+                            <Icon Name="IconName.ExclamationTriangleFill" class="me-2" aria-hidden="true" />@saveError
+                        </Alert>
+                    }
+                </div>
+
+                @if (step == EditStep.Details)
+                {
+                    <form class="tm-panel" @onsubmit="CheckName" @onsubmit:preventDefault novalidate aria-labelledby="tm-pe-details-title">
+                        <h2 class="tm-section-title" id="tm-pe-details-title" tabindex="-1" @ref="detailsTitle">Their details</h2>
+
+                        <div class="tm-pe-demo mb-4" role="note" aria-label="Demo accounts">
+                            <p class="fw-semibold mb-1"><Icon Name="IconName.InfoCircle" class="me-2" aria-hidden="true" />Demo: use made-up numbers only, never real bank details.</p>
+                            <p class="small mb-1">The name check knows four fictitious accounts, with any 9-digit routing number (for example 123456789):</p>
+                            <ul class="small mb-1">
+                                <li><span class="tm-mono">40001001</span>: Morgan Ellis</li>
+                                <li><span class="tm-mono">40001002</span>: Brightwater Plumbing</li>
+                                <li><span class="tm-mono">40001003</span>: Sam Okafor</li>
+                                <li><span class="tm-mono">40001004</span>: Cedar Hill Nursery School</li>
+                            </ul>
+                            <p class="small mb-0">Any other account can't be checked.</p>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold" for="tm-pe-name">Account holder's name</label>
+                            <input id="tm-pe-name" class="form-control @Invalid("name")" type="text" maxlength="60" autocomplete="off"
+                                   @bind="draft.Name" @bind:after="DetailsChanged" @ref="nameInput" aria-describedby="tm-pe-name-help tm-pe-name-error" />
+                            <div class="form-text" id="tm-pe-name-help">Their full name, or the company's name, as their bank has it.</div>
+                            <p class="text-danger-emphasis small fw-semibold mt-1 mb-0" id="tm-pe-name-error">@Error("name")</p>
+                        </div>
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-sm-6">
+                                <label class="form-label fw-semibold" for="tm-pe-routing">Routing number</label>
+                                <input id="tm-pe-routing" class="form-control tm-mono @Invalid("routing")" type="text" inputmode="numeric" maxlength="11" autocomplete="off"
+                                       @bind="draft.RoutingNumber" @bind:after="DetailsChanged" @ref="routingInput" aria-describedby="tm-pe-routing-help tm-pe-routing-error" />
+                                <div class="form-text" id="tm-pe-routing-help">9 digits.</div>
+                                <p class="text-danger-emphasis small fw-semibold mt-1 mb-0" id="tm-pe-routing-error">@Error("routing")</p>
+                            </div>
+                            <div class="col-sm-6">
+                                <label class="form-label fw-semibold" for="tm-pe-account">Account number</label>
+                                <input id="tm-pe-account" class="form-control tm-mono @Invalid("account")" type="text" inputmode="numeric" maxlength="21" autocomplete="off"
+                                       @bind="draft.AccountNumber" @bind:after="DetailsChanged" @ref="accountInput" aria-describedby="tm-pe-account-help tm-pe-account-error" />
+                                <div class="form-text" id="tm-pe-account-help">
+                                    4 to 17 digits.@(existing is not null ? $" We only keep the last four ({existing.MaskedAccount}), so enter the full number again." : string.Empty)
+                                </div>
+                                <p class="text-danger-emphasis small fw-semibold mt-1 mb-0" id="tm-pe-account-error">@Error("account")</p>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold" for="tm-pe-nickname">Nickname <span class="fw-normal text-body-secondary">(optional)</span></label>
+                            <input id="tm-pe-nickname" class="form-control @Invalid("nickname")" type="text" maxlength="30" autocomplete="off"
+                                   @bind="draft.Nickname" @ref="nicknameInput" aria-describedby="tm-pe-nickname-help tm-pe-nickname-error" />
+                            <div class="form-text" id="tm-pe-nickname-help">Up to 30 characters, like "Landlord". Only you see it.</div>
+                            <p class="text-danger-emphasis small fw-semibold mt-1 mb-0" id="tm-pe-nickname-error">@Error("nickname")</p>
+                        </div>
+
+                        @* Always rendered, so the name-check result is announced when it appears. *@
+                        <div role="status" tabindex="-1" @ref="checkRegion" class="tm-pe-check">
+                            @if (check is { } result)
+                            {
+                                @switch (result.Match)
+                                {
+                                    case FintechPayeeMatch.Match:
+                                        <Alert Color="AlertColor.Success" Class="mb-3">
+                                            <h3 class="h6 fw-bold mb-1"><Icon Name="IconName.PatchCheckFill" class="me-2" aria-hidden="true" />Name confirmed</h3>
+                                            <p class="mb-0">The account at @result.BankName is in the name of @(result.ActualName ?? draft.Name).</p>
+                                        </Alert>
+                                        break;
+
+                                    case FintechPayeeMatch.CloseMatch:
+                                        <Alert Color="AlertColor.Warning" Class="mb-3">
+                                            <h3 class="h6 fw-bold mb-1"><Icon Name="IconName.PatchExclamationFill" class="me-2" aria-hidden="true" />Close match</h3>
+                                            <p class="mb-2">The account at @result.BankName is in the name of <strong>@result.ActualName</strong>, not @checkedName. Use the account holder's name so the payee is easy to recognize.</p>
+                                            <div class="d-flex flex-wrap gap-2">
+                                                <Button Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="UseActualName">Use @result.ActualName</Button>
+                                            </div>
+                                            <p class="small mb-0 mt-2">You can continue with the name you typed; the payee is then marked as a close match.</p>
+                                        </Alert>
+                                        break;
+
+                                    case FintechPayeeMatch.NoMatch:
+                                        <Alert Color="AlertColor.Danger" Class="mb-3">
+                                            <h3 class="h6 fw-bold mb-1"><Icon Name="IconName.ExclamationTriangleFill" class="me-2" aria-hidden="true" />Name didn't match</h3>
+                                            <p class="mb-2">The account at @result.BankName isn't in the name of @checkedName. If you continue, your money could go to someone else, and we may not be able to get it back.</p>
+                                            <p class="mb-2">Check the details with them first. Transfers of @FintechDisplay.Money(FintechState.HoldNewPayeeAmount) or more to this payee are held for a check.</p>
+                                            <div class="form-check mb-0">
+                                                <input class="form-check-input" type="checkbox" id="tm-pe-accept" @bind="acceptMismatch" />
+                                                <label class="form-check-label fw-semibold" for="tm-pe-accept">I understand and still want to add this payee</label>
+                                            </div>
+                                        </Alert>
+                                        break;
+
+                                    default:
+                                        <Alert Color="AlertColor.Info" Class="mb-3">
+                                            <h3 class="h6 fw-bold mb-1"><Icon Name="IconName.QuestionCircleFill" class="me-2" aria-hidden="true" />Name can't be checked</h3>
+                                            <p class="mb-2">@result.BankName can't confirm who holds this account, so we couldn't check the name. Make sure the details are right before you continue.</p>
+                                            <p class="small mb-0">In this demo, only the four example accounts can be checked. Transfers of @FintechDisplay.Money(FintechState.HoldNewPayeeAmount) or more to a payee whose name wasn't checked are held for a check.</p>
+                                        </Alert>
+                                        break;
+                                }
+                            }
+                        </div>
+
+                        <div class="d-flex flex-wrap gap-2">
+                            @if (check is null)
+                            {
+                                <Button Type="ButtonType.Submit" Color="ButtonColor.Primary">Check name</Button>
+                            }
+                            else
+                            {
+                                <Button Color="ButtonColor.Primary" @onclick="ContinueToCode" Disabled="@(check.Match == FintechPayeeMatch.NoMatch && !acceptMismatch)">Continue</Button>
+                                <Button Type="ButtonType.Submit" Color="ButtonColor.Secondary" Outline="true">Check again</Button>
+                            }
+                            <a class="btn btn-link" href="@ListUrl">Cancel</a>
+                        </div>
+                    </form>
+                }
+                else
+                {
+                    <section class="tm-panel mb-3" aria-labelledby="tm-pe-review-title">
+                        <h2 class="tm-section-title" id="tm-pe-review-title" tabindex="-1" @ref="reviewTitle">Check the payee</h2>
+                        <dl class="row tm-summary mb-3">
+                            <dt class="col-sm-4">Name</dt>
+                            <dd class="col-sm-8 text-break">@draft.Name.Trim()</dd>
+                            <dt class="col-sm-4">Nickname</dt>
+                            <dd class="col-sm-8 text-break">@(string.IsNullOrWhiteSpace(draft.Nickname) ? "None" : draft.Nickname.Trim())</dd>
+                            <dt class="col-sm-4">Bank</dt>
+                            <dd class="col-sm-8">@check?.BankName</dd>
+                            <dt class="col-sm-4">Account</dt>
+                            <dd class="col-sm-8 tm-mono">•••• @LastFour(draft.AccountNumber)</dd>
+                            <dt class="col-sm-4">Name check</dt>
+                            <dd class="col-sm-8">@(check is null ? "Not checked" : Payees.MatchText(check.Match))</dd>
+                        </dl>
+                        <Button Color="ButtonColor.Secondary" Outline="true" Size="ButtonSize.Small" @onclick="BackToDetails">Change details</Button>
+                    </section>
+
+                    <FintechCodeStep Purpose="FintechCodePurpose.Payee"
+                                     IdPrefix="tm-pe-code"
+                                     Title="Confirm with a one-time code"
+                                     Lead="@(IsNew ? "Adding a payee needs a code we text to your phone, so no one else can add one to your account." : "Changing a payee needs a code we text to your phone, so no one else can change where your money goes.")"
+                                     SubmitText="@(IsNew ? "Add payee" : "Save changes")"
+                                     Submit="SubmitCode"
+                                     OnCancel="BackToDetails" />
+                }
+            </div>
+
+            <div class="col-lg-5">
+                <section class="tm-panel" aria-labelledby="tm-pe-why-title">
+                    <h2 class="tm-section-title" id="tm-pe-why-title">Why we check</h2>
+                    <ul class="small d-grid gap-2 ps-3 mb-0">
+                        <li>We ask the receiving bank whether the name matches the account, so a mistyped number or a scammer's account is caught before you send money.</li>
+                        <li>The one-time code makes sure it's you adding the payee, even if someone else knows your password.</li>
+                        <li>For @FintechState.NewPayeeDays days after a payee is added or changed, transfers of @FintechDisplay.Money(FintechState.HoldNewPayeeAmount) or more to it are held for a check. Transfers of @FintechDisplay.Money(FintechState.HoldLargeAmount) or more to any payee always are.</li>
+                        <li>Banks never ask you to move money to a "safe account". If someone does, stop and call us.</li>
+                    </ul>
+                </section>
+            </div>
+        </div>
+    }
+</div>

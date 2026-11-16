@@ -1,0 +1,60 @@
+/* The status message stays in the page for screen readers and focus; it takes no room while empty. */
+.tm-account-status:empty {
+    margin: 0;
+}
+
+.tm-account-status:focus {
+    outline: none;
+}
+
+/* Balance, available, and set aside (or owed, limit, and credit available) side by side, stacked on a phone. */
+.tm-account-figures {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+    gap: 1rem;
+}
+
+    .tm-account-figures dt {
+        font-size: .8125rem;
+    }
+
+    .tm-account-figures dd {
+        margin: 0;
+    }
+
+/* A brand-neutral picture of the card: the site's gradient, the last four digits, and the holder. */
+.tm-card-face {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 1.25rem;
+    max-width: 22rem;
+    aspect-ratio: 1.586;
+    padding: 1.25rem;
+    border-radius: 1rem;
+    background: var(--tm-hero);
+    color: #ecfdf5;
+    box-shadow: 0 .5rem 1.5rem rgba(4, 47, 34, .18);
+}
+
+.tm-card-number {
+    font-family: var(--tm-font-mono);
+    font-size: 1.375rem;
+    letter-spacing: .12em;
+}
+
+/* Frozen: the picture greys out, and the word "Frozen" says it without relying on the color. */
+.tm-card-face-frozen {
+    background: linear-gradient(135deg, #4b5563 0%, #6b7280 100%);
+    color: #f9fafb;
+}
+
+.tm-card-frozen-label {
+    display: inline-flex;
+    align-items: center;
+    padding: .125rem .5rem;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, .2);
+    font-size: .8125rem;
+    font-weight: 700;
+}

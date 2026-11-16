@@ -1,0 +1,15 @@
+@page "/showcase/fintech/sign-in"
+@layout FintechLayout
+
+<PageTitle>Sign in · @FintechSeedData.ProductName</PageTitle>
+
+@* Step one is the password (or the one-click demo account); step two, the one-time code, follows on the page you return to. *@
+<div class="container-xl">
+    <ShowcaseSignIn SiteBase="@FintechLayout.Base" SiteName="@FintechSeedData.ProductName" ReturnUrl="@ReturnUrl" />
+    <p class="small text-body-secondary text-center mt-3 mb-0">After your password, we'll ask for a one-time code. In this demo the code is shown on screen.</p>
+</div>
+
+@code {
+    /// <summary>Gets or sets the page to return to after signing in; only a page inside the site is used.</summary>
+    [SupplyParameterFromQuery(Name = "returnUrl")] public string? ReturnUrl { get; set; }
+}

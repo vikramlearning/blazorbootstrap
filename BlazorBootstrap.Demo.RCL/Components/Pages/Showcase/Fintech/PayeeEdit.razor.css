@@ -1,0 +1,22 @@
+/* The payee editor. Alert, Button, and FintechCodeStep render their own elements, so those need ::deep. */
+
+/* The demo note: which made-up accounts the name check knows. */
+.tm-pe-demo {
+    padding: .75rem 1rem;
+    border-radius: .75rem;
+    background: rgba(var(--sc-primary-rgb), .08);
+    border: 1px dashed rgba(var(--sc-primary-rgb), .45);
+}
+
+    .tm-pe-demo ul {
+        padding-left: 1.25rem;
+    }
+
+/* Focused after a check so the result is read; the alert inside shows where it is. */
+.tm-pe-check:focus {
+    outline: none;
+}
+
+.tm-pe-check ::deep .alert h3 {
+    color: inherit;
+}
