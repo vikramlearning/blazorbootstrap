@@ -12,7 +12,8 @@ public partial class Overview : ComponentBase, IDisposable
 {
     #region Fields and Constants
 
-    private static readonly string[] latencyServices = { "api-gateway", "search", "payments" };
+    /// <summary>The services the latency chart prefers; admins can delete services, so only the ones that still exist are used.</summary>
+    private static readonly string[] preferredLatencyServices = { "api-gateway", "search", "payments" };
 
     private bool chartsReady;
 
@@ -77,14 +78,14 @@ public partial class Overview : ComponentBase, IDisposable
     private ChartData LatencyData()
     {
         var colors = MonitoringChartTheme.Series(State.IsDarkTheme);
-        var datasets = latencyServices
+        var datasets = LatencyServices
             .Select((id, index) => (IChartDataset)MonitoringChartTheme.Line(State.FindService(id)!.Name, State.History(id).Select(sample => (double?)Math.Round(sample.LatencyMs)), colors[index]))
             .ToList();
 
         return new ChartData { Labels = Labels(), Datasets = datasets };
     }
 
-    private List<string> Labels() => State.History("api-gateway").Select(sample => MonitoringDisplay.Time(sample.Time)).ToList();
+    private List<string> Labels() => State.History(TrafficService.Id).Select(sample => MonitoringDisplay.Time(sample.Time)).ToList();
 
     /// <summary>Incident changes rebuild the metrics, so the charts redraw too (also while live updates are paused).</summary>
     private void OnStateChanged() => InvokeAsync(async () =>
@@ -134,7 +135,7 @@ public partial class Overview : ComponentBase, IDisposable
         Labels = Labels(),
         Datasets = new List<IChartDataset>
         {
-            MonitoringChartTheme.Line("API gateway", State.History("api-gateway").Select(sample => (double?)Math.Round(sample.Requests)), MonitoringChartTheme.Series(State.IsDarkTheme)[0], fill: true),
+            MonitoringChartTheme.Line(TrafficService.Name, State.History(TrafficService.Id).Select(sample => (double?)Math.Round(sample.Requests)), MonitoringChartTheme.Series(State.IsDarkTheme)[0], fill: true),
         },
     };
 
@@ -158,16 +159,31 @@ public partial class Overview : ComponentBase, IDisposable
         }
     }
 
-    private MonitoringSample Gateway => State.Latest("api-gateway");
+    private MonitoringSample Gateway => State.Latest(TrafficService.Id);
+
+    /// <summary>The services in the latency chart: the preferred ones that still exist, else the first three.</summary>
+    private IReadOnlyList<string> LatencyServices
+    {
+        get
+        {
+            var ids = preferredLatencyServices.Where(id => State.FindService(id) is not null).ToList();
+
+            return ids.Count > 0 ? ids : State.Services.Take(3).Select(service => service.Id).ToList();
+        }
+    }
+
+    /// <summary>The service in the traffic chart and tile: the API gateway, else the first API, else the first service.</summary>
+    private MonitoringService TrafficService =>
+        State.FindService("api-gateway") ?? State.Services.FirstOrDefault(service => service.Kind == MonitoringServiceKind.Api) ?? State.Services[0];
 
     private string LatencyLabel => "Line chart of p95 latency over the last minute. Latest: "
-        + string.Join(", ", latencyServices.Select(id => $"{State.FindService(id)!.Name} {MonitoringDisplay.Latency(State.Latest(id).LatencyMs)}")) + ".";
+        + string.Join(", ", LatencyServices.Select(id => $"{State.FindService(id)!.Name} {MonitoringDisplay.Latency(State.Latest(id).LatencyMs)}")) + ".";
 
     private int OperationalCount => State.Services.Count(service => State.Status(service) == MonitoringStatus.Operational);
 
     [Inject] private MonitoringState State { get; set; } = default!;
 
-    private string TrafficLabel => $"Line chart of API gateway traffic over the last minute. Latest: {MonitoringDisplay.Number(Gateway.Requests)} requests per second.";
+    private string TrafficLabel => $"Line chart of {TrafficService.Name} traffic over the last minute. Latest: {MonitoringDisplay.Number(Gateway.Requests)} requests per second.";
 
     #endregion
 }

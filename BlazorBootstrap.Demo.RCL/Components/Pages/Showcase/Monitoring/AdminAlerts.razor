@@ -1,0 +1,584 @@
+@page "/showcase/monitoring/console/admin/alerts"
+@layout ConsoleLayout
+
+<PageTitle>Alert rules and drills · @MonitoringSeedData.ProductName</PageTitle>
+
+<div class="container-fluid px-lg-4">
+    <ShowcaseRoleGuard Roles="@MonitoringSeedData.AdminRole" SignInPath="@MonitoringLayout.SignInPath">
+        <div class="mw-page-head">
+            <div>
+                <h1 class="mw-title">Alert rules and drills</h1>
+                <p class="mw-lead">
+                    Rules check every sample (every @MonitoringSeedData.TickSeconds seconds) while live updates run. A drill injects a failure so you can
+                    watch a rule fire, open an incident, and, for rules that post on the status page, go public. Last sample
+                    <span class="mw-mono">@MonitoringDisplay.Time(State.CurrentTime)</span>.
+                </p>
+            </div>
+            <LivePauseButton />
+        </div>
+
+        @if (State.IsPaused)
+        {
+            <p class="mw-al-paused d-flex align-items-start gap-2">
+                <Icon Name="IconName.PauseCircle" class="mt-1" aria-hidden="true" />
+                <span>Live updates are paused, so rules aren't checked and drills can't fire. Times and values are as of the last sample. Resume live updates to let drills run their course.</span>
+            </p>
+        }
+
+        @* Always rendered and focusable, so outcomes and alerts that fire are announced once, and focus has somewhere to go when the pressed button is gone. *@
+        <div class="mw-al-status @(statusIsError ? "text-danger-emphasis" : null)" role="status" tabindex="-1" @ref="statusRegion">
+            @foreach (var note in statusNotes)
+            {
+                <p class="mb-1">
+                    <span class="fw-semibold">@note.Text</span>
+                    @if (note.IncidentId is { } noteIncident)
+                    {
+                        <a class="ms-1" href="@MonitoringDisplay.IncidentUrl(noteIncident)">Open incident #@noteIncident</a>
+                        @if (note.IsPublic)
+                        {
+                            <span aria-hidden="true"> · </span><a href="@MonitoringDisplay.PublicIncidentUrl(noteIncident)">See it on the status page</a>
+                        }
+                    }
+                </p>
+            }
+        </div>
+
+        @* Failure drills *@
+        <Card Class="mw-card mb-4">
+            <CardHeader>
+                <h2 class="mw-card-title" id="mw-al-drill-title">Failure drills</h2>
+                <span class="small text-body-secondary">Inject a failure and check that the right rule fires</span>
+            </CardHeader>
+            <CardBody>
+                <form @onsubmit="SubmitDrillAsync" novalidate aria-labelledby="mw-al-drill-title">
+                    <div class="row g-3">
+                        <div class="col-md-6 col-xl-4">
+                            <label class="form-label fw-semibold" for="mw-al-drill-service">Service</label>
+                            <select id="mw-al-drill-service" class="form-select @(drillServiceError is null ? null : "is-invalid")" @bind="drillServiceId" @ref="drillServiceInput"
+                                    aria-required="true" aria-invalid="@(drillServiceError is null ? null : "true")" aria-describedby="mw-al-drill-service-error">
+                                <option value="">Choose a service</option>
+                                @foreach (var service in State.Services)
+                                {
+                                    <option value="@service.Id">@service.Name@(State.ActiveFault(service.Id) is not null ? " (drill running)" : null)</option>
+                                }
+                            </select>
+                            <div class="invalid-feedback d-block" id="mw-al-drill-service-error">@drillServiceError</div>
+
+                            <label class="form-label fw-semibold mt-3" for="mw-al-drill-length">Length</label>
+                            <select id="mw-al-drill-length" class="form-select" @bind="drillSeconds" aria-describedby="mw-al-drill-length-help">
+                                @foreach (var seconds in DrillLengths)
+                                {
+                                    <option value="@seconds">@LengthLabel(seconds)</option>
+                                }
+                            </select>
+                            <div class="form-text" id="mw-al-drill-length-help">The metrics return to normal when it ends, or when you stop it.</div>
+                        </div>
+
+                        <fieldset class="col-md-6 col-xl-4">
+                            <legend class="form-label fw-semibold fs-6">Impact</legend>
+                            @foreach (var impact in Enum.GetValues<MonitoringImpact>())
+                            {
+                                var inputId = $"mw-al-drill-impact-{impact}";
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="radio" name="mw-al-drill-impact" id="@inputId" checked="@(drillImpact == impact)"
+                                           @onchange="() => drillImpact = impact" aria-describedby="@($"{inputId}-help")" />
+                                    <label class="form-check-label fw-semibold" for="@inputId">@MonitoringDisplay.ImpactLabel(impact)</label>
+                                    <div class="form-text mt-0" id="@($"{inputId}-help")">@Incidents.ImpactHelp(impact)</div>
+                                </div>
+                            }
+                        </fieldset>
+
+                        <div class="col-xl-4">
+                            <h3 class="mw-label mb-2" id="mw-al-preview-title">What this drill would do</h3>
+                            <section class="mw-al-preview" aria-labelledby="mw-al-preview-title">
+                                @if (State.FindService(drillServiceId) is not { } drillService)
+                                {
+                                    <p class="small text-body-secondary mb-0">Choose a service to see which rules watch it and whether they would post on the status page.</p>
+                                }
+                                else
+                                {
+                                    var watching = State.Rules.Where(rule => rule.ServiceId == drillService.Id).ToList();
+                                    var enabled = watching.Where(rule => rule.IsEnabled).ToList();
+                                    var blockedBy = State.ActiveIncident(drillService.Id);
+                                    var maintenance = State.ActiveMaintenance(drillService.Id);
+
+                                    @if (State.ActiveFault(drillService.Id) is { } runningFault)
+                                    {
+                                        <p class="mw-al-warning small">
+                                            <Icon Name="IconName.ExclamationTriangleFill" class="me-1" aria-hidden="true" /><strong>A drill is already running on @drillService.Name</strong>
+                                            (ends @MonitoringDisplay.Time(runningFault.End)). Stop it below before starting another.
+                                        </p>
+                                    }
+                                    @if (blockedBy is not null)
+                                    {
+                                        <p class="mw-al-warning small">
+                                            <Icon Name="IconName.ExclamationTriangleFill" class="me-1" aria-hidden="true" /><strong>No rule will fire:</strong>
+                                            @drillService.Name already has active incident <a href="@MonitoringDisplay.IncidentUrl(blockedBy.Id)">#@blockedBy.Id</a> (@blockedBy.Severity).
+                                            The drill still bends the metrics. Resolve the incident first to test the rules.
+                                        </p>
+                                    }
+                                    @if (maintenance is not null)
+                                    {
+                                        <p class="mw-al-warning small">
+                                            <Icon Name="IconName.Tools" class="me-1" aria-hidden="true" /><strong>Alerts are silenced:</strong>
+                                            "@maintenance.Title" is running on @drillService.Name until @MonitoringDisplay.Stamp(maintenance.End), so no rule fires.
+                                        </p>
+                                    }
+
+                                    @if (enabled.Count == 0)
+                                    {
+                                        <p class="small mb-0">
+                                            No enabled rule watches @drillService.Name@(watching.Count > 0 ? $" ({watching.Count} disabled)" : null), so this drill won't open an incident.
+                                            Add or turn on a rule below first.
+                                        </p>
+                                    }
+                                    else
+                                    {
+                                        <p class="small mb-1">@(enabled.Count == 1 ? "1 enabled rule watches" : $"{enabled.Count} enabled rules watch") @drillService.Name:</p>
+                                        <ul class="mw-al-outlook small">
+                                            @foreach (var rule in enabled)
+                                            {
+                                                <li @key="rule.Id">
+                                                    <span class="fw-semibold mw-al-text">@rule.Name</span>
+                                                    <span class="d-block text-body-secondary">@Condition(rule) · @(rule.AutoPublish ? "Posts on the status page" : "Engineers only")</span>
+                                                    <span class="d-block">@Outlook(rule, drillService, drillImpact, drillSeconds, blockedBy is not null || maintenance is not null)</span>
+                                                </li>
+                                            }
+                                        </ul>
+                                        @if (watching.Count > enabled.Count)
+                                        {
+                                            <p class="small text-body-secondary mb-0">@(watching.Count - enabled.Count) disabled @(watching.Count - enabled.Count == 1 ? "rule doesn't" : "rules don't") fire.</p>
+                                        }
+                                    }
+                                }
+                            </section>
+                        </div>
+                    </div>
+
+                    <div class="d-flex flex-wrap align-items-center gap-2 mt-3">
+                        <Button @ref="startDrillButton" Type="ButtonType.Submit" Color="ButtonColor.Warning">
+                            <Icon Name="IconName.LightningCharge" class="me-1" aria-hidden="true" />Start drill
+                        </Button>
+                        <span class="small text-body-secondary">Rules only fire while live updates run on a console page.</span>
+                    </div>
+                </form>
+
+                <h3 class="h6 fw-bold mt-4 mb-2" id="mw-al-running-title">Running drills</h3>
+                @if (RunningFaults.Count == 0)
+                {
+                    <p class="small text-body-secondary mb-0">No drills are running.</p>
+                }
+                else
+                {
+                    <div class="table-responsive mw-grid border rounded-3">
+                        <table class="table mw-al-drill-table mb-0">
+                            <caption class="visually-hidden">Running drills, newest first. Time left is as of the last sample.</caption>
+                            <thead>
+                                <tr>
+                                    <th scope="col">Service</th>
+                                    <th scope="col">Impact</th>
+                                    <th scope="col">Started</th>
+                                    <th scope="col">Time left</th>
+                                    <th scope="col">Incident opened</th>
+                                    <th scope="col"><span class="visually-hidden">Actions</span></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var fault in RunningFaults)
+                                {
+                                    <tr @key="fault.Id">
+                                        <th scope="row"><a href="@MonitoringDisplay.ServiceUrl(fault.ServiceId)">@ServiceName(fault.ServiceId)</a></th>
+                                        <td>@MonitoringDisplay.ImpactLabel(fault.Impact)</td>
+                                        <td class="text-nowrap"><span class="mw-mono">@MonitoringDisplay.Time(fault.Start)</span><span class="d-block small text-body-secondary">by @fault.CreatedBy</span></td>
+                                        <td class="text-nowrap">@Left(fault.End - State.Clock.Now)<span class="d-block small text-body-secondary">ends <span class="mw-mono">@MonitoringDisplay.Time(fault.End)</span></span></td>
+                                        <td>
+                                            @if (DrillIncident(fault) is { } opened)
+                                            {
+                                                <a href="@MonitoringDisplay.IncidentUrl(opened.Id)">#@opened.Id</a>@(opened.IsPublished ? " (on the status page)" : null)
+                                            }
+                                            else
+                                            {
+                                                <span class="text-body-secondary">None yet</span>
+                                            }
+                                        </td>
+                                        <td class="text-end">
+                                            <Button Color="ButtonColor.Secondary" Outline="true" Size="ButtonSize.Small" @onclick="() => StopDrill(fault)">
+                                                <Icon Name="IconName.StopFill" class="me-1" aria-hidden="true" />Stop<span class="visually-hidden"> the drill on @ServiceName(fault.ServiceId)</span>
+                                            </Button>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+
+                <h3 class="h6 fw-bold mt-4 mb-2">Recent drills</h3>
+                @if (PastFaults.Count == 0)
+                {
+                    <p class="small text-body-secondary mb-0">No drills have finished yet in this tab.</p>
+                }
+                else
+                {
+                    <div class="table-responsive mw-grid border rounded-3">
+                        <table class="table mw-al-drill-table mb-0">
+                            <caption class="visually-hidden">The last @PastFaults.Count finished drills, newest first.</caption>
+                            <thead>
+                                <tr>
+                                    <th scope="col">Service</th>
+                                    <th scope="col">Impact</th>
+                                    <th scope="col">Started</th>
+                                    <th scope="col">Ran for</th>
+                                    <th scope="col">Incident opened</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var fault in PastFaults)
+                                {
+                                    <tr @key="fault.Id">
+                                        <th scope="row"><a href="@MonitoringDisplay.ServiceUrl(fault.ServiceId)">@ServiceName(fault.ServiceId)</a></th>
+                                        <td>@MonitoringDisplay.ImpactLabel(fault.Impact)</td>
+                                        <td class="text-nowrap"><span class="mw-mono">@MonitoringDisplay.Stamp(fault.Start)</span><span class="d-block small text-body-secondary">by @fault.CreatedBy</span></td>
+                                        <td class="text-nowrap">@LengthLabel((int)Math.Round((fault.End - fault.Start).TotalSeconds))</td>
+                                        <td>
+                                            @if (DrillIncident(fault) is { } opened)
+                                            {
+                                                <a href="@MonitoringDisplay.IncidentUrl(opened.Id)">#@opened.Id</a>@(opened.IsPublished ? " (on the status page)" : null)
+                                            }
+                                            else
+                                            {
+                                                <span class="text-body-secondary">None</span>
+                                            }
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+            </CardBody>
+        </Card>
+
+        @* Alert rules *@
+        <div class="d-flex flex-wrap align-items-end justify-content-between gap-2 mb-2">
+            <div>
+                <h2 class="h5 fw-bold mb-1" id="mw-al-rules-title">Alert rules</h2>
+                <p class="small text-body-secondary mb-0">
+                    @State.Rules.Count of @MonitoringState.MaxRules rules. A rule opens an incident when its metric stays above the threshold for the whole duration,
+                    unless the service already has an active incident or is in maintenance.
+                </p>
+            </div>
+            <Button @ref="newRuleButton" Color="ButtonColor.Primary" @onclick="OpenNewRuleAsync">
+                <Icon Name="IconName.PlusCircle" class="me-1" aria-hidden="true" />New rule
+            </Button>
+        </div>
+
+        <div class="table-responsive mw-grid border rounded-3 mb-4">
+            <table class="table mw-al-rules-table mb-0">
+                <caption class="visually-hidden">Alert rules. Current values are as of the last sample.</caption>
+                <thead>
+                    <tr>
+                        <th scope="col">Rule</th>
+                        <th scope="col">Service</th>
+                        <th scope="col">Condition</th>
+                        <th scope="col">Severity</th>
+                        <th scope="col">State</th>
+                        <th scope="col">Posts on the status page</th>
+                        <th scope="col">Current value</th>
+                        <th scope="col">Last fired</th>
+                        <th scope="col"><span class="visually-hidden">Actions</span></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (State.Rules.Count == 0)
+                    {
+                        <tr><td colspan="9" class="text-body-secondary py-4 text-center">No alert rules. Nothing opens incidents on its own until you add one.</td></tr>
+                    }
+                    @foreach (var rule in State.Rules)
+                    {
+                        var service = State.FindService(rule.ServiceId);
+                        var current = service is null ? (double?)null : MonitoringDisplay.MetricOf(rule.Metric, State.Latest(service.Id));
+                        var breaching = current > rule.Threshold;
+                        var lastIncident = rule.LastIncidentId is { } lastId ? State.FindIncident(lastId) : null;
+                        <tr @key="rule.Id">
+                            <th scope="row" class="mw-al-name-cell mw-al-text">@rule.Name</th>
+                            <td>
+                                @if (service is not null)
+                                {
+                                    <a href="@MonitoringDisplay.ServiceUrl(service.Id)">@service.Name</a>
+                                }
+                                else
+                                {
+                                    @rule.ServiceId
+                                }
+                            </td>
+                            <td>@Condition(rule)</td>
+                            <td><Badge Color="@MonitoringDisplay.SeverityColor(rule.Severity)">@rule.Severity</Badge></td>
+                            <td>
+                                @if (rule.IsEnabled)
+                                {
+                                    <span class="d-inline-flex align-items-center gap-1"><Icon Name="IconName.CheckCircleFill" class="text-success" aria-hidden="true" />Enabled</span>
+                                    @if (service is not null && State.ActiveIncident(service.Id) is { } active)
+                                    {
+                                        <span class="d-block small text-body-secondary">Waiting: #@active.Id is active</span>
+                                    }
+                                    else if (service is not null && State.ActiveMaintenance(service.Id) is not null)
+                                    {
+                                        <span class="d-block small text-body-secondary">Silenced by maintenance</span>
+                                    }
+                                }
+                                else
+                                {
+                                    <span class="d-inline-flex align-items-center gap-1 text-body-secondary"><Icon Name="IconName.PauseCircle" aria-hidden="true" />Disabled</span>
+                                }
+                            </td>
+                            <td>@(rule.AutoPublish ? "Yes" : "No")</td>
+                            <td class="text-nowrap">
+                                @if (current is { } value)
+                                {
+                                    <span class="mw-mono">@MonitoringDisplay.MetricValue(rule.Metric, value)</span>
+                                    @if (breaching)
+                                    {
+                                        <span class="d-block small fw-semibold text-danger-emphasis"><Icon Name="IconName.ExclamationTriangleFill" class="me-1" aria-hidden="true" />Breaching</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="d-block small text-body-secondary">Below the threshold</span>
+                                    }
+                                }
+                                else
+                                {
+                                    <span class="text-body-secondary">No data</span>
+                                }
+                            </td>
+                            <td class="text-nowrap">
+                                @if (rule.LastFiredAt is { } firedAt)
+                                {
+                                    <span class="mw-mono">@MonitoringDisplay.Stamp(firedAt)</span>
+                                    @if (rule.LastIncidentId is { } firedId)
+                                    {
+                                        <span class="d-block small">
+                                            @if (lastIncident is not null)
+                                            {
+                                                <a href="@MonitoringDisplay.IncidentUrl(firedId)">Incident #@firedId</a>
+                                            }
+                                            else
+                                            {
+                                                @($"Incident #{firedId} (no longer kept)")
+                                            }
+                                        </span>
+                                    }
+                                }
+                                else
+                                {
+                                    <span class="text-body-secondary">Never</span>
+                                }
+                            </td>
+                            <td>
+                                <div class="d-flex flex-nowrap gap-1 justify-content-end">
+                                    <Button @ref="editButtons[rule.Id]" Color="ButtonColor.Secondary" Outline="true" Size="ButtonSize.Small" @onclick="() => OpenEditRuleAsync(rule)">
+                                        Edit<span class="visually-hidden"> @rule.Name</span>
+                                    </Button>
+                                    <Button Color="ButtonColor.Secondary" Outline="true" Size="ButtonSize.Small" @onclick="() => ToggleRule(rule)">
+                                        @(rule.IsEnabled ? "Disable" : "Enable")<span class="visually-hidden"> @rule.Name</span>
+                                    </Button>
+                                    <Button @ref="deleteButtons[rule.Id]" Color="ButtonColor.Danger" Outline="true" Size="ButtonSize.Small" @onclick="() => OpenDeleteRuleAsync(rule)">
+                                        Delete<span class="visually-hidden"> @rule.Name</span>
+                                    </Button>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        @* The rule form, for a new rule or an edit. Opened from code, so focus is returned by hand; the heading names it and Cancel closes it. *@
+        <Modal @ref="ruleModal" Size="ModalSize.Large" IsScrollable="true" ShowCloseButton="false" aria-labelledby="mw-al-rule-title"
+               OnShown="OnRuleShown" OnHidden="OnRuleHidden">
+            <HeaderTemplate>
+                <h2 class="modal-title h5" id="mw-al-rule-title">@(editingRuleId == 0 ? "New alert rule" : "Edit alert rule")</h2>
+            </HeaderTemplate>
+            <BodyTemplate>
+                <form id="mw-al-rule-form" @onsubmit="SubmitRuleAsync" novalidate>
+                    @if (ruleFormError is not null)
+                    {
+                        <p class="text-danger-emphasis fw-semibold" id="mw-al-rule-form-error">@ruleFormError</p>
+                    }
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold" for="mw-al-rule-name">Name</label>
+                        <input id="mw-al-rule-name" class="form-control @(ruleNameError is null ? null : "is-invalid")" maxlength="@MonitoringState.MaxRuleNameLength"
+                               @bind="ruleName" @bind:event="oninput" @ref="ruleNameInput" aria-required="true" aria-invalid="@(ruleNameError is null ? null : "true")"
+                               aria-describedby="mw-al-rule-name-help mw-al-rule-name-error" />
+                        <div class="form-text d-flex flex-wrap justify-content-between gap-2" id="mw-al-rule-name-help">
+                            <span>Also the title of the incident it opens, like "Payments error rate above 2%".</span>
+                            <span class="text-nowrap">@ruleName.Length of @MonitoringState.MaxRuleNameLength characters</span>
+                        </div>
+                        <div class="invalid-feedback d-block" id="mw-al-rule-name-error">@ruleNameError</div>
+                    </div>
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold" for="mw-al-rule-service">Service</label>
+                            <select id="mw-al-rule-service" class="form-select @(ruleServiceError is null ? null : "is-invalid")" @bind="ruleServiceId" @ref="ruleServiceInput"
+                                    aria-required="true" aria-invalid="@(ruleServiceError is null ? null : "true")" aria-describedby="mw-al-rule-service-error">
+                                <option value="">Choose a service</option>
+                                @foreach (var service in State.Services)
+                                {
+                                    <option value="@service.Id">@service.Name</option>
+                                }
+                            </select>
+                            <div class="invalid-feedback d-block" id="mw-al-rule-service-error">@ruleServiceError</div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold" for="mw-al-rule-metric">Metric</label>
+                            <select id="mw-al-rule-metric" class="form-select @(ruleMetricError is null ? null : "is-invalid")" @bind="ruleMetric" @bind:after="OnRuleMetricChanged" @ref="ruleMetricInput"
+                                    aria-invalid="@(ruleMetricError is null ? null : "true")" aria-describedby="mw-al-rule-metric-help mw-al-rule-metric-error">
+                                @foreach (var metric in Enum.GetValues<MonitoringAlertMetric>())
+                                {
+                                    <option value="@metric">@MonitoringDisplay.MetricLabel(metric)</option>
+                                }
+                            </select>
+                            <div class="form-text" id="mw-al-rule-metric-help">@MetricHelp(ruleMetric)</div>
+                            <div class="invalid-feedback d-block" id="mw-al-rule-metric-error">@ruleMetricError</div>
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            @{ var (low, high) = MonitoringState.ThresholdRange(ruleMetric); }
+                            <label class="form-label fw-semibold" for="mw-al-rule-threshold">Threshold</label>
+                            <div class="input-group has-validation">
+                                <input id="mw-al-rule-threshold" type="number" class="form-control @(ruleThresholdError is null ? null : "is-invalid")" step="any"
+                                       min="@low.ToString(CultureInfo.InvariantCulture)" max="@high.ToString(CultureInfo.InvariantCulture)"
+                                       @bind="ruleThreshold" @ref="ruleThresholdInput" aria-required="true" aria-invalid="@(ruleThresholdError is null ? null : "true")"
+                                       aria-describedby="mw-al-rule-threshold-help mw-al-rule-threshold-error" />
+                                <span class="input-group-text">@UnitSymbol(ruleMetric)</span>
+                            </div>
+                            <div class="form-text" id="mw-al-rule-threshold-help">
+                                Fires when the metric is above this. From @low.ToString(CultureInfo.InvariantCulture) to @MonitoringDisplay.Number(high) @UnitWords(ruleMetric).
+                                @if (State.FindService(ruleServiceId) is { } formService)
+                                {
+                                    @($" {formService.Name} is at {MonitoringDisplay.MetricValue(ruleMetric, MonitoringDisplay.MetricOf(ruleMetric, State.Latest(formService.Id)))} now.")
+                                }
+                            </div>
+                            <div class="invalid-feedback d-block" id="mw-al-rule-threshold-error">@ruleThresholdError</div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold" for="mw-al-rule-duration">For at least</label>
+                            <select id="mw-al-rule-duration" class="form-select @(ruleDurationError is null ? null : "is-invalid")" @bind="ruleForSeconds" @ref="ruleDurationInput"
+                                    aria-invalid="@(ruleDurationError is null ? null : "true")" aria-describedby="mw-al-rule-duration-help mw-al-rule-duration-error">
+                                @foreach (var seconds in RuleDurations)
+                                {
+                                    <option value="@seconds">@seconds seconds</option>
+                                }
+                            </select>
+                            <div class="form-text" id="mw-al-rule-duration-help">Every sample in this window must be above the threshold. Shorter fires sooner but also on brief spikes.</div>
+                            <div class="invalid-feedback d-block" id="mw-al-rule-duration-error">@ruleDurationError</div>
+                        </div>
+                    </div>
+
+                    <fieldset class="mb-3">
+                        <legend class="form-label fw-semibold fs-6">Severity of the incident it opens</legend>
+                        <div class="mw-al-severities">
+                            @foreach (var severity in Enum.GetValues<MonitoringSeverity>())
+                            {
+                                var inputId = $"mw-al-rule-severity-{severity}";
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="mw-al-rule-severity" id="@inputId" checked="@(ruleSeverity == severity)"
+                                           @onchange="() => ruleSeverity = severity" aria-describedby="@($"{inputId}-help")" />
+                                    <label class="form-check-label fw-semibold" for="@inputId">@severity</label>
+                                    <div class="form-text mt-0" id="@($"{inputId}-help")">@Incidents.SeverityHelp(severity)</div>
+                                </div>
+                            }
+                        </div>
+                    </fieldset>
+
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" id="mw-al-rule-publish" @bind="ruleAutoPublish" aria-describedby="mw-al-rule-publish-help" />
+                        <label class="form-check-label fw-semibold" for="mw-al-rule-publish">Post on the status page automatically</label>
+                        <div class="form-text mt-0" id="mw-al-rule-publish-help">
+                            When the rule fires, the message below is posted on the public status page as "Investigating" at once, without an engineer
+                            checking first, and emailed to @SubscribersText(ruleServiceId).
+                        </div>
+                    </div>
+
+                    @if (ruleEnabled && WouldFireOnSave)
+                    {
+                        @* Saving a rule whose metric is already past the threshold isn't a drill: it fires on the next samples. *@
+                        <p class="small fw-semibold text-danger-emphasis mb-3" id="mw-al-rule-breach-warning">
+                            @(State.FindService(ruleServiceId)?.Name) is past this threshold right now, so saving opens an incident within seconds@(ruleAutoPublish ? $" and posts the message on the public status page, emailed to {SubscribersText(ruleServiceId)}" : null).
+                        </p>
+                    }
+
+                    @if (ruleAutoPublish)
+                    {
+                        <div class="mb-3 ms-md-4">
+                            <label class="form-label fw-semibold" for="mw-al-rule-message">Status page message</label>
+                            <textarea id="mw-al-rule-message" class="form-control @(ruleMessageError is null ? null : "is-invalid")" rows="3" maxlength="@MonitoringState.MaxUpdateLength"
+                                      @bind="rulePublicMessage" @bind:event="oninput" @ref="ruleMessageInput" aria-required="true" aria-invalid="@(ruleMessageError is null ? null : "true")"
+                                      aria-describedby="mw-al-rule-message-help mw-al-rule-message-error"></textarea>
+                            <div class="form-text d-flex flex-wrap justify-content-between gap-2" id="mw-al-rule-message-help">
+                                <span>Customers read this. Plain words about what they notice, no internal details.</span>
+                                <span class="text-nowrap">@rulePublicMessage.Length of @MonitoringDisplay.Number(MonitoringState.MaxUpdateLength) characters</span>
+                            </div>
+                            <div class="invalid-feedback d-block" id="mw-al-rule-message-error">@ruleMessageError</div>
+                        </div>
+                    }
+
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="mw-al-rule-enabled" @bind="ruleEnabled" aria-describedby="mw-al-rule-enabled-help" />
+                        <label class="form-check-label fw-semibold" for="mw-al-rule-enabled">Enabled</label>
+                        <div class="form-text mt-0" id="mw-al-rule-enabled-help">A disabled rule is kept but never fires.</div>
+                    </div>
+                </form>
+            </BodyTemplate>
+            <FooterTemplate>
+                <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => ruleModal.HideAsync()">Cancel</Button>
+                <Button Type="ButtonType.Submit" Color="ButtonColor.Primary" form="mw-al-rule-form">@(editingRuleId == 0 ? "Create rule" : "Save changes")</Button>
+            </FooterTemplate>
+        </Modal>
+
+        @* Confirmations: deleting a rule, and starting a drill that could go public. *@
+        <Modal @ref="confirmModal" IsVerticallyCentered="true" IsScrollable="true" ShowCloseButton="false" aria-labelledby="mw-al-confirm-title"
+               OnHidden="OnConfirmHidden">
+            <HeaderTemplate>
+                <h2 class="modal-title h5" id="mw-al-confirm-title">@ConfirmTitle</h2>
+            </HeaderTemplate>
+            <BodyTemplate>
+                @if (confirm == ConfirmKind.DeleteRule && State.Rules.FirstOrDefault(rule => rule.Id == confirmRuleId) is { } doomed)
+                {
+                    <p>
+                        "<span class="mw-al-text">@doomed.Name</span>" stops watching @ServiceName(doomed.ServiceId) and can't be brought back.
+                    </p>
+                    <p class="small text-body-secondary mb-0">
+                        Incidents it opened stay, with their timelines@(doomed.LastIncidentId is { } doomedIncident ? $" (it last opened #{doomedIncident})" : null).
+                        To stop it for a while instead, disable it.
+                    </p>
+                }
+                else if (confirm == ConfirmKind.StartDrill && pendingDrill is { } drill)
+                {
+                    <p>
+                        A drill on @ServiceName(drill.ServiceId) for @LengthLabel(drill.Seconds): @MonitoringDisplay.ImpactLabel(drill.Impact).ToLowerInvariant().
+                    </p>
+                    @foreach (var rule in PublishingRules(drill.ServiceId))
+                    {
+                        <p class="fw-semibold">
+                            If "<span class="mw-al-text">@rule.Name</span>" fires, it opens a @rule.Severity.ToString().ToLowerInvariant() incident and posts this on the public status page,
+                            emailed to @SubscribersText(drill.ServiceId):
+                        </p>
+                        <blockquote class="mw-al-quote mw-al-text">@rule.PublicMessage</blockquote>
+                    }
+                    <p class="small text-body-secondary mb-0">
+                        In this demo it stays in this tab, but treat it as real: customers would see it. Resolve the incident afterwards with a public "Resolved" update.
+                    </p>
+                }
+            </BodyTemplate>
+            <FooterTemplate>
+                <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => confirmModal.HideAsync()">Cancel</Button>
+                <Button Color="@(confirm == ConfirmKind.DeleteRule ? ButtonColor.Danger : ButtonColor.Warning)" @onclick="ConfirmAsync">@(confirm == ConfirmKind.DeleteRule ? "Delete rule" : "Start drill")</Button>
+            </FooterTemplate>
+        </Modal>
+    </ShowcaseRoleGuard>
+</div>

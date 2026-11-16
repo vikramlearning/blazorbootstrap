@@ -6,6 +6,7 @@
 @{
     var overall = State.OverallPublicStatus;
     var active = State.PublicActiveIncidents;
+    var maintenance = State.PublicMaintenance;
     var now = State.Clock.Now;
 }
 
@@ -13,7 +14,7 @@
     <div class="mw-page-head">
         <div>
             <h1 class="mw-title">@MonitoringSeedData.StatusPageName</h1>
-            <p class="mw-lead">The current status of @MonitoringSeedData.ProductName's services, the incidents we're working on, and 90 days of uptime.</p>
+            <p class="mw-lead">The current status of @MonitoringSeedData.ProductName's services, the incidents we're working on, scheduled maintenance, and 90 days of uptime.</p>
         </div>
         <Button Type="ButtonType.Link" To="@SubscribePath" Color="ButtonColor.Primary">
             <Icon Name="IconName.Envelope" class="me-2" aria-hidden="true" />Subscribe to updates
@@ -26,7 +27,7 @@
         <div class="flex-grow-1">
             <h2 class="mw-overall-title" id="mw-overall-title">@MonitoringDisplay.OverallStatusText(overall)</h2>
             <p class="mb-0 small">
-                @OngoingText(active.Count) · Last updated <time datetime="@now.ToString("yyyy-MM-ddTHH:mm", CultureInfo.InvariantCulture)">@MonitoringDisplay.Stamp(now)</time>
+                @OngoingText(active.Count)@MaintenanceSummary(maintenance, now) · Last updated <time datetime="@now.ToString("yyyy-MM-ddTHH:mm", CultureInfo.InvariantCulture)">@MonitoringDisplay.Stamp(now)</time>
             </p>
         </div>
     </section>
@@ -70,6 +71,44 @@
         </section>
     }
 
+    @if (maintenance.Count > 0)
+    {
+        @* In progress first, then upcoming (the state's order is soonest start first, and every running window started earlier). Only the
+           components on the status page are named, and never who scheduled it. *@
+        <section class="mb-4" aria-labelledby="mw-maintenance-title">
+            <h2 class="mw-section-title" id="mw-maintenance-title">Scheduled maintenance</h2>
+            <ul class="mw-maint-list">
+                @foreach (var window in maintenance)
+                {
+                    var running = window.StatusAt(now) == MonitoringMaintenanceStatus.InProgress;
+                    <li class="mw-maint @(running ? "mw-maint-running" : null)" @key="window.Id">
+                        <div class="d-flex flex-wrap align-items-start justify-content-between gap-2 mb-1">
+                            <h3 class="mw-incident-title mb-0">@window.Title</h3>
+                            @if (running)
+                            {
+                                <span class="mw-public-status mw-public-maintenance">
+                                    <Icon Name="IconName.Tools" class="me-1" aria-hidden="true" />In progress, until @UntilText(window, now)
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="mw-public-status mw-maint-upcoming">
+                                    <Icon Name="IconName.CalendarEvent" class="me-1" aria-hidden="true" />Upcoming
+                                </span>
+                            }
+                        </div>
+                        <p class="small mb-1">
+                            <time datetime="@window.Start.ToString("yyyy-MM-ddTHH:mm", CultureInfo.InvariantCulture)">@window.Start.ToString("ddd, MMM d", CultureInfo.InvariantCulture)</time>,
+                            @MaintenanceRange(window)
+                        </p>
+                        <p class="small text-body-secondary mb-2">Affects @PublicServiceNames(window)</p>
+                        <p class="mw-plain small mb-0">@window.Description</p>
+                    </li>
+                }
+            </ul>
+        </section>
+    }
+
     <section class="mb-4" aria-labelledby="mw-components-title">
         <div class="d-flex flex-wrap align-items-end justify-content-between gap-2 mb-3">
             <div>
@@ -87,11 +126,12 @@
         <Card Class="mw-card">
             <CardBody Class="py-2">
                 <ul class="list-unstyled mb-0">
-                    @foreach (var service in State.Services)
+                    @foreach (var service in State.StatusPageServices)
                     {
                         var status = State.PublicStatus(service.Id);
                         var days = State.UptimeDays(service.Id, UptimeDayCount);
                         var incidentDays = days.Where(day => day.IncidentIds.Count > 0).Reverse().ToList();
+                        var maintenanceDays = days.Count(day => day.Status == MonitoringPublicStatus.Maintenance);
                         var summaryId = $"mw-uptime-{service.Id}-summary";
                         <li class="mw-component" @key="service.Id">
                             <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-2">
@@ -112,7 +152,7 @@
                             </div>
                             <div class="mw-uptime-scale" aria-hidden="true"><span>90 days ago</span><span>Today</span></div>
                             <p class="small mb-1" id="@summaryId">
-                                <span class="mw-mono fw-semibold">@UptimeText(State.UptimePercent(service.Id))</span> uptime over 90 days · @IncidentDaysText(incidentDays.Count)
+                                <span class="mw-mono fw-semibold">@UptimeText(State.UptimePercent(service.Id))</span> uptime over 90 days · @IncidentDaysText(incidentDays.Count)@MaintenanceDaysText(maintenanceDays)
                             </p>
 
                             @if (incidentDays.Count > 0)
@@ -159,7 +199,7 @@
         <span class="mw-icon fs-5" aria-hidden="true"><Icon Name="IconName.Envelope" /></span>
         <div class="flex-grow-1">
             <h2 class="mw-section-title mb-1" id="mw-subscribe-cta-title">Get updates by email</h2>
-            <p class="small text-body-secondary mb-0">We email you when we post an update about an incident, for every component or only the ones you choose. In this demo, the emails stay in this tab.</p>
+            <p class="small text-body-secondary mb-0">We email you when we post an update about an incident or schedule maintenance, for every component or only the ones you choose. In this demo, the emails stay in this tab.</p>
         </div>
         <Button Type="ButtonType.Link" To="@SubscribePath" Color="ButtonColor.Primary" Outline="true">Subscribe to updates</Button>
     </section>

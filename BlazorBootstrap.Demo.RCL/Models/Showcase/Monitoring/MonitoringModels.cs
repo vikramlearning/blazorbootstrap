@@ -40,6 +40,9 @@ public enum MonitoringPublicStatus
     /// <summary>Working normally.</summary>
     Operational,
 
+    /// <summary>In a maintenance window (announced in advance); outranked by any published incident.</summary>
+    Maintenance,
+
     /// <summary>Slower than usual (a published minor incident).</summary>
     Degraded,
 
@@ -163,6 +166,35 @@ public enum MonitoringOnCallRole
     Secondary,
 }
 
+/// <summary>The metric an alert rule watches.</summary>
+public enum MonitoringAlertMetric
+{
+    /// <summary>The share of failed requests, in percent.</summary>
+    ErrorRate,
+
+    /// <summary>The p95 latency, in milliseconds.</summary>
+    Latency,
+
+    /// <summary>The average CPU use, in percent.</summary>
+    Cpu,
+}
+
+/// <summary>Where a maintenance window is.</summary>
+public enum MonitoringMaintenanceStatus
+{
+    /// <summary>Announced, not started.</summary>
+    Scheduled,
+
+    /// <summary>Running now.</summary>
+    InProgress,
+
+    /// <summary>Over (its end passed, or it was ended early).</summary>
+    Completed,
+
+    /// <summary>Called off before it started.</summary>
+    Cancelled,
+}
+
 /// <summary>Outcome of an action on the monitoring site.</summary>
 public enum MonitoringResult
 {
@@ -203,7 +235,15 @@ public sealed record MonitoringService(
     double BaseMemory,
     double DiskUsed,
     int Instances,
-    double Uptime30Days);
+    double Uptime30Days)
+{
+    #region Properties, Indexers
+
+    /// <summary>Gets whether the service is a component on the public status page.</summary>
+    public bool IsPublic { get; init; } = true;
+
+    #endregion
+}
 
 /// <summary>One reading of a service's metrics.</summary>
 public sealed record MonitoringSample(int Tick, DateTime Time, double Requests, double LatencyMs, double ErrorRate, double Cpu, double Memory);
@@ -268,6 +308,15 @@ public sealed class MonitoringIncident
 
     /// <summary>Gets the incident number.</summary>
     public int Id { get; init; }
+
+    /// <summary>Gets the alert rule that opened it, or <see langword="null" /> for a seeded or declared incident.</summary>
+    public int? RuleId { get; init; }
+
+    /// <summary>
+    /// Gets the failure drill running when a rule opened it, if any. Such an incident doesn't bend the metrics itself (the
+    /// drill does), so they recover when the drill ends.
+    /// </summary>
+    public int? FaultId { get; init; }
 
     /// <summary>Gets what the incident does to its service's metrics while it is active.</summary>
     public MonitoringImpact Impact { get; init; }
@@ -350,8 +399,19 @@ public sealed class MonitoringSubscription
     #endregion
 }
 
-/// <summary>An email "sent" to a subscriber when a status page update was published (nothing is sent; this is the demo outbox).</summary>
-public sealed record MonitoringEmail(int Id, int SubscriptionId, string To, string Subject, string Body, DateTime SentAt, int IncidentId);
+/// <summary>
+/// An email "sent" to a subscriber when a status page update or a maintenance window was published (nothing is sent; this
+/// is the demo outbox). It is about an incident (<see cref="IncidentId" />) or a maintenance window (<see cref="MaintenanceId" />).
+/// </summary>
+public sealed record MonitoringEmail(int Id, int SubscriptionId, string To, string Subject, string Body, DateTime SentAt, int? IncidentId)
+{
+    #region Properties, Indexers
+
+    /// <summary>Gets the maintenance window it announces, if it is about one.</summary>
+    public int? MaintenanceId { get; init; }
+
+    #endregion
+}
 
 /// <summary>An in-app notification for an engineer.</summary>
 public sealed class MonitoringNotification
@@ -456,3 +516,123 @@ public sealed class MonitoringOverride
 
 /// <summary>One day of a component's 90-day uptime bar: its worst published status that day.</summary>
 public sealed record MonitoringUptimeDay(DateTime Date, MonitoringPublicStatus Status, IReadOnlyList<int> IncidentIds);
+
+/// <summary>
+/// An alert rule: when a service's metric stays past the threshold for the whole duration, it opens an incident (unless
+/// the service already has an active incident or is in maintenance), and can post on the status page at once.
+/// </summary>
+public sealed class MonitoringAlertRule
+{
+    #region Properties, Indexers
+
+    /// <summary>Gets or sets whether the incident it opens is posted on the status page at once ("Investigating").</summary>
+    public bool AutoPublish { get; set; }
+
+    /// <summary>Gets or sets the seconds the metric must stay past the threshold.</summary>
+    public int ForSeconds { get; set; } = 20;
+
+    /// <summary>Gets the rule number.</summary>
+    public int Id { get; init; }
+
+    /// <summary>Gets or sets whether the rule is evaluated.</summary>
+    public bool IsEnabled { get; set; } = true;
+
+    /// <summary>Gets or sets when it last opened an incident.</summary>
+    public DateTime? LastFiredAt { get; set; }
+
+    /// <summary>Gets or sets the incident it last opened.</summary>
+    public int? LastIncidentId { get; set; }
+
+    /// <summary>Gets or sets the metric watched.</summary>
+    public MonitoringAlertMetric Metric { get; set; }
+
+    /// <summary>Gets or sets the rule's name (the incident title when it fires).</summary>
+    public string Name { get; set; } = string.Empty;
+
+    /// <summary>Gets or sets the status page message posted when <see cref="AutoPublish" /> is on (plain text).</summary>
+    public string PublicMessage { get; set; } = string.Empty;
+
+    /// <summary>Gets or sets the service watched.</summary>
+    public string ServiceId { get; set; } = string.Empty;
+
+    /// <summary>Gets or sets the severity of the incident it opens.</summary>
+    public MonitoringSeverity Severity { get; set; }
+
+    /// <summary>Gets or sets the threshold: percent for error rate and CPU, milliseconds for latency. The metric must be above it.</summary>
+    public double Threshold { get; set; }
+
+    #endregion
+}
+
+/// <summary>An injected failure (a drill): from <see cref="Start" /> to <see cref="End" /> it bends a service's metrics like a real incident would.</summary>
+public sealed class MonitoringFault
+{
+    #region Properties, Indexers
+
+    /// <summary>Gets the admin who injected it (their name).</summary>
+    public string CreatedBy { get; init; } = string.Empty;
+
+    /// <summary>Gets or sets when it stops (moved earlier when an admin stops it).</summary>
+    public DateTime End { get; set; }
+
+    /// <summary>Gets the fault number.</summary>
+    public int Id { get; init; }
+
+    /// <summary>Gets what it does to the metrics.</summary>
+    public MonitoringImpact Impact { get; init; }
+
+    /// <summary>Gets the service it affects.</summary>
+    public string ServiceId { get; init; } = string.Empty;
+
+    /// <summary>Gets when it starts.</summary>
+    public DateTime Start { get; init; }
+
+    #endregion
+}
+
+/// <summary>A maintenance window announced on the status page. Its status follows the clock unless it was cancelled or ended early.</summary>
+public sealed class MonitoringMaintenance
+{
+    #region Properties, Indexers
+
+    /// <summary>Gets or sets when it was cancelled, if it was.</summary>
+    public DateTime? CancelledAt { get; set; }
+
+    /// <summary>Gets the admin who scheduled it (their name).</summary>
+    public string CreatedBy { get; init; } = string.Empty;
+
+    /// <summary>Gets or sets what customers should expect (plain text).</summary>
+    public string Description { get; set; } = string.Empty;
+
+    /// <summary>Gets or sets when it ends (moved earlier when it is ended early).</summary>
+    public DateTime End { get; set; }
+
+    /// <summary>Gets the window number.</summary>
+    public int Id { get; init; }
+
+    /// <summary>Gets or sets the services in maintenance.</summary>
+    public List<string> ServiceIds { get; set; } = new();
+
+    /// <summary>Gets or sets when it starts.</summary>
+    public DateTime Start { get; set; }
+
+    /// <summary>Gets or sets the title.</summary>
+    public string Title { get; set; } = string.Empty;
+
+    #endregion
+
+    #region Methods
+
+    #region Public Methods
+
+    /// <summary>Returns where the window is at a time.</summary>
+    public MonitoringMaintenanceStatus StatusAt(DateTime now) =>
+        CancelledAt is not null ? MonitoringMaintenanceStatus.Cancelled
+        : now >= End ? MonitoringMaintenanceStatus.Completed
+        : now >= Start ? MonitoringMaintenanceStatus.InProgress
+        : MonitoringMaintenanceStatus.Scheduled;
+
+    #endregion
+
+    #endregion
+}

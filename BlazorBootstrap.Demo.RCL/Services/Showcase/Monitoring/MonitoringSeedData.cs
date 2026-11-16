@@ -13,6 +13,15 @@ public static class MonitoringSeedData
 {
     #region Fields and Constants
 
+    /// <summary>The demo admin's name (also on the rotation).</summary>
+    public const string AdminName = "Marcus Osei";
+
+    /// <summary>The role of an admin: everything an engineer does, plus alert rules, failure drills, maintenance, and services.</summary>
+    public const string AdminRole = "admin";
+
+    /// <summary>The roles that use the console: engineers and admins.</summary>
+    public const string ConsoleRoles = EngineerRole + "," + AdminRole;
+
     /// <summary>The demo engineer's name.</summary>
     public const string EngineerName = "Priya Nair";
 
@@ -24,6 +33,9 @@ public static class MonitoringSeedData
 
     /// <summary>The fictitious product name.</summary>
     public const string ProductName = "Stackwatch";
+
+    /// <summary>The ID of the demo admin account (also his ID on the rotation).</summary>
+    public const string SeededAdminId = "marcus";
 
     /// <summary>The ID of the demo engineer account (also her ID on the rotation).</summary>
     public const string SeededEngineerId = "priya";
@@ -110,10 +122,39 @@ public static class MonitoringSeedData
         return new MonitoringTrace(entry.TraceId, entry.Time, spans[0].ServiceId, spans);
     }
 
-    /// <summary>The demo accounts: the on-call engineer.</summary>
+    /// <summary>The alert rules in a fresh tab: one per important signal; two post on the status page on their own.</summary>
+    public static List<MonitoringAlertRule> AlertRules() => new()
+    {
+        new() { Id = 1, Name = "Payments error rate above 2%", ServiceId = "payments", Metric = MonitoringAlertMetric.ErrorRate, Threshold = 2, ForSeconds = 20, Severity = MonitoringSeverity.Critical, AutoPublish = true, PublicMessage = "Some card payments are failing at checkout. We're investigating.", LastFiredAt = Now.AddMinutes(-18), LastIncidentId = 301 },
+        new() { Id = 2, Name = "API gateway error rate above 2%", ServiceId = "api-gateway", Metric = MonitoringAlertMetric.ErrorRate, Threshold = 2, ForSeconds = 20, Severity = MonitoringSeverity.Major },
+        new() { Id = 3, Name = "Search p95 latency above 300 ms", ServiceId = "search", Metric = MonitoringAlertMetric.Latency, Threshold = 300, ForSeconds = 30, Severity = MonitoringSeverity.Major, LastFiredAt = Now.AddMinutes(-52), LastIncidentId = 300 },
+        new() { Id = 4, Name = "Orders database CPU above 90%", ServiceId = "postgres", Metric = MonitoringAlertMetric.Cpu, Threshold = 90, ForSeconds = 30, Severity = MonitoringSeverity.Major },
+        new() { Id = 5, Name = "Notification worker error rate above 5%", ServiceId = "notifications", Metric = MonitoringAlertMetric.ErrorRate, Threshold = 5, ForSeconds = 20, Severity = MonitoringSeverity.Minor },
+        new() { Id = 6, Name = "Warehouse sensors not reporting", ServiceId = "sensors", Metric = MonitoringAlertMetric.ErrorRate, Threshold = 20, ForSeconds = 20, Severity = MonitoringSeverity.Major, AutoPublish = true, PublicMessage = "Readings from some warehouse sensors aren't arriving. We're investigating." },
+    };
+
+    /// <summary>The demo accounts: the on-call engineer, and the admin who runs the monitoring setup.</summary>
     public static IReadOnlyList<ShowcaseDemoAccount> DemoAccounts() => new List<ShowcaseDemoAccount>
     {
         new(SeededEngineerId, EngineerRole, EngineerName, "priya.nair@example.com", "watch-demo-26", "PN"),
+        new(SeededAdminId, AdminRole, AdminName, "marcus.osei@example.com", "watch-admin-26", "MO"),
+    };
+
+    /// <summary>Maintenance windows in a fresh tab: a database upgrade in two days, and a finished cache resize.</summary>
+    public static List<MonitoringMaintenance> Maintenance() => new()
+    {
+        new()
+        {
+            Id = 1, Title = "Orders database upgrade", CreatedBy = AdminName, ServiceIds = { "postgres" },
+            Start = Now.Date.AddDays(2).AddHours(2), End = Now.Date.AddDays(2).AddHours(3),
+            Description = "We're upgrading the orders database. Placing orders may be unavailable for a few minutes during the window.",
+        },
+        new()
+        {
+            Id = 2, Title = "Session cache resize", CreatedBy = AdminName, ServiceIds = { "redis" },
+            Start = Now.Date.AddDays(-5).AddHours(1), End = Now.Date.AddDays(-5).AddHours(1.5),
+            Description = "We added memory to the session cache. Some customers may have had to sign in again.",
+        },
     };
 
     /// <summary>The engineers on the on-call rotation.</summary>
@@ -154,7 +195,7 @@ public static class MonitoringSeedData
         {
             new()
             {
-                Id = 301, ServiceId = "payments", Severity = MonitoringSeverity.Critical, Impact = MonitoringImpact.Errors, Status = MonitoringIncidentStatus.Open, StartedAt = Now.AddMinutes(-18),
+                Id = 301, RuleId = 1, ServiceId = "payments", Severity = MonitoringSeverity.Critical, Impact = MonitoringImpact.Errors, Status = MonitoringIncidentStatus.Open, StartedAt = Now.AddMinutes(-18),
                 Title = "Payments API returning 5xx errors",
                 Summary = "About 6% of payment requests fail with 502 responses from the card processor.",
                 Updates =
@@ -165,7 +206,7 @@ public static class MonitoringSeedData
             },
             new()
             {
-                Id = 300, ServiceId = "search", Severity = MonitoringSeverity.Major, Impact = MonitoringImpact.Latency, Status = MonitoringIncidentStatus.Acknowledged, StartedAt = Now.AddMinutes(-52),
+                Id = 300, RuleId = 3, ServiceId = "search", Severity = MonitoringSeverity.Major, Impact = MonitoringImpact.Latency, Status = MonitoringIncidentStatus.Acknowledged, StartedAt = Now.AddMinutes(-52),
                 Assignee = EngineerName,
                 Title = "Search latency above 300 ms",
                 Summary = "Search results take two to three times longer than usual.",
@@ -341,6 +382,7 @@ public static class MonitoringSeedData
     public static IReadOnlyList<ShowcaseRole> Roles() => new List<ShowcaseRole>
     {
         new(EngineerRole, "Engineer", "/showcase/monitoring/console", "/showcase/monitoring/console/account", "Works incidents, posts status page updates, reads logs and traces, and goes on call."),
+        new(AdminRole, "Admin", "/showcase/monitoring/console", "/showcase/monitoring/console/account", "Everything an engineer does, plus alert rules and failure drills, maintenance windows, and the monitored services."),
     };
 
     /// <summary>The monitored services.</summary>

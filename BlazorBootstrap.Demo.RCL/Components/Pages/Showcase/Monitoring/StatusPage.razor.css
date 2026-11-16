@@ -2,6 +2,7 @@
    every colored mark also carries its status in words (badge text, the day's name, the table). */
 .mw-public-page {
     --mw-up-operational: #15803d;
+    --mw-up-maintenance: #1d4ed8;
     --mw-up-degraded: #0e7490;
     --mw-up-partial: #c2410c;
     --mw-up-major: #b91c1c;
@@ -9,6 +10,7 @@
 
 [data-bs-theme=dark] .mw-public-page {
     --mw-up-operational: #4ade80;
+    --mw-up-maintenance: #93c5fd;
     --mw-up-degraded: #22d3ee;
     --mw-up-partial: #fb923c;
     --mw-up-major: #f87171;
@@ -33,6 +35,10 @@
     border-radius: .75rem;
     background: var(--mw-surface);
     color: var(--mw-ink);
+}
+
+.mw-overall-maintenance {
+    --mw-tone: var(--mw-up-maintenance);
 }
 
 .mw-overall-degraded {
@@ -61,7 +67,9 @@
 }
 
 .mw-incident-title {
+    min-width: 0;
     margin: 0 0 .25rem;
+    overflow-wrap: anywhere;
     font-size: 1rem;
     font-weight: 700;
 }
@@ -112,6 +120,10 @@
     color: var(--mw-up-operational);
 }
 
+.mw-public-maintenance {
+    color: var(--mw-up-maintenance);
+}
+
 .mw-public-degraded {
     color: var(--mw-up-degraded);
 }
@@ -145,6 +157,11 @@
         opacity: .75;
     }
 
+    /* Maintenance days are dashed, so they differ from incident days by shape as well as color. */
+    .mw-uptime-day.mw-uptime-maintenance {
+        background: repeating-linear-gradient(to bottom, var(--mw-up-maintenance) 0 3px, transparent 3px 5px);
+    }
+
     .mw-uptime-day.mw-uptime-degraded {
         background: var(--mw-up-degraded);
     }
@@ -165,6 +182,17 @@
         .mw-uptime-day:not(.mw-uptime-operational) {
             background: CanvasText;
         }
+
+        /* Forced colors drop gradients; keep the dashes in system colors. */
+        .mw-uptime-day.mw-uptime-maintenance {
+            forced-color-adjust: none;
+            border-color: CanvasText;
+            background: repeating-linear-gradient(to bottom, CanvasText 0 3px, Canvas 3px 5px);
+        }
+
+    .mw-maint {
+        border-inline-start-color: CanvasText;
+    }
 }
 
 .mw-uptime-scale {
@@ -221,6 +249,34 @@
         .mw-legend .mw-uptime-day.mw-uptime-operational {
             height: .7rem;
         }
+
+/* Scheduled maintenance: one row per window, in progress ones marked by a solid start border and their status in words. */
+.mw-maint-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.mw-maint {
+    padding: 1rem 1.25rem;
+    border: 1px solid var(--mw-border);
+    border-inline-start: .375rem solid var(--mw-up-maintenance);
+    border-radius: .75rem;
+    background: var(--mw-surface);
+    color: var(--mw-ink);
+}
+
+    .mw-maint + .mw-maint {
+        margin-top: .75rem;
+    }
+
+    .mw-maint:not(.mw-maint-running) {
+        border-inline-start-style: dashed;
+    }
+
+.mw-maint-upcoming {
+    color: var(--bs-secondary-color);
+}
 
 .mw-subscribe-cta {
     display: flex;

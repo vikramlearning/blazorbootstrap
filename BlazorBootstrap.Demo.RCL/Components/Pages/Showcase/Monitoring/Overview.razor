@@ -32,7 +32,7 @@
         </div>
         <div class="col">
             <Card Class="mw-card h-100"><CardBody Class="p-3">
-                <span class="mw-label">Gateway traffic</span>
+                <span class="mw-label">@TrafficService.Name traffic</span>
                 <span class="mw-value">@MonitoringDisplay.Number(Gateway.Requests)<span class="fs-6"> req/s</span></span>
             </CardBody></Card>
         </div>
@@ -58,7 +58,7 @@
     <div class="row g-4 mb-4">
         <div class="col-xl-6">
             <Card Class="mw-card h-100">
-                <CardHeader><h2 class="mw-card-title">Gateway traffic</h2><span class="small text-body-secondary">requests per second</span></CardHeader>
+                <CardHeader><h2 class="mw-card-title">@TrafficService.Name traffic</h2><span class="small text-body-secondary">requests per second</span></CardHeader>
                 <CardBody>
                     <div class="mw-chart" role="img" aria-label="@TrafficLabel">
                         <LineChart @ref="trafficChart" Height="260" HeightUnit="Unit.Px" Width="100" WidthUnit="Unit.Percentage" />

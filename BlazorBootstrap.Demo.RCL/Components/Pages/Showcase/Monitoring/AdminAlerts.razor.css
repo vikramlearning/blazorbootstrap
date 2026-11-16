@@ -1,0 +1,75 @@
+/* The admins' alert rules and drills. Card, CardBody, Badge, and Modal render their own elements, so styles inside them need ::deep. */
+
+.mw-al-status:empty {
+    margin: 0;
+}
+
+.mw-al-status {
+    margin-bottom: 1rem;
+    overflow-wrap: anywhere;
+}
+
+.mw-al-paused {
+    padding: .5rem .75rem;
+    border: 1px solid var(--mw-border);
+    border-radius: .5rem;
+    background: var(--bs-tertiary-bg);
+}
+
+/* Rule names and status page messages are plain user text: keep line breaks and wrap long words. */
+::deep .mw-al-text {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+/* What a drill would do: the rules watching the service, and warnings that stop them firing. */
+::deep .mw-al-preview {
+    padding: .75rem;
+    border: 1px solid var(--mw-border);
+    border-radius: .5rem;
+    background: var(--bs-tertiary-bg);
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+::deep .mw-al-warning {
+    padding: .375rem .5rem;
+    border-left: 3px solid var(--bs-warning);
+    background: var(--bs-body-bg);
+    border-radius: 0 .25rem .25rem 0;
+}
+
+::deep .mw-al-outlook {
+    margin: 0 0 .5rem;
+    padding-left: 1.125rem;
+}
+
+    ::deep .mw-al-outlook li + li {
+        margin-top: .5rem;
+    }
+
+::deep .mw-al-drill-table {
+    min-width: 40rem;
+}
+
+::deep .mw-al-rules-table {
+    min-width: 72rem;
+}
+
+::deep .mw-al-name-cell {
+    min-width: 14rem;
+    font-weight: 600;
+}
+
+::deep .mw-al-severities {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+    gap: .5rem 1.5rem;
+}
+
+::deep .mw-al-quote {
+    padding: .5rem .75rem;
+    border-left: 3px solid var(--sc-primary);
+    background: var(--bs-tertiary-bg);
+    border-radius: 0 .25rem .25rem 0;
+}

@@ -46,9 +46,9 @@
                                     {
                                         <p class="mw-field-error" id="mw-sub-components-error">@componentsError</p>
                                     }
-                                    @for (var index = 0; index < State.Services.Count; index++)
+                                    @for (var index = 0; index < State.StatusPageServices.Count; index++)
                                     {
-                                        var service = State.Services[index];
+                                        var service = State.StatusPageServices[index];
                                         var isFirst = index == 0;
                                         <div class="form-check" @key="service.Id">
                                             @if (isFirst)
@@ -145,9 +145,9 @@
                                             @if (!editAll)
                                             {
                                                 <div class="mw-sub-choices" role="group" aria-label="Choose the components">
-                                                    @for (var index = 0; index < State.Services.Count; index++)
+                                                    @for (var index = 0; index < State.StatusPageServices.Count; index++)
                                                     {
-                                                        var service = State.Services[index];
+                                                        var service = State.StatusPageServices[index];
                                                         var isFirst = index == 0;
                                                         <div class="form-check" @key="service.Id">
                                                             @if (isFirst)
@@ -192,7 +192,14 @@
                                                     <div class="mw-email-body">
                                                         <p class="small text-body-secondary mb-2">To @message.To</p>
                                                         <p class="mw-plain mb-2">@message.Body</p>
-                                                        <a class="small fw-semibold" href="@MonitoringDisplay.PublicIncidentUrl(message.IncidentId)">View incident #@message.IncidentId on the status page</a>
+                                                        @if (message.IncidentId is { } incidentId)
+                                                        {
+                                                            <a class="small fw-semibold" href="@MonitoringDisplay.PublicIncidentUrl(incidentId)">View incident #@incidentId on the status page</a>
+                                                        }
+                                                        else
+                                                        {
+                                                            <a class="small fw-semibold" href="@MonitoringLayout.Base">See the maintenance on the status page</a>
+                                                        }
                                                     </div>
                                                 </details>
                                             </li>

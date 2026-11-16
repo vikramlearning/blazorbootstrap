@@ -23,12 +23,12 @@
                          Href="@Base"
                          IconName="IconName.Activity"
                          Title="@MonitoringSeedData.ProductName"
-                         BadgeText="Engineer"
+                         BadgeText="@(State.IsAdmin ? "Admin" : "Engineer")"
                          DataProvider="SidebarDataProvider" />
             }
         </Sidebar>
         <ChildContent>
-            <ShowcaseRoleGuard Roles="@MonitoringSeedData.EngineerRole" SignInPath="@MonitoringLayout.SignInPath">
+            <ShowcaseRoleGuard Roles="@MonitoringSeedData.ConsoleRoles" SignInPath="@MonitoringLayout.SignInPath">
                 @Body
             </ShowcaseRoleGuard>
         </ChildContent>

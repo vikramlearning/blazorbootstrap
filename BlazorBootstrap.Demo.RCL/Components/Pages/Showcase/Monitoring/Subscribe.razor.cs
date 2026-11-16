@@ -92,7 +92,8 @@ public partial class Subscribe : ComponentBase, IDisposable
     protected override void OnParametersSet()
     {
         // The incident page links here with its component; choose it once, and leave later choices to the user.
-        if (preselected || State.FindService(Component) is not { } service)
+        // Only a component the status page shows can be chosen (a hidden one has no checkbox).
+        if (preselected || State.FindService(Component) is not { IsPublic: true } service)
             return;
 
         preselected = true;
@@ -131,13 +132,13 @@ public partial class Subscribe : ComponentBase, IDisposable
     }
 
     /// <summary>The chosen IDs in the status page's order.</summary>
-    private List<string> ChosenInOrder(HashSet<string> selection) => State.Services.Where(service => selection.Contains(service.Id)).Select(service => service.Id).ToList();
+    private List<string> ChosenInOrder(HashSet<string> selection) => State.StatusPageServices.Where(service => selection.Contains(service.Id)).Select(service => service.Id).ToList();
 
     /// <summary>The components in a sentence, like "all components" or "Payments API, Search".</summary>
     private string ComponentsPhrase(IReadOnlyList<string> serviceIds) => serviceIds.Count == 0 ? "all components" : ComponentsText(serviceIds);
 
     private string ComponentsText(IReadOnlyList<string> serviceIds) =>
-        serviceIds.Count == 0 ? "All components" : string.Join(", ", State.Services.Where(service => serviceIds.Contains(service.Id)).Select(service => service.Name));
+        serviceIds.Count == 0 ? "All components" : string.Join(", ", State.StatusPageServices.Where(service => serviceIds.Contains(service.Id)).Select(service => service.Name));
 
     /// <summary>Hides the dialog first; the hidden handler unsubscribes, so the page changes only after the dialog is gone.</summary>
     private async Task ConfirmUnsubscribeAsync()
@@ -203,7 +204,8 @@ public partial class Subscribe : ComponentBase, IDisposable
 
         editError = null;
 
-        if (!editAll && editChosen.Count == 0)
+        // Counted over the components the page shows, so a choice never shrinks to "all components" without a word.
+        if (!editAll && ChosenInOrder(editChosen).Count == 0)
         {
             editError = "Choose at least one component, or choose All components.";
             pendingFocus = () => editFirstInput;
@@ -271,7 +273,7 @@ public partial class Subscribe : ComponentBase, IDisposable
         editingId = subscription.Id;
         editAll = subscription.ServiceIds.Count == 0;
         editChosen.Clear();
-        editChosen.UnionWith(subscription.ServiceIds);
+        editChosen.UnionWith(subscription.ServiceIds.Where(id => State.FindService(id) is { IsPublic: true }));
         editError = null;
         listStatus = null;
         pendingFocus = () => editAllInput;
@@ -292,7 +294,7 @@ public partial class Subscribe : ComponentBase, IDisposable
         else if (address.Length > MonitoringState.MaxEmailLength)
             emailError = $"Use an email address of up to {MonitoringState.MaxEmailLength.ToString(CultureInfo.InvariantCulture)} characters.";
 
-        if (!allComponents && chosen.Count == 0)
+        if (!allComponents && ChosenInOrder(chosen).Count == 0)
             componentsError = "Choose at least one component, or choose All components.";
 
         if (emailError is not null || componentsError is not null)

@@ -1,0 +1,44 @@
+/* Adding or editing a service: the form, and for an existing service a side panel with its live status, rules, and incidents. */
+.mw-svced-status {
+    min-height: 1.5rem;
+    overflow-wrap: anywhere;
+}
+
+    .mw-svced-status:focus {
+        outline: none;
+    }
+
+    .mw-svced-status:focus-visible {
+        outline: 2px solid var(--bs-focus-ring-color, var(--bs-primary));
+        outline-offset: 2px;
+    }
+
+.mw-svced-facts {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: .375rem 1rem;
+    margin-bottom: 1rem;
+}
+
+    .mw-svced-facts dt {
+        font-weight: 600;
+        font-size: .875rem;
+    }
+
+    .mw-svced-facts dd {
+        margin: 0;
+        overflow-wrap: anywhere;
+    }
+
+.mw-svced-list,
+.mw-svced-reasons {
+    overflow-wrap: anywhere;
+}
+
+.mw-svced-reasons {
+    padding-left: 1.25rem;
+}
+
+    .mw-svced-reasons li + li {
+        margin-top: .375rem;
+    }

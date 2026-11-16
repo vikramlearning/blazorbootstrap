@@ -6,16 +6,17 @@ using BlazorBootstrap.Demo.RCL.Services.Showcase.Foundation;
 namespace BlazorBootstrap.Demo.RCL.Services.Showcase.Monitoring;
 
 /// <summary>
-/// State of the "Stackwatch" monitoring site for the current browser tab: incidents with their internal and public
-/// timelines, status page subscriptions and the demo email outbox, engineers' notifications and preferences, on-call
-/// overrides, and the demo sign-in. It is kept in the tab's <c>sessionStorage</c> through the showcase foundation; nothing
+/// State of the "Stackwatch" monitoring site for the current browser tab: the monitored services, incidents with their
+/// internal and public timelines, alert rules, injected failures, maintenance windows, status page subscriptions and the
+/// demo email outbox, engineers' notifications and preferences, on-call overrides, and the demo sign-in. It is kept in the tab's <c>sessionStorage</c> through the showcase foundation; nothing
 /// is sent.
 /// </summary>
 /// <remarks>
 /// Metrics and log lines are not stored: they are generated deterministically for the sample ticks of the site's moving
-/// clock (one every <see cref="MonitoringSeedData.TickSeconds" /> seconds, D-029), bent by the incidents active at each
-/// sample's time. <see cref="Tick" /> moves the shown window up to the clock; live pages call it from a timer, and pausing
-/// stops it. The public status page reads only what engineers published: an incident appears once it has a public update,
+/// clock (one every <see cref="MonitoringSeedData.TickSeconds" /> seconds, D-029), bent by the incidents and injected
+/// failures active at each sample's time. <see cref="Tick" /> moves the shown window up to the clock and then evaluates the
+/// alert rules on it; live pages call it from a timer, and pausing stops it. Admins have every engineer action plus the
+/// admin ones (rules, failures, maintenance, services). The public status page reads only what engineers published: an incident appears once it has a public update,
 /// and is ongoing there until a public update says it is resolved.
 /// </remarks>
 public sealed partial class MonitoringState : IShowcaseSiteState
@@ -30,6 +31,42 @@ public sealed partial class MonitoringState : IShowcaseSiteState
 
     /// <summary>The longest email address.</summary>
     public const int MaxEmailLength = 120;
+
+    /// <summary>The longest injected failure, in seconds.</summary>
+    public const int MaxFaultSeconds = 900;
+
+    /// <summary>The longest maintenance window.</summary>
+    public static readonly TimeSpan MaxMaintenanceLength = TimeSpan.FromHours(24);
+
+    /// <summary>The longest maintenance description.</summary>
+    public const int MaxMaintenanceDescriptionLength = 1000;
+
+    /// <summary>The most maintenance windows the tab holds.</summary>
+    public const int MaxMaintenanceWindows = 50;
+
+    /// <summary>The longest maintenance title.</summary>
+    public const int MaxMaintenanceTitleLength = 120;
+
+    /// <summary>The longest alert rule name (it becomes the incident title).</summary>
+    public const int MaxRuleNameLength = 80;
+
+    /// <summary>The most alert rules.</summary>
+    public const int MaxRules = 30;
+
+    /// <summary>The longest service description.</summary>
+    public const int MaxServiceDescriptionLength = 300;
+
+    /// <summary>The longest service name.</summary>
+    public const int MaxServiceNameLength = 60;
+
+    /// <summary>The most monitored services.</summary>
+    public const int MaxServices = 20;
+
+    /// <summary>The longest region or team name.</summary>
+    public const int MaxServiceTagLength = 40;
+
+    /// <summary>The shortest injected failure, in seconds.</summary>
+    public const int MinFaultSeconds = 20;
 
     /// <summary>The longest incident summary.</summary>
     public const int MaxIncidentSummaryLength = 300;
@@ -55,6 +92,8 @@ public sealed partial class MonitoringState : IShowcaseSiteState
 
     private const int MaxEmails = 300;
 
+    private const int MaxFaults = 100;
+
     private const int MaxIncidents = 300;
 
     private const int MaxLogLines = 500;
@@ -76,13 +115,19 @@ public sealed partial class MonitoringState : IShowcaseSiteState
     /// <summary>Room for the prefix of status and severity entries on top of <see cref="MaxUpdateLength" />.</summary>
     private const int UpdatePrefixRoom = 64;
 
+    private static readonly List<string> seedServiceIds = MonitoringSeedData.Services().Select(service => service.Id).ToList();
+
     private static readonly JsonSerializerOptions snapshotOptions = new(JsonSerializerDefaults.Web) { MaxDepth = 32 };
 
     private readonly List<MonitoringEmail> emails = new();
 
+    private readonly List<MonitoringFault> faults = new();
+
     private readonly Dictionary<string, List<MonitoringSample>> history = new();
 
     private readonly List<MonitoringIncident> incidents = MonitoringSeedData.Incidents();
+
+    private readonly List<MonitoringMaintenance> maintenance = MonitoringSeedData.Maintenance();
 
     private readonly List<MonitoringNotification> notifications = MonitoringSeedData.Notifications();
 
@@ -90,7 +135,11 @@ public sealed partial class MonitoringState : IShowcaseSiteState
 
     private readonly Dictionary<string, MonitoringNotificationPreferences> preferences = new();
 
+    private readonly List<MonitoringAlertRule> rules = MonitoringSeedData.AlertRules();
+
     private readonly List<MonitoringLogEntry> seedLogs;
+
+    private readonly List<MonitoringService> services = MonitoringSeedData.Services().ToList();
 
     private readonly List<MonitoringSubscription> subscriptions = new();
 
@@ -104,11 +153,17 @@ public sealed partial class MonitoringState : IShowcaseSiteState
 
     private int nextEmailId = 1;
 
+    private int nextFaultId = 1;
+
     private int nextIncidentId = FirstIncidentId;
+
+    private int nextMaintenanceId = 3;
 
     private int nextNotificationId;
 
     private int nextOverrideId = 1;
+
+    private int nextRuleId = 7;
 
     private int nextSubscriptionId = 1;
 
@@ -124,7 +179,7 @@ public sealed partial class MonitoringState : IShowcaseSiteState
     /// <summary>Seeds a fresh tab, signed out, with a full chart window ending at tick 0.</summary>
     public MonitoringState()
     {
-        seedLogs = MonitoringSeedData.Logs(Services);
+        seedLogs = MonitoringSeedData.Logs(services);
         nextUpdateId = incidents.SelectMany(incident => incident.Updates).Max(update => update.Id) + 1;
         nextNotificationId = notifications.Max(notification => notification.Id) + 1;
         Identity = new ShowcaseIdentity(MonitoringSeedData.Roles(), MonitoringSeedData.DemoAccounts());
@@ -184,13 +239,18 @@ public sealed partial class MonitoringState : IShowcaseSiteState
         return MonitoringResult.Ok;
     }
 
-    /// <summary>Returns the snapshot: incidents, subscriptions, the outbox, notifications, preferences, overrides, and the ID counters.</summary>
+    /// <summary>Returns the snapshot: services, incidents, rules, failures, maintenance, subscriptions, the outbox, notifications, preferences, overrides, and the ID counters.</summary>
     public object CaptureData() => new MonitoringSnapshot
     {
         Emails = emails.ToList(),
+        Faults = faults.ToList(),
         Incidents = incidents.ToList(),
+        Maintenance = maintenance.ToList(),
         NextEmailId = nextEmailId,
+        NextFaultId = nextFaultId,
         NextIncidentId = nextIncidentId,
+        NextMaintenanceId = nextMaintenanceId,
+        NextRuleId = nextRuleId,
         NextNotificationId = nextNotificationId,
         NextOverrideId = nextOverrideId,
         NextSubscriptionId = nextSubscriptionId,
@@ -198,6 +258,8 @@ public sealed partial class MonitoringState : IShowcaseSiteState
         Notifications = notifications.ToList(),
         Overrides = overrides.ToList(),
         Preferences = preferences.ToDictionary(pair => pair.Key, pair => pair.Value),
+        Rules = rules.ToList(),
+        Services = services.ToList(),
         Subscriptions = subscriptions.ToList(),
     };
 
@@ -254,7 +316,7 @@ public sealed partial class MonitoringState : IShowcaseSiteState
     public MonitoringIncident? FindIncident(int incidentId) => incidents.FirstOrDefault(incident => incident.Id == incidentId);
 
     /// <summary>Finds a published incident by its number (the status page's view), or returns <see langword="null" />.</summary>
-    public MonitoringIncident? FindPublicIncident(int incidentId) => incidents.FirstOrDefault(incident => incident.Id == incidentId && incident.IsPublished);
+    public MonitoringIncident? FindPublicIncident(int incidentId) => incidents.FirstOrDefault(incident => incident.Id == incidentId && incident.IsPublished && IsOnStatusPage(incident.ServiceId));
 
     /// <summary>Finds a service by its ID, or returns <see langword="null" />.</summary>
     public MonitoringService? FindService(string? serviceId) => Services.FirstOrDefault(service => service.Id == serviceId);
@@ -361,9 +423,14 @@ public sealed partial class MonitoringState : IShowcaseSiteState
         return MonitoringResult.Ok;
     }
 
-    /// <summary>Returns how a service shows on the status page: from the published, ongoing incidents that affect it.</summary>
-    public MonitoringPublicStatus PublicStatus(string serviceId) =>
-        PublicActiveIncidents.Where(incident => incident.ServiceId == serviceId).Select(incident => StatusOf(incident.Severity)).DefaultIfEmpty(MonitoringPublicStatus.Operational).Max();
+    /// <summary>Returns how a service shows on the status page: from the published, ongoing incidents that affect it, and any maintenance in progress.</summary>
+    public MonitoringPublicStatus PublicStatus(string serviceId)
+    {
+        var fromIncidents = PublicActiveIncidents.Where(incident => incident.ServiceId == serviceId).Select(incident => StatusOf(incident.Severity)).DefaultIfEmpty(MonitoringPublicStatus.Operational).Max();
+
+        // A maintenance window shows as such, unless a published incident is worse.
+        return ActiveMaintenance(serviceId) is not null && fromIncidents < MonitoringPublicStatus.Maintenance ? MonitoringPublicStatus.Maintenance : fromIncidents;
+    }
 
     /// <summary>
     /// Reopens a resolved incident (a reason is required). A published incident goes back to "Investigating" on the
@@ -612,7 +679,8 @@ public sealed partial class MonitoringState : IShowcaseSiteState
         email = (email ?? string.Empty).Trim().ToLowerInvariant();
         var services = (serviceIds ?? Array.Empty<string>()).Distinct().ToList();
 
-        if (!IsEmail(email) || services.Any(id => FindService(id) is null))
+        // Subscribers only see, and so only follow, the services on the status page.
+        if (!IsEmail(email) || services.Any(id => !IsOnStatusPage(id)))
             return MonitoringResult.Invalid;
 
         if (subscriptions.Any(item => item.Email == email))
@@ -677,7 +745,7 @@ public sealed partial class MonitoringState : IShowcaseSiteState
         return MonitoringResult.Ok;
     }
 
-    /// <summary>Moves the shown window up to the clock's latest tick, so charts and logs show the newest samples.</summary>
+    /// <summary>Moves the shown window up to the clock's latest tick, so charts and logs show the newest samples, then evaluates the alert rules.</summary>
     public void Tick()
     {
         var target = LiveTick;
@@ -687,10 +755,14 @@ public sealed partial class MonitoringState : IShowcaseSiteState
 
         displayTick = target;
         RebuildHistory();
+
+        if (EvaluateRules())
+            Commit();
+
         Ticked?.Invoke();
     }
 
-    /// <summary>Validates a stored snapshot against its own data and applies it only when every part is valid.</summary>
+    /// <summary>Validates a stored snapshot against its own data (never the live lists) and applies it only when every part is valid.</summary>
     public bool TryRestoreData(JsonElement data)
     {
         MonitoringSnapshot? snapshot;
@@ -707,10 +779,14 @@ public sealed partial class MonitoringState : IShowcaseSiteState
         if (snapshot is not
             {
                 Emails: { Count: <= MaxEmails } storedEmails,
+                Faults: { Count: <= MaxFaults } storedFaults,
                 Incidents: { Count: > 0 and <= MaxIncidents } storedIncidents,
+                Maintenance: { Count: <= MaxMaintenanceWindows } storedMaintenance,
                 Notifications: { Count: <= MaxNotifications } storedNotifications,
                 Overrides: { Count: <= MaxOverrides } storedOverrides,
                 Preferences: { Count: <= 10 } storedPreferences,
+                Rules: { Count: <= MaxRules } storedRules,
+                Services: { Count: > 0 and <= MaxServices } storedServices,
                 Subscriptions: { Count: <= MaxSubscriptions } storedSubscriptions,
             }
             || snapshot.NextIncidentId is < FirstIncidentId or > NextIdLimit
@@ -718,25 +794,59 @@ public sealed partial class MonitoringState : IShowcaseSiteState
             || snapshot.NextEmailId is < 1 or > NextIdLimit
             || snapshot.NextNotificationId is < 1 or > NextIdLimit
             || snapshot.NextOverrideId is < 1 or > NextIdLimit
-            || snapshot.NextSubscriptionId is < 1 or > NextIdLimit)
+            || snapshot.NextSubscriptionId is < 1 or > NextIdLimit
+            || snapshot.NextRuleId is < 1 or > NextIdLimit
+            || snapshot.NextFaultId is < 1 or > NextIdLimit
+            || snapshot.NextMaintenanceId is < 1 or > NextIdLimit)
             return false;
 
-        if (storedIncidents.Any(incident => !ValidIncident(incident, snapshot)) || !Unique(storedIncidents.Select(incident => incident.Id))
+        if (storedServices.Any(service => !ValidService(service)) || !Unique(storedServices.Select(service => service.Id)))
+            return false;
+
+        var serviceIds = storedServices.Select(service => service.Id).ToHashSet();
+
+        if (storedIncidents.Any(incident => !ValidIncident(incident, snapshot, serviceIds)) || !Unique(storedIncidents.Select(incident => incident.Id))
             || !Unique(storedIncidents.SelectMany(incident => incident.Updates).Select(update => update.Id)))
             return false;
 
         var incidentIds = storedIncidents.Select(incident => incident.Id).ToHashSet();
 
+        if (storedRules.Any(rule => rule is null || rule.Id < 1 || rule.Id >= snapshot.NextRuleId || !serviceIds.Contains(rule.ServiceId) || rule.PublicMessage is null
+                || RuleProblem(rule.Name, rule.Metric, rule.Threshold, rule.ForSeconds, rule.Severity, rule.AutoPublish, rule.PublicMessage) is not null
+                || (rule.LastFiredAt is { } fired && !IsPlausible(fired)) || (rule.LastIncidentId is { } last && !incidentIds.Contains(last)))
+            || !Unique(storedRules.Select(rule => rule.Id))
+            || storedIncidents.Any(incident => (incident.RuleId is { } ruleId && (ruleId < 1 || ruleId >= snapshot.NextRuleId))
+                || (incident.FaultId is { } faultId && (faultId < 1 || faultId >= snapshot.NextFaultId))))
+            return false;
+
+        if (storedFaults.Any(fault => fault is null || fault.Id < 1 || fault.Id >= snapshot.NextFaultId || !serviceIds.Contains(fault.ServiceId) || !Enum.IsDefined(fault.Impact)
+                || !IsText(fault.CreatedBy, ShowcaseIdentity.MaxNameLength) || !IsPlausible(fault.Start) || fault.End < fault.Start || (fault.End - fault.Start).TotalSeconds > MaxFaultSeconds)
+            || !Unique(storedFaults.Select(fault => fault.Id)))
+            return false;
+
+        if (storedMaintenance.Any(window => window is null || window.Id < 1 || window.Id >= snapshot.NextMaintenanceId || !IsText(window.Title, MaxMaintenanceTitleLength)
+                || !IsText(window.Description, MaxMaintenanceDescriptionLength) || !IsText(window.CreatedBy, ShowcaseIdentity.MaxNameLength)
+                || window.ServiceIds is not { Count: > 0 } || window.ServiceIds.Any(id => !serviceIds.Contains(id)) || !Unique(window.ServiceIds)
+                || !IsPlausible(window.Start) || window.End <= window.Start || window.End - window.Start > MaxMaintenanceLength
+                || (window.CancelledAt is { } cancelled && !IsPlausible(cancelled)))
+            || !Unique(storedMaintenance.Select(window => window.Id)))
+            return false;
+
+        var maintenanceIds = storedMaintenance.Select(window => window.Id).ToHashSet();
+
         if (storedSubscriptions.Any(subscription => subscription is null || subscription.Id < 1 || subscription.Id >= snapshot.NextSubscriptionId || !IsEmail(subscription.Email)
-                || subscription.ServiceIds is not { Count: <= 20 } || subscription.ServiceIds.Any(id => FindService(id) is null) || !Unique(subscription.ServiceIds)
+                || subscription.ServiceIds is not { Count: <= MaxServices } || subscription.ServiceIds.Any(id => !serviceIds.Contains(id)) || !Unique(subscription.ServiceIds)
                 || !IsPlausible(subscription.CreatedAt))
             || !Unique(storedSubscriptions.Select(subscription => subscription.Id)) || !Unique(storedSubscriptions.Select(subscription => subscription.Email)))
             return false;
 
         var subscriptionIds = storedSubscriptions.Select(subscription => subscription.Id).ToHashSet();
 
+        // An email is about exactly one incident or one maintenance window.
         if (storedEmails.Any(email => email is null || email.Id < 1 || email.Id >= snapshot.NextEmailId || !subscriptionIds.Contains(email.SubscriptionId)
-                || !incidentIds.Contains(email.IncidentId) || !IsEmail(email.To) || !IsText(email.Subject, 200) || !IsText(email.Body, MaxUpdateLength + 600) || !IsPlausible(email.SentAt))
+                || (email.IncidentId is null) == (email.MaintenanceId is null)
+                || (email.IncidentId is { } incidentId && !incidentIds.Contains(incidentId)) || (email.MaintenanceId is { } windowId && !maintenanceIds.Contains(windowId))
+                || !IsEmail(email.To) || !IsText(email.Subject, 200) || !IsText(email.Body, MaxUpdateLength + MaxMaintenanceDescriptionLength + 600) || !IsPlausible(email.SentAt))
             || !Unique(storedEmails.Select(email => email.Id)))
             return false;
 
@@ -756,8 +866,16 @@ public sealed partial class MonitoringState : IShowcaseSiteState
             || !Unique(storedOverrides.Select(item => item.Id)) || !Unique(storedOverrides.Select(item => (item.ShiftStart, item.Role))))
             return false;
 
+        services.Clear();
+        services.AddRange(storedServices);
         incidents.Clear();
         incidents.AddRange(storedIncidents);
+        rules.Clear();
+        rules.AddRange(storedRules);
+        faults.Clear();
+        faults.AddRange(storedFaults);
+        maintenance.Clear();
+        maintenance.AddRange(storedMaintenance);
         subscriptions.Clear();
         subscriptions.AddRange(storedSubscriptions);
         emails.Clear();
@@ -777,6 +895,11 @@ public sealed partial class MonitoringState : IShowcaseSiteState
         nextNotificationId = snapshot.NextNotificationId;
         nextOverrideId = snapshot.NextOverrideId;
         nextSubscriptionId = snapshot.NextSubscriptionId;
+        nextRuleId = snapshot.NextRuleId;
+        nextFaultId = snapshot.NextFaultId;
+        nextMaintenanceId = snapshot.NextMaintenanceId;
+        version++;
+        RebuildHistory();
 
         return true;
     }
@@ -801,7 +924,7 @@ public sealed partial class MonitoringState : IShowcaseSiteState
 
         var services = (serviceIds ?? Array.Empty<string>()).Distinct().ToList();
 
-        if (services.Any(id => FindService(id) is null))
+        if (services.Any(id => !IsOnStatusPage(id)))
             return MonitoringResult.Invalid;
 
         if (subscription.ServiceIds.Order().SequenceEqual(services.Order()))
@@ -826,6 +949,11 @@ public sealed partial class MonitoringState : IShowcaseSiteState
             var hits = published.Where(incident => incident.StartedAt < date.AddDays(1) && (incident.ResolvedAt ?? Clock.Now) >= date).ToList();
             var status = hits.Select(incident => StatusOf(incident.Severity)).DefaultIfEmpty(MonitoringPublicStatus.Operational).Max();
 
+            // A day with maintenance (that happened) shows it, unless an incident made the day worse.
+            if (status == MonitoringPublicStatus.Operational && maintenance.Any(window => window.CancelledAt is null && window.ServiceIds.Contains(serviceId)
+                    && window.Start < date.AddDays(1) && window.End > date && window.Start <= Clock.Now))
+                status = MonitoringPublicStatus.Maintenance;
+
             return new MonitoringUptimeDay(date, status, hits.Select(incident => incident.Id).ToList());
         }).ToList();
     }
@@ -847,6 +975,407 @@ public sealed partial class MonitoringState : IShowcaseSiteState
             });
 
         return total <= 0 ? 100 : Math.Max(0, 100 - (lost / total * 100));
+    }
+
+
+    /// <summary>Returns the injected failure running on a service now, if any.</summary>
+    public MonitoringFault? ActiveFault(string serviceId) => faults.FirstOrDefault(fault => fault.ServiceId == serviceId && fault.Start <= Clock.Now && Clock.Now < fault.End);
+
+    /// <summary>Returns the maintenance window in progress on a service now, if any.</summary>
+    public MonitoringMaintenance? ActiveMaintenance(string serviceId) =>
+        maintenance.FirstOrDefault(window => window.ServiceIds.Contains(serviceId) && window.StatusAt(Clock.Now) == MonitoringMaintenanceStatus.InProgress);
+
+    /// <summary>Cancels a scheduled maintenance window (admins), optionally emailing the subscribers who follow its services.</summary>
+    public MonitoringResult CancelMaintenance(int maintenanceId, bool notifySubscribers)
+    {
+        if (Admin() is null)
+            return MonitoringResult.NotAllowed;
+
+        if (maintenance.FirstOrDefault(window => window.Id == maintenanceId) is not { } window)
+            return MonitoringResult.NotFound;
+
+        if (window.StatusAt(Clock.Now) != MonitoringMaintenanceStatus.Scheduled)
+            return MonitoringResult.WrongState;
+
+        window.CancelledAt = Clock.Now;
+
+        if (notifySubscribers)
+            EmailMaintenance(window, "Maintenance cancelled");
+
+        Commit();
+
+        return MonitoringResult.Ok;
+    }
+
+    /// <summary>Deletes an alert rule (admins). Incidents it opened stay.</summary>
+    public MonitoringResult DeleteRule(int ruleId)
+    {
+        if (Admin() is null)
+            return MonitoringResult.NotAllowed;
+
+        if (rules.RemoveAll(rule => rule.Id == ruleId) == 0)
+            return MonitoringResult.NotFound;
+
+        Changed?.Invoke();
+
+        return MonitoringResult.Ok;
+    }
+
+    /// <summary>
+    /// Deletes a monitored service (admins). A service with incidents, with subscribers who follow it by name, or in a
+    /// scheduled or running maintenance window can't be deleted (hide it from the status page instead); its alert rules and
+    /// injected failures go with it. The last service can't be deleted.
+    /// </summary>
+    public MonitoringResult DeleteService(string serviceId)
+    {
+        if (Admin() is null)
+            return MonitoringResult.NotAllowed;
+
+        if (FindService(serviceId) is not { } service)
+            return MonitoringResult.NotFound;
+
+        if (services.Count == 1 || incidents.Any(incident => incident.ServiceId == serviceId) || subscriptions.Any(subscription => subscription.ServiceIds.Contains(serviceId))
+            || maintenance.Any(window => window.ServiceIds.Contains(serviceId) && window.StatusAt(Clock.Now) is MonitoringMaintenanceStatus.Scheduled or MonitoringMaintenanceStatus.InProgress))
+            return MonitoringResult.WrongState;
+
+        services.Remove(service);
+        rules.RemoveAll(rule => rule.ServiceId == serviceId);
+        faults.RemoveAll(fault => fault.ServiceId == serviceId);
+
+        foreach (var window in maintenance)
+            window.ServiceIds.Remove(serviceId);
+
+        var emptied = maintenance.Where(window => window.ServiceIds.Count == 0).Select(window => window.Id).ToHashSet();
+        maintenance.RemoveAll(window => emptied.Contains(window.Id));
+        emails.RemoveAll(email => email.MaintenanceId is { } id && emptied.Contains(id));
+        Commit();
+
+        return MonitoringResult.Ok;
+    }
+
+    /// <summary>Ends a maintenance window that is in progress (admins), optionally emailing the subscribers who follow its services.</summary>
+    public MonitoringResult EndMaintenanceNow(int maintenanceId, bool notifySubscribers)
+    {
+        if (Admin() is null)
+            return MonitoringResult.NotAllowed;
+
+        if (maintenance.FirstOrDefault(window => window.Id == maintenanceId) is not { } window)
+            return MonitoringResult.NotFound;
+
+        if (window.StatusAt(Clock.Now) != MonitoringMaintenanceStatus.InProgress)
+            return MonitoringResult.WrongState;
+
+        window.End = Clock.Now > window.Start ? Clock.Now : window.Start.AddSeconds(1);
+
+        if (notifySubscribers)
+            EmailMaintenance(window, "Maintenance completed");
+
+        Commit();
+
+        return MonitoringResult.Ok;
+    }
+
+    /// <summary>
+    /// Injects a failure on a service for a while (admins; a drill): from now its metrics bend like a real incident with that
+    /// impact, so alert rules can fire. One failure runs per service at a time.
+    /// </summary>
+    public MonitoringResult InjectFailure(string serviceId, MonitoringImpact impact, int seconds, out MonitoringFault? fault)
+    {
+        fault = null;
+
+        if (Admin() is not { } account)
+            return MonitoringResult.NotAllowed;
+
+        if (FindService(serviceId) is null)
+            return MonitoringResult.NotFound;
+
+        if (!Enum.IsDefined(impact) || seconds is < MinFaultSeconds or > MaxFaultSeconds || nextFaultId >= NextIdLimit)
+            return MonitoringResult.Invalid;
+
+        if (ActiveFault(serviceId) is not null)
+            return MonitoringResult.WrongState;
+
+        // The oldest finished drills make room.
+        while (faults.Count >= MaxFaults && faults.Where(item => item.End <= Clock.Now).OrderBy(item => item.End).FirstOrDefault() is { } oldest)
+            faults.Remove(oldest);
+
+        if (faults.Count >= MaxFaults)
+            return MonitoringResult.Invalid;
+
+        fault = new MonitoringFault { Id = nextFaultId++, ServiceId = serviceId, Impact = impact, Start = Clock.Now, End = Clock.Now.AddSeconds(seconds), CreatedBy = Clip(account.Name, ShowcaseIdentity.MaxNameLength) };
+        faults.Add(fault);
+        Commit();
+
+        return MonitoringResult.Ok;
+    }
+
+    /// <summary>Returns what is wrong with an alert rule's settings, or <see langword="null" /> when they are valid (the same check the state applies).</summary>
+    public static string? RuleProblem(string? name, MonitoringAlertMetric metric, double threshold, int forSeconds, MonitoringSeverity severity, bool autoPublish, string? publicMessage)
+    {
+        if (!IsText(name, MaxRuleNameLength) || name != name!.Trim())
+            return FormattableString.Invariant($"Give the rule a name of 1 to {MaxRuleNameLength} characters.");
+
+        if (!Enum.IsDefined(metric) || !Enum.IsDefined(severity))
+            return "Choose a metric and a severity.";
+
+        var (low, high) = ThresholdRange(metric);
+
+        if (!double.IsFinite(threshold) || threshold < low || threshold > high)
+            return FormattableString.Invariant($"Set a threshold from {low} to {high}.");
+
+        if (forSeconds < MonitoringSeedData.TickSeconds * 2 || forSeconds > MonitoringSeedData.TickSeconds * MonitoringSeedData.HistoryLength || forSeconds % MonitoringSeedData.TickSeconds != 0)
+            return FormattableString.Invariant($"Choose a duration from {MonitoringSeedData.TickSeconds * 2} to {MonitoringSeedData.TickSeconds * MonitoringSeedData.HistoryLength} seconds, in steps of {MonitoringSeedData.TickSeconds}.");
+
+        if (autoPublish && (!IsText(publicMessage, MaxUpdateLength) || publicMessage != publicMessage!.Trim()))
+            return FormattableString.Invariant($"Write the status page message (1 to {MaxUpdateLength} characters), or turn off posting on the status page.");
+
+        return publicMessage is not null && publicMessage.Length > MaxUpdateLength ? FormattableString.Invariant($"Shorten the status page message to {MaxUpdateLength} characters.") : null;
+    }
+
+    /// <summary>
+    /// Creates (<paramref name="ruleId" /> 0) or edits an alert rule (admins). See <see cref="RuleProblem" /> for the limits.
+    /// Editing a rule doesn't touch incidents it already opened.
+    /// </summary>
+    public MonitoringResult SaveRule(int ruleId, string name, string serviceId, MonitoringAlertMetric metric, double threshold, int forSeconds, MonitoringSeverity severity,
+        bool autoPublish, string publicMessage, bool isEnabled, out MonitoringAlertRule? saved)
+    {
+        saved = null;
+
+        if (Admin() is null)
+            return MonitoringResult.NotAllowed;
+
+        var existing = ruleId == 0 ? null : rules.FirstOrDefault(rule => rule.Id == ruleId);
+
+        if ((ruleId != 0 && existing is null) || FindService(serviceId) is null)
+            return MonitoringResult.NotFound;
+
+        name = name?.Trim() ?? string.Empty;
+        publicMessage = publicMessage?.Trim() ?? string.Empty;
+
+        if (RuleProblem(name, metric, threshold, forSeconds, severity, autoPublish, publicMessage) is not null)
+            return MonitoringResult.Invalid;
+
+        if (existing is null)
+        {
+            if (rules.Count >= MaxRules || nextRuleId >= NextIdLimit)
+                return MonitoringResult.Invalid;
+
+            existing = new MonitoringAlertRule { Id = nextRuleId++ };
+            rules.Add(existing);
+        }
+        else if (existing.Name == name && existing.ServiceId == serviceId && existing.Metric == metric && existing.Threshold == threshold && existing.ForSeconds == forSeconds
+            && existing.Severity == severity && existing.AutoPublish == autoPublish && existing.PublicMessage == publicMessage && existing.IsEnabled == isEnabled)
+        {
+            saved = existing;
+
+            return MonitoringResult.NoChange;
+        }
+
+        existing.Name = name;
+        existing.ServiceId = serviceId;
+        existing.Metric = metric;
+        existing.Threshold = threshold;
+        existing.ForSeconds = forSeconds;
+        existing.Severity = severity;
+        existing.AutoPublish = autoPublish;
+        existing.PublicMessage = publicMessage;
+        existing.IsEnabled = isEnabled;
+        saved = existing;
+        Changed?.Invoke();
+
+        return MonitoringResult.Ok;
+    }
+
+    /// <summary>
+    /// Adds (<paramref name="serviceId" /> null; its ID comes from the name) or edits a monitored service (admins): name,
+    /// kind, region, team, description, normal latency and traffic, instances, and whether it is on the status page. The other
+    /// normal ranges come from the kind.
+    /// </summary>
+    public MonitoringResult SaveService(string? serviceId, string name, MonitoringServiceKind kind, string region, string team, string description, double baseLatencyMs,
+        double baseRequests, int instances, bool isPublic, out MonitoringService? saved)
+    {
+        saved = null;
+
+        if (Admin() is null)
+            return MonitoringResult.NotAllowed;
+
+        var existing = serviceId is null ? null : FindService(serviceId);
+
+        if (serviceId is not null && existing is null)
+            return MonitoringResult.NotFound;
+
+        name = name?.Trim() ?? string.Empty;
+        region = region?.Trim() ?? string.Empty;
+        team = team?.Trim() ?? string.Empty;
+        description = description?.Trim() ?? string.Empty;
+
+        if (!IsText(name, MaxServiceNameLength) || !Enum.IsDefined(kind) || !IsText(region, MaxServiceTagLength) || !IsText(team, MaxServiceTagLength)
+            || !IsText(description, MaxServiceDescriptionLength) || !double.IsFinite(baseLatencyMs) || baseLatencyMs is < 0.1 or > 10_000
+            || !double.IsFinite(baseRequests) || baseRequests is < 1 or > 100_000 || instances is < 1 or > 10_000)
+            return MonitoringResult.Invalid;
+
+        if (services.Any(service => service.Id != serviceId && string.Equals(service.Name, name, StringComparison.OrdinalIgnoreCase)))
+            return MonitoringResult.Duplicate;
+
+        if (existing is null)
+        {
+            var id = Slug(name);
+
+            // "new" is the route of the add-service page, so no service may have it as its ID.
+            if (id.Length < 2 || id == "new" || services.Count >= MaxServices)
+                return MonitoringResult.Invalid;
+
+            if (FindService(id) is not null)
+                return MonitoringResult.Duplicate;
+
+            var (errors, cpu, memory, disk) = KindDefaults(kind);
+            saved = new MonitoringService(id, name, kind, region, team, description, baseRequests, baseLatencyMs, errors, cpu, memory, disk, instances, 100) { IsPublic = isPublic };
+            services.Add(saved);
+        }
+        else
+        {
+            saved = existing with
+            {
+                Name = name, Kind = kind, Region = region, Team = team, Description = description, BaseLatencyMs = baseLatencyMs, BaseRequests = baseRequests, Instances = instances,
+                IsPublic = isPublic,
+            };
+
+            if (saved == existing)
+                return MonitoringResult.NoChange;
+
+            services[services.IndexOf(existing)] = saved;
+        }
+
+        if (!FitsSnapshot())
+        {
+            if (existing is null)
+                services.Remove(saved);
+            else
+                services[services.IndexOf(saved)] = existing;
+
+            saved = null;
+
+            return MonitoringResult.Invalid;
+        }
+
+        Commit();
+
+        return MonitoringResult.Ok;
+    }
+
+    /// <summary>
+    /// Schedules a maintenance window on some services (admins): it starts now or later (within 90 days) and lasts up to
+    /// <see cref="MaxMaintenanceLength" />. The status page announces it; <paramref name="notifySubscribers" /> also emails the
+    /// subscribers who follow its services. Alert rules don't fire for its services while it runs.
+    /// </summary>
+    public MonitoringResult ScheduleMaintenance(string title, string description, IReadOnlyList<string> serviceIds, DateTime start, DateTime end, bool notifySubscribers, out MonitoringMaintenance? window)
+    {
+        window = null;
+
+        if (Admin() is not { } account)
+            return MonitoringResult.NotAllowed;
+
+        if (MaintenanceProblem(title, description, serviceIds, start, end) is { } problem)
+            return problem;
+
+        if (maintenance.Count >= MaxMaintenanceWindows || nextMaintenanceId >= NextIdLimit)
+            return MonitoringResult.Invalid;
+
+        window = new MonitoringMaintenance
+        {
+            Id = nextMaintenanceId++, Title = title.Trim(), Description = description.Trim(), ServiceIds = serviceIds.Distinct().ToList(), Start = start, End = end,
+            CreatedBy = Clip(account.Name, ShowcaseIdentity.MaxNameLength),
+        };
+        maintenance.Add(window);
+
+        if (!FitsSnapshot())
+        {
+            maintenance.Remove(window);
+            window = null;
+
+            return MonitoringResult.Invalid;
+        }
+
+        if (notifySubscribers)
+            EmailMaintenance(window, "Scheduled maintenance");
+
+        Commit();
+
+        return MonitoringResult.Ok;
+    }
+
+    /// <summary>Turns an alert rule on or off (admins).</summary>
+    public MonitoringResult SetRuleEnabled(int ruleId, bool isEnabled)
+    {
+        if (Admin() is null)
+            return MonitoringResult.NotAllowed;
+
+        if (rules.FirstOrDefault(rule => rule.Id == ruleId) is not { } rule)
+            return MonitoringResult.NotFound;
+
+        if (rule.IsEnabled == isEnabled)
+            return MonitoringResult.NoChange;
+
+        rule.IsEnabled = isEnabled;
+        Changed?.Invoke();
+
+        return MonitoringResult.Ok;
+    }
+
+    /// <summary>Stops an injected failure that is running (admins): the metrics return to normal from the next sample.</summary>
+    public MonitoringResult StopFailure(int faultId)
+    {
+        if (Admin() is null)
+            return MonitoringResult.NotAllowed;
+
+        if (faults.FirstOrDefault(fault => fault.Id == faultId) is not { } fault)
+            return MonitoringResult.NotFound;
+
+        if (fault.End <= Clock.Now)
+            return MonitoringResult.NoChange;
+
+        fault.End = Clock.Now > fault.Start ? Clock.Now : fault.Start;
+        Commit();
+
+        return MonitoringResult.Ok;
+    }
+
+    /// <summary>Changes a scheduled maintenance window (admins); <paramref name="notifySubscribers" /> emails the subscribers who follow its services.</summary>
+    public MonitoringResult UpdateMaintenance(int maintenanceId, string title, string description, IReadOnlyList<string> serviceIds, DateTime start, DateTime end, bool notifySubscribers)
+    {
+        if (Admin() is null)
+            return MonitoringResult.NotAllowed;
+
+        if (maintenance.FirstOrDefault(item => item.Id == maintenanceId) is not { } window)
+            return MonitoringResult.NotFound;
+
+        if (window.StatusAt(Clock.Now) != MonitoringMaintenanceStatus.Scheduled)
+            return MonitoringResult.WrongState;
+
+        if (MaintenanceProblem(title, description, serviceIds, start, end) is { } problem)
+            return problem;
+
+        var ids = serviceIds.Distinct().ToList();
+
+        if (window.Title == title.Trim() && window.Description == description.Trim() && window.ServiceIds.Order().SequenceEqual(ids.Order()) && window.Start == start && window.End == end)
+            return MonitoringResult.NoChange;
+
+        var before = (window.Title, window.Description, window.ServiceIds, window.Start, window.End);
+        (window.Title, window.Description, window.ServiceIds, window.Start, window.End) = (title.Trim(), description.Trim(), ids, start, end);
+
+        if (!FitsSnapshot())
+        {
+            (window.Title, window.Description, window.ServiceIds, window.Start, window.End) = before;
+
+            return MonitoringResult.Invalid;
+        }
+
+        if (notifySubscribers)
+            EmailMaintenance(window, "Maintenance updated");
+
+        Commit();
+
+        return MonitoringResult.Ok;
     }
 
     #endregion
@@ -904,10 +1433,23 @@ public sealed partial class MonitoringState : IShowcaseSiteState
 
     private static int WeekIndex(DateTime time) => (int)Math.Floor((time - MonitoringSeedData.RotationStart).TotalDays / 7);
 
-    /// <summary>The incident active on a service at a time (the worst one), from its own start and resolution times.</summary>
-    private MonitoringIncident? ActiveAt(string serviceId, DateTime time) =>
-        incidents.Where(incident => incident.ServiceId == serviceId && incident.StartedAt <= time && (incident.ResolvedAt is null || time < incident.ResolvedAt))
-            .OrderByDescending(incident => incident.Impact == MonitoringImpact.Outage).ThenBy(incident => incident.Severity).FirstOrDefault();
+    /// <summary>
+    /// What bends a service's metrics at a time: the worst of the incidents active then (from their own start and resolution
+    /// times) and the injected failures running then. An outage outranks errors, which outrank latency.
+    /// </summary>
+    private MonitoringImpact? ImpactAt(string serviceId, DateTime time)
+    {
+        // An incident a rule opened during a drill is the drill's symptom: the drill bends the metrics, so they recover when it ends.
+        var fromIncidents = incidents.Where(incident => incident.ServiceId == serviceId && incident.FaultId is null && incident.StartedAt <= time && (incident.ResolvedAt is null || time < incident.ResolvedAt))
+            .Select(incident => incident.Impact);
+        var fromFaults = faults.Where(fault => fault.ServiceId == serviceId && fault.Start <= time && time < fault.End).Select(fault => fault.Impact);
+        var all = fromIncidents.Concat(fromFaults).ToList();
+
+        return all.Count == 0 ? null
+            : all.Contains(MonitoringImpact.Outage) ? MonitoringImpact.Outage
+            : all.Contains(MonitoringImpact.Errors) ? MonitoringImpact.Errors
+            : MonitoringImpact.Latency;
+    }
 
     private void Commit()
     {
@@ -919,16 +1461,40 @@ public sealed partial class MonitoringState : IShowcaseSiteState
     /// <summary>Puts one email per matching subscription in the outbox; the oldest go when it is full.</summary>
     private void EmailSubscribers(MonitoringIncident incident, MonitoringPublicStage stage, string text)
     {
-        var service = FindService(incident.ServiceId)!;
+        var service = FindService(incident.ServiceId);
 
-        foreach (var subscription in subscriptions.Where(item => item.ServiceIds.Count == 0 || item.ServiceIds.Contains(incident.ServiceId)))
+        SendEmails(new[] { incident.ServiceId }, Clip($"[{StageWord(stage)}] {incident.Title}", 200),
+            $"{service?.Name ?? incident.ServiceId}: {StageWord(stage)}\n\n{text}\n\nView the incident on {MonitoringSeedData.StatusPageName}. You get this email because you subscribed to updates in this demo tab.",
+            incident.Id, null);
+    }
+
+    /// <summary>Emails the subscribers who follow any of the window's services about a scheduled maintenance window.</summary>
+    private void EmailMaintenance(MonitoringMaintenance window, string headline)
+    {
+        // Only the services on the status page are named; a window with none of them sends nothing (see SendEmails).
+        var names = string.Join(", ", window.ServiceIds.Where(IsOnStatusPage).Select(id => FindService(id)!.Name));
+        var end = window.End.Date == window.Start.Date ? FormattableString.Invariant($"{window.End:HH:mm}") : FormattableString.Invariant($"{window.End:ddd, MMM d, HH:mm}");
+
+        SendEmails(window.ServiceIds, Clip($"[{headline}] {window.Title}", 200),
+            FormattableString.Invariant($"{names}: {headline}\n\n{window.Start:ddd, MMM d, HH:mm} to {end} (site time)\n\n{window.Description}\n\nYou get this email because you subscribed to updates in this demo tab."),
+            null, window.Id);
+    }
+
+    /// <summary>Puts one email per subscription that follows any of the services in the outbox; the oldest go when it is full or the snapshot would be too large.</summary>
+    private void SendEmails(IReadOnlyCollection<string> serviceIds, string subject, string body, int? incidentId, int? maintenanceId)
+    {
+        // Nothing about services the status page doesn't show goes to subscribers.
+        var publicIds = serviceIds.Where(IsOnStatusPage).ToList();
+
+        if (publicIds.Count == 0)
+            return;
+
+        foreach (var subscription in subscriptions.Where(item => item.ServiceIds.Count == 0 || item.ServiceIds.Any(publicIds.Contains)))
         {
             if (nextEmailId >= NextIdLimit)
                 return;
 
-            emails.Add(new MonitoringEmail(nextEmailId++, subscription.Id, subscription.Email, Clip($"[{StageWord(stage)}] {incident.Title}", 200),
-                $"{service.Name}: {StageWord(stage)}\n\n{text}\n\nView the incident on {MonitoringSeedData.StatusPageName}. You get this email because you subscribed to updates in this demo tab.",
-                Clock.Now, incident.Id));
+            emails.Add(new MonitoringEmail(nextEmailId++, subscription.Id, subscription.Email, subject, body, Clock.Now, incidentId) { MaintenanceId = maintenanceId });
 
             while (emails.Count > MaxEmails)
                 emails.RemoveAt(0);
@@ -939,8 +1505,14 @@ public sealed partial class MonitoringState : IShowcaseSiteState
             emails.RemoveAt(0);
     }
 
-    /// <summary>The signed-in engineer, or <see langword="null" />.</summary>
-    private ShowcaseAccount? Engineer() => Identity.Current is { RoleId: MonitoringSeedData.EngineerRole } account ? account : null;
+    /// <summary>The signed-in admin, or <see langword="null" />.</summary>
+    private ShowcaseAccount? Admin() => Identity.Current is { RoleId: MonitoringSeedData.AdminRole } account ? account : null;
+
+    /// <summary>The signed-in engineer or admin (admins have every engineer action), or <see langword="null" />.</summary>
+    private ShowcaseAccount? Engineer() => Identity.Current is { RoleId: MonitoringSeedData.EngineerRole or MonitoringSeedData.AdminRole } account ? account : null;
+
+    /// <summary>Whether a service exists and is a component on the public status page.</summary>
+    private bool IsOnStatusPage(string serviceId) => FindService(serviceId) is { IsPublic: true };
 
     /// <summary>Whether the snapshot, as it would be saved now, still fits under <see cref="MaxSnapshotLength" />.</summary>
     private bool FitsSnapshot()
@@ -958,7 +1530,7 @@ public sealed partial class MonitoringState : IShowcaseSiteState
     /// <summary>The log lines for the shown tick: the seeded two hours, three generated lines per tick since, and incident events; newest first.</summary>
     private IReadOnlyList<MonitoringLogEntry> BuildLogs()
     {
-        var lines = new List<MonitoringLogEntry>(seedLogs);
+        var lines = seedLogs.Where(entry => FindService(entry.ServiceId) is not null).ToList();
         var now = CurrentTime;
 
         for (var t = Math.Max(1, displayTick - LiveLogTicks + 1); t <= displayTick; t++)
@@ -968,7 +1540,7 @@ public sealed partial class MonitoringState : IShowcaseSiteState
                 var id = 10_001 + ((t - 1) * 3) + i;
                 var service = Services[(int)(MonitoringSeedData.Hash(id, 17, i) * 1000) % Services.Count];
                 var time = SampleTime(t).AddMilliseconds(-i * 350);
-                var level = ActiveAt(service.Id, time)?.Impact switch
+                var level = ImpactAt(service.Id, time) switch
                 {
                     MonitoringImpact.Errors or MonitoringImpact.Outage => i == 1 ? MonitoringLogLevel.Warning : MonitoringLogLevel.Error,
                     MonitoringImpact.Latency => MonitoringLogLevel.Warning,
@@ -1018,13 +1590,34 @@ public sealed partial class MonitoringState : IShowcaseSiteState
 
     private void RebuildHistory()
     {
-        for (var index = 0; index < Services.Count; index++)
+        history.Clear();
+
+        foreach (var service in Services)
         {
-            var service = Services[index];
+            var index = WaveIndex(service.Id);
             history[service.Id] = Enumerable.Range(displayTick - MonitoringSeedData.HistoryLength + 1, MonitoringSeedData.HistoryLength).Select(t => Sample(service, index, t)).ToList();
         }
 
         logCache = null;
+    }
+
+    /// <summary>
+    /// A service's place in the metric waves: a seeded service keeps its seed position; an added one gets a stable number from
+    /// its ID. So adding or deleting a service never changes another service's metrics.
+    /// </summary>
+    private static int WaveIndex(string serviceId)
+    {
+        var seeded = seedServiceIds.IndexOf(serviceId);
+
+        if (seeded >= 0)
+            return seeded;
+
+        var hash = 17;
+
+        foreach (var c in serviceId)
+            hash = unchecked((hash * 31) + c);
+
+        return 8 + Math.Abs(hash % 89);
     }
 
     /// <summary>A deterministic sample: a slow wave plus hash noise around the normal range, bent by the incident active at its time.</summary>
@@ -1040,7 +1633,7 @@ public sealed partial class MonitoringState : IShowcaseSiteState
         var cpu = Math.Clamp(service.BaseCpu * Wave(3, 0.06), 0, 100);
         var memory = Math.Clamp(service.BaseMemory * Wave(4, 0.02), 0, 100);
 
-        switch (ActiveAt(service.Id, time)?.Impact)
+        switch (ImpactAt(service.Id, time))
         {
             case MonitoringImpact.Errors:
                 errors = 6 + (1.5 * Math.Sin(at / 3.0)) + MonitoringSeedData.Hash(at, 3, 1);
@@ -1100,10 +1693,145 @@ public sealed partial class MonitoringState : IShowcaseSiteState
         return true;
     }
 
-    /// <summary>Checks one stored incident: references, enums, text limits, times, the timeline, the postmortem, and that a published incident's public stage matches its status.</summary>
-    private bool ValidIncident(MonitoringIncident? incident, MonitoringSnapshot snapshot)
+    /// <summary>Evaluates the enabled alert rules on the shown window; returns whether any opened an incident.</summary>
+    private bool EvaluateRules()
     {
-        if (incident is null || incident.Id < 1 || incident.Id >= snapshot.NextIncidentId || FindService(incident.ServiceId) is null || !Enum.IsDefined(incident.Severity)
+        var fired = false;
+
+        foreach (var rule in rules.Where(rule => rule.IsEnabled).ToList())
+        {
+            // An alert doesn't fire on a service that already has an incident, or that is in maintenance.
+            if (FindService(rule.ServiceId) is not { } service || ActiveIncident(service.Id) is not null || ActiveMaintenance(service.Id) is not null)
+                continue;
+
+            var count = Math.Clamp(rule.ForSeconds / MonitoringSeedData.TickSeconds, 1, MonitoringSeedData.HistoryLength);
+            var samples = history[service.Id].TakeLast(count).ToList();
+
+            // After an incident on the service is resolved, the rule needs a full window of new samples before it fires again.
+            var lastResolved = incidents.Where(incident => incident.ServiceId == service.Id && incident.ResolvedAt is not null).Select(incident => incident.ResolvedAt!.Value).DefaultIfEmpty(DateTime.MinValue).Max();
+
+            if (samples.Count < count || samples[0].Time <= lastResolved || !samples.All(sample => MetricOf(rule.Metric, sample) > rule.Threshold))
+                continue;
+
+            if (incidents.Count >= MaxIncidents || nextIncidentId >= NextIdLimit || nextUpdateId >= NextIdLimit - 2)
+                continue;
+
+            var latest = MetricOf(rule.Metric, samples[^1]);
+            var drill = faults.FirstOrDefault(fault => fault.ServiceId == service.Id && fault.Start <= samples[^1].Time && samples[^1].Time < fault.End);
+
+            // A hidden service's incidents never go on the status page.
+            var publish = rule.AutoPublish && service.IsPublic;
+            var impact = ImpactAt(service.Id, samples[^1].Time)
+                ?? (rule.Metric == MonitoringAlertMetric.ErrorRate ? (latest >= 20 ? MonitoringImpact.Outage : MonitoringImpact.Errors) : MonitoringImpact.Latency);
+            var incident = new MonitoringIncident
+            {
+                Id = nextIncidentId++, RuleId = rule.Id, FaultId = drill?.Id, ServiceId = service.Id, Severity = rule.Severity, Impact = impact, Status = MonitoringIncidentStatus.Open,
+                StartedAt = samples[0].Time, Title = Clip(rule.Name, MaxIncidentTitleLength),
+                Summary = Clip($"{MetricLabel(rule.Metric)} stayed above {MetricValue(rule.Metric, rule.Threshold)} for {rule.ForSeconds} s on {service.Name} (latest {MetricValue(rule.Metric, latest)}).", MaxIncidentSummaryLength),
+            };
+
+            incident.Updates.Add(new MonitoringIncidentUpdate(samples[^1].Time, MonitoringSeedData.SystemAuthor,
+                Clip($"Alert fired: {rule.Name}. {incident.Summary}", MaxUpdateLength)) { Id = nextUpdateId++, Kind = MonitoringUpdateKind.Alert });
+
+            if (publish)
+                incident.Updates.Add(new MonitoringIncidentUpdate(samples[^1].Time, MonitoringSeedData.SystemAuthor, rule.PublicMessage) { Id = nextUpdateId++, Kind = MonitoringUpdateKind.Public, Stage = MonitoringPublicStage.Investigating });
+
+            incidents.Add(incident);
+
+            if (!FitsSnapshot())
+            {
+                incidents.Remove(incident);
+
+                continue;
+            }
+
+            rule.LastFiredAt = samples[^1].Time;
+            rule.LastIncidentId = incident.Id;
+
+            if (publish)
+                EmailSubscribers(incident, MonitoringPublicStage.Investigating, rule.PublicMessage);
+
+            NotifyOnCall(incident, $"{SeverityWord(rule.Severity)} alert: {rule.Name}", $"#{incident.Id} opened on {service.Name}.{(publish ? " It's posted on the status page." : string.Empty)}");
+            fired = true;
+        }
+
+        return fired;
+    }
+
+    /// <summary>The normal ranges a new service gets from its kind: error rate, CPU, memory, disk.</summary>
+    private static (double Errors, double Cpu, double Memory, double Disk) KindDefaults(MonitoringServiceKind kind) => kind switch
+    {
+        MonitoringServiceKind.Api => (0.3, 40, 55, 30),
+        MonitoringServiceKind.Worker => (0.5, 45, 60, 25),
+        MonitoringServiceKind.Database => (0, 55, 70, 50),
+        MonitoringServiceKind.Cache => (0, 20, 70, 10),
+        _ => (0.8, 20, 35, 20),
+    };
+
+    /// <summary>Checks a maintenance window's fields; returns the refusal, or <see langword="null" /> when they are valid.</summary>
+    private MonitoringResult? MaintenanceProblem(string? title, string? description, IReadOnlyList<string>? serviceIds, DateTime start, DateTime end)
+    {
+        if (serviceIds is null || serviceIds.Count == 0 || serviceIds.Any(id => FindService(id) is null))
+            return serviceIds is { Count: > 0 } ? MonitoringResult.NotFound : MonitoringResult.Invalid;
+
+        return !IsText(title?.Trim(), MaxMaintenanceTitleLength) || !IsText(description?.Trim(), MaxMaintenanceDescriptionLength)
+            || start < Clock.Now.AddMinutes(-1) || start > Clock.Now.AddDays(90) || end <= start || end - start > MaxMaintenanceLength
+                ? MonitoringResult.Invalid
+                : null;
+    }
+
+    private static string MetricLabel(MonitoringAlertMetric metric) => metric switch
+    {
+        MonitoringAlertMetric.ErrorRate => "Error rate",
+        MonitoringAlertMetric.Latency => "p95 latency",
+        _ => "CPU",
+    };
+
+    private static double MetricOf(MonitoringAlertMetric metric, MonitoringSample sample) => metric switch
+    {
+        MonitoringAlertMetric.ErrorRate => sample.ErrorRate,
+        MonitoringAlertMetric.Latency => sample.LatencyMs,
+        _ => sample.Cpu,
+    };
+
+    private static string MetricValue(MonitoringAlertMetric metric, double value) =>
+        metric == MonitoringAlertMetric.Latency ? FormattableString.Invariant($"{value:0} ms") : FormattableString.Invariant($"{value:0.#}%");
+
+    /// <summary>A service ID from its name: lower-case letters, digits, and hyphens.</summary>
+    private static string Slug(string name)
+    {
+        var slug = SlugPattern().Replace(name.ToLowerInvariant(), "-").Trim('-');
+
+        return slug.Length > 30 ? slug[..30].TrimEnd('-') : slug;
+    }
+
+    [GeneratedRegex("[^a-z0-9]+")]
+    private static partial Regex SlugPattern();
+
+    /// <summary>The thresholds an alert rule may use for a metric: percent for error rate and CPU, milliseconds for latency.</summary>
+    public static (double Low, double High) ThresholdRange(MonitoringAlertMetric metric) => metric switch
+    {
+        MonitoringAlertMetric.Latency => (1, 60_000),
+        MonitoringAlertMetric.Cpu => (1, 100),
+        _ => (0.1, 100),
+    };
+
+    [GeneratedRegex("^[a-z0-9][a-z0-9-]{1,29}$")]
+    private static partial Regex ServiceIdPattern();
+
+    /// <summary>Checks one stored service: its ID, text limits, kind, and normal ranges.</summary>
+    private static bool ValidService(MonitoringService? service) =>
+        service is not null && service.Id is not null && ServiceIdPattern().IsMatch(service.Id) && service.Id != "new" && IsText(service.Name, MaxServiceNameLength) && Enum.IsDefined(service.Kind)
+        && IsText(service.Region, MaxServiceTagLength) && IsText(service.Team, MaxServiceTagLength) && IsText(service.Description, MaxServiceDescriptionLength)
+        && InRange(service.BaseRequests, 1, 100_000) && InRange(service.BaseLatencyMs, 0.1, 10_000) && InRange(service.BaseErrorRate, 0, 10) && InRange(service.BaseCpu, 0, 100)
+        && InRange(service.BaseMemory, 0, 100) && InRange(service.DiskUsed, 0, 100) && service.Instances is >= 1 and <= 10_000 && InRange(service.Uptime30Days, 0, 100);
+
+    private static bool InRange(double value, double low, double high) => double.IsFinite(value) && value >= low && value <= high;
+
+    /// <summary>Checks one stored incident: references, enums, text limits, times, the timeline, the postmortem, and that a published incident's public stage matches its status.</summary>
+    private bool ValidIncident(MonitoringIncident? incident, MonitoringSnapshot snapshot, HashSet<string> serviceIds)
+    {
+        if (incident is null || incident.Id < 1 || incident.Id >= snapshot.NextIncidentId || !serviceIds.Contains(incident.ServiceId) || !Enum.IsDefined(incident.Severity)
             || !Enum.IsDefined(incident.Impact) || !Enum.IsDefined(incident.Status) || !IsText(incident.Title, MaxIncidentTitleLength) || !IsText(incident.Summary, MaxIncidentSummaryLength)
             || !IsPlausible(incident.StartedAt) || (incident.Assignee is not null && !IsText(incident.Assignee, ShowcaseIdentity.MaxNameLength))
             || (incident.Status == MonitoringIncidentStatus.Resolved) != (incident.ResolvedAt is not null)
@@ -1151,8 +1879,11 @@ public sealed partial class MonitoringState : IShowcaseSiteState
     /// <summary>Gets whether the theme switcher reported the dark color mode.</summary>
     public bool IsDarkTheme => isDarkTheme;
 
-    /// <summary>Gets whether the signed-in account is an engineer.</summary>
-    public bool IsEngineer => Identity.Current?.RoleId == MonitoringSeedData.EngineerRole;
+    /// <summary>Gets whether the signed-in account is an admin.</summary>
+    public bool IsAdmin => Identity.Current?.RoleId == MonitoringSeedData.AdminRole;
+
+    /// <summary>Gets whether the signed-in account uses the console: an engineer or an admin.</summary>
+    public bool IsEngineer => Identity.Current?.RoleId is MonitoringSeedData.EngineerRole or MonitoringSeedData.AdminRole;
 
     /// <summary>Gets or sets whether live updates are paused; kept here so the choice holds across pages (WCAG 2.2.2).</summary>
     public bool IsPaused { get; set; }
@@ -1176,8 +1907,14 @@ public sealed partial class MonitoringState : IShowcaseSiteState
     public IReadOnlyList<MonitoringNotification> Notifications =>
         Engineer() is { } account ? notifications.Where(notification => notification.AccountId == account.Id).OrderByDescending(notification => notification.Time).ThenByDescending(notification => notification.Id).ToList() : Array.Empty<MonitoringNotification>();
 
+    /// <summary>Gets the injected failures, newest first.</summary>
+    public IReadOnlyList<MonitoringFault> Faults => faults.OrderByDescending(fault => fault.Start).ThenByDescending(fault => fault.Id).ToList();
+
+    /// <summary>Gets every maintenance window, the latest start first.</summary>
+    public IReadOnlyList<MonitoringMaintenance> MaintenanceWindows => maintenance.OrderByDescending(window => window.Start).ToList();
+
     /// <summary>Gets the status page's overall status: the worst of its components.</summary>
-    public MonitoringPublicStatus OverallPublicStatus => Services.Select(service => PublicStatus(service.Id)).DefaultIfEmpty(MonitoringPublicStatus.Operational).Max();
+    public MonitoringPublicStatus OverallPublicStatus => StatusPageServices.Select(service => PublicStatus(service.Id)).DefaultIfEmpty(MonitoringPublicStatus.Operational).Max();
 
     /// <summary>Gets the on-call overrides, newest first.</summary>
     public IReadOnlyList<MonitoringOverride> Overrides => overrides.OrderByDescending(item => item.CreatedAt).ToList();
@@ -1186,21 +1923,34 @@ public sealed partial class MonitoringState : IShowcaseSiteState
     public MonitoringNotificationPreferences Preferences =>
         Engineer() is { } account && preferences.TryGetValue(account.Id, out var saved) ? saved : new MonitoringNotificationPreferences();
 
-    /// <summary>Gets the published incidents that are still ongoing on the status page, newest first.</summary>
+    /// <summary>Gets the published incidents that are still ongoing on the status page (on services it shows), newest first.</summary>
     public IReadOnlyList<MonitoringIncident> PublicActiveIncidents =>
-        incidents.Where(incident => incident.IsPublished && incident.PublicStage != MonitoringPublicStage.Resolved).OrderByDescending(incident => incident.StartedAt).ToList();
+        incidents.Where(incident => incident.IsPublished && incident.PublicStage != MonitoringPublicStage.Resolved && IsOnStatusPage(incident.ServiceId)).OrderByDescending(incident => incident.StartedAt).ToList();
 
-    /// <summary>Gets every published incident (the status page's history), newest first.</summary>
-    public IReadOnlyList<MonitoringIncident> PublicIncidents => incidents.Where(incident => incident.IsPublished).OrderByDescending(incident => incident.StartedAt).ToList();
+    /// <summary>Gets every published incident on a service the status page shows (its history), newest first.</summary>
+    public IReadOnlyList<MonitoringIncident> PublicIncidents => incidents.Where(incident => incident.IsPublished && IsOnStatusPage(incident.ServiceId)).OrderByDescending(incident => incident.StartedAt).ToList();
 
-    /// <summary>Gets the monitored services.</summary>
-    public IReadOnlyList<MonitoringService> Services { get; } = MonitoringSeedData.Services();
+    /// <summary>Gets the maintenance windows the status page announces: in progress, and scheduled within the next 14 days; soonest first.</summary>
+    public IReadOnlyList<MonitoringMaintenance> PublicMaintenance =>
+        maintenance.Where(window => window.StatusAt(Clock.Now) is MonitoringMaintenanceStatus.InProgress
+                || (window.StatusAt(Clock.Now) == MonitoringMaintenanceStatus.Scheduled && window.Start <= Clock.Now.AddDays(14)))
+            .Where(window => window.ServiceIds.Any(id => FindService(id) is { IsPublic: true }))
+            .OrderBy(window => window.Start).ToList();
+
+    /// <summary>Gets the alert rules, in number order.</summary>
+    public IReadOnlyList<MonitoringAlertRule> Rules => rules.OrderBy(rule => rule.Id).ToList();
+
+    /// <summary>Gets the monitored services, in the order they were added.</summary>
+    public IReadOnlyList<MonitoringService> Services => services;
+
+    /// <summary>Gets the services shown as components on the public status page.</summary>
+    public IReadOnlyList<MonitoringService> StatusPageServices => services.Where(service => service.IsPublic).ToList();
 
     /// <summary>Gets the site's slug, used in the storage key.</summary>
     public string SiteSlug => "monitoring";
 
-    /// <summary>Gets the snapshot format version.</summary>
-    public int SnapshotVersion => 1;
+    /// <summary>Gets the snapshot format version (2: services, rules, failures, and maintenance are part of it).</summary>
+    public int SnapshotVersion => 2;
 
     /// <summary>Gets the status page subscriptions made in this tab, oldest first.</summary>
     public IReadOnlyList<MonitoringSubscription> Subscriptions => subscriptions;
@@ -1232,11 +1982,21 @@ public sealed partial class MonitoringState : IShowcaseSiteState
 
         public List<MonitoringEmail>? Emails { get; set; }
 
+        public List<MonitoringFault>? Faults { get; set; }
+
         public List<MonitoringIncident>? Incidents { get; set; }
+
+        public List<MonitoringMaintenance>? Maintenance { get; set; }
 
         public int NextEmailId { get; set; }
 
+        public int NextFaultId { get; set; }
+
         public int NextIncidentId { get; set; }
+
+        public int NextMaintenanceId { get; set; }
+
+        public int NextRuleId { get; set; }
 
         public int NextNotificationId { get; set; }
 
@@ -1251,6 +2011,10 @@ public sealed partial class MonitoringState : IShowcaseSiteState
         public List<MonitoringOverride>? Overrides { get; set; }
 
         public Dictionary<string, MonitoringNotificationPreferences>? Preferences { get; set; }
+
+        public List<MonitoringAlertRule>? Rules { get; set; }
+
+        public List<MonitoringService>? Services { get; set; }
 
         public List<MonitoringSubscription>? Subscriptions { get; set; }
 
