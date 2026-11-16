@@ -204,32 +204,9 @@ public partial class CourseDetail : ComponentBase, IDisposable
         await deleteModal.HideAsync();
     }
 
+    /// <summary>Closes the dialog; the unenroll runs once it is hidden, so the page never changes under an open dialog.</summary>
     private async Task ConfirmUnenrollAsync()
     {
-        if (Course is not { } course)
-            return;
-
-        var hasCertificate = State.CertificateFor(course.Id) is not null;
-        var result = State.Unenroll(course.Id);
-
-        switch (result)
-        {
-            case LearningResult.Ok:
-                isEditing = false;
-                ClearReviewForm();
-                enrollStatus.Set($"You're no longer enrolled in {course.Title}. Your progress and self-check results are removed; "
-                    + $"{(hasCertificate ? "your certificate, " : string.Empty)}any review and questions you wrote stay. You can enroll again at any time.");
-                break;
-
-            case LearningResult.NotEnrolled:
-                enrollStatus.Set($"You weren't enrolled in {course.Title}, so nothing changed.");
-                break;
-
-            default:
-                unenrollError = ResultText(result, "You're still enrolled.");
-                return;
-        }
-
         unenrollDone = true;
         await unenrollModal.HideAsync();
     }
@@ -255,6 +232,10 @@ public partial class CourseDetail : ComponentBase, IDisposable
 
             case LearningResult.Invalid:
                 enrollStatus.Set("This demo tab has reached its limit of enrollments, so you weren't enrolled. Use \"Reset demo data\" in the account menu to start over.", isError: true);
+                break;
+
+            case LearningResult.WrongState:
+                enrollStatus.Set($"{course.Title} isn't open for new enrollments right now, so you weren't enrolled.", isError: true);
                 break;
 
             default:
@@ -284,21 +265,57 @@ public partial class CourseDetail : ComponentBase, IDisposable
 
     private void OnStateChanged() => InvokeAsync(StateHasChanged);
 
-    /// <summary>After unenrolling, focus goes to the status message (the opener is gone); otherwise back to "Unenroll".</summary>
+    /// <summary>
+    /// Runs a confirmed unenroll once the dialog is hidden, then moves focus to the status message (the opener is gone);
+    /// after "Stay enrolled", back to "Unenroll". A course no longer in the catalog disappears for the learner after leaving
+    /// it (unless they hold its certificate), so they go to My learning with a notice.
+    /// </summary>
     private async Task OnUnenrollHiddenAsync()
     {
         unenrollError = null;
 
-        if (unenrollDone)
-        {
-            unenrollDone = false;
-            StateHasChanged();
-            await LearningDisplay.FocusAsync(enrollStatusRegion);
-        }
-        else
+        if (!unenrollDone)
         {
             await LearningDisplay.FocusAsync(unenrollButton);
+
+            return;
         }
+
+        unenrollDone = false;
+
+        if (Course is not { } course)
+            return;
+
+        var hasCertificate = State.CertificateFor(course.Id) is not null;
+        var result = State.Unenroll(course.Id);
+
+        switch (result)
+        {
+            case LearningResult.Ok when State.FindCourse(course.Id) is null:
+                Toasts.Notify(new ToastMessage(ToastType.Info, IconName.BoxArrowRight, "Unenrolled", $"You left {course.Title}. It's no longer in the catalog, so it's gone from your courses."));
+                Navigation.NavigateTo($"{LearningLayout.Base}/progress");
+
+                return;
+
+            case LearningResult.Ok:
+                isEditing = false;
+                ClearReviewForm();
+                enrollStatus.Set($"You're no longer enrolled in {course.Title}. Your progress and self-check results are removed; "
+                    + $"{(hasCertificate ? "your certificate, " : string.Empty)}any review and questions you wrote stay. "
+                    + (course.IsPublished ? "You can enroll again at any time." : "The course isn't in the catalog any more, so you can't enroll again."));
+                break;
+
+            case LearningResult.NotEnrolled:
+                enrollStatus.Set($"You weren't enrolled in {course.Title}, so nothing changed.");
+                break;
+
+            default:
+                enrollStatus.Set(ResultText(result, "You're still enrolled."), isError: true);
+                break;
+        }
+
+        StateHasChanged();
+        await LearningDisplay.FocusAsync(enrollStatusRegion);
     }
 
     /// <summary>Maps a result that isn't the expected outcome to a message ending with what happened.</summary>
@@ -448,7 +465,8 @@ public partial class CourseDetail : ComponentBase, IDisposable
             {
                 0 => "No self-checks in this course",
                 1 => $"1 self-check: pass with {quizzes[0].PassMark} of {quizzes[0].Questions.Count} right",
-                _ => string.Create(CultureInfo.InvariantCulture, $"{quizzes.Count} self-checks: pass each with {quizzes[0].PassMark} of {quizzes[0].Questions.Count} right"),
+                // Quizzes can have different lengths, so the shared rule is said instead of one quiz's numbers.
+                _ => string.Create(CultureInfo.InvariantCulture, $"{quizzes.Count} self-checks: pass each with two thirds right"),
             };
         }
     }
@@ -458,6 +476,8 @@ public partial class CourseDetail : ComponentBase, IDisposable
     [CascadingParameter] private ShowcaseSession Session { get; set; } = default!;
 
     [Inject] private LearningState State { get; set; } = default!;
+
+    [Inject] private ToastService Toasts { get; set; } = default!;
 
     #endregion
 

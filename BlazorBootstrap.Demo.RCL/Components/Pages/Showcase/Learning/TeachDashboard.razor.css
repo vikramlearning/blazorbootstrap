@@ -1,0 +1,40 @@
+/* A KPI's text column may shrink beside its icon, so long notes wrap instead of widening the panel. */
+.qp-kpi {
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+.qp-kpi-label {
+    display: block;
+    font-size: .875rem;
+    font-weight: 600;
+    color: var(--bs-secondary-color);
+}
+
+.qp-kpi-value {
+    display: block;
+    margin: .125rem 0;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--qp-ink);
+}
+
+.qp-chart {
+    position: relative;
+    width: 100%;
+}
+
+.qp-dash-row {
+    padding-block: .75rem;
+    border-top: 1px solid var(--qp-border);
+}
+
+    .qp-dash-row:first-child {
+        padding-top: 0;
+        border-top: 0;
+    }
+
+/* Plain text: Razor encodes it; long words break instead of widening the panel. */
+.qp-dash-text {
+    overflow-wrap: anywhere;
+}

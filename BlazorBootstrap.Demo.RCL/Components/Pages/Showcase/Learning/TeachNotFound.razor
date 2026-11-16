@@ -1,0 +1,22 @@
+@page "/showcase/learning/teach/{*path}"
+@layout TeachLayout
+
+<PageTitle>Page not found · Teaching · @LearningSeedData.SchoolName</PageTitle>
+
+@* Unknown back-office pages stay in the back office instead of falling to the school's not-found page. *@
+<div class="container-fluid px-lg-4">
+    <section class="qp-not-found">
+        <span class="qp-icon fs-4" aria-hidden="true"><Icon Name="IconName.SignpostSplit" /></span>
+        <h1 class="qp-title fs-3 mt-3 mb-2">We couldn't find that page</h1>
+        <p class="text-body-secondary mb-4">The link may be wrong, or the course or lesson no longer exists.</p>
+        <div class="d-flex justify-content-center flex-wrap gap-2">
+            <Button Type="ButtonType.Link" To="@TeachLayout.Base" Color="ButtonColor.Primary">Back to the dashboard</Button>
+            <Button Type="ButtonType.Link" To="@($"{TeachLayout.Base}/courses")" Color="ButtonColor.Primary" Outline="true">Your courses</Button>
+        </div>
+    </section>
+</div>
+
+@code {
+    /// <summary>Gets or sets the unmatched path.</summary>
+    [Parameter] public string? Path { get; set; }
+}

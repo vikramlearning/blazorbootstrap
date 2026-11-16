@@ -28,7 +28,7 @@
             <ul class="list-unstyled row g-3 mb-0">
                 @foreach (var certificate in State.MyCertificates)
                 {
-                    var title = State.FindCourse(certificate.CourseId)?.Title ?? "A retired course";
+                    var title = State.CertificateCourse(certificate.CourseId)?.Title ?? "A retired course";
                     <li class="col-lg-6" @key="certificate.Code">
                         <Card Class="qp-card h-100">
                             <CardBody>

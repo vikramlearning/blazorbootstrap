@@ -51,9 +51,17 @@
                             </div>
                         }
 
-                        @* Lesson bodies are seeded content from LearningSeedData. Markdown renders raw HTML, so it never shows user input. *@
-                        @* Siblings share one key scope, so each keyed child gets its own prefix. *@
-                        <Markdown @key="@($"body-{lesson.Id}")" Class="qp-lesson-body mb-4">@lesson.Body</Markdown>
+                        @* An instructor's body is editor HTML, shown only through the allowlist (A05). A seeded body is Markdown from
+                           LearningSeedData; Markdown renders raw HTML, so it never shows user input (restore checks it's the seeded text).
+                           Siblings share one key scope, so each keyed child gets its own prefix. *@
+                        @if (lesson.Html is not null)
+                        {
+                            <div class="qp-lesson-body mb-4">@ShowcaseHtml.FromEditorHtml(lesson.Html, keepHeadings: true)</div>
+                        }
+                        else
+                        {
+                            <Markdown @key="@($"body-{lesson.Id}")" Class="qp-lesson-body mb-4">@lesson.Body</Markdown>
+                        }
 
                         @if (lesson.Kind == LearningLessonKind.Quiz)
                         {
@@ -129,6 +137,8 @@
 
                         <LearningLessonQuestions @key="@($"qa-{lesson.Id}")" Course="course" Lesson="lesson" />
 
+                        @if (course.HasHandout)
+                        {
                         <section class="mt-4" aria-labelledby="qp-handout-heading">
                             <div class="d-flex flex-wrap justify-content-between align-items-baseline gap-2 mb-2">
                                 <h2 class="qp-section-title mb-0" id="qp-handout-heading">Course handout</h2>
@@ -146,6 +156,7 @@
                             <PdfViewer @key="course.Id" Url="@HandoutUrl" Class="qp-pdf" OnDocumentLoadError="OnHandoutError"
                                        role="img" aria-label="@($"{course.Title} handout, page view")" />
                         </section>
+                        }
                     }
                 </div>
 

@@ -47,7 +47,8 @@
             <h1 class="qp-title fs-2 mb-4" id="qp-certificate-title">Certificate of completion</h1>
             <p class="mb-1">This certifies that</p>
             <p class="qp-certificate-name mb-3">@Found.LearnerName</p>
-            <p class="mb-1">has completed all @Course.Lessons.Count lessons (@LearningDisplay.Duration(Course.Minutes)) of</p>
+            @* Instructors change courses after a certificate is issued, so it states completion, not today's lesson count. *@
+            <p class="mb-1">has completed every lesson of</p>
             <p class="h4 fw-bold mb-4">@Course.Title</p>
             <dl class="row justify-content-center small mb-4">
                 <dt class="col-6 col-sm-3 text-sm-end">Instructor</dt>

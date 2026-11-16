@@ -1,0 +1,48 @@
+.qp-reviews-note {
+    padding: .75rem 1rem;
+    border: 1px solid rgba(var(--sc-primary-rgb), .3);
+    border-radius: .75rem;
+    background: rgba(var(--sc-primary-rgb), .06);
+    color: var(--qp-ink);
+}
+
+.qp-reviews-status:empty {
+    margin: 0 !important;
+}
+
+.qp-reviews-status:focus {
+    outline: 3px solid var(--sc-primary);
+    outline-offset: 2px;
+}
+
+.qp-review-main {
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+/* Plain text: Razor encodes it, and pre-wrap keeps its line breaks. */
+.qp-review-body {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+.qp-review-hidden {
+    padding: .5rem .75rem;
+    border-radius: .5rem;
+    background: var(--bs-secondary-bg);
+    color: var(--bs-body-color);
+}
+
+.qp-instructor-reply {
+    margin-inline-start: 1rem;
+    padding: .625rem .875rem;
+    border-inline-start: 3px solid var(--sc-primary);
+    border-radius: 0 .5rem .5rem 0;
+    background: rgba(var(--sc-primary-rgb), .06);
+}
+
+.qp-reply-form {
+    margin-bottom: .25rem;
+    padding-top: .75rem;
+    border-top: 1px solid var(--qp-border);
+}

@@ -1,0 +1,261 @@
+@page "/showcase/learning/teach/courses/{CourseId:int}/lessons/{LessonId:int}/quiz"
+@layout TeachLayout
+
+@{
+    var course = Course;
+    var lesson = Lesson;
+}
+
+@if (course is null || lesson is null)
+{
+    <PageTitle>Quiz not found · Teaching · @LearningSeedData.SchoolName</PageTitle>
+    <div class="container-fluid px-lg-4">
+        <section class="qp-not-found">
+            <span class="qp-icon fs-4" aria-hidden="true"><Icon Name="IconName.SignpostSplit" /></span>
+            <h1 class="qp-title fs-3 mt-3 mb-2">We couldn't find that quiz</h1>
+            <p class="text-body-secondary mb-4">
+                @(course is null ? "There's no course of yours with that number. It may have been deleted."
+                  : course.Lessons.Any(item => item.Id == LessonId) ? "That lesson isn't a quiz. Change its kind to Quiz in the lesson editor to give it questions."
+                  : $"{course.Title} has no lesson with that number. It may have been deleted.")
+            </p>
+            @if (course is null)
+            {
+                <a class="btn btn-primary" href="@CoursesUrl">Back to your courses</a>
+            }
+            else if (course.Lessons.Any(item => item.Id == LessonId))
+            {
+                <a class="btn btn-primary" href="@LessonEditUrl">Open the lesson editor</a>
+            }
+            else
+            {
+                <a class="btn btn-primary" href="@CourseEditUrl">Back to @course.Title</a>
+            }
+        </section>
+    </div>
+}
+else
+{
+    <PageTitle>Questions for @lesson.Title · Teaching · @LearningSeedData.SchoolName</PageTitle>
+
+    <div class="container-fluid px-lg-4">
+        <Breadcrumb Items="BreadcrumbItems" Class="mb-3" />
+
+        <h1 class="qp-title">Quiz questions</h1>
+        <p class="qp-lead mb-3">
+            For "@lesson.Title" in @course.Title.
+            @(lesson.IsPublished ? "The quiz is published: saved changes reach learners at once." : "The lesson is a draft: publish it in the lesson editor once the questions are ready.")
+        </p>
+
+        <p class="qp-edit-error" role="alert">@formError</p>
+        @* Always rendered and focusable, so a save, an added question, or a move is announced. *@
+        <p class="qp-edit-status" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
+
+        <div class="row g-4">
+            <div class="col-xl-8 d-grid gap-4 align-content-start">
+                <section class="qp-panel" aria-labelledby="qp-quiz-form-heading">
+                    <div class="d-flex flex-wrap justify-content-between align-items-baseline gap-2 mb-2">
+                        <h2 class="qp-section-title mb-0" id="qp-quiz-form-heading">Questions</h2>
+                        <p class="qp-pass-mark mb-0">@PassText</p>
+                    </div>
+                    <p class="small text-body-secondary">
+                        Each question has @LearningState.MinOptions to @LearningState.MaxOptions different options and one correct answer. Changes apply when you save.
+                    </p>
+                    <ShowcaseDemoNotice Class="mb-3" Text="Demo only: quizzes stay in this browser tab. Nothing is sent." />
+
+                    <form @onsubmit="SaveAsync" novalidate>
+                        @if (drafts.Count == 0)
+                        {
+                            <p class="text-body-secondary fst-italic">No questions yet. Add the first one.</p>
+                        }
+
+                        <ol class="qp-quiz-drafts">
+                            @foreach (var (draft, index) in drafts.Select((draft, index) => (draft, index)))
+                            {
+                                var questionIndex = index;
+                                var prefix = DraftId(draft);
+                                var number = questionIndex + 1;
+                                var promptId = $"{prefix}-prompt";
+                                var explanationId = $"{prefix}-explanation";
+                                var addOptionId = $"{prefix}-add-option";
+                                var upId = $"{prefix}-up";
+                                var downId = $"{prefix}-down";
+                                <li @key="draft.Key">
+                                    <fieldset class="qp-quiz-draft">
+                                        <legend class="qp-quiz-draft-legend">Question @number</legend>
+
+                                        <div class="mb-3">
+                                            <label class="form-label fw-semibold" for="@promptId">Question</label>
+                                            <textarea id="@promptId" class="form-control @(draft.PromptError is null ? null : "is-invalid")" rows="2"
+                                                      value="@draft.Prompt" @oninput="args => OnPromptInput(draft, args)" @ref="refs[promptId]"
+                                                      aria-describedby="@($"{prefix}-prompt-count {prefix}-prompt-error")" aria-invalid="@(draft.PromptError is null ? null : "true")"></textarea>
+                                            <div class="form-text @(draft.Prompt.Trim().Length > LearningState.MaxPromptLength ? "qp-over" : null)" id="@($"{prefix}-prompt-count")">
+                                                @CounterText(draft.Prompt.Trim().Length, LearningState.MaxPromptLength)
+                                            </div>
+                                            <p class="qp-field-error" id="@($"{prefix}-prompt-error")">@draft.PromptError</p>
+                                        </div>
+
+                                        <fieldset class="qp-quiz-options mb-3" aria-describedby="@($"{prefix}-correct-error")">
+                                            <legend class="form-label fw-semibold fs-6 mb-2">Options<span class="visually-hidden"> for question @number</span></legend>
+                                            <ol class="qp-option-list">
+                                                @foreach (var (option, optionIndex) in draft.Options.Select((option, optionIndex) => (option, optionIndex)))
+                                                {
+                                                    var choice = optionIndex;
+                                                    var optionId = $"{prefix}-o{option.Key}";
+                                                    var correctId = $"{optionId}-correct";
+                                                    <li @key="option.Key" class="qp-option">
+                                                        <label class="form-label small mb-1" for="@optionId">Option @(choice + 1)</label>
+                                                        <div class="qp-option-row">
+                                                            <input id="@optionId" class="form-control qp-option-text @(option.Error is null ? null : "is-invalid")" value="@option.Text" autocomplete="off"
+                                                                   @oninput="args => OnOptionInput(draft, option, args)" @ref="refs[optionId]"
+                                                                   aria-describedby="@($"{optionId}-error")" aria-invalid="@(option.Error is null ? null : "true")" />
+                                                            <div class="form-check qp-option-correct mb-0">
+                                                                <input class="form-check-input" type="radio" id="@correctId" name="@($"{prefix}-correct")"
+                                                                       checked="@(draft.CorrectKey == option.Key)" @onchange="() => OnCorrectChosen(draft, option)" @ref="refs[correctId]"
+                                                                       aria-describedby="@($"{prefix}-correct-error")" aria-invalid="@(draft.CorrectError is null ? null : "true")" />
+                                                                <label class="form-check-label" for="@correctId">Correct answer<span class="visually-hidden">: option @(choice + 1)</span></label>
+                                                            </div>
+                                                            @if (draft.Options.Count > LearningState.MinOptions)
+                                                            {
+                                                                <button type="button" class="btn btn-sm btn-outline-danger" @onclick="() => RemoveOption(draft, option)">
+                                                                    <Icon Name="IconName.XLg" aria-hidden="true" /><span class="visually-hidden">Remove option @(choice + 1) of question @number</span>
+                                                                </button>
+                                                            }
+                                                        </div>
+                                                        <p class="qp-field-error" id="@($"{optionId}-error")">@option.Error</p>
+                                                    </li>
+                                                }
+                                            </ol>
+                                            <p class="qp-field-error" id="@($"{prefix}-correct-error")">@draft.CorrectError</p>
+                                            @if (draft.Options.Count < LearningState.MaxOptions)
+                                            {
+                                                <button type="button" class="btn btn-sm btn-outline-secondary" @onclick="() => AddOption(draft)" @ref="refs[addOptionId]">
+                                                    <Icon Name="IconName.Plus" class="me-1" aria-hidden="true" />Add option<span class="visually-hidden"> to question @number</span>
+                                                </button>
+                                            }
+                                            else
+                                            {
+                                                <p class="small text-body-secondary mb-0">A question has up to @LearningState.MaxOptions options.</p>
+                                            }
+                                        </fieldset>
+
+                                        <div class="mb-3">
+                                            <label class="form-label fw-semibold" for="@explanationId">Explanation (optional)</label>
+                                            <textarea id="@explanationId" class="form-control @(draft.ExplanationError is null ? null : "is-invalid")" rows="2"
+                                                      value="@draft.Explanation" @oninput="args => OnExplanationInput(draft, args)" @ref="refs[explanationId]"
+                                                      aria-describedby="@($"{prefix}-explanation-help {prefix}-explanation-error")" aria-invalid="@(draft.ExplanationError is null ? null : "true")"></textarea>
+                                            <div class="form-text @(draft.Explanation.Trim().Length > LearningState.MaxExplanationLength ? "qp-over" : null)" id="@($"{prefix}-explanation-help")">
+                                                Shown after learners answer. @CounterText(draft.Explanation.Trim().Length, LearningState.MaxExplanationLength)
+                                            </div>
+                                            <p class="qp-field-error" id="@($"{prefix}-explanation-error")">@draft.ExplanationError</p>
+                                        </div>
+
+                                        <div class="qp-quiz-draft-actions">
+                                            <button type="button" class="btn btn-sm btn-outline-secondary" disabled="@(questionIndex == 0)"
+                                                    @onclick="() => MoveQuestion(draft, -1)" @ref="refs[upId]">
+                                                <Icon Name="IconName.ArrowUp" class="me-1" aria-hidden="true" />Move up<span class="visually-hidden">: question @number</span>
+                                            </button>
+                                            <button type="button" class="btn btn-sm btn-outline-secondary" disabled="@(questionIndex == drafts.Count - 1)"
+                                                    @onclick="() => MoveQuestion(draft, 1)" @ref="refs[downId]">
+                                                <Icon Name="IconName.ArrowDown" class="me-1" aria-hidden="true" />Move down<span class="visually-hidden">: question @number</span>
+                                            </button>
+                                            <button type="button" class="btn btn-sm btn-outline-danger ms-sm-auto" @onclick="() => RemoveQuestion(draft)">
+                                                <Icon Name="IconName.Trash3" class="me-1" aria-hidden="true" />Remove question<span class="visually-hidden"> @number</span>
+                                            </button>
+                                        </div>
+                                    </fieldset>
+                                </li>
+                            }
+                        </ol>
+
+                        <div class="qp-edit-actions">
+                            @if (drafts.Count < LearningState.MaxQuestionsPerQuiz)
+                            {
+                                <button type="button" class="btn btn-outline-primary" @onclick="AddQuestion" @ref="addQuestionButton">
+                                    <Icon Name="IconName.PlusCircle" class="me-2" aria-hidden="true" />Add question
+                                </button>
+                            }
+                            else
+                            {
+                                <p class="small text-body-secondary mb-0 me-auto" tabindex="-1" @ref="addQuestionButton">A quiz holds up to @LearningState.MaxQuestionsPerQuiz questions.</p>
+                            }
+                            <Button @ref="saveButton" Type="ButtonType.Submit" Color="ButtonColor.Primary" Class="ms-sm-auto">
+                                <Icon Name="IconName.Save" class="me-2" aria-hidden="true" />Save questions
+                            </Button>
+                        </div>
+                        <p class="small text-body-secondary mt-2 mb-0">
+                            @(IsUnchanged ? "No unsaved changes." : "You have unsaved changes.")
+                            @(State.LessonImpact(lesson.Id).QuizResults is var results and > 0
+                                ? $" Saving a change removes {LearnerResultsText(results)} for this quiz; lessons they completed stay complete."
+                                : null)
+                        </p>
+                    </form>
+                </section>
+            </div>
+
+            <div class="col-xl-4 d-grid gap-3 align-content-start">
+                <section class="qp-panel" aria-labelledby="qp-quiz-preview-heading">
+                    <h2 class="qp-section-title" id="qp-quiz-preview-heading">Preview</h2>
+                    <p class="small text-body-secondary">How learners see the questions, before they answer. The correct answers aren't shown.</p>
+                    @if (drafts.Count == 0)
+                    {
+                        <p class="text-body-secondary fst-italic mb-0">The questions show here as you add them.</p>
+                    }
+                    else
+                    {
+                        <p class="small mb-3">@QuestionCountText(drafts.Count). Get @PassMarkFor(drafts.Count) right to pass; passing completes the lesson.</p>
+                        <ol class="qp-quiz-preview">
+                            @foreach (var (draft, index) in drafts.Select((draft, index) => (draft, index)))
+                            {
+                                <li @key="draft.Key" class="qp-quiz-preview-item">
+                                    <p class="qp-quiz-preview-number mb-0">Question @(index + 1) of @drafts.Count</p>
+                                    <p class="fw-semibold mb-1">@(string.IsNullOrWhiteSpace(draft.Prompt) ? "(No question yet)" : draft.Prompt.Trim())</p>
+                                    <ul class="qp-quiz-preview-options">
+                                        @foreach (var option in draft.Options)
+                                        {
+                                            <li @key="option.Key">
+                                                <Icon Name="IconName.Circle" class="me-2 text-body-secondary" aria-hidden="true" />@(string.IsNullOrWhiteSpace(option.Text) ? "(Empty option)" : option.Text.Trim())
+                                            </li>
+                                        }
+                                    </ul>
+                                </li>
+                            }
+                        </ol>
+                    }
+                </section>
+
+                <section class="qp-panel" aria-labelledby="qp-quiz-links-heading">
+                    <h2 class="qp-section-title" id="qp-quiz-links-heading">Lesson</h2>
+                    <dl class="qp-summary small">
+                        <dt>Status</dt>
+                        <dd><Badge Color="@(lesson.IsPublished ? BadgeColor.Success : BadgeColor.Secondary)">@(lesson.IsPublished ? "Published" : "Draft")</Badge></dd>
+                        <dt>Saved questions</dt>
+                        <dd>@(lesson.Questions.Count == 0 ? "None yet" : QuestionCountText(lesson.Questions.Count))</dd>
+                        <dt>Quiz results</dt>
+                        <dd>@ResultsSummary(State.LessonImpact(lesson.Id).QuizResults)</dd>
+                    </dl>
+                    <div class="d-flex flex-wrap gap-2">
+                        <a class="btn btn-sm btn-outline-primary" href="@LessonEditUrl">
+                            <Icon Name="IconName.PencilSquare" class="me-1" aria-hidden="true" />Edit the lesson
+                        </a>
+                        <a class="btn btn-sm btn-outline-secondary" href="@CourseEditUrl">Back to @course.Title</a>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+}
+
+@* Outside the branches, so the dialog is never removed while open. Opened from code: focus is returned by hand. *@
+<Modal @ref="saveModal" IsVerticallyCentered="true" ShowCloseButton="false" aria-labelledby="qp-quiz-save-title"
+       OnShown="() => LearningDisplay.FocusAsync(cancelSaveButton?.Element)" OnHidden="OnSaveHiddenAsync">
+    <HeaderTemplate>
+        <h2 class="modal-title h5" id="qp-quiz-save-title">Save the changed quiz?</h2>
+    </HeaderTemplate>
+    <BodyTemplate>
+        <p class="mb-0">@SaveConsequence() This can't be undone.</p>
+    </BodyTemplate>
+    <FooterTemplate>
+        <Button @ref="cancelSaveButton" Color="ButtonColor.Secondary" Outline="true" @onclick="() => saveModal.HideAsync()">Keep editing</Button>
+        <Button Color="ButtonColor.Danger" @onclick="ConfirmSaveAsync">Save and remove results</Button>
+    </FooterTemplate>
+</Modal>

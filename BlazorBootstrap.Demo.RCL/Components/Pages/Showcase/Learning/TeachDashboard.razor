@@ -1,0 +1,266 @@
+@page "/showcase/learning/teach"
+@layout TeachLayout
+@using BlazorExpress.ChartJS
+@using Unit = BlazorExpress.ChartJS.Unit
+
+<PageTitle>Dashboard · Teaching · @LearningSeedData.SchoolName</PageTitle>
+
+<div class="container-fluid px-lg-4">
+    <h1 class="qp-title mb-1">@Greeting</h1>
+    <p class="qp-lead mb-4">How your learners are doing, what is waiting for you, and your courses at a glance.</p>
+
+    <section aria-label="Teaching summary" class="row row-cols-1 row-cols-sm-2 row-cols-xl-5 g-3 mb-4">
+        <div class="col">
+            <div class="qp-panel h-100 d-flex align-items-start gap-3 p-3">
+                <span class="qp-icon flex-shrink-0" aria-hidden="true"><Icon Name="IconName.People" /></span>
+                <span class="qp-kpi">
+                    <span class="qp-kpi-label">Learners enrolled</span>
+                    <span class="qp-kpi-value">@Count(roster.Count)</span>
+                    <span class="d-block small text-body-secondary">@EnrolledNote</span>
+                </span>
+            </div>
+        </div>
+        <div class="col">
+            <div class="qp-panel h-100 d-flex align-items-start gap-3 p-3">
+                <span class="qp-icon flex-shrink-0" aria-hidden="true"><Icon Name="IconName.Activity" /></span>
+                <span class="qp-kpi">
+                    <span class="qp-kpi-label">Active in the last 7 days</span>
+                    <span class="qp-kpi-value">@Count(ActiveCount)</span>
+                    <span class="d-block small text-body-secondary">@(roster.Count == 0 ? "No learners yet." : $"Opened a lesson since {LearningDisplay.Date(State.Clock.Now.AddDays(-ActiveDays))}")</span>
+                </span>
+            </div>
+        </div>
+        <div class="col">
+            <div class="qp-panel h-100 d-flex align-items-start gap-3 p-3">
+                <span class="qp-icon flex-shrink-0" aria-hidden="true"><Icon Name="IconName.Award" /></span>
+                <span class="qp-kpi">
+                    <span class="qp-kpi-label">Courses completed</span>
+                    <span class="qp-kpi-value">@Count(CompletedCount)</span>
+                    <span class="d-block small text-body-secondary">@(roster.Count == 0 ? "No learners yet." : $"{PercentText(CompletedCount, roster.Count)} of enrollments finished every lesson")</span>
+                </span>
+            </div>
+        </div>
+        <div class="col">
+            <div class="qp-panel h-100 d-flex align-items-start gap-3 p-3">
+                <span class="qp-icon flex-shrink-0" aria-hidden="true"><Icon Name="IconName.Star" /></span>
+                <span class="qp-kpi">
+                    <span class="qp-kpi-label">Average rating</span>
+                    <span class="qp-kpi-value">@(publishedReviews.Count == 0 ? "—" : $"{LearningDisplay.Rating(publishedReviews.Average(review => review.Rating))} out of 5")</span>
+                    <span class="d-block small text-body-secondary">@(publishedReviews.Count == 0 ? "No reviews of your published courses yet." : $"From {Plural(publishedReviews.Count, "review", "reviews")} of your published courses")</span>
+                </span>
+            </div>
+        </div>
+        <div class="col">
+            <div class="qp-panel h-100 d-flex align-items-start gap-3 p-3">
+                <span class="qp-icon flex-shrink-0" aria-hidden="true"><Icon Name="IconName.ChatLeftText" /></span>
+                <span class="qp-kpi">
+                    <span class="qp-kpi-label">Questions waiting</span>
+                    <span class="qp-kpi-value">@Count(State.UnansweredCount)</span>
+                    <a class="d-block small" href="@QuestionsUrl">@(State.UnansweredCount == 0 ? "Open the Q&A inbox" : "Answer them in the Q&A inbox")</a>
+                </span>
+            </div>
+        </div>
+    </section>
+
+    <div class="row g-4 mb-4">
+        <div class="col-12 col-xl-7">
+            <section class="qp-panel h-100" aria-labelledby="qp-funnel-title">
+                <h2 class="qp-section-title fs-5" id="qp-funnel-title">Completion funnel</h2>
+                <p class="small text-body-secondary">@FunnelSummary</p>
+                @* The wrapper's role and label stand in for the canvas. It stays in the page while empty, so the chart keeps its instance. *@
+                <div class="qp-chart @(funnels.Count == 0 ? "d-none" : null)" role="img" aria-label="@FunnelLabel">
+                    <BarChart @ref="funnelChart" Height="280" HeightUnit="Unit.Px" Width="100" WidthUnit="Unit.Percentage" />
+                </div>
+                @* The wrapper hides the table: a hidden table itself can't shrink below its content and would widen the page. *@
+                <div class="visually-hidden">
+                    <table>
+                        <caption>Completion funnel: learners enrolled, started, halfway, and completed, by course</caption>
+                        <thead>
+                            <tr>
+                                <th scope="col">Course</th>
+                                <th scope="col">Enrolled</th>
+                                <th scope="col">Started</th>
+                                <th scope="col">Halfway</th>
+                                <th scope="col">Completed</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var row in funnels)
+                            {
+                                <tr @key="row.Course.Id">
+                                    <th scope="row">@row.Course.Title</th>
+                                    <td>@row.Funnel.Enrolled</td>
+                                    <td>@row.Funnel.Started</td>
+                                    <td>@row.Funnel.Halfway</td>
+                                    <td>@row.Funnel.Completed</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+        <div class="col-12 col-xl-5">
+            <section class="qp-panel h-100" aria-labelledby="qp-ratings-title">
+                <h2 class="qp-section-title fs-5" id="qp-ratings-title">Ratings</h2>
+                <div class="mb-2">
+                    <label class="form-label small fw-semibold" for="qp-ratings-course">Course</label>
+                    <select id="qp-ratings-course" class="form-select" value="@ratingCourse" @onchange="OnRatingCourseChangedAsync">
+                        <option value="">All your courses</option>
+                        @foreach (var course in State.MyCourses)
+                        {
+                            <option value="@course.Id.ToString(CultureInfo.InvariantCulture)">@course.Title</option>
+                        }
+                    </select>
+                </div>
+                <p class="small text-body-secondary" aria-live="polite">@RatingSummary</p>
+                <div class="qp-chart @(ratingCounts.Sum() == 0 ? "d-none" : null)" role="img" aria-label="@RatingLabel">
+                    <BarChart @ref="ratingChart" Height="240" HeightUnit="Unit.Px" Width="100" WidthUnit="Unit.Percentage" />
+                </div>
+                <div class="visually-hidden">
+                    <table>
+                        <caption>Visible reviews by star rating, @RatingScopeText</caption>
+                        <thead>
+                            <tr>
+                                <th scope="col">Rating</th>
+                                <th scope="col">Reviews</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (var stars = 5; stars >= 1; stars--)
+                            {
+                                <tr @key="stars">
+                                    <th scope="row">@StarLabel(stars)</th>
+                                    <td>@ratingCounts[stars - 1]</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <div class="row g-4 mb-4">
+        <div class="col-12 col-lg-6">
+            <section class="qp-panel h-100" aria-labelledby="qp-waiting-title">
+                <div class="d-flex flex-wrap align-items-baseline justify-content-between gap-2 mb-2">
+                    <h2 class="qp-section-title fs-5 mb-0" id="qp-waiting-title">Waiting for an answer</h2>
+                    <a class="small" href="@QuestionsUrl">Q&amp;A inbox<span class="visually-hidden">: every question on your courses</span></a>
+                </div>
+                @if (Waiting.Count == 0)
+                {
+                    <p class="text-body-secondary mb-0">Every question on your courses has an answer from you.</p>
+                }
+                else
+                {
+                    <ul class="list-unstyled mb-0">
+                        @foreach (var thread in Waiting)
+                        {
+                            <li class="qp-dash-row" @key="thread.Id">
+                                <p class="fw-semibold mb-1 text-break">@thread.Author <span class="fw-normal text-body-secondary">asked about @LessonTitle(thread)</span></p>
+                                <p class="qp-dash-text small mb-1">@Excerpt(thread.Text)</p>
+                                <p class="small text-body-secondary mb-0">@CourseTitle(thread.CourseId) · @LearningDisplay.Date(thread.AskedAt)</p>
+                            </li>
+                        }
+                    </ul>
+                    @if (State.UnansweredCount > Waiting.Count)
+                    {
+                        <p class="small mt-3 mb-0"><a href="@QuestionsUrl">See all @Count(State.UnansweredCount) questions waiting</a></p>
+                    }
+                }
+            </section>
+        </div>
+        <div class="col-12 col-lg-6">
+            <section class="qp-panel h-100" aria-labelledby="qp-latest-reviews-title">
+                <div class="d-flex flex-wrap align-items-baseline justify-content-between gap-2 mb-2">
+                    <h2 class="qp-section-title fs-5 mb-0" id="qp-latest-reviews-title">Latest reviews</h2>
+                    <a class="small" href="@ReviewsUrl">All reviews</a>
+                </div>
+                @if (LatestReviews.Count == 0)
+                {
+                    <p class="text-body-secondary mb-0">No one has reviewed your courses yet.</p>
+                }
+                else
+                {
+                    <ul class="list-unstyled mb-0">
+                        @foreach (var review in LatestReviews)
+                        {
+                            <li class="qp-dash-row" @key="review.Id">
+                                <p class="fw-semibold mb-1 text-break">
+                                    @review.Author <span class="fw-normal text-body-secondary">on @CourseTitle(review.CourseId)</span>
+                                </p>
+                                <p class="qp-stars small mb-1">
+                                    <span aria-hidden="true" class="me-1">
+                                        @foreach (var star in LearningDisplay.Stars(review.Rating))
+                                        {
+                                            <Icon Name="star" />
+                                        }
+                                    </span>
+                                    <span class="text-body">Rated @review.Rating out of 5</span>
+                                    @if (review.HiddenReason is not null)
+                                    {
+                                        <span class="text-body-secondary"> · Hidden</span>
+                                    }
+                                    else if (review.InstructorReply is null)
+                                    {
+                                        <span class="text-body-secondary"> · Needs a reply</span>
+                                    }
+                                </p>
+                                <p class="qp-dash-text small mb-1">@Excerpt(review.Body)</p>
+                                <p class="small text-body-secondary mb-0">@LearningDisplay.Date(review.PostedOn)</p>
+                            </li>
+                        }
+                    </ul>
+                }
+            </section>
+        </div>
+    </div>
+
+    <section class="qp-panel mb-4" aria-labelledby="qp-your-courses-title">
+        <div class="d-flex flex-wrap align-items-baseline justify-content-between gap-2 mb-2">
+            <h2 class="qp-section-title fs-5 mb-0" id="qp-your-courses-title">Your courses</h2>
+            <a class="small" href="@($"{TeachLayout.Base}/courses")">Manage courses</a>
+        </div>
+        @if (State.MyCourses.Count == 0)
+        {
+            <p class="text-body-secondary mb-0">You don't have any courses yet. <a href="@($"{TeachLayout.Base}/courses")">Create your first course</a>.</p>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table align-middle mb-0">
+                    <caption class="visually-hidden">Your courses, published first</caption>
+                    <thead>
+                        <tr>
+                            <th scope="col">Course</th>
+                            <th scope="col">Status</th>
+                            <th scope="col" class="text-end">Learners</th>
+                            <th scope="col" class="text-end">Rating</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var course in State.MyCourses)
+                        {
+                            <tr @key="course.Id">
+                                <th scope="row" class="fw-normal"><a href="@($"{TeachLayout.Base}/courses/{course.Id.ToString(CultureInfo.InvariantCulture)}")">@course.Title</a></th>
+                                <td>
+                                    @if (course.IsPublished)
+                                    {
+                                        <Badge Color="BadgeColor.Success" Class="rounded-pill"><Icon Name="IconName.CheckCircle" class="me-1" aria-hidden="true" />Published</Badge>
+                                    }
+                                    else
+                                    {
+                                        <Badge Color="BadgeColor.Secondary" Class="rounded-pill"><Icon Name="IconName.PencilSquare" class="me-1" aria-hidden="true" />Draft</Badge>
+                                    }
+                                </td>
+                                <td class="text-end">@Count(roster.Count(row => row.Course.Id == course.Id))</td>
+                                <td class="text-end text-nowrap">@RatingCell(course.Id)</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </section>
+</div>

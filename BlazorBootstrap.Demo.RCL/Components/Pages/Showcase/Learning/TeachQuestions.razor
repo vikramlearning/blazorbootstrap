@@ -1,0 +1,173 @@
+@page "/showcase/learning/teach/questions"
+@layout TeachLayout
+
+<PageTitle>Q&amp;A inbox · Teaching · @LearningSeedData.SchoolName</PageTitle>
+
+@{
+    var threads = Threads;
+}
+
+<div class="container-fluid px-lg-4">
+    <h1 class="qp-title">Q&amp;A inbox</h1>
+    <p class="qp-lead mb-3">@LeadText</p>
+
+    @* Always rendered and focusable, so posting or deleting an answer is announced, and focus has somewhere to go when a question leaves the list. *@
+    <p class="qp-inbox-status @(statusIsError ? "qp-inbox-status-error" : null)" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
+
+    <section class="qp-panel qp-inbox-filters mb-4" aria-labelledby="qp-inbox-filters-heading">
+        <h2 class="visually-hidden" id="qp-inbox-filters-heading">Filter questions</h2>
+        <fieldset class="qp-inbox-status-filter">
+            <legend class="qp-filter-heading">Show</legend>
+            <div class="qp-inbox-toggle">
+                @foreach (var filter in filters)
+                {
+                    var value = filter;
+                    var inputId = $"qp-inbox-show-{value.ToString().ToLowerInvariant()}";
+                    <input class="btn-check" type="radio" name="qp-inbox-show" id="@inputId" checked="@(statusFilter == value)" @onchange="() => SetStatusFilter(value)" />
+                    <label class="btn btn-sm btn-outline-secondary" for="@inputId">@FilterLabel(value) (@StatusCount(value).ToString(CultureInfo.InvariantCulture))</label>
+                }
+            </div>
+        </fieldset>
+        <div class="qp-inbox-course-filter">
+            <label class="qp-filter-heading d-block" for="qp-inbox-course">Course</label>
+            <select id="qp-inbox-course" class="form-select form-select-sm" value="@courseFilter" @onchange="OnCourseChanged">
+                <option value="0">All your courses (@CourseCount(0).ToString(CultureInfo.InvariantCulture))</option>
+                @foreach (var course in State.MyCourses)
+                {
+                    <option value="@course.Id">@course.Title (@CourseCount(course.Id).ToString(CultureInfo.InvariantCulture))</option>
+                }
+            </select>
+        </div>
+    </section>
+
+    @if (threads.Count == 0)
+    {
+        <section class="qp-panel text-center py-5">
+            <span class="qp-icon fs-4 mb-3" aria-hidden="true"><Icon Name="@(statusFilter == InboxFilter.NeedsAnswer ? IconName.CheckCircle : IconName.ChatLeftText)" /></span>
+            <h2 class="qp-section-title">@EmptyTitle</h2>
+            <p class="text-body-secondary mb-0">@EmptyText</p>
+        </section>
+    }
+    else
+    {
+        <p class="small text-body-secondary mb-2">@ShowingText(threads.Count)</p>
+        <ol class="qp-inbox-list">
+            @foreach (var thread in threads)
+            {
+                var course = State.FindCourseForEdit(thread.CourseId);
+                var lesson = course?.Lessons.FirstOrDefault(item => item.Id == thread.LessonId);
+                var answered = IsAnswered(thread);
+                var prefix = string.Create(CultureInfo.InvariantCulture, $"qp-inbox-{thread.Id}");
+                var answerError = answerErrors.GetValueOrDefault(thread.Id);
+                <li @key="thread.Id" class="qp-panel qp-inbox-thread">
+                    <article aria-labelledby="@($"{prefix}-title")">
+                        <p class="qp-inbox-where mb-1">
+                            <span class="fw-semibold">@(course?.Title ?? "A course")</span>
+                            <span aria-hidden="true"> · </span><span class="visually-hidden">, lesson: </span>
+                            <span>@(lesson?.Title ?? "a lesson no longer in the course")</span>
+                            @if (lesson is { IsPublished: false })
+                            {
+                                <span class="text-body-secondary"> (draft)</span>
+                            }
+                        </p>
+                        <div class="d-flex flex-wrap align-items-baseline justify-content-between gap-2">
+                            <h2 class="qp-inbox-byline" id="@($"{prefix}-title")">
+                                <span class="fw-semibold">@thread.Author</span>
+                                <span class="fw-normal text-body-secondary"> asked <time datetime="@IsoTime(thread.AskedAt)">@When(thread.AskedAt)</time> (@Ago(thread.AskedAt))</span>
+                            </h2>
+                            <Badge Color="@(answered ? BadgeColor.Success : BadgeColor.Warning)">@(answered ? "Answered" : "Needs an answer")</Badge>
+                        </div>
+                        <p class="qp-qa-text mb-2">@thread.Text</p>
+
+                        <div class="qp-inbox-links mb-3">
+                            @* The lesson player is for learners; the instructor sees the course page as learners do (the lesson editor previews the lesson). *@
+                            @if (lesson is { IsPublished: true })
+                            {
+                                <a href="@LearningDisplay.CourseUrl(thread.CourseId)">
+                                    <Icon Name="IconName.BoxArrowUpRight" class="me-1" aria-hidden="true" />View the course page<span class="visually-hidden">: @lesson.Title's course</span>
+                                </a>
+                            }
+                            @if (lesson is not null)
+                            {
+                                <a href="@LessonEditUrl(thread.CourseId, thread.LessonId)">
+                                    <Icon Name="IconName.PencilSquare" class="me-1" aria-hidden="true" />Edit the lesson<span class="visually-hidden">: @lesson.Title</span>
+                                </a>
+                            }
+                        </div>
+
+                        @if (thread.Answers.Count > 0)
+                        {
+                            <h3 class="visually-hidden">Answers</h3>
+                            <ul class="qp-qa-answers mb-3">
+                                @foreach (var answer in thread.Answers)
+                                {
+                                    var mine = IsMine(answer);
+                                    <li @key="answer.Id" class="qp-qa-answer @(answer.IsInstructor ? "qp-qa-answer-instructor" : null)">
+                                        <p class="small mb-1">
+                                            <span class="fw-semibold">@answer.Author</span>
+                                            @if (answer.IsInstructor)
+                                            {
+                                                <Badge Color="BadgeColor.Primary" Class="ms-1">Instructor</Badge>
+                                            }
+                                            @if (mine)
+                                            {
+                                                <Badge Color="BadgeColor.Secondary" Class="ms-1">You</Badge>
+                                            }
+                                            <span class="text-body-secondary"> · <time datetime="@IsoTime(answer.At)">@When(answer.At)</time></span>
+                                        </p>
+                                        <p class="qp-qa-text mb-0">@answer.Text</p>
+                                        @if (mine)
+                                        {
+                                            <button type="button" class="btn btn-sm btn-outline-danger mt-2" @onclick="() => AskDeleteAsync(thread, answer)" @ref="deleteButtons[answer.Id]">
+                                                <Icon Name="IconName.Trash" class="me-1" aria-hidden="true" />Delete<span class="visually-hidden"> your answer from @When(answer.At) to @thread.Author</span>
+                                            </button>
+                                        }
+                                    </li>
+                                }
+                            </ul>
+                        }
+
+                        <form class="qp-inbox-answer-form" @onsubmit="() => PostAnswer(thread)" novalidate>
+                            <label class="form-label fw-semibold" for="@($"{prefix}-answer")">
+                                @(answered ? "Add to the answers" : "Your answer")<span class="visually-hidden"> to @thread.Author's question</span>
+                            </label>
+                            <textarea id="@($"{prefix}-answer")" class="form-control @(answerError is null ? null : "is-invalid")" rows="3" maxlength="@LearningState.MaxQuestionLength"
+                                      value="@answerDrafts.GetValueOrDefault(thread.Id)" @oninput="args => OnAnswerInput(thread.Id, args)" @ref="answerInputs[thread.Id]"
+                                      aria-invalid="@(answerError is null ? null : "true")"
+                                      aria-describedby="@($"{prefix}-help {prefix}-count {prefix}-error")"></textarea>
+                            <div class="d-flex flex-wrap justify-content-between gap-2">
+                                <div class="form-text" id="@($"{prefix}-help")">
+                                    You answer as @(State.Identity.Current?.Name). Learners see it on the lesson, marked Instructor.
+                                </div>
+                                <div class="form-text text-nowrap" id="@($"{prefix}-count")">@CharacterCount(thread.Id) of @MaxLengthText characters</div>
+                            </div>
+                            <p class="qp-field-error" id="@($"{prefix}-error")">@answerError</p>
+                            <Button Type="ButtonType.Submit" Color="ButtonColor.Primary" Size="ButtonSize.Small" Class="mt-1">
+                                <Icon Name="IconName.Reply" class="me-1" aria-hidden="true" />Post answer<span class="visually-hidden"> to @thread.Author</span>
+                            </Button>
+                        </form>
+                    </article>
+                </li>
+            }
+        </ol>
+    }
+</div>
+
+@* Opened from code, so focus is returned by hand; the heading names the dialog and Cancel closes it. *@
+<Modal @ref="deleteModal" IsVerticallyCentered="true" ShowCloseButton="false" aria-labelledby="qp-inbox-delete-title"
+       OnShown="() => LearningDisplay.FocusAsync(cancelDeleteButton?.Element)" OnHidden="OnDeleteHiddenAsync">
+    <HeaderTemplate>
+        <h2 class="modal-title h5" id="qp-inbox-delete-title">Delete your answer?</h2>
+    </HeaderTemplate>
+    <BodyTemplate>
+        @if (PendingAnswer is { } pending)
+        {
+            <p class="qp-qa-text qp-qa-quote mb-3">@Excerpt(pending.Text)</p>
+        }
+        <p class="mb-0">@DeleteConsequence()</p>
+    </BodyTemplate>
+    <FooterTemplate>
+        <Button @ref="cancelDeleteButton" Color="ButtonColor.Secondary" Outline="true" @onclick="() => deleteModal.HideAsync()">Cancel</Button>
+        <Button Color="ButtonColor.Danger" @onclick="ConfirmDeleteAsync">Delete answer</Button>
+    </FooterTemplate>
+</Modal>

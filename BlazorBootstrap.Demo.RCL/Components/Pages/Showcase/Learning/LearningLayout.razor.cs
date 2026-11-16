@@ -1,12 +1,11 @@
-using BlazorBootstrap.Demo.RCL.Models.Showcase;
-using BlazorBootstrap.Demo.RCL.Services.Showcase;
 using BlazorBootstrap.Demo.RCL.Services.Showcase.Learning;
 
 namespace BlazorBootstrap.Demo.RCL.Components.Pages.Showcase.Learning;
 
 /// <summary>
-/// Layout of the "Quillpath Academy" learning site: the site bar, a Navbar with the learner's modules and the account menu,
-/// the page body inside the showcase session (per-tab data and the demo sign-in), one ad slot, the footer, and the toasts.
+/// Layout of the "Quillpath Academy" school, inside <see cref="LearningFrame" />: a Navbar with the learner's modules (an
+/// instructor gets "Teaching" and a bar back to the back office, D-032) and the account menu, and the page body inside the
+/// showcase session (per-tab data and the demo sign-in).
 /// </summary>
 public partial class LearningLayout : LayoutComponentBase, IDisposable
 {
@@ -17,8 +16,6 @@ public partial class LearningLayout : LayoutComponentBase, IDisposable
 
     /// <summary>Route of the demo sign-in page.</summary>
     public const string SignInPath = Base + "/sign-in";
-
-    private readonly ShowcaseSite site = ShowcaseCatalog.Get("learning");
 
     #endregion
 
