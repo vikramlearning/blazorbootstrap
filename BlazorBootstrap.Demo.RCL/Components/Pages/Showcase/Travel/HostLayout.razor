@@ -1,0 +1,36 @@
+@inherits LayoutComponentBase
+
+@* The host back office (D-031): its own sidebar with the host's modules, separate from the guest site. *@
+<ShowcaseSessionHost State="State" SiteBase="@TravelLayout.Base" SiteName="@TravelSeedData.SiteName">
+    <TravelFrame>
+        <Header>
+            <div class="ds-host-bar">
+                <span class="ds-host-bar-title">Hosting</span>
+                <div class="ds-host-bar-actions">
+                    <a class="btn btn-sm btn-outline-secondary" href="@TravelLayout.Base">
+                        <Icon Name="IconName.BoxArrowUpRight" class="me-1" aria-hidden="true" />View site
+                    </a>
+                    <ShowcaseAccountMenu SiteBase="@TravelLayout.Base" SignInPath="@TravelLayout.SignInPath"
+                                         NoticeCount="@State.HostUnreadCount" NoticesPath="@($"{Base}/inbox")" />
+                </div>
+            </div>
+        </Header>
+        <Sidebar>
+            @if (State.IsHost)
+            {
+                <Sidebar @key="State.Identity.Current?.Id"
+                         Class="ds-sidebar"
+                         Href="@Base"
+                         IconName="IconName.Compass"
+                         Title="@TravelSeedData.SiteName"
+                         BadgeText="Host"
+                         DataProvider="SidebarDataProvider" />
+            }
+        </Sidebar>
+        <ChildContent>
+            <ShowcaseRoleGuard Roles="@TravelSeedData.HostRole" SignInPath="@TravelLayout.SignInPath">
+                @Body
+            </ShowcaseRoleGuard>
+        </ChildContent>
+    </TravelFrame>
+</ShowcaseSessionHost>

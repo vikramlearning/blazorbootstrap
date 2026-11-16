@@ -18,8 +18,6 @@ public partial class TravelLayout : LayoutComponentBase, IDisposable
     /// <summary>Route of the demo sign-in page.</summary>
     public const string SignInPath = Base + "/sign-in";
 
-    private readonly ShowcaseSite site = ShowcaseCatalog.Get("travel");
-
     #endregion
 
     #region Methods

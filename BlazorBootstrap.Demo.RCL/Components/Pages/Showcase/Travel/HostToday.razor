@@ -1,0 +1,225 @@
+@page "/showcase/travel/host"
+@layout HostLayout
+@using static BlazorBootstrap.Demo.RCL.Components.Pages.Showcase.Travel.HostReservations
+
+<PageTitle>Today · Hosting · @TravelSeedData.SiteName</PageTitle>
+
+<div class="container-fluid px-lg-4">
+    @if (State.CurrentHost is { } host)
+    {
+        var now = State.Clock.Now;
+        var today = State.Today;
+        var bookings = State.HostBookings();
+        var requests = bookings.Where(booking => State.Phase(booking) == TravelTripPhase.Requested).OrderBy(AnswerBy).ToList();
+        var checkInsToday = bookings.Count(booking => booking.Status == TravelBookingStatus.Confirmed && booking.CheckIn == today);
+        var checkInsTomorrow = bookings.Count(booking => booking.Status == TravelBookingStatus.Confirmed && booking.CheckIn == today.AddDays(1));
+        var staying = bookings.Where(booking => State.Phase(booking) == TravelTripPhase.InProgress).ToList();
+        var monthPayouts = State.HostPayouts().Where(payout => payout.PaysOn.Year == today.Year && payout.PaysOn.Month == today.Month).ToList();
+        var monthName = today.ToString("MMMM", CultureInfo.InvariantCulture);
+        var occupancy = Occupancy(bookings);
+        var reviews = State.HostReviews();
+        var unreplied = reviews.Count(review => string.IsNullOrWhiteSpace(review.HostReply));
+        var unread = State.HostUnreadCount;
+        var arriving = bookings.Where(booking => booking.Status == TravelBookingStatus.Confirmed && booking.CheckIn >= today && booking.CheckIn <= today.AddDays(SoonDays))
+            .OrderBy(booking => booking.CheckIn).ToList();
+        var leaving = bookings.Where(booking => booking.Status == TravelBookingStatus.Confirmed && now >= TravelState.CheckInAt(booking)
+                && booking.CheckOut >= today && booking.CheckOut <= today.AddDays(SoonDays))
+            .OrderBy(booking => booking.CheckOut).ToList();
+
+        <h1 class="ds-title mb-1">@Greeting(host.Name)</h1>
+        <p class="ds-lead mb-4">Here's what needs you on @today.ToString("dddd, MMMM d", CultureInfo.InvariantCulture), across your @Count(State.HostStays().Count, "listing", "listings").</p>
+
+        <section aria-labelledby="ds-today-glance" class="mb-5">
+            <h2 class="visually-hidden" id="ds-today-glance">At a glance</h2>
+            <ul class="row row-cols-1 row-cols-sm-2 row-cols-xl-4 g-3 list-unstyled mb-0">
+                <li class="col">
+                    <div class="ds-panel ds-kpi h-100">
+                        <h3 class="ds-kpi-label"><Icon Name="IconName.Inbox" class="me-2" aria-hidden="true" />Requests waiting</h3>
+                        <p class="ds-kpi-value">@requests.Count</p>
+                        <p class="ds-kpi-note">
+                            @if (requests.Count == 0)
+                            {
+                                <span>Nothing to answer right now.</span>
+                            }
+                            else
+                            {
+                                var soonest = AnswerBy(requests[0]);
+                                <span>Soonest answer due @TravelDisplay.Stamp(soonest) (@TimeLeft(soonest, now)). <a href="@($"{HostLayout.Base}#ds-today-requests")">See requests</a></span>
+                            }
+                        </p>
+                    </div>
+                </li>
+                <li class="col">
+                    <div class="ds-panel ds-kpi h-100">
+                        <h3 class="ds-kpi-label"><Icon Name="IconName.BoxArrowInRight" class="me-2" aria-hidden="true" />Check-ins today</h3>
+                        <p class="ds-kpi-value">@checkInsToday</p>
+                        <p class="ds-kpi-note">@Count(checkInsTomorrow, "check-in", "check-ins") tomorrow. Check-in starts at 3 pm.</p>
+                    </div>
+                </li>
+                <li class="col">
+                    <div class="ds-panel ds-kpi h-100">
+                        <h3 class="ds-kpi-label"><Icon Name="IconName.People" class="me-2" aria-hidden="true" />Guests staying now</h3>
+                        <p class="ds-kpi-value">@staying.Sum(booking => booking.Guests)</p>
+                        <p class="ds-kpi-note">@(staying.Count == 0 ? "No one is staying right now." : $"In {Count(staying.Count, "reservation", "reservations")}.")</p>
+                    </div>
+                </li>
+                <li class="col">
+                    <div class="ds-panel ds-kpi h-100">
+                        <h3 class="ds-kpi-label"><Icon Name="IconName.Cash" class="me-2" aria-hidden="true" />Earnings in @monthName</h3>
+                        <p class="ds-kpi-value">@TravelDisplay.Money(monthPayouts.Sum(payout => payout.Amount))</p>
+                        <p class="ds-kpi-note">
+                            @if (monthPayouts.Count == 0)
+                            {
+                                <span>No payouts this month.</span>
+                            }
+                            else
+                            {
+                                <span>
+                                    @Count(monthPayouts.Count, "payout", "payouts"): @TravelDisplay.Money(monthPayouts.Where(payout => payout.IsPaid).Sum(payout => payout.Amount)) paid,
+                                    @TravelDisplay.Money(monthPayouts.Where(payout => !payout.IsPaid).Sum(payout => payout.Amount)) upcoming.
+                                </span>
+                            }
+                            <a href="@($"{HostLayout.Base}/earnings")">Earnings</a>
+                        </p>
+                    </div>
+                </li>
+                <li class="col">
+                    <div class="ds-panel ds-kpi h-100">
+                        <h3 class="ds-kpi-label"><Icon Name="IconName.CalendarCheck" class="me-2" aria-hidden="true" />Occupancy, next @OccupancyDays days</h3>
+                        <p class="ds-kpi-value">@(occupancy.Open <= 0 ? "—" : FormattableString.Invariant($"{Math.Round(100.0 * occupancy.Booked / occupancy.Open):0}%"))</p>
+                        <p class="ds-kpi-note">
+                            @if (occupancy.Listings == 0)
+                            {
+                                <span>No listed listings.</span>
+                            }
+                            else
+                            {
+                                <span>
+                                    @occupancy.Booked of @Count(occupancy.Open, "open night", "open nights") booked over @Count(occupancy.Listings, "listed listing", "listed listings").
+                                    @(occupancy.Blocked == 0 ? null : $"{Count(occupancy.Blocked, "blocked night is", "blocked nights are")} left out.")
+                                </span>
+                            }
+                        </p>
+                    </div>
+                </li>
+                <li class="col">
+                    <div class="ds-panel ds-kpi h-100">
+                        <h3 class="ds-kpi-label"><Icon Name="IconName.StarFill" class="me-2" aria-hidden="true" />Average rating</h3>
+                        <p class="ds-kpi-value">@(reviews.Count == 0 ? "—" : TravelDisplay.Rating(reviews.Average(review => review.Rating)))<span class="ds-kpi-unit">@(reviews.Count == 0 ? null : " out of 5")</span></p>
+                        <p class="ds-kpi-note">@(reviews.Count == 0 ? "No reviews yet." : $"From {Count(reviews.Count, "review", "reviews")} of your listings.")</p>
+                    </div>
+                </li>
+                <li class="col">
+                    <div class="ds-panel ds-kpi h-100">
+                        <h3 class="ds-kpi-label"><Icon Name="IconName.ChatDots" class="me-2" aria-hidden="true" />Unread conversations</h3>
+                        <p class="ds-kpi-value">@unread</p>
+                        <p class="ds-kpi-note">
+                            <span>@(unread == 0 ? "You're all caught up." : "Guests are waiting for a reply.")</span>
+                            <a href="@($"{HostLayout.Base}/inbox")">Open the inbox</a>
+                        </p>
+                    </div>
+                </li>
+                <li class="col">
+                    <div class="ds-panel ds-kpi h-100">
+                        <h3 class="ds-kpi-label"><Icon Name="IconName.Reply" class="me-2" aria-hidden="true" />Reviews without a reply</h3>
+                        <p class="ds-kpi-value">@unreplied</p>
+                        <p class="ds-kpi-note">
+                            <span>@(unreplied == 0 ? "Every review has your reply." : "A short public reply helps future guests.")</span>
+                            <a href="@($"{HostLayout.Base}/reviews")">Go to reviews</a>
+                        </p>
+                    </div>
+                </li>
+            </ul>
+        </section>
+
+        <section class="mb-5" aria-labelledby="ds-today-requests">
+            <h2 class="ds-section-title" id="ds-today-requests" tabindex="-1">Needs your answer <span class="text-body-secondary fs-6">(@requests.Count)</span></h2>
+            @if (requests.Count == 0)
+            {
+                <div class="ds-panel ds-today-empty">
+                    <p class="text-body-secondary mb-0">No requests waiting. When a guest asks to book a listing without instant booking, the request shows up here with the time you have to answer.</p>
+                </div>
+            }
+            else
+            {
+                <ul class="list-unstyled d-grid gap-3 mb-0">
+                    @foreach (var request in requests)
+                    {
+                        var stay = State.FindStay(request.StayId);
+                        var deadline = AnswerBy(request);
+                        <li class="ds-panel ds-today-request" @key="request.Reference">
+                            <div class="ds-today-request-main">
+                                <h3 class="ds-card-title"><a href="@ReservationUrl(request.Reference)">@request.GuestName</a></h3>
+                                <p class="small mb-1">@(stay?.Name ?? "Removed listing") · @request.Reference</p>
+                                <p class="small text-body-secondary mb-0">
+                                    @TravelDisplay.Dates(request.CheckIn, request.CheckOut) · @TravelDisplay.Nights(request.Nights) · @TravelDisplay.Guests(request.Guests) · @TravelDisplay.Money(request.Total)
+                                </p>
+                            </div>
+                            <div class="ds-today-request-side">
+                                <p class="small fw-semibold mb-1"><Icon Name="IconName.Hourglass" class="me-1" aria-hidden="true" />@TimeLeft(deadline, now)</p>
+                                <p class="small text-body-secondary mb-2">Answer by @TravelDisplay.Stamp(deadline)</p>
+                                <a class="btn btn-sm btn-primary" href="@ReservationUrl(request.Reference)">
+                                    Answer request<span class="visually-hidden">@($" from {request.GuestName}, {request.Reference}")</span>
+                                </a>
+                            </div>
+                        </li>
+                    }
+                </ul>
+            }
+        </section>
+
+        <div class="row g-4 mb-4">
+            <section class="col-lg-6" aria-labelledby="ds-today-arriving">
+                <h2 class="ds-section-title" id="ds-today-arriving">Arriving soon <span class="text-body-secondary fs-6">(@arriving.Count)</span></h2>
+                @if (arriving.Count == 0)
+                {
+                    <div class="ds-panel ds-today-empty">
+                        <p class="text-body-secondary mb-0">No check-ins in the next @SoonDays days.</p>
+                    </div>
+                }
+                else
+                {
+                    <ul class="ds-panel ds-today-list list-unstyled mb-0">
+                        @foreach (var booking in arriving)
+                        {
+                            <li @key="booking.Reference">
+                                <span class="ds-today-day">@RelativeDay(booking.CheckIn)</span>
+                                <span class="ds-today-who">
+                                    <a class="fw-semibold" href="@ReservationUrl(booking.Reference)">@booking.GuestName</a>
+                                    <span class="d-block small text-body-secondary">@(State.FindStay(booking.StayId)?.Name) · @TravelDisplay.Nights(booking.Nights) · @TravelDisplay.Guests(booking.Guests)</span>
+                                </span>
+                            </li>
+                        }
+                    </ul>
+                }
+            </section>
+
+            <section class="col-lg-6" aria-labelledby="ds-today-leaving">
+                <h2 class="ds-section-title" id="ds-today-leaving">Leaving soon <span class="text-body-secondary fs-6">(@leaving.Count)</span></h2>
+                @if (leaving.Count == 0)
+                {
+                    <div class="ds-panel ds-today-empty">
+                        <p class="text-body-secondary mb-0">No check-outs in the next @SoonDays days.</p>
+                    </div>
+                }
+                else
+                {
+                    <ul class="ds-panel ds-today-list list-unstyled mb-0">
+                        @foreach (var booking in leaving)
+                        {
+                            <li @key="booking.Reference">
+                                <span class="ds-today-day">@RelativeDay(booking.CheckOut)</span>
+                                <span class="ds-today-who">
+                                    <a class="fw-semibold" href="@ReservationUrl(booking.Reference)">@booking.GuestName</a>
+                                    <span class="d-block small text-body-secondary">@(State.FindStay(booking.StayId)?.Name) · checked in @TravelDisplay.Day(booking.CheckIn) · @TravelDisplay.Guests(booking.Guests)</span>
+                                </span>
+                            </li>
+                        }
+                    </ul>
+                }
+            </section>
+        </div>
+
+        <p class="small mb-0"><a href="@ReservationsPath">All reservations</a></p>
+    }
+</div>

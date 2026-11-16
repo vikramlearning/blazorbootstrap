@@ -1,0 +1,334 @@
+@page "/showcase/travel/host/listings/new"
+@page "/showcase/travel/host/listings/{Id:int}"
+@layout HostLayout
+
+@{
+    var stay = Item;
+}
+
+@if (Id is not null && stay is null)
+{
+    <PageTitle>Listing not found · Hosting · @TravelSeedData.SiteName</PageTitle>
+
+    <div class="container-fluid px-lg-4">
+        <section class="ds-not-found" aria-labelledby="ds-le-missing-title">
+            <span class="ds-icon fs-4" aria-hidden="true"><Icon Name="IconName.HouseExclamation" /></span>
+            <h1 class="ds-title fs-3 mt-3 mb-2" id="ds-le-missing-title">We couldn't find that listing</h1>
+            <p class="text-body-secondary mb-4">There's no listing @Id among yours. It may have been deleted, or it belongs to another host.</p>
+            <a class="btn btn-primary" href="@ListUrl">Back to your listings</a>
+        </section>
+    </div>
+}
+else
+{
+    <PageTitle>@(stay is null ? "Add listing" : $"Edit {stay.Name}") · Hosting · @TravelSeedData.SiteName</PageTitle>
+
+    <div class="container-fluid px-lg-4">
+        <Breadcrumb Items="BreadcrumbItems" Class="mb-3" />
+
+        <h1 class="ds-title mb-1">@(stay is null ? "Add listing" : "Edit listing")</h1>
+        <p class="ds-lead text-body-secondary mb-3">
+            @(stay is null ? "Describe the place, set the price, and pick photos. It appears on the site as soon as you save it."
+              : stay.IsListed ? "Changes show on the site as soon as you save them."
+              : "This listing is unlisted: it isn't in search and can't be booked. Changes are saved for when you list it again.")
+        </p>
+
+        <ShowcaseDemoNotice Class="mb-3" Text="Demo only: listings stay in this browser tab. Nothing is sent." />
+
+        <p class="ds-le-error" role="alert" tabindex="-1" @ref="formErrorRegion">@formError</p>
+
+        <form @onsubmit="SaveAsync" novalidate>
+            <div class="row g-4">
+                <div class="col-xl-8 d-grid gap-4 align-content-start">
+                    <section class="ds-panel" aria-labelledby="ds-le-basics">
+                        <h2 class="h5 fw-bold" id="ds-le-basics">The place</h2>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold" for="ds-le-name">Name</label>
+                            <input @ref="nameInput" id="ds-le-name" class="form-control @Invalid(nameError)" value="@draft.Name" @oninput="OnNameInput" autocomplete="off"
+                                   aria-describedby="ds-le-name-count ds-le-name-error" aria-invalid="@AriaInvalid(nameError)" aria-required="true" />
+                            <div class="form-text @(Over(draft.Name, TravelState.MaxStayNameLength) ? "ds-le-over" : null)" id="ds-le-name-count">
+                                @CounterText(draft.Name, TravelState.MaxStayNameLength). Guests see it in search and on the stay page; no two listings share a name.
+                            </div>
+                            <p class="ds-le-field-error" id="ds-le-name-error">@nameError</p>
+                        </div>
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-sm-6">
+                                <label class="form-label fw-semibold" for="ds-le-destination">Destination</label>
+                                <select id="ds-le-destination" class="form-select" value="@draft.DestinationId" @onchange="OnDestinationChanged">
+                                    @foreach (var destination in State.Destinations)
+                                    {
+                                        <option value="@destination.Id">@destination.Name, @destination.Country</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="col-sm-6">
+                                <label class="form-label fw-semibold" for="ds-le-neighborhood">Neighborhood</label>
+                                <input @ref="neighborhoodInput" id="ds-le-neighborhood" class="form-control @Invalid(neighborhoodError)" value="@draft.Neighborhood" @oninput="OnNeighborhoodInput"
+                                       autocomplete="off" aria-describedby="ds-le-neighborhood-count ds-le-neighborhood-error" aria-invalid="@AriaInvalid(neighborhoodError)" aria-required="true" />
+                                <div class="form-text @(Over(draft.Neighborhood, MaxNeighborhoodLength) ? "ds-le-over" : null)" id="ds-le-neighborhood-count">@CounterText(draft.Neighborhood, MaxNeighborhoodLength)</div>
+                                <p class="ds-le-field-error" id="ds-le-neighborhood-error">@neighborhoodError</p>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold" for="ds-le-type">Type of place</label>
+                            <select id="ds-le-type" class="form-select" value="@draft.Type" @onchange="OnTypeChanged">
+                                @foreach (var type in Enum.GetValues<TravelStayType>())
+                                {
+                                    <option value="@type">@TravelDisplay.TypeLabel(type)</option>
+                                }
+                            </select>
+                        </div>
+
+                        <div class="mb-0">
+                            <label class="form-label fw-semibold" for="ds-le-description">Description</label>
+                            <textarea @ref="descriptionInput" id="ds-le-description" class="form-control @Invalid(descriptionError)" rows="5" value="@draft.Description" @oninput="OnDescriptionInput"
+                                      aria-describedby="ds-le-description-count ds-le-description-error" aria-invalid="@AriaInvalid(descriptionError)" aria-required="true"></textarea>
+                            <div class="form-text @(Over(draft.Description, TravelState.MaxDescriptionLength) ? "ds-le-over" : null)" id="ds-le-description-count">
+                                @CounterText(draft.Description, TravelState.MaxDescriptionLength). Plain text: what it's like to stay there.
+                            </div>
+                            <p class="ds-le-field-error" id="ds-le-description-error">@descriptionError</p>
+                        </div>
+                    </section>
+
+                    <section class="ds-panel" aria-labelledby="ds-le-price">
+                        <h2 class="h5 fw-bold" id="ds-le-price">Price and guests</h2>
+
+                        <div class="row g-3">
+                            <div class="col-sm-6">
+                                <label class="form-label fw-semibold" for="ds-le-rate">Nightly rate (USD)</label>
+                                <input @ref="rateInput" id="ds-le-rate" type="number" class="form-control @Invalid(rateError)" min="@MinRate" max="@MaxRate" step="any" inputmode="decimal"
+                                       value="@rateText" @oninput="OnRateInput" aria-describedby="ds-le-rate-help ds-le-rate-error ds-le-quote" aria-invalid="@AriaInvalid(rateError)" aria-required="true" />
+                                <div class="form-text" id="ds-le-rate-help">
+                                    From @TravelDisplay.Money(MinRate) to @TravelDisplay.Money(MaxRate).
+                                    @if (stay is not null)
+                                    {
+                                        @(RateChanged(stay) ? $" Was {TravelDisplay.Money(stay.NightlyRate)}: the new rate applies to new bookings only; existing trips keep the price they were booked at." : " A new rate applies to new bookings only.")
+                                    }
+                                </div>
+                                <p class="ds-le-field-error" id="ds-le-rate-error">@rateError</p>
+                            </div>
+                            <div class="col-sm-6">
+                                <label class="form-label fw-semibold" for="ds-le-cleaning">Cleaning fee (USD)</label>
+                                <input @ref="cleaningInput" id="ds-le-cleaning" type="number" class="form-control @Invalid(cleaningError)" min="0" max="@MaxCleaning" step="any" inputmode="decimal"
+                                       value="@cleaningText" @oninput="OnCleaningInput" aria-describedby="ds-le-cleaning-help ds-le-cleaning-error ds-le-quote" aria-invalid="@AriaInvalid(cleaningError)" />
+                                <div class="form-text" id="ds-le-cleaning-help">Once per stay, from $0 to @TravelDisplay.Money(MaxCleaning).</div>
+                                <p class="ds-le-field-error" id="ds-le-cleaning-error">@cleaningError</p>
+                            </div>
+                        </div>
+
+                        <div class="ds-le-quote small mt-2 mb-3" id="ds-le-quote">
+                            @if (Example is { } quote)
+                            {
+                                <p class="fw-semibold mb-1">What a guest sees for @TravelDisplay.Nights(ExampleNights)</p>
+                                <dl class="ds-summary row mb-0">
+                                    <dt class="col-8">@TravelDisplay.Money(quote.NightlyRate) × @TravelDisplay.Nights(quote.Nights)</dt>
+                                    <dd class="col-4">@TravelDisplay.Money(quote.Subtotal)</dd>
+                                    <dt class="col-8">Cleaning fee</dt>
+                                    <dd class="col-4">@TravelDisplay.Money(quote.CleaningFee)</dd>
+                                    <dt class="col-8">Taxes and fees (@TaxPercent of the nights)</dt>
+                                    <dd class="col-4">@TravelDisplay.Money(quote.Taxes)</dd>
+                                    <dt class="col-8 ds-total">Total</dt>
+                                    <dd class="col-4 ds-total">@TravelDisplay.Money(quote.Total)</dd>
+                                </dl>
+                            }
+                            else
+                            {
+                                <p class="text-body-secondary mb-0">Enter a nightly rate and a cleaning fee to see what a guest pays for @TravelDisplay.Nights(ExampleNights).</p>
+                            }
+                        </div>
+
+                        <div class="row g-3">
+                            <div class="col-sm-6">
+                                <label class="form-label fw-semibold" for="ds-le-guests">Guests</label>
+                                <select @ref="guestsSelect" id="ds-le-guests" class="form-select" value="@draft.MaxGuests" @onchange="OnGuestsChanged" aria-describedby="ds-le-guests-help">
+                                    @for (var count = 1; count <= TravelSeedData.MaxGuests; count++)
+                                    {
+                                        <option value="@count">Up to @TravelDisplay.Guests(count)</option>
+                                    }
+                                </select>
+                                <div class="form-text" id="ds-le-guests-help">The most guests the place sleeps.</div>
+                            </div>
+                            <div class="col-sm-6">
+                                <label class="form-label fw-semibold" for="ds-le-bedrooms">Bedrooms</label>
+                                <select @ref="bedroomsSelect" id="ds-le-bedrooms" class="form-select @Invalid(bedroomsError)" value="@draft.Bedrooms" @onchange="OnBedroomsChanged"
+                                        aria-describedby="ds-le-bedrooms-error" aria-invalid="@AriaInvalid(bedroomsError)">
+                                    @for (var count = 0; count <= MaxBedrooms; count++)
+                                    {
+                                        <option value="@count">@(count == 0 ? "Studio (no separate bedroom)" : count == 1 ? "1 bedroom" : $"{count} bedrooms")</option>
+                                    }
+                                </select>
+                                <p class="ds-le-field-error" id="ds-le-bedrooms-error">@bedroomsError</p>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="ds-panel" aria-labelledby="ds-le-booking">
+                        <h2 class="h5 fw-bold" id="ds-le-booking">Amenities and booking</h2>
+
+                        <fieldset class="mb-4">
+                            <legend class="fs-6 fw-semibold">Amenities</legend>
+                            <div class="ds-le-amenities">
+                                @foreach (var amenity in amenityCatalog)
+                                {
+                                    var amenityId = $"ds-le-amenity-{AmenitySlug(amenity)}";
+                                    <div class="form-check" @key="amenity">
+                                        <input class="form-check-input" type="checkbox" id="@amenityId" checked="@draft.Amenities.Contains(amenity)" @onchange="args => OnAmenityChanged(amenity, args)" />
+                                        <label class="form-check-label" for="@amenityId">@amenity</label>
+                                    </div>
+                                }
+                            </div>
+                        </fieldset>
+
+                        <fieldset class="mb-4">
+                            <legend class="fs-6 fw-semibold">Cancellation policy</legend>
+                            @foreach (var policy in Enum.GetValues<TravelCancellationPolicy>())
+                            {
+                                var policyId = $"ds-le-policy-{policy}";
+                                <div class="form-check mb-2" @key="policy">
+                                    <input class="form-check-input" type="radio" name="ds-le-policy" id="@policyId" checked="@(draft.Policy == policy)" @onchange="() => OnPolicyChanged(policy)"
+                                           aria-describedby="@($"{policyId}-text")" />
+                                    <label class="form-check-label fw-semibold" for="@policyId">@policy</label>
+                                    <div class="form-text mt-0" id="@($"{policyId}-text")">@TravelDisplay.PolicyText(policy)</div>
+                                </div>
+                            }
+                        </fieldset>
+
+                        <div class="form-check mb-0">
+                            <input class="form-check-input" type="checkbox" id="ds-le-instant" checked="@draft.InstantBook" @onchange="OnInstantBookChanged" aria-describedby="ds-le-instant-help" />
+                            <label class="form-check-label fw-semibold" for="ds-le-instant">Instant book</label>
+                            <div class="form-text mt-0" id="ds-le-instant-help">
+                                On: guests book and pay straight away. Off: guests send a request to book with a message; their card is held, not charged,
+                                and you have @TravelState.RequestHours hours (or until check-in) to accept or decline. A request you don't answer expires.
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="ds-panel" aria-labelledby="ds-le-address-title">
+                        <h2 class="h5 fw-bold" id="ds-le-address-title">Address</h2>
+                        <label class="form-label fw-semibold" for="ds-le-address">Street address</label>
+                        <input @ref="addressInput" id="ds-le-address" class="form-control @Invalid(addressError)" value="@draft.Address" @oninput="OnAddressInput" autocomplete="off"
+                               aria-describedby="ds-le-address-help ds-le-address-error" aria-invalid="@AriaInvalid(addressError)" aria-required="true" />
+                        <div class="form-text @(Over(draft.Address, MaxAddressLength) ? "ds-le-over" : null)" id="ds-le-address-help">
+                            @CounterText(draft.Address, MaxAddressLength). Guests only see the address on a confirmed trip; search and the stay page show the neighborhood.
+                        </div>
+                        <p class="ds-le-field-error" id="ds-le-address-error">@addressError</p>
+                    </section>
+
+                    <section class="ds-panel" aria-labelledby="ds-le-photos-title">
+                        <h2 class="h5 fw-bold" id="ds-le-photos-title" tabindex="-1" @ref="photosHeading">Photos</h2>
+                        <p class="small text-body-secondary">
+                            @PhotoCountText. The first photo is the cover in search. Pick 1 to @TravelStay.MaxPhotos from the photo library.
+                        </p>
+                        <p class="ds-le-field-error mb-2" id="ds-le-photos-error">@photosError</p>
+
+                        @if (draft.Photos.Count == 0)
+                        {
+                            <p class="small fw-semibold mb-3">No photos yet. Add some from the photo library.</p>
+                        }
+                        else
+                        {
+                            <ol class="ds-le-photos list-unstyled" aria-label="Chosen photos, in order">
+                                @for (var index = 0; index < draft.Photos.Count; index++)
+                                {
+                                    var i = index;
+                                    var key = draft.Photos[i];
+                                    var number = i + 1;
+                                    <li class="ds-le-photo" @key="key">
+                                        <div class="ds-le-photo-thumb">
+                                            <ShowcaseImage Src="@TravelStay.LibraryPath(key)" Alt="" Width="320" Height="240" Accent="@AccentOf(key)" Caption="@key" />
+                                        </div>
+                                        <div class="ds-le-photo-text">
+                                            <span class="fw-semibold">Photo @number</span>
+                                            <span class="small text-body-secondary">@key</span>
+                                            @if (i == 0)
+                                            {
+                                                <span class="badge text-bg-primary">Cover</span>
+                                            }
+                                        </div>
+                                        <div class="ds-le-photo-actions">
+                                            <button type="button" class="btn btn-sm btn-outline-secondary" @ref="upButtons[i]" disabled="@(i == 0)" @onclick="() => MovePhoto(i, -1)"
+                                                    aria-label="@($"Move photo {number} up")">
+                                                <Icon Name="IconName.ArrowUp" aria-hidden="true" />
+                                            </button>
+                                            <button type="button" class="btn btn-sm btn-outline-secondary" @ref="downButtons[i]" disabled="@(i == draft.Photos.Count - 1)" @onclick="() => MovePhoto(i, 1)"
+                                                    aria-label="@($"Move photo {number} down")">
+                                                <Icon Name="IconName.ArrowDown" aria-hidden="true" />
+                                            </button>
+                                            <button type="button" class="btn btn-sm btn-outline-danger" @ref="removeButtons[i]" @onclick="() => RemovePhoto(i)" aria-label="@($"Remove photo {number}")">
+                                                <Icon Name="IconName.XLg" aria-hidden="true" />
+                                            </button>
+                                        </div>
+                                    </li>
+                                }
+                            </ol>
+                        }
+
+                        @* Announces moves and removals; the list itself changes silently. *@
+                        <p class="visually-hidden" role="status">@photoAnnouncement</p>
+
+                        <button type="button" class="btn btn-outline-primary btn-sm" @ref="libraryToggle" @onclick="ToggleLibrary" aria-expanded="@(showLibrary ? "true" : "false")" aria-controls="ds-le-library">
+                            <Icon Name="@(showLibrary ? IconName.ChevronUp : IconName.PlusLg)" class="me-1" aria-hidden="true" />@(showLibrary ? "Hide photo library" : "Add photos")
+                        </button>
+
+                        @if (showLibrary)
+                        {
+                            <fieldset class="ds-le-library mt-3" id="ds-le-library">
+                                <legend class="fs-6 fw-semibold">Photo library</legend>
+                                <p class="small text-body-secondary mb-2" aria-live="polite">
+                                    @PhotoCountText chosen.@(draft.Photos.Count >= TravelStay.MaxPhotos ? " That's the most a listing can have: remove one to add another." : " Tick a photo to add it at the end; untick it to remove it.")
+                                </p>
+                                <div class="ds-le-grid">
+                                    @foreach (var key in photoLibrary)
+                                    {
+                                        var position = draft.Photos.IndexOf(key);
+                                        var chosen = position >= 0;
+                                        var tileId = $"ds-le-lib-{key}";
+                                        <div class="ds-le-tile @(chosen ? "ds-le-tile-on" : null)" @key="key">
+                                            <input class="form-check-input ds-le-tile-check" type="checkbox" id="@tileId" checked="@chosen"
+                                                   disabled="@(!chosen && draft.Photos.Count >= TravelStay.MaxPhotos)" @onchange="args => OnLibraryChanged(key, args)" />
+                                            <label class="ds-le-tile-label" for="@tileId">
+                                                <ShowcaseImage Src="@TravelStay.LibraryPath(key)" Alt="" Width="320" Height="240" Accent="@AccentOf(key)" Caption="@key" />
+                                                <span class="ds-le-tile-name">Photo @key</span>
+                                                @if (chosen)
+                                                {
+                                                    <span class="ds-le-tile-pos" aria-hidden="true">@(position == 0 ? "Cover" : $"#{position + 1}")</span>
+                                                }
+                                            </label>
+                                        </div>
+                                    }
+                                </div>
+                            </fieldset>
+                        }
+                    </section>
+                </div>
+
+                <div class="col-xl-4">
+                    <aside class="ds-panel ds-sticky" aria-labelledby="ds-le-save-title">
+                        <h2 class="h5 fw-bold" id="ds-le-save-title">@(stay is null ? "Add it to the site" : "Save changes")</h2>
+                        <p class="small text-body-secondary">
+                            @(stay is null ? "New listings are listed straight away: guests can find and book them as soon as you save."
+                              : "Guests see the changes straight away. Existing trips keep their dates and the price they were booked at.")
+                        </p>
+                        <div class="d-grid gap-2">
+                            <Button Type="ButtonType.Submit" Color="ButtonColor.Primary">
+                                <Icon Name="IconName.Check2" class="me-2" aria-hidden="true" />@(stay is null ? "Add listing" : "Save listing")
+                            </Button>
+                            <a class="btn btn-outline-secondary" href="@ListUrl">Cancel</a>
+                        </div>
+                        @if (stay is not null)
+                        {
+                            <hr />
+                            <ul class="list-unstyled small mb-0 d-grid gap-2">
+                                <li><a href="@TravelDisplay.StayUrl(stay.Id)"><Icon Name="IconName.BoxArrowUpRight" class="me-2" aria-hidden="true" />View on site</a></li>
+                                <li><a href="@HostCalendar.CalendarUrl(stay.Id)"><Icon Name="IconName.Calendar3" class="me-2" aria-hidden="true" />Calendar</a></li>
+                            </ul>
+                        }
+                    </aside>
+                </div>
+            </div>
+        </form>
+    </div>
+}

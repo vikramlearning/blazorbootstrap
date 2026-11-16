@@ -88,6 +88,83 @@
     padding-block: 1.75rem 1rem;
 }
 
+/* The host back office (D-031): a sidebar beside the page on wide screens, above it on narrow ones. */
+.ds-shell {
+    display: flex;
+    flex-direction: column;
+    flex: 1 0 auto;
+    min-width: 0;
+}
+
+.ds-shell-main {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+@media (min-width: 641px) {
+    .ds-shell {
+        flex-direction: row;
+        align-items: flex-start;
+    }
+}
+
+.sc-travel ::deep .ds-sidebar {
+    --bb-sidebar-width: 15rem;
+    --bb-sidebar-background-color: #0c2233;
+    --bb-sidebar-top-row-background-color: #0c2233;
+    --bb-sidebar-top-row-border-color: rgba(255, 255, 255, .08);
+    --bb-sidebar-title-text-color: #fff;
+    --bb-sidebar-brand-icon-color: #7dd3fc;
+    --bb-sidebar-title-badge-text-color: #0c2233;
+    --bb-sidebar-title-badge-background-color: #7dd3fc;
+    --bb-sidebar-navbar-toggler-icon-color: #fff;
+    --bb-sidebar-navbar-toggler-background-color: rgba(255, 255, 255, .1);
+    --bb-sidebar-content-border-color: rgba(255, 255, 255, .08);
+    --bb-sidebar-nav-item-text-color: #d3e3ee;
+    --bb-sidebar-nav-item-text-active-color-rgb: 255, 255, 255;
+    --bb-sidebar-nav-item-text-hover-color: rgba(255, 255, 255, .95);
+    --bb-sidebar-nav-item-background-hover-color: rgba(255, 255, 255, .08);
+    --bb-sidebar-nav-item-group-background-color: rgba(255, 255, 255, .06);
+    position: sticky;
+    top: 0;
+}
+
+/* The host's top bar, and the bar a host sees over the guest site (D-032). */
+.sc-travel ::deep .ds-host-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: .75rem;
+    padding: .625rem 1.5rem;
+    border-bottom: 1px solid var(--ds-border);
+    background: var(--bs-body-bg);
+}
+
+.sc-travel ::deep .ds-host-bar-title {
+    font-weight: 700;
+    color: var(--ds-ink);
+}
+
+.sc-travel ::deep .ds-host-bar-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: .5rem;
+}
+
+.sc-travel ::deep .ds-viewing-bar {
+    padding: .5rem 0;
+    background: #0c2233;
+    color: #e0f2fe;
+    font-size: .875rem;
+}
+
+    .sc-travel ::deep .ds-viewing-bar a {
+        color: #7dd3fc;
+        font-weight: 600;
+    }
+
 .ds-footer {
     margin-top: 2rem;
     padding-block: 1.25rem;
@@ -287,4 +364,9 @@
     inset: auto 0 0 0;
     padding: 1rem;
     background: linear-gradient(transparent, rgba(0, 0, 0, .72));
+}
+
+/* A table that scrolls sideways can round to one pixel taller than its box; never show a vertical scrollbar for it. */
+.sc-travel ::deep .table-responsive {
+    overflow-y: hidden;
 }

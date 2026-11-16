@@ -1,0 +1,86 @@
+/* The host's listings. Badge, Modal, and ShowcaseImage render their own elements, so those need ::deep. */
+
+.ds-hl-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+/* Empty until an action reports, so it takes no space then. */
+.ds-hl-status {
+    font-weight: 600;
+}
+
+    .ds-hl-status:empty {
+        margin: 0;
+    }
+
+    .ds-hl-status:focus {
+        outline: none;
+    }
+
+.ds-hl-list {
+    display: grid;
+    gap: 1rem;
+}
+
+/* Photo above the details on a phone, beside them when there is room. */
+.ds-hl-item {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1rem;
+}
+
+@media (min-width: 576px) {
+    .ds-hl-item {
+        grid-template-columns: 11rem minmax(0, 1fr);
+    }
+}
+
+.ds-hl-photo {
+    border-radius: .75rem;
+    overflow: hidden;
+    align-self: start;
+}
+
+    .ds-hl-photo ::deep .sc-image,
+    .ds-hl-photo ::deep .sc-image-placeholder {
+        width: 100%;
+        aspect-ratio: 4 / 3;
+    }
+
+.ds-hl-body {
+    min-width: 0;
+}
+
+.ds-hl-title-wrap {
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+.ds-hl-facts {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(9.5rem, 1fr));
+    gap: .5rem 1.25rem;
+    margin: .875rem 0;
+}
+
+    .ds-hl-facts dt {
+        font-size: .8125rem;
+        font-weight: 500;
+        color: var(--bs-secondary-color);
+    }
+
+    .ds-hl-facts dd {
+        margin: 0;
+        font-weight: 600;
+        color: var(--ds-ink);
+    }
+
+.ds-hl-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .5rem;
+}

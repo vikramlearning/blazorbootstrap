@@ -1,0 +1,196 @@
+@page "/showcase/travel/host/listings"
+@layout HostLayout
+
+<PageTitle>Listings · Hosting · @TravelSeedData.SiteName</PageTitle>
+
+<div class="container-fluid px-lg-4">
+    <div class="ds-hl-head mb-3">
+        <div>
+            <h1 class="ds-title mb-1">Listings</h1>
+            <p class="ds-lead text-body-secondary mb-0">Your places to stay: edit them, take them out of search, or open their calendars.</p>
+        </div>
+        <a class="btn btn-primary" href="@HostListingEdit.NewUrl"><Icon Name="IconName.PlusLg" class="me-2" aria-hidden="true" />Add listing</a>
+    </div>
+
+    @* Always rendered and focusable, so an action's outcome is announced and focus has somewhere to go. *@
+    <p class="ds-hl-status" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
+
+    @{
+        var listings = State.HostStays();
+    }
+
+    @if (listings.Count == 0)
+    {
+        <section class="ds-panel text-center py-5" aria-labelledby="ds-hl-empty">
+            <span class="ds-icon fs-4" aria-hidden="true"><Icon Name="IconName.HouseAdd" /></span>
+            <h2 class="h5 fw-bold mt-3" id="ds-hl-empty">No listings yet</h2>
+            <p class="text-body-secondary">Add your first place to stay. It appears on the site as soon as you save it.</p>
+            <a class="btn btn-primary" href="@HostListingEdit.NewUrl">Add listing</a>
+        </section>
+    }
+    else
+    {
+        <p class="small text-body-secondary">@ListingCountText(listings)</p>
+        <ul class="ds-hl-list list-unstyled mb-0">
+            @foreach (var stay in listings)
+            {
+                var destination = State.FindDestination(stay.DestinationId);
+                var counts = Counts(stay.Id);
+                var rating = State.AverageRating(stay.Id);
+                var headingId = FormattableString.Invariant($"ds-hl-name-{stay.Id}");
+
+                <li @key="stay.Id">
+                    <article class="ds-panel ds-hl-item" aria-labelledby="@headingId">
+                        <div class="ds-hl-photo">
+                            <ShowcaseImage Src="@stay.PhotoPath(1)" Alt="" Width="800" Height="600" Accent="@destination.Accent" PlaceholderIcon="IconName.HouseHeart" />
+                        </div>
+                        <div class="ds-hl-body">
+                            <div class="d-flex flex-wrap align-items-start justify-content-between gap-2">
+                                <div class="ds-hl-title-wrap">
+                                    <h2 class="ds-card-title" id="@headingId">@stay.Name</h2>
+                                    <p class="small text-body-secondary mb-0">@stay.Neighborhood, @destination.Name · @TravelDisplay.TypeLabel(stay.Type)</p>
+                                </div>
+                                @if (stay.IsListed)
+                                {
+                                    <Badge Color="BadgeColor.Success"><Icon Name="IconName.Eye" class="me-1" aria-hidden="true" />Listed</Badge>
+                                }
+                                else
+                                {
+                                    <Badge Color="BadgeColor.Secondary"><Icon Name="IconName.EyeSlash" class="me-1" aria-hidden="true" />Unlisted</Badge>
+                                }
+                            </div>
+
+                            <dl class="ds-hl-facts">
+                                <div>
+                                    <dt>Nightly rate</dt>
+                                    <dd>@TravelDisplay.Money(stay.NightlyRate)<span class="fw-normal text-body-secondary"> + @TravelDisplay.Money(stay.CleaningFee) cleaning</span></dd>
+                                </div>
+                                <div>
+                                    <dt>Sleeps</dt>
+                                    <dd>@TravelDisplay.Guests(stay.MaxGuests), @BedroomsText(stay.Bedrooms)</dd>
+                                </div>
+                                <div>
+                                    <dt>Booking</dt>
+                                    <dd>@(stay.InstantBook ? "Instant book" : "Request to book")</dd>
+                                </div>
+                                <div>
+                                    <dt>Cancellation</dt>
+                                    <dd>@stay.Policy</dd>
+                                </div>
+                                <div>
+                                    <dt>Upcoming</dt>
+                                    <dd>@UpcomingText(counts)</dd>
+                                </div>
+                                <div>
+                                    <dt>Rating</dt>
+                                    <dd>
+                                        @if (counts.Reviews == 0)
+                                        {
+                                            <span class="fw-normal text-body-secondary">No reviews yet</span>
+                                        }
+                                        else
+                                        {
+                                            <text><Icon Name="IconName.StarFill" class="ds-stars me-1" aria-hidden="true" />@TravelDisplay.Rating(rating)<span class="fw-normal text-body-secondary"> (@ReviewsText(counts.Reviews))</span></text>
+                                        }
+                                    </dd>
+                                </div>
+                            </dl>
+
+                            @if (!stay.IsListed)
+                            {
+                                <p class="small text-body-secondary mb-2">Not in search and can't be booked. Existing trips go on as booked.</p>
+                            }
+
+                            <div class="ds-hl-actions">
+                                <a class="btn btn-sm btn-primary" href="@HostListingEdit.EditUrl(stay.Id)">
+                                    <Icon Name="IconName.Pencil" class="me-1" aria-hidden="true" />Edit<span class="visually-hidden"> @stay.Name</span>
+                                </a>
+                                <a class="btn btn-sm btn-outline-secondary" href="@HostCalendar.CalendarUrl(stay.Id)">
+                                    <Icon Name="IconName.Calendar3" class="me-1" aria-hidden="true" />Calendar<span class="visually-hidden"> of @stay.Name</span>
+                                </a>
+                                <a class="btn btn-sm btn-outline-secondary" href="@TravelDisplay.StayUrl(stay.Id)">
+                                    <Icon Name="IconName.BoxArrowUpRight" class="me-1" aria-hidden="true" />View on site<span class="visually-hidden">: @stay.Name</span>
+                                </a>
+                                <button type="button" class="btn btn-sm btn-outline-secondary" @ref="listButtons[stay.Id]" @onclick="() => ToggleListedAsync(stay)">
+                                    @if (stay.IsListed)
+                                    {
+                                        <text><Icon Name="IconName.EyeSlash" class="me-1" aria-hidden="true" />Unlist<span class="visually-hidden"> @stay.Name</span></text>
+                                    }
+                                    else
+                                    {
+                                        <text><Icon Name="IconName.Eye" class="me-1" aria-hidden="true" />List<span class="visually-hidden"> @stay.Name</span></text>
+                                    }
+                                </button>
+                                <button type="button" class="btn btn-sm btn-outline-danger" @ref="deleteButtons[stay.Id]" @onclick="() => AskDeleteAsync(stay)">
+                                    <Icon Name="IconName.Trash3" class="me-1" aria-hidden="true" />Delete<span class="visually-hidden"> @stay.Name</span>
+                                </button>
+                            </div>
+                        </div>
+                    </article>
+                </li>
+            }
+        </ul>
+    }
+</div>
+
+@* Outside the list, so a dialog is never removed while it is open. *@
+<Modal @ref="unlistModal" IsVerticallyCentered="true" ShowCloseButton="false" aria-labelledby="ds-hl-unlist-title" OnHidden="OnDialogHiddenAsync">
+    <HeaderTemplate>
+        <h2 class="modal-title h5" id="ds-hl-unlist-title">Unlist @pending?.Name?</h2>
+    </HeaderTemplate>
+    <BodyTemplate>
+        @if (pending is { } stay)
+        {
+            var counts = Counts(stay.Id);
+            <p class="mb-2">It leaves search, and guests can't book it. Its page stays open to guests who already have a trip there.</p>
+            <p class="mb-2">@ExistingTripsText(counts)</p>
+            <p class="small text-body-secondary mb-0">You can list it again at any time.</p>
+        }
+        <p class="text-danger-emphasis fw-semibold small mt-2 mb-0" role="alert">@dialogError</p>
+    </BodyTemplate>
+    <FooterTemplate>
+        <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => unlistModal.HideAsync()">Keep listed</Button>
+        <Button Color="ButtonColor.Primary" @onclick="ConfirmUnlistAsync">Unlist</Button>
+    </FooterTemplate>
+</Modal>
+
+<Modal @ref="deleteModal" IsVerticallyCentered="true" ShowCloseButton="false" aria-labelledby="ds-hl-delete-title" OnHidden="OnDialogHiddenAsync">
+    <HeaderTemplate>
+        <h2 class="modal-title h5" id="ds-hl-delete-title">@(pendingInUse ? $"{pending?.Name} can't be deleted" : $"Delete {pending?.Name}?")</h2>
+    </HeaderTemplate>
+    <BodyTemplate>
+        @if (pendingInUse)
+        {
+            <p class="mb-2">@InUseText</p>
+            @if (pending is { IsListed: true })
+            {
+                <p class="mb-0">Unlist it instead: it leaves search and can't be booked, and existing trips go on.</p>
+            }
+            else
+            {
+                <p class="mb-0">It's already unlisted, so guests can't find or book it.</p>
+            }
+        }
+        else
+        {
+            <p class="mb-2">The listing, its photos, and its calendar blocks are removed from @TravelSeedData.SiteName. Guests who saved it no longer see it.</p>
+            <p class="small text-body-secondary mb-0">This can't be undone.</p>
+        }
+        <p class="text-danger-emphasis fw-semibold small mt-2 mb-0" role="alert">@dialogError</p>
+    </BodyTemplate>
+    <FooterTemplate>
+        @if (pendingInUse)
+        {
+            <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => deleteModal.HideAsync()">Close</Button>
+            @if (pending is { IsListed: true })
+            {
+                <Button Color="ButtonColor.Primary" @onclick="ConfirmUnlistAsync">Unlist instead</Button>
+            }
+        }
+        else
+        {
+            <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => deleteModal.HideAsync()">Keep listing</Button>
+            <Button Color="ButtonColor.Danger" @onclick="ConfirmDeleteAsync">Delete listing</Button>
+        }
+    </FooterTemplate>
+</Modal>

@@ -1,0 +1,94 @@
+/* The host's Today dashboard. Icon renders its own element, so it would need ::deep; nothing here styles it. */
+
+.ds-kpi {
+    display: flex;
+    flex-direction: column;
+    gap: .25rem;
+}
+
+.ds-kpi-label {
+    margin: 0;
+    font-family: var(--sc-font-body);
+    font-size: .875rem;
+    font-weight: 600;
+    color: var(--bs-secondary-color);
+}
+
+.ds-kpi-value {
+    margin: 0;
+    font-size: 1.75rem;
+    font-weight: 700;
+    line-height: 1.2;
+    color: var(--ds-ink);
+    font-variant-numeric: tabular-nums;
+}
+
+.ds-kpi-unit {
+    font-size: .875rem;
+    font-weight: 500;
+    color: var(--bs-secondary-color);
+}
+
+.ds-kpi-note {
+    margin: 0;
+    font-size: .8125rem;
+    color: var(--bs-secondary-color);
+}
+
+    .ds-kpi-note a {
+        white-space: nowrap;
+    }
+
+.ds-today-empty {
+    padding-block: 1.5rem;
+}
+
+/* A request: details beside the deadline and the answer link; on a phone the deadline goes underneath. */
+.ds-today-request {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: .75rem;
+}
+
+.ds-today-request-main {
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+@media (min-width: 768px) {
+    .ds-today-request {
+        grid-template-columns: 1fr auto;
+        align-items: center;
+    }
+
+    .ds-today-request-side {
+        text-align: end;
+    }
+}
+
+.ds-today-list {
+    padding-block: .5rem;
+}
+
+    .ds-today-list li {
+        display: grid;
+        grid-template-columns: 6.5rem 1fr;
+        gap: .75rem;
+        padding-block: .625rem;
+        border-bottom: 1px solid var(--ds-border);
+    }
+
+        .ds-today-list li:last-child {
+            border-bottom: 0;
+        }
+
+.ds-today-day {
+    font-size: .875rem;
+    font-weight: 600;
+    color: var(--ds-ink);
+}
+
+.ds-today-who {
+    min-width: 0;
+    overflow-wrap: anywhere;
+}

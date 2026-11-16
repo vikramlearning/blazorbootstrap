@@ -217,7 +217,7 @@ public partial class TripDetail : ComponentBase, IDisposable
         if (!changing || State.ValidateStay(stay, changeIn, changeOut, changeGuests) is not null || !State.IsAvailable(stay.Id, changeIn, changeOut, trip.Reference))
             return "Change dates";
 
-        var difference = State.ChangeAmount(trip, State.Quote(stay, changeIn, changeOut));
+        var difference = State.ChangeAmount(trip, State.QuoteChange(trip, changeIn, changeOut));
 
         return difference > 0 ? $"Change and pay {TravelDisplay.Money(difference)}"
             : difference < 0 ? $"Change and get {TravelDisplay.Money(-difference)} back"
@@ -358,6 +358,9 @@ public partial class TripDetail : ComponentBase, IDisposable
 
     private void OnStateChanged() => InvokeAsync(StateHasChanged);
 
+    /// <summary>Returns when a request runs out (see <see cref="TravelState.AnswerBy" />).</summary>
+    private static DateTime AnswerBy(TravelBooking trip) => TravelState.AnswerBy(trip);
+
     /// <summary>Returns the sentence beside the phase badge: where the trip stands and what happens next.</summary>
     private string PhaseSentence(TravelBooking trip, TravelTripPhase phase, TravelHost host)
     {
@@ -365,7 +368,8 @@ public partial class TripDetail : ComponentBase, IDisposable
 
         return phase switch
         {
-            TravelTripPhase.Requested => $"Waiting for {host.Name} to answer ({host.ResponseTime}). Your card is held, not charged.",
+            TravelTripPhase.Requested => $"Waiting for {host.Name} to answer, by {TravelDisplay.Stamp(AnswerBy(trip))} at the latest. Your card is held, not charged.",
+            TravelTripPhase.Expired => $"{host.Name} didn't answer in time, so the request expired. Nothing was charged.",
             TravelTripPhase.Upcoming => trip.CheckIn.DayNumber - State.Today.DayNumber == 1
                 ? "Check-in is tomorrow."
                 : $"Check-in is in {trip.CheckIn.DayNumber - State.Today.DayNumber} days.",

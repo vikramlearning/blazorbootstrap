@@ -32,13 +32,13 @@ else
             <div class="col-lg-7">
                 @* Autoplay stays off, so the gallery never moves on its own (WCAG 2.2.2). *@
                 <Carousel ShowIndicators="true" Autoplay="CarouselAutoPlay.None" Class="ds-gallery mb-4" @key="Stay.Id">
-                    @for (var number = 1; number <= TravelStay.PhotoCount; number++)
+                    @for (var number = 1; number <= Stay.PhotoTotal; number++)
                     {
                         @* The slide content renders after the loop ends, so it must not read the loop variable. *@
                         var photo = number;
-                        <CarouselItem Active="photo == 1" Label="@($"Photo {photo} of {TravelStay.PhotoCount}")">
-                            <ShowcaseImage Src="@Stay.PhotoPath(photo)" Alt="@($"{Stay.Name}, photo {photo} of {TravelStay.PhotoCount}")" Width="1200" Height="800"
-                                           Eager="photo == 1" Accent="@Destination.Accent" PlaceholderIcon="IconName.HouseHeart" Caption="@($"Photo {photo} of {TravelStay.PhotoCount}")" />
+                        <CarouselItem Active="photo == 1" Label="@($"Photo {photo} of {Stay.PhotoTotal}")">
+                            <ShowcaseImage Src="@Stay.PhotoPath(photo)" Alt="@($"{Stay.Name}, photo {photo} of {Stay.PhotoTotal}")" Width="1200" Height="800"
+                                           Eager="photo == 1" Accent="@Destination.Accent" PlaceholderIcon="IconName.HouseHeart" Caption="@($"Photo {photo} of {Stay.PhotoTotal}")" />
                         </CarouselItem>
                     }
                 </Carousel>
@@ -159,6 +159,20 @@ else
             </div>
 
             <div class="col-lg-5">
+                @if (!Stay.IsListed)
+                {
+                    @* Shown to its host (a preview) and to guests with a trip there; an unlisted stay can't be booked. *@
+                    <section class="ds-panel" aria-labelledby="ds-unlisted-title">
+                        <h2 class="h5 fw-bold" id="ds-unlisted-title"><Icon Name="IconName.EyeSlash" class="me-2" aria-hidden="true" />Not listed</h2>
+                        <p class="small mb-0">
+                            @(Stay.HostId == State.CurrentHost?.Id
+                                ? "You've unlisted this stay, so it's out of search and can't be booked. Existing trips go on."
+                                : "This stay is no longer listed, so it can't be booked. Your trips here go on, and you can still message the host.")
+                        </p>
+                    </section>
+                }
+                else
+                {
                 <section class="ds-panel ds-sticky" aria-labelledby="ds-book-title">
                     <h2 class="visually-hidden" id="ds-book-title">Book @Stay.Name</h2>
                     <p class="mb-1"><span class="ds-price">@TravelDisplay.Money(Stay.NightlyRate)</span> <span class="text-body-secondary">a night</span></p>
@@ -239,6 +253,7 @@ else
                         }
                     </p>
                 </section>
+                }
             </div>
         </div>
     </div>

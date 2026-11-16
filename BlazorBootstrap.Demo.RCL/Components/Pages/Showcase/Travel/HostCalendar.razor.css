@@ -1,0 +1,233 @@
+/* The host calendar. Button, DateInput, and Modal render their own elements, so those need ::deep. Every night's state is
+   written in words; the tints and borders only repeat it. */
+
+.ds-hc-status {
+    font-weight: 600;
+}
+
+    .ds-hc-status:empty {
+        margin: 0;
+    }
+
+    .ds-hc-status:focus {
+        outline: none;
+    }
+
+.ds-hc-error {
+    margin: 0 0 .75rem;
+    font-size: .875rem;
+    font-weight: 600;
+    color: var(--bs-danger-text-emphasis);
+}
+
+    .ds-hc-error:empty {
+        margin: 0;
+    }
+
+.ds-hc-picker {
+    max-width: 26rem;
+}
+
+.ds-hc-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: .5rem;
+    margin-bottom: .5rem;
+}
+
+.ds-hc-shown {
+    flex: 1 1 auto;
+    min-width: 0;
+    margin: 0;
+    font-weight: 700;
+    text-align: center;
+    color: var(--ds-ink);
+}
+
+/* The month table: seven equal columns; long notes and names wrap inside their cell. */
+.ds-hc-table {
+    width: 100%;
+    table-layout: fixed;
+    border-collapse: collapse;
+    caption-side: top;
+}
+
+    .ds-hc-table caption {
+        padding: 0 0 .5rem;
+        font-weight: 600;
+        color: var(--bs-secondary-color);
+    }
+
+    .ds-hc-table th {
+        padding: .25rem;
+        font-size: .8125rem;
+        font-weight: 600;
+        text-align: center;
+        color: var(--bs-secondary-color);
+    }
+
+        .ds-hc-table th abbr {
+            text-decoration: none;
+            cursor: default;
+        }
+
+.ds-hc-day,
+.ds-hc-blank {
+    height: 6.25rem;
+    padding: .375rem;
+    border: 1px solid var(--ds-border);
+    vertical-align: top;
+}
+
+.ds-hc-day {
+    font-size: .75rem;
+    line-height: 1.3;
+    overflow-wrap: anywhere;
+}
+
+.ds-hc-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 1.625rem;
+    height: 1.625rem;
+    margin-bottom: .125rem;
+    border-radius: 50%;
+    font-size: .875rem;
+    font-weight: 600;
+    color: var(--ds-ink);
+}
+
+.ds-hc-is-today .ds-hc-num {
+    box-shadow: inset 0 0 0 2px var(--ds-ink);
+    font-weight: 700;
+}
+
+.ds-hc-today-tag {
+    display: inline-block;
+    margin-inline-start: .25rem;
+    padding: 0 .375rem;
+    border-radius: .375rem;
+    font-size: .6875rem;
+    font-weight: 700;
+    background: var(--ds-ink);
+    color: var(--ds-surface);
+}
+
+.ds-hc-label {
+    display: block;
+    font-weight: 700;
+    color: var(--ds-ink);
+}
+
+.ds-hc-detail {
+    display: block;
+    color: var(--ds-ink);
+}
+
+.ds-hc-booked {
+    background: rgba(var(--sc-primary-rgb), .14);
+}
+
+.ds-hc-requested {
+    background: rgba(217, 119, 6, .14);
+    background-image: repeating-linear-gradient(135deg, transparent 0 6px, rgba(217, 119, 6, .12) 6px 8px);
+}
+
+.ds-hc-blocked {
+    background: var(--bs-tertiary-bg);
+}
+
+    .ds-hc-blocked .ds-hc-label {
+        text-decoration: line-through;
+        text-decoration-thickness: 2px;
+    }
+
+.ds-hc-past .ds-hc-label,
+.ds-hc-past .ds-hc-num {
+    color: var(--bs-secondary-color);
+    font-weight: 500;
+}
+
+/* The narrow-screen list: one row per run of nights. */
+.ds-hc-agenda {
+    display: grid;
+    gap: .375rem;
+}
+
+.ds-hc-run {
+    display: grid;
+    gap: .125rem;
+    padding: .5rem .75rem;
+    border: 1px solid var(--ds-border);
+    border-radius: .625rem;
+    font-size: .875rem;
+    overflow-wrap: anywhere;
+}
+
+    .ds-hc-run.ds-hc-free {
+        background: var(--ds-surface);
+    }
+
+.ds-hc-run-dates {
+    font-weight: 700;
+    color: var(--ds-ink);
+}
+
+.ds-hc-run-what {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: .25rem .5rem;
+}
+
+    .ds-hc-run-what .ds-hc-label {
+        display: inline;
+    }
+
+.ds-hc-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .5rem 1.25rem;
+    margin: 1rem 0 .25rem;
+    padding: 0;
+    list-style: none;
+    font-size: .875rem;
+    color: var(--bs-secondary-color);
+}
+
+    .ds-hc-legend li {
+        display: inline-flex;
+        align-items: center;
+        gap: .5rem;
+    }
+
+.ds-hc-swatch {
+    flex: 0 0 auto;
+    width: 1.25rem;
+    height: 1.25rem;
+    border: 1px solid var(--ds-border);
+    border-radius: .25rem;
+}
+
+.ds-hc-blocks {
+    display: grid;
+    gap: .5rem;
+}
+
+    .ds-hc-blocks li {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: .5rem;
+        padding: .5rem .75rem;
+        border: 1px solid var(--ds-border);
+        border-radius: .625rem;
+    }
+
+.ds-hc-block-text {
+    min-width: 0;
+    overflow-wrap: anywhere;
+}

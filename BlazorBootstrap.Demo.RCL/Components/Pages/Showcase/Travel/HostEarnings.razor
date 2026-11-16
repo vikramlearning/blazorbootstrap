@@ -1,0 +1,171 @@
+@page "/showcase/travel/host/earnings"
+@layout HostLayout
+@using BlazorExpress.ChartJS
+@using Unit = BlazorExpress.ChartJS.Unit
+
+<PageTitle>Earnings · Hosting · @TravelSeedData.SiteName</PageTitle>
+
+<div class="container-fluid px-lg-4">
+    <h1 class="ds-title mb-1">Earnings</h1>
+    <p class="ds-lead mb-4">What your listings have paid out and what is still to come, stay by stay.</p>
+
+    <div class="row g-2 align-items-end mb-3" role="group" aria-label="Earnings filter">
+        <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
+            <label class="form-label small fw-semibold" for="ds-earnings-listing">Listing</label>
+            <select id="ds-earnings-listing" class="form-select" value="@stayFilter" @onchange="OnListingChangedAsync">
+                <option value="">All listings</option>
+                @foreach (var stay in State.HostStays())
+                {
+                    <option value="@stay.Id.ToString(CultureInfo.InvariantCulture)">@stay.Name</option>
+                }
+            </select>
+        </div>
+        <div class="col-12 col-sm">
+            <p class="small text-body-secondary mb-sm-2" aria-live="polite">@ScopeText</p>
+        </div>
+    </div>
+
+    <section aria-label="Earnings summary" class="row row-cols-1 row-cols-sm-2 row-cols-xl-4 g-3 mb-4">
+        <div class="col">
+            <div class="ds-panel h-100 d-flex align-items-start gap-3 p-3">
+                <span class="ds-icon" aria-hidden="true"><Icon Name="IconName.Cash" /></span>
+                <span class="ds-earnings-kpi">
+                    <span class="ds-earnings-kpi-label">Paid out this month</span>
+                    <span class="ds-earnings-kpi-value">@TravelDisplay.Money(PaidThisMonth.Sum(payout => payout.Amount))</span>
+                    <span class="d-block small text-body-secondary">@PayoutCount(PaidThisMonth.Count) in @MonthText(ThisMonth)</span>
+                </span>
+            </div>
+        </div>
+        <div class="col">
+            <div class="ds-panel h-100 d-flex align-items-start gap-3 p-3">
+                <span class="ds-icon" aria-hidden="true"><Icon Name="IconName.CashStack" /></span>
+                <span class="ds-earnings-kpi">
+                    <span class="ds-earnings-kpi-label">Paid out in the last 6 months</span>
+                    <span class="ds-earnings-kpi-value">@TravelDisplay.Money(PaidSixMonths.Sum(payout => payout.Amount))</span>
+                    <span class="d-block small text-body-secondary">@PayoutCount(PaidSixMonths.Count) since @TravelDisplay.Day(FirstMonth), @FirstMonth.Year</span>
+                </span>
+            </div>
+        </div>
+        <div class="col">
+            <div class="ds-panel h-100 d-flex align-items-start gap-3 p-3">
+                <span class="ds-icon" aria-hidden="true"><Icon Name="IconName.CalendarEvent" /></span>
+                <span class="ds-earnings-kpi">
+                    <span class="ds-earnings-kpi-label">Upcoming payouts</span>
+                    <span class="ds-earnings-kpi-value">@TravelDisplay.Money(Upcoming.Sum(payout => payout.Amount))</span>
+                    <span class="d-block small text-body-secondary">@UpcomingNote</span>
+                </span>
+            </div>
+        </div>
+        <div class="col">
+            <div class="ds-panel h-100 d-flex align-items-start gap-3 p-3">
+                <span class="ds-icon" aria-hidden="true"><Icon Name="IconName.GraphUp" /></span>
+                <span class="ds-earnings-kpi">
+                    <span class="ds-earnings-kpi-label">Average per stay</span>
+                    <span class="ds-earnings-kpi-value">@(payouts.Count == 0 ? "—" : TravelDisplay.Money(Math.Round(payouts.Average(payout => payout.Amount), 2, MidpointRounding.AwayFromZero)))</span>
+                    <span class="d-block small text-body-secondary">@(payouts.Count == 0 ? "No payouts yet." : $"Across {PayoutCount(payouts.Count)}, paid and upcoming")</span>
+                </span>
+            </div>
+        </div>
+    </section>
+
+    <section class="ds-panel mb-4" aria-labelledby="ds-earnings-chart-title">
+        <h2 class="ds-section-title fs-5" id="ds-earnings-chart-title">Payouts per month</h2>
+        <p class="small text-body-secondary">@RangeText: paid and upcoming payouts, by the day they pay out.</p>
+        @if (ChartTotal == 0)
+        {
+            <p class="small text-body-secondary mb-0">No payouts in these months.</p>
+        }
+        @* The wrapper's role and label stand in for the canvas, which carries nothing a screen reader can use. It stays in the
+           page while empty, so the chart keeps its instance. *@
+        <div class="ds-earnings-chart @(ChartTotal == 0 ? "d-none" : null)" role="img" aria-label="@ChartLabel">
+            <BarChart @ref="payoutChart" Height="280" HeightUnit="Unit.Px" Width="100" WidthUnit="Unit.Percentage" />
+        </div>
+        @* The wrapper hides the table: a hidden table itself can't shrink below its content and would widen the page. *@
+        <div class="visually-hidden">
+            <table>
+                <caption>Payouts per month, paid and upcoming, @RangeText</caption>
+                <thead>
+                    <tr>
+                        <th scope="col">Month</th>
+                        <th scope="col">Paid</th>
+                        <th scope="col">Upcoming</th>
+                        <th scope="col">Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var month in months)
+                    {
+                        <tr @key="month.Start">
+                            <th scope="row">@MonthText(month.Start)</th>
+                            <td>@TravelDisplay.Money(month.Paid)</td>
+                            <td>@TravelDisplay.Money(month.Upcoming)</td>
+                            <td>@TravelDisplay.Money(month.Paid + month.Upcoming)</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        @if (LaterCount > 0)
+        {
+            <p class="small text-body-secondary mt-3 mb-0">@PayoutCount(LaterCount) after @MonthText(months[^1].Start) @(LaterCount == 1 ? "is" : "are") in the table below, not in the chart.</p>
+        }
+    </section>
+
+    <section class="ds-panel mb-4" aria-labelledby="ds-payouts-title">
+        <h2 class="ds-section-title fs-5" id="ds-payouts-title">Payouts</h2>
+        <div class="table-responsive">
+            <table class="table align-middle mb-0">
+                <caption class="visually-hidden">Payouts of @ListingText, the latest pay-out date first</caption>
+                <thead>
+                    <tr>
+                        <th scope="col">Pays on</th>
+                        <th scope="col">Reservation</th>
+                        <th scope="col">Guest</th>
+                        <th scope="col">Listing</th>
+                        <th scope="col">Dates</th>
+                        <th scope="col" class="text-end">Amount</th>
+                        <th scope="col">Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (payouts.Count == 0)
+                    {
+                        <tr>
+                            <td colspan="7" class="text-center text-body-secondary py-4">No payouts yet. A stay pays out the day after its guest checks in.</td>
+                        </tr>
+                    }
+                    @foreach (var payout in payouts)
+                    {
+                        <tr @key="payout.Reference">
+                            <td class="text-nowrap">@TravelDisplay.Day(payout.PaysOn), @payout.PaysOn.Year</td>
+                            <th scope="row" class="fw-normal"><a href="@HostInbox.ReservationUrl(payout.Reference)">@payout.Reference</a></th>
+                            <td>@payout.GuestName</td>
+                            <td>@(State.FindStay(payout.StayId)?.Name ?? "Removed listing")</td>
+                            <td class="text-nowrap">@TravelDisplay.Dates(payout.CheckIn, payout.CheckOut)</td>
+                            <td class="text-end fw-semibold">@TravelDisplay.Money(payout.Amount)</td>
+                            <td>
+                                @if (payout.IsPaid)
+                                {
+                                    <Badge Color="BadgeColor.Success" Class="rounded-pill"><Icon Name="IconName.CheckCircle" class="me-1" aria-hidden="true" />Paid</Badge>
+                                }
+                                else
+                                {
+                                    <Badge Color="BadgeColor.Secondary" Class="rounded-pill"><Icon Name="IconName.Hourglass" class="me-1" aria-hidden="true" />Upcoming</Badge>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <section class="mb-4" aria-labelledby="ds-payouts-how">
+        <h2 class="ds-section-title fs-6" id="ds-payouts-how">How payouts work</h2>
+        <ul class="small text-body-secondary mb-0 ps-3">
+            <li>A payout is what the guest paid, without taxes, less the @FeeText host fee.</li>
+            <li>It is paid the day after check-in. When a guest cancels and the cancellation policy keeps part of the payment, that part is paid the day after the cancellation.</li>
+            <li>Requests pay out only once you accept them; declined and expired requests are never charged.</li>
+        </ul>
+    </section>
+</div>

@@ -1,0 +1,248 @@
+@page "/showcase/travel/host/calendar"
+@layout HostLayout
+
+<PageTitle>Calendar · Hosting · @TravelSeedData.SiteName</PageTitle>
+
+<div class="container-fluid px-lg-4">
+    <h1 class="ds-title mb-1">Calendar</h1>
+    <p class="ds-lead text-body-secondary mb-3">Who's staying, which requests are waiting, and the nights you've blocked, one listing and one month at a time.</p>
+
+    @* Always rendered and focusable, so an action's outcome is announced and focus has somewhere to go. *@
+    <p class="ds-hc-status" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
+
+    @if (Stay is not { } stay)
+    {
+        <section class="ds-panel text-center py-5" aria-labelledby="ds-hc-empty">
+            <span class="ds-icon fs-4" aria-hidden="true"><Icon Name="IconName.Calendar3" /></span>
+            <h2 class="h5 fw-bold mt-3" id="ds-hc-empty">No listings yet</h2>
+            <p class="text-body-secondary">Add a listing to see its calendar.</p>
+            <a class="btn btn-primary" href="@HostListingEdit.NewUrl">Add listing</a>
+        </section>
+    }
+    else
+    {
+        var month = FirstMonth;
+        var nights = NightsOf(stay.Id, month);
+        var monthName = MonthName(month);
+
+        <div class="ds-hc-picker mb-3">
+            <label class="form-label fw-semibold mb-1" for="ds-hc-stay">Listing</label>
+            <select id="ds-hc-stay" class="form-select" value="@stay.Id" @onchange="OnStayChanged" aria-describedby="@(stayNotice is null ? null : "ds-hc-stay-notice")">
+                @foreach (var option in State.HostStays())
+                {
+                    <option value="@option.Id">@option.Name@(option.IsListed ? null : " (unlisted)")</option>
+                }
+            </select>
+            @if (stayNotice is not null)
+            {
+                <div class="form-text" id="ds-hc-stay-notice">@stayNotice</div>
+            }
+        </div>
+
+        <section class="ds-panel mb-4" aria-labelledby="ds-hc-month-title">
+            <h2 class="h5 fw-bold" id="ds-hc-month-title">Nights of @stay.Name</h2>
+
+            <div class="ds-hc-toolbar">
+                <button type="button" class="btn btn-sm btn-outline-secondary" @ref="previousButton" @onclick="PreviousAsync" disabled="@(!CanGoBack)" aria-label="Previous month">
+                    <Icon Name="IconName.ChevronLeft" aria-hidden="true" /><span class="ms-1 d-none d-sm-inline">Previous</span>
+                </button>
+                @* Announces the month shown after Previous, Next, or This month. *@
+                <p class="ds-hc-shown" aria-live="polite">@monthName</p>
+                <button type="button" class="btn btn-sm btn-outline-secondary" @ref="nextButton" @onclick="NextAsync" disabled="@(!CanGoForward)" aria-label="Next month">
+                    <span class="me-1 d-none d-sm-inline">Next</span><Icon Name="IconName.ChevronRight" aria-hidden="true" />
+                </button>
+            </div>
+            <p class="small text-body-secondary d-flex flex-wrap align-items-center gap-2 mb-3">
+                <span>Today is @LongDay(State.Today).</span>
+                @if (month != StartOfMonth(State.Today))
+                {
+                    <button type="button" class="btn btn-link btn-sm p-0" @onclick="ShowThisMonthAsync">Show this month</button>
+                }
+            </p>
+
+            @* A month grid where there is room; a list of runs of nights on narrower screens. Only one is displayed at a time. *@
+            <div class="d-none d-lg-block">
+                <table class="ds-hc-table">
+                    <caption>@monthName: nights of @stay.Name</caption>
+                    <thead>
+                        <tr>
+                            @foreach (var weekday in weekdays)
+                            {
+                                <th scope="col"><abbr title="@weekday">@weekday[..3]</abbr></th>
+                            }
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var week in Weeks(month))
+                        {
+                            <tr>
+                                @foreach (var day in week)
+                                {
+                                    if (day is { } date)
+                                    {
+                                        var night = nights[date.Day - 1];
+                                        <td class="ds-hc-day @KindClass(night.Kind) @(date == State.Today ? "ds-hc-is-today" : null)">
+                                            <span class="ds-hc-num">
+                                                <span aria-hidden="true">@date.Day</span><span class="visually-hidden">@date.ToString("MMMM d", CultureInfo.InvariantCulture)</span>
+                                            </span>
+                                            @if (date == State.Today)
+                                            {
+                                                <span class="ds-hc-today-tag">Today</span>
+                                            }
+                                            <span class="ds-hc-label">@KindText(night.Kind)</span>
+                                            @if (night.Booking is { } booking)
+                                            {
+                                                <span class="ds-hc-detail">@ShortName(booking.GuestName)</span>
+                                                @if (date == booking.CheckIn || date.DayOfWeek == DayOfWeek.Sunday || date.Day == 1)
+                                                {
+                                                    <a class="ds-hc-detail" href="@ReservationUrl(booking.Reference)">@booking.Reference</a>
+                                                }
+                                                else
+                                                {
+                                                    <span class="ds-hc-detail">@booking.Reference</span>
+                                                }
+                                            }
+                                            else if (night.Block is { } block)
+                                            {
+                                                <span class="ds-hc-detail">@block.Note</span>
+                                            }
+                                        </td>
+                                    }
+                                    else
+                                    {
+                                        <td class="ds-hc-blank"></td>
+                                    }
+                                }
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="d-lg-none">
+                <ol class="ds-hc-agenda list-unstyled mb-0" aria-label="@($"{monthName}: nights of {stay.Name}")">
+                    @foreach (var run in Runs(nights))
+                    {
+                        <li class="ds-hc-run @KindClass(run.Kind)" @key="run.First">
+                            <span class="ds-hc-run-dates">@RangeText(run.First, run.Last)<span class="fw-normal text-body-secondary"> · @TravelDisplay.Nights(run.Last.DayNumber - run.First.DayNumber + 1)</span></span>
+                            <span class="ds-hc-run-what">
+                                <span class="ds-hc-label">@KindText(run.Kind)</span>
+                                @if (run.Booking is { } booking)
+                                {
+                                    <span>@booking.GuestName, <a href="@ReservationUrl(booking.Reference)">@booking.Reference</a>@(booking.Status == TravelBookingStatus.Requested ? " (waiting for your answer)" : null)</span>
+                                }
+                                else if (run.Block is { } block)
+                                {
+                                    <span>@block.Note</span>
+                                }
+                                @if (State.Today >= run.First && State.Today <= run.Last)
+                                {
+                                    <span class="ds-hc-today-tag">Includes today</span>
+                                }
+                            </span>
+                        </li>
+                    }
+                </ol>
+            </div>
+
+            <ul class="ds-hc-legend" aria-label="Calendar key">
+                <li><span class="ds-hc-swatch ds-hc-booked" aria-hidden="true"></span><strong>Booked:</strong> a confirmed guest is staying.</li>
+                <li><span class="ds-hc-swatch ds-hc-requested" aria-hidden="true"></span><strong>Requested:</strong> a request waits for your answer; the nights are held.</li>
+                <li><span class="ds-hc-swatch ds-hc-blocked" aria-hidden="true"></span><strong>Blocked:</strong> you closed the nights.</li>
+                <li><span class="ds-hc-swatch ds-hc-free" aria-hidden="true"></span><strong>Free:</strong> guests can book.</li>
+            </ul>
+            <p class="small text-body-secondary mb-0">Each date is a night: a guest checks out on the morning of the day after their last night.</p>
+        </section>
+
+        <div class="row g-4">
+            <div class="col-xl-6">
+                <section class="ds-panel h-100" aria-labelledby="ds-hc-block-title">
+                    <h2 class="h5 fw-bold" id="ds-hc-block-title">Block dates</h2>
+                    <p class="small text-body-secondary">Close nights you can't host, for up to @TravelState.MaxBlockNights nights at a time. The nights must be free: no booking, request, or other block.</p>
+                    <form @onsubmit="AddBlockAsync" novalidate>
+                        <div class="row g-3 mb-3">
+                            <div class="col-sm-6">
+                                <label class="form-label fw-semibold" for="ds-hc-first">First night</label>
+                                <DateInput @ref="firstInput" TValue="DateOnly" Id="ds-hc-first" Value="blockFirst" ValueExpression="() => blockFirst" ValueChanged="OnFirstChanged"
+                                           Min="State.Today" Max="State.Today.AddDays(365)" EnableMinMax="true" aria-describedby="ds-hc-dates-error" />
+                            </div>
+                            <div class="col-sm-6">
+                                <label class="form-label fw-semibold" for="ds-hc-last">Last night</label>
+                                <DateInput TValue="DateOnly" Id="ds-hc-last" Value="blockLast" ValueExpression="() => blockLast" ValueChanged="OnLastChanged"
+                                           Min="blockFirst" Max="State.Today.AddDays(365)" EnableMinMax="true" aria-describedby="ds-hc-dates-help ds-hc-dates-error" />
+                            </div>
+                        </div>
+                        <p class="form-text mt-n2" id="ds-hc-dates-help">@BlockSummary(stay)</p>
+                        <p class="ds-hc-error" id="ds-hc-dates-error" role="alert">@datesError</p>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold" for="ds-hc-note">Note <span class="fw-normal text-body-secondary">(optional, only you see it)</span></label>
+                            <input @ref="noteInput" id="ds-hc-note" class="form-control @(noteError is null ? null : "is-invalid")" value="@blockNote" @oninput="OnNoteInput" autocomplete="off"
+                                   aria-describedby="ds-hc-note-count ds-hc-note-error" aria-invalid="@(noteError is null ? null : "true")" />
+                            <div class="form-text @(blockNote.Trim().Length > MaxNoteLength ? "ds-hc-error" : null)" id="ds-hc-note-count">
+                                @CounterText(blockNote, MaxNoteLength). Without a note, the nights show as "Blocked".
+                            </div>
+                            <p class="ds-hc-error" id="ds-hc-note-error">@noteError</p>
+                        </div>
+
+                        <Button Type="ButtonType.Submit" Color="ButtonColor.Primary"><Icon Name="IconName.CalendarX" class="me-2" aria-hidden="true" />Block nights</Button>
+                    </form>
+                </section>
+            </div>
+
+            <div class="col-xl-6">
+                <section class="ds-panel h-100" aria-labelledby="ds-hc-blocks-title">
+                    <h2 class="h5 fw-bold" id="ds-hc-blocks-title">Blocked dates of @stay.Name</h2>
+                    @{
+                        var blocks = State.BlocksFor(stay.Id);
+                    }
+                    @if (blocks.Count == 0)
+                    {
+                        <p class="small text-body-secondary mb-0">No blocked dates. Every night without a booking or request is open to guests.</p>
+                    }
+                    else
+                    {
+                        <ul class="ds-hc-blocks list-unstyled mb-0">
+                            @foreach (var block in blocks)
+                            {
+                                var blockKey = BlockKey(block);
+                                <li @key="blockKey">
+                                    <div class="ds-hc-block-text">
+                                        <span class="fw-semibold">@BlockRange(block)</span>
+                                        <span class="small text-body-secondary">@TravelDisplay.Nights(block.End.DayNumber - block.Start.DayNumber)@(block.End <= State.Today ? ", past" : null)</span>
+                                        <span class="small d-block">@block.Note</span>
+                                    </div>
+                                    <button type="button" class="btn btn-sm btn-outline-danger" @ref="removeButtons[blockKey]" @onclick="() => AskRemoveAsync(block)">
+                                        Remove<span class="visually-hidden"> the block on @BlockRange(block)</span>
+                                    </button>
+                                </li>
+                            }
+                        </ul>
+                    }
+                </section>
+            </div>
+        </div>
+    }
+</div>
+
+@* Outside the branches, so the dialog is never removed while it is open. *@
+<Modal @ref="removeModal" IsVerticallyCentered="true" ShowCloseButton="false" aria-labelledby="ds-hc-remove-title" OnHidden="OnRemoveHiddenAsync">
+    <HeaderTemplate>
+        <h2 class="modal-title h5" id="ds-hc-remove-title">Remove the block on @(pendingBlock is null ? null : BlockRange(pendingBlock))?</h2>
+    </HeaderTemplate>
+    <BodyTemplate>
+        @if (pendingBlock is { } shown)
+        {
+            var blockStay = State.FindStay(shown.StayId);
+            <p class="mb-2">@TravelDisplay.Nights(shown.End.DayNumber - shown.Start.DayNumber) on @blockStay?.Name (@shown.Note).</p>
+            <p class="mb-0">
+                @(blockStay is { IsListed: true } ? "The nights become free, and guests can book them straight away." : "The nights become free. The listing is unlisted, so guests can book them once you list it again.")
+            </p>
+        }
+        <p class="text-danger-emphasis fw-semibold small mt-2 mb-0" role="alert">@dialogError</p>
+    </BodyTemplate>
+    <FooterTemplate>
+        <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => removeModal.HideAsync()">Keep block</Button>
+        <Button Color="ButtonColor.Danger" @onclick="ConfirmRemoveAsync">Remove block</Button>
+    </FooterTemplate>
+</Modal>
