@@ -1,0 +1,308 @@
+@page "/showcase/monitoring/console/admin/maintenance"
+@layout ConsoleLayout
+
+<PageTitle>Maintenance · @MonitoringSeedData.ProductName</PageTitle>
+
+<ShowcaseRoleGuard Roles="@MonitoringSeedData.AdminRole" SignInPath="@MonitoringLayout.SignInPath">
+    @{
+        var now = State.Clock.Now;
+        var chosenIds = ChosenIds;
+        var followers = Followers(chosenIds);
+    }
+
+    <div class="container-fluid px-lg-4">
+        <div class="mw-page-head">
+            <div>
+                <h1 class="mw-title">Maintenance</h1>
+                <p class="mw-lead">Plan downtime ahead: the status page announces each window, subscribers can get an email, and alert rules stay quiet for its services while it runs.</p>
+            </div>
+            <button type="button" class="btn btn-primary" @onclick="StartNew">
+                <Icon Name="IconName.CalendarPlus" class="me-2" aria-hidden="true" />Schedule maintenance
+            </button>
+        </div>
+
+        @* Always rendered and focusable, so a result is announced and focus has somewhere to go once a dialog closes. *@
+        <p class="fw-semibold mt-status @(statusIsError ? "text-danger-emphasis" : null)" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
+
+        <div class="row g-4">
+            <div class="col-xl-7">
+                @foreach (var section in Sections(now))
+                {
+                    <section class="mb-4" aria-labelledby="@($"{section.Id}-title")" @key="section.Id">
+                        <Card Class="mw-card">
+                            <CardHeader>
+                                <h2 class="mw-card-title" id="@($"{section.Id}-title")">@section.Title <span class="mt-count">(@section.Windows.Count)</span></h2>
+                            </CardHeader>
+                            <CardBody>
+                                @if (section.Windows.Count == 0)
+                                {
+                                    <p class="text-body-secondary mb-0">@section.EmptyText</p>
+                                }
+                                else
+                                {
+                                    <ul class="list-unstyled mb-0">
+                                        @foreach (var window in section.Windows)
+                                        {
+                                            var status = window.StatusAt(now);
+                                            var announced = StatusPageText(window, status, now);
+                                            var editKey = $"edit-{window.Id}";
+                                            var cancelKey = $"cancel-{window.Id}";
+                                            var endKey = $"end-{window.Id}";
+                                            <li class="mt-window" @key="window.Id">
+                                                <div class="d-flex flex-wrap align-items-start justify-content-between gap-2 mb-2">
+                                                    <h3 class="mt-window-title">@window.Title</h3>
+                                                    <Badge Color="@MonitoringDisplay.MaintenanceStatusColor(status)">@MonitoringDisplay.MaintenanceStatusLabel(status)</Badge>
+                                                </div>
+                                                <dl class="mt-facts">
+                                                    <div>
+                                                        <dt>Services</dt>
+                                                        <dd>@ServiceNames(window.ServiceIds)</dd>
+                                                    </div>
+                                                    <div>
+                                                        <dt>When (site time)</dt>
+                                                        <dd>
+                                                            <time datetime="@InputValue(window.Start)">@MonitoringDisplay.Stamp(window.Start)</time> to
+                                                            <time datetime="@InputValue(window.End)">@EndText(window.Start, window.End)</time>
+                                                        </dd>
+                                                    </div>
+                                                    <div>
+                                                        <dt>Duration</dt>
+                                                        <dd>@MonitoringDisplay.Duration(window.End - window.Start)@(status == MonitoringMaintenanceStatus.InProgress ? $", {MonitoringDisplay.Duration(window.End - now)} left" : null)</dd>
+                                                    </div>
+                                                    <div>
+                                                        <dt>Scheduled by</dt>
+                                                        <dd>@window.CreatedBy</dd>
+                                                    </div>
+                                                    @if (window.CancelledAt is { } cancelledAt)
+                                                    {
+                                                        <div>
+                                                            <dt>Cancelled</dt>
+                                                            <dd><time datetime="@InputValue(cancelledAt)">@MonitoringDisplay.Stamp(cancelledAt)</time></dd>
+                                                        </div>
+                                                    }
+                                                    @if (announced is not null)
+                                                    {
+                                                        <div>
+                                                            <dt>Status page</dt>
+                                                            <dd>@announced</dd>
+                                                        </div>
+                                                    }
+                                                </dl>
+                                                <p class="mt-plain small mb-0">@window.Description</p>
+
+                                                @if (status == MonitoringMaintenanceStatus.Scheduled)
+                                                {
+                                                    <div class="d-flex flex-wrap gap-2 mt-3">
+                                                        <button type="button" class="btn btn-sm btn-outline-primary" @ref="openers[editKey]" @onclick="() => Edit(window)">
+                                                            <Icon Name="IconName.Pencil" class="me-1" aria-hidden="true" />Edit<span class="visually-hidden">: @window.Title</span>
+                                                        </button>
+                                                        <button type="button" class="btn btn-sm btn-outline-danger" @ref="openers[cancelKey]" @onclick="() => AskAsync(DialogKind.Cancel, window, cancelKey)">
+                                                            <Icon Name="IconName.XCircle" class="me-1" aria-hidden="true" />Cancel maintenance<span class="visually-hidden">: @window.Title</span>
+                                                        </button>
+                                                    </div>
+                                                }
+                                                else if (status == MonitoringMaintenanceStatus.InProgress)
+                                                {
+                                                    <div class="d-flex flex-wrap gap-2 mt-3">
+                                                        <button type="button" class="btn btn-sm btn-outline-danger" @ref="openers[endKey]" @onclick="() => AskAsync(DialogKind.End, window, endKey)">
+                                                            <Icon Name="IconName.StopCircle" class="me-1" aria-hidden="true" />End now<span class="visually-hidden">: @window.Title</span>
+                                                        </button>
+                                                    </div>
+                                                }
+                                            </li>
+                                        }
+                                    </ul>
+                                }
+                            </CardBody>
+                        </Card>
+                    </section>
+                }
+            </div>
+
+            <div class="col-xl-5">
+                <section class="mb-4" aria-labelledby="mt-form-title">
+                    <Card Class="mw-card">
+                        <CardHeader>
+                            <h2 class="mw-card-title" id="mt-form-title" tabindex="-1" @ref="formHeading">@(editingId is null ? "Schedule maintenance" : $"Edit “{editingTitle}”")</h2>
+                        </CardHeader>
+                        <CardBody>
+                            <form @onsubmit="SubmitFormAsync" novalidate>
+                                @if (editingId is null && State.MaintenanceWindows.Count >= MonitoringState.MaxMaintenanceWindows)
+                                {
+                                    <p class="mt-field-error">This tab already holds @MonitoringState.MaxMaintenanceWindows maintenance windows, the most it keeps, so a new one can't be saved.</p>
+                                }
+
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold" for="mt-title">Title</label>
+                                    <input id="mt-title" type="text" class="form-control @Invalid(titleError)" maxlength="@MonitoringState.MaxMaintenanceTitleLength" autocomplete="off"
+                                           @bind="title" @bind:event="oninput" @ref="titleInput" aria-invalid="@AriaInvalid(titleError)"
+                                           aria-describedby="mt-title-help mt-title-count mt-title-error" />
+                                    <div class="d-flex flex-wrap justify-content-between gap-2 form-text">
+                                        <span id="mt-title-help">Shown on the status page, for example “Orders database upgrade”.</span>
+                                        <span id="mt-title-count">@title.Length of @MonitoringState.MaxMaintenanceTitleLength characters</span>
+                                    </div>
+                                    <div class="mt-field-error" id="mt-title-error">@titleError</div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold" for="mt-description">What customers should expect</label>
+                                    <textarea id="mt-description" class="form-control @Invalid(descriptionError)" rows="4" maxlength="@MonitoringState.MaxMaintenanceDescriptionLength"
+                                              @bind="description" @bind:event="oninput" @ref="descriptionInput" aria-invalid="@AriaInvalid(descriptionError)"
+                                              aria-describedby="mt-description-help mt-description-count mt-description-error"></textarea>
+                                    <div class="d-flex flex-wrap justify-content-between gap-2 form-text">
+                                        <span id="mt-description-help">Plain text, shown on the status page and in the email.</span>
+                                        <span id="mt-description-count">@description.Length of @MonitoringState.MaxMaintenanceDescriptionLength characters</span>
+                                    </div>
+                                    <div class="mt-field-error" id="mt-description-error">@descriptionError</div>
+                                </div>
+
+                                <fieldset class="mb-3" aria-describedby="mt-services-help mt-services-error">
+                                    <legend class="mt-legend">Services</legend>
+                                    <p class="form-text mt-0 mb-2" id="mt-services-help">Services hidden from the status page are paused for alerts too, but customers don't see them named.</p>
+                                    <div class="mt-services">
+                                        @foreach (var service in State.Services)
+                                        {
+                                            var inputId = $"mt-service-{service.Id}";
+                                            <div class="form-check" @key="service.Id">
+                                                <input class="form-check-input" type="checkbox" id="@inputId" checked="@chosen.Contains(service.Id)"
+                                                       aria-invalid="@AriaInvalid(servicesError)" @onchange="e => ToggleService(service.Id, e)" @ref="serviceInputs[service.Id]" />
+                                                <label class="form-check-label" for="@inputId">
+                                                    @service.Name
+                                                    @if (!service.IsPublic)
+                                                    {
+                                                        <span class="small text-body-secondary"> (not on the status page)</span>
+                                                    }
+                                                </label>
+                                            </div>
+                                        }
+                                    </div>
+                                    <div class="mt-field-error" id="mt-services-error">@servicesError</div>
+                                </fieldset>
+
+                                <p class="small mb-2">
+                                    Times are site time (the demo's clock, not your device's). It's now
+                                    <time class="fw-semibold" datetime="@InputValue(now)">@MonitoringDisplay.Stamp(now)</time>.
+                                </p>
+
+                                <div class="mb-3" role="group" aria-labelledby="mt-presets-label">
+                                    <span class="mw-label d-block mb-1" id="mt-presets-label">Quick times</span>
+                                    <div class="d-flex flex-wrap gap-2">
+                                        <button type="button" class="btn btn-sm btn-outline-secondary" @onclick="() => ApplyPreset(Preset.Now)">Now, for 1 hour</button>
+                                        <button type="button" class="btn btn-sm btn-outline-secondary" @onclick="() => ApplyPreset(Preset.InAnHour)">In 1 hour, for 1 hour</button>
+                                        <button type="button" class="btn btn-sm btn-outline-secondary" @onclick="() => ApplyPreset(Preset.Night)">Next 02:00, for 2 hours</button>
+                                    </div>
+                                    <p class="small text-body-secondary mt-1 mb-0" role="status">@presetStatus</p>
+                                </div>
+
+                                <div class="row g-3 mb-2">
+                                    <div class="col-sm-6">
+                                        <label class="form-label fw-semibold" for="mt-start">Start</label>
+                                        <input id="mt-start" type="datetime-local" class="form-control @Invalid(startError)" step="60"
+                                               min="@InputValue(now)" max="@InputValue(now.AddDays(MaxDaysAhead))"
+                                               value="@startText" @onchange="OnStartChanged" @ref="startInput" aria-invalid="@AriaInvalid(startError)"
+                                               aria-describedby="mt-start-help mt-start-error" />
+                                        <div class="form-text" id="mt-start-help">From now to @MaxDaysAhead days ahead.</div>
+                                        <div class="mt-field-error" id="mt-start-error">@startError</div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <label class="form-label fw-semibold" for="mt-end">End</label>
+                                        <input id="mt-end" type="datetime-local" class="form-control @Invalid(endError)" step="60"
+                                               value="@endText" @onchange="OnEndChanged" @ref="endInput" aria-invalid="@AriaInvalid(endError)"
+                                               aria-describedby="mt-end-help mt-end-error" />
+                                        <div class="form-text" id="mt-end-help">After the start, at most @MaxHours hours later.</div>
+                                        <div class="mt-field-error" id="mt-end-error">@endError</div>
+                                    </div>
+                                </div>
+                                <p class="small text-body-secondary mb-3">@WindowSummary()</p>
+
+                                <div class="form-check mb-1">
+                                    <input class="form-check-input" type="checkbox" id="mt-notify" @bind="notify" aria-describedby="mt-notify-help" />
+                                    <label class="form-check-label" for="mt-notify">@NotifyLabel(followers, editingId is not null)</label>
+                                </div>
+                                <p class="form-text mt-0 mb-3" id="mt-notify-help">Subscribers to every component, or to any of these services, get one email. In this demo, emails stay in this tab.</p>
+
+                                <div class="d-flex flex-wrap gap-2">
+                                    <button type="submit" class="btn btn-primary" @ref="openers[SubmitKey]">@(editingId is null ? "Schedule maintenance" : "Save changes")</button>
+                                    @if (editingId is not null)
+                                    {
+                                        <button type="button" class="btn btn-outline-secondary" @onclick="StopEditing">Stop editing</button>
+                                    }
+                                </div>
+                            </form>
+                        </CardBody>
+                    </Card>
+                </section>
+
+                <section aria-labelledby="mt-how-title">
+                    <Card Class="mw-card">
+                        <CardHeader><h2 class="mw-card-title" id="mt-how-title">How maintenance works</h2></CardHeader>
+                        <CardBody>
+                            <ul class="mt-how mb-0">
+                                <li>The <a href="@MonitoringLayout.Base">status page</a> announces a window from @AnnounceDays days before it starts, with its time, components, and description. Services hidden from the status page aren't named.</li>
+                                <li>While a window runs, the status page shows its components as <strong>“Under maintenance”</strong> (unless a published incident is worse), and their 90-day bars mark the day.</li>
+                                <li><a href="@($"{ConsoleLayout.AdminBase}/alerts")">Alert rules</a> don't fire for its services while it runs, so planned work doesn't open incidents or page on-call.</li>
+                                <li>Only a scheduled window can be edited or cancelled; one in progress can be ended early.</li>
+                            </ul>
+                        </CardBody>
+                    </Card>
+                </section>
+            </div>
+        </div>
+    </div>
+
+    <Modal @ref="dialogModal" IsVerticallyCentered="true" IsScrollable="true" ShowCloseButton="false" aria-labelledby="mt-dialog-title"
+           OnShown="OnDialogShownAsync" OnHidden="OnDialogHidden">
+        <HeaderTemplate>
+            <h2 class="modal-title h5" id="mt-dialog-title">@DialogTitle()</h2>
+        </HeaderTemplate>
+        <BodyTemplate>
+            @if (dialog == DialogKind.Save && pendingDraft is { } draft)
+            {
+                var publicNames = PublicNames(draft.ServiceIds);
+                <dl class="mt-facts mb-3">
+                    <div>
+                        <dt>Services</dt>
+                        <dd>@ServiceNames(draft.ServiceIds)</dd>
+                    </div>
+                    <div>
+                        <dt>When (site time)</dt>
+                        <dd>@MonitoringDisplay.Stamp(draft.Start) to @EndText(draft.Start, draft.End) (@MonitoringDisplay.Duration(draft.End - draft.Start))</dd>
+                    </div>
+                </dl>
+                <ul class="mt-consequences">
+                    <li>@AnnouncementText(publicNames, draft.Start, now)</li>
+                    <li>Alert rules for these services don't fire while it runs.</li>
+                    <li>@(draft.Notify ? EmailPlan(Followers(draft.ServiceIds)) : "No email is sent.")</li>
+                </ul>
+            }
+            else if (dialogWindow is { } window)
+            {
+                var publicNames = PublicNames(window.ServiceIds);
+                var count = Followers(window.ServiceIds);
+                if (dialog == DialogKind.Cancel)
+                {
+                    <p>
+                        “@window.Title” (@MonitoringDisplay.Stamp(window.Start) to @EndText(window.Start, window.End)) comes off the status page, and alert rules for
+                        @ServiceNames(window.ServiceIds) stay active at that time. A cancelled window can't be restored; schedule a new one if you need it.
+                    </p>
+                }
+                else
+                {
+                    <p>
+                        The window ends at @MonitoringDisplay.Stamp(now) instead of @EndText(window.Start, window.End).
+                        @(publicNames.Count > 0 ? $"The status page stops showing {string.Join(", ", publicNames)} as “Under maintenance”, and alert" : "Alert") rules for
+                        @ServiceNames(window.ServiceIds) fire again.
+                    </p>
+                }
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="mt-dialog-notify" @bind="dialogNotify" />
+                    <label class="form-check-label" for="mt-dialog-notify">@DialogNotifyLabel(count)</label>
+                </div>
+            }
+        </BodyTemplate>
+        <FooterTemplate>
+            <button type="button" class="btn btn-outline-secondary" @ref="dialogDismiss" @onclick="() => dialogModal.HideAsync()">@DismissText()</button>
+            <button type="button" class="btn @(dialog == DialogKind.Save ? "btn-primary" : "btn-danger")" @onclick="ConfirmAsync" disabled="@(pendingAction is not null)">@ConfirmText()</button>
+        </FooterTemplate>
+    </Modal>
+</ShowcaseRoleGuard>

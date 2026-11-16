@@ -1,0 +1,105 @@
+/* Maintenance windows (admins). Card, CardHeader, CardBody, Badge, and Modal render their own elements; the markup inside
+   them is this page's, so it takes these styles without ::deep. */
+
+.mt-status:empty {
+    margin: 0;
+}
+
+.mt-status:focus {
+    outline: none;
+}
+
+.mt-count {
+    font-weight: 400;
+    color: var(--bs-secondary-color);
+}
+
+.mt-window {
+    padding-block: 1rem;
+    border-top: 1px solid var(--mw-border);
+}
+
+    .mt-window:first-child {
+        padding-top: 0;
+        border-top: 0;
+    }
+
+    .mt-window:last-child {
+        padding-bottom: 0;
+    }
+
+.mt-window-title {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--mw-ink);
+    overflow-wrap: anywhere;
+}
+
+/* Facts as label and value pairs that wrap to one per line on a phone. */
+.mt-facts {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 13rem), 1fr));
+    gap: .5rem 1.25rem;
+    margin: 0 0 .75rem;
+    font-size: .875rem;
+}
+
+    .mt-facts dt {
+        font-size: .75rem;
+        font-weight: 600;
+        letter-spacing: .02em;
+        text-transform: uppercase;
+        color: var(--bs-secondary-color);
+    }
+
+    .mt-facts dd {
+        margin: 0;
+        overflow-wrap: anywhere;
+    }
+
+/* User text is plain: Razor encodes it, and pre-wrap keeps its line breaks. */
+.mt-plain {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+.mt-legend {
+    margin-bottom: .25rem;
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.mt-services {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 12rem), 1fr));
+    gap: .25rem 1rem;
+}
+
+.mt-field-error {
+    font-size: .875rem;
+    font-weight: 600;
+    color: var(--bs-danger-text-emphasis);
+}
+
+    .mt-field-error:empty {
+        display: none;
+    }
+
+    p.mt-field-error {
+        margin-bottom: 1rem;
+    }
+
+.mt-how,
+.mt-consequences {
+    padding-inline-start: 1.25rem;
+}
+
+    .mt-how li + li,
+    .mt-consequences li + li {
+        margin-top: .5rem;
+    }
+
+.mt-consequences {
+    margin-bottom: 0;
+}

@@ -1,0 +1,382 @@
+@page "/showcase/monitoring/console/admin/services/new"
+@page "/showcase/monitoring/console/admin/services/{Id}"
+@layout ConsoleLayout
+
+@{
+    var service = Service;
+}
+
+@if (leaving)
+{
+    @* The service was just deleted and the list is loading: no not-found flash in between. *@
+    <PageTitle>Manage services · @MonitoringSeedData.ProductName</PageTitle>
+    <p class="visually-hidden" role="status">The service is deleted. Going back to the list.</p>
+}
+else
+{
+    <PageTitle>@(Id is null ? "Add service" : service is null ? "Service not found" : $"Edit {service.Name}") · @MonitoringSeedData.ProductName</PageTitle>
+
+    <div class="container-fluid px-lg-4">
+        <ShowcaseRoleGuard Roles="@MonitoringSeedData.AdminRole" SignInPath="@MonitoringLayout.SignInPath">
+            @if (Id is not null && service is null)
+            {
+                <section class="mw-not-found" aria-labelledby="mw-svced-missing-title">
+                    <span class="mw-icon fs-4" aria-hidden="true"><Icon Name="IconName.SignpostSplit" /></span>
+                    <h1 class="mw-title fs-3 mt-3 mb-2" id="mw-svced-missing-title">We couldn't find the service "@Id"</h1>
+                    <p class="text-body-secondary mb-4">Check the ID, or open the service from the list. It may have been deleted.</p>
+                    <div class="d-flex justify-content-center flex-wrap gap-2">
+                        <Button Type="ButtonType.Link" To="@AdminServices.ListUrl" Color="ButtonColor.Primary">Back to services</Button>
+                        <Button Type="ButtonType.Link" To="@AdminServices.NewUrl" Color="ButtonColor.Primary" Outline="true">Add service</Button>
+                    </div>
+                </section>
+            }
+            else
+            {
+                var unit = MonitoringDisplay.RequestUnit(kind);
+                var idPreview = IdPreview;
+
+                <Breadcrumb Items="BreadcrumbItems" Class="mb-3" />
+
+                <div class="mw-page-head">
+                    <div>
+                        <h1 class="mw-title">@(service is null ? "Add service" : $"Edit {service.Name}")</h1>
+                        <p class="mw-lead">
+                            @(service is null
+                                ? "Stackwatch starts sampling a new service at once. Its normal latency and traffic set what its charts and alert rules treat as usual."
+                                : service.IsPublic ? "This service is on the public status page. Changes to its name and description show there when you save."
+                                : "This service is engineers-only: customers don't see it on the status page.")
+                        </p>
+                    </div>
+                </div>
+
+                @* Always rendered and focusable, so a save is announced and focus has somewhere to go when it fails or the pressed button is gone. *@
+                <p class="fw-semibold mw-svced-status @(statusIsError ? "text-danger-emphasis" : null)" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
+
+                <div class="row g-4">
+                    <div class="col-xl-8">
+                        <Card Class="mw-card">
+                            <CardHeader><h2 class="mw-card-title" id="mw-svced-form-title">Service details</h2></CardHeader>
+                            <CardBody>
+                                <form @onsubmit="Save" novalidate aria-labelledby="mw-svced-form-title">
+                                    <div class="mb-3">
+                                        <label class="form-label fw-semibold" for="mw-svced-name">Name</label>
+                                        <input id="mw-svced-name" class="form-control @(nameError is null ? null : "is-invalid")" @bind="name" @bind:event="oninput" @ref="nameInput"
+                                               autocomplete="off" aria-required="true" aria-invalid="@(nameError is null ? null : "true")"
+                                               aria-describedby="mw-svced-name-help mw-svced-name-error" />
+                                        <div class="form-text d-flex flex-wrap justify-content-between gap-2" id="mw-svced-name-help">
+                                            @if (service is null)
+                                            {
+                                                <span>
+                                                    ID: <span class="mw-mono">@(idPreview.Length == 0 ? "(made from the name)" : idPreview)</span>.
+                                                    Lower-case letters, digits, and hyphens, made from the name. It's used in links and can't change later.
+                                                </span>
+                                            }
+                                            else
+                                            {
+                                                <span>ID: <span class="mw-mono">@service.Id</span> (it can't change).</span>
+                                            }
+                                            <span class="text-nowrap @(name.Trim().Length > MonitoringState.MaxServiceNameLength ? "text-danger-emphasis" : null)">@CounterText(name, MonitoringState.MaxServiceNameLength)</span>
+                                        </div>
+                                        <div class="invalid-feedback d-block" id="mw-svced-name-error">@nameError</div>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label class="form-label fw-semibold" for="mw-svced-kind">Kind</label>
+                                        <select id="mw-svced-kind" class="form-select" @bind="kind" aria-describedby="mw-svced-kind-help">
+                                            @foreach (var option in Enum.GetValues<MonitoringServiceKind>())
+                                            {
+                                                <option value="@option">@MonitoringDisplay.KindLabel(option)</option>
+                                            }
+                                        </select>
+                                        <div class="form-text" id="mw-svced-kind-help">
+                                            @(service is null
+                                                ? "The kind sets its normal error rate, CPU, memory, and disk use, and the unit of its traffic."
+                                                : "The kind sets the unit of its traffic and its icon.")
+                                        </div>
+                                    </div>
+
+                                    <div class="row g-3 mb-3">
+                                        <div class="col-sm-6">
+                                            <label class="form-label fw-semibold" for="mw-svced-region">Region</label>
+                                            <input id="mw-svced-region" class="form-control @(regionError is null ? null : "is-invalid")" @bind="region" @bind:event="oninput" @ref="regionInput"
+                                                   autocomplete="off" maxlength="@MonitoringState.MaxServiceTagLength" aria-required="true" aria-invalid="@(regionError is null ? null : "true")"
+                                                   aria-describedby="mw-svced-region-help mw-svced-region-error" />
+                                            <div class="form-text" id="mw-svced-region-help">Where it runs, like us-east-1. Up to @MonitoringState.MaxServiceTagLength characters.</div>
+                                            <div class="invalid-feedback d-block" id="mw-svced-region-error">@regionError</div>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <label class="form-label fw-semibold" for="mw-svced-team">Team</label>
+                                            <input id="mw-svced-team" class="form-control @(teamError is null ? null : "is-invalid")" @bind="team" @bind:event="oninput" @ref="teamInput"
+                                                   autocomplete="off" maxlength="@MonitoringState.MaxServiceTagLength" aria-required="true" aria-invalid="@(teamError is null ? null : "true")"
+                                                   aria-describedby="mw-svced-team-help mw-svced-team-error" />
+                                            <div class="form-text" id="mw-svced-team-help">The team that owns it, like Payments. Up to @MonitoringState.MaxServiceTagLength characters.</div>
+                                            <div class="invalid-feedback d-block" id="mw-svced-team-error">@teamError</div>
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label class="form-label fw-semibold" for="mw-svced-description">Description</label>
+                                        <textarea id="mw-svced-description" class="form-control @(descriptionError is null ? null : "is-invalid")" rows="3" @bind="description" @bind:event="oninput"
+                                                  @ref="descriptionInput" aria-required="true" aria-invalid="@(descriptionError is null ? null : "true")"
+                                                  aria-describedby="mw-svced-description-help mw-svced-description-error"></textarea>
+                                        <div class="form-text d-flex flex-wrap justify-content-between gap-2" id="mw-svced-description-help">
+                                            <span>What it does, in a sentence. Engineers see it on the service page.</span>
+                                            <span class="text-nowrap @(description.Trim().Length > MonitoringState.MaxServiceDescriptionLength ? "text-danger-emphasis" : null)">@CounterText(description, MonitoringState.MaxServiceDescriptionLength)</span>
+                                        </div>
+                                        <div class="invalid-feedback d-block" id="mw-svced-description-error">@descriptionError</div>
+                                    </div>
+
+                                    <fieldset class="mb-3">
+                                        <legend class="form-label fw-semibold fs-6 mb-1">Normal ranges</legend>
+                                        <p class="form-text mt-0 mb-2">What the service does on a usual day. Charts, live status, and alert rules compare its samples with these.</p>
+                                        <div class="row g-3">
+                                            <div class="col-sm-4">
+                                                <label class="form-label" for="mw-svced-latency">p95 latency (ms)</label>
+                                                <input id="mw-svced-latency" type="number" inputmode="decimal" step="any" min="0.1" max="10000"
+                                                       class="form-control @(latencyError is null ? null : "is-invalid")" @bind="latencyText" @ref="latencyInput"
+                                                       aria-required="true" aria-invalid="@(latencyError is null ? null : "true")" aria-describedby="mw-svced-latency-help mw-svced-latency-error" />
+                                                <div class="form-text" id="mw-svced-latency-help">From 0.1 to 10,000 ms.</div>
+                                                <div class="invalid-feedback d-block" id="mw-svced-latency-error">@latencyError</div>
+                                            </div>
+                                            <div class="col-sm-4">
+                                                <label class="form-label" for="mw-svced-traffic">Traffic (@unit)</label>
+                                                <input id="mw-svced-traffic" type="number" inputmode="decimal" step="any" min="1" max="100000"
+                                                       class="form-control @(trafficError is null ? null : "is-invalid")" @bind="trafficText" @ref="trafficInput"
+                                                       aria-required="true" aria-invalid="@(trafficError is null ? null : "true")" aria-describedby="mw-svced-traffic-help mw-svced-traffic-error" />
+                                                <div class="form-text" id="mw-svced-traffic-help">Per second, from 1 to 100,000.</div>
+                                                <div class="invalid-feedback d-block" id="mw-svced-traffic-error">@trafficError</div>
+                                            </div>
+                                            <div class="col-sm-4">
+                                                <label class="form-label" for="mw-svced-instances">@InstancesLabel</label>
+                                                <input id="mw-svced-instances" type="number" inputmode="numeric" step="1" min="1" max="10000"
+                                                       class="form-control @(instancesError is null ? null : "is-invalid")" @bind="instancesText" @ref="instancesInput"
+                                                       aria-required="true" aria-invalid="@(instancesError is null ? null : "true")" aria-describedby="mw-svced-instances-help mw-svced-instances-error" />
+                                                <div class="form-text" id="mw-svced-instances-help">
+                                                    @(kind == MonitoringServiceKind.Devices ? "Devices reporting through the gateway" : "Copies running"), from 1 to 10,000.
+                                                </div>
+                                                <div class="invalid-feedback d-block" id="mw-svced-instances-error">@instancesError</div>
+                                            </div>
+                                        </div>
+                                    </fieldset>
+
+                                    <div class="form-check mb-1">
+                                        <input class="form-check-input" type="checkbox" id="mw-svced-public" @bind="isPublic" aria-describedby="mw-svced-public-help" />
+                                        <label class="form-check-label fw-semibold" for="mw-svced-public">Show on the public status page</label>
+                                    </div>
+                                    <div class="form-text mt-0 mb-3" id="mw-svced-public-help">
+                                        @if (service is not null && service.IsPublic && !isPublic)
+                                        {
+                                            @("When you save, customers stop seeing its status and uptime, and can't subscribe to it. Its published incidents leave the status page too (they come back if you show it again).")
+                                        }
+                                        else if (isPublic && service is not { IsPublic: true })
+                                        {
+                                            @("When you save, customers see it as a component on the status page, with its status and uptime, and can subscribe to its updates.")
+                                        }
+                                        else if (isPublic)
+                                        {
+                                            @("Customers see its status and uptime on the status page and can subscribe to it.")
+                                        }
+                                        else
+                                        {
+                                            @("Engineers-only: it stays off the status page. Engineers still see its metrics, alerts, and incidents.")
+                                        }
+                                    </div>
+
+                                    <div class="d-flex flex-wrap align-items-center gap-2">
+                                        <Button Type="ButtonType.Submit" Color="ButtonColor.Primary">
+                                            <Icon Name="@(service is null ? IconName.PlusLg : IconName.CheckLg)" class="me-1" aria-hidden="true" />@(service is null ? "Add service" : "Save changes")
+                                        </Button>
+                                        <a class="btn btn-link" href="@AdminServices.ListUrl">@(service is null ? "Cancel" : "Back to services")</a>
+                                    </div>
+                                </form>
+                            </CardBody>
+                        </Card>
+                    </div>
+
+                    @if (service is not null)
+                    {
+                        var latest = State.Latest(service.Id);
+                        var status = State.Status(service);
+                        var publicStatus = State.PublicStatus(service.Id);
+                        var fault = State.ActiveFault(service.Id);
+                        var window = State.ActiveMaintenance(service.Id);
+                        var rules = ServiceRules;
+                        var incidents = ServiceIncidents;
+                        var deleteBlocked = AdminServices.DeleteBlockers(State, service).Count > 0;
+
+                        <div class="col-xl-4 d-grid gap-4 align-content-start">
+                            <Card Class="mw-card">
+                                <CardHeader><h2 class="mw-card-title">Live status</h2></CardHeader>
+                                <CardBody>
+                                    @* Not a live region: the values change every tick and are not announced. *@
+                                    <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
+                                        <Badge Color="@MonitoringDisplay.StatusColor(status)"><Icon Name="@MonitoringDisplay.StatusIcon(status)" class="me-1" aria-hidden="true" />@status</Badge>
+                                        <span class="small text-body-secondary">Sample at <span class="mw-mono">@MonitoringDisplay.Time(latest.Time)</span></span>
+                                    </div>
+                                    <dl class="mw-svced-facts">
+                                        <dt>p95 latency</dt>
+                                        <dd class="mw-mono">@MonitoringDisplay.Latency(latest.LatencyMs) <span class="text-body-secondary small">(normal @MonitoringDisplay.Latency(service.BaseLatencyMs))</span></dd>
+                                        <dt>Error rate</dt>
+                                        <dd class="mw-mono">@MonitoringDisplay.ErrorRate(latest.ErrorRate)</dd>
+                                        <dt>Traffic</dt>
+                                        <dd class="mw-mono">@MonitoringDisplay.Number(latest.Requests) <span class="text-body-secondary small">@MonitoringDisplay.RequestUnit(service.Kind)</span></dd>
+                                        <dt>CPU</dt>
+                                        <dd class="mw-mono">@MonitoringDisplay.Percent(latest.Cpu)</dd>
+                                        <dt>Status page</dt>
+                                        <dd>
+                                            @if (service.IsPublic)
+                                            {
+                                                <Badge Color="@MonitoringDisplay.PublicStatusColor(publicStatus)"><Icon Name="@MonitoringDisplay.PublicStatusIcon(publicStatus)" class="me-1" aria-hidden="true" />@MonitoringDisplay.PublicStatusLabel(publicStatus)</Badge>
+                                            }
+                                            else
+                                            {
+                                                <span class="text-body-secondary">Not shown (engineers only)</span>
+                                            }
+                                        </dd>
+                                    </dl>
+                                    @if (fault is not null)
+                                    {
+                                        <p class="small mb-2"><Icon Name="IconName.LightningCharge" class="me-1" aria-hidden="true" />Failure drill running: @MonitoringDisplay.ImpactLabel(fault.Impact).ToLowerInvariant() until @MonitoringDisplay.Time(fault.End).</p>
+                                    }
+                                    @if (window is not null)
+                                    {
+                                        <p class="small mb-2"><Icon Name="IconName.Tools" class="me-1" aria-hidden="true" />Under maintenance: "@window.Title" until @MonitoringDisplay.Stamp(window.End). Alert rules don't fire meanwhile.</p>
+                                    }
+                                    <div class="d-flex flex-wrap align-items-center gap-2 mt-3">
+                                        <LivePauseButton />
+                                    </div>
+                                    <ul class="list-unstyled small mt-3 mb-0 d-grid gap-1">
+                                        <li><a href="@MonitoringDisplay.ServiceUrl(service.Id)">@service.Name in the console</a></li>
+                                        <li><a href="@LogsUrl">@service.Name logs</a></li>
+                                    </ul>
+                                </CardBody>
+                            </Card>
+
+                            <Card Class="mw-card">
+                                <CardHeader><h2 class="mw-card-title">Alert rules (@rules.Count)</h2></CardHeader>
+                                <CardBody>
+                                    @if (rules.Count == 0)
+                                    {
+                                        <p class="small text-body-secondary">No alert rules watch @service.Name yet, so nothing opens an incident for it automatically.</p>
+                                    }
+                                    else
+                                    {
+                                        <ul class="list-unstyled d-grid gap-2 mb-2 mw-svced-list">
+                                            @foreach (var rule in rules)
+                                            {
+                                                <li @key="rule.Id">
+                                                    <span class="fw-semibold">@rule.Name</span>
+                                                    <span class="d-block small text-body-secondary">
+                                                        @MonitoringDisplay.MetricLabel(rule.Metric) above @MonitoringDisplay.MetricValue(rule.Metric, rule.Threshold) for @rule.ForSeconds s ·
+                                                        @(rule.IsEnabled ? "on" : "off")@(rule.AutoPublish ? " · posts on the status page" : null)@(rule.LastFiredAt is { } fired ? $" · last fired {MonitoringDisplay.Stamp(fired)}" : null)
+                                                    </span>
+                                                </li>
+                                            }
+                                        </ul>
+                                    }
+                                    <a class="small" href="@AlertsUrl">Manage alert rules and drills</a>
+                                </CardBody>
+                            </Card>
+
+                            <Card Class="mw-card">
+                                <CardHeader><h2 class="mw-card-title">Incidents (@incidents.Count)</h2></CardHeader>
+                                <CardBody>
+                                    @if (incidents.Count == 0)
+                                    {
+                                        <p class="small text-body-secondary mb-0">@service.Name has no incidents.</p>
+                                    }
+                                    else
+                                    {
+                                        <ul class="list-unstyled d-grid gap-2 mb-0 mw-svced-list">
+                                            @foreach (var incident in incidents.Take(6))
+                                            {
+                                                <li @key="incident.Id">
+                                                    <a href="@MonitoringDisplay.IncidentUrl(incident.Id)">#@incident.Id @incident.Title</a>
+                                                    <span class="d-block small text-body-secondary">
+                                                        @incident.Severity · @incident.Status.ToString().ToLowerInvariant() · started @MonitoringDisplay.Stamp(incident.StartedAt)@(incident.IsPublished ? " · on the status page" : null)
+                                                    </span>
+                                                </li>
+                                            }
+                                        </ul>
+                                        @if (incidents.Count > 6)
+                                        {
+                                            <p class="small text-body-secondary mt-2 mb-0">And @(incidents.Count - 6) older. <a href="@($"{ConsoleLayout.Base}/incidents")">All incidents</a></p>
+                                        }
+                                    }
+                                </CardBody>
+                            </Card>
+
+                            <Card Class="mw-card">
+                                <CardHeader><h2 class="mw-card-title">Delete service</h2></CardHeader>
+                                <CardBody>
+                                    <p class="small">
+                                        @(deleteBlocked
+                                            ? "It can't be deleted right now. Delete says why, and offers to hide it from the status page instead."
+                                            : AdminServices.DeleteConsequence(State, service) + " This can't be undone.")
+                                    </p>
+                                    <Button @ref="deleteButton" Color="ButtonColor.Danger" Outline="true" @onclick="OpenDeleteAsync">
+                                        <Icon Name="IconName.Trash3" class="me-1" aria-hidden="true" />Delete<span class="visually-hidden"> @service.Name</span>
+                                    </Button>
+                                </CardBody>
+                            </Card>
+                        </div>
+                    }
+                </div>
+
+                @if (service is not null)
+                {
+                    var blockers = AdminServices.DeleteBlockers(State, service);
+
+                    <Modal @ref="dialogModal" IsVerticallyCentered="true" IsScrollable="true" ShowCloseButton="false" aria-labelledby="mw-svced-dialog-title" OnHidden="OnDialogHidden">
+                        <HeaderTemplate>
+                            <h2 class="modal-title h5" id="mw-svced-dialog-title">@(blockers.Count == 0 ? $"Delete {service.Name}?" : $"{service.Name} can't be deleted")</h2>
+                        </HeaderTemplate>
+                        <BodyTemplate>
+                            @if (blockers.Count > 0)
+                            {
+                                <p>Deleting @service.Name would lose history that other people rely on:</p>
+                                <ul class="mw-svced-reasons">
+                                    @foreach (var reason in blockers)
+                                    {
+                                        <li>@reason</li>
+                                    }
+                                </ul>
+                                @if (service.IsPublic)
+                                {
+                                    <p class="mb-0">
+                                        Hide it from the status page instead. Customers stop seeing its status and uptime, and can't subscribe to it; its published incidents leave the
+                                        status page too. Engineers keep its metrics, alert rules, and incidents in the console.
+                                    </p>
+                                }
+                                else
+                                {
+                                    <p class="mb-0">It's already hidden from the status page, so customers don't see it. Engineers keep its metrics, alert rules, and incidents in the console.</p>
+                                }
+                            }
+                            else
+                            {
+                                <p>@AdminServices.DeleteConsequence(State, service)</p>
+                                <p class="mb-0">@(service.IsPublic ? "It also leaves the public status page. " : null)Its metrics and logs stop. This can't be undone.</p>
+                            }
+                        </BodyTemplate>
+                        <FooterTemplate>
+                            @if (blockers.Count > 0)
+                            {
+                                <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => dialogModal.HideAsync()">@(service.IsPublic ? "Cancel" : "Close")</Button>
+                                @if (service.IsPublic)
+                                {
+                                    <Button Color="ButtonColor.Primary" @onclick="ConfirmHideAsync"><Icon Name="IconName.EyeSlash" class="me-1" aria-hidden="true" />Hide from the status page</Button>
+                                }
+                            }
+                            else
+                            {
+                                <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => dialogModal.HideAsync()">Cancel</Button>
+                                <Button Color="ButtonColor.Danger" @onclick="ConfirmDeleteAsync"><Icon Name="IconName.Trash3" class="me-1" aria-hidden="true" />Delete service</Button>
+                            }
+                        </FooterTemplate>
+                    </Modal>
+                }
+            }
+        </ShowcaseRoleGuard>
+    </div>
+}

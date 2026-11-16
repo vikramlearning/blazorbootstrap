@@ -1,0 +1,189 @@
+@page "/showcase/monitoring/console/admin/services"
+@layout ConsoleLayout
+
+<PageTitle>Manage services · @MonitoringSeedData.ProductName</PageTitle>
+
+<div class="container-fluid px-lg-4">
+    <ShowcaseRoleGuard Roles="@MonitoringSeedData.AdminRole" SignInPath="@MonitoringLayout.SignInPath">
+        @{
+            var rows = Rows;
+            var full = State.Services.Count >= MonitoringState.MaxServices;
+        }
+
+        <div class="mw-page-head">
+            <div>
+                <h1 class="mw-title">Manage services</h1>
+                <p class="mw-lead">Add the services Stackwatch monitors, change their details, choose which ones customers see on the status page, and delete the ones you no longer run.</p>
+            </div>
+            @if (full)
+            {
+                <div class="mw-adsvc-add">
+                    <Button Color="ButtonColor.Primary" Disabled="true"><Icon Name="IconName.PlusLg" class="me-1" aria-hidden="true" />Add service</Button>
+                    <span class="small text-body-secondary">This tab holds at most @MonitoringState.MaxServices services. Delete one to add another.</span>
+                </div>
+            }
+            else
+            {
+                <Button Type="ButtonType.Link" To="@NewUrl" Color="ButtonColor.Primary"><Icon Name="IconName.PlusLg" class="me-1" aria-hidden="true" />Add service</Button>
+            }
+        </div>
+
+        <p class="mb-2">@CountText()</p>
+
+        @* Always rendered and focusable, so an outcome is announced and focus has somewhere to go when a deleted row disappears. *@
+        <p class="fw-semibold mw-adsvc-status @(statusIsError ? "text-danger-emphasis" : null)" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
+
+        <Card Class="mw-card">
+            <CardBody Class="p-0">
+                <div class="table-responsive mw-grid">
+                    <table class="table mw-adsvc-table mb-0">
+                        <caption class="mw-adsvc-caption">
+                            Every monitored service. "Subscribers" counts the status page subscribers who follow the service by name.
+                        </caption>
+                        <thead>
+                            <tr>
+                                <th scope="col">Service</th>
+                                <th scope="col">ID</th>
+                                <th scope="col">Kind</th>
+                                <th scope="col">Region</th>
+                                <th scope="col">Team</th>
+                                <th scope="col">On the status page</th>
+                                <th scope="col" class="text-end">Alert rules</th>
+                                <th scope="col" class="text-end">Incidents</th>
+                                <th scope="col" class="text-end">Subscribers</th>
+                                <th scope="col">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var row in rows)
+                            {
+                                var service = row.Service;
+                                <tr @key="service.Id">
+                                    <th scope="row" class="mw-adsvc-name">
+                                        <a class="mw-row-link" href="@EditUrl(service.Id)">@service.Name</a>
+                                    </th>
+                                    <td class="mw-mono text-nowrap">@service.Id</td>
+                                    <td class="text-nowrap"><Icon Name="@MonitoringDisplay.KindIcon(service.Kind)" class="me-1 text-body-secondary" aria-hidden="true" />@MonitoringDisplay.KindLabel(service.Kind)</td>
+                                    <td class="mw-mono text-nowrap">@service.Region</td>
+                                    <td class="mw-adsvc-wrap">@service.Team</td>
+                                    <td class="text-nowrap">
+                                        @if (service.IsPublic)
+                                        {
+                                            <Icon Name="IconName.Broadcast" class="me-1 text-success-emphasis" aria-hidden="true" /><span>Yes</span>
+                                        }
+                                        else
+                                        {
+                                            <Icon Name="IconName.EyeSlash" class="me-1 text-body-secondary" aria-hidden="true" /><span>No, engineers only</span>
+                                        }
+                                    </td>
+                                    <td class="mw-mono text-end">@row.Rules</td>
+                                    <td class="text-end text-nowrap">
+                                        <span class="mw-mono">@row.Incidents</span>
+                                        @if (row.ActiveIncidents > 0)
+                                        {
+                                            <span class="d-block small text-body-secondary">@row.ActiveIncidents active</span>
+                                        }
+                                    </td>
+                                    <td class="mw-mono text-end">@row.Followers</td>
+                                    <td>
+                                        <div class="mw-adsvc-actions">
+                                            <Button Type="ButtonType.Link" To="@EditUrl(service.Id)" Color="ButtonColor.Secondary" Outline="true" Size="ButtonSize.Small">
+                                                Edit<span class="visually-hidden"> @service.Name</span>
+                                            </Button>
+                                            <Button Color="ButtonColor.Secondary" Outline="true" Size="ButtonSize.Small" @onclick="() => TogglePublic(service)">
+                                                @if (service.IsPublic)
+                                                {
+                                                    <Icon Name="IconName.EyeSlash" class="me-1" aria-hidden="true" /><span>Hide<span class="visually-hidden"> @service.Name</span> from the status page</span>
+                                                }
+                                                else
+                                                {
+                                                    <Icon Name="IconName.Broadcast" class="me-1" aria-hidden="true" /><span>Show<span class="visually-hidden"> @service.Name</span> on the status page</span>
+                                                }
+                                            </Button>
+                                            <Button @ref="deleteButtons[service.Id]" Color="ButtonColor.Danger" Outline="true" Size="ButtonSize.Small" @onclick="() => OpenDeleteAsync(service)">
+                                                <Icon Name="IconName.Trash3" class="me-1" aria-hidden="true" />Delete<span class="visually-hidden"> @service.Name</span>
+                                            </Button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </CardBody>
+        </Card>
+
+        <p class="small text-body-secondary mt-3 mb-0">
+            "Show on" and "Hide from the status page" change what customers see at once. Hiding a service keeps its metrics, alert rules, and incidents in the console.
+            <a href="@MonitoringLayout.Base">View the status page</a>.
+        </p>
+
+        <Modal @ref="dialogModal" IsVerticallyCentered="true" IsScrollable="true" ShowCloseButton="false" aria-labelledby="mw-adsvc-dialog-title" OnHidden="OnDialogHidden">
+            <HeaderTemplate>
+                @if (DialogService is { } target)
+                {
+                    <h2 class="modal-title h5" id="mw-adsvc-dialog-title">
+                        @(DeleteBlockers(State, target).Count == 0 ? $"Delete {target.Name}?" : $"{target.Name} can't be deleted")
+                    </h2>
+                }
+                else
+                {
+                    <h2 class="modal-title h5" id="mw-adsvc-dialog-title">Service not found</h2>
+                }
+            </HeaderTemplate>
+            <BodyTemplate>
+                @if (DialogService is not { } target)
+                {
+                    <p class="mb-0">That service no longer exists, so there's nothing to delete.</p>
+                }
+                else if (DeleteBlockers(State, target) is { Count: > 0 } blockers)
+                {
+                    <p>Deleting @target.Name would lose history that other people rely on:</p>
+                    <ul class="mw-adsvc-reasons">
+                        @foreach (var reason in blockers)
+                        {
+                            <li>@reason</li>
+                        }
+                    </ul>
+                    @if (target.IsPublic)
+                    {
+                        <p class="mb-0">
+                            Hide it from the status page instead. Customers stop seeing its status and uptime, and can't subscribe to it; its published incidents leave the
+                            status page too. Engineers keep its metrics, alert rules, and incidents in the console.
+                        </p>
+                    }
+                    else
+                    {
+                        <p class="mb-0">It's already hidden from the status page, so customers don't see it. Engineers keep its metrics, alert rules, and incidents in the console.</p>
+                    }
+                }
+                else
+                {
+                    <p>@DeleteConsequence(State, target)</p>
+                    <p class="mb-0">
+                        @(target.IsPublic ? "It also leaves the public status page. " : null)Its metrics and logs stop. This can't be undone.
+                    </p>
+                }
+            </BodyTemplate>
+            <FooterTemplate>
+                @if (DialogService is { } target && DeleteBlockers(State, target).Count > 0)
+                {
+                    <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => dialogModal.HideAsync()">@(target.IsPublic ? "Cancel" : "Close")</Button>
+                    @if (target.IsPublic)
+                    {
+                        <Button Color="ButtonColor.Primary" @onclick="ConfirmHideAsync"><Icon Name="IconName.EyeSlash" class="me-1" aria-hidden="true" />Hide from the status page</Button>
+                    }
+                }
+                else if (DialogService is not null)
+                {
+                    <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => dialogModal.HideAsync()">Cancel</Button>
+                    <Button Color="ButtonColor.Danger" @onclick="ConfirmDeleteAsync"><Icon Name="IconName.Trash3" class="me-1" aria-hidden="true" />Delete service</Button>
+                }
+                else
+                {
+                    <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => dialogModal.HideAsync()">Close</Button>
+                }
+            </FooterTemplate>
+        </Modal>
+    </ShowcaseRoleGuard>
+</div>

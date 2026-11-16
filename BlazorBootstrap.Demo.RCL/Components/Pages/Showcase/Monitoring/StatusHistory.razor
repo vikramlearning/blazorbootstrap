@@ -13,7 +13,7 @@
             <label class="form-label mw-label mb-1" for="mw-history-service">Component</label>
             <select class="form-select" id="mw-history-service" value="@serviceFilter" @onchange="OnServiceChanged">
                 <option value="">All components</option>
-                @foreach (var service in State.Services)
+                @foreach (var service in State.StatusPageServices)
                 {
                     <option value="@service.Id">@service.Name</option>
                 }

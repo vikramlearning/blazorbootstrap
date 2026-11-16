@@ -1,0 +1,62 @@
+/* The admins' services list. The table scrolls inside its box on narrow screens; long names and teams wrap. */
+.mw-adsvc-add {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: .25rem;
+    max-width: 22rem;
+}
+
+.mw-adsvc-status {
+    min-height: 1.5rem;
+    overflow-wrap: anywhere;
+}
+
+    .mw-adsvc-status:focus {
+        outline: none;
+    }
+
+    .mw-adsvc-status:focus-visible {
+        outline: 2px solid var(--bs-focus-ring-color, var(--bs-primary));
+        outline-offset: 2px;
+    }
+
+.mw-adsvc-caption {
+    caption-side: top;
+    padding: .875rem 1rem .5rem;
+    font-size: .8125rem;
+    color: var(--bs-secondary-color);
+}
+
+.mw-adsvc-table th[scope=row] {
+    font-weight: 600;
+}
+
+.mw-adsvc-name {
+    min-width: 10rem;
+    overflow-wrap: anywhere;
+}
+
+.mw-adsvc-wrap {
+    min-width: 7rem;
+    overflow-wrap: anywhere;
+}
+
+.mw-adsvc-actions {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: .375rem;
+}
+
+    .mw-adsvc-actions ::deep .btn {
+        white-space: nowrap;
+    }
+
+.mw-adsvc-reasons {
+    padding-left: 1.25rem;
+    overflow-wrap: anywhere;
+}
+
+    .mw-adsvc-reasons li + li {
+        margin-top: .375rem;
+    }

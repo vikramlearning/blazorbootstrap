@@ -4,8 +4,8 @@ namespace BlazorBootstrap.Demo.RCL.Components.Pages.Showcase.Monitoring;
 
 /// <summary>
 /// Layout of the Stackwatch engineers' console (D-031): a top bar with "View status page" and the account menu (its
-/// notice count is the engineer's unread notifications), a sidebar with the engineer's modules, and the page behind an
-/// engineer-only guard. The sidebar shows only to a signed-in engineer.
+/// notice count is the engineer's unread notifications), a sidebar with the engineer's modules (and, for an admin, the
+/// admin pages), and the page behind a guard for engineers and admins. The sidebar shows only to them.
 /// </summary>
 public partial class ConsoleLayout : LayoutComponentBase, IDisposable
 {
@@ -13,6 +13,9 @@ public partial class ConsoleLayout : LayoutComponentBase, IDisposable
 
     /// <summary>Base route of the console.</summary>
     public const string Base = MonitoringLayout.Base + "/console";
+
+    /// <summary>Base route of the admin pages inside the console.</summary>
+    public const string AdminBase = Base + "/admin";
 
     #endregion
 
@@ -48,6 +51,14 @@ public partial class ConsoleLayout : LayoutComponentBase, IDisposable
             new() { Id = "notifications", Href = $"{Base}/notifications", IconName = IconName.Bell, Text = "Notifications" },
             new() { Id = "account", Href = $"{Base}/account", IconName = IconName.PersonGear, Text = "Account" },
         };
+
+        // Admins also run the monitoring setup.
+        if (State.IsAdmin)
+        {
+            items.Insert(items.Count - 1, new() { Id = "alerts", Href = $"{AdminBase}/alerts", IconName = IconName.BellFill, Text = "Alert rules and drills" });
+            items.Insert(items.Count - 1, new() { Id = "maintenance", Href = $"{AdminBase}/maintenance", IconName = IconName.Tools, Text = "Maintenance" });
+            items.Insert(items.Count - 1, new() { Id = "manage-services", Href = $"{AdminBase}/services", IconName = IconName.Sliders, Text = "Manage services" });
+        }
 
         return Task.FromResult(request.ApplyTo(items));
     }

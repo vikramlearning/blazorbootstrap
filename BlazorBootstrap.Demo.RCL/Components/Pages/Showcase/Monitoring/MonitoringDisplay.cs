@@ -76,6 +76,8 @@ public static class MonitoringDisplay
         MonitoringPublicStatus.MajorOutage => BadgeColor.Danger,
         MonitoringPublicStatus.PartialOutage => BadgeColor.Warning,
         MonitoringPublicStatus.Degraded => BadgeColor.Info,
+        // Primary is this site's green, the same as Operational; maintenance gets its own neutral tone (the words carry it).
+        MonitoringPublicStatus.Maintenance => BadgeColor.Dark,
         _ => BadgeColor.Success,
     };
 
@@ -85,6 +87,7 @@ public static class MonitoringDisplay
         MonitoringPublicStatus.MajorOutage => IconName.XCircleFill,
         MonitoringPublicStatus.PartialOutage => IconName.ExclamationTriangleFill,
         MonitoringPublicStatus.Degraded => IconName.DashCircleFill,
+        MonitoringPublicStatus.Maintenance => IconName.Tools,
         _ => IconName.CheckCircleFill,
     };
 
@@ -94,6 +97,7 @@ public static class MonitoringDisplay
         MonitoringPublicStatus.MajorOutage => "Major outage",
         MonitoringPublicStatus.PartialOutage => "Partial outage",
         MonitoringPublicStatus.Degraded => "Degraded performance",
+        MonitoringPublicStatus.Maintenance => "Under maintenance",
         _ => "Operational",
     };
 
@@ -103,7 +107,54 @@ public static class MonitoringDisplay
         MonitoringPublicStatus.MajorOutage => "Major outage",
         MonitoringPublicStatus.PartialOutage => "Partial outage",
         MonitoringPublicStatus.Degraded => "Some systems are slower than usual",
+        MonitoringPublicStatus.Maintenance => "Scheduled maintenance in progress",
         _ => "All systems operational",
+    };
+
+    /// <summary>Returns an alert rule's metric in words.</summary>
+    public static string MetricLabel(MonitoringAlertMetric metric) => metric switch
+    {
+        MonitoringAlertMetric.ErrorRate => "Error rate",
+        MonitoringAlertMetric.Latency => "p95 latency",
+        _ => "CPU",
+    };
+
+    /// <summary>Formats a metric value with its unit, like "2%" or "300 ms".</summary>
+    public static string MetricValue(MonitoringAlertMetric metric, double value) =>
+        metric == MonitoringAlertMetric.Latency ? Latency(value) : value.ToString("0.##", CultureInfo.InvariantCulture) + "%";
+
+    /// <summary>Returns a sample's value of an alert rule's metric.</summary>
+    public static double MetricOf(MonitoringAlertMetric metric, MonitoringSample sample) => metric switch
+    {
+        MonitoringAlertMetric.ErrorRate => sample.ErrorRate,
+        MonitoringAlertMetric.Latency => sample.LatencyMs,
+        _ => sample.Cpu,
+    };
+
+    /// <summary>Returns a maintenance window's status in words.</summary>
+    public static string MaintenanceStatusLabel(MonitoringMaintenanceStatus status) => status switch
+    {
+        MonitoringMaintenanceStatus.Scheduled => "Scheduled",
+        MonitoringMaintenanceStatus.InProgress => "In progress",
+        MonitoringMaintenanceStatus.Completed => "Completed",
+        _ => "Cancelled",
+    };
+
+    /// <summary>Returns the badge color of a maintenance window's status.</summary>
+    public static BadgeColor MaintenanceStatusColor(MonitoringMaintenanceStatus status) => status switch
+    {
+        MonitoringMaintenanceStatus.Scheduled => BadgeColor.Info,
+        MonitoringMaintenanceStatus.InProgress => BadgeColor.Dark,
+        MonitoringMaintenanceStatus.Completed => BadgeColor.Success,
+        _ => BadgeColor.Secondary,
+    };
+
+    /// <summary>Returns an impact (what an incident or a failure drill does to the metrics) in words.</summary>
+    public static string ImpactLabel(MonitoringImpact impact) => impact switch
+    {
+        MonitoringImpact.Errors => "Elevated errors",
+        MonitoringImpact.Latency => "Slow responses",
+        _ => "Outage",
     };
 
     /// <summary>Returns a public update's stage in words.</summary>
