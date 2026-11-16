@@ -1,0 +1,81 @@
+@* One task on a project board: key, title (a link to the task), priority, assignee, due date in words, estimate, and
+   checklist progress. Unless the board is read-only, a "Move to" select and Move up/down buttons are the keyboard and
+   single-pointer alternative to dragging (WCAG 2.1.1, 2.5.7). *@
+@{
+    var key = State.TaskKey(Item);
+    var assignee = State.FindPerson(Item.AssigneeId);
+    var today = State.Clock.Today;
+    var overdue = PbDisplay.IsOverdue(Item, today);
+    var checkedCount = Item.Checklist.Count(item => item.Done);
+    var idBase = $"tb-card-{Item.Id}";
+}
+
+<article class="@(CanDrag ? "tb-card-item tb-taskcard tb-taskcard-drag" : "tb-card-item tb-taskcard")" aria-labelledby="@($"{idBase}-title")">
+    @* The drag handle: everything but the move controls, so pressing the select or the buttons never starts a drag. *@
+    <div class="tb-taskcard-grab">
+        <div class="d-flex justify-content-between align-items-start gap-2 mb-1">
+            <span class="tb-key" aria-hidden="true">@key</span>
+            <span class="@($"badge text-bg-{PbDisplay.PriorityColor(Item.Priority)}")">@Item.Priority<span class="visually-hidden"> priority</span></span>
+        </div>
+
+        <h3 class="tb-taskcard-title" id="@($"{idBase}-title")">
+            <a href="@PbDisplay.TaskUrl(Item.Id)"><span class="visually-hidden">@key, </span>@Item.Title</a>
+        </h3>
+
+        <ul class="tb-taskcard-meta list-unstyled">
+            <li>
+                @if (assignee is not null)
+                {
+                    <span class="tb-person" title="@assignee.Name" aria-hidden="true">@assignee.Initials</span>
+                    <span class="visually-hidden">Assigned to @assignee.Name</span>
+                }
+                else
+                {
+                    <span class="tb-taskcard-unassigned">Unassigned</span>
+                }
+            </li>
+            <li class="@(overdue ? "tb-taskcard-overdue" : null)">
+                @if (overdue)
+                {
+                    <Icon Name="IconName.ExclamationTriangleFill" class="me-1" aria-hidden="true" />
+                }
+                @DueText(today)
+            </li>
+            @if (Item.EstimateHours > 0)
+            {
+                <li><span aria-hidden="true">@Item.EstimateHours h</span><span class="visually-hidden">Estimate @HoursText(Item.EstimateHours)</span></li>
+            }
+            @if (Item.Checklist.Count > 0)
+            {
+                <li>
+                    <Icon Name="IconName.CheckSquare" class="me-1" aria-hidden="true" /><span aria-hidden="true">@checkedCount/@Item.Checklist.Count</span>
+                    <span class="visually-hidden">Checklist: @checkedCount of @Item.Checklist.Count done</span>
+                </li>
+            }
+        </ul>
+    </div>
+
+    @if (CanMove)
+    {
+        <div class="tb-taskcard-move">
+            <label class="tb-taskcard-move-label" for="@($"{idBase}-move")">Move<span class="visually-hidden"> @key</span> to</label>
+            <select id="@($"{idBase}-move")" class="form-select form-select-sm" value="@Item.Status" @onchange="OnMoveToChanged" @ref="moveSelect">
+                @foreach (var status in Enum.GetValues<PbTaskStatus>())
+                {
+                    <option value="@status" @key="status">@PbDisplay.StatusLabel(status)</option>
+                }
+            </select>
+            @if (CanReorder)
+            {
+                <button type="button" class="btn btn-sm btn-outline-secondary" disabled="@(Index <= 0)" aria-label="@($"Move {key} up")" title="Move up"
+                        @onclick="() => OnReorder.InvokeAsync((Item, -1))" @ref="upButton">
+                    <Icon Name="IconName.ArrowUp" aria-hidden="true" />
+                </button>
+                <button type="button" class="btn btn-sm btn-outline-secondary" disabled="@(Index >= Count - 1)" aria-label="@($"Move {key} down")" title="Move down"
+                        @onclick="() => OnReorder.InvokeAsync((Item, 1))" @ref="downButton">
+                    <Icon Name="IconName.ArrowDown" aria-hidden="true" />
+                </button>
+            }
+        </div>
+    }
+</article>

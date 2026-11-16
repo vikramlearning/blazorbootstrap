@@ -1,0 +1,177 @@
+@page "/showcase/project-board/workload"
+@layout PbWorkLayout
+
+<PageTitle>Workload · @PbSeedData.ProductName</PageTitle>
+
+<div class="container-fluid px-lg-4">
+    <PbRoleGuard Role="@PbSeedData.ProjectManagerRole">
+        @{
+            var today = State.Clock.Today;
+            var all = State.Workload();
+            var rows = hideIdle ? all.Where(row => row.Open.Count > 0).ToList() : all.ToList();
+            var sunday = PbState.WeekStart(today).AddDays(6);
+            var labels = ChartLabels(rows);
+        }
+
+        <div class="mb-3">
+            <h1 class="tb-title">Workload</h1>
+            <p class="tb-lead mb-0">
+                Everyone's open tasks: the hours due this week (by Sunday, @PbDisplay.Date(sunday), or overdue) against what they can take on each week, and the hours due later.
+                Open a person to reassign their tasks.
+            </p>
+        </div>
+
+        @* Always rendered, so a reassignment is announced. *@
+        <p class="fw-semibold tb-wl-status @(statusIsError ? "text-danger-emphasis" : null)" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
+
+        <div class="form-check mb-3">
+            <input class="form-check-input" type="checkbox" id="tb-wl-hide" @bind="hideIdle" aria-describedby="tb-wl-hide-help" />
+            <label class="form-check-label fw-semibold" for="tb-wl-hide">Hide people with no open work</label>
+            <span class="d-block small text-body-secondary" id="tb-wl-hide-help">
+                Showing @ManageProjects.Plural(rows.Count, "person", "people") of @all.Count@(hideIdle && rows.Count < all.Count ? $"; {ManageProjects.Plural(all.Count - rows.Count, "person has", "people have")} no open tasks" : null).
+            </span>
+        </div>
+
+        <section class="tb-panel mb-4" aria-labelledby="tb-wl-chart-title">
+            <h2 class="tb-section-title mb-1" id="tb-wl-chart-title">This week against capacity</h2>
+            <p class="small text-body-secondary">Estimated hours of open tasks due this week or overdue, next to each person's weekly capacity</p>
+            @if (rows.Count == 0)
+            {
+                <p class="text-body-secondary mb-0">Nobody has open tasks right now.</p>
+            }
+            else
+            {
+                <ReportsChart AriaLabel="Bar chart of each person's hours due this week next to their weekly capacity. Summary and data table follow."
+                              Labels="labels"
+                              Series="ChartSeries(rows)"
+                              Height="280" />
+                <p class="small mt-3 mb-2">@Summary(rows)</p>
+                <details class="tb-wl-details">
+                    <summary>Hours by person as a table</summary>
+                    <div class="table-responsive mt-2">
+                        <table class="table table-sm mb-0">
+                            <caption class="visually-hidden">Each person's open work in estimated hours, the busiest against capacity first</caption>
+                            <thead>
+                                <tr>
+                                    <th scope="col">Person</th>
+                                    <th scope="col" class="text-end">This week</th>
+                                    <th scope="col" class="text-end">Capacity</th>
+                                    <th scope="col" class="text-end">Later</th>
+                                    <th scope="col" class="text-end">Open tasks</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var row in rows)
+                                {
+                                    <tr @key="row.Person.Id">
+                                        <th scope="row" class="fw-semibold">@row.Person.Name</th>
+                                        <td class="text-end tb-mono">@Hours(row.HoursThisWeek)</td>
+                                        <td class="text-end tb-mono">@Hours(row.Person.CapacityHours)</td>
+                                        <td class="text-end tb-mono">@Hours(row.HoursLater)</td>
+                                        <td class="text-end tb-mono">@row.Open.Count</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </details>
+            }
+        </section>
+
+        <section aria-labelledby="tb-wl-people-title">
+            <h2 class="tb-section-title" id="tb-wl-people-title">People</h2>
+            <ul class="list-unstyled d-grid gap-3 mb-0">
+                @foreach (var row in rows)
+                {
+                    var person = row.Person;
+                    var personId = person.Id;
+                    var open = expanded.Contains(personId) && row.Open.Count > 0;
+                    var percent = person.CapacityHours <= 0 ? (row.HoursThisWeek > 0 ? 100 : 0) : row.HoursThisWeek * 100.0 / person.CapacityHours;
+                    var panelId = $"tb-wl-tasks-{personId}";
+
+                    <li class="tb-card tb-wl-person" @key="personId">
+                        <div class="d-flex align-items-start gap-3">
+                            <span class="tb-person" aria-hidden="true">@person.Initials</span>
+                            <div class="min-w-0 flex-grow-1">
+                                <h3 class="h6 fw-bold mb-0 tb-wl-wrap">@person.Name@(person.Id == State.CurrentPerson?.Id ? " (you)" : null)</h3>
+                                <p class="small text-body-secondary mb-2 tb-wl-wrap">@person.Title</p>
+                                <p class="small fw-semibold mb-1">@LoadText(row)</p>
+                                <Progress Height="8" Class="mb-2">
+                                    <ProgressBar Width="Math.Min(100, percent)" Color="@LoadColor(row)"
+                                                 aria-label="@($"{person.Name}, hours this week against capacity")" aria-valuenow="@Math.Round(Math.Min(100, percent))" aria-valuemin="0" aria-valuemax="100"
+                                                 aria-valuetext="@LoadText(row)" />
+                                </Progress>
+                                <p class="small text-body-secondary mb-2">
+                                    Later: @Hours(row.HoursLater) · @ManageProjects.Plural(row.Open.Count, "open task")
+                                </p>
+                                @if (row.Open.Count == 0)
+                                {
+                                    <p class="small text-body-secondary mb-0">Nothing to reassign.</p>
+                                }
+                                else
+                                {
+                                    <button type="button" class="btn btn-sm btn-outline-secondary" aria-expanded="@(open ? "true" : "false")" aria-controls="@panelId"
+                                            @ref="toggleButtons[personId]" @onclick="() => Toggle(personId)">
+                                        <Icon Name="@(open ? IconName.ChevronUp : IconName.ChevronDown)" class="me-1" aria-hidden="true" />@(open ? "Hide" : "Show") @ManageProjects.Plural(row.Open.Count, "open task")<span class="visually-hidden"> of @person.Name</span>
+                                    </button>
+                                }
+                            </div>
+                        </div>
+
+                        @if (open)
+                        {
+                            <div class="table-responsive mt-3" id="@panelId">
+                                <table class="table table-sm align-middle mb-0 tb-wl-table">
+                                    <caption class="visually-hidden">@person.Name's open tasks by due date, with a control to reassign each</caption>
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">Key</th>
+                                            <th scope="col">Task</th>
+                                            <th scope="col">Project</th>
+                                            <th scope="col">Due</th>
+                                            <th scope="col" class="text-end">Estimate</th>
+                                            <th scope="col">Reassign</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var task in row.Open)
+                                        {
+                                            var project = State.FindProject(task.ProjectId);
+                                            var taskKey = State.TaskKey(task);
+                                            var taskId = task.Id;
+                                            var selectId = $"tb-wl-assign-{taskId}";
+                                            var draft = Draft(task);
+                                            <tr @key="taskId">
+                                                <td class="text-nowrap"><span class="tb-key">@taskKey</span></td>
+                                                <th scope="row" class="tb-wl-title"><a href="@PbDisplay.TaskUrl(taskId)">@task.Title</a></th>
+                                                <td class="tb-wl-project">@(project?.Name ?? "Unknown project")</td>
+                                                <td class="text-nowrap @(PbDisplay.IsOverdue(task, today) ? "text-danger-emphasis fw-semibold" : null)">@PbDisplay.Due(task.DueDate, today)</td>
+                                                <td class="text-end text-nowrap tb-mono">@Hours(task.EstimateHours)</td>
+                                                <td>
+                                                    <div class="d-flex flex-nowrap gap-1">
+                                                        <label class="visually-hidden" for="@selectId">Assignee for @taskKey</label>
+                                                        <select id="@selectId" class="form-select form-select-sm tb-wl-select" value="@draft" @onchange="args => SetDraft(taskId, args.Value as string)">
+                                                            @foreach (var member in Members(project))
+                                                            {
+                                                                <option value="@member.Id" @key="member.Id">@member.Name</option>
+                                                            }
+                                                            <option value="">Unassigned</option>
+                                                        </select>
+                                                        <button type="button" class="btn btn-sm btn-primary text-nowrap" disabled="@(draft == (task.AssigneeId ?? string.Empty))"
+                                                                @onclick="() => Reassign(taskId, personId)">
+                                                            Reassign<span class="visually-hidden"> @taskKey</span>
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        }
+                    </li>
+                }
+            </ul>
+        </section>
+    </PbRoleGuard>
+</div>

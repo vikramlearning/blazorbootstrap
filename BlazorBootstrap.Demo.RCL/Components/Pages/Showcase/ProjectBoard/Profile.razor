@@ -1,0 +1,84 @@
+@page "/showcase/project-board/profile"
+@layout PbWorkLayout
+
+<PageTitle>Profile · @PbSeedData.ProductName</PageTitle>
+
+@* The person's name, email, and password; then their work: title, capacity, projects, and task counts. *@
+<div class="container-fluid px-lg-4">
+    <h1 class="tb-title mb-1">Profile</h1>
+    <p class="tb-lead mb-4">
+        Your name, email, and password for this demo. Teammates see your name and initials on the boards, on the tasks
+        assigned to you, and next to your comments.
+    </p>
+
+    <ShowcaseAccountProfile />
+
+    @{
+        var person = State.CurrentPerson;
+    }
+
+    <section class="tb-panel mt-4" aria-labelledby="tb-profile-work-title">
+        <h2 class="tb-section-title" id="tb-profile-work-title">Your work</h2>
+        @if (person is null)
+        {
+            <p class="mb-0">Sign in to see your work.</p>
+        }
+        else
+        {
+            var today = State.Clock.Today;
+            var projects = State.Projects.Where(project => project.MemberIds.Contains(person.Id)).ToList();
+            var open = State.AllTasks.Where(task => task.AssigneeId == person.Id && task.Status != PbTaskStatus.Done).ToList();
+            var overdue = open.Count(task => PbDisplay.IsOverdue(task, today));
+            var sunday = PbState.WeekStart(today).AddDays(6);
+            var thisWeek = open.Where(task => task.DueDate is { } due && due.Date <= sunday).ToList();
+            var hours = thisWeek.Sum(task => task.EstimateHours);
+
+            <dl class="tb-profile-facts">
+                <div>
+                    <dt>Title</dt>
+                    <dd>@person.Title</dd>
+                </div>
+                <div>
+                    <dt>Weekly capacity</dt>
+                    <dd>@TaskCard.HoursText(person.CapacityHours)</dd>
+                </div>
+                <div>
+                    <dt>Open tasks</dt>
+                    <dd><a href="@($"{PbLayout.Base}/my-tasks")">@TaskCard.Plural(open.Count, "open task")</a></dd>
+                </div>
+                <div>
+                    <dt>Overdue</dt>
+                    <dd class="@(overdue > 0 ? "tb-profile-overdue" : null)">
+                        @if (overdue > 0)
+                        {
+                            <Icon Name="IconName.ExclamationTriangleFill" class="me-1" aria-hidden="true" />
+                        }
+                        @(overdue == 0 ? "None" : TaskCard.Plural(overdue, "task"))
+                    </dd>
+                </div>
+                <div>
+                    <dt>Due by Sunday</dt>
+                    <dd>@TaskCard.Plural(thisWeek.Count, "task"), @TaskCard.HoursText(hours) estimated of your @person.CapacityHours</dd>
+                </div>
+            </dl>
+
+            <h3 class="h6 fw-bold mt-4">Projects you're on</h3>
+            @if (projects.Count == 0)
+            {
+                <p class="mb-0 text-body-secondary">You aren't on a project team yet. A project manager adds people to projects.</p>
+            }
+            else
+            {
+                <ul class="tb-profile-projects mb-0">
+                    @foreach (var project in projects)
+                    {
+                        <li @key="@($"project-{project.Id}")">
+                            <a href="@PbDisplay.ProjectUrl(project.Id)">@project.Name</a>
+                            <span class="text-body-secondary small"> (@project.Key, @PbDisplay.ProjectStatusLabel(project.Status).ToLowerInvariant())</span>
+                        </li>
+                    }
+                </ul>
+            }
+        }
+    </section>
+</div>

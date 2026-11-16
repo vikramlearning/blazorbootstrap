@@ -1,0 +1,117 @@
+/* A task's page: details beside the description, checklist, and comments (above them on narrow screens). */
+.tb-task-crumb,
+.tb-task-wrap {
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+.tb-task-notice {
+    padding: .75rem 1rem;
+    border: 1px solid var(--tb-border);
+    border-radius: .625rem;
+    background: var(--tb-soft);
+    color: var(--tb-ink);
+}
+
+.tb-task-status {
+    min-height: 1.5rem;
+    margin-bottom: .75rem;
+    overflow-wrap: anywhere;
+}
+
+    .tb-task-status:focus {
+        outline: none;
+    }
+
+    .tb-task-status:focus-visible {
+        outline: 2px solid var(--bs-focus-ring-color, var(--sc-primary));
+        outline-offset: 2px;
+    }
+
+.tb-task-facts {
+    display: grid;
+    gap: .75rem;
+    margin-bottom: 1.25rem;
+}
+
+    .tb-task-facts dt {
+        margin-bottom: .125rem;
+        font-size: .75rem;
+        font-weight: 700;
+        letter-spacing: .02em;
+        text-transform: uppercase;
+        color: var(--bs-secondary-color);
+    }
+
+    .tb-task-facts dd {
+        margin: 0;
+        overflow-wrap: anywhere;
+    }
+
+.tb-task-overdue {
+    color: var(--bs-danger-text-emphasis);
+    font-weight: 600;
+}
+
+.tb-task-checklist {
+    display: grid;
+    gap: .25rem;
+}
+
+.tb-task-check {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: .25rem .75rem;
+    padding: .375rem 0;
+    border-bottom: 1px solid var(--tb-border);
+}
+
+    .tb-task-check .form-check {
+        flex: 1 1 12rem;
+        min-width: 0;
+    }
+
+.tb-task-check-done {
+    color: var(--bs-secondary-color);
+    text-decoration: line-through;
+}
+
+.tb-task-remove {
+    padding: 0 .25rem;
+    color: var(--bs-danger-text-emphasis);
+}
+
+.tb-task-add {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .5rem;
+}
+
+    .tb-task-add .form-control {
+        flex: 1 1 12rem;
+        min-width: 0;
+    }
+
+.tb-task-comments {
+    display: grid;
+    gap: 1rem;
+}
+
+.tb-task-comment {
+    display: flex;
+    gap: .75rem;
+}
+
+.tb-task-comment-body {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.tb-task-quote {
+    padding: .5rem .75rem;
+    border-left: 3px solid var(--tb-border);
+    background: var(--tb-soft);
+    border-radius: .25rem;
+}

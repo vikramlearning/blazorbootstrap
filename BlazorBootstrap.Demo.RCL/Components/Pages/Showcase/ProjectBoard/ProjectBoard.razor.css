@@ -1,0 +1,226 @@
+/* A project's board: header facts, toolbar, the columns (they scroll sideways inside their own box on narrow screens),
+   and the list table. SortableList and TaskCard render their own markup, so their parts need ::deep. */
+.tb-board-crumb,
+.tb-board-heading,
+.tb-board-wrap {
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+.tb-board-heading {
+    flex: 1 1 18rem;
+}
+
+.tb-board-facts {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+    gap: 1rem 1.5rem;
+}
+
+    .tb-board-facts dt {
+        margin-bottom: .25rem;
+        font-size: .75rem;
+        font-weight: 700;
+        letter-spacing: .02em;
+        text-transform: uppercase;
+        color: var(--bs-secondary-color);
+    }
+
+    .tb-board-facts dd {
+        margin: 0;
+        min-width: 0;
+    }
+
+.tb-board-team {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .25rem;
+}
+
+.tb-board-notice {
+    padding: .75rem 1rem;
+    border: 1px solid var(--tb-border);
+    border-radius: .625rem;
+    background: var(--tb-soft);
+    color: var(--tb-ink);
+}
+
+.tb-board-status {
+    min-height: 1.5rem;
+    margin-bottom: .75rem;
+    overflow-wrap: anywhere;
+}
+
+    .tb-board-status:focus {
+        outline: none;
+    }
+
+    .tb-board-status:focus-visible {
+        outline: 2px solid var(--bs-focus-ring-color, var(--sc-primary));
+        outline-offset: 2px;
+    }
+
+.tb-board-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: .75rem 1.25rem;
+}
+
+.tb-board-filters {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: .5rem .75rem;
+    min-width: 0;
+}
+
+    .tb-board-filters > div {
+        min-width: 0;
+    }
+
+.tb-board-search {
+    flex: 1 1 10rem;
+}
+
+.tb-board-filter-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .25rem;
+}
+
+/* The columns: side by side, scrolling inside this box when the screen is narrower than four columns. */
+.tb-board-scroll {
+    /* The containing block of the cards' visually hidden text, which is absolutely positioned: otherwise that text
+       escapes the scrolling box and widens the page on narrow screens. */
+    position: relative;
+    overflow-x: auto;
+    padding-bottom: .5rem;
+    border-radius: .875rem;
+}
+
+    .tb-board-scroll:focus-visible {
+        outline: 2px solid var(--bs-focus-ring-color, var(--sc-primary));
+        outline-offset: 2px;
+    }
+
+.tb-board {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(15.5rem, 1fr));
+    gap: .75rem;
+    align-items: start;
+}
+
+@media (max-width: 575.98px) {
+    .tb-board {
+        grid-template-columns: repeat(4, minmax(min(15.5rem, 82vw), 1fr));
+    }
+}
+
+.tb-board-column-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: .25rem .5rem;
+    margin-bottom: .625rem;
+}
+
+.tb-board-column-title {
+    margin: 0;
+    font-size: .9375rem;
+    font-weight: 700;
+    color: var(--tb-ink);
+}
+
+/* SortableList is a list-group: drop its borders so the cards stand alone, and keep an empty column a drop target. */
+.tb-board-list ::deep .list-group {
+    gap: .5rem;
+    min-height: 4.5rem;
+    border-radius: 0;
+}
+
+.tb-board-list ::deep .sortable-list-group-item {
+    padding: 0;
+    border: 0;
+    border-radius: .625rem;
+    background: transparent;
+    color: inherit;
+}
+
+    .tb-board-list ::deep .sortable-list-group-item + .sortable-list-group-item {
+        border-top-width: 0;
+    }
+
+.tb-board-list ::deep .sortable-ghost {
+    opacity: .45;
+}
+
+.tb-board-empty {
+    display: block;
+    padding: 1rem .5rem;
+    border: 1px dashed var(--tb-border);
+    border-radius: .625rem;
+    text-align: center;
+    font-size: .8125rem;
+    color: var(--bs-secondary-color);
+}
+
+/* The list. */
+.tb-board-table-box {
+    border: 1px solid var(--tb-border);
+    border-radius: .875rem;
+    background: var(--tb-surface);
+}
+
+.tb-board-table {
+    min-width: 52rem;
+}
+
+    .tb-board-table th,
+    .tb-board-table td {
+        background: transparent;
+    }
+
+.tb-board-caption {
+    caption-side: top;
+    padding: .75rem 1rem .25rem;
+    font-size: .8125rem;
+    color: var(--bs-secondary-color);
+}
+
+.tb-board-sort {
+    display: inline-flex;
+    align-items: center;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: inherit;
+    font: inherit;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+    .tb-board-sort:hover {
+        color: var(--sc-primary);
+    }
+
+.tb-board-row-title {
+    min-width: 14rem;
+    font-weight: 600;
+    overflow-wrap: anywhere;
+}
+
+    .tb-board-row-title a {
+        color: var(--tb-ink);
+    }
+
+.tb-board-row-select {
+    width: auto;
+    min-width: 8.5rem;
+}
+
+.tb-board-overdue {
+    color: var(--bs-danger-text-emphasis);
+    font-weight: 600;
+}

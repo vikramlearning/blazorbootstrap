@@ -1,0 +1,192 @@
+@page "/showcase/project-board/roadmap"
+@layout PbWorkLayout
+
+<PageTitle>Roadmap · @PbSeedData.ProductName</PageTitle>
+
+<div class="container-fluid px-lg-4">
+    <PbRoleGuard Role="@PbSeedData.ProjectManagerRole">
+        @{
+            var today = State.Clock.Today;
+            var projects = RoadmapProjects;
+        }
+
+        <div class="mb-3">
+            <h1 class="tb-title">Roadmap</h1>
+            <p class="tb-lead mb-0">Every project that isn't completed, with its milestones and how far along they are. The same plan is listed as a timeline below the map.</p>
+        </div>
+
+        <div class="form-check mb-3">
+            <input class="form-check-input" type="checkbox" id="tb-rm-tasks" checked="@showTasks" @onchange="args => SetShowTasks(args.Value is true)" />
+            <label class="form-check-label fw-semibold" for="tb-rm-tasks">Show open tasks under their milestones (open a milestone to see them)</label>
+        </div>
+
+        <div class="row g-4 mb-4">
+            <div class="col-xl-8">
+                <section class="tb-panel h-100" aria-labelledby="tb-rm-map-title">
+                    <h2 class="tb-section-title mb-1" id="tb-rm-map-title">Mind map</h2>
+                    <p class="small text-body-secondary">Select a project or milestone to see its details and links. Up and down arrows move between nodes, right and left arrows open and close a branch, and Enter or Space selects.</p>
+                    <MindMap TItem="RoadmapNode"
+                             Root="tree"
+                             Children="node => node.Children"
+                             Label="node => node.Label"
+                             InitialExpandDepth="2"
+                             @bind-SelectedItem="selected"
+                             SearchLabel="Find a project, milestone, or task"
+                             SearchPlaceholder="Find a project, milestone, or task…"
+                             PathLabel="Path to the selected node"
+                             Class="tb-rm-map"
+                             aria-labelledby="tb-rm-map-title">
+                        <NodeTemplate Context="node">
+                            <span class="d-block tb-rm-node-label @(node.IsMatch ? "tb-rm-node-match" : null)">@node.Item.Label</span>
+                            @if (node.Item.Note.Length > 0)
+                            {
+                                <span class="d-block small tb-rm-node-note">@node.Item.Note</span>
+                            }
+                        </NodeTemplate>
+                    </MindMap>
+                </section>
+            </div>
+
+            <div class="col-xl-4">
+                <section class="tb-panel h-100 tb-rm-details" aria-labelledby="tb-rm-details-title">
+                    <h2 class="tb-section-title" id="tb-rm-details-title">Details</h2>
+                    <p class="visually-hidden" role="status">@(selected is null ? null : $"Details of {selected.Label} are shown in the Details section.")</p>
+                    @if (SelectedProject is { } project)
+                    {
+                        var progress = State.ProjectProgress(project.Id);
+                        var milestone = selected?.Kind is RoadmapNodeKind.Milestone or RoadmapNodeKind.Task && selected.MilestoneId is { } milestoneId
+                            ? project.Milestones.FirstOrDefault(item => item.Id == milestoneId)
+                            : null;
+                        var task = selected?.Kind == RoadmapNodeKind.Task && selected.TaskId is { } taskId ? State.FindTask(taskId) : null;
+
+                        if (task is not null)
+                        {
+                            <h3 class="h6 fw-bold tb-rm-wrap"><span class="tb-key me-1">@State.TaskKey(task)</span>@task.Title</h3>
+                            <dl class="tb-rm-facts small">
+                                <dt>Status</dt>
+                                <dd>@PbDisplay.StatusLabel(task.Status)</dd>
+                                <dt>Assignee</dt>
+                                <dd>@(State.FindPerson(task.AssigneeId)?.Name ?? "Unassigned")</dd>
+                                <dt>Due</dt>
+                                <dd>@PbDisplay.Due(task.DueDate, today)</dd>
+                                <dt>Estimate</dt>
+                                <dd>@task.EstimateHours h</dd>
+                            </dl>
+                            <ul class="list-unstyled small d-grid gap-1 mb-3">
+                                <li><a href="@PbDisplay.TaskUrl(task.Id)">Open @State.TaskKey(task)</a></li>
+                                <li><a href="@PbDisplay.ProjectUrl(project.Id)">@project.Key board</a></li>
+                            </ul>
+                        }
+
+                        if (milestone is not null)
+                        {
+                            var milestoneProgress = State.MilestoneProgress(project.Id, milestone.Id);
+                            var milestoneTasks = State.TasksOf(project.Id).Where(item => item.MilestoneId == milestone.Id).OrderBy(item => item.Status == PbTaskStatus.Done).ThenBy(item => item.DueDate ?? DateTime.MaxValue).ToList();
+
+                            <h3 class="h6 fw-bold tb-rm-wrap">@(task is null ? null : "Milestone: ")@milestone.Title</h3>
+                            <p class="small mb-2">
+                                Due @PbDisplay.Date(milestone.Due) · @MilestoneState(project, milestone, today) · @ManageProjects.ProgressText(milestoneProgress.Done, milestoneProgress.Total)
+                            </p>
+                            if (task is null)
+                            {
+                                if (milestoneTasks.Count == 0)
+                                {
+                                    <p class="small text-body-secondary">No tasks count toward it yet. Set the milestone in a task's editor.</p>
+                                }
+                                else
+                                {
+                                    <h4 class="small fw-bold mb-1">Its tasks</h4>
+                                    <ul class="list-unstyled small d-grid gap-1 mb-3">
+                                        @foreach (var item in milestoneTasks)
+                                        {
+                                            <li @key="item.Id" class="tb-rm-wrap">
+                                                <a href="@PbDisplay.TaskUrl(item.Id)"><span class="tb-key me-1">@State.TaskKey(item)</span>@item.Title</a>
+                                                <span class="text-body-secondary"> · @PbDisplay.StatusLabel(item.Status)@(item.Status == PbTaskStatus.Done ? null : $" · {PbDisplay.Due(item.DueDate, today)}")</span>
+                                            </li>
+                                        }
+                                    </ul>
+                                }
+                            }
+                        }
+
+                        if (task is null)
+                        {
+                            <h3 class="h6 fw-bold tb-rm-wrap">@(milestone is null ? null : "Project: ")<span class="tb-key me-1">@project.Key</span>@project.Name</h3>
+                            <dl class="tb-rm-facts small">
+                                <dt>Client</dt>
+                                <dd>@ManageProjects.ClientName(State, project.ClientId)</dd>
+                                <dt>Status</dt>
+                                <dd>@PbDisplay.ProjectStatusLabel(project.Status)@(IsFresh(project) ? " · new from a won deal, needs a team" : null)</dd>
+                                <dt>Dates</dt>
+                                <dd>@PbDisplay.Date(project.StartDate) to @PbDisplay.Date(project.DueDate)</dd>
+                                <dt>Team</dt>
+                                <dd>@(project.MemberIds.Count == 0 ? "Nobody yet" : string.Join(", ", project.MemberIds.Select(id => State.FindPerson(id)?.Name).OfType<string>()))</dd>
+                                <dt>Tasks</dt>
+                                <dd>@ManageProjects.ProgressText(progress.Done, progress.Total)</dd>
+                                <dt>Milestones</dt>
+                                <dd>@(project.Milestones.Count == 0 ? "None yet" : ManageProjects.Plural(project.Milestones.Count, "milestone"))</dd>
+                            </dl>
+                        }
+                        <div class="d-flex flex-wrap gap-2">
+                            <a class="btn btn-sm btn-primary" href="@PbDisplay.ProjectUrl(project.Id)">Open board<span class="visually-hidden">: @project.Name</span></a>
+                            <a class="btn btn-sm btn-outline-secondary" href="@ManageProjects.EditUrl(project.Id)">@(IsFresh(project) ? "Plan it" : "Edit project")<span class="visually-hidden">: @project.Name</span></a>
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="small text-body-secondary mb-2">Select a project, milestone, or task in the map to see its details and links here.</p>
+                        <p class="small mb-0">
+                            @ManageProjects.Plural(projects.Count, "project") on the roadmap, with @ManageProjects.Plural(projects.Sum(item => item.Milestones.Count), "milestone").
+                            @(NextMilestone(projects, today) is { } next ? $"Next up: “{next.Milestone.Title}” ({next.Project.Key}), due {PbDisplay.Date(next.Milestone.Due)}." : null)
+                        </p>
+                    }
+                </section>
+            </div>
+        </div>
+
+        <section aria-labelledby="tb-rm-timeline-title">
+            <h2 class="tb-section-title mb-1" id="tb-rm-timeline-title">Timeline</h2>
+            <p class="small text-body-secondary">Each project from its start to its due date, with its milestones in date order. Past milestones say whether all their tasks were done.</p>
+            @if (projects.Count == 0)
+            {
+                <p class="text-body-secondary">Every project is completed. New ones appear here when they're created or a deal is won.</p>
+            }
+            else
+            {
+                <div class="d-grid gap-3">
+                    @foreach (var item in projects.OrderBy(p => p.StartDate).ThenBy(p => p.DueDate))
+                    {
+                        var progress = State.ProjectProgress(item.Id);
+                        <article class="tb-card tb-rm-project" @key="item.Id" aria-labelledby="@($"tb-rm-p-{item.Id}")">
+                            <div class="d-flex flex-wrap justify-content-between align-items-start gap-2 mb-2">
+                                <div class="min-w-0">
+                                    <h3 class="h6 fw-bold mb-1 tb-rm-wrap" id="@($"tb-rm-p-{item.Id}")"><span class="tb-key me-1">@item.Key</span>@item.Name</h3>
+                                    <p class="small text-body-secondary mb-0 tb-rm-wrap">
+                                        @ManageProjects.ClientName(State, item.ClientId) · @ManageProjects.ProgressText(progress.Done, progress.Total)@(IsFresh(item) ? " · new from a won deal, needs a team" : null)
+                                    </p>
+                                </div>
+                                <Badge Color="@ManageProjects.StatusBadge(item.Status)">@PbDisplay.ProjectStatusLabel(item.Status)</Badge>
+                            </div>
+                            <ol class="tb-rm-timeline mb-0">
+                                @foreach (var entry in TimelineOf(item, today))
+                                {
+                                    <li class="@($"tb-rm-entry tb-rm-entry-{entry.Tone}")" @key="entry.Key">
+                                        <span class="tb-rm-date">@PbDisplay.Date(entry.Date)</span>
+                                        <span class="tb-rm-what tb-rm-wrap">
+                                            <span class="fw-semibold">@entry.Title</span>
+                                            <span class="d-block small text-body-secondary">@entry.Note</span>
+                                        </span>
+                                    </li>
+                                }
+                            </ol>
+                            @if (item.Milestones.Count == 0)
+                            {
+                                <p class="small text-body-secondary mt-2 mb-0">No milestones yet. <a href="@ManageProjects.EditUrl(item.Id)">Add milestones<span class="visually-hidden"> to @item.Name</span></a></p>
+                            }
+                        </article>
+                    }
+                </div>
+            }
+        </section>
+    </PbRoleGuard>
+</div>

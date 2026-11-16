@@ -1,0 +1,105 @@
+/* Roadmap: the mind map (a child component, so ::deep), the details panel, and the timeline list. */
+.tb-panel ::deep .tb-rm-map {
+    --bb-mind-map-max-height: 34rem;
+}
+
+.tb-panel ::deep .tb-rm-node-label {
+    max-width: 16rem;
+    font-weight: 600;
+    overflow-wrap: anywhere;
+}
+
+/* The note takes the node's own text color (light on the dark root, dark on the branches), slightly softer. */
+.tb-panel ::deep .tb-rm-node-note {
+    max-width: 16rem;
+    overflow-wrap: anywhere;
+    color: inherit;
+    opacity: .85;
+}
+
+.tb-panel ::deep .tb-rm-node-match {
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 2px;
+}
+
+.tb-rm-wrap {
+    overflow-wrap: anywhere;
+}
+
+.min-w-0 {
+    min-width: 0;
+}
+
+.tb-rm-facts {
+    display: grid;
+    grid-template-columns: max-content minmax(0, 1fr);
+    gap: .25rem .75rem;
+    margin-bottom: 1rem;
+}
+
+    .tb-rm-facts dt {
+        font-weight: 600;
+        color: var(--bs-secondary-color);
+    }
+
+    .tb-rm-facts dd {
+        margin: 0;
+        overflow-wrap: anywhere;
+    }
+
+.tb-rm-project {
+    padding: 1rem 1.25rem;
+}
+
+.tb-rm-timeline {
+    list-style: none;
+    margin: 0;
+    padding: 0 0 0 1rem;
+    border-left: 2px solid var(--tb-border);
+}
+
+.tb-rm-entry {
+    position: relative;
+    display: grid;
+    grid-template-columns: 7.5rem minmax(0, 1fr);
+    gap: .25rem .75rem;
+    padding: .375rem 0;
+}
+
+    .tb-rm-entry::before {
+        content: "";
+        position: absolute;
+        top: .75rem;
+        left: calc(-1rem - 6px);
+        width: 10px;
+        height: 10px;
+        border: 2px solid var(--tb-surface);
+        border-radius: 50%;
+        background: var(--bs-secondary-color);
+    }
+
+.tb-rm-entry-done::before {
+    background: var(--bs-success);
+}
+
+.tb-rm-entry-missed::before {
+    background: var(--bs-danger);
+}
+
+.tb-rm-entry-upcoming::before {
+    background: var(--sc-primary);
+}
+
+.tb-rm-date {
+    font-size: .8125rem;
+    font-weight: 600;
+    color: var(--bs-secondary-color);
+    white-space: nowrap;
+}
+
+@media (max-width: 420px) {
+    .tb-rm-entry {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}

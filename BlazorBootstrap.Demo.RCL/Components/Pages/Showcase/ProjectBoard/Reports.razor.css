@@ -1,0 +1,69 @@
+/* Reports: KPI cards, two charts with their tables, and the project and overdue tables. */
+.tb-rp-kpi {
+    display: flex;
+    flex-direction: column;
+    gap: .25rem;
+    padding: 1rem 1.25rem;
+}
+
+.tb-rp-kpi-label {
+    font-size: .8125rem;
+    font-weight: 600;
+    color: var(--bs-secondary-color);
+}
+
+.tb-rp-kpi-value {
+    font-size: 1.75rem;
+    font-weight: 700;
+    line-height: 1.2;
+    color: var(--tb-ink);
+    font-variant-numeric: tabular-nums;
+}
+
+.tb-rp-details > summary {
+    width: fit-content;
+    font-size: .875rem;
+    font-weight: 600;
+    color: var(--sc-primary);
+    cursor: pointer;
+}
+
+    .tb-rp-details > summary:focus-visible {
+        outline: 2px solid var(--bs-focus-ring-color, var(--sc-primary));
+        outline-offset: 2px;
+        border-radius: .25rem;
+    }
+
+.tb-rp-details .table {
+    font-size: .8125rem;
+}
+
+.tb-rp-caption {
+    caption-side: top;
+    padding-top: 0;
+    font-size: .8125rem;
+    color: var(--bs-secondary-color);
+}
+
+.tb-rp-table {
+    font-size: .875rem;
+}
+
+.tb-rp-name {
+    min-width: 13rem;
+    overflow-wrap: anywhere;
+}
+
+.tb-rp-project {
+    min-width: 10rem;
+    overflow-wrap: anywhere;
+}
+
+.tb-rp-progress {
+    min-width: 9rem;
+}
+
+.tb-rp-next {
+    min-width: 13rem;
+    overflow-wrap: anywhere;
+}

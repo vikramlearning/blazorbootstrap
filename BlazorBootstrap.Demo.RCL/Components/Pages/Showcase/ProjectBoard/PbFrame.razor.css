@@ -1,0 +1,277 @@
+.sc-board {
+    --sc-primary: #4338ca;
+    --sc-primary-rgb: 67, 56, 202;
+    --sc-primary-hover: #3730a3;
+    --sc-primary-contrast: #fff;
+    --sc-font-body: "Manrope", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --sc-font-heading: "Manrope", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --sc-page-bg: #f6f7fb;
+    --tb-font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    --tb-ink: #151a2e;
+    --tb-surface: #fff;
+    --tb-border: #e1e4f0;
+    --tb-soft: #eef0fc;
+    --tb-column: #eef0f6;
+}
+
+[data-bs-theme=dark] .sc-board {
+    --sc-primary: #a5b4fc;
+    --sc-primary-rgb: 165, 180, 252;
+    --sc-primary-hover: #c7d2fe;
+    --sc-primary-contrast: #141a3a;
+    --sc-page-bg: #0d1020;
+    --tb-ink: #eef0fb;
+    --tb-surface: #151a2e;
+    --tb-border: #2a3150;
+    --tb-soft: #1d2442;
+    --tb-column: #11162a;
+}
+
+/* Bootstrap keeps white text on primary fills; on the light dark-mode violet that fails contrast. */
+[data-bs-theme=dark] .sc-board ::deep .text-bg-primary,
+[data-bs-theme=dark] .sc-board ::deep .progress-bar {
+    color: var(--sc-primary-contrast) !important;
+}
+
+/* Header: the Navbar component renders the nav and its links, so they need ::deep. */
+.sc-board ::deep .tb-header {
+    min-height: 3.75rem;
+    background: var(--tb-surface);
+    border-bottom: 1px solid var(--tb-border);
+}
+
+.sc-board ::deep .tb-header .nav-link {
+    color: var(--tb-ink);
+    font-weight: 600;
+    border-radius: .5rem;
+    padding-inline: .75rem !important;
+}
+
+    .sc-board ::deep .tb-header .nav-link:hover {
+        color: var(--sc-primary);
+    }
+
+    .sc-board ::deep .tb-header .nav-link.active {
+        color: var(--sc-primary-hover);
+        background: rgba(var(--sc-primary-rgb), .12);
+    }
+
+[data-bs-theme=dark] .sc-board ::deep .tb-header .nav-link.active {
+    color: var(--sc-primary);
+}
+
+.sc-board ::deep .tb-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: .5rem;
+    font-weight: 700;
+    font-size: 1.25rem;
+    color: var(--tb-ink);
+    text-decoration: none;
+}
+
+.sc-board ::deep .tb-brand-mark {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    border-radius: .625rem;
+    background: var(--sc-primary);
+    color: var(--sc-primary-contrast);
+}
+
+.tb-content {
+    padding-block: 1.5rem 1rem;
+}
+
+.tb-footer {
+    margin-top: 2rem;
+    padding-block: 1.25rem;
+    border-top: 1px solid var(--tb-border);
+    color: var(--bs-secondary-color);
+    font-size: .8125rem;
+}
+
+/* Shared page styles: page markup is child content of the layout, so it needs ::deep. */
+.sc-board ::deep .tb-title {
+    margin: 0;
+    overflow-wrap: anywhere;
+    font-size: clamp(1.375rem, 2.4vw, 1.75rem);
+    font-weight: 700;
+    color: var(--tb-ink);
+}
+
+.sc-board ::deep .tb-lead {
+    color: var(--bs-secondary-color);
+    font-size: 1rem;
+}
+
+.sc-board ::deep .tb-panel {
+    padding: 1.25rem;
+    border: 1px solid var(--tb-border);
+    border-radius: .875rem;
+    background: var(--tb-surface);
+}
+
+.sc-board ::deep .tb-card {
+    border: 1px solid var(--tb-border);
+    border-radius: .875rem;
+    background: var(--tb-surface);
+}
+
+.sc-board ::deep .tb-section-title {
+    margin-bottom: .75rem;
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: var(--tb-ink);
+}
+
+.sc-board ::deep .tb-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: .75rem;
+    background: var(--tb-soft);
+    color: var(--sc-primary);
+}
+
+.sc-board ::deep .tb-mono {
+    font-family: var(--tb-font-mono);
+}
+
+.sc-board ::deep .tb-plain {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+.sc-board ::deep .tb-not-found {
+    max-width: 36rem;
+    margin: 2rem auto;
+    text-align: center;
+}
+
+/* The signed-in app (D-031): a sidebar beside the page on wide screens, above it on narrow ones. */
+.tb-shell {
+    display: flex;
+    flex-direction: column;
+    flex: 1 0 auto;
+    min-width: 0;
+}
+
+.tb-shell-main {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+@media (min-width: 641px) {
+    .tb-shell {
+        flex-direction: row;
+        align-items: flex-start;
+    }
+}
+
+.sc-board ::deep .tb-sidebar {
+    --bb-sidebar-width: 15rem;
+    --bb-sidebar-background-color: #141a3a;
+    --bb-sidebar-top-row-background-color: #141a3a;
+    --bb-sidebar-top-row-border-color: rgba(255, 255, 255, .08);
+    --bb-sidebar-title-text-color: #fff;
+    --bb-sidebar-brand-icon-color: #a5b4fc;
+    --bb-sidebar-title-badge-text-color: #141a3a;
+    --bb-sidebar-title-badge-background-color: #a5b4fc;
+    --bb-sidebar-navbar-toggler-icon-color: #fff;
+    --bb-sidebar-navbar-toggler-background-color: rgba(255, 255, 255, .1);
+    --bb-sidebar-content-border-color: rgba(255, 255, 255, .08);
+    --bb-sidebar-nav-item-text-color: #e0e4fa;
+    --bb-sidebar-nav-item-text-active-color-rgb: 255, 255, 255;
+    --bb-sidebar-nav-item-text-hover-color: rgba(255, 255, 255, .95);
+    --bb-sidebar-nav-item-background-hover-color: rgba(255, 255, 255, .08);
+    --bb-sidebar-nav-item-group-background-color: rgba(255, 255, 255, .06);
+}
+
+/* Beside the page only: above it (narrow screens), a sticky bar would sit under the page content. */
+@media (min-width: 641px) {
+    .sc-board ::deep .tb-sidebar {
+        position: sticky;
+        top: 0;
+    }
+}
+
+.sc-board ::deep .tb-app-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: .75rem;
+    padding: .625rem 1.5rem;
+    border-bottom: 1px solid var(--tb-border);
+    background: var(--tb-surface);
+}
+
+.sc-board ::deep .tb-app-bar-title {
+    font-weight: 700;
+    color: var(--tb-ink);
+}
+
+.sc-board ::deep .tb-app-bar-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: .5rem;
+}
+
+/* A table that scrolls sideways can round to one pixel taller than its box; never show a vertical scrollbar for it.
+   It is also the containing block of its visually hidden text, which is absolutely positioned: otherwise that text
+   escapes the clipping and widens the page at 375 px. */
+.sc-board ::deep .table-responsive {
+    position: relative;
+    overflow-y: hidden;
+}
+
+/* Shared board pieces: avatars of people, task and deal cards, and columns. */
+.sc-board ::deep .tb-person {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    width: 1.75rem;
+    height: 1.75rem;
+    border-radius: 50%;
+    background: var(--tb-soft);
+    color: var(--sc-primary-hover);
+    font-size: .6875rem;
+    font-weight: 700;
+}
+
+[data-bs-theme=dark] .sc-board ::deep .tb-person {
+    color: var(--sc-primary);
+}
+
+.sc-board ::deep .tb-column {
+    min-width: 0;
+    padding: .75rem;
+    border-radius: .875rem;
+    background: var(--tb-column);
+}
+
+.sc-board ::deep .tb-card-item {
+    padding: .75rem;
+    border: 1px solid var(--tb-border);
+    border-radius: .625rem;
+    background: var(--tb-surface);
+    overflow-wrap: anywhere;
+}
+
+.sc-board ::deep .tb-key {
+    font-family: var(--tb-font-mono);
+    font-size: .75rem;
+    color: var(--bs-secondary-color);
+}
+
+.sc-board ::deep .tb-chart {
+    position: relative;
+    min-height: 16rem;
+}

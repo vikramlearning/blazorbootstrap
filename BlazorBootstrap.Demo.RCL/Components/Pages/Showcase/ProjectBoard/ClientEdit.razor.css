@@ -1,0 +1,29 @@
+/* The client form and its Delete panel. */
+.pb-cledit-status {
+    min-height: 1.5rem;
+    overflow-wrap: anywhere;
+}
+
+    .pb-cledit-status:focus {
+        outline: none;
+    }
+
+    .pb-cledit-status:focus-visible {
+        outline: 2px solid var(--bs-focus-ring-color, var(--sc-primary));
+        outline-offset: 2px;
+    }
+
+.pb-cledit-crumb {
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+.pb-cledit-owner {
+    max-width: 24rem;
+}
+
+/* Written in this page's templates, so they carry its scope inside the Modal. */
+.pb-cledit-dialog-title,
+.pb-cledit-blockers {
+    overflow-wrap: anywhere;
+}

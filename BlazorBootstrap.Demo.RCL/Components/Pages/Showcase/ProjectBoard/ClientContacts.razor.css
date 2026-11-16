@@ -1,0 +1,41 @@
+/* The client's contacts: the table scrolls sideways inside its box on narrow screens. */
+.pb-clcon-status {
+    min-height: 1.5rem;
+    overflow-wrap: anywhere;
+}
+
+    .pb-clcon-status:focus,
+    .pb-clcon-form-status:focus {
+        outline: none;
+    }
+
+    .pb-clcon-status:focus-visible,
+    .pb-clcon-form-status:focus-visible {
+        outline: 2px solid var(--bs-focus-ring-color, var(--sc-primary));
+        outline-offset: 2px;
+    }
+
+.pb-clcon-form-status:empty {
+    margin: 0 !important;
+}
+
+.pb-clcon-caption {
+    caption-side: top;
+    padding-top: 0;
+    font-size: .8125rem;
+    color: var(--bs-secondary-color);
+}
+
+.pb-clcon-wrap {
+    min-width: 8rem;
+    overflow-wrap: anywhere;
+}
+
+.pb-clcon-email {
+    min-width: 12rem;
+    overflow-wrap: anywhere;
+}
+
+.pb-clcon-dialog-title {
+    overflow-wrap: anywhere;
+}

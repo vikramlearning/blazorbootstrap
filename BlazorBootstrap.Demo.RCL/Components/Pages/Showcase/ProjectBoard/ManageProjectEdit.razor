@@ -1,0 +1,288 @@
+@page "/showcase/project-board/manage/projects/new"
+@page "/showcase/project-board/manage/projects/{Id:int}/edit"
+@layout PbWorkLayout
+
+@{
+    var project = Project;
+}
+
+@if (Id is null || project is not null || !State.IsProjectManager)
+{
+    <PageTitle>@(project is not null ? $"Edit {project.Key}" : Id is null ? "New project" : "Project not found") · @PbSeedData.ProductName</PageTitle>
+}
+
+<div class="container-fluid px-lg-4">
+    <PbRoleGuard Role="@PbSeedData.ProjectManagerRole">
+        @if (Id is not null && project is null)
+        {
+            <PbNotFound Message="This project was deleted, or the link is wrong. Open it from Manage projects." />
+        }
+        else
+        {
+            var deal = project is null ? null : State.FindDeal(project.FromDealId);
+            var warnings = TeamWarnings(project);
+
+            <p class="small mb-2">
+                <a href="@ManageProjects.ListUrl"><Icon Name="IconName.ArrowLeft" class="me-1" aria-hidden="true" />Manage projects</a>
+            </p>
+
+            <div class="mb-3">
+                <h1 class="tb-title">@(project is null ? "New project" : $"Edit {project.Key} · {project.Name}")</h1>
+                <p class="tb-lead mb-0">
+                    @(project is null
+                        ? "Set the client, dates, and team. You can add milestones once it's created."
+                        : "Changes show on the board, the roadmap, and the reports when you save.")
+                </p>
+                @if (project is not null && project.FromDealId is not null)
+                {
+                    <p class="tb-pe-deal small mt-2 mb-0">
+                        <Icon Name="IconName.Trophy" class="me-1" aria-hidden="true" />
+                        @(deal is null
+                            ? "Created from a won deal."
+                            : $"Created from the won deal “{deal.Title}” ({ManageProjects.ClientName(State, deal.ClientId)}), worth {PbDisplay.Money(deal.Value)}.")
+                    </p>
+                }
+            </div>
+
+            @* Always rendered and focusable, so a save is announced and focus has somewhere to go when it fails. *@
+            <p class="fw-semibold tb-pe-status @(statusIsError ? "text-danger-emphasis" : null)" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
+
+            <div class="row g-4">
+                <div class="col-xl-7">
+                    <section class="tb-panel" aria-labelledby="tb-pe-form-title">
+                        <h2 class="tb-section-title" id="tb-pe-form-title">Project details</h2>
+                        <form @onsubmit="Save" novalidate aria-labelledby="tb-pe-form-title">
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold" for="tb-pe-name">Name</label>
+                                <input id="tb-pe-name" class="form-control @(nameError is null ? null : "is-invalid")" @bind="name" @bind:event="oninput" @ref="nameInput"
+                                       autocomplete="off" aria-required="true" aria-invalid="@(nameError is null ? null : "true")" aria-describedby="tb-pe-name-help tb-pe-name-error" />
+                                <div class="form-text" id="tb-pe-name-help">@Counter(name, PbState.MaxProjectNameLength)</div>
+                                <div class="invalid-feedback d-block" id="tb-pe-name-error">@nameError</div>
+                            </div>
+
+                            <div class="row g-3 mb-3">
+                                <div class="col-sm-5">
+                                    <label class="form-label fw-semibold" for="tb-pe-key">Key</label>
+                                    <input id="tb-pe-key" class="form-control tb-mono @(keyError is null ? null : "is-invalid")" @bind:get="key" @bind:set="SetKey" @bind:event="oninput"
+                                           @ref="keyInput" maxlength="5" autocomplete="off" autocapitalize="characters" spellcheck="false"
+                                           aria-required="true" aria-invalid="@(keyError is null ? null : "true")" aria-describedby="tb-pe-key-help tb-pe-key-error" />
+                                    <div class="form-text" id="tb-pe-key-help">
+                                        2 to 5 capital letters, used in task keys like @(KeyPreview)-12.@(project is not null && key != project.Key ? $" Saving renames every task key, like {project.Key}-1 to {KeyPreview}-1." : null)
+                                    </div>
+                                    <div class="invalid-feedback d-block" id="tb-pe-key-error">@keyError</div>
+                                </div>
+                                <div class="col-sm-7">
+                                    <label class="form-label fw-semibold" for="tb-pe-client">Client</label>
+                                    <select id="tb-pe-client" class="form-select" @bind="clientValue">
+                                        <option value="">Internal (no client)</option>
+                                        @foreach (var client in State.Clients)
+                                        {
+                                            <option value="@client.Id.ToString(CultureInfo.InvariantCulture)" @key="client.Id">@client.Name</option>
+                                        }
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold" for="tb-pe-description">Description</label>
+                                <textarea id="tb-pe-description" class="form-control @(descriptionError is null ? null : "is-invalid")" rows="4" @bind="description" @bind:event="oninput"
+                                          @ref="descriptionInput" aria-invalid="@(descriptionError is null ? null : "true")" aria-describedby="tb-pe-description-help tb-pe-description-error"></textarea>
+                                <div class="form-text d-flex flex-wrap justify-content-between gap-2" id="tb-pe-description-help">
+                                    <span>Optional: the scope, in plain text. The team sees it on the board.</span>
+                                    <span class="text-nowrap @(description.Trim().Length > PbState.MaxDescriptionLength ? "text-danger-emphasis" : null)">@Counter(description, PbState.MaxDescriptionLength)</span>
+                                </div>
+                                <div class="invalid-feedback d-block" id="tb-pe-description-error">@descriptionError</div>
+                            </div>
+
+                            <div class="row g-3 mb-3">
+                                <div class="col-md-4">
+                                    <label class="form-label fw-semibold" for="tb-pe-status">Status</label>
+                                    <select id="tb-pe-status" class="form-select" @bind="status" aria-describedby="tb-pe-status-help">
+                                        @foreach (var option in Enum.GetValues<PbProjectStatus>())
+                                        {
+                                            <option value="@option" @key="option">@PbDisplay.ProjectStatusLabel(option)</option>
+                                        }
+                                    </select>
+                                </div>
+                                <div class="col-sm-6 col-md-4">
+                                    <label class="form-label fw-semibold" for="tb-pe-start">Start date</label>
+                                    <input id="tb-pe-start" type="date" class="form-control @(startError is null ? null : "is-invalid")" value="@startText" @onchange="args => startText = args.Value as string ?? string.Empty" @ref="startInput"
+                                           min="@DateValue(MinDate)" max="@DateValue(MaxDate)" aria-required="true" aria-invalid="@(startError is null ? null : "true")" aria-describedby="tb-pe-start-error" />
+                                    <div class="invalid-feedback d-block" id="tb-pe-start-error">@startError</div>
+                                </div>
+                                <div class="col-sm-6 col-md-4">
+                                    <label class="form-label fw-semibold" for="tb-pe-due">Due date</label>
+                                    <input id="tb-pe-due" type="date" class="form-control @(dueError is null ? null : "is-invalid")" value="@dueText" @onchange="args => dueText = args.Value as string ?? string.Empty" @ref="dueInput"
+                                           min="@(TryDate(startText) is { } start ? DateValue(start) : DateValue(MinDate))" max="@DateValue(MaxDate)"
+                                           aria-required="true" aria-invalid="@(dueError is null ? null : "true")" aria-describedby="tb-pe-due-help tb-pe-due-error" />
+                                    <div class="form-text" id="tb-pe-due-help">On or after the start date.</div>
+                                    <div class="invalid-feedback d-block" id="tb-pe-due-error">@dueError</div>
+                                </div>
+                                <div class="col-12 form-text mt-1" id="tb-pe-status-help">@StatusHelp(status)</div>
+                            </div>
+
+                            <fieldset class="mb-3">
+                                <legend class="form-label fw-semibold fs-6 mb-1">Team</legend>
+                                <p class="form-text mt-0 mb-2">The people who can be assigned this project's tasks. @(memberIds.Count == 0 ? "Nobody is on it yet." : $"{ManageProjects.Plural(memberIds.Count, "person", "people")} selected.")</p>
+                                <div class="tb-pe-team">
+                                    @foreach (var person in State.People)
+                                    {
+                                        var warning = warnings.GetValueOrDefault(person.Id);
+                                        var inputId = $"tb-pe-member-{person.Id}";
+                                        <div class="form-check tb-pe-member" @key="person.Id">
+                                            <input class="form-check-input" type="checkbox" id="@inputId" checked="@memberIds.Contains(person.Id)"
+                                                   @onchange="args => ToggleMember(person.Id, args.Value is true)"
+                                                   aria-describedby="@($"{inputId}-title{(warning is null ? null : $" {inputId}-warn")}")" />
+                                            <label class="form-check-label" for="@inputId">
+                                                <span class="fw-semibold">@person.Name</span>
+                                                <span class="d-block small text-body-secondary" id="@($"{inputId}-title")">@person.Title</span>
+                                            </label>
+                                            @if (warning is not null)
+                                            {
+                                                <span class="d-block small text-warning-emphasis" id="@($"{inputId}-warn")"><Icon Name="IconName.ExclamationTriangle" class="me-1" aria-hidden="true" />@warning</span>
+                                            }
+                                        </div>
+                                    }
+                                </div>
+                                @* Announces the consequence of unticking someone as it appears. *@
+                                <div class="visually-hidden" role="status">@string.Join(" ", warnings.Values)</div>
+                            </fieldset>
+
+                            <div class="d-flex flex-wrap align-items-center gap-2">
+                                <Button Type="ButtonType.Submit" Color="ButtonColor.Primary">
+                                    <Icon Name="@(project is null ? IconName.PlusLg : IconName.CheckLg)" class="me-1" aria-hidden="true" />@(project is null ? "Create project" : "Save changes")
+                                </Button>
+                                @if (project is not null)
+                                {
+                                    <a class="btn btn-outline-secondary" href="@PbDisplay.ProjectUrl(project.Id)">Open board</a>
+                                }
+                                <a class="btn btn-link" href="@ManageProjects.ListUrl">@(project is null ? "Cancel" : "Back to projects")</a>
+                            </div>
+                        </form>
+                    </section>
+                </div>
+
+                <div class="col-xl-5">
+                    @if (project is null)
+                    {
+                        <section class="tb-panel" aria-labelledby="tb-pe-ms-title">
+                            <h2 class="tb-section-title" id="tb-pe-ms-title">Milestones</h2>
+                            <p class="small text-body-secondary mb-0">Create the project first; then add its milestones here. They show on the roadmap, and tasks can count toward them.</p>
+                        </section>
+                    }
+                    else
+                    {
+                        var editing = msEditId == 0 ? null : project.Milestones.FirstOrDefault(item => item.Id == msEditId);
+
+                        <section class="tb-panel" aria-labelledby="tb-pe-ms-title">
+                            <h2 class="tb-section-title mb-1" id="tb-pe-ms-title">Milestones (@project.Milestones.Count)</h2>
+                            <p class="small text-body-secondary">Dated goals, shown on the roadmap. A task counts toward one when it's set in the task's editor.</p>
+
+                            <p class="small fw-semibold tb-pe-status @(msStatusIsError ? "text-danger-emphasis" : null)" role="status" tabindex="-1" @ref="msStatusRegion">@msStatusMessage</p>
+
+                            @if (project.Milestones.Count == 0)
+                            {
+                                <p class="text-body-secondary">No milestones yet.</p>
+                            }
+                            else
+                            {
+                                <ul class="list-unstyled d-grid gap-2 mb-3">
+                                    @foreach (var milestone in project.Milestones)
+                                    {
+                                        var progress = State.MilestoneProgress(project.Id, milestone.Id);
+                                        var milestoneId = milestone.Id;
+                                        <li class="tb-pe-ms @(milestone.Id == msEditId ? "tb-pe-ms-editing" : null)" @key="milestone.Id">
+                                            <div class="min-w-0 flex-grow-1">
+                                                <span class="fw-semibold tb-pe-wrap">@milestone.Title</span>
+                                                <span class="d-block small text-body-secondary">
+                                                    Due @PbDisplay.Date(milestone.Due) · @ManageProjects.ProgressText(progress.Done, progress.Total)@(milestone.Id == msEditId ? " · editing" : null)
+                                                </span>
+                                                <Progress Height="4" Class="mt-1">
+                                                    <ProgressBar Width="@ManageProjects.Percent(progress.Done, progress.Total)" Color="ProgressColor.Success"
+                                                                 aria-label="@($"{milestone.Title}, tasks done")" aria-valuenow="@Math.Round(ManageProjects.Percent(progress.Done, progress.Total))" aria-valuemin="0" aria-valuemax="100"
+                                                                 aria-valuetext="@ManageProjects.ProgressText(progress.Done, progress.Total)" />
+                                                </Progress>
+                                            </div>
+                                            <div class="d-flex gap-1 flex-shrink-0">
+                                                <button type="button" class="btn btn-sm btn-outline-secondary" @ref="msEditButtons[milestoneId]" @onclick="() => StartEditMilestone(milestoneId)">
+                                                    Edit<span class="visually-hidden"> @milestone.Title</span>
+                                                </button>
+                                                <button type="button" class="btn btn-sm btn-outline-danger" @ref="msDeleteButtons[milestoneId]" @onclick="() => OpenDeleteMilestoneAsync(milestoneId)">
+                                                    Delete<span class="visually-hidden"> @milestone.Title</span>
+                                                </button>
+                                            </div>
+                                        </li>
+                                    }
+                                </ul>
+                            }
+
+                            <form class="tb-pe-ms-form" @onsubmit="SaveMilestone" novalidate aria-labelledby="tb-pe-ms-form-title">
+                                <h3 class="h6 fw-bold tb-pe-wrap" id="tb-pe-ms-form-title">@(editing is null ? "Add a milestone" : $"Edit “{editing.Title}”")</h3>
+                                @if (editing is null && project.Milestones.Count >= PbState.MaxMilestones)
+                                {
+                                    <p class="small text-body-secondary mb-0">This project has @PbState.MaxMilestones milestones, the most it can. Delete one to add another.</p>
+                                }
+                                else
+                                {
+                                    <div class="row g-2 mb-2">
+                                        <div class="col-sm-7">
+                                            <label class="form-label small fw-semibold" for="tb-pe-ms-name">Title</label>
+                                            <input id="tb-pe-ms-name" class="form-control @(msTitleError is null ? null : "is-invalid")" @bind="msTitle" @bind:event="oninput" @ref="msTitleInput"
+                                                   maxlength="@PbState.MaxMilestoneTitleLength" autocomplete="off" aria-required="true" aria-invalid="@(msTitleError is null ? null : "true")"
+                                                   aria-describedby="tb-pe-ms-name-help tb-pe-ms-name-error" />
+                                            <div class="form-text" id="tb-pe-ms-name-help">Unique in this project, up to @PbState.MaxMilestoneTitleLength characters.</div>
+                                            <div class="invalid-feedback d-block" id="tb-pe-ms-name-error">@msTitleError</div>
+                                        </div>
+                                        <div class="col-sm-5">
+                                            <label class="form-label small fw-semibold" for="tb-pe-ms-due">Due date</label>
+                                            <input id="tb-pe-ms-due" type="date" class="form-control @(msDueError is null ? null : "is-invalid")" value="@msDueText" @onchange="args => msDueText = args.Value as string ?? string.Empty" @ref="msDueInput"
+                                                   min="@DateValue(MinDate)" max="@DateValue(MaxDate)" aria-required="true" aria-invalid="@(msDueError is null ? null : "true")" aria-describedby="tb-pe-ms-due-error" />
+                                            <div class="invalid-feedback d-block" id="tb-pe-ms-due-error">@msDueError</div>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex flex-wrap gap-2">
+                                        <Button Type="ButtonType.Submit" Color="ButtonColor.Primary" Outline="@(editing is null)" Size="ButtonSize.Small">
+                                            <Icon Name="@(editing is null ? IconName.PlusLg : IconName.CheckLg)" class="me-1" aria-hidden="true" />@(editing is null ? "Add milestone" : "Save milestone")
+                                        </Button>
+                                        @if (editing is not null)
+                                        {
+                                            <Button Color="ButtonColor.Secondary" Outline="true" Size="ButtonSize.Small" @onclick="CancelEditMilestone">Cancel</Button>
+                                        }
+                                    </div>
+                                }
+                            </form>
+                        </section>
+
+                        <Modal @ref="msDialogModal" IsVerticallyCentered="true" ShowCloseButton="false" aria-labelledby="tb-pe-ms-dialog-title" OnHidden="OnMilestoneDialogHidden">
+                            <HeaderTemplate>
+                                <h2 class="modal-title h5 tb-pe-wrap" id="tb-pe-ms-dialog-title">@(DialogMilestone is { } target ? $"Delete the milestone “{target.Title}”?" : "Delete this milestone?")</h2>
+                            </HeaderTemplate>
+                            <BodyTemplate>
+                                @if (DialogMilestone is { } target)
+                                {
+                                    var count = State.MilestoneProgress(project.Id, target.Id).Total;
+                                    <p class="mb-0">
+                                        @(count == 0
+                                            ? "No tasks count toward it. It leaves the roadmap."
+                                            : $"Its {ManageProjects.Plural(count, "task")} stay on the board but no longer count toward a milestone. It leaves the roadmap.")
+                                    </p>
+                                }
+                                else
+                                {
+                                    <p class="mb-0">This milestone was already deleted.</p>
+                                }
+                            </BodyTemplate>
+                            <FooterTemplate>
+                                <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => msDialogModal.HideAsync()">Cancel</Button>
+                                @if (DialogMilestone is not null)
+                                {
+                                    <Button Color="ButtonColor.Danger" @onclick="ConfirmDeleteMilestoneAsync"><Icon Name="IconName.Trash3" class="me-1" aria-hidden="true" />Delete milestone</Button>
+                                }
+                            </FooterTemplate>
+                        </Modal>
+                    }
+                </div>
+            </div>
+        }
+    </PbRoleGuard>
+</div>

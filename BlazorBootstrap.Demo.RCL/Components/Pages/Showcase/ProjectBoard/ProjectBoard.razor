@@ -1,0 +1,347 @@
+@page "/showcase/project-board/projects/{Id:int}"
+@layout PbWorkLayout
+
+@* A project's board: four columns of task cards with drag and drop (and "Move to" and Move up/down on every card), or the
+   same tasks as a sortable table. Filters by assignee, priority, and text; new tasks in a dialog. *@
+@if (State.FindProject(Id) is not { } project)
+{
+    <PbNotFound Message="This project was deleted, or the link is wrong." />
+}
+else
+{
+    var today = State.Clock.Today;
+    var client = State.FindClient(project.ClientId);
+    var progress = State.ProjectProgress(project.Id);
+    var nextMilestone = project.Milestones.Where(milestone => milestone.Due.Date >= today).OrderBy(milestone => milestone.Due).FirstOrDefault();
+    var team = State.People.Where(person => project.MemberIds.Contains(person.Id)).ToList();
+    var readOnly = project.Status == PbProjectStatus.Completed;
+    var filtersOn = FiltersOn;
+    var dragOn = !readOnly && !filtersOn;
+    var shown = columns.Values.Sum(list => list.Count);
+
+    <PageTitle>@project.Name · @PbSeedData.ProductName</PageTitle>
+
+    <div class="container-fluid px-lg-4">
+        <nav aria-label="Breadcrumb">
+            <ol class="breadcrumb small mb-2">
+                <li class="breadcrumb-item"><a href="@($"{PbLayout.Base}/projects")">Project boards</a></li>
+                <li class="breadcrumb-item active tb-board-crumb" aria-current="page">@project.Name</li>
+            </ol>
+        </nav>
+
+        <div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-3">
+            <div class="tb-board-heading">
+                <p class="tb-key mb-1">@project.Key</p>
+                <h1 class="tb-title mb-1">@project.Name</h1>
+                <p class="mb-0 text-body-secondary">
+                    @(client?.Name ?? "Internal project")
+                    <span class="@($"badge text-bg-{PbDisplay.ProjectStatusColor(project.Status)} ms-1")">@PbDisplay.ProjectStatusLabel(project.Status)</span>
+                </p>
+            </div>
+            @if (!readOnly)
+            {
+                <button type="button" class="btn btn-primary" @ref="newTaskButton" @onclick="() => OpenCreateAsync(PbTaskStatus.Todo, newTaskButton)">
+                    <Icon Name="IconName.PlusLg" class="me-1" aria-hidden="true" />New task
+                </button>
+            }
+        </div>
+
+        <section class="tb-panel mb-3" aria-label="About this project">
+            <dl class="tb-board-facts mb-0">
+                <div>
+                    <dt>Dates</dt>
+                    <dd>@PbDisplay.Date(project.StartDate) to @PbDisplay.Date(project.DueDate)</dd>
+                </div>
+                <div>
+                    <dt>Next milestone</dt>
+                    <dd>
+                        @if (nextMilestone is not null)
+                        {
+                            var milestoneProgress = State.MilestoneProgress(project.Id, nextMilestone.Id);
+                            <span class="tb-board-wrap">@nextMilestone.Title</span>
+                            <span class="d-block small text-body-secondary">@PbDisplay.Date(nextMilestone.Due), @milestoneProgress.Done of @TaskCard.Plural(milestoneProgress.Total, "task") done</span>
+                        }
+                        else
+                        {
+                            <span>None coming up</span>
+                        }
+                    </dd>
+                </div>
+                <div>
+                    <dt>Progress</dt>
+                    <dd>
+                        @{
+                            var percent = progress.Total == 0 ? 0 : progress.Done * 100.0 / progress.Total;
+                            var progressText = $"{progress.Done} of {TaskCard.Plural(progress.Total, "task")} done";
+                        }
+                        <Progress Height="8" Class="mb-1 tb-board-progress">
+                            <ProgressBar Width="percent" aria-label="Project progress" aria-valuenow="@Math.Round(percent).ToString(CultureInfo.InvariantCulture)"
+                                         aria-valuemin="0" aria-valuemax="100" aria-valuetext="@progressText" />
+                        </Progress>
+                        <span class="small">@progressText</span>
+                    </dd>
+                </div>
+                <div>
+                    <dt>Team</dt>
+                    <dd>
+                        @if (team.Count == 0)
+                        {
+                            <span>Nobody yet</span>
+                        }
+                        else
+                        {
+                            <ul class="tb-board-team list-unstyled mb-0">
+                                @foreach (var person in team)
+                                {
+                                    <li @key="@($"team-{person.Id}")"><span class="tb-person" title="@person.Name" aria-hidden="true">@person.Initials</span><span class="visually-hidden">@person.Name</span></li>
+                                }
+                            </ul>
+                        }
+                    </dd>
+                </div>
+            </dl>
+        </section>
+
+        @if (readOnly)
+        {
+            <p class="tb-board-notice">
+                <Icon Name="IconName.Lock" class="me-2" aria-hidden="true" />
+                This project is completed, so its board is read-only: tasks can't be added or moved. Open a task to read it or comment on it.
+            </p>
+        }
+
+        @* Always rendered and focusable, so every move and save is announced and focus has somewhere to go. *@
+        <p class="fw-semibold tb-board-status @(statusIsError ? "text-danger-emphasis" : null)" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
+
+        <div class="tb-board-toolbar mb-3">
+            <div class="btn-group" role="group" aria-label="View">
+                <button type="button" class="btn btn-sm @(IsList ? "btn-outline-secondary" : "btn-primary")" aria-pressed="@(IsList ? "false" : "true")" @onclick="() => SetView(false)">
+                    <Icon Name="IconName.Kanban" class="me-1" aria-hidden="true" />Board
+                </button>
+                <button type="button" class="btn btn-sm @(IsList ? "btn-primary" : "btn-outline-secondary")" aria-pressed="@(IsList ? "true" : "false")" @onclick="() => SetView(true)">
+                    <Icon Name="IconName.ListUl" class="me-1" aria-hidden="true" />List
+                </button>
+            </div>
+
+            <div class="tb-board-filters" role="search" aria-label="Filter tasks">
+                <div>
+                    <label class="form-label small fw-semibold mb-1" for="tb-board-assignee">Assignee</label>
+                    <select id="tb-board-assignee" class="form-select form-select-sm" @bind="filterAssignee" @bind:after="OnFiltersChanged">
+                        <option value="">Anyone</option>
+                        <option value="@MeFilter">Me</option>
+                        <option value="@UnassignedFilter">Unassigned</option>
+                        @foreach (var person in AssigneeOptions(project))
+                        {
+                            <option value="@person.Id" @key="@($"assignee-{person.Id}")">@person.Name</option>
+                        }
+                    </select>
+                </div>
+                <div>
+                    <label class="form-label small fw-semibold mb-1" for="tb-board-priority">Priority</label>
+                    <select id="tb-board-priority" class="form-select form-select-sm" @bind="filterPriority" @bind:after="OnFiltersChanged">
+                        <option value="">Any</option>
+                        @foreach (var option in Enum.GetValues<PbTaskPriority>().Reverse())
+                        {
+                            <option value="@option" @key="@($"priority-{option}")">@option</option>
+                        }
+                    </select>
+                </div>
+                <div class="tb-board-search">
+                    <label class="form-label small fw-semibold mb-1" for="tb-board-search">Search</label>
+                    <input id="tb-board-search" type="search" class="form-control form-control-sm" placeholder="Key or title" @bind="search" @bind:event="oninput"
+                           @bind:after="OnFiltersChanged" maxlength="@PbState.MaxTaskTitleLength" autocomplete="off" />
+                </div>
+                <div class="tb-board-filter-buttons">
+                    <button type="button" class="btn btn-sm @(filterAssignee == MeFilter ? "btn-primary" : "btn-outline-secondary")" aria-pressed="@(filterAssignee == MeFilter ? "true" : "false")"
+                            @onclick="ToggleMine">
+                        <Icon Name="IconName.PersonCheck" class="me-1" aria-hidden="true" />Only my tasks
+                    </button>
+                    @if (filtersOn)
+                    {
+                        <button type="button" class="btn btn-sm btn-link" @onclick="ClearFilters">Clear filters</button>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <p class="small text-body-secondary mb-2">
+            @if (filtersOn)
+            {
+                <span>Showing @shown of @TaskCard.Plural(progress.Total, "task").</span>
+            }
+            else
+            {
+                <span>@TaskCard.Plural(progress.Total, "task").</span>
+            }
+            @if (!IsList)
+            {
+                if (readOnly)
+                {
+                    <span> Dragging is off on a completed project.</span>
+                }
+                else if (filtersOn)
+                {
+                    <span> Filters are on, so dragging and Move up/down are off: reordering part of a column is ambiguous. “Move to” on a card still works; clear the filters to drag.</span>
+                }
+                else
+                {
+                    <span> Drag a card to another column or place it in order, or use “Move to” and the up and down buttons on the card.</span>
+                }
+            }
+        </p>
+
+        @if (!IsList)
+        {
+            <div class="tb-board-scroll" role="region" aria-label="Board columns, scrolls sideways on small screens" tabindex="0">
+                <div class="tb-board">
+                    @foreach (var status in Statuses)
+                    {
+                        var list = columns.TryGetValue(status, out var found) ? found : new List<PbTask>();
+                        var label = PbDisplay.StatusLabel(status);
+                        var hours = list.Sum(task => task.EstimateHours);
+                        var headingId = $"tb-board-col-{status}";
+                        <section class="tb-column tb-board-column" aria-labelledby="@headingId" @key="@($"column-{status}")">
+                            <div class="tb-board-column-head">
+                                <h2 class="tb-board-column-title" id="@headingId">@label</h2>
+                                <span class="small text-body-secondary">@TaskCard.Plural(list.Count, "task") · @TaskCard.HoursText(hours)</span>
+                            </div>
+                            <div class="tb-board-list">
+                                <SortableList TItem="PbTask" @key="@($"list-{status}-{boardVersion}")" Group="@($"tb-board-{project.Id}")" Name="@status.ToString()"
+                                              Data="list" Context="task" AllowSorting="dragOn"
+                                              Pull="@(dragOn ? SortableListPullMode.True : SortableListPullMode.False)"
+                                              Put="@(dragOn ? SortableListPutMode.True : SortableListPutMode.False)"
+                                              Handle="@(dragOn ? ".tb-taskcard-grab" : ".tb-board-drag-off")"
+                                              OnUpdate="args => OnColumnUpdate(status, args)" OnRemove="OnColumnRemove">
+                                    <ItemTemplate>
+                                        <TaskCard @ref="cards[task.Id]" Item="task" Index="list.IndexOf(task)" Count="list.Count" CanMove="!readOnly" CanReorder="dragOn" CanDrag="dragOn"
+                                                  OnMoveTo="OnCardMoveTo" OnReorder="OnCardReorder" />
+                                    </ItemTemplate>
+                                    <EmptyDataTemplate>
+                                        <span class="tb-board-empty">@(filtersOn ? "No matching tasks" : dragOn ? "No tasks. Drop one here." : "No tasks")</span>
+                                    </EmptyDataTemplate>
+                                </SortableList>
+                            </div>
+                            @if (!readOnly)
+                            {
+                                <button type="button" class="btn btn-sm btn-outline-primary w-100 mt-2" @ref="addButtons[status]" @onclick="() => OpenCreateAsync(status, addButtons[status])">
+                                    <Icon Name="IconName.PlusLg" class="me-1" aria-hidden="true" />Add task<span class="visually-hidden"> to @label</span>
+                                </button>
+                            }
+                        </section>
+                    }
+                </div>
+            </div>
+        }
+        else
+        {
+            var rows = ListRows();
+            var canReorder = !readOnly && !filtersOn && sort == ListSort.Board;
+
+            if (sort != ListSort.Board)
+            {
+                <p class="small mb-2">
+                    <button type="button" class="btn btn-sm btn-outline-secondary" @onclick="() => SortBy(ListSort.Board)">
+                        <Icon Name="IconName.Kanban" class="me-1" aria-hidden="true" />Back to board order
+                    </button>
+                </p>
+            }
+
+            if (!readOnly && !canReorder)
+            {
+                <p class="small text-body-secondary mb-2">To change the order within a column, sort by board order and clear the filters.</p>
+            }
+
+            if (rows.Count == 0)
+            {
+                <p class="tb-panel text-body-secondary">@(filtersOn ? "No tasks match the filters." : "This project has no tasks yet.")</p>
+            }
+            else
+            {
+                <div class="table-responsive tb-board-table-box">
+                    <table class="table align-middle mb-0 tb-board-table">
+                        <caption class="tb-board-caption">
+                            Tasks of @project.Key@(filtersOn ? ", filtered" : null): @TaskCard.Plural(rows.Count, "task"), @SortText. Choose a column heading to sort by it.
+                        </caption>
+                        <thead>
+                            <tr>
+                                @foreach (var column in SortColumns)
+                                {
+                                    <th scope="col" aria-sort="@AriaSort(column.Sort)" class="@(column.Sort is ListSort.Estimate ? "text-end" : null)" @key="@($"head-{column.Sort}")">
+                                        <button type="button" class="tb-board-sort" @onclick="() => SortBy(column.Sort)">
+                                            @column.Text
+                                            <Icon Name="@SortIcon(column.Sort)" class="ms-1" aria-hidden="true" />
+                                        </button>
+                                    </th>
+                                }
+                                <th scope="col">Checklist</th>
+                                @if (canReorder)
+                                {
+                                    <th scope="col">Order</th>
+                                }
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var task in rows)
+                            {
+                                var key = State.TaskKey(task);
+                                var assignee = State.FindPerson(task.AssigneeId);
+                                var overdue = PbDisplay.IsOverdue(task, today);
+                                var checkedCount = task.Checklist.Count(item => item.Done);
+                                var column = State.TasksIn(project.Id, task.Status);
+                                var index = column.ToList().IndexOf(task);
+                                var selectId = $"tb-board-row-{task.Id}-status";
+                                <tr @key="@($"row-{task.Id}")">
+                                    <td class="tb-key text-nowrap">@key</td>
+                                    <th scope="row" class="tb-board-row-title"><a href="@PbDisplay.TaskUrl(task.Id)">@task.Title</a></th>
+                                    <td>
+                                        @if (readOnly)
+                                        {
+                                            @PbDisplay.StatusLabel(task.Status)
+                                        }
+                                        else
+                                        {
+                                            <label class="visually-hidden" for="@selectId">Status of @key</label>
+                                            <select id="@selectId" class="form-select form-select-sm tb-board-row-select" value="@task.Status" @key="@($"status-{task.Id}-{boardVersion}")"
+                                                    @ref="rowSelects[task.Id]" @onchange="args => OnRowStatusChanged(task, args)">
+                                                @foreach (var option in Statuses)
+                                                {
+                                                    <option value="@option" @key="option">@PbDisplay.StatusLabel(option)</option>
+                                                }
+                                            </select>
+                                        }
+                                    </td>
+                                    <td class="text-nowrap">@(assignee?.Name ?? "Unassigned")</td>
+                                    <td><span class="@($"badge text-bg-{PbDisplay.PriorityColor(task.Priority)}")">@task.Priority</span></td>
+                                    <td class="text-nowrap @(overdue ? "tb-board-overdue" : null)">
+                                        @if (overdue)
+                                        {
+                                            <Icon Name="IconName.ExclamationTriangleFill" class="me-1" aria-hidden="true" />
+                                        }
+                                        @(task.Status == PbTaskStatus.Done && task.CompletedAt is { } completed ? $"Done {completed.ToString("MMM d", CultureInfo.InvariantCulture)}" : PbDisplay.Due(task.DueDate, today))
+                                    </td>
+                                    <td class="text-end text-nowrap">@(task.EstimateHours == 0 ? "None" : $"{task.EstimateHours} h")</td>
+                                    <td class="text-nowrap">@(task.Checklist.Count == 0 ? "None" : $"{checkedCount} of {task.Checklist.Count}")</td>
+                                    @if (canReorder)
+                                    {
+                                        <td class="text-nowrap">
+                                            <button type="button" class="btn btn-sm btn-outline-secondary" disabled="@(index <= 0)" aria-label="@($"Move {key} up in {PbDisplay.StatusLabel(task.Status)}")"
+                                                    title="Move up" @ref="rowUps[task.Id]" @onclick="() => ReorderAsync(task, -1, TaskCardControl.Up)">
+                                                <Icon Name="IconName.ArrowUp" aria-hidden="true" />
+                                            </button>
+                                            <button type="button" class="btn btn-sm btn-outline-secondary" disabled="@(index >= column.Count - 1)" aria-label="@($"Move {key} down in {PbDisplay.StatusLabel(task.Status)}")"
+                                                    title="Move down" @ref="rowDowns[task.Id]" @onclick="() => ReorderAsync(task, 1, TaskCardControl.Down)">
+                                                <Icon Name="IconName.ArrowDown" aria-hidden="true" />
+                                            </button>
+                                        </td>
+                                    }
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        }
+    </div>
+
+    <TaskEditor @ref="editor" OnClosed="OnEditorClosed" />
+}

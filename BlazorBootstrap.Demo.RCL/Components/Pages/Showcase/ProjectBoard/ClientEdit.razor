@@ -1,0 +1,164 @@
+@page "/showcase/project-board/clients/new"
+@page "/showcase/project-board/clients/{Id:int}/edit"
+@layout PbWorkLayout
+
+@{
+    var client = Client;
+}
+
+<PageTitle>@(Id is null ? "New client" : client is null ? "Client not found" : $"Edit {client.Name}") · @PbSeedData.ProductName</PageTitle>
+
+<div class="container-fluid px-lg-4">
+    <PbRoleGuard Role="@PbSeedData.AccountManagerRole">
+        @if (leaving)
+        {
+            @* The client was just deleted and the list is loading: no not-found flash in between. *@
+            <p class="visually-hidden" role="status">The client is deleted. Going back to the client list.</p>
+        }
+        else if (Id is not null && client is null)
+        {
+            <PbNotFound Message="This client was deleted, or the link is wrong. Open it from the client list." />
+        }
+        else
+        {
+            var owners = State.AccountManagers;
+
+            <nav aria-label="Breadcrumb" class="mb-2">
+                <ol class="breadcrumb mb-0 small">
+                    <li class="breadcrumb-item"><a href="@DealDisplay.ClientsUrl">Clients</a></li>
+                    @if (client is not null)
+                    {
+                        <li class="breadcrumb-item pb-cledit-crumb"><a href="@PbDisplay.ClientUrl(client.Id)">@client.Name</a></li>
+                    }
+                    <li class="breadcrumb-item active" aria-current="page">@(client is null ? "New client" : "Edit")</li>
+                </ol>
+            </nav>
+
+            <h1 class="tb-title mb-1">@(client is null ? "New client" : $"Edit {client.Name}")</h1>
+            <p class="tb-lead">
+                @(client is null
+                    ? "Add a company you work with. You can add its contacts, deals, and notes on its page next."
+                    : "Change the client's name, industry, website, or who owns the relationship.")
+            </p>
+
+            @* Always rendered and focusable, so a save is announced and focus has somewhere to go when it fails. *@
+            <p class="fw-semibold pb-cledit-status @(statusIsError ? "text-danger-emphasis" : null)" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
+
+            <div class="row g-4">
+                <div class="col-xl-8">
+                    <section class="tb-panel" aria-labelledby="pb-cledit-form-title">
+                        <h2 class="tb-section-title" id="pb-cledit-form-title">Client details</h2>
+                        <form @onsubmit="Save" novalidate aria-labelledby="pb-cledit-form-title">
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold" for="pb-cledit-name">Name</label>
+                                <input id="pb-cledit-name" class="form-control @(nameError is null ? null : "is-invalid")" @bind="name" @bind:event="oninput" @ref="nameInput"
+                                       maxlength="@PbState.MaxClientNameLength" autocomplete="off" aria-required="true" aria-invalid="@(nameError is null ? null : "true")"
+                                       aria-describedby="pb-cledit-name-help pb-cledit-name-error" />
+                                <div class="form-text d-flex flex-wrap justify-content-between gap-2" id="pb-cledit-name-help">
+                                    <span>The company's name. Each client's name is different.</span>
+                                    <span class="text-nowrap">@DealDisplay.CounterText(name, PbState.MaxClientNameLength)</span>
+                                </div>
+                                <div class="invalid-feedback d-block" id="pb-cledit-name-error">@nameError</div>
+                            </div>
+
+                            <div class="row g-3 mb-3">
+                                <div class="col-sm-6">
+                                    <label class="form-label fw-semibold" for="pb-cledit-industry">Industry</label>
+                                    <input id="pb-cledit-industry" class="form-control @(industryError is null ? null : "is-invalid")" @bind="industry" @bind:event="oninput" @ref="industryInput"
+                                           maxlength="@PbState.MaxContactFieldLength" autocomplete="off" aria-required="true" aria-invalid="@(industryError is null ? null : "true")"
+                                           aria-describedby="pb-cledit-industry-help pb-cledit-industry-error" />
+                                    <div class="form-text" id="pb-cledit-industry-help">Like Retail or Healthcare. Up to @PbState.MaxContactFieldLength characters.</div>
+                                    <div class="invalid-feedback d-block" id="pb-cledit-industry-error">@industryError</div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <label class="form-label fw-semibold" for="pb-cledit-website">Website <span class="fw-normal text-body-secondary">(optional)</span></label>
+                                    <input id="pb-cledit-website" class="form-control @(websiteError is null ? null : "is-invalid")" @bind="website" @bind:event="oninput" @ref="websiteInput"
+                                           maxlength="@PbState.MaxWebsiteLength" autocomplete="off" spellcheck="false" aria-invalid="@(websiteError is null ? null : "true")"
+                                           aria-describedby="pb-cledit-website-help pb-cledit-website-error" />
+                                    <div class="form-text" id="pb-cledit-website-help">Like example.com. It's shown as text, not as a link. Up to @PbState.MaxWebsiteLength characters.</div>
+                                    <div class="invalid-feedback d-block" id="pb-cledit-website-error">@websiteError</div>
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <label class="form-label fw-semibold" for="pb-cledit-owner">Owner</label>
+                                <select id="pb-cledit-owner" class="form-select pb-cledit-owner @(ownerError is null ? null : "is-invalid")" @bind="ownerId" @ref="ownerInput"
+                                        aria-invalid="@(ownerError is null ? null : "true")" aria-describedby="pb-cledit-owner-help pb-cledit-owner-error">
+                                    @if (owners.All(person => person.Id != ownerId))
+                                    {
+                                        <option value="">Choose an account manager</option>
+                                    }
+                                    @foreach (var owner in owners)
+                                    {
+                                        <option value="@owner.Id" @key="owner.Id">@owner.Name@(owner.Id == State.CurrentPerson?.Id ? " (you)" : null)</option>
+                                    }
+                                </select>
+                                <div class="form-text" id="pb-cledit-owner-help">The account manager who looks after the relationship.</div>
+                                <div class="invalid-feedback d-block" id="pb-cledit-owner-error">@ownerError</div>
+                            </div>
+
+                            <div class="d-flex flex-wrap align-items-center gap-2">
+                                <Button Type="ButtonType.Submit" Color="ButtonColor.Primary">
+                                    <Icon Name="@(client is null ? IconName.PlusLg : IconName.CheckLg)" class="me-1" aria-hidden="true" />@(client is null ? "Add client" : "Save changes")
+                                </Button>
+                                <a class="btn btn-link" href="@(client is null ? DealDisplay.ClientsUrl : PbDisplay.ClientUrl(client.Id))">Cancel</a>
+                            </div>
+                        </form>
+                    </section>
+                </div>
+
+                @if (client is not null)
+                {
+                    var blockers = Blockers(client);
+                    <div class="col-xl-4">
+                        <section class="tb-panel" aria-labelledby="pb-cledit-delete-title">
+                            <h2 class="tb-section-title" id="pb-cledit-delete-title">Delete client</h2>
+                            <p class="small">
+                                @(blockers.Count == 0
+                                    ? $"{DeleteConsequence(client)} This can't be undone."
+                                    : $"{client.Name} has projects or deals, so it can't be deleted. Delete says which.")
+                            </p>
+                            <Button @ref="deleteButton" Color="ButtonColor.Danger" Outline="true" @onclick="OpenDeleteAsync">
+                                <Icon Name="IconName.Trash3" class="me-1" aria-hidden="true" />Delete<span class="visually-hidden"> @client.Name</span>
+                            </Button>
+                        </section>
+                    </div>
+
+                    <Modal @ref="deleteModal" IsVerticallyCentered="true" IsScrollable="true" ShowCloseButton="false" aria-labelledby="pb-cledit-dialog-title" OnHidden="OnDeleteHidden">
+                        <HeaderTemplate>
+                            <h2 class="modal-title h5 pb-cledit-dialog-title" id="pb-cledit-dialog-title">@(blockers.Count == 0 ? $"Delete {client.Name}?" : $"{client.Name} can't be deleted")</h2>
+                        </HeaderTemplate>
+                        <BodyTemplate>
+                            @if (blockers.Count > 0)
+                            {
+                                <p>A client with projects or deals keeps its history. It still has:</p>
+                                <ul class="pb-cledit-blockers">
+                                    @foreach (var project in State.Projects.Where(project => project.ClientId == client.Id))
+                                    {
+                                        <li @key="@($"p-{project.Id}")">Project <a href="@PbDisplay.ProjectUrl(project.Id)">@project.Key · @project.Name</a> (@PbDisplay.ProjectStatusLabel(project.Status).ToLowerInvariant())</li>
+                                    }
+                                    @foreach (var deal in State.DealsOf(client.Id))
+                                    {
+                                        <li @key="@($"d-{deal.Id}")">Deal “@deal.Title” (@PbDisplay.StageLabel(deal.Stage).ToLowerInvariant(), @PbDisplay.Money(deal.Value))</li>
+                                    }
+                                </ul>
+                                <p class="mb-0">A project manager can delete its projects, and you can delete its deals on the <a href="@DealDisplay.PipelineUrl">deal pipeline</a> (a won deal only once its project is gone).</p>
+                            }
+                            else
+                            {
+                                <p class="mb-0">@DeleteConsequence(client) This can't be undone.</p>
+                            }
+                        </BodyTemplate>
+                        <FooterTemplate>
+                            <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => deleteModal.HideAsync()">@(blockers.Count == 0 ? "Cancel" : "Close")</Button>
+                            @if (blockers.Count == 0)
+                            {
+                                <Button Color="ButtonColor.Danger" @onclick="ConfirmDeleteAsync"><Icon Name="IconName.Trash3" class="me-1" aria-hidden="true" />Delete client</Button>
+                            }
+                        </FooterTemplate>
+                    </Modal>
+                }
+            </div>
+        }
+    </PbRoleGuard>
+</div>

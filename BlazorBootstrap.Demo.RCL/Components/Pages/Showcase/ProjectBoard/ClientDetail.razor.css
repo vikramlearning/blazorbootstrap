@@ -1,0 +1,83 @@
+/* A client's page: the header facts, deals, and projects. */
+.pb-cldet-head {
+    min-width: 0;
+    flex: 1 1 20rem;
+}
+
+.pb-cldet-crumb {
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+.pb-cldet-facts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .5rem 1.75rem;
+}
+
+    .pb-cldet-facts dt {
+        font-size: .75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: .04em;
+        color: var(--bs-secondary-color);
+    }
+
+    .pb-cldet-facts dd {
+        margin: 0;
+        overflow-wrap: anywhere;
+    }
+
+.pb-cldet-website {
+    font-family: var(--tb-font-mono);
+    font-size: .875rem;
+}
+
+.pb-cldet-status {
+    min-height: 1.5rem;
+    overflow-wrap: anywhere;
+}
+
+    .pb-cldet-status:empty {
+        min-height: 0;
+        margin: 0;
+    }
+
+    .pb-cldet-status:focus {
+        outline: none;
+    }
+
+    .pb-cldet-status:focus-visible {
+        outline: 2px solid var(--bs-focus-ring-color, var(--sc-primary));
+        outline-offset: 2px;
+    }
+
+.pb-cldet-caption {
+    caption-side: top;
+    padding-top: 0;
+    font-size: .8125rem;
+    color: var(--bs-secondary-color);
+}
+
+.pb-cldet-wrap {
+    min-width: 10rem;
+    overflow-wrap: anywhere;
+}
+
+.pb-cldet-close {
+    min-width: 9rem;
+}
+
+.pb-cldet-project {
+    min-width: 0;
+}
+
+.pb-cldet-bar {
+    height: .5rem;
+}
+
+/* A grid track is as wide as its widest content by default; the contacts table must scroll inside its own box instead
+   of widening the page at 375 px. */
+.pb-cldet-main {
+    grid-template-columns: minmax(0, 1fr);
+}

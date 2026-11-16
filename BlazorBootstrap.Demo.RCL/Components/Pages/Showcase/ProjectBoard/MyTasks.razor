@@ -1,0 +1,65 @@
+@page "/showcase/project-board/my-tasks"
+@layout PbWorkLayout
+
+<PageTitle>My tasks · @PbSeedData.ProductName</PageTitle>
+
+@* The signed-in person's tasks by due date (overdue, today, this week, later, none), and the ones done in the last two weeks. *@
+<div class="container-fluid px-lg-4">
+    @{
+        var today = State.Clock.Today;
+        var groups = Groups(today);
+        var open = groups.Where(group => !group.IsDone).Sum(group => group.Tasks.Count);
+        var done = groups.First(group => group.IsDone).Tasks;
+    }
+
+    <h1 class="tb-title mb-1">My tasks</h1>
+    <p class="tb-lead mb-3">Everything assigned to you across @PbSeedData.AgencyName's projects, by due date. Open a task for its checklist and comments.</p>
+
+    <p class="tb-mytasks-summary mb-2">
+        @if (open == 0)
+        {
+            <span>You have no open tasks.</span>
+        }
+        else
+        {
+            <span>You have @TaskCard.Plural(open, "open task")@SummaryText(groups).</span>
+        }
+    </p>
+
+    @* Always rendered and focusable, so every Mark done or Reopen is announced and focus has somewhere to go. *@
+    <p class="fw-semibold tb-mytasks-status @(statusIsError ? "text-danger-emphasis" : null)" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
+
+    @if (open == 0)
+    {
+        <section class="tb-panel tb-mytasks-empty mb-4" aria-labelledby="tb-mytasks-empty-title">
+            <span class="tb-icon mb-2" aria-hidden="true"><Icon Name="IconName.CheckAll" /></span>
+            <h2 class="tb-section-title" id="tb-mytasks-empty-title">All clear</h2>
+            <p class="mb-3">Nothing is assigned to you right now. Pick up an unassigned task on a project board, or ask your project manager what's next.</p>
+            <a class="btn btn-primary" href="@($"{PbLayout.Base}/projects")">Open project boards</a>
+        </section>
+    }
+
+    @foreach (var group in groups.Where(group => !group.IsDone && group.Tasks.Count > 0))
+    {
+        <section class="mb-4" aria-labelledby="@($"tb-mytasks-{group.Id}")" @key="@($"group-{group.Id}")">
+            <h2 class="tb-section-title" id="@($"tb-mytasks-{group.Id}")">
+                @group.Title <span class="text-body-secondary fw-normal">(@group.Tasks.Count)</span>
+            </h2>
+            <MyTasksList GroupId="@group.Id" Tasks="group.Tasks" OnToggleDone="ToggleDone" />
+        </section>
+    }
+
+    <details class="tb-panel tb-mytasks-done">
+        <summary class="tb-section-title mb-0">Done in the last 2 weeks <span class="text-body-secondary fw-normal">(@done.Count)</span></summary>
+        <div class="mt-3">
+            @if (done.Count == 0)
+            {
+                <p class="text-body-secondary mb-0">Nothing finished in the last 14 days yet.</p>
+            }
+            else
+            {
+                <MyTasksList GroupId="done" Tasks="done" OnToggleDone="ToggleDone" />
+            }
+        </div>
+    </details>
+</div>

@@ -1,0 +1,56 @@
+@* One entry of a client's activity timeline, inside the parent's list item: the kind (icon and words), who logged it and
+   when (relative, with the full time in a title and visually hidden text), the text (plain), and the deal it is about.
+   Entries Tandem recorded itself (deal and project changes) say so. *@
+@{
+    var author = State.FindPerson(Activity.AuthorId);
+    var deal = State.FindDeal(Activity.DealId);
+    var client = ShowClient ? State.FindClient(Activity.ClientId) : null;
+    var system = DealDisplay.IsSystem(Activity.Kind);
+}
+<div class="pb-activity-entry">
+    <span class="tb-icon pb-activity-icon @(system ? "pb-activity-icon-system" : null)" aria-hidden="true"><Icon Name="@DealDisplay.KindIcon(Activity.Kind)" /></span>
+    <div class="pb-activity-body">
+        <p class="pb-activity-meta mb-1">
+            <span class="fw-semibold">@DealDisplay.KindLabel(Activity.Kind)</span>
+            @if (client is not null)
+            {
+                <span> with <a href="@PbDisplay.ClientUrl(client.Id)">@client.Name</a></span>
+            }
+            <span class="text-body-secondary">
+                · @(system ? $"Recorded by {PbSeedData.ProductName}" + (author is null ? null : $" for {author.Name}") : author?.Name ?? "Someone who left the team")
+                · <time datetime="@Activity.At.ToString("yyyy-MM-ddTHH:mm", CultureInfo.InvariantCulture)" title="@DealDisplay.FullTime(Activity.At)">@PbDisplay.Ago(Activity.At, State.Clock.Now)</time><span class="visually-hidden"> (@DealDisplay.FullTime(Activity.At))</span>
+            </span>
+        </p>
+        <p class="tb-plain mb-1">@Activity.Text</p>
+        @if (Activity.DealId is not null)
+        {
+            <p class="small text-body-secondary mb-0">
+                @if (deal is null)
+                {
+                    @("About a deal that was deleted.")
+                }
+                else
+                {
+                    <span>About the deal “@deal.Title” (@PbDisplay.StageLabel(deal.Stage).ToLowerInvariant()).</span>
+                }
+            </p>
+        }
+        @if (ChildContent is not null)
+        {
+            <div class="mt-2">@ChildContent</div>
+        }
+    </div>
+</div>
+
+@code {
+    /// <summary>Gets or sets the entry.</summary>
+    [Parameter, EditorRequired] public PbActivity Activity { get; set; } = default!;
+
+    /// <summary>Gets or sets actions under the entry, like Delete.</summary>
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    /// <summary>Gets or sets whether to name the client (with a link), for the timeline of every client.</summary>
+    [Parameter] public bool ShowClient { get; set; }
+
+    [Inject] private PbState State { get; set; } = default!;
+}

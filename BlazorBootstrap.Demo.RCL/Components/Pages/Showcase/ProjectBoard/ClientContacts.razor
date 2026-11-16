@@ -1,0 +1,148 @@
+@* The contacts section of the client page: a table of the client's people (the primary contact first), and a dialog to
+   add or edit one. Emails and phone numbers are shown as text, never as links. *@
+@{
+    var contacts = State.ContactsOf(ClientId);
+    var clientName = State.FindClient(ClientId)?.Name ?? "this client";
+}
+<section class="tb-panel" aria-labelledby="pb-clcon-title">
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2">
+        <h2 class="tb-section-title mb-0" id="pb-clcon-title">Contacts</h2>
+        <button type="button" class="btn btn-sm btn-outline-primary" @ref="addButton" @onclick="() => OpenEditorAsync(0)">
+            <Icon Name="IconName.PersonPlus" class="me-1" aria-hidden="true" />Add contact
+        </button>
+    </div>
+
+    @* Always rendered and focusable, so saving and deleting are announced and focus has somewhere to go. *@
+    <p class="fw-semibold pb-clcon-status @(statusIsError ? "text-danger-emphasis" : null)" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
+
+    @if (contacts.Count == 0)
+    {
+        <p class="text-body-secondary mb-0">No contacts yet. Add the people you talk to at @clientName.</p>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table align-middle mb-0">
+                <caption class="pb-clcon-caption">@DealDisplay.Plural(contacts.Count, "contact") at @clientName, the primary contact first.</caption>
+                <thead>
+                    <tr>
+                        <th scope="col">Name</th>
+                        <th scope="col">Title</th>
+                        <th scope="col">Email</th>
+                        <th scope="col">Phone</th>
+                        <th scope="col">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var contact in contacts)
+                    {
+                        var contactId = contact.Id;
+                        <tr @key="contact.Id">
+                            <th scope="row" class="pb-clcon-wrap">
+                                @contact.Name
+                                @if (contact.IsPrimary)
+                                {
+                                    <Badge Color="BadgeColor.Primary" Class="ms-1 rounded-pill">Primary</Badge>
+                                }
+                            </th>
+                            <td class="pb-clcon-wrap">@(string.IsNullOrEmpty(contact.Title) ? "None" : contact.Title)</td>
+                            <td class="pb-clcon-email">@contact.Email</td>
+                            <td class="text-nowrap">@(string.IsNullOrEmpty(contact.Phone) ? "None" : contact.Phone)</td>
+                            <td>
+                                <div class="d-flex flex-nowrap gap-2">
+                                    <button type="button" class="btn btn-sm btn-outline-secondary text-nowrap" @ref="editButtons[contactId]" @onclick="() => OpenEditorAsync(contactId)">
+                                        <Icon Name="IconName.Pencil" class="me-1" aria-hidden="true" />Edit<span class="visually-hidden"> @contact.Name</span>
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-outline-danger text-nowrap" @onclick="() => OpenDeleteAsync(contactId)">
+                                        <Icon Name="IconName.Trash3" class="me-1" aria-hidden="true" />Delete<span class="visually-hidden"> @contact.Name</span>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</section>
+
+<Modal @ref="editorModal" IsVerticallyCentered="true" IsScrollable="true" ShowCloseButton="false" aria-labelledby="pb-clcon-editor-title" OnShown="OnEditorShownAsync" OnHidden="OnEditorHidden">
+    <HeaderTemplate>
+        <h2 class="modal-title h5 pb-clcon-dialog-title" id="pb-clcon-editor-title">@(editId == 0 ? $"Add a contact at {clientName}" : $"Edit {State.FindContact(editId)?.Name ?? "contact"}")</h2>
+    </HeaderTemplate>
+    <BodyTemplate>
+        <form id="pb-clcon-form" @onsubmit="SaveAsync" novalidate aria-labelledby="pb-clcon-editor-title">
+            <div class="mb-3">
+                <label class="form-label fw-semibold" for="pb-clcon-name">Name</label>
+                <input id="pb-clcon-name" class="form-control @(nameError is null ? null : "is-invalid")" @bind="name" @bind:event="oninput" @ref="nameInput"
+                       maxlength="@PbState.MaxContactFieldLength" autocomplete="off" aria-required="true" aria-invalid="@(nameError is null ? null : "true")"
+                       aria-describedby="pb-clcon-name-help pb-clcon-name-error" />
+                <div class="form-text" id="pb-clcon-name-help">Up to @PbState.MaxContactFieldLength characters.</div>
+                <div class="invalid-feedback d-block" id="pb-clcon-name-error">@nameError</div>
+            </div>
+            <div class="mb-3">
+                <label class="form-label fw-semibold" for="pb-clcon-jobtitle">Job title <span class="fw-normal text-body-secondary">(optional)</span></label>
+                <input id="pb-clcon-jobtitle" class="form-control @(titleError is null ? null : "is-invalid")" @bind="jobTitle" @bind:event="oninput" @ref="titleInput"
+                       maxlength="@PbState.MaxContactFieldLength" autocomplete="off" aria-invalid="@(titleError is null ? null : "true")" aria-describedby="pb-clcon-jobtitle-error" />
+                <div class="invalid-feedback d-block" id="pb-clcon-jobtitle-error">@titleError</div>
+            </div>
+            <div class="row g-3 mb-3">
+                <div class="col-sm-7">
+                    <label class="form-label fw-semibold" for="pb-clcon-email">Email</label>
+                    <input id="pb-clcon-email" type="email" class="form-control @(emailError is null ? null : "is-invalid")" @bind="email" @bind:event="oninput" @ref="emailInput"
+                           maxlength="@ShowcaseIdentity.MaxEmailLength" autocomplete="off" spellcheck="false" aria-required="true" aria-invalid="@(emailError is null ? null : "true")"
+                           aria-describedby="pb-clcon-email-help pb-clcon-email-error" />
+                    <div class="form-text" id="pb-clcon-email-help">Each contact at a client has a different email. Demo only: nothing is sent.</div>
+                    <div class="invalid-feedback d-block" id="pb-clcon-email-error">@emailError</div>
+                </div>
+                <div class="col-sm-5">
+                    <label class="form-label fw-semibold" for="pb-clcon-phone">Phone <span class="fw-normal text-body-secondary">(optional)</span></label>
+                    <input id="pb-clcon-phone" type="tel" class="form-control @(phoneError is null ? null : "is-invalid")" @bind="phone" @bind:event="oninput" @ref="phoneInput"
+                           maxlength="@PbState.MaxPhoneLength" autocomplete="off" aria-invalid="@(phoneError is null ? null : "true")" aria-describedby="pb-clcon-phone-help pb-clcon-phone-error" />
+                    <div class="form-text" id="pb-clcon-phone-help">Any format, up to @PbState.MaxPhoneLength characters.</div>
+                    <div class="invalid-feedback d-block" id="pb-clcon-phone-error">@phoneError</div>
+                </div>
+            </div>
+            <div class="form-check mb-1">
+                <input class="form-check-input" type="checkbox" id="pb-clcon-primary" @bind="isPrimary" aria-describedby="pb-clcon-primary-help" />
+                <label class="form-check-label fw-semibold" for="pb-clcon-primary">Primary contact</label>
+            </div>
+            <div class="form-text mt-0" id="pb-clcon-primary-help">
+                @(PrimaryHelp(clientName))
+            </div>
+            <p class="fw-semibold text-danger-emphasis small mt-3 mb-0 pb-clcon-form-status" role="status" tabindex="-1" @ref="formStatusRegion">@formMessage</p>
+        </form>
+    </BodyTemplate>
+    <FooterTemplate>
+        <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => editorModal.HideAsync()">Cancel</Button>
+        <button type="submit" form="pb-clcon-form" class="btn btn-primary">
+            <Icon Name="@(editId == 0 ? IconName.PlusLg : IconName.CheckLg)" class="me-1" aria-hidden="true" />@(editId == 0 ? "Add contact" : "Save contact")
+        </button>
+    </FooterTemplate>
+</Modal>
+
+<Modal @ref="deleteModal" IsVerticallyCentered="true" ShowCloseButton="false" aria-labelledby="pb-clcon-delete-title" OnHidden="OnDeleteHidden">
+    <HeaderTemplate>
+        <h2 class="modal-title h5 pb-clcon-dialog-title" id="pb-clcon-delete-title">@(State.FindContact(deleteId) is { } doomed ? $"Delete {doomed.Name}?" : "Contact not found")</h2>
+    </HeaderTemplate>
+    <BodyTemplate>
+        @if (State.FindContact(deleteId) is { } target)
+        {
+            <p class="mb-0">
+                @target.Name (@target.Email) leaves the contacts of @clientName.@(target.IsPrimary ? " They're the primary contact, so the client will have none until you choose another." : null)
+                Activity that mentions them stays. This can't be undone.
+            </p>
+        }
+        else
+        {
+            <p class="mb-0">That contact was already deleted.</p>
+        }
+    </BodyTemplate>
+    <FooterTemplate>
+        <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => deleteModal.HideAsync()">Cancel</Button>
+        @if (State.FindContact(deleteId) is not null)
+        {
+            <Button Color="ButtonColor.Danger" @onclick="ConfirmDeleteAsync"><Icon Name="IconName.Trash3" class="me-1" aria-hidden="true" />Delete contact</Button>
+        }
+    </FooterTemplate>
+</Modal>

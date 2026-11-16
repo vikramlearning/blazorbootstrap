@@ -1,0 +1,83 @@
+@page "/showcase/project-board/activity"
+@layout PbWorkLayout
+
+<PageTitle>Activity · @PbSeedData.ProductName</PageTitle>
+
+<div class="container-fluid px-lg-4">
+    <PbRoleGuard Role="@PbSeedData.AccountManagerRole">
+        @{
+            var clients = State.Clients;
+            var entries = Entries;
+            var days = entries.GroupBy(entry => entry.At.Date).ToList();
+            var today = State.Clock.Today;
+        }
+
+        <div class="mb-3">
+            <h1 class="tb-title">Activity</h1>
+            <p class="tb-lead mb-0">Calls, emails, meetings, and notes with every client, newest first, with the deal and project changes @PbSeedData.ProductName records. Log new activity on a client's page.</p>
+        </div>
+
+        <div class="tb-panel mb-3" role="search" aria-label="Filter activity">
+            <div class="row g-3">
+                <div class="col-sm-6 col-lg-4">
+                    <label class="form-label fw-semibold" for="pb-act-client">Client</label>
+                    <select id="pb-act-client" class="form-select" @bind="clientFilter">
+                        <option value="0">Every client</option>
+                        @foreach (var client in clients)
+                        {
+                            <option value="@client.Id" @key="client.Id">@client.Name</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-sm-6 col-lg-3">
+                    <label class="form-label fw-semibold" for="pb-act-kind">Kind</label>
+                    <select id="pb-act-kind" class="form-select" @bind="kindFilter">
+                        <option value="">Every kind</option>
+                        @foreach (var kind in Enum.GetValues<PbActivityKind>())
+                        {
+                            <option value="@kind" @key="kind">@DealDisplay.KindLabel(kind)</option>
+                        }
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        @* Announces how many entries the filters show. *@
+        <p class="small text-body-secondary" role="status">
+            @(entries.Count == 0 ? "No activity matches." : $"Showing {DealDisplay.Plural(entries.Count, "entry", "entries")} over {DealDisplay.Plural(days.Count, "day")}.")
+        </p>
+
+        @if (entries.Count == 0)
+        {
+            <div class="tb-panel">
+                <p class="mb-0">
+                    @(State.Activities.Count == 0 ? "Nothing logged yet. Log a call, email, meeting, or note on a client's page." : "Nothing matches these filters. Choose Every client or Every kind.")
+                </p>
+            </div>
+        }
+        else
+        {
+            <div class="d-grid gap-4">
+                @foreach (var day in days)
+                {
+                    var headingId = "pb-act-day-" + day.Key.ToString("yyyyMMdd", CultureInfo.InvariantCulture);
+                    <section class="tb-panel" aria-labelledby="@headingId" @key="day.Key">
+                        <h2 class="tb-section-title" id="@headingId">
+                            <time datetime="@day.Key.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)">@DealDisplay.DayLabel(day.Key, today)</time>
+                            @if ((today - day.Key).Days is 0 or 1)
+                            {
+                                <span class="fw-normal text-body-secondary fs-6"> · @PbDisplay.Date(day.Key)</span>
+                            }
+                        </h2>
+                        <ol class="list-unstyled pb-act-list mb-0">
+                            @foreach (var entry in day)
+                            {
+                                <li @key="entry.Id"><ActivityEntry Activity="entry" ShowClient="true" /></li>
+                            }
+                        </ol>
+                    </section>
+                }
+            </div>
+        }
+    </PbRoleGuard>
+</div>
