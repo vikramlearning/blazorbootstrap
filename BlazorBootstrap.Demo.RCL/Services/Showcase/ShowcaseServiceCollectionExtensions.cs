@@ -16,6 +16,7 @@ public static class ShowcaseServiceCollectionExtensions
     public static IServiceCollection AddShowcaseServices(this IServiceCollection services)
     {
         services.AddScoped<Foundation.ShowcaseSessionStore>();
+        services.AddScoped<AiAssistant.AiState>();
         services.AddScoped<Ecommerce.EcommerceState>();
         services.AddScoped<Fintech.FintechState>();
         services.AddScoped<HelpDesk.HelpDeskState>();

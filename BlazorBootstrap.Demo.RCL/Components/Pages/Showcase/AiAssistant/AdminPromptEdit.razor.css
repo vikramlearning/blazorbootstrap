@@ -1,0 +1,22 @@
+/* The shared prompt editor: one form in a panel, at a readable width. */
+.pa-adpe-status {
+    min-height: 1.5rem;
+    overflow-wrap: anywhere;
+}
+
+    .pa-adpe-status:focus {
+        outline: none;
+    }
+
+    .pa-adpe-status:focus-visible {
+        outline: 2px solid var(--bs-focus-ring-color, var(--sc-primary));
+        outline-offset: 2px;
+    }
+
+.pa-adpe-form {
+    max-width: 52rem;
+}
+
+.pa-adpe-text {
+    min-height: 10rem;
+}

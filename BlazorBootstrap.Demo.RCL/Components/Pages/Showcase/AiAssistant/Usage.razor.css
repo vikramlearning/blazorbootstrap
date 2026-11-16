@@ -1,0 +1,59 @@
+.pa-usage-big {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: .5rem;
+    font-size: clamp(1.5rem, 4vw, 2rem);
+    font-weight: 700;
+    color: var(--pa-ink);
+}
+
+.pa-usage-label {
+    display: block;
+    color: var(--bs-secondary-color);
+    font-size: .875rem;
+    font-weight: 600;
+}
+
+.pa-usage-value {
+    display: block;
+    margin-block: .25rem;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--pa-ink);
+}
+
+.pa-usage-model {
+    overflow-wrap: anywhere;
+    font-size: 1.25rem;
+}
+
+/* Words and an icon carry the message; the color only supports it. */
+.pa-usage-alert {
+    padding: .75rem 1rem;
+    border: 1px solid;
+    border-radius: .625rem;
+}
+
+.pa-usage-alert-warning {
+    border-color: var(--bs-warning-border-subtle);
+    background: var(--bs-warning-bg-subtle);
+    color: var(--bs-warning-text-emphasis);
+}
+
+.pa-usage-alert-danger {
+    border-color: var(--bs-danger-border-subtle);
+    background: var(--bs-danger-bg-subtle);
+    color: var(--bs-danger-text-emphasis);
+}
+
+.pa-usage-details summary {
+    width: fit-content;
+    color: var(--sc-primary);
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.pa-usage-details .table {
+    --bs-table-bg: transparent;
+}

@@ -1,0 +1,86 @@
+@page "/showcase/ai-assistant"
+@layout AiLayout
+@implements IDisposable
+
+<PageTitle>@AiSeedData.ProductName · @AiSeedData.WorkspaceName</PageTitle>
+
+@* The start page: what Parley does, and for a signed-in member their recent conversations. *@
+<div class="container-xl">
+    <section class="pa-hero mb-5" aria-labelledby="pa-home-title">
+        <span class="pa-icon mb-3" aria-hidden="true"><Icon Name="IconName.Stars" class="fs-4" /></span>
+        <h1 class="pa-title fs-2 mb-2" id="pa-home-title">@AiSeedData.ProductName, the assistant for @AiSeedData.WorkspaceName</h1>
+        <p class="pa-lead mb-4">
+            Ask questions, draft and summarize, plan, and get help with code, in conversations you can search, pin, and come back to.
+            Save the prompts you use often, and share the best ones with the team.
+        </p>
+        @if (State.IsActiveMember)
+        {
+            <div class="d-flex flex-wrap gap-2">
+                <a class="btn btn-primary" href="@($"{AiLayout.Base}/chat")"><Icon Name="IconName.PlusLg" class="me-2" aria-hidden="true" />New chat</a>
+                <a class="btn btn-outline-primary" href="@($"{AiLayout.Base}/prompts")">Prompt library</a>
+            </div>
+        }
+        else if (State.Identity.IsSignedIn)
+        {
+            <p class="mb-0">You're signed in, but your account isn't an active member of @AiSeedData.WorkspaceName, so chat isn't open to you. Ask a workspace admin.</p>
+        }
+        else
+        {
+            <div class="d-flex flex-wrap gap-2">
+                <a class="btn btn-primary" href="@($"{AiLayout.SignInPath}?returnUrl={Uri.EscapeDataString(AiLayout.Base + "/chat")}")">
+                    <Icon Name="IconName.BoxArrowInRight" class="me-2" aria-hidden="true" />Sign in to start
+                </a>
+                <a class="btn btn-outline-primary" href="@($"{AiLayout.SignInPath}?mode=register")">Join the workspace</a>
+            </div>
+            <p class="small text-body-secondary mt-3 mb-0">The sign-in page has one-click demo accounts: a member, and a workspace admin.</p>
+        }
+    </section>
+
+    @if (State.IsActiveMember && State.Conversations.Count > 0)
+    {
+        <section class="mb-5" aria-labelledby="pa-home-recent">
+            <h2 class="pa-section-title" id="pa-home-recent">Pick up where you left off</h2>
+            <ul class="list-unstyled row g-3">
+                @foreach (var conversation in State.Conversations.Take(4))
+                {
+                    <li class="col-md-6" @key="conversation.Id">
+                        <a class="pa-panel d-block text-decoration-none h-100" href="@AiDisplay.ConversationUrl(conversation.Id)">
+                            <span class="d-block fw-semibold text-body">
+                                @if (conversation.IsPinned)
+                                {
+                                    <Icon Name="IconName.PinAngleFill" class="me-1 text-body-secondary" aria-hidden="true" /><span class="visually-hidden">Pinned: </span>
+                                }
+                                @conversation.Title
+                            </span>
+                            <span class="small text-body-secondary">@MessageCount(conversation) · @AiDisplay.Ago(conversation.UpdatedAt, State.Clock.Now)</span>
+                        </a>
+                    </li>
+                }
+            </ul>
+        </section>
+    }
+
+    <section aria-labelledby="pa-home-features">
+        <h2 class="pa-section-title" id="pa-home-features">What you can do</h2>
+        <ul class="list-unstyled row row-cols-1 row-cols-md-3 g-3 mb-0">
+            <li class="col"><div class="pa-panel h-100"><Icon Name="IconName.ChatDots" class="pa-feature-icon mb-2" aria-hidden="true" /><h3 class="h6 fw-bold">Conversations</h3><p class="small text-body-secondary mb-0">Answers stream in as they're written, with formatted text and code. Stop, regenerate, and rate them.</p></div></li>
+            <li class="col"><div class="pa-panel h-100"><Icon Name="IconName.JournalText" class="pa-feature-icon mb-2" aria-hidden="true" /><h3 class="h6 fw-bold">Prompt library</h3><p class="small text-body-secondary mb-0">Keep your own prompts, and use the ones your admins share with the whole workspace.</p></div></li>
+            <li class="col"><div class="pa-panel h-100"><Icon Name="IconName.Speedometer2" class="pa-feature-icon mb-2" aria-hidden="true" /><h3 class="h6 fw-bold">Usage</h3><p class="small text-body-secondary mb-0">See your messages and tokens by day and model, against the monthly quota.</p></div></li>
+        </ul>
+        <p class="small text-body-secondary mt-3 mb-0">This is a demo: no model is called. Replies are prewritten examples chosen by keywords, and nothing leaves this browser tab.</p>
+    </section>
+</div>
+
+@code {
+    [Inject] private AiState State { get; set; } = default!;
+
+    /// <summary>Stops listening to state changes.</summary>
+    public void Dispose() => State.Changed -= OnStateChanged;
+
+    protected override void OnInitialized() => State.Changed += OnStateChanged;
+
+    private static string MessageCount(AiConversation conversation) =>
+        conversation.Messages.Count(message => message.Role == AiRole.User) is var count && count == 1 ? "1 message" : string.Create(CultureInfo.InvariantCulture, $"{count} messages");
+
+    private void OnStateChanged() => InvokeAsync(StateHasChanged);
+}

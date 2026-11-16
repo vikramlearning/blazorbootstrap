@@ -1,0 +1,385 @@
+@page "/showcase/ai-assistant/chat"
+@page "/showcase/ai-assistant/chat/{Id:int}"
+@layout AiLayout
+
+@* An unknown conversation shows the not-found panel, which sets its own title. *@
+@if (!IsNotFound)
+{
+    <PageTitle>@(Conversation?.Title ?? (Id is null ? "New chat" : "Chat")) · @AiSeedData.ProductName</PageTitle>
+}
+
+<div class="container-xl">
+    <AiMemberGuard>
+        @if (IsNotFound)
+        {
+            <AiNotFound />
+        }
+        else
+        {
+            var conversation = Conversation;
+            var turnedOff = TurnedOffModel;
+
+            <div class="pa-chat">
+                <section class="pa-chat-side d-none d-lg-flex" aria-labelledby="pa-chat-side-title">
+                    <h2 class="pa-chat-side-title" id="pa-chat-side-title">Conversations</h2>
+                    <ChatConversationList Prefix="pa-side" CurrentId="Id" OnRequest="OnListRequestAsync" OnStatus="OnListStatus" OnNavigate="OnListNavigateAsync" />
+                </section>
+
+                <section class="pa-chat-main" aria-labelledby="pa-chat-title">
+                    <div class="pa-chat-head">
+                        <h1 class="pa-title pa-chat-title" id="pa-chat-title" tabindex="-1" @ref="heading">@(conversation?.Title ?? "New chat")</h1>
+                        <Button @ref="conversationsButton" Class="d-lg-none flex-shrink-0" Color="ButtonColor.Secondary" Outline="true" Size="ButtonSize.Small"
+                                aria-haspopup="dialog" @onclick="OpenDrawerAsync">
+                            <Icon Name="IconName.ChatLeftText" class="me-2" aria-hidden="true" />Conversations
+                        </Button>
+                    </div>
+
+                    @* Streaming progress, said once as a reply starts and once as it ends: never the streamed text itself. *@
+                    <div class="visually-hidden" role="status">@streamStatus</div>
+
+                    <div class="pa-chat-messages" id="@MessagesId" tabindex="0" role="region" aria-label="Messages" @attributes="FollowHandlers">
+                        @if (conversation is null)
+                        {
+                            <div class="pa-welcome">
+                                <span class="pa-icon mb-3" aria-hidden="true"><Icon Name="IconName.Stars" class="fs-5" /></span>
+                                <h2 class="pa-section-title mb-1">What can @AiSeedData.ProductName help with?</h2>
+                                <p class="text-body-secondary mb-3">
+                                    Ask a question, draft an email, plan a project, or get help with code. Pick a starter to fill in the message box, or
+                                    write your own. Replies in this demo are prewritten examples; nothing leaves this browser tab.
+                                </p>
+                                <ul class="pa-starters list-unstyled mb-0">
+                                    @foreach (var starter in starters)
+                                    {
+                                        <li @key="@($"starter-{starter.Label}")">
+                                            <button type="button" class="pa-starter" @onclick="() => UseStarter(starter.Text)">
+                                                <Icon Name="@starter.Icon" class="pa-starter-icon" aria-hidden="true" />
+                                                <span>
+                                                    <span class="d-block fw-semibold">@starter.Label</span>
+                                                    <span class="d-block small text-body-secondary">@starter.Hint</span>
+                                                </span>
+                                            </button>
+                                        </li>
+                                    }
+                                </ul>
+                            </div>
+                        }
+                        else
+                        {
+                            var last = conversation.Messages.LastOrDefault();
+
+                            <ol class="pa-thread list-unstyled mb-0">
+                                @foreach (var message in conversation.Messages)
+                                {
+                                    var headingId = $"pa-msg-{message.Id}";
+
+                                    @if (message.Role == AiRole.User)
+                                    {
+                                        <li class="pa-msg pa-msg-user" @key="@($"msg-{message.Id}")">
+                                            <article aria-labelledby="@headingId">
+                                                <h2 class="pa-msg-head" id="@headingId">You <span class="pa-msg-time">· @AiDisplay.Stamp(message.At)</span></h2>
+                                                <div class="pa-bubble">
+                                                    <p class="pa-plain mb-0">@message.Text</p>
+                                                    @if (message.Attachments.Count > 0)
+                                                    {
+                                                        <ul class="pa-files" aria-label="Attached files">
+                                                            @foreach (var (file, index) in message.Attachments.Select((file, index) => (file, index)))
+                                                            {
+                                                                <li class="pa-file" @key="@($"msg-{message.Id}-file-{index}")">
+                                                                    <Icon Name="IconName.Paperclip" aria-hidden="true" />
+                                                                    <span class="pa-file-name">@file.Name</span>
+                                                                    <span class="pa-file-size">@AiDisplay.FileSize(file.SizeBytes)</span>
+                                                                </li>
+                                                            }
+                                                        </ul>
+                                                    }
+                                                </div>
+                                            </article>
+                                        </li>
+                                    }
+                                    else
+                                    {
+                                        var streaming = State.IsStreaming(message);
+                                        var text = VisibleReply(message, streaming);
+                                        var isLast = ReferenceEquals(message, last);
+
+                                        <li class="pa-msg pa-msg-reply" @key="@($"msg-{message.Id}")">
+                                            <article aria-labelledby="@headingId" aria-busy="@(streaming ? "true" : null)">
+                                                <div class="pa-msg-meta">
+                                                    <span class="pa-msg-mark" aria-hidden="true"><Icon Name="IconName.Stars" /></span>
+                                                    <h2 class="pa-msg-head mb-0" id="@headingId">@ModelName(message.ModelId) <span class="pa-msg-time">· @AiDisplay.Stamp(message.At)</span></h2>
+                                                    @if (message.ReplyKey == AiReplies.PolicyKey)
+                                                    {
+                                                        <span class="badge rounded-pill pa-badge-policy"><Icon Name="IconName.ShieldExclamation" class="me-1" aria-hidden="true" />Blocked by workspace policy</span>
+                                                    }
+                                                    @if (message.IsStopped)
+                                                    {
+                                                        <span class="badge rounded-pill pa-badge-stopped"><Icon Name="IconName.StopCircle" class="me-1" aria-hidden="true" />Stopped</span>
+                                                    }
+                                                </div>
+
+                                                <div class="pa-reply-body">
+                                                    @if (text.Length > 0)
+                                                    {
+                                                        <ChatReplyBody @key="@($"reply-{message.Id}")" MessageId="message.Id" Text="@text" IsStreaming="streaming" />
+                                                    }
+                                                    else if (!streaming)
+                                                    {
+                                                        <p class="text-body-secondary fst-italic mb-0">Stopped before any text was written.</p>
+                                                    }
+
+                                                    @if (streaming)
+                                                    {
+                                                        @if (text.Length == 0)
+                                                        {
+                                                            <PlaceholderContainer Animation="PlaceholderAnimation.Glow" Class="pa-typing-lines" aria-hidden="true">
+                                                                <Placeholder Width="PlaceholderWidth.Col7" /><br />
+                                                                <Placeholder Width="PlaceholderWidth.Col10" /><br />
+                                                                <Placeholder Width="PlaceholderWidth.Col5" />
+                                                            </PlaceholderContainer>
+                                                        }
+                                                        else
+                                                        {
+                                                            <span class="pa-typing" aria-hidden="true"><span></span><span></span><span></span></span>
+                                                        }
+                                                    }
+                                                </div>
+
+                                                <div class="pa-msg-actions">
+                                                    @if (streaming)
+                                                    {
+                                                        <button type="button" class="btn btn-sm btn-outline-secondary" @ref="stopButton"
+                                                                @onclick="() => StopReply(message)" @onfocus="() => stopFocused = true" @onblur="() => stopFocused = false">
+                                                            <Icon Name="IconName.StopFill" class="me-1" aria-hidden="true" />Stop<span class="visually-hidden"> the answer</span>
+                                                        </button>
+                                                    }
+                                                    else
+                                                    {
+                                                        <div class="pa-feedback" role="group" aria-label="Rate this reply">
+                                                            <button type="button" class="btn btn-sm @(message.Feedback == AiFeedback.Helpful ? "btn-secondary" : "btn-outline-secondary")"
+                                                                    aria-pressed="@(message.Feedback == AiFeedback.Helpful ? "true" : "false")"
+                                                                    @onclick="() => SetFeedback(message, AiFeedback.Helpful)" @ref="helpfulButtons[message.Id]">
+                                                                <Icon Name="@(message.Feedback == AiFeedback.Helpful ? IconName.HandThumbsUpFill : IconName.HandThumbsUp)" class="me-1" aria-hidden="true" />Helpful
+                                                            </button>
+                                                            <button type="button" class="btn btn-sm @(message.Feedback == AiFeedback.NotHelpful ? "btn-secondary" : "btn-outline-secondary")"
+                                                                    aria-pressed="@(message.Feedback == AiFeedback.NotHelpful ? "true" : "false")"
+                                                                    @onclick="() => SetFeedback(message, AiFeedback.NotHelpful)">
+                                                                <Icon Name="@(message.Feedback == AiFeedback.NotHelpful ? IconName.HandThumbsDownFill : IconName.HandThumbsDown)" class="me-1" aria-hidden="true" />Not helpful
+                                                            </button>
+                                                        </div>
+                                                        @if (isLast)
+                                                        {
+                                                            <button type="button" class="btn btn-sm btn-outline-primary" @onclick="Regenerate">
+                                                                <Icon Name="IconName.ArrowRepeat" class="me-1" aria-hidden="true" />Regenerate
+                                                            </button>
+                                                        }
+                                                    }
+                                                </div>
+                                            </article>
+                                        </li>
+                                    }
+                                }
+                            </ol>
+                        }
+                    </div>
+
+                    @* Always rendered and focusable, so an outcome is announced and focus has somewhere to go when the pressed button is gone. *@
+                    <p class="pa-chat-status @(statusIsError ? "text-danger-emphasis" : null)" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
+
+                    <form class="pa-composer" @onsubmit="Submit" novalidate>
+                        @if (turnedOff is not null)
+                        {
+                            <div class="alert alert-warning d-flex align-items-start gap-2 small py-2 px-3 mb-2">
+                                <Icon Name="IconName.ExclamationTriangle" class="mt-1 flex-shrink-0" aria-hidden="true" />
+                                <span>
+                                    @if (conversation is not null)
+                                    {
+                                        @($"{turnedOff.Name} was turned off by a workspace admin; new replies use {ModelName(SelectedModelId)}. Choose another model below if you prefer.")
+                                    }
+                                    else
+                                    {
+                                        @($"{turnedOff.Name}, your preferred model, was turned off by a workspace admin; new chats use {ModelName(SelectedModelId)}.")
+                                    }
+                                </span>
+                            </div>
+                        }
+
+                        <label class="form-label fw-semibold mb-1" for="pa-chat-input">Message @AiSeedData.ProductName</label>
+                        <textarea id="pa-chat-input" class="form-control pa-composer-input" rows="3" maxlength="@AiState.MaxMessageLength"
+                                  value="@draft" @oninput="OnDraftInput" @onkeydown="OnDraftKeyDown" @ref="composerInput"
+                                  aria-describedby="pa-chat-input-help"></textarea>
+                        <div class="form-text" id="pa-chat-input-help">
+                            @if (State.Preferences.EnterToSend)
+                            {
+                                <span>Enter sends; Shift+Enter starts a new line.</span>
+                            }
+                            else
+                            {
+                                <span>Ctrl+Enter (⌘+Enter on a Mac) sends; Enter starts a new line.</span>
+                            }
+                            <span>Change it in <a href="@ProfileUrl">your profile</a>.</span>
+                            @if (draft.Length >= AiState.MaxMessageLength - CountWarningMargin)
+                            {
+                                <span class="fw-semibold">@CharacterCount</span>
+                            }
+                        </div>
+
+                        @if (attachments.Count > 0)
+                        {
+                            <ul class="pa-files pa-files-pending" aria-label="Files to send">
+                                @foreach (var (file, index) in attachments.Select((file, index) => (file, index)))
+                                {
+                                    <li class="pa-file" @key="@($"pending-{index}-{file.Name}")">
+                                        <Icon Name="IconName.Paperclip" aria-hidden="true" />
+                                        <span class="pa-file-name">@file.Name</span>
+                                        <span class="pa-file-size">@AiDisplay.FileSize(file.SizeBytes)</span>
+                                        <button type="button" class="pa-file-remove" title="Remove" @onclick="() => RemoveAttachment(index)">
+                                            <Icon Name="IconName.XLg" aria-hidden="true" /><span class="visually-hidden">Remove @file.Name</span>
+                                        </button>
+                                    </li>
+                                }
+                            </ul>
+                        }
+
+                        <div class="pa-composer-tools">
+                            <div class="pa-composer-field">
+                                <label class="form-label small fw-semibold mb-1" for="pa-chat-model">Model</label>
+                                <select id="pa-chat-model" class="form-select form-select-sm" value="@SelectedModelId" @onchange="OnModelChanged" aria-describedby="pa-chat-model-help">
+                                    @foreach (var model in State.EnabledModels)
+                                    {
+                                        <option value="@model.Id">@model.Name</option>
+                                    }
+                                </select>
+                                <div class="form-text" id="pa-chat-model-help">@(State.FindModel(SelectedModelId)?.Description)</div>
+                            </div>
+
+                            @if (State.Policy.AllowAttachments)
+                            {
+                                <div class="pa-composer-field">
+                                    <label class="form-label small fw-semibold mb-1" for="pa-chat-files">Attach files</label>
+                                    <InputFile @key="@($"files-{fileInputKey}")" @ref="fileInput" id="pa-chat-files" class="form-control form-control-sm" multiple
+                                               OnChange="OnFilesChosen" aria-describedby="pa-chat-files-help" />
+                                    <div class="form-text" id="pa-chat-files-help">
+                                        Up to @AiState.MaxAttachments files, @State.Policy.MaxAttachmentMb MB each. Only names and sizes are kept; files aren't opened or uploaded.
+                                    </div>
+                                </div>
+                            }
+                            else
+                            {
+                                <p class="pa-composer-field small text-body-secondary mb-0">
+                                    <Icon Name="IconName.Paperclip" class="me-1" aria-hidden="true" />A workspace admin turned attachments off for @AiSeedData.WorkspaceName, so you can't attach files.
+                                </p>
+                            }
+
+                            <div class="pa-composer-buttons">
+                                <Button @ref="promptsButton" Color="ButtonColor.Secondary" Outline="true" aria-haspopup="dialog" @onclick="OpenPromptsAsync">
+                                    <Icon Name="IconName.JournalText" class="me-2" aria-hidden="true" />Prompts
+                                </Button>
+                                <Button Type="ButtonType.Submit" Color="ButtonColor.Primary">
+                                    <Icon Name="IconName.SendFill" class="me-2" aria-hidden="true" />Send
+                                </Button>
+                            </div>
+                        </div>
+                    </form>
+                </section>
+            </div>
+
+            @* Narrow screens: the same list in a drawer (its close button is named "Close"). *@
+            <Offcanvas @ref="drawer" Placement="Placement.Start" aria-labelledby="pa-chat-drawer-title" OnShown="OnDrawerShown" OnHidden="OnDrawerHiddenAsync">
+                <HeaderTemplate>
+                    <h2 class="offcanvas-title h5 mb-0" id="pa-chat-drawer-title">Conversations</h2>
+                </HeaderTemplate>
+                <BodyTemplate>
+                    <ChatConversationList Prefix="pa-drawer" CurrentId="Id" OnRequest="OnListRequestAsync" OnStatus="OnListStatus" OnNavigate="OnListNavigateAsync" />
+                </BodyTemplate>
+            </Offcanvas>
+
+            @* Rename and delete. Opened from code, so focus is returned by hand; the action runs once the dialog is hidden. *@
+            <Modal @ref="dialogModal" IsVerticallyCentered="true" ShowCloseButton="false" aria-labelledby="pa-chat-dialog-title"
+                   OnShown="OnDialogShown" OnHidden="OnDialogHidden">
+                <HeaderTemplate>
+                    <h2 class="modal-title h5 pa-dialog-title" id="pa-chat-dialog-title">@DialogTitle</h2>
+                </HeaderTemplate>
+                <BodyTemplate>
+                    <form id="pa-chat-dialog-form" @onsubmit="SubmitDialogAsync" novalidate>
+                        @if (dialog == ChatConversationList.ListAction.Rename)
+                        {
+                            <label class="form-label fw-semibold" for="pa-chat-rename">Title</label>
+                            <input id="pa-chat-rename" type="text" class="form-control @(renameError is null ? null : "is-invalid")" maxlength="@AiState.MaxTitleLength" autocomplete="off"
+                                   @bind="renameText" @bind:event="oninput" @ref="renameInput" aria-required="true" aria-invalid="@(renameError is null ? null : "true")"
+                                   aria-describedby="pa-chat-rename-help pa-chat-rename-error" />
+                            <div class="form-text" id="pa-chat-rename-help">Up to @AiState.MaxTitleLength characters (@renameText.Length now). Only you see it.</div>
+                            <div class="invalid-feedback d-block" id="pa-chat-rename-error">@renameError</div>
+                        }
+                        else if (dialogConversation is { } doomed)
+                        {
+                            <p class="pa-dialog-text mb-0">
+                                This deletes “@doomed.Title” and its @MessageCountText(doomed) from this tab. It can't be undone.
+                                @if (doomed.Id == Id)
+                                {
+                                    <span>You'll go to a new chat.</span>
+                                }
+                            </p>
+                        }
+                    </form>
+                </BodyTemplate>
+                <FooterTemplate>
+                    <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => dialogModal.HideAsync()">Cancel</Button>
+                    <Button Type="ButtonType.Submit" Color="@(dialog == ChatConversationList.ListAction.Delete ? ButtonColor.Danger : ButtonColor.Primary)" form="pa-chat-dialog-form">
+                        @(dialog == ChatConversationList.ListAction.Delete ? "Delete conversation" : "Rename")
+                    </Button>
+                </FooterTemplate>
+            </Modal>
+
+            @* The saved prompts: the member's own and the workspace's shared ones, with a filter. *@
+            <Modal @ref="promptModal" IsVerticallyCentered="true" IsScrollable="true" ShowCloseButton="false" Size="ModalSize.Large" aria-labelledby="pa-chat-prompts-title"
+                   OnShown="OnPromptsShown" OnHidden="OnPromptsHidden">
+                <HeaderTemplate>
+                    <h2 class="modal-title h5" id="pa-chat-prompts-title">Insert a saved prompt</h2>
+                </HeaderTemplate>
+                <BodyTemplate>
+                    <label class="form-label fw-semibold" for="pa-chat-prompt-filter">Filter prompts</label>
+                    <input id="pa-chat-prompt-filter" type="search" class="form-control" maxlength="100" autocomplete="off"
+                           @bind="promptFilter" @bind:event="oninput" @ref="promptFilterInput" aria-describedby="pa-chat-prompt-filter-help" />
+                    <div class="form-text" id="pa-chat-prompt-filter-help">Matches titles, text, and tags. Choosing a prompt adds its text to the message box.</div>
+                    <p class="visually-hidden" role="status">@PromptFilterSummary</p>
+
+                    @foreach (var group in PromptGroups)
+                    {
+                        var groupId = $"pa-chat-prompts-{group.Key}";
+
+                        <h3 class="pa-prompt-group" id="@groupId" @key="@($"prompt-title-{group.Key}")">@group.Label</h3>
+                        @if (group.Items.Count == 0)
+                        {
+                            <p class="small text-body-secondary" @key="@($"prompt-empty-{group.Key}")">@group.Empty</p>
+                        }
+                        else
+                        {
+                            <ul class="pa-prompt-list" aria-labelledby="@groupId" @key="@($"prompt-list-{group.Key}")">
+                                @foreach (var prompt in group.Items)
+                                {
+                                    <li class="pa-prompt" @key="@($"prompt-{prompt.Id}")">
+                                        <div class="pa-prompt-info">
+                                            <span class="pa-prompt-title">@prompt.Title</span>
+                                            <span class="pa-prompt-text">@prompt.Text</span>
+                                            @if (prompt.Tags.Count > 0)
+                                            {
+                                                <span class="pa-prompt-tags">Tags: @string.Join(", ", prompt.Tags)</span>
+                                            }
+                                        </div>
+                                        <button type="button" class="btn btn-sm btn-outline-primary flex-shrink-0" @onclick="() => ChoosePromptAsync(prompt)">
+                                            Use<span class="visually-hidden"> @prompt.Title</span>
+                                        </button>
+                                    </li>
+                                }
+                            </ul>
+                        }
+                    }
+                </BodyTemplate>
+                <FooterTemplate>
+                    <a class="btn btn-link me-auto px-0" href="@PromptsUrl">Manage prompts</a>
+                    <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => promptModal.HideAsync()">Cancel</Button>
+                </FooterTemplate>
+            </Modal>
+        }
+    </AiMemberGuard>
+</div>

@@ -1,0 +1,65 @@
+.pa-prompts-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.pa-prompts-status:empty {
+    margin: 0;
+}
+
+.pa-prompts-status:focus {
+    outline: none;
+}
+
+.pa-prompts-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .5rem;
+}
+
+.pa-prompts-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 20rem), 1fr));
+    gap: 1rem;
+}
+
+.pa-prompt {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    padding: 1.125rem 1.25rem;
+}
+
+.pa-prompt-title {
+    margin-bottom: .5rem;
+    overflow-wrap: anywhere;
+    font-size: 1.0625rem;
+    font-weight: 700;
+    color: var(--pa-ink);
+}
+
+/* The first lines of the prompt: the full text is in the editor and the chat composer. */
+.pa-prompt-text {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 4;
+    line-clamp: 4;
+    overflow: hidden;
+    margin-bottom: .75rem;
+    color: var(--bs-secondary-color);
+    font-size: .9375rem;
+}
+
+.pa-prompt-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .5rem;
+    margin-top: auto;
+}
+
+.pa-prompts-dialog-text {
+    overflow-wrap: anywhere;
+}

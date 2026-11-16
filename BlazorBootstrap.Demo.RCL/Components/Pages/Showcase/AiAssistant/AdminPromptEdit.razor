@@ -1,0 +1,85 @@
+@page "/showcase/ai-assistant/admin/prompts/new"
+@page "/showcase/ai-assistant/admin/prompts/{Id:int}/edit"
+@layout AiAdminLayout
+
+@{
+    var prompt = Prompt;
+}
+
+<div class="container-fluid px-lg-4">
+    @if (Id is not null && prompt is null)
+    {
+        <AiNotFound />
+    }
+    else
+    {
+        var tags = ParseTags(tagsText);
+
+        <PageTitle>@(prompt is null ? "New shared prompt" : $"Edit {prompt.Title}") · @AiSeedData.ProductName</PageTitle>
+
+        <Breadcrumb Items="BreadcrumbItems" Class="mb-3" />
+
+        <div class="mb-3">
+            <h1 class="pa-title">@(prompt is null ? "New shared prompt" : $"Edit \"{prompt.Title}\"")</h1>
+            <p class="pa-lead mb-0">
+                @(prompt is null
+                    ? "Every member sees it in their prompt library when you save, and can put it in the composer. Only workspace admins can change it."
+                    : $"Every member sees this prompt in their prompt library; changes show there when you save. Used {AdminMembers.Plural(prompt.UseCount, "time")}, last changed {AiDisplay.Ago(prompt.UpdatedAt, State.Clock.Now)}.")
+            </p>
+        </div>
+
+        @* Always rendered and focusable, so a save is announced and focus has somewhere to go when it fails. *@
+        <p class="fw-semibold pa-adpe-status @(statusIsError ? "text-danger-emphasis" : null)" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
+
+        <section class="pa-panel pa-adpe-form" aria-labelledby="pa-adpe-form-title">
+            <h2 class="pa-section-title" id="pa-adpe-form-title">Prompt</h2>
+            <form @onsubmit="Save" novalidate aria-labelledby="pa-adpe-form-title">
+                <div class="mb-3">
+                    <label class="form-label fw-semibold" for="pa-adpe-title">Title</label>
+                    <input id="pa-adpe-title" class="form-control @(titleError is null ? null : "is-invalid")" @bind="title" @bind:event="oninput" @ref="titleInput"
+                           maxlength="@AiState.MaxPromptTitleLength" autocomplete="off" aria-required="true"
+                           aria-invalid="@(titleError is null ? null : "true")" aria-describedby="pa-adpe-title-help pa-adpe-title-error" />
+                    <div class="form-text d-flex flex-wrap justify-content-between gap-2" id="pa-adpe-title-help">
+                        <span>What members see in the list, like "Weekly status update".</span>
+                        <span class="text-nowrap">@CounterText(title, AiState.MaxPromptTitleLength)</span>
+                    </div>
+                    <div class="invalid-feedback d-block" id="pa-adpe-title-error">@titleError</div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-semibold" for="pa-adpe-text">Prompt text</label>
+                    <textarea id="pa-adpe-text" class="form-control pa-adpe-text @(textError is null ? null : "is-invalid")" rows="8" @bind="text" @bind:event="oninput" @ref="textInput"
+                              maxlength="@AiState.MaxPromptTextLength" aria-required="true"
+                              aria-invalid="@(textError is null ? null : "true")" aria-describedby="pa-adpe-text-help pa-adpe-text-error"></textarea>
+                    <div class="form-text d-flex flex-wrap justify-content-between gap-2" id="pa-adpe-text-help">
+                        <span>Plain text. Leave a placeholder like [paste text here] where members add their own part.</span>
+                        <span class="text-nowrap">@CounterText(text, AiState.MaxPromptTextLength)</span>
+                    </div>
+                    <div class="invalid-feedback d-block" id="pa-adpe-text-error">@textError</div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-semibold" for="pa-adpe-tags">Tags <span class="fw-normal text-body-secondary">(optional)</span></label>
+                    <input id="pa-adpe-tags" class="form-control pa-mono @(tagsError is null ? null : "is-invalid")" @bind="tagsText" @bind:event="oninput" @ref="tagsInput"
+                           autocomplete="off" spellcheck="false" aria-invalid="@(tagsError is null ? null : "true")" aria-describedby="pa-adpe-tags-help pa-adpe-tags-error" />
+                    <div class="form-text" id="pa-adpe-tags-help">
+                        Separate tags with commas, like "writing, team". Up to @AiState.MaxTags tags of @AiState.MaxTagLength characters: lower-case letters, digits, and hyphens,
+                        starting with a letter or digit.
+                        @if (tags.Count > 0)
+                        {
+                            <span class="d-block mt-1">Saved as: <span class="pa-mono">@string.Join(", ", tags)</span></span>
+                        }
+                    </div>
+                    <div class="invalid-feedback d-block" id="pa-adpe-tags-error">@tagsError</div>
+                </div>
+
+                <div class="d-flex flex-wrap align-items-center gap-2">
+                    <Button Type="ButtonType.Submit" Color="ButtonColor.Primary">
+                        <Icon Name="@(prompt is null ? IconName.PlusLg : IconName.CheckLg)" class="me-1" aria-hidden="true" />@(prompt is null ? "Share prompt" : "Save changes")
+                    </Button>
+                    <a class="btn btn-link" href="@AdminPrompts.ListUrl">Cancel<span class="visually-hidden"> and go back to shared prompts</span></a>
+                </div>
+            </form>
+        </section>
+    }
+</div>

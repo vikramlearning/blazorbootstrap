@@ -1,0 +1,57 @@
+@using BlazorBootstrap.Demo.RCL.Models.Showcase
+@using BlazorBootstrap.Demo.RCL.Services.Showcase
+
+<HeadContent>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" />
+</HeadContent>
+
+@* The frame both Parley layouts share: the members' app and the workspace admin back office (D-031). The site bar's theme
+   changes feed the chart colors. Its stylesheet styles the pages of both through ::deep. *@
+<div class="sc-site sc-ai">
+    <ShowcaseSiteBar Site="@site" OnThemeChanged="OnThemeChanged" />
+
+    @Header
+
+    <div class="@(Sidebar is null ? null : "pa-shell")">
+        @Sidebar
+
+        <div class="@(Sidebar is null ? null : "pa-shell-main")">
+            @* Pages show members' names, emails, conversations, and prompts, so the content is masked from session recording. *@
+            <main class="sc-main pa-content" id="pa-main" data-clarity-mask="true">
+                @ChildContent
+            </main>
+
+            <div class="@Container">
+                <CarbonAds Class="sc-ad" />
+            </div>
+
+            <footer class="pa-footer">
+                <div class="@Container d-flex flex-wrap justify-content-between gap-2">
+                    <span>© 2026 @AiSeedData.ProductName for @AiSeedData.WorkspaceName (fictitious). No model is called: replies are prewritten examples, and everything stays in this browser tab.</span>
+                    <span class="d-none d-lg-inline">Built with Markdown, Sidebar, Charts, Modal, Offcanvas, Placeholders, Progress, and Avatar.</span>
+                </div>
+            </footer>
+        </div>
+    </div>
+</div>
+
+@code {
+    private readonly ShowcaseSite site = ShowcaseCatalog.Get("ai-assistant");
+
+    /// <summary>Gets or sets the page content.</summary>
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    /// <summary>Gets or sets the header above the page (the app's Navbar, or the admin top bar).</summary>
+    [Parameter] public RenderFragment? Header { get; set; }
+
+    /// <summary>Gets or sets the sidebar beside the page (the admin back office), or <see langword="null" /> for none.</summary>
+    [Parameter] public RenderFragment? Sidebar { get; set; }
+
+    [Inject] private AiState State { get; set; } = default!;
+
+    private string Container => Sidebar is null ? "container-xl" : "container-fluid px-lg-4";
+
+    private void OnThemeChanged(string themeName) => State.SetTheme(themeName);
+}

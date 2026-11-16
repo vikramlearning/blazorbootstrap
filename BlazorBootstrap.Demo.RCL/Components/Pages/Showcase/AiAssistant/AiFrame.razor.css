@@ -1,0 +1,270 @@
+.sc-ai {
+    --sc-primary: #6d28d9;
+    --sc-primary-rgb: 109, 40, 217;
+    --sc-primary-hover: #5b21b6;
+    --sc-primary-contrast: #fff;
+    --sc-font-body: "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --sc-font-heading: "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --sc-page-bg: #f7f5fc;
+    --pa-font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    --pa-ink: #1c1530;
+    --pa-surface: #fff;
+    --pa-border: #e4dff2;
+    --pa-soft: #f1ecfd;
+    --pa-user-bubble: #ede7fe;
+}
+
+[data-bs-theme=dark] .sc-ai {
+    --sc-primary: #c4b5fd;
+    --sc-primary-rgb: 196, 181, 253;
+    --sc-primary-hover: #ddd6fe;
+    --sc-primary-contrast: #1e1338;
+    --sc-page-bg: #0f0c18;
+    --pa-ink: #f2eefc;
+    --pa-surface: #18142a;
+    --pa-border: #2e2747;
+    --pa-soft: #221b3b;
+    --pa-user-bubble: #2a2149;
+}
+
+/* Bootstrap keeps white text on primary fills; on the light dark-mode violet that fails contrast. */
+[data-bs-theme=dark] .sc-ai ::deep .text-bg-primary,
+[data-bs-theme=dark] .sc-ai ::deep .progress-bar {
+    color: var(--sc-primary-contrast) !important;
+}
+
+/* Header: the Navbar component renders the nav and its links, so they need ::deep. */
+.sc-ai ::deep .pa-header {
+    min-height: 3.75rem;
+    background: var(--pa-surface);
+    border-bottom: 1px solid var(--pa-border);
+}
+
+.sc-ai ::deep .pa-header .nav-link {
+    color: var(--pa-ink);
+    font-weight: 600;
+    border-radius: .5rem;
+    padding-inline: .75rem !important;
+}
+
+    .sc-ai ::deep .pa-header .nav-link:hover {
+        color: var(--sc-primary);
+    }
+
+    .sc-ai ::deep .pa-header .nav-link.active {
+        color: var(--sc-primary-hover);
+        background: rgba(var(--sc-primary-rgb), .12);
+    }
+
+[data-bs-theme=dark] .sc-ai ::deep .pa-header .nav-link.active {
+    color: var(--sc-primary);
+}
+
+.sc-ai ::deep .pa-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: .5rem;
+    font-weight: 700;
+    font-size: 1.25rem;
+    color: var(--pa-ink);
+    text-decoration: none;
+}
+
+.sc-ai ::deep .pa-brand-mark {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    border-radius: .625rem;
+    background: var(--sc-primary);
+    color: var(--sc-primary-contrast);
+}
+
+.pa-content {
+    padding-block: 1.5rem 1rem;
+}
+
+.pa-footer {
+    margin-top: 2rem;
+    padding-block: 1.25rem;
+    border-top: 1px solid var(--pa-border);
+    color: var(--bs-secondary-color);
+    font-size: .8125rem;
+}
+
+/* Shared page styles: page markup is child content of the layout, so it needs ::deep. */
+.sc-ai ::deep .pa-title {
+    margin: 0;
+    overflow-wrap: anywhere;
+    font-size: clamp(1.375rem, 2.4vw, 1.75rem);
+    font-weight: 700;
+    color: var(--pa-ink);
+}
+
+.sc-ai ::deep .pa-lead {
+    color: var(--bs-secondary-color);
+    font-size: 1rem;
+}
+
+.sc-ai ::deep .pa-panel {
+    padding: 1.25rem;
+    border: 1px solid var(--pa-border);
+    border-radius: .875rem;
+    background: var(--pa-surface);
+}
+
+.sc-ai ::deep .pa-card {
+    border: 1px solid var(--pa-border);
+    border-radius: .875rem;
+    background: var(--pa-surface);
+}
+
+.sc-ai ::deep .pa-section-title {
+    margin-bottom: .75rem;
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: var(--pa-ink);
+}
+
+.sc-ai ::deep .pa-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: .75rem;
+    background: var(--pa-soft);
+    color: var(--sc-primary);
+}
+
+.sc-ai ::deep .pa-mono {
+    font-family: var(--pa-font-mono);
+}
+
+.sc-ai ::deep .pa-plain {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+.sc-ai ::deep .pa-not-found {
+    max-width: 36rem;
+    margin: 2rem auto;
+    text-align: center;
+}
+
+/* Assistant replies (Markdown): readable code blocks and spacing. */
+.sc-ai ::deep .pa-reply h2,
+.sc-ai ::deep .pa-reply h3 {
+    margin-top: 1rem;
+    font-size: 1.0625rem;
+    font-weight: 700;
+}
+
+.sc-ai ::deep .pa-reply pre {
+    padding: .875rem 1rem;
+    overflow-x: auto;
+    border-radius: .625rem;
+    background: #1e1b2e;
+    color: #ede9fe;
+    font-family: var(--pa-font-mono);
+    font-size: .8125rem;
+}
+
+.sc-ai ::deep .pa-reply code {
+    font-family: var(--pa-font-mono);
+    font-size: .875em;
+}
+
+.sc-ai ::deep .pa-reply :not(pre) > code {
+    padding: .1rem .3rem;
+    border-radius: .3rem;
+    background: var(--pa-soft);
+    color: var(--pa-ink);
+}
+
+.sc-ai ::deep .pa-reply blockquote {
+    margin: .75rem 0;
+    padding: .5rem 1rem;
+    border-left: .25rem solid var(--sc-primary);
+    background: var(--pa-soft);
+    border-radius: 0 .5rem .5rem 0;
+}
+
+/* The workspace admin back office (D-031): a sidebar beside the page on wide screens, above it on narrow ones. */
+.pa-shell {
+    display: flex;
+    flex-direction: column;
+    flex: 1 0 auto;
+    min-width: 0;
+}
+
+.pa-shell-main {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+@media (min-width: 641px) {
+    .pa-shell {
+        flex-direction: row;
+        align-items: flex-start;
+    }
+}
+
+.sc-ai ::deep .pa-sidebar {
+    --bb-sidebar-width: 15rem;
+    --bb-sidebar-background-color: #1e1338;
+    --bb-sidebar-top-row-background-color: #1e1338;
+    --bb-sidebar-top-row-border-color: rgba(255, 255, 255, .08);
+    --bb-sidebar-title-text-color: #fff;
+    --bb-sidebar-brand-icon-color: #c4b5fd;
+    --bb-sidebar-title-badge-text-color: #1e1338;
+    --bb-sidebar-title-badge-background-color: #c4b5fd;
+    --bb-sidebar-navbar-toggler-icon-color: #fff;
+    --bb-sidebar-navbar-toggler-background-color: rgba(255, 255, 255, .1);
+    --bb-sidebar-content-border-color: rgba(255, 255, 255, .08);
+    --bb-sidebar-nav-item-text-color: #e5defa;
+    --bb-sidebar-nav-item-text-active-color-rgb: 255, 255, 255;
+    --bb-sidebar-nav-item-text-hover-color: rgba(255, 255, 255, .95);
+    --bb-sidebar-nav-item-background-hover-color: rgba(255, 255, 255, .08);
+    --bb-sidebar-nav-item-group-background-color: rgba(255, 255, 255, .06);
+}
+
+/* Beside the page only: above it (narrow screens), a sticky bar would sit under the page content. */
+@media (min-width: 641px) {
+    .sc-ai ::deep .pa-sidebar {
+        position: sticky;
+        top: 0;
+    }
+}
+
+.sc-ai ::deep .pa-admin-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: .75rem;
+    padding: .625rem 1.5rem;
+    border-bottom: 1px solid var(--pa-border);
+    background: var(--pa-surface);
+}
+
+.sc-ai ::deep .pa-admin-bar-title {
+    font-weight: 700;
+    color: var(--pa-ink);
+}
+
+.sc-ai ::deep .pa-admin-bar-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: .5rem;
+}
+
+/* A table that scrolls sideways can round to one pixel taller than its box; never show a vertical scrollbar for it.
+   It is also the containing block of its visually hidden text, which is absolutely positioned: otherwise that text
+   escapes the clipping and widens the page at 375 px. */
+.sc-ai ::deep .table-responsive {
+    position: relative;
+    overflow-y: hidden;
+}

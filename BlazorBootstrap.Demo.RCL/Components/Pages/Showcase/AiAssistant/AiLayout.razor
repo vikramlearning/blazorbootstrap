@@ -1,0 +1,49 @@
+@inherits LayoutComponentBase
+
+<ShowcaseSessionHost State="State" SiteBase="@Base" SiteName="@AiSeedData.ProductName">
+<AiFrame>
+    <Header>
+    <Navbar Class="pa-header"
+            Placement="NavbarPlacement.StickyTop"
+            Container="NavbarContainer.Fluid"
+            AriaLabel="@AiSeedData.ProductName"
+            TogglerAriaLabel="Menu">
+        <Brand>
+            <NavbarBrand Href="@Base" Class="pa-brand">
+                <span class="pa-brand-mark" aria-hidden="true"><Icon Name="IconName.Stars" /></span>
+                <span>@AiSeedData.ProductName</span>
+            </NavbarBrand>
+            @if (State.Identity.IsSignedIn)
+            {
+                <ShowcaseAccountMenu SiteBase="@Base" SignInPath="@SignInPath" Class="ms-auto me-2 order-lg-last" />
+            }
+            else
+            {
+                <a class="btn btn-sm btn-outline-secondary ms-auto me-2 order-lg-last" href="@SignInPath">Sign in</a>
+            }
+        </Brand>
+        <ChildContent>
+            <NavbarNav Class="me-auto ms-lg-4 mb-3 mb-lg-0">
+                @if (State.IsActiveMember)
+                {
+                    <NavbarItem Href="@($"{Base}/chat")">Chat</NavbarItem>
+                    <NavbarItem Href="@($"{Base}/prompts")">Prompts</NavbarItem>
+                    <NavbarItem Href="@($"{Base}/usage")">Usage</NavbarItem>
+                    @if (State.IsWorkspaceAdmin)
+                    {
+                        <NavbarItem Href="@AiAdminLayout.Base">Workspace admin</NavbarItem>
+                    }
+                }
+                else
+                {
+                    <NavbarItem Href="@Base" Match="NavLinkMatch.All">Home</NavbarItem>
+                }
+            </NavbarNav>
+        </ChildContent>
+    </Navbar>
+    </Header>
+    <ChildContent>
+        @Body
+    </ChildContent>
+</AiFrame>
+</ShowcaseSessionHost>

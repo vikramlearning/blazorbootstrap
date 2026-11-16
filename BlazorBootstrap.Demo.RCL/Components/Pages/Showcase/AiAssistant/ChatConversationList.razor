@@ -1,0 +1,68 @@
+@* The member's conversations, beside the chat on wide screens and in the Conversations drawer on narrow ones. The page
+   renders it twice (one copy is hidden at each width), so every ID carries the prefix. *@
+<div class="pa-convs">
+    <a class="btn btn-primary w-100 mb-3" href="@NewChatUrl" aria-current="@(CurrentId is null ? "page" : null)" @onclick="OnNavigate">
+        <Icon Name="IconName.PlusLg" class="me-2" aria-hidden="true" />New chat
+    </a>
+
+    <div class="mb-2" role="search">
+        <label class="form-label small fw-semibold mb-1" for="@($"{Prefix}-search")">Search conversations</label>
+        <input id="@($"{Prefix}-search")" type="search" class="form-control form-control-sm" maxlength="100" autocomplete="off"
+               @bind="search" @bind:event="oninput" aria-describedby="@($"{Prefix}-search-help")" />
+        <div class="form-text" id="@($"{Prefix}-search-help")">Searches titles and your own messages, not @AiSeedData.ProductName's replies.</div>
+    </div>
+
+    @* Says how many match while searching. Only the copy on screen is announced (the other is display: none). *@
+    <p class="visually-hidden" role="status">@SearchSummary</p>
+
+    @if (State.Conversations.Count == 0)
+    {
+        <div class="pa-convs-empty">
+            <Icon Name="IconName.ChatDots" class="fs-4 mb-2" aria-hidden="true" />
+            <p class="mb-0">No conversations yet. Start one with <strong>New chat</strong>, and it shows up here.</p>
+        </div>
+    }
+    else if (Results.Count == 0)
+    {
+        <div class="pa-convs-empty">
+            <p class="pa-convs-term mb-2">No conversations match “@search.Trim()”.</p>
+            <button type="button" class="btn btn-sm btn-outline-secondary" @onclick="ClearSearch">Clear search</button>
+        </div>
+    }
+    else
+    {
+        @foreach (var group in Groups)
+        {
+            var groupId = $"{Prefix}-{group.Key}";
+
+            <h3 class="pa-convs-group" id="@groupId" @key="@($"group-title-{group.Key}")">@group.Label</h3>
+            <ul class="pa-conv-list" aria-labelledby="@groupId" @key="@($"group-list-{group.Key}")">
+                @foreach (var conversation in group.Items)
+                {
+                    var current = conversation.Id == CurrentId;
+                    var id = conversation.Id;
+
+                    <li class="pa-conv @(current ? "is-current" : null)" @key="@($"conv-{id}")">
+                        <a class="pa-conv-link" href="@AiDisplay.ConversationUrl(id)" aria-current="@(current ? "page" : null)" @onclick="OnNavigate">
+                            <span class="pa-conv-title">@conversation.Title</span>
+                            <span class="pa-conv-meta">@AiDisplay.Ago(conversation.UpdatedAt, State.Clock.Now)</span>
+                        </a>
+                        <div class="pa-conv-actions">
+                            @* A toggle: the name stays "Pin …" and aria-pressed says whether it is pinned. *@
+                            <button type="button" class="pa-conv-action" aria-pressed="@(conversation.IsPinned ? "true" : "false")" title="@(conversation.IsPinned ? "Unpin" : "Pin")"
+                                    @onclick="() => TogglePinAsync(conversation)" @ref="pinButtons[id]">
+                                <Icon Name="@(conversation.IsPinned ? IconName.PinAngleFill : IconName.PinAngle)" aria-hidden="true" /><span class="visually-hidden">Pin @conversation.Title</span>
+                            </button>
+                            <button type="button" class="pa-conv-action" title="Rename" aria-haspopup="dialog" @onclick="() => RequestAsync(ListAction.Rename, conversation)" @ref="renameButtons[id]">
+                                <Icon Name="IconName.Pencil" aria-hidden="true" /><span class="visually-hidden">Rename @conversation.Title</span>
+                            </button>
+                            <button type="button" class="pa-conv-action pa-conv-delete" title="Delete" aria-haspopup="dialog" @onclick="() => RequestAsync(ListAction.Delete, conversation)" @ref="deleteButtons[id]">
+                                <Icon Name="IconName.Trash" aria-hidden="true" /><span class="visually-hidden">Delete @conversation.Title</span>
+                            </button>
+                        </div>
+                    </li>
+                }
+            </ul>
+        }
+    }
+</div>

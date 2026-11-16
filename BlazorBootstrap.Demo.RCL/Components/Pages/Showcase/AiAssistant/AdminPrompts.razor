@@ -1,0 +1,113 @@
+@page "/showcase/ai-assistant/admin/prompts"
+@layout AiAdminLayout
+
+<PageTitle>Shared prompts · @AiSeedData.ProductName</PageTitle>
+
+<div class="container-fluid px-lg-4">
+    @{
+        var prompts = State.SharedPrompts;
+    }
+
+    <div class="pa-adpr-head mb-4">
+        <div>
+            <h1 class="pa-title">Shared prompts</h1>
+            <p class="pa-lead mb-0">Prompts every member of @AiSeedData.WorkspaceName sees in their prompt library, next to their own. The most used come first.</p>
+        </div>
+        <Button Type="ButtonType.Link" To="@NewUrl" Color="ButtonColor.Primary"><Icon Name="IconName.PlusLg" class="me-1" aria-hidden="true" />New shared prompt</Button>
+    </div>
+
+    @* Always rendered and focusable, so a delete is announced and focus has somewhere to go when its row is gone. *@
+    <p class="fw-semibold pa-adpr-status @(statusIsError ? "text-danger-emphasis" : null)" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
+
+    <section class="pa-panel" aria-labelledby="pa-adpr-list-title">
+        <h2 class="pa-section-title" id="pa-adpr-list-title">@AdminMembers.Plural(prompts.Count, "shared prompt")</h2>
+        @if (prompts.Count == 0)
+        {
+            <p class="text-body-secondary mb-0">There are no shared prompts yet. Members only see their own until you add one.</p>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table align-middle mb-0">
+                    <caption class="visually-hidden">Shared prompts, the most used first</caption>
+                    <thead>
+                        <tr>
+                            <th scope="col">Title</th>
+                            <th scope="col">Tags</th>
+                            <th scope="col">Author</th>
+                            <th scope="col" class="text-end">Uses</th>
+                            <th scope="col">Updated</th>
+                            <th scope="col">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var prompt in prompts)
+                        {
+                            var promptId = prompt.Id;
+                            <tr @key="promptId">
+                                <th scope="row" class="pa-adpr-title">
+                                    <a href="@EditUrl(promptId)">@prompt.Title</a>
+                                    <span class="d-block small fw-normal text-body-secondary pa-adpr-excerpt">@Excerpt(prompt.Text)</span>
+                                </th>
+                                <td class="pa-adpr-tags">
+                                    @if (prompt.Tags.Count == 0)
+                                    {
+                                        <span class="small text-body-secondary">None</span>
+                                    }
+                                    else
+                                    {
+                                        <ul class="list-unstyled d-flex flex-wrap gap-1 mb-0" aria-label="Tags">
+                                            @foreach (var tag in prompt.Tags)
+                                            {
+                                                <li @key="tag"><span class="pa-adpr-tag">@tag</span></li>
+                                            }
+                                        </ul>
+                                    }
+                                </td>
+                                <td class="pa-adpr-author">@prompt.Author</td>
+                                <td class="text-end pa-mono">@prompt.UseCount.ToString("#,0", CultureInfo.InvariantCulture)</td>
+                                <td class="text-nowrap">@AiDisplay.Ago(prompt.UpdatedAt, State.Clock.Now)</td>
+                                <td>
+                                    <div class="pa-adpr-actions">
+                                        <Button Type="ButtonType.Link" To="@EditUrl(promptId)" Color="ButtonColor.Secondary" Outline="true" Size="ButtonSize.Small">
+                                            <Icon Name="IconName.Pencil" class="me-1" aria-hidden="true" />Edit<span class="visually-hidden"> @prompt.Title</span>
+                                        </Button>
+                                        <Button @ref="deleteButtons[promptId]" Color="ButtonColor.Danger" Outline="true" Size="ButtonSize.Small" @onclick="() => OpenDeleteAsync(promptId)">
+                                            <Icon Name="IconName.Trash3" class="me-1" aria-hidden="true" />Delete<span class="visually-hidden"> @prompt.Title</span>
+                                        </Button>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        <p class="small text-body-secondary mt-3 mb-0">
+            Members can use a shared prompt but not change it. The tab holds at most @AiState.MaxPrompts saved prompts, personal and shared together.
+        </p>
+    </section>
+
+    <Modal @ref="deleteModal" IsVerticallyCentered="true" ShowCloseButton="false" aria-labelledby="pa-adpr-dialog-title" OnHidden="OnDeleteHidden">
+        <HeaderTemplate>
+            <h2 class="modal-title h5 pa-adpr-dialog-title" id="pa-adpr-dialog-title">@(DialogPrompt is { } target ? $"Delete \"{target.Title}\"?" : "Prompt not found")</h2>
+        </HeaderTemplate>
+        <BodyTemplate>
+            @if (DialogPrompt is null)
+            {
+                <p class="mb-0">That prompt was already deleted, so there's nothing to delete.</p>
+            }
+            else
+            {
+                <p class="mb-0">Members will no longer see it in their prompt library. Conversations that used it keep their messages. This can't be undone.</p>
+            }
+        </BodyTemplate>
+        <FooterTemplate>
+            <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => deleteModal.HideAsync()">Cancel</Button>
+            @if (DialogPrompt is not null)
+            {
+                <Button Color="ButtonColor.Danger" @onclick="ConfirmDeleteAsync"><Icon Name="IconName.Trash3" class="me-1" aria-hidden="true" />Delete prompt</Button>
+            }
+        </FooterTemplate>
+    </Modal>
+</div>

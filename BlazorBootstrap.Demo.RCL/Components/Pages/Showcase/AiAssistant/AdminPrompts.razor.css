@@ -1,0 +1,65 @@
+/* The shared prompt list: the table scrolls inside its box on narrow screens; titles and authors wrap. */
+.pa-adpr-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.pa-adpr-status {
+    min-height: 1.5rem;
+    overflow-wrap: anywhere;
+}
+
+    .pa-adpr-status:focus {
+        outline: none;
+    }
+
+    .pa-adpr-status:focus-visible {
+        outline: 2px solid var(--bs-focus-ring-color, var(--sc-primary));
+        outline-offset: 2px;
+    }
+
+.pa-adpr-title {
+    min-width: 14rem;
+    max-width: 28rem;
+    overflow-wrap: anywhere;
+}
+
+.pa-adpr-excerpt {
+    overflow-wrap: anywhere;
+}
+
+.pa-adpr-tags {
+    min-width: 8rem;
+}
+
+.pa-adpr-tag {
+    display: inline-block;
+    padding: .125rem .5rem;
+    border-radius: 999px;
+    background: var(--pa-soft);
+    color: var(--pa-ink);
+    font-family: var(--pa-font-mono);
+    font-size: .75rem;
+}
+
+.pa-adpr-author {
+    min-width: 7rem;
+    overflow-wrap: anywhere;
+}
+
+.pa-adpr-actions {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: .375rem;
+}
+
+    .pa-adpr-actions ::deep .btn {
+        white-space: nowrap;
+    }
+
+::deep .pa-adpr-dialog-title {
+    overflow-wrap: anywhere;
+}
