@@ -1,0 +1,136 @@
+.qp-edit-status,
+.qp-edit-error {
+    font-size: .875rem;
+    font-weight: 600;
+}
+
+    .qp-edit-status:empty,
+    .qp-edit-error:empty {
+        margin: 0;
+    }
+
+    .qp-edit-status:focus-visible {
+        outline: 2px solid var(--sc-primary);
+        outline-offset: 2px;
+    }
+
+.qp-edit-error,
+.qp-field-error,
+.qp-over {
+    color: var(--bs-danger-text-emphasis);
+}
+
+.qp-field-error {
+    margin: .25rem 0 0;
+    font-size: .875rem;
+}
+
+    .qp-field-error:empty {
+        margin: 0;
+    }
+
+.qp-pass-mark {
+    font-weight: 700;
+    color: var(--qp-ink);
+}
+
+.qp-quiz-drafts,
+.qp-option-list,
+.qp-quiz-preview,
+.qp-quiz-preview-options {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.qp-quiz-draft {
+    min-width: 0;
+    margin: 0 0 1.25rem;
+    padding: 1rem;
+    border: 1px solid var(--qp-border);
+    border-radius: .75rem;
+}
+
+.qp-quiz-draft-legend {
+    float: none;
+    width: auto;
+    margin: 0 0 .5rem;
+    padding: 0 .375rem;
+    font-family: var(--sc-font-heading);
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: var(--qp-ink);
+}
+
+.qp-quiz-options {
+    min-width: 0;
+}
+
+/* An option's text field, its "Correct answer" radio, and Remove share a row; they wrap at 375 px. */
+.qp-option {
+    margin-bottom: .75rem;
+}
+
+.qp-option-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: .375rem .75rem;
+}
+
+.qp-option-text {
+    flex: 1 1 12rem;
+    width: auto;
+    min-width: 0;
+}
+
+.qp-option-correct {
+    white-space: nowrap;
+}
+
+.qp-quiz-draft-actions,
+.qp-edit-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: .5rem;
+}
+
+.qp-quiz-preview-item {
+    padding-block: .75rem;
+    border-top: 1px solid var(--qp-border);
+    overflow-wrap: anywhere;
+}
+
+    .qp-quiz-preview-item:first-child {
+        border-top: 0;
+        padding-top: 0;
+    }
+
+.qp-quiz-preview-number {
+    font-size: .8125rem;
+    font-weight: 700;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    color: var(--bs-secondary-color);
+}
+
+.qp-quiz-preview-options li {
+    margin-bottom: .25rem;
+}
+
+.qp-summary {
+    display: grid;
+    grid-template-columns: minmax(0, auto) minmax(0, 1fr);
+    gap: .375rem 1rem;
+    margin-bottom: 1rem;
+}
+
+    .qp-summary dt {
+        font-weight: 600;
+    }
+
+    .qp-summary dd {
+        margin: 0;
+        overflow-wrap: anywhere;
+    }

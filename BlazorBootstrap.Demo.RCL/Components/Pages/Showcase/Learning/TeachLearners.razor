@@ -1,0 +1,118 @@
+@page "/showcase/learning/teach/learners"
+@layout TeachLayout
+
+<PageTitle>Learners · Teaching · @LearningSeedData.SchoolName</PageTitle>
+
+<div class="container-fluid px-lg-4">
+    @{
+        var all = State.Roster;
+        var scoped = Scoped(all);
+        var shown = Sorted(scoped.Where(row => MatchesStatus(row, statusFilter))).ToList();
+    }
+
+    <h1 class="qp-title mb-1">Learners</h1>
+    <p class="qp-lead mb-2">Everyone enrolled in your courses and how far they are through the published lessons.</p>
+    <p class="fw-semibold mb-4">@SummaryText(all)</p>
+
+    <div class="row g-2 align-items-end mb-2" role="group" aria-label="Learner filters">
+        <div class="col-12 col-sm-6 col-lg-3">
+            <label class="form-label small fw-semibold" for="qp-learners-course">Course</label>
+            <select id="qp-learners-course" class="form-select" value="@courseFilter" @onchange="OnCourseChanged">
+                <option value="">All your courses</option>
+                @foreach (var course in State.MyCourses)
+                {
+                    <option value="@course.Id.ToString(CultureInfo.InvariantCulture)">@course.Title</option>
+                }
+            </select>
+        </div>
+        <div class="col-12 col-sm-6 col-lg-3">
+            <label class="form-label small fw-semibold" for="qp-learners-search">Search by name</label>
+            <input id="qp-learners-search" class="form-control" type="search" maxlength="80" autocomplete="off"
+                   @bind="search" @bind:event="oninput" />
+        </div>
+        <div class="col-12 col-sm-6 col-lg-3">
+            <label class="form-label small fw-semibold" for="qp-learners-status">Status</label>
+            <select id="qp-learners-status" class="form-select" value="@statusFilter" @onchange="OnStatusChanged">
+                @foreach (var filter in StatusFilters)
+                {
+                    <option value="@filter">@StatusLabel(filter, scoped)</option>
+                }
+            </select>
+        </div>
+        <div class="col-12 col-sm-6 col-lg-3">
+            <label class="form-label small fw-semibold" for="qp-learners-sort">Sort by</label>
+            <select id="qp-learners-sort" class="form-select" value="@sort" @onchange="OnSortChanged">
+                <option value="@SortActive">Last active, latest first</option>
+                <option value="@SortName">Name, A to Z</option>
+                <option value="@SortProgress">Progress, furthest first</option>
+            </select>
+        </div>
+    </div>
+    <p class="small text-body-secondary mb-3" aria-live="polite">@ScopeText(shown.Count, all.Count)</p>
+
+    @if (all.Count == 0)
+    {
+        <div class="qp-panel text-center py-5">
+            <span class="qp-icon fs-4" aria-hidden="true"><Icon Name="IconName.People" /></span>
+            <p class="fw-bold mt-3 mb-1">No learners yet</p>
+            <p class="text-body-secondary mb-0">Learners who enroll in your published courses show up here with their progress.</p>
+        </div>
+    }
+    else
+    {
+        <div class="qp-panel p-0 p-sm-2">
+            <div class="table-responsive">
+                <table class="table align-middle mb-0 qp-roster">
+                    <caption class="visually-hidden">Learners on your courses, @SortText</caption>
+                    <thead>
+                        <tr>
+                            <th scope="col">Learner</th>
+                            <th scope="col">Course</th>
+                            <th scope="col">Enrolled on</th>
+                            <th scope="col">Progress</th>
+                            <th scope="col">Last active</th>
+                            <th scope="col">Certificate</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (shown.Count == 0)
+                        {
+                            <tr>
+                                <td colspan="6" class="text-center text-body-secondary py-4">No learners match. Try another course, name, or status.</td>
+                            </tr>
+                        }
+                        @foreach (var row in shown)
+                        {
+                            var progressText = ProgressText(row);
+
+                            <tr @key="RowKey(row)">
+                                <th scope="row" class="fw-semibold qp-roster-name">@row.Enrollment.LearnerName</th>
+                                <td class="qp-roster-course">@row.Course.Title</td>
+                                <td class="text-nowrap">@LearningDisplay.Date(row.Enrollment.EnrolledOn)</td>
+                                <td class="qp-roster-progress">
+                                    <span class="d-block small mb-1">@progressText</span>
+                                    <Progress Height="8">
+                                        <ProgressBar Width="row.Percent" Color="@(row.IsComplete ? ProgressColor.Success : ProgressColor.Primary)"
+                                                     aria-label="@($"Progress of {row.Enrollment.LearnerName} in {row.Course.Title}")"
+                                                     aria-valuenow="@row.Percent" aria-valuemin="0" aria-valuemax="100" aria-valuetext="@progressText" />
+                                    </Progress>
+                                </td>
+                                <td class="text-nowrap">@LearningDisplay.Date(row.Enrollment.LastActivity)</td>
+                                <td class="text-nowrap">
+                                    @if (row.Certificate is { } certificate)
+                                    {
+                                        <a href="@Certificate.PathFor(certificate.Code)">@certificate.Code<span class="visually-hidden">, certificate of @row.Enrollment.LearnerName</span></a>
+                                    }
+                                    else
+                                    {
+                                        <span aria-hidden="true">—</span><span class="visually-hidden">None yet</span>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+</div>

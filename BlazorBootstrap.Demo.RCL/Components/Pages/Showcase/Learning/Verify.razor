@@ -45,7 +45,7 @@
             }
             else if (Result is { } certificate)
             {
-                var course = State.FindCourse(certificate.CourseId);
+                var course = State.CertificateCourse(certificate.CourseId);
                 <section class="qp-verify-outcome qp-verify-valid" aria-labelledby="qp-verify-valid-title">
                     <h2 class="h5 fw-bold d-flex align-items-center gap-2" id="qp-verify-valid-title">
                         <Icon Name="IconName.PatchCheckFill" class="qp-verify-mark" aria-hidden="true" />Valid certificate

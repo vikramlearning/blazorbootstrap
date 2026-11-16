@@ -1,0 +1,233 @@
+@page "/showcase/learning/teach/reviews"
+@layout TeachLayout
+
+<PageTitle>Reviews · Teaching · @LearningSeedData.SchoolName</PageTitle>
+
+<div class="container-fluid px-lg-4">
+    @{
+        var all = State.InstructorReviews;
+        var scoped = Scoped(all);
+        var shown = scoped.Where(review => MatchesStatus(review, statusFilter)).ToList();
+    }
+
+    <h1 class="qp-title mb-1">Reviews</h1>
+    <p class="qp-lead mb-3">What learners wrote about your courses, the newest first, with your public replies.</p>
+
+    <p class="qp-reviews-note small mb-4">
+        <Icon Name="IconName.InfoCircle" class="me-1" aria-hidden="true" />
+        Replies are public: everyone who opens the course page sees your reply under the learner's review. Hiding a review takes it
+        off the course page and out of the course's rating; its author still sees it, with a note that you hid it.
+    </p>
+
+    <div class="row g-2 align-items-end mb-2" role="group" aria-label="Review filters">
+        <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
+            <label class="form-label small fw-semibold" for="qp-reviews-course">Course</label>
+            <select id="qp-reviews-course" class="form-select" value="@courseFilter" @onchange="OnCourseChanged">
+                <option value="">All your courses</option>
+                @foreach (var course in State.MyCourses)
+                {
+                    <option value="@course.Id.ToString(CultureInfo.InvariantCulture)">@course.Title</option>
+                }
+            </select>
+        </div>
+        <div class="col-12 col-sm-6 col-lg-3 col-xl-2">
+            <label class="form-label small fw-semibold" for="qp-reviews-rating">Rating</label>
+            <select id="qp-reviews-rating" class="form-select" value="@ratingFilter.ToString(CultureInfo.InvariantCulture)" @onchange="OnRatingChanged">
+                <option value="0">All ratings</option>
+                @for (var stars = 5; stars >= 1; stars--)
+                {
+                    <option value="@stars.ToString(CultureInfo.InvariantCulture)">@StarLabel(stars)</option>
+                }
+            </select>
+        </div>
+        <div class="col-12 col-sm-6 col-lg-3 col-xl-2">
+            <label class="form-label small fw-semibold" for="qp-reviews-status">Status</label>
+            <select id="qp-reviews-status" class="form-select" value="@statusFilter" @onchange="OnStatusChanged">
+                @foreach (var filter in StatusFilters)
+                {
+                    <option value="@filter">@StatusLabel(filter, scoped)</option>
+                }
+            </select>
+        </div>
+    </div>
+    <p class="small text-body-secondary mb-2" aria-live="polite">@ScopeText(shown.Count, all.Count)</p>
+
+    @* Always rendered, so a screen reader announces each result; it takes focus when the review it is about leaves the list. *@
+    <p class="qp-reviews-status small fw-semibold mb-3 @(status.IsError ? "text-danger-emphasis" : null)" role="status" tabindex="-1" @ref="statusRegion">@status.Message</p>
+
+    @if (shown.Count == 0)
+    {
+        <div class="qp-panel text-center py-5">
+            <span class="qp-icon fs-4" aria-hidden="true"><Icon Name="IconName.Star" /></span>
+            <p class="fw-bold mt-3 mb-1">@(all.Count == 0 ? "No reviews yet" : "No reviews match")</p>
+            <p class="text-body-secondary mb-0">@EmptyText(all.Count)</p>
+        </div>
+    }
+    else
+    {
+        <ul class="list-unstyled d-grid gap-3 mb-0" aria-label="Reviews">
+            @foreach (var review in shown)
+            {
+                var courseTitle = CourseTitle(review.CourseId);
+                var isEditing = editingId == review.Id;
+                var headingId = $"qp-review-{review.Id}";
+
+                <li @key="review.Id">
+                    <article class="qp-panel" aria-labelledby="@headingId">
+                        <div class="d-flex flex-wrap align-items-start justify-content-between gap-2">
+                            <div class="qp-review-main">
+                                <h2 class="qp-card-title fs-6 mb-0" id="@headingId">@review.Author<span class="visually-hidden"> on @courseTitle</span></h2>
+                                <div class="qp-meta mt-1">
+                                    <a href="@LearningDisplay.CourseUrl(review.CourseId)">@courseTitle</a>
+                                    <span>@DatesText(review)</span>
+                                </div>
+                            </div>
+                            <p class="qp-stars small text-nowrap mb-0">
+                                <span aria-hidden="true" class="me-1">
+                                    @foreach (var star in LearningDisplay.Stars(review.Rating))
+                                    {
+                                        <Icon Name="star" />
+                                    }
+                                </span>
+                                <span class="text-body">Rated @review.Rating out of 5</span>
+                            </p>
+                        </div>
+
+                        @if (review.HiddenReason is { } reason)
+                        {
+                            <p class="qp-review-hidden small mt-2 mb-0">
+                                <Icon Name="IconName.EyeSlash" class="me-1" aria-hidden="true" /><span class="fw-semibold">Hidden: @reason.</span>
+                                Not on the course page and not in the rating; the author still sees it.
+                            </p>
+                        }
+
+                        <p class="qp-review-body mt-2 mb-3">@review.Body</p>
+
+                        @if (isEditing)
+                        {
+                            var inputId = $"qp-reply-text-{review.Id}";
+                            var countId = $"qp-reply-count-{review.Id}";
+                            var errorId = $"qp-reply-error-{review.Id}";
+
+                            <div class="qp-reply-form">
+                                <label class="form-label fw-semibold" for="@inputId">@(review.InstructorReply is null ? $"Your public reply to {review.Author}" : $"Edit your public reply to {review.Author}")</label>
+                                <textarea class="form-control @(replyError is null ? null : "is-invalid")" id="@inputId" rows="4" maxlength="@LearningState.MaxReviewLength"
+                                          aria-describedby="@(replyError is null ? countId : $"{countId} {errorId}")" aria-invalid="@(replyError is null ? null : "true")"
+                                          @ref="replyInput" @bind="replyText" @bind:event="oninput"></textarea>
+                                <div class="form-text" id="@countId">@CountText · shown on the @courseTitle course page</div>
+                                <div class="invalid-feedback d-block" id="@errorId">@replyError</div>
+                                <div class="d-flex flex-wrap gap-2 mt-3">
+                                    <button type="button" class="btn btn-primary" @onclick="() => SaveReply(review)">
+                                        @(review.InstructorReply is null ? "Post reply" : "Save reply")
+                                    </button>
+                                    <button type="button" class="btn btn-outline-secondary" @onclick="() => CancelEdit(review.Id)">Cancel</button>
+                                </div>
+                            </div>
+                        }
+                        else if (review.InstructorReply is { } reply)
+                        {
+                            <div class="qp-instructor-reply mb-3">
+                                <p class="small fw-semibold mb-1">Your public reply@(review.RepliedOn is { } repliedOn ? $" · {LearningDisplay.Date(repliedOn)}" : null)</p>
+                                <p class="qp-review-body small mb-0">@reply</p>
+                            </div>
+                        }
+                        else
+                        {
+                            <p class="small text-body-secondary mb-3">No reply yet.</p>
+                        }
+
+                        @if (!isEditing)
+                        {
+                            <div class="d-flex flex-wrap gap-2">
+                                @if (review.InstructorReply is null)
+                                {
+                                    <button type="button" class="btn btn-sm btn-primary" @ref="replyButtons[review.Id]" @onclick="() => StartEdit(review)">
+                                        <Icon Name="IconName.Reply" class="me-1" aria-hidden="true" />Reply<span class="visually-hidden"> to @review.Author</span>
+                                    </button>
+                                }
+                                else
+                                {
+                                    <button type="button" class="btn btn-sm btn-outline-primary" @ref="replyButtons[review.Id]" @onclick="() => StartEdit(review)">
+                                        <Icon Name="IconName.Pencil" class="me-1" aria-hidden="true" />Edit reply<span class="visually-hidden"> to @review.Author</span>
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-outline-danger" @ref="deleteButtons[review.Id]" @onclick="() => AskDeleteAsync(review)">
+                                        <Icon Name="IconName.Trash" class="me-1" aria-hidden="true" />Delete reply<span class="visually-hidden"> to @review.Author</span>
+                                    </button>
+                                }
+                                @if (review.HiddenReason is null)
+                                {
+                                    <button type="button" class="btn btn-sm btn-outline-secondary" @ref="visibilityButtons[review.Id]" @onclick="() => AskHideAsync(review)">
+                                        <Icon Name="IconName.EyeSlash" class="me-1" aria-hidden="true" />Hide<span class="visually-hidden"> the review by @review.Author</span>
+                                    </button>
+                                }
+                                else
+                                {
+                                    <button type="button" class="btn btn-sm btn-outline-secondary" @ref="visibilityButtons[review.Id]" @onclick="() => ShowAgain(review)">
+                                        <Icon Name="IconName.Eye" class="me-1" aria-hidden="true" />Show again<span class="visually-hidden"> the review by @review.Author</span>
+                                    </button>
+                                }
+                            </div>
+                        }
+                    </article>
+                </li>
+            }
+        </ul>
+    }
+
+    <Modal @ref="deleteModal" IsVerticallyCentered="true" ShowCloseButton="false" aria-labelledby="qp-delete-reply-title" OnHidden="OnDeleteHiddenAsync">
+        <HeaderTemplate>
+            <h2 class="modal-title h5" id="qp-delete-reply-title">Delete your reply to @(deleting?.Author ?? "this review")?</h2>
+        </HeaderTemplate>
+        <BodyTemplate>
+            @if (deleting is { } target)
+            {
+                <p class="mb-2">
+                    Learners will no longer see your reply under @target.Author's review on the @CourseTitle(target.CourseId) course page.
+                    The review itself stays. This can't be undone.
+                </p>
+                <p class="small text-body-secondary mb-0">You can write a new reply at any time.</p>
+            }
+            <p class="text-danger-emphasis fw-semibold small mt-2 mb-0" role="alert">@dialogError</p>
+        </BodyTemplate>
+        <FooterTemplate>
+            <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => deleteModal.HideAsync()">Keep reply</Button>
+            <Button Color="ButtonColor.Danger" @onclick="ConfirmDeleteAsync">Delete reply</Button>
+        </FooterTemplate>
+    </Modal>
+
+    <Modal @ref="hideModal" IsVerticallyCentered="true" ShowCloseButton="false" aria-labelledby="qp-hide-review-title" OnHidden="OnHideHiddenAsync">
+        <HeaderTemplate>
+            <h2 class="modal-title h5" id="qp-hide-review-title">Hide the review by @(hiding?.Author ?? "this learner")?</h2>
+        </HeaderTemplate>
+        <BodyTemplate>
+            @if (hiding is { } target)
+            {
+                <p class="mb-3">
+                    The review leaves the @CourseTitle(target.CourseId) course page and no longer counts in the course's rating.
+                    @target.Author still sees it, with a note that you hid it and why. You can show it again at any time.
+                </p>
+                <fieldset aria-describedby="@(hideError is null ? null : "qp-hide-reason-error")">
+                    <legend class="form-label fw-semibold fs-6">Reason</legend>
+                    @for (var index = 0; index < LearningReviewHideReasons.All.Count; index++)
+                    {
+                        var reason = LearningReviewHideReasons.All[index];
+                        var radioId = $"qp-hide-reason-{index}";
+
+                        <div class="form-check" @key="reason">
+                            <input class="form-check-input @(hideError is null ? null : "is-invalid")" type="radio" name="qp-hide-reason" id="@radioId"
+                                   value="@reason" checked="@(hideReason == reason)" aria-invalid="@(hideError is null ? null : "true")"
+                                   @onchange="() => SelectHideReason(reason)" @ref="reasonRadios[reason]" />
+                            <label class="form-check-label" for="@radioId">@reason</label>
+                        </div>
+                    }
+                    <div class="invalid-feedback d-block" id="qp-hide-reason-error">@hideError</div>
+                </fieldset>
+            }
+            <p class="text-danger-emphasis fw-semibold small mt-2 mb-0" role="alert">@dialogError</p>
+        </BodyTemplate>
+        <FooterTemplate>
+            <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => hideModal.HideAsync()">Keep it visible</Button>
+            <Button Color="ButtonColor.Primary" @onclick="ConfirmHideAsync">Hide review</Button>
+        </FooterTemplate>
+    </Modal>
+</div>

@@ -67,7 +67,8 @@ public partial class Certificate : ComponentBase, IDisposable
     /// <summary>Gets or sets the certificate code from the route (case and spaces are ignored).</summary>
     [Parameter] public string? Code { get; set; }
 
-    private LearningCourse? Course => Found is null ? null : State.FindCourse(Found.CourseId);
+    /// <summary>The certificate's course, even if it's no longer in the catalog.</summary>
+    private LearningCourse? Course => Found is null ? null : State.CertificateCourse(Found.CourseId);
 
     private LearningCertificate? Found => State.VerifyCertificate(Code);
 

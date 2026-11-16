@@ -1,0 +1,120 @@
+.qp-inbox-status {
+    font-size: .875rem;
+    font-weight: 600;
+}
+
+    .qp-inbox-status:empty {
+        margin: 0;
+    }
+
+    .qp-inbox-status:focus-visible {
+        outline: 2px solid var(--sc-primary);
+        outline-offset: 2px;
+    }
+
+.qp-inbox-status-error,
+.qp-field-error {
+    color: var(--bs-danger-text-emphasis);
+}
+
+.qp-field-error {
+    margin: .25rem 0 0;
+    font-size: .875rem;
+}
+
+    .qp-field-error:empty {
+        margin: 0;
+    }
+
+/* Status and course filters side by side, stacking at 375 px. */
+.qp-inbox-filters {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 1rem 2rem;
+}
+
+.qp-inbox-status-filter {
+    min-width: 0;
+    margin: 0;
+}
+
+    .qp-inbox-status-filter legend {
+        float: none;
+        width: auto;
+    }
+
+.qp-inbox-toggle {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .375rem;
+}
+
+.qp-inbox-course-filter {
+    flex: 1 1 14rem;
+    max-width: 24rem;
+    min-width: 0;
+}
+
+.qp-inbox-list {
+    display: grid;
+    gap: 1rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.qp-inbox-where {
+    font-size: .875rem;
+    overflow-wrap: anywhere;
+}
+
+.qp-inbox-byline {
+    margin: 0 0 .375rem;
+    font-family: var(--sc-font-body);
+    font-size: 1rem;
+    font-weight: 600;
+    overflow-wrap: anywhere;
+}
+
+.qp-inbox-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .25rem 1.25rem;
+    font-size: .875rem;
+}
+
+/* Question and answer text is plain: line breaks are kept, long words wrap at 375 px. */
+.qp-qa-text {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+.qp-qa-answers {
+    margin: 0;
+    padding: 0 0 0 1rem;
+    list-style: none;
+    border-left: .2rem solid var(--qp-border);
+}
+
+.qp-qa-answer + .qp-qa-answer {
+    margin-top: .75rem;
+}
+
+.qp-qa-answer-instructor {
+    margin-left: -1.2rem;
+    padding-left: 1rem;
+    border-left: .2rem solid var(--sc-primary);
+}
+
+.qp-inbox-answer-form {
+    padding-top: .75rem;
+    border-top: 1px solid var(--qp-border);
+}
+
+.qp-qa-quote {
+    padding: .5rem .75rem;
+    border-left: .25rem solid var(--qp-border);
+    border-radius: 0 .5rem .5rem 0;
+    background: var(--bs-tertiary-bg);
+}

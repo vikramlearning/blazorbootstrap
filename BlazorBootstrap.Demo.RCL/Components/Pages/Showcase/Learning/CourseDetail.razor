@@ -127,10 +127,17 @@ else
                         else
                         {
                             var certificate = State.CertificateFor(Course.Id);
-                            <p class="small mb-3">Free for members. Enroll to open every lesson, take the self-checks, track your progress, and earn a certificate.</p>
-                            <button type="button" class="btn btn-primary w-100" @onclick="Enroll">
-                                <Icon Name="IconName.PlusCircle" class="me-2" aria-hidden="true" />Enroll
-                            </button>
+                            @if (Course.IsPublished)
+                            {
+                                <p class="small mb-3">Free for members. Enroll to open every lesson, take the self-checks, track your progress, and earn a certificate.</p>
+                                <button type="button" class="btn btn-primary w-100" @onclick="Enroll">
+                                    <Icon Name="IconName.PlusCircle" class="me-2" aria-hidden="true" />Enroll
+                                </button>
+                            }
+                            else
+                            {
+                                <p class="small mb-0">@Course.Instructor took this course out of the catalog, so it isn't open for new enrollments.</p>
+                            }
                             @if (certificate is not null)
                             {
                                 <p class="small mt-3 mb-1">You earned this course's certificate before; it's still yours.</p>
@@ -144,7 +151,10 @@ else
                         <p class="small fw-semibold mb-0 @(enrollStatus.Message is null ? null : "mt-2") @(enrollStatus.IsError ? "text-danger-emphasis" : null)" role="status" tabindex="-1" @ref="enrollStatusRegion">@enrollStatus.Message</p>
 
                         <hr />
-                        <p class="small mb-1"><Icon Name="IconName.FileEarmarkPdf" class="me-2" aria-hidden="true" />Course handout (PDF) in every lesson</p>
+                        @if (Course.HasHandout)
+                        {
+                            <p class="small mb-1"><Icon Name="IconName.FileEarmarkPdf" class="me-2" aria-hidden="true" />Course handout (PDF) in every lesson</p>
+                        }
                         <p class="small mb-1"><Icon Name="IconName.PatchQuestion" class="me-2" aria-hidden="true" />@QuizCountText</p>
                         <p class="small mb-0"><Icon Name="IconName.Award" class="me-2" aria-hidden="true" />Certificate with a verify code when you finish</p>
                     </CardBody>
@@ -245,6 +255,10 @@ else
                                 </p>
                                 <p class="text-break mb-1" style="white-space: pre-wrap;">@own.Body</p>
                                 <p class="small text-body-secondary mb-3">@DatesText(own)</p>
+                                @if (own.HiddenReason is not null)
+                                {
+                                    <p class="small mb-3"><Icon Name="IconName.EyeSlash" class="me-1" aria-hidden="true" />@Course.Instructor hid your review from the course page (@own.HiddenReason.ToLowerInvariant()). Other learners don't see it, and it doesn't count in the rating.</p>
+                                }
                                 @if (own.InstructorReply is not null)
                                 {
                                     <p class="small mb-3">@Course.Instructor replied; the reply is in the list.</p>
@@ -372,7 +386,14 @@ else
             <p class="mb-2">
                 <strong>Kept:</strong> @KeptText.
             </p>
-            <p class="small text-body-secondary mb-0">You can enroll again at any time; you'd start from the first lesson.</p>
+            @if (Course.IsPublished)
+            {
+                <p class="small text-body-secondary mb-0">You can enroll again at any time; you'd start from the first lesson.</p>
+            }
+            else
+            {
+                <p class="small fw-semibold mb-0">@Course.Instructor took this course out of the catalog, so you can't enroll again after leaving@(State.CertificateFor(Course.Id) is null ? ", and the course is gone from your courses" : null).</p>
+            }
             <p class="text-danger-emphasis fw-semibold small mt-2 mb-0" role="alert">@unenrollError</p>
         </BodyTemplate>
         <FooterTemplate>

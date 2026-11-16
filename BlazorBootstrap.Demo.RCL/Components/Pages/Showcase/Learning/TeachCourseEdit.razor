@@ -1,0 +1,445 @@
+@page "/showcase/learning/teach/courses/new"
+@page "/showcase/learning/teach/courses/{Id:int}"
+@layout TeachLayout
+
+@{
+    var course = Item;
+}
+
+@if (Id is not null && course is null)
+{
+    <PageTitle>Course not found · Teaching · @LearningSeedData.SchoolName</PageTitle>
+
+    <div class="container-fluid px-lg-4">
+        <section class="qp-not-found">
+            <span class="qp-icon fs-4" aria-hidden="true"><Icon Name="IconName.SignpostSplit" /></span>
+            <h1 class="qp-title fs-3 mt-3 mb-2">Course not found</h1>
+            <p class="text-body-secondary mb-4">None of your courses has that number. It may have been deleted.</p>
+            <a class="btn btn-primary" href="@TeachCourses.ListUrl">Back to your courses</a>
+        </section>
+    </div>
+}
+else
+{
+    var learners = course is null ? 0 : LearnerCount(course.Id);
+
+    <PageTitle>@(course is null ? "New course" : $"Edit {course.Title}") · Teaching · @LearningSeedData.SchoolName</PageTitle>
+
+    <div class="container-fluid px-lg-4">
+        <Breadcrumb Items="BreadcrumbItems" Class="mb-3" />
+
+        <h1 class="qp-title qp-ce-wrap">@(course?.Title ?? "New course")</h1>
+        <p class="qp-lead mb-4">
+            @(course is null ? "Write the details and save them. A new course starts as a draft; then add modules and lessons, and publish it."
+              : course.IsPublished ? "Published: saved changes show on the course page right away."
+              : "Draft: only you see it until you publish it.")
+        </p>
+
+        <div class="row g-4">
+            <div class="col-lg-8">
+                <section class="qp-panel" aria-labelledby="qp-ce-details-heading">
+                    <h2 class="qp-section-title" id="qp-ce-details-heading">Details</h2>
+                    <p class="small text-body-secondary">Learners see these in the catalog and on the course page.</p>
+
+                    <form @onsubmit="Save" novalidate>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold" for="qp-ce-title">Title</label>
+                            <input @ref="titleInput" id="qp-ce-title" class="form-control @(titleError is null ? null : "is-invalid")" value="@title" @oninput="OnTitleInput"
+                                   autocomplete="off" aria-describedby="qp-ce-title-count qp-ce-title-error" aria-invalid="@(titleError is null ? null : "true")" />
+                            <div class="form-text @(IsOver(title, LearningState.MaxCourseTitleLength) ? "qp-ce-over" : null)" id="qp-ce-title-count">@CounterText(title, LearningState.MaxCourseTitleLength)</div>
+                            <p class="qp-ce-field-error" id="qp-ce-title-error">@titleError</p>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold" for="qp-ce-subtitle">Subtitle</label>
+                            <input @ref="subtitleInput" id="qp-ce-subtitle" class="form-control @(subtitleError is null ? null : "is-invalid")" value="@subtitle" @oninput="OnSubtitleInput"
+                                   autocomplete="off" aria-describedby="qp-ce-subtitle-count qp-ce-subtitle-error" aria-invalid="@(subtitleError is null ? null : "true")" />
+                            <div class="form-text @(IsOver(subtitle, LearningState.MaxCourseSubtitleLength) ? "qp-ce-over" : null)" id="qp-ce-subtitle-count">
+                                @CounterText(subtitle, LearningState.MaxCourseSubtitleLength). One line under the title.
+                            </div>
+                            <p class="qp-ce-field-error" id="qp-ce-subtitle-error">@subtitleError</p>
+                        </div>
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-sm-6">
+                                <label class="form-label fw-semibold" for="qp-ce-category">Category</label>
+                                <select @ref="categorySelect" id="qp-ce-category" class="form-select @(categoryError is null ? null : "is-invalid")" value="@categoryId" @onchange="OnCategoryChanged"
+                                        aria-describedby="qp-ce-category-error" aria-invalid="@(categoryError is null ? null : "true")">
+                                    @foreach (var category in State.Categories)
+                                    {
+                                        <option value="@category.Id">@category.Name</option>
+                                    }
+                                </select>
+                                <p class="qp-ce-field-error" id="qp-ce-category-error">@categoryError</p>
+                            </div>
+                            <div class="col-sm-6">
+                                <label class="form-label fw-semibold" for="qp-ce-level">Level</label>
+                                <select id="qp-ce-level" class="form-select" value="@level" @onchange="OnLevelChanged" aria-describedby="qp-ce-level-help">
+                                    @foreach (var option in Enum.GetValues<LearningLevel>())
+                                    {
+                                        <option value="@option">@option</option>
+                                    }
+                                </select>
+                                <div class="form-text" id="qp-ce-level-help">What learners need to know before they start.</div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold" for="qp-ce-role">Your role on the course page</label>
+                            <input @ref="roleInput" id="qp-ce-role" class="form-control @(roleError is null ? null : "is-invalid")" value="@instructorRole" @oninput="OnRoleInput"
+                                   autocomplete="organization-title" aria-describedby="qp-ce-role-count qp-ce-role-error" aria-invalid="@(roleError is null ? null : "true")" />
+                            <div class="form-text @(IsOver(instructorRole, LearningState.MaxInstructorRoleLength) ? "qp-ce-over" : null)" id="qp-ce-role-count">
+                                @CounterText(instructorRole, LearningState.MaxInstructorRoleLength). Shown after your name, @(State.Identity.Current?.Name ?? "the instructor"), for example "Senior .NET engineer".
+                            </div>
+                            <p class="qp-ce-field-error" id="qp-ce-role-error">@roleError</p>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold" for="qp-ce-description">Description</label>
+                            <textarea @ref="descriptionInput" id="qp-ce-description" class="form-control @(descriptionError is null ? null : "is-invalid")" rows="5" value="@description" @oninput="OnDescriptionInput"
+                                      aria-describedby="qp-ce-description-count qp-ce-description-error" aria-invalid="@(descriptionError is null ? null : "true")"></textarea>
+                            <div class="form-text @(IsOver(description, LearningState.MaxCourseDescriptionLength) ? "qp-ce-over" : null)" id="qp-ce-description-count">
+                                @CounterText(description, LearningState.MaxCourseDescriptionLength)
+                            </div>
+                            <p class="qp-ce-field-error" id="qp-ce-description-error">@descriptionError</p>
+                        </div>
+
+                        <fieldset class="mb-3" aria-describedby="qp-ce-outcomes-help">
+                            <legend class="form-label fw-semibold fs-6 mb-1">What you'll learn</legend>
+                            <p class="form-text mt-0 mb-2" id="qp-ce-outcomes-help">
+                                Up to @LearningState.MaxOutcomes outcomes, one short sentence each, listed on the course page. Empty ones are left out when you save.
+                            </p>
+                            @if (outcomes.Count > 0)
+                            {
+                                <ol class="qp-ce-outcomes list-unstyled mb-2">
+                                    @for (var i = 0; i < outcomes.Count; i++)
+                                    {
+                                        var index = i;
+                                        var row = outcomes[index];
+                                        var inputId = FormattableString.Invariant($"qp-ce-outcome-{row.Key}");
+
+                                        <li @key="row.Key">
+                                            <label class="form-label small fw-semibold mb-1" for="@inputId">Outcome @(index + 1)</label>
+                                            <div class="d-flex gap-2">
+                                                <input @ref="outcomeInputs[row.Key]" id="@inputId" class="form-control @(row.Error is null ? null : "is-invalid")" value="@row.Text"
+                                                       @oninput="args => OnOutcomeInput(row, args)" autocomplete="off"
+                                                       aria-describedby="@($"{inputId}-count {inputId}-error")" aria-invalid="@(row.Error is null ? null : "true")" />
+                                                <button type="button" class="btn btn-outline-secondary flex-shrink-0" @onclick="() => RemoveOutcome(index)">
+                                                    <Icon Name="IconName.XLg" aria-hidden="true" /><span class="visually-hidden">Remove outcome @(index + 1)</span>
+                                                </button>
+                                            </div>
+                                            <div class="form-text @(IsOver(row.Text, LearningState.MaxOutcomeLength) ? "qp-ce-over" : null)" id="@($"{inputId}-count")">@CounterText(row.Text, LearningState.MaxOutcomeLength)</div>
+                                            <p class="qp-ce-field-error" id="@($"{inputId}-error")">@row.Error</p>
+                                        </li>
+                                    }
+                                </ol>
+                            }
+                            <button type="button" class="btn btn-sm btn-outline-secondary" @ref="addOutcomeButton" @onclick="AddOutcome"
+                                    disabled="@(outcomes.Count >= LearningState.MaxOutcomes)" aria-describedby="qp-ce-outcomes-limit">
+                                <Icon Name="IconName.PlusLg" class="me-1" aria-hidden="true" />Add outcome
+                            </button>
+                            <span class="small text-body-secondary ms-2" id="qp-ce-outcomes-limit">@OutcomeCountText</span>
+                        </fieldset>
+
+                        <div class="qp-ce-actions">
+                            <button type="submit" class="btn btn-primary">
+                                <Icon Name="IconName.Save" class="me-2" aria-hidden="true" />@(course is null ? "Create course" : "Save details")
+                            </button>
+                            <a class="btn btn-link" href="@TeachCourses.ListUrl">@(course is null ? "Cancel" : "Back to courses")</a>
+                        </div>
+                    </form>
+
+                    <p class="qp-ce-error" role="alert">@formError</p>
+                    @* Always rendered and focusable, so a save is announced, also after a new course moves to its edit route. *@
+                    <p class="qp-ce-status @(detailsStatus.IsError ? "text-danger-emphasis" : null)" role="status" tabindex="-1" @ref="detailsStatusRegion">@detailsStatus.Message</p>
+                </section>
+            </div>
+
+            <div class="col-lg-4">
+                <section class="qp-panel" aria-labelledby="qp-ce-state-heading">
+                    <h2 class="qp-section-title" id="qp-ce-state-heading">Status</h2>
+                    @if (course is null)
+                    {
+                        <p class="small mb-0">Not saved yet. A new course starts as a draft: only you see it until you publish it.</p>
+                    }
+                    else
+                    {
+                        var publishedLessons = course.Lessons.Count(lesson => lesson.IsPublished);
+
+                        <p class="mb-2">
+                            @if (course.IsPublished)
+                            {
+                                <Badge Color="BadgeColor.Success"><Icon Name="IconName.Globe" class="me-1" aria-hidden="true" />Published</Badge>
+                            }
+                            else
+                            {
+                                <Badge Color="BadgeColor.Secondary"><Icon Name="IconName.PencilSquare" class="me-1" aria-hidden="true" />Draft</Badge>
+                            }
+                        </p>
+                        <p class="small mb-2">
+                            @(course.IsPublished ? "In the catalog and open for enrollment."
+                              : learners > 0 ? "Not in the catalog and closed to new enrollments. Enrolled learners keep their access."
+                              : "Not in the catalog. Only you can open the course page.")
+                        </p>
+                        <dl class="qp-ce-summary small">
+                            <dt>Learners</dt>
+                            <dd>@(learners == 0 ? "None yet" : learners.ToString(CultureInfo.InvariantCulture))</dd>
+                            <dt>Published lessons</dt>
+                            <dd>@publishedLessons of @course.Lessons.Count</dd>
+                        </dl>
+                        @if (!course.IsPublished && publishedLessons == 0)
+                        {
+                            <p class="small text-body-secondary">Publish at least one lesson before you publish the course.</p>
+                        }
+                        <div class="qp-ce-actions">
+                            <button type="button" class="btn btn-sm @(course.IsPublished ? "btn-outline-secondary" : "btn-primary")" @ref="publishButton" @onclick="() => ToggleCoursePublishedAsync(course)">
+                                @if (course.IsPublished)
+                                {
+                                    <text><Icon Name="IconName.EyeSlash" class="me-1" aria-hidden="true" />Unpublish course</text>
+                                }
+                                else
+                                {
+                                    <text><Icon Name="IconName.Globe" class="me-1" aria-hidden="true" />Publish course</text>
+                                }
+                            </button>
+                            <a class="btn btn-sm btn-outline-secondary" href="@LearningDisplay.CourseUrl(course.Id)">
+                                <Icon Name="IconName.BoxArrowUpRight" class="me-1" aria-hidden="true" />View in school
+                            </a>
+                        </div>
+                    }
+                    <p class="qp-ce-status mt-2 @(publishStatus.IsError ? "text-danger-emphasis" : null)" role="status" tabindex="-1" @ref="publishStatusRegion">@publishStatus.Message</p>
+                </section>
+            </div>
+        </div>
+
+        @if (course is not null)
+        {
+            var modules = course.Modules;
+
+            <section class="qp-panel mt-4" aria-labelledby="qp-ce-curriculum-heading">
+                <h2 class="qp-section-title" id="qp-ce-curriculum-heading">Curriculum</h2>
+                <p class="small text-body-secondary">
+                    @CurriculumText(course) Learners see the published lessons, in this order. A course holds up to @LearningState.MaxModulesPerCourse modules and @LearningState.MaxLessonsPerCourse lessons.
+                </p>
+                <p class="qp-ce-status @(curriculumStatus.IsError ? "text-danger-emphasis" : null)" role="status" tabindex="-1" @ref="curriculumStatusRegion">@curriculumStatus.Message</p>
+
+                @if (modules.Count == 0)
+                {
+                    <p class="text-body-secondary">No modules yet. Add the first module below, then its lessons.</p>
+                }
+                else
+                {
+                    <ol class="qp-ce-modules list-unstyled">
+                        @for (var m = 0; m < modules.Count; m++)
+                        {
+                            var moduleIndex = m;
+                            var module = modules[moduleIndex];
+                            var moduleHeadingId = FormattableString.Invariant($"qp-ce-module-{module.Id}");
+
+                            <li @key="module.Id" class="qp-ce-module">
+                                <div class="qp-ce-module-head">
+                                    <div class="min-w-0 qp-ce-wrap">
+                                        <p class="small text-body-secondary mb-0">Module @(moduleIndex + 1) of @modules.Count</p>
+                                        <h3 class="qp-ce-module-title" id="@moduleHeadingId">@module.Title</h3>
+                                        <p class="small text-body-secondary mb-0">@ModuleText(module)</p>
+                                    </div>
+                                    <div class="qp-ce-actions">
+                                        <button type="button" class="btn btn-sm btn-outline-secondary" @ref="renameButtons[module.Id]" @onclick="() => StartRename(module)"
+                                                aria-expanded="@(renamingModuleId == module.Id ? "true" : "false")">
+                                            <Icon Name="IconName.Pencil" class="me-1" aria-hidden="true" />Rename<span class="visually-hidden"> @module.Title</span>
+                                        </button>
+                                        <button type="button" class="btn btn-sm btn-outline-secondary" @ref="moduleUpButtons[module.Id]" disabled="@(moduleIndex == 0)"
+                                                title="Move up" @onclick="() => MoveModule(course, module, -1)">
+                                            <Icon Name="IconName.ArrowUp" aria-hidden="true" /><span class="visually-hidden">Move @module.Title up</span>
+                                        </button>
+                                        <button type="button" class="btn btn-sm btn-outline-secondary" @ref="moduleDownButtons[module.Id]" disabled="@(moduleIndex == modules.Count - 1)"
+                                                title="Move down" @onclick="() => MoveModule(course, module, 1)">
+                                            <Icon Name="IconName.ArrowDown" aria-hidden="true" /><span class="visually-hidden">Move @module.Title down</span>
+                                        </button>
+                                        <button type="button" class="btn btn-sm btn-outline-danger @(module.Lessons.Count > 0 ? "qp-ce-unavailable" : null)"
+                                                aria-disabled="@(module.Lessons.Count > 0 ? "true" : null)" @onclick="() => DeleteModule(course, module)">
+                                            <Icon Name="IconName.Trash3" class="me-1" aria-hidden="true" />Delete<span class="visually-hidden"> module @module.Title</span>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                @if (renamingModuleId == module.Id)
+                                {
+                                    <form class="qp-ce-rename" @onsubmit="() => SaveRename(course, module)" novalidate>
+                                        <label class="form-label small fw-semibold" for="qp-ce-rename-input">New title for the module "@module.Title"</label>
+                                        <div class="d-flex flex-wrap gap-2">
+                                            <input @ref="renameInput" id="qp-ce-rename-input" class="form-control qp-ce-rename-input @(renameError is null ? null : "is-invalid")" value="@renameText"
+                                                   @oninput="OnRenameInput" autocomplete="off"
+                                                   aria-describedby="qp-ce-rename-count qp-ce-rename-error" aria-invalid="@(renameError is null ? null : "true")" />
+                                            <button type="submit" class="btn btn-sm btn-primary">Save title</button>
+                                            <button type="button" class="btn btn-sm btn-outline-secondary" @onclick="CancelRename">Cancel</button>
+                                        </div>
+                                        <div class="form-text @(IsOver(renameText, LearningState.MaxModuleTitleLength) ? "qp-ce-over" : null)" id="qp-ce-rename-count">@CounterText(renameText, LearningState.MaxModuleTitleLength)</div>
+                                        <p class="qp-ce-field-error" id="qp-ce-rename-error">@renameError</p>
+                                    </form>
+                                }
+
+                                @if (module.Lessons.Count == 0)
+                                {
+                                    <p class="small text-body-secondary mt-3 mb-2">No lessons in this module yet.</p>
+                                }
+                                else
+                                {
+                                    <ol class="qp-ce-lessons list-unstyled" aria-labelledby="@moduleHeadingId">
+                                        @for (var l = 0; l < module.Lessons.Count; l++)
+                                        {
+                                            var lessonIndex = l;
+                                            var lesson = module.Lessons[lessonIndex];
+                                            var isQuiz = lesson.Kind == LearningLessonKind.Quiz;
+
+                                            <li @key="lesson.Id" class="qp-ce-lesson">
+                                                <div class="min-w-0 qp-ce-wrap">
+                                                    <p class="qp-ce-lesson-title">@lesson.Title</p>
+                                                    <p class="qp-meta mb-0">
+                                                        <span><Icon Name="@LearningDisplay.KindIcon(lesson.Kind)" class="me-1" aria-hidden="true" />@LearningDisplay.KindLabel(lesson.Kind)</span>
+                                                        <span><Icon Name="IconName.Clock" class="me-1" aria-hidden="true" />@LearningDisplay.Duration(lesson.Minutes)</span>
+                                                        <span>
+                                                            @if (lesson.IsPublished)
+                                                            {
+                                                                <Badge Color="BadgeColor.Success">Published</Badge>
+                                                            }
+                                                            else
+                                                            {
+                                                                <Badge Color="BadgeColor.Secondary">Draft</Badge>
+                                                            }
+                                                        </span>
+                                                        @if (isQuiz && lesson.Questions.Count > 0)
+                                                        {
+                                                            <span>@QuestionsText(lesson)</span>
+                                                        }
+                                                    </p>
+                                                    @if (isQuiz && lesson.Questions.Count == 0)
+                                                    {
+                                                        <p class="small mt-1 mb-0">
+                                                            <Icon Name="IconName.ExclamationTriangle" class="me-1 text-warning-emphasis" aria-hidden="true" />
+                                                            <a href="@QuizUrl(course.Id, lesson.Id)">Add questions before publishing<span class="visually-hidden">: @lesson.Title</span></a>
+                                                        </p>
+                                                    }
+                                                </div>
+                                                <div class="qp-ce-actions">
+                                                    <a class="btn btn-sm btn-outline-primary" href="@LessonEditUrl(course.Id, lesson.Id)">
+                                                        <Icon Name="IconName.Pencil" class="me-1" aria-hidden="true" />Edit<span class="visually-hidden"> @lesson.Title</span>
+                                                    </a>
+                                                    <button type="button" class="btn btn-sm btn-outline-secondary" @ref="lessonUpButtons[lesson.Id]" disabled="@(lessonIndex == 0)"
+                                                            title="Move up" @onclick="() => MoveLesson(course, module, lesson, -1)">
+                                                        <Icon Name="IconName.ArrowUp" aria-hidden="true" /><span class="visually-hidden">Move @lesson.Title up</span>
+                                                    </button>
+                                                    <button type="button" class="btn btn-sm btn-outline-secondary" @ref="lessonDownButtons[lesson.Id]" disabled="@(lessonIndex == module.Lessons.Count - 1)"
+                                                            title="Move down" @onclick="() => MoveLesson(course, module, lesson, 1)">
+                                                        <Icon Name="IconName.ArrowDown" aria-hidden="true" /><span class="visually-hidden">Move @lesson.Title down</span>
+                                                    </button>
+                                                    <button type="button" class="btn btn-sm btn-outline-secondary" @onclick="() => ToggleLessonPublished(course, lesson)">
+                                                        @if (lesson.IsPublished)
+                                                        {
+                                                            <text><Icon Name="IconName.EyeSlash" class="me-1" aria-hidden="true" />Unpublish<span class="visually-hidden"> @lesson.Title</span></text>
+                                                        }
+                                                        else
+                                                        {
+                                                            <text><Icon Name="IconName.Globe" class="me-1" aria-hidden="true" />Publish<span class="visually-hidden"> @lesson.Title</span></text>
+                                                        }
+                                                    </button>
+                                                    <button type="button" class="btn btn-sm btn-outline-danger" @ref="lessonDeleteButtons[lesson.Id]" @onclick="() => AskDeleteLessonAsync(course, lesson)">
+                                                        <Icon Name="IconName.Trash3" class="me-1" aria-hidden="true" />Delete<span class="visually-hidden"> @lesson.Title</span>
+                                                    </button>
+                                                </div>
+                                            </li>
+                                        }
+                                    </ol>
+                                }
+
+                                @if (course.Lessons.Count < LearningState.MaxLessonsPerCourse)
+                                {
+                                    <a class="btn btn-sm btn-outline-primary mt-2" href="@NewLessonUrl(course.Id, module.Id)">
+                                        <Icon Name="IconName.PlusLg" class="me-1" aria-hidden="true" />Add lesson<span class="visually-hidden"> to @module.Title</span>
+                                    </a>
+                                }
+                            </li>
+                        }
+                    </ol>
+                }
+
+                @if (course.Lessons.Count >= LearningState.MaxLessonsPerCourse)
+                {
+                    <p class="small text-body-secondary">The course has the most lessons a course can hold (@LearningState.MaxLessonsPerCourse). Delete one to add another.</p>
+                }
+
+                <h3 class="qp-ce-module-title mt-4" id="qp-ce-add-module-heading">Add a module</h3>
+                @if (modules.Count >= LearningState.MaxModulesPerCourse)
+                {
+                    <p class="small text-body-secondary mb-0">The course has the most modules a course can hold (@LearningState.MaxModulesPerCourse). Delete an empty one to add another.</p>
+                }
+                else
+                {
+                    <form class="qp-ce-add-module" @onsubmit="() => AddModule(course)" novalidate aria-labelledby="qp-ce-add-module-heading">
+                        <label class="form-label small fw-semibold" for="qp-ce-new-module">Module title</label>
+                        <div class="d-flex flex-wrap gap-2">
+                            <input @ref="newModuleInput" id="qp-ce-new-module" class="form-control qp-ce-rename-input @(newModuleError is null ? null : "is-invalid")" value="@newModuleTitle"
+                                   @oninput="OnNewModuleInput" autocomplete="off"
+                                   aria-describedby="qp-ce-new-module-count qp-ce-new-module-error" aria-invalid="@(newModuleError is null ? null : "true")" />
+                            <button type="submit" class="btn btn-sm btn-primary"><Icon Name="IconName.PlusLg" class="me-1" aria-hidden="true" />Add module</button>
+                        </div>
+                        <div class="form-text @(IsOver(newModuleTitle, LearningState.MaxModuleTitleLength) ? "qp-ce-over" : null)" id="qp-ce-new-module-count">
+                            @CounterText(newModuleTitle, LearningState.MaxModuleTitleLength). It's added at the end of the curriculum.
+                        </div>
+                        <p class="qp-ce-field-error" id="qp-ce-new-module-error">@newModuleError</p>
+                    </form>
+                }
+            </section>
+        }
+    </div>
+}
+
+@* Outside the branches, so a dialog is never removed while it is open. *@
+<Modal @ref="unpublishModal" IsVerticallyCentered="true" ShowCloseButton="false" aria-labelledby="qp-ce-unpublish-title" OnHidden="OnUnpublishHiddenAsync">
+    <HeaderTemplate>
+        <h2 class="modal-title h5" id="qp-ce-unpublish-title">Unpublish @Item?.Title?</h2>
+    </HeaderTemplate>
+    <BodyTemplate>
+        <p class="mb-2">It leaves the catalog and takes no new enrollments.</p>
+        <p class="mb-2">@KeepAccessText(Item is { } shown ? LearnerCount(shown.Id) : 0)</p>
+        <p class="small text-body-secondary mb-0">You can publish it again at any time.</p>
+    </BodyTemplate>
+    <FooterTemplate>
+        <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => unpublishModal.HideAsync()">Keep published</Button>
+        <Button Color="ButtonColor.Primary" @onclick="ConfirmUnpublishAsync">Unpublish</Button>
+    </FooterTemplate>
+</Modal>
+
+<Modal @ref="deleteLessonModal" IsVerticallyCentered="true" ShowCloseButton="false" aria-labelledby="qp-ce-delete-lesson-title" OnHidden="OnDeleteLessonHiddenAsync">
+    <HeaderTemplate>
+        <h2 class="modal-title h5" id="qp-ce-delete-lesson-title">
+            @(pendingLessonBlocked ? $"\"{pendingLesson?.Title}\" can't be deleted" : $"Delete the lesson \"{pendingLesson?.Title}\"?")
+        </h2>
+    </HeaderTemplate>
+    <BodyTemplate>
+        @if (pendingLesson is { } lesson && Item is { } shown)
+        {
+            @if (pendingLessonBlocked)
+            {
+                <p class="mb-0">@LastLessonText(shown, lesson, "deleted")</p>
+            }
+            else
+            {
+                <p class="mb-2">The lesson is removed from the course@(lesson.IsPublished ? ", and learners no longer see it" : string.Empty).</p>
+                <p class="mb-2">@ImpactText(State.LessonImpact(lesson.Id))</p>
+                <p class="small text-body-secondary mb-0">This can't be undone.</p>
+            }
+        }
+    </BodyTemplate>
+    <FooterTemplate>
+        @if (pendingLessonBlocked)
+        {
+            <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => deleteLessonModal.HideAsync()">Close</Button>
+        }
+        else
+        {
+            <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => deleteLessonModal.HideAsync()">Keep lesson</Button>
+            <Button Color="ButtonColor.Danger" @onclick="ConfirmDeleteLessonAsync">Delete lesson</Button>
+        }
+    </FooterTemplate>
+</Modal>

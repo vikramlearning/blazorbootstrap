@@ -1,0 +1,86 @@
+.qp-edit-status,
+.qp-edit-error {
+    font-size: .875rem;
+    font-weight: 600;
+}
+
+    .qp-edit-status:empty,
+    .qp-edit-error:empty {
+        margin: 0;
+    }
+
+    .qp-edit-status:focus-visible {
+        outline: 2px solid var(--sc-primary);
+        outline-offset: 2px;
+    }
+
+.qp-edit-error,
+.qp-field-error,
+.qp-over {
+    color: var(--bs-danger-text-emphasis);
+}
+
+.qp-field-error {
+    margin: .25rem 0 0;
+    font-size: .875rem;
+}
+
+    .qp-field-error:empty {
+        margin: 0;
+    }
+
+/* Turning a quiz into another kind removes its questions and results: said in text, with an icon. */
+.qp-kind-warning {
+    margin: 0 0 1rem;
+    padding: .5rem .75rem;
+    border-left: .25rem solid var(--bs-warning);
+    border-radius: 0 .5rem .5rem 0;
+    background: var(--bs-warning-bg-subtle);
+    color: var(--bs-warning-text-emphasis);
+    font-size: .875rem;
+    font-weight: 600;
+}
+
+/* The editor grows with the lesson instead of staying a few lines tall. */
+.qp-lesson-editor ::deep [contenteditable] {
+    min-height: 16rem;
+}
+
+.qp-edit-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: .5rem;
+}
+
+/* The preview frames the lesson like the player's main column. */
+.qp-lesson-preview {
+    padding: 1rem 1.25rem;
+    border: 1px dashed var(--qp-border);
+    border-radius: .5rem;
+    overflow-wrap: anywhere;
+}
+
+    .qp-lesson-preview .qp-title.qp-preview-title {
+        font-size: 1.5rem;
+    }
+
+.qp-preview-quiz {
+    color: var(--bs-secondary-color);
+}
+
+.qp-summary {
+    display: grid;
+    grid-template-columns: minmax(0, auto) minmax(0, 1fr);
+    gap: .375rem 1rem;
+    margin-bottom: 1rem;
+}
+
+    .qp-summary dt {
+        font-weight: 600;
+    }
+
+    .qp-summary dd {
+        margin: 0;
+        overflow-wrap: anywhere;
+    }

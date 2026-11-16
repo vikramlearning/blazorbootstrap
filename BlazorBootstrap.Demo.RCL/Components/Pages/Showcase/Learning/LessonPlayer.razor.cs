@@ -109,6 +109,7 @@ public partial class LessonPlayer : ComponentBase, IDisposable
             LearningResult.NotAllowed => "Sign in with a learner account to enroll. Nothing changed.",
             LearningResult.NotFound => "This course isn't in the catalog any more, so you can't enroll.",
             LearningResult.Invalid => "This demo tab holds as many enrollments as it can. Reset the demo data to enroll.",
+            LearningResult.WrongState => $"{course.Title} isn't open for new enrollments right now, so you weren't enrolled.",
             _ => "That didn't work, and nothing changed. Try again.",
         };
 

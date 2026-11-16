@@ -344,3 +344,95 @@
             color: #854d0e !important;
         }
 }
+
+/* The instructor back office (D-031): a sidebar beside the page on wide screens, above it on narrow ones. */
+.qp-shell {
+    display: flex;
+    flex-direction: column;
+    flex: 1 0 auto;
+    min-width: 0;
+}
+
+.qp-shell-main {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+@media (min-width: 641px) {
+    .qp-shell {
+        flex-direction: row;
+        align-items: flex-start;
+    }
+}
+
+.sc-learning ::deep .qp-sidebar {
+    --bb-sidebar-width: 15rem;
+    --bb-sidebar-background-color: #2b2112;
+    --bb-sidebar-top-row-background-color: #2b2112;
+    --bb-sidebar-top-row-border-color: rgba(255, 255, 255, .08);
+    --bb-sidebar-title-text-color: #fff;
+    --bb-sidebar-brand-icon-color: #fcd34d;
+    --bb-sidebar-title-badge-text-color: #2b2112;
+    --bb-sidebar-title-badge-background-color: #fcd34d;
+    --bb-sidebar-navbar-toggler-icon-color: #fff;
+    --bb-sidebar-navbar-toggler-background-color: rgba(255, 255, 255, .1);
+    --bb-sidebar-content-border-color: rgba(255, 255, 255, .08);
+    --bb-sidebar-nav-item-text-color: #f3e8d2;
+    --bb-sidebar-nav-item-text-active-color-rgb: 255, 255, 255;
+    --bb-sidebar-nav-item-text-hover-color: rgba(255, 255, 255, .95);
+    --bb-sidebar-nav-item-background-hover-color: rgba(255, 255, 255, .08);
+    --bb-sidebar-nav-item-group-background-color: rgba(255, 255, 255, .06);
+}
+
+/* Beside the page only: above it (narrow screens), a sticky bar would sit under the page content. */
+@media (min-width: 641px) {
+    .sc-learning ::deep .qp-sidebar {
+        position: sticky;
+        top: 0;
+    }
+}
+
+.sc-learning ::deep .qp-teach-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: .75rem;
+    padding: .625rem 1.5rem;
+    border-bottom: 1px solid var(--qp-border);
+    background: var(--qp-surface);
+}
+
+.sc-learning ::deep .qp-teach-bar-title {
+    font-family: var(--sc-font-heading);
+    font-weight: 700;
+    color: var(--qp-ink);
+}
+
+.sc-learning ::deep .qp-teach-bar-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: .5rem;
+}
+
+/* An instructor viewing the school (D-032). */
+.sc-learning ::deep .qp-viewing-bar {
+    padding: .5rem 0;
+    background: #2b2112;
+    color: #fef3c7;
+    font-size: .875rem;
+}
+
+    .sc-learning ::deep .qp-viewing-bar a {
+        color: #fde68a;
+        font-weight: 600;
+    }
+
+/* A table that scrolls sideways can round to one pixel taller than its box; never show a vertical scrollbar for it.
+   It is also the containing block of its visually hidden text, which is absolutely positioned: otherwise that text
+   escapes the clipping and widens the page at 375 px. */
+.sc-learning ::deep .table-responsive {
+    position: relative;
+    overflow-y: hidden;
+}

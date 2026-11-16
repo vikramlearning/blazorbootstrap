@@ -1,0 +1,63 @@
+/* The instructor's courses. Badge and Modal render their own elements, so those would need ::deep. */
+
+.qp-tc-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+/* Empty until an action reports, so it takes no space then. */
+.qp-tc-status {
+    font-weight: 600;
+}
+
+    .qp-tc-status:empty {
+        margin: 0;
+    }
+
+    .qp-tc-status:focus-visible {
+        outline: 2px solid var(--sc-primary);
+        outline-offset: 2px;
+    }
+
+.qp-tc-list {
+    display: grid;
+    gap: 1rem;
+}
+
+.qp-tc-title-wrap {
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+.qp-tc-facts {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
+    gap: .5rem 1.25rem;
+    margin: .875rem 0;
+}
+
+    .qp-tc-facts dt {
+        font-size: .8125rem;
+        font-weight: 500;
+        color: var(--bs-secondary-color);
+    }
+
+    .qp-tc-facts dd {
+        margin: 0;
+        font-weight: 600;
+        color: var(--qp-ink);
+    }
+
+.qp-tc-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .5rem;
+}
+
+/* Delete on a course with learners: still focusable (aria-disabled), so its reason can be found and announced. */
+.qp-tc-unavailable {
+    opacity: .65;
+}

@@ -1,0 +1,14 @@
+/* The table scrolls sideways inside .table-responsive on narrow screens; these keep each column readable there. */
+.qp-roster {
+    --bs-table-bg: transparent;
+}
+
+.qp-roster-name,
+.qp-roster-course {
+    min-width: 9rem;
+    overflow-wrap: anywhere;
+}
+
+.qp-roster-progress {
+    min-width: 11rem;
+}

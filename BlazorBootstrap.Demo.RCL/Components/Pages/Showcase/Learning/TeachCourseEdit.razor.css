@@ -1,0 +1,134 @@
+/* The course editor. Badge, Breadcrumb, Icon, and Modal render their own elements, so those would need ::deep. */
+
+/* User text (titles) wraps at 375 px instead of widening the page. */
+.qp-ce-wrap {
+    overflow-wrap: anywhere;
+}
+
+/* Messages take no space until they report something. */
+.qp-ce-status,
+.qp-ce-error {
+    font-size: .875rem;
+    font-weight: 600;
+}
+
+    .qp-ce-status:empty,
+    .qp-ce-error:empty {
+        margin: 0;
+    }
+
+    .qp-ce-status:not(:empty),
+    .qp-ce-error:not(:empty) {
+        margin: .75rem 0 0;
+    }
+
+    .qp-ce-status:focus-visible {
+        outline: 2px solid var(--sc-primary);
+        outline-offset: 2px;
+    }
+
+.qp-ce-error,
+.qp-ce-field-error,
+.qp-ce-over {
+    color: var(--bs-danger-text-emphasis);
+}
+
+.qp-ce-field-error {
+    margin: .25rem 0 0;
+    font-size: .875rem;
+}
+
+    .qp-ce-field-error:empty {
+        margin: 0;
+    }
+
+.qp-ce-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: .5rem;
+}
+
+.qp-ce-outcomes {
+    display: grid;
+    gap: .5rem;
+}
+
+.qp-ce-summary {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: .25rem 1rem;
+}
+
+    .qp-ce-summary dt {
+        font-weight: 500;
+        color: var(--bs-secondary-color);
+    }
+
+    .qp-ce-summary dd {
+        margin: 0;
+        font-weight: 600;
+    }
+
+.qp-ce-modules {
+    display: grid;
+    gap: 1rem;
+    margin: 0;
+}
+
+.qp-ce-module {
+    padding: 1rem;
+    border: 1px solid var(--qp-border);
+    border-radius: .75rem;
+}
+
+.qp-ce-module-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: .75rem;
+}
+
+.qp-ce-module-title {
+    margin: 0;
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: var(--qp-ink);
+}
+
+.qp-ce-rename,
+.qp-ce-add-module {
+    margin-top: .75rem;
+}
+
+/* The title field grows, leaving room for its buttons; on a phone it takes the whole row. */
+.qp-ce-rename-input {
+    flex: 1 1 14rem;
+    min-width: 0;
+}
+
+.qp-ce-lessons {
+    margin: .75rem 0 0;
+}
+
+.qp-ce-lesson {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: .5rem 1rem;
+    padding-block: .75rem;
+    border-top: 1px solid var(--qp-border);
+}
+
+.qp-ce-lesson-title {
+    margin: 0 0 .25rem;
+    font-weight: 600;
+    color: var(--qp-ink);
+}
+
+/* Delete on a module with lessons: still focusable (aria-disabled), so its reason can be found and announced. */
+.qp-ce-unavailable {
+    opacity: .65;
+}

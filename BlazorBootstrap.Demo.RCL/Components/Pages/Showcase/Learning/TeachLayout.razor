@@ -1,0 +1,36 @@
+@inherits LayoutComponentBase
+
+@* The instructor back office (D-031): its own sidebar with the instructor's modules, separate from the school. *@
+<ShowcaseSessionHost State="State" SiteBase="@LearningLayout.Base" SiteName="@LearningSeedData.SchoolName">
+    <LearningFrame>
+        <Header>
+            <div class="qp-teach-bar">
+                <span class="qp-teach-bar-title">Teaching</span>
+                <div class="qp-teach-bar-actions">
+                    <a class="btn btn-sm btn-outline-secondary" href="@LearningLayout.Base">
+                        <Icon Name="IconName.BoxArrowUpRight" class="me-1" aria-hidden="true" />View school
+                    </a>
+                    <ShowcaseAccountMenu SiteBase="@LearningLayout.Base" SignInPath="@LearningLayout.SignInPath"
+                                         NoticeCount="@State.UnansweredCount" NoticesPath="@($"{Base}/questions")" />
+                </div>
+            </div>
+        </Header>
+        <Sidebar>
+            @if (State.IsInstructor)
+            {
+                <Sidebar @key="State.Identity.Current?.Id"
+                         Class="qp-sidebar"
+                         Href="@Base"
+                         IconName="IconName.Feather"
+                         Title="@LearningSeedData.SchoolName"
+                         BadgeText="Instructor"
+                         DataProvider="SidebarDataProvider" />
+            }
+        </Sidebar>
+        <ChildContent>
+            <ShowcaseRoleGuard Roles="@LearningSeedData.InstructorRole" SignInPath="@LearningLayout.SignInPath">
+                @Body
+            </ShowcaseRoleGuard>
+        </ChildContent>
+    </LearningFrame>
+</ShowcaseSessionHost>

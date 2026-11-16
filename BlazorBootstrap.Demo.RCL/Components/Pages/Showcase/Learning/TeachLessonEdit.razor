@@ -1,0 +1,314 @@
+@page "/showcase/learning/teach/courses/{CourseId:int}/lessons/new"
+@page "/showcase/learning/teach/courses/{CourseId:int}/lessons/{LessonId:int}"
+@layout TeachLayout
+
+@{
+    var course = Course;
+    var lesson = Lesson;
+}
+
+@if (leaving)
+{
+    @* The lesson was just deleted and the course editor is loading: no not-found flash in between. *@
+    <p class="visually-hidden" role="status">The lesson is deleted. Going back to the course.</p>
+}
+else if (course is null)
+{
+    <PageTitle>Course not found · Teaching · @LearningSeedData.SchoolName</PageTitle>
+    <div class="container-fluid px-lg-4">
+        <section class="qp-not-found">
+            <span class="qp-icon fs-4" aria-hidden="true"><Icon Name="IconName.SignpostSplit" /></span>
+            <h1 class="qp-title fs-3 mt-3 mb-2">We couldn't find that course</h1>
+            <p class="text-body-secondary mb-4">There's no course of yours with that number. It may have been deleted.</p>
+            <a class="btn btn-primary" href="@CoursesUrl">Back to your courses</a>
+        </section>
+    </div>
+}
+else if (LessonId is not null && lesson is null)
+{
+    <PageTitle>Lesson not found · Teaching · @LearningSeedData.SchoolName</PageTitle>
+    <div class="container-fluid px-lg-4">
+        <section class="qp-not-found">
+            <span class="qp-icon fs-4" aria-hidden="true"><Icon Name="IconName.SignpostSplit" /></span>
+            <h1 class="qp-title fs-3 mt-3 mb-2">We couldn't find that lesson</h1>
+            <p class="text-body-secondary mb-4">@course.Title has no lesson with that number. It may have been deleted.</p>
+            <a class="btn btn-primary" href="@CourseEditUrl">Back to @course.Title</a>
+        </section>
+    </div>
+}
+else
+{
+    <PageTitle>@(lesson is null ? "New lesson" : lesson.Title) · Teaching · @LearningSeedData.SchoolName</PageTitle>
+
+    <div class="container-fluid px-lg-4">
+        <Breadcrumb Items="BreadcrumbItems" Class="mb-3" />
+
+        <h1 class="qp-title">@(lesson is null ? "New lesson" : "Edit lesson")</h1>
+        <p class="qp-lead mb-3">
+            @(lesson is null ? $"Write a lesson for {course.Title}, check the preview, then save a draft or publish it to learners."
+              : lesson.IsPublished ? "This lesson is published. Changes reach learners when you choose Update."
+              : "This lesson is a draft: only you see it until you publish it.")
+        </p>
+
+        <p class="qp-edit-error" role="alert">@formError</p>
+        @* Always rendered and focusable, so a save is announced and focus has somewhere to go when the clicked button is replaced. *@
+        <p class="qp-edit-status" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
+
+        @if (course.Modules.Count == 0)
+        {
+            <section class="qp-panel" aria-labelledby="qp-lesson-nomodule-heading">
+                <h2 class="qp-section-title" id="qp-lesson-nomodule-heading">Add a module first</h2>
+                <p class="mb-3">Lessons live in modules, and @course.Title has none yet. Add a module in the course editor, then come back to write the lesson.</p>
+                <a class="btn btn-primary" href="@CourseEditUrl">Go to the course editor</a>
+            </section>
+        }
+        else
+        {
+            <div class="row g-4">
+                <div class="col-xl-8 d-grid gap-4 align-content-start">
+                    <section class="qp-panel" aria-labelledby="qp-lesson-form-heading">
+                        <h2 class="qp-section-title" id="qp-lesson-form-heading">Lesson</h2>
+                        <ShowcaseDemoNotice Class="mb-3" Text="Demo only: lessons stay in this browser tab. Nothing is sent." />
+
+                        @* Only the plain fields are in the form, so Enter there saves (keeping the status); the editor's toolbar stays out of it. *@
+                        <form id="qp-lesson-form" @onsubmit="SaveKeepingStatusAsync" novalidate>
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold" for="qp-lesson-title">Title</label>
+                                <input @ref="titleInput" id="qp-lesson-title" class="form-control @(titleError is null ? null : "is-invalid")" value="@title" @oninput="OnTitleInput"
+                                       autocomplete="off" aria-describedby="qp-lesson-title-count qp-lesson-title-error" aria-invalid="@(titleError is null ? null : "true")" />
+                                <div class="form-text @(TitleOver ? "qp-over" : null)" id="qp-lesson-title-count">@CounterText(title.Trim().Length, LearningState.MaxLessonTitleLength)</div>
+                                <p class="qp-field-error" id="qp-lesson-title-error">@titleError</p>
+                            </div>
+
+                            <div class="row g-3 mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label fw-semibold" for="qp-lesson-module">Module</label>
+                                    <select @ref="moduleSelect" id="qp-lesson-module" class="form-select @(moduleError is null ? null : "is-invalid")" value="@moduleId" @onchange="OnModuleChanged"
+                                            aria-describedby="qp-lesson-module-help qp-lesson-module-error" aria-invalid="@(moduleError is null ? null : "true")">
+                                        @foreach (var (module, index) in course.Modules.Select((module, index) => (module, index)))
+                                        {
+                                            <option value="@module.Id">Module @(index + 1): @module.Title</option>
+                                        }
+                                    </select>
+                                    <div class="form-text" id="qp-lesson-module-help">
+                                        @(lesson is not null && moduleId != StoredModuleId ? "Saving moves the lesson to the end of this module." : "A new lesson goes at the end of the module.")
+                                    </div>
+                                    <p class="qp-field-error" id="qp-lesson-module-error">@moduleError</p>
+                                </div>
+
+                                <div class="col-sm-6 col-md-3">
+                                    <label class="form-label fw-semibold" for="qp-lesson-kind">Kind</label>
+                                    <select @ref="kindSelect" id="qp-lesson-kind" class="form-select" value="@kind" @onchange="OnKindChanged"
+                                            aria-describedby="qp-lesson-kind-help">
+                                        <option value="@LearningLessonKind.Video">Video</option>
+                                        <option value="@LearningLessonKind.Reading">Reading</option>
+                                        <option value="@LearningLessonKind.Quiz">Quiz</option>
+                                    </select>
+                                </div>
+
+                                <div class="col-sm-6 col-md-3">
+                                    <label class="form-label fw-semibold" for="qp-lesson-minutes">Minutes</label>
+                                    <input @ref="minutesInput" id="qp-lesson-minutes" type="number" inputmode="numeric" min="1" max="@LearningState.MaxLessonMinutes" step="1"
+                                           class="form-control @(minutesError is null ? null : "is-invalid")" value="@minutes" @oninput="OnMinutesInput"
+                                           aria-describedby="qp-lesson-minutes-help qp-lesson-minutes-error" aria-invalid="@(minutesError is null ? null : "true")" />
+                                    <div class="form-text" id="qp-lesson-minutes-help">1 to @LearningState.MaxLessonMinutes.</div>
+                                    <p class="qp-field-error" id="qp-lesson-minutes-error">@minutesError</p>
+                                </div>
+                            </div>
+
+                            @* Always rendered, so the warning is announced when the kind changes away from a quiz. *@
+                            <div id="qp-lesson-kind-help" role="status">
+                                @if (QuizWouldBeRemoved)
+                                {
+                                    <p class="qp-kind-warning">
+                                        <Icon Name="IconName.ExclamationTriangle" class="me-1" aria-hidden="true" />
+                                        @KindChangeConsequence() Saving asks you to confirm.
+                                    </p>
+                                }
+                            </div>
+                        </form>
+
+                        <span class="form-label fw-semibold d-block" id="qp-lesson-body-label">@BodyLabel</span>
+                        @* The editor reads Value only when it is built, so a new key per load starts it with this lesson's body. It renders
+                           Value as markup, so the stored or seeded body goes through the allowlist first (A05). *@
+                        <div class="qp-lesson-editor">
+                            <RichTextEditor @key="editorVersion"
+                                            Value="@editorStart"
+                                            ValueChanged="OnBodyChanged"
+                                            ToolbarItems="toolbarItems"
+                                            AriaLabel="@BodyLabel"
+                                            Placeholder="Write the lesson…"
+                                            ShowFooter="false" />
+                        </div>
+                        <div class="form-text @(BodyOver ? "qp-over" : null)" id="qp-lesson-body-count">
+                            @CounterText(bodyHtml.Length, LearningState.MaxLessonHtmlLength), formatting included. @BodyHelp
+                        </div>
+                        <p class="qp-field-error mt-1" role="alert">@bodyError</p>
+
+                        <div class="qp-edit-actions mt-3">
+                            @if (lesson is { IsPublished: true })
+                            {
+                                <Button Color="ButtonColor.Primary" @onclick="() => SaveAsync(publish: true)">
+                                    <Icon Name="IconName.CheckCircle" class="me-2" aria-hidden="true" />Update
+                                </Button>
+                                <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => SaveAsync(publish: false)">
+                                    <Icon Name="IconName.EyeSlash" class="me-2" aria-hidden="true" />Unpublish
+                                </Button>
+                            }
+                            else
+                            {
+                                <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => SaveAsync(publish: false)">
+                                    <Icon Name="IconName.Save" class="me-2" aria-hidden="true" />Save draft
+                                </Button>
+                                <Button Color="ButtonColor.Primary" @onclick="() => SaveAsync(publish: true)">
+                                    <Icon Name="IconName.Globe" class="me-2" aria-hidden="true" />Publish
+                                </Button>
+                            }
+                            <a class="btn btn-link" href="@CourseEditUrl">Back to the course</a>
+                            @if (lesson is not null)
+                            {
+                                <Button @ref="deleteButton" Color="ButtonColor.Danger" Outline="true" Class="ms-sm-auto" @onclick="AskDeleteAsync">
+                                    <Icon Name="IconName.Trash3" class="me-2" aria-hidden="true" />Delete
+                                </Button>
+                            }
+                        </div>
+                        <p class="small text-body-secondary mt-2 mb-0">
+                            @(lesson is { IsPublished: true }
+                                ? "Update saves your changes to the published lesson. Unpublish saves them and hides the lesson from learners."
+                                : "Save draft keeps it to you. Publish saves it and adds it to the course for learners.")
+                        </p>
+                    </section>
+
+                    <section class="qp-panel" aria-labelledby="qp-lesson-preview-heading">
+                        <h2 class="qp-section-title" id="qp-lesson-preview-heading">Preview</h2>
+                        <p class="small text-body-secondary">How learners see the lesson, with only its allowed formatting.</p>
+                        <div class="qp-lesson-preview">
+                            <span class="sc-eyebrow">Module @(ModuleNumber) · @LearningDisplay.KindLabel(kind) · @(MinutesValue is int shown ? shown : 0) min</span>
+                            <p class="qp-title qp-preview-title mt-1 mb-3">@(string.IsNullOrWhiteSpace(title) ? "Untitled lesson" : title.Trim())</p>
+                            @if (kind == LearningLessonKind.Video)
+                            {
+                                <div class="qp-video mb-4" role="img" aria-label="Video placeholder. The transcript follows.">
+                                    <Icon Name="IconName.PlayCircleFill" class="fs-1" aria-hidden="true" />
+                                    <span class="small">Videos are not part of this demo. The transcript is below.</span>
+                                </div>
+                            }
+                            @* The same rendering as the lesson player: editor HTML only through the allowlist (A05). *@
+                            <div class="qp-lesson-body">@ShowcaseHtml.FromEditorHtml(bodyHtml, keepHeadings: true)</div>
+                            @if (string.IsNullOrWhiteSpace(bodyText))
+                            {
+                                <p class="text-body-secondary fst-italic mb-0">The body shows here as you write it.</p>
+                            }
+                            @if (kind == LearningLessonKind.Quiz)
+                            {
+                                <p class="qp-preview-quiz small mt-3 mb-0">
+                                    <Icon Name="IconName.PatchQuestion" class="me-1" aria-hidden="true" />
+                                    @(QuestionCount == 0 ? "The quiz follows here once it has questions." : $"The quiz follows: {QuestionCountText(QuestionCount)}, pass with {PassMarkFor(QuestionCount)}.")
+                                </p>
+                            }
+                        </div>
+                    </section>
+                </div>
+
+                <div class="col-xl-4 d-grid gap-3 align-content-start">
+                    @if (kind == LearningLessonKind.Quiz || lesson is { Kind: LearningLessonKind.Quiz })
+                    {
+                        <section class="qp-panel" aria-labelledby="qp-lesson-quiz-heading">
+                            <h2 class="qp-section-title" id="qp-lesson-quiz-heading">Quiz</h2>
+                            @if (lesson is null)
+                            {
+                                <p class="small mb-0">Save the lesson as a draft first, then add its questions. A quiz is published only once it has questions.</p>
+                            }
+                            else if (lesson.Kind != LearningLessonKind.Quiz)
+                            {
+                                <p class="small mb-0">Save the lesson to make it a quiz, then add its questions. A quiz is published only once it has questions.</p>
+                            }
+                            else
+                            {
+                                <dl class="qp-summary small">
+                                    <dt>Questions</dt>
+                                    <dd>@(lesson.Questions.Count == 0 ? "None yet" : QuestionCountText(lesson.Questions.Count))</dd>
+                                    <dt>Pass mark</dt>
+                                    <dd>@(lesson.Questions.Count == 0 ? "Set by the questions: two thirds right" : $"{lesson.PassMark} of {lesson.Questions.Count} right")</dd>
+                                </dl>
+                                @if (lesson.Questions.Count == 0)
+                                {
+                                    <p class="small text-body-secondary">Add questions before you publish the quiz.</p>
+                                }
+                                @if (kind != LearningLessonKind.Quiz)
+                                {
+                                    <p class="small text-body-secondary">You've chosen another kind; the questions go when you save.</p>
+                                }
+                                <a class="btn btn-outline-primary btn-sm" href="@QuizUrl(lesson.Id)">
+                                    <Icon Name="IconName.ListCheck" class="me-1" aria-hidden="true" />Edit questions
+                                </a>
+                            }
+                        </section>
+                    }
+
+                    <section class="qp-panel" aria-labelledby="qp-lesson-details-heading">
+                        <h2 class="qp-section-title" id="qp-lesson-details-heading">Details</h2>
+                        @if (lesson is null)
+                        {
+                            <p class="small text-body-secondary mb-0">Not saved yet. Save a draft to keep it, or publish it to add it to the course for learners.</p>
+                        }
+                        else
+                        {
+                            var impact = State.LessonImpact(lesson.Id);
+
+                            <dl class="qp-summary small mb-0">
+                                <dt>Status</dt>
+                                <dd><Badge Color="@(lesson.IsPublished ? BadgeColor.Success : BadgeColor.Secondary)">@(lesson.IsPublished ? "Published" : "Draft")</Badge></dd>
+                                <dt>Course</dt>
+                                <dd>@course.Title (@(course.IsPublished ? "published" : "unpublished"))</dd>
+                                <dt>Completed by</dt>
+                                <dd>@Count(impact.Completions, "learner", "learners")</dd>
+                                @if (lesson.Kind == LearningLessonKind.Quiz)
+                                {
+                                    <dt>Quiz results</dt>
+                                    <dd>@Count(impact.QuizResults, "learner", "learners")</dd>
+                                }
+                                <dt>Questions from learners</dt>
+                                <dd>@impact.Questions.ToString(CultureInfo.InvariantCulture)</dd>
+                            </dl>
+                            @if (impact.Questions > 0)
+                            {
+                                <a class="btn btn-sm btn-outline-secondary mt-3" href="@QuestionsUrl">
+                                    <Icon Name="IconName.ChatLeftText" class="me-1" aria-hidden="true" />Open the Q&amp;A inbox
+                                </a>
+                            }
+                        }
+                    </section>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+@* Outside the branches, so the dialogs are never removed while open. Opened from code: focus is returned by hand. *@
+<Modal @ref="kindModal" IsVerticallyCentered="true" ShowCloseButton="false" aria-labelledby="qp-lesson-kind-title"
+       OnShown="() => LearningDisplay.FocusAsync(keepQuizButton?.Element)" OnHidden="OnKindHiddenAsync">
+    <HeaderTemplate>
+        <h2 class="modal-title h5" id="qp-lesson-kind-title">Turn the quiz into a @LearningDisplay.KindLabel(kind).ToLowerInvariant() lesson?</h2>
+    </HeaderTemplate>
+    <BodyTemplate>
+        <p class="mb-0">@KindChangeConsequence() This can't be undone.</p>
+    </BodyTemplate>
+    <FooterTemplate>
+        <Button @ref="keepQuizButton" Color="ButtonColor.Secondary" Outline="true" @onclick="() => kindModal.HideAsync()">Keep it a quiz</Button>
+        <Button Color="ButtonColor.Danger" @onclick="ConfirmKindAsync">Change and save</Button>
+    </FooterTemplate>
+</Modal>
+
+<Modal @ref="deleteModal" IsVerticallyCentered="true" ShowCloseButton="false" aria-labelledby="qp-lesson-delete-title"
+       OnShown="() => LearningDisplay.FocusAsync(keepLessonButton?.Element)" OnHidden="OnDeleteHiddenAsync">
+    <HeaderTemplate>
+        <h2 class="modal-title h5" id="qp-lesson-delete-title">Delete the lesson "@(Lesson?.Title)"?</h2>
+    </HeaderTemplate>
+    <BodyTemplate>
+        <p class="mb-0">@DeleteConsequence(Lesson)</p>
+    </BodyTemplate>
+    <FooterTemplate>
+        <Button @ref="keepLessonButton" Color="ButtonColor.Secondary" Outline="true" @onclick="() => deleteModal.HideAsync()">Keep lesson</Button>
+        <Button Color="ButtonColor.Danger" @onclick="ConfirmDeleteAsync">Delete lesson</Button>
+    </FooterTemplate>
+</Modal>
