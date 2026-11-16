@@ -1,0 +1,95 @@
+/* The operations dispute page. Card, CardBody, and Badge render their own elements, so styles inside them need ::deep. */
+
+.tm-opsdispute-status:empty {
+    margin: 0;
+}
+
+/* The timeline: a dot per step on a line; done steps are filled with a check, the current one has a ring and "Now". */
+::deep .tm-opsdispute-timeline {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+::deep .tm-opsdispute-step {
+    position: relative;
+    display: flex;
+    gap: .75rem;
+    padding-bottom: 1rem;
+}
+
+    ::deep .tm-opsdispute-step:last-child {
+        padding-bottom: 0;
+    }
+
+    ::deep .tm-opsdispute-step:not(:last-child)::before {
+        content: "";
+        position: absolute;
+        top: 1.75rem;
+        bottom: .25rem;
+        left: calc(.875rem - 1px);
+        width: 2px;
+        background: var(--bs-border-color);
+    }
+
+::deep .tm-opsdispute-dot {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    width: 1.75rem;
+    height: 1.75rem;
+    border: 2px solid var(--bs-border-color);
+    border-radius: 50%;
+    background: var(--bs-body-bg);
+    color: var(--sc-primary-contrast);
+    font-size: .875rem;
+}
+
+::deep .tm-opsdispute-step-done .tm-opsdispute-dot {
+    border-color: var(--sc-primary);
+    background: var(--sc-primary);
+}
+
+::deep .tm-opsdispute-step-current .tm-opsdispute-dot {
+    border-color: var(--sc-primary);
+    box-shadow: 0 0 0 3px rgba(var(--sc-primary-rgb), .25);
+}
+
+::deep .tm-opsdispute-step-text {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    padding-top: .125rem;
+}
+
+::deep .tm-opsdispute-now {
+    display: inline-block;
+    margin-inline-start: .5rem;
+    padding: 0 .5rem;
+    border-radius: 1rem;
+    background: rgba(var(--sc-primary-rgb), .14);
+    color: var(--bs-emphasis-color);
+    font-size: .75rem;
+    font-weight: 700;
+    vertical-align: .1em;
+}
+
+::deep .tm-opsdispute-facts dd {
+    margin-bottom: .75rem;
+    overflow-wrap: anywhere;
+}
+
+    ::deep .tm-opsdispute-facts dd:last-child {
+        margin-bottom: 0;
+    }
+
+::deep .tm-opsdispute-audit {
+    align-items: flex-start;
+}
+
+/* Customer and operations text keeps its line breaks and never widens the page. */
+::deep .tm-opsdispute-text {
+    white-space: pre-line;
+    overflow-wrap: anywhere;
+}

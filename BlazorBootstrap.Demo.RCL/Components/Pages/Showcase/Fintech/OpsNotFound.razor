@@ -1,0 +1,18 @@
+@page "/showcase/fintech/ops/{*path}"
+@layout FintechOpsLayout
+
+<PageTitle>Page not found · Operations · @FintechSeedData.ProductName</PageTitle>
+
+@* Unknown operations pages stay in the back office instead of falling to the customer bank's not-found page. *@
+<div class="container-fluid px-lg-4">
+    <section class="tm-not-found text-center py-5">
+        <h1 class="tm-title mb-2">We couldn't find that page</h1>
+        <p class="text-body-secondary mb-4">The link may be wrong, or the item no longer exists.</p>
+        <a class="btn btn-primary" href="@FintechOpsLayout.Base">Back to the operations overview</a>
+    </section>
+</div>
+
+@code {
+    /// <summary>Gets or sets the unmatched path.</summary>
+    [Parameter] public string? Path { get; set; }
+}

@@ -1,0 +1,117 @@
+@page "/showcase/fintech/ops/audit"
+@layout FintechOpsLayout
+
+<PageTitle>Audit log · Operations · @FintechSeedData.ProductName</PageTitle>
+
+<div class="container-fluid px-lg-4">
+    <div class="tm-page-head">
+        <div>
+            <h1 class="tm-title">Audit log</h1>
+            <p class="tm-lead">Who did what, and when, across customers, operations, and the system.</p>
+        </div>
+    </div>
+
+    <Card Class="tm-card">
+        <CardBody Class="p-3 p-lg-4">
+            <p class="small text-body-secondary mb-3">
+                <Icon Name="IconName.Lock" class="me-1" aria-hidden="true" />Every customer and operations action in the demo is recorded here, newest first, and kept for this browser tab. Entries can't be changed or deleted.
+            </p>
+
+            <div class="row g-2 align-items-end mb-3" role="search" aria-label="Filter the audit log">
+                <div class="col-md-6 col-xl-4">
+                    <label class="form-label small fw-semibold" for="tm-audit-search">Search</label>
+                    <InputGroup>
+                        <InputGroupText><Icon Name="IconName.Search" aria-hidden="true" /></InputGroupText>
+                        @* The bound value changes only on change; @oninput filters live without writing older text back into the box. *@
+                        <TextInput @ref="searchInput" Id="tm-audit-search" Value="@searchBoxValue" ValueExpression="() => searchBoxValue" ValueChanged="OnSearchChanged"
+                                   @oninput="OnSearchInput" Placeholder="Actor, subject, or details" />
+                    </InputGroup>
+                </div>
+                <div class="col-6 col-md-3 col-xl-2">
+                    <label class="form-label small fw-semibold" for="tm-audit-role">Role</label>
+                    <select id="tm-audit-role" class="form-select" value="@roleFilter" @onchange="OnRoleChanged">
+                        <option value="">All roles</option>
+                        @foreach (var role in Roles)
+                        {
+                            <option value="@role">@RoleText(role)</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-6 col-md-3 col-xl-3">
+                    <label class="form-label small fw-semibold" for="tm-audit-action">Action</label>
+                    <select id="tm-audit-action" class="form-select" value="@actionFilter" @onchange="OnActionChanged">
+                        <option value="">All actions</option>
+                        @foreach (var action in Actions)
+                        {
+                            <option value="@action">@action</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-xl-3 d-flex flex-wrap align-items-center gap-2 justify-content-xl-end">
+                    @* Polite, so the count is read after typing pauses or a filter changes. *@
+                    <span class="small text-body-secondary" role="status">@MatchText</span>
+                    @if (HasFilters)
+                    {
+                        <Button Color="ButtonColor.Link" Size="ButtonSize.Small" Class="p-0" @onclick="ClearFilters">Clear filters</Button>
+                    }
+                </div>
+            </div>
+
+            <div class="table-responsive tm-grid">
+                <table class="table align-middle mb-0 tm-audit-table">
+                    <caption class="caption-top small">@CaptionText</caption>
+                    <thead>
+                        <tr>
+                            <th scope="col">Time</th>
+                            <th scope="col">Actor</th>
+                            <th scope="col">Role</th>
+                            <th scope="col">Action</th>
+                            <th scope="col">Subject</th>
+                            <th scope="col">Details</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Shown.Count == 0)
+                        {
+                            <tr>
+                                <td colspan="6" class="text-body-secondary py-4 text-center">
+                                    @(State.AuditLog.Count == 0 ? "Nothing has been recorded yet." : "No entries match these filters.")
+                                </td>
+                            </tr>
+                        }
+                        @foreach (var (entry, index) in Shown.Select((entry, index) => (entry, index)))
+                        {
+                            var stamp = entry.At.ToString("yyyy-MM-ddTHH:mm", CultureInfo.InvariantCulture);
+                            <tr @key="entry.Id">
+                                @if (index == firstNewIndex)
+                                {
+                                    @* The first row "Show more" added: focus moves here, so keyboard users carry on reading. *@
+                                    <th scope="row" class="tm-mono small fw-normal text-nowrap" tabindex="-1" @ref="firstNewCell"><time datetime="@stamp">@Transfers.StampText(entry.At)</time></th>
+                                }
+                                else
+                                {
+                                    <th scope="row" class="tm-mono small fw-normal text-nowrap"><time datetime="@stamp">@Transfers.StampText(entry.At)</time></th>
+                                }
+                                <td class="text-nowrap">@entry.Actor</td>
+                                <td class="text-nowrap small">@RoleText(entry.Role)</td>
+                                <td class="fw-semibold tm-audit-action">@entry.Action</td>
+                                <td class="tm-audit-subject">@entry.Subject</td>
+                                <td class="small tm-audit-details">@entry.Details</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            @if (FilteredCount > Shown.Count)
+            {
+                <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mt-3">
+                    <span class="small text-body-secondary">Showing @Shown.Count of @FilteredCount</span>
+                    <Button Color="ButtonColor.Primary" Outline="true" Size="ButtonSize.Small" @onclick="ShowMore">
+                        Show @Math.Min(PageSize, FilteredCount - Shown.Count) more
+                    </Button>
+                </div>
+            }
+        </CardBody>
+    </Card>
+</div>

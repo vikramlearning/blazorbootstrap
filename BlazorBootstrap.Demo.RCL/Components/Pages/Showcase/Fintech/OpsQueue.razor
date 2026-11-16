@@ -1,0 +1,82 @@
+@page "/showcase/fintech/ops/queue"
+@layout FintechOpsLayout
+
+<PageTitle>Review queue · Operations · @FintechSeedData.ProductName</PageTitle>
+
+<div class="container-fluid px-lg-4">
+    @{
+        var held = Held;
+    }
+
+    <div class="tm-page-head">
+        <div>
+            <h1 class="tm-title">Review queue <span class="tm-oq-count">@CountText(held.Count)</span></h1>
+            <p class="tm-lead">Transfers held for a check, oldest first. Open one to approve or reject it.</p>
+        </div>
+        <a class="btn btn-outline-secondary" href="@($"{FintechOpsLayout.Base}/scheduled")"><Icon Name="IconName.CalendarEvent" class="me-2" aria-hidden="true" />Scheduled postings</a>
+    </div>
+
+    <section class="tm-panel mb-4" aria-labelledby="tm-oq-list-title">
+        <h2 class="tm-section-title" id="tm-oq-list-title">Held transfers</h2>
+        @if (held.Count == 0)
+        {
+            <div class="tm-oq-empty">
+                <span class="tm-icon" aria-hidden="true"><Icon Name="IconName.CheckCircle" /></span>
+                <div>
+                    <p class="fw-semibold mb-1">Nothing to review</p>
+                    <p class="small text-body-secondary mb-0">Every held transfer has been approved or rejected. New ones appear here as customers send them.</p>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="table-responsive tm-grid">
+                <table class="table tm-oq-table">
+                    <caption class="caption-top small">@(held.Count == 1 ? "1 held transfer" : $"{held.Count.ToString(CultureInfo.InvariantCulture)} held transfers"), oldest first. Waiting is the time since the customer confirmed the transfer.</caption>
+                    <thead>
+                        <tr>
+                            <th scope="col">Reference</th>
+                            <th scope="col">Customer</th>
+                            <th scope="col" class="text-end">Amount</th>
+                            <th scope="col">To</th>
+                            <th scope="col">Date</th>
+                            <th scope="col">Hold reason</th>
+                            <th scope="col">Waiting</th>
+                            <th scope="col"><span class="visually-hidden">Action</span></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var transfer in held)
+                        {
+                            <tr @key="transfer.Reference">
+                                <th scope="row" class="tm-mono fw-semibold text-nowrap">@transfer.Reference</th>
+                                <td class="text-nowrap"><a href="@CustomerUrl(transfer.CustomerId)">@transfer.CustomerName</a></td>
+                                <td class="text-end tm-mono fw-semibold text-nowrap">@FintechDisplay.Money(transfer.Amount)</td>
+                                <td class="tm-oq-wrap">@transfer.ToName</td>
+                                <td class="text-nowrap">@Transfers.DateText(transfer.Date)</td>
+                                <td class="tm-oq-reason">@(transfer.HoldReason ?? "No reason recorded")</td>
+                                <td class="text-nowrap">@WaitText(transfer.CreatedAt, State.Clock.Now)</td>
+                                <td class="text-end">
+                                    <a class="btn btn-sm btn-primary text-nowrap" href="@TransferUrl(transfer.Reference)">Review<span class="visually-hidden"> @transfer.Reference, @FintechDisplay.Money(transfer.Amount) from @transfer.CustomerName</span></a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </section>
+
+    <section class="tm-panel" aria-labelledby="tm-oq-rules-title">
+        <h2 class="tm-section-title" id="tm-oq-rules-title">When a transfer is held</h2>
+        <ul class="small mb-2">
+            <li>@FintechDisplay.Money(FintechState.HoldLargeAmount) or more to any payee.</li>
+            <li>@FintechDisplay.Money(FintechState.HoldNewPayeeAmount) or more to a payee added in the last @FintechState.NewPayeeDays days, or whose name couldn't be confirmed.</li>
+            <li>A scheduled transfer operations put on hold from its page.</li>
+        </ul>
+        <p class="small text-body-secondary mb-0">
+            Transfers between a customer's own accounts are never held. The money stays set aside while a transfer waits; approving sends it,
+            or schedules it when its date is still ahead, and rejecting releases it. The customer is told either way.
+        </p>
+    </section>
+</div>

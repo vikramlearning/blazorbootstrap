@@ -335,3 +335,65 @@
 .sc-fintech ::deep .table-responsive {
     overflow-y: hidden;
 }
+
+/* The bank operations back office (D-031): a sidebar beside the page on wide screens, above it on narrow ones. */
+.tm-shell {
+    display: flex;
+    flex-direction: column;
+    flex: 1 0 auto;
+    min-width: 0;
+}
+
+.tm-shell-main {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+@media (min-width: 641px) {
+    .tm-shell {
+        flex-direction: row;
+        align-items: flex-start;
+    }
+}
+
+.sc-fintech ::deep .tm-sidebar {
+    --bb-sidebar-width: 15rem;
+    --bb-sidebar-background-color: #0b2a22;
+    --bb-sidebar-top-row-background-color: #0b2a22;
+    --bb-sidebar-top-row-border-color: rgba(255, 255, 255, .08);
+    --bb-sidebar-title-text-color: #fff;
+    --bb-sidebar-brand-icon-color: #6ee7b7;
+    --bb-sidebar-title-badge-text-color: #0b2a22;
+    --bb-sidebar-title-badge-background-color: #6ee7b7;
+    --bb-sidebar-navbar-toggler-icon-color: #fff;
+    --bb-sidebar-navbar-toggler-background-color: rgba(255, 255, 255, .1);
+    --bb-sidebar-content-border-color: rgba(255, 255, 255, .08);
+    --bb-sidebar-nav-item-text-color: #d1e7df;
+    --bb-sidebar-nav-item-text-active-color-rgb: 255, 255, 255;
+    --bb-sidebar-nav-item-text-hover-color: rgba(255, 255, 255, .95);
+    --bb-sidebar-nav-item-background-hover-color: rgba(255, 255, 255, .08);
+    --bb-sidebar-nav-item-group-background-color: rgba(255, 255, 255, .06);
+}
+
+/* Beside the page only: above it (narrow screens), a sticky bar would sit under the page content. */
+@media (min-width: 641px) {
+    .sc-fintech ::deep .tm-sidebar {
+        position: sticky;
+        top: 0;
+    }
+}
+
+.sc-fintech ::deep .tm-ops-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: .75rem;
+    padding: .625rem 1.5rem;
+    border-bottom: 1px solid var(--tm-border);
+    background: var(--bs-body-bg);
+}
+
+.sc-fintech ::deep .tm-ops-bar-title {
+    font-weight: 700;
+}

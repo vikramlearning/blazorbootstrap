@@ -1,0 +1,85 @@
+@page "/showcase/fintech/ops/disputes"
+@layout FintechOpsLayout
+
+<PageTitle>Disputes · Operations · @FintechSeedData.ProductName</PageTitle>
+
+<div class="container-fluid px-lg-4">
+    <div class="tm-page-head">
+        <div>
+            <h1 class="tm-title">Disputes</h1>
+            <p class="tm-lead">Charges customers asked us to look into: start a review, then refund or decline each one.</p>
+        </div>
+    </div>
+
+    <section class="tm-panel mb-4" aria-labelledby="tm-opsdisputes-counts-title">
+        <h2 class="visually-hidden" id="tm-opsdisputes-counts-title">Disputes by status</h2>
+        <dl class="tm-summary tm-opsdisputes-counts mb-0">
+            @foreach (var status in Enum.GetValues<FintechDisputeStatus>())
+            {
+                <div>
+                    <dt>@Disputes.StatusText(status)</dt>
+                    <dd class="tm-amount">@All.Count(dispute => dispute.Status == status)</dd>
+                </div>
+            }
+        </dl>
+    </section>
+
+    <Card Class="tm-card">
+        <CardBody Class="p-3 p-lg-4">
+            <fieldset class="mb-3">
+                <legend class="form-label small fw-semibold mb-2">Show</legend>
+                <div class="btn-group flex-wrap" role="group">
+                    @foreach (var option in FilterOptions)
+                    {
+                        var optionId = $"tm-opsdisputes-filter-{option.Filter.ToString().ToLowerInvariant()}";
+                        <input type="radio" class="btn-check" name="tm-opsdisputes-filter" id="@optionId" checked="@(filter == option.Filter)"
+                               @onchange="() => filter = option.Filter" />
+                        <label class="btn btn-outline-primary btn-sm" for="@optionId">@option.Label (@Count(option.Filter))</label>
+                    }
+                </div>
+            </fieldset>
+
+            @* Announces the new count when the filter changes; the caption says the same for table navigation. *@
+            <p class="visually-hidden" role="status">@CaptionText</p>
+
+            <div class="table-responsive tm-grid">
+                <table class="table table-hover align-middle mb-0">
+                    <caption class="caption-top small">@CaptionText</caption>
+                    <thead>
+                        <tr>
+                            <th scope="col">Dispute</th>
+                            <th scope="col">Customer</th>
+                            <th scope="col">Merchant</th>
+                            <th scope="col" class="text-end">Amount</th>
+                            <th scope="col">Reason</th>
+                            <th scope="col">Status</th>
+                            <th scope="col">Opened</th>
+                            <th scope="col">Age</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Shown.Count == 0)
+                        {
+                            <tr>
+                                <td colspan="8" class="text-body-secondary py-4 text-center">@EmptyText</td>
+                            </tr>
+                        }
+                        @foreach (var dispute in Shown)
+                        {
+                            <tr @key="dispute.Id">
+                                <td class="text-nowrap"><a class="fw-semibold tm-mono" href="@DisputePath(dispute.Id)">@dispute.Id</a></td>
+                                <td class="text-nowrap"><a href="@OpsCustomers.CustomerPath(dispute.CustomerId)">@CustomerName(dispute.CustomerId)</a></td>
+                                <td>@dispute.Merchant</td>
+                                <td class="tm-mono text-end text-nowrap">@FintechDisplay.Money(dispute.Amount)</td>
+                                <td>@ReasonText(dispute.Reason)</td>
+                                <td><Badge Color="Disputes.StatusColor(dispute.Status)" Class="rounded-pill text-nowrap">@Disputes.StatusText(dispute.Status)</Badge></td>
+                                <td class="tm-mono small text-nowrap">@Disputes.DayText(dispute.CreatedAt)</td>
+                                <td class="small text-nowrap">@AgeText(dispute, State.Clock.Now)</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </CardBody>
+    </Card>
+</div>

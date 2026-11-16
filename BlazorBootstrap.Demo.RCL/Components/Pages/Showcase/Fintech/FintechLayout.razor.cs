@@ -19,8 +19,6 @@ public partial class FintechLayout : LayoutComponentBase, IDisposable
     /// <summary>Route of the demo sign-in page.</summary>
     public const string SignInPath = Base + "/sign-in";
 
-    private readonly ShowcaseSite site = ShowcaseCatalog.Get("fintech");
-
     #endregion
 
     #region Methods
@@ -53,8 +51,6 @@ public partial class FintechLayout : LayoutComponentBase, IDisposable
     private void OnLocationChanged(object? sender, LocationChangedEventArgs e) => InvokeAsync(StateHasChanged);
 
     private void OnStateChanged() => InvokeAsync(StateHasChanged);
-
-    private void OnThemeChanged(string themeName) => State.SetTheme(themeName);
 
     #endregion
 

@@ -1,0 +1,113 @@
+@page "/showcase/fintech/ops/scheduled"
+@layout FintechOpsLayout
+
+<PageTitle>Scheduled postings · Operations · @FintechSeedData.ProductName</PageTitle>
+
+<div class="container-fluid px-lg-4">
+    @{
+        var days = Days;
+        var dueCount = days.Sum(day => day.Items.Count(IsDue));
+        var recent = Recent;
+    }
+
+    <div class="tm-page-head">
+        <div>
+            <h1 class="tm-title">Scheduled postings</h1>
+            <p class="tm-lead">Transfers waiting for their date, soonest first. They post at 06:00 on the day.</p>
+        </div>
+        <a class="btn btn-outline-secondary" href="@($"{FintechOpsLayout.Base}/queue")"><Icon Name="IconName.ShieldCheck" class="me-2" aria-hidden="true" />Review queue</a>
+    </div>
+
+    <section class="tm-panel mb-4" aria-labelledby="tm-os-run-title">
+        <h2 class="tm-section-title" id="tm-os-run-title">Run postings</h2>
+        <p class="small text-body-secondary mb-3">
+            Postings also run on their own whenever a page loads, so due transfers rarely wait here. Run them by hand after the clock
+            has moved on while this page was open. A demo customer's transfer that the account can't cover on its date is rejected, and the customer is told.
+        </p>
+        <div class="d-flex flex-wrap align-items-center gap-3">
+            <Button Color="ButtonColor.Primary" @onclick="RunPostings"><Icon Name="IconName.PlayCircle" class="me-2" aria-hidden="true" />Run due postings</Button>
+            <span class="small fw-semibold">@(dueCount == 0 ? "Nothing is due now." : dueCount == 1 ? "1 transfer is due now." : $"{dueCount.ToString(CultureInfo.InvariantCulture)} transfers are due now.")</span>
+        </div>
+        @* Always rendered, so a run's result is announced. *@
+        <p class="tm-os-status mt-3 mb-0" role="status">@statusMessage</p>
+    </section>
+
+    <section class="mb-4" aria-labelledby="tm-os-list-title">
+        <h2 class="tm-section-title" id="tm-os-list-title">Coming up</h2>
+        @if (days.Count == 0)
+        {
+            <div class="tm-panel">
+                <p class="fw-semibold mb-1">Nothing scheduled</p>
+                <p class="small text-body-secondary mb-0">Transfers customers schedule for a later date, and held transfers approved for a later date, appear here.</p>
+            </div>
+        }
+        else
+        {
+            @foreach (var day in days)
+            {
+                var headingId = $"tm-os-day-{day.Date.ToString("yyyyMMdd", CultureInfo.InvariantCulture)}";
+                <section class="tm-panel tm-os-day mb-3" aria-labelledby="@headingId" @key="day.Date">
+                    <div class="tm-os-day-head">
+                        <h3 class="h6 fw-bold mb-0" id="@headingId">@Transfers.DateText(day.Date) <span class="fw-normal text-body-secondary">· @WhenText(day.Date)</span></h3>
+                        <span class="small">
+                            @(day.Items.Count == 1 ? "1 transfer" : $"{day.Items.Count.ToString(CultureInfo.InvariantCulture)} transfers") ·
+                            <span class="tm-mono fw-semibold">@FintechDisplay.Money(day.Items.Sum(transfer => transfer.Amount))</span>
+                        </span>
+                    </div>
+                    <ul class="list-unstyled mb-0">
+                        @foreach (var transfer in day.Items)
+                        {
+                            <li class="tm-row tm-os-row" @key="transfer.Reference">
+                                <span class="tm-icon" aria-hidden="true"><Icon Name="IconName.CalendarEvent" /></span>
+                                <span class="tm-row-text">
+                                    <a class="tm-row-title tm-os-link" href="@OpsQueue.CustomerUrl(transfer.CustomerId)">@transfer.CustomerName</a>
+                                    <span class="tm-row-sub">From @FromText(transfer) to @transfer.ToName</span>
+                                    <span class="tm-row-sub"><a class="tm-mono" href="@OpsQueue.TransferUrl(transfer.Reference)">@transfer.Reference</a> · confirmed @Transfers.StampText(transfer.CreatedAt)</span>
+                                </span>
+                                <span class="tm-os-side">
+                                    <span class="tm-mono fw-semibold">@FintechDisplay.Money(transfer.Amount)</span>
+                                    @if (IsDue(transfer))
+                                    {
+                                        <Badge Color="BadgeColor.Warning" Class="rounded-pill">Due</Badge>
+                                    }
+                                </span>
+                            </li>
+                        }
+                    </ul>
+                </section>
+            }
+        }
+    </section>
+
+    <section class="tm-panel" aria-labelledby="tm-os-recent-title">
+        <h2 class="tm-section-title" id="tm-os-recent-title">Posted and rejected</h2>
+        <p class="small text-body-secondary">The last @RecentCount scheduled transfers that were sent or rejected, newest first.</p>
+        @if (recent.Count == 0)
+        {
+            <p class="small text-body-secondary mb-0">No scheduled transfer has posted or been rejected yet.</p>
+        }
+        else
+        {
+            <ul class="list-unstyled mb-0">
+                @foreach (var transfer in recent)
+                {
+                    <li class="tm-row tm-os-row" @key="transfer.Reference">
+                        <span class="tm-icon" aria-hidden="true"><Icon Name="@Transfers.StatusIcon(transfer.Status)" /></span>
+                        <span class="tm-row-text">
+                            <a class="tm-row-title tm-os-link" href="@OpsQueue.TransferUrl(transfer.Reference)">@transfer.Reference · @transfer.CustomerName</a>
+                            <span class="tm-row-sub">To @transfer.ToName · for @Transfers.DateText(transfer.Date)@(transfer.ClosedAt is { } closed ? $" · closed {Transfers.StampText(closed)}" : null)</span>
+                            @if (transfer.Status == FintechTransferStatus.Rejected && transfer.RejectReason is { } reason)
+                            {
+                                <span class="tm-row-sub">Rejected: @reason</span>
+                            }
+                        </span>
+                        <span class="tm-os-side">
+                            <span class="tm-mono fw-semibold">@FintechDisplay.Money(transfer.Amount)</span>
+                            <Badge Color="Transfers.StatusColor(transfer.Status)" Class="rounded-pill">@OpsTransfer.StatusText(transfer.Status)</Badge>
+                        </span>
+                    </li>
+                }
+            </ul>
+        }
+    </section>
+</div>

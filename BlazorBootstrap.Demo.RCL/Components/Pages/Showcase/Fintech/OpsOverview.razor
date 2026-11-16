@@ -1,0 +1,195 @@
+@page "/showcase/fintech/ops"
+@layout FintechOpsLayout
+
+<PageTitle>Overview · Operations · @FintechSeedData.ProductName</PageTitle>
+
+<div class="container-fluid px-lg-4">
+    <div class="tm-page-head">
+        <div>
+            <span class="sc-eyebrow">@State.Today.ToString("dddd, MMMM d, yyyy", CultureInfo.InvariantCulture)</span>
+            <h1 class="tm-title">@Greeting, @FirstName</h1>
+            <p class="tm-lead">What's waiting for operations today, and the latest activity across the bank.</p>
+        </div>
+    </div>
+
+    <section aria-labelledby="tm-ops-kpi-title" class="mb-4">
+        <h2 class="visually-hidden" id="tm-ops-kpi-title">Today's figures</h2>
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 row-cols-xxl-5 g-3">
+            <div class="col">
+                <Card Class="tm-card h-100">
+                    <CardBody Class="p-3 p-lg-4">
+                        <div class="tm-ops-kpi-head">
+                            @* The stretched link makes the whole card open its module; the label is the link text. *@
+                            <a class="tm-ops-kpi-link stretched-link" href="@QueuePath">Waiting for review</a>
+                            <span class="tm-icon" aria-hidden="true"><Icon Name="IconName.ShieldCheck" /></span>
+                        </div>
+                        <span class="tm-amount">@Held.Count</span>
+                        <span class="small d-block">@(Held.Count == 1 ? "transfer" : "transfers") · @FintechDisplay.Money(Held.Sum(transfer => transfer.Amount))</span>
+                        <span class="small text-body-secondary d-block">@OldestHeldText</span>
+                    </CardBody>
+                </Card>
+            </div>
+            <div class="col">
+                <Card Class="tm-card h-100">
+                    <CardBody Class="p-3 p-lg-4">
+                        <div class="tm-ops-kpi-head">
+                            <a class="tm-ops-kpi-link stretched-link" href="@DisputesPath">Open disputes</a>
+                            <span class="tm-icon" aria-hidden="true"><Icon Name="IconName.ExclamationOctagon" /></span>
+                        </div>
+                        <span class="tm-amount">@OpenDisputes.Count</span>
+                        <span class="small d-block">@(OpenDisputes.Count == 1 ? "dispute" : "disputes") submitted or under review</span>
+                        <span class="small text-body-secondary d-block">@NotStartedText</span>
+                    </CardBody>
+                </Card>
+            </div>
+            <div class="col">
+                <Card Class="tm-card h-100">
+                    <CardBody Class="p-3 p-lg-4">
+                        <div class="tm-ops-kpi-head">
+                            <a class="tm-ops-kpi-link stretched-link" href="@ScheduledPath">Scheduled postings</a>
+                            <span class="tm-icon" aria-hidden="true"><Icon Name="IconName.CalendarEvent" /></span>
+                        </div>
+                        <span class="tm-amount">@UpcomingPostings.Count</span>
+                        <span class="small d-block">in the next @PostingDays days · @FintechDisplay.Money(UpcomingPostings.Sum(transfer => transfer.Amount))</span>
+                        <span class="small text-body-secondary d-block">@DueNowText</span>
+                    </CardBody>
+                </Card>
+            </div>
+            <div class="col">
+                <Card Class="tm-card h-100">
+                    <CardBody Class="p-3 p-lg-4">
+                        <div class="tm-ops-kpi-head">
+                            <a class="tm-ops-kpi-link stretched-link" href="@CustomersPath">Customers on Watch</a>
+                            <span class="tm-icon" aria-hidden="true"><Icon Name="IconName.Eye" /></span>
+                        </div>
+                        <span class="tm-amount">@WatchCount</span>
+                        <span class="small d-block">of @State.Customers.Count customers</span>
+                        <span class="small text-body-secondary d-block">@(WatchCount == 0 ? "No one is on Watch" : "Watched after unusual activity")</span>
+                    </CardBody>
+                </Card>
+            </div>
+            <div class="col">
+                <Card Class="tm-card h-100">
+                    <CardBody Class="p-3 p-lg-4">
+                        <div class="tm-ops-kpi-head">
+                            <a class="tm-ops-kpi-link stretched-link" href="@AuditPath">Actions today</a>
+                            <span class="tm-icon" aria-hidden="true"><Icon Name="IconName.JournalText" /></span>
+                        </div>
+                        <span class="tm-amount">@ActionsToday</span>
+                        <span class="small d-block">audit @(ActionsToday == 1 ? "entry" : "entries") since midnight</span>
+                        <span class="small text-body-secondary d-block">By customers, operations, and the system</span>
+                    </CardBody>
+                </Card>
+            </div>
+        </div>
+    </section>
+
+    <div class="row g-3 mb-4">
+        <div class="col-xl-6">
+            <Card Class="tm-card h-100">
+                <CardHeader>
+                    <div>
+                        <h2 class="tm-card-title">Needs attention</h2>
+                        <p class="tm-card-sub">The longest-waiting held transfers and the disputes no one has started</p>
+                    </div>
+                </CardHeader>
+                <CardBody Class="pt-0">
+                    <div class="tm-ops-group">
+                        <div class="tm-ops-group-head">
+                            <h3 class="tm-ops-group-title">Held transfers</h3>
+                            <a class="small fw-semibold" href="@QueuePath">Review queue</a>
+                        </div>
+                        @if (Held.Count == 0)
+                        {
+                            <p class="small text-body-secondary border-top pt-3 mb-0">No transfers are held for a check. Transfers the bank's rules hold show here, oldest first.</p>
+                        }
+                        else
+                        {
+                            <ul class="list-unstyled mb-0">
+                                @foreach (var transfer in OldestHeld)
+                                {
+                                    <li class="tm-row" @key="transfer.Reference">
+                                        <span class="tm-icon" aria-hidden="true"><Icon Name="IconName.ShieldExclamation" /></span>
+                                        <span class="tm-row-text">
+                                            <a class="tm-row-title tm-ops-link" href="@TransferPath(transfer.Reference)">@transfer.Reference · @transfer.CustomerName</a>
+                                            <span class="tm-row-sub">To @transfer.ToName · waiting @WaitText(State.Clock.Now - transfer.CreatedAt)</span>
+                                            @if (!string.IsNullOrEmpty(transfer.HoldReason))
+                                            {
+                                                <span class="tm-row-sub"><span class="visually-hidden">Held because: </span>@transfer.HoldReason</span>
+                                            }
+                                        </span>
+                                        <span class="tm-mono fw-semibold text-nowrap">@FintechDisplay.Money(transfer.Amount)</span>
+                                    </li>
+                                }
+                            </ul>
+                            @if (Held.Count > OldestHeld.Count)
+                            {
+                                <p class="small text-body-secondary mt-2 mb-0">@(Held.Count - OldestHeld.Count) more in the review queue.</p>
+                            }
+                        }
+                    </div>
+
+                    <div class="tm-ops-group mt-4">
+                        <div class="tm-ops-group-head">
+                            <h3 class="tm-ops-group-title">Submitted disputes</h3>
+                            <a class="small fw-semibold" href="@DisputesPath">All disputes</a>
+                        </div>
+                        @if (SubmittedDisputes.Count == 0)
+                        {
+                            <p class="small text-body-secondary border-top pt-3 mb-0">No disputes are waiting to be started. New disputes from customers show here.</p>
+                        }
+                        else
+                        {
+                            <ul class="list-unstyled mb-0">
+                                @foreach (var dispute in SubmittedDisputes)
+                                {
+                                    <li class="tm-row" @key="dispute.Id">
+                                        <span class="tm-icon" aria-hidden="true"><Icon Name="IconName.Flag" /></span>
+                                        <span class="tm-row-text">
+                                            <a class="tm-row-title tm-ops-link" href="@DisputePath(dispute.Id)">Dispute @dispute.Id · @CustomerName(dispute.CustomerId)</a>
+                                            <span class="tm-row-sub">@dispute.Merchant · opened @Disputes.DayText(dispute.CreatedAt)</span>
+                                        </span>
+                                        <span class="tm-mono fw-semibold text-nowrap">@FintechDisplay.Money(dispute.Amount)</span>
+                                    </li>
+                                }
+                            </ul>
+                        }
+                    </div>
+                </CardBody>
+            </Card>
+        </div>
+        <div class="col-xl-6">
+            <Card Class="tm-card h-100">
+                <CardHeader>
+                    <div>
+                        <h2 class="tm-card-title">Recent activity</h2>
+                        <p class="tm-card-sub">The last @RecentCount entries in the audit log</p>
+                    </div>
+                    <a class="small fw-semibold" href="@AuditPath">Full audit log</a>
+                </CardHeader>
+                <CardBody Class="pt-0">
+                    @if (Recent.Count == 0)
+                    {
+                        <p class="small text-body-secondary border-top pt-3 mb-0">Nothing has been recorded yet. Customer, operations, and system actions show here as they happen.</p>
+                    }
+                    else
+                    {
+                        <ul class="list-unstyled mb-0">
+                            @foreach (var entry in Recent)
+                            {
+                                <li class="tm-row tm-ops-activity" @key="entry.Id">
+                                    <time class="tm-mono small text-body-secondary tm-ops-time" datetime="@entry.At.ToString("yyyy-MM-ddTHH:mm", CultureInfo.InvariantCulture)">@TimeText(entry.At)</time>
+                                    <span class="tm-row-text">
+                                        <span class="fw-semibold text-body">@entry.Action</span>
+                                        <span class="tm-row-sub tm-ops-wrap">@entry.Subject</span>
+                                        <span class="tm-row-sub">By @entry.Actor (@OpsAudit.RoleText(entry.Role))</span>
+                                    </span>
+                                </li>
+                            }
+                        </ul>
+                    }
+                </CardBody>
+            </Card>
+        </div>
+    </div>
+</div>

@@ -406,3 +406,25 @@ public sealed class FintechNotice
 
     #endregion
 }
+
+/// <summary>Where a customer stands with the bank.</summary>
+public enum FintechCustomerStatus
+{
+    /// <summary>In good standing.</summary>
+    Active,
+
+    /// <summary>Watched by operations (for example after unusual activity).</summary>
+    Watch,
+}
+
+/// <summary>
+/// A bank customer, as operations see them. Only the demo customer has a full ledger in the tab; the others are summaries
+/// with their accounts' count and total, and the transfers and disputes seeded for them.
+/// </summary>
+public sealed record FintechCustomer(string Id, string Name, string Email, string City, DateOnly Since, string Segment, FintechCustomerStatus Status, int AccountCount, decimal TotalBalance);
+
+/// <summary>An internal note operations wrote about a customer (customers never see it).</summary>
+public sealed record FintechCustomerNote(int Id, string CustomerId, DateTime At, string Author, string Text);
+
+/// <summary>One entry in the audit log: who did what, when, to what.</summary>
+public sealed record FintechAuditEntry(int Id, DateTime At, string Actor, string Role, string Action, string Subject, string Details);
