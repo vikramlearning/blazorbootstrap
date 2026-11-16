@@ -1,0 +1,46 @@
+/* The trips list. Card, CardBody, Badge, and ShowcaseImage render their own elements, so those need ::deep. */
+
+.ds-trip-jump {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .5rem;
+}
+
+.ds-trip-empty {
+    padding-block: 1.5rem;
+}
+
+/* A photo beside the details; on a phone the photo sits on top, so the details keep the full width. */
+::deep .ds-trip-layout {
+    display: grid;
+    grid-template-columns: 1fr;
+    height: 100%;
+}
+
+::deep .ds-trip-photo {
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+}
+
+    ::deep .ds-trip-photo img,
+    ::deep .ds-trip-photo > * {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+@media (min-width: 576px) {
+    ::deep .ds-trip-layout {
+        grid-template-columns: minmax(8rem, 35%) 1fr;
+    }
+
+    ::deep .ds-trip-photo {
+        aspect-ratio: auto;
+        min-height: 100%;
+    }
+}
+
+/* Long stay names wrap instead of widening the card. */
+::deep .ds-trip .ds-card-title {
+    overflow-wrap: anywhere;
+}

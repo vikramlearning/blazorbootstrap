@@ -1,0 +1,98 @@
+/* The printable receipt. The site's header, footer, and ad are hidden in print by the showcase stylesheet
+   (.sc-site > :not(.sc-main)); the buttons above the receipt carry .sc-no-print. */
+
+.ds-receipt-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: .75rem 1rem;
+    margin-bottom: 1.25rem;
+}
+
+.ds-receipt {
+    max-width: 52rem;
+    padding: clamp(1rem, 4vw, 2rem);
+    border: 1px solid var(--ds-border);
+    border-radius: 1rem;
+    background: var(--ds-surface);
+}
+
+.ds-receipt-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    padding-bottom: 1rem;
+    margin-bottom: 1.25rem;
+    border-bottom: 1px solid var(--ds-border);
+}
+
+.ds-receipt-brand {
+    font-family: var(--sc-font-heading);
+    font-size: 1.25rem;
+    color: var(--sc-primary-hover);
+}
+
+.ds-receipt-ref {
+    display: grid;
+    grid-template-columns: auto auto;
+    gap: .125rem 1rem;
+    font-size: .875rem;
+}
+
+    .ds-receipt-ref dt {
+        font-weight: 500;
+        color: var(--bs-secondary-color);
+    }
+
+    .ds-receipt-ref dd {
+        margin: 0;
+        font-weight: 600;
+    }
+
+.ds-receipt-facts {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+    gap: .75rem 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+    .ds-receipt-facts dt {
+        font-size: .8125rem;
+        font-weight: 500;
+        color: var(--bs-secondary-color);
+    }
+
+    .ds-receipt-facts dd {
+        margin: 0;
+        font-weight: 600;
+        overflow-wrap: anywhere;
+    }
+
+.ds-receipt caption {
+    padding-top: 0;
+    font-weight: 700;
+    color: var(--ds-ink);
+}
+
+.ds-receipt-note {
+    font-size: .875rem;
+    color: var(--bs-secondary-color);
+}
+
+/* Browsers drop backgrounds when printing, so the receipt prints in dark ink on white, even from the dark theme. */
+@media print {
+    .ds-receipt {
+        max-width: none;
+        padding: 0;
+        border: 0;
+    }
+
+        .ds-receipt,
+        .ds-receipt * {
+            color: #111 !important;
+            background: transparent !important;
+            border-color: #bbb !important;
+        }
+}

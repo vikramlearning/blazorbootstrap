@@ -6,6 +6,7 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@400;500;600;700&display=swap" />
 </HeadContent>
 
+<ShowcaseSessionHost State="State" SiteBase="@Base" SiteName="@TravelSeedData.SiteName">
 <div class="sc-site sc-travel">
     <ShowcaseSiteBar Site="@site" />
 
@@ -19,21 +20,32 @@
                 <span class="ds-brand-mark" aria-hidden="true"><Icon Name="IconName.Compass" /></span>
                 <span>@TravelSeedData.SiteName</span>
             </NavbarBrand>
+            @if (State.Identity.IsSignedIn)
+            {
+                <ShowcaseAccountMenu SiteBase="@Base" SignInPath="@SignInPath" Class="ms-auto me-2 order-lg-last"
+                                     NoticeCount="@State.UnreadThreadCount" NoticesPath="@($"{Base}/messages")" />
+            }
+            else
+            {
+                <a class="btn btn-sm btn-outline-secondary ms-auto me-2 order-lg-last" href="@SignInPath">Sign in</a>
+            }
         </Brand>
         <ChildContent>
             <NavbarNav Class="me-auto ms-lg-4 mb-3 mb-lg-0">
                 <NavbarItem Href="@Base" Match="NavLinkMatch.All">Search</NavbarItem>
                 <NavbarItem Href="@($"{Base}/stays")">Stays</NavbarItem>
-                <NavbarItem Href="@($"{Base}/trips")">Trips</NavbarItem>
+                @if (State.IsGuest)
+                {
+                    <NavbarItem Href="@($"{Base}/wishlist")">Wishlist</NavbarItem>
+                    <NavbarItem Href="@($"{Base}/trips")">Trips</NavbarItem>
+                    <NavbarItem Href="@($"{Base}/messages")">Messages@(State.UnreadThreadCount > 0 ? $" ({State.UnreadThreadCount})" : null)</NavbarItem>
+                }
             </NavbarNav>
-            <div class="ds-user mb-3 mb-lg-0">
-                <Avatar Name="@TravelSeedData.TravelerName" Initials="JA" Color="AvatarColor.Info" Size="AvatarSize.Small" />
-                <span>@TravelSeedData.TravelerName</span>
-            </div>
         </ChildContent>
     </Navbar>
 
-    <main class="sc-main ds-content" id="ds-main">
+    @* Pages show guests' names, trips, and messages, so the content is masked from session recording. *@
+    <main class="sc-main ds-content" id="ds-main" data-clarity-mask="true">
         @Body
     </main>
 
@@ -43,8 +55,14 @@
 
     <footer class="ds-footer">
         <div class="container-xl d-flex flex-wrap justify-content-between gap-2">
-            <span>© 2026 @TravelSeedData.SiteName (fictitious). The cities are real; every stay, host, review, and booking is made up.</span>
+            <span>© 2026 @TravelSeedData.SiteName (fictitious). The cities are real; every stay, host, review, and booking is made up and stays in this browser tab. Payments use test cards only.</span>
             <span class="d-none d-lg-inline">Built with GoogleMap, Carousel, DateInput, NumberInput, RangeInput, RatingInput, and Modal.</span>
         </div>
     </footer>
+
+    @* Toasts can name guests and stays, so they are masked from session recording like the page content. *@
+    <div data-clarity-mask="true">
+        <Toasts class="p-3" AutoHide="true" Delay="5000" Placement="ToastsPlacement.BottomRight" />
+    </div>
 </div>
+</ShowcaseSessionHost>

@@ -1,0 +1,56 @@
+.ds-wish {
+    display: inline-flex;
+    flex-shrink: 0;
+}
+
+.ds-wish-btn-compact,
+.ds-wish-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--ds-border);
+    background: var(--ds-surface);
+    color: var(--ds-ink);
+}
+
+    .ds-wish-btn-compact:hover,
+    .ds-wish-btn-compact:active,
+    .ds-wish-btn:hover,
+    .ds-wish-btn:active {
+        border-color: var(--sc-primary);
+        background: rgba(var(--sc-primary-rgb), .08);
+        color: var(--ds-ink);
+    }
+
+    .ds-wish-btn-compact:focus-visible,
+    .ds-wish-btn:focus-visible {
+        outline: 3px solid var(--sc-primary);
+        outline-offset: 2px;
+        box-shadow: none;
+    }
+
+/* Round icon-only button: 2.5rem, so it is an easy target on touch screens. */
+.ds-wish-btn-compact {
+    width: 2.5rem;
+    height: 2.5rem;
+    padding: 0;
+    border-radius: 50%;
+    font-size: 1.125rem;
+    line-height: 1;
+}
+
+.ds-wish-btn {
+    min-height: 2.5rem;
+    padding-inline: 1rem;
+    border-radius: 999px;
+    font-weight: 600;
+}
+
+/* Saved shows a filled heart (and on the stay page the word changes), so the state is never told by color alone. */
+.ds-wish-on ::deep .bi {
+    color: #be123c;
+}
+
+[data-bs-theme=dark] .ds-wish-on ::deep .bi {
+    color: #fb7185;
+}

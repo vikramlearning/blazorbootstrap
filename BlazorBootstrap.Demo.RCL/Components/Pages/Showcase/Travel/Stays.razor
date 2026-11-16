@@ -50,8 +50,12 @@
                     </RadioButtonGroup>
                 </div>
 
+                <div class="mb-2">
+                    <Switch Id="ds-filter-free" Value="State.Filter.FreeCancellationOnly" ValueExpression="() => State.Filter.FreeCancellationOnly" ValueChanged="OnFreeCancellationChanged" Label="Free cancellation only" />
+                </div>
                 <div class="mb-3">
-                    <Switch Value="State.Filter.FreeCancellationOnly" ValueExpression="() => State.Filter.FreeCancellationOnly" ValueChanged="OnFreeCancellationChanged" Label="Free cancellation only" />
+                    <Switch Id="ds-filter-instant" Value="State.Filter.InstantBookOnly" ValueExpression="() => State.Filter.InstantBookOnly" ValueChanged="OnInstantBookChanged" Label="Instant book only" />
+                    <p class="small text-body-secondary mt-1 mb-0">Book without waiting for the host to accept.</p>
                 </div>
 
                 <Button Color="ButtonColor.Secondary" Outline="true" Size="ButtonSize.Small" Class="w-100" @onclick="ClearFiltersAsync" Disabled="!State.Filter.IsActive">
@@ -65,7 +69,15 @@
                 <section class="col-xl-7" aria-labelledby="ds-results-count">
                     <p class="fw-semibold mb-3" id="ds-results-count" aria-live="polite" tabindex="-1" @ref="resultsCount">@ResultsText</p>
 
-                    @if (Results.Count == 0)
+                    @if (Listed.Count == 0 && Booked.Count > 0)
+                    {
+                        <div class="ds-panel text-center py-5">
+                            <span class="ds-icon fs-4" aria-hidden="true"><Icon Name="IconName.CalendarX" /></span>
+                            <h2 class="h5 fw-bold mt-3">Every matching stay is booked on your dates</h2>
+                            <p class="text-body-secondary mb-0">Use "Change search" to try other dates, or open a stay under "Booked on your dates" to see when it's free.</p>
+                        </div>
+                    }
+                    else if (Listed.Count == 0)
                     {
                         <div class="ds-panel text-center py-5">
                             <span class="ds-icon fs-4" aria-hidden="true"><Icon Name="IconName.HouseHeart" /></span>
@@ -76,9 +88,9 @@
                     else
                     {
                         <ol class="list-unstyled d-grid gap-3 mb-0">
-                            @for (var index = 0; index < Results.Count; index++)
+                            @for (var index = 0; index < Listed.Count; index++)
                             {
-                                var stay = Results[index];
+                                var stay = Listed[index];
                                 var number = index + 1;
                                 var rating = State.AverageRating(stay.Id);
                                 var quote = State.Quote(stay, State.Search.CheckIn, State.Search.CheckOut);
@@ -94,10 +106,11 @@
                                                 <CardBody Class="h-100 d-flex flex-column">
                                                     <div class="d-flex align-items-start gap-2">
                                                         <span class="ds-pin-number" aria-hidden="true">@number</span>
-                                                        <div class="min-w-0">
+                                                        <div class="min-w-0 flex-grow-1">
                                                             <span class="small text-body-secondary">@TravelDisplay.TypeLabel(stay.Type) · @stay.Neighborhood</span>
                                                             <h2 class="ds-card-title"><a href="@TravelDisplay.StayUrl(stay.Id)"><span class="visually-hidden">Map pin @number: </span>@stay.Name</a></h2>
                                                         </div>
+                                                        <TravelWishButton Stay="stay" Compact="true" />
                                                     </div>
                                                     <div class="ds-stars small mb-2">
                                                         <span class="visually-hidden">Rated @TravelDisplay.Rating(rating) out of 5 from @State.ReviewsFor(stay.Id).Count reviews</span>
@@ -107,10 +120,21 @@
                                                         </span>
                                                     </div>
                                                     <p class="small text-body-secondary mb-2">Sleeps @stay.MaxGuests · @stay.Bedrooms @(stay.Bedrooms == 1 ? "bedroom" : "bedrooms") · @string.Join(", ", stay.Amenities.Take(2))</p>
-                                                    @if (stay.FreeCancellation)
-                                                    {
-                                                        <span class="small text-success-emphasis fw-semibold mb-2"><Icon Name="IconName.ShieldCheck" class="me-1" aria-hidden="true" />Free cancellation</span>
-                                                    }
+                                                    <ul class="list-unstyled small d-flex flex-wrap row-gap-1 column-gap-3 mb-2">
+                                                        <li>
+                                                            @if (stay.InstantBook)
+                                                            {
+                                                                <span class="fw-semibold"><Icon Name="IconName.LightningCharge" class="me-1" aria-hidden="true" />Instant book</span>
+                                                            }
+                                                            else
+                                                            {
+                                                                <span><Icon Name="IconName.ChatText" class="me-1" aria-hidden="true" />Request to book</span>
+                                                            }
+                                                        </li>
+                                                        <li class="@(stay.FreeCancellation ? "text-success-emphasis" : null)">
+                                                            <Icon Name="IconName.ShieldCheck" class="me-1" aria-hidden="true" />@PolicyName(stay.Policy)@(stay.FreeCancellation ? ", free cancellation" : null)
+                                                        </li>
+                                                    </ul>
                                                     <div class="mt-auto d-flex flex-wrap justify-content-between align-items-baseline gap-2">
                                                         <span><span class="ds-price">@TravelDisplay.Money(stay.NightlyRate)</span> <span class="small text-body-secondary">a night</span></span>
                                                         @if (SearchError is null)
@@ -126,6 +150,34 @@
                             }
                         </ol>
                     }
+
+                    @if (SearchError is null && Booked.Count > 0)
+                    {
+                        <section class="mt-5" aria-labelledby="ds-booked-title">
+                            <h2 class="ds-section-title" id="ds-booked-title">Booked on your dates</h2>
+                            <p class="text-body-secondary small">These stays match your search, but some of the nights from @TravelDisplay.Dates(State.Search.CheckIn, State.Search.CheckOut) are taken. Open one to see which nights are free.</p>
+                            <ul class="list-unstyled d-grid gap-3 mb-0">
+                                @foreach (var stay in Booked)
+                                {
+                                    <li @key="stay.Id">
+                                        <Card Class="ds-card">
+                                            <CardBody Class="d-flex flex-wrap align-items-center gap-3">
+                                                <div class="min-w-0 flex-grow-1">
+                                                    <span class="small text-body-secondary">@TravelDisplay.TypeLabel(stay.Type) · @stay.Neighborhood</span>
+                                                    <h3 class="ds-card-title">@stay.Name</h3>
+                                                    <div class="d-flex flex-wrap align-items-baseline gap-2">
+                                                        <span><span class="fw-bold">@TravelDisplay.Money(stay.NightlyRate)</span> <span class="small text-body-secondary">a night</span></span>
+                                                        <span class="small text-body-secondary"><Icon Name="IconName.CalendarX" class="me-1" aria-hidden="true" />Booked on your dates</span>
+                                                    </div>
+                                                </div>
+                                                <a class="btn btn-outline-primary btn-sm" href="@TravelDisplay.StayUrl(stay.Id)">Pick other dates<span class="visually-hidden"> for @stay.Name</span></a>
+                                            </CardBody>
+                                        </Card>
+                                    </li>
+                                }
+                            </ul>
+                        </section>
+                    }
                 </section>
 
                 <section class="col-xl-5" aria-labelledby="ds-map-title">
@@ -133,7 +185,7 @@
                         <h2 class="ds-filter-heading" id="ds-map-title">Map</h2>
                         @* Without a Google Maps key, the placeholder shows numbered pins and lists the same stays (AC-30). *@
                         <ShowcaseMapOrPlaceholder Locations="Locations" Height="380" Zoom="13"
-                                                  AriaLabel="@($"Map preview with {Results.Count} numbered pins for the stays listed in {Destination.Name}")" />
+                                                  AriaLabel="@($"Map preview with {Listed.Count} numbered pins for the stays listed in {Destination.Name}")" />
                     </div>
                 </section>
             </div>

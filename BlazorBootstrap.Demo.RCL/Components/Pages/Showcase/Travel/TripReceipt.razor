@@ -1,0 +1,160 @@
+@page "/showcase/travel/trips/{Reference}/receipt"
+@layout TravelLayout
+
+<PageTitle>Receipt @Reference · @TravelSeedData.SiteName</PageTitle>
+
+<div class="container-xl pb-4">
+    <ShowcaseRoleGuard Roles="@TravelSeedData.GuestRole" SignInPath="@TravelLayout.SignInPath">
+        @if (Booking is not { } trip || State.FindStay(trip.StayId) is not { } stay)
+        {
+            <section class="ds-not-found" aria-labelledby="ds-receipt-missing-title">
+                <span class="ds-icon fs-4" aria-hidden="true"><Icon Name="IconName.Receipt" /></span>
+                <h1 class="ds-title fs-3 mt-3 mb-2" id="ds-receipt-missing-title">We couldn't find that receipt</h1>
+                <p class="text-body-secondary mb-4">There's no trip @Reference on your account. Check the reference, or open the trip from your trips.</p>
+                <div class="d-flex justify-content-center flex-wrap gap-2">
+                    <Button Type="ButtonType.Link" To="@($"{TravelLayout.Base}/trips")" Color="ButtonColor.Primary">Your trips</Button>
+                </div>
+            </section>
+        }
+        else
+        {
+            var phase = State.Phase(trip);
+            var destination = State.FindDestination(stay.DestinationId);
+            var host = State.HostOf(stay);
+            var showsAddress = phase is TravelTripPhase.Upcoming or TravelTripPhase.InProgress or TravelTripPhase.Completed;
+
+            <div class="ds-receipt-actions sc-no-print">
+                <a class="btn btn-outline-secondary btn-sm" href="@TravelDisplay.TripUrl(trip.Reference)"><Icon Name="IconName.ArrowLeft" class="me-1" aria-hidden="true" />Back to the trip</a>
+                <Button Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="PrintAsync"><Icon Name="IconName.Printer" class="me-1" aria-hidden="true" />Print receipt</Button>
+                <span class="small text-body-secondary">To save it as a PDF, choose "Save as PDF" in the print dialog.</span>
+            </div>
+
+            <article class="ds-receipt" aria-labelledby="ds-receipt-title">
+                <header class="ds-receipt-head">
+                    <div>
+                        <p class="ds-receipt-brand mb-1"><Icon Name="IconName.Compass" class="me-2" aria-hidden="true" />@TravelSeedData.SiteName</p>
+                        <h1 class="ds-title" id="ds-receipt-title">Receipt</h1>
+                    </div>
+                    <dl class="ds-receipt-ref mb-0">
+                        <dt>Reference</dt>
+                        <dd>@trip.Reference</dd>
+                        <dt>Status</dt>
+                        <dd>@TravelDisplay.PhaseText(phase)</dd>
+                        <dt>Issued</dt>
+                        <dd>@TravelDisplay.Stamp(State.Clock.Now)</dd>
+                    </dl>
+                </header>
+
+                <dl class="ds-receipt-facts">
+                    <div>
+                        <dt>Guest</dt>
+                        <dd>@trip.GuestName</dd>
+                    </div>
+                    <div>
+                        <dt>Stay</dt>
+                        <dd>
+                            @stay.Name
+                            <span class="d-block fw-normal small">@stay.Neighborhood, @destination.Name, @destination.Country</span>
+                            @if (showsAddress)
+                            {
+                                <span class="d-block fw-normal small">@stay.Address</span>
+                            }
+                        </dd>
+                    </div>
+                    <div>
+                        <dt>Host</dt>
+                        <dd>@host.Name</dd>
+                    </div>
+                    <div>
+                        <dt>Dates</dt>
+                        <dd>
+                            @TravelDisplay.Dates(trip.CheckIn, trip.CheckOut)
+                            <span class="d-block fw-normal small">@TravelDisplay.Nights(trip.Nights), check-in from @CheckInTime(trip)</span>
+                        </dd>
+                    </div>
+                    <div>
+                        <dt>Guests</dt>
+                        <dd>@TravelDisplay.Guests(trip.Guests)</dd>
+                    </div>
+                    <div>
+                        <dt>Card</dt>
+                        <dd>@trip.CardBrand ending @trip.CardLast4</dd>
+                    </div>
+                </dl>
+
+                <div class="table-responsive">
+                    <table class="table table-sm mb-4">
+                        <caption class="caption-top">Price of the stay</caption>
+                        <thead>
+                            <tr>
+                                <th scope="col">Item</th>
+                                <th scope="col" class="text-end">Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>@TravelDisplay.Money(trip.NightlyRate) × @TravelDisplay.Nights(trip.Nights)</td>
+                                <td class="text-end text-nowrap">@TravelDisplay.Money(trip.Subtotal)</td>
+                            </tr>
+                            <tr>
+                                <td>Cleaning fee</td>
+                                <td class="text-end text-nowrap">@TravelDisplay.Money(trip.CleaningFee)</td>
+                            </tr>
+                            <tr>
+                                <td>Taxes and fees (@TaxRateText)</td>
+                                <td class="text-end text-nowrap">@TravelDisplay.Money(trip.Taxes)</td>
+                            </tr>
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <th scope="row">Trip total (USD)</th>
+                                <td class="text-end fw-bold text-nowrap">@TravelDisplay.Money(trip.Total)</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-sm mb-4">
+                        <caption class="caption-top">Payments and refunds</caption>
+                        <thead>
+                            <tr>
+                                <th scope="col">Date</th>
+                                <th scope="col">Description</th>
+                                <th scope="col" class="text-end">Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (trip.Charges.Count == 0)
+                            {
+                                <tr>
+                                    <td colspan="3">
+                                        @(phase == TravelTripPhase.Requested
+                                            ? $"Nothing charged yet: the card is held until {host.Name} answers the request."
+                                            : "Nothing was charged.")
+                                    </td>
+                                </tr>
+                            }
+                            @foreach (var charge in trip.Charges)
+                            {
+                                <tr>
+                                    <td class="text-nowrap">@TravelDisplay.Stamp(charge.At)</td>
+                                    <td>@charge.Description</td>
+                                    <td class="text-end text-nowrap">@SignedMoney(charge.Amount)</td>
+                                </tr>
+                            }
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <th scope="row" colspan="2">Total paid, after refunds</th>
+                                <td class="text-end fw-bold text-nowrap">@TravelDisplay.Money(trip.Paid)</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+
+                <p class="ds-receipt-note mb-0"><Icon Name="IconName.InfoCircle" class="me-2" aria-hidden="true" />Demo receipt: no real payment was made. @TravelSeedData.SiteName, its stays, and its hosts are fictitious.</p>
+            </article>
+        }
+    </ShowcaseRoleGuard>
+</div>

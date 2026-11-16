@@ -1,0 +1,53 @@
+.ds-thread {
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+    gap: .875rem;
+}
+
+    .ds-thread:focus-within {
+        outline: 3px solid var(--sc-primary);
+        outline-offset: 2px;
+    }
+
+    /* The outline on the row shows focus; the link itself doesn't need a second ring. */
+    .ds-thread a:focus-visible {
+        outline: none;
+    }
+
+/* Unread is also said in words (the badge); the edge only helps scanning. */
+.ds-thread-unread {
+    border-inline-start: 4px solid var(--sc-primary);
+}
+
+.ds-thread-main {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+.ds-thread-preview {
+    color: var(--bs-secondary-color);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.ds-thread-unread .ds-thread-preview {
+    color: var(--ds-ink);
+}
+
+.ds-avatar {
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: 50%;
+    background: rgba(var(--sc-primary-rgb), .14);
+    color: var(--sc-primary-hover);
+    font-weight: 700;
+    font-size: .9375rem;
+}

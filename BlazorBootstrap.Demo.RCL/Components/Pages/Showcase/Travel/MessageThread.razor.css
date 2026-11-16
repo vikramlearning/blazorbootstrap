@@ -1,0 +1,72 @@
+.ds-thread-head {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.ds-thread-head-main {
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+.ds-avatar {
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+    width: 3.5rem;
+    height: 3.5rem;
+    border-radius: 50%;
+    background: rgba(var(--sc-primary-rgb), .14);
+    color: var(--sc-primary-hover);
+    font-weight: 700;
+    font-size: 1.125rem;
+}
+
+/* The host writes on the left, the guest on the right; the author's name on each says who, not the side alone. */
+.ds-message-row {
+    display: flex;
+}
+
+.ds-message-row-guest {
+    justify-content: flex-end;
+}
+
+.ds-message {
+    width: min(100%, 36rem);
+    padding: .875rem 1rem;
+    border: 1px solid var(--ds-border);
+    border-radius: 1rem;
+    background: var(--ds-surface);
+    color: var(--ds-ink);
+}
+
+.ds-message-host {
+    border-end-start-radius: .25rem;
+}
+
+.ds-message-guest {
+    border-color: rgba(var(--sc-primary-rgb), .3);
+    border-end-end-radius: .25rem;
+    background: rgba(var(--sc-primary-rgb), .08);
+}
+
+@media (min-width: 576px) {
+    .ds-message {
+        width: min(85%, 36rem);
+    }
+}
+
+.ds-message-body {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+.ds-reply-status {
+    margin-top: .75rem;
+    font-weight: 600;
+}
+
+    .ds-reply-status:empty {
+        margin-top: 0;
+    }

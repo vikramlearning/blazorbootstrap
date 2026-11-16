@@ -1,0 +1,94 @@
+@page "/showcase/travel/wishlist"
+@layout TravelLayout
+
+<PageTitle>Wishlist · @TravelSeedData.SiteName</PageTitle>
+
+<div class="container-xl pb-4">
+    <ShowcaseRoleGuard Roles="@TravelSeedData.GuestRole" SignInPath="@TravelLayout.SignInPath">
+        @{
+            var saved = State.Wishlist();
+        }
+
+        <h1 class="ds-title">Wishlist</h1>
+        <p class="ds-lead mb-3">@SavedText(saved.Count)</p>
+
+        @* Always rendered and focusable, so a removal is announced and focus has somewhere to go when its card is gone. *@
+        <div class="ds-wish-status" role="status" tabindex="-1" @ref="statusRegion">
+            @if (statusMessage is not null)
+            {
+                <span>@statusMessage</span>
+                @if (removed is { } stay && !State.IsWished(stay.Id))
+                {
+                    <button type="button" class="btn btn-link btn-sm p-0 ms-2 align-baseline" @onclick="UndoAsync">Undo<span class="visually-hidden">: save @stay.Name again</span></button>
+                }
+            }
+        </div>
+
+        @if (saved.Count == 0)
+        {
+            <div class="ds-panel text-center py-5">
+                <span class="ds-icon fs-4" aria-hidden="true"><Icon Name="IconName.Heart" /></span>
+                <h2 class="h5 fw-bold mt-3">No saved stays yet</h2>
+                <p class="text-body-secondary mb-4">Tap the heart on a stay to save it here, so you can compare places and come back to them.</p>
+                <a class="btn btn-primary" href="@TravelLayout.Base"><Icon Name="IconName.Search" class="me-2" aria-hidden="true" />Search stays</a>
+            </div>
+        }
+        else
+        {
+            <ul class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-4 list-unstyled mb-0">
+                @foreach (var stay in saved)
+                {
+                    var destination = State.FindDestination(stay.DestinationId);
+                    var reviews = State.ReviewsFor(stay.Id).Count;
+                    var rating = State.AverageRating(stay.Id);
+                    <li class="col" @key="stay.Id">
+                        <Card Class="ds-card h-100">
+                            <a href="@TravelDisplay.StayUrl(stay.Id)" tabindex="-1" aria-hidden="true">
+                                <ShowcaseImage Src="@stay.PhotoPath(1)" Alt="" Width="800" Height="600" Accent="@destination.Accent" PlaceholderIcon="IconName.HouseHeart" />
+                            </a>
+                            <CardBody Class="d-flex flex-column">
+                                <div class="d-flex align-items-start gap-2">
+                                    <div class="min-w-0 flex-grow-1">
+                                        <span class="small text-body-secondary">@TravelDisplay.TypeLabel(stay.Type) · @stay.Neighborhood, @destination.Name</span>
+                                        <h2 class="ds-card-title"><a href="@TravelDisplay.StayUrl(stay.Id)">@stay.Name</a></h2>
+                                    </div>
+                                    <TravelWishButton Stay="stay" Compact="true" Announce="false" OnToggled="isWished => OnToggledAsync(stay, isWished)" />
+                                </div>
+                                <div class="ds-stars small mb-2">
+                                    @if (reviews == 0)
+                                    {
+                                        <span class="text-body-secondary">No reviews yet</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="visually-hidden">Rated @TravelDisplay.Rating(rating) out of 5 from @reviews @(reviews == 1 ? "review" : "reviews")</span>
+                                        <span aria-hidden="true">
+                                            <Icon Name="IconName.StarFill" class="me-1" />@TravelDisplay.Rating(rating)
+                                            <span class="text-body-secondary">(@reviews)</span>
+                                        </span>
+                                    }
+                                </div>
+                                <ul class="list-unstyled small d-flex flex-wrap row-gap-1 column-gap-3 mb-3">
+                                    <li>
+                                        @if (stay.InstantBook)
+                                        {
+                                            <span class="fw-semibold"><Icon Name="IconName.LightningCharge" class="me-1" aria-hidden="true" />Instant book</span>
+                                        }
+                                        else
+                                        {
+                                            <span><Icon Name="IconName.ChatText" class="me-1" aria-hidden="true" />Request to book</span>
+                                        }
+                                    </li>
+                                    <li class="@(stay.FreeCancellation ? "text-success-emphasis" : null)">
+                                        <Icon Name="IconName.ShieldCheck" class="me-1" aria-hidden="true" />@stay.Policy cancellation@(stay.FreeCancellation ? ", free cancellation" : null)
+                                    </li>
+                                </ul>
+                                <p class="mt-auto mb-0"><span class="ds-price">@TravelDisplay.Money(stay.NightlyRate)</span> <span class="small text-body-secondary">a night</span></p>
+                            </CardBody>
+                        </Card>
+                    </li>
+                }
+            </ul>
+        }
+    </ShowcaseRoleGuard>
+</div>

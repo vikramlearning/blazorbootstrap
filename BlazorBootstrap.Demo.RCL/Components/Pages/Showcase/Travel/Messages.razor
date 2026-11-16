@@ -1,0 +1,90 @@
+@page "/showcase/travel/messages"
+@layout TravelLayout
+
+<PageTitle>Messages · @TravelSeedData.SiteName</PageTitle>
+
+<div class="container-xl">
+    <ShowcaseRoleGuard Roles="@TravelSeedData.GuestRole" SignInPath="@TravelLayout.SignInPath">
+        @{
+            var threads = State.MyThreads();
+            var unread = State.UnreadThreadCount;
+        }
+
+        <div class="mb-4">
+            <h1 class="ds-title">Messages</h1>
+            <p class="ds-lead">
+                Your conversations with hosts, the most recent first.
+                @if (unread > 0)
+                {
+                    <strong class="text-body">@UnreadText(unread)</strong>
+                }
+            </p>
+        </div>
+
+        @if (threads.Count == 0)
+        {
+            <section class="ds-panel text-center py-5" aria-labelledby="ds-messages-empty">
+                <span class="ds-icon fs-4" aria-hidden="true"><Icon Name="IconName.ChatDots" /></span>
+                <h2 class="h5 fw-bold mt-3" id="ds-messages-empty">No messages yet</h2>
+                <p class="text-body-secondary mb-4">You can contact a host from any stay page. Your conversation and the host's replies show up here.</p>
+                <a class="btn btn-primary" href="@TravelLayout.Base">Search stays</a>
+            </section>
+        }
+        else
+        {
+            <ul class="list-unstyled d-grid gap-3 mb-0" aria-label="Conversations">
+                @foreach (var thread in threads)
+                {
+                    var stay = State.FindStay(thread.StayId);
+                    var host = stay is null ? null : State.HostOf(stay);
+                    var booking = State.FindBooking(thread.BookingReference);
+                    var last = thread.Messages.Count > 0 ? thread.Messages[^1] : null;
+
+                    <li class="ds-panel ds-thread @(thread.GuestUnread ? "ds-thread-unread" : null)" @key="thread.Id">
+                        <span class="ds-avatar" aria-hidden="true">@(host?.Initials ?? "?")</span>
+                        <div class="ds-thread-main">
+                            <div class="d-flex flex-wrap align-items-baseline justify-content-between gap-2">
+                                <h2 class="ds-card-title fs-6 mb-0">
+                                    <a class="stretched-link" href="@TravelDisplay.ThreadUrl(thread.Id)">
+                                        @(host?.Name ?? "Host")<span class="visually-hidden">, about @(stay?.Name ?? "a stay")</span>
+                                    </a>
+                                </h2>
+                                @if (last is not null)
+                                {
+                                    <time class="small text-body-secondary" datetime="@last.SentAt.ToString("s", CultureInfo.InvariantCulture)">@TravelDisplay.Stamp(last.SentAt)</time>
+                                }
+                            </div>
+                            <div class="ds-meta mt-1">
+                                <span>@(stay?.Name ?? "Stay no longer listed")</span>
+                                @if (booking is not null)
+                                {
+                                    var phase = State.Phase(booking);
+                                    <span>
+                                        Booking @booking.Reference
+                                        <Badge Color="@TravelDisplay.PhaseColor(phase)" Class="rounded-pill ms-1">@TravelDisplay.PhaseText(phase)</Badge>
+                                    </span>
+                                }
+                            </div>
+                            @if (last is not null)
+                            {
+                                <p class="ds-thread-preview mb-0 mt-2">
+                                    @if (!last.FromHost)
+                                    {
+                                        <span class="fw-semibold">You: </span>
+                                    }
+                                    @Preview(last.Body)
+                                </p>
+                            }
+                            @if (thread.GuestUnread)
+                            {
+                                <Badge Color="BadgeColor.Primary" Class="rounded-pill mt-2">
+                                    <Icon Name="IconName.ChatDotsFill" class="me-1" aria-hidden="true" />Unread
+                                </Badge>
+                            }
+                        </div>
+                    </li>
+                }
+            </ul>
+        }
+    </ShowcaseRoleGuard>
+</div>

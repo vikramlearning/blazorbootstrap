@@ -1,0 +1,39 @@
+@* Guests get the heart; signed out, it is a link to sign in that comes back here; other roles see nothing. *@
+@if (State.IsGuest)
+{
+    <span class="ds-wish @Class">
+        @* The accessible name says the action and changes with it, so there is no aria-pressed (one approach, not both). *@
+        <button type="button"
+                class="btn @(Compact ? "ds-wish-btn-compact" : "ds-wish-btn") @(IsWished ? "ds-wish-on" : null)"
+                aria-label="@AccessibleName"
+                title="@(Compact ? AccessibleName : null)"
+                @onclick="ToggleAsync">
+            <Icon Name="@(IsWished ? IconName.HeartFill : IconName.Heart)" aria-hidden="true" />
+            @if (!Compact)
+            {
+                @* The visible word starts the accessible name, so speech users can say what they see (WCAG 2.5.3). *@
+                <span class="ms-2">@(IsWished ? "Remove" : "Save")</span>
+            }
+        </button>
+        @if (Announce)
+        {
+            @* Always rendered, so a screen reader announces the change when the text appears. *@
+            <span class="visually-hidden" role="status">@statusMessage</span>
+        }
+    </span>
+}
+else if (!State.Identity.IsSignedIn)
+{
+    <span class="ds-wish @Class">
+        <a class="btn @(Compact ? "ds-wish-btn-compact" : "ds-wish-btn")"
+           href="@SignInHref"
+           aria-label="@SignInName"
+           title="@(Compact ? SignInName : null)">
+            <Icon Name="IconName.Heart" aria-hidden="true" />
+            @if (!Compact)
+            {
+                <span class="ms-2">Save</span>
+            }
+        </a>
+    </span>
+}

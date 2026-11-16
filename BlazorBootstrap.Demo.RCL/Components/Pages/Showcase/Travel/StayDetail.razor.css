@@ -1,0 +1,41 @@
+.ds-avatar {
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    width: 3.5rem;
+    height: 3.5rem;
+    border-radius: 50%;
+    background: var(--ds-hero);
+    color: #fff;
+    font-weight: 700;
+    font-size: 1.125rem;
+    letter-spacing: .03em;
+}
+
+/* Reviews and messages are plain text; their line breaks are kept. */
+.ds-text {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+/* The host's public answer, indented under the review it replies to. */
+.ds-reply {
+    margin-inline-start: 1rem;
+    padding: .625rem .875rem;
+    border-inline-start: 3px solid var(--sc-primary);
+    border-radius: 0 .5rem .5rem 0;
+    background: rgba(var(--sc-primary-rgb), .06);
+}
+
+.ds-taken {
+    padding: .75rem;
+    border: 1px solid var(--bs-warning-border-subtle);
+    border-radius: .5rem;
+    background: var(--bs-warning-bg-subtle);
+    color: var(--bs-warning-text-emphasis);
+}
+
+    .ds-taken a {
+        color: inherit;
+    }

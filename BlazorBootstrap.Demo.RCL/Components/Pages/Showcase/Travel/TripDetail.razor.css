@@ -1,0 +1,89 @@
+/* The trip page. Alert, Badge, Button, Modal, and ShowcaseImage render their own elements, so those need ::deep. */
+
+.ds-trip-banner:focus {
+    outline: none;
+}
+
+    .ds-trip-banner:focus-visible {
+        outline: 3px solid var(--sc-primary);
+        outline-offset: 3px;
+        border-radius: .5rem;
+    }
+
+/* Empty until an action reports, so it takes no space then. */
+.ds-trip-status:empty {
+    margin: 0;
+}
+
+.ds-trip-status:focus {
+    outline: none;
+}
+
+.ds-trip-facts {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+    gap: .75rem 1.5rem;
+}
+
+    .ds-trip-facts dt {
+        font-size: .8125rem;
+        font-weight: 500;
+        color: var(--bs-secondary-color);
+    }
+
+    .ds-trip-facts dd {
+        margin: 0;
+        font-weight: 600;
+        color: var(--ds-ink);
+    }
+
+.ds-trip-stay {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+}
+
+.ds-trip-stay-photo {
+    border-radius: .75rem;
+    overflow: hidden;
+}
+
+@media (min-width: 576px) {
+    .ds-trip-stay {
+        grid-template-columns: 10rem 1fr;
+        align-items: start;
+    }
+}
+
+.ds-trip-avatar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 3rem;
+    height: 3rem;
+    border-radius: 50%;
+    background: rgba(var(--sc-primary-rgb), .12);
+    color: var(--sc-primary-hover);
+    font-weight: 700;
+}
+
+/* Guest and host text is plain; line breaks are kept and long words wrap. */
+.ds-trip-text {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+.ds-trip-reply {
+    padding: .75rem 1rem;
+    border-inline-start: 3px solid var(--sc-primary);
+    border-radius: .25rem;
+    background: rgba(var(--sc-primary-rgb), .06);
+}
+
+/* The library's table colors follow the theme; the caption reads as a small heading. */
+.ds-panel caption {
+    padding-top: 0;
+    font-weight: 600;
+    color: var(--ds-ink);
+}

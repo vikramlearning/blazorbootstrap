@@ -50,15 +50,76 @@
         </div>
     </section>
 
-    @if (NextTrip is { } trip && State.FindStay(trip.StayId) is { } tripStay)
+    @* Both panels wait for the tab's session, so a signed-in guest doesn't first see the sign-in invitation. *@
+    @if (Session.IsRestored && State.IsGuest)
     {
+        var trip = NextTrip;
+        var tripStay = trip is null ? null : State.FindStay(trip.StayId);
+        var waiting = PendingRequestCount;
+        var unread = State.UnreadThreadCount;
+
         <section class="ds-panel d-flex flex-wrap align-items-center gap-3 mb-5" aria-labelledby="ds-next-trip">
             <span class="ds-icon" aria-hidden="true"><Icon Name="IconName.Luggage" /></span>
             <div class="flex-grow-1">
-                <h2 class="h6 fw-bold mb-1" id="ds-next-trip">Your next trip</h2>
-                <p class="mb-0">@tripStay.Name, @State.FindDestination(tripStay.DestinationId).Name · @TravelDisplay.Dates(trip.CheckIn, trip.CheckOut) · @TravelDisplay.Guests(trip.Guests)</p>
+                @if (trip is not null && tripStay is not null)
+                {
+                    var phase = State.Phase(trip);
+                    <h2 class="h6 fw-bold mb-1" id="ds-next-trip">Your next trip</h2>
+                    <p class="mb-0">
+                        @tripStay.Name, @State.FindDestination(tripStay.DestinationId).Name · @TravelDisplay.Dates(trip.CheckIn, trip.CheckOut) · @TravelDisplay.Guests(trip.Guests)
+                        <Badge Color="@TravelDisplay.PhaseColor(phase)" Class="rounded-pill ms-1">@TravelDisplay.PhaseText(phase)</Badge>
+                    </p>
+                }
+                else
+                {
+                    <h2 class="h6 fw-bold mb-1" id="ds-next-trip">Your trips</h2>
+                    <p class="mb-0">No confirmed trips coming up. Search above to plan the next one.</p>
+                }
+                @if (waiting > 0 || unread > 0)
+                {
+                    <ul class="ds-meta list-unstyled mt-2 mb-0">
+                        @if (waiting > 0)
+                        {
+                            <li>
+                                <Icon Name="IconName.HourglassSplit" class="me-1" aria-hidden="true" />
+                                <a href="@($"{TravelLayout.Base}/trips")">@(waiting == 1 ? "1 request waiting for the host" : $"{waiting} requests waiting for the host")</a>
+                            </li>
+                        }
+                        @if (unread > 0)
+                        {
+                            <li>
+                                <Icon Name="IconName.ChatDotsFill" class="me-1" aria-hidden="true" />
+                                <a href="@($"{TravelLayout.Base}/messages")">@(unread == 1 ? "1 unread message" : $"{unread} unread messages")</a>
+                            </li>
+                        }
+                    </ul>
+                }
             </div>
-            <Button Type="ButtonType.Link" To="@($"{TravelLayout.Base}/trips")" Color="ButtonColor.Primary" Outline="true">View trips</Button>
+            @if (trip is not null && tripStay is not null)
+            {
+                <Button Type="ButtonType.Link" To="@TravelDisplay.TripUrl(trip.Reference)" Color="ButtonColor.Primary" Outline="true">View trip</Button>
+            }
+            else
+            {
+                <Button Type="ButtonType.Link" To="@($"{TravelLayout.Base}/trips")" Color="ButtonColor.Primary" Outline="true">View trips</Button>
+            }
+        </section>
+    }
+    else if (Session.IsRestored && !State.Identity.IsSignedIn)
+    {
+        <section class="ds-panel d-flex flex-wrap align-items-center gap-3 mb-5" aria-labelledby="ds-home-sign-in">
+            <span class="ds-icon" aria-hidden="true"><Icon Name="IconName.PersonCircle" /></span>
+            <div class="flex-grow-1">
+                <h2 class="h6 fw-bold mb-1" id="ds-home-sign-in">Sign in to save stays and book</h2>
+                <p class="mb-0">
+                    Keep a wishlist, book stays, and message hosts. The sign-in page has a one-click demo account, or
+                    you can create your own; it only lives in this browser tab.
+                </p>
+            </div>
+            <div class="d-flex flex-wrap gap-2">
+                <Button Type="ButtonType.Link" To="@TravelDisplay.SignInUrl(TravelLayout.Base)" Color="ButtonColor.Primary">Sign in</Button>
+                <Button Type="ButtonType.Link" To="@TravelDisplay.SignInUrl(TravelLayout.Base, register: true)" Color="ButtonColor.Primary" Outline="true">Create an account</Button>
+            </div>
         </section>
     }
 

@@ -1,0 +1,454 @@
+@page "/showcase/travel/trips/{Reference}"
+@layout TravelLayout
+
+<PageTitle>Trip @Reference · @TravelSeedData.SiteName</PageTitle>
+
+<div class="container-xl pb-4">
+    <ShowcaseRoleGuard Roles="@TravelSeedData.GuestRole" SignInPath="@TravelLayout.SignInPath">
+        @if (Booking is not { } trip || State.FindStay(trip.StayId) is not { } stay)
+        {
+            <section class="ds-not-found" aria-labelledby="ds-trip-missing-title">
+                <span class="ds-icon fs-4" aria-hidden="true"><Icon Name="IconName.Suitcase" /></span>
+                <h1 class="ds-title fs-3 mt-3 mb-2" id="ds-trip-missing-title">We couldn't find that trip</h1>
+                <p class="text-body-secondary mb-4">There's no trip @Reference on your account. Check the reference, or open the trip from your trips.</p>
+                <div class="d-flex justify-content-center flex-wrap gap-2">
+                    <Button Type="ButtonType.Link" To="@TripsPath" Color="ButtonColor.Primary">Your trips</Button>
+                    <Button Type="ButtonType.Link" To="@TravelLayout.Base" Color="ButtonColor.Primary" Outline="true">Search stays</Button>
+                </div>
+            </section>
+        }
+        else
+        {
+            var host = State.HostOf(stay);
+            var destination = State.FindDestination(stay.DestinationId);
+            var phase = State.Phase(trip);
+            var thread = State.ThreadAbout(stay.Id);
+            var messageHostUrl = thread is null ? $"{TravelDisplay.StayUrl(stay.Id)}#ds-host-title" : TravelDisplay.ThreadUrl(thread.Id);
+            var showsAddress = phase is TravelTripPhase.Upcoming or TravelTripPhase.InProgress or TravelTripPhase.Completed;
+
+            <Breadcrumb Items="BreadcrumbItems" Class="mb-3" />
+
+            @if (bannerPhase is { } shownPhase)
+            {
+                <div class="ds-trip-banner mb-4" tabindex="-1" @ref="banner">
+                    @if (shownPhase == TravelTripPhase.Requested)
+                    {
+                        <Alert Color="AlertColor.Info" Class="mb-0">
+                            <h2 class="h5 fw-bold alert-heading"><Icon Name="IconName.SendCheck" class="me-2" aria-hidden="true" />Request sent to @host.Name</h2>
+                            <p class="mb-0">
+                                Reference <strong>@trip.Reference</strong>. Your @CardText(trip) is held, not charged: you're only charged @TravelDisplay.Money(trip.Total) if @host.Name accepts.
+                                In this demo hosts don't answer yet, so the request stays sent.
+                            </p>
+                        </Alert>
+                    }
+                    else
+                    {
+                        <Alert Color="AlertColor.Success" Class="mb-0">
+                            <h2 class="h5 fw-bold alert-heading"><Icon Name="IconName.CheckCircleFill" class="me-2" aria-hidden="true" />You're booked!</h2>
+                            <p class="mb-0">Reference <strong>@trip.Reference</strong>. @TravelDisplay.Money(trip.Paid) was charged to your @CardText(trip). The address and check-in details are below.</p>
+                        </Alert>
+                    }
+                </div>
+            }
+
+            <div class="mb-4">
+                <span class="small text-body-secondary">@destination.Name, @destination.Country · @trip.Reference</span>
+                <h1 class="ds-title mb-2">@stay.Name</h1>
+                <p class="mb-0">
+                    <Badge Color="@TravelDisplay.PhaseColor(phase)" Class="me-2">@TravelDisplay.PhaseText(phase)</Badge>
+                    <span>@PhaseSentence(trip, phase, host)</span>
+                </p>
+            </div>
+
+            @* Always rendered and focusable, so an action's outcome is announced and focus has somewhere to go. *@
+            <p class="fw-semibold ds-trip-status" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
+
+            <div class="row g-4 g-lg-5">
+                <div class="col-lg-7">
+                    <section class="ds-panel mb-4" aria-labelledby="ds-trip-details">
+                        <h2 class="h5 fw-bold" id="ds-trip-details">Trip details</h2>
+                        <dl class="ds-trip-facts mb-0">
+                            <div>
+                                <dt>Check-in</dt>
+                                <dd>@LongDay(trip.CheckIn), from @CheckInTime(trip)</dd>
+                            </div>
+                            <div>
+                                <dt>Check-out</dt>
+                                <dd>@LongDay(trip.CheckOut)</dd>
+                            </div>
+                            <div>
+                                <dt>Length</dt>
+                                <dd>@TravelDisplay.Nights(trip.Nights)</dd>
+                            </div>
+                            <div>
+                                <dt>Guests</dt>
+                                <dd>@TravelDisplay.Guests(trip.Guests)</dd>
+                            </div>
+                            <div>
+                                <dt>@(phase == TravelTripPhase.Requested || trip.Status == TravelBookingStatus.Declined ? "Requested" : "Booked")</dt>
+                                <dd>@TravelDisplay.Stamp(trip.CreatedAt)</dd>
+                            </div>
+                            @if (trip.ClosedAt is { } closedAt)
+                            {
+                                <div>
+                                    <dt>@(phase == TravelTripPhase.Declined ? "Declined" : "Cancelled")</dt>
+                                    <dd>@TravelDisplay.Stamp(closedAt)</dd>
+                                </div>
+                            }
+                        </dl>
+                    </section>
+
+                    <section class="ds-panel mb-4" aria-labelledby="ds-trip-stay">
+                        <h2 class="h5 fw-bold" id="ds-trip-stay">Where you're staying</h2>
+                        <div class="ds-trip-stay">
+                            <div class="ds-trip-stay-photo">
+                                <ShowcaseImage Src="@stay.PhotoPath(1)" Alt="" Width="800" Height="600" Accent="@destination.Accent" PlaceholderIcon="IconName.HouseHeart" />
+                            </div>
+                            <div>
+                                <p class="ds-card-title mb-1"><a href="@TravelDisplay.StayUrl(stay.Id)">@stay.Name</a></p>
+                                <p class="small text-body-secondary mb-2">@TravelDisplay.TypeLabel(stay.Type) · @stay.Neighborhood, @destination.Name</p>
+                                @if (showsAddress)
+                                {
+                                    <p class="small mb-0"><Icon Name="IconName.GeoAlt" class="me-1" aria-hidden="true" /><span class="fw-semibold">Address:</span> @stay.Address</p>
+                                }
+                                else if (phase == TravelTripPhase.Requested)
+                                {
+                                    <p class="small text-body-secondary mb-0"><Icon Name="IconName.GeoAlt" class="me-1" aria-hidden="true" />You get the address once @host.Name accepts.</p>
+                                }
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="ds-panel mb-4" aria-labelledby="ds-trip-host">
+                        <h2 class="h5 fw-bold" id="ds-trip-host">Your host</h2>
+                        <div class="d-flex flex-wrap align-items-center gap-3">
+                            <span class="ds-trip-avatar" aria-hidden="true">@host.Initials</span>
+                            <div class="flex-grow-1">
+                                <p class="fw-semibold mb-0">@host.Name</p>
+                                <p class="small text-body-secondary mb-0">Hosting since @host.HostingSince · @host.ResponseTime</p>
+                            </div>
+                            <a class="btn btn-outline-primary btn-sm" href="@messageHostUrl"><Icon Name="IconName.ChatDots" class="me-1" aria-hidden="true" />Message @host.Name</a>
+                        </div>
+                        @if (!string.IsNullOrEmpty(trip.RequestMessage))
+                        {
+                            <h3 class="h6 fw-bold mt-3 mb-1">Your message with the request</h3>
+                            <p class="ds-trip-text small mb-0">@trip.RequestMessage</p>
+                        }
+                    </section>
+
+                    <section class="ds-panel mb-4" aria-labelledby="ds-trip-payment">
+                        <div class="d-flex flex-wrap justify-content-between align-items-baseline gap-2">
+                            <h2 class="h5 fw-bold mb-0" id="ds-trip-payment">Payment</h2>
+                            <a class="small" href="@TravelDisplay.ReceiptUrl(trip.Reference)"><Icon Name="IconName.Receipt" class="me-1" aria-hidden="true" />View receipt</a>
+                        </div>
+                        <h3 class="h6 fw-bold mt-3 mb-2">Price details</h3>
+                        <dl class="ds-summary row small mb-3">
+                            <dt class="col-7">@TravelDisplay.Money(trip.NightlyRate) × @TravelDisplay.Nights(trip.Nights)</dt>
+                            <dd class="col-5">@TravelDisplay.Money(trip.Subtotal)</dd>
+                            <dt class="col-7">Cleaning fee</dt>
+                            <dd class="col-5">@TravelDisplay.Money(trip.CleaningFee)</dd>
+                            <dt class="col-7">Taxes and fees</dt>
+                            <dd class="col-5">@TravelDisplay.Money(trip.Taxes)</dd>
+                            <dt class="col-7 ds-total">Trip total</dt>
+                            <dd class="col-5 ds-total">@TravelDisplay.Money(trip.Total)</dd>
+                        </dl>
+
+                        @if (trip.Charges.Count == 0)
+                        {
+                            <p class="small mb-0">
+                                <Icon Name="IconName.CreditCard" class="me-1" aria-hidden="true" />
+                                @(phase == TravelTripPhase.Requested
+                                    ? $"Nothing has been charged. Your {CardText(trip)} is held for {TravelDisplay.Money(trip.Total)} until {host.Name} answers."
+                                    : $"Nothing was charged to your {CardText(trip)}.")
+                            </p>
+                        }
+                        else
+                        {
+                            <div class="table-responsive">
+                                <table class="table table-sm small mb-0">
+                                    <caption class="caption-top">Payments and refunds on your @CardText(trip)</caption>
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">Date</th>
+                                            <th scope="col">Description</th>
+                                            <th scope="col" class="text-end">Amount</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var charge in trip.Charges)
+                                        {
+                                            <tr>
+                                                <td class="text-nowrap">@TravelDisplay.Stamp(charge.At)</td>
+                                                <td>@charge.Description</td>
+                                                <td class="text-end text-nowrap">@SignedMoney(charge.Amount)</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <th scope="row" colspan="2">Paid, after refunds</th>
+                                            <td class="text-end fw-bold text-nowrap">@TravelDisplay.Money(trip.Paid)</td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                        }
+                    </section>
+
+                    <section class="ds-panel mb-4" aria-labelledby="ds-trip-policy">
+                        <h2 class="h5 fw-bold" id="ds-trip-policy">Cancellation policy: @stay.Policy</h2>
+                        <p class="small mb-1">@TravelDisplay.PolicyText(stay.Policy)</p>
+                        <p class="small text-body-secondary mb-0">Check-in starts at @CheckInTime(trip) on the check-in day. The cleaning fee comes back whenever you cancel before check-in.</p>
+                        @if (phase == TravelTripPhase.Upcoming)
+                        {
+                            var preview = State.RefundFor(trip);
+                            <p class="small mt-2 mb-0"><span class="fw-semibold">If you cancelled now:</span> you'd get @TravelDisplay.Money(preview.Amount) back. @preview.Rule</p>
+                        }
+                    </section>
+
+                    @if (phase == TravelTripPhase.Completed)
+                    {
+                        var review = State.ReviewFor(trip);
+                        <section class="ds-panel mb-4" aria-labelledby="ds-trip-review" id="ds-review">
+                            <h2 class="h5 fw-bold" id="ds-trip-review" tabindex="-1" @ref="reviewHeading">Your review</h2>
+                            @if (review is not null && !editingReview)
+                            {
+                                <p class="mb-1">
+                                    <span class="ds-stars" aria-hidden="true">
+                                        @for (var star = 1; star <= 5; star++)
+                                        {
+                                            <Icon Name="@(star <= review.Rating ? IconName.StarFill : IconName.Star)" />
+                                        }
+                                    </span>
+                                    <span class="visually-hidden">Rated @review.Rating out of 5.</span>
+                                    <span class="small text-body-secondary ms-2">Posted @TravelDisplay.Day(review.PostedOn) as @review.Author</span>
+                                </p>
+                                <p class="ds-trip-text mb-3">@review.Body</p>
+                                @if (!string.IsNullOrEmpty(review.HostReply))
+                                {
+                                    <div class="ds-trip-reply mb-3">
+                                        <p class="small fw-semibold mb-1">Response from @host.Name</p>
+                                        <p class="ds-trip-text small mb-0">@review.HostReply</p>
+                                    </div>
+                                }
+                                <Button @ref="editReviewButton" Color="ButtonColor.Primary" Outline="true" Size="ButtonSize.Small" @onclick="() => StartReview(review)">Edit review</Button>
+                            }
+                            else
+                            {
+                                <p class="small text-body-secondary">@(review is null ? $"How was {stay.Name}? Your review appears on the stay page with your first name and last initial." : "Change your stars or your words; the host's reply stays.")</p>
+                                <form @onsubmit="SaveReview" novalidate>
+                                    <div class="mb-3">
+                                        <span class="form-label fw-semibold d-block" id="ds-review-rating-label">Your rating</span>
+                                        <RatingInput TValue="int" Id="ds-review-rating" @bind-Value="reviewRating" aria-labelledby="ds-review-rating-label" />
+                                        <p class="text-danger-emphasis fw-semibold small mt-1 mb-0" role="alert">@reviewRatingError</p>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label fw-semibold" for="ds-review-body">Your review</label>
+                                        <textarea id="ds-review-body" class="form-control @(reviewBodyError is null ? null : "is-invalid")" rows="5" maxlength="@TravelState.MaxReviewLength"
+                                                  @bind="reviewBody" @bind:event="oninput" @ref="reviewBodyInput" aria-describedby="ds-review-body-count ds-review-body-error"
+                                                  aria-invalid="@(reviewBodyError is null ? null : "true")" aria-required="true"></textarea>
+                                        <div class="form-text text-end" id="ds-review-body-count">@(reviewBody?.Length ?? 0) of @TravelState.MaxReviewLength characters</div>
+                                        <p class="text-danger-emphasis fw-semibold small mb-0" id="ds-review-body-error" role="alert">@reviewBodyError</p>
+                                    </div>
+                                    <div class="d-flex flex-wrap gap-2">
+                                        <Button Type="ButtonType.Submit" Color="ButtonColor.Primary">@(review is null ? "Post review" : "Save changes")</Button>
+                                        @if (review is not null)
+                                        {
+                                            <Button Color="ButtonColor.Secondary" Outline="true" @onclick="CancelReviewEdit">Cancel</Button>
+                                        }
+                                    </div>
+                                </form>
+                            }
+                        </section>
+                    }
+                </div>
+
+                <div class="col-lg-5">
+                    <aside class="ds-panel ds-sticky" aria-labelledby="ds-trip-actions">
+                        <h2 class="h5 fw-bold" id="ds-trip-actions">Manage your trip</h2>
+                        @switch (phase)
+                        {
+                            case TravelTripPhase.Requested:
+                                <p class="small">Changed your mind? Withdrawing frees the dates. Nothing was charged, so there's nothing to refund.</p>
+                                <Button @ref="withdrawButton" Color="ButtonColor.Danger" Outline="true" Class="w-100" @onclick="AskWithdrawAsync">Withdraw request</Button>
+                                break;
+
+                            case TravelTripPhase.Upcoming:
+                                var cutoff = TravelState.ChangeCutoffHours(stay.Policy);
+                                var cutoffText = cutoff % 24 == 0 && cutoff > 24 ? $"{cutoff / 24} days" : $"{cutoff} hours";
+                                if (State.CanChangeDates(trip))
+                                {
+                                    <p class="small">Change the dates or guests until @cutoffText before check-in; the price is worked out again@(stay.Policy == TravelCancellationPolicy.Strict ? ", and a cheaper stay is refunded by half, as the Strict policy refunds a cancellation" : null). Or cancel by the @stay.Policy policy.</p>
+                                }
+                                else
+                                {
+                                    <p class="small">Under the @stay.Policy policy, date changes close @cutoffText before check-in, so these dates are fixed now. You can still cancel by the policy.</p>
+                                }
+                                <div class="d-grid gap-2">
+                                    @if (State.CanChangeDates(trip))
+                                    {
+                                        <Button @ref="changeButton" Color="ButtonColor.Primary" @onclick="AskChangeAsync"><Icon Name="IconName.CalendarEvent" class="me-2" aria-hidden="true" />Change dates</Button>
+                                    }
+                                    <Button @ref="cancelButton" Color="ButtonColor.Danger" Outline="true" @onclick="AskCancelAsync">Cancel trip</Button>
+                                </div>
+                                break;
+
+                            case TravelTripPhase.InProgress:
+                                <p class="small mb-0">You're staying now, so the dates can't be changed and the trip can't be cancelled. Need anything? Message @host.Name.</p>
+                                break;
+
+                            case TravelTripPhase.Completed:
+                                <p class="small mb-0">This stay is over. @(State.ReviewFor(trip) is null ? "Tell other guests how it was in your review." : "Thanks for your review.")</p>
+                                break;
+
+                            case TravelTripPhase.Cancelled:
+                                <p class="small mb-0">
+                                    @(trip.Charges.Count == 0
+                                        ? $"You withdrew this request on {TravelDisplay.Stamp(trip.ClosedAt ?? trip.CreatedAt)}. Nothing was charged."
+                                        : $"You cancelled on {TravelDisplay.Stamp(trip.ClosedAt ?? trip.CreatedAt)}. {TravelDisplay.Money(Refunded(trip))} was refunded to your {CardText(trip)}, and {TravelDisplay.Money(trip.Paid)} was kept by the {stay.Policy} policy.")
+                                </p>
+                                break;
+
+                            default:
+                                <p class="small mb-0">@host.Name declined this request on @TravelDisplay.Stamp(trip.ClosedAt ?? trip.CreatedAt). Nothing was charged, and your card is no longer held.</p>
+                                break;
+                        }
+
+                        <hr />
+                        <ul class="list-unstyled small mb-0 d-grid gap-2">
+                            <li><a href="@messageHostUrl"><Icon Name="IconName.ChatDots" class="me-2" aria-hidden="true" />Message @host.Name</a></li>
+                            <li><a href="@TravelDisplay.ReceiptUrl(trip.Reference)"><Icon Name="IconName.Receipt" class="me-2" aria-hidden="true" />Receipt</a></li>
+                            <li><a href="@TravelDisplay.StayUrl(stay.Id)"><Icon Name="IconName.HouseHeart" class="me-2" aria-hidden="true" />Stay page</a></li>
+                            <li><a href="@TripsPath"><Icon Name="IconName.Suitcase" class="me-2" aria-hidden="true" />All your trips</a></li>
+                        </ul>
+                    </aside>
+                </div>
+            </div>
+
+            <Modal @ref="withdrawModal" IsVerticallyCentered="true" ShowCloseButton="false" aria-labelledby="ds-withdraw-title" OnHidden="OnDialogHiddenAsync">
+                <HeaderTemplate>
+                    <h2 class="modal-title h5" id="ds-withdraw-title">Withdraw your request for @stay.Name?</h2>
+                </HeaderTemplate>
+                <BodyTemplate>
+                    <p class="mb-2">@TravelDisplay.Dates(trip.CheckIn, trip.CheckOut), @TravelDisplay.Guests(trip.Guests). Reference @trip.Reference.</p>
+                    <p class="mb-2">Nothing was charged, so nothing is refunded, and your @CardText(trip) is no longer held. The dates become free for other guests.</p>
+                    <p class="small text-body-secondary mb-0">This can't be undone: to stay here later, send a new request.</p>
+                    <p class="text-danger-emphasis fw-semibold small mt-2 mb-0" role="alert">@dialogError</p>
+                </BodyTemplate>
+                <FooterTemplate>
+                    <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => withdrawModal.HideAsync()">Keep request</Button>
+                    <Button Color="ButtonColor.Danger" @onclick="ConfirmWithdrawAsync">Withdraw request</Button>
+                </FooterTemplate>
+            </Modal>
+
+            <Modal @ref="cancelModal" IsVerticallyCentered="true" IsScrollable="true" ShowCloseButton="false" aria-labelledby="ds-cancel-title" OnHidden="OnDialogHiddenAsync">
+                <HeaderTemplate>
+                    <h2 class="modal-title h5" id="ds-cancel-title">Cancel your trip to @stay.Name?</h2>
+                </HeaderTemplate>
+                <BodyTemplate>
+                    @if (cancelPreview is { } refund)
+                    {
+                        <p class="mb-3">@TravelDisplay.Dates(trip.CheckIn, trip.CheckOut), @TravelDisplay.Guests(trip.Guests). Reference @trip.Reference.</p>
+                        <p class="small mb-2"><span class="fw-semibold">The rule:</span> @refund.Rule</p>
+                        <dl class="ds-summary row small mb-3">
+                            <dt class="col-7">You paid</dt>
+                            <dd class="col-5">@TravelDisplay.Money(trip.Paid)</dd>
+                            <dt class="col-7">Kept by the policy</dt>
+                            <dd class="col-5">@TravelDisplay.Money(refund.Kept)</dd>
+                            <dt class="col-7 ds-total">Refund to your @CardText(trip)</dt>
+                            <dd class="col-5 ds-total">@TravelDisplay.Money(refund.Amount)</dd>
+                        </dl>
+                        <p class="small mb-2">The cleaning fee (@TravelDisplay.Money(trip.CleaningFee)) is part of the refund, because you're cancelling before check-in.</p>
+                        <p class="small text-body-secondary mb-0">This can't be undone: the dates go back on the calendar for other guests.</p>
+                    }
+                    <p class="text-danger-emphasis fw-semibold small mt-2 mb-0" role="alert">@dialogError</p>
+                </BodyTemplate>
+                <FooterTemplate>
+                    <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => cancelModal.HideAsync()">Keep trip</Button>
+                    <Button Color="ButtonColor.Danger" @onclick="ConfirmCancelAsync">
+                        @(cancelPreview is { Amount: > 0 } shownRefund ? $"Cancel and refund {TravelDisplay.Money(shownRefund.Amount)}" : "Cancel with no refund")
+                    </Button>
+                </FooterTemplate>
+            </Modal>
+
+            <Modal @ref="changeModal" Size="ModalSize.Large" IsVerticallyCentered="true" IsScrollable="true" ShowCloseButton="false" aria-labelledby="ds-change-title"
+                   OnShown="OnChangeShownAsync" OnHidden="OnDialogHiddenAsync">
+                <HeaderTemplate>
+                    <h2 class="modal-title h5" id="ds-change-title">Change the dates of your trip to @stay.Name</h2>
+                </HeaderTemplate>
+                <BodyTemplate>
+                    @if (changing)
+                    {
+                        var newQuote = State.Quote(stay, changeIn, changeOut);
+                        var changeRule = State.ValidateStay(stay, changeIn, changeOut, changeGuests);
+                        var changeFree = State.IsAvailable(stay.Id, changeIn, changeOut, trip.Reference);
+                        var difference = State.ChangeAmount(trip, newQuote);
+
+                        <p class="small text-body-secondary">Now: @TravelDisplay.Dates(trip.CheckIn, trip.CheckOut), @TravelDisplay.Guests(trip.Guests), @TravelDisplay.Money(trip.Total).</p>
+                        <div class="row g-3 mb-3">
+                            <div class="col-sm-4">
+                                <label class="form-label fw-semibold" for="ds-change-in">New check-in</label>
+                                <DateInput @ref="changeInInput" TValue="DateOnly" Id="ds-change-in" Value="changeIn" ValueExpression="() => changeIn" ValueChanged="OnChangeInChanged"
+                                           Min="State.Today" Max="State.Today.AddDays(365)" EnableMinMax="true" aria-describedby="ds-change-status" />
+                            </div>
+                            <div class="col-sm-4">
+                                <label class="form-label fw-semibold" for="ds-change-out">New check-out</label>
+                                <DateInput TValue="DateOnly" Id="ds-change-out" Value="changeOut" ValueExpression="() => changeOut" ValueChanged="OnChangeOutChanged"
+                                           Min="changeIn.AddDays(1)" Max="State.Today.AddDays(365 + TravelSeedData.MaxNights)" EnableMinMax="true" aria-describedby="ds-change-status" />
+                            </div>
+                            <div class="col-sm-4">
+                                <label class="form-label fw-semibold" for="ds-change-guests">Guests</label>
+                                <select id="ds-change-guests" class="form-select" value="@changeGuests" @onchange="OnChangeGuestsChanged" aria-describedby="ds-change-guests-help ds-change-status">
+                                    @for (var count = 1; count <= TravelSeedData.MaxGuests; count++)
+                                    {
+                                        <option value="@count">@TravelDisplay.Guests(count)</option>
+                                    }
+                                </select>
+                                <div class="form-text" id="ds-change-guests-help">Sleeps up to @stay.MaxGuests.</div>
+                            </div>
+                        </div>
+
+                        <TravelAvailabilityCalendar StayId="stay.Id" CheckIn="changeIn" CheckOut="changeOut" ExceptReference="@trip.Reference" Class="mb-3" />
+
+                        @* Always rendered, so the new price, the difference, or a problem is announced as the dates change. *@
+                        <div id="ds-change-status" role="status">
+                            @if (changeRule is not null)
+                            {
+                                <p class="text-danger-emphasis fw-semibold mb-0"><Icon Name="IconName.ExclamationTriangleFill" class="me-2" aria-hidden="true" />@changeRule</p>
+                            }
+                            else if (!changeFree)
+                            {
+                                <p class="text-danger-emphasis fw-semibold mb-0"><Icon Name="IconName.CalendarX" class="me-2" aria-hidden="true" />Some of those nights are already booked or blocked. Choose dates shown as available.</p>
+                            }
+                            else
+                            {
+                                <dl class="ds-summary row small mb-2">
+                                    <dt class="col-7">@TravelDisplay.Money(newQuote.NightlyRate) × @TravelDisplay.Nights(newQuote.Nights)</dt>
+                                    <dd class="col-5">@TravelDisplay.Money(newQuote.Subtotal)</dd>
+                                    <dt class="col-7">Cleaning fee</dt>
+                                    <dd class="col-5">@TravelDisplay.Money(newQuote.CleaningFee)</dd>
+                                    <dt class="col-7">Taxes and fees</dt>
+                                    <dd class="col-5">@TravelDisplay.Money(newQuote.Taxes)</dd>
+                                    <dt class="col-7 ds-total">New total</dt>
+                                    <dd class="col-5 ds-total">@TravelDisplay.Money(newQuote.Total)</dd>
+                                </dl>
+                                <p class="fw-semibold mb-0">
+                                    @(difference > 0
+                                        ? $"You'll be charged {TravelDisplay.Money(difference)} to your {CardText(trip)}."
+                                        : difference < 0
+                                            ? $"You'll get {TravelDisplay.Money(-difference)} back to your {CardText(trip)}."
+                                            : "The price stays the same.")
+                                </p>
+                            }
+                        </div>
+                        <p class="text-danger-emphasis fw-semibold small mt-2 mb-0" role="alert">@dialogError</p>
+                    }
+                </BodyTemplate>
+                <FooterTemplate>
+                    <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => changeModal.HideAsync()">Keep current dates</Button>
+                    <Button Color="ButtonColor.Primary" @onclick="ConfirmChangeAsync">@ChangeButtonText(trip, stay)</Button>
+                </FooterTemplate>
+            </Modal>
+        }
+    </ShowcaseRoleGuard>
+</div>

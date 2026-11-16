@@ -1,0 +1,157 @@
+.ds-cal {
+    min-width: 0;
+}
+
+.ds-cal-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: .5rem;
+    margin-bottom: .75rem;
+}
+
+.ds-cal-shown {
+    flex: 1 1 auto;
+    min-width: 0;
+    margin: 0;
+    font-size: .875rem;
+    font-weight: 600;
+    text-align: center;
+    color: var(--ds-ink);
+}
+
+/* One month per row on a phone, two side by side when there is room for both (16rem each). */
+.ds-cal-months {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+    gap: 1rem 1.5rem;
+}
+
+.ds-cal-table {
+    width: 100%;
+    table-layout: fixed;
+    border-collapse: collapse;
+    caption-side: top;
+}
+
+    .ds-cal-table caption {
+        padding: 0 0 .5rem;
+        font-weight: 700;
+        color: var(--ds-ink);
+        text-align: center;
+    }
+
+    .ds-cal-table th {
+        padding-bottom: .25rem;
+        font-size: .75rem;
+        font-weight: 600;
+        text-align: center;
+        color: var(--bs-secondary-color);
+    }
+
+    .ds-cal-table td {
+        padding: 1px 0;
+        text-align: center;
+    }
+
+.ds-cal-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.125rem;
+    height: 2.125rem;
+    border-radius: 50%;
+    font-size: .875rem;
+    font-variant-numeric: tabular-nums;
+    color: var(--ds-ink);
+}
+
+.ds-cal-past .ds-cal-num {
+    color: var(--bs-secondary-color);
+    opacity: .7;
+}
+
+/* Struck through, so an unavailable night is never told by color alone. */
+.ds-cal-off .ds-cal-num {
+    color: var(--bs-secondary-color);
+    text-decoration: line-through;
+    text-decoration-thickness: 2px;
+    background: var(--bs-tertiary-bg);
+}
+
+.ds-cal-today .ds-cal-num {
+    box-shadow: inset 0 0 0 2px var(--ds-ink);
+    font-weight: 700;
+}
+
+.ds-cal-range {
+    background: rgba(var(--sc-primary-rgb), .14);
+}
+
+.ds-cal-in {
+    background: linear-gradient(to right, transparent 50%, rgba(var(--sc-primary-rgb), .14) 50%);
+}
+
+.ds-cal-out {
+    background: linear-gradient(to left, transparent 50%, rgba(var(--sc-primary-rgb), .14) 50%);
+}
+
+    .ds-cal-in .ds-cal-num,
+    .ds-cal-out .ds-cal-num {
+        background: var(--sc-primary);
+        color: var(--sc-primary-contrast);
+        font-weight: 700;
+    }
+
+.ds-cal-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .5rem 1.25rem;
+    margin: 1rem 0 .25rem;
+    padding: 0;
+    list-style: none;
+    font-size: .875rem;
+    color: var(--bs-secondary-color);
+}
+
+    .ds-cal-legend li {
+        display: inline-flex;
+        align-items: center;
+        gap: .5rem;
+    }
+
+.ds-cal-swatch {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.75rem;
+    height: 1.75rem;
+    border: 1px solid var(--ds-border);
+    border-radius: 50%;
+    font-size: .8125rem;
+    color: var(--ds-ink);
+}
+
+.ds-cal-swatch-off {
+    color: var(--bs-secondary-color);
+    text-decoration: line-through;
+    text-decoration-thickness: 2px;
+    background: var(--bs-tertiary-bg);
+}
+
+.ds-cal-swatch-today {
+    border: 0;
+    box-shadow: inset 0 0 0 2px var(--ds-ink);
+    font-weight: 700;
+}
+
+.ds-cal-swatch-range {
+    border: 0;
+    background: rgba(var(--sc-primary-rgb), .14);
+}
+
+.ds-cal-note {
+    margin: 0;
+    font-size: .8125rem;
+    color: var(--bs-secondary-color);
+}

@@ -1,0 +1,102 @@
+@page "/showcase/travel/messages/{ThreadId:int}"
+@layout TravelLayout
+
+<div class="container-xl">
+    <ShowcaseRoleGuard Roles="@TravelSeedData.GuestRole" SignInPath="@TravelLayout.SignInPath">
+        @if (Conversation is not { } thread)
+        {
+            <PageTitle>Conversation not found · @TravelSeedData.SiteName</PageTitle>
+
+            <section class="ds-not-found">
+                <span class="ds-icon fs-4" aria-hidden="true"><Icon Name="IconName.ChatDots" /></span>
+                <h1 class="ds-title fs-3 mt-3 mb-2">We couldn't find that conversation</h1>
+                <p class="text-body-secondary mb-4">It isn't one of your conversations with hosts. Your other messages are safe.</p>
+                <div class="d-flex justify-content-center flex-wrap gap-2">
+                    <Button Type="ButtonType.Link" To="@MessagesPath" Color="ButtonColor.Primary">Your messages</Button>
+                    <Button Type="ButtonType.Link" To="@TravelLayout.Base" Color="ButtonColor.Primary" Outline="true">Search stays</Button>
+                </div>
+            </section>
+        }
+        else
+        {
+            var stay = State.FindStay(thread.StayId);
+            var host = stay is null ? null : State.HostOf(stay);
+            var hostName = host?.Name ?? "your host";
+            var booking = State.FindBooking(thread.BookingReference);
+            var isFull = thread.Messages.Count >= TravelState.MaxMessagesPerThread;
+
+            <PageTitle>@(host?.Name ?? "Host") · Messages · @TravelSeedData.SiteName</PageTitle>
+
+            <Breadcrumb Items="BreadcrumbItems(host)" Class="mb-3" />
+
+            <div class="ds-thread-head mb-4">
+                <span class="ds-avatar ds-avatar-lg" aria-hidden="true">@(host?.Initials ?? "?")</span>
+                <div class="ds-thread-head-main">
+                    <h1 class="ds-title">@(host?.Name ?? "Host")</h1>
+                    <div class="ds-meta mt-2">
+                        @if (stay is not null)
+                        {
+                            <span>Stay: <a href="@TravelDisplay.StayUrl(stay.Id)">@stay.Name</a></span>
+                        }
+                        else
+                        {
+                            <span>The stay is no longer listed</span>
+                        }
+                        @if (booking is not null)
+                        {
+                            var phase = State.Phase(booking);
+                            <span>
+                                Booking <a href="@TravelDisplay.TripUrl(booking.Reference)">@booking.Reference</a>
+                                <Badge Color="@TravelDisplay.PhaseColor(phase)" Class="rounded-pill ms-1">@TravelDisplay.PhaseText(phase)</Badge>
+                            </span>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-9 col-xl-8">
+                    <h2 class="visually-hidden" id="ds-conversation-title">Conversation with @hostName</h2>
+                    <ol class="list-unstyled d-grid gap-3 mb-4" aria-labelledby="ds-conversation-title">
+                        @foreach (var message in thread.Messages)
+                        {
+                            <li class="ds-message-row @(message.FromHost ? "ds-message-row-host" : "ds-message-row-guest")">
+                                <article class="ds-message @(message.FromHost ? "ds-message-host" : "ds-message-guest")" aria-label="@MessageLabel(message)">
+                                    <header class="d-flex flex-wrap align-items-baseline gap-2 mb-1">
+                                        <span class="fw-bold">@(message.FromHost ? message.Author : "You")</span>
+                                        <time class="small text-body-secondary ms-auto" datetime="@message.SentAt.ToString("s", CultureInfo.InvariantCulture)">@TravelDisplay.Stamp(message.SentAt)</time>
+                                    </header>
+                                    @* Plain text: Razor encodes it, and pre-wrap keeps its line breaks. *@
+                                    <div class="ds-message-body">@message.Body</div>
+                                </article>
+                            </li>
+                        }
+                    </ol>
+
+                    <section class="ds-panel" aria-labelledby="ds-reply-title">
+                        <h2 class="ds-section-title fs-5" id="ds-reply-title">Reply to @hostName</h2>
+                        @if (isFull)
+                        {
+                            <p class="text-body-secondary mb-0">This conversation has reached its limit of @TravelState.MaxMessagesPerThread messages, so no more can be added in this demo.</p>
+                        }
+                        else
+                        {
+                            <label class="form-label fw-semibold" for="ds-reply-text">Your message</label>
+                            <textarea class="form-control" id="ds-reply-text" rows="4" maxlength="@TravelState.MaxMessageLength"
+                                      aria-describedby="ds-reply-count ds-reply-note" @ref="replyBox" @bind="replyText" @bind:event="oninput"></textarea>
+                            <div class="form-text" id="ds-reply-count">@CountText</div>
+                            @* Always rendered, so a screen reader announces the error when it appears. *@
+                            <p class="text-danger small mt-2 mb-0" role="alert">@replyError</p>
+                            <Button Color="ButtonColor.Primary" Class="mt-3" @onclick="Send"><Icon Name="IconName.Send" class="me-2" aria-hidden="true" />Send</Button>
+                        }
+                        @* Always rendered and polite, so "Message sent" is announced without interrupting the next message. *@
+                        <p class="ds-reply-status small mb-0" role="status">@statusMessage</p>
+                        <p class="small text-body-secondary mt-3 mb-0" id="ds-reply-note">
+                            Hosts reply from their own inbox; in this demo, host replies arrive only in the seeded conversations.
+                        </p>
+                    </section>
+                </div>
+            </div>
+        }
+    </ShowcaseRoleGuard>
+</div>
