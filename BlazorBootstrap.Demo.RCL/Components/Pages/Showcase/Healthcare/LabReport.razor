@@ -1,0 +1,121 @@
+@page "/showcase/healthcare/lab-reports/{Id:int}"
+@layout HcLayout
+
+<div class="container-xl hc-lab">
+    <ShowcaseRoleGuard Roles="@HcSeedData.PatientRole" SignInPath="@HcLayout.SignInPath">
+        @if (Order is not { } order || State.LabPanel(order.PanelId) is not { } panel)
+        {
+            <HcNotFound Message="This lab report isn't available. It may still be waiting for results, or the link is wrong." />
+        }
+        else
+        {
+            var doctor = State.FindDoctor(order.DoctorId);
+            var doctorName = doctor?.Name ?? "your doctor";
+            var outOfRange = LabReports.OutOfRange(order, panel);
+            var released = order.ReleasedAt ?? order.OrderedAt;
+
+            <PageTitle>@panel.Name report · @HcSeedData.ProductName</PageTitle>
+
+            <Breadcrumb Items="BreadcrumbItems" Class="mb-3" />
+
+            <h1 class="hc-title mb-1">@panel.Name</h1>
+            <p class="hc-lead mb-1">Released @HcDisplay.DayLong(released) · ordered by @doctorName on @HcDisplay.Date(order.OrderedAt)</p>
+            <p class="small text-body-secondary mb-3">@panel.Description</p>
+            <p class="mb-4 @(outOfRange > 0 ? "fw-semibold text-warning-emphasis" : "text-success-emphasis")">
+                <Icon Name="@(outOfRange > 0 ? IconName.ExclamationTriangleFill : IconName.CheckCircleFill)" class="me-2" aria-hidden="true" />@LabReports.RangeText(outOfRange).
+                @if (outOfRange > 0)
+                {
+                    <span class="fw-normal">Read your doctor's comment, and ask at your next visit what it means for you.</span>
+                }
+            </p>
+
+            <div class="hc-lab-grid">
+                <div class="hc-lab-main">
+                    <section class="hc-panel" aria-labelledby="hc-lab-results-title">
+                        <h2 class="hc-section-title" id="hc-lab-results-title">Results</h2>
+                        <div class="table-responsive">
+                            <table class="table align-middle mb-2">
+                                <caption class="visually-hidden">Results of your @panel.Name, released @HcDisplay.Date(released), with each reference range</caption>
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Test</th>
+                                        <th scope="col" class="text-end">Result</th>
+                                        <th scope="col">Unit</th>
+                                        <th scope="col">Reference range</th>
+                                        <th scope="col">Flag</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @for (var index = 0; index < panel.Analytes.Count; index++)
+                                    {
+                                        var analyte = panel.Analytes[index];
+                                        double? value = index < order.Values.Count ? order.Values[index] : null;
+                                        var flag = value is { } shown ? HcState.Flag(analyte, shown) : null;
+                                        var unusual = flag is "High" or "Low";
+
+                                        <tr class="@(unusual ? "hc-lab-unusual" : null)">
+                                            <th scope="row" class="fw-semibold">@analyte.Name</th>
+                                            <td class="text-end text-nowrap @(unusual ? "fw-bold" : null)">@(value is { } number ? HcDisplay.Number(number) : "Not reported")</td>
+                                            <td class="text-nowrap">@analyte.Unit</td>
+                                            <td class="text-nowrap">@RangeLabel(analyte)</td>
+                                            <td class="text-nowrap">
+                                                @if (flag == "High")
+                                                {
+                                                    <span class="fw-bold text-danger-emphasis"><Icon Name="IconName.ArrowUpCircleFill" class="me-1" aria-hidden="true" />High</span>
+                                                }
+                                                else if (flag == "Low")
+                                                {
+                                                    <span class="fw-bold text-danger-emphasis"><Icon Name="IconName.ArrowDownCircleFill" class="me-1" aria-hidden="true" />Low</span>
+                                                }
+                                                else
+                                                {
+                                                    <span>@(flag ?? "None")</span>
+                                                }
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                        <p class="small text-body-secondary mb-0">"High" or "Low" means outside the lab's usual range, not always a problem. Demo only: these results are made up, and nothing here is medical advice.</p>
+                    </section>
+
+                    <section class="hc-panel mt-4" aria-labelledby="hc-lab-comment-title">
+                        <h2 class="hc-section-title" id="hc-lab-comment-title">Comment from @doctorName</h2>
+                        @if (string.IsNullOrWhiteSpace(order.Comment))
+                        {
+                            <p class="text-body-secondary mb-0">@doctorName didn't add a comment to these results.</p>
+                        }
+                        else
+                        {
+                            <p class="hc-plain mb-0">@order.Comment</p>
+                        }
+                    </section>
+                </div>
+
+                <section class="hc-panel hc-lab-pdf-panel" aria-labelledby="hc-lab-pdf-title">
+                    <div class="d-flex flex-wrap justify-content-between align-items-baseline gap-2 mb-3">
+                        <h2 class="hc-section-title mb-0" id="hc-lab-pdf-title">PDF report</h2>
+                        @if (pdfUrl is not null)
+                        {
+                            @* The viewer's toolbar is mouse-only, so the PDF is also a plain download link. *@
+                            <a class="btn btn-sm btn-outline-primary" download="@($"lab-report-{order.Id}.pdf")" href="@pdfUrl">
+                                <Icon Name="IconName.Download" class="me-1" aria-hidden="true" />Download PDF<span class="visually-hidden">: @panel.Name report</span>
+                            </a>
+                        }
+                    </div>
+                    @if (pdfError is not null)
+                    {
+                        <Alert Color="AlertColor.Warning">@pdfError</Alert>
+                    }
+                    @if (pdfUrl is not null)
+                    {
+                        @* Keyed by the report's version: the viewer reads Url only on first render. *@
+                        <PdfViewer @key="pdfKey" Url="@pdfUrl" Class="hc-pdf" OnDocumentLoadError="OnPdfError"
+                                   role="img" aria-label="@($"{panel.Name} report PDF, page view. Use Download PDF to open it.")" />
+                    }
+                </section>
+            </div>
+        }
+    </ShowcaseRoleGuard>
+</div>

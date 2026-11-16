@@ -1,0 +1,10 @@
+.hc-book-doctor {
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+.hc-book-chosen {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: var(--hc-ink);
+}

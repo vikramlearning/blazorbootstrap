@@ -1,0 +1,152 @@
+@page "/showcase/healthcare/staff/schedule"
+@layout HcStaffLayout
+
+<PageTitle>My schedule · @HcSeedData.ProductName</PageTitle>
+
+@* The signed-in doctor's day: who is coming, who is checked in and waiting, and the visit to start or open. It re-renders
+   when the front desk checks someone in. *@
+<div class="container-fluid px-lg-4">
+    <ShowcaseRoleGuard Roles="@HcSeedData.DoctorRole" SignInPath="@HcLayout.SignInPath">
+        @if (State.CurrentDoctor is not { } doctor)
+        {
+            <h1 class="hc-title mb-2">My schedule</h1>
+            <p class="hc-lead">This account isn't linked to a doctor, so there's no schedule to show.</p>
+        }
+        else
+        {
+            var day = Day;
+            var today = State.Clock.Today;
+            var list = State.AppointmentsOn(day, doctor.Id);
+            var clinic = State.FindClinic(doctor.ClinicId);
+
+            <h1 class="hc-title mb-1">My schedule</h1>
+            <p class="hc-lead mb-3">@doctor.Name · @doctor.Specialty@(clinic is null ? null : $" · {clinic.Name}")</p>
+
+            <nav class="hc-sch-nav mb-3" aria-label="Choose a day">
+                <div class="hc-sch-steps">
+                    <a class="btn btn-outline-secondary" href="@DayUrl(day.AddDays(-1))">
+                        <Icon Name="IconName.ChevronLeft" class="me-1" aria-hidden="true" />Previous day
+                    </a>
+                    <a class="btn btn-outline-secondary" href="@DayUrl(today)" aria-current="@(day == today ? "date" : null)">Today</a>
+                    <a class="btn btn-outline-secondary" href="@DayUrl(day.AddDays(1))">
+                        Next day<Icon Name="IconName.ChevronRight" class="ms-1" aria-hidden="true" />
+                    </a>
+                </div>
+                <form class="hc-sch-goto" @onsubmit="GoToDate" novalidate aria-label="Go to a date">
+                    <label class="form-label fw-semibold mb-1" for="hc-sch-date">Go to a date</label>
+                    <div class="hc-sch-goto-row">
+                        <input id="hc-sch-date" type="date" class="@(dateError is null ? "form-control" : "form-control is-invalid")" @key="@($"date-{day:yyyyMMdd}")"
+                               value="@day.ToString(HcDisplay.QueryDate, CultureInfo.InvariantCulture)" @onchange="OnDateChanged" @ref="dateField"
+                               aria-invalid="@(dateError is null ? null : "true")" aria-describedby="hc-sch-date-error" />
+                        <button type="submit" class="btn btn-primary">Show day</button>
+                    </div>
+                    <div class="invalid-feedback d-block" id="hc-sch-date-error">@dateError</div>
+                </form>
+            </nav>
+
+            @* Always rendered and focusable, so an outcome is announced and focus has somewhere to go. *@
+            <p class="fw-semibold hc-sch-status @(statusIsError ? "text-danger-emphasis" : null)" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
+
+            <div class="hc-sch-grid">
+                <section aria-labelledby="hc-sch-day-title">
+                    <h2 class="hc-section-title mb-1" id="hc-sch-day-title">@HcDisplay.DayLong(day)@(day == today ? " (today)" : null)</h2>
+                    <p class="text-body-secondary mb-3">@SummaryText(list, day, today)</p>
+
+                    @if (list.Count == 0)
+                    {
+                        <div class="hc-panel text-body-secondary">
+                            <Icon Name="IconName.CalendarX" class="me-2" aria-hidden="true" />No visits on your schedule this day.
+                        </div>
+                    }
+                    else
+                    {
+                        <ol class="list-unstyled hc-sch-list mb-0" aria-labelledby="hc-sch-day-title">
+                            @foreach (var appointment in list)
+                            {
+                                var patient = State.FindPatient(appointment.PatientId);
+                                var name = patient?.Name ?? "A former patient";
+                                var visitClinic = State.FindClinic(appointment.ClinicId);
+                                var ready = appointment.Status == HcAppointmentStatus.CheckedIn;
+                                var inactive = appointment.Status is HcAppointmentStatus.Cancelled or HcAppointmentStatus.NoShow;
+
+                                <li class="hc-card hc-sch-item @(ready ? "hc-sch-ready" : null) @(inactive ? "hc-sch-inactive" : null)" @key="@($"appt-{appointment.Id}")">
+                                    <div class="hc-sch-time">
+                                        <span class="hc-sch-clock">@HcDisplay.Time(appointment.Start)</span>
+                                        <span class="small text-body-secondary">@appointment.Minutes min</span>
+                                    </div>
+                                    <div class="hc-sch-body">
+                                        <h3 class="hc-sch-name">
+                                            @if (patient is not null)
+                                            {
+                                                <a href="@HcDisplay.PatientChartUrl(patient.Id)">@patient.Name</a>
+                                            }
+                                            else
+                                            {
+                                                @name
+                                            }
+                                        </h3>
+                                        <p class="small text-body-secondary mb-1">
+                                            @PatientChart.AgeText(HcDisplay.Age(patient?.DateOfBirth, today))@(visitClinic is null ? null : $" · {visitClinic.Name}")
+                                        </p>
+                                        <p class="hc-plain mb-2">@appointment.Reason</p>
+                                        <p class="hc-sch-state mb-0">
+                                            <span class="@($"badge text-bg-{HcDisplay.StatusColor(appointment.Status)}")">@HcDisplay.StatusLabel(appointment.Status)</span>
+                                            @if (ready)
+                                            {
+                                                <strong class="hc-sch-ready-text">
+                                                    <Icon Name="IconName.PersonCheckFill" class="me-1" aria-hidden="true" />@StateText(appointment)
+                                                </strong>
+                                            }
+                                            else if (StateText(appointment) is { } detail)
+                                            {
+                                                <span class="small text-body-secondary">@detail</span>
+                                            }
+                                        </p>
+                                    </div>
+                                    <div class="hc-sch-action">
+                                        @switch (appointment.Status)
+                                        {
+                                            case HcAppointmentStatus.CheckedIn:
+                                                <button type="button" class="btn btn-primary" @ref="startButtons[appointment.Id]" @onclick="() => StartVisit(appointment.Id)">
+                                                    <Icon Name="IconName.PlayFill" class="me-1" aria-hidden="true" />Start visit<span class="visually-hidden"> with @name</span>
+                                                </button>
+                                                break;
+
+                                            case HcAppointmentStatus.InVisit:
+                                            case HcAppointmentStatus.Completed:
+                                                <a class="btn btn-outline-primary" href="@HcDisplay.StaffAppointmentUrl(appointment.Id)">
+                                                    Open visit<span class="visually-hidden"> with @name at @HcDisplay.Time(appointment.Start)</span>
+                                                </a>
+                                                break;
+
+                                            case HcAppointmentStatus.Booked:
+                                                <span class="small text-body-secondary">Waiting for check-in</span>
+                                                break;
+                                        }
+                                    </div>
+                                </li>
+                            }
+                        </ol>
+                    }
+                </section>
+
+                <aside class="hc-panel hc-sch-week" aria-labelledby="hc-sch-week-title">
+                    <h2 class="hc-section-title mb-1" id="hc-sch-week-title">Coming up this week</h2>
+                    <p class="small text-body-secondary mb-2">Your visits on the next seven days.</p>
+                    <ul class="list-unstyled mb-0">
+                        @for (var offset = 1; offset <= 7; offset++)
+                        {
+                            var date = today.AddDays(offset);
+                            var count = State.AppointmentsOn(date, doctor.Id).Count(item => item.Status is not (HcAppointmentStatus.Cancelled or HcAppointmentStatus.NoShow));
+
+                            <li class="hc-sch-week-day" @key="@($"week-{offset}")">
+                                <a href="@DayUrl(date)" aria-current="@(date == day ? "date" : null)">@HcDisplay.Day(date)</a>
+                                <span class="@(count == 0 ? "text-body-secondary" : "fw-semibold")">@VisitCount(count)</span>
+                            </li>
+                        }
+                    </ul>
+                </aside>
+            </div>
+        }
+    </ShowcaseRoleGuard>
+</div>

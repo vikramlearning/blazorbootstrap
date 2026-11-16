@@ -1,0 +1,210 @@
+/* The front desk's calendar: a toolbar, a column per doctor (stacked on narrow screens), and the week overview. Modal
+   renders its own elements; the markup inside its templates is this page's, so it takes these styles without ::deep. */
+.hc-cal-status:empty {
+    margin: 0;
+}
+
+.hc-cal-status:focus,
+#hc-cal-day-summary:focus {
+    outline: none;
+}
+
+.hc-cal-status:focus-visible,
+#hc-cal-day-summary:focus-visible {
+    outline: 2px solid var(--bs-focus-ring-color, var(--sc-primary));
+    outline-offset: 2px;
+}
+
+.hc-cal-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: .75rem 1rem;
+}
+
+.hc-cal-field {
+    flex: 1 1 11rem;
+    min-width: 0;
+    max-width: 16rem;
+}
+
+/* One column per doctor where there is room; one per row (a list grouped by doctor) on a phone. */
+.hc-cal-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 15rem), 1fr));
+    gap: 1rem;
+    align-items: start;
+}
+
+.hc-cal-col {
+    min-width: 0;
+    border: 1px solid var(--hc-border);
+    border-radius: .875rem;
+    background: var(--hc-surface);
+}
+
+.hc-cal-col-head {
+    display: flex;
+    align-items: flex-start;
+    gap: .75rem;
+    padding: .875rem 1rem;
+    border-bottom: 1px solid var(--hc-border);
+}
+
+.hc-cal-min {
+    min-width: 0;
+}
+
+.hc-cal-doc {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--hc-ink);
+    overflow-wrap: anywhere;
+}
+
+.hc-cal-col > p {
+    padding-top: .875rem;
+}
+
+.hc-cal-list {
+    display: grid;
+    gap: .5rem;
+    margin: 0;
+    padding: .75rem;
+}
+
+.hc-cal-appt {
+    --hc-cal-accent: var(--bs-primary);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: .125rem;
+    width: 100%;
+    padding: .5rem .75rem;
+    border: 1px solid var(--hc-border);
+    border-left: .3125rem solid var(--hc-cal-accent);
+    border-radius: .5rem;
+    background: var(--hc-muted-bg);
+    color: var(--hc-ink);
+    text-align: start;
+    font: inherit;
+}
+
+    .hc-cal-appt:hover {
+        background: var(--hc-soft);
+    }
+
+    .hc-cal-appt:focus-visible {
+        outline: 2px solid var(--bs-focus-ring-color, var(--sc-primary));
+        outline-offset: 2px;
+    }
+
+/* Cancelled and no-show appointments stay listed but step back; the status words say why. */
+.hc-cal-appt-closed {
+    background: transparent;
+}
+
+    .hc-cal-appt-closed .hc-cal-patient,
+    .hc-cal-appt-closed .hc-cal-reason {
+        color: var(--bs-secondary-color);
+    }
+
+.hc-cal-time {
+    font-family: var(--hc-font-mono, ui-monospace, monospace);
+    font-size: .8125rem;
+    font-weight: 600;
+}
+
+.hc-cal-patient {
+    font-weight: 700;
+    overflow-wrap: anywhere;
+}
+
+.hc-cal-reason {
+    font-size: .875rem;
+    overflow-wrap: anywhere;
+}
+
+.hc-cal-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: .25rem .5rem;
+    margin-top: .25rem;
+}
+
+.hc-cal-warn,
+.hc-cal-panel-warn {
+    display: flex;
+    align-items: flex-start;
+    margin-top: .375rem;
+    font-size: .8125rem;
+    font-weight: 600;
+    color: var(--bs-warning-text-emphasis);
+}
+
+.hc-cal-panel-warn {
+    padding: .625rem .75rem;
+    border-radius: .5rem;
+    background: var(--bs-warning-bg-subtle);
+    font-size: .875rem;
+}
+
+.hc-cal-week {
+    font-size: .875rem;
+}
+
+    .hc-cal-week th,
+    .hc-cal-week td {
+        white-space: nowrap;
+    }
+
+.hc-cal-week-doc {
+    font-weight: 600;
+}
+
+.hc-cal-facts {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr));
+    gap: .5rem 1rem;
+    margin-bottom: 1rem;
+    font-size: .9375rem;
+}
+
+    .hc-cal-facts dt {
+        font-size: .75rem;
+        font-weight: 600;
+        letter-spacing: .02em;
+        text-transform: uppercase;
+        color: var(--bs-secondary-color);
+    }
+
+    .hc-cal-facts dd {
+        margin: 0;
+        overflow-wrap: anywhere;
+    }
+
+.hc-cal-facts-wide {
+    grid-column: 1 / -1;
+}
+
+.hc-cal-confirm {
+    padding: .875rem 1rem;
+    border: 1px solid var(--hc-border);
+    border-radius: .625rem;
+}
+
+    .hc-cal-confirm > p:first-child:focus {
+        outline: none;
+    }
+
+.hc-cal-error {
+    font-size: .875rem;
+    font-weight: 600;
+    color: var(--bs-danger-text-emphasis);
+}
+
+    .hc-cal-error:empty {
+        display: none;
+    }

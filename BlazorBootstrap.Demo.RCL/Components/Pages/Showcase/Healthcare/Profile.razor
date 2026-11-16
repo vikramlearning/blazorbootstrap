@@ -1,0 +1,43 @@
+@page "/showcase/healthcare/profile"
+@layout HcLayout
+
+<PageTitle>Profile · @HcSeedData.ProductName</PageTitle>
+
+<div class="container-xl hc-profile">
+    <ShowcaseRoleGuard Roles="@HcSeedData.PatientRole" SignInPath="@HcLayout.SignInPath">
+        <h1 class="hc-title mb-1">Profile</h1>
+        <p class="hc-lead mb-4">Your name, email, and password for this demo, and the details your clinic keeps on file.</p>
+
+        <ShowcaseAccountProfile />
+
+        @if (State.CurrentPatient is { } patient)
+        {
+            <section class="hc-panel hc-profile-details mt-4" aria-labelledby="hc-profile-details-title" data-clarity-mask="true">
+                <h2 class="hc-section-title" id="hc-profile-details-title">Your details</h2>
+                <p class="mb-1">Medical record number: <span class="hc-mono fw-semibold">@patient.Id</span></p>
+                <p class="small text-body-secondary mb-4">Give this number when you call a clinic. It never changes.</p>
+
+                <EditForm Model="form" OnSubmit="Save" FormName="hc-profile-details" novalidate>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold" for="hc-profile-dob">Date of birth</label>
+                        <input type="date" id="hc-profile-dob" class="form-control hc-profile-date @(dobError is null ? null : "is-invalid")" value="@form.DateOfBirth" @onchange="OnDateOfBirthChanged" @ref="dobInput"
+                               min="1900-01-01" max="@State.Clock.Today.ToString(HcDisplay.QueryDate, CultureInfo.InvariantCulture)"
+                               aria-describedby="hc-profile-dob-help hc-profile-dob-error" aria-invalid="@(dobError is null ? null : "true")" />
+                        <div class="form-text" id="hc-profile-dob-help">Your doctors use it to make sure they have the right record.</div>
+                        <p class="text-danger-emphasis fw-semibold small mt-1 mb-0" id="hc-profile-dob-error">@dobError</p>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold" for="hc-profile-phone">Phone</label>
+                        <input type="tel" id="hc-profile-phone" class="form-control hc-profile-phone @(phoneError is null ? null : "is-invalid")" @bind="form.Phone" @ref="phoneInput"
+                               maxlength="@HcState.MaxPhoneLength" autocomplete="tel"
+                               aria-describedby="hc-profile-phone-help hc-profile-phone-error" aria-invalid="@(phoneError is null ? null : "true")" />
+                        <div class="form-text" id="hc-profile-phone-help">The clinic calls this number about your appointments. Up to @HcState.MaxPhoneLength characters.</div>
+                        <p class="text-danger-emphasis fw-semibold small mt-1 mb-0" id="hc-profile-phone-error">@phoneError</p>
+                    </div>
+                    <Button Type="ButtonType.Submit" Color="ButtonColor.Primary">Save details</Button>
+                    <p class="small fw-semibold mt-3 mb-0 @(statusIsError ? "text-danger-emphasis" : "text-success-emphasis")" role="status">@statusMessage</p>
+                </EditForm>
+            </section>
+        }
+    </ShowcaseRoleGuard>
+</div>

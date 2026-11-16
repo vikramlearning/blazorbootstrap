@@ -1,0 +1,266 @@
+@page "/showcase/healthcare/appointments/{Id:int}"
+@layout HcLayout
+
+<div class="container-xl hc-appt">
+    <ShowcaseRoleGuard Roles="@HcSeedData.PatientRole" SignInPath="@HcLayout.SignInPath">
+        @if (Appointment is not { } appointment)
+        {
+            <HcNotFound Message="We couldn't find that appointment. It may belong to another account, or the link is wrong." />
+        }
+        else
+        {
+            var doctor = State.FindDoctor(appointment.DoctorId);
+            var clinic = State.FindClinic(appointment.ClinicId);
+            var doctorName = doctor?.Name ?? "your doctor";
+
+            <PageTitle>Appointment on @HcDisplay.Day(appointment.Start) · @HcSeedData.ProductName</PageTitle>
+
+            <Breadcrumb Items="BreadcrumbItems" Class="mb-3" />
+
+            <h1 class="hc-title mb-1">Appointment with @doctorName</h1>
+            <p class="hc-lead mb-3">
+                @HcDisplay.DayLong(appointment.Start) at @HcDisplay.Time(appointment.Start)
+                <span class="badge text-bg-@HcDisplay.StatusColor(appointment.Status) ms-1 align-middle">@HcDisplay.StatusLabel(appointment.Status)</span>
+            </p>
+
+            @* Always rendered and focusable: a booking, a move, or a cancellation is announced here, and focus has somewhere to go. *@
+            <div class="hc-appt-status" role="status" tabindex="-1" @ref="statusRegion">
+                @if (announceBooked)
+                {
+                    <div class="alert alert-success mb-4">
+                        <p class="fw-semibold mb-1"><Icon Name="IconName.CheckCircleFill" class="me-2" aria-hidden="true" />Booked. See you on @HcDisplay.DayLong(appointment.Start) at @HcDisplay.Time(appointment.Start).</p>
+                        <p class="small mb-0">With @doctorName at @clinic?.Name, @clinic?.Address. You can change or cancel it here up to 2 hours before.</p>
+                    </div>
+                }
+                else if (statusMessage is not null)
+                {
+                    <div class="alert @(statusIsError ? "alert-danger" : "alert-success") mb-4">
+                        <Icon Name="@(statusIsError ? IconName.ExclamationTriangleFill : IconName.CheckCircleFill)" class="me-2" aria-hidden="true" />@statusMessage
+                    </div>
+                }
+            </div>
+
+            <div class="row g-4">
+                <div class="col-lg-7">
+                    <section class="hc-panel" aria-labelledby="hc-appt-details-title">
+                        <h2 class="hc-section-title" id="hc-appt-details-title">Details</h2>
+                        <dl class="hc-appt-facts mb-0">
+                            <div>
+                                <dt>Date and time</dt>
+                                <dd>@HcDisplay.DayLong(appointment.Start) at @HcDisplay.Time(appointment.Start) (@appointment.Minutes minutes)</dd>
+                            </div>
+                            <div>
+                                <dt>Doctor</dt>
+                                <dd>
+                                    @if (doctor is not null)
+                                    {
+                                        <a href="@HcDisplay.DoctorUrl(doctor.Id)">@doctor.Name</a><span>, @doctor.Specialty</span>
+                                    }
+                                    else
+                                    {
+                                        <span>Unknown doctor</span>
+                                    }
+                                </dd>
+                            </div>
+                            @if (clinic is not null)
+                            {
+                                <div>
+                                    <dt>Clinic</dt>
+                                    <dd>
+                                        <span class="d-block">@clinic.Name</span>
+                                        <span class="d-block">@clinic.Address</span>
+                                        <a href="@SlotPicker.TelUrl(clinic.Phone)">@clinic.Phone</a>
+                                    </dd>
+                                </div>
+                            }
+                            <div>
+                                <dt>Reason for the visit</dt>
+                                <dd class="hc-plain">@appointment.Reason</dd>
+                            </div>
+                            <div>
+                                <dt>Status</dt>
+                                <dd>@StatusSentence(appointment)</dd>
+                            </div>
+                            <div>
+                                <dt>Booked on</dt>
+                                <dd>@HcDisplay.Date(appointment.CreatedAt)</dd>
+                            </div>
+                            @if (appointment.Status == HcAppointmentStatus.Cancelled && !string.IsNullOrWhiteSpace(appointment.CancelReason))
+                            {
+                                <div>
+                                    <dt>Reason for cancelling</dt>
+                                    <dd class="hc-plain">@appointment.CancelReason</dd>
+                                </div>
+                            }
+                        </dl>
+                    </section>
+
+                    @if (appointment.Status == HcAppointmentStatus.Completed)
+                    {
+                        var labs = VisitLabs(appointment);
+                        var medicines = VisitPrescriptions(appointment);
+                        var bill = VisitBill(appointment);
+
+                        <section class="hc-panel mt-4" aria-labelledby="hc-appt-summary-title">
+                            <h2 class="hc-section-title" id="hc-appt-summary-title">Visit summary from @doctorName</h2>
+                            @if (string.IsNullOrWhiteSpace(appointment.Summary))
+                            {
+                                <p class="text-body-secondary mb-0">@doctorName hasn't written a summary for this visit.</p>
+                            }
+                            else
+                            {
+                                <p class="hc-plain mb-0">@appointment.Summary</p>
+                            }
+                        </section>
+
+                        <section class="hc-panel mt-4" aria-labelledby="hc-appt-labs-title">
+                            <h2 class="hc-section-title" id="hc-appt-labs-title">Lab tests ordered in this visit</h2>
+                            @if (labs.Count == 0)
+                            {
+                                <p class="text-body-secondary mb-0">No lab tests were ordered in this visit.</p>
+                            }
+                            else
+                            {
+                                <ul class="list-unstyled d-grid gap-2 mb-0">
+                                    @foreach (var order in labs)
+                                    {
+                                        var panel = State.LabPanel(order.PanelId);
+
+                                        <li class="hc-appt-item" @key="@($"lab-{order.Id}")">
+                                            <span class="fw-semibold">@(panel?.Name ?? "Lab test")</span>
+                                            @if (order.Status == HcLabStatus.Released)
+                                            {
+                                                <span class="small text-success-emphasis"><Icon Name="IconName.CheckCircle" class="me-1" aria-hidden="true" />Results ready</span>
+                                                <a class="small" href="@HcDisplay.LabUrl(order.Id)">View report<span class="visually-hidden">: @panel?.Name</span></a>
+                                            }
+                                            else
+                                            {
+                                                <span class="small text-body-secondary"><Icon Name="IconName.HourglassSplit" class="me-1" aria-hidden="true" />Waiting for results (ordered @HcDisplay.Date(order.OrderedAt))</span>
+                                            }
+                                        </li>
+                                    }
+                                </ul>
+                            }
+                        </section>
+
+                        <section class="hc-panel mt-4" aria-labelledby="hc-appt-rx-title">
+                            <h2 class="hc-section-title" id="hc-appt-rx-title">Prescriptions from this visit</h2>
+                            @if (medicines.Count == 0)
+                            {
+                                <p class="text-body-secondary mb-0">No medicines were prescribed in this visit.</p>
+                            }
+                            else
+                            {
+                                <ul class="list-unstyled d-grid gap-2 mb-2">
+                                    @foreach (var prescription in medicines)
+                                    {
+                                        <li class="hc-appt-item" @key="@($"rx-{prescription.Id}")">
+                                            <span class="fw-semibold">@prescription.Medication, @prescription.Dose</span>
+                                            <span class="small">@prescription.Directions</span>
+                                            <span class="small text-body-secondary">@(prescription.Status == HcPrescriptionStatus.Active ? "Active" : "Stopped")</span>
+                                        </li>
+                                    }
+                                </ul>
+                                <a class="small" href="@($"{HcLayout.Base}/prescriptions")">All your prescriptions and refills</a>
+                            }
+                        </section>
+
+                        @if (bill is not null)
+                        {
+                            <section class="hc-panel mt-4" aria-labelledby="hc-appt-bill-title">
+                                <h2 class="hc-section-title" id="hc-appt-bill-title">Bill for this visit</h2>
+                                <p class="mb-2">
+                                    @HcDisplay.Money(bill.AmountCents):
+                                    @(bill.Status == HcBillStatus.Paid
+                                        ? $"paid on {HcDisplay.Date(bill.PaidAt ?? bill.CreatedAt)}."
+                                        : $"due by {HcDisplay.Date(bill.DueDate)}.")
+                                </p>
+                                <a class="small" href="@($"{HcLayout.Base}/bills")">@(bill.Status == HcBillStatus.Paid ? "See your bills" : "Pay it on the Bills page")</a>
+                            </section>
+                        }
+                    }
+                </div>
+
+                <div class="col-lg-5">
+                    <section class="hc-panel" aria-labelledby="hc-appt-change-title">
+                        <h2 class="hc-section-title" id="hc-appt-change-title">@ChangeTitle(appointment)</h2>
+                        @if (appointment.Status == HcAppointmentStatus.Booked && CanChange(appointment))
+                        {
+                            <p class="small mb-3">You can reschedule or cancel online until @HcDisplay.When(appointment.Start.AddHours(-2)). After that, call the clinic.</p>
+                            <div class="d-flex flex-wrap gap-2">
+                                <button type="button" class="btn btn-outline-primary" aria-expanded="@(rescheduleOpen ? "true" : "false")" aria-controls="hc-appt-reschedule"
+                                        @ref="rescheduleButton" @onclick="ToggleReschedule">
+                                    <Icon Name="IconName.CalendarEvent" class="me-1" aria-hidden="true" />Reschedule
+                                </button>
+                                <button type="button" class="btn btn-outline-danger" @ref="cancelButton" @onclick="OpenCancelAsync">
+                                    <Icon Name="IconName.XCircle" class="me-1" aria-hidden="true" />Cancel appointment
+                                </button>
+                            </div>
+
+                            @if (rescheduleOpen)
+                            {
+                                <div class="hc-appt-reschedule mt-4" id="hc-appt-reschedule">
+                                    <h3 class="h6 fw-bold" tabindex="-1" @ref="rescheduleHeading">Choose a new time with @doctorName</h3>
+                                    <SlotPicker DoctorId="@appointment.DoctorId" Selected="newStart" OnSelect="OnPickNew" IdPrefix="hc-appt-sp" />
+
+                                    @if (newStart is { } target)
+                                    {
+                                        var targetClinic = State.FindClinic(State.Slots(appointment.DoctorId, target.Date).FirstOrDefault(slot => slot.Start == target)?.ClinicId);
+
+                                        <div class="hc-appt-confirm mt-3" tabindex="-1" @ref="confirmBox" role="group" aria-labelledby="hc-appt-confirm-text">
+                                            <p class="fw-semibold mb-1" id="hc-appt-confirm-text">Move your visit to @SlotPicker.SlotName(target)?</p>
+                                            <p class="small mb-3">
+                                                Instead of @SlotPicker.SlotName(appointment.Start)@(targetClinic is not null && targetClinic.Id != appointment.ClinicId ? $", at {targetClinic.Name}" : null).
+                                                Your current time opens up for other patients.
+                                            </p>
+                                            <div class="d-flex flex-wrap gap-2">
+                                                <Button Color="ButtonColor.Primary" @onclick="ConfirmReschedule">Move my appointment</Button>
+                                                <Button Color="ButtonColor.Secondary" Outline="true" @onclick="KeepCurrentTime">Keep current time</Button>
+                                            </div>
+                                        </div>
+                                    }
+
+                                    <div class="mt-2" role="alert">
+                                        @if (rescheduleError is not null)
+                                        {
+                                            <p class="text-danger-emphasis fw-semibold small mb-0"><Icon Name="IconName.ExclamationTriangleFill" class="me-2" aria-hidden="true" />@rescheduleError</p>
+                                        }
+                                    </div>
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <p class="mb-3">@ChangeSentence(appointment, clinic)</p>
+                            @if (doctor is not null && appointment.Status is HcAppointmentStatus.Completed or HcAppointmentStatus.Cancelled or HcAppointmentStatus.NoShow)
+                            {
+                                <a class="btn btn-outline-primary" href="@HcDisplay.DoctorUrl(doctor.Id)">
+                                    <Icon Name="IconName.CalendarPlus" class="me-1" aria-hidden="true" />@(appointment.Status == HcAppointmentStatus.Completed ? "Book a follow-up" : "Book again")<span class="visually-hidden"> with @doctor.Name</span>
+                                </a>
+                            }
+                        }
+                    </section>
+                    <p class="small text-body-secondary mt-3 mb-0">Demo only: nothing here is medical advice, and nothing is sent to a clinic.</p>
+                </div>
+            </div>
+
+            <Modal @ref="cancelModal" IsVerticallyCentered="true" ShowCloseButton="false" aria-labelledby="hc-appt-cancel-title" OnHidden="OnCancelHidden">
+                <HeaderTemplate>
+                    <h2 class="modal-title h5" id="hc-appt-cancel-title">Cancel your appointment on @HcDisplay.When(appointment.Start)?</h2>
+                </HeaderTemplate>
+                <BodyTemplate>
+                    <p class="mb-2">With @doctorName at @clinic?.Name. The time opens up for other patients as soon as you cancel.</p>
+                    <p class="small text-body-secondary mb-3">This can't be undone: to see @doctorName later, book a new time.</p>
+                    <label class="form-label fw-semibold" for="hc-appt-cancel-reason">Reason for cancelling <span class="fw-normal text-body-secondary">(optional)</span></label>
+                    <textarea id="hc-appt-cancel-reason" class="form-control" rows="2" maxlength="@HcState.MaxReasonLength" @bind="cancelReason" @bind:event="oninput"
+                              aria-describedby="hc-appt-cancel-count"></textarea>
+                    <div class="form-text" id="hc-appt-cancel-count">@(cancelReason?.Length ?? 0) of @HcState.MaxReasonLength characters. The clinic sees it.</div>
+                </BodyTemplate>
+                <FooterTemplate>
+                    <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => cancelModal.HideAsync()">Keep appointment</Button>
+                    <Button Color="ButtonColor.Danger" @onclick="ConfirmCancelAsync">Cancel appointment</Button>
+                </FooterTemplate>
+            </Modal>
+        }
+    </ShowcaseRoleGuard>
+</div>

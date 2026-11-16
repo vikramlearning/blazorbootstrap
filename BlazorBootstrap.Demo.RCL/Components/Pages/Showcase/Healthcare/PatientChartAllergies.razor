@@ -1,0 +1,6 @@
+@* A patient's allergies, prominent at the top of the chart and the visit page: an icon and the word "Allergies", so the
+   warning never depends on color. *@
+<div class="@(Allergies.Count > 0 ? "hc-allergy hc-allergy-alert" : "hc-allergy")">
+    <Icon Name="@(Allergies.Count > 0 ? IconName.ExclamationTriangleFill : IconName.ShieldCheck)" class="hc-allergy-icon" aria-hidden="true" />
+    <p class="hc-allergy-text mb-0"><strong>Allergies:</strong> @(Allergies.Count > 0 ? string.Join("; ", Allergies) : "none known")</p>
+</div>

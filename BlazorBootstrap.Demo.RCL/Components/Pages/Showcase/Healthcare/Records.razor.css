@@ -1,0 +1,31 @@
+/* Summaries beside the chart lists on wide screens; one column at 375 px. The side column holds a table, so its track
+   can shrink (minmax(0, ...)). */
+.hc-records-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1.5rem;
+}
+
+@media (min-width: 992px) {
+    .hc-records-grid {
+        grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+        align-items: start;
+    }
+}
+
+.hc-records-side {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1.5rem;
+}
+
+.hc-records-list {
+    padding-left: 1.25rem;
+    margin-bottom: .75rem;
+    overflow-wrap: anywhere;
+}
+
+/* Visit reasons and summaries are the patient's and doctor's own words: long words wrap rather than widen the page. */
+.hc-records-main article {
+    overflow-wrap: anywhere;
+}

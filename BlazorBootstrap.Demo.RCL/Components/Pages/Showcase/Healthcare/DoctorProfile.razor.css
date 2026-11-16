@@ -1,0 +1,75 @@
+/* A doctor's profile: facts, hours, and the week of open times. */
+.hc-dp-min {
+    min-width: 0;
+}
+
+.hc-dp-avatar {
+    width: 4rem;
+    height: 4rem;
+    font-size: 1.375rem;
+}
+
+.hc-dp-facts {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 11rem), 1fr));
+    gap: .5rem 1.25rem;
+    font-size: .9375rem;
+}
+
+    .hc-dp-facts dt {
+        font-size: .75rem;
+        font-weight: 600;
+        letter-spacing: .02em;
+        text-transform: uppercase;
+        color: var(--bs-secondary-color);
+    }
+
+    .hc-dp-facts dd {
+        margin: 0;
+        overflow-wrap: anywhere;
+    }
+
+.hc-dp-hours {
+    padding-inline-start: 1.25rem;
+}
+
+    .hc-dp-hours li + li {
+        margin-top: .375rem;
+    }
+
+.hc-dp-note {
+    display: flex;
+    align-items: flex-start;
+    padding: .75rem 1rem;
+    border-radius: .625rem;
+    background: var(--hc-soft);
+    color: var(--hc-ink);
+}
+
+.hc-dp-window:focus {
+    outline: none;
+}
+
+.hc-dp-window:focus-visible {
+    outline: 2px solid var(--bs-focus-ring-color, var(--sc-primary));
+    outline-offset: 2px;
+}
+
+.hc-dp-day {
+    padding-block: .875rem;
+    border-top: 1px solid var(--hc-border);
+}
+
+.hc-dp-day-title {
+    margin-bottom: .25rem;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--hc-ink);
+}
+
+.hc-dp-slots {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .5rem;
+    margin-bottom: .5rem;
+}

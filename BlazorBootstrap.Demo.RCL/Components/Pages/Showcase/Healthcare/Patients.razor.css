@@ -1,0 +1,18 @@
+/* The patient list: a search above a table that scrolls sideways on narrow screens. */
+.hc-pts-search {
+    max-width: 28rem;
+}
+
+.hc-pts-count {
+    min-height: 1.25rem;
+    overflow-wrap: anywhere;
+}
+
+.hc-pts-table {
+    --bs-table-bg: transparent;
+}
+
+    .hc-pts-table th,
+    .hc-pts-table td {
+        padding-inline: 1rem;
+    }

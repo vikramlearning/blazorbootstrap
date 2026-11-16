@@ -1,0 +1,131 @@
+@page "/showcase/healthcare/records"
+@layout HcLayout
+
+<PageTitle>Records · @HcSeedData.ProductName</PageTitle>
+
+<div class="container-xl hc-records">
+    <ShowcaseRoleGuard Roles="@HcSeedData.PatientRole" SignInPath="@HcLayout.SignInPath">
+        @if (State.CurrentPatient is { } patient)
+        {
+            var visits = Visits(patient);
+
+            <h1 class="hc-title mb-1">Your health record</h1>
+            <p class="hc-lead mb-2">Visit summaries from your doctors, and the conditions, allergies, and vaccinations on your chart.</p>
+            <p class="small text-body-secondary mb-4">
+                @patient.Name · Medical record number <span class="hc-mono">@patient.Id</span>@(patient.DateOfBirth is { } dob ? $" · Born {HcDisplay.Date(dob)}" : null).
+                Demo only: the people and records are made up, and nothing here is medical advice.
+            </p>
+
+            <div class="hc-records-grid">
+                <section class="hc-records-main" aria-labelledby="hc-records-visits-title">
+                    <h2 class="hc-section-title" id="hc-records-visits-title">Visit summaries (@visits.Count)</h2>
+                    <p class="small text-body-secondary">What your doctor wrote for you after each completed visit, newest first.</p>
+                    @if (visits.Count == 0)
+                    {
+                        <div class="hc-panel">
+                            <p class="mb-0">No completed visits yet. After a visit, the doctor's summary appears here. <a href="@($"{HcLayout.Base}/doctors")">Find a doctor</a></p>
+                        </div>
+                    }
+                    else
+                    {
+                        <ul class="list-unstyled d-grid gap-3 mb-0">
+                            @foreach (var visit in visits)
+                            {
+                                var doctor = State.FindDoctor(visit.DoctorId);
+                                var titleId = $"hc-records-visit-{visit.Id}";
+
+                                <li @key="@($"visit-{visit.Id}")">
+                                    <article class="hc-panel" aria-labelledby="@titleId">
+                                        <div class="d-flex flex-wrap justify-content-between align-items-baseline gap-2 mb-2">
+                                            <h3 class="h6 fw-bold mb-0" id="@titleId">@HcDisplay.Date(visit.Start): @visit.Reason</h3>
+                                            <a class="small" href="@HcDisplay.AppointmentUrl(visit.Id)">Visit details<span class="visually-hidden">: @HcDisplay.Date(visit.Start), @visit.Reason</span></a>
+                                        </div>
+                                        <p class="small text-body-secondary mb-2">@(doctor?.Name ?? "Unknown doctor"), @doctor?.Specialty · @State.FindClinic(visit.ClinicId)?.Name</p>
+                                        @if (string.IsNullOrWhiteSpace(visit.Summary))
+                                        {
+                                            <p class="text-body-secondary mb-0">The doctor didn't write a summary for this visit.</p>
+                                        }
+                                        else
+                                        {
+                                            <p class="hc-plain mb-0">@visit.Summary</p>
+                                        }
+                                    </article>
+                                </li>
+                            }
+                        </ul>
+                    }
+                </section>
+
+                <div class="hc-records-side">
+                    <section class="hc-panel" aria-labelledby="hc-records-conditions-title">
+                        <h2 class="hc-section-title" id="hc-records-conditions-title">Conditions</h2>
+                        @if (patient.Conditions.Count == 0)
+                        {
+                            <p class="mb-2">No ongoing conditions on record.</p>
+                        }
+                        else
+                        {
+                            <ul class="hc-records-list">
+                                @foreach (var condition in patient.Conditions)
+                                {
+                                    <li>@condition</li>
+                                }
+                            </ul>
+                        }
+                        <p class="small text-body-secondary mb-0">Your doctor keeps this list up to date at your visits. If something is missing or wrong, tell your doctor at your next visit.</p>
+                    </section>
+
+                    <section class="hc-panel" aria-labelledby="hc-records-allergies-title">
+                        <h2 class="hc-section-title" id="hc-records-allergies-title">Allergies</h2>
+                        @if (patient.Allergies.Count == 0)
+                        {
+                            <p class="mb-2">No known allergies on record.</p>
+                        }
+                        else
+                        {
+                            <ul class="hc-records-list">
+                                @foreach (var allergy in patient.Allergies)
+                                {
+                                    <li>@allergy</li>
+                                }
+                            </ul>
+                        }
+                        <p class="small text-body-secondary mb-0">Your doctor records allergies so they're checked before anything is prescribed. Tell your doctor about any new reaction.</p>
+                    </section>
+
+                    <section class="hc-panel" aria-labelledby="hc-records-immunizations-title">
+                        <h2 class="hc-section-title" id="hc-records-immunizations-title">Vaccinations</h2>
+                        @if (patient.Immunizations.Count == 0)
+                        {
+                            <p class="mb-2">No vaccinations on record.</p>
+                        }
+                        else
+                        {
+                            <div class="table-responsive">
+                                <table class="table table-sm mb-2">
+                                    <caption class="visually-hidden">Your vaccinations, newest first</caption>
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">Vaccine</th>
+                                            <th scope="col">Date given</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var shot in patient.Immunizations.OrderByDescending(item => item.Date))
+                                        {
+                                            <tr>
+                                                <th scope="row" class="fw-normal">@shot.Name</th>
+                                                <td class="text-nowrap">@HcDisplay.Date(shot.Date)</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        }
+                        <p class="small text-body-secondary mb-0">Your doctor adds vaccinations given at our clinics. Bring a record of ones given elsewhere to your next visit.</p>
+                    </section>
+                </div>
+            </div>
+        }
+    </ShowcaseRoleGuard>
+</div>

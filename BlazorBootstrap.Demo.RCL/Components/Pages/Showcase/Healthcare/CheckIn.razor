@@ -1,0 +1,165 @@
+@page "/showcase/healthcare/staff/check-in"
+@layout HcStaffLayout
+@implements IDisposable
+
+<PageTitle>Check-in · @HcSeedData.ProductName</PageTitle>
+
+<ShowcaseRoleGuard Roles="@HcSeedData.FrontDeskRole" SignInPath="@HcLayout.SignInPath">
+    @{
+        var today = State.Clock.Today;
+        var now = State.Clock.Now;
+        var names = PatientNames();
+        var all = TodayAppointments();
+        var shown = all.Where(item => Matches(item, names)).ToList();
+    }
+
+    <div class="container-fluid px-lg-4">
+        <h1 class="hc-title mb-1">Check-in</h1>
+        <p class="hc-lead mb-3">Today's arrivals at every clinic, @HcDisplay.DayLong(today). Check patients in as they arrive; the doctor sees them as “Checked in” right away.</p>
+
+        @* Always rendered and focusable, so an outcome is announced and focus has somewhere to go when the pressed button disappears. *@
+        <p class="fw-semibold hc-ci-status @(statusIsError ? "text-danger-emphasis" : null)" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
+
+        <ul class="hc-ci-counts list-unstyled" aria-label="Today's appointments by status">
+            @foreach (var count in Counts(all))
+            {
+                <li class="hc-ci-count" @key="count.Label">
+                    <span class="hc-ci-count-number">@count.Number</span>
+                    <span class="hc-ci-count-label">@count.Label</span>
+                </li>
+            }
+        </ul>
+
+        <div class="hc-panel mb-3" role="search" aria-label="Filter today's arrivals">
+            <div class="row g-3 align-items-end">
+                <div class="col-sm-6 col-lg-4">
+                    <label class="form-label fw-semibold" for="hc-ci-search">Patient name</label>
+                    <input id="hc-ci-search" type="search" class="form-control" autocomplete="off" maxlength="60"
+                           @bind="search" @bind:event="oninput" aria-describedby="hc-ci-summary" />
+                </div>
+                <div class="col-sm-6 col-lg-4">
+                    <label class="form-label fw-semibold" for="hc-ci-clinic">Clinic</label>
+                    <select id="hc-ci-clinic" class="form-select" value="@(clinicFilter ?? string.Empty)" @onchange="OnClinicChanged">
+                        <option value="">All clinics</option>
+                        @foreach (var clinic in State.Clinics)
+                        {
+                            <option value="@clinic.Id">@clinic.Name</option>
+                        }
+                    </select>
+                </div>
+                @if (clinicFilter is not null || search.Trim().Length > 0)
+                {
+                    <div class="col-lg-auto">
+                        <button type="button" class="btn btn-outline-secondary" @onclick="ClearFilters">Clear filters</button>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <p class="small text-body-secondary mb-2" id="hc-ci-summary" role="status" tabindex="-1" @ref="summaryRegion">@SummaryText(shown.Count, all.Count)</p>
+
+        @if (shown.Count == 0)
+        {
+            <div class="hc-panel text-center py-4">
+                <p class="mb-0 text-body-secondary">@(all.Count == 0 ? "No appointments today." : "No arrivals match the name or clinic. Clear the filters to see everyone.")</p>
+            </div>
+        }
+        else
+        {
+            <div class="hc-panel p-0">
+                <div class="table-responsive">
+                    <table class="table align-middle mb-0 hc-ci-table">
+                        <caption class="visually-hidden">Today's appointments by time: @SummaryText(shown.Count, all.Count)</caption>
+                        <thead>
+                            <tr>
+                                <th scope="col">Time</th>
+                                <th scope="col">Patient</th>
+                                <th scope="col">Doctor</th>
+                                <th scope="col">Clinic</th>
+                                <th scope="col">Status</th>
+                                <th scope="col"><span class="visually-hidden">Actions</span></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var appointment in shown)
+                            {
+                                var patient = PatientName(names, appointment.PatientId);
+                                var doctor = State.FindDoctor(appointment.DoctorId);
+                                var late = appointment.Status == HcAppointmentStatus.Booked && appointment.Start <= now;
+                                var checkInKey = $"in-{appointment.Id}";
+                                var noShowKey = $"no-{appointment.Id}";
+                                <tr @key="appointment.Id" class="@(appointment.Status is HcAppointmentStatus.Cancelled or HcAppointmentStatus.NoShow ? "hc-ci-closed" : null)">
+                                    <td class="hc-mono">@HcDisplay.Time(appointment.Start)</td>
+                                    <th scope="row" class="hc-ci-patient">
+                                        @patient
+                                        @if (appointment.Reason.Length > 0)
+                                        {
+                                            <span class="d-block small fw-normal text-body-secondary">@appointment.Reason</span>
+                                        }
+                                    </th>
+                                    <td>@(doctor?.Name)</td>
+                                    <td>@(State.FindClinic(appointment.ClinicId)?.Name)</td>
+                                    <td>
+                                        <span class="badge text-bg-@HcDisplay.StatusColor(appointment.Status)">@HcDisplay.StatusLabel(appointment.Status)</span>
+                                        @if (appointment.Status == HcAppointmentStatus.CheckedIn && appointment.CheckedInAt is { } arrived)
+                                        {
+                                            <span class="d-block small text-body-secondary">Arrived @HcDisplay.Time(arrived)</span>
+                                        }
+                                        else if (late)
+                                        {
+                                            <span class="d-block small text-body-secondary">Not here yet</span>
+                                        }
+                                        @if (appointment.Status == HcAppointmentStatus.Booked && State.IsOutsideHours(appointment))
+                                        {
+                                            <span class="d-block small fw-semibold text-warning-emphasis">
+                                                <Icon Name="IconName.ExclamationTriangleFill" class="me-1" aria-hidden="true" />@Calendar.OutsideText(State, appointment)
+                                            </span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <div class="d-flex flex-wrap gap-2 justify-content-end">
+                                            @if (appointment.Status == HcAppointmentStatus.Booked)
+                                            {
+                                                <button type="button" class="btn btn-sm btn-primary" @ref="openers[checkInKey]" @onclick="() => CheckInPatient(appointment)">
+                                                    Check in<span class="visually-hidden"> @patient for @HcDisplay.Time(appointment.Start) with @(doctor?.Name)</span>
+                                                </button>
+                                            }
+                                            @if (late)
+                                            {
+                                                <button type="button" class="btn btn-sm btn-outline-danger" @ref="openers[noShowKey]" @onclick="() => AskNoShowAsync(appointment, noShowKey)">
+                                                    No-show<span class="visually-hidden">: @patient at @HcDisplay.Time(appointment.Start)</span>
+                                                </button>
+                                            }
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        }
+
+        <p class="small mt-3 mb-0">To cancel an appointment or see another day, use the <a href="@($"{HcStaffLayout.Base}/calendar")">calendar</a>.</p>
+    </div>
+
+    <Modal @ref="noShowModal" IsVerticallyCentered="true" ShowCloseButton="false" aria-labelledby="hc-ci-dialog-title"
+           OnShown="OnDialogShownAsync" OnHidden="OnDialogHidden">
+        <HeaderTemplate>
+            <h2 class="modal-title h5" id="hc-ci-dialog-title">Mark @(noShowAppointment is { } pending ? PatientName(names, pending.PatientId) : "the patient") as a no-show?</h2>
+        </HeaderTemplate>
+        <BodyTemplate>
+            @if (noShowAppointment is { } appointment)
+            {
+                <p class="mb-0">
+                    Their @HcDisplay.Time(appointment.Start) appointment with @(State.FindDoctor(appointment.DoctorId)?.Name) closes as a no-show and can't be checked in
+                    afterwards. If they turn up later, book them a new time.
+                </p>
+            }
+        </BodyTemplate>
+        <FooterTemplate>
+            <button type="button" class="btn btn-outline-secondary" @ref="dialogDismiss" @onclick="() => noShowModal.HideAsync()">Go back</button>
+            <button type="button" class="btn btn-danger" @onclick="ConfirmNoShowAsync" disabled="@(pendingNoShow is not null)">Mark as no-show</button>
+        </FooterTemplate>
+    </Modal>
+</ShowcaseRoleGuard>

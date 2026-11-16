@@ -1,0 +1,70 @@
+/* Find a doctor: the filter panel and one card per doctor. */
+.hc-fd-count:focus {
+    outline: none;
+}
+
+.hc-fd-count:focus-visible {
+    outline: 2px solid var(--bs-focus-ring-color, var(--sc-primary));
+    outline-offset: 2px;
+}
+
+.hc-fd-card {
+    display: flex;
+    flex-direction: column;
+    padding: 1.25rem;
+}
+
+.hc-fd-min {
+    min-width: 0;
+}
+
+.hc-fd-name {
+    margin: 0;
+    font-size: 1.125rem;
+    font-weight: 700;
+    overflow-wrap: anywhere;
+}
+
+    .hc-fd-name a {
+        color: var(--hc-ink);
+        text-decoration: none;
+    }
+
+        .hc-fd-name a:hover,
+        .hc-fd-name a:focus-visible {
+            color: var(--sc-primary);
+            text-decoration: underline;
+        }
+
+.hc-fd-facts {
+    display: grid;
+    gap: .5rem;
+    margin: 1rem 0;
+    font-size: .875rem;
+}
+
+    .hc-fd-facts dt {
+        font-size: .75rem;
+        font-weight: 600;
+        letter-spacing: .02em;
+        text-transform: uppercase;
+        color: var(--bs-secondary-color);
+    }
+
+    .hc-fd-facts dd {
+        margin: 0;
+        overflow-wrap: anywhere;
+    }
+
+.hc-fd-next {
+    margin-top: auto;
+    padding-top: .75rem;
+    border-top: 1px solid var(--hc-border);
+}
+
+/* The full day and time wraps on a phone instead of widening the card. */
+.hc-fd-slot {
+    max-width: 100%;
+    white-space: normal;
+    text-align: start;
+}

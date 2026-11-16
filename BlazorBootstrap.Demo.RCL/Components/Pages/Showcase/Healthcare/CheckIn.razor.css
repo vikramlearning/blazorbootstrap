@@ -1,0 +1,62 @@
+/* Check-in: status counts and today's arrivals table. */
+.hc-ci-status:empty {
+    margin: 0;
+}
+
+.hc-ci-status:focus,
+#hc-ci-summary:focus {
+    outline: none;
+}
+
+.hc-ci-status:focus-visible,
+#hc-ci-summary:focus-visible {
+    outline: 2px solid var(--bs-focus-ring-color, var(--sc-primary));
+    outline-offset: 2px;
+}
+
+.hc-ci-counts {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 9.5rem), 1fr));
+    gap: .75rem;
+    margin-bottom: 1rem;
+}
+
+.hc-ci-count {
+    display: flex;
+    flex-direction: column;
+    padding: .75rem 1rem;
+    border: 1px solid var(--hc-border);
+    border-radius: .75rem;
+    background: var(--hc-surface);
+}
+
+.hc-ci-count-number {
+    font-size: 1.5rem;
+    font-weight: 700;
+    line-height: 1.2;
+    color: var(--hc-ink);
+    font-variant-numeric: tabular-nums;
+}
+
+.hc-ci-count-label {
+    font-size: .8125rem;
+    color: var(--bs-secondary-color);
+}
+
+.hc-ci-table {
+    font-size: .9375rem;
+}
+
+    .hc-ci-table th,
+    .hc-ci-table td {
+        padding: .625rem .75rem;
+    }
+
+.hc-ci-patient {
+    min-width: 11rem;
+    overflow-wrap: anywhere;
+}
+
+.hc-ci-closed .hc-ci-patient {
+    color: var(--bs-secondary-color);
+}

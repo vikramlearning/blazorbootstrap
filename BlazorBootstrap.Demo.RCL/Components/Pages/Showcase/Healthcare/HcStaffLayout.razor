@@ -1,0 +1,77 @@
+@inherits LayoutComponentBase
+@implements IDisposable
+
+@* The staff back office (D-031): doctors and the front desk, each with their own modules in the sidebar. Pages for one of
+   the two roles add their own ShowcaseRoleGuard. *@
+<ShowcaseSessionHost State="State" SiteBase="@HcLayout.Base" SiteName="@HcSeedData.ProductName">
+    <HcFrame>
+        <Header>
+            <div class="hc-app-bar">
+                <span class="hc-app-bar-title">@HcSeedData.ProductName staff</span>
+                <div class="hc-app-bar-actions">
+                    <a class="btn btn-sm btn-outline-secondary" href="@HcLayout.Base">
+                        <Icon Name="IconName.BoxArrowUpRight" class="me-1" aria-hidden="true" />View patient portal
+                    </a>
+                    <ShowcaseAccountMenu SiteBase="@HcLayout.Base" SignInPath="@HcLayout.SignInPath" />
+                </div>
+            </div>
+        </Header>
+        <Sidebar>
+            @if (State.IsStaff)
+            {
+                <Sidebar @key="State.Identity.Current?.Id"
+                         Class="hc-sidebar"
+                         Href="@HomeFor(State)"
+                         IconName="IconName.HeartPulse"
+                         Title="@HcSeedData.ProductName"
+                         BadgeText="@(State.IsFrontDesk ? "Front desk" : "Doctor")"
+                         DataProvider="SidebarDataProvider" />
+            }
+        </Sidebar>
+        <ChildContent>
+            <ShowcaseRoleGuard Roles="@HcSeedData.StaffRoles" SignInPath="@HcLayout.SignInPath">
+                @Body
+            </ShowcaseRoleGuard>
+        </ChildContent>
+    </HcFrame>
+</ShowcaseSessionHost>
+
+@code {
+    /// <summary>Base route of the staff back office.</summary>
+    public const string Base = HcLayout.Base + "/staff";
+
+    [Inject] private HcState State { get; set; } = default!;
+
+    /// <summary>Returns the staff start page of the signed-in role.</summary>
+    public static string HomeFor(HcState state) => state.IsFrontDesk ? $"{Base}/calendar" : $"{Base}/schedule";
+
+    /// <summary>Stops listening to state changes.</summary>
+    public void Dispose() => State.Changed -= OnStateChanged;
+
+    protected override void OnInitialized() => State.Changed += OnStateChanged;
+
+    private void OnStateChanged() => InvokeAsync(StateHasChanged);
+
+    /// <summary>The doctor's or the front desk's modules.</summary>
+    private Task<SidebarDataProviderResult> SidebarDataProvider(SidebarDataProviderRequest request)
+    {
+        var items = State.IsFrontDesk
+            ? new List<NavItem>
+            {
+                new() { Id = "calendar", Href = $"{Base}/calendar", IconName = IconName.CalendarWeek, Text = "Calendar" },
+                new() { Id = "check-in", Href = $"{Base}/check-in", IconName = IconName.PersonCheck, Text = "Check-in" },
+                new() { Id = "availability", Href = $"{Base}/availability", IconName = IconName.Clock, Text = "Doctors' hours" },
+                new() { Id = "account", Href = $"{Base}/account", IconName = IconName.PersonGear, Text = "Account" },
+            }
+            : new List<NavItem>
+            {
+                new() { Id = "schedule", Href = $"{Base}/schedule", IconName = IconName.CalendarDay, Text = "My schedule" },
+                new() { Id = "patients", Href = $"{Base}/patients", IconName = IconName.People, Text = "Patients" },
+                new() { Id = "labs", Href = $"{Base}/labs", IconName = IconName.Clipboard2Pulse, Text = "Lab results" },
+                new() { Id = "refills", Href = $"{Base}/refills", IconName = IconName.Capsule, Text = "Refill requests" },
+                new() { Id = "account", Href = $"{Base}/account", IconName = IconName.PersonGear, Text = "Account" },
+            };
+
+        return Task.FromResult(request.ApplyTo(items));
+    }
+}

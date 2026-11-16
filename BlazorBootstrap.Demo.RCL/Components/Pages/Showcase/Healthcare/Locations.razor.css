@@ -1,0 +1,58 @@
+/* Locations: numbered clinic cards that match the map's pins. */
+.hc-loc-card {
+    padding: 1.25rem;
+}
+
+.hc-loc-number {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    width: 1.75rem;
+    height: 1.75rem;
+    border-radius: 50%;
+    background: var(--sc-primary);
+    color: var(--sc-primary-contrast);
+    font-size: .875rem;
+    font-weight: 700;
+}
+
+.hc-loc-name {
+    margin: 0;
+    min-width: 0;
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: var(--hc-ink);
+    overflow-wrap: anywhere;
+}
+
+.hc-loc-facts {
+    display: grid;
+    gap: .5rem;
+    margin-bottom: 1rem;
+    font-size: .9375rem;
+}
+
+    .hc-loc-facts dt {
+        font-size: .75rem;
+        font-weight: 600;
+        letter-spacing: .02em;
+        text-transform: uppercase;
+        color: var(--bs-secondary-color);
+    }
+
+    .hc-loc-facts dd {
+        margin: 0;
+        overflow-wrap: anywhere;
+    }
+
+.hc-loc-subtitle {
+    margin-bottom: .375rem;
+    font-size: .9375rem;
+    font-weight: 700;
+    color: var(--hc-ink);
+}
+
+.hc-loc-doctors li + li {
+    margin-top: .25rem;
+}

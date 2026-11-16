@@ -1,0 +1,328 @@
+@page "/showcase/healthcare/staff/availability"
+@layout HcStaffLayout
+@implements IDisposable
+
+<PageTitle>Doctors' hours · @HcSeedData.ProductName</PageTitle>
+
+<ShowcaseRoleGuard Roles="@HcSeedData.FrontDeskRole" SignInPath="@HcLayout.SignInPath">
+    @{
+        var doctor = Doctor;
+        var shortName = DoctorProfile.ShortName(doctor);
+        var blocks = State.AvailabilityOf(doctor.Id);
+        var timeOff = State.TimeOffOf(doctor.Id);
+        var rebook = OutsideAppointments(doctor.Id);
+        var names = PatientNames();
+        var today = State.Clock.Today;
+        var freeDays = DoctorProfile.Week.Where(day => blocks.All(block => block.Day != day)).Select(day => day.ToString()).ToList();
+    }
+
+    <div class="container-fluid px-lg-4">
+        <h1 class="hc-title mb-1">Doctors' hours</h1>
+        <p class="hc-lead mb-3">
+            Weekly hours decide when patients can book, and time off closes whole days. Appointments already booked stay booked
+            when hours change, so the list of appointments to rebook shows who to call.
+        </p>
+
+        @* Always rendered and focusable, so an outcome is announced and focus has somewhere to go once a dialog closes. *@
+        <p class="fw-semibold hc-av-status @(statusIsError ? "text-danger-emphasis" : null)" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
+
+        <div class="hc-panel mb-4 hc-av-doctor">
+            <div class="hc-av-doctor-field">
+                <label class="form-label fw-semibold" for="hc-av-doctor">Doctor</label>
+                <select id="hc-av-doctor" class="form-select" value="@doctor.Id" @onchange="OnDoctorChanged" aria-describedby="hc-av-doctor-help">
+                    @foreach (var item in State.Doctors)
+                    {
+                        <option value="@item.Id">@item.Name</option>
+                    }
+                </select>
+            </div>
+            <p class="small text-body-secondary mb-0" id="hc-av-doctor-help">
+                @doctor.Specialty, based at @(State.FindClinic(doctor.ClinicId)?.Name).
+                @(doctor.AcceptingNewPatients ? "Accepting new patients." : "Not accepting new patients.")
+                <a href="@HcDisplay.DoctorUrl(doctor.Id)">Public profile</a>
+            </p>
+        </div>
+
+        <section class="mb-5" aria-labelledby="hc-av-rebook-title">
+            <h2 class="hc-section-title" id="hc-av-rebook-title">Booked appointments to rebook <span class="hc-av-count">(@rebook.Count)</span></h2>
+            @if (rebook.Count == 0)
+            {
+                <div class="hc-panel">
+                    <p class="mb-0">
+                        <Icon Name="IconName.CheckCircle" class="me-1 text-success-emphasis" aria-hidden="true" />
+                        No booked appointments fall outside @(shortName)'s hours or time off.
+                    </p>
+                </div>
+            }
+            else
+            {
+                <p class="hc-av-warn">
+                    <Icon Name="IconName.ExclamationTriangleFill" class="me-2 flex-shrink-0" aria-hidden="true" />
+                    <span>
+                        @(rebook.Count == 1 ? "This booked appointment is" : $"These {rebook.Count} booked appointments are") outside @(shortName)'s hours or in their
+                        time off. Patients can't book those times any more. Call each patient to rebook, then cancel the old appointment on the
+                        <a href="@($"{HcStaffLayout.Base}/calendar?doctor={Uri.EscapeDataString(doctor.Id)}")">calendar</a>.
+                    </span>
+                </p>
+                <div class="hc-panel p-0">
+                    <div class="table-responsive">
+                        <table class="table table-sm align-middle mb-0 hc-av-table">
+                            <caption class="visually-hidden">Booked appointments with @doctor.Name to rebook</caption>
+                            <thead>
+                                <tr>
+                                    <th scope="col">When</th>
+                                    <th scope="col">Patient</th>
+                                    <th scope="col">Phone</th>
+                                    <th scope="col">Why</th>
+                                    <th scope="col">What to do</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var appointment in rebook)
+                                {
+                                    <tr @key="appointment.Id">
+                                        <td class="text-nowrap">@HcDisplay.When(appointment.Start)</td>
+                                        <th scope="row">@(names.TryGetValue(appointment.PatientId, out var patientName) ? patientName : "Unknown patient")</th>
+                                        <td class="text-nowrap">@(State.FindPatient(appointment.PatientId)?.Phone is { Length: > 0 } phone ? phone : "Not on file")</td>
+                                        <td>@WhyText(appointment)</td>
+                                        <td>Call to rebook</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            }
+        </section>
+
+        <div class="row g-4">
+            <section class="col-xl-7" aria-labelledby="hc-av-hours-title">
+                <h2 class="hc-section-title" id="hc-av-hours-title">Weekly hours</h2>
+                <div class="hc-panel mb-3">
+                    @if (blocks.Count == 0)
+                    {
+                        <p class="mb-0 text-body-secondary">@shortName has no weekly hours, so patients can't book any times. Add hours below.</p>
+                    }
+                    else
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-sm align-middle mb-0 hc-av-table">
+                                <caption class="visually-hidden">@(doctor.Name)'s weekly hours</caption>
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Day</th>
+                                        <th scope="col">Hours</th>
+                                        <th scope="col">Clinic</th>
+                                        <th scope="col"><span class="visually-hidden">Actions</span></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var block in blocks)
+                                    {
+                                        var label = BlockLabel(block);
+                                        var editKey = $"hours-edit-{block.Id}";
+                                        var deleteKey = $"hours-delete-{block.Id}";
+                                        <tr @key="block.Id" class="@(editingBlockId == block.Id ? "hc-av-editing" : null)">
+                                            <th scope="row">@block.Day</th>
+                                            <td class="hc-mono text-nowrap">@DoctorProfile.BlockText(block)</td>
+                                            <td>@(State.FindClinic(block.ClinicId)?.Name)</td>
+                                            <td>
+                                                <div class="d-flex flex-wrap justify-content-end gap-2">
+                                                    <button type="button" class="btn btn-sm btn-outline-primary" @ref="openers[editKey]" @onclick="() => EditBlock(block)">
+                                                        Edit<span class="visually-hidden"> @label</span>
+                                                    </button>
+                                                    <button type="button" class="btn btn-sm btn-outline-danger" @ref="openers[deleteKey]" @onclick="() => AskDeleteBlockAsync(block, deleteKey)">
+                                                        Delete<span class="visually-hidden"> @label</span>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                        @if (freeDays.Count > 0)
+                        {
+                            <p class="small text-body-secondary mt-2 mb-0">No hours on @DoctorProfile.JoinAnd(freeDays).</p>
+                        }
+                    }
+                </div>
+
+                <div class="hc-panel">
+                    <h3 class="hc-av-form-title" id="hc-av-hours-form-title" tabindex="-1" @ref="hoursFormHeading">@(editingBlockId == 0 ? "Add hours" : $"Edit {editingBlockLabel}")</h3>
+                    <form @onsubmit="SaveHours" novalidate>
+                        <div class="row g-3">
+                            <div class="col-sm-6">
+                                <label class="form-label fw-semibold" for="hc-av-day">Day</label>
+                                <select id="hc-av-day" class="form-select" @bind="hoursDay">
+                                    @foreach (var day in DoctorProfile.Week)
+                                    {
+                                        <option value="@day">@day</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="col-sm-6">
+                                <label class="form-label fw-semibold" for="hc-av-clinic">Clinic</label>
+                                <select id="hc-av-clinic" class="form-select" @bind="hoursClinic">
+                                    @foreach (var clinic in State.Clinics)
+                                    {
+                                        <option value="@clinic.Id">@clinic.Name</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="col-sm-6">
+                                <label class="form-label fw-semibold" for="hc-av-start">Start</label>
+                                <select id="hc-av-start" class="form-select @(hoursError is null ? null : "is-invalid")" @bind="hoursStart" @ref="hoursStartInput"
+                                        aria-invalid="@(hoursError is null ? null : "true")" aria-describedby="hc-av-times-help hc-av-hours-error">
+                                    @for (var minute = HcState.DayStartMinute; minute < HcState.DayEndMinute; minute += HcState.SlotMinutes)
+                                    {
+                                        <option value="@minute">@HcDisplay.Minutes(minute)</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="col-sm-6">
+                                <label class="form-label fw-semibold" for="hc-av-end">End</label>
+                                <select id="hc-av-end" class="form-select @(hoursError is null && endError is null ? null : "is-invalid")" @bind="hoursEnd" @ref="hoursEndInput"
+                                        aria-invalid="@(hoursError is null && endError is null ? null : "true")" aria-describedby="hc-av-times-help hc-av-end-error hc-av-hours-error">
+                                    @for (var minute = HcState.DayStartMinute + HcState.SlotMinutes; minute <= HcState.DayEndMinute; minute += HcState.SlotMinutes)
+                                    {
+                                        <option value="@minute">@HcDisplay.Minutes(minute)</option>
+                                    }
+                                </select>
+                                <div class="hc-av-error" id="hc-av-end-error">@endError</div>
+                            </div>
+                        </div>
+                        <p class="form-text mb-2" id="hc-av-times-help">
+                            Whole or half hours from @HcDisplay.Minutes(HcState.DayStartMinute) to @HcDisplay.Minutes(HcState.DayEndMinute), in @HcState.SlotMinutes-minute appointments.
+                            Blocks on the same day can't overlap.
+                        </p>
+                        <div class="hc-av-error mb-2" id="hc-av-hours-error">@hoursError</div>
+                        <div class="d-flex flex-wrap gap-2 mt-3">
+                            <button type="submit" class="btn btn-primary">@(editingBlockId == 0 ? "Add hours" : "Save changes")</button>
+                            @if (editingBlockId != 0)
+                            {
+                                <button type="button" class="btn btn-outline-secondary" @onclick="StopEditingBlock">Stop editing</button>
+                            }
+                        </div>
+                    </form>
+                </div>
+            </section>
+
+            <section class="col-xl-5" aria-labelledby="hc-av-off-title">
+                <h2 class="hc-section-title" id="hc-av-off-title">Time off</h2>
+                <div class="hc-panel mb-3">
+                    @if (timeOff.Count == 0)
+                    {
+                        <p class="mb-0 text-body-secondary">No time off planned for @shortName.</p>
+                    }
+                    else
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-sm align-middle mb-0 hc-av-table">
+                                <caption class="visually-hidden">@(doctor.Name)'s time off</caption>
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Days</th>
+                                        <th scope="col">Reason</th>
+                                        <th scope="col"><span class="visually-hidden">Actions</span></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var entry in timeOff)
+                                    {
+                                        var dates = DoctorProfile.AwayText(entry);
+                                        var editKey = $"off-edit-{entry.Id}";
+                                        var deleteKey = $"off-delete-{entry.Id}";
+                                        <tr @key="entry.Id" class="@(editingOffId == entry.Id ? "hc-av-editing" : null)">
+                                            <th scope="row">
+                                                <span class="text-nowrap">@dates</span>
+                                                <span class="d-block small fw-normal text-body-secondary">@TimeOffPhase(entry)</span>
+                                            </th>
+                                            <td class="hc-plain">@(entry.Reason.Length > 0 ? entry.Reason : "—")</td>
+                                            <td>
+                                                <div class="d-flex flex-wrap justify-content-end gap-2">
+                                                    @if (entry.To >= today)
+                                                    {
+                                                        <button type="button" class="btn btn-sm btn-outline-primary" @ref="openers[editKey]" @onclick="() => EditTimeOff(entry)">
+                                                            Edit<span class="visually-hidden"> time off @dates</span>
+                                                        </button>
+                                                    }
+                                                    <button type="button" class="btn btn-sm btn-outline-danger" @ref="openers[deleteKey]" @onclick="() => AskDeleteTimeOffAsync(entry, deleteKey)">
+                                                        Delete<span class="visually-hidden"> time off @dates</span>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                </div>
+
+                <div class="hc-panel">
+                    <h3 class="hc-av-form-title" id="hc-av-off-form-title" tabindex="-1" @ref="offFormHeading">@(editingOffId == 0 ? "Add time off" : $"Edit time off {editingOffLabel}")</h3>
+                    <form @onsubmit="SaveTimeOff" novalidate>
+                        <div class="row g-3">
+                            <div class="col-sm-6 col-xl-12 col-xxl-6">
+                                <label class="form-label fw-semibold" for="hc-av-from">First day away</label>
+                                <input id="hc-av-from" type="date" class="form-control @(fromError is null && offError is null ? null : "is-invalid")" value="@offFrom" @onchange="OnFromChanged"
+                                       min="@QueryValue(today)" @ref="offFromInput" aria-invalid="@(fromError is null && offError is null ? null : "true")"
+                                       aria-describedby="hc-av-from-error hc-av-off-error" />
+                                <div class="hc-av-error" id="hc-av-from-error">@fromError</div>
+                            </div>
+                            <div class="col-sm-6 col-xl-12 col-xxl-6">
+                                <label class="form-label fw-semibold" for="hc-av-to">Last day away</label>
+                                <input id="hc-av-to" type="date" class="form-control @(toError is null && offError is null ? null : "is-invalid")" value="@offTo" @onchange="OnToChanged"
+                                       min="@QueryValue(today)" @ref="offToInput" aria-invalid="@(toError is null && offError is null ? null : "true")"
+                                       aria-describedby="hc-av-to-help hc-av-to-error hc-av-off-error" />
+                                <div class="form-text" id="hc-av-to-help">Whole days, up to @HcState.MaxTimeOffDays days, ending today or later.</div>
+                                <div class="hc-av-error" id="hc-av-to-error">@toError</div>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label fw-semibold" for="hc-av-reason">Reason (optional)</label>
+                                <input id="hc-av-reason" type="text" class="form-control" maxlength="@HcState.MaxReasonLength" autocomplete="off"
+                                       @bind="offReason" @bind:event="oninput" aria-describedby="hc-av-reason-help" />
+                                <div class="form-text" id="hc-av-reason-help">Staff only: patients see the dates, never the reason. @offReason.Length of @HcState.MaxReasonLength characters.</div>
+                            </div>
+                        </div>
+                        <div class="hc-av-error mt-2" id="hc-av-off-error">@offError</div>
+                        <div class="d-flex flex-wrap gap-2 mt-3">
+                            <button type="submit" class="btn btn-primary">@(editingOffId == 0 ? "Add time off" : "Save changes")</button>
+                            @if (editingOffId != 0)
+                            {
+                                <button type="button" class="btn btn-outline-secondary" @onclick="StopEditingTimeOff">Stop editing</button>
+                            }
+                        </div>
+                    </form>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <Modal @ref="deleteModal" IsVerticallyCentered="true" ShowCloseButton="false" aria-labelledby="hc-av-dialog-title"
+           OnShown="OnDialogShownAsync" OnHidden="OnDialogHidden">
+        <HeaderTemplate>
+            <h2 class="modal-title h5" id="hc-av-dialog-title">@DialogTitle()</h2>
+        </HeaderTemplate>
+        <BodyTemplate>
+            @if (deleteBlock is { } block)
+            {
+                <p class="mb-0">
+                    Patients can no longer book @block.Day times from @DoctorProfile.BlockText(block) with @shortName. Appointments already booked
+                    then stay booked and show up under “Booked appointments to rebook”, so you can call those patients.
+                </p>
+            }
+            else if (deleteOff is { } entry)
+            {
+                <p class="mb-0">
+                    @DoctorProfile.AwayText(entry) open for booking again in @(shortName)'s usual hours. The reason is deleted with it.
+                </p>
+            }
+        </BodyTemplate>
+        <FooterTemplate>
+            <button type="button" class="btn btn-outline-secondary" @ref="dialogDismiss" @onclick="() => deleteModal.HideAsync()">Keep it</button>
+            <button type="button" class="btn btn-danger" @onclick="ConfirmDeleteAsync" disabled="@(pendingDelete is not null)">@(deleteBlock is not null ? "Delete these hours" : "Delete the time off")</button>
+        </FooterTemplate>
+    </Modal>
+</ShowcaseRoleGuard>

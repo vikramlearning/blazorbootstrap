@@ -1,0 +1,111 @@
+@page "/showcase/healthcare/prescriptions"
+@layout HcLayout
+
+<PageTitle>Prescriptions · @HcSeedData.ProductName</PageTitle>
+
+<div class="container-xl hc-rx">
+    <ShowcaseRoleGuard Roles="@HcSeedData.PatientRole" SignInPath="@HcLayout.SignInPath">
+        @{
+            var all = All();
+        }
+
+        <h1 class="hc-title mb-1">Prescriptions</h1>
+        <p class="hc-lead mb-2">The medicines your doctors prescribed. When an active one has no refills left, ask your doctor for one here.</p>
+        <p class="small text-body-secondary mb-3">Demo only: the medicines are made up, nothing is sent to a pharmacy, and nothing here is medical advice.</p>
+
+        @* Always rendered and focusable: a refill request is announced here, and focus lands here once its button is gone. *@
+        <div class="hc-rx-status" role="status" tabindex="-1" @ref="statusRegion">
+            @if (statusMessage is not null)
+            {
+                <div class="alert @(statusIsError ? "alert-danger" : "alert-success") mb-4">
+                    <Icon Name="@(statusIsError ? IconName.ExclamationTriangleFill : IconName.CheckCircleFill)" class="me-2" aria-hidden="true" />@statusMessage
+                </div>
+            }
+        </div>
+
+        @foreach (var section in Sections)
+        {
+            var items = all.Where(item => item.Status == section.Status).ToList();
+
+            <section class="mb-5" aria-labelledby="@($"hc-rx-{section.Key}-title")" @key="@($"section-{section.Key}")">
+                <h2 class="hc-section-title" id="@($"hc-rx-{section.Key}-title")">@section.Title (@items.Count)</h2>
+                @if (items.Count == 0)
+                {
+                    <div class="hc-panel">
+                        <p class="mb-0">@section.Empty</p>
+                    </div>
+                }
+                else
+                {
+                    <ul class="list-unstyled hc-rx-list mb-0">
+                        @foreach (var prescription in items)
+                        {
+                            var doctor = State.FindDoctor(prescription.DoctorId);
+                            var doctorName = doctor?.Name ?? "your doctor";
+                            var titleId = $"hc-rx-{prescription.Id}-title";
+
+                            <li @key="@($"rx-{prescription.Id}")">
+                                <article class="hc-card hc-rx-card" aria-labelledby="@titleId">
+                                    <div class="d-flex align-items-start gap-3">
+                                        <span class="hc-icon flex-shrink-0" aria-hidden="true"><Icon Name="IconName.Capsule" /></span>
+                                        <div class="hc-rx-text">
+                                            <h3 class="h6 fw-bold mb-1" id="@titleId">@prescription.Medication <span class="fw-normal">@prescription.Dose</span></h3>
+                                            <p class="hc-plain mb-2">@prescription.Directions</p>
+                                            <ul class="hc-rx-facts small text-body-secondary">
+                                                <li>Quantity: @prescription.Quantity</li>
+                                                <li>Refills left: @prescription.Refills</li>
+                                                <li>Prescribed by @doctorName on @HcDisplay.Date(prescription.PrescribedAt)</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+
+                                    <div class="hc-rx-refill">
+                                        @if (prescription.Status == HcPrescriptionStatus.Stopped)
+                                        {
+                                            <p class="small mb-0">Stopped by your doctor. Don't start taking it again unless a doctor tells you to.</p>
+                                            @if (!string.IsNullOrWhiteSpace(prescription.RefillNote))
+                                            {
+                                                <p class="small mb-0 mt-1"><span class="fw-semibold">Note from @doctorName:</span> <span class="hc-plain">@prescription.RefillNote</span></p>
+                                            }
+                                        }
+                                        else if (prescription.RefillRequestedAt is { } requested)
+                                        {
+                                            <p class="small fw-semibold text-info-emphasis mb-0">
+                                                <Icon Name="IconName.HourglassSplit" class="me-1" aria-hidden="true" />Refill requested on @HcDisplay.Date(requested), waiting for @doctorName.
+                                            </p>
+                                        }
+                                        else
+                                        {
+                                            @if (!string.IsNullOrWhiteSpace(prescription.RefillNote))
+                                            {
+                                                var approved = prescription.Refills > 0;
+
+                                                <p class="small mb-2 @(approved ? "text-success-emphasis" : "text-danger-emphasis")">
+                                                    <Icon Name="@(approved ? IconName.CheckCircleFill : IconName.XCircleFill)" class="me-1" aria-hidden="true" /><span class="fw-semibold">@(approved ? "Refill approved" : "Refill not approved") by @doctorName:</span>
+                                                    <span class="hc-plain">@prescription.RefillNote</span>
+                                                </p>
+                                            }
+                                            @if (prescription.Refills == 0)
+                                            {
+                                                <div class="d-flex flex-wrap align-items-center gap-2">
+                                                    <Button Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="() => RequestRefill(prescription.Id)">
+                                                        <Icon Name="IconName.ArrowRepeat" class="me-1" aria-hidden="true" />Request refill<span class="visually-hidden">: @prescription.Medication @prescription.Dose</span>
+                                                    </Button>
+                                                    <span class="small text-body-secondary">No refills left. @doctorName answers here, usually within a day.</span>
+                                                </div>
+                                            }
+                                            else
+                                            {
+                                                <p class="small mb-0">@RefillsText(prescription.Refills) left: ask your pharmacy when you need more.</p>
+                                            }
+                                        }
+                                    </div>
+                                </article>
+                            </li>
+                        }
+                    </ul>
+                }
+            </section>
+        }
+    </ShowcaseRoleGuard>
+</div>

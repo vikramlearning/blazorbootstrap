@@ -1,0 +1,94 @@
+@page "/showcase/healthcare/staff/refills"
+@layout HcStaffLayout
+
+<PageTitle>Refill requests · @HcSeedData.ProductName</PageTitle>
+
+@* Patients' refill requests waiting for a doctor: approve (adds one refill) or decline with a note for the patient. *@
+<div class="container-fluid px-lg-4">
+    <ShowcaseRoleGuard Roles="@HcSeedData.DoctorRole" SignInPath="@HcLayout.SignInPath">
+        @{
+            var requests = State.RefillRequests;
+            var me = State.CurrentDoctor;
+        }
+
+        <h1 class="hc-title mb-1">Refill requests</h1>
+        <p class="hc-lead mb-3">
+            Patients ask for a refill when a prescription has none left. Approving adds one refill; declining needs a note that tells
+            the patient why. The patient sees your answer under Prescriptions.
+        </p>
+
+        @* Always rendered and focusable, so an outcome is announced and focus has somewhere to go when the answered request leaves the list. *@
+        <p class="fw-semibold hc-ref-status @(statusIsError ? "text-danger-emphasis" : null)" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
+
+        @if (requests.Count == 0)
+        {
+            <div class="hc-panel hc-ref-empty">
+                <span class="hc-icon" aria-hidden="true"><Icon Name="IconName.Capsule" /></span>
+                <div>
+                    <h2 class="hc-section-title mb-1">No refill requests are waiting</h2>
+                    <p class="text-body-secondary mb-0">When a patient asks for a refill, it shows here.</p>
+                </div>
+            </div>
+        }
+        else
+        {
+            <p class="text-body-secondary">@(requests.Count == 1 ? "1 request is waiting" : $"{requests.Count} requests are waiting"), oldest first.</p>
+            <ol class="list-unstyled hc-ref-list" aria-label="Refill requests">
+                @foreach (var prescription in requests)
+                {
+                    var patient = State.FindPatient(prescription.PatientId);
+                    var patientName = patient?.Name ?? "A former patient";
+                    var doctor = State.FindDoctor(prescription.DoctorId);
+                    var label = $"{prescription.Medication} {prescription.Dose}";
+                    var noteId = $"hc-ref-note-{prescription.Id}";
+                    var error = noteErrors.GetValueOrDefault(prescription.Id);
+                    var note = notes.GetValueOrDefault(prescription.Id) ?? string.Empty;
+
+                    <li class="hc-card hc-ref-card" @key="@($"refill-{prescription.Id}")">
+                        <h2 class="hc-ref-title">@label<span class="fw-normal"> for @patientName</span></h2>
+                        <dl class="hc-ref-facts">
+                            <div>
+                                <dt>Requested</dt>
+                                <dd>@(prescription.RefillRequestedAt is { } requested ? HcDisplay.When(requested) : "Just now")</dd>
+                            </div>
+                            <div>
+                                <dt>Prescribed by</dt>
+                                <dd>@(doctor?.Name ?? "A former doctor")@(prescription.DoctorId == me?.Id ? " (you)" : null), @HcDisplay.Date(prescription.PrescribedAt)</dd>
+                            </div>
+                            <div>
+                                <dt>Each fill</dt>
+                                <dd>Quantity @prescription.Quantity, @PatientChart.RefillsText(prescription.Refills) left</dd>
+                            </div>
+                            <div>
+                                <dt>Directions</dt>
+                                <dd class="hc-plain">@prescription.Directions</dd>
+                            </div>
+                        </dl>
+                        @if (patient is not null)
+                        {
+                            <p class="mb-3"><a href="@HcDisplay.PatientChartUrl(patient.Id)">Open @patient.Name's chart</a></p>
+                        }
+
+                        <label class="form-label fw-semibold" for="@noteId">Note for the patient</label>
+                        <textarea id="@noteId" class="@(error is null ? "form-control" : "form-control is-invalid")" rows="2" maxlength="@HcState.MaxReasonLength"
+                                  value="@note" @oninput="args => notes[prescription.Id] = args.Value?.ToString() ?? string.Empty" @ref="noteInputs[prescription.Id]"
+                                  aria-invalid="@(error is null ? null : "true")" aria-describedby="@($"{noteId}-help {noteId}-error")"></textarea>
+                        <div class="form-text" id="@($"{noteId}-help")">
+                            Optional when you approve; needed when you decline. The patient sees it. @note.Length of @HcState.MaxReasonLength characters.
+                        </div>
+                        <div class="invalid-feedback d-block" id="@($"{noteId}-error")">@error</div>
+
+                        <div class="d-flex flex-wrap gap-2 mt-2">
+                            <button type="button" class="btn btn-success" @onclick="() => Decide(prescription.Id, true)">
+                                <Icon Name="IconName.CheckLg" class="me-1" aria-hidden="true" />Approve<span class="visually-hidden"> @label for @patientName</span>
+                            </button>
+                            <button type="button" class="btn btn-outline-danger" @onclick="() => Decide(prescription.Id, false)">
+                                <Icon Name="IconName.XLg" class="me-1" aria-hidden="true" />Decline<span class="visually-hidden"> @label for @patientName</span>
+                            </button>
+                        </div>
+                    </li>
+                }
+            </ol>
+        }
+    </ShowcaseRoleGuard>
+</div>

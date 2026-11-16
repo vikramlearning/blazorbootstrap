@@ -1,0 +1,11 @@
+@page "/showcase/healthcare/{*path}"
+@layout HcLayout
+
+<div class="container-xl">
+    <HcNotFound />
+</div>
+
+@code {
+    /// <summary>Gets or sets the unknown path.</summary>
+    [Parameter] public string? Path { get; set; }
+}

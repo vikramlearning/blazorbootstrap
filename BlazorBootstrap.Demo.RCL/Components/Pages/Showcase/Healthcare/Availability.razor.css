@@ -1,0 +1,89 @@
+/* Doctors' hours: the doctor picker, appointments to rebook, and the hours and time-off tables with their forms. Modal
+   renders its own elements; the markup inside its templates is this page's, so it takes these styles without ::deep. */
+.hc-av-status:empty {
+    margin: 0;
+}
+
+.hc-av-status:focus {
+    outline: none;
+}
+
+.hc-av-status:focus-visible {
+    outline: 2px solid var(--bs-focus-ring-color, var(--sc-primary));
+    outline-offset: 2px;
+}
+
+.hc-av-doctor {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: .75rem 1.5rem;
+}
+
+.hc-av-doctor-field {
+    flex: 0 1 20rem;
+    min-width: 0;
+}
+
+.hc-av-doctor > p {
+    flex: 1 1 16rem;
+    min-width: 0;
+}
+
+.hc-av-count {
+    font-weight: 400;
+    color: var(--bs-secondary-color);
+}
+
+.hc-av-warn {
+    display: flex;
+    align-items: flex-start;
+    padding: .75rem 1rem;
+    border-radius: .625rem;
+    background: var(--bs-warning-bg-subtle);
+    color: var(--bs-warning-text-emphasis);
+    font-weight: 600;
+}
+
+    .hc-av-warn a {
+        color: inherit;
+    }
+
+.hc-av-table {
+    font-size: .9375rem;
+}
+
+    .hc-av-table th[scope=row] {
+        font-weight: 600;
+    }
+
+.hc-av-editing > * {
+    background: var(--hc-soft) !important;
+}
+
+.hc-av-form-title {
+    margin-bottom: .75rem;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--hc-ink);
+    overflow-wrap: anywhere;
+}
+
+    .hc-av-form-title:focus {
+        outline: none;
+    }
+
+    .hc-av-form-title:focus-visible {
+        outline: 2px solid var(--bs-focus-ring-color, var(--sc-primary));
+        outline-offset: 2px;
+    }
+
+.hc-av-error {
+    font-size: .875rem;
+    font-weight: 600;
+    color: var(--bs-danger-text-emphasis);
+}
+
+    .hc-av-error:empty {
+        display: none;
+    }

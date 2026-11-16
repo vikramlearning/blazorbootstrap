@@ -1,0 +1,72 @@
+@inherits LayoutComponentBase
+@implements IDisposable
+
+@* The patient portal: public pages (find a doctor, locations) and, for a signed-in patient, their health pages. Staff
+   signed in here get a "viewing as" bar back to the back office (D-032). *@
+<ShowcaseSessionHost State="State" SiteBase="@Base" SiteName="@HcSeedData.ProductName">
+<HcFrame>
+    <Header>
+    @if (State.IsStaff)
+    {
+        <div class="hc-viewing-bar">
+            <span>Viewing the patient portal as @State.Identity.Current?.Name.</span>
+            <a href="@HcStaffLayout.HomeFor(State)">Back to the staff area</a>
+        </div>
+    }
+    <Navbar Class="hc-header"
+            Placement="NavbarPlacement.StickyTop"
+            Container="NavbarContainer.Fluid"
+            AriaLabel="@HcSeedData.ProductName"
+            TogglerAriaLabel="Menu">
+        <Brand>
+            <NavbarBrand Href="@Base" Class="hc-brand">
+                <span class="hc-brand-mark" aria-hidden="true"><Icon Name="IconName.HeartPulse" /></span>
+                <span>@HcSeedData.ProductName</span>
+            </NavbarBrand>
+            @if (State.Identity.IsSignedIn)
+            {
+                <ShowcaseAccountMenu SiteBase="@Base" SignInPath="@SignInPath" Class="ms-auto me-2 order-lg-last" />
+            }
+            else
+            {
+                <a class="btn btn-sm btn-outline-secondary ms-auto me-2 order-lg-last" href="@SignInPath">Sign in</a>
+            }
+        </Brand>
+        <ChildContent>
+            <NavbarNav Class="me-auto ms-lg-4 mb-3 mb-lg-0">
+                <NavbarItem Href="@($"{Base}/doctors")">Find a doctor</NavbarItem>
+                <NavbarItem Href="@($"{Base}/locations")">Locations</NavbarItem>
+                @if (State.CurrentPatient is not null)
+                {
+                    <NavbarItem Href="@($"{Base}/appointments")">Appointments</NavbarItem>
+                    <NavbarItem Href="@($"{Base}/records")">Records</NavbarItem>
+                    <NavbarItem Href="@($"{Base}/lab-reports")">Lab reports</NavbarItem>
+                    <NavbarItem Href="@($"{Base}/prescriptions")">Prescriptions</NavbarItem>
+                    <NavbarItem Href="@($"{Base}/bills")">Bills</NavbarItem>
+                }
+            </NavbarNav>
+        </ChildContent>
+    </Navbar>
+    </Header>
+    <ChildContent>
+        @Body
+    </ChildContent>
+</HcFrame>
+</ShowcaseSessionHost>
+
+@code {
+    /// <summary>Base route of the healthcare site.</summary>
+    public const string Base = DemoRouteConstants.Showcase_URL_Healthcare;
+
+    /// <summary>Route of the sign-in page.</summary>
+    public const string SignInPath = Base + "/sign-in";
+
+    [Inject] private HcState State { get; set; } = default!;
+
+    /// <summary>Stops listening to state changes.</summary>
+    public void Dispose() => State.Changed -= OnStateChanged;
+
+    protected override void OnInitialized() => State.Changed += OnStateChanged;
+
+    private void OnStateChanged() => InvokeAsync(StateHasChanged);
+}

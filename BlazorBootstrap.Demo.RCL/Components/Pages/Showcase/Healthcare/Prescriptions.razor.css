@@ -1,0 +1,39 @@
+.hc-rx-list {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1rem;
+}
+
+@media (min-width: 992px) {
+    .hc-rx-list {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+.hc-rx-card {
+    display: flex;
+    flex-direction: column;
+    gap: .75rem;
+    height: 100%;
+    padding: 1rem 1.25rem;
+}
+
+.hc-rx-text {
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+.hc-rx-facts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .125rem 1rem;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+}
+
+.hc-rx-refill {
+    margin-top: auto;
+    padding-top: .75rem;
+    border-top: 1px solid var(--hc-border);
+}

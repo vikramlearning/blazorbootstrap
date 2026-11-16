@@ -1,0 +1,76 @@
+@* Open times with one doctor: the days that have any as toggle buttons, then the chosen day's times. The page decides what
+   picking a time does (choose it for a booking, or move an appointment). *@
+@{
+    var days = OpenDays();
+    var doctor = State.FindDoctor(DoctorId);
+    var selectedIndex = selectedDay is { } wanted ? days.FindIndex(day => day.Date == wanted) : -1;
+    var current = selectedIndex >= 0 ? days[selectedIndex] : days.FirstOrDefault();
+    var visible = Math.Max(shownDays, selectedIndex + 1);
+}
+
+<div class="hc-sp">
+    @if (doctor is null || days.Count == 0)
+    {
+        var clinic = State.FindClinic(doctor?.ClinicId);
+
+        <p class="mb-0" id="@($"{IdPrefix}-none")">
+            <Icon Name="IconName.CalendarX" class="me-2" aria-hidden="true" />@(doctor?.Name ?? "This doctor") has no open times in the next @HcState.BookingDays days.
+            @if (clinic is not null)
+            {
+                <span>Call @clinic.Name at <a href="@TelUrl(clinic.Phone)">@clinic.Phone</a> to ask about a cancellation.</span>
+            }
+        </p>
+    }
+    else
+    {
+        <p class="fw-semibold mb-2" id="@($"{IdPrefix}-days-label")">Choose a day</p>
+        <div class="hc-sp-days" role="group" aria-labelledby="@($"{IdPrefix}-days-label")">
+            @foreach (var day in days.Take(visible))
+            {
+                var pressed = current is not null && day.Date == current.Date;
+                var date = day.Date;
+
+                <button type="button" class="btn hc-sp-day @(pressed ? "btn-primary" : "btn-outline-primary")" aria-pressed="@(pressed ? "true" : "false")"
+                        @key="@($"day-{date:yyyyMMdd}")" @ref="dayButtons[date]" @onclick="() => SelectDay(date)">
+                    <span class="d-block fw-semibold" aria-hidden="true">@HcDisplay.Day(date)</span>
+                    <span class="d-block small" aria-hidden="true">@TimesText(day.Slots.Count)</span>
+                    <span class="visually-hidden">@LongDay(date): @TimesText(day.Slots.Count, true)</span>
+                </button>
+            }
+        </div>
+        @if (days.Count > visible)
+        {
+            <Button Color="ButtonColor.Link" Size="ButtonSize.Small" Class="px-0 mt-2" @onclick="ShowLaterDays">
+                <Icon Name="IconName.ChevronDown" class="me-1" aria-hidden="true" />Show later days
+            </Button>
+        }
+        else if (days.Count > PageDays)
+        {
+            <p class="small text-body-secondary mt-2 mb-0">These are all the days with open times in the next @HcState.BookingDays days.</p>
+        }
+
+        @if (current is not null)
+        {
+            var clinics = current.Slots.Select(slot => slot.ClinicId).Distinct().Count();
+
+            <p class="fw-semibold mt-3 mb-2" id="@($"{IdPrefix}-times-label")">Open times on @LongDay(current.Date)</p>
+            <div class="hc-sp-times" role="group" aria-labelledby="@($"{IdPrefix}-times-label")">
+                @foreach (var slot in current.Slots)
+                {
+                    var chosen = Selected == slot.Start;
+                    var clinicName = clinics > 1 ? State.FindClinic(slot.ClinicId)?.Name : null;
+
+                    <button type="button" class="btn hc-slot @(chosen ? "btn-primary" : "btn-outline-primary")" aria-pressed="@(chosen ? "true" : "false")"
+                            @key="@($"slot-{slot.Start:yyyyMMddHHmm}")" @onclick="() => PickAsync(slot)">
+                        <span aria-hidden="true">@HcDisplay.Time(slot.Start)</span>
+                        @if (clinicName is not null)
+                        {
+                            <span class="d-block small" aria-hidden="true">@clinicName</span>
+                        }
+                        <span class="visually-hidden">@SlotName(slot.Start)@(clinicName is null ? null : $", at {clinicName}")</span>
+                    </button>
+                }
+            </div>
+        }
+    }
+</div>
