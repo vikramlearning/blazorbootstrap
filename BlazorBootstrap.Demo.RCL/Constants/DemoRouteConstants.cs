@@ -10,7 +10,6 @@ public static class DemoRouteConstants
     #region Showcase
 
     public const string Showcase_URL_AiAssistant = Showcase_URL_Prefix + "/ai-assistant";
-    public const string Showcase_URL_Crm = Showcase_URL_Prefix + "/crm";
     public const string Showcase_URL_Ecommerce = Showcase_URL_Prefix + "/ecommerce";
     public const string Showcase_URL_Fintech = Showcase_URL_Prefix + "/fintech";
     public const string Showcase_URL_Healthcare = Showcase_URL_Prefix + "/healthcare";

@@ -1,0 +1,49 @@
+/* The rows of a group on My tasks; each row wraps to stacked lines on narrow screens. */
+.tb-mytasks-list {
+    display: grid;
+    gap: .5rem;
+}
+
+.tb-mytask {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: .5rem 1rem;
+}
+
+.tb-mytask-main {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 18rem;
+    min-width: 0;
+}
+
+.tb-mytask-title {
+    font-weight: 600;
+    color: var(--tb-ink);
+    overflow-wrap: anywhere;
+}
+
+.tb-mytask-project {
+    color: inherit;
+    overflow-wrap: anywhere;
+}
+
+.tb-mytask-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: .25rem .75rem;
+    margin: 0;
+    font-size: .8125rem;
+    color: var(--bs-secondary-color);
+}
+
+.tb-mytask-overdue {
+    color: var(--bs-danger-text-emphasis);
+    font-weight: 600;
+}
+
+.tb-mytask-action {
+    flex: 0 0 auto;
+}

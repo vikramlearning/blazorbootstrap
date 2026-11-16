@@ -1,0 +1,210 @@
+@page "/showcase/project-board/reports"
+@layout PbWorkLayout
+
+<PageTitle>Reports · @PbSeedData.ProductName</PageTitle>
+
+<div class="container-fluid px-lg-4">
+    <PbRoleGuard Role="@PbSeedData.ProjectManagerRole">
+        @{
+            var today = State.Clock.Today;
+            var tasks = State.AllTasks;
+            var weeks = State.CompletedPerWeek(ThroughputWeeks);
+            var overdue = tasks.Where(task => PbDisplay.IsOverdue(task, today)).OrderBy(task => task.DueDate).ThenBy(task => task.Id).ToList();
+            var openByStatus = openStatuses.Select(status => (Status: status, Count: tasks.Count(task => task.Status == status))).ToList();
+        }
+
+        <div class="mb-4">
+            <h1 class="tb-title">Reports</h1>
+            <p class="tb-lead mb-0">How delivery is going across @PbSeedData.AgencyName's projects: open and overdue work, tasks finished each week, and each project's progress.</p>
+        </div>
+
+        <section aria-label="Totals" class="row row-cols-1 row-cols-sm-2 row-cols-xl-4 g-3 mb-4">
+            @foreach (var kpi in Kpis(tasks, weeks, overdue.Count, today))
+            {
+                <div class="col" @key="kpi.Label">
+                    <div class="tb-card tb-rp-kpi h-100">
+                        <span class="tb-rp-kpi-label">@kpi.Label</span>
+                        <span class="tb-rp-kpi-value">@kpi.Value</span>
+                        <span class="small text-body-secondary">@kpi.Note</span>
+                    </div>
+                </div>
+            }
+        </section>
+
+        <div class="row g-3 mb-4">
+            <div class="col-xxl-8">
+                <section class="tb-panel h-100" aria-labelledby="tb-rp-throughput-title">
+                    <h2 class="tb-section-title mb-1" id="tb-rp-throughput-title">Tasks done per week</h2>
+                    <p class="small text-body-secondary">The last @ThroughputWeeks weeks, Monday to Sunday, this week last (so far)</p>
+                    <ReportsChart AriaLabel="@($"Bar chart of tasks done per week, the last {ThroughputWeeks} weeks. Summary and data table follow.")"
+                                  Labels="weeks.Select(week => ShortDate(week.WeekStart)).ToList()"
+                                  Series="ThroughputSeries(weeks)"
+                                  Height="280" />
+                    <p class="small mt-3 mb-2">@ThroughputSummary(weeks)</p>
+                    <details class="tb-rp-details">
+                        <summary>Tasks done per week as a table</summary>
+                        <div class="table-responsive mt-2">
+                            <table class="table table-sm mb-0">
+                                <caption class="visually-hidden">Tasks done and their estimated hours per week, oldest first</caption>
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Week of</th>
+                                        <th scope="col" class="text-end">Tasks done</th>
+                                        <th scope="col" class="text-end">Hours done</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var week in weeks)
+                                    {
+                                        <tr @key="week.WeekStart">
+                                            <th scope="row" class="fw-semibold text-nowrap">@PbDisplay.Date(week.WeekStart)@(week.WeekStart == PbState.WeekStart(today) ? " (this week)" : null)</th>
+                                            <td class="text-end tb-mono">@week.Tasks</td>
+                                            <td class="text-end tb-mono">@week.Hours h</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </details>
+                </section>
+            </div>
+            <div class="col-xxl-4">
+                <section class="tb-panel h-100" aria-labelledby="tb-rp-status-title">
+                    <h2 class="tb-section-title mb-1" id="tb-rp-status-title">Open tasks by status</h2>
+                    <p class="small text-body-secondary">Every project, tasks not done yet</p>
+                    @if (openByStatus.Sum(item => item.Count) == 0)
+                    {
+                        <p class="text-body-secondary mb-0">There are no open tasks.</p>
+                    }
+                    else
+                    {
+                        <ReportsChart Kind="ReportsChartKind.Doughnut"
+                                      AriaLabel="Doughnut chart of open tasks by status. Summary and data table follow."
+                                      Labels="openByStatus.Select(item => PbDisplay.StatusLabel(item.Status)).ToList()"
+                                      Series="StatusSeries(openByStatus)"
+                                      Height="280" />
+                        <p class="small mt-3 mb-2">@StatusSummary(openByStatus)</p>
+                        <details class="tb-rp-details">
+                            <summary>Open tasks by status as a table</summary>
+                            <div class="table-responsive mt-2">
+                                <table class="table table-sm mb-0">
+                                    <caption class="visually-hidden">Open tasks by status, in board order</caption>
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">Status</th>
+                                            <th scope="col" class="text-end">Tasks</th>
+                                            <th scope="col" class="text-end">Share</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var item in openByStatus)
+                                        {
+                                            <tr @key="item.Status">
+                                                <th scope="row" class="fw-semibold">@PbDisplay.StatusLabel(item.Status)</th>
+                                                <td class="text-end tb-mono">@item.Count</td>
+                                                <td class="text-end tb-mono">@Share(item.Count, openByStatus.Sum(other => other.Count))</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </details>
+                    }
+                </section>
+            </div>
+        </div>
+
+        <section class="tb-panel mb-4" aria-labelledby="tb-rp-projects-title">
+            <h2 class="tb-section-title" id="tb-rp-projects-title">Progress by project</h2>
+            @if (State.Projects.Count == 0)
+            {
+                <p class="text-body-secondary mb-0">There are no projects yet.</p>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table align-middle mb-0 tb-rp-table">
+                        <caption class="tb-rp-caption">Each project's tasks and estimated hours done, overdue tasks, and next milestone: active first, then planned, on hold, and completed.</caption>
+                        <thead>
+                            <tr>
+                                <th scope="col">Project</th>
+                                <th scope="col">Status</th>
+                                <th scope="col">Tasks done</th>
+                                <th scope="col" class="text-end">Hours done</th>
+                                <th scope="col" class="text-end">Overdue</th>
+                                <th scope="col">Next milestone</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var project in State.Projects)
+                            {
+                                var projectTasks = State.TasksOf(project.Id);
+                                var progress = State.ProjectProgress(project.Id);
+                                var hoursDone = projectTasks.Where(task => task.Status == PbTaskStatus.Done).Sum(task => task.EstimateHours);
+                                var hoursTotal = projectTasks.Sum(task => task.EstimateHours);
+                                var lateCount = projectTasks.Count(task => PbDisplay.IsOverdue(task, today));
+                                var percent = ManageProjects.Percent(progress.Done, progress.Total);
+                                <tr @key="project.Id">
+                                    <th scope="row" class="tb-rp-name">
+                                        <a href="@PbDisplay.ProjectUrl(project.Id)"><span class="tb-key me-1">@project.Key</span>@project.Name</a>
+                                    </th>
+                                    <td><Badge Color="@ManageProjects.StatusBadge(project.Status)">@PbDisplay.ProjectStatusLabel(project.Status)</Badge></td>
+                                    <td class="tb-rp-progress">
+                                        <Progress Height="6" Class="mb-1">
+                                            <ProgressBar Width="percent" Color="ProgressColor.Success"
+                                                         aria-label="@($"{project.Name}, tasks done")" aria-valuenow="@Math.Round(percent)" aria-valuemin="0" aria-valuemax="100"
+                                                         aria-valuetext="@ManageProjects.ProgressText(progress.Done, progress.Total)" />
+                                        </Progress>
+                                        <span class="small text-nowrap">@ManageProjects.ProgressText(progress.Done, progress.Total)</span>
+                                    </td>
+                                    <td class="text-end text-nowrap tb-mono">@hoursDone of @hoursTotal h</td>
+                                    <td class="text-end text-nowrap @(lateCount > 0 ? "text-danger-emphasis fw-semibold" : null)">@(lateCount == 0 ? "None" : lateCount.ToString(CultureInfo.InvariantCulture))</td>
+                                    <td class="tb-rp-next">@NextMilestoneText(project, today)</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </section>
+
+        <section class="tb-panel" aria-labelledby="tb-rp-overdue-title">
+            <h2 class="tb-section-title" id="tb-rp-overdue-title">Overdue tasks (@overdue.Count)</h2>
+            @if (overdue.Count == 0)
+            {
+                <p class="text-body-secondary mb-0">Nothing is overdue. Every open task is due today or later, or has no due date.</p>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table align-middle mb-0 tb-rp-table">
+                        <caption class="tb-rp-caption">Open tasks past their due date, the longest overdue first</caption>
+                        <thead>
+                            <tr>
+                                <th scope="col">Key</th>
+                                <th scope="col">Task</th>
+                                <th scope="col">Project</th>
+                                <th scope="col">Assignee</th>
+                                <th scope="col" class="text-end">Overdue by</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var task in overdue)
+                            {
+                                var project = State.FindProject(task.ProjectId);
+                                var days = (today - task.DueDate!.Value.Date).Days;
+                                <tr @key="task.Id">
+                                    <td class="text-nowrap"><span class="tb-key">@State.TaskKey(task)</span></td>
+                                    <th scope="row" class="tb-rp-name"><a href="@PbDisplay.TaskUrl(task.Id)">@task.Title</a></th>
+                                    <td class="tb-rp-project">@(project?.Name ?? "Unknown project")</td>
+                                    <td class="text-nowrap">@(State.FindPerson(task.AssigneeId)?.Name ?? "Unassigned")</td>
+                                    <td class="text-end text-nowrap fw-semibold text-danger-emphasis">@ManageProjects.Plural(days, "day")</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </section>
+    </PbRoleGuard>
+</div>

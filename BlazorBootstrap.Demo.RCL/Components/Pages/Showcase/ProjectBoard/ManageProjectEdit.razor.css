@@ -1,0 +1,66 @@
+/* Project editor: the details form with the team checkboxes, and the milestones with their inline form. */
+.tb-pe-status:empty {
+    margin: 0;
+}
+
+.tb-pe-status:focus {
+    outline: none;
+}
+
+.tb-pe-status:focus-visible {
+    outline: 2px solid var(--bs-focus-ring-color, var(--sc-primary));
+    outline-offset: 2px;
+}
+
+.tb-pe-deal {
+    display: inline-block;
+    padding: .375rem .75rem;
+    border-radius: .5rem;
+    background: var(--tb-soft);
+    color: var(--tb-ink);
+    overflow-wrap: anywhere;
+}
+
+.tb-pe-team {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 13rem), 1fr));
+    gap: .5rem .75rem;
+}
+
+.tb-pe-member {
+    min-width: 0;
+    padding: .5rem .75rem .5rem 2.25rem;
+    border: 1px solid var(--tb-border);
+    border-radius: .625rem;
+    background: var(--tb-surface);
+    overflow-wrap: anywhere;
+}
+
+.tb-pe-ms {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: .5rem .75rem;
+    padding: .625rem .75rem;
+    border: 1px solid var(--tb-border);
+    border-radius: .625rem;
+    background: var(--tb-surface);
+}
+
+.tb-pe-ms-editing {
+    border-color: var(--sc-primary);
+    box-shadow: inset 3px 0 0 var(--sc-primary);
+}
+
+.tb-pe-ms-form {
+    padding-top: .75rem;
+    border-top: 1px solid var(--tb-border);
+}
+
+.tb-pe-wrap {
+    overflow-wrap: anywhere;
+}
+
+.min-w-0 {
+    min-width: 0;
+}

@@ -1,0 +1,100 @@
+@page "/showcase/project-board/projects"
+@layout PbWorkLayout
+
+<PageTitle>Project boards · @PbSeedData.ProductName</PageTitle>
+
+@* Every project as a card (status, due date, progress, team, next milestone), filtered by status, each linking to its board. *@
+<div class="container-fluid px-lg-4">
+    @{
+        var all = State.Projects;
+        var shown = all.Where(project => filter is not { } status || project.Status == status).ToList();
+        var today = State.Clock.Today;
+        var me = State.CurrentPerson;
+    }
+
+    <h1 class="tb-title mb-1">Project boards</h1>
+    <p class="tb-lead mb-3">Every project at @PbSeedData.AgencyName. Open one for its board of tasks, in columns or as a list.</p>
+
+    <div class="tb-projects-filter mb-2" role="group" aria-label="Show projects by status">
+        @foreach (var option in FilterOptions)
+        {
+            var pressed = filter == option.Status;
+            <button type="button" class="btn btn-sm @(pressed ? "btn-primary" : "btn-outline-secondary")" aria-pressed="@(pressed ? "true" : "false")"
+                    @onclick="() => SetFilter(option.Status)" @key="option.Text">
+                @option.Text <span class="tb-projects-count">(@(option.Status is { } status ? all.Count(project => project.Status == status) : all.Count))</span>
+            </button>
+        }
+    </div>
+
+    @* Always rendered, so the filter's result is announced. *@
+    <p class="small text-body-secondary mb-3" role="status">@ShownText(shown.Count, all.Count)</p>
+
+    @if (all.Count == 0)
+    {
+        <section class="tb-panel" aria-labelledby="tb-projects-empty-title">
+            <h2 class="tb-section-title" id="tb-projects-empty-title">No projects yet</h2>
+            <p class="mb-0">A project manager sets up projects, and a won deal becomes one. They'll show here.</p>
+        </section>
+    }
+    else if (shown.Count == 0)
+    {
+        <p class="tb-panel mb-0">No @FilterWord projects right now. <button type="button" class="btn btn-link p-0 align-baseline" @onclick="() => SetFilter(null)">Show all projects</button></p>
+    }
+    else
+    {
+        <ul class="list-unstyled row row-cols-1 row-cols-md-2 row-cols-xxl-3 g-3 mb-0">
+            @foreach (var project in shown)
+            {
+                var client = State.FindClient(project.ClientId);
+                var progress = State.ProjectProgress(project.Id);
+                var percent = progress.Total == 0 ? 0 : progress.Done * 100.0 / progress.Total;
+                var progressText = $"{progress.Done} of {TaskCard.Plural(progress.Total, "task")} done";
+                var team = State.People.Where(person => project.MemberIds.Contains(person.Id)).ToList();
+                var next = project.Milestones.Where(milestone => milestone.Due.Date >= today).OrderBy(milestone => milestone.Due).FirstOrDefault();
+                var mine = me is null ? 0 : State.TasksOf(project.Id).Count(task => task.AssigneeId == me.Id && task.Status != PbTaskStatus.Done);
+                var titleId = $"tb-projects-{project.Id}";
+                <li class="col" @key="@($"project-{project.Id}")">
+                    <article class="tb-card tb-projects-card h-100" aria-labelledby="@titleId">
+                        <div class="d-flex justify-content-between align-items-start gap-2 mb-1">
+                            <span class="tb-key">@project.Key</span>
+                            <span class="@($"badge text-bg-{PbDisplay.ProjectStatusColor(project.Status)}")">@PbDisplay.ProjectStatusLabel(project.Status)</span>
+                        </div>
+                        <h2 class="tb-projects-name" id="@titleId"><a href="@PbDisplay.ProjectUrl(project.Id)">@project.Name</a></h2>
+                        <p class="small text-body-secondary mb-3">@(client?.Name ?? "Internal project") · Due @PbDisplay.Date(project.DueDate)</p>
+
+                        <Progress Height="8" Class="mb-1">
+                            <ProgressBar Width="percent" aria-label="@($"Progress of {project.Name}")" aria-valuenow="@Math.Round(percent).ToString(CultureInfo.InvariantCulture)"
+                                         aria-valuemin="0" aria-valuemax="100" aria-valuetext="@progressText" />
+                        </Progress>
+                        <p class="small mb-3">@progressText@(mine > 0 ? $" · {TaskCard.Plural(mine, "open task")} of yours" : null)</p>
+
+                        <dl class="tb-projects-facts mb-0">
+                            <div>
+                                <dt>Next milestone</dt>
+                                <dd>@(next is null ? "None coming up" : $"{next.Title}, {PbDisplay.Date(next.Due)}")</dd>
+                            </div>
+                            <div>
+                                <dt>Team</dt>
+                                <dd>
+                                    @if (team.Count == 0)
+                                    {
+                                        <span>Nobody yet</span>
+                                    }
+                                    else
+                                    {
+                                        <ul class="tb-projects-team list-unstyled mb-0">
+                                            @foreach (var person in team)
+                                            {
+                                                <li @key="@($"team-{project.Id}-{person.Id}")"><span class="tb-person" title="@person.Name" aria-hidden="true">@person.Initials</span><span class="visually-hidden">@person.Name</span></li>
+                                            }
+                                        </ul>
+                                    }
+                                </dd>
+                            </div>
+                        </dl>
+                    </article>
+                </li>
+            }
+        </ul>
+    }
+</div>

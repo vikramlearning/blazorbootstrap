@@ -1,0 +1,78 @@
+@inherits LayoutComponentBase
+@implements IDisposable
+
+@* The signed-in app (D-031): one sidebar for everyone, with the project manager's and account manager's modules added for
+   those roles. Pages for one role add their own PbRoleGuard. *@
+<ShowcaseSessionHost State="State" SiteBase="@PbLayout.Base" SiteName="@PbSeedData.ProductName">
+    <PbFrame>
+        <Header>
+            <div class="tb-app-bar">
+                <span class="tb-app-bar-title">@PbSeedData.AgencyName</span>
+                <div class="tb-app-bar-actions">
+                    <ShowcaseAccountMenu SiteBase="@PbLayout.Base" SignInPath="@PbLayout.SignInPath" />
+                </div>
+            </div>
+        </Header>
+        <Sidebar>
+            @if (State.CurrentPerson is not null)
+            {
+                <Sidebar @key="State.Identity.Current?.Id"
+                         Class="tb-sidebar"
+                         Href="@($"{PbLayout.Base}/my-tasks")"
+                         IconName="IconName.Kanban"
+                         Title="@PbSeedData.ProductName"
+                         BadgeText="@BadgeText"
+                         DataProvider="SidebarDataProvider" />
+            }
+        </Sidebar>
+        <ChildContent>
+            <ShowcaseRoleGuard Roles="@PbSeedData.SignedInRoles" SignInPath="@PbLayout.SignInPath">
+                @Body
+            </ShowcaseRoleGuard>
+        </ChildContent>
+    </PbFrame>
+</ShowcaseSessionHost>
+
+@code {
+    [Inject] private PbState State { get; set; } = default!;
+
+    private string BadgeText => State.IsProjectManager ? "PM" : State.IsAccountManager ? "Sales" : "Team";
+
+    /// <summary>Stops listening to state changes.</summary>
+    public void Dispose() => State.Changed -= OnStateChanged;
+
+    protected override void OnInitialized() => State.Changed += OnStateChanged;
+
+    private void OnStateChanged() => InvokeAsync(StateHasChanged);
+
+    /// <summary>Everyone's modules, then the role's.</summary>
+    private Task<SidebarDataProviderResult> SidebarDataProvider(SidebarDataProviderRequest request)
+    {
+        var b = PbLayout.Base;
+        var items = new List<NavItem>
+        {
+            new() { Id = "my-tasks", Href = $"{b}/my-tasks", IconName = IconName.CheckSquare, Text = "My tasks" },
+            new() { Id = "projects", Href = $"{b}/projects", IconName = IconName.Kanban, Text = "Project boards" },
+        };
+
+        if (State.IsProjectManager)
+        {
+            items.Add(new() { Id = "manage-projects", Href = $"{b}/manage/projects", IconName = IconName.Folder2Open, Text = "Manage projects" });
+            items.Add(new() { Id = "workload", Href = $"{b}/workload", IconName = IconName.People, Text = "Workload" });
+            items.Add(new() { Id = "roadmap", Href = $"{b}/roadmap", IconName = IconName.Diagram3, Text = "Roadmap" });
+            items.Add(new() { Id = "reports", Href = $"{b}/reports", IconName = IconName.BarChart, Text = "Reports" });
+        }
+
+        if (State.IsAccountManager)
+        {
+            items.Add(new() { Id = "clients", Href = $"{b}/clients", IconName = IconName.Building, Text = "Clients" });
+            items.Add(new() { Id = "pipeline", Href = $"{b}/pipeline", IconName = IconName.Funnel, Text = "Deal pipeline" });
+            items.Add(new() { Id = "activity", Href = $"{b}/activity", IconName = IconName.ClockHistory, Text = "Activity" });
+            items.Add(new() { Id = "forecast", Href = $"{b}/forecast", IconName = IconName.GraphUpArrow, Text = "Forecast" });
+        }
+
+        items.Add(new() { Id = "profile", Href = $"{b}/profile", IconName = IconName.PersonGear, Text = "Profile" });
+
+        return Task.FromResult(request.ApplyTo(items));
+    }
+}

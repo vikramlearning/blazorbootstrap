@@ -1,0 +1,23 @@
+/* The deal form. The markup is written in this component's templates, so it carries this scope even inside the Modal. */
+.pb-deal-editor-title {
+    overflow-wrap: anywhere;
+}
+
+.pb-deal-editor-status {
+    min-height: 1.25rem;
+    overflow-wrap: anywhere;
+}
+
+    .pb-deal-editor-status:empty {
+        margin: 0 !important;
+        min-height: 0;
+    }
+
+    .pb-deal-editor-status:focus {
+        outline: none;
+    }
+
+    .pb-deal-editor-status:focus-visible {
+        outline: 2px solid var(--bs-focus-ring-color, var(--sc-primary));
+        outline-offset: 2px;
+    }

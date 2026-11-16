@@ -1,0 +1,11 @@
+@page "/showcase/project-board/{*path}"
+@layout PbLayout
+
+<div class="container-xl">
+    <PbNotFound />
+</div>
+
+@code {
+    /// <summary>Gets or sets the unknown path.</summary>
+    [Parameter] public string? Path { get; set; }
+}

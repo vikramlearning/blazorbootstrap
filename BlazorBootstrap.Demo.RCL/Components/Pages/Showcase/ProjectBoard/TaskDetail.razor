@@ -1,0 +1,307 @@
+@page "/showcase/project-board/tasks/{Id:int}"
+@layout PbWorkLayout
+
+@* One task: its details (status, assignee, priority, due date, estimate, milestone), description, checklist, and comments.
+   Project managers can also delete it. *@
+@if (State.FindTask(Id) is not { } task || State.FindProject(task.ProjectId) is not { } project)
+{
+    <PbNotFound Message="This task was deleted, or the link is wrong." />
+}
+else
+{
+    var key = State.TaskKey(task);
+    var today = State.Clock.Today;
+    var now = State.Clock.Now;
+    var me = State.CurrentPerson;
+    var assignee = State.FindPerson(task.AssigneeId);
+    var members = State.People.Where(person => project.MemberIds.Contains(person.Id)).ToList();
+    var milestone = project.Milestones.FirstOrDefault(item => item.Id == task.MilestoneId);
+    var readOnly = project.Status == PbProjectStatus.Completed;
+    var overdue = PbDisplay.IsOverdue(task, today);
+    var checkedCount = task.Checklist.Count(item => item.Done);
+    var checklistFull = task.Checklist.Count >= PbState.MaxChecklistItems;
+    var commentsFull = task.Comments.Count >= PbState.MaxComments;
+
+    <PageTitle>@key @task.Title · @PbSeedData.ProductName</PageTitle>
+
+    <div class="container-fluid px-lg-4">
+        <nav aria-label="Breadcrumb">
+            <ol class="breadcrumb small mb-2">
+                <li class="breadcrumb-item"><a href="@($"{PbLayout.Base}/projects")">Project boards</a></li>
+                <li class="breadcrumb-item tb-task-crumb"><a href="@PbDisplay.ProjectUrl(project.Id)">@project.Name</a></li>
+                <li class="breadcrumb-item active" aria-current="page">@key</li>
+            </ol>
+        </nav>
+
+        <p class="tb-key mb-1">@key</p>
+        <h1 class="tb-title mb-2">@task.Title</h1>
+        <p class="text-body-secondary mb-3">
+            @PbDisplay.StatusLabel(task.Status) in <a href="@PbDisplay.ProjectUrl(project.Id)" class="tb-task-wrap">@project.Name</a>
+            <span class="@($"badge text-bg-{PbDisplay.PriorityColor(task.Priority)} ms-1")">@task.Priority<span class="visually-hidden"> priority</span></span>
+        </p>
+
+        @if (readOnly)
+        {
+            <p class="tb-task-notice">
+                <Icon Name="IconName.Lock" class="me-2" aria-hidden="true" />
+                @project.Name is completed, so this task is read-only. You can still comment on it.
+            </p>
+        }
+
+        @* Always rendered and focusable, so every change is announced and focus has somewhere to go. *@
+        <p class="fw-semibold tb-task-status @(statusIsError ? "text-danger-emphasis" : null)" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
+
+        <div class="row g-4">
+            <div class="col-lg-8 order-2 order-lg-1">
+                <section class="tb-panel mb-4" aria-labelledby="tb-task-description-title">
+                    <h2 class="tb-section-title" id="tb-task-description-title">Description</h2>
+                    @if (task.Description.Length > 0)
+                    {
+                        <p class="tb-plain mb-0">@task.Description</p>
+                    }
+                    else
+                    {
+                        <p class="text-body-secondary mb-0">No description yet.@(readOnly ? null : " Add one with Edit details.")</p>
+                    }
+                </section>
+
+                <section class="tb-panel mb-4" aria-labelledby="tb-task-checklist-title">
+                    <h2 class="tb-section-title" id="tb-task-checklist-title">Checklist</h2>
+                    @if (task.Checklist.Count > 0)
+                    {
+                        var percent = checkedCount * 100.0 / task.Checklist.Count;
+                        var progressText = $"{checkedCount} of {task.Checklist.Count} done";
+                        <Progress Height="8" Class="mb-1">
+                            <ProgressBar Width="percent" aria-label="Checklist progress" aria-valuenow="@Math.Round(percent).ToString(CultureInfo.InvariantCulture)"
+                                         aria-valuemin="0" aria-valuemax="100" aria-valuetext="@progressText" />
+                        </Progress>
+                        <p class="small mb-3">@progressText</p>
+
+                        <ul class="list-unstyled tb-task-checklist mb-3">
+                            @foreach (var item in task.Checklist)
+                            {
+                                var inputId = $"tb-task-check-{item.Id}";
+                                <li class="tb-task-check" @key="@($"check-{item.Id}")">
+                                    <div class="form-check mb-0">
+                                        <input class="form-check-input" type="checkbox" id="@inputId" checked="@item.Done" disabled="@readOnly"
+                                               @key="@($"check-input-{item.Id}-{controlsVersion}")" @ref="checkInputs[item.Id]" @onchange="args => SetChecklistItem(item, args)" />
+                                        <label class="@(item.Done ? "form-check-label tb-plain tb-task-check-done" : "form-check-label tb-plain")" for="@inputId">@item.Text</label>
+                                    </div>
+                                    @if (!readOnly)
+                                    {
+                                        <button type="button" class="btn btn-sm btn-link tb-task-remove" @onclick="() => RemoveChecklistItem(item)">
+                                            Remove<span class="visually-hidden"> “@item.Text”</span>
+                                        </button>
+                                    }
+                                </li>
+                            }
+                        </ul>
+                    }
+                    else
+                    {
+                        <p class="text-body-secondary">No checklist items yet.</p>
+                    }
+
+                    @if (!readOnly)
+                    {
+                        <form @onsubmit="AddChecklistItem" novalidate aria-label="Add a checklist item">
+                            <label class="form-label fw-semibold" for="tb-task-new-item">New checklist item</label>
+                            <div class="tb-task-add">
+                                <input id="tb-task-new-item" class="@(newItemError is null ? "form-control" : "form-control is-invalid")" @bind="newItem" @ref="newItemInput"
+                                       maxlength="@PbState.MaxChecklistTextLength" autocomplete="off" disabled="@checklistFull"
+                                       aria-invalid="@(newItemError is null ? null : "true")" aria-describedby="tb-task-new-item-help tb-task-new-item-error" />
+                                <button type="submit" class="btn btn-outline-primary" disabled="@checklistFull">
+                                    <Icon Name="IconName.PlusLg" class="me-1" aria-hidden="true" />Add item
+                                </button>
+                            </div>
+                            <div class="form-text" id="tb-task-new-item-help">
+                                @(checklistFull
+                                    ? $"The checklist is full ({PbState.MaxChecklistItems} items). Remove one to add another."
+                                    : $"Up to {PbState.MaxChecklistTextLength} characters. A task holds up to {PbState.MaxChecklistItems} items; this one has {task.Checklist.Count}.")
+                            </div>
+                            <div class="invalid-feedback d-block" id="tb-task-new-item-error">@newItemError</div>
+                        </form>
+                    }
+                </section>
+
+                <section class="tb-panel" aria-labelledby="tb-task-comments-title">
+                    <h2 class="tb-section-title" id="tb-task-comments-title">Comments <span class="text-body-secondary fw-normal">(@task.Comments.Count)</span></h2>
+                    @if (task.Comments.Count == 0)
+                    {
+                        <p class="text-body-secondary">No comments yet. Start the conversation below.</p>
+                    }
+                    else
+                    {
+                        <ol class="list-unstyled tb-task-comments mb-4">
+                            @foreach (var comment in task.Comments)
+                            {
+                                var author = State.FindPerson(comment.AuthorId);
+                                var mine = me is not null && comment.AuthorId == me.Id;
+                                var ago = PbDisplay.Ago(comment.At, now);
+                                <li class="tb-task-comment" @key="@($"comment-{comment.Id}")">
+                                    <span class="tb-person" aria-hidden="true">@(author?.Initials ?? "?")</span>
+                                    <div class="tb-task-comment-body">
+                                        <p class="small mb-1">
+                                            <strong>@(author?.Name ?? "A former teammate")</strong>@(mine ? " (you)" : null)
+                                            <span class="text-body-secondary"> · <time datetime="@comment.At.ToString("yyyy-MM-ddTHH:mm", CultureInfo.InvariantCulture)" title="@comment.At.ToString("MMM d, yyyy h:mm tt", CultureInfo.InvariantCulture)">@ago</time></span>
+                                        </p>
+                                        <p class="tb-plain mb-1">@comment.Text</p>
+                                        @if (mine)
+                                        {
+                                            <button type="button" class="btn btn-sm btn-link tb-task-remove" @ref="commentButtons[comment.Id]" @onclick="() => OpenDeleteCommentAsync(comment)">
+                                                Delete<span class="visually-hidden"> your comment from @ago</span>
+                                            </button>
+                                        }
+                                    </div>
+                                </li>
+                            }
+                        </ol>
+                    }
+
+                    <form @onsubmit="AddComment" novalidate aria-label="Add a comment">
+                        <label class="form-label fw-semibold" for="tb-task-new-comment">Add a comment</label>
+                        <textarea id="tb-task-new-comment" class="@(newCommentError is null ? "form-control" : "form-control is-invalid")" rows="3" @bind="newComment" @bind:event="oninput"
+                                  @ref="newCommentInput" maxlength="@PbState.MaxCommentLength" disabled="@commentsFull"
+                                  aria-invalid="@(newCommentError is null ? null : "true")" aria-describedby="tb-task-new-comment-help tb-task-new-comment-error"></textarea>
+                        <div class="form-text" id="tb-task-new-comment-help">
+                            @(commentsFull
+                                ? $"This task has the most comments it can hold ({PbState.MaxComments})."
+                                : $"Plain text. {newComment.Length} of {PbState.MaxCommentLength} characters.")
+                        </div>
+                        <div class="invalid-feedback d-block" id="tb-task-new-comment-error">@newCommentError</div>
+                        <button type="submit" class="btn btn-primary mt-2" disabled="@commentsFull">
+                            <Icon Name="IconName.ChatLeftText" class="me-1" aria-hidden="true" />Post comment
+                        </button>
+                    </form>
+                </section>
+            </div>
+
+            <div class="col-lg-4 order-1 order-lg-2">
+                <section class="tb-panel" aria-labelledby="tb-task-details-title">
+                    <h2 class="tb-section-title" id="tb-task-details-title">Details</h2>
+
+                    @if (!readOnly)
+                    {
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold" for="tb-task-status">Status</label>
+                            <select id="tb-task-status" class="form-select" value="@task.Status" @key="@($"status-{controlsVersion}")" @ref="statusSelect"
+                                    @onchange="OnStatusChanged" aria-describedby="tb-task-status-help">
+                                @foreach (var option in Enum.GetValues<PbTaskStatus>())
+                                {
+                                    <option value="@option" @key="option">@PbDisplay.StatusLabel(option)</option>
+                                }
+                            </select>
+                            <div class="form-text" id="tb-task-status-help">Moves it to the end of that column on the board.</div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold" for="tb-task-assignee">Assignee</label>
+                            <select id="tb-task-assignee" class="form-select" value="@(task.AssigneeId ?? string.Empty)" @key="@($"assignee-{controlsVersion}")" @ref="assigneeSelect"
+                                    @onchange="OnAssigneeChanged" aria-describedby="tb-task-assignee-help">
+                                <option value="">Unassigned</option>
+                                @if (assignee is not null && members.All(person => person.Id != assignee.Id))
+                                {
+                                    <option value="@assignee.Id">@assignee.Name (not on this project)</option>
+                                }
+                                @foreach (var person in members)
+                                {
+                                    <option value="@person.Id" @key="person.Id">@person.Name@(person.Id == me?.Id ? " (you)" : null)</option>
+                                }
+                            </select>
+                            <div class="form-text" id="tb-task-assignee-help">People on @project.Key.</div>
+                        </div>
+                    }
+
+                    <dl class="tb-task-facts">
+                        @if (readOnly)
+                        {
+                            <div><dt>Status</dt><dd>@PbDisplay.StatusLabel(task.Status)</dd></div>
+                            <div><dt>Assignee</dt><dd>@(assignee?.Name ?? "Unassigned")</dd></div>
+                        }
+                        <div>
+                            <dt>Priority</dt>
+                            <dd><span class="@($"badge text-bg-{PbDisplay.PriorityColor(task.Priority)}")">@task.Priority</span></dd>
+                        </div>
+                        <div>
+                            <dt>Due date</dt>
+                            <dd class="@(overdue ? "tb-task-overdue" : null)">
+                                @if (overdue)
+                                {
+                                    <Icon Name="IconName.ExclamationTriangleFill" class="me-1" aria-hidden="true" />
+                                }
+                                @PbDisplay.Due(task.DueDate, today)
+                                @if (task.DueDate is { } dueDate)
+                                {
+                                    <span class="d-block small text-body-secondary">@PbDisplay.Date(dueDate)</span>
+                                }
+                            </dd>
+                        </div>
+                        <div>
+                            <dt>Estimate</dt>
+                            <dd>@(task.EstimateHours == 0 ? "No estimate" : TaskCard.HoursText(task.EstimateHours))</dd>
+                        </div>
+                        <div>
+                            <dt>Milestone</dt>
+                            <dd>@(milestone is null ? "None" : $"{milestone.Title} ({PbDisplay.Date(milestone.Due)})")</dd>
+                        </div>
+                        <div>
+                            <dt>Created</dt>
+                            <dd>@PbDisplay.Date(task.CreatedAt)</dd>
+                        </div>
+                        @if (task.CompletedAt is { } completedAt)
+                        {
+                            <div>
+                                <dt>Done</dt>
+                                <dd>@PbDisplay.Date(completedAt)</dd>
+                            </div>
+                        }
+                    </dl>
+
+                    <div class="d-flex flex-wrap gap-2">
+                        @if (!readOnly)
+                        {
+                            <button type="button" class="btn btn-outline-primary" @ref="editButton" @onclick="OpenEditAsync">
+                                <Icon Name="IconName.Pencil" class="me-1" aria-hidden="true" />Edit details
+                            </button>
+                        }
+                        @if (State.IsProjectManager)
+                        {
+                            <button type="button" class="btn btn-outline-danger" @ref="deleteTaskButton" @onclick="OpenDeleteTaskAsync">
+                                <Icon Name="IconName.Trash" class="me-1" aria-hidden="true" />Delete task
+                            </button>
+                        }
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+
+    <TaskEditor @ref="editor" OnClosed="OnEditorClosed" />
+
+    <Modal @ref="confirmModal" IsVerticallyCentered="true" ShowCloseButton="false" aria-labelledby="tb-task-confirm-title" OnHidden="OnConfirmHiddenAsync">
+        <HeaderTemplate>
+            <h2 class="modal-title h5 tb-task-wrap" id="tb-task-confirm-title">@(confirmKind == ConfirmKind.DeleteTask ? $"Delete {key} “{task.Title}”?" : "Delete your comment?")</h2>
+        </HeaderTemplate>
+        <BodyTemplate>
+            @if (confirmKind == ConfirmKind.DeleteTask)
+            {
+                <p class="mb-0">
+                    This deletes the task from @project.Name with its @TaskCard.Plural(task.Checklist.Count, "checklist item") and @TaskCard.Plural(task.Comments.Count, "comment").
+                    It's gone for everyone, and it can't be undone.
+                </p>
+            }
+            else if (task.Comments.FirstOrDefault(item => item.Id == confirmCommentId) is { } target)
+            {
+                <p>This removes your comment for everyone, and it can't be undone:</p>
+                <blockquote class="tb-task-quote tb-plain mb-0">@Excerpt(target.Text)</blockquote>
+            }
+            else
+            {
+                <p class="mb-0">That comment was already deleted.</p>
+            }
+        </BodyTemplate>
+        <FooterTemplate>
+            <button type="button" class="btn btn-outline-secondary" @onclick="() => confirmModal.HideAsync()">Cancel</button>
+            <button type="button" class="btn btn-danger" @onclick="ConfirmAsync">@(confirmKind == ConfirmKind.DeleteTask ? "Delete task" : "Delete comment")</button>
+        </FooterTemplate>
+    </Modal>
+}

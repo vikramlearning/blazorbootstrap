@@ -1,0 +1,84 @@
+/* Manage projects: the won-deal callout, the status filter, and the projects table. */
+.tb-mp-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.tb-mp-status:empty {
+    margin: 0;
+}
+
+.tb-mp-status:focus {
+    outline: none;
+}
+
+.tb-mp-status:focus-visible {
+    outline: 2px solid var(--bs-focus-ring-color, var(--sc-primary));
+    outline-offset: 2px;
+}
+
+.tb-mp-callout {
+    padding: 1rem 1.25rem;
+    border: 2px solid var(--sc-primary);
+    border-radius: .875rem;
+    background: var(--tb-soft);
+    color: var(--tb-ink);
+}
+
+.tb-mp-fresh-item {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: .5rem .75rem;
+    padding: .625rem .75rem;
+    border: 1px solid var(--tb-border);
+    border-radius: .625rem;
+    background: var(--tb-surface);
+}
+
+.min-w-0 {
+    min-width: 0;
+}
+
+.tb-mp-wrap {
+    overflow-wrap: anywhere;
+}
+
+.tb-mp-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .5rem;
+}
+
+.tb-mp-count {
+    font-variant-numeric: tabular-nums;
+}
+
+.tb-mp-caption {
+    caption-side: top;
+    padding-top: 0;
+    font-size: .8125rem;
+    color: var(--bs-secondary-color);
+}
+
+.tb-mp-name {
+    min-width: 12rem;
+    overflow-wrap: anywhere;
+}
+
+.tb-mp-client {
+    min-width: 9rem;
+    overflow-wrap: anywhere;
+}
+
+.tb-mp-progress {
+    min-width: 9rem;
+}
+
+.tb-mp-row-fresh > * {
+    background-color: rgba(var(--sc-primary-rgb), .07);
+}

@@ -1,0 +1,38 @@
+/* The forecast: key figures, the chart, and the tables (they scroll sideways inside their box on narrow screens). */
+.pb-fc-label {
+    display: block;
+    color: var(--bs-secondary-color);
+    font-size: .875rem;
+    font-weight: 600;
+}
+
+.pb-fc-value {
+    display: block;
+    margin-block: .25rem;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--tb-ink);
+    overflow-wrap: anywhere;
+}
+
+.pb-fc-caption {
+    caption-side: top;
+    padding-top: 0;
+    font-size: .8125rem;
+    color: var(--bs-secondary-color);
+}
+
+.pb-fc-wrap {
+    min-width: 10rem;
+    overflow-wrap: anywhere;
+}
+
+.pb-fc-close {
+    min-width: 9rem;
+}
+
+.pb-fc-details summary {
+    cursor: pointer;
+    font-weight: 600;
+    color: var(--sc-primary);
+}

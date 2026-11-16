@@ -1,0 +1,35 @@
+/* Profile: the person's work facts and projects. */
+.tb-profile-facts {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+    gap: 1rem 1.5rem;
+    margin-bottom: 0;
+}
+
+    .tb-profile-facts dt {
+        margin-bottom: .125rem;
+        font-size: .75rem;
+        font-weight: 700;
+        letter-spacing: .02em;
+        text-transform: uppercase;
+        color: var(--bs-secondary-color);
+    }
+
+    .tb-profile-facts dd {
+        margin: 0;
+        overflow-wrap: anywhere;
+    }
+
+.tb-profile-overdue {
+    color: var(--bs-danger-text-emphasis);
+    font-weight: 600;
+}
+
+.tb-profile-projects {
+    padding-left: 1.25rem;
+    overflow-wrap: anywhere;
+}
+
+    .tb-profile-projects li + li {
+        margin-top: .25rem;
+    }

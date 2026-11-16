@@ -1,0 +1,164 @@
+@page "/showcase/project-board/manage/projects"
+@layout PbWorkLayout
+
+<PageTitle>Manage projects · @PbSeedData.ProductName</PageTitle>
+
+<div class="container-fluid px-lg-4">
+    <PbRoleGuard Role="@PbSeedData.ProjectManagerRole">
+        @{
+            var all = State.Projects;
+            var fresh = NewFromDeals(State);
+            var shown = filter is { } status ? all.Where(project => project.Status == status).ToList() : all;
+        }
+
+        <div class="tb-mp-head mb-3">
+            <div>
+                <h1 class="tb-title">Manage projects</h1>
+                <p class="tb-lead mb-0">Every project at @PbSeedData.AgencyName: its client, dates, team, and milestones. Won deals arrive here as planned projects.</p>
+            </div>
+            <Button Type="ButtonType.Link" To="@NewUrl" Color="ButtonColor.Primary"><Icon Name="IconName.PlusLg" class="me-1" aria-hidden="true" />New project</Button>
+        </div>
+
+        @* Always rendered and focusable, so a deletion is announced and focus has somewhere to go when its row is gone. *@
+        <p class="fw-semibold tb-mp-status @(statusIsError ? "text-danger-emphasis" : null)" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
+
+        @if (fresh.Count > 0)
+        {
+            <section class="tb-mp-callout mb-4" aria-labelledby="tb-mp-fresh-title">
+                <div class="d-flex align-items-start gap-3">
+                    <span class="tb-icon flex-shrink-0" aria-hidden="true"><Icon Name="IconName.Stars" /></span>
+                    <div class="min-w-0 flex-grow-1">
+                        <h2 class="tb-section-title mb-1" id="tb-mp-fresh-title">New from a won deal: plan the team and milestones</h2>
+                        <p class="small mb-2">
+                            @(fresh.Count == 1 ? "An account manager won this deal, so its project is waiting for you." : $"An account manager won these {fresh.Count} deals, so their projects are waiting for you.")
+                            They're planned, with nobody on the team yet.
+                        </p>
+                        <ul class="list-unstyled d-grid gap-2 mb-0">
+                            @foreach (var project in fresh)
+                            {
+                                var deal = State.FindDeal(project.FromDealId);
+                                <li class="tb-mp-fresh-item" @key="project.Id">
+                                    <div class="min-w-0">
+                                        <span class="tb-key me-1">@project.Key</span><span class="fw-semibold tb-mp-wrap">@project.Name</span>
+                                        <span class="d-block small text-body-secondary tb-mp-wrap">
+                                            @(ClientName(State, project.ClientId))@(deal is null ? null : $" · from the deal “{deal.Title}” ({PbDisplay.Money(deal.Value)})") · starts @PbDisplay.Date(project.StartDate)
+                                        </span>
+                                    </div>
+                                    <a class="btn btn-sm btn-primary flex-shrink-0" href="@EditUrl(project.Id)">Plan it<span class="visually-hidden">: @project.Name</span></a>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                </div>
+            </section>
+        }
+
+        <div class="tb-mp-filters mb-3" role="group" aria-label="Filter projects by status">
+            @foreach (var option in FilterOptions)
+            {
+                var pressed = filter == option.Status;
+                var count = option.Status is { } optionStatus ? all.Count(project => project.Status == optionStatus) : all.Count;
+                <button type="button" class="btn btn-sm @(pressed ? "btn-primary" : "btn-outline-secondary")" aria-pressed="@(pressed ? "true" : "false")"
+                        @onclick="() => filter = option.Status" @key="option.Text">
+                    @option.Text <span class="tb-mp-count">(@count)</span>
+                </button>
+            }
+        </div>
+
+        <div class="tb-panel">
+            @if (shown.Count == 0)
+            {
+                <p class="text-body-secondary mb-0">
+                    @(all.Count == 0 ? "There are no projects yet. Create one, or win a deal in the pipeline." : $"No project is {PbDisplay.ProjectStatusLabel(filter!.Value).ToLowerInvariant()} right now.")
+                </p>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table align-middle mb-0 tb-mp-table">
+                        <caption class="tb-mp-caption">
+                            @(filter is null ? $"All {Plural(all.Count, "project")}" : $"{Plural(shown.Count, "project")} {PbDisplay.ProjectStatusLabel(filter.Value).ToLowerInvariant()}"):
+                            active first, then planned, on hold, and completed; by due date within each.
+                        </caption>
+                        <thead>
+                            <tr>
+                                <th scope="col">Key</th>
+                                <th scope="col">Name</th>
+                                <th scope="col">Client</th>
+                                <th scope="col">Status</th>
+                                <th scope="col">Start</th>
+                                <th scope="col">Due</th>
+                                <th scope="col" class="text-end">Team</th>
+                                <th scope="col">Progress</th>
+                                <th scope="col"><span class="visually-hidden">Actions</span></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var project in shown)
+                            {
+                                var progress = State.ProjectProgress(project.Id);
+                                var isFresh = fresh.Contains(project);
+                                <tr @key="project.Id" class="@(isFresh ? "tb-mp-row-fresh" : null)">
+                                    <td><span class="tb-key">@project.Key</span></td>
+                                    <th scope="row" class="tb-mp-name">
+                                        <a href="@EditUrl(project.Id)">@project.Name</a>
+                                        @if (isFresh)
+                                        {
+                                            <span class="d-block small fw-normal"><Icon Name="IconName.Stars" class="me-1" aria-hidden="true" />New from a won deal: needs a team</span>
+                                        }
+                                    </th>
+                                    <td class="tb-mp-client">@ClientName(State, project.ClientId)</td>
+                                    <td><Badge Color="@StatusBadge(project.Status)">@PbDisplay.ProjectStatusLabel(project.Status)</Badge></td>
+                                    <td class="text-nowrap">@PbDisplay.Date(project.StartDate)</td>
+                                    <td class="text-nowrap">@PbDisplay.Date(project.DueDate)</td>
+                                    <td class="text-end">@(project.MemberIds.Count == 0 ? "None" : project.MemberIds.Count.ToString(CultureInfo.InvariantCulture))</td>
+                                    <td class="tb-mp-progress">
+                                        <Progress Height="6" Class="mb-1">
+                                            <ProgressBar Width="@Percent(progress.Done, progress.Total)" Color="ProgressColor.Success"
+                                                         aria-label="@($"{project.Name}, tasks done")" aria-valuenow="@Math.Round(Percent(progress.Done, progress.Total))" aria-valuemin="0" aria-valuemax="100"
+                                                         aria-valuetext="@ProgressText(progress.Done, progress.Total)" />
+                                        </Progress>
+                                        <span class="small text-nowrap">@ProgressText(progress.Done, progress.Total)</span>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex flex-nowrap gap-1 justify-content-end">
+                                            <a class="btn btn-sm btn-outline-secondary text-nowrap" href="@PbDisplay.ProjectUrl(project.Id)">Open board<span class="visually-hidden">: @project.Name</span></a>
+                                            <a class="btn btn-sm btn-outline-secondary" href="@EditUrl(project.Id)">Edit<span class="visually-hidden"> @project.Name</span></a>
+                                            <button type="button" class="btn btn-sm btn-outline-danger" @ref="deleteButtons[project.Id]" @onclick="() => OpenDeleteAsync(project.Id)">
+                                                Delete<span class="visually-hidden"> @project.Name</span>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+
+        <Modal @ref="dialogModal" IsVerticallyCentered="true" ShowCloseButton="false" aria-labelledby="tb-mp-dialog-title" OnHidden="OnDialogHidden">
+            <HeaderTemplate>
+                <h2 class="modal-title h5 tb-mp-wrap" id="tb-mp-dialog-title">@(DialogProject is { } target ? $"Delete {target.Key} · {target.Name}?" : "Delete this project?")</h2>
+            </HeaderTemplate>
+            <BodyTemplate>
+                @if (DialogProject is { } target)
+                {
+                    <p>@DeleteConsequence(target)</p>
+                    <p class="mb-0">This can't be undone.</p>
+                }
+                else
+                {
+                    <p class="mb-0">This project was already deleted.</p>
+                }
+            </BodyTemplate>
+            <FooterTemplate>
+                <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => dialogModal.HideAsync()">Cancel</Button>
+                @if (DialogProject is not null)
+                {
+                    <Button Color="ButtonColor.Danger" @onclick="ConfirmDeleteAsync"><Icon Name="IconName.Trash3" class="me-1" aria-hidden="true" />Delete project</Button>
+                }
+            </FooterTemplate>
+        </Modal>
+    </PbRoleGuard>
+</div>

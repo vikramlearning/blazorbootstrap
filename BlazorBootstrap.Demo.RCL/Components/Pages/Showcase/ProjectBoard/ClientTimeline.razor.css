@@ -1,0 +1,37 @@
+/* The client's activity: the log form above the timeline. */
+.pb-cltl-form {
+    padding: 1rem;
+    border-radius: .75rem;
+    background: var(--tb-soft);
+}
+
+.pb-cltl-status {
+    min-height: 1.5rem;
+    overflow-wrap: anywhere;
+}
+
+    .pb-cltl-status:focus {
+        outline: none;
+    }
+
+    .pb-cltl-status:focus-visible {
+        outline: 2px solid var(--bs-focus-ring-color, var(--sc-primary));
+        outline-offset: 2px;
+    }
+
+.pb-cltl-list {
+    display: grid;
+    gap: 1rem;
+}
+
+    .pb-cltl-list > li + li {
+        padding-top: 1rem;
+        border-top: 1px solid var(--tb-border);
+    }
+
+.pb-cltl-quote {
+    max-height: 8rem;
+    overflow: auto;
+    padding-left: .75rem;
+    border-left: .25rem solid var(--tb-border);
+}

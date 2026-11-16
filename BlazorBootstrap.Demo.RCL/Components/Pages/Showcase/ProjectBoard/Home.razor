@@ -1,0 +1,70 @@
+@page "/showcase/project-board"
+@layout PbLayout
+@implements IDisposable
+
+<PageTitle>@PbSeedData.ProductName · @PbSeedData.AgencyName</PageTitle>
+
+@* The start page: what Tandem does for each role, and the way in. *@
+<div class="container-xl">
+    <section class="tb-hero mb-5" aria-labelledby="tb-home-title">
+        <span class="tb-icon mb-3" aria-hidden="true"><Icon Name="IconName.Kanban" class="fs-4" /></span>
+        <h1 class="tb-title fs-2 mb-2" id="tb-home-title">@PbSeedData.ProductName, where @PbSeedData.AgencyName plans, delivers, and sells</h1>
+        <p class="tb-lead mb-4">
+            One place for client work: boards for every project, a clear view of who is doing what, and the pipeline of deals
+            that turn into the next projects.
+        </p>
+        @if (State.CurrentPerson is { } person)
+        {
+            <p class="mb-3">Signed in as @person.Name.</p>
+            <a class="btn btn-primary" href="@(State.Identity.CurrentRole?.HomePath ?? $"{PbLayout.Base}/my-tasks")">
+                <Icon Name="IconName.BoxArrowInRight" class="me-2" aria-hidden="true" />Open @PbSeedData.ProductName
+            </a>
+        }
+        else
+        {
+            <div class="d-flex flex-wrap gap-2">
+                <a class="btn btn-primary" href="@PbLayout.SignInPath"><Icon Name="IconName.BoxArrowInRight" class="me-2" aria-hidden="true" />Sign in</a>
+                <a class="btn btn-outline-primary" href="@($"{PbLayout.SignInPath}?mode=register")">Join the team</a>
+            </div>
+            <p class="small text-body-secondary mt-3 mb-0">The sign-in page has one-click demo accounts for a team member, a project manager, and an account manager.</p>
+        }
+    </section>
+
+    <section aria-labelledby="tb-home-roles">
+        <h2 class="tb-section-title" id="tb-home-roles">For each role</h2>
+        <ul class="list-unstyled row row-cols-1 row-cols-md-3 g-3 mb-0">
+            <li class="col">
+                <div class="tb-panel h-100">
+                    <Icon Name="IconName.CheckSquare" class="fs-4 mb-2 d-block" aria-hidden="true" />
+                    <h3 class="h6 fw-bold">Team members</h3>
+                    <p class="small text-body-secondary mb-0">See your tasks by due date, move them across the board or the list, and keep the details in one place: comments, checklists, and due dates.</p>
+                </div>
+            </li>
+            <li class="col">
+                <div class="tb-panel h-100">
+                    <Icon Name="IconName.Diagram3" class="fs-4 mb-2 d-block" aria-hidden="true" />
+                    <h3 class="h6 fw-bold">Project managers</h3>
+                    <p class="small text-body-secondary mb-0">Set up projects and milestones, balance the team's workload, follow the roadmap, and report on progress.</p>
+                </div>
+            </li>
+            <li class="col">
+                <div class="tb-panel h-100">
+                    <Icon Name="IconName.Funnel" class="fs-4 mb-2 d-block" aria-hidden="true" />
+                    <h3 class="h6 fw-bold">Account managers</h3>
+                    <p class="small text-body-secondary mb-0">Keep clients and contacts, move deals through the pipeline, log calls and meetings, and forecast revenue. A won deal becomes a project.</p>
+                </div>
+            </li>
+        </ul>
+    </section>
+</div>
+
+@code {
+    [Inject] private PbState State { get; set; } = default!;
+
+    /// <summary>Stops listening to state changes.</summary>
+    public void Dispose() => State.Changed -= OnStateChanged;
+
+    protected override void OnInitialized() => State.Changed += OnStateChanged;
+
+    private void OnStateChanged() => InvokeAsync(StateHasChanged);
+}

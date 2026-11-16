@@ -1,0 +1,164 @@
+@page "/showcase/project-board/clients/{Id:int}"
+@layout PbWorkLayout
+
+@{
+    var client = State.FindClient(Id);
+}
+
+<PageTitle>@(client?.Name ?? "Client not found") · @PbSeedData.ProductName</PageTitle>
+
+<div class="container-fluid px-lg-4">
+    <PbRoleGuard Role="@PbSeedData.AccountManagerRole">
+        @if (client is null)
+        {
+            <PbNotFound Message="This client was deleted, or the link is wrong. Open it from the client list." />
+        }
+        else
+        {
+            var owner = State.FindPerson(client.OwnerId);
+            var deals = State.DealsOf(client.Id);
+            var open = deals.Where(DealDisplay.IsOpen).ToList();
+            var projects = State.Projects.Where(project => project.ClientId == client.Id).ToList();
+
+            <nav aria-label="Breadcrumb" class="mb-2">
+                <ol class="breadcrumb mb-0 small">
+                    <li class="breadcrumb-item"><a href="@DealDisplay.ClientsUrl">Clients</a></li>
+                    <li class="breadcrumb-item active pb-cldet-crumb" aria-current="page">@client.Name</li>
+                </ol>
+            </nav>
+
+            <div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-3">
+                <div class="pb-cldet-head">
+                    <h1 class="tb-title">@client.Name</h1>
+                    <dl class="pb-cldet-facts mt-2 mb-0">
+                        <div><dt>Industry</dt><dd>@client.Industry</dd></div>
+                        <div><dt>Website</dt><dd class="pb-cldet-website">@(string.IsNullOrEmpty(client.Website) ? "None" : client.Website)</dd></div>
+                        <div><dt>Owner</dt><dd>@(owner?.Name ?? "Nobody")@(owner is not null && owner.Id == State.CurrentPerson?.Id ? " (you)" : null)</dd></div>
+                        <div><dt>Client since</dt><dd>@PbDisplay.Date(client.CreatedAt)</dd></div>
+                        <div><dt>Open pipeline</dt><dd>@(open.Count == 0 ? "No open deals" : $"{DealDisplay.Plural(open.Count, "deal")}, {PbDisplay.Money(open.Sum(deal => (long)deal.Value))}")</dd></div>
+                    </dl>
+                </div>
+                <a class="btn btn-outline-primary" href="@DealDisplay.ClientEditUrl(client.Id)">
+                    <Icon Name="IconName.Pencil" class="me-1" aria-hidden="true" />Edit client<span class="visually-hidden"> @client.Name</span>
+                </a>
+            </div>
+
+            @* Always rendered, so the outcome of the client form is announced here. *@
+            <p class="fw-semibold pb-cldet-status" role="status">@pageMessage</p>
+
+            <div class="row g-4">
+                <div class="col-xl-7 d-grid gap-4 align-content-start pb-cldet-main">
+                    <ClientContacts ClientId="client.Id" />
+
+                    <section class="tb-panel" aria-labelledby="pb-cldet-deals-title">
+                        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2">
+                            <h2 class="tb-section-title mb-0" id="pb-cldet-deals-title">Deals</h2>
+                            <button type="button" class="btn btn-sm btn-outline-primary" @ref="newDealButton" @onclick="OpenNewDealAsync">
+                                <Icon Name="IconName.PlusLg" class="me-1" aria-hidden="true" />New deal
+                            </button>
+                        </div>
+
+                        <p class="fw-semibold pb-cldet-status @(dealStatusIsError ? "text-danger-emphasis" : null)" role="status" tabindex="-1" @ref="dealStatusRegion">@dealMessage</p>
+
+                        @if (deals.Count == 0)
+                        {
+                            <p class="text-body-secondary mb-0">No deals with @client.Name yet. Add one with New deal.</p>
+                        }
+                        else
+                        {
+                            <div class="table-responsive">
+                                <table class="table align-middle mb-0">
+                                    <caption class="pb-cldet-caption">@DealDisplay.Plural(deals.Count, "deal") with @client.Name, open ones first. Weighted value is the value times the stage's chance of closing.</caption>
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">Deal</th>
+                                            <th scope="col">Stage</th>
+                                            <th scope="col" class="text-end">Value</th>
+                                            <th scope="col">Close date</th>
+                                            <th scope="col" class="text-end">Weighted</th>
+                                            <th scope="col">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var deal in deals)
+                                        {
+                                            var dealId = deal.Id;
+                                            var overdue = DealDisplay.IsCloseOverdue(deal, State.Clock.Today);
+                                            <tr @key="deal.Id">
+                                                <th scope="row" class="pb-cldet-wrap"><a href="@($"{DealDisplay.PipelineUrl}#pb-deal-{deal.Id}")">@deal.Title</a></th>
+                                                <td class="text-nowrap">@PbDisplay.StageLabel(deal.Stage) <span class="small text-body-secondary">(@DealDisplay.Percent(PbState.Probability(deal.Stage)))</span></td>
+                                                <td class="text-end text-nowrap">@PbDisplay.Money(deal.Value)</td>
+                                                <td class="pb-cldet-close @(overdue ? "text-danger-emphasis fw-semibold" : null)">
+                                                    @if (overdue)
+                                                    {
+                                                        <Icon Name="IconName.ExclamationTriangle" class="me-1" aria-hidden="true" />
+                                                    }
+                                                    @DealDisplay.CloseText(deal, State.Clock.Today)
+                                                </td>
+                                                <td class="text-end text-nowrap">@PbDisplay.Money(PbState.Weighted(deal))</td>
+                                                <td>
+                                                    @if (deal.ClosedAt is null)
+                                                    {
+                                                        <button type="button" class="btn btn-sm btn-outline-secondary text-nowrap" @ref="editDealButtons[dealId]" @onclick="() => OpenEditDealAsync(dealId)">
+                                                            <Icon Name="IconName.Pencil" class="me-1" aria-hidden="true" />Edit<span class="visually-hidden"> @deal.Title</span>
+                                                        </button>
+                                                    }
+                                                    else if (deal.ProjectId is { } projectId && State.FindProject(projectId) is { } fromDeal)
+                                                    {
+                                                        <a class="small text-nowrap" href="@PbDisplay.ProjectUrl(fromDeal.Id)">Project @fromDeal.Key</a>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span class="small text-body-secondary text-nowrap">Closed</span>
+                                                    }
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        }
+                        <p class="small mt-3 mb-0"><a href="@DealDisplay.PipelineUrl">Move deals between stages on the deal pipeline</a></p>
+                    </section>
+
+                    <section class="tb-panel" aria-labelledby="pb-cldet-projects-title">
+                        <h2 class="tb-section-title" id="pb-cldet-projects-title">Projects</h2>
+                        @if (projects.Count == 0)
+                        {
+                            <p class="text-body-secondary mb-0">No projects for @client.Name yet. Winning a deal creates one for the project managers to plan.</p>
+                        }
+                        else
+                        {
+                            <ul class="list-unstyled d-grid gap-3 mb-0">
+                                @foreach (var project in projects)
+                                {
+                                    var (done, total) = State.ProjectProgress(project.Id);
+                                    var percent = total == 0 ? 0 : done * 100 / total;
+                                    var progressId = $"pb-cldet-progress-{project.Id}";
+                                    <li @key="project.Id" class="pb-cldet-project">
+                                        <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-1">
+                                            <a class="fw-semibold pb-cldet-wrap" href="@PbDisplay.ProjectUrl(project.Id)"><span class="tb-key">@project.Key</span> @project.Name</a>
+                                            <Badge Color="@ProjectBadge(project.Status)" Class="rounded-pill">@PbDisplay.ProjectStatusLabel(project.Status)</Badge>
+                                        </div>
+                                        <div class="progress pb-cldet-bar" role="progressbar" aria-labelledby="@progressId" aria-valuemin="0" aria-valuemax="100" aria-valuenow="@percent">
+                                            <div class="progress-bar" style="width: @(percent)%"></div>
+                                        </div>
+                                        <p class="small text-body-secondary mt-1 mb-0" id="@progressId">
+                                            @(total == 0 ? "No tasks yet" : $"{done} of {DealDisplay.Plural(total, "task")} done ({percent}%)") · due @PbDisplay.Date(project.DueDate)
+                                        </p>
+                                    </li>
+                                }
+                            </ul>
+                        }
+                    </section>
+                </div>
+
+                <div class="col-xl-5">
+                    <ClientTimeline ClientId="client.Id" />
+                </div>
+            </div>
+
+            <DealEditor @ref="dealEditor" OnClosed="OnDealEditorClosed" />
+        }
+    </PbRoleGuard>
+</div>

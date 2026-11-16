@@ -1,0 +1,40 @@
+@implements IDisposable
+
+@* For pages of one role inside PbWorkLayout (which already requires a sign-in): another role sees a short panel instead.
+   Roles: "pm" or "am" (PbSeedData.ProjectManagerRole, PbSeedData.AccountManagerRole). *@
+@if (Allowed)
+{
+    @ChildContent
+}
+else
+{
+    <section class="tb-not-found" aria-labelledby="tb-guard-title">
+        <span class="tb-icon fs-4" aria-hidden="true"><Icon Name="IconName.ShieldLock" /></span>
+        <h1 class="tb-title fs-3 mt-3 mb-2" id="tb-guard-title">This page is for @RoleName</h1>
+        <p class="text-body-secondary mb-4">You're signed in as @(State.Identity.CurrentRole?.Label.ToLowerInvariant() ?? "someone else"). Sign in with the @RoleSingular demo account to use it.</p>
+        <a class="btn btn-primary" href="@($"{PbLayout.Base}/my-tasks")">Go to my tasks</a>
+    </section>
+}
+
+@code {
+    /// <summary>Gets or sets the content shown to the role.</summary>
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    /// <summary>Gets or sets the role that may see the content.</summary>
+    [Parameter, EditorRequired] public string Role { get; set; } = string.Empty;
+
+    [Inject] private PbState State { get; set; } = default!;
+
+    private bool Allowed => Role == PbSeedData.ProjectManagerRole ? State.IsProjectManager : Role == PbSeedData.AccountManagerRole && State.IsAccountManager;
+
+    private string RoleName => Role == PbSeedData.ProjectManagerRole ? "project managers" : "account managers";
+
+    private string RoleSingular => Role == PbSeedData.ProjectManagerRole ? "project manager" : "account manager";
+
+    /// <summary>Stops listening to state changes.</summary>
+    public void Dispose() => State.Changed -= OnStateChanged;
+
+    protected override void OnInitialized() => State.Changed += OnStateChanged;
+
+    private void OnStateChanged() => InvokeAsync(StateHasChanged);
+}

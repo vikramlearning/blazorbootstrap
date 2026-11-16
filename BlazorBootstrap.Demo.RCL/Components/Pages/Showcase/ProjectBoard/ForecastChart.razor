@@ -1,0 +1,5 @@
+@* A bar chart of the forecast. It is its own component so it starts drawing when it appears: the page's content sits inside
+   the role guard, which shows it only after the tab's data is restored and the account manager is signed in. *@
+<div class="pb-forecast-chart" role="img" aria-label="@AriaLabel">
+    <BarChart @ref="chart" Height="@Height" HeightUnit="Unit.Px" Width="100" WidthUnit="Unit.Percentage" />
+</div>

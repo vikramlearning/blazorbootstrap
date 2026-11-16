@@ -1,0 +1,60 @@
+/* Workload: the chart with its table, and one card per person with their open tasks. */
+.tb-wl-status:empty {
+    margin: 0;
+}
+
+.tb-wl-status:focus {
+    outline: none;
+}
+
+.tb-wl-status:focus-visible {
+    outline: 2px solid var(--bs-focus-ring-color, var(--sc-primary));
+    outline-offset: 2px;
+}
+
+.tb-wl-person {
+    min-width: 0;
+    padding: 1rem 1.25rem;
+}
+
+.tb-wl-wrap {
+    overflow-wrap: anywhere;
+}
+
+.min-w-0 {
+    min-width: 0;
+}
+
+.tb-wl-details > summary {
+    width: fit-content;
+    font-size: .875rem;
+    font-weight: 600;
+    color: var(--sc-primary);
+    cursor: pointer;
+}
+
+    .tb-wl-details > summary:focus-visible {
+        outline: 2px solid var(--bs-focus-ring-color, var(--sc-primary));
+        outline-offset: 2px;
+        border-radius: .25rem;
+    }
+
+.tb-wl-details .table,
+.tb-wl-table {
+    font-size: .8125rem;
+}
+
+.tb-wl-title {
+    min-width: 12rem;
+    font-weight: 600;
+    overflow-wrap: anywhere;
+}
+
+.tb-wl-project {
+    min-width: 9rem;
+    overflow-wrap: anywhere;
+}
+
+.tb-wl-select {
+    min-width: 9.5rem;
+}

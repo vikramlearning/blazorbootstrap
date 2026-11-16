@@ -1,0 +1,10 @@
+/* The activity of every client, one panel per day. */
+.pb-act-list {
+    display: grid;
+    gap: 1rem;
+}
+
+    .pb-act-list > li + li {
+        padding-top: 1rem;
+        border-top: 1px solid var(--tb-border);
+    }

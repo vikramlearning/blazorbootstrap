@@ -1,0 +1,12 @@
+@* A chart of the project manager's reports and workload pages. It is its own component so it starts drawing when it
+   appears: the page's content sits inside the sign-in and role guards, which show it only after the tab's data is restored. *@
+<div class="tb-rpc" role="img" aria-label="@AriaLabel">
+    @if (Kind == ReportsChartKind.Doughnut)
+    {
+        <DoughnutChart @ref="doughnut" Height="@Height" HeightUnit="Unit.Px" Width="100" WidthUnit="Unit.Percentage" />
+    }
+    else
+    {
+        <BarChart @ref="bar" Height="@Height" HeightUnit="Unit.Px" Width="100" WidthUnit="Unit.Percentage" />
+    }
+</div>

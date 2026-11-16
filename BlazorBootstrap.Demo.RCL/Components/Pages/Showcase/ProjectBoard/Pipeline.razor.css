@@ -1,0 +1,139 @@
+/* The deal pipeline: six columns that scroll sideways inside their own box when the screen is narrower than the board. */
+.pb-pipe-status {
+    min-height: 1.5rem;
+    margin-bottom: .75rem;
+    overflow-wrap: anywhere;
+}
+
+    .pb-pipe-status:focus {
+        outline: none;
+    }
+
+    .pb-pipe-status:focus-visible {
+        outline: 2px solid var(--bs-focus-ring-color, var(--sc-primary));
+        outline-offset: 2px;
+    }
+
+.pb-pipe-scroll {
+    /* The containing block of the cards' visually hidden text, which is absolutely positioned: otherwise that text
+       escapes the scrolling box and widens the page on narrow screens. */
+    position: relative;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding-bottom: .5rem;
+    border-radius: .875rem;
+}
+
+    .pb-pipe-scroll:focus-visible {
+        outline: 2px solid var(--bs-focus-ring-color, var(--sc-primary));
+        outline-offset: 2px;
+    }
+
+.pb-pipe-board {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(15.5rem, 1fr);
+    gap: .75rem;
+    align-items: start;
+    min-width: min-content;
+}
+
+.pb-pipe-column {
+    display: flex;
+    flex-direction: column;
+    gap: .625rem;
+}
+
+.pb-pipe-column-title {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: .5rem;
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--tb-ink);
+}
+
+.pb-pipe-chance {
+    font-size: .75rem;
+    font-weight: 600;
+    color: var(--bs-secondary-color);
+}
+
+.pb-pipe-column-sum {
+    font-size: .8125rem;
+    color: var(--bs-secondary-color);
+}
+
+/* The SortableList renders the list and its item wrappers: reach them through ::deep. */
+.pb-pipe-column ::deep .pb-pipe-list {
+    display: flex;
+    flex-direction: column;
+    gap: .5rem;
+    min-height: 4rem;
+    border-radius: .625rem;
+}
+
+    .pb-pipe-column ::deep .pb-pipe-list > .list-group-item {
+        padding: 0;
+        border: 0;
+        border-radius: .625rem;
+        background: transparent;
+        color: inherit;
+    }
+
+    /* The empty column's placeholder: a drop target. */
+    .pb-pipe-column ::deep .pb-pipe-list > .bb-sortable-list-item-disabled:not(:has(.pb-pipe-card)) {
+        padding: .75rem;
+        border: 1px dashed var(--tb-border);
+    }
+
+    .pb-pipe-column ::deep .pb-pipe-list > .sortable-ghost {
+        opacity: .5;
+    }
+
+.pb-pipe-card:focus {
+    outline: 2px solid var(--bs-focus-ring-color, var(--sc-primary));
+    outline-offset: 2px;
+}
+
+.pb-pipe-handle {
+    flex: 0 0 auto;
+    margin-top: .125rem;
+    color: var(--bs-secondary-color);
+    cursor: grab;
+    touch-action: none;
+}
+
+    .pb-pipe-handle:hover {
+        color: var(--sc-primary);
+    }
+
+.pb-pipe-card-title {
+    margin: 0 0 .125rem;
+    font-size: .9375rem;
+    font-weight: 700;
+    color: var(--tb-ink);
+    overflow-wrap: anywhere;
+}
+
+.pb-pipe-client {
+    overflow-wrap: anywhere;
+}
+
+.pb-pipe-value {
+    overflow-wrap: anywhere;
+    margin-top: .5rem;
+}
+
+.pb-pipe-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .375rem;
+}
+
+/* Written in this page's templates, so it carries the page's scope inside the Modal. */
+.pb-pipe-dialog-title {
+    overflow-wrap: anywhere;
+}

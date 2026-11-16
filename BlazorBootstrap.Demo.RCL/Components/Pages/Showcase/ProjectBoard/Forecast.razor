@@ -1,0 +1,198 @@
+@page "/showcase/project-board/forecast"
+@layout PbWorkLayout
+
+<PageTitle>Forecast · @PbSeedData.ProductName</PageTitle>
+
+<div class="container-fluid px-lg-4">
+    <PbRoleGuard Role="@PbSeedData.AccountManagerRole">
+        @{
+            var report = Report;
+            var targetText = PbDisplay.Money(PbSeedData.MonthlyTarget);
+        }
+
+        <div class="mb-4">
+            <h1 class="tb-title">Forecast</h1>
+            <p class="tb-lead mb-0">
+                Revenue won and the pipeline weighted by each stage's chance of closing, against @PbSeedData.AgencyName's target of @targetText won a month.
+                Figures are for every account manager's deals.
+            </p>
+        </div>
+
+        <section aria-labelledby="pb-fc-kpi-title" class="mb-4">
+            <h2 class="visually-hidden" id="pb-fc-kpi-title">Key figures</h2>
+            <div class="row g-3">
+                <div class="col-sm-6 col-xl-3">
+                    <div class="tb-panel h-100">
+                        <span class="pb-fc-label">Open pipeline</span>
+                        <span class="pb-fc-value">@PbDisplay.Money(report.OpenValue)</span>
+                        <span class="small text-body-secondary">@DealDisplay.Plural(report.OpenCount, "open deal")</span>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-xl-3">
+                    <div class="tb-panel h-100">
+                        <span class="pb-fc-label">Weighted pipeline</span>
+                        <span class="pb-fc-value">@PbDisplay.Money(report.WeightedValue)</span>
+                        <span class="small text-body-secondary">What the open deals are worth at their stage's chance</span>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-xl-3">
+                    <div class="tb-panel h-100">
+                        <span class="pb-fc-label" id="pb-fc-won-label">Won in @report.MonthName</span>
+                        <span class="pb-fc-value">@PbDisplay.Money(report.WonThisMonth)</span>
+                        <Progress Height="8" Class="my-2">
+                            <ProgressBar Width="@Math.Min(100, report.TargetPercent)" Color="@(report.TargetPercent >= 100 ? ProgressColor.Success : ProgressColor.Primary)"
+                                         aria-labelledby="pb-fc-won-label" aria-describedby="pb-fc-won-words" aria-valuemin="0" aria-valuemax="100" aria-valuenow="@Math.Min(100, report.TargetPercent)" />
+                        </Progress>
+                        <span class="small" id="pb-fc-won-words">@report.TargetWords</span>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-xl-3">
+                    <div class="tb-panel h-100">
+                        <span class="pb-fc-label">Win rate</span>
+                        <span class="pb-fc-value">@(report.ClosedCount == 0 ? "None yet" : DealDisplay.Percent(report.WinRate))</span>
+                        <span class="small text-body-secondary">
+                            @(report.ClosedCount == 0 ? "No deals won or lost yet" : $"{report.WonCount} won of {DealDisplay.Plural(report.ClosedCount, "closed deal")} ({report.LostCount} lost)")
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="tb-panel mb-4" aria-labelledby="pb-fc-chart-title">
+            <h2 class="tb-section-title mb-1" id="pb-fc-chart-title">By month</h2>
+            <p class="small text-body-secondary">
+                Won revenue by the month each deal was won, and the weighted open pipeline by the month each deal is expected to close
+                (deals past their close date count in @report.MonthName), from @report.Months[0].Label to @report.Months[^1].Label. The muted bars are the target.
+            </p>
+            <ForecastChart Labels="report.Months.Select(month => month.Label).ToList()" Series="report.ChartSeries" AriaLabel="@($"Bar chart by month. {report.MonthSummary}")" />
+            <p class="mt-3 mb-2">@report.MonthSummary</p>
+            <details class="pb-fc-details">
+                <summary>Show the data as a table</summary>
+                <div class="table-responsive mt-2">
+                    <table class="table table-sm align-middle mb-0">
+                        <caption class="visually-hidden">Won revenue, weighted open pipeline, and the target by month, oldest first</caption>
+                        <thead>
+                            <tr>
+                                <th scope="col">Month</th>
+                                <th scope="col" class="text-end">Won</th>
+                                <th scope="col" class="text-end">Weighted pipeline</th>
+                                <th scope="col" class="text-end">Target</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var month in report.Months)
+                            {
+                                <tr @key="month.Start">
+                                    <th scope="row" class="text-nowrap">@month.Label@(month.IsCurrent ? " (this month)" : null)</th>
+                                    <td class="text-end">@PbDisplay.Money(month.Won) <span class="small text-body-secondary">(@DealDisplay.Plural(month.WonCount, "deal"))</span></td>
+                                    <td class="text-end">@PbDisplay.Money(month.Weighted) <span class="small text-body-secondary">(@DealDisplay.Plural(month.OpenCount, "deal"))</span></td>
+                                    <td class="text-end">@targetText</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </details>
+        </section>
+
+        <div class="row g-4">
+            <div class="col-xxl-8">
+                <section class="tb-panel" aria-labelledby="pb-fc-closing-title">
+                    <h2 class="tb-section-title" id="pb-fc-closing-title">Closing in the next 90 days</h2>
+                    @if (report.Closing.Count == 0)
+                    {
+                        <p class="mb-0">No open deals are expected to close by @PbDisplay.Date(report.HorizonEnd).</p>
+                    }
+                    else
+                    {
+                        <div class="table-responsive">
+                            <table class="table align-middle mb-0">
+                                <caption class="pb-fc-caption">
+                                    @DealDisplay.Plural(report.Closing.Count, "open deal") expected to close by @PbDisplay.Date(report.HorizonEnd), the soonest first:
+                                    @PbDisplay.Money(report.Closing.Sum(deal => (long)deal.Value)), weighted @PbDisplay.Money(report.Closing.Sum(deal => (long)PbState.Weighted(deal))).
+                                </caption>
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Deal</th>
+                                        <th scope="col">Client</th>
+                                        <th scope="col">Stage</th>
+                                        <th scope="col" class="text-end">Value</th>
+                                        <th scope="col" class="text-end">Chance</th>
+                                        <th scope="col" class="text-end">Weighted</th>
+                                        <th scope="col">Close date</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var deal in report.Closing)
+                                    {
+                                        var client = State.FindClient(deal.ClientId);
+                                        var overdue = DealDisplay.IsCloseOverdue(deal, State.Clock.Today);
+                                        <tr @key="deal.Id">
+                                            <th scope="row" class="pb-fc-wrap"><a href="@($"{DealDisplay.PipelineUrl}#pb-deal-{deal.Id}")">@deal.Title</a></th>
+                                            <td class="pb-fc-wrap">
+                                                @if (client is not null)
+                                                {
+                                                    <a href="@PbDisplay.ClientUrl(client.Id)">@client.Name</a>
+                                                }
+                                            </td>
+                                            <td>@PbDisplay.StageLabel(deal.Stage)</td>
+                                            <td class="text-end text-nowrap">@PbDisplay.Money(deal.Value)</td>
+                                            <td class="text-end">@DealDisplay.Percent(PbState.Probability(deal.Stage))</td>
+                                            <td class="text-end text-nowrap">@PbDisplay.Money(PbState.Weighted(deal))</td>
+                                            <td class="pb-fc-close @(overdue ? "text-danger-emphasis fw-semibold" : null)">
+                                                @if (overdue)
+                                                {
+                                                    <Icon Name="IconName.ExclamationTriangle" class="me-1" aria-hidden="true" />
+                                                }
+                                                @DealDisplay.CloseText(deal, State.Clock.Today)
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                </section>
+            </div>
+
+            <div class="col-xxl-4">
+                <section class="tb-panel" aria-labelledby="pb-fc-stage-title">
+                    <h2 class="tb-section-title" id="pb-fc-stage-title">By stage</h2>
+                    <div class="table-responsive">
+                        <table class="table table-sm align-middle mb-0">
+                            <caption class="pb-fc-caption">Every deal by stage. Won and lost are all time.</caption>
+                            <thead>
+                                <tr>
+                                    <th scope="col">Stage</th>
+                                    <th scope="col" class="text-end">Deals</th>
+                                    <th scope="col" class="text-end">Value</th>
+                                    <th scope="col" class="text-end">Weighted</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var row in report.Stages)
+                                {
+                                    <tr @key="row.Stage">
+                                        <th scope="row" class="text-nowrap">@PbDisplay.StageLabel(row.Stage) <span class="fw-normal small text-body-secondary">(@DealDisplay.Percent(PbState.Probability(row.Stage)))</span></th>
+                                        <td class="text-end">@row.Count</td>
+                                        <td class="text-end text-nowrap">@PbDisplay.Money(row.Value)</td>
+                                        <td class="text-end text-nowrap">@PbDisplay.Money(row.Weighted)</td>
+                                    </tr>
+                                }
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <th scope="row">Open</th>
+                                    <td class="text-end fw-semibold">@report.OpenCount</td>
+                                    <td class="text-end fw-semibold text-nowrap">@PbDisplay.Money(report.OpenValue)</td>
+                                    <td class="text-end fw-semibold text-nowrap">@PbDisplay.Money(report.WeightedValue)</td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                    <p class="small mt-3 mb-0"><a href="@DealDisplay.PipelineUrl">Open the deal pipeline</a></p>
+                </section>
+            </div>
+        </div>
+    </PbRoleGuard>
+</div>

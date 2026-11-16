@@ -1,0 +1,17 @@
+@* The site's not-found screen, shown by the catch-all route and for unknown projects, tasks, clients, and deals. *@
+<PageTitle>Page not found · @PbSeedData.ProductName</PageTitle>
+
+<section class="tb-not-found">
+    <span class="tb-icon fs-4" aria-hidden="true"><Icon Name="IconName.SignpostSplit" /></span>
+    <h1 class="tb-title fs-3 mt-3 mb-2">We couldn't find that page</h1>
+    <p class="text-body-secondary mb-4">@(Message ?? "It may have been deleted, or the link is wrong.")</p>
+    <div class="d-flex justify-content-center flex-wrap gap-2">
+        <Button Type="ButtonType.Link" To="@($"{PbLayout.Base}/my-tasks")" Color="ButtonColor.Primary">My tasks</Button>
+        <Button Type="ButtonType.Link" To="@($"{PbLayout.Base}/projects")" Color="ButtonColor.Primary" Outline="true">Project boards</Button>
+    </div>
+</section>
+
+@code {
+    /// <summary>Gets or sets what is missing, like "This task was deleted, or the link is wrong."</summary>
+    [Parameter] public string? Message { get; set; }
+}

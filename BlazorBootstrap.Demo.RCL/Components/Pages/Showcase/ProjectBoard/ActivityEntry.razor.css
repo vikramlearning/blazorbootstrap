@@ -1,0 +1,27 @@
+/* One timeline entry: the kind's icon beside the text. */
+.pb-activity-entry {
+    display: flex;
+    gap: .75rem;
+    align-items: flex-start;
+    min-width: 0;
+}
+
+.pb-activity-icon {
+    flex: 0 0 auto;
+}
+
+/* Recorded by Tandem: the words say so; the outline only supports them. */
+.pb-activity-entry .pb-activity-icon-system {
+    background: transparent;
+    border: 1px dashed var(--tb-border);
+}
+
+.pb-activity-body {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+.pb-activity-meta {
+    font-size: .875rem;
+}

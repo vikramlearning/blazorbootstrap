@@ -1,0 +1,139 @@
+@page "/showcase/project-board/clients"
+@layout PbWorkLayout
+
+<PageTitle>Clients · @PbSeedData.ProductName</PageTitle>
+
+<div class="container-fluid px-lg-4">
+    <PbRoleGuard Role="@PbSeedData.AccountManagerRole">
+        @{
+            var all = State.Clients;
+            var rows = Rows;
+            var owners = State.AccountManagers;
+        }
+
+        <div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-3">
+            <div>
+                <h1 class="tb-title">Clients</h1>
+                <p class="tb-lead mb-0">The companies @PbSeedData.AgencyName works with: who owns each relationship, the main contact, open deals, and projects.</p>
+            </div>
+            <Button Type="ButtonType.Link" To="@DealDisplay.NewClientUrl" Color="ButtonColor.Primary">
+                <Icon Name="IconName.PlusLg" class="me-1" aria-hidden="true" />New client
+            </Button>
+        </div>
+
+        @* Always rendered, so the outcome of a deletion on the edit page is announced here. *@
+        <p class="fw-semibold pb-clients-status" role="status">@statusMessage</p>
+
+        <section class="tb-panel" aria-labelledby="pb-clients-list-title">
+            <h2 class="visually-hidden" id="pb-clients-list-title">Client list</h2>
+            <div class="row g-3 align-items-start mb-3" role="search" aria-label="Find clients">
+                <div class="col-sm-7 col-lg-5">
+                    <label class="form-label fw-semibold" for="pb-clients-search">Search</label>
+                    <input id="pb-clients-search" type="search" class="form-control" @bind="search" @bind:event="oninput" autocomplete="off"
+                           aria-describedby="pb-clients-search-help" />
+                    <div class="form-text" id="pb-clients-search-help">Name, industry, or a contact's name.</div>
+                </div>
+                <div class="col-sm-5 col-lg-3">
+                    <label class="form-label fw-semibold" for="pb-clients-owner">Owner</label>
+                    <select id="pb-clients-owner" class="form-select" @bind="ownerFilter" aria-describedby="pb-clients-owner-help">
+                        <option value="">Everyone</option>
+                        @foreach (var owner in owners)
+                        {
+                            <option value="@owner.Id" @key="owner.Id">@owner.Name@(owner.Id == State.CurrentPerson?.Id ? " (you)" : null)</option>
+                        }
+                    </select>
+                    <div class="form-text" id="pb-clients-owner-help">Who owns the relationship.</div>
+                </div>
+            </div>
+
+            @if (rows.Count == 0)
+            {
+                <p class="mb-0">
+                    @if (all.Count == 0)
+                    {
+                        @("There are no clients yet. Add the first one with New client.")
+                    }
+                    else
+                    {
+                        @("No clients match. Change the search or the owner.")
+                    }
+                </p>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table align-middle mb-0">
+                        <caption class="pb-clients-caption">
+                            @(rows.Count == all.Count ? $"All {DealDisplay.Plural(all.Count, "client")}, by name." : $"{DealDisplay.Plural(rows.Count, "client")} of {all.Count} match, by name.")
+                            Open deal value is the total of deals not yet won or lost.
+                        </caption>
+                        <thead>
+                            <tr>
+                                <th scope="col">Name</th>
+                                <th scope="col">Industry</th>
+                                <th scope="col">Owner</th>
+                                <th scope="col">Primary contact</th>
+                                <th scope="col" class="text-end">Open deals</th>
+                                <th scope="col" class="text-end">Projects</th>
+                                <th scope="col">Last activity</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var client in rows)
+                            {
+                                var open = State.DealsOf(client.Id).Where(DealDisplay.IsOpen).ToList();
+                                var projects = State.Projects.Count(project => project.ClientId == client.Id);
+                                var primary = State.ContactsOf(client.Id).FirstOrDefault(contact => contact.IsPrimary);
+                                var last = State.ActivitiesOf(client.Id).FirstOrDefault();
+                                var owner = State.FindPerson(client.OwnerId);
+                                <tr @key="client.Id">
+                                    <th scope="row" class="pb-clients-name"><a href="@PbDisplay.ClientUrl(client.Id)">@client.Name</a></th>
+                                    <td class="pb-clients-wrap">@client.Industry</td>
+                                    <td class="text-nowrap">@(owner?.Name ?? "Nobody")@(owner is not null && owner.Id == State.CurrentPerson?.Id ? " (you)" : null)</td>
+                                    <td class="pb-clients-wrap">
+                                        @if (primary is null)
+                                        {
+                                            <span class="text-body-secondary">None yet</span>
+                                        }
+                                        else
+                                        {
+                                            @primary.Name
+                                            @if (!string.IsNullOrEmpty(primary.Title))
+                                            {
+                                                <span class="d-block small text-body-secondary">@primary.Title</span>
+                                            }
+                                        }
+                                    </td>
+                                    <td class="text-end text-nowrap">
+                                        @if (open.Count == 0)
+                                        {
+                                            <span class="text-body-secondary">None</span>
+                                        }
+                                        else
+                                        {
+                                            @DealDisplay.Plural(open.Count, "deal")
+                                            <span class="d-block small text-body-secondary">@PbDisplay.Money(open.Sum(deal => (long)deal.Value))</span>
+                                        }
+                                    </td>
+                                    <td class="text-end">@projects</td>
+                                    <td class="text-nowrap">
+                                        @if (last is null)
+                                        {
+                                            <span class="text-body-secondary">None yet</span>
+                                        }
+                                        else
+                                        {
+                                            <span title="@DealDisplay.FullTime(last.At)">@PbDisplay.Ago(last.At, State.Clock.Now)</span>
+                                            <span class="visually-hidden"> (@DealDisplay.FullTime(last.At))</span>
+                                            <span class="d-block small text-body-secondary">@DealDisplay.KindLabel(last.Kind)</span>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </section>
+    </PbRoleGuard>
+</div>

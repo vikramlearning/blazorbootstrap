@@ -1,0 +1,280 @@
+@page "/showcase/project-board/pipeline"
+@layout PbWorkLayout
+
+<PageTitle>Deal pipeline · @PbSeedData.ProductName</PageTitle>
+
+<div class="container-fluid px-lg-4">
+    <PbRoleGuard Role="@PbSeedData.AccountManagerRole">
+        @{
+            var owners = State.AccountManagers;
+            var filtered = IsFiltered;
+            var today = State.Clock.Today;
+            var createdProject = State.FindProject(createdProjectId);
+        }
+
+        <div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-3">
+            <div>
+                <h1 class="tb-title">Deal pipeline</h1>
+                <p class="tb-lead mb-0">
+                    Every deal from lead to won or lost. Drag a card by its handle, or use Move to stage on the card.
+                    Winning a deal creates a planned project for the project managers.
+                </p>
+            </div>
+            <button type="button" class="btn btn-primary" @ref="newDealButton" @onclick="OpenNewDealAsync">
+                <Icon Name="IconName.PlusLg" class="me-1" aria-hidden="true" />New deal
+            </button>
+        </div>
+
+        <div class="tb-panel mb-3" role="search" aria-label="Filter deals">
+            <div class="row g-3 align-items-end">
+                <div class="col-sm-6 col-lg-4">
+                    <label class="form-label fw-semibold" for="pb-pipe-search">Search</label>
+                    <input id="pb-pipe-search" type="search" class="form-control" @bind="search" @bind:event="oninput" autocomplete="off" aria-describedby="pb-pipe-search-help" />
+                    <div class="form-text" id="pb-pipe-search-help">A deal's title or its client's name.</div>
+                </div>
+                <div class="col-sm-6 col-lg-3">
+                    <label class="form-label fw-semibold" for="pb-pipe-owner">Owner</label>
+                    <select id="pb-pipe-owner" class="form-select" @bind="ownerFilter" aria-describedby="pb-pipe-owner-help">
+                        <option value="">Everyone</option>
+                        @foreach (var owner in owners)
+                        {
+                            <option value="@owner.Id" @key="owner.Id">@owner.Name@(owner.Id == State.CurrentPerson?.Id ? " (you)" : null)</option>
+                        }
+                    </select>
+                    <div class="form-text" id="pb-pipe-owner-help">The account manager who owns the deal.</div>
+                </div>
+                <div class="col-sm-6 col-lg-3">
+                    <button type="button" class="btn @(closeThisMonth ? "btn-primary" : "btn-outline-secondary") w-100" aria-pressed="@(closeThisMonth ? "true" : "false")"
+                            aria-describedby="pb-pipe-month-help" @onclick="() => closeThisMonth = !closeThisMonth">
+                        <Icon Name="IconName.Calendar3" class="me-1" aria-hidden="true" />Closing this month
+                    </button>
+                    <div class="form-text" id="pb-pipe-month-help">Expected or actual close in @today.ToString("MMMM yyyy", CultureInfo.InvariantCulture).</div>
+                </div>
+                @if (filtered)
+                {
+                    <div class="col-sm-6 col-lg-2">
+                        <button type="button" class="btn btn-link px-0" @onclick="ClearFilters">Show all deals</button>
+                        <div class="form-text">&nbsp;</div>
+                    </div>
+                }
+            </div>
+        </div>
+
+        @* Always rendered and focusable: every move, save, and refusal is announced here, and focus has somewhere to go. *@
+        <div class="fw-semibold pb-pipe-status @(statusIsError ? "text-danger-emphasis" : null)" role="status" tabindex="-1" @ref="statusRegion">
+            @statusMessage
+            @if (createdProject is not null && statusMessage is not null)
+            {
+                <a class="ms-1" href="@PbDisplay.ProjectUrl(createdProject.Id)">Open the @createdProject.Key project board</a>
+            }
+        </div>
+
+        <p class="small text-body-secondary mb-2" id="pb-pipe-totals-help">
+            @(filtered ? "Counts and totals are of the deals shown." : "Counts and totals are of every deal in the stage.")
+            Weighted value is the value times the stage's chance of closing.
+        </p>
+
+        <div class="pb-pipe-scroll" role="region" aria-label="Pipeline stages" tabindex="0">
+            <div class="pb-pipe-board">
+                @foreach (var stage in DealDisplay.Stages)
+                {
+                    var column = Visible(stage);
+                    renderedColumns[stage] = column;
+                    var titleId = $"pb-pipe-col-{stage}";
+                    <section class="tb-column pb-pipe-column" aria-labelledby="@titleId" @key="@($"col-{stage}")">
+                        <header class="pb-pipe-column-head">
+                            <h2 class="pb-pipe-column-title" id="@titleId">
+                                @PbDisplay.StageLabel(stage)
+                                <span class="pb-pipe-chance">@DealDisplay.Percent(PbState.Probability(stage))</span>
+                            </h2>
+                            <p class="pb-pipe-column-sum mb-0">
+                                @DealDisplay.Plural(column.Count, "deal") · @PbDisplay.Money(column.Sum(deal => (long)deal.Value))
+                                <span class="d-block">Weighted @PbDisplay.Money(column.Sum(deal => (long)PbState.Weighted(deal)))</span>
+                            </p>
+                        </header>
+
+                        <SortableList @key="@($"list-{stage}-{pipelineVersion}")"
+                                      TItem="PbDeal"
+                                      Class="pb-pipe-list"
+                                      Group="pb-pipeline"
+                                      Name="@stage.ToString()"
+                                      Handle=".pb-pipe-handle"
+                                      Data="column"
+                                      Context="deal"
+                                      OnUpdate="args => OnDragUpdate(stage, args)"
+                                      OnRemove="args => OnDragRemove(stage, args)">
+                            <ItemTemplate>
+                                @{
+                                    var dealId = deal.Id;
+                                    var locked = IsLocked(deal);
+                                    var client = State.FindClient(deal.ClientId);
+                                    var owner = State.FindPerson(deal.OwnerId);
+                                    var project = State.FindProject(deal.ProjectId);
+                                    var overdue = DealDisplay.IsCloseOverdue(deal, today);
+                                    var position = column.IndexOf(deal);
+                                    var cardTitleId = $"pb-deal-{deal.Id}-title";
+                                    var selectId = $"pb-deal-{deal.Id}-move";
+                                }
+                                <article class="tb-card-item pb-pipe-card" id="@($"pb-deal-{deal.Id}")" tabindex="-1" aria-labelledby="@cardTitleId" @key="deal.Id" @ref="cards[dealId]">
+                                    <div class="d-flex align-items-start gap-2">
+                                        @if (!locked)
+                                        {
+                                            <span class="pb-pipe-handle" title="Drag to move" aria-hidden="true"><Icon Name="IconName.GripVertical" /></span>
+                                        }
+                                        <div class="flex-grow-1 min-w-0">
+                                            <h3 class="pb-pipe-card-title" id="@cardTitleId">@deal.Title</h3>
+                                            @if (client is not null)
+                                            {
+                                                <a class="small pb-pipe-client" href="@PbDisplay.ClientUrl(client.Id)">@client.Name</a>
+                                            }
+                                        </div>
+                                        <span class="tb-person" title="@($"Owner: {owner?.Name ?? "nobody"}")">
+                                            <span aria-hidden="true">@(owner?.Initials ?? "?")</span><span class="visually-hidden">Owner: @(owner?.Name ?? "nobody")</span>
+                                        </span>
+                                    </div>
+
+                                    <p class="pb-pipe-value mb-1">
+                                        <span class="fw-bold">@PbDisplay.Money(deal.Value)</span>
+                                        <span class="small text-body-secondary">· @DealDisplay.WeightedText(deal)</span>
+                                    </p>
+                                    <p class="small mb-2 @(overdue ? "text-danger-emphasis fw-semibold" : "text-body-secondary")">
+                                        @if (overdue)
+                                        {
+                                            <Icon Name="IconName.ExclamationTriangle" class="me-1" aria-hidden="true" />
+                                        }
+                                        @DealDisplay.CloseText(deal, today)
+                                    </p>
+
+                                    @if (locked && project is not null)
+                                    {
+                                        <p class="small mb-2">
+                                            <Icon Name="IconName.Lock" class="me-1" aria-hidden="true" />Became project <a href="@PbDisplay.ProjectUrl(project.Id)">@project.Key</a>, so it stays in Won.
+                                        </p>
+                                    }
+                                    else
+                                    {
+                                        <div class="pb-pipe-move mb-2">
+                                            <label class="form-label small fw-semibold mb-1" for="@selectId">Move to stage<span class="visually-hidden">: @deal.Title</span></label>
+                                            <div class="input-group input-group-sm">
+                                                <select id="@selectId" class="form-select form-select-sm" value="@MoveChoice(deal)" @onchange="e => SetMoveChoice(dealId, e.Value)" @ref="moveSelects[dealId]">
+                                                    @foreach (var option in DealDisplay.Stages)
+                                                    {
+                                                        <option value="@option" @key="option">@PbDisplay.StageLabel(option)@(option == deal.Stage ? " (now)" : null)</option>
+                                                    }
+                                                </select>
+                                                <button type="button" class="btn btn-outline-primary" @onclick="() => MoveWithSelectAsync(dealId)">
+                                                    Move<span class="visually-hidden"> @deal.Title</span>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    }
+
+                                    <div class="pb-pipe-actions">
+                                        <button type="button" class="btn btn-sm btn-outline-secondary" title="Move up" disabled="@(position <= 0)" @ref="upButtons[dealId]" @onclick="() => MoveWithinAsync(dealId, -1)">
+                                            <Icon Name="IconName.ArrowUp" aria-hidden="true" /><span class="visually-hidden">Move @deal.Title up in @PbDisplay.StageLabel(stage)</span>
+                                        </button>
+                                        <button type="button" class="btn btn-sm btn-outline-secondary" title="Move down" disabled="@(position >= column.Count - 1)" @ref="downButtons[dealId]" @onclick="() => MoveWithinAsync(dealId, 1)">
+                                            <Icon Name="IconName.ArrowDown" aria-hidden="true" /><span class="visually-hidden">Move @deal.Title down in @PbDisplay.StageLabel(stage)</span>
+                                        </button>
+                                        @if (deal.ClosedAt is null)
+                                        {
+                                            <button type="button" class="btn btn-sm btn-outline-secondary" @ref="editButtons[dealId]" @onclick="() => OpenEditDealAsync(dealId)">
+                                                <Icon Name="IconName.Pencil" class="me-1" aria-hidden="true" />Edit<span class="visually-hidden"> @deal.Title</span>
+                                            </button>
+                                        }
+                                        <button type="button" class="btn btn-sm btn-outline-danger" @ref="deleteButtons[dealId]" @onclick="() => OpenDeleteAsync(dealId)">
+                                            <Icon Name="IconName.Trash3" class="me-1" aria-hidden="true" />Delete<span class="visually-hidden"> @deal.Title</span>
+                                        </button>
+                                    </div>
+                                </article>
+                            </ItemTemplate>
+                            <EmptyDataTemplate>
+                                <span class="small text-body-secondary">@(filtered ? "No deals shown here." : "No deals. Drop one here.")</span>
+                            </EmptyDataTemplate>
+                        </SortableList>
+                    </section>
+                }
+            </div>
+        </div>
+
+        <DealEditor @ref="dealEditor" OnClosed="OnDealEditorClosed" />
+
+        <Modal @ref="moveModal" IsVerticallyCentered="true" ShowCloseButton="false" aria-labelledby="pb-pipe-move-title" OnHidden="OnMoveHidden">
+            <HeaderTemplate>
+                <h2 class="modal-title h5 pb-pipe-dialog-title" id="pb-pipe-move-title">
+                    @(State.FindDeal(moveDealId) is { } moving ? (moveStage == PbDealStage.Won ? $"Mark “{moving.Title}” as won?" : $"Mark “{moving.Title}” as lost?") : "Deal not found")
+                </h2>
+            </HeaderTemplate>
+            <BodyTemplate>
+                @if (State.FindDeal(moveDealId) is { } target)
+                {
+                    var targetClient = State.FindClient(target.ClientId)?.Name ?? "the client";
+                    @if (moveStage == PbDealStage.Won)
+                    {
+                        <p>Winning closes the deal at @PbDisplay.Money(target.Value) and creates a planned project for @targetClient, named after the deal, for the project managers to plan.</p>
+                        <p class="mb-0">The client's timeline records it. Once the project exists, the deal stays in Won.</p>
+                    }
+                    else
+                    {
+                        <p>Losing closes the deal: its @PbDisplay.Money(target.Value) leaves the open pipeline and the forecast.</p>
+                        <p class="mb-0">The client's timeline records it. You can move it back to an open stage later.</p>
+                    }
+                }
+                else
+                {
+                    <p class="mb-0">That deal was deleted meanwhile, so there's nothing to move.</p>
+                }
+            </BodyTemplate>
+            <FooterTemplate>
+                <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => moveModal.HideAsync()">Cancel</Button>
+                @if (State.FindDeal(moveDealId) is not null)
+                {
+                    <Button Color="@(moveStage == PbDealStage.Won ? ButtonColor.Success : ButtonColor.Danger)" @onclick="ConfirmMoveAsync">
+                        <Icon Name="@(moveStage == PbDealStage.Won ? IconName.Trophy : IconName.XCircle)" class="me-1" aria-hidden="true" />@(moveStage == PbDealStage.Won ? "Mark as won" : "Mark as lost")
+                    </Button>
+                }
+            </FooterTemplate>
+        </Modal>
+
+        <Modal @ref="deleteModal" IsVerticallyCentered="true" ShowCloseButton="false" aria-labelledby="pb-pipe-delete-title" OnHidden="OnDeleteHidden">
+            <HeaderTemplate>
+                @{
+                    var doomed = State.FindDeal(deleteId);
+                }
+                <h2 class="modal-title h5 pb-pipe-dialog-title" id="pb-pipe-delete-title">
+                    @(doomed is null ? "Deal not found" : IsLocked(doomed) ? $"“{doomed.Title}” can't be deleted" : $"Delete “{doomed.Title}”?")
+                </h2>
+            </HeaderTemplate>
+            <BodyTemplate>
+                @if (State.FindDeal(deleteId) is not { } doomedDeal)
+                {
+                    <p class="mb-0">That deal was already deleted.</p>
+                }
+                else if (IsLocked(doomedDeal) && State.FindProject(doomedDeal.ProjectId) is { } blocking)
+                {
+                    <p class="mb-0">
+                        It was won and became project <a href="@PbDisplay.ProjectUrl(blocking.Id)">@blocking.Key · @blocking.Name</a>, which keeps its history.
+                        A project manager can delete the project first; then the deal can be deleted.
+                    </p>
+                }
+                else
+                {
+                    <p class="mb-0">
+                        “@doomedDeal.Title” (@PbDisplay.Money(doomedDeal.Value), @PbDisplay.StageLabel(doomedDeal.Stage).ToLowerInvariant()) leaves the pipeline and the forecast.
+                        Activity entries about it stay on the client's timeline. This can't be undone.
+                    </p>
+                }
+            </BodyTemplate>
+            <FooterTemplate>
+                @{
+                    var canDelete = State.FindDeal(deleteId) is { } candidate && !IsLocked(candidate);
+                }
+                <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => deleteModal.HideAsync()">@(canDelete ? "Cancel" : "Close")</Button>
+                @if (canDelete)
+                {
+                    <Button Color="ButtonColor.Danger" @onclick="ConfirmDeleteAsync"><Icon Name="IconName.Trash3" class="me-1" aria-hidden="true" />Delete deal</Button>
+                }
+            </FooterTemplate>
+        </Modal>
+    </PbRoleGuard>
+</div>
