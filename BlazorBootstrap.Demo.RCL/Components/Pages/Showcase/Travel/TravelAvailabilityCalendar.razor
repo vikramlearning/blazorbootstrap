@@ -1,0 +1,68 @@
+@{
+    var first = FirstMonth;
+    var unavailable = State.UnavailableNights(StayId, first, first.AddMonths(MonthCount), ExceptReference);
+}
+
+<div class="ds-cal @Class">
+    <div class="ds-cal-toolbar">
+        <button type="button" class="btn btn-sm btn-outline-secondary" @ref="previousButton" @onclick="PreviousAsync" disabled="@(!CanGoBack)" aria-label="Previous month">
+            <Icon Name="IconName.ChevronLeft" aria-hidden="true" /><span class="ms-1">Previous</span>
+        </button>
+        @* Announces the months shown after Previous or Next. *@
+        <p class="ds-cal-shown" aria-live="polite">@RangeText</p>
+        <button type="button" class="btn btn-sm btn-outline-secondary" @ref="nextButton" @onclick="NextAsync" disabled="@(!CanGoForward)" aria-label="Next month">
+            <span class="me-1">Next</span><Icon Name="IconName.ChevronRight" aria-hidden="true" />
+        </button>
+    </div>
+
+    <div class="ds-cal-months">
+        @for (var offset = 0; offset < MonthCount; offset++)
+        {
+            var month = first.AddMonths(offset);
+            <table class="ds-cal-table" @key="month">
+                <caption>@MonthName(month)</caption>
+                <thead>
+                    <tr>
+                        @foreach (var weekday in weekdays)
+                        {
+                            <th scope="col"><span aria-hidden="true">@weekday[..2]</span><span class="visually-hidden">@weekday</span></th>
+                        }
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var week in Weeks(month))
+                    {
+                        <tr>
+                            @foreach (var day in week)
+                            {
+                                if (day is { } date)
+                                {
+                                    var isUnavailable = unavailable.Contains(date);
+                                    <td class="@DayClass(date, isUnavailable)">
+                                        <span class="ds-cal-num" aria-hidden="true">@date.Day</span>
+                                        <span class="visually-hidden">@DayText(date, isUnavailable)</span>
+                                    </td>
+                                }
+                                else
+                                {
+                                    <td></td>
+                                }
+                            }
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </div>
+
+    <ul class="ds-cal-legend" aria-label="Calendar key">
+        <li><span class="ds-cal-swatch" aria-hidden="true">8</span>Available night</li>
+        <li><span class="ds-cal-swatch ds-cal-swatch-off" aria-hidden="true">8</span>Unavailable night (struck through)</li>
+        <li><span class="ds-cal-swatch ds-cal-swatch-today" aria-hidden="true">8</span>Today (circled)</li>
+        @if (HasSelection)
+        {
+            <li><span class="ds-cal-swatch ds-cal-swatch-range" aria-hidden="true">8</span>Your dates (shaded)</li>
+        }
+    </ul>
+    <p class="ds-cal-note">Each date is a night: you can still check out on the morning of an unavailable night.</p>
+</div>

@@ -7,111 +7,178 @@
 }
 else
 {
-    <PageTitle>Book @Stay.Name · @TravelSeedData.SiteName</PageTitle>
+    var host = State.HostOf(Stay);
+    var quote = Quote;
+
+    <PageTitle>@Heading · @Stay.Name · @TravelSeedData.SiteName</PageTitle>
 
     <div class="container-xl pb-4">
         <Breadcrumb Items="BreadcrumbItems" Class="mb-3" />
-        <h1 class="ds-title mb-4">Confirm and book</h1>
 
-        <div class="row g-4 g-lg-5">
-            <div class="col-lg-7">
-                <div class="ds-panel" data-clarity-mask="true">
-                    <ShowcaseDemoNotice Class="mb-4" Text="Demo only: nothing is booked or charged. The booking stays in this browser tab until you reload." />
+        <ShowcaseRoleGuard Roles="@TravelSeedData.GuestRole" SignInPath="@TravelLayout.SignInPath">
+            <h1 class="ds-title mb-1">@Heading</h1>
+            <p class="ds-lead mb-4">
+                @if (Stay.InstantBook)
+                {
+                    <span>@Stay.Name books instantly: your trip is confirmed as soon as the payment goes through.</span>
+                }
+                else
+                {
+                    <span>@host.Name reviews requests for @Stay.Name. Your card is held, not charged, until they accept.</span>
+                }
+            </p>
 
-                    <EditForm EditContext="editContext" OnValidSubmit="Submit" FormName="ds-book">
-                        <DataAnnotationsValidator />
+            <div class="row g-4 g-lg-5">
+                <div class="col-lg-7">
+                    <div class="ds-panel" data-clarity-mask="true">
+                        <ShowcaseDemoNotice Class="mb-4" Text="Demo only: use one of the listed test cards; real cards are never accepted and nothing is really charged. The booking stays in this browser tab." />
 
-                        <h2 class="h5 fw-bold">Your trip</h2>
-                        <div class="row g-3 mb-4">
-                            <div class="col-sm-4">
-                                <label class="form-label fw-semibold" for="ds-book-in">Check-in</label>
-                                <DateInput TValue="DateOnly" Id="ds-book-in" @bind-Value="form.CheckIn" Min="TravelSeedData.Today" Max="TravelSeedData.Today.AddDays(365)" EnableMinMax="true" />
+                        <EditForm EditContext="editContext" OnSubmit="Submit" FormName="ds-book" novalidate>
+                            <h2 class="h5 fw-bold">Your trip</h2>
+                            <div class="row g-3">
+                                <div class="col-sm-4">
+                                    <label class="form-label fw-semibold" for="ds-book-in">Check-in</label>
+                                    <DateInput @ref="checkInInput" TValue="DateOnly" Id="ds-book-in" Value="form.CheckIn" ValueExpression="() => form.CheckIn" ValueChanged="OnCheckInChanged"
+                                               Min="State.Today" Max="State.Today.AddDays(365)" EnableMinMax="true" aria-describedby="ds-book-dates-status" />
+                                </div>
+                                <div class="col-sm-4">
+                                    <label class="form-label fw-semibold" for="ds-book-out">Check-out</label>
+                                    <DateInput TValue="DateOnly" Id="ds-book-out" Value="form.CheckOut" ValueExpression="() => form.CheckOut" ValueChanged="OnCheckOutChanged"
+                                               Min="form.CheckIn.AddDays(1)" Max="State.Today.AddDays(365 + TravelSeedData.MaxNights)" EnableMinMax="true" aria-describedby="ds-book-dates-status" />
+                                </div>
+                                <div class="col-sm-4">
+                                    <label class="form-label fw-semibold" for="ds-book-guests">Guests</label>
+                                    <select id="ds-book-guests" class="form-select" value="@form.Guests" @onchange="OnGuestsChanged" aria-describedby="ds-book-guests-help ds-book-dates-status">
+                                        @for (var count = 1; count <= TravelSeedData.MaxGuests; count++)
+                                        {
+                                            <option value="@count">@TravelDisplay.Guests(count)</option>
+                                        }
+                                    </select>
+                                    <div class="form-text" id="ds-book-guests-help">Sleeps up to @Stay.MaxGuests.</div>
+                                </div>
                             </div>
-                            <div class="col-sm-4">
-                                <label class="form-label fw-semibold" for="ds-book-out">Check-out</label>
-                                <DateInput TValue="DateOnly" Id="ds-book-out" @bind-Value="form.CheckOut" Min="TravelSeedData.Today.AddDays(1)" Max="TravelSeedData.Today.AddDays(365 + TravelSeedData.MaxNights)" EnableMinMax="true" />
-                            </div>
-                            <div class="col-sm-4">
-                                <label class="form-label fw-semibold" for="ds-book-guests">Guests</label>
-                                <NumberInput TValue="int" Id="ds-book-guests" @bind-Value="form.Guests" Min="1" Max="Stay.MaxGuests" EnableMinMax="true" />
-                                <div class="form-text">Sleeps up to @Stay.MaxGuests.</div>
-                            </div>
-                        </div>
 
-                        <h2 class="h5 fw-bold">Who's coming</h2>
-                        <div class="row g-3 mb-4">
-                            <div class="col-md-6">
-                                <label class="form-label fw-semibold" for="ds-book-name">Full name</label>
-                                <TextInput Id="ds-book-name" @bind-Value="form.FullName" MaxLength="60" />
-                                <ValidationMessage For="() => form.FullName" />
+                            @* Always rendered, so a screen reader announces a rule error or taken nights as the dates change. *@
+                            <div id="ds-book-dates-status" role="status" class="mt-3">
+                                @if (RuleError is { } ruleError)
+                                {
+                                    <p class="text-danger-emphasis fw-semibold mb-0"><Icon Name="IconName.ExclamationTriangleFill" class="me-2" aria-hidden="true" />@ruleError</p>
+                                }
+                                else if (!IsAvailable)
+                                {
+                                    <div class="alert alert-warning mb-0">
+                                        <p class="fw-semibold mb-1">
+                                            <Icon Name="IconName.CalendarX" class="me-2" aria-hidden="true" />@(datesJustTaken ? "Someone else just booked some of these nights." : "Some of these nights aren't available.")
+                                        </p>
+                                        <p class="small mb-2">@TakenNightsText</p>
+                                        <a class="alert-link" href="@TravelDisplay.StayUrl(Stay.Id)">Pick other dates on the @Stay.Name page</a>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <p class="small text-success-emphasis fw-semibold mb-0">
+                                        <Icon Name="IconName.CalendarCheck" class="me-2" aria-hidden="true" />Available: @TravelDisplay.Dates(form.CheckIn, form.CheckOut), @TravelDisplay.Nights(quote.Nights), @TravelDisplay.Guests(form.Guests).
+                                    </p>
+                                }
                             </div>
-                            <div class="col-md-6">
-                                <label class="form-label fw-semibold" for="ds-book-email">Email</label>
-                                <TextInput Id="ds-book-email" @bind-Value="form.Email" MaxLength="80" />
-                                <div class="form-text">Use any made-up address; nothing is sent.</div>
-                                <ValidationMessage For="() => form.Email" />
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label fw-semibold" for="ds-book-arrival">Arrival time</label>
-                                <InputSelect id="ds-book-arrival" class="form-select" @bind-Value="form.Arrival">
-                                    <option value="">Choose a time</option>
-                                    <option value="afternoon">Afternoon (2–6 PM)</option>
-                                    <option value="evening">Evening (6–10 PM)</option>
-                                    <option value="late">Late (after 10 PM)</option>
-                                </InputSelect>
-                                <ValidationMessage For="() => form.Arrival" />
-                            </div>
-                            <div class="col-12">
-                                <label class="form-label fw-semibold" for="ds-book-note">Message to the host <span class="fw-normal text-body-secondary">(optional)</span></label>
-                                <TextAreaInput Id="ds-book-note" @bind-Value="form.Note" Rows="3" MaxLength="300" />
-                                <ValidationMessage For="() => form.Note" />
-                            </div>
-                        </div>
 
-                        <div class="mb-3">
-                            <CheckboxInput Id="ds-book-rules" @bind-Value="form.AcceptsRules" Label="I agree to the house rules: no parties, and quiet hours from 10 PM." />
-                            <ValidationMessage For="() => form.AcceptsRules" />
-                        </div>
+                            <h2 class="h5 fw-bold mt-4">Message to @host.Name</h2>
+                            <label class="form-label fw-semibold" for="ds-book-message">
+                                Your message
+                                <span class="fw-normal text-body-secondary">@(Stay.InstantBook ? "(optional)" : "(required for a request)")</span>
+                            </label>
+                            <textarea id="ds-book-message" class="form-control @(messageError is null ? null : "is-invalid")" rows="4" maxlength="@TravelState.MaxMessageLength"
+                                      @bind="form.Message" @bind:event="oninput" @bind:after="OnMessageInput" @ref="messageInput" aria-describedby="ds-book-message-help ds-book-message-count ds-book-message-error"
+                                      aria-invalid="@(messageError is null ? null : "true")" aria-required="@(Stay.InstantBook ? null : "true")"></textarea>
+                            <div class="d-flex flex-wrap justify-content-between column-gap-3">
+                                <div class="form-text" id="ds-book-message-help">
+                                    @(Stay.InstantBook ? "Say hello or share your arrival plans." : $"Tell {host.Name} who's coming and what brings you to {Destination.Name}.")
+                                </div>
+                                <div class="form-text" id="ds-book-message-count">@MessageLength of @TravelState.MaxMessageLength characters</div>
+                            </div>
+                            <p class="text-danger-emphasis fw-semibold small mt-1 mb-0" id="ds-book-message-error" role="alert">@messageError</p>
 
-                        @if (ruleError is not null)
-                        {
-                            <Alert Color="AlertColor.Danger" Class="mt-3 mb-0" role="alert">
-                                <Icon Name="IconName.ExclamationTriangleFill" class="me-2" aria-hidden="true" />@ruleError
-                            </Alert>
-                        }
+                            <h2 class="h5 fw-bold mt-4 mb-3">Payment</h2>
+                            @if (!Stay.InstantBook)
+                            {
+                                <p class="small text-body-secondary">Your card is held when you send the request and charged @TravelDisplay.Money(quote.Total) only if @host.Name accepts.</p>
+                            }
+                            @* Only the published test cards pass; only the brand and last four digits are kept (D-026). *@
+                            <ShowcaseCardForm Card="card" Today="State.Clock.Today" IdPrefix="ds-book" />
 
-                        <Button Type="ButtonType.Submit" Color="ButtonColor.Primary" Size="ButtonSize.Large" Class="w-100 mt-4">
-                            Book for @TravelDisplay.Money(Quote.Total)
-                        </Button>
-                        <p class="small text-body-secondary text-center mt-2 mb-0">Pay at the property. No card details are needed in this demo.</p>
-                    </EditForm>
+                            <div class="text-danger-emphasis fw-semibold mt-3" id="ds-book-payment-error" role="alert">
+                                @if (paymentError is not null)
+                                {
+                                    <Icon Name="IconName.ExclamationTriangleFill" class="me-2" aria-hidden="true" />@paymentError
+                                }
+                            </div>
+
+                            <div class="mt-3" role="alert">
+                                @if (bookError is not null)
+                                {
+                                    <div class="alert alert-danger mb-0">
+                                        <Icon Name="IconName.ExclamationTriangleFill" class="me-2" aria-hidden="true" />@bookError
+                                    </div>
+                                }
+                            </div>
+
+                            <Button Type="ButtonType.Submit" Color="ButtonColor.Primary" Size="ButtonSize.Large" Class="w-100 mt-3" Disabled="booking">
+                                @(Stay.InstantBook ? $"Confirm and pay {TravelDisplay.Money(quote.Total)}" : "Send request")
+                            </Button>
+                            <p class="small text-body-secondary text-center mt-2 mb-0">
+                                @if (Stay.InstantBook)
+                                {
+                                    <span>Your card is charged now and the trip is confirmed right away.</span>
+                                }
+                                else
+                                {
+                                    <span>Your card is held, not charged. You're only charged @TravelDisplay.Money(quote.Total) if @host.Name accepts.</span>
+                                }
+                            </p>
+                        </EditForm>
+                    </div>
+                </div>
+
+                <div class="col-lg-5">
+                    <Card Class="ds-card ds-sticky">
+                        <ShowcaseImage Src="@Stay.PhotoPath(1)" Alt="" Width="800" Height="450" Accent="@Destination.Accent" PlaceholderIcon="IconName.HouseHeart" />
+                        <CardBody>
+                            <span class="small text-body-secondary">@TravelDisplay.TypeLabel(Stay.Type) · @Stay.Neighborhood, @Destination.Name</span>
+                            <h2 class="ds-card-title"><a href="@TravelDisplay.StayUrl(Stay.Id)">@Stay.Name</a></h2>
+                            <p class="small mb-2">Hosted by @host.Name</p>
+                            <p class="small mb-3">
+                                @if (Stay.InstantBook)
+                                {
+                                    <Badge Color="BadgeColor.Success"><Icon Name="IconName.LightningChargeFill" class="me-1" aria-hidden="true" />Instant book</Badge>
+                                }
+                                else
+                                {
+                                    <Badge Color="BadgeColor.Secondary"><Icon Name="IconName.ChatDots" class="me-1" aria-hidden="true" />Request to book</Badge>
+                                }
+                            </p>
+
+                            <h3 class="h6 fw-bold mb-1">Your trip</h3>
+                            <p class="small mb-3">@TravelDisplay.Dates(form.CheckIn, form.CheckOut) · @TravelDisplay.Nights(quote.Nights) · @TravelDisplay.Guests(form.Guests)</p>
+
+                            <h3 class="h6 fw-bold mb-2">Price details</h3>
+                            <dl class="ds-summary row small mb-0">
+                                <dt class="col-7">@TravelDisplay.Money(quote.NightlyRate) × @TravelDisplay.Nights(quote.Nights)</dt>
+                                <dd class="col-5">@TravelDisplay.Money(quote.Subtotal)</dd>
+                                <dt class="col-7">Cleaning fee</dt>
+                                <dd class="col-5">@TravelDisplay.Money(quote.CleaningFee)</dd>
+                                <dt class="col-7">Taxes and fees</dt>
+                                <dd class="col-5">@TravelDisplay.Money(quote.Taxes)</dd>
+                                <dt class="col-7 ds-total">Total (USD)</dt>
+                                <dd class="col-5 ds-total">@TravelDisplay.Money(quote.Total)</dd>
+                            </dl>
+
+                            <h3 class="h6 fw-bold mt-4 mb-1">Cancellation policy: @Stay.Policy</h3>
+                            <p class="small mb-1">@TravelDisplay.PolicyText(Stay.Policy)</p>
+                            <p class="small text-body-secondary mb-0">Check-in starts at 3 pm. The cleaning fee comes back whenever you cancel before check-in.</p>
+                        </CardBody>
+                    </Card>
                 </div>
             </div>
-
-            <div class="col-lg-5">
-                <Card Class="ds-card ds-sticky">
-                    <ShowcaseImage Src="@Stay.PhotoPath(1)" Alt="" Width="800" Height="450" Accent="@Destination.Accent" PlaceholderIcon="IconName.HouseHeart" />
-                    <CardBody>
-                        <span class="small text-body-secondary">@TravelDisplay.TypeLabel(Stay.Type) · @Stay.Neighborhood, @Destination.Name</span>
-                        <h2 class="ds-card-title">@Stay.Name</h2>
-                        <p class="small mb-3">@TravelDisplay.Dates(form.CheckIn, form.CheckOut) · @TravelDisplay.Guests(form.Guests)</p>
-                        <dl class="ds-summary row small mb-0">
-                            <dt class="col-7">@TravelDisplay.Money(Quote.NightlyRate) × @TravelDisplay.Nights(Quote.Nights)</dt>
-                            <dd class="col-5">@TravelDisplay.Money(Quote.Subtotal)</dd>
-                            <dt class="col-7">Cleaning fee</dt>
-                            <dd class="col-5">@TravelDisplay.Money(Quote.CleaningFee)</dd>
-                            <dt class="col-7">Taxes and fees</dt>
-                            <dd class="col-5">@TravelDisplay.Money(Quote.Taxes)</dd>
-                            <dt class="col-7 ds-total">Total</dt>
-                            <dd class="col-5 ds-total">@TravelDisplay.Money(Quote.Total)</dd>
-                        </dl>
-                        @if (Stay.FreeCancellation)
-                        {
-                            <p class="small text-success-emphasis fw-semibold mt-3 mb-0"><Icon Name="IconName.ShieldCheck" class="me-1" aria-hidden="true" />Free cancellation until 48 hours before check-in</p>
-                        }
-                    </CardBody>
-                </Card>
-            </div>
-        </div>
+        </ShowcaseRoleGuard>
     </div>
 }

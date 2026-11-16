@@ -1,0 +1,18 @@
+@page "/showcase/travel/account"
+@layout TravelLayout
+
+<PageTitle>Your profile · @TravelSeedData.SiteName</PageTitle>
+
+@* The guest's profile and password. New bookings and messages use the name saved here. *@
+<div class="container-xl">
+    <ShowcaseRoleGuard Roles="@TravelSeedData.GuestRole" SignInPath="@TravelLayout.SignInPath">
+        <div class="d-flex flex-wrap align-items-end justify-content-between gap-3 mb-4">
+            <div>
+                <h1 class="ds-title mb-1">Your profile</h1>
+                <p class="text-body-secondary mb-0">Your name, email, and password for this demo. New bookings and messages to hosts use the name saved here.</p>
+            </div>
+            <a class="btn btn-outline-primary" href="@($"{TravelLayout.Base}/trips")"><Icon Name="IconName.Suitcase" class="me-2" aria-hidden="true" />Your trips</a>
+        </div>
+        <ShowcaseAccountProfile />
+    </ShowcaseRoleGuard>
+</div>

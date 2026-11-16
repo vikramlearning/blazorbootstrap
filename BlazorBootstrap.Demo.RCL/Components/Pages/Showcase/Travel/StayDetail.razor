@@ -7,20 +7,25 @@
 }
 else
 {
+    var host = State.HostOf(Stay);
+
     <PageTitle>@Stay.Name · @TravelSeedData.SiteName</PageTitle>
 
     <div class="container-xl pb-4">
         <Breadcrumb Items="BreadcrumbItems" Class="mb-3" />
 
-        <div class="mb-3">
-            <span class="sc-eyebrow">@TravelDisplay.TypeLabel(Stay.Type) · @Stay.Neighborhood, @Destination.Name</span>
-            <h1 class="ds-title mt-1">@Stay.Name</h1>
-            <div class="d-flex flex-wrap align-items-center gap-2 mt-2">
-                @* The value is rounded to one decimal, so the label, the library's description, and the checked star agree. *@
-                <RatingInput TValue="decimal" Value="AverageRating" ValueExpression="() => AverageRating" ReadOnly="true" AllowHalf="true"
-                             Size="RatingInputSize.Small" aria-label="@($"Average rating {TravelDisplay.Rating((double)AverageRating)} out of 5")" />
-                <span class="small">@TravelDisplay.Rating((double)AverageRating) · <a href="@($"{TravelDisplay.StayUrl(Stay.Id)}#ds-reviews")">@Reviews.Count reviews</a></span>
+        <div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-3">
+            <div class="min-w-0">
+                <span class="sc-eyebrow">@TravelDisplay.TypeLabel(Stay.Type) · @Stay.Neighborhood, @Destination.Name</span>
+                <h1 class="ds-title mt-1">@Stay.Name</h1>
+                <div class="d-flex flex-wrap align-items-center gap-2 mt-2">
+                    @* The value is rounded to one decimal, so the label, the library's description, and the checked star agree. *@
+                    <RatingInput TValue="decimal" Value="AverageRating" ValueExpression="() => AverageRating" ReadOnly="true" AllowHalf="true"
+                                 Size="RatingInputSize.Small" aria-label="@($"Average rating {TravelDisplay.Rating((double)AverageRating)} out of 5")" />
+                    <span class="small">@TravelDisplay.Rating((double)AverageRating) · <a href="@($"{TravelDisplay.StayUrl(Stay.Id)}#ds-reviews")">@ReviewCountText</a></span>
+                </div>
             </div>
+            <TravelWishButton Stay="Stay" />
         </div>
 
         <div class="row g-4 g-lg-5">
@@ -43,10 +48,15 @@ else
                 <p class="ds-meta mb-4">
                     <span><Icon Name="IconName.People" class="me-1" aria-hidden="true" />Sleeps @Stay.MaxGuests</span>
                     <span><Icon Name="IconName.House" class="me-1" aria-hidden="true" />@Stay.Bedrooms @(Stay.Bedrooms == 1 ? "bedroom" : "bedrooms")</span>
-                    @if (Stay.FreeCancellation)
+                    @if (Stay.InstantBook)
                     {
-                        <span><Icon Name="IconName.ShieldCheck" class="me-1" aria-hidden="true" />Free cancellation until 48 hours before check-in</span>
+                        <span><Icon Name="IconName.LightningCharge" class="me-1" aria-hidden="true" />Instant book</span>
                     }
+                    else
+                    {
+                        <span><Icon Name="IconName.ChatText" class="me-1" aria-hidden="true" />Request to book</span>
+                    }
+                    <span><Icon Name="IconName.ShieldCheck" class="me-1" aria-hidden="true" />@PolicyName</span>
                 </p>
 
                 <h2 class="ds-section-title">What this place offers</h2>
@@ -59,12 +69,72 @@ else
 
                 <h2 class="ds-section-title">Where you'll be</h2>
                 <ShowcaseMapOrPlaceholder Locations="Location" Height="260" Zoom="14" AriaLabel="@($"Map preview showing {Stay.Name} in {Stay.Neighborhood}")" />
+                <p class="small text-body-secondary mt-2 mb-0">You'll see the exact address on your trip once the booking is confirmed.</p>
+
+                <section class="mt-5" aria-labelledby="ds-host-title">
+                    <h2 class="ds-section-title" id="ds-host-title">Meet your host</h2>
+                    <div class="ds-panel">
+                        <div class="d-flex align-items-center gap-3 mb-3">
+                            <span class="ds-avatar" aria-hidden="true">@host.Initials</span>
+                            <div class="min-w-0">
+                                <h3 class="h5 fw-bold mb-1">@host.Name</h3>
+                                <p class="ds-meta mb-0">
+                                    <span><Icon Name="IconName.Calendar3" class="me-1" aria-hidden="true" />Hosting since @host.HostingSince</span>
+                                    <span><Icon Name="IconName.Clock" class="me-1" aria-hidden="true" />Usually responds @host.ResponseTime</span>
+                                </p>
+                            </div>
+                        </div>
+                        <p>@host.About</p>
+
+                        @if (State.IsGuest)
+                        {
+                            <div class="d-flex flex-wrap align-items-center gap-3">
+                                <Button @ref="contactButton" Color="ButtonColor.Primary" Outline="true" @onclick="OpenContactAsync">
+                                    <Icon Name="IconName.ChatText" class="me-2" aria-hidden="true" />Contact host
+                                </Button>
+                                @if (State.ThreadAbout(Stay.Id) is { } thread)
+                                {
+                                    <a href="@TravelDisplay.ThreadUrl(thread.Id)">Open your conversation with @FirstName(host)</a>
+                                }
+                            </div>
+                        }
+                        else if (!State.Identity.IsSignedIn)
+                        {
+                            <a class="btn btn-outline-primary" href="@SignInHere">
+                                <Icon Name="IconName.BoxArrowInRight" class="me-2" aria-hidden="true" />Sign in to contact the host
+                            </a>
+                        }
+                        else
+                        {
+                            <p class="small text-body-secondary mb-0">Sign in with a guest account to message the host.</p>
+                        }
+                    </div>
+                </section>
+
+                <section class="mt-5" aria-labelledby="ds-policy-title">
+                    <h2 class="ds-section-title" id="ds-policy-title">Cancellation policy</h2>
+                    <p class="fw-semibold mb-1">@PolicyName</p>
+                    <p class="mb-1">@TravelDisplay.PolicyText(Stay.Policy)</p>
+                    <p class="text-body-secondary small mb-0">
+                        The cleaning fee is refunded whenever you cancel before check-in. The hours and days in these rules count down to 3 pm on the check-in day, when check-in starts.
+                    </p>
+                </section>
+
+                <section class="mt-5" aria-labelledby="ds-availability">
+                    <h2 class="ds-section-title" id="ds-availability" tabindex="-1">Availability</h2>
+                    <p class="text-body-secondary small">Nights that are booked, requested, or blocked by the host are struck through and read as "unavailable". The dates in the booking box are shaded.</p>
+                    <TravelAvailabilityCalendar StayId="Stay.Id" CheckIn="State.Search.CheckIn" CheckOut="State.Search.CheckOut" />
+                </section>
 
                 <section class="mt-5" aria-labelledby="ds-reviews">
                     <h2 class="ds-section-title" id="ds-reviews" tabindex="-1">Reviews</h2>
+                    @if (Reviews.Count == 0)
+                    {
+                        <p class="text-body-secondary">No reviews yet. Guests can review a stay after their trip.</p>
+                    }
                     @foreach (var review in Reviews)
                     {
-                        <article class="py-3 border-bottom">
+                        <article class="py-3 border-bottom" @key="review.Id">
                             <div class="ds-stars small">
                                 <span class="visually-hidden">Rated @review.Rating out of 5</span>
                                 <span aria-hidden="true">
@@ -74,26 +144,44 @@ else
                                     }
                                 </span>
                             </div>
-                            <p class="mt-1 mb-1">@review.Body</p>
+                            <p class="ds-text mt-1 mb-1">@review.Body</p>
                             <p class="small text-body-secondary mb-0">@review.Author · @review.PostedOn.ToString("MMM yyyy", CultureInfo.InvariantCulture)</p>
+                            @if (review.HostReply is { } reply)
+                            {
+                                <div class="ds-reply mt-2">
+                                    <p class="small fw-semibold mb-1">Response from @host.Name</p>
+                                    <p class="ds-text small mb-0">@reply</p>
+                                </div>
+                            }
                         </article>
                     }
                 </section>
             </div>
 
             <div class="col-lg-5">
-                <div class="ds-panel ds-sticky">
-                    <p class="mb-3"><span class="ds-price">@TravelDisplay.Money(Stay.NightlyRate)</span> <span class="text-body-secondary">a night</span></p>
+                <section class="ds-panel ds-sticky" aria-labelledby="ds-book-title">
+                    <h2 class="visually-hidden" id="ds-book-title">Book @Stay.Name</h2>
+                    <p class="mb-1"><span class="ds-price">@TravelDisplay.Money(Stay.NightlyRate)</span> <span class="text-body-secondary">a night</span></p>
+                    <p class="small text-body-secondary mb-3">
+                        @if (Stay.InstantBook)
+                        {
+                            <span><Icon Name="IconName.LightningCharge" class="me-1" aria-hidden="true" />Instant book: confirmed as soon as you pay.</span>
+                        }
+                        else
+                        {
+                            <span><Icon Name="IconName.ChatText" class="me-1" aria-hidden="true" />Request to book: @FirstName(host) accepts or declines each request.</span>
+                        }
+                    </p>
                     <div class="row g-2">
                         <div class="col-6">
                             <label class="form-label small fw-semibold" for="ds-detail-in">Check-in</label>
                             <DateInput TValue="DateOnly" Id="ds-detail-in" Value="State.Search.CheckIn" ValueExpression="() => State.Search.CheckIn" ValueChanged="OnCheckInChanged"
-                                       Min="TravelSeedData.Today" Max="TravelSeedData.Today.AddDays(365)" EnableMinMax="true" />
+                                       Min="State.Today" Max="State.Today.AddDays(365)" EnableMinMax="true" />
                         </div>
                         <div class="col-6">
                             <label class="form-label small fw-semibold" for="ds-detail-out">Check-out</label>
                             <DateInput TValue="DateOnly" Id="ds-detail-out" Value="State.Search.CheckOut" ValueExpression="() => State.Search.CheckOut" ValueChanged="OnCheckOutChanged"
-                                       Min="State.Search.CheckIn.AddDays(1)" Max="TravelSeedData.Today.AddDays(365 + TravelSeedData.MaxNights)" EnableMinMax="true" />
+                                       Min="State.Search.CheckIn.AddDays(1)" Max="State.Today.AddDays(365 + TravelSeedData.MaxNights)" EnableMinMax="true" />
                         </div>
                         <div class="col-12">
                             <label class="form-label small fw-semibold" for="ds-detail-guests">Guests</label>
@@ -102,15 +190,27 @@ else
                         </div>
                     </div>
 
-                    @* Always rendered, so a screen reader announces the new price or a rule error. *@
+                    @* Always rendered, so a screen reader announces the new price, a rule error, or that the dates are taken. *@
                     <div aria-live="polite">
                         @if (RuleError is not null)
                         {
                             <p class="text-danger small mt-3 mb-0"><Icon Name="IconName.ExclamationCircle" class="me-1" aria-hidden="true" />@RuleError</p>
                         }
+                        else if (!IsAvailable)
+                        {
+                            <div class="ds-taken mt-3">
+                                <p class="fw-semibold small mb-1"><Icon Name="IconName.CalendarX" class="me-1" aria-hidden="true" />Not available on these dates</p>
+                                <p class="small mb-0">
+                                    @TakenText Pick other dates: the <a href="@($"{TravelDisplay.StayUrl(Stay.Id)}#ds-availability")">availability calendar</a> shows which nights are free.
+                                </p>
+                            </div>
+                        }
                         else
                         {
-                            <dl class="ds-summary row small mt-3 mb-0">
+                            <p class="small text-success-emphasis fw-semibold mt-3 mb-0">
+                                <Icon Name="IconName.CheckCircle" class="me-1" aria-hidden="true" />Available @TravelDisplay.Dates(State.Search.CheckIn, State.Search.CheckOut)
+                            </p>
+                            <dl class="ds-summary row small mt-2 mb-0">
                                 <dt class="col-7">@TravelDisplay.Money(Quote.NightlyRate) × @TravelDisplay.Nights(Quote.Nights)</dt>
                                 <dd class="col-5">@TravelDisplay.Money(Quote.Subtotal)</dd>
                                 <dt class="col-7">Cleaning fee</dt>
@@ -124,13 +224,53 @@ else
                     </div>
 
                     @* No extra attributes on link Buttons: a parent re-render replaces them and drops the Button's own href and role. *@
-                    <Button Type="ButtonType.Link" To="@($"{TravelDisplay.StayUrl(Stay.Id)}/book")" Color="ButtonColor.Primary" Size="ButtonSize.Large" Class="w-100 mt-3"
-                            Disabled="RuleError is not null">
-                        Reserve
+                    <Button Type="ButtonType.Link" To="@BookUrl" Color="ButtonColor.Primary" Size="ButtonSize.Large" Class="w-100 mt-3"
+                            Disabled="!CanBook">
+                        @(Stay.InstantBook ? "Reserve" : "Request to book")
                     </Button>
-                    <p class="small text-body-secondary text-center mt-2 mb-0">You won't be charged: this is a demo.</p>
-                </div>
+                    <p class="small text-body-secondary text-center mt-2 mb-0">
+                        @if (Stay.InstantBook)
+                        {
+                            <span>You'll pay on the next step, with a test card only.</span>
+                        }
+                        else
+                        {
+                            <span>You won't be charged until the host accepts. You'll add a message to @FirstName(host) on the next step.</span>
+                        }
+                    </p>
+                </section>
             </div>
         </div>
     </div>
+
+    <Modal @ref="contactModal"
+           IsVerticallyCentered="true"
+           ShowCloseButton="false"
+           aria-labelledby="ds-contact-title"
+           OnShown="OnContactShownAsync"
+           OnHidden="OnContactHiddenAsync">
+        <HeaderTemplate>
+            <h2 class="modal-title h5" id="ds-contact-title">Message @host.Name</h2>
+        </HeaderTemplate>
+        <BodyTemplate>
+            <div data-clarity-mask="true">
+                <p class="small text-body-secondary">Ask about @Stay.Name before you book. @FirstName(host) usually responds @host.ResponseTime. Demo only: the message stays in this browser tab.</p>
+                <form id="ds-contact-form" @onsubmit="SendContactAsync" novalidate>
+                    <label class="form-label fw-semibold" for="ds-contact-text">Your message</label>
+                    <textarea @ref="contactInput" id="ds-contact-text" class="form-control ds-text @(contactError is null ? null : "is-invalid")" rows="5"
+                              @bind="contactText" @bind:event="oninput" maxlength="@TravelState.MaxMessageLength"
+                              aria-describedby="ds-contact-help ds-contact-error" aria-invalid="@(contactError is null ? null : "true")"></textarea>
+                    <div class="d-flex justify-content-between gap-2 small mt-1">
+                        <span id="ds-contact-help" class="text-body-secondary">Up to @TravelState.MaxMessageLength characters.</span>
+                        <span class="text-body-secondary" aria-hidden="true">@contactText.Length / @TravelState.MaxMessageLength</span>
+                    </div>
+                    <div id="ds-contact-error" class="invalid-feedback d-block" role="status">@contactError</div>
+                </form>
+            </div>
+        </BodyTemplate>
+        <FooterTemplate>
+            <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => contactModal.HideAsync()">Cancel</Button>
+            <Button Type="ButtonType.Submit" Color="ButtonColor.Primary" form="ds-contact-form">Send message</Button>
+        </FooterTemplate>
+    </Modal>
 }

@@ -1,0 +1,13 @@
+/* Holds the removal message; empty, it takes no room. */
+.ds-wish-status:not(:empty) {
+    margin-bottom: 1rem;
+    padding: .625rem .875rem;
+    border: 1px solid var(--ds-border);
+    border-radius: .5rem;
+    background: var(--ds-surface);
+}
+
+.ds-wish-status:focus-visible {
+    outline: 3px solid var(--sc-primary);
+    outline-offset: 2px;
+}

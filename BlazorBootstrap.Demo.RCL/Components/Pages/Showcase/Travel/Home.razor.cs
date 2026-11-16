@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using BlazorBootstrap.Demo.RCL.Models.Showcase.Travel;
+using BlazorBootstrap.Demo.RCL.Services.Showcase.Foundation;
 using BlazorBootstrap.Demo.RCL.Services.Showcase.Travel;
 using Microsoft.AspNetCore.Components.Forms;
 
@@ -7,9 +8,11 @@ namespace BlazorBootstrap.Demo.RCL.Components.Pages.Showcase.Travel;
 
 /// <summary>
 /// Search: destination, dates, and guests, then the results. The form starts from the current search, so going back
-/// shows what was searched last. Destination tiles link to the results for that city with the current dates.
+/// shows what was searched last. Destination tiles link to the results for that city with the current dates. A signed-in
+/// guest sees their next trip, requests waiting for a host, and unread messages; a signed-out visitor is invited to sign
+/// in or register.
 /// </summary>
-public partial class Home : ComponentBase
+public partial class Home : ComponentBase, IDisposable
 {
     #region Fields and Constants
 
@@ -35,15 +38,25 @@ public partial class Home : ComponentBase
             Guests = State.Search.Guests,
         };
         editContext = new EditContext(form);
+        State.Changed += OnStateChanged;
     }
+
+    #endregion
+
+    #region Public Methods
+
+    /// <summary>Stops listening to state changes.</summary>
+    public void Dispose() => State.Changed -= OnStateChanged;
 
     #endregion
 
     #region Private Methods
 
+    private void OnStateChanged() => InvokeAsync(StateHasChanged);
+
     private void Search()
     {
-        ruleError = TravelState.ValidateSearch(form.CheckIn, form.CheckOut, form.Guests);
+        ruleError = State.ValidateSearch(form.CheckIn, form.CheckOut, form.Guests);
 
         if (ruleError is not null)
             return;
@@ -64,10 +77,16 @@ public partial class Home : ComponentBase
 
     [Inject] private NavigationManager Navigation { get; set; } = default!;
 
-    private TravelBooking? NextTrip => State.Bookings
-        .Where(booking => booking.Status == TravelBookingStatus.Upcoming)
+    /// <summary>The signed-in guest's next confirmed trip, if any.</summary>
+    private TravelBooking? NextTrip => State.MyBookings()
+        .Where(booking => State.Phase(booking) is TravelTripPhase.Upcoming or TravelTripPhase.InProgress)
         .OrderBy(booking => booking.CheckIn)
         .FirstOrDefault();
+
+    /// <summary>The signed-in guest's requests to book that are waiting for the host.</summary>
+    private int PendingRequestCount => State.MyBookings().Count(booking => State.Phase(booking) == TravelTripPhase.Requested);
+
+    [CascadingParameter] private ShowcaseSession Session { get; set; } = default!;
 
     [Inject] private TravelState State { get; set; } = default!;
 
