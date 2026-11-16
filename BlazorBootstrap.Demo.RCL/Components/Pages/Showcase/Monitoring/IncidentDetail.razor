@@ -1,0 +1,596 @@
+@page "/showcase/monitoring/console/incidents/{Id:int}"
+@layout ConsoleLayout
+
+@if (Incident is not { } incident)
+{
+    <PageTitle>Incident not found · @MonitoringSeedData.ProductName</PageTitle>
+
+    <div class="container-fluid px-lg-4">
+        <section class="mw-not-found" aria-labelledby="mw-incd-missing-title">
+            <span class="mw-icon fs-4" aria-hidden="true"><Icon Name="IconName.SignpostSplit" /></span>
+            <h1 class="mw-title fs-3 mt-3 mb-2" id="mw-incd-missing-title">We couldn't find incident #@Id</h1>
+            <p class="text-body-secondary mb-4">Check the number, or open the incident from the list.</p>
+            <div class="d-flex justify-content-center flex-wrap gap-2">
+                <Button Type="ButtonType.Link" To="@IncidentsPath" Color="ButtonColor.Primary">All incidents</Button>
+                <Button Type="ButtonType.Link" To="@ConsoleLayout.Base" Color="ButtonColor.Primary" Outline="true">Console overview</Button>
+            </div>
+        </section>
+    </div>
+}
+else
+{
+    var service = State.FindService(incident.ServiceId);
+    var serviceName = service?.Name ?? incident.ServiceId;
+    var resolved = incident.Status == MonitoringIncidentStatus.Resolved;
+    var subscribers = SubscriberCount(incident);
+
+    <PageTitle>#@incident.Id @incident.Title · @MonitoringSeedData.ProductName</PageTitle>
+
+    <div class="container-fluid px-lg-4">
+        <Breadcrumb Items="BreadcrumbItems" Class="mb-3" />
+
+        <div class="mw-page-head">
+            <div class="mw-incd-head">
+                <p class="small text-body-secondary mb-1">
+                    <span class="mw-mono">#@incident.Id</span> · <a href="@MonitoringDisplay.ServiceUrl(incident.ServiceId)">@serviceName</a>
+                </p>
+                <h1 class="mw-title">@incident.Title</h1>
+                <div class="d-flex flex-wrap align-items-center gap-2 mt-2">
+                    <Badge Color="@MonitoringDisplay.SeverityColor(incident.Severity)">@incident.Severity</Badge>
+                    <Badge Color="@MonitoringDisplay.IncidentStatusColor(incident.Status)">@incident.Status</Badge>
+                    @if (incident.PublicStage is { } headStage)
+                    {
+                        <span class="small d-inline-flex align-items-center gap-1">
+                            <Icon Name="IconName.Broadcast" aria-hidden="true" />On the status page: @MonitoringDisplay.StageLabel(headStage)
+                            · <a href="@MonitoringDisplay.PublicIncidentUrl(incident.Id)">View the public page</a>
+                        </span>
+                    }
+                    else
+                    {
+                        <span class="small d-inline-flex align-items-center gap-1 text-body-secondary"><Icon Name="IconName.EyeSlash" aria-hidden="true" />Engineers only</span>
+                    }
+                </div>
+                <p class="mw-lead mw-incd-text mt-2 mb-0">@incident.Summary</p>
+            </div>
+        </div>
+
+        @* Always rendered and focusable, so an outcome is announced and focus has somewhere to go when the pressed button disappears. *@
+        <p class="fw-semibold mw-incd-status @(statusIsError ? "text-danger-emphasis" : null)" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
+
+        <div class="row g-4">
+            <div class="col-xl-8">
+                <Card Class="mw-card mb-4">
+                    <CardHeader><h2 class="mw-card-title">Actions</h2></CardHeader>
+                    <CardBody>
+                        @if (incident.Status == MonitoringIncidentStatus.Open)
+                        {
+                            <p class="small text-body-secondary mb-2">Nobody has picked this up yet. Acknowledging makes you the assignee and stops the paging.</p>
+                        }
+                        else if (resolved)
+                        {
+                            <p class="small text-body-secondary mb-2">Resolved @MonitoringDisplay.Stamp(incident.ResolvedAt ?? incident.StartedAt). Reopen it if the problem is back.</p>
+                        }
+                        <div class="d-flex flex-wrap gap-2">
+                            @if (incident.Status == MonitoringIncidentStatus.Open)
+                            {
+                                <Button Color="ButtonColor.Warning" @onclick="Acknowledge">
+                                    <Icon Name="IconName.HandIndexThumb" class="me-1" aria-hidden="true" />Acknowledge
+                                </Button>
+                            }
+                            @if (!resolved)
+                            {
+                                <Button @ref="severityButton" Color="ButtonColor.Secondary" Outline="true" @onclick="() => OpenDialogAsync(DialogKind.Severity, severityButton)">
+                                    <Icon Name="IconName.Sliders" class="me-1" aria-hidden="true" />Change severity
+                                </Button>
+                                <Button @ref="resolveButton" Color="ButtonColor.Success" @onclick="() => OpenDialogAsync(DialogKind.Resolve, resolveButton)">
+                                    <Icon Name="IconName.CheckCircle" class="me-1" aria-hidden="true" />Resolve
+                                </Button>
+                            }
+                            else
+                            {
+                                <Button @ref="reopenButton" Color="ButtonColor.Secondary" Outline="true" @onclick="() => OpenDialogAsync(DialogKind.Reopen, reopenButton)">
+                                    <Icon Name="IconName.ArrowCounterclockwise" class="me-1" aria-hidden="true" />Reopen
+                                </Button>
+                            }
+                        </div>
+                    </CardBody>
+                </Card>
+
+                <Card Class="mw-card mb-4">
+                    <CardHeader>
+                        <h2 class="mw-card-title" id="mw-incd-post-title">Post on the status page</h2>
+                        <span class="small text-body-secondary">Customers read this, and subscribers get it by email</span>
+                    </CardHeader>
+                    <CardBody>
+                        @if (resolved)
+                        {
+                            <p class="mb-0 text-body-secondary">
+                                A resolved incident takes no more status page updates@(incident.IsPublished ? ": its last public update says it is resolved" : null).
+                                Reopen it if the problem is back.
+                            </p>
+                        }
+                        else
+                        {
+                            <form @onsubmit="SubmitPostAsync" novalidate aria-labelledby="mw-incd-post-title">
+                                <fieldset class="mb-3">
+                                    <legend class="form-label fw-semibold fs-6">Stage</legend>
+                                    <div class="mw-incd-stages">
+                                        @foreach (var stage in Enum.GetValues<MonitoringPublicStage>())
+                                        {
+                                            var inputId = $"mw-incd-stage-{stage}";
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="mw-incd-stage" id="@inputId" checked="@(postStage == stage)"
+                                                       @onchange="() => postStage = stage" aria-describedby="@($"{inputId}-help")" />
+                                                <label class="form-check-label fw-semibold" for="@inputId">@MonitoringDisplay.StageLabel(stage)</label>
+                                                <div class="form-text mt-0" id="@($"{inputId}-help")">@StageHelp(stage)</div>
+                                            </div>
+                                        }
+                                    </div>
+                                </fieldset>
+
+                                <label class="form-label fw-semibold" for="mw-incd-post-text">Message</label>
+                                <textarea id="mw-incd-post-text" class="form-control @(postError is null ? null : "is-invalid")" rows="4" maxlength="@MonitoringState.MaxUpdateLength"
+                                          @bind="postText" @bind:event="oninput" @ref="postInput" aria-required="true" aria-invalid="@(postError is null ? null : "true")"
+                                          aria-describedby="mw-incd-post-help mw-incd-post-error"></textarea>
+                                <div class="form-text d-flex flex-wrap justify-content-between gap-2" id="mw-incd-post-help">
+                                    <span>Plain words for customers: what they notice and what happens next. No internal details.</span>
+                                    <span class="text-nowrap">@postText.Length of @MonitoringDisplay.Number(MonitoringState.MaxUpdateLength) characters</span>
+                                </div>
+                                <div class="invalid-feedback d-block" id="mw-incd-post-error">@postError</div>
+
+                                <p class="small mt-2 mb-3">
+                                    @if (incident.IsPublished)
+                                    {
+                                        @($"Published on the status page right away and {EmailedText(subscribers)}.")
+                                    }
+                                    else
+                                    {
+                                        @($"#{incident.Id} is engineers-only. Your first update makes it public on the status page; you confirm before it goes out.")
+                                    }
+                                    @if (postStage == MonitoringPublicStage.Resolved)
+                                    {
+                                        @(" Posting \"Resolved\" also resolves the incident.")
+                                    }
+                                </p>
+                                <Button @ref="postButton" Type="ButtonType.Submit" Color="ButtonColor.Primary">
+                                    <Icon Name="IconName.Broadcast" class="me-1" aria-hidden="true" />@(incident.IsPublished ? "Post update" : "Post and make public")
+                                </Button>
+                            </form>
+                        }
+                    </CardBody>
+                </Card>
+
+                <Card Class="mw-card mb-4">
+                    <CardHeader>
+                        <h2 class="mw-card-title" id="mw-incd-note-title">Add an internal note</h2>
+                        <span class="small text-body-secondary">Engineers only</span>
+                    </CardHeader>
+                    <CardBody>
+                        <form @onsubmit="SubmitNote" novalidate aria-labelledby="mw-incd-note-title">
+                            <label class="form-label fw-semibold" for="mw-incd-note-text">Note</label>
+                            <textarea id="mw-incd-note-text" class="form-control @(noteError is null ? null : "is-invalid")" rows="3" maxlength="@MonitoringState.MaxUpdateLength"
+                                      @bind="noteText" @bind:event="oninput" @ref="noteInput" aria-required="true" aria-invalid="@(noteError is null ? null : "true")"
+                                      aria-describedby="mw-incd-note-help mw-incd-note-error"></textarea>
+                            <div class="form-text d-flex flex-wrap justify-content-between gap-2" id="mw-incd-note-help">
+                                <span>Never shown on the status page or emailed: for what you tried, found, or handed over.</span>
+                                <span class="text-nowrap">@noteText.Length of @MonitoringDisplay.Number(MonitoringState.MaxUpdateLength) characters</span>
+                            </div>
+                            <div class="invalid-feedback d-block" id="mw-incd-note-error">@noteError</div>
+                            <Button Type="ButtonType.Submit" Color="ButtonColor.Secondary" Class="mt-2">
+                                <Icon Name="IconName.JournalPlus" class="me-1" aria-hidden="true" />Add note
+                            </Button>
+                        </form>
+                    </CardBody>
+                </Card>
+
+                <Card Class="mw-card mb-4">
+                    <CardHeader>
+                        <h2 class="mw-card-title" id="mw-incd-timeline-title">Timeline</h2>
+                        <button type="button" class="btn btn-sm btn-outline-secondary" aria-pressed="@(newestFirst ? "true" : "false")" @onclick="() => newestFirst = !newestFirst">
+                            <Icon Name="IconName.SortDown" class="me-1" aria-hidden="true" />Newest first
+                        </button>
+                    </CardHeader>
+                    <CardBody Class="pt-2">
+                        <p class="small text-body-secondary">@incident.Updates.Count entries, @(newestFirst ? "newest" : "oldest") first. Entries marked "Published" are on the status page; the rest are engineers only.</p>
+                        <ol class="mw-incd-timeline" aria-labelledby="mw-incd-timeline-title">
+                            @foreach (var update in newestFirst ? incident.Updates.AsEnumerable().Reverse() : incident.Updates)
+                            {
+                                <li class="mw-incd-entry @(update.IsPublic ? "mw-incd-entry-public" : null)" @key="update.Id">
+                                    <span class="mw-incd-dot" aria-hidden="true"><Icon Name="@KindIcon(update.Kind)" /></span>
+                                    <div class="mw-incd-entry-body">
+                                        <div class="d-flex flex-wrap align-items-center gap-2 small">
+                                            <span class="mw-mono text-body-secondary">@MonitoringDisplay.Stamp(update.Time)</span>
+                                            <span class="fw-semibold">@update.Author</span>
+                                            <span class="mw-incd-kind">@MonitoringDisplay.UpdateKindLabel(update.Kind)</span>
+                                            @if (update.IsPublic && update.Stage is { } stage)
+                                            {
+                                                <Badge Color="BadgeColor.Success"><Icon Name="IconName.Broadcast" class="me-1" aria-hidden="true" />Published: @MonitoringDisplay.StageLabel(stage)</Badge>
+                                            }
+                                        </div>
+                                        <p class="mw-incd-text mb-0 mt-1">@update.Text</p>
+                                    </div>
+                                </li>
+                            }
+                        </ol>
+                    </CardBody>
+                </Card>
+
+                @if (resolved || incident.Postmortem is not null)
+                {
+                    var postmortem = incident.Postmortem;
+
+                    <Card Class="mw-card">
+                        <CardHeader>
+                            <h2 class="mw-card-title" id="mw-incd-pm-title">Postmortem</h2>
+                            @if (postmortem is not null)
+                            {
+                                <span class="small">
+                                    @if (postmortem.PublishedAt is { } published)
+                                    {
+                                        <span class="d-inline-flex align-items-center gap-1"><Icon Name="IconName.Broadcast" aria-hidden="true" />Published on the status page @MonitoringDisplay.Stamp(published)</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="d-inline-flex align-items-center gap-1 text-body-secondary"><Icon Name="IconName.EyeSlash" aria-hidden="true" />Draft, engineers only</span>
+                                    }
+                                </span>
+                            }
+                        </CardHeader>
+                        <CardBody>
+                            @if (!resolved)
+                            {
+                                <p class="small text-body-secondary">The incident was reopened, so its postmortem can't be changed until it is resolved again.</p>
+                            }
+
+                            @if (editingPostmortem && resolved)
+                            {
+                                <form @onsubmit="SavePostmortemDraftAsync" novalidate aria-labelledby="mw-incd-pm-title">
+                                    <div class="mb-3">
+                                        <label class="form-label fw-semibold" for="mw-incd-pm-summary">What happened</label>
+                                        <textarea id="mw-incd-pm-summary" class="form-control @(pmSummaryError is null ? null : "is-invalid")" rows="4" maxlength="@MonitoringState.MaxPostmortemLength"
+                                                  @bind="pmSummary" @bind:event="oninput" @ref="pmSummaryInput" aria-required="true" aria-invalid="@(pmSummaryError is null ? null : "true")"
+                                                  aria-describedby="mw-incd-pm-summary-help mw-incd-pm-summary-error"></textarea>
+                                        <div class="form-text d-flex flex-wrap justify-content-between gap-2" id="mw-incd-pm-summary-help">
+                                            <span>The impact on customers, and how long it lasted.</span>
+                                            <span class="text-nowrap">@pmSummary.Length of @MonitoringDisplay.Number(MonitoringState.MaxPostmortemLength) characters</span>
+                                        </div>
+                                        <div class="invalid-feedback d-block" id="mw-incd-pm-summary-error">@pmSummaryError</div>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label class="form-label fw-semibold" for="mw-incd-pm-cause">Root cause</label>
+                                        <textarea id="mw-incd-pm-cause" class="form-control @(pmRootCauseError is null ? null : "is-invalid")" rows="4" maxlength="@MonitoringState.MaxPostmortemLength"
+                                                  @bind="pmRootCause" @bind:event="oninput" @ref="pmRootCauseInput" aria-required="true" aria-invalid="@(pmRootCauseError is null ? null : "true")"
+                                                  aria-describedby="mw-incd-pm-cause-help mw-incd-pm-cause-error"></textarea>
+                                        <div class="form-text d-flex flex-wrap justify-content-between gap-2" id="mw-incd-pm-cause-help">
+                                            <span>Why it happened, not who.</span>
+                                            <span class="text-nowrap">@pmRootCause.Length of @MonitoringDisplay.Number(MonitoringState.MaxPostmortemLength) characters</span>
+                                        </div>
+                                        <div class="invalid-feedback d-block" id="mw-incd-pm-cause-error">@pmRootCauseError</div>
+                                    </div>
+
+                                    <fieldset class="mb-3">
+                                        <legend class="form-label fw-semibold fs-6">Action items</legend>
+                                        <p class="form-text mt-0" id="mw-incd-pm-items-help">
+                                            What changes so it doesn't happen again: up to @MonitoringState.MaxActionItems items of @MonitoringState.MaxActionItemLength characters. Empty items are left out.
+                                        </p>
+                                        @if (pmItems.Count == 0)
+                                        {
+                                            <p class="small text-body-secondary">No action items yet.</p>
+                                        }
+                                        <ol class="list-unstyled mb-2">
+                                            @for (var index = 0; index < pmItems.Count; index++)
+                                            {
+                                                var item = pmItems[index];
+                                                var number = index + 1;
+                                                var inputId = $"mw-incd-pm-item-{item.Key}";
+                                                <li class="d-flex align-items-start gap-2 mb-2" @key="item.Key">
+                                                    <div class="flex-grow-1 min-w-0">
+                                                        <label class="visually-hidden" for="@inputId">Action item @number</label>
+                                                        <input id="@inputId" class="form-control form-control-sm" maxlength="@MonitoringState.MaxActionItemLength" @bind="item.Text" @bind:event="oninput"
+                                                               @ref="item.Input" aria-describedby="mw-incd-pm-items-help" />
+                                                    </div>
+                                                    <button type="button" class="btn btn-sm btn-outline-danger text-nowrap" @onclick="() => RemoveActionItem(item)">
+                                                        Remove<span class="visually-hidden"> action item @number</span>
+                                                    </button>
+                                                </li>
+                                            }
+                                        </ol>
+                                        <Button @ref="addItemButton" Color="ButtonColor.Secondary" Outline="true" Size="ButtonSize.Small" Disabled="@(pmItems.Count >= MonitoringState.MaxActionItems)" @onclick="AddActionItem">
+                                            <Icon Name="IconName.Plus" class="me-1" aria-hidden="true" />Add action item
+                                        </Button>
+                                        @if (pmItems.Count >= MonitoringState.MaxActionItems)
+                                        {
+                                            <span class="small text-body-secondary ms-2">That's the most a postmortem holds.</span>
+                                        }
+                                    </fieldset>
+
+                                    @if (postmortem?.PublishedAt is not null)
+                                    {
+                                        <p class="small mb-2">This postmortem is published: saving changes the public incident page right away. You confirm first.</p>
+                                    }
+                                    else if (!incident.IsPublished)
+                                    {
+                                        <p class="small mb-2">#@incident.Id was never on the status page, so its postmortem stays engineers-only.</p>
+                                    }
+                                    <div class="d-flex flex-wrap gap-2">
+                                        @if (postmortem?.PublishedAt is not null)
+                                        {
+                                            <Button @ref="pmPublishButton" Color="ButtonColor.Primary" @onclick="RequestPublishFromFormAsync">Save changes</Button>
+                                        }
+                                        else
+                                        {
+                                            <Button Type="ButtonType.Submit" Color="ButtonColor.Primary">Save draft</Button>
+                                            @if (incident.IsPublished)
+                                            {
+                                                <Button @ref="pmPublishButton" Color="ButtonColor.Success" Outline="true" @onclick="RequestPublishFromFormAsync">
+                                                    <Icon Name="IconName.Broadcast" class="me-1" aria-hidden="true" />Publish on the status page
+                                                </Button>
+                                            }
+                                        }
+                                        <Button Color="ButtonColor.Secondary" Outline="true" @onclick="CancelPostmortemEdit">Cancel</Button>
+                                    </div>
+                                </form>
+                            }
+                            else if (postmortem is null)
+                            {
+                                <p class="text-body-secondary">No postmortem yet. Write down what happened, why, and what changes, while it's fresh.</p>
+                                <Button @ref="pmEditButton" Color="ButtonColor.Primary" @onclick="StartPostmortemEdit">
+                                    <Icon Name="IconName.PencilSquare" class="me-1" aria-hidden="true" />Write the postmortem
+                                </Button>
+                            }
+                            else
+                            {
+                                <p class="small text-body-secondary">Written by @postmortem.Author, last saved @MonitoringDisplay.Stamp(postmortem.WrittenAt).</p>
+                                <h3 class="h6 fw-bold">What happened</h3>
+                                <p class="mw-incd-text">@postmortem.Summary</p>
+                                <h3 class="h6 fw-bold">Root cause</h3>
+                                <p class="mw-incd-text">@postmortem.RootCause</p>
+                                <h3 class="h6 fw-bold">Action items</h3>
+                                @if (postmortem.ActionItems.Count == 0)
+                                {
+                                    <p class="text-body-secondary">None.</p>
+                                }
+                                else
+                                {
+                                    <ol>
+                                        @foreach (var item in postmortem.ActionItems)
+                                        {
+                                            <li class="mw-incd-text">@item</li>
+                                        }
+                                    </ol>
+                                }
+
+                                @if (resolved)
+                                {
+                                    <div class="d-flex flex-wrap gap-2">
+                                        <Button @ref="pmEditButton" Color="ButtonColor.Primary" Outline="true" @onclick="StartPostmortemEdit">
+                                            <Icon Name="IconName.PencilSquare" class="me-1" aria-hidden="true" />Edit
+                                        </Button>
+                                        @if (postmortem.PublishedAt is not null)
+                                        {
+                                            <Button @ref="pmUnpublishButton" Color="ButtonColor.Danger" Outline="true" @onclick="() => OpenDialogAsync(DialogKind.UnpublishPostmortem, pmUnpublishButton)">
+                                                <Icon Name="IconName.EyeSlash" class="me-1" aria-hidden="true" />Unpublish
+                                            </Button>
+                                        }
+                                        else if (incident.IsPublished)
+                                        {
+                                            <Button @ref="pmPublishButton" Color="ButtonColor.Success" Outline="true" @onclick="RequestPublishFromViewAsync">
+                                                <Icon Name="IconName.Broadcast" class="me-1" aria-hidden="true" />Publish on the status page
+                                            </Button>
+                                        }
+                                    </div>
+                                    @if (postmortem.PublishedAt is null && !incident.IsPublished)
+                                    {
+                                        <p class="small text-body-secondary mt-2 mb-0">#@incident.Id was never on the status page, so its postmortem stays engineers-only.</p>
+                                    }
+                                }
+                            }
+                        </CardBody>
+                    </Card>
+                }
+            </div>
+
+            <div class="col-xl-4">
+                <Card Class="mw-card mb-4">
+                    <CardHeader><h2 class="mw-card-title">Details</h2></CardHeader>
+                    <CardBody Class="pt-2">
+                        <dl class="mw-incd-facts mb-0">
+                            <dt>Service</dt>
+                            <dd><a href="@MonitoringDisplay.ServiceUrl(incident.ServiceId)">@serviceName</a></dd>
+                            <dt>Severity</dt>
+                            <dd>@incident.Severity</dd>
+                            <dt>Status</dt>
+                            <dd>@incident.Status</dd>
+                            <dt>Assignee</dt>
+                            <dd>@(incident.Assignee ?? "Nobody yet")</dd>
+                            <dt>Impact</dt>
+                            <dd>@Incidents.ImpactLabel(incident.Impact)</dd>
+                            <dt>Started</dt>
+                            <dd>@MonitoringDisplay.Stamp(incident.StartedAt) (@MonitoringDisplay.Ago(incident.StartedAt, State.Clock.Now))</dd>
+                            @if (incident.ResolvedAt is { } resolvedAt)
+                            {
+                                <dt>Resolved</dt>
+                                <dd>@MonitoringDisplay.Stamp(resolvedAt)</dd>
+                                <dt>Duration</dt>
+                                <dd>@MonitoringDisplay.Duration(resolvedAt - incident.StartedAt)</dd>
+                            }
+                            else
+                            {
+                                <dt>Duration</dt>
+                                <dd>@MonitoringDisplay.Duration(State.Clock.Now - incident.StartedAt) so far</dd>
+                            }
+                            <dt>Status page</dt>
+                            <dd>
+                                @if (incident.PublicStage is { } factStage)
+                                {
+                                    @($"On the status page: {MonitoringDisplay.StageLabel(factStage)}")
+                                    <a class="d-block" href="@MonitoringDisplay.PublicIncidentUrl(incident.Id)">View the public page</a>
+                                }
+                                else
+                                {
+                                    @("Engineers only")
+                                }
+                            </dd>
+                            <dt>Subscribers</dt>
+                            <dd>@SubscribersText(subscribers, serviceName)</dd>
+                        </dl>
+                    </CardBody>
+                </Card>
+
+                @if (service is not null)
+                {
+                    var latest = State.Latest(service.Id);
+                    var health = State.Status(service);
+
+                    <Card Class="mw-card">
+                        <CardHeader>
+                            <h2 class="mw-card-title">@service.Name now</h2>
+                            <Badge Color="@MonitoringDisplay.StatusColor(health)"><Icon Name="@MonitoringDisplay.StatusIcon(health)" class="me-1" aria-hidden="true" />@health</Badge>
+                        </CardHeader>
+                        <CardBody Class="pt-2">
+                            <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-2">
+                                <p class="small text-body-secondary mb-0">Last sample <span class="mw-mono">@MonitoringDisplay.Time(latest.Time)</span></p>
+                                <Button Color="ButtonColor.Secondary" Outline="true" Size="ButtonSize.Small" @onclick="RefreshLive">
+                                    <Icon Name="IconName.ArrowClockwise" class="me-1" aria-hidden="true" />Refresh
+                                </Button>
+                            </div>
+                            <div class="row g-3 mb-3">
+                                <div class="col-6">
+                                    <span class="mw-label d-block">p95 latency</span>
+                                    <span class="mw-mono fs-5 fw-semibold">@MonitoringDisplay.Latency(latest.LatencyMs)</span>
+                                    <span class="d-block small text-body-secondary">normal: @MonitoringDisplay.Latency(service.BaseLatencyMs)</span>
+                                </div>
+                                <div class="col-6">
+                                    <span class="mw-label d-block">Error rate</span>
+                                    <span class="mw-mono fs-5 fw-semibold">@MonitoringDisplay.ErrorRate(latest.ErrorRate)</span>
+                                    <span class="d-block small text-body-secondary">normal: @MonitoringDisplay.ErrorRate(service.BaseErrorRate)</span>
+                                </div>
+                            </div>
+                            <div class="d-flex flex-wrap gap-3 small">
+                                <a href="@LogsUrl(service.Id)"><Icon Name="IconName.JournalText" class="me-1" aria-hidden="true" />@service.Name logs</a>
+                                <a href="@MonitoringDisplay.ServiceUrl(service.Id)"><Icon Name="IconName.GraphUp" class="me-1" aria-hidden="true" />Charts</a>
+                            </div>
+                        </CardBody>
+                    </Card>
+                }
+            </div>
+        </div>
+
+        @* One dialog for every confirmation. Opened from code, so focus is returned by hand; the heading names it and Cancel closes it. *@
+        <Modal @ref="dialogModal" IsVerticallyCentered="true" IsScrollable="true" ShowCloseButton="false" aria-labelledby="mw-incd-dialog-title"
+               OnShown="OnDialogShown" OnHidden="OnDialogHidden">
+            <HeaderTemplate>
+                <h2 class="modal-title h5" id="mw-incd-dialog-title">@DialogTitle(incident)</h2>
+            </HeaderTemplate>
+            <BodyTemplate>
+                <form id="mw-incd-dialog-form" @onsubmit="SubmitDialogAsync" novalidate>
+                    @switch (dialog)
+                    {
+                        case DialogKind.Severity:
+                            <p>Now <strong>@incident.Severity</strong>. The change and your reason go on the timeline.</p>
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold" for="mw-incd-severity">New severity</label>
+                                <select id="mw-incd-severity" class="form-select @(severityError is null ? null : "is-invalid")" @bind="severityChoice" @ref="severityInput"
+                                        aria-invalid="@(severityError is null ? null : "true")" aria-describedby="mw-incd-severity-help mw-incd-severity-error">
+                                    @foreach (var severity in Enum.GetValues<MonitoringSeverity>())
+                                    {
+                                        <option value="@severity">@(severity == incident.Severity ? $"{severity} (current)" : severity.ToString())</option>
+                                    }
+                                </select>
+                                <div class="form-text" id="mw-incd-severity-help">
+                                    @Incidents.SeverityHelp(severityChoice)
+                                    @if (incident.IsPublished && severityChoice != incident.Severity)
+                                    {
+                                        @($" #{incident.Id} is public, so the status page will show {serviceName} as \"{MonitoringDisplay.PublicStatusLabel(PublicStatusOf(severityChoice))}\".")
+                                    }
+                                </div>
+                                <div class="invalid-feedback d-block" id="mw-incd-severity-error">@severityError</div>
+                            </div>
+                            <label class="form-label fw-semibold" for="mw-incd-severity-reason">Reason</label>
+                            <textarea id="mw-incd-severity-reason" class="form-control @(reasonError is null ? null : "is-invalid")" rows="3" maxlength="@MonitoringState.MaxUpdateLength"
+                                      @bind="reasonText" @bind:event="oninput" @ref="reasonInput" aria-required="true" aria-invalid="@(reasonError is null ? null : "true")"
+                                      aria-describedby="mw-incd-severity-reason-help mw-incd-severity-reason-error"></textarea>
+                            <div class="form-text" id="mw-incd-severity-reason-help">Why it's worse or better than first thought. Engineers only. @reasonText.Length of @MonitoringDisplay.Number(MonitoringState.MaxUpdateLength) characters.</div>
+                            <div class="invalid-feedback d-block" id="mw-incd-severity-reason-error">@reasonError</div>
+                            break;
+
+                        case DialogKind.Resolve:
+                            <p>@serviceName's metrics return to normal from the next sample, and the incident leaves the active list.</p>
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold" for="mw-incd-resolve-note">Note for engineers (optional)</label>
+                                <textarea id="mw-incd-resolve-note" class="form-control" rows="3" maxlength="@MonitoringState.MaxUpdateLength"
+                                          @bind="reasonText" @bind:event="oninput" @ref="reasonInput" aria-describedby="mw-incd-resolve-note-help"></textarea>
+                                <div class="form-text" id="mw-incd-resolve-note-help">What fixed it. Goes on the timeline only. @reasonText.Length of @MonitoringDisplay.Number(MonitoringState.MaxUpdateLength) characters.</div>
+                            </div>
+                            @if (incident.IsPublished)
+                            {
+                                <label class="form-label fw-semibold" for="mw-incd-resolve-public">"Resolved" message on the status page</label>
+                                <textarea id="mw-incd-resolve-public" class="form-control @(publicError is null ? null : "is-invalid")" rows="4" maxlength="@MonitoringState.MaxUpdateLength"
+                                          @bind="publicText" @bind:event="oninput" @ref="publicInput" aria-required="true" aria-invalid="@(publicError is null ? null : "true")"
+                                          aria-describedby="mw-incd-resolve-public-help mw-incd-resolve-public-error"></textarea>
+                                <div class="form-text" id="mw-incd-resolve-public-help">A draft to edit. @publicText.Length of @MonitoringDisplay.Number(MonitoringState.MaxUpdateLength) characters.</div>
+                                <div class="invalid-feedback d-block" id="mw-incd-resolve-public-error">@publicError</div>
+                                <p class="fw-semibold mt-3 mb-0">This is published on the status page and @EmailedText(subscribers).</p>
+                            }
+                            else
+                            {
+                                <p class="small text-body-secondary mb-0">#@incident.Id is engineers-only: nothing is posted on the status page.</p>
+                            }
+                            break;
+
+                        case DialogKind.Reopen:
+                            <p>The incident becomes active again and is assigned to you. The on-call engineers are notified.@(incident.Postmortem?.PublishedAt is not null ? " Its published postmortem comes off the status page until the incident is resolved again." : null)</p>
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold" for="mw-incd-reopen-reason">Reason</label>
+                                <textarea id="mw-incd-reopen-reason" class="form-control @(reasonError is null ? null : "is-invalid")" rows="3" maxlength="@MonitoringState.MaxUpdateLength"
+                                          @bind="reasonText" @bind:event="oninput" @ref="reasonInput" aria-required="true" aria-invalid="@(reasonError is null ? null : "true")"
+                                          aria-describedby="mw-incd-reopen-reason-help mw-incd-reopen-reason-error"></textarea>
+                                <div class="form-text" id="mw-incd-reopen-reason-help">What came back. Engineers only. @reasonText.Length of @MonitoringDisplay.Number(MonitoringState.MaxUpdateLength) characters.</div>
+                                <div class="invalid-feedback d-block" id="mw-incd-reopen-reason-error">@reasonError</div>
+                            </div>
+                            @if (incident.IsPublished)
+                            {
+                                <label class="form-label fw-semibold" for="mw-incd-reopen-public">"Investigating" message on the status page</label>
+                                <textarea id="mw-incd-reopen-public" class="form-control @(publicError is null ? null : "is-invalid")" rows="4" maxlength="@MonitoringState.MaxUpdateLength"
+                                          @bind="publicText" @bind:event="oninput" @ref="publicInput" aria-required="true" aria-invalid="@(publicError is null ? null : "true")"
+                                          aria-describedby="mw-incd-reopen-public-help mw-incd-reopen-public-error"></textarea>
+                                <div class="form-text" id="mw-incd-reopen-public-help">A draft to edit. @publicText.Length of @MonitoringDisplay.Number(MonitoringState.MaxUpdateLength) characters.</div>
+                                <div class="invalid-feedback d-block" id="mw-incd-reopen-public-error">@publicError</div>
+                                <p class="fw-semibold mt-3 mb-0">#@incident.Id is back to "Investigating" on the status page, and this message is @EmailedText(subscribers).</p>
+                            }
+                            else
+                            {
+                                <p class="small text-body-secondary mb-0">#@incident.Id is engineers-only: nothing is posted on the status page.</p>
+                            }
+                            break;
+
+                        case DialogKind.FirstPublic:
+                            <p class="fw-semibold">This makes #@incident.Id public on the status page: customers see it, @serviceName shows as "@MonitoringDisplay.PublicStatusLabel(PublicStatusOf(incident.Severity))", and the update is @EmailedText(subscribers).</p>
+                            <p class="mb-1">You're posting <strong>@MonitoringDisplay.StageLabel(postStage)</strong>@(postStage == MonitoringPublicStage.Resolved ? ", which also resolves the incident" : null):</p>
+                            <blockquote class="mw-incd-quote mw-incd-text mb-0">@postText.Trim()</blockquote>
+                            break;
+
+                        case DialogKind.PublishPostmortem:
+                            <p class="fw-semibold mb-2">
+                                @(incident.Postmortem?.PublishedAt is null
+                                    ? $"This shows the postmortem on #{incident.Id}'s public incident page, where anyone can read it."
+                                    : $"This updates the postmortem on #{incident.Id}'s public incident page right away.")
+                            </p>
+                            <p class="small text-body-secondary mb-0">Subscribers aren't emailed about postmortems. You can unpublish it later.</p>
+                            break;
+
+                        case DialogKind.UnpublishPostmortem:
+                            <p class="fw-semibold mb-2">This takes the postmortem off #@incident.Id's public incident page.</p>
+                            <p class="small text-body-secondary mb-0">It stays here as an engineers-only draft, and you can publish it again.</p>
+                            break;
+                    }
+                </form>
+            </BodyTemplate>
+            <FooterTemplate>
+                <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => dialogModal.HideAsync()">Cancel</Button>
+                <Button Type="ButtonType.Submit" Color="@(dialog == DialogKind.UnpublishPostmortem ? ButtonColor.Danger : ButtonColor.Primary)" form="mw-incd-dialog-form">@DialogConfirmLabel(incident)</Button>
+            </FooterTemplate>
+        </Modal>
+    </div>
+}

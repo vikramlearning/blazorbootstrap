@@ -1,0 +1,14 @@
+@page "/showcase/monitoring/sign-in"
+@layout MonitoringLayout
+
+<PageTitle>Engineer sign-in · @MonitoringSeedData.ProductName</PageTitle>
+
+@* Engineers are staff, so there is no register form; the status page itself needs no account. *@
+<div class="container-xl">
+    <ShowcaseSignIn SiteBase="@MonitoringLayout.Base" SiteName="@MonitoringSeedData.ProductName" ReturnUrl="@ReturnUrl" />
+</div>
+
+@code {
+    /// <summary>Gets or sets the page to return to after signing in; only a page inside the site is used.</summary>
+    [SupplyParameterFromQuery(Name = "returnUrl")] public string? ReturnUrl { get; set; }
+}

@@ -1,0 +1,205 @@
+@page "/showcase/monitoring/console/on-call"
+@layout ConsoleLayout
+
+<PageTitle>On-call · @MonitoringSeedData.ProductName</PageTitle>
+
+<div class="container-fluid px-lg-4">
+    <div class="mw-page-head">
+        <div>
+            <h1 class="mw-title">On-call</h1>
+            <p class="mw-lead">Who gets paged for alerts. Each week runs from Monday 09:00 to the next Monday 09:00; take a shift to cover for a teammate.</p>
+        </div>
+    </div>
+
+    @* Always rendered and focusable, so a result is announced and focus has somewhere to go once a dialog closes. *@
+    <div class="oc-status" role="status" tabindex="-1" @ref="statusRegion">
+        @if (statusMessage is not null)
+        {
+            <Alert Color="@statusColor" Class="mb-4"><p class="mb-0 fw-semibold">@statusMessage</p></Alert>
+        }
+    </div>
+
+    @{
+        var weeks = State.Shifts(0, Weeks);
+        var now = weeks.FirstOrDefault();
+    }
+
+    <div class="row g-4 mb-4">
+        <div class="col-lg-7">
+            <section class="h-100" aria-labelledby="oc-now-title">
+                <Card Class="mw-card h-100">
+                    <CardHeader>
+                        <h2 class="mw-card-title" id="oc-now-title">On call now</h2>
+                        @if (now is not null)
+                        {
+                            <span class="small text-body-secondary">until @WeekDay(now.End)</span>
+                        }
+                    </CardHeader>
+                    <CardBody>
+                        @if (now is null)
+                        {
+                            <p class="mb-0 text-body-secondary">The rotation has no shift for this week.</p>
+                        }
+                        else
+                        {
+                            <ul class="list-unstyled mb-0">
+                                @foreach (var role in Enum.GetValues<MonitoringOnCallRole>())
+                                {
+                                    var holderId = Holder(now, role);
+                                    var holder = State.FindEngineer(holderId);
+                                    var taken = Override(now, role);
+                                    <li class="mw-row" @key="role">
+                                        <span class="oc-avatar" aria-hidden="true">@(holder?.Initials ?? "?")</span>
+                                        <span class="flex-grow-1">
+                                            <span class="mw-label d-block">@RoleLabel(role)</span>
+                                            <span class="fw-semibold">@Name(holderId)@(holderId == MyId ? " (you)" : null)</span>
+                                            @if (taken is not null)
+                                            {
+                                                <span class="d-block small text-body-secondary">Covering for @Name(taken.OriginalId)</span>
+                                            }
+                                            <span class="d-block small text-body-secondary">@RoleHelp(role)</span>
+                                        </span>
+                                    </li>
+                                }
+                            </ul>
+                        }
+                    </CardBody>
+                </Card>
+            </section>
+        </div>
+        <div class="col-lg-5">
+            <section class="h-100" aria-labelledby="oc-policy-title">
+                <Card Class="mw-card h-100">
+                    <CardHeader><h2 class="mw-card-title" id="oc-policy-title">Escalation policy</h2></CardHeader>
+                    <CardBody>
+                        <ol class="oc-policy mb-0">
+                            <li><strong>Primary on call</strong> is paged first, for every alert.</li>
+                            <li><strong>Secondary on call</strong> is paged if the primary doesn't acknowledge within 5 minutes.</li>
+                            <li><strong>The team lead</strong> is paged if the secondary doesn't acknowledge either.</li>
+                        </ol>
+                        <p class="small text-body-secondary mt-3 mb-0">How each page reaches you is set in <a href="@($"{ConsoleLayout.Base}/notifications")">Notifications</a>.</p>
+                    </CardBody>
+                </Card>
+            </section>
+        </div>
+    </div>
+
+    <section aria-labelledby="oc-weeks-title">
+        <Card Class="mw-card">
+            <CardHeader>
+                <h2 class="mw-card-title" id="oc-weeks-title">The next @Weeks weeks</h2>
+                <span class="small text-body-secondary">You can take a position nobody has taken over yet, and remove your own overrides until their week ends.</span>
+            </CardHeader>
+            <CardBody Class="pt-2">
+                <div class="table-responsive mw-grid">
+                    <table class="table oc-table">
+                        <caption class="visually-hidden">On-call rotation for the next @Weeks weeks: the primary and secondary of each week, with overrides</caption>
+                        <thead>
+                            <tr>
+                                <th scope="col">Week</th>
+                                <th scope="col">Primary</th>
+                                <th scope="col">Secondary</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var shift in weeks)
+                            {
+                                <tr @key="shift.Start">
+                                    <th scope="row" class="text-nowrap">
+                                        <span class="d-block">@WeekText(shift)</span>
+                                        @if (shift == now)
+                                        {
+                                            <Badge Color="BadgeColor.Primary" Class="mt-1">This week</Badge>
+                                        }
+                                    </th>
+                                    @foreach (var role in Enum.GetValues<MonitoringOnCallRole>())
+                                    {
+                                        var holderId = Holder(shift, role);
+                                        var otherId = Holder(shift, Other(role));
+                                        var taken = Override(shift, role);
+                                        var key = CellKey(shift, role);
+                                        <td>
+                                            <span class="fw-semibold">@Name(holderId)@(holderId == MyId ? " (you)" : null)</span>
+                                            @if (taken is not null)
+                                            {
+                                                <span class="d-block small">@Name(taken.EngineerId), covering for @Name(taken.OriginalId)</span>
+                                                @if (taken.Reason.Length > 0)
+                                                {
+                                                    <span class="d-block small text-body-secondary oc-reason">Reason: @taken.Reason</span>
+                                                }
+                                            }
+
+                                            @if (taken is not null && taken.AccountId == MyId)
+                                            {
+                                                <button type="button" class="btn btn-sm btn-outline-danger mt-2" @ref="openers[key]" @onclick="() => AskRemoveAsync(shift, role, taken, key)">
+                                                    Remove my override<span class="visually-hidden">: @RoleLabel(role).ToLowerInvariant(), @WeekText(shift)</span>
+                                                </button>
+                                            }
+                                            else if (holderId == MyId)
+                                            {
+                                                <span class="d-block small text-body-secondary">You're on call</span>
+                                            }
+                                            else if (otherId == MyId)
+                                            {
+                                                <span class="d-block small text-body-secondary">You're @RoleLabel(Other(role)).ToLowerInvariant() this week</span>
+                                            }
+                                            else if (taken is null)
+                                            {
+                                                <button type="button" class="btn btn-sm btn-outline-primary mt-2" @ref="openers[key]" @onclick="() => AskTakeAsync(shift, role, key)">
+                                                    Take this shift<span class="visually-hidden">: @RoleLabel(role).ToLowerInvariant(), @WeekText(shift)</span>
+                                                </button>
+                                            }
+                                        </td>
+                                    }
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </CardBody>
+        </Card>
+    </section>
+</div>
+
+<Modal @ref="takeModal" IsVerticallyCentered="true" IsScrollable="true" ShowCloseButton="false" aria-labelledby="oc-take-title"
+       OnShown="OnTakeShownAsync" OnHidden="OnDialogHiddenAsync">
+    <HeaderTemplate>
+        <h2 class="modal-title h5" id="oc-take-title">Take the @RoleLabel(pendingRole).ToLowerInvariant() shift for @WeekText(pendingStart)?</h2>
+    </HeaderTemplate>
+    <BodyTemplate>
+        <p class="mb-2">
+            From @WeekDay(pendingStart) to @WeekDay(pendingStart.AddDays(7)), you're @(pendingRole == MonitoringOnCallRole.Primary ? "paged first for every alert" : "paged when the primary doesn't acknowledge within 5 minutes")
+            instead of @pendingHolderName.
+        </p>
+        <p class="small text-body-secondary mb-3">You can remove your override later, until the week ends.</p>
+        <label class="form-label fw-semibold" for="oc-take-reason">Reason (optional)</label>
+        <textarea id="oc-take-reason" class="form-control @(reasonError is null ? null : "is-invalid")" rows="3" maxlength="@MonitoringState.MaxReasonLength"
+                  @bind="reason" @bind:event="oninput" @ref="reasonInput" aria-invalid="@(reasonError is null ? null : "true")"
+                  aria-describedby="oc-take-reason-help oc-take-reason-count oc-take-reason-error"></textarea>
+        <div class="d-flex flex-wrap justify-content-between gap-2 form-text">
+            <span id="oc-take-reason-help">Shown next to the shift for the rest of the team, for example "Swapping with Marcus for his holiday".</span>
+            <span id="oc-take-reason-count">@reason.Length of @MonitoringState.MaxReasonLength characters</span>
+        </div>
+        <p class="text-danger-emphasis fw-semibold small mt-2 mb-0" id="oc-take-reason-error">@reasonError</p>
+        <p class="text-danger-emphasis fw-semibold small mt-2 mb-0" role="alert">@dialogError</p>
+    </BodyTemplate>
+    <FooterTemplate>
+        <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => takeModal.HideAsync()">Cancel</Button>
+        <Button Color="ButtonColor.Primary" @onclick="ConfirmTakeAsync" Disabled="busy">Take the @RoleLabel(pendingRole).ToLowerInvariant() shift</Button>
+    </FooterTemplate>
+</Modal>
+
+<Modal @ref="removeModal" IsVerticallyCentered="true" IsScrollable="true" ShowCloseButton="false" aria-labelledby="oc-remove-title"
+       OnShown="OnRemoveShownAsync" OnHidden="OnDialogHiddenAsync">
+    <HeaderTemplate>
+        <h2 class="modal-title h5" id="oc-remove-title">Remove your override for @WeekText(pendingStart)?</h2>
+    </HeaderTemplate>
+    <BodyTemplate>
+        <p class="mb-0">@pendingHolderName goes back to being @RoleLabel(pendingRole).ToLowerInvariant() on call from @WeekDay(pendingStart) to @WeekDay(pendingStart.AddDays(7)), and you're off that shift.</p>
+        <p class="text-danger-emphasis fw-semibold small mt-2 mb-0" role="alert">@dialogError</p>
+    </BodyTemplate>
+    <FooterTemplate>
+        <button type="button" class="btn btn-outline-secondary" @ref="removeCancelButton" @onclick="() => removeModal.HideAsync()">Cancel</button>
+        <Button Color="ButtonColor.Danger" @onclick="ConfirmRemoveAsync" Disabled="busy">Remove my override</Button>
+    </FooterTemplate>
+</Modal>

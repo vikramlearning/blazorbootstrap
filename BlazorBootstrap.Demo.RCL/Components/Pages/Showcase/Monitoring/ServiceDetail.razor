@@ -1,5 +1,5 @@
-@page "/showcase/monitoring/services/{Id}"
-@layout MonitoringLayout
+@page "/showcase/monitoring/console/services/{Id}"
+@layout ConsoleLayout
 
 @if (Service is null)
 {
@@ -24,7 +24,7 @@ else
                     <p class="mw-lead mb-2">@Service.Description</p>
                     <div class="d-flex flex-wrap align-items-center gap-2 small">
                         <Badge Color="@MonitoringDisplay.StatusColor(status)"><Icon Name="@MonitoringDisplay.StatusIcon(status)" class="me-1" aria-hidden="true" />@status</Badge>
-                        <span class="text-body-secondary">@Service.Kind · @Service.Region · @Service.Team team · last sample <span class="mw-mono">@MonitoringDisplay.Time(latest.Time)</span></span>
+                        <span class="text-body-secondary">@MonitoringDisplay.KindLabel(Service.Kind) · @Service.Region · @Service.Team team · last sample <span class="mw-mono">@MonitoringDisplay.Time(latest.Time)</span></span>
                     </div>
                 </div>
             </div>
@@ -122,7 +122,7 @@ else
                 <Card Class="mw-card h-100">
                     <CardHeader>
                         <h2 class="mw-card-title">Recent logs</h2>
-                        <a class="small" href="@($"{MonitoringLayout.Base}/logs?service={Service.Id}")">All @Service.Name logs</a>
+                        <a class="small" href="@($"{ConsoleLayout.Base}/logs?service={Uri.EscapeDataString(Service.Id)}")">All @Service.Name logs</a>
                     </CardHeader>
                     <CardBody Class="pt-2">
                         @if (RecentLogs.Count == 0)

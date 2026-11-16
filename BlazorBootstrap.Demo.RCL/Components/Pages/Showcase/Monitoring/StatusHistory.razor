@@ -1,0 +1,79 @@
+@page "/showcase/monitoring/history"
+@layout MonitoringLayout
+
+<PageTitle>Incident history · @MonitoringSeedData.StatusPageName</PageTitle>
+
+<div class="container-xl mw-public-page">
+    <div class="mw-page-head">
+        <div>
+            <h1 class="mw-title">Incident history</h1>
+            <p class="mw-lead">Every incident we posted on the status page, newest first.</p>
+        </div>
+        <div>
+            <label class="form-label mw-label mb-1" for="mw-history-service">Component</label>
+            <select class="form-select" id="mw-history-service" value="@serviceFilter" @onchange="OnServiceChanged">
+                <option value="">All components</option>
+                @foreach (var service in State.Services)
+                {
+                    <option value="@service.Id">@service.Name</option>
+                }
+            </select>
+        </div>
+    </div>
+
+    <p class="visually-hidden" role="status">@filterMessage</p>
+
+    @if (Months.Count == 0)
+    {
+        <Card Class="mw-card">
+            <CardBody Class="text-center py-5">
+                <span class="mw-icon fs-4" aria-hidden="true"><Icon Name="IconName.CheckCircle" /></span>
+                <h2 class="mw-section-title mt-3 mb-1">No incidents</h2>
+                <p class="text-body-secondary mb-0">@(SelectedService is { } selected ? $"We haven't posted any incidents about {selected.Name}." : "We haven't posted any incidents.")</p>
+            </CardBody>
+        </Card>
+    }
+    else
+    {
+        @foreach (var month in Months)
+        {
+            var headingId = $"mw-history-{month.Key:yyyy-MM}";
+            <section class="mb-4" aria-labelledby="@headingId" @key="month.Key">
+                <h2 class="mw-section-title" id="@headingId">@month.Key.ToString("MMMM yyyy", CultureInfo.InvariantCulture)</h2>
+                <Card Class="mw-card">
+                    <CardBody Class="py-2">
+                        <ul class="list-unstyled mb-0">
+                            @foreach (var incident in month)
+                            {
+                                var ongoing = IsOngoing(incident);
+                                var stage = incident.PublicStage ?? MonitoringPublicStage.Investigating;
+                                <li class="mw-history-row" @key="incident.Id">
+                                    <div class="flex-grow-1 mw-history-main">
+                                        <h3 class="mw-history-title"><a class="mw-row-link" href="@MonitoringDisplay.PublicIncidentUrl(incident.Id)">@incident.Title</a></h3>
+                                        <p class="small text-body-secondary mb-0">
+                                            @ServiceName(incident.ServiceId) · started <time datetime="@incident.StartedAt.ToString("yyyy-MM-ddTHH:mm", CultureInfo.InvariantCulture)">@MonitoringDisplay.Stamp(incident.StartedAt)</time>
+                                            · @(ongoing ? "Ongoing" : $"lasted {MonitoringDisplay.Duration(incident.ResolvedAt!.Value - incident.StartedAt)}")
+                                        </p>
+                                    </div>
+                                    <div class="d-flex flex-wrap align-items-center gap-2">
+                                        <span class="mw-stage @(ongoing ? "mw-stage-ongoing" : null)">
+                                            <span class="visually-hidden">Last update: </span>@MonitoringDisplay.StageLabel(stage)
+                                        </span>
+                                        @if (incident.Postmortem?.PublishedAt is not null)
+                                        {
+                                            <span class="mw-stage">Postmortem</span>
+                                        }
+                                    </div>
+                                </li>
+                            }
+                        </ul>
+                    </CardBody>
+                </Card>
+            </section>
+        }
+    }
+
+    <p class="small text-body-secondary mb-0">
+        <a href="@MonitoringLayout.Base">Back to the current status</a> · <a href="@StatusPage.SubscribePath">Subscribe to updates</a>
+    </p>
+</div>

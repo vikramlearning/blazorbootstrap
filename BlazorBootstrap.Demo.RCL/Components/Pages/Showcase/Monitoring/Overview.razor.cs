@@ -86,7 +86,12 @@ public partial class Overview : ComponentBase, IDisposable
 
     private List<string> Labels() => State.History("api-gateway").Select(sample => MonitoringDisplay.Time(sample.Time)).ToList();
 
-    private void OnStateChanged() => InvokeAsync(StateHasChanged);
+    /// <summary>Incident changes rebuild the metrics, so the charts redraw too (also while live updates are paused).</summary>
+    private void OnStateChanged() => InvokeAsync(async () =>
+    {
+        StateHasChanged();
+        await RedrawChartsAsync();
+    });
 
     private void OnThemeChanged() => InvokeAsync(RedrawChartsAsync);
 

@@ -1,0 +1,25 @@
+/* The console's services list. The table scrolls inside its box on narrow screens. */
+.mw-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .75rem 1rem;
+}
+
+    .mw-filters > div {
+        min-width: min(100%, 12rem);
+    }
+
+.mw-services-caption {
+    caption-side: top;
+    padding: .875rem 1rem .5rem;
+    font-size: .8125rem;
+    color: var(--bs-secondary-color);
+}
+
+.mw-services-table th[scope=row] {
+    font-weight: 600;
+}
+
+.mw-incident-cell {
+    min-width: 14rem;
+}

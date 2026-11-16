@@ -1,0 +1,47 @@
+/* The incident history. */
+.mw-section-title {
+    margin: 0 0 .75rem;
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: var(--mw-ink);
+}
+
+.mw-history-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: .5rem 1rem;
+    padding-block: .75rem;
+    border-top: 1px solid var(--mw-border);
+}
+
+    .mw-history-row:first-child {
+        border-top: 0;
+    }
+
+.mw-history-main {
+    min-width: min(100%, 16rem);
+}
+
+.mw-history-title {
+    margin: 0 0 .125rem;
+    font-size: 1rem;
+    font-weight: 700;
+    overflow-wrap: anywhere;
+}
+
+/* The latest stage in words; an ongoing incident's is bold with a tinted fill, never the fill alone. */
+.mw-stage {
+    display: inline-block;
+    padding: .125rem .5rem;
+    border: 1px solid var(--mw-border);
+    border-radius: 1rem;
+    font-size: .8125rem;
+    color: var(--mw-ink);
+}
+
+.mw-stage-ongoing {
+    font-weight: 700;
+    border-color: currentColor;
+    background: rgba(var(--sc-primary-rgb), .08);
+}

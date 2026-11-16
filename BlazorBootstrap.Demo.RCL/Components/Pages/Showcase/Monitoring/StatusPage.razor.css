@@ -1,0 +1,238 @@
+/* The public status page. Status colors are tokens with a dark-mode set; each is at least 3:1 against the surface, and
+   every colored mark also carries its status in words (badge text, the day's name, the table). */
+.mw-public-page {
+    --mw-up-operational: #15803d;
+    --mw-up-degraded: #0e7490;
+    --mw-up-partial: #c2410c;
+    --mw-up-major: #b91c1c;
+}
+
+[data-bs-theme=dark] .mw-public-page {
+    --mw-up-operational: #4ade80;
+    --mw-up-degraded: #22d3ee;
+    --mw-up-partial: #fb923c;
+    --mw-up-major: #f87171;
+}
+
+.mw-section-title {
+    margin: 0 0 .75rem;
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: var(--mw-ink);
+}
+
+/* The overall banner. */
+.mw-overall {
+    --mw-tone: var(--mw-up-operational);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.25rem 1.5rem;
+    border: 1px solid var(--mw-border);
+    border-inline-start: .5rem solid var(--mw-tone);
+    border-radius: .75rem;
+    background: var(--mw-surface);
+    color: var(--mw-ink);
+}
+
+.mw-overall-degraded {
+    --mw-tone: var(--mw-up-degraded);
+}
+
+.mw-overall-partial {
+    --mw-tone: var(--mw-up-partial);
+}
+
+.mw-overall-major {
+    --mw-tone: var(--mw-up-major);
+}
+
+.mw-overall-icon {
+    display: inline-flex;
+    flex: 0 0 auto;
+    font-size: 2rem;
+    color: var(--mw-tone);
+}
+
+.mw-overall-title {
+    margin: 0 0 .25rem;
+    font-size: clamp(1.125rem, 2.2vw, 1.5rem);
+    font-weight: 700;
+}
+
+.mw-incident-title {
+    margin: 0 0 .25rem;
+    font-size: 1rem;
+    font-weight: 700;
+}
+
+/* Public updates of an ongoing incident, newest first. */
+.mw-updates {
+    margin: 0 0 .75rem;
+    padding: 0;
+    list-style: none;
+}
+
+.mw-update {
+    padding: .5rem 0 .5rem .875rem;
+    border-inline-start: 2px solid var(--mw-border);
+}
+
+/* User text is plain: Razor encodes it, and pre-wrap keeps its line breaks. */
+.mw-plain {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+/* Components and their 90-day bars. */
+.mw-component {
+    padding-block: 1rem;
+    border-top: 1px solid var(--mw-border);
+}
+
+    .mw-component:first-child {
+        border-top: 0;
+    }
+
+.mw-component-name {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--mw-ink);
+}
+
+.mw-public-status {
+    display: inline-flex;
+    align-items: center;
+    font-size: .875rem;
+    font-weight: 600;
+}
+
+.mw-public-operational {
+    color: var(--mw-up-operational);
+}
+
+.mw-public-degraded {
+    color: var(--mw-up-degraded);
+}
+
+.mw-public-partial {
+    color: var(--mw-up-partial);
+}
+
+.mw-public-major {
+    color: var(--mw-up-major);
+}
+
+/* Days with an incident are full height; quiet days are shorter, so the shape marks them too, not only the color. */
+.mw-uptime-bar {
+    display: flex;
+    align-items: flex-end;
+    gap: 2px;
+    height: 2rem;
+}
+
+.mw-uptime-day {
+    flex: 1 1 0;
+    min-width: 0;
+    height: 100%;
+    border-radius: 2px;
+    background: var(--mw-up-operational);
+}
+
+    .mw-uptime-day.mw-uptime-operational {
+        height: 70%;
+        opacity: .75;
+    }
+
+    .mw-uptime-day.mw-uptime-degraded {
+        background: var(--mw-up-degraded);
+    }
+
+    .mw-uptime-day.mw-uptime-partial {
+        background: var(--mw-up-partial);
+    }
+
+    .mw-uptime-day.mw-uptime-major {
+        background: var(--mw-up-major);
+    }
+
+@media (forced-colors: active) {
+    .mw-uptime-day {
+        border: 1px solid CanvasText;
+    }
+
+        .mw-uptime-day:not(.mw-uptime-operational) {
+            background: CanvasText;
+        }
+}
+
+.mw-uptime-scale {
+    display: flex;
+    justify-content: space-between;
+    margin: .25rem 0 .375rem;
+    font-size: .75rem;
+    color: var(--bs-secondary-color);
+}
+
+.mw-uptime-details > summary {
+    width: fit-content;
+    font-size: .875rem;
+    font-weight: 600;
+    color: var(--sc-primary-hover);
+    cursor: pointer;
+}
+
+    .mw-uptime-details > summary:focus-visible {
+        outline: 2px solid var(--sc-primary);
+        outline-offset: 2px;
+        border-radius: .25rem;
+    }
+
+.mw-uptime-details .table {
+    --bs-table-bg: transparent;
+    font-size: .875rem;
+}
+
+/* The legend's marks are the bar's own shapes, side by side with their words. */
+.mw-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .375rem 1rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-size: .8125rem;
+    color: var(--bs-secondary-color);
+}
+
+    .mw-legend li {
+        display: inline-flex;
+        align-items: flex-end;
+        gap: .375rem;
+        height: 1rem;
+    }
+
+    .mw-legend .mw-uptime-day {
+        flex: 0 0 .5rem;
+        height: 1rem;
+    }
+
+        .mw-legend .mw-uptime-day.mw-uptime-operational {
+            height: .7rem;
+        }
+
+.mw-subscribe-cta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.25rem 1.5rem;
+    border: 1px solid var(--mw-border);
+    border-radius: .75rem;
+    background: var(--mw-surface);
+}
+
+    .mw-subscribe-cta > .flex-grow-1 {
+        min-width: min(100%, 16rem);
+    }

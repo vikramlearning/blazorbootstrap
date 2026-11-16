@@ -1,0 +1,36 @@
+.oc-status:focus {
+    outline: none;
+}
+
+.oc-avatar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    font-weight: 700;
+    font-size: .875rem;
+    color: var(--sc-primary-hover);
+    background: rgba(var(--sc-primary-rgb), .12);
+}
+
+.oc-policy {
+    padding-inline-start: 1.25rem;
+}
+
+    .oc-policy li + li {
+        margin-top: .5rem;
+    }
+
+.oc-table td,
+.oc-table th[scope=row] {
+    min-width: 11rem;
+    vertical-align: top;
+}
+
+.oc-reason {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}

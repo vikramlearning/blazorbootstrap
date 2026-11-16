@@ -1,0 +1,168 @@
+@page "/showcase/monitoring"
+@layout MonitoringLayout
+
+<PageTitle>Status · @MonitoringSeedData.StatusPageName</PageTitle>
+
+@{
+    var overall = State.OverallPublicStatus;
+    var active = State.PublicActiveIncidents;
+    var now = State.Clock.Now;
+}
+
+<div class="container-xl mw-public-page">
+    <div class="mw-page-head">
+        <div>
+            <h1 class="mw-title">@MonitoringSeedData.StatusPageName</h1>
+            <p class="mw-lead">The current status of @MonitoringSeedData.ProductName's services, the incidents we're working on, and 90 days of uptime.</p>
+        </div>
+        <Button Type="ButtonType.Link" To="@SubscribePath" Color="ButtonColor.Primary">
+            <Icon Name="IconName.Envelope" class="me-2" aria-hidden="true" />Subscribe to updates
+        </Button>
+    </div>
+
+    @* The overall status: icon, color, and the headline in words. *@
+    <section class="mw-overall mw-overall-@StatusClass(overall) mb-4" aria-labelledby="mw-overall-title">
+        <span class="mw-overall-icon" aria-hidden="true"><Icon Name="@MonitoringDisplay.PublicStatusIcon(overall)" /></span>
+        <div class="flex-grow-1">
+            <h2 class="mw-overall-title" id="mw-overall-title">@MonitoringDisplay.OverallStatusText(overall)</h2>
+            <p class="mb-0 small">
+                @OngoingText(active.Count) · Last updated <time datetime="@now.ToString("yyyy-MM-ddTHH:mm", CultureInfo.InvariantCulture)">@MonitoringDisplay.Stamp(now)</time>
+            </p>
+        </div>
+    </section>
+
+    @if (active.Count > 0)
+    {
+        <section class="mb-4" aria-labelledby="mw-ongoing-title">
+            <h2 class="mw-section-title" id="mw-ongoing-title">Ongoing incidents</h2>
+            @foreach (var incident in active)
+            {
+                var status = ImpactStatus(incident.Severity);
+                var updates = PublicUpdates(incident);
+                <Card Class="mw-card mb-3" @key="incident.Id">
+                    <CardBody>
+                        <div class="d-flex flex-wrap align-items-start justify-content-between gap-2 mb-3">
+                            <div>
+                                <h3 class="mw-incident-title"><a class="mw-row-link" href="@MonitoringDisplay.PublicIncidentUrl(incident.Id)">@incident.Title</a></h3>
+                                <p class="small text-body-secondary mb-0">Affects @ServiceName(incident.ServiceId) · started @MonitoringDisplay.Stamp(incident.StartedAt)</p>
+                            </div>
+                            <Badge Color="@MonitoringDisplay.PublicStatusColor(status)">
+                                <Icon Name="@MonitoringDisplay.PublicStatusIcon(status)" class="me-1" aria-hidden="true" />@MonitoringDisplay.PublicStatusLabel(status)
+                            </Badge>
+                        </div>
+                        <ol class="mw-updates" aria-label="@($"Updates on {incident.Title}, newest first")">
+                            @foreach (var update in updates)
+                            {
+                                <li class="mw-update" @key="update.Id">
+                                    <div class="small">
+                                        <span class="fw-bold">@MonitoringDisplay.StageLabel(update.Stage ?? MonitoringPublicStage.Investigating)</span>
+                                        <span aria-hidden="true"> · </span>
+                                        <time class="text-body-secondary" datetime="@update.Time.ToString("yyyy-MM-ddTHH:mm", CultureInfo.InvariantCulture)">@MonitoringDisplay.Stamp(update.Time)</time>
+                                    </div>
+                                    <p class="mw-plain mb-0">@update.Text</p>
+                                </li>
+                            }
+                        </ol>
+                        <a class="small fw-semibold" href="@MonitoringDisplay.PublicIncidentUrl(incident.Id)">View incident #@incident.Id<span class="visually-hidden">: @incident.Title</span></a>
+                    </CardBody>
+                </Card>
+            }
+        </section>
+    }
+
+    <section class="mb-4" aria-labelledby="mw-components-title">
+        <div class="d-flex flex-wrap align-items-end justify-content-between gap-2 mb-3">
+            <div>
+                <h2 class="mw-section-title mb-1" id="mw-components-title">Components</h2>
+                <p class="small text-body-secondary mb-0">Each bar shows the last 90 days, one day per mark, oldest on the left. Point at a day for its status, or open "Days with incidents".</p>
+            </div>
+            <ul class="mw-legend" aria-label="Uptime bar legend">
+                @foreach (var status in LegendStatuses)
+                {
+                    <li><span class="mw-uptime-day mw-uptime-@StatusClass(status)" aria-hidden="true"></span>@MonitoringDisplay.PublicStatusLabel(status)</li>
+                }
+            </ul>
+        </div>
+
+        <Card Class="mw-card">
+            <CardBody Class="py-2">
+                <ul class="list-unstyled mb-0">
+                    @foreach (var service in State.Services)
+                    {
+                        var status = State.PublicStatus(service.Id);
+                        var days = State.UptimeDays(service.Id, UptimeDayCount);
+                        var incidentDays = days.Where(day => day.IncidentIds.Count > 0).Reverse().ToList();
+                        var summaryId = $"mw-uptime-{service.Id}-summary";
+                        <li class="mw-component" @key="service.Id">
+                            <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-2">
+                                <h3 class="mw-component-name">@service.Name</h3>
+                                <span class="mw-public-status mw-public-@StatusClass(status)">
+                                    <Icon Name="@MonitoringDisplay.PublicStatusIcon(status)" class="me-1" aria-hidden="true" />@MonitoringDisplay.PublicStatusLabel(status)
+                                </span>
+                            </div>
+
+                            @* One group, not 90 tab stops: each day is an image with its status in its name (and a tooltip for the mouse); the
+                               table below lists the days with incidents for keyboard users. *@
+                            <div class="mw-uptime-bar" role="group" aria-label="@($"{service.Name}: status each day for the last 90 days")" aria-describedby="@summaryId">
+                                @foreach (var day in days)
+                                {
+                                    var label = DayLabel(day);
+                                    <span class="mw-uptime-day mw-uptime-@StatusClass(day.Status)" role="img" aria-label="@label" title="@label" @key="day.Date"></span>
+                                }
+                            </div>
+                            <div class="mw-uptime-scale" aria-hidden="true"><span>90 days ago</span><span>Today</span></div>
+                            <p class="small mb-1" id="@summaryId">
+                                <span class="mw-mono fw-semibold">@UptimeText(State.UptimePercent(service.Id))</span> uptime over 90 days · @IncidentDaysText(incidentDays.Count)
+                            </p>
+
+                            @if (incidentDays.Count > 0)
+                            {
+                                <details class="mw-uptime-details">
+                                    <summary>Days with incidents<span class="visually-hidden"> for @service.Name</span> (@incidentDays.Count)</summary>
+                                    <div class="table-responsive mt-2">
+                                        <table class="table table-sm mb-0">
+                                            <caption class="visually-hidden">@service.Name: days with incidents in the last 90 days, newest first</caption>
+                                            <thead>
+                                                <tr>
+                                                    <th scope="col">Day</th>
+                                                    <th scope="col">Status</th>
+                                                    <th scope="col">Incidents</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach (var day in incidentDays)
+                                                {
+                                                    <tr @key="day.Date">
+                                                        <th scope="row" class="fw-semibold text-nowrap">@day.Date.ToString("MMM d", CultureInfo.InvariantCulture)</th>
+                                                        <td class="text-nowrap">@MonitoringDisplay.PublicStatusLabel(day.Status)</td>
+                                                        <td>
+                                                            @foreach (var incidentId in day.IncidentIds)
+                                                            {
+                                                                <a class="d-block" href="@MonitoringDisplay.PublicIncidentUrl(incidentId)" @key="incidentId">@IncidentLinkText(incidentId)</a>
+                                                            }
+                                                        </td>
+                                                    </tr>
+                                                }
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </details>
+                            }
+                        </li>
+                    }
+                </ul>
+            </CardBody>
+        </Card>
+    </section>
+
+    <section class="mw-subscribe-cta" aria-labelledby="mw-subscribe-cta-title">
+        <span class="mw-icon fs-5" aria-hidden="true"><Icon Name="IconName.Envelope" /></span>
+        <div class="flex-grow-1">
+            <h2 class="mw-section-title mb-1" id="mw-subscribe-cta-title">Get updates by email</h2>
+            <p class="small text-body-secondary mb-0">We email you when we post an update about an incident, for every component or only the ones you choose. In this demo, the emails stay in this tab.</p>
+        </div>
+        <Button Type="ButtonType.Link" To="@SubscribePath" Color="ButtonColor.Primary" Outline="true">Subscribe to updates</Button>
+    </section>
+
+    <p class="small text-body-secondary mt-3 mb-0">Past incidents are in the <a href="@HistoryPath">incident history</a>.</p>
+</div>

@@ -1,0 +1,36 @@
+@inherits LayoutComponentBase
+
+@* The engineers' console (D-031): its own sidebar with the engineer's modules, separate from the public status page. *@
+<ShowcaseSessionHost State="State" SiteBase="@MonitoringLayout.Base" SiteName="@MonitoringSeedData.ProductName">
+    <MonitoringFrame>
+        <Header>
+            <div class="mw-console-bar">
+                <span class="mw-console-bar-title">Console</span>
+                <div class="mw-console-bar-actions">
+                    <a class="btn btn-sm btn-outline-secondary" href="@MonitoringLayout.Base">
+                        <Icon Name="IconName.BoxArrowUpRight" class="me-1" aria-hidden="true" />View status page
+                    </a>
+                    <ShowcaseAccountMenu SiteBase="@MonitoringLayout.Base" SignInPath="@MonitoringLayout.SignInPath"
+                                         NoticeCount="@State.UnreadCount" NoticesPath="@($"{Base}/notifications")" />
+                </div>
+            </div>
+        </Header>
+        <Sidebar>
+            @if (State.IsEngineer)
+            {
+                <Sidebar @key="State.Identity.Current?.Id"
+                         Class="mw-sidebar"
+                         Href="@Base"
+                         IconName="IconName.Activity"
+                         Title="@MonitoringSeedData.ProductName"
+                         BadgeText="Engineer"
+                         DataProvider="SidebarDataProvider" />
+            }
+        </Sidebar>
+        <ChildContent>
+            <ShowcaseRoleGuard Roles="@MonitoringSeedData.EngineerRole" SignInPath="@MonitoringLayout.SignInPath">
+                @Body
+            </ShowcaseRoleGuard>
+        </ChildContent>
+    </MonitoringFrame>
+</ShowcaseSessionHost>

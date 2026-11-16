@@ -1,0 +1,117 @@
+/* The console's incident page. Card, CardBody, Badge, and Modal render their own elements, so styles inside them need ::deep. */
+
+.mw-incd-status:empty {
+    margin: 0;
+}
+
+.mw-incd-head {
+    min-width: 0;
+    max-width: 60rem;
+}
+
+/* User text (summaries, notes, updates, postmortems) is plain and keeps its line breaks. */
+::deep .mw-incd-text {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+::deep .mw-incd-stages {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+    gap: .5rem 1.5rem;
+}
+
+/* The timeline: an icon per entry on a line; published entries get a tinted card and say "Published". */
+::deep .mw-incd-timeline {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+::deep .mw-incd-entry {
+    position: relative;
+    display: flex;
+    gap: .75rem;
+    padding-bottom: 1rem;
+}
+
+    ::deep .mw-incd-entry:last-child {
+        padding-bottom: 0;
+    }
+
+    ::deep .mw-incd-entry:not(:last-child)::before {
+        content: "";
+        position: absolute;
+        top: 2rem;
+        bottom: .25rem;
+        left: calc(1rem - 1px);
+        width: 2px;
+        background: var(--mw-border);
+    }
+
+::deep .mw-incd-dot {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    border: 1px solid var(--mw-border);
+    background: var(--mw-surface);
+    color: var(--bs-secondary-color);
+    font-size: .875rem;
+}
+
+::deep .mw-incd-entry-public .mw-incd-dot {
+    border-color: var(--sc-primary);
+    color: var(--sc-primary-hover);
+    background: rgba(var(--sc-primary-rgb), .1);
+}
+
+::deep .mw-incd-entry-body {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+::deep .mw-incd-entry-public .mw-incd-entry-body {
+    padding: .5rem .75rem;
+    border-radius: .5rem;
+    background: rgba(var(--sc-primary-rgb), .06);
+}
+
+::deep .mw-incd-kind {
+    padding: 0 .375rem;
+    border: 1px solid var(--mw-border);
+    border-radius: .25rem;
+    color: var(--bs-secondary-color);
+}
+
+::deep .mw-incd-facts {
+    display: grid;
+    grid-template-columns: minmax(6rem, auto) 1fr;
+    gap: .5rem 1rem;
+    font-size: .875rem;
+}
+
+    ::deep .mw-incd-facts dt {
+        font-weight: 600;
+        color: var(--bs-secondary-color);
+    }
+
+    ::deep .mw-incd-facts dd {
+        margin: 0;
+        min-width: 0;
+        overflow-wrap: anywhere;
+    }
+
+::deep .mw-incd-quote {
+    padding: .5rem .75rem;
+    border-left: 3px solid var(--sc-primary);
+    background: var(--bs-tertiary-bg);
+    border-radius: 0 .25rem .25rem 0;
+}
+
+::deep .min-w-0 {
+    min-width: 0;
+}

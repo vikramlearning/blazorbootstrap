@@ -54,8 +54,79 @@ public static class MonitoringDisplay
         }
     }
 
-    /// <summary>Returns the route of an incident on the incidents page.</summary>
-    public static string IncidentUrl(int incidentId) => FormattableString.Invariant($"{MonitoringLayout.Base}/incidents#incident-{incidentId}");
+    /// <summary>Returns the route of an incident's page in the console.</summary>
+    public static string IncidentUrl(int incidentId) => FormattableString.Invariant($"{ConsoleLayout.Base}/incidents/{incidentId}");
+
+    /// <summary>Returns a service kind in words, like "API" or "Database".</summary>
+    public static string KindLabel(MonitoringServiceKind kind) => kind switch
+    {
+        MonitoringServiceKind.Api => "API",
+        MonitoringServiceKind.Worker => "Worker",
+        MonitoringServiceKind.Database => "Database",
+        MonitoringServiceKind.Cache => "Cache",
+        _ => "Devices",
+    };
+
+    /// <summary>Returns the route of a published incident on the public status page.</summary>
+    public static string PublicIncidentUrl(int incidentId) => FormattableString.Invariant($"{MonitoringLayout.Base}/incidents/{incidentId}");
+
+    /// <summary>Returns the badge color of a component's public status.</summary>
+    public static BadgeColor PublicStatusColor(MonitoringPublicStatus status) => status switch
+    {
+        MonitoringPublicStatus.MajorOutage => BadgeColor.Danger,
+        MonitoringPublicStatus.PartialOutage => BadgeColor.Warning,
+        MonitoringPublicStatus.Degraded => BadgeColor.Info,
+        _ => BadgeColor.Success,
+    };
+
+    /// <summary>Returns the icon of a component's public status.</summary>
+    public static IconName PublicStatusIcon(MonitoringPublicStatus status) => status switch
+    {
+        MonitoringPublicStatus.MajorOutage => IconName.XCircleFill,
+        MonitoringPublicStatus.PartialOutage => IconName.ExclamationTriangleFill,
+        MonitoringPublicStatus.Degraded => IconName.DashCircleFill,
+        _ => IconName.CheckCircleFill,
+    };
+
+    /// <summary>Returns a component's public status in words, like "Partial outage".</summary>
+    public static string PublicStatusLabel(MonitoringPublicStatus status) => status switch
+    {
+        MonitoringPublicStatus.MajorOutage => "Major outage",
+        MonitoringPublicStatus.PartialOutage => "Partial outage",
+        MonitoringPublicStatus.Degraded => "Degraded performance",
+        _ => "Operational",
+    };
+
+    /// <summary>Returns the status page's overall headline for its worst component status.</summary>
+    public static string OverallStatusText(MonitoringPublicStatus status) => status switch
+    {
+        MonitoringPublicStatus.MajorOutage => "Major outage",
+        MonitoringPublicStatus.PartialOutage => "Partial outage",
+        MonitoringPublicStatus.Degraded => "Some systems are slower than usual",
+        _ => "All systems operational",
+    };
+
+    /// <summary>Returns a public update's stage in words.</summary>
+    public static string StageLabel(MonitoringPublicStage stage) => stage switch
+    {
+        MonitoringPublicStage.Investigating => "Investigating",
+        MonitoringPublicStage.Identified => "Identified",
+        MonitoringPublicStage.Monitoring => "Monitoring",
+        _ => "Resolved",
+    };
+
+    /// <summary>Returns the route of a trace in the console.</summary>
+    public static string TraceUrl(string traceId) => $"{ConsoleLayout.Base}/traces/{Uri.EscapeDataString(traceId)}";
+
+    /// <summary>Returns what a timeline entry is, in words.</summary>
+    public static string UpdateKindLabel(MonitoringUpdateKind kind) => kind switch
+    {
+        MonitoringUpdateKind.Alert => "Alert",
+        MonitoringUpdateKind.Public => "Status page",
+        MonitoringUpdateKind.Status => "Status",
+        MonitoringUpdateKind.Severity => "Severity",
+        _ => "Note",
+    };
 
     /// <summary>Returns the badge color of an incident status.</summary>
     public static BadgeColor IncidentStatusColor(MonitoringIncidentStatus status) => status switch
@@ -107,8 +178,8 @@ public static class MonitoringDisplay
         _ => "messages/s",
     };
 
-    /// <summary>Returns the route of a service page.</summary>
-    public static string ServiceUrl(string serviceId) => $"{MonitoringLayout.Base}/services/{serviceId}";
+    /// <summary>Returns the route of a service's page in the console.</summary>
+    public static string ServiceUrl(string serviceId) => $"{ConsoleLayout.Base}/services/{Uri.EscapeDataString(serviceId)}";
 
     /// <summary>Returns the badge color of a severity.</summary>
     public static BadgeColor SeverityColor(MonitoringSeverity severity) => severity switch

@@ -1,0 +1,35 @@
+.lg-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: .5rem;
+    margin-bottom: .5rem;
+}
+
+.lg-paused {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: .5rem .75rem;
+    margin-bottom: .75rem;
+    padding: .625rem .875rem;
+    border: 1px solid var(--mw-border);
+    border-radius: .5rem;
+    background: var(--bs-tertiary-bg);
+    font-size: .875rem;
+}
+
+.lg-empty {
+    margin: 0;
+    padding: 2rem 0;
+    text-align: center;
+    color: var(--bs-secondary-color);
+}
+
+/* Messages wrap instead of widening the table past the screen; the table scrolls inside its box when it must. */
+.lg-message {
+    min-width: 16rem;
+    font-size: .8125rem;
+    overflow-wrap: anywhere;
+}

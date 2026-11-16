@@ -1,0 +1,44 @@
+/* The console's incidents list. Card, CardBody, Badge, and Modal render their own elements, so styles inside them need ::deep. */
+
+.mw-inc-status:empty {
+    margin: 0;
+}
+
+/* Filters side by side on wide screens, stacked at 375 px. */
+::deep .mw-inc-filters {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 1rem 1.5rem;
+}
+
+::deep .mw-inc-filter {
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+
+    ::deep .mw-inc-filter .form-select {
+        min-width: 12rem;
+        max-width: 100%;
+    }
+
+::deep .mw-inc-filter-check {
+    padding-bottom: .25rem;
+}
+
+/* The status filter is a group of native radios drawn as buttons; a visible ring shows the keyboard focus. */
+::deep .btn-check:focus-visible + .btn {
+    outline: 2px solid var(--sc-primary);
+    outline-offset: 2px;
+}
+
+::deep .mw-inc-table {
+    min-width: 60rem;
+}
+
+::deep .mw-inc-title-cell {
+    min-width: 16rem;
+    font-weight: 400;
+}

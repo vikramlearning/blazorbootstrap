@@ -1,0 +1,129 @@
+@page "/showcase/monitoring/console/notifications"
+@layout ConsoleLayout
+
+<PageTitle>Notifications · @MonitoringSeedData.ProductName</PageTitle>
+
+<div class="container-fluid px-lg-4">
+    <div class="mw-page-head">
+        <div>
+            <h1 class="mw-title">Notifications</h1>
+            <p class="mw-lead">Alerts, assignments, incident updates, and on-call changes for you, newest first. @UnreadText</p>
+        </div>
+        <button type="button" class="btn btn-outline-primary" @onclick="MarkAllRead">
+            <Icon Name="IconName.CheckAll" class="me-2" aria-hidden="true" />Mark all read
+        </button>
+    </div>
+
+    @* Always rendered and focusable: results are announced here, and focus comes here when the item acted on leaves the list. *@
+    <div class="nt-status" role="status" tabindex="-1" @ref="statusRegion">
+        @if (statusMessage is not null)
+        {
+            <Alert Color="@statusColor" Class="mb-4"><p class="mb-0 fw-semibold">@statusMessage</p></Alert>
+        }
+    </div>
+
+    <div class="row g-4">
+        <div class="col-xl-8">
+            <Card Class="mw-card">
+                <CardHeader><h2 class="mw-card-title" id="nt-list-title">Your notifications</h2></CardHeader>
+                <CardBody Class="p-3 p-lg-4 pt-lg-3">
+                    <div class="nt-filters mb-3">
+                        <fieldset>
+                            <legend class="form-label small fw-semibold mb-1">Show</legend>
+                            <div class="btn-group btn-group-sm" role="presentation">
+                                <input type="radio" class="btn-check" name="nt-read" id="nt-read-all" checked="@(!unreadOnly)" @onchange="() => SetUnreadOnly(false)" />
+                                <label class="btn btn-outline-primary" for="nt-read-all">All</label>
+                                <input type="radio" class="btn-check" name="nt-read" id="nt-read-unread" checked="@unreadOnly" @onchange="() => SetUnreadOnly(true)" />
+                                <label class="btn btn-outline-primary" for="nt-read-unread">Unread</label>
+                            </div>
+                        </fieldset>
+                        <div>
+                            <label class="form-label small fw-semibold mb-1" for="nt-kind">Kind</label>
+                            <select id="nt-kind" class="form-select form-select-sm" value="@kindFilter" @onchange="OnKindChanged">
+                                <option value="">All kinds</option>
+                                @foreach (var kind in Enum.GetValues<MonitoringNotificationKind>())
+                                {
+                                    <option value="@kind">@KindLabel(kind)</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+
+                    <p class="small text-body-secondary mb-2">@CountText</p>
+
+                    @if (Shown.Count == 0)
+                    {
+                        <p class="nt-empty">@(State.Notifications.Count == 0 ? "You have no notifications yet." : "No notifications match these filters.")</p>
+                    }
+                    else
+                    {
+                        <ul class="list-unstyled mb-0" aria-labelledby="nt-list-title">
+                            @foreach (var item in Shown)
+                            {
+                                <li class="nt-item @(item.IsRead ? null : "nt-unread")" @key="item.Id">
+                                    <span class="mw-icon" aria-hidden="true"><Icon Name="@KindIcon(item.Kind)" /></span>
+                                    <div class="nt-body">
+                                        <div class="d-flex flex-wrap align-items-center gap-2 mb-1">
+                                            <Badge Color="BadgeColor.Secondary">@KindLabel(item.Kind)</Badge>
+                                            @if (!item.IsRead)
+                                            {
+                                                <Badge Color="BadgeColor.Primary">Unread</Badge>
+                                            }
+                                            <span class="small text-body-secondary" title="@MonitoringDisplay.Stamp(item.Time)">@MonitoringDisplay.Ago(item.Time, State.Clock.Now)</span>
+                                        </div>
+                                        <h3 class="nt-title">@item.Title</h3>
+                                        <p class="nt-text">@item.Text</p>
+                                        <div class="d-flex flex-wrap align-items-center gap-3">
+                                            @if (item.IncidentId is { } incidentId)
+                                            {
+                                                <a class="small fw-semibold" href="@MonitoringDisplay.IncidentUrl(incidentId)">Open incident #@incidentId</a>
+                                            }
+                                            <button type="button" class="btn btn-link btn-sm p-0" @onclick="() => ToggleRead(item)">
+                                                @(item.IsRead ? "Mark unread" : "Mark read")<span class="visually-hidden">: @item.Title</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </li>
+                            }
+                        </ul>
+                    }
+                </CardBody>
+            </Card>
+        </div>
+
+        <div class="col-xl-4">
+            <Card Class="mw-card">
+                <CardHeader><h2 class="mw-card-title" id="nt-prefs-title">How you're notified</h2></CardHeader>
+                <CardBody>
+                    <form @onsubmit="SavePreferences" aria-labelledby="nt-prefs-title">
+                        <p class="small text-body-secondary">Everything also appears here in the console. Choose where else it reaches you.</p>
+                        <fieldset class="mb-3">
+                            <legend class="form-label small fw-semibold">Alerts reach you by</legend>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="nt-pref-email" @bind="prefEmail" />
+                                <label class="form-check-label" for="nt-pref-email">Email</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="nt-pref-push" @bind="prefPush" />
+                                <label class="form-check-label" for="nt-pref-push">Push notification on the phone app</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="nt-pref-sms" @bind="prefSms" />
+                                <label class="form-check-label" for="nt-pref-sms">Text message for critical alerts</label>
+                            </div>
+                        </fieldset>
+                        <fieldset class="mb-3">
+                            <legend class="form-label small fw-semibold">Besides alerts</legend>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="nt-pref-updates" @bind="prefUpdates" aria-describedby="nt-pref-updates-help" />
+                                <label class="form-check-label" for="nt-pref-updates">Updates to incidents you're working on</label>
+                                <span class="form-text d-block" id="nt-pref-updates-help">When someone else posts on an incident assigned to you.</span>
+                            </div>
+                        </fieldset>
+                        <button type="submit" class="btn btn-primary">Save</button>
+                    </form>
+                </CardBody>
+            </Card>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,113 @@
+.tv-back {
+    display: inline-flex;
+    align-items: center;
+    margin-bottom: .75rem;
+    color: var(--sc-primary-hover);
+    text-decoration: none;
+}
+
+    .tv-back:hover,
+    .tv-back:focus-visible {
+        text-decoration: underline;
+    }
+
+.tv-summary {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+    gap: .75rem;
+    margin: 0;
+}
+
+.tv-stat {
+    padding: .875rem 1rem;
+    border: 1px solid var(--mw-border);
+    border-radius: .75rem;
+    background: var(--mw-surface);
+    min-width: 0;
+}
+
+    .tv-stat dd {
+        margin-top: .25rem;
+        color: var(--mw-ink);
+        overflow-wrap: anywhere;
+    }
+
+.tv-waterfall {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+/* Narrow screens: the text above its bar. Wide screens: text on the left, the bar on the right. */
+.tv-span {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: .375rem;
+    padding-block: .625rem;
+    padding-inline-start: calc(var(--tv-depth, 0) * .75rem);
+    border-top: 1px solid var(--mw-border);
+}
+
+    .tv-span:first-child {
+        border-top: 0;
+    }
+
+@media (min-width: 768px) {
+    .tv-span {
+        grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
+        align-items: center;
+        gap: 1rem;
+        padding-inline-start: 0;
+    }
+
+    .tv-span-label {
+        padding-inline-start: calc(var(--tv-depth, 0) * 1rem);
+    }
+}
+
+.tv-span-label {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.tv-span-service {
+    font-weight: 600;
+    color: var(--mw-ink);
+}
+
+.tv-span-op {
+    font-size: .8125rem;
+    overflow-wrap: anywhere;
+}
+
+.tv-span-time {
+    font-size: .75rem;
+    color: var(--bs-secondary-color);
+}
+
+.tv-track {
+    position: relative;
+    height: .875rem;
+    border-radius: .25rem;
+    background: var(--bs-tertiary-bg);
+}
+
+.tv-bar {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    border-radius: .25rem;
+    background: var(--sc-primary);
+}
+
+/* Errors also say "Error" in text; the stripes keep the bar distinct without relying on color. */
+.tv-span-error .tv-bar {
+    background: repeating-linear-gradient(135deg, var(--bs-danger) 0 6px, rgba(var(--bs-danger-rgb), .6) 6px 12px);
+}
+
+.tv-table-op {
+    min-width: 14rem;
+    font-size: .8125rem;
+    overflow-wrap: anywhere;
+}

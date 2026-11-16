@@ -1,0 +1,136 @@
+@page "/showcase/monitoring/incidents/{Id:int}"
+@layout MonitoringLayout
+
+@if (Incident is not { } incident)
+{
+    <PageTitle>Incident not found · @MonitoringSeedData.StatusPageName</PageTitle>
+
+    <div class="container-xl">
+        <section class="mw-not-found">
+            <span class="mw-icon fs-4" aria-hidden="true"><Icon Name="IconName.SignpostSplit" /></span>
+            <h1 class="mw-title fs-3 mt-3 mb-2">We couldn't find that incident</h1>
+            <p class="text-body-secondary mb-4">Incident #@Id isn't on the status page. It may not exist, or it hasn't been posted.</p>
+            <div class="d-flex justify-content-center flex-wrap gap-2">
+                <Button Type="ButtonType.Link" To="@MonitoringLayout.Base" Color="ButtonColor.Primary">Back to the status page</Button>
+                <Button Type="ButtonType.Link" To="@StatusPage.HistoryPath" Color="ButtonColor.Primary" Outline="true">Incident history</Button>
+            </div>
+        </section>
+    </div>
+}
+else
+{
+    var service = State.FindService(incident.ServiceId);
+    var ongoing = StatusHistory.IsOngoing(incident);
+    var impact = StatusPage.ImpactStatus(incident.Severity);
+    var postmortem = incident.Postmortem is { PublishedAt: not null } published ? published : null;
+
+    <PageTitle>@incident.Title · @MonitoringSeedData.StatusPageName</PageTitle>
+
+    <div class="container-xl mw-public-page">
+        <Breadcrumb Items="BreadcrumbItems" Class="mb-3" />
+
+        <div class="mw-page-head">
+            <div>
+                <h1 class="mw-title">@incident.Title</h1>
+                <div class="d-flex flex-wrap align-items-center gap-2 mt-2">
+                    @if (ongoing)
+                    {
+                        <Badge Color="@MonitoringDisplay.PublicStatusColor(impact)">
+                            <Icon Name="@MonitoringDisplay.PublicStatusIcon(impact)" class="me-1" aria-hidden="true" />Ongoing: @MonitoringDisplay.PublicStatusLabel(impact)
+                        </Badge>
+                    }
+                    else
+                    {
+                        <Badge Color="BadgeColor.Success"><Icon Name="IconName.CheckCircleFill" class="me-1" aria-hidden="true" />Resolved</Badge>
+                    }
+                    <span class="small text-body-secondary">Incident #@incident.Id</span>
+                </div>
+            </div>
+            <Button Type="ButtonType.Link" To="@SubscribeLink" Color="ButtonColor.Primary" Outline="true">
+                <Icon Name="IconName.Envelope" class="me-2" aria-hidden="true" />Subscribe to updates
+            </Button>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-lg-8 order-2 order-lg-1">
+                <Card Class="mw-card mb-4">
+                    <CardHeader><h2 class="mw-card-title">Updates</h2><span class="small text-body-secondary">newest first</span></CardHeader>
+                    <CardBody>
+                        <ol class="mw-timeline" aria-label="Updates, newest first">
+                            @foreach (var update in StatusPage.PublicUpdates(incident))
+                            {
+                                var stage = update.Stage ?? MonitoringPublicStage.Investigating;
+                                <li class="mw-timeline-item mw-timeline-@(stage == MonitoringPublicStage.Resolved ? "resolved" : "open")" @key="update.Id">
+                                    <span class="mw-timeline-dot" aria-hidden="true"></span>
+                                    <h3 class="mw-timeline-stage">@MonitoringDisplay.StageLabel(stage)</h3>
+                                    <p class="small text-body-secondary mb-1">
+                                        <time datetime="@update.Time.ToString("yyyy-MM-ddTHH:mm", CultureInfo.InvariantCulture)">@MonitoringDisplay.Stamp(update.Time)</time>
+                                    </p>
+                                    <p class="mw-plain mb-0">@update.Text</p>
+                                </li>
+                            }
+                        </ol>
+                    </CardBody>
+                </Card>
+
+                @if (postmortem is not null)
+                {
+                    <Card Class="mw-card">
+                        <CardHeader>
+                            <h2 class="mw-card-title">Postmortem</h2>
+                            <span class="small text-body-secondary">published <time datetime="@postmortem.PublishedAt!.Value.ToString("yyyy-MM-ddTHH:mm", CultureInfo.InvariantCulture)">@MonitoringDisplay.Stamp(postmortem.PublishedAt!.Value)</time></span>
+                        </CardHeader>
+                        <CardBody>
+                            <h3 class="mw-sub-title">What happened</h3>
+                            <p class="mw-plain">@postmortem.Summary</p>
+                            <h3 class="mw-sub-title">Root cause</h3>
+                            <p class="mw-plain">@postmortem.RootCause</p>
+                            @if (postmortem.ActionItems.Count > 0)
+                            {
+                                <h3 class="mw-sub-title">What we're changing</h3>
+                                <ol class="mb-0 ps-3">
+                                    @foreach (var item in postmortem.ActionItems)
+                                    {
+                                        <li class="mw-plain mb-1">@item</li>
+                                    }
+                                </ol>
+                            }
+                        </CardBody>
+                    </Card>
+                }
+            </div>
+
+            <div class="col-lg-4 order-1 order-lg-2">
+                <Card Class="mw-card">
+                    <CardHeader><h2 class="mw-card-title">Summary</h2></CardHeader>
+                    <CardBody>
+                        <dl class="mw-facts mb-0">
+                            <dt>Affected component</dt>
+                            <dd>@(service?.Name ?? incident.ServiceId)</dd>
+                            <dt>Status</dt>
+                            <dd>@(ongoing ? $"Ongoing ({MonitoringDisplay.PublicStatusLabel(impact)})" : "Resolved")</dd>
+                            <dt>Started</dt>
+                            <dd><time datetime="@incident.StartedAt.ToString("yyyy-MM-ddTHH:mm", CultureInfo.InvariantCulture)">@MonitoringDisplay.Stamp(incident.StartedAt)</time></dd>
+                            @if (ongoing)
+                            {
+                                <dt>Ongoing for</dt>
+                                <dd>@MonitoringDisplay.Duration(State.Clock.Now - incident.StartedAt)</dd>
+                            }
+                            else
+                            {
+                                <dt>Resolved</dt>
+                                <dd><time datetime="@incident.ResolvedAt!.Value.ToString("yyyy-MM-ddTHH:mm", CultureInfo.InvariantCulture)">@MonitoringDisplay.Stamp(incident.ResolvedAt!.Value)</time></dd>
+                                <dt>Duration</dt>
+                                <dd>@MonitoringDisplay.Duration(incident.ResolvedAt!.Value - incident.StartedAt)</dd>
+                            }
+                        </dl>
+                        <hr />
+                        <p class="small mb-0">
+                            Want to hear about the next update? <a href="@SubscribeLink">Subscribe to updates@(service is null ? null : $" for {service.Name}")</a>.
+                        </p>
+                    </CardBody>
+                </Card>
+            </div>
+        </div>
+    </div>
+}

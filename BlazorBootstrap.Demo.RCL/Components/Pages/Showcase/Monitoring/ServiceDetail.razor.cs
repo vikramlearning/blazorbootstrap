@@ -110,7 +110,12 @@ public partial class ServiceDetail : ComponentBase, IDisposable
         },
     };
 
-    private void OnStateChanged() => InvokeAsync(StateHasChanged);
+    /// <summary>Incident changes rebuild the metrics, so the charts redraw too (also while live updates are paused).</summary>
+    private void OnStateChanged() => InvokeAsync(async () =>
+    {
+        StateHasChanged();
+        await RedrawChartsAsync();
+    });
 
     private void OnThemeChanged() => InvokeAsync(RedrawChartsAsync);
 
@@ -161,7 +166,7 @@ public partial class ServiceDetail : ComponentBase, IDisposable
 
     private List<BreadcrumbItem> BreadcrumbItems => new()
     {
-        new() { Text = "Overview", Href = MonitoringLayout.Base },
+        new() { Text = "Services", Href = $"{ConsoleLayout.Base}/services" },
         new() { Text = Service?.Name, IsCurrentPage = true },
     };
 
