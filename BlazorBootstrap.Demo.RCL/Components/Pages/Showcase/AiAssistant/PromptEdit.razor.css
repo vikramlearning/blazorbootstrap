@@ -1,0 +1,23 @@
+.pa-promptedit-form,
+.pa-promptedit-readonly {
+    max-width: 48rem;
+}
+
+.pa-promptedit-status:empty {
+    margin: 0;
+}
+
+.pa-promptedit-status:focus {
+    outline: none;
+}
+
+.pa-promptedit-textarea {
+    min-height: 10rem;
+    resize: vertical;
+}
+
+/* A long prompt title in the breadcrumb wraps instead of widening the page. */
+.container-xl ::deep .breadcrumb-item {
+    min-width: 0;
+    overflow-wrap: anywhere;
+}

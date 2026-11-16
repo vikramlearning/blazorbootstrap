@@ -1,0 +1,5 @@
+@* A bar chart of the usage page. It is its own component so it starts drawing when it appears: the page's content sits
+   inside the member guard, which shows it only after the tab's data is restored and the member is signed in. *@
+<div class="pa-usage-chart" role="img" aria-label="@AriaLabel">
+    <BarChart @ref="chart" Height="@Height" HeightUnit="Unit.Px" Width="100" WidthUnit="Unit.Percentage" />
+</div>

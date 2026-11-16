@@ -1,0 +1,196 @@
+@page "/showcase/ai-assistant/admin"
+@layout AiAdminLayout
+
+<PageTitle>Usage analytics · @AiSeedData.ProductName</PageTitle>
+
+<div class="container-fluid px-lg-4">
+    @{
+        var quota = State.Policy.MonthlyTokenQuota;
+        var rows = MemberRows;
+        var daily = DailyTotals;
+        var byModel = ModelTotals;
+        var monthName = State.Clock.Now.ToString("MMMM", CultureInfo.InvariantCulture);
+    }
+
+    <div class="pa-adov-head mb-4">
+        <h1 class="pa-title">Usage analytics</h1>
+        <p class="pa-lead mb-1">How @AiSeedData.WorkspaceName uses @AiSeedData.ProductName: members, messages, and tokens by model, against the monthly quota of @AiDisplay.Tokens(quota) tokens per member.</p>
+        <p class="small text-body-secondary mb-0">Sample figures: the history before today is generated; messages sent in this tab are added to it.</p>
+    </div>
+
+    <section aria-label="Totals for @monthName" class="row row-cols-1 row-cols-sm-2 row-cols-xl-4 g-3 mb-4">
+        @foreach (var total in Totals(rows, quota))
+        {
+            <div class="col" @key="total.Label">
+                <div class="pa-card pa-adov-kpi h-100">
+                    <span class="pa-adov-kpi-label">@total.Label</span>
+                    <span class="pa-adov-kpi-value">@total.Value</span>
+                    <span class="small text-body-secondary">@total.Note</span>
+                </div>
+            </div>
+        }
+    </section>
+
+    <div class="row g-3 mb-4">
+        <div class="col-xxl-8">
+            <section class="pa-panel h-100" aria-labelledby="pa-adov-daily-title">
+                <h2 class="pa-section-title mb-1" id="pa-adov-daily-title">Tokens per day</h2>
+                <p class="small text-body-secondary">The whole workspace, the last 30 days, stacked by model</p>
+                <div class="pa-adov-chart" role="img" aria-label="Stacked bar chart of workspace tokens per day by model, the last 30 days. Summary and data table follow.">
+                    <BarChart @ref="dailyChart" Height="300" HeightUnit="Unit.Px" Width="100" WidthUnit="Unit.Percentage" />
+                </div>
+                <p class="small mt-3 mb-2">@DailySummary(daily)</p>
+                <details class="pa-adov-details">
+                    <summary>Tokens per day as a table</summary>
+                    <div class="table-responsive mt-2">
+                        <table class="table table-sm mb-0">
+                            <caption class="visually-hidden">Workspace tokens per day by model, the last 30 days, oldest first</caption>
+                            <thead>
+                                <tr>
+                                    <th scope="col">Day</th>
+                                    @foreach (var model in State.Models)
+                                    {
+                                        <th scope="col" class="text-end" @key="model.Id">@model.Name</th>
+                                    }
+                                    <th scope="col" class="text-end">Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var day in daily)
+                                {
+                                    <tr @key="day.Date">
+                                        <th scope="row" class="fw-semibold text-nowrap">@day.Date.ToString("ddd, MMM d", CultureInfo.InvariantCulture)</th>
+                                        @foreach (var model in State.Models)
+                                        {
+                                            <td class="text-end pa-mono" @key="model.Id">@AiDisplay.Tokens(day.ByModel.GetValueOrDefault(model.Id))</td>
+                                        }
+                                        <td class="text-end pa-mono fw-semibold">@AiDisplay.Tokens(day.Total)</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </details>
+            </section>
+        </div>
+        <div class="col-xxl-4">
+            <section class="pa-panel h-100" aria-labelledby="pa-adov-models-title">
+                <h2 class="pa-section-title mb-1" id="pa-adov-models-title">Tokens by model</h2>
+                <p class="small text-body-secondary">@monthName so far, every member</p>
+                <div class="pa-adov-chart" role="img" aria-label="Doughnut chart of this month's tokens by model. Summary and data table follow.">
+                    <DoughnutChart @ref="modelsChart" Height="300" HeightUnit="Unit.Px" Width="100" WidthUnit="Unit.Percentage" />
+                </div>
+                <p class="small mt-3 mb-2">@ModelSummary(byModel)</p>
+                <details class="pa-adov-details">
+                    <summary>Tokens by model as a table</summary>
+                    <div class="table-responsive mt-2">
+                        <table class="table table-sm mb-0">
+                            <caption class="visually-hidden">Tokens by model in @monthName, the most used first</caption>
+                            <thead>
+                                <tr>
+                                    <th scope="col">Model</th>
+                                    <th scope="col" class="text-end">Tokens</th>
+                                    <th scope="col" class="text-end">Share</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in byModel)
+                                {
+                                    <tr @key="item.Model.Id">
+                                        <th scope="row" class="fw-semibold">
+                                            @item.Model.Name
+                                            @if (!State.Policy.EnabledModelIds.Contains(item.Model.Id))
+                                            {
+                                                <span class="d-block small fw-normal text-body-secondary">Turned off</span>
+                                            }
+                                        </th>
+                                        <td class="text-end pa-mono">@AiDisplay.Tokens(item.Tokens)</td>
+                                        <td class="text-end pa-mono">@Percent(item.Tokens, byModel.Sum(other => other.Tokens))</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </details>
+            </section>
+        </div>
+    </div>
+
+    <section class="pa-panel mb-4" aria-labelledby="pa-adov-top-title">
+        <div class="d-flex flex-wrap justify-content-between align-items-baseline gap-2 mb-2">
+            <h2 class="pa-section-title mb-0" id="pa-adov-top-title">Top members this month</h2>
+            <a class="small" href="@($"{AiAdminLayout.Base}/members")">Manage members and roles</a>
+        </div>
+        @if (rows.Count == 0)
+        {
+            <p class="text-body-secondary mb-0">Nobody has joined the workspace yet.</p>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table align-middle mb-0 pa-adov-top">
+                    <caption class="pa-adov-caption">
+                        Members by tokens used in @monthName, the most first (top @Math.Min(TopCount, rows.Count) of @rows.Count). The quota is @AiDisplay.Tokens(quota) tokens per member each month.
+                    </caption>
+                    <thead>
+                        <tr>
+                            <th scope="col">Name</th>
+                            <th scope="col">Email</th>
+                            <th scope="col" class="text-end">Messages</th>
+                            <th scope="col" class="text-end">Tokens</th>
+                            <th scope="col" class="pa-adov-share">Share of quota</th>
+                            <th scope="col">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var row in rows.Take(TopCount))
+                        {
+                            var percent = SharePercent(row.Tokens, quota);
+                            <tr @key="row.Member.Email">
+                                <th scope="row" class="pa-adov-name">
+                                    @row.Member.Name
+                                    @if (row.Member.AccountId is not null && row.Member.AccountId == State.Identity.Current?.Id)
+                                    {
+                                        <span class="fw-normal text-body-secondary"> (you)</span>
+                                    }
+                                </th>
+                                <td class="pa-adov-email">@row.Member.Email</td>
+                                <td class="text-end pa-mono">@row.Messages.ToString("#,0", CultureInfo.InvariantCulture)</td>
+                                <td class="text-end pa-mono">@AiDisplay.Tokens(row.Tokens)</td>
+                                <td>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <Progress Height="6" Class="flex-grow-1">
+                                            <ProgressBar Width="Math.Min(100, percent)" Color="@QuotaColor(percent)"
+                                                         aria-label="@($"{row.Member.Name}, share of quota")" aria-valuenow="@Math.Round(percent)" aria-valuemin="0" aria-valuemax="100"
+                                                         aria-valuetext="@QuotaText(percent)" />
+                                        </Progress>
+                                        <span class="small text-nowrap">@QuotaText(percent)</span>
+                                    </div>
+                                </td>
+                                <td class="text-nowrap">@AiDisplay.StatusLabel(row.Member.Status)</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </section>
+
+    <section aria-labelledby="pa-adov-more-title">
+        <h2 class="pa-section-title" id="pa-adov-more-title">More workspace admin</h2>
+        <div class="row row-cols-1 row-cols-md-3 g-3">
+            @foreach (var module in Modules)
+            {
+                <div class="col" @key="module.Href">
+                    <a class="pa-card pa-adov-module h-100" href="@module.Href">
+                        <span class="pa-icon flex-shrink-0" aria-hidden="true"><Icon Name="@module.Icon" /></span>
+                        <span>
+                            <span class="d-block fw-bold">@module.Title</span>
+                            <span class="d-block small text-body-secondary">@module.Description</span>
+                        </span>
+                    </a>
+                </div>
+            }
+        </div>
+    </section>
+</div>

@@ -1,0 +1,74 @@
+@using BlazorBootstrap.Demo.RCL.Components.Pages.Showcase.Shared
+@implements IDisposable
+
+@* Signed in (any role), then an active membership, then (when asked) a workspace admin. Workspace roles live on the
+   membership, not the identity role, so an admin can promote or deactivate someone in this tab. When access ends while
+   the page is open (an admin demoting themselves), focus moves to the panel's heading so the change is announced. *@
+<ShowcaseRoleGuard Roles="@AiSeedData.SignedInRoles" SignInPath="@AiLayout.SignInPath">
+    @if (State.CurrentMember is null)
+    {
+        <section class="pa-not-found" aria-labelledby="pa-guard-title">
+            <span class="pa-icon fs-4" aria-hidden="true"><Icon Name="IconName.PersonExclamation" /></span>
+            <h1 class="pa-title fs-3 mt-3 mb-2" id="pa-guard-title" tabindex="-1" @ref="heading">You're not a member of @AiSeedData.WorkspaceName</h1>
+            <p class="text-body-secondary mb-4">
+                Your account is signed in, but the workspace couldn't add it: it's full (@AiState.MaxMembers members and invitations).
+                Ask a workspace admin to remove an invitation, then sign out and in again.
+            </p>
+            <a class="btn btn-primary" href="@AiLayout.Base">Back to the start page</a>
+        </section>
+    }
+    else if (State.CurrentMember.Status != AiMemberStatus.Active)
+    {
+        <section class="pa-not-found" aria-labelledby="pa-guard-title">
+            <span class="pa-icon fs-4" aria-hidden="true"><Icon Name="IconName.PersonSlash" /></span>
+            <h1 class="pa-title fs-3 mt-3 mb-2" id="pa-guard-title" tabindex="-1" @ref="heading">Your access to @AiSeedData.WorkspaceName was removed</h1>
+            <p class="text-body-secondary mb-4">A workspace admin deactivated your membership. Your conversations are kept; ask an admin to reactivate you.</p>
+            <a class="btn btn-primary" href="@AiLayout.Base">Back to the start page</a>
+        </section>
+    }
+    else if (RequireAdmin && !State.IsWorkspaceAdmin)
+    {
+        <section class="pa-not-found" aria-labelledby="pa-guard-title">
+            <span class="pa-icon fs-4" aria-hidden="true"><Icon Name="IconName.ShieldLock" /></span>
+            <h1 class="pa-title fs-3 mt-3 mb-2" id="pa-guard-title" tabindex="-1" @ref="heading">This page is for workspace admins</h1>
+            <p class="text-body-secondary mb-4">You're a member of @AiSeedData.WorkspaceName. Ask a workspace admin if you need to change members, shared prompts, or settings.</p>
+            <a class="btn btn-primary" href="@($"{AiLayout.Base}/chat")">Back to chat</a>
+        </section>
+    }
+    else
+    {
+        @ChildContent
+    }
+</ShowcaseRoleGuard>
+
+@code {
+    private ElementReference heading;
+
+    private bool wasAllowed;
+
+    /// <summary>Gets or sets the content shown to an active member (or admin).</summary>
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    /// <summary>Gets or sets whether the content needs an active workspace admin.</summary>
+    [Parameter] public bool RequireAdmin { get; set; }
+
+    [Inject] private AiState State { get; set; } = default!;
+
+    private bool IsAllowed => State.IsActiveMember && (!RequireAdmin || State.IsWorkspaceAdmin);
+
+    /// <summary>Stops listening to state changes.</summary>
+    public void Dispose() => State.Changed -= OnStateChanged;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        // Access ended on this page (not a sign-out: the role guard shows the sign-in prompt then).
+        if (wasAllowed && !IsAllowed && State.Identity.IsSignedIn)
+            await AiDisplay.FocusAsync(heading);
+
+        wasAllowed = IsAllowed;
+    }
+
+    protected override void OnInitialized() => State.Changed += OnStateChanged;
+
+    private void OnStateChanged() => InvokeAsync(StateHasChanged);
+}

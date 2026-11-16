@@ -1,0 +1,151 @@
+@page "/showcase/ai-assistant/usage"
+@layout AiLayout
+
+<PageTitle>Usage · @AiSeedData.ProductName</PageTitle>
+
+@* The signed-in member's usage: this month's tokens against the workspace quota, a chart of the last 30 days, and tokens by model. *@
+<div class="container-xl">
+    <AiMemberGuard>
+        @{
+            var report = Report();
+            var level = report.Level;
+        }
+
+        <h1 class="pa-title mb-1">Usage</h1>
+        <p class="pa-lead mb-4">
+            How much of your monthly quota you've used in @report.MonthName. Tokens are counted as about 4 characters each, for your messages and the assistant's
+            replies. Your quota resets on the 1st of every month.
+        </p>
+
+        <section class="pa-panel mb-4" aria-labelledby="pa-usage-quota-title">
+            <h2 class="pa-section-title" id="pa-usage-quota-title">This month's quota</h2>
+            <p class="pa-usage-big mb-2">
+                <span class="pa-mono">@AiDisplay.Tokens(report.MonthTokens)</span>
+                <span class="text-body-secondary fs-6 fw-normal">of @AiDisplay.Tokens(report.Quota) tokens</span>
+            </p>
+            <Progress Height="12" Class="mb-2">
+                <ProgressBar Width="Math.Min(100, report.Percent)" Color="@ProgressColorFor(level)"
+                             aria-label="Tokens used this month" aria-valuenow="@Math.Min(100, Math.Round(report.Percent)).ToString(CultureInfo.InvariantCulture)" aria-valuemin="0" aria-valuemax="100"
+                             aria-valuetext="@report.QuotaText" />
+            </Progress>
+            <p class="mb-0">@report.QuotaText</p>
+            @if (level == QuotaLevel.Over)
+            {
+                <p class="pa-usage-alert pa-usage-alert-danger mt-3 mb-0">
+                    <Icon Name="IconName.ExclamationOctagon" class="me-2" aria-hidden="true" /><strong>Over the quota.</strong>
+                    You've used all of this month's tokens, so new messages can't be sent until @report.ResetText, or until a workspace admin raises the quota.
+                </p>
+            }
+            else if (level == QuotaLevel.Warning)
+            {
+                <p class="pa-usage-alert pa-usage-alert-warning mt-3 mb-0">
+                    <Icon Name="IconName.ExclamationTriangle" class="me-2" aria-hidden="true" /><strong>Almost at the quota.</strong>
+                    You've used @report.PercentText of it. When a message and its reply would go over, it isn't sent; the quota resets on @report.ResetText.
+                </p>
+            }
+        </section>
+
+        <section aria-label="This month in numbers" class="row row-cols-1 row-cols-sm-3 g-3 mb-4">
+            <div class="col">
+                <div class="pa-panel h-100">
+                    <span class="pa-usage-label">Messages this month</span>
+                    <span class="pa-usage-value pa-mono">@report.MonthMessages.ToString("#,0", CultureInfo.InvariantCulture)</span>
+                    <span class="small text-body-secondary">That you sent; each gets a reply</span>
+                </div>
+            </div>
+            <div class="col">
+                <div class="pa-panel h-100">
+                    <span class="pa-usage-label">Conversations</span>
+                    <span class="pa-usage-value pa-mono">@report.Conversations.ToString("#,0", CultureInfo.InvariantCulture)</span>
+                    <span class="small text-body-secondary"><a href="@($"{AiLayout.Base}/chat")">Open your chats</a></span>
+                </div>
+            </div>
+            <div class="col">
+                <div class="pa-panel h-100">
+                    <span class="pa-usage-label">Most used model</span>
+                    <span class="pa-usage-value pa-usage-model">@(report.TopModel ?? "None yet")</span>
+                    <span class="small text-body-secondary">@(report.TopModel is null ? "No messages this month" : "By tokens this month")</span>
+                </div>
+            </div>
+        </section>
+
+        <div class="row g-4">
+            <div class="col-xl-7">
+                <section class="pa-panel h-100" aria-labelledby="pa-usage-daily-title">
+                    <h2 class="pa-section-title mb-1" id="pa-usage-daily-title">Tokens per day</h2>
+                    <p class="small text-body-secondary">@report.DailySummary</p>
+                    <UsageChart Labels="report.DayLabels" Values="report.DayTokens" SeriesLabel="Tokens" AriaLabel="@($"Bar chart of tokens per day over the last 30 days. {report.DailySummary}")" />
+                    <details class="pa-usage-details mt-3">
+                        <summary>Show the data as a table</summary>
+                        <div class="table-responsive mt-2">
+                            <table class="table table-sm align-middle mb-0">
+                                <caption class="visually-hidden">Your tokens and messages per day, over the last 30 days, oldest first</caption>
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Day</th>
+                                        <th scope="col" class="text-end">Messages</th>
+                                        <th scope="col" class="text-end">Tokens</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var day in report.Days)
+                                    {
+                                        <tr @key="day.Date">
+                                            <th scope="row" class="fw-normal text-nowrap">@day.Date.ToString("ddd, MMM d", CultureInfo.InvariantCulture)</th>
+                                            <td class="text-end pa-mono">@day.Messages.ToString("#,0", CultureInfo.InvariantCulture)</td>
+                                            <td class="text-end pa-mono">@day.Tokens.ToString("#,0", CultureInfo.InvariantCulture)</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </details>
+                </section>
+            </div>
+            <div class="col-xl-5">
+                <section class="pa-panel h-100" aria-labelledby="pa-usage-models-title">
+                    <h2 class="pa-section-title mb-1" id="pa-usage-models-title">Tokens by model</h2>
+                    <p class="small text-body-secondary">@report.ModelSummary</p>
+                    @if (report.Models.Count > 0)
+                    {
+                        <UsageChart Labels="report.Models.Select(model => model.Name).ToList()" Values="report.Models.Select(model => (double)model.Tokens).ToList()"
+                                    SeriesLabel="Tokens" SeriesIndex="1" Height="200" AriaLabel="@($"Bar chart of tokens by model in {report.MonthName}. {report.ModelSummary}")" />
+                        <details class="pa-usage-details mt-3">
+                            <summary>Show the data as a table</summary>
+                            <div class="table-responsive mt-2">
+                                <table class="table table-sm align-middle mb-0">
+                                    <caption class="visually-hidden">Your tokens and messages by model in @report.MonthName, the most tokens first</caption>
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">Model</th>
+                                            <th scope="col" class="text-end">Messages</th>
+                                            <th scope="col" class="text-end">Tokens</th>
+                                            <th scope="col" class="text-end">Share</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var model in report.Models)
+                                        {
+                                            <tr @key="model.Id">
+                                                <th scope="row" class="fw-normal">
+                                                    @model.Name
+                                                    @if (!model.IsEnabled)
+                                                    {
+                                                        <span class="d-block small text-body-secondary">Turned off now</span>
+                                                    }
+                                                </th>
+                                                <td class="text-end pa-mono">@model.Messages.ToString("#,0", CultureInfo.InvariantCulture)</td>
+                                                <td class="text-end pa-mono">@model.Tokens.ToString("#,0", CultureInfo.InvariantCulture)</td>
+                                                <td class="text-end pa-mono">@Percent(model.Tokens, report.MonthTokens)</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </details>
+                    }
+                </section>
+            </div>
+        </div>
+    </AiMemberGuard>
+</div>

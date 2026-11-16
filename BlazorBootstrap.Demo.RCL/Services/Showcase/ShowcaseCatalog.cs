@@ -26,8 +26,8 @@ public static class ShowcaseCatalog
 
     private static readonly IReadOnlyList<ShowcaseSite> sites = new List<ShowcaseSite>
     {
-        new("ai-assistant", "AI Assistant Workspace", "Chat workspace with streaming answers, prompt library, and attachments.", "SaaS", IconName.Stars, "#7c3aed", "AiAssistant",
-            new[] { "Sidebar2", "SplitView", "Markdown", "Placeholders", "Offcanvas", "Toasts", "Avatar", "FileInput", "ThemeSwitcher" }),
+        new("ai-assistant", "AI Assistant Workspace", "Members chat with streaming answers, attachments, and a prompt library; workspace admins manage members, shared prompts, usage, and model policy.", "SaaS", IconName.Stars, "#7c3aed", "AiAssistant",
+            new[] { "Markdown", "Offcanvas", "Sidebar", "Modal", "Charts", "Placeholders", "Progress", "Avatar", "Form inputs" }),
         new("saas", "SaaS Product", "Public site, trial sign-up, a customer workspace with team and billing, and an operator console.", "SaaS", IconName.Lightning, "#db2777", "Saas",
             new[] { "Sidebar", "Charts", "Card", "Switch", "Accordion", "Modal", "Tabs", "Progress", "Dropdown", "Form inputs" }),
         new("ecommerce", "E-commerce Storefront", "Catalog filters, product pages, cart drawer, and checkout.", "Commerce", IconName.Bag, "#ea580c", "Ecommerce",

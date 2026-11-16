@@ -1,0 +1,18 @@
+.pa-prompt-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .375rem;
+    margin-bottom: .75rem;
+}
+
+.pa-prompt-tag {
+    display: inline-block;
+    padding: .125rem .5rem;
+    border: 1px solid var(--pa-border);
+    border-radius: 999px;
+    background: var(--pa-soft);
+    color: var(--pa-ink);
+    font-family: var(--pa-font-mono);
+    font-size: .75rem;
+    overflow-wrap: anywhere;
+}

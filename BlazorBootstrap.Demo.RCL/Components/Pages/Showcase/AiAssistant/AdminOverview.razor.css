@@ -1,0 +1,83 @@
+/* Usage analytics: KPI cards, two charts with their tables, the top-members table, and links to the other modules. */
+.pa-adov-kpi {
+    display: flex;
+    flex-direction: column;
+    gap: .25rem;
+    padding: 1rem 1.25rem;
+}
+
+.pa-adov-kpi-label {
+    font-size: .8125rem;
+    font-weight: 600;
+    color: var(--bs-secondary-color);
+}
+
+.pa-adov-kpi-value {
+    font-size: 1.75rem;
+    font-weight: 700;
+    line-height: 1.2;
+    color: var(--pa-ink);
+    font-variant-numeric: tabular-nums;
+}
+
+.pa-adov-chart {
+    position: relative;
+    min-width: 0;
+}
+
+.pa-adov-details > summary {
+    width: fit-content;
+    font-size: .875rem;
+    font-weight: 600;
+    color: var(--sc-primary);
+    cursor: pointer;
+}
+
+    .pa-adov-details > summary:focus-visible {
+        outline: 2px solid var(--bs-focus-ring-color, var(--sc-primary));
+        outline-offset: 2px;
+        border-radius: .25rem;
+    }
+
+.pa-adov-details .table {
+    font-size: .8125rem;
+}
+
+.pa-adov-caption {
+    caption-side: top;
+    padding-top: 0;
+    font-size: .8125rem;
+    color: var(--bs-secondary-color);
+}
+
+.pa-adov-name {
+    min-width: 9rem;
+    overflow-wrap: anywhere;
+}
+
+.pa-adov-email {
+    min-width: 11rem;
+    overflow-wrap: anywhere;
+}
+
+.pa-adov-share {
+    min-width: 13rem;
+}
+
+.pa-adov-module {
+    display: flex;
+    align-items: flex-start;
+    gap: .875rem;
+    padding: 1rem 1.25rem;
+    color: var(--pa-ink);
+    text-decoration: none;
+}
+
+    .pa-adov-module:hover {
+        border-color: var(--sc-primary);
+    }
+
+    .pa-adov-module:focus-visible {
+        outline: 2px solid var(--bs-focus-ring-color, var(--sc-primary));
+        outline-offset: 2px;
+    }

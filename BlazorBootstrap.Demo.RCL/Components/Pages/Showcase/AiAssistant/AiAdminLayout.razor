@@ -1,0 +1,35 @@
+@inherits LayoutComponentBase
+
+@* The workspace admin back office (D-031): its own sidebar, separate from the members' app. *@
+<ShowcaseSessionHost State="State" SiteBase="@AiLayout.Base" SiteName="@AiSeedData.ProductName">
+    <AiFrame>
+        <Header>
+            <div class="pa-admin-bar">
+                <span class="pa-admin-bar-title">Workspace admin · @AiSeedData.WorkspaceName</span>
+                <div class="pa-admin-bar-actions">
+                    <a class="btn btn-sm btn-outline-secondary" href="@($"{AiLayout.Base}/chat")">
+                        <Icon Name="IconName.ChatDots" class="me-1" aria-hidden="true" />Back to chat
+                    </a>
+                    <ShowcaseAccountMenu SiteBase="@AiLayout.Base" SignInPath="@AiLayout.SignInPath" />
+                </div>
+            </div>
+        </Header>
+        <Sidebar>
+            @if (State.IsWorkspaceAdmin)
+            {
+                <Sidebar @key="State.Identity.Current?.Id"
+                         Class="pa-sidebar"
+                         Href="@Base"
+                         IconName="IconName.Stars"
+                         Title="@AiSeedData.ProductName"
+                         BadgeText="Admin"
+                         DataProvider="SidebarDataProvider" />
+            }
+        </Sidebar>
+        <ChildContent>
+            <AiMemberGuard RequireAdmin="true">
+                @Body
+            </AiMemberGuard>
+        </ChildContent>
+    </AiFrame>
+</ShowcaseSessionHost>

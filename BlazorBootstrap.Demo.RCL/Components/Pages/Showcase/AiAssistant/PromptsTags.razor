@@ -1,0 +1,15 @@
+@* A prompt's tags as a list of small labels; nothing when it has none. *@
+@if (Tags.Count > 0)
+{
+    <ul class="pa-prompt-tags list-unstyled" aria-label="Tags">
+        @foreach (var tag in Tags)
+        {
+            <li @key="tag"><span class="pa-prompt-tag">@tag</span></li>
+        }
+    </ul>
+}
+
+@code {
+    /// <summary>Gets or sets the tags (lower-case words).</summary>
+    [Parameter] public IReadOnlyList<string> Tags { get; set; } = Array.Empty<string>();
+}

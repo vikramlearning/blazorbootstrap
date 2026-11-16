@@ -1,0 +1,72 @@
+/* Members and roles: the invite form, the status filter, and the members table (it scrolls inside its box on narrow screens). */
+.pa-admem-status {
+    min-height: 1.5rem;
+    overflow-wrap: anywhere;
+}
+
+    .pa-admem-status:focus {
+        outline: none;
+    }
+
+    .pa-admem-status:focus-visible {
+        outline: 2px solid var(--bs-focus-ring-color, var(--sc-primary));
+        outline-offset: 2px;
+    }
+
+/* Lines the button up with the inputs, whose labels sit above them. */
+@media (min-width: 1200px) {
+    .pa-admem-invite-submit {
+        padding-top: 2rem;
+    }
+}
+
+.pa-admem-filter {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .375rem;
+}
+
+.pa-admem-count {
+    font-variant-numeric: tabular-nums;
+}
+
+.pa-admem-caption {
+    caption-side: top;
+    padding-top: 0;
+    font-size: .8125rem;
+    color: var(--bs-secondary-color);
+}
+
+.pa-admem-name {
+    min-width: 9rem;
+    overflow-wrap: anywhere;
+}
+
+.pa-admem-email {
+    min-width: 11rem;
+    overflow-wrap: anywhere;
+}
+
+.pa-admem-actions {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: .375rem;
+}
+
+    .pa-admem-actions ::deep .btn {
+        white-space: nowrap;
+    }
+
+/* Inside the Modal component, so ::deep from the page. */
+::deep .pa-admem-dialog-title {
+    overflow-wrap: anywhere;
+}
+
+::deep .pa-admem-warning {
+    padding: .625rem .75rem;
+    border-left: .25rem solid var(--bs-warning);
+    border-radius: 0 .5rem .5rem 0;
+    background: var(--bs-warning-bg-subtle);
+    color: var(--bs-warning-text-emphasis);
+}

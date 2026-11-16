@@ -1,0 +1,176 @@
+@page "/showcase/ai-assistant/prompts"
+@layout AiLayout
+
+<PageTitle>Prompt library · @AiSeedData.ProductName</PageTitle>
+
+@* The member's own prompts (create, edit, delete) and the workspace's shared prompts (read-only here), with a filter. *@
+<div class="container-xl">
+    <AiMemberGuard>
+        @{
+            var mine = State.MyPrompts;
+            var shared = State.SharedPrompts;
+            var tags = AllTags(mine, shared);
+            var shownMine = mine.Where(Matches).ToList();
+            var shownShared = shared.Where(Matches).ToList();
+            var isFiltered = IsFiltered;
+        }
+
+        <div class="pa-prompts-head mb-3">
+            <div>
+                <h1 class="pa-title mb-1">Prompt library</h1>
+                <p class="pa-lead mb-0">
+                    Prompts you use often, ready to drop into a chat. Keep your own here, and use the ones your workspace shares.
+                </p>
+            </div>
+            <a class="btn btn-primary" href="@NewUrl"><Icon Name="IconName.PlusLg" class="me-2" aria-hidden="true" />New prompt</a>
+        </div>
+
+        @* Always rendered and focusable, so an outcome is announced and focus has somewhere to go after a deletion. *@
+        <p class="pa-prompts-status fw-semibold @(statusIsError ? "text-danger-emphasis" : null)" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
+
+        @if (mine.Count + shared.Count > 0)
+        {
+            <section class="pa-panel mb-4" aria-labelledby="pa-prompts-filter-title">
+                <h2 class="visually-hidden" id="pa-prompts-filter-title">Filter prompts</h2>
+                <div class="row g-3 align-items-start">
+                    <div class="col-md-5">
+                        <label class="form-label fw-semibold" for="pa-prompts-search">Filter prompts</label>
+                        <input id="pa-prompts-search" class="form-control" type="search" autocomplete="off" maxlength="100" @bind="search" @bind:event="oninput"
+                               @ref="searchInput" aria-describedby="pa-prompts-search-help" />
+                        <div class="form-text" id="pa-prompts-search-help">Matches the title, the text, or a tag.</div>
+                    </div>
+                    <div class="col-md-7">
+                        <span class="form-label fw-semibold d-block" id="pa-prompts-tags-label">Tag</span>
+                        <div class="pa-prompts-tags" role="group" aria-labelledby="pa-prompts-tags-label">
+                            <button type="button" class="btn btn-sm rounded-pill @(selectedTag is null ? "btn-primary" : "btn-outline-primary")"
+                                    aria-pressed="@(selectedTag is null ? "true" : "false")" @onclick="() => selectedTag = null">
+                                All tags
+                            </button>
+                            @foreach (var tag in tags)
+                            {
+                                var isSelected = tag == selectedTag;
+                                <button type="button" class="btn btn-sm rounded-pill @(isSelected ? "btn-primary" : "btn-outline-primary")" @key="@($"tag-{tag}")"
+                                        aria-pressed="@(isSelected ? "true" : "false")" @onclick="() => selectedTag = isSelected ? null : tag">
+                                    @tag
+                                </button>
+                            }
+                        </div>
+                    </div>
+                </div>
+                @if (isFiltered)
+                {
+                    <p class="small mt-3 mb-0">
+                        Showing @CountText(shownMine.Count + shownShared.Count, "prompt") for @FilterText.
+                        <button type="button" class="btn btn-link btn-sm p-0 align-baseline" @onclick="ClearFilters">Clear the filter</button>
+                    </p>
+                }
+            </section>
+        }
+
+        <section class="mb-5" aria-labelledby="pa-prompts-mine-title">
+            <h2 class="pa-section-title" id="pa-prompts-mine-title">My prompts <span class="text-body-secondary fw-normal">(@mine.Count)</span></h2>
+
+            @if (mine.Count == 0)
+            {
+                <div class="pa-panel text-center py-4">
+                    <span class="pa-icon fs-5" aria-hidden="true"><Icon Name="IconName.Bookmark" /></span>
+                    <p class="fw-semibold mt-3 mb-1">You haven't saved any prompts yet</p>
+                    <p class="text-body-secondary mb-3">Save a prompt you type often, like "Summarize this for my manager", and start a chat with it in one click.</p>
+                    <a class="btn btn-primary" href="@NewUrl">New prompt</a>
+                </div>
+            }
+            else if (shownMine.Count == 0)
+            {
+                <p class="pa-panel text-body-secondary mb-0">None of your prompts match @FilterText.</p>
+            }
+            else
+            {
+                <ul class="pa-prompts-list list-unstyled mb-0">
+                    @foreach (var prompt in shownMine)
+                    {
+                        <li class="pa-card pa-prompt" @key="@($"mine-{prompt.Id}")">
+                            <h3 class="pa-prompt-title">@prompt.Title</h3>
+                            <p class="pa-plain pa-prompt-text">@prompt.Text</p>
+                            <PromptsTags Tags="prompt.Tags" />
+                            <p class="small text-body-secondary mb-3">
+                                Updated <time datetime="@prompt.UpdatedAt.ToString("s", CultureInfo.InvariantCulture)" title="@AiDisplay.Stamp(prompt.UpdatedAt)">@AiDisplay.Ago(prompt.UpdatedAt, State.Clock.Now)</time>
+                                · @UseText(prompt.UseCount)
+                            </p>
+                            <div class="pa-prompt-actions">
+                                <a class="btn btn-primary btn-sm" href="@ChatUrl(prompt.Id)" aria-label="@($"Use {prompt.Title} in chat")">
+                                    <Icon Name="IconName.ChatDots" class="me-1" aria-hidden="true" />Use in chat
+                                </a>
+                                <a class="btn btn-outline-secondary btn-sm" href="@PromptEdit.EditUrl(prompt.Id)" aria-label="@($"Edit {prompt.Title}")">Edit</a>
+                                <button type="button" class="btn btn-outline-danger btn-sm" @ref="deleteButtons[prompt.Id]" @onclick="() => AskDeleteAsync(prompt)"
+                                        aria-label="@($"Delete {prompt.Title}")">
+                                    Delete
+                                </button>
+                            </div>
+                        </li>
+                    }
+                </ul>
+            }
+        </section>
+
+        <section aria-labelledby="pa-prompts-shared-title">
+            <h2 class="pa-section-title mb-1" id="pa-prompts-shared-title">Shared with the workspace <span class="text-body-secondary fw-normal">(@shared.Count)</span></h2>
+            <p class="small text-body-secondary mb-3">
+                Prompts everyone at @AiSeedData.WorkspaceName can use, the most used first. Workspace admins write and manage them; you can use them in a chat.
+                @if (State.IsWorkspaceAdmin)
+                {
+                    <a href="@($"{AiAdminLayout.Base}/prompts")">Manage shared prompts</a>
+                }
+            </p>
+
+            @if (shared.Count == 0)
+            {
+                <div class="pa-panel text-center py-4">
+                    <span class="pa-icon fs-5" aria-hidden="true"><Icon Name="IconName.People" /></span>
+                    <p class="fw-semibold mt-3 mb-1">No shared prompts yet</p>
+                    <p class="text-body-secondary mb-0">When a workspace admin shares a prompt with the team, it shows up here.</p>
+                </div>
+            }
+            else if (shownShared.Count == 0)
+            {
+                <p class="pa-panel text-body-secondary mb-0">No shared prompts match @FilterText.</p>
+            }
+            else
+            {
+                <ul class="pa-prompts-list list-unstyled mb-0">
+                    @foreach (var prompt in shownShared)
+                    {
+                        <li class="pa-card pa-prompt" @key="@($"shared-{prompt.Id}")">
+                            <h3 class="pa-prompt-title">@prompt.Title</h3>
+                            <p class="pa-plain pa-prompt-text">@prompt.Text</p>
+                            <PromptsTags Tags="prompt.Tags" />
+                            <p class="small text-body-secondary mb-3">
+                                By @prompt.Author · @UseText(prompt.UseCount) · updated
+                                <time datetime="@prompt.UpdatedAt.ToString("s", CultureInfo.InvariantCulture)" title="@AiDisplay.Stamp(prompt.UpdatedAt)">@AiDisplay.Ago(prompt.UpdatedAt, State.Clock.Now)</time>
+                            </p>
+                            <div class="pa-prompt-actions">
+                                <a class="btn btn-primary btn-sm" href="@ChatUrl(prompt.Id)" aria-label="@($"Use {prompt.Title} in chat")">
+                                    <Icon Name="IconName.ChatDots" class="me-1" aria-hidden="true" />Use in chat
+                                </a>
+                            </div>
+                        </li>
+                    }
+                </ul>
+            }
+        </section>
+    </AiMemberGuard>
+</div>
+
+@* Outside the lists, so the dialog is never removed while it is open. *@
+<Modal @ref="deleteModal" IsVerticallyCentered="true" ShowCloseButton="false" aria-labelledby="pa-prompts-delete-title" OnHidden="OnDeleteHiddenAsync">
+    <HeaderTemplate>
+        <h2 class="modal-title h5 pa-prompt-title" id="pa-prompts-delete-title">Delete "@deleting?.Title"?</h2>
+    </HeaderTemplate>
+    <BodyTemplate>
+        <p class="pa-prompts-dialog-text mb-2">The prompt "@deleting?.Title" is removed from your prompts. Chats you started with it keep their messages.</p>
+        <p class="small text-body-secondary mb-0">This can't be undone.</p>
+    </BodyTemplate>
+    <FooterTemplate>
+        <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => deleteModal.HideAsync()">Keep prompt</Button>
+        <Button Color="ButtonColor.Danger" @onclick="ConfirmDeleteAsync"><Icon Name="IconName.Trash3" class="me-1" aria-hidden="true" />Delete prompt</Button>
+    </FooterTemplate>
+</Modal>

@@ -1,0 +1,88 @@
+/* Models and policy: model cards with checkboxes, three settings panels, the blocked-terms list, and the Save bar. */
+.pa-adset-status {
+    min-height: 1.5rem;
+    overflow-wrap: anywhere;
+}
+
+    .pa-adset-status:focus {
+        outline: none;
+    }
+
+    .pa-adset-status:focus-visible {
+        outline: 2px solid var(--bs-focus-ring-color, var(--sc-primary));
+        outline-offset: 2px;
+    }
+
+/* Room for the checkbox inside the card: Bootstrap's form-check pads the left for it. */
+.pa-adset-model {
+    height: 100%;
+    margin: 0;
+    padding: .75rem 1rem .75rem 2.5rem;
+    border: 1px solid var(--pa-border);
+    border-radius: .75rem;
+}
+
+.pa-adset-model-on {
+    border-color: rgba(var(--sc-primary-rgb), .55);
+    background: rgba(var(--sc-primary-rgb), .05);
+}
+
+.pa-adset-note {
+    color: var(--bs-warning-text-emphasis);
+}
+
+.pa-adset-term-add {
+    display: flex;
+    gap: .5rem;
+    max-width: 32rem;
+}
+
+    .pa-adset-term-add input {
+        flex: 1 1 auto;
+        min-width: 0;
+    }
+
+    .pa-adset-term-add ::deep .btn {
+        flex-shrink: 0;
+    }
+
+.pa-adset-terms {
+    display: grid;
+    gap: .375rem;
+    max-width: 32rem;
+}
+
+    .pa-adset-terms li {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: .75rem;
+        padding: .375rem .375rem .375rem .75rem;
+        border: 1px solid var(--pa-border);
+        border-radius: .5rem;
+    }
+
+.pa-adset-term {
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+.pa-adset-terms .btn {
+    flex-shrink: 0;
+}
+
+.pa-adset-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: .5rem .75rem;
+    padding: 1rem 1.25rem;
+    border: 1px solid var(--pa-border);
+    border-radius: .875rem;
+    background: var(--pa-surface);
+}
+
+    .pa-adset-actions p {
+        flex: 1 1 16rem;
+        overflow-wrap: anywhere;
+    }

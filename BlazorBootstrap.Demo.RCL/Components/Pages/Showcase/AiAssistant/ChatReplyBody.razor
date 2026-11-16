@@ -1,0 +1,4 @@
+@* An assistant reply's Markdown (from the fixed templates, never user text). Its only parameters are a string, a number,
+   and a flag, so it renders, and Markdown re-parses, only when the shown text changes: not on every streaming tick of the
+   page. The key changes when the reply finishes, so the full text is always parsed by a fresh Markdown. *@
+<Markdown @key="@($"reply-md-{MessageId}-{(IsStreaming ? "s" : "f")}")" Class="pa-reply">@Text</Markdown>
