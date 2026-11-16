@@ -1,0 +1,57 @@
+.qp-verify {
+    max-width: 44rem;
+}
+
+/* The field and Check sit side by side, and stack at 375 px. */
+.qp-verify-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .5rem;
+}
+
+.qp-verify-input {
+    flex: 1 1 14rem;
+    min-width: 0;
+    font-family: var(--bs-font-monospace);
+    letter-spacing: .04em;
+}
+
+/* The outcome is said in the heading text; the colored border and icon only repeat it. */
+.qp-verify-outcome {
+    padding: 1.25rem;
+    border: 1px solid var(--bs-border-color);
+    border-left-width: .375rem;
+    border-radius: .75rem;
+    background: var(--bs-body-bg);
+}
+
+.qp-verify-valid {
+    border-left-color: var(--bs-success);
+}
+
+    .qp-verify-valid ::deep .qp-verify-mark {
+        color: var(--bs-success-text-emphasis);
+    }
+
+.qp-verify-missing {
+    border-left-color: var(--bs-danger);
+}
+
+    .qp-verify-missing ::deep .qp-verify-mark {
+        color: var(--bs-danger-text-emphasis);
+    }
+
+.qp-verify-facts {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: .25rem 1rem;
+}
+
+    .qp-verify-facts dt {
+        font-weight: 600;
+    }
+
+    .qp-verify-facts dd {
+        margin-bottom: 0;
+        overflow-wrap: anywhere;
+    }

@@ -1,0 +1,110 @@
+@* A scored quiz: one fieldset of native radios per question, then the result in a status region with each question marked in text. *@
+<section class="qp-panel qp-quiz mb-4" aria-labelledby="@TitleId">
+    <h2 class="h5 fw-bold mb-1" id="@TitleId">Check your understanding</h2>
+    <p class="small text-body-secondary mb-3">
+        @Lesson.Questions.Count questions. Get @Lesson.PassMark right to pass; passing completes this lesson. You can retake the quiz as often as you like, and your best score counts.
+    </p>
+
+    @if (Attempt is { } attempt)
+    {
+        <p class="qp-quiz-best mb-3">
+            @if (IsPassed)
+            {
+                <Icon Name="IconName.CheckCircleFill" class="qp-lesson-done me-1" aria-hidden="true" /><span class="fw-semibold">Passed (best @attempt.BestScore of @Lesson.Questions.Count)</span>
+            }
+            else
+            {
+                <Icon Name="IconName.Circle" class="text-body-secondary me-1" aria-hidden="true" /><span class="fw-semibold">Not passed yet (best @attempt.BestScore of @Lesson.Questions.Count)</span>
+            }
+            <span class="text-body-secondary"> · @AttemptsText(attempt.Attempts) · last on @LearningDisplay.Date(attempt.LastAt)</span>
+            <span class="d-block small text-body-secondary">@(IsPassed ? "This lesson is complete. Retake the quiz any time; a lower score won't undo it." : "Pass the quiz to complete this lesson.")</span>
+        </p>
+    }
+
+    @* Always rendered, and focused after a submission, so the score is announced. *@
+    <div class="qp-quiz-result @ResultClass"
+         role="status" tabindex="-1" @ref="resultRegion">
+        @if (result is { } shown)
+        {
+            <p class="fw-bold mb-1">@ResultSentence(shown)</p>
+            @if (shown.Note is not null)
+            {
+                <p class="small mb-0">@shown.Note</p>
+            }
+        }
+        else if (errorMessage is not null)
+        {
+            <p class="fw-semibold text-danger-emphasis mb-0">@errorMessage</p>
+        }
+    </div>
+
+    @if (result is { } review)
+    {
+        <ol class="qp-quiz-review">
+            @foreach (var (question, index) in Lesson.Questions.Select((question, index) => (question, index)))
+            {
+                var chosen = review.Answers[index];
+                var right = chosen == question.CorrectIndex;
+                <li @key="question.Id" class="qp-quiz-review-item">
+                    <h3 class="h6 fw-bold mb-1">Question @(index + 1): @question.Prompt</h3>
+                    <p class="mb-1">
+                        <span class="qp-quiz-mark @(right ? "qp-quiz-mark-right" : "qp-quiz-mark-wrong")">
+                            <Icon Name="@(right ? IconName.CheckCircleFill : IconName.XCircleFill)" class="me-1" aria-hidden="true" />@(right ? "Right" : "Wrong")
+                        </span>
+                        <span> · Your answer: @question.Options[chosen]</span>
+                    </p>
+                    @if (!right)
+                    {
+                        <p class="mb-1">Correct answer: <span class="fw-semibold">@question.Options[question.CorrectIndex]</span></p>
+                    }
+                    <p class="small text-body-secondary mb-0">@question.Explanation</p>
+                </li>
+            }
+        </ol>
+        <Button Color="ButtonColor.Primary" Outline="true" @onclick="TryAgain">
+            <Icon Name="IconName.ArrowRepeat" class="me-2" aria-hidden="true" />Try again
+        </Button>
+    }
+    else
+    {
+        <form @onsubmit="SubmitAsync" novalidate>
+            @foreach (var (question, index) in Lesson.Questions.Select((question, index) => (question, index)))
+            {
+                var questionIndex = index;
+                var missing = showMissing && answers[questionIndex] is null;
+                <fieldset @key="question.Id" class="qp-quiz-question @(missing ? "qp-quiz-question-missing" : null)"
+                          aria-describedby="@(missing ? $"{QuestionId(questionIndex)}-missing" : null)">
+                    <legend class="qp-quiz-legend">
+                        <span class="qp-quiz-number">Question @(questionIndex + 1) of @Lesson.Questions.Count</span>
+                        <span class="d-block">@question.Prompt</span>
+                    </legend>
+                    @if (missing)
+                    {
+                        <p class="small fw-semibold text-danger-emphasis mb-2" id="@($"{QuestionId(questionIndex)}-missing")">Choose an answer to this question.</p>
+                    }
+                    @foreach (var (option, optionIndex) in question.Options.Select((option, optionIndex) => (option, optionIndex)))
+                    {
+                        var choice = optionIndex;
+                        var inputId = $"{QuestionId(questionIndex)}-o{choice}";
+                        <div class="form-check qp-quiz-option">
+                            @if (choice == 0)
+                            {
+                                <input class="form-check-input" type="radio" id="@inputId" name="@QuestionId(questionIndex)" value="@choice"
+                                       checked="@(answers[questionIndex] == choice)" @onchange="() => Choose(questionIndex, choice)" @ref="firstOptions[questionIndex]" />
+                            }
+                            else
+                            {
+                                <input class="form-check-input" type="radio" id="@inputId" name="@QuestionId(questionIndex)" value="@choice"
+                                       checked="@(answers[questionIndex] == choice)" @onchange="() => Choose(questionIndex, choice)" />
+                            }
+                            <label class="form-check-label" for="@inputId">@option</label>
+                        </div>
+                    }
+                </fieldset>
+            }
+            <Button Type="ButtonType.Submit" Color="ButtonColor.Primary">
+                <Icon Name="IconName.Send" class="me-2" aria-hidden="true" />Submit answers
+            </Button>
+        </form>
+    }
+</section>

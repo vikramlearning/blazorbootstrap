@@ -6,6 +6,7 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lora:wght@500;600;700&family=Source+Sans+3:wght@400;600;700&display=swap" />
 </HeadContent>
 
+<ShowcaseSessionHost State="State" SiteBase="@Base" SiteName="@LearningSeedData.SchoolName">
 <div class="sc-site sc-learning">
     <ShowcaseSiteBar Site="@site" />
 
@@ -19,20 +20,30 @@
                 <span class="qp-brand-mark" aria-hidden="true"><Icon Name="IconName.Feather" /></span>
                 <span>@LearningSeedData.SchoolName</span>
             </NavbarBrand>
+            @if (State.Identity.IsSignedIn)
+            {
+                <ShowcaseAccountMenu SiteBase="@Base" SignInPath="@SignInPath" Class="ms-auto me-2 order-lg-last" />
+            }
+            else
+            {
+                <a class="btn btn-sm btn-outline-secondary ms-auto me-2 order-lg-last" href="@SignInPath">Sign in</a>
+            }
         </Brand>
         <ChildContent>
             <NavbarNav Class="me-auto ms-lg-4 mb-3 mb-lg-0">
                 <NavbarItem Href="@Base" Match="NavLinkMatch.All">Courses</NavbarItem>
-                <NavbarItem Href="@($"{Base}/progress")">My learning</NavbarItem>
+                @if (State.IsLearner)
+                {
+                    <NavbarItem Href="@($"{Base}/progress")">My learning</NavbarItem>
+                    <NavbarItem Href="@($"{Base}/certificates")" Match="NavLinkMatch.All">Certificates</NavbarItem>
+                }
+                <NavbarItem Href="@($"{Base}/verify")">Verify a certificate</NavbarItem>
             </NavbarNav>
-            <div class="qp-user mb-3 mb-lg-0">
-                <Avatar Name="@LearningSeedData.LearnerName" Initials="JA" Color="AvatarColor.Warning" Size="AvatarSize.Small" />
-                <span>@LearningSeedData.LearnerName</span>
-            </div>
         </ChildContent>
     </Navbar>
 
-    <main class="sc-main qp-content" id="qp-main">
+    @* Pages show learners' names, progress, reviews, and questions, so the content is masked from session recording. *@
+    <main class="sc-main qp-content" id="qp-main" data-clarity-mask="true">
         @Body
     </main>
 
@@ -42,8 +53,14 @@
 
     <footer class="qp-footer">
         <div class="container-xl d-flex flex-wrap justify-content-between gap-2">
-            <span>© 2026 @LearningSeedData.SchoolName (fictitious). Courses, people, reviews, and certificates on this site are made up.</span>
-            <span class="d-none d-lg-inline">Built with Card, Accordion, Progress, Markdown, PdfViewer, RatingInput, ListGroup, and Badge.</span>
+            <span>© 2026 @LearningSeedData.SchoolName (fictitious). Courses, people, reviews, and certificates are made up and stay in this browser tab.</span>
+            <span class="d-none d-lg-inline">Built with Card, Accordion, Progress, Markdown, PdfViewer, Modal, Breadcrumb, and Badge.</span>
         </div>
     </footer>
+
+    @* Toasts can name learners and courses, so they are masked from session recording like the page content. *@
+    <div data-clarity-mask="true">
+        <Toasts class="p-3" AutoHide="true" Delay="5000" Placement="ToastsPlacement.BottomRight" />
+    </div>
 </div>
+</ShowcaseSessionHost>

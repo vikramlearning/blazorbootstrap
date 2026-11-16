@@ -1,0 +1,83 @@
+.qp-player-status:empty {
+    margin: 0;
+}
+
+/* Course outline: plain links, so the current lesson carries aria-current="page". */
+.qp-outline {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.qp-outline-link {
+    display: flex;
+    align-items: flex-start;
+    gap: .5rem;
+    padding: .5rem;
+    border-radius: .5rem;
+    color: var(--qp-ink);
+    text-decoration: none;
+}
+
+    .qp-outline-link:hover {
+        background: rgba(var(--sc-primary-rgb), .08);
+    }
+
+    .qp-outline-link:hover .qp-outline-title {
+        text-decoration: underline;
+    }
+
+    .qp-outline-link:focus-visible {
+        outline: 2px solid var(--sc-primary);
+        outline-offset: 1px;
+    }
+
+    .qp-outline-link ::deep .bi {
+        margin-top: .125rem;
+    }
+
+.qp-outline-current {
+    font-weight: 600;
+    background: rgba(var(--sc-primary-rgb), .14);
+    box-shadow: inset .25rem 0 0 var(--sc-primary);
+}
+
+.qp-outline-text {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+.qp-outline-meta {
+    font-size: .8125rem;
+    font-weight: 400;
+    color: var(--bs-secondary-color);
+}
+
+.qp-lesson-pager {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: .5rem;
+}
+
+/* The one-time "You finished the course" banner. */
+.qp-finished {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    padding: 1.25rem;
+    border: 1px solid var(--qp-border);
+    border-left: .35rem solid var(--sc-primary);
+    border-radius: 1rem;
+    /* A light tint, not the hero gradient: the outline button's amber is under 4.5:1 on the hero's yellow. */
+    background: linear-gradient(rgba(var(--sc-primary-rgb), .08), rgba(var(--sc-primary-rgb), .08)), var(--qp-surface);
+    color: var(--qp-ink);
+}
+
+.qp-code {
+    font-family: var(--bs-font-monospace);
+    font-weight: 700;
+    white-space: nowrap;
+}

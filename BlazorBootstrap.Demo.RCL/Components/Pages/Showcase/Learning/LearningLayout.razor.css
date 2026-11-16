@@ -297,7 +297,13 @@
     color: var(--qp-ink);
 }
 
+/* Lets a flex child with long text shrink instead of overflowing the card. */
+.sc-learning ::deep .min-w-0 {
+    min-width: 0;
+}
+
 .sc-learning ::deep .qp-certificate-name {
+    overflow-wrap: anywhere;
     font-family: var(--sc-font-heading);
     font-size: clamp(1.75rem, 5vw, 2.75rem);
     font-weight: 700;

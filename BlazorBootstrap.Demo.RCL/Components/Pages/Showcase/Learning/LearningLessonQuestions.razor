@@ -1,0 +1,116 @@
+@* Lesson Q&A: the ask form for enrolled learners, then the questions newest first with their answers. Text is plain and Razor-encoded. *@
+<section class="qp-panel qp-qa mb-4" aria-labelledby="@($"{IdPrefix}-title")">
+    <h2 class="qp-section-title mb-1" id="@($"{IdPrefix}-title")">Questions about this lesson</h2>
+    <p class="small text-body-secondary mb-3">@CountText</p>
+
+    @* Always rendered and focusable, so posting or deleting is announced and focus has somewhere to go. *@
+    <p class="qp-qa-status @(statusIsError ? "text-danger-emphasis" : null)" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
+
+    @if (!State.IsLearner)
+    {
+        <p class="mb-4">Sign in with a learner account to ask about this lesson.</p>
+    }
+    else if (!State.IsEnrolled(Course.Id))
+    {
+        <p class="mb-4">Questions are for learners enrolled in @Course.Title. Enroll in the course to ask @Course.Instructor about this lesson.</p>
+    }
+    else
+    {
+        <form class="qp-qa-form mb-4" @onsubmit="Ask" novalidate>
+            <h3 class="h6 fw-bold mb-2">Ask a question</h3>
+            <label class="form-label" for="@($"{IdPrefix}-text")">Your question</label>
+            <textarea id="@($"{IdPrefix}-text")" class="form-control @(askError is null ? null : "is-invalid")" rows="3" maxlength="@LearningState.MaxQuestionLength"
+                      @bind="questionText" @bind:event="oninput" @ref="questionInput"
+                      aria-invalid="@(askError is null ? null : "true")"
+                      aria-describedby="@($"{IdPrefix}-help {IdPrefix}-count {IdPrefix}-error")"></textarea>
+            <div class="d-flex flex-wrap justify-content-between gap-2">
+                <div class="form-text" id="@($"{IdPrefix}-help")">
+                    @Course.Instructor, the instructor, usually answers within a day. Other learners see your question and your name.
+                </div>
+                <div class="form-text text-nowrap" id="@($"{IdPrefix}-count")">@CharacterCount of @MaxLengthText characters</div>
+            </div>
+            <p class="small fw-semibold text-danger-emphasis mb-2" id="@($"{IdPrefix}-error")">@askError</p>
+            <Button Type="ButtonType.Submit" Color="ButtonColor.Primary">
+                <Icon Name="IconName.ChatLeftText" class="me-2" aria-hidden="true" />Post question
+            </Button>
+        </form>
+    }
+
+    @if (Threads.Count == 0)
+    {
+        <p class="text-body-secondary mb-0">No one has asked about this lesson yet.</p>
+    }
+    else
+    {
+        <ol class="qp-qa-list">
+            @foreach (var thread in Threads)
+            {
+                var isMine = IsMine(thread);
+                <li @key="thread.Id" class="qp-qa-thread @(thread.Id == postedId ? "qp-qa-new" : null)">
+                    <article aria-labelledby="@($"{IdPrefix}-q{thread.Id}")">
+                        <h3 class="qp-qa-byline" id="@($"{IdPrefix}-q{thread.Id}")">
+                            <span class="fw-semibold">@thread.Author</span>@(isMine ? " (you)" : null)
+                            <span class="fw-normal text-body-secondary"> asked <time datetime="@IsoTime(thread.AskedAt)">@When(thread.AskedAt)</time></span>
+                        </h3>
+                        <p class="qp-qa-text mb-2">@thread.Text</p>
+
+                        @if (thread.Answers.Count == 0)
+                        {
+                            <p class="small text-body-secondary mb-0">No answers yet.@(isMine ? $" {Course.Instructor} usually answers within a day." : null)</p>
+                        }
+                        else
+                        {
+                            <h4 class="visually-hidden">Answers</h4>
+                            <ul class="qp-qa-answers">
+                                @foreach (var answer in thread.Answers)
+                                {
+                                    <li class="qp-qa-answer @(answer.IsInstructor ? "qp-qa-answer-instructor" : null)">
+                                        <p class="small mb-1">
+                                            <span class="fw-semibold">@answer.Author</span>
+                                            @if (answer.IsInstructor)
+                                            {
+                                                <Badge Color="BadgeColor.Primary" Class="ms-1">Instructor</Badge>
+                                            }
+                                            <span class="text-body-secondary"> · <time datetime="@IsoTime(answer.At)">@When(answer.At)</time></span>
+                                        </p>
+                                        <p class="qp-qa-text mb-0">@answer.Text</p>
+                                    </li>
+                                }
+                            </ul>
+                        }
+
+                        @if (isMine && thread.Answers.Count == 0)
+                        {
+                            <button type="button" class="btn btn-sm btn-outline-danger mt-2" @onclick="() => AskDeleteAsync(thread)" @ref="deleteButtons[thread.Id]">
+                                <Icon Name="IconName.Trash" class="me-1" aria-hidden="true" />Delete<span class="visually-hidden"> your question from @When(thread.AskedAt)</span>
+                            </button>
+                        }
+                        else if (isMine)
+                        {
+                            <p class="small text-body-secondary mt-2 mb-0">Answered questions stay, so other learners can read the answer.</p>
+                        }
+                    </article>
+                </li>
+            }
+        </ol>
+    }
+
+    @* Opened from code, so focus is returned by hand; the heading names the dialog and Cancel closes it. *@
+    <Modal @ref="deleteModal" IsVerticallyCentered="true" ShowCloseButton="false" aria-labelledby="@($"{IdPrefix}-delete-title")"
+           OnShown="OnDeleteShownAsync" OnHidden="OnDeleteHiddenAsync">
+        <HeaderTemplate>
+            <h2 class="modal-title h5" id="@($"{IdPrefix}-delete-title")">Delete your question?</h2>
+        </HeaderTemplate>
+        <BodyTemplate>
+            @if (PendingDelete is { } pending)
+            {
+                <p class="qp-qa-text qp-qa-quote mb-3">@Excerpt(pending.Text)</p>
+            }
+            <p class="mb-0">It's removed from this lesson for everyone, and @Course.Instructor won't see it. This can't be undone.</p>
+        </BodyTemplate>
+        <FooterTemplate>
+            <Button Color="ButtonColor.Secondary" Outline="true" @ref="cancelDeleteButton" @onclick="() => deleteModal.HideAsync()">Cancel</Button>
+            <Button Color="ButtonColor.Danger" @onclick="ConfirmDeleteAsync">Delete question</Button>
+        </FooterTemplate>
+    </Modal>
+</section>

@@ -1,0 +1,95 @@
+@page "/showcase/learning/verify"
+@layout LearningLayout
+
+<PageTitle>Verify a certificate · @LearningSeedData.SchoolName</PageTitle>
+
+@* Public: an employer or anyone else checks a certificate ID without an account. ?code= fills the field and checks it. *@
+<div class="container-xl pb-4">
+    <div class="qp-verify">
+        <h1 class="qp-title">Verify a certificate</h1>
+        <p class="qp-lead">
+            Enter the certificate ID printed on a @LearningSeedData.SchoolName certificate to confirm that we issued it, to whom,
+            for which course, and when.
+        </p>
+
+        <div class="qp-panel mb-4">
+            <form class="qp-verify-form" @onsubmit="CheckAsync" @onsubmit:preventDefault="true" novalidate>
+                <label class="form-label fw-semibold" for="qp-verify-code">Certificate ID</label>
+                <div class="qp-verify-row">
+                    <input id="qp-verify-code" @ref="codeInput" class="form-control qp-verify-input @(inputError is null ? null : "is-invalid")"
+                           type="text" @bind="input" maxlength="40" autocomplete="off" spellcheck="false" autocapitalize="characters"
+                           placeholder="QP-XXXX-XXXX" aria-invalid="@(inputError is null ? "false" : "true")"
+                           aria-describedby="@(inputError is null ? "qp-verify-hint" : "qp-verify-hint qp-verify-error")" />
+                    <Button Type="ButtonType.Submit" Color="ButtonColor.Primary">
+                        <Icon Name="IconName.ShieldCheck" class="me-1" aria-hidden="true" />Check
+                    </Button>
+                </div>
+                @if (inputError is not null)
+                {
+                    <div id="qp-verify-error" class="invalid-feedback d-block">@inputError</div>
+                }
+                <div id="qp-verify-hint" class="form-text">Format QP-XXXX-XXXX, for example QP-7K4M-R2XD. Upper or lower case both work, and spaces are ignored.</div>
+            </form>
+        </div>
+
+        @* Always rendered, so a new result is announced; the result stays in the URL (?code=) so it can be shared. *@
+        <div role="status" class="qp-verify-result">
+            @if (checkedCode is null)
+            {
+            }
+            else if (!Session.IsRestored)
+            {
+                <p class="d-flex align-items-center text-body-secondary mb-0">
+                    <Spinner Size="SpinnerSize.Small" Class="me-2" aria-hidden="true" />Checking @checkedCode…
+                </p>
+            }
+            else if (Result is { } certificate)
+            {
+                var course = State.FindCourse(certificate.CourseId);
+                <section class="qp-verify-outcome qp-verify-valid" aria-labelledby="qp-verify-valid-title">
+                    <h2 class="h5 fw-bold d-flex align-items-center gap-2" id="qp-verify-valid-title">
+                        <Icon Name="IconName.PatchCheckFill" class="qp-verify-mark" aria-hidden="true" />Valid certificate
+                    </h2>
+                    <p class="mb-3">@LearningSeedData.SchoolName issued certificate <code class="text-reset fw-semibold">@certificate.Code</code>.</p>
+                    <dl class="qp-verify-facts mb-3">
+                        <dt>Learner</dt>
+                        <dd>@certificate.LearnerName</dd>
+                        <dt>Course</dt>
+                        <dd>@(course?.Title ?? "A retired course")</dd>
+                        <dt>Issued</dt>
+                        <dd>@LearningDisplay.Date(certificate.IssuedOn)</dd>
+                    </dl>
+                    <a class="btn btn-outline-primary btn-sm" href="@Certificate.PathFor(certificate.Code)">
+                        <Icon Name="IconName.Award" class="me-1" aria-hidden="true" />View the certificate
+                    </a>
+                </section>
+            }
+            else
+            {
+                <section class="qp-verify-outcome qp-verify-missing" aria-labelledby="qp-verify-missing-title">
+                    <h2 class="h5 fw-bold d-flex align-items-center gap-2" id="qp-verify-missing-title">
+                        <Icon Name="IconName.XCircleFill" class="qp-verify-mark" aria-hidden="true" />We couldn't find a certificate with that ID
+                    </h2>
+                    <p class="mb-2">Nothing matches <code class="text-reset fw-semibold text-break">@checkedCode</code>. Check that:</p>
+                    <ul class="mb-0">
+                        @if (!LooksLikeCode(checkedCode))
+                        {
+                            <li>it has the format QP-XXXX-XXXX: QP, a dash, four letters or digits, a dash, and four more;</li>
+                        }
+                        <li>every character matches the certificate: IDs never use the letters I or O or the digits 0 or 1;</li>
+                        <li>it came from @LearningSeedData.SchoolName and not another school.</li>
+                    </ul>
+                </section>
+            }
+        </div>
+
+        <section class="mt-4" aria-labelledby="qp-verify-about">
+            <h2 class="h6 fw-bold" id="qp-verify-about">What verification proves</h2>
+            <p class="small text-body-secondary mb-0">
+                A valid result means @LearningSeedData.SchoolName issued this ID when the named learner finished every lesson of the
+                course. It shows the name the learner had on that day; it doesn't prove who is showing you the certificate, so compare
+                the name with other identification if that matters. In this demo, certificates are fictitious and stay in this browser tab.
+            </p>
+        </section>
+    </div>
+</div>

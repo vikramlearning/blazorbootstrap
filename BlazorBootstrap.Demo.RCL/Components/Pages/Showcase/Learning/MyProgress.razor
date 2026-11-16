@@ -4,65 +4,137 @@
 <PageTitle>My learning · @LearningSeedData.SchoolName</PageTitle>
 
 <div class="container-xl pb-4">
-    <div class="mb-4">
-        <h1 class="qp-title">My learning</h1>
-        <p class="qp-lead">@Summary</p>
-    </div>
+    <ShowcaseRoleGuard Roles="@LearningSeedData.LearnerRole" SignInPath="@LearningLayout.SignInPath">
+        @{
+            var inProgress = InProgress;
+            var completed = Completed;
+        }
 
-    @if (State.EnrolledCourses.Count == 0)
-    {
-        <div class="qp-panel text-center py-5">
-            <span class="qp-icon fs-4" aria-hidden="true"><Icon Name="IconName.Mortarboard" /></span>
-            <h2 class="h5 fw-bold mt-3">You haven't enrolled in a course yet</h2>
-            <Button Type="ButtonType.Link" To="@LearningLayout.Base" Color="ButtonColor.Primary" Class="mt-2">Browse courses</Button>
+        <div class="mb-4">
+            <h1 class="qp-title">My learning</h1>
+            <p class="qp-lead mb-0">@SummaryText(inProgress.Count, completed.Count)</p>
         </div>
-    }
-    else
-    {
-        <div class="row g-3">
-            @foreach (var course in State.EnrolledCourses)
-            {
-                var percent = State.ProgressPercent(course.Id);
-                var complete = State.IsComplete(course.Id);
-                var category = State.FindCategory(course.CategoryId);
-                <div class="col-md-6" @key="course.Id">
-                    <Card Class="qp-card h-100">
-                        <CardBody>
-                            <div class="d-flex align-items-start gap-3">
-                                <span class="qp-icon flex-shrink-0" aria-hidden="true"><Icon Name="@category.IconName" /></span>
-                                <div class="flex-grow-1 min-w-0">
-                                    <span class="sc-eyebrow">@category.Name</span>
-                                    <h2 class="qp-card-title"><a href="@LearningDisplay.CourseUrl(course.Id)">@course.Title</a></h2>
-                                    <p class="small text-body-secondary mb-2">@course.Instructor · @LearningDisplay.Duration(course.Minutes)</p>
-                                    <Progress Height="10" Class="mb-1">
-                                        <ProgressBar Width="percent" Color="@(complete ? ProgressColor.Success : ProgressColor.Primary)"
-                                                     aria-label="@($"{course.Title} progress")" aria-valuenow="@percent" aria-valuemin="0" aria-valuemax="100"
-                                                     aria-valuetext="@($"{State.CompletedCount(course.Id)} of {course.Lessons.Count} lessons complete")" />
-                                    </Progress>
-                                    <p class="small text-body-secondary mb-3">@State.CompletedCount(course.Id) of @course.Lessons.Count lessons complete (@percent%)</p>
-                                    @if (complete)
-                                    {
-                                        <Badge Color="BadgeColor.Success" Class="me-2">Completed</Badge>
-                                        @* No extra attributes on link Buttons: a parent re-render replaces them and drops the Button's own href and role. *@
-                                        <Button Type="ButtonType.Link" To="@($"{LearningLayout.Base}/certificates/{course.Id}")" Color="ButtonColor.Primary" Size="ButtonSize.Small">
-                                            <Icon Name="IconName.Award" class="me-1" aria-hidden="true" />View certificate<span class="visually-hidden"> for @course.Title</span>
-                                        </Button>
-                                    }
-                                    else
-                                    {
-                                        var next = State.NextLesson(course);
-                                        <Button Type="ButtonType.Link" To="@LearningDisplay.LessonUrl(course.Id, next.Id)" Color="ButtonColor.Primary" Size="ButtonSize.Small">
-                                            <Icon Name="IconName.PlayFill" class="me-1" aria-hidden="true" />@(percent == 0 ? "Start" : "Continue")<span class="visually-hidden">@($" {course.Title}")</span>
-                                        </Button>
-                                        <span class="small text-body-secondary ms-2">Next: @next.Title</span>
-                                    }
-                                </div>
-                            </div>
-                        </CardBody>
-                    </Card>
-                </div>
-            }
-        </div>
-    }
+
+        @if (inProgress.Count == 0 && completed.Count == 0)
+        {
+            <section class="qp-panel text-center py-5" aria-labelledby="qp-progress-empty">
+                <span class="qp-icon fs-4" aria-hidden="true"><Icon Name="IconName.Mortarboard" /></span>
+                <h2 class="h5 fw-bold mt-3" id="qp-progress-empty">You haven't enrolled in a course yet</h2>
+                <p class="text-body-secondary">Pick a course from the catalog and enroll; your progress and certificates show up here.</p>
+                <a class="btn btn-primary" href="@LearningLayout.Base">Browse courses</a>
+            </section>
+        }
+        else
+        {
+            <section class="mb-5" aria-labelledby="qp-progress-current">
+                <h2 class="qp-section-title" id="qp-progress-current">In progress</h2>
+                @if (inProgress.Count == 0)
+                {
+                    <p class="text-body-secondary">
+                        Nothing in progress. <a href="@LearningLayout.Base">Find your next course</a>.
+                    </p>
+                }
+                else
+                {
+                    <p class="small text-body-secondary">The course you worked on most recently comes first.</p>
+                    <ul class="list-unstyled row g-3">
+                        @foreach (var course in inProgress)
+                        {
+                            var percent = State.ProgressPercent(course.Id);
+                            var progressText = $"{State.CompletedCount(course.Id)} of {course.Lessons.Count} lessons complete";
+                            var category = State.FindCategory(course.CategoryId);
+                            var next = State.NextLesson(course);
+                            var started = State.CompletedCount(course.Id) > 0;
+                            var certificate = State.CertificateFor(course.Id);
+                            <li class="col-md-6" @key="course.Id">
+                                <Card Class="qp-card h-100">
+                                    <CardBody>
+                                        <div class="d-flex align-items-start gap-3">
+                                            <span class="qp-icon flex-shrink-0" aria-hidden="true"><Icon Name="@category.IconName" /></span>
+                                            <div class="flex-grow-1 min-w-0">
+                                                <span class="sc-eyebrow">@category.Name</span>
+                                                <h3 class="qp-card-title"><a href="@LearningDisplay.CourseUrl(course.Id)">@course.Title</a></h3>
+                                                <p class="small text-body-secondary mb-2">@course.Instructor · @LearningDisplay.Duration(course.Minutes)</p>
+                                                <Progress Height="10" Class="mb-1">
+                                                    <ProgressBar Width="percent"
+                                                                 aria-label="@($"{course.Title} progress")" aria-valuenow="@percent" aria-valuemin="0" aria-valuemax="100"
+                                                                 aria-valuetext="@progressText" />
+                                                </Progress>
+                                                <p class="small text-body-secondary mb-3">@progressText (@percent%)</p>
+                                                <a class="btn btn-sm btn-primary" href="@LearningDisplay.LessonUrl(course.Id, next.Id)">
+                                                    <Icon Name="IconName.PlayFill" class="me-1" aria-hidden="true" />@(started ? "Continue" : "Start")<span class="visually-hidden"> @course.Title</span>
+                                                </a>
+                                                <p class="small mt-2 mb-0">
+                                                    <span class="text-body-secondary">@(started ? "Next lesson:" : "First lesson:")</span> @next.Title
+                                                </p>
+                                                @if (certificate is not null)
+                                                {
+                                                    <p class="small mt-2 mb-0">
+                                                        <a href="@CertificateUrl(certificate.Code)">Your earlier certificate<span class="visually-hidden"> for @course.Title</span></a>
+                                                    </p>
+                                                }
+                                            </div>
+                                        </div>
+                                    </CardBody>
+                                </Card>
+                            </li>
+                        }
+                    </ul>
+                }
+            </section>
+
+            <section aria-labelledby="qp-progress-done">
+                <h2 class="qp-section-title" id="qp-progress-done">Completed</h2>
+                @if (completed.Count == 0)
+                {
+                    <p class="text-body-secondary">No finished courses yet. Finish every lesson of a course to earn its certificate.</p>
+                }
+                else
+                {
+                    <ul class="list-unstyled row g-3">
+                        @foreach (var course in completed)
+                        {
+                            var category = State.FindCategory(course.CategoryId);
+                            var certificate = State.CertificateFor(course.Id);
+                            var reviewed = State.ReviewBy(course.Id) is not null;
+                            <li class="col-md-6" @key="course.Id">
+                                <Card Class="qp-card h-100">
+                                    <CardBody>
+                                        <div class="d-flex align-items-start gap-3">
+                                            <span class="qp-icon flex-shrink-0" aria-hidden="true"><Icon Name="@category.IconName" /></span>
+                                            <div class="flex-grow-1 min-w-0">
+                                                <div class="d-flex flex-wrap align-items-center gap-2">
+                                                    <span class="sc-eyebrow">@category.Name</span>
+                                                    <Badge Color="BadgeColor.Success" Class="rounded-pill">Completed</Badge>
+                                                </div>
+                                                <h3 class="qp-card-title"><a href="@LearningDisplay.CourseUrl(course.Id)">@course.Title</a></h3>
+                                                <p class="small text-body-secondary mb-3">
+                                                    @course.Instructor@(certificate is null ? null : $" · Certificate issued {LearningDisplay.Date(certificate.IssuedOn)}")
+                                                </p>
+                                                <div class="d-flex flex-wrap gap-2">
+                                                    @if (certificate is not null)
+                                                    {
+                                                        <a class="btn btn-sm btn-primary" href="@CertificateUrl(certificate.Code)">
+                                                            <Icon Name="IconName.Award" class="me-1" aria-hidden="true" />View certificate<span class="visually-hidden"> for @course.Title</span>
+                                                        </a>
+                                                    }
+                                                    @* Only enrolled learners can write a review, so a course left after finishing links to an existing one only. *@
+                                                    @if (reviewed || State.IsEnrolled(course.Id))
+                                                    {
+                                                        <a class="btn btn-sm btn-outline-primary" href="@($"{LearningDisplay.CourseUrl(course.Id)}#your-review")">
+                                                            @(reviewed ? "See your review" : "Review this course")<span class="visually-hidden">: @course.Title</span>
+                                                        </a>
+                                                    }
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </CardBody>
+                                </Card>
+                            </li>
+                        }
+                    </ul>
+                }
+            </section>
+        }
+    </ShowcaseRoleGuard>
 </div>
-

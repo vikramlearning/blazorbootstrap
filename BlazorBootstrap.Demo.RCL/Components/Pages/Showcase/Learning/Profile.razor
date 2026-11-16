@@ -1,0 +1,18 @@
+@page "/showcase/learning/profile"
+@layout LearningLayout
+
+<PageTitle>Your profile · @LearningSeedData.SchoolName</PageTitle>
+
+@* The learner's profile and password. New certificates use the name saved here; issued ones keep the name they were issued to. *@
+<div class="container-xl">
+    <ShowcaseRoleGuard Roles="@LearningSeedData.LearnerRole" SignInPath="@LearningLayout.SignInPath">
+        <div class="d-flex flex-wrap align-items-end justify-content-between gap-3 mb-4">
+            <div>
+                <h1 class="qp-title mb-1">Your profile</h1>
+                <p class="text-body-secondary mb-0">Your name, email, and password for this demo. New certificates show the name saved here; certificates already issued keep theirs.</p>
+            </div>
+            <a class="btn btn-outline-primary" href="@($"{LearningLayout.Base}/certificates")"><Icon Name="IconName.Award" class="me-2" aria-hidden="true" />Your certificates</a>
+        </div>
+        <ShowcaseAccountProfile />
+    </ShowcaseRoleGuard>
+</div>
