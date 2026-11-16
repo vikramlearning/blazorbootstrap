@@ -1,5 +1,5 @@
-@page "/showcase/monitoring"
-@layout MonitoringLayout
+@page "/showcase/monitoring/console"
+@layout ConsoleLayout
 
 <PageTitle>Overview · @MonitoringSeedData.ProductName</PageTitle>
 
@@ -98,7 +98,7 @@
                         <span class="mw-icon" aria-hidden="true"><Icon Name="@MonitoringDisplay.KindIcon(service.Kind)" /></span>
                         <span class="flex-grow-1" style="min-width: 12rem;">
                             <a class="mw-row-link" href="@MonitoringDisplay.ServiceUrl(service.Id)">@service.Name</a>
-                            <span class="d-block small text-body-secondary">@service.Kind · @service.Region · @service.Team</span>
+                            <span class="d-block small text-body-secondary">@MonitoringDisplay.KindLabel(service.Kind) · @service.Region · @service.Team</span>
                         </span>
                         <Badge Color="@MonitoringDisplay.StatusColor(status)"><Icon Name="@MonitoringDisplay.StatusIcon(status)" class="me-1" aria-hidden="true" />@status</Badge>
                         <span class="mw-mono small text-end" style="min-width: 6rem;">@MonitoringDisplay.Latency(latest.LatencyMs)<span class="d-block text-body-secondary">p95</span></span>

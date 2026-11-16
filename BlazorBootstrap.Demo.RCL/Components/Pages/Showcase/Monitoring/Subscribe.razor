@@ -1,0 +1,225 @@
+@page "/showcase/monitoring/subscribe"
+@layout MonitoringLayout
+
+<PageTitle>Subscribe to updates · @MonitoringSeedData.StatusPageName</PageTitle>
+
+<div class="container-xl mw-public-page">
+    <div class="mw-page-head">
+        <div>
+            <h1 class="mw-title">Subscribe to updates</h1>
+            <p class="mw-lead">Get an email whenever we post an update about an incident, for every component or only the ones you use.</p>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-5">
+            <Card Class="mw-card">
+                <CardHeader><h2 class="mw-card-title">New subscription</h2></CardHeader>
+                <CardBody>
+                    <form @onsubmit="Submit" @onsubmit:preventDefault novalidate aria-label="New subscription">
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold" for="mw-sub-email">Email address</label>
+                            <input type="email" id="mw-sub-email" class="form-control @(emailError is null ? null : "is-invalid")" autocomplete="email" spellcheck="false"
+                                   maxlength="@MonitoringState.MaxEmailLength" @bind="email" @bind:event="oninput" @ref="emailInput"
+                                   aria-invalid="@(emailError is null ? null : "true")"
+                                   aria-describedby="@(emailError is null ? "mw-sub-email-help" : "mw-sub-email-error mw-sub-email-help")" />
+                            <div class="invalid-feedback" id="mw-sub-email-error">@emailError</div>
+                            <div class="form-text" id="mw-sub-email-help">This is a demo: no email is sent. The address stays in this browser tab, and its emails appear below.</div>
+                        </div>
+
+                        <fieldset class="mb-3">
+                            <legend class="mw-legend-title">Components</legend>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="mw-sub-scope" id="mw-sub-all" checked="@allComponents" @onchange="() => SetAllComponents(true)" />
+                                <label class="form-check-label" for="mw-sub-all">All components</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="mw-sub-scope" id="mw-sub-specific" checked="@(!allComponents)" @onchange="() => SetAllComponents(false)" />
+                                <label class="form-check-label" for="mw-sub-specific">Specific components</label>
+                            </div>
+
+                            @if (!allComponents)
+                            {
+                                <fieldset class="mw-sub-choices" aria-describedby="@(componentsError is null ? null : "mw-sub-components-error")">
+                                    <legend class="mw-legend-title small">Choose the components</legend>
+                                    @if (componentsError is not null)
+                                    {
+                                        <p class="mw-field-error" id="mw-sub-components-error">@componentsError</p>
+                                    }
+                                    @for (var index = 0; index < State.Services.Count; index++)
+                                    {
+                                        var service = State.Services[index];
+                                        var isFirst = index == 0;
+                                        <div class="form-check" @key="service.Id">
+                                            @if (isFirst)
+                                            {
+                                                <input class="form-check-input" type="checkbox" id="@($"mw-sub-c-{service.Id}")" checked="@chosen.Contains(service.Id)"
+                                                       @onchange="e => Toggle(chosen, service.Id, e)" @ref="firstComponentInput" />
+                                            }
+                                            else
+                                            {
+                                                <input class="form-check-input" type="checkbox" id="@($"mw-sub-c-{service.Id}")" checked="@chosen.Contains(service.Id)"
+                                                       @onchange="e => Toggle(chosen, service.Id, e)" />
+                                            }
+                                            <label class="form-check-label" for="@($"mw-sub-c-{service.Id}")">@service.Name</label>
+                                        </div>
+                                    }
+                                </fieldset>
+                            }
+                        </fieldset>
+
+                        @if (formError is not null)
+                        {
+                            <p class="mw-field-error" id="mw-sub-form-error">@formError</p>
+                        }
+                        <button type="submit" class="btn btn-primary" aria-describedby="@(formError is null ? null : "mw-sub-form-error")">Subscribe</button>
+                        <p class="mw-status small fw-semibold mt-3 mb-0 @(formStatusIsError ? "text-danger-emphasis" : null)" role="status">@formStatus</p>
+                    </form>
+                </CardBody>
+            </Card>
+        </div>
+
+        <div class="col-lg-7">
+            <section aria-labelledby="mw-subs-title">
+                <h2 class="mw-section-title mw-focus" id="mw-subs-title" tabindex="-1" @ref="subscriptionsHeading">Your subscriptions in this tab</h2>
+                <p class="small text-body-secondary">
+                    Emails arrive here when engineers post an update about an incident on a component you follow. Nothing leaves this tab, and closing it removes them.
+                </p>
+                <p class="mw-status small fw-semibold @(listStatusIsError ? "text-danger-emphasis" : null)" role="status">@listStatus</p>
+
+                @if (State.Subscriptions.Count == 0)
+                {
+                    <Card Class="mw-card">
+                        <CardBody Class="text-center py-5">
+                            <span class="mw-icon fs-4" aria-hidden="true"><Icon Name="IconName.Envelope" /></span>
+                            <h3 class="mw-sub-title mt-3">No subscriptions yet</h3>
+                            <p class="small text-body-secondary mb-0">Subscribe with any address, for example you@example.com. It's only kept in this tab.</p>
+                        </CardBody>
+                    </Card>
+                }
+                else
+                {
+                    @foreach (var subscription in State.Subscriptions)
+                    {
+                        var emails = State.EmailsFor(subscription.Id);
+                        var editing = editingId == subscription.Id;
+                        <Card Class="mw-card mb-3" @key="subscription.Id">
+                            <CardBody>
+                                <div class="d-flex flex-wrap align-items-start justify-content-between gap-2">
+                                    <div class="mw-sub-head">
+                                        <h3 class="mw-sub-title mw-sub-email">@subscription.Email</h3>
+                                        <p class="small text-body-secondary mb-0">
+                                            Follows: <span class="text-body">@ComponentsText(subscription.ServiceIds)</span> · since @MonitoringDisplay.Stamp(subscription.CreatedAt)
+                                        </p>
+                                    </div>
+                                    <div class="d-flex flex-wrap gap-2">
+                                        @if (!editing)
+                                        {
+                                            <button type="button" class="btn btn-sm btn-outline-secondary" @ref="editButtons[subscription.Id]" @onclick="() => StartEdit(subscription)">
+                                                <Icon Name="IconName.Pencil" class="me-1" aria-hidden="true" />Edit components<span class="visually-hidden">: @subscription.Email</span>
+                                            </button>
+                                        }
+                                        <button type="button" class="btn btn-sm btn-outline-danger" @ref="unsubscribeButtons[subscription.Id]" @onclick="() => AskUnsubscribeAsync(subscription)">
+                                            Unsubscribe<span class="visually-hidden">: @subscription.Email</span>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                @if (editing)
+                                {
+                                    <form class="mw-sub-edit" @onsubmit="SaveEdit" @onsubmit:preventDefault novalidate aria-label="@($"Components for {subscription.Email}")">
+                                        <fieldset aria-describedby="@(editError is null ? null : "mw-sub-edit-error")">
+                                            <legend class="mw-legend-title small">Components for @subscription.Email</legend>
+                                            @if (editError is not null)
+                                            {
+                                                <p class="mw-field-error" id="mw-sub-edit-error">@editError</p>
+                                            }
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="mw-sub-edit-scope" id="mw-sub-edit-all" checked="@editAll" @onchange="() => SetEditAll(true)" @ref="editAllInput" />
+                                                <label class="form-check-label" for="mw-sub-edit-all">All components</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="mw-sub-edit-scope" id="mw-sub-edit-specific" checked="@(!editAll)" @onchange="() => SetEditAll(false)" />
+                                                <label class="form-check-label" for="mw-sub-edit-specific">Specific components</label>
+                                            </div>
+                                            @if (!editAll)
+                                            {
+                                                <div class="mw-sub-choices" role="group" aria-label="Choose the components">
+                                                    @for (var index = 0; index < State.Services.Count; index++)
+                                                    {
+                                                        var service = State.Services[index];
+                                                        var isFirst = index == 0;
+                                                        <div class="form-check" @key="service.Id">
+                                                            @if (isFirst)
+                                                            {
+                                                                <input class="form-check-input" type="checkbox" id="@($"mw-sub-e-{service.Id}")" checked="@editChosen.Contains(service.Id)"
+                                                                       @onchange="e => Toggle(editChosen, service.Id, e)" @ref="editFirstInput" />
+                                                            }
+                                                            else
+                                                            {
+                                                                <input class="form-check-input" type="checkbox" id="@($"mw-sub-e-{service.Id}")" checked="@editChosen.Contains(service.Id)"
+                                                                       @onchange="e => Toggle(editChosen, service.Id, e)" />
+                                                            }
+                                                            <label class="form-check-label" for="@($"mw-sub-e-{service.Id}")">@service.Name</label>
+                                                        </div>
+                                                    }
+                                                </div>
+                                            }
+                                        </fieldset>
+                                        <div class="d-flex flex-wrap gap-2 mt-3">
+                                            <button type="submit" class="btn btn-sm btn-primary">Save components</button>
+                                            <button type="button" class="btn btn-sm btn-outline-secondary" @onclick="CancelEdit">Cancel</button>
+                                        </div>
+                                    </form>
+                                }
+
+                                <h4 class="mw-outbox-title">Demo outbox <span class="fw-normal text-body-secondary">(@EmailCountText(emails.Count))</span></h4>
+                                @if (emails.Count == 0)
+                                {
+                                    <p class="small text-body-secondary mb-0">No emails yet. One arrives here when engineers post an update about @(subscription.ServiceIds.Count == 0 ? "any component" : "a component you follow").</p>
+                                }
+                                else
+                                {
+                                    <ul class="mw-outbox" aria-label="@($"Emails to {subscription.Email}, newest first")">
+                                        @foreach (var message in emails)
+                                        {
+                                            <li @key="message.Id">
+                                                <details class="mw-email">
+                                                    <summary>
+                                                        <span class="mw-email-subject">@message.Subject</span>
+                                                        <time class="mw-email-time" datetime="@message.SentAt.ToString("yyyy-MM-ddTHH:mm", CultureInfo.InvariantCulture)">@MonitoringDisplay.Stamp(message.SentAt)</time>
+                                                    </summary>
+                                                    <div class="mw-email-body">
+                                                        <p class="small text-body-secondary mb-2">To @message.To</p>
+                                                        <p class="mw-plain mb-2">@message.Body</p>
+                                                        <a class="small fw-semibold" href="@MonitoringDisplay.PublicIncidentUrl(message.IncidentId)">View incident #@message.IncidentId on the status page</a>
+                                                    </div>
+                                                </details>
+                                            </li>
+                                        }
+                                    </ul>
+                                }
+                            </CardBody>
+                        </Card>
+                    }
+                }
+            </section>
+        </div>
+    </div>
+</div>
+
+<Modal @ref="unsubscribeModal" IsVerticallyCentered="true" ShowCloseButton="false" aria-labelledby="mw-unsub-title" OnHidden="OnUnsubscribeHidden">
+    <HeaderTemplate>
+        <h2 class="modal-title h5" id="mw-unsub-title">Unsubscribe @(unsubscribing?.Email)?</h2>
+    </HeaderTemplate>
+    <BodyTemplate>
+        @if (unsubscribing is not null)
+        {
+            <p class="mb-0">@UnsubscribeConsequence(unsubscribing)</p>
+        }
+    </BodyTemplate>
+    <FooterTemplate>
+        <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => unsubscribeModal.HideAsync()">Keep subscription</Button>
+        <Button Color="ButtonColor.Danger" @onclick="ConfirmUnsubscribeAsync">Unsubscribe</Button>
+    </FooterTemplate>
+</Modal>

@@ -46,8 +46,8 @@ public static class ShowcaseCatalog
             new[] { "GoogleMap", "Carousel", "Sidebar", "Charts", "DateInput", "RatingInput", "Modal", "Form inputs" }),
         new("help-desk", "Help Desk & Ticketing", "Help center for customers, an agent desk with SLAs and saved replies, knowledge base authoring, reports, and admin.", "Industry", IconName.Headset, "#dc2626", "HelpDesk",
             new[] { "Sidebar", "Charts", "RichTextEditor", "Modal", "Tabs", "Badge", "Breadcrumb", "Toasts" }),
-        new("monitoring", "IoT & DevOps Monitoring", "Live metrics, service health, incidents, and logs.", "Industry", IconName.Activity, "#16a34a", "Monitoring",
-            new[] { "Charts", "Progress", "Alert", "Callout", "Grid", "Spinner", "Tooltip" }),
+        new("monitoring", "IoT & DevOps Monitoring", "A public status page with history and subscriptions; engineers work incidents, publish updates, follow live logs and traces, and share on-call.", "Industry", IconName.Activity, "#16a34a", "Monitoring",
+            new[] { "Charts", "Sidebar", "Progress", "Alert", "Callout", "Grid", "Modal", "Tooltip" }),
         new("hr-portal", "HR & Employee Portal", "Directory, org chart, leave requests, and onboarding.", "Extras", IconName.People, "#9333ea", "HrPortal",
             new[] { "Grid", "Avatar", "Tabs", "MindMap", "DateInput", "CheckboxInput", "Progress" }),
     };

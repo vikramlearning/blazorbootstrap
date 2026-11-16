@@ -1,0 +1,78 @@
+/* A published incident's public page. */
+.mw-public-page {
+    --mw-up-operational: #15803d;
+}
+
+[data-bs-theme=dark] .mw-public-page {
+    --mw-up-operational: #4ade80;
+}
+
+/* User text is plain: Razor encodes it, and pre-wrap keeps its line breaks. */
+.mw-plain {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+.mw-sub-title {
+    margin: 0 0 .375rem;
+    font-size: .9375rem;
+    font-weight: 700;
+    color: var(--mw-ink);
+}
+
+/* The public updates as a timeline: a line with a dot per update; the stage is the heading, so the dot is decoration. */
+.mw-timeline {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.mw-timeline-item {
+    position: relative;
+    padding: 0 0 1.25rem 1.5rem;
+    border-inline-start: 2px solid var(--mw-border);
+    margin-inline-start: .375rem;
+}
+
+    .mw-timeline-item:last-child {
+        padding-bottom: 0;
+        border-inline-start-color: transparent;
+    }
+
+.mw-timeline-dot {
+    position: absolute;
+    top: .25rem;
+    inset-inline-start: -.4375rem;
+    width: .75rem;
+    height: .75rem;
+    border: 2px solid var(--sc-primary);
+    border-radius: 50%;
+    background: var(--mw-surface);
+}
+
+.mw-timeline-resolved .mw-timeline-dot {
+    border-color: var(--mw-up-operational);
+    background: var(--mw-up-operational);
+}
+
+.mw-timeline-stage {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--mw-ink);
+}
+
+.mw-facts dt {
+    font-size: .8125rem;
+    font-weight: 600;
+    color: var(--bs-secondary-color);
+}
+
+.mw-facts dd {
+    margin-bottom: .75rem;
+    color: var(--mw-ink);
+}
+
+    .mw-facts dd:last-child {
+        margin-bottom: 0;
+    }

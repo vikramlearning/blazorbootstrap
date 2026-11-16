@@ -1,50 +1,54 @@
 @inherits LayoutComponentBase
 
-<HeadContent>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" />
-</HeadContent>
-
-<div class="sc-site sc-monitoring">
-    <ShowcaseSiteBar Site="@site" OnThemeChanged="OnThemeChanged" />
-
+@* The public status page: what customers see. Engineers sign in to the console from here. *@
+<ShowcaseSessionHost State="State" SiteBase="@Base" SiteName="@MonitoringSeedData.StatusPageName">
+<MonitoringFrame>
+    <Header>
+    @if (State.IsEngineer)
+    {
+        @* An engineer sees the status page as customers do, with a way back to the console (D-032). *@
+        <div class="mw-viewing-bar">
+            <div class="container-xl d-flex flex-wrap align-items-center justify-content-between gap-2">
+                <span><Icon Name="IconName.Eye" class="me-2" aria-hidden="true" />Viewing the public status page as @State.Identity.Current!.Name (Engineer)</span>
+                <a href="@ConsoleLayout.Base"><Icon Name="IconName.ArrowLeft" class="me-1" aria-hidden="true" />Back to the console</a>
+            </div>
+        </div>
+    }
     <Navbar Class="mw-header"
             Placement="NavbarPlacement.StickyTop"
-            Container="NavbarContainer.Fluid"
-            AriaLabel="Stackwatch"
+            Container="NavbarContainer.ExtraLarge"
+            AriaLabel="@MonitoringSeedData.StatusPageName"
             TogglerAriaLabel="Menu">
         <Brand>
             <NavbarBrand Href="@Base" Class="mw-brand">
                 <span class="mw-brand-mark" aria-hidden="true"><Icon Name="IconName.Activity" /></span>
-                <span>@MonitoringSeedData.ProductName</span>
+                <span>@MonitoringSeedData.StatusPageName</span>
             </NavbarBrand>
+            @if (State.Identity.IsSignedIn)
+            {
+                <ShowcaseAccountMenu SiteBase="@Base" SignInPath="@SignInPath" Class="ms-auto me-2 order-lg-last"
+                                     NoticeCount="@State.UnreadCount" NoticesPath="@($"{ConsoleLayout.Base}/notifications")" />
+            }
+            else
+            {
+                <a class="btn btn-sm btn-outline-secondary ms-auto me-2 order-lg-last" href="@SignInPath">Engineer sign-in</a>
+            }
         </Brand>
         <ChildContent>
             <NavbarNav Class="me-auto ms-lg-4 mb-3 mb-lg-0">
-                <NavbarItem Href="@Base" Match="NavLinkMatch.All">Overview</NavbarItem>
-                <NavbarItem Href="@($"{Base}/incidents")">Incidents</NavbarItem>
-                <NavbarItem Href="@($"{Base}/logs")">Logs</NavbarItem>
+                <NavbarItem Href="@Base" Match="NavLinkMatch.All">Status</NavbarItem>
+                <NavbarItem Href="@($"{Base}/history")">Incident history</NavbarItem>
+                <NavbarItem Href="@($"{Base}/subscribe")">Subscribe to updates</NavbarItem>
+                @if (State.IsEngineer)
+                {
+                    <NavbarItem Href="@ConsoleLayout.Base">Console</NavbarItem>
+                }
             </NavbarNav>
-            <div class="mw-user mb-3 mb-lg-0">
-                <Avatar Name="@MonitoringSeedData.UserName" Initials="JA" Color="AvatarColor.Success" Size="AvatarSize.Small" />
-                <span>@MonitoringSeedData.UserName <span class="mw-user-role">On call</span></span>
-            </div>
         </ChildContent>
     </Navbar>
-
-    <main class="sc-main mw-content" id="mw-main">
+    </Header>
+    <ChildContent>
         @Body
-    </main>
-
-    <div class="container-fluid px-lg-4">
-        <CarbonAds Class="sc-ad" />
-    </div>
-
-    <footer class="mw-footer">
-        <div class="container-fluid px-lg-4 d-flex flex-wrap justify-content-between gap-2">
-            <span>© 2026 @MonitoringSeedData.ProductName (fictitious). Services, devices, incidents, and metrics are simulated in your browser session.</span>
-            <span class="d-none d-lg-inline">Built with Charts, Progress, Alert, Callout, Grid, Spinner, and Tooltip.</span>
-        </div>
-    </footer>
-</div>
+    </ChildContent>
+</MonitoringFrame>
+</ShowcaseSessionHost>

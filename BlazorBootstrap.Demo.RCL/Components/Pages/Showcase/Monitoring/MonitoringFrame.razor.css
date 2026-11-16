@@ -115,6 +115,7 @@
 
 .sc-monitoring ::deep .mw-title {
     margin: 0;
+    overflow-wrap: anywhere;
     font-size: clamp(1.375rem, 2.4vw, 1.75rem);
     font-weight: 700;
     color: var(--mw-ink);
@@ -263,4 +264,95 @@
     max-width: 32rem;
     margin: 4rem auto;
     text-align: center;
+}
+
+/* The engineers' console (D-031): a sidebar beside the page on wide screens, above it on narrow ones. */
+.mw-shell {
+    display: flex;
+    flex-direction: column;
+    flex: 1 0 auto;
+    min-width: 0;
+}
+
+.mw-shell-main {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+@media (min-width: 641px) {
+    .mw-shell {
+        flex-direction: row;
+        align-items: flex-start;
+    }
+}
+
+.sc-monitoring ::deep .mw-sidebar {
+    --bb-sidebar-width: 15rem;
+    --bb-sidebar-background-color: #0f1f17;
+    --bb-sidebar-top-row-background-color: #0f1f17;
+    --bb-sidebar-top-row-border-color: rgba(255, 255, 255, .08);
+    --bb-sidebar-title-text-color: #fff;
+    --bb-sidebar-brand-icon-color: #86efac;
+    --bb-sidebar-title-badge-text-color: #0f1f17;
+    --bb-sidebar-title-badge-background-color: #86efac;
+    --bb-sidebar-navbar-toggler-icon-color: #fff;
+    --bb-sidebar-navbar-toggler-background-color: rgba(255, 255, 255, .1);
+    --bb-sidebar-content-border-color: rgba(255, 255, 255, .08);
+    --bb-sidebar-nav-item-text-color: #d6eadf;
+    --bb-sidebar-nav-item-text-active-color-rgb: 255, 255, 255;
+    --bb-sidebar-nav-item-text-hover-color: rgba(255, 255, 255, .95);
+    --bb-sidebar-nav-item-background-hover-color: rgba(255, 255, 255, .08);
+    --bb-sidebar-nav-item-group-background-color: rgba(255, 255, 255, .06);
+}
+
+/* Beside the page only: above it (narrow screens), a sticky bar would sit under the page content. */
+@media (min-width: 641px) {
+    .sc-monitoring ::deep .mw-sidebar {
+        position: sticky;
+        top: 0;
+    }
+}
+
+.sc-monitoring ::deep .mw-console-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: .75rem;
+    padding: .625rem 1.5rem;
+    border-bottom: 1px solid var(--mw-border);
+    background: var(--mw-surface);
+}
+
+.sc-monitoring ::deep .mw-console-bar-title {
+    font-weight: 700;
+    color: var(--mw-ink);
+}
+
+.sc-monitoring ::deep .mw-console-bar-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: .5rem;
+}
+
+/* An engineer viewing the public status page (D-032). */
+.sc-monitoring ::deep .mw-viewing-bar {
+    padding: .5rem 0;
+    background: #0f1f17;
+    color: #dcfce7;
+    font-size: .875rem;
+}
+
+    .sc-monitoring ::deep .mw-viewing-bar a {
+        color: #86efac;
+        font-weight: 600;
+    }
+
+/* A table that scrolls sideways can round to one pixel taller than its box; never show a vertical scrollbar for it.
+   It is also the containing block of its visually hidden text, which is absolutely positioned: otherwise that text
+   escapes the clipping and widens the page at 375 px. */
+.sc-monitoring ::deep .table-responsive {
+    position: relative;
+    overflow-y: hidden;
 }

@@ -1,5 +1,5 @@
-@page "/showcase/monitoring/incidents"
-@layout MonitoringLayout
+@page "/showcase/monitoring/console/incidents"
+@layout ConsoleLayout
 
 <PageTitle>Incidents · @MonitoringSeedData.ProductName</PageTitle>
 
@@ -7,84 +7,247 @@
     <div class="mw-page-head">
         <div>
             <h1 class="mw-title">Incidents</h1>
-            <p class="mw-lead">Alerts that need someone, and what happened before.</p>
+            <p class="mw-lead">What needs someone now, and what happened before. Open an incident to work on it or post on the status page.</p>
         </div>
+        <Button @ref="declareButton" Color="ButtonColor.Primary" @onclick="OpenDeclareAsync">
+            <Icon Name="IconName.PlusCircle" class="me-1" aria-hidden="true" />Declare incident
+        </Button>
     </div>
 
-    @if (Active.Count == 0)
-    {
-        <Alert Color="AlertColor.Success" Class="d-flex align-items-center gap-2">
-            <Icon Name="IconName.CheckCircleFill" aria-hidden="true" />All systems operational. There are no active incidents.
-        </Alert>
-    }
-    else
-    {
-        <Alert Color="AlertColor.Danger" Class="d-flex align-items-center gap-2">
-            <Icon Name="IconName.BellFill" aria-hidden="true" />@(Active.Count == 1 ? "1 active incident needs attention." : $"{Active.Count} active incidents need attention.")
-        </Alert>
-    }
-
-    @* Always rendered and focusable, so an action is announced and focus has somewhere to go when its button disappears. *@
-    <p class="fw-semibold" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
-
-    <section class="mb-5" aria-labelledby="mw-active-heading">
-        <h2 class="mw-card-title fs-5 mb-3" id="mw-active-heading">Active (@Active.Count)</h2>
-        @if (Active.Count == 0)
-        {
-            <p class="text-body-secondary">Nothing is open right now.</p>
-        }
-        <div class="d-grid gap-3">
-            @foreach (var incident in Active)
-            {
-                var service = State.FindService(incident.ServiceId);
-                <Card Class="mw-card" id="@($"incident-{incident.Id}")" @key="incident.Id">
-                    <CardBody>
-                        <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
-                            <Badge Color="@MonitoringDisplay.SeverityColor(incident.Severity)">@incident.Severity</Badge>
-                            <Badge Color="@MonitoringDisplay.IncidentStatusColor(incident.Status)">@incident.Status</Badge>
-                            <span class="small text-body-secondary">#@incident.Id · started @MonitoringDisplay.Stamp(incident.StartedAt) (@MonitoringDisplay.Ago(incident.StartedAt, State.CurrentTime))</span>
-                        </div>
-                        <h3 class="h5 fw-bold mb-1">@incident.Title</h3>
-                        <p class="mb-2">@incident.Summary <a href="@MonitoringDisplay.ServiceUrl(incident.ServiceId)">@service?.Name</a></p>
-                        <ol class="list-unstyled small border-start ps-3 mb-3" aria-label="@($"Timeline of incident {incident.Id}")">
-                            @foreach (var update in incident.Updates)
-                            {
-                                <li class="mb-1"><span class="mw-mono text-body-secondary">@MonitoringDisplay.Stamp(update.Time)</span> <strong>@update.Author</strong>: @update.Text</li>
-                            }
-                        </ol>
-                        <div class="d-flex flex-wrap gap-2">
-                            @if (incident.Status == MonitoringIncidentStatus.Open)
-                            {
-                                <Button Color="ButtonColor.Warning" Size="ButtonSize.Small" @onclick="() => AcknowledgeAsync(incident)">
-                                    <Icon Name="IconName.Bell" class="me-1" aria-hidden="true" />Acknowledge<span class="visually-hidden">@($" incident {incident.Id}")</span>
-                                </Button>
-                            }
-                            <Button Color="ButtonColor.Success" Size="ButtonSize.Small" @onclick="() => ResolveAsync(incident)">
-                                <Icon Name="IconName.CheckCircleFill" class="me-1" aria-hidden="true" />Resolve<span class="visually-hidden">@($" incident {incident.Id}")</span>
-                            </Button>
-                        </div>
-                    </CardBody>
-                </Card>
-            }
+    <section aria-label="Summary" class="row row-cols-1 row-cols-sm-3 g-3 mb-4">
+        <div class="col">
+            <Card Class="mw-card h-100"><CardBody Class="p-3">
+                <span class="mw-label">Open</span>
+                <span class="mw-value">@OpenCount</span>
+                <span class="small text-body-secondary">Not picked up yet</span>
+            </CardBody></Card>
+        </div>
+        <div class="col">
+            <Card Class="mw-card h-100"><CardBody Class="p-3">
+                <span class="mw-label">Acknowledged</span>
+                <span class="mw-value">@AcknowledgedCount</span>
+                <span class="small text-body-secondary">Someone is working on it</span>
+            </CardBody></Card>
+        </div>
+        <div class="col">
+            <Card Class="mw-card h-100"><CardBody Class="p-3">
+                <span class="mw-label">Critical, active</span>
+                <span class="mw-value">@CriticalActiveCount</span>
+                <span class="small text-body-secondary">Customers can't use a core feature</span>
+            </CardBody></Card>
         </div>
     </section>
 
-    <section aria-labelledby="mw-resolved-heading">
-        <h2 class="mw-card-title fs-5 mb-3" id="mw-resolved-heading">Resolved (@Resolved.Count)</h2>
-        <div class="d-grid gap-3">
-            @foreach (var incident in Resolved)
-            {
-                var service = State.FindService(incident.ServiceId);
-                <div id="@($"incident-{incident.Id}")" @key="incident.Id">
-                    <Callout Color="CalloutColor.Default" Heading="@($"#{incident.Id} {incident.Title}")">
-                        <p class="mb-1">@incident.Summary</p>
-                        <p class="small text-body-secondary mb-2">
-                            @incident.Severity · @service?.Name · @MonitoringDisplay.Stamp(incident.StartedAt), resolved after @MonitoringDisplay.Duration((incident.ResolvedAt ?? incident.StartedAt) - incident.StartedAt)
-                        </p>
-                        <p class="small mb-0"><strong>@incident.Updates[^1].Author:</strong> @incident.Updates[^1].Text</p>
-                    </Callout>
+    @* Always rendered and focusable, so an outcome is announced and focus has somewhere to go when a dialog closes. *@
+    <p class="fw-semibold mw-inc-status @(statusIsError ? "text-danger-emphasis" : null)" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
+
+    <Card Class="mw-card mb-4">
+        <CardBody>
+            <h2 class="mw-card-title mb-3" id="mw-inc-filters-title">Filter incidents</h2>
+            <div class="mw-inc-filters" role="group" aria-labelledby="mw-inc-filters-title">
+                <fieldset class="mw-inc-filter">
+                    <legend class="mw-label mb-1">Status</legend>
+                    <div class="d-flex flex-wrap gap-1">
+                        @foreach (var option in statusOptions)
+                        {
+                            var inputId = $"mw-inc-status-{option.Value}";
+                            <input type="radio" class="btn-check" name="mw-inc-status" id="@inputId" value="@option.Value"
+                                   checked="@(statusFilter == option.Value)" @onchange="() => SetStatusFilter(option.Value)" />
+                            <label class="btn btn-sm btn-outline-secondary" for="@inputId">@option.Label (@StatusCount(option.Value))</label>
+                        }
+                    </div>
+                </fieldset>
+
+                <div class="mw-inc-filter">
+                    <label class="mw-label mb-1 d-block" for="mw-inc-severity">Severity</label>
+                    <select id="mw-inc-severity" class="form-select form-select-sm" @bind="severityFilter">
+                        <option value="@AllValue">All severities (@SeverityCount(null))</option>
+                        @foreach (var severity in Enum.GetValues<MonitoringSeverity>())
+                        {
+                            <option value="@severity.ToString()">@severity (@SeverityCount(severity))</option>
+                        }
+                    </select>
                 </div>
-            }
-        </div>
-    </section>
+
+                <div class="mw-inc-filter">
+                    <label class="mw-label mb-1 d-block" for="mw-inc-service">Service</label>
+                    <select id="mw-inc-service" class="form-select form-select-sm" @bind="serviceFilter">
+                        <option value="@AllValue">All services (@ServiceCount(null))</option>
+                        @foreach (var service in State.Services)
+                        {
+                            <option value="@service.Id">@service.Name (@ServiceCount(service.Id))</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="mw-inc-filter mw-inc-filter-check">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="mw-inc-public" @bind="publicOnly" />
+                        <label class="form-check-label fw-semibold" for="mw-inc-public">Only incidents on the status page (@PublicCount)</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-flex flex-wrap align-items-center gap-2 mt-3">
+                <p class="small text-body-secondary mb-0" aria-live="polite">Showing @Shown.Count of @State.Incidents.Count incidents.</p>
+                @if (IsFiltered)
+                {
+                    <Button Color="ButtonColor.Link" Size="ButtonSize.Small" Class="p-0" @onclick="ClearFilters">Show active incidents of every service</Button>
+                }
+            </div>
+        </CardBody>
+    </Card>
+
+    <div class="table-responsive mw-grid border rounded-3">
+        <table class="table mw-inc-table">
+            <caption class="visually-hidden">Incidents, newest first. @Shown.Count shown.</caption>
+            <thead>
+                <tr>
+                    <th scope="col">Incident</th>
+                    <th scope="col">Service</th>
+                    <th scope="col">Severity</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Assignee</th>
+                    <th scope="col">Started</th>
+                    <th scope="col">Duration</th>
+                    <th scope="col">Status page</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Shown.Count == 0)
+                {
+                    <tr>
+                        <td colspan="8" class="text-body-secondary py-4 text-center">
+                            @(statusFilter == "active" && !publicOnly && severityFilter == AllValue && serviceFilter == AllValue
+                                ? "No active incidents. All services are operating normally."
+                                : "No incidents match these filters.")
+                        </td>
+                    </tr>
+                }
+                @foreach (var incident in Shown)
+                {
+                    var service = State.FindService(incident.ServiceId);
+                    <tr @key="incident.Id">
+                        <th scope="row" class="mw-inc-title-cell">
+                            <a class="mw-row-link" href="@MonitoringDisplay.IncidentUrl(incident.Id)"><span class="mw-mono">#@incident.Id</span> @incident.Title</a>
+                        </th>
+                        <td><a href="@MonitoringDisplay.ServiceUrl(incident.ServiceId)">@(service?.Name ?? incident.ServiceId)</a></td>
+                        <td><Badge Color="@MonitoringDisplay.SeverityColor(incident.Severity)">@incident.Severity</Badge></td>
+                        <td><Badge Color="@MonitoringDisplay.IncidentStatusColor(incident.Status)">@incident.Status</Badge></td>
+                        <td>@(incident.Assignee ?? "Nobody yet")</td>
+                        <td class="text-nowrap">
+                            @MonitoringDisplay.Ago(incident.StartedAt, State.Clock.Now)
+                            <span class="d-block small text-body-secondary mw-mono">@MonitoringDisplay.Stamp(incident.StartedAt)</span>
+                        </td>
+                        <td class="text-nowrap">
+                            @MonitoringDisplay.Duration((incident.ResolvedAt ?? State.Clock.Now) - incident.StartedAt)@(incident.ResolvedAt is null ? " so far" : null)
+                        </td>
+                        <td>
+                            @if (incident.PublicStage is { } stage)
+                            {
+                                <span class="d-inline-flex align-items-center gap-1"><Icon Name="IconName.Broadcast" aria-hidden="true" />Published: @MonitoringDisplay.StageLabel(stage)</span>
+                            }
+                            else
+                            {
+                                <span class="text-body-secondary">Engineers only</span>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    @* Opened from code, so focus is returned by hand; the heading names the dialog and Cancel closes it. *@
+    <Modal @ref="declareModal" Size="ModalSize.Large" IsScrollable="true" ShowCloseButton="false" aria-labelledby="mw-declare-title"
+           OnShown="OnDeclareShown" OnHidden="OnDeclareHiddenAsync">
+        <HeaderTemplate>
+            <h2 class="modal-title h5" id="mw-declare-title">Declare an incident</h2>
+        </HeaderTemplate>
+        <BodyTemplate>
+            <form id="mw-declare-form" @onsubmit="SubmitDeclareAsync" novalidate>
+                <p class="small text-body-secondary">
+                    For a problem the alerts didn't catch. It starts open and engineers-only: the on-call engineers are notified, and
+                    nothing reaches the status page until someone posts an update on it.
+                </p>
+
+                <div class="mb-3">
+                    <label class="form-label fw-semibold" for="mw-declare-service">Service</label>
+                    <select id="mw-declare-service" class="form-select @(serviceError is null ? null : "is-invalid")" @bind="declareServiceId" @ref="serviceInput"
+                            aria-required="true" aria-invalid="@(serviceError is null ? null : "true")" aria-describedby="mw-declare-service-hint mw-declare-service-error">
+                        <option value="">Choose a service</option>
+                        @foreach (var service in State.Services)
+                        {
+                            <option value="@service.Id">@service.Name</option>
+                        }
+                    </select>
+                    <div class="form-text" id="mw-declare-service-hint">
+                        @if (State.ActiveIncident(declareServiceId) is { } active)
+                        {
+                            @($"{State.FindService(declareServiceId)?.Name} already has active incident #{active.Id} ({active.Severity}): {active.Title}. Declare another only for a different problem.")
+                        }
+                    </div>
+                    <div class="invalid-feedback d-block" id="mw-declare-service-error">@serviceError</div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-semibold" for="mw-declare-title-input">Title</label>
+                    <input id="mw-declare-title-input" class="form-control @(titleError is null ? null : "is-invalid")" maxlength="@MonitoringState.MaxIncidentTitleLength"
+                           @bind="declareTitle" @bind:event="oninput" @ref="titleInput" aria-required="true" aria-invalid="@(titleError is null ? null : "true")"
+                           aria-describedby="mw-declare-title-help mw-declare-title-error" />
+                    <div class="form-text d-flex justify-content-between gap-2" id="mw-declare-title-help">
+                        <span>What is broken, in a few words, like "Checkout slow for EU customers".</span>
+                        <span class="text-nowrap">@declareTitle.Length of @MonitoringState.MaxIncidentTitleLength characters</span>
+                    </div>
+                    <div class="invalid-feedback d-block" id="mw-declare-title-error">@titleError</div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-semibold" for="mw-declare-summary">Summary</label>
+                    <textarea id="mw-declare-summary" class="form-control @(summaryError is null ? null : "is-invalid")" rows="3" maxlength="@MonitoringState.MaxIncidentSummaryLength"
+                              @bind="declareSummary" @bind:event="oninput" @ref="summaryInput" aria-required="true" aria-invalid="@(summaryError is null ? null : "true")"
+                              aria-describedby="mw-declare-summary-help mw-declare-summary-error"></textarea>
+                    <div class="form-text d-flex justify-content-between gap-2" id="mw-declare-summary-help">
+                        <span>What you see and who it affects. Engineers only.</span>
+                        <span class="text-nowrap">@declareSummary.Length of @MonitoringState.MaxIncidentSummaryLength characters</span>
+                    </div>
+                    <div class="invalid-feedback d-block" id="mw-declare-summary-error">@summaryError</div>
+                </div>
+
+                <div class="row g-3">
+                    <fieldset class="col-md-6">
+                        <legend class="form-label fw-semibold fs-6">Severity</legend>
+                        @foreach (var severity in Enum.GetValues<MonitoringSeverity>())
+                        {
+                            var inputId = $"mw-declare-severity-{severity}";
+                            <div class="form-check mb-1">
+                                <input class="form-check-input" type="radio" name="mw-declare-severity" id="@inputId" checked="@(declareSeverity == severity)"
+                                       @onchange="() => declareSeverity = severity" aria-describedby="@($"{inputId}-help")" />
+                                <label class="form-check-label fw-semibold" for="@inputId">@severity</label>
+                                <div class="form-text mt-0" id="@($"{inputId}-help")">@SeverityHelp(severity)</div>
+                            </div>
+                        }
+                    </fieldset>
+                    <fieldset class="col-md-6">
+                        <legend class="form-label fw-semibold fs-6">Impact on the metrics</legend>
+                        @foreach (var impact in Enum.GetValues<MonitoringImpact>())
+                        {
+                            var inputId = $"mw-declare-impact-{impact}";
+                            <div class="form-check mb-1">
+                                <input class="form-check-input" type="radio" name="mw-declare-impact" id="@inputId" checked="@(declareImpact == impact)"
+                                       @onchange="() => declareImpact = impact" aria-describedby="@($"{inputId}-help")" />
+                                <label class="form-check-label fw-semibold" for="@inputId">@ImpactLabel(impact)</label>
+                                <div class="form-text mt-0" id="@($"{inputId}-help")">@ImpactHelp(impact)</div>
+                            </div>
+                        }
+                    </fieldset>
+                </div>
+                <p class="small text-body-secondary mt-3 mb-0">The service's charts and logs follow the impact you choose until the incident is resolved.</p>
+            </form>
+        </BodyTemplate>
+        <FooterTemplate>
+            <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => declareModal.HideAsync()">Cancel</Button>
+            <Button Type="ButtonType.Submit" Color="ButtonColor.Primary" form="mw-declare-form">Declare incident</Button>
+        </FooterTemplate>
+    </Modal>
 </div>

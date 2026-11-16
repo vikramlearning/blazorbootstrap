@@ -1,0 +1,159 @@
+@page "/showcase/monitoring/console/traces/{TraceId}"
+@layout ConsoleLayout
+
+<PageTitle>Trace @TraceId · @MonitoringSeedData.ProductName</PageTitle>
+
+<div class="container-fluid px-lg-4">
+    <a class="tv-back small fw-semibold" href="@LogsUrl"><Icon Name="IconName.ArrowLeft" class="me-1" aria-hidden="true" />Back to logs</a>
+
+    @if (trace is null)
+    {
+        <section class="mw-not-found" aria-labelledby="tv-missing-title">
+            <span class="mw-icon fs-4" aria-hidden="true"><Icon Name="IconName.Diagram3" /></span>
+            <h1 class="mw-title fs-3 mt-3 mb-2" id="tv-missing-title">We couldn't find that trace</h1>
+            <p class="text-body-secondary mb-2">There's no trace <span class="mw-mono text-break">@TraceId</span> in the log window.</p>
+            <p class="text-body-secondary mb-4">Traces are kept for the log lines still in the window (the newest lines of every service), so an older trace expires as new lines arrive. Check the ID, or open a newer trace from the logs.</p>
+            <a class="btn btn-primary" href="@LogsUrl">Back to logs</a>
+        </section>
+    }
+    else
+    {
+        var root = State.FindService(trace.RootServiceId);
+        var errors = trace.Spans.Count(span => span.IsError);
+
+        <div class="mw-page-head">
+            <div>
+                <h1 class="mw-title">Trace <span class="mw-mono text-break">@trace.TraceId</span></h1>
+                <p class="mw-lead">A request through @Services(trace).Count @(Services(trace).Count == 1 ? "service" : "services"), starting at @(root?.Name ?? trace.RootServiceId).</p>
+            </div>
+            <a class="btn btn-outline-primary" href="@TraceLogsUrl"><Icon Name="IconName.Terminal" class="me-2" aria-hidden="true" />Log lines of this trace</a>
+        </div>
+
+        <section aria-labelledby="tv-summary-title" class="mb-4">
+            <h2 class="visually-hidden" id="tv-summary-title">Summary</h2>
+            <dl class="tv-summary">
+                <div class="tv-stat">
+                    <dt class="mw-label">Root service</dt>
+                    <dd class="mb-0 fw-semibold"><a class="mw-row-link" href="@MonitoringDisplay.ServiceUrl(trace.RootServiceId)">@(root?.Name ?? trace.RootServiceId)</a></dd>
+                </div>
+                <div class="tv-stat">
+                    <dt class="mw-label">Time</dt>
+                    <dd class="mb-0 mw-mono">@MonitoringDisplay.Stamp(trace.Time)<span class="d-block small text-body-secondary">@MonitoringDisplay.Time(trace.Time)</span></dd>
+                </div>
+                <div class="tv-stat">
+                    <dt class="mw-label">Total duration</dt>
+                    <dd class="mb-0 mw-mono fw-semibold">@MonitoringDisplay.Latency(trace.DurationMs)</dd>
+                </div>
+                <div class="tv-stat">
+                    <dt class="mw-label">Spans</dt>
+                    <dd class="mb-0 mw-mono fw-semibold">@trace.Spans.Count</dd>
+                </div>
+                <div class="tv-stat">
+                    <dt class="mw-label">Errors</dt>
+                    <dd class="mb-0 fw-semibold">
+                        @if (trace.HasError)
+                        {
+                            <span class="text-danger-emphasis"><Icon Name="IconName.XCircleFill" class="me-1" aria-hidden="true" />Yes, @errors @(errors == 1 ? "span" : "spans") failed</span>
+                        }
+                        else
+                        {
+                            <span><Icon Name="IconName.CheckCircleFill" class="me-1 text-success" aria-hidden="true" />No</span>
+                        }
+                    </dd>
+                </div>
+            </dl>
+        </section>
+
+        <Card Class="mw-card mb-4">
+            <CardHeader>
+                <h2 class="mw-card-title" id="tv-waterfall-title">Waterfall</h2>
+                <span class="small text-body-secondary">bars show when each span ran within @MonitoringDisplay.Latency(trace.DurationMs)</span>
+            </CardHeader>
+            <CardBody>
+                <ol class="tv-waterfall" aria-labelledby="tv-waterfall-title">
+                    @foreach (var (span, depth) in Ordered(trace))
+                    {
+                        <li class="tv-span @(span.IsError ? "tv-span-error" : null)" style="@IndentStyle(depth)" @key="span.Id">
+                            <div class="tv-span-label">
+                                <span class="tv-span-service">
+                                    @ServiceName(span.ServiceId)
+                                    @if (span.IsError)
+                                    {
+                                        <Badge Color="BadgeColor.Danger" Class="ms-1"><Icon Name="IconName.XCircleFill" class="me-1" aria-hidden="true" />Error</Badge>
+                                    }
+                                </span>
+                                <span class="tv-span-op mw-mono">@span.Operation</span>
+                                <span class="tv-span-time mw-mono">starts at @MonitoringDisplay.Latency(span.StartMs), takes @MonitoringDisplay.Latency(span.DurationMs)</span>
+                            </div>
+                            <div class="tv-track" aria-hidden="true">
+                                <span class="tv-bar" style="@BarStyle(trace, span)"></span>
+                            </div>
+                        </li>
+                    }
+                </ol>
+            </CardBody>
+        </Card>
+
+        <Card Class="mw-card mb-4">
+            <CardHeader><h2 class="mw-card-title">Spans as a table</h2></CardHeader>
+            <CardBody Class="pt-2">
+                <div class="table-responsive mw-grid">
+                    <table class="table">
+                        <caption class="visually-hidden">Spans of trace @trace.TraceId in start order, with their parent, start offset, and duration</caption>
+                        <thead>
+                            <tr>
+                                <th scope="col">Service</th>
+                                <th scope="col">Operation</th>
+                                <th scope="col">Parent</th>
+                                <th scope="col" class="text-end">Starts at</th>
+                                <th scope="col" class="text-end">Duration</th>
+                                <th scope="col">Result</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var (span, _) in Ordered(trace))
+                            {
+                                var parent = trace.Spans.FirstOrDefault(item => item.Id == span.ParentId);
+                                <tr @key="span.Id">
+                                    <th scope="row" class="text-nowrap fw-semibold">@ServiceName(span.ServiceId)</th>
+                                    <td class="tv-table-op"><span class="mw-mono">@span.Operation</span></td>
+                                    <td class="text-nowrap">@(parent is null ? "None (root)" : ServiceName(parent.ServiceId))</td>
+                                    <td class="text-end text-nowrap mw-mono">@MonitoringDisplay.Latency(span.StartMs)</td>
+                                    <td class="text-end text-nowrap mw-mono">@MonitoringDisplay.Latency(span.DurationMs)</td>
+                                    <td class="text-nowrap">
+                                        @if (span.IsError)
+                                        {
+                                            <span class="text-danger-emphasis fw-semibold"><Icon Name="IconName.XCircleFill" class="me-1" aria-hidden="true" />Error</span>
+                                        }
+                                        else
+                                        {
+                                            <span>OK</span>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </CardBody>
+        </Card>
+
+        <Card Class="mw-card">
+            <CardHeader><h2 class="mw-card-title">Services in this trace</h2></CardHeader>
+            <CardBody Class="pt-2">
+                <ul class="list-unstyled mb-0">
+                    @foreach (var service in Services(trace))
+                    {
+                        <li class="mw-row" @key="service.Id">
+                            <span class="mw-icon" aria-hidden="true"><Icon Name="@MonitoringDisplay.KindIcon(service.Kind)" /></span>
+                            <span class="flex-grow-1">
+                                <a class="mw-row-link" href="@MonitoringDisplay.ServiceUrl(service.Id)">@service.Name</a>
+                                <span class="d-block small text-body-secondary">@MonitoringDisplay.KindLabel(service.Kind) · @service.Region · @service.Team team</span>
+                            </span>
+                        </li>
+                    }
+                </ul>
+            </CardBody>
+        </Card>
+    }
+</div>

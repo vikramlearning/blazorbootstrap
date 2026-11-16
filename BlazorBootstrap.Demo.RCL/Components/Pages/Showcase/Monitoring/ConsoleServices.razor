@@ -1,0 +1,123 @@
+@page "/showcase/monitoring/console/services"
+@layout ConsoleLayout
+
+<PageTitle>Services · @MonitoringSeedData.ProductName</PageTitle>
+
+@{
+    var rows = Rows;
+}
+
+<div class="container-fluid px-lg-4">
+    <div class="mw-page-head">
+        <div>
+            <h1 class="mw-title">Services</h1>
+            <p class="mw-lead">Live metrics from @State.Services.Count services, sampled every @MonitoringSeedData.TickSeconds seconds. Last sample <span class="mw-mono">@MonitoringDisplay.Time(State.CurrentTime)</span>.</p>
+        </div>
+        <LivePauseButton />
+    </div>
+
+    <div class="mw-filters mb-3">
+        <div>
+            <label class="form-label mw-label mb-1" for="mw-services-kind">Kind</label>
+            <select class="form-select" id="mw-services-kind" value="@(kindFilter?.ToString() ?? string.Empty)" @onchange="OnKindChanged">
+                <option value="">All kinds</option>
+                @foreach (var kind in Enum.GetValues<MonitoringServiceKind>())
+                {
+                    <option value="@kind">@KindLabel(kind)</option>
+                }
+            </select>
+        </div>
+        <div>
+            <label class="form-label mw-label mb-1" for="mw-services-status">Live status</label>
+            <select class="form-select" id="mw-services-status" value="@(statusFilter?.ToString() ?? string.Empty)" @onchange="OnStatusChanged">
+                <option value="">All statuses</option>
+                @foreach (var status in Enum.GetValues<MonitoringStatus>())
+                {
+                    <option value="@status">@status</option>
+                }
+            </select>
+        </div>
+        @if (kindFilter is not null || statusFilter is not null)
+        {
+            <div class="align-self-end">
+                <button type="button" class="btn btn-outline-secondary" @onclick="ClearFilters">Clear filters</button>
+            </div>
+        }
+    </div>
+
+    @* Announces filter changes only, never the live ticks. *@
+    <p class="visually-hidden" role="status">@filterMessage</p>
+
+    <Card Class="mw-card">
+        <CardBody Class="p-0">
+            <div class="table-responsive mw-grid">
+                <table class="table mw-services-table">
+                    <caption class="mw-services-caption">@CaptionText(rows.Count). Metrics are from the last sample.</caption>
+                    <thead>
+                        <tr>
+                            <th scope="col">Service</th>
+                            <th scope="col">Kind</th>
+                            <th scope="col">Region</th>
+                            <th scope="col">Team</th>
+                            <th scope="col">Live status</th>
+                            <th scope="col" class="text-end">p95 latency</th>
+                            <th scope="col" class="text-end">Error rate</th>
+                            <th scope="col" class="text-end">Throughput</th>
+                            <th scope="col">Active incident</th>
+                            <th scope="col">Status page</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (rows.Count == 0)
+                        {
+                            <tr>
+                                <td colspan="10" class="text-center text-body-secondary py-4">No services match these filters.</td>
+                            </tr>
+                        }
+                        @foreach (var (service, status) in rows)
+                        {
+                            var latest = State.Latest(service.Id);
+                            var incident = State.ActiveIncident(service.Id);
+                            var publicStatus = State.PublicStatus(service.Id);
+                            <tr @key="service.Id">
+                                <th scope="row">
+                                    <a class="mw-row-link text-nowrap" href="@MonitoringDisplay.ServiceUrl(service.Id)">@service.Name</a>
+                                </th>
+                                <td class="text-nowrap"><Icon Name="@MonitoringDisplay.KindIcon(service.Kind)" class="me-1 text-body-secondary" aria-hidden="true" />@KindLabel(service.Kind)</td>
+                                <td class="mw-mono text-nowrap">@service.Region</td>
+                                <td class="text-nowrap">@service.Team</td>
+                                <td>
+                                    <Badge Color="@MonitoringDisplay.StatusColor(status)"><Icon Name="@MonitoringDisplay.StatusIcon(status)" class="me-1" aria-hidden="true" />@status</Badge>
+                                </td>
+                                <td class="mw-mono text-end text-nowrap">@MonitoringDisplay.Latency(latest.LatencyMs)</td>
+                                <td class="mw-mono text-end text-nowrap">@MonitoringDisplay.ErrorRate(latest.ErrorRate)</td>
+                                <td class="mw-mono text-end text-nowrap">@MonitoringDisplay.Number(latest.Requests) <span class="text-body-secondary small">@MonitoringDisplay.RequestUnit(service.Kind)</span></td>
+                                <td class="mw-incident-cell">
+                                    @if (incident is null)
+                                    {
+                                        <span class="text-body-secondary">None</span>
+                                    }
+                                    else
+                                    {
+                                        <a href="@MonitoringDisplay.IncidentUrl(incident.Id)">#@incident.Id @incident.Title</a>
+                                        <span class="d-block small text-body-secondary">
+                                            @incident.Severity · @incident.Status.ToString().ToLowerInvariant()@(incident.IsPublished ? null : " · not on the status page")
+                                        </span>
+                                    }
+                                </td>
+                                <td>
+                                    <Badge Color="@MonitoringDisplay.PublicStatusColor(publicStatus)"><Icon Name="@MonitoringDisplay.PublicStatusIcon(publicStatus)" class="me-1" aria-hidden="true" />@MonitoringDisplay.PublicStatusLabel(publicStatus)</Badge>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </CardBody>
+    </Card>
+
+    <p class="small text-body-secondary mt-3 mb-0">
+        "Live status" comes from each service's latest metrics. "Status page" is what customers see: it changes only when an engineer posts an update on an incident.
+        <a href="@MonitoringLayout.Base">View the status page</a>.
+    </p>
+</div>

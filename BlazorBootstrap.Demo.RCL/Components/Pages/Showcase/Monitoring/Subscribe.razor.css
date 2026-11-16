@@ -1,0 +1,150 @@
+/* Subscribing to status page updates, and the tab's subscriptions with their demo outboxes. */
+.mw-section-title {
+    margin: 0 0 .5rem;
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: var(--mw-ink);
+}
+
+.mw-sub-title {
+    margin: 0 0 .25rem;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--mw-ink);
+}
+
+.mw-sub-head {
+    min-width: 0;
+}
+
+/* Long addresses wrap instead of widening the card at 375 px. */
+.mw-sub-email {
+    overflow-wrap: anywhere;
+}
+
+.mw-legend-title {
+    margin-bottom: .375rem;
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+    .mw-legend-title.small {
+        font-size: .875rem;
+    }
+
+.mw-sub-choices {
+    margin: .5rem 0 0 1.5rem;
+    padding: .625rem .75rem;
+    border: 1px solid var(--mw-border);
+    border-radius: .5rem;
+}
+
+/* Errors are text in the danger emphasis color (above 4.5:1 in both modes), tied to their fields. */
+.mw-field-error {
+    margin: 0 0 .5rem;
+    font-size: .875rem;
+    font-weight: 600;
+    color: var(--bs-danger-text-emphasis);
+}
+
+/* Empty until an action reports, so it takes no space then. */
+.mw-status:empty {
+    margin: 0 !important;
+}
+
+/* Headings that take focus from code show no outline for the mouse, a ring for the keyboard. */
+.mw-focus:focus {
+    outline: none;
+}
+
+    .mw-focus:focus-visible {
+        outline: 3px solid var(--sc-primary);
+        outline-offset: 2px;
+        border-radius: .25rem;
+    }
+
+.mw-sub-edit {
+    margin-top: 1rem;
+    padding: 1rem;
+    border: 1px solid var(--mw-border);
+    border-radius: .5rem;
+    background: rgba(var(--sc-primary-rgb), .04);
+}
+
+    .mw-sub-edit .mw-sub-choices {
+        margin-inline-start: 1.5rem;
+    }
+
+.mw-outbox-title {
+    margin: 1.25rem 0 .5rem;
+    font-size: .875rem;
+    font-weight: 700;
+    color: var(--mw-ink);
+}
+
+.mw-outbox {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    border: 1px solid var(--mw-border);
+    border-radius: .5rem;
+}
+
+    .mw-outbox > li + li {
+        border-top: 1px solid var(--mw-border);
+    }
+
+.mw-email > summary {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: .25rem .75rem;
+    padding: .625rem .75rem;
+    cursor: pointer;
+    list-style: none;
+}
+
+    .mw-email > summary::-webkit-details-marker {
+        display: none;
+    }
+
+    .mw-email > summary::before {
+        content: "▸";
+        content: "▸" / "";
+        margin-inline-end: .25rem;
+        color: var(--bs-secondary-color);
+    }
+
+.mw-email[open] > summary::before {
+    content: "▾";
+    content: "▾" / "";
+}
+
+.mw-email > summary:focus-visible {
+    outline: 2px solid var(--sc-primary);
+    outline-offset: -2px;
+    border-radius: .5rem;
+}
+
+.mw-email-subject {
+    flex: 1 1 12rem;
+    min-width: 0;
+    font-weight: 600;
+    overflow-wrap: anywhere;
+}
+
+.mw-email-time {
+    font-size: .8125rem;
+    color: var(--bs-secondary-color);
+}
+
+.mw-email-body {
+    padding: 0 .75rem .75rem;
+}
+
+/* User text is plain: Razor encodes it, and pre-wrap keeps the email's line breaks. */
+.mw-plain {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
