@@ -1,0 +1,113 @@
+@page "/showcase/travel/host/reservations"
+@layout HostLayout
+
+<PageTitle>Reservations · Hosting · @TravelSeedData.SiteName</PageTitle>
+
+<div class="container-fluid px-lg-4">
+    @{
+        var groups = Groups;
+        var stays = State.HostStays();
+    }
+    <h1 class="ds-title mb-1">Reservations</h1>
+    <p class="ds-lead mb-4">Every booking and request for your listings. Open one to answer a request or see the payout.</p>
+
+    <div class="ds-res-filters ds-panel mb-3" role="search" aria-label="Filter reservations">
+        <div class="row g-3 align-items-end">
+            <div class="col-sm-6 col-lg-4">
+                <label class="form-label fw-semibold" for="ds-res-stay">Listing</label>
+                <select id="ds-res-stay" class="form-select" value="@stayFilter" @onchange="OnStayChanged">
+                    <option value="0">All listings</option>
+                    @foreach (var stay in stays)
+                    {
+                        <option value="@stay.Id">@(stay.IsListed ? stay.Name : $"{stay.Name} (unlisted)")</option>
+                    }
+                </select>
+            </div>
+            <div class="col-sm-6 col-lg-4">
+                <label class="form-label fw-semibold" for="ds-res-search">Search</label>
+                <input id="ds-res-search" type="search" class="form-control" placeholder="Guest name or reference" autocomplete="off"
+                       @bind="search" @bind:event="oninput" aria-describedby="ds-res-summary" />
+            </div>
+            @if (stayFilter != 0 || search.Trim().Length > 0)
+            {
+                <div class="col-lg-auto">
+                    <button type="button" class="btn btn-outline-secondary" @onclick="ClearFilters">Clear filters</button>
+                </div>
+            }
+        </div>
+    </div>
+
+    @* Always rendered, so a filter or search change is announced with its count. *@
+    <p class="small text-body-secondary mb-3" id="ds-res-summary" role="status">@Summary(groups)</p>
+
+    @* A jump list rather than tabs: every group stays on the page with its count, so nothing is hidden from search or print. *@
+    <nav class="ds-res-jump mb-4" aria-label="Reservation groups">
+        @foreach (var group in groups)
+        {
+            <a class="btn btn-sm btn-outline-secondary" href="@($"{ReservationsPath}{(stayFilter == 0 ? null : FormattableString.Invariant($"?stay={stayFilter}"))}#{group.Id}")">
+                @group.Title <span class="badge text-bg-secondary ms-1">@group.Bookings.Count</span>
+            </a>
+        }
+    </nav>
+
+    @foreach (var group in groups)
+    {
+        <section class="mb-5" aria-labelledby="@group.Id" @key="group.Id">
+            <h2 class="ds-section-title" id="@group.Id" tabindex="-1">@group.Title <span class="text-body-secondary fs-6">(@group.Bookings.Count)</span></h2>
+            @if (group.Bookings.Count == 0)
+            {
+                <div class="ds-panel ds-res-empty">
+                    <p class="text-body-secondary mb-0">@(stayFilter != 0 || search.Trim().Length > 0 ? "None match the listing or search." : group.Empty)</p>
+                </div>
+            }
+            else
+            {
+                <div class="ds-panel ds-res-panel">
+                    <div class="table-responsive">
+                        <table class="table table-sm align-middle mb-0 ds-res-table">
+                            <caption class="visually-hidden">@group.Title: @(group.Bookings.Count == 1 ? "1 reservation" : $"{group.Bookings.Count} reservations")</caption>
+                            <thead>
+                                <tr>
+                                    <th scope="col">Guest</th>
+                                    <th scope="col">Listing</th>
+                                    <th scope="col">Dates</th>
+                                    <th scope="col">Guests</th>
+                                    <th scope="col">Status</th>
+                                    <th scope="col" class="text-end">Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var booking in group.Bookings)
+                                {
+                                    var phase = State.Phase(booking);
+                                    var stay = State.FindStay(booking.StayId);
+                                    <tr @key="booking.Reference">
+                                        <th scope="row" class="fw-normal">
+                                            <a class="fw-semibold" href="@ReservationUrl(booking.Reference)">@booking.GuestName</a>
+                                            <span class="d-block small text-body-secondary">@booking.Reference</span>
+                                        </th>
+                                        <td class="ds-res-listing">@(stay?.Name ?? "Removed listing")</td>
+                                        <td>
+                                            <span class="text-nowrap">@TravelDisplay.Dates(booking.CheckIn, booking.CheckOut)</span>
+                                            <span class="d-block small text-body-secondary">@TravelDisplay.Nights(booking.Nights)</span>
+                                        </td>
+                                        <td class="text-nowrap">@TravelDisplay.Guests(booking.Guests)</td>
+                                        <td>
+                                            <Badge Color="@TravelDisplay.PhaseColor(phase)">@PhaseText(phase)</Badge>
+                                            @if (phase == TravelTripPhase.Requested)
+                                            {
+                                                var deadline = AnswerBy(booking);
+                                                <span class="d-block small mt-1">Answer by @TravelDisplay.Stamp(deadline) <span class="text-body-secondary">(@TimeLeft(deadline, State.Clock.Now))</span></span>
+                                            }
+                                        </td>
+                                        <td class="text-end text-nowrap">@TotalText(booking, phase)</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            }
+        </section>
+    }
+</div>

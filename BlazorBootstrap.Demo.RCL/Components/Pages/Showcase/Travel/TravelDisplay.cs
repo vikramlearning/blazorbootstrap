@@ -81,6 +81,7 @@ public static class TravelDisplay
         TravelTripPhase.InProgress => "Staying now",
         TravelTripPhase.Completed => "Completed",
         TravelTripPhase.Cancelled => "Cancelled",
+        TravelTripPhase.Expired => "Request expired",
         _ => "Declined by host",
     };
 
@@ -89,7 +90,7 @@ public static class TravelDisplay
     {
         TravelTripPhase.Requested => BadgeColor.Warning,
         TravelTripPhase.Upcoming or TravelTripPhase.InProgress => BadgeColor.Success,
-        TravelTripPhase.Completed => BadgeColor.Secondary,
+        TravelTripPhase.Completed or TravelTripPhase.Expired => BadgeColor.Secondary,
         _ => BadgeColor.Danger,
     };
 

@@ -37,7 +37,7 @@
                             <h2 class="h5 fw-bold alert-heading"><Icon Name="IconName.SendCheck" class="me-2" aria-hidden="true" />Request sent to @host.Name</h2>
                             <p class="mb-0">
                                 Reference <strong>@trip.Reference</strong>. Your @CardText(trip) is held, not charged: you're only charged @TravelDisplay.Money(trip.Total) if @host.Name accepts.
-                                In this demo hosts don't answer yet, so the request stays sent.
+                                @host.Name has @TravelState.RequestHours hours to answer; if they don't, the request expires and nothing is charged.
                             </p>
                         </Alert>
                     }
@@ -85,7 +85,7 @@
                                 <dd>@TravelDisplay.Guests(trip.Guests)</dd>
                             </div>
                             <div>
-                                <dt>@(phase == TravelTripPhase.Requested || trip.Status == TravelBookingStatus.Declined ? "Requested" : "Booked")</dt>
+                                <dt>@(trip.Charges.Count == 0 ? "Requested" : "Booked")</dt>
                                 <dd>@TravelDisplay.Stamp(trip.CreatedAt)</dd>
                             </div>
                             @if (trip.ClosedAt is { } closedAt)
@@ -196,8 +196,8 @@
                     </section>
 
                     <section class="ds-panel mb-4" aria-labelledby="ds-trip-policy">
-                        <h2 class="h5 fw-bold" id="ds-trip-policy">Cancellation policy: @stay.Policy</h2>
-                        <p class="small mb-1">@TravelDisplay.PolicyText(stay.Policy)</p>
+                        <h2 class="h5 fw-bold" id="ds-trip-policy">Cancellation policy: @trip.Policy</h2>
+                        <p class="small mb-1">@TravelDisplay.PolicyText(trip.Policy)</p>
                         <p class="small text-body-secondary mb-0">Check-in starts at @CheckInTime(trip) on the check-in day. The cleaning fee comes back whenever you cancel before check-in.</p>
                         @if (phase == TravelTripPhase.Upcoming)
                         {
@@ -274,15 +274,15 @@
                                 break;
 
                             case TravelTripPhase.Upcoming:
-                                var cutoff = TravelState.ChangeCutoffHours(stay.Policy);
+                                var cutoff = TravelState.ChangeCutoffHours(trip.Policy);
                                 var cutoffText = cutoff % 24 == 0 && cutoff > 24 ? $"{cutoff / 24} days" : $"{cutoff} hours";
                                 if (State.CanChangeDates(trip))
                                 {
-                                    <p class="small">Change the dates or guests until @cutoffText before check-in; the price is worked out again@(stay.Policy == TravelCancellationPolicy.Strict ? ", and a cheaper stay is refunded by half, as the Strict policy refunds a cancellation" : null). Or cancel by the @stay.Policy policy.</p>
+                                    <p class="small">Change the dates or guests until @cutoffText before check-in; the price is worked out again at the rates you booked@(trip.Policy == TravelCancellationPolicy.Strict ? ", and a cheaper stay is refunded by half, as the Strict policy refunds a cancellation" : null). Or cancel by the @trip.Policy policy.</p>
                                 }
                                 else
                                 {
-                                    <p class="small">Under the @stay.Policy policy, date changes close @cutoffText before check-in, so these dates are fixed now. You can still cancel by the policy.</p>
+                                    <p class="small">Under the @trip.Policy policy, date changes close @cutoffText before check-in, so these dates are fixed now. You can still cancel by the policy.</p>
                                 }
                                 <div class="d-grid gap-2">
                                     @if (State.CanChangeDates(trip))
@@ -305,8 +305,12 @@
                                 <p class="small mb-0">
                                     @(trip.Charges.Count == 0
                                         ? $"You withdrew this request on {TravelDisplay.Stamp(trip.ClosedAt ?? trip.CreatedAt)}. Nothing was charged."
-                                        : $"You cancelled on {TravelDisplay.Stamp(trip.ClosedAt ?? trip.CreatedAt)}. {TravelDisplay.Money(Refunded(trip))} was refunded to your {CardText(trip)}, and {TravelDisplay.Money(trip.Paid)} was kept by the {stay.Policy} policy.")
+                                        : $"You cancelled on {TravelDisplay.Stamp(trip.ClosedAt ?? trip.CreatedAt)}. {TravelDisplay.Money(Refunded(trip))} was refunded to your {CardText(trip)}, and {TravelDisplay.Money(trip.Paid)} was kept by the {trip.Policy} policy.")
                                 </p>
+                                break;
+
+                            case TravelTripPhase.Expired:
+                                <p class="small mb-0">@host.Name didn't answer in time (within @TravelState.RequestHours hours, or before check-in), so the request expired. Nothing was charged, and your card is no longer held. The dates may still be free: book again from the stay page.</p>
                                 break;
 
                             default:
@@ -379,7 +383,7 @@
                 <BodyTemplate>
                     @if (changing)
                     {
-                        var newQuote = State.Quote(stay, changeIn, changeOut);
+                        var newQuote = State.QuoteChange(trip, changeIn, changeOut);
                         var changeRule = State.ValidateStay(stay, changeIn, changeOut, changeGuests);
                         var changeFree = State.IsAvailable(stay.Id, changeIn, changeOut, trip.Reference);
                         var difference = State.ChangeAmount(trip, newQuote);

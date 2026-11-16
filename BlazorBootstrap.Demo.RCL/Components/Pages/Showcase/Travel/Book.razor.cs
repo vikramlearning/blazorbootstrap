@@ -281,7 +281,8 @@ public partial class Book : ComponentBase, IDisposable
 
     [Inject] private TravelState State { get; set; } = default!;
 
-    private TravelStay? Stay => State.FindStay(Id);
+    /// <summary>The stay, when it is listed; an unlisted stay can't be booked.</summary>
+    private TravelStay? Stay => State.FindStay(Id) is { IsListed: true } stay ? stay : null;
 
     /// <summary>Gets the taken nights in the chosen range, by date, for the availability message.</summary>
     private string TakenNightsText

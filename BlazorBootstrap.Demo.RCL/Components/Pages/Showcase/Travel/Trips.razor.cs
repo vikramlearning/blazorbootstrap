@@ -67,7 +67,7 @@ public partial class Trips : ComponentBase, IDisposable
                     In(TravelTripPhase.InProgress, TravelTripPhase.Requested, TravelTripPhase.Upcoming)),
                 new TripGroup("ds-trips-past", "Past", "No past stays yet. Trips show up here after check-out.", In(TravelTripPhase.Completed)),
                 new TripGroup("ds-trips-cancelled", "Cancelled", "Nothing cancelled. Cancelled trips and declined requests show up here.",
-                    In(TravelTripPhase.Cancelled, TravelTripPhase.Declined)),
+                    In(TravelTripPhase.Cancelled, TravelTripPhase.Declined, TravelTripPhase.Expired)),
             };
         }
     }

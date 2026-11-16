@@ -199,7 +199,9 @@ public partial class StayDetail : ComponentBase, IDisposable
 
     [Inject] private TravelState State { get; set; } = default!;
 
-    private TravelStay? Stay => State.FindStay(Id);
+    /// <summary>The stay, when it is listed, or unlisted for its host (a preview) and for guests with a trip there.</summary>
+    private TravelStay? Stay => State.FindStay(Id) is { } stay
+        && (stay.IsListed || stay.HostId == State.CurrentHost?.Id || State.MyBookings().Any(booking => booking.StayId == stay.Id)) ? stay : null;
 
     /// <summary>Names the taken nights, like "The nights of Dec 8 and Dec 9 are taken."</summary>
     private string TakenText

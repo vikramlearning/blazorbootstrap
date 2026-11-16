@@ -15,6 +15,12 @@ public static class TravelSeedData
     /// <summary>The role of a guest (searches, books, and manages trips).</summary>
     public const string GuestRole = "guest";
 
+    /// <summary>The role of a host (the back office: reservations, calendar, listings, inbox, reviews, earnings).</summary>
+    public const string HostRole = "host";
+
+    /// <summary>The ID of the demo host account; it is also the host's ID, which links the account to their listings.</summary>
+    public const string SeededHostId = "aiko";
+
     /// <summary>The most guests a search can ask for.</summary>
     public const int MaxGuests = 8;
 
@@ -69,8 +75,14 @@ public static class TravelSeedData
         var list = new List<TravelBooking>
         {
             Booking(stays[306], "DS-48213", SeededGuestId, TravelerName, 18, 22, 2, TravelBookingStatus.Confirmed, -9, "Visa", "4242"),
-            Booking(stays[307], "DS-50112", SeededGuestId, TravelerName, 40, 43, 2, TravelBookingStatus.Requested, -1, "Mastercard", "4444",
+            Booking(stays[307], "DS-50112", SeededGuestId, TravelerName, 40, 43, 2, TravelBookingStatus.Requested, 0, "Mastercard", "4444",
                 "Hello! We're visiting Kyoto for my partner's birthday and would love to stay at the inn. We'll arrive around 4 pm."),
+
+            // Requests from guests who booked elsewhere: one waiting for Aiko, one she didn't answer within 24 hours.
+            Booking(stays[308], "DS-50187", null, "Mia Laurent", 20, 23, 2, TravelBookingStatus.Requested, -0.15, "Visa", "1881",
+                "Hi Aiko, we'd love three quiet nights near the bamboo paths. We're two hikers and will be out most days."),
+            Booking(stays[307], "DS-49960", null, "Felix Wagner", 45, 47, 1, TravelBookingStatus.Requested, -1.3, "Visa", "5100",
+                "Hello, is the inn quiet enough to work from during the day?"),
             Booking(stays[302], "DS-41877", SeededGuestId, TravelerName, -61, -57, 2, TravelBookingStatus.Confirmed, -90, "Visa", "4242"),
             Booking(stays[314], "DS-39542", SeededGuestId, TravelerName, -140, -133, 3, TravelBookingStatus.Confirmed, -170, "Visa", "4242"),
         };
@@ -90,6 +102,29 @@ public static class TravelSeedData
                 row.In - 30, index % 2 == 0 ? "Visa" : "Mastercard", index % 2 == 0 ? "1881" : "5100"));
         }
 
+        // Past stays of other guests over the last six months, so hosts have earnings history; none overlaps another booking.
+        string[] guests = { "Lena Vogel", "Arjun Rao", "Chloe Martin", "Kenji Mori", "Sara Lind", "Pedro Costa", "Nadia Ali", "Owen Price", "Yuki Ito", "Eva Novak" };
+        var number = 0;
+
+        foreach (var stay in stays.Values)
+        {
+            var count = 2 + (stay.Id % 3);
+
+            for (var j = 0; j < count; j++)
+            {
+                var checkIn = -(15 + (j * 45) + (stay.Id % 7 * 3));
+                var checkOut = checkIn + 2 + ((stay.Id + j) % 4);
+
+                if (list.Any(other => other.StayId == stay.Id && other.CheckIn < Today.AddDays(checkOut) && Today.AddDays(checkIn) < other.CheckOut))
+                    continue;
+
+                var guestCount = Math.Min(stay.MaxGuests, 1 + ((stay.Id + j) % 3));
+                list.Add(Booking(stay, FormattableString.Invariant($"DS-{43_000 + (number * 11)}"), null, guests[(stay.Id + j) % guests.Length], checkIn, checkOut, guestCount,
+                    TravelBookingStatus.Confirmed, checkIn - 20, number % 2 == 0 ? "Visa" : "Mastercard", number % 2 == 0 ? "1881" : "5100"));
+                number++;
+            }
+        }
+
         return list;
     }
 
@@ -101,11 +136,23 @@ public static class TravelSeedData
         new(317, Today.AddDays(7), Today.AddDays(14), "Host holiday"),
     };
 
-    /// <summary>The demo accounts: the guest with trips of their own.</summary>
+    /// <summary>The amenities a host can list.</summary>
+    public static IReadOnlyList<string> AmenityCatalog() => new[]
+    {
+        "Wifi", "Air conditioning", "Heating", "Kitchen", "Washer", "Workspace", "Breakfast included", "24-hour front desk", "Free parking", "EV charger",
+        "Fireplace", "Garden", "Balcony", "Pool", "Sea view", "Pets allowed",
+    };
+
+    /// <summary>The demo accounts: a guest with trips of their own, and a host with four listings in Kyoto.</summary>
     public static IReadOnlyList<ShowcaseDemoAccount> DemoAccounts() => new List<ShowcaseDemoAccount>
     {
         new(SeededGuestId, GuestRole, TravelerName, "jordan.ashdown@example.com", "stay-demo-26", "JA"),
+        new(SeededHostId, HostRole, "Aiko Tanaka", "aiko.tanaka@example.com", "host-demo-26", "AT"),
     };
+
+    /// <summary>The photo library a host picks listing photos from: every seeded stay's three photos.</summary>
+    public static IReadOnlyList<string> PhotoLibrary() =>
+        Enumerable.Range(301, 18).SelectMany(id => Enumerable.Range(1, TravelStay.PhotoCount).Select(number => FormattableString.Invariant($"{id}-{number}"))).ToList();
 
     /// <summary>The searchable destinations.</summary>
     public static IReadOnlyList<TravelDestination> Destinations() => new List<TravelDestination>
@@ -130,6 +177,7 @@ public static class TravelSeedData
     public static IReadOnlyList<ShowcaseRole> Roles() => new List<ShowcaseRole>
     {
         new(GuestRole, "Guest", "/showcase/travel/trips", "/showcase/travel/account", "Searches stays, books trips, and messages hosts."),
+        new(HostRole, "Host", "/showcase/travel/host", "/showcase/travel/host/account", "Answers requests, manages calendars and listings, replies to guests and reviews, and tracks earnings."),
     };
 
     /// <summary>Three to five reviews per stay, with ratings from a fixed pattern, plus the demo guest's review of a past trip.</summary>
@@ -183,7 +231,7 @@ public static class TravelSeedData
 
             new(306, "Machiya Kotone", "kyoto", TravelStayType.Villa, "Higashiyama", "A restored wooden townhouse with tatami rooms, a cedar bath, and a moss garden.", 228m, 60m, 4, 2, nature, moderate, 34.9967, 135.7850, "aiko", true, "2-14 Kotone-cho, Higashiyama, Kyoto"),
             new(307, "Gion Lantern Inn", "kyoto", TravelStayType.Hotel, "Gion", "A ten-room inn on a lantern-lit lane, with a seasonal breakfast served in your room.", 196m, 0m, 2, 1, hotel, strict, 35.0037, 135.7788, "aiko", false, "5-3 Chochin-dori, Gion, Kyoto"),
-            new(308, "Bamboo Grove Cabin", "kyoto", TravelStayType.Cabin, "Arashiyama", "A cabin at the edge of the hills, a short walk from the bamboo paths and the river.", 154m, 40m, 3, 1, nature, flexible, 35.0094, 135.6668, "aiko", true, "8 Takebayashi, Arashiyama, Kyoto"),
+            new(308, "Bamboo Grove Cabin", "kyoto", TravelStayType.Cabin, "Arashiyama", "A cabin at the edge of the hills, a short walk from the bamboo paths and the river.", 154m, 40m, 3, 1, nature, flexible, 35.0094, 135.6668, "aiko", false, "8 Takebayashi, Arashiyama, Kyoto"),
             new(309, "Nishiki Market Flat", "kyoto", TravelStayType.Apartment, "Nakagyo", "A modern flat above a side street of the food market, on the subway line.", 118m, 30m, 3, 1, city, moderate, 35.0100, 135.7600, "aiko", true, "3-21 Ichiba-machi, Nakagyo, Kyoto"),
 
             new(310, "Camps Bay Glass House", "cape-town", TravelStayType.Villa, "Camps Bay", "Floor-to-ceiling windows, a heated pool, and the sunset over the bay from every room.", 420m, 95m, 8, 4, luxury, strict, -33.9510, 18.3770, "thabo", false, "18 Sunset Ridge, Camps Bay, Cape Town"),
@@ -227,7 +275,7 @@ public static class TravelSeedData
             HostUnread = true,
             Messages =
             {
-                new TravelMessage(false, TravelerName, "Hello! We're visiting Kyoto for my partner's birthday and would love to stay at the inn. We'll arrive around 4 pm.", Now.AddDays(-1)),
+                new TravelMessage(false, TravelerName, "Hello! We're visiting Kyoto for my partner's birthday and would love to stay at the inn. We'll arrive around 4 pm.", Now.AddHours(-2)),
             },
         },
     };
@@ -240,7 +288,7 @@ public static class TravelSeedData
     #region Private Methods
 
     private static TravelBooking Booking(TravelStay stay, string reference, string? accountId, string guest, int inDays, int outDays, int guests, TravelBookingStatus status,
-        int bookedDaysAgo, string brand, string last4, string? message = null)
+        double bookedDaysAgo, string brand, string last4, string? message = null)
     {
         var nights = outDays - inDays;
         var subtotal = stay.NightlyRate * nights;
@@ -260,6 +308,7 @@ public static class TravelSeedData
             CreatedAt = Now.AddDays(bookedDaysAgo).AddHours(-2),
             CardBrand = brand,
             CardLast4 = last4,
+            Policy = stay.Policy,
             RequestMessage = message,
         };
 

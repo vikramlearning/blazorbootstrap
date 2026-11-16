@@ -1,0 +1,59 @@
+.ds-reviews-note {
+    padding: .75rem 1rem;
+    border: 1px solid rgba(var(--sc-primary-rgb), .3);
+    border-radius: .75rem;
+    background: rgba(var(--sc-primary-rgb), .06);
+    color: var(--ds-ink);
+}
+
+.ds-rating-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--ds-ink);
+}
+
+.ds-rating-card {
+    overflow-wrap: anywhere;
+}
+
+.ds-review-main {
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+/* The rating is said in words beside the stars; the words keep the body color, the stars the site's star color. */
+.ds-rating-text {
+    color: var(--bs-body-color);
+}
+
+/* Plain text: Razor encodes it, and pre-wrap keeps its line breaks. */
+.ds-review-body {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+.ds-host-reply {
+    margin-inline-start: 1rem;
+    padding: .625rem .875rem;
+    border-inline-start: 3px solid var(--sc-primary);
+    border-radius: 0 .5rem .5rem 0;
+    background: rgba(var(--sc-primary-rgb), .06);
+}
+
+.ds-reply-form {
+    padding-top: .75rem;
+    border-top: 1px solid var(--ds-border);
+}
+
+.ds-reviews-status {
+    font-weight: 600;
+}
+
+    .ds-reviews-status:empty {
+        margin: 0 !important;
+    }
+
+    .ds-reviews-status:focus {
+        outline: 3px solid var(--sc-primary);
+        outline-offset: 2px;
+    }

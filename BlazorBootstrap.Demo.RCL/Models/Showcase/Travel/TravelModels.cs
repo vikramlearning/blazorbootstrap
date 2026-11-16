@@ -86,8 +86,11 @@ public sealed record TravelStay(
 {
     #region Fields and Constants
 
-    /// <summary>The number of gallery photos per stay.</summary>
+    /// <summary>The number of gallery photos of a seeded stay.</summary>
     public const int PhotoCount = 3;
+
+    /// <summary>The most photos a listing can have.</summary>
+    public const int MaxPhotos = 8;
 
     #endregion
 
@@ -96,14 +99,28 @@ public sealed record TravelStay(
     /// <summary>Gets whether a guest can cancel for a full refund until shortly before check-in (Flexible or Moderate).</summary>
     public bool FreeCancellation => Policy != TravelCancellationPolicy.Strict;
 
+    /// <summary>Gets whether the listing shows in search and can be booked; an unlisted stay keeps its trips.</summary>
+    public bool IsListed { get; init; } = true;
+
+    /// <summary>Gets the photos, in order, as keys of the photo library (like "306-2"); empty means the stay's own three photos.</summary>
+    public IReadOnlyList<string> Photos { get; init; } = Array.Empty<string>();
+
+    /// <summary>Gets how many gallery photos the stay has.</summary>
+    [System.Text.Json.Serialization.JsonIgnore]
+    public int PhotoTotal => Photos.Count > 0 ? Photos.Count : PhotoCount;
+
     #endregion
 
     #region Methods
 
     #region Public Methods
 
-    /// <summary>Gets the path of a gallery photo (1 to <see cref="PhotoCount" />); <c>ShowcaseImage</c> shows a placeholder until the file is supplied.</summary>
-    public string PhotoPath(int number) => $"_content/BlazorBootstrap.Demo.RCL/showcase/travel/stays/{Id}-{number}.webp";
+    /// <summary>Returns the path of a photo-library key; <c>ShowcaseImage</c> shows a placeholder until the file is supplied.</summary>
+    public static string LibraryPath(string key) => $"_content/BlazorBootstrap.Demo.RCL/showcase/travel/stays/{key}.webp";
+
+    /// <summary>Gets the path of a gallery photo (1 to <see cref="PhotoTotal" />).</summary>
+    public string PhotoPath(int number) =>
+        LibraryPath(Photos.Count > 0 ? Photos[Math.Clamp(number, 1, Photos.Count) - 1] : FormattableString.Invariant($"{Id}-{number}"));
 
     #endregion
 
@@ -187,6 +204,9 @@ public sealed class TravelBooking
 
     /// <summary>Gets or sets the nightly rate when booked.</summary>
     public decimal NightlyRate { get; set; }
+
+    /// <summary>Gets or sets the cancellation policy the stay had when booked; a later change by the host doesn't apply to it.</summary>
+    public TravelCancellationPolicy Policy { get; set; }
 
     /// <summary>Gets the booking reference shown to the guest.</summary>
     public string Reference { get; init; } = string.Empty;
@@ -364,6 +384,12 @@ public enum TravelResult
 
     /// <summary>Nothing changed.</summary>
     NoChange,
+
+    /// <summary>The listing has bookings, conversations, or reviews, so it can only be unlisted.</summary>
+    InUse,
+
+    /// <summary>Another listing already has that name.</summary>
+    Duplicate,
 }
 
 /// <summary>Dates a host blocked on a stay's calendar, from <see cref="Start" /> up to (not including) <see cref="End" />.</summary>
@@ -389,4 +415,87 @@ public enum TravelTripPhase
 
     /// <summary>Declined by the host.</summary>
     Declined,
+
+    /// <summary>The host didn't answer the request within 24 hours, or before check-in; nothing was charged.</summary>
+    Expired,
+}
+
+/// <summary>What a host is paid for one booking: the guest's payment without taxes, less the 3% host fee.</summary>
+public sealed record TravelPayout(string Reference, int StayId, string GuestName, DateOnly CheckIn, DateOnly CheckOut, decimal Amount, DateOnly PaysOn, bool IsPaid);
+
+/// <summary>A listing being written or edited by its host.</summary>
+public sealed class TravelStayDraft
+{
+    #region Properties, Indexers
+
+    /// <summary>Gets or sets the address, shown to guests on a confirmed trip.</summary>
+    public string Address { get; set; } = string.Empty;
+
+    /// <summary>Gets the amenities (from <c>TravelSeedData.AmenityCatalog</c>).</summary>
+    public List<string> Amenities { get; set; } = new();
+
+    /// <summary>Gets or sets the bedrooms.</summary>
+    public int Bedrooms { get; set; } = 1;
+
+    /// <summary>Gets or sets the cleaning fee.</summary>
+    public decimal CleaningFee { get; set; }
+
+    /// <summary>Gets or sets the description.</summary>
+    public string Description { get; set; } = string.Empty;
+
+    /// <summary>Gets or sets the destination ID.</summary>
+    public string DestinationId { get; set; } = string.Empty;
+
+    /// <summary>Gets or sets whether guests can book without a request.</summary>
+    public bool InstantBook { get; set; } = true;
+
+    /// <summary>Gets or sets the most guests.</summary>
+    public int MaxGuests { get; set; } = 2;
+
+    /// <summary>Gets or sets the listing name.</summary>
+    public string Name { get; set; } = string.Empty;
+
+    /// <summary>Gets or sets the neighborhood.</summary>
+    public string Neighborhood { get; set; } = string.Empty;
+
+    /// <summary>Gets or sets the nightly rate.</summary>
+    public decimal NightlyRate { get; set; } = 100m;
+
+    /// <summary>Gets the photos, in order (photo-library keys).</summary>
+    public List<string> Photos { get; set; } = new();
+
+    /// <summary>Gets or sets the cancellation policy.</summary>
+    public TravelCancellationPolicy Policy { get; set; } = TravelCancellationPolicy.Moderate;
+
+    /// <summary>Gets or sets the type of place.</summary>
+    public TravelStayType Type { get; set; } = TravelStayType.Apartment;
+
+    #endregion
+
+    #region Methods
+
+    #region Public Methods
+
+    /// <summary>Returns a draft filled from a stay, for editing.</summary>
+    public static TravelStayDraft From(TravelStay stay) => new()
+    {
+        Address = stay.Address,
+        Amenities = stay.Amenities.ToList(),
+        Bedrooms = stay.Bedrooms,
+        CleaningFee = stay.CleaningFee,
+        Description = stay.Description,
+        DestinationId = stay.DestinationId,
+        InstantBook = stay.InstantBook,
+        MaxGuests = stay.MaxGuests,
+        Name = stay.Name,
+        Neighborhood = stay.Neighborhood,
+        NightlyRate = stay.NightlyRate,
+        Photos = Enumerable.Range(1, stay.PhotoTotal).Select(number => stay.Photos.Count > 0 ? stay.Photos[number - 1] : FormattableString.Invariant($"{stay.Id}-{number}")).ToList(),
+        Policy = stay.Policy,
+        Type = stay.Type,
+    };
+
+    #endregion
+
+    #endregion
 }

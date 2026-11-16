@@ -1,0 +1,84 @@
+@page "/showcase/travel/host/inbox"
+@layout HostLayout
+
+<PageTitle>Inbox · Hosting · @TravelSeedData.SiteName</PageTitle>
+
+<div class="container-fluid px-lg-4">
+    @{
+        var threads = State.HostThreads();
+        var unread = State.HostUnreadCount;
+    }
+
+    <h1 class="ds-title mb-1">Inbox</h1>
+    <p class="ds-lead mb-4">
+        Conversations with guests about your listings, the most recent first.
+        @if (unread > 0)
+        {
+            <strong class="text-body">@UnreadText(unread)</strong>
+        }
+    </p>
+
+    @if (threads.Count == 0)
+    {
+        <section class="ds-panel text-center py-5" aria-labelledby="ds-inbox-empty">
+            <span class="ds-icon fs-4" aria-hidden="true"><Icon Name="IconName.ChatDots" /></span>
+            <h2 class="h5 fw-bold mt-3" id="ds-inbox-empty">No conversations yet</h2>
+            <p class="text-body-secondary mb-0">When a guest contacts you from a stay page or sends a request to book, the conversation shows up here.</p>
+        </section>
+    }
+    else
+    {
+        <ul class="list-unstyled d-grid gap-3 mb-0" aria-label="Conversations">
+            @foreach (var thread in threads)
+            {
+                var stay = State.FindStay(thread.StayId);
+                var booking = State.FindHostBooking(thread.BookingReference);
+                var last = thread.Messages.Count > 0 ? thread.Messages[^1] : null;
+
+                <li class="ds-panel ds-thread @(thread.HostUnread ? "ds-thread-unread" : null)" @key="thread.Id">
+                    <span class="ds-avatar" aria-hidden="true">@Initials(thread.GuestName)</span>
+                    <div class="ds-thread-main">
+                        <div class="d-flex flex-wrap align-items-baseline justify-content-between gap-2">
+                            <h2 class="ds-card-title fs-6 mb-0">
+                                <a class="stretched-link" href="@ThreadUrl(thread.Id)">
+                                    @thread.GuestName<span class="visually-hidden">, about @(stay?.Name ?? "a listing")@(thread.HostUnread ? ", unread" : null)</span>
+                                </a>
+                            </h2>
+                            @if (last is not null)
+                            {
+                                <time class="small text-body-secondary" datetime="@last.SentAt.ToString("s", CultureInfo.InvariantCulture)">@TravelDisplay.Stamp(last.SentAt)</time>
+                            }
+                        </div>
+                        <div class="ds-meta mt-1">
+                            <span>@(stay?.Name ?? "Listing removed")</span>
+                            @if (booking is not null)
+                            {
+                                var phase = State.Phase(booking);
+                                <span>
+                                    Booking @booking.Reference
+                                    <Badge Color="@TravelDisplay.PhaseColor(phase)" Class="rounded-pill ms-1">@PhaseLabel(phase)</Badge>
+                                </span>
+                            }
+                        </div>
+                        @if (last is not null)
+                        {
+                            <p class="ds-thread-preview mb-0 mt-2">
+                                @if (last.FromHost)
+                                {
+                                    <span class="fw-semibold">You: </span>
+                                }
+                                @Preview(last.Body)
+                            </p>
+                        }
+                        @if (thread.HostUnread)
+                        {
+                            <Badge Color="BadgeColor.Primary" Class="rounded-pill mt-2">
+                                <Icon Name="IconName.ChatDotsFill" class="me-1" aria-hidden="true" />Unread
+                            </Badge>
+                        }
+                    </div>
+                </li>
+            }
+        </ul>
+    }
+</div>

@@ -1,0 +1,35 @@
+/* The host's reservations. Badge renders its own element, so it would need ::deep; nothing here styles it. */
+
+.ds-res-jump {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .5rem;
+}
+
+.ds-res-empty {
+    padding-block: 1.5rem;
+}
+
+/* The table sits flush in its panel; on a phone it scrolls inside the panel, never the page. */
+.ds-res-panel {
+    padding: .5rem 1rem;
+}
+
+.ds-res-table {
+    --bs-table-bg: transparent;
+    min-width: 40rem;
+}
+
+    .ds-res-table thead th {
+        font-size: .8125rem;
+        font-weight: 600;
+        color: var(--bs-secondary-color);
+    }
+
+    .ds-res-table th[scope=row] a {
+        overflow-wrap: anywhere;
+    }
+
+.ds-res-listing {
+    min-width: 9rem;
+}

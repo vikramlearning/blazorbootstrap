@@ -1,0 +1,207 @@
+@page "/showcase/travel/host/reviews"
+@layout HostLayout
+
+<PageTitle>Reviews · Hosting · @TravelSeedData.SiteName</PageTitle>
+
+<div class="container-fluid px-lg-4">
+    @{
+        var all = State.HostReviews();
+        var stays = State.HostStays();
+        var shown = Filtered(all);
+    }
+
+    <h1 class="ds-title mb-1">Reviews</h1>
+    <p class="ds-lead mb-3">What guests wrote about your listings, the newest first, and your replies to them.</p>
+
+    <p class="ds-reviews-note small mb-4">
+        <Icon Name="IconName.InfoCircle" class="me-1" aria-hidden="true" />
+        Replies are public: anyone who opens the listing's stay page sees your reply under the guest's review. Keep it friendly and
+        leave out private details such as door codes or phone numbers.
+    </p>
+
+    <section class="mb-4" aria-labelledby="ds-ratings-title">
+        <h2 class="ds-section-title fs-5" id="ds-ratings-title">Ratings by listing</h2>
+        @if (stays.Count == 0)
+        {
+            <p class="text-body-secondary mb-0">You don't have any listings yet.</p>
+        }
+        else
+        {
+            <ul class="list-unstyled row row-cols-1 row-cols-sm-2 row-cols-xl-4 g-3 mb-0">
+                @foreach (var stay in stays)
+                {
+                    var reviews = all.Where(review => review.StayId == stay.Id).ToList();
+                    var waiting = reviews.Count(review => review.HostReply is null);
+
+                    <li class="col" @key="stay.Id">
+                        <div class="ds-panel h-100 ds-rating-card">
+                            <h3 class="ds-card-title fs-6">@stay.Name</h3>
+                            @if (reviews.Count == 0)
+                            {
+                                <p class="text-body-secondary small mb-0">No reviews yet.</p>
+                            }
+                            else
+                            {
+                                var average = reviews.Average(review => review.Rating);
+                                <p class="mb-1">
+                                    <span class="ds-rating-value">@TravelDisplay.Rating(average)</span>
+                                    <span class="text-body-secondary small">average out of 5, from @Plural(reviews.Count, "review", "reviews")</span>
+                                </p>
+                                <p class="small mb-0 @(waiting > 0 ? "fw-semibold" : "text-body-secondary")">
+                                    @(waiting == 0 ? "Every review has a reply." : $"{Plural(waiting, "review needs", "reviews need")} a reply.")
+                                </p>
+                            }
+                        </div>
+                    </li>
+                }
+            </ul>
+        }
+    </section>
+
+    <section aria-labelledby="ds-reviews-title">
+        <h2 class="ds-section-title fs-5" id="ds-reviews-title">Guest reviews</h2>
+
+        <div class="row g-2 align-items-end mb-2" role="group" aria-label="Review filters">
+            <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
+                <label class="form-label small fw-semibold" for="ds-reviews-listing">Listing</label>
+                <select id="ds-reviews-listing" class="form-select" value="@stayFilter" @onchange="OnListingChanged">
+                    <option value="">All listings</option>
+                    @foreach (var stay in stays)
+                    {
+                        <option value="@stay.Id.ToString(CultureInfo.InvariantCulture)">@stay.Name</option>
+                    }
+                </select>
+            </div>
+            <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
+                <div class="form-check mb-sm-2">
+                    <input class="form-check-input" type="checkbox" id="ds-reviews-needs-reply" checked="@needsReplyOnly" @onchange="OnNeedsReplyChanged" />
+                    <label class="form-check-label" for="ds-reviews-needs-reply">Needs a reply</label>
+                </div>
+            </div>
+        </div>
+        <p class="small text-body-secondary mb-2" aria-live="polite">@ScopeText(shown.Count, all.Count)</p>
+
+        @* Always rendered, so a screen reader announces each result; it takes focus when the review it is about leaves the list. *@
+        <p class="ds-reviews-status mb-3" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
+
+        @if (shown.Count == 0)
+        {
+            <div class="ds-panel text-center py-5">
+                <span class="ds-icon fs-4" aria-hidden="true"><Icon Name="IconName.Star" /></span>
+                <p class="fw-bold mt-3 mb-1">@EmptyTitle(all.Count)</p>
+                <p class="text-body-secondary mb-0">@EmptyText(all.Count)</p>
+            </div>
+        }
+        else
+        {
+            <ul class="list-unstyled d-grid gap-3 mb-0" aria-labelledby="ds-reviews-title">
+                @foreach (var review in shown)
+                {
+                    var stay = State.FindStay(review.StayId);
+                    var stayName = stay?.Name ?? "a removed listing";
+                    var isEditing = editingId == review.Id;
+
+                    <li @key="review.Id">
+                        <article class="ds-panel" aria-labelledby="@($"ds-review-{review.Id}")">
+                            <div class="d-flex flex-wrap align-items-start justify-content-between gap-2">
+                                <div class="ds-review-main">
+                                    <h3 class="ds-card-title fs-6 mb-0" id="@($"ds-review-{review.Id}")">@review.Author<span class="visually-hidden"> about @stayName</span></h3>
+                                    <div class="ds-meta mt-1">
+                                        <span>
+                                            @if (stay is not null)
+                                            {
+                                                <a href="@TravelDisplay.StayUrl(stay.Id)">@stay.Name</a>
+                                            }
+                                            else
+                                            {
+                                                @stayName
+                                            }
+                                        </span>
+                                        <time datetime="@review.PostedOn.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)">@PostedText(review.PostedOn)</time>
+                                    </div>
+                                </div>
+                                <div class="ds-stars small text-nowrap">
+                                    <span aria-hidden="true">
+                                        @for (var star = 1; star <= 5; star++)
+                                        {
+                                            <Icon Name="@(star <= review.Rating ? IconName.StarFill : IconName.Star)" />
+                                        }
+                                    </span>
+                                    <span class="ds-rating-text ms-1">Rated @review.Rating out of 5</span>
+                                </div>
+                            </div>
+
+                            <p class="ds-review-body mt-2 mb-3">@review.Body</p>
+
+                            @if (isEditing)
+                            {
+                                var inputId = $"ds-reply-text-{review.Id}";
+                                var countId = $"ds-reply-count-{review.Id}";
+
+                                <div class="ds-reply-form">
+                                    <label class="form-label fw-semibold" for="@inputId">@(review.HostReply is null ? "Your public reply" : "Edit your public reply")</label>
+                                    <textarea class="form-control" id="@inputId" rows="4" maxlength="@TravelState.MaxReviewLength"
+                                              aria-describedby="@countId" @ref="replyInput" @bind="replyText" @bind:event="oninput"></textarea>
+                                    <div class="form-text" id="@countId">@CountText · shown on the @stayName stay page</div>
+                                    @* Always rendered, so a screen reader announces the error when it appears. *@
+                                    <p class="text-danger small mt-2 mb-0" role="alert">@replyError</p>
+                                    <div class="d-flex flex-wrap gap-2 mt-3">
+                                        <button type="button" class="btn btn-primary" @onclick="() => SaveReply(review)">
+                                            @(review.HostReply is null ? "Post reply" : "Save reply")
+                                        </button>
+                                        <button type="button" class="btn btn-outline-secondary" @onclick="() => CancelEdit(review.Id)">Cancel</button>
+                                    </div>
+                                </div>
+                            }
+                            else if (review.HostReply is { } reply)
+                            {
+                                <div class="ds-host-reply">
+                                    <p class="small fw-semibold mb-1">Your public reply</p>
+                                    <p class="ds-review-body small mb-2">@reply</p>
+                                    <div class="d-flex flex-wrap gap-2">
+                                        <button type="button" class="btn btn-sm btn-outline-primary" @ref="actionButtons[review.Id]" @onclick="() => StartEdit(review)">
+                                            <Icon Name="IconName.Pencil" class="me-1" aria-hidden="true" />Edit<span class="visually-hidden"> your reply to @review.Author</span>
+                                        </button>
+                                        <button type="button" class="btn btn-sm btn-outline-danger" @ref="removeButtons[review.Id]" @onclick="() => AskRemoveAsync(review)">
+                                            <Icon Name="IconName.Trash" class="me-1" aria-hidden="true" />Remove<span class="visually-hidden"> your reply to @review.Author</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="d-flex flex-wrap align-items-center gap-2">
+                                    <span class="small text-body-secondary">No reply yet.</span>
+                                    <button type="button" class="btn btn-sm btn-primary" @ref="actionButtons[review.Id]" @onclick="() => StartEdit(review)">
+                                        <Icon Name="IconName.Reply" class="me-1" aria-hidden="true" />Reply<span class="visually-hidden"> to @review.Author</span>
+                                    </button>
+                                </div>
+                            }
+                        </article>
+                    </li>
+                }
+            </ul>
+        }
+    </section>
+
+    <Modal @ref="removeModal" IsVerticallyCentered="true" ShowCloseButton="false" aria-labelledby="ds-remove-reply-title" OnHidden="OnRemoveHiddenAsync">
+        <HeaderTemplate>
+            <h2 class="modal-title h5" id="ds-remove-reply-title">Remove your reply to @(removing?.Author ?? "this review")?</h2>
+        </HeaderTemplate>
+        <BodyTemplate>
+            @if (removing is { } target)
+            {
+                <p class="mb-2">
+                    Guests will no longer see your reply under @target.Author's review on the @(State.FindStay(target.StayId)?.Name ?? "listing's") stay page.
+                    The review itself stays.
+                </p>
+                <p class="small text-body-secondary mb-0">You can write a new reply at any time.</p>
+            }
+            <p class="text-danger-emphasis fw-semibold small mt-2 mb-0" role="alert">@dialogError</p>
+        </BodyTemplate>
+        <FooterTemplate>
+            <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => removeModal.HideAsync()">Keep reply</Button>
+            <Button Color="ButtonColor.Danger" @onclick="ConfirmRemoveAsync">Remove reply</Button>
+        </FooterTemplate>
+    </Modal>
+</div>

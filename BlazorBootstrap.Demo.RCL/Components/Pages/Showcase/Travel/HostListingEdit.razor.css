@@ -1,0 +1,164 @@
+/* The listing editor. Breadcrumb, Button, and ShowcaseImage render their own elements, so those need ::deep. */
+
+.ds-le-error,
+.ds-le-field-error,
+.ds-le-over {
+    color: var(--bs-danger-text-emphasis);
+}
+
+.ds-le-error {
+    font-weight: 600;
+}
+
+    .ds-le-error:empty {
+        margin: 0;
+    }
+
+    .ds-le-error:focus {
+        outline: none;
+    }
+
+.ds-le-field-error {
+    margin: .25rem 0 0;
+    font-size: .875rem;
+    font-weight: 600;
+}
+
+    .ds-le-field-error:empty {
+        margin: 0;
+    }
+
+.ds-le-quote {
+    max-width: 26rem;
+    padding: .75rem 1rem;
+    border: 1px dashed var(--ds-border);
+    border-radius: .75rem;
+}
+
+.ds-le-amenities {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(11rem, 1fr));
+    gap: .25rem 1rem;
+}
+
+/* The chosen photos, in order: thumbnail, name, and the move and remove buttons (which wrap below on a phone). */
+.ds-le-photos {
+    display: grid;
+    gap: .5rem;
+    margin-bottom: 1rem;
+}
+
+.ds-le-photo {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: .5rem .75rem;
+    padding: .5rem;
+    border: 1px solid var(--ds-border);
+    border-radius: .75rem;
+}
+
+.ds-le-photo-thumb {
+    flex: 0 0 5rem;
+    border-radius: .5rem;
+    overflow: hidden;
+}
+
+    .ds-le-photo-thumb ::deep .sc-image,
+    .ds-le-photo-thumb ::deep .sc-image-placeholder {
+        width: 100%;
+        aspect-ratio: 4 / 3;
+    }
+
+    .ds-le-photo-thumb ::deep .sc-image-placeholder-caption {
+        display: none;
+    }
+
+.ds-le-photo-text {
+    display: flex;
+    flex: 1 1 6rem;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: .25rem .5rem;
+    min-width: 0;
+}
+
+.ds-le-photo-actions {
+    display: flex;
+    gap: .375rem;
+    margin-inline-start: auto;
+}
+
+/* The photo library: thumbnails with a checkbox in the corner; a chosen one is outlined and shows its place. */
+.ds-le-library {
+    min-width: 0;
+}
+
+.ds-le-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(6.5rem, 1fr));
+    gap: .75rem;
+}
+
+.ds-le-tile {
+    position: relative;
+    border: 2px solid var(--ds-border);
+    border-radius: .75rem;
+    overflow: hidden;
+    background: var(--ds-surface);
+}
+
+.ds-le-tile-on {
+    border-color: var(--sc-primary);
+}
+
+.ds-le-tile:focus-within {
+    outline: 3px solid var(--sc-primary);
+    outline-offset: 2px;
+}
+
+.ds-le-tile-check {
+    position: absolute;
+    top: .375rem;
+    left: .375rem;
+    z-index: 1;
+    width: 1.25rem;
+    height: 1.25rem;
+    margin: 0;
+}
+
+.ds-le-tile-label {
+    display: block;
+    cursor: pointer;
+}
+
+    .ds-le-tile-label ::deep .sc-image,
+    .ds-le-tile-label ::deep .sc-image-placeholder {
+        width: 100%;
+        aspect-ratio: 4 / 3;
+    }
+
+.ds-le-tile-check:disabled + .ds-le-tile-label {
+    cursor: not-allowed;
+    opacity: .55;
+}
+
+.ds-le-tile-name {
+    display: block;
+    padding: .25rem .5rem;
+    font-size: .8125rem;
+    font-weight: 600;
+    color: var(--ds-ink);
+}
+
+.ds-le-tile-pos {
+    position: absolute;
+    top: .375rem;
+    right: .375rem;
+    padding: 0 .375rem;
+    border-radius: .375rem;
+    font-size: .75rem;
+    font-weight: 700;
+    background: var(--sc-primary);
+    color: var(--sc-primary-contrast);
+}

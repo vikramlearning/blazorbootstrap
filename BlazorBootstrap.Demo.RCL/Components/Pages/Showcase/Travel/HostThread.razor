@@ -1,0 +1,108 @@
+@page "/showcase/travel/host/inbox/{ThreadId:int}"
+@layout HostLayout
+
+<div class="container-fluid px-lg-4">
+    @if (Conversation is not { } thread)
+    {
+        <PageTitle>Conversation not found · Hosting · @TravelSeedData.SiteName</PageTitle>
+
+        <section class="ds-not-found">
+            <span class="ds-icon fs-4" aria-hidden="true"><Icon Name="IconName.ChatDots" /></span>
+            <h1 class="ds-title fs-3 mt-3 mb-2">We couldn't find that conversation</h1>
+            <p class="text-body-secondary mb-4">It isn't a conversation about one of your listings. Your other messages are safe.</p>
+            <Button Type="ButtonType.Link" To="@HostInbox.InboxPath" Color="ButtonColor.Primary">Back to the inbox</Button>
+        </section>
+    }
+    else
+    {
+        var stay = State.FindStay(thread.StayId);
+        var booking = State.FindHostBooking(thread.BookingReference);
+        var isFull = thread.Messages.Count >= TravelState.MaxMessagesPerThread;
+
+        <PageTitle>@thread.GuestName · Inbox · Hosting · @TravelSeedData.SiteName</PageTitle>
+
+        <Breadcrumb Items="BreadcrumbItems(thread)" Class="mb-3" />
+
+        <div class="ds-thread-head mb-2">
+            <span class="ds-avatar ds-avatar-lg" aria-hidden="true">@HostInbox.Initials(thread.GuestName)</span>
+            <div class="ds-thread-head-main">
+                <h1 class="ds-title mb-0">@thread.GuestName</h1>
+                <div class="ds-meta mt-2">
+                    @if (stay is not null)
+                    {
+                        <span>Listing: <a href="@TravelDisplay.StayUrl(stay.Id)">@stay.Name</a></span>
+                    }
+                    else
+                    {
+                        <span>The listing was removed</span>
+                    }
+                    @if (booking is not null)
+                    {
+                        var phase = State.Phase(booking);
+                        <span>
+                            Booking <a href="@HostInbox.ReservationUrl(booking.Reference)">@booking.Reference</a>,
+                            @TravelDisplay.Dates(booking.CheckIn, booking.CheckOut)
+                            <Badge Color="@TravelDisplay.PhaseColor(phase)" Class="rounded-pill ms-1">@HostInbox.PhaseLabel(phase)</Badge>
+                        </span>
+                    }
+                    else
+                    {
+                        <span>No booking yet</span>
+                    }
+                </div>
+            </div>
+        </div>
+        <p class="ds-lead mb-4">Your conversation with @thread.GuestName, oldest message first.</p>
+
+        <div class="row">
+            <div class="col-lg-9 col-xl-8">
+                <h2 class="visually-hidden" id="ds-conversation-title">Messages with @thread.GuestName</h2>
+                <ol class="list-unstyled d-grid gap-3 mb-4" aria-labelledby="ds-conversation-title">
+                    @foreach (var message in thread.Messages)
+                    {
+                        <li class="ds-message-row @(message.FromHost ? "ds-message-row-host" : "ds-message-row-guest")">
+                            <article class="ds-message @(message.FromHost ? "ds-message-host" : "ds-message-guest")" aria-label="@MessageLabel(message)">
+                                <header class="d-flex flex-wrap align-items-baseline gap-2 mb-1">
+                                    <span class="fw-bold">@(message.FromHost ? "You" : message.Author)</span>
+                                    <time class="small text-body-secondary ms-auto" datetime="@message.SentAt.ToString("s", CultureInfo.InvariantCulture)">@TravelDisplay.Stamp(message.SentAt)</time>
+                                </header>
+                                @* Plain text: Razor encodes it, and pre-wrap keeps its line breaks. *@
+                                <div class="ds-message-body">@message.Body</div>
+                            </article>
+                        </li>
+                    }
+                </ol>
+
+                <section class="ds-panel" aria-labelledby="ds-reply-title">
+                    <h2 class="ds-section-title fs-5" id="ds-reply-title">Reply to @thread.GuestName</h2>
+                    @if (isFull)
+                    {
+                        <p class="text-body-secondary mb-0">This conversation has reached its limit of @TravelState.MaxMessagesPerThread messages, so no more can be added in this demo.</p>
+                    }
+                    else
+                    {
+                        <div class="d-flex flex-wrap gap-2 mb-3" role="group" aria-label="Quick replies" aria-describedby="ds-quick-note">
+                            @foreach (var quick in QuickReplies(thread, stay, booking))
+                            {
+                                <button type="button" class="btn btn-sm btn-outline-secondary" @key="quick.Label" @onclick="() => UseQuickReply(quick.Text)">
+                                    <Icon Name="IconName.Lightning" class="me-1" aria-hidden="true" />@quick.Label
+                                </button>
+                            }
+                        </div>
+                        <p class="form-text mt-0 mb-3" id="ds-quick-note">A quick reply adds a ready-made message to the box. Edit it before you send.</p>
+
+                        <label class="form-label fw-semibold" for="ds-reply-text">Your message</label>
+                        <textarea class="form-control" id="ds-reply-text" rows="5" maxlength="@TravelState.MaxMessageLength"
+                                  aria-describedby="ds-reply-count" @ref="replyBox" @bind="replyText" @bind:event="oninput"></textarea>
+                        <div class="form-text" id="ds-reply-count">@CountText</div>
+                        @* Always rendered, so a screen reader announces the error when it appears. *@
+                        <p class="text-danger small mt-2 mb-0" role="alert">@replyError</p>
+                        <Button Color="ButtonColor.Primary" Class="mt-3" @onclick="Send"><Icon Name="IconName.Send" class="me-2" aria-hidden="true" />Send</Button>
+                    }
+                    @* Always rendered and polite, so "Message sent" is announced without interrupting the next message. *@
+                    <p class="ds-reply-status small mb-0" role="status">@statusMessage</p>
+                </section>
+            </div>
+        </div>
+    }
+</div>
