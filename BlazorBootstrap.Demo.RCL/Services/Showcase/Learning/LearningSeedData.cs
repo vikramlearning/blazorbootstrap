@@ -1,4 +1,5 @@
 using BlazorBootstrap.Demo.RCL.Models.Showcase.Learning;
+using BlazorBootstrap.Demo.RCL.Services.Showcase.Foundation;
 
 namespace BlazorBootstrap.Demo.RCL.Services.Showcase.Learning;
 
@@ -10,14 +11,23 @@ public static class LearningSeedData
 {
     #region Fields and Constants
 
-    /// <summary>The fictitious learner shown as signed in.</summary>
+    /// <summary>The demo learner's name.</summary>
     public const string LearnerName = "Jordan Ashdown";
+
+    /// <summary>The role of a learner (enrolls, learns, takes quizzes, asks questions, reviews).</summary>
+    public const string LearnerRole = "learner";
 
     /// <summary>The fictitious school name.</summary>
     public const string SchoolName = "Quillpath Academy";
 
-    /// <summary>The fixed "today" all dates on the site are relative to.</summary>
-    public static readonly DateTime Today = new(2026, 11, 24);
+    /// <summary>The ID of the demo learner account.</summary>
+    public const string SeededLearnerId = "jordan";
+
+    /// <summary>When a fresh tab's clock starts; the clock moves on from there (D-029).</summary>
+    public static readonly DateTime Now = new(2026, 11, 24, 9, 0, 0);
+
+    /// <summary>The seed's "today" all seeded dates are relative to.</summary>
+    public static readonly DateTime Today = Now.Date;
 
     private static readonly string[] reviewers = { "Maya R.", "Theo L.", "Priya S.", "Jonah W.", "Elena V.", "Sam K.", "Ines M.", "Callum B." };
 
@@ -49,7 +59,91 @@ public static class LearningSeedData
         new("growth", "Personal growth", IconName.Flower1, "#7c3aed"),
     };
 
-    /// <summary>The lesson IDs completed in a fresh session: one course finished, two in progress.</summary>
+    /// <summary>Certificates in a fresh tab: the demo learner's, and a few other learners' (so the verify page has something to find).</summary>
+    public static List<LearningCertificate> Certificates() => new()
+    {
+        new("QP-7K4M-R2XD", 203, LearnerName, Now.AddDays(-20)) { AccountId = SeededLearnerId },
+        new("QP-2D8R-H6NW", 201, "Maya Rahman", Now.AddDays(-41)),
+        new("QP-9TFC-3LPQ", 205, "Theo Lindqvist", Now.AddDays(-12)),
+        new("QP-M4ZB-8EVK", 208, "Priya Sandhu", Now.AddDays(-3)),
+    };
+
+    /// <summary>The demo accounts: the learner with courses of their own.</summary>
+    public static IReadOnlyList<ShowcaseDemoAccount> DemoAccounts() => new List<ShowcaseDemoAccount>
+    {
+        new(SeededLearnerId, LearnerRole, LearnerName, "jordan.ashdown@example.com", "learn-demo-26", "JA"),
+    };
+
+    /// <summary>The demo learner's enrollments: one course finished, two in progress.</summary>
+    public static List<LearningEnrollment> Enrollments(IEnumerable<LearningCourse> courses) =>
+        CompletedLessons(courses).Select((pair, index) => new LearningEnrollment
+        {
+            AccountId = SeededLearnerId,
+            CourseId = pair.Key,
+            CompletedLessons = pair.Value,
+            EnrolledOn = Now.AddDays(-(45 - (index * 12))),
+            LastActivity = Now.AddDays(-(index + 1)),
+        }).ToList();
+
+    /// <summary>The demo learner's quiz results: every completed quiz lesson passed, some at the first try.</summary>
+    public static List<LearningQuizAttempt> QuizAttempts(IEnumerable<LearningCourse> courses) =>
+        Enrollments(courses)
+            .SelectMany(enrollment => courses.First(course => course.Id == enrollment.CourseId).Lessons
+                .Where(lesson => lesson.Kind == LearningLessonKind.Quiz && enrollment.CompletedLessons.Contains(lesson.Id))
+                .Select(lesson => new LearningQuizAttempt
+                {
+                    AccountId = SeededLearnerId,
+                    LessonId = lesson.Id,
+                    Attempts = 1 + (lesson.Id % 2),
+                    BestScore = lesson.Id % 3 == 0 ? lesson.Questions.Count : lesson.PassMark,
+                    LastScore = lesson.Id % 3 == 0 ? lesson.Questions.Count : lesson.PassMark,
+                    LastAnswers = lesson.Questions.Select((question, index) => index < (lesson.Id % 3 == 0 ? lesson.Questions.Count : lesson.PassMark) ? question.CorrectIndex : (question.CorrectIndex + 1) % question.Options.Count).ToList(),
+                    LastAt = enrollment.EnrolledOn.AddDays(2),
+                }))
+            .ToList();
+
+    /// <summary>Lesson questions and answers: a few answered by instructors or learners, and one of the demo learner's still open.</summary>
+    public static List<LearningQuestionThread> Questions(IReadOnlyList<LearningCourse> courses)
+    {
+        var byId = courses.ToDictionary(course => course.Id);
+        var threads = new List<LearningQuestionThread>();
+        var id = 1;
+
+        void Add(int courseId, int lessonIndex, string author, string? accountId, string text, double daysAgo, params (bool Instructor, string Text, double DaysAgo)[] answers)
+        {
+            var course = byId[courseId];
+            var thread = new LearningQuestionThread
+            {
+                Id = id++, CourseId = courseId, LessonId = course.Lessons[lessonIndex].Id, AccountId = accountId, Author = author, Text = text, AskedAt = Now.AddDays(-daysAgo),
+            };
+
+            foreach (var answer in answers)
+                thread.Answers.Add(new LearningAnswer(answer.Instructor ? course.Instructor : "Sam K.", answer.Instructor, answer.Text, Now.AddDays(-answer.DaysAgo)));
+
+            threads.Add(thread);
+        }
+
+        Add(201, 0, "Maya R.", null, "Do I need Visual Studio, or is VS Code enough for this course?", 20,
+            (true, "VS Code with the C# Dev Kit is enough. Everything in the course works from the command line too.", 19));
+        Add(201, 1, "Theo L.", null, "When should a component own its state, and when should the parent own it?", 14,
+            (true, "Start with the component owning it. Lift it up as soon as two components need the same value.", 13),
+            (false, "That rule of thumb saved me a lot of refactoring, thanks!", 12));
+        Add(201, 4, LearnerName, SeededLearnerId, "Is it fine to validate on every keystroke, or only when the form is submitted?", 2);
+        Add(203, 1, "Priya S.", null, "Is a LEFT JOIN always slower than an INNER JOIN?", 30,
+            (true, "Not always. It depends on the data and indexes; measure with the query plan rather than guessing.", 29));
+        Add(206, 0, "Elena V.", null, "How long should a status update be?", 8,
+            (true, "Short enough to read on a phone: a headline, three bullets, and the one thing you need from the reader.", 7));
+
+        return threads;
+    }
+
+    /// <summary>The roles of the site.</summary>
+    public static IReadOnlyList<ShowcaseRole> Roles() => new List<ShowcaseRole>
+    {
+        new(LearnerRole, "Learner", "/showcase/learning/progress", "/showcase/learning/profile", "Enrolls in courses, takes quizzes, asks questions, earns certificates, and writes reviews."),
+    };
+
+    /// <summary>The lesson IDs completed in a fresh tab: one course finished, two in progress.</summary>
     public static Dictionary<int, HashSet<int>> CompletedLessons(IEnumerable<LearningCourse> courses)
     {
         var byId = courses.ToDictionary(course => course.Id);
@@ -117,7 +211,11 @@ public static class LearningSeedData
                         _ => 3 + (index % 3),
                     };
 
-                    lessons.Add(new LearningLesson((courseId * 100) + number, title, kind, minutes, Body(row.Title, topic, kind)));
+                    var lessonId = (courseId * 100) + number;
+                    lessons.Add(new LearningLesson(lessonId, title, kind, minutes, Body(row.Title, topic, kind))
+                    {
+                        Questions = kind == LearningLessonKind.Quiz ? Quiz(lessonId, topic) : Array.Empty<LearningQuestion>(),
+                    });
                 }
 
                 modules.Add(new LearningModule(topic, lessons));
@@ -140,10 +238,11 @@ public static class LearningSeedData
         return courses;
     }
 
-    /// <summary>Three to five reviews per course, with ratings from a fixed pattern.</summary>
+    /// <summary>Three to five reviews per course, with ratings from a fixed pattern; some have an instructor reply.</summary>
     public static List<LearningReview> Reviews(IEnumerable<LearningCourse> courses)
     {
         var reviews = new List<LearningReview>();
+        var id = 1;
 
         foreach (var course in courses)
         {
@@ -152,7 +251,11 @@ public static class LearningSeedData
             for (var i = 0; i < count; i++)
             {
                 var rating = ratingPattern[(course.Id + (i * 3)) % ratingPattern.Length];
-                reviews.Add(new LearningReview(course.Id, reviewers[(course.Id + i) % reviewers.Length], rating, reviewBodies[rating - 1][(course.Id + i) % 2], Today.AddDays(-(5 + (i * 11) + (course.Id % 7))), IsFromThisSession: false));
+                reviews.Add(new LearningReview(id++, course.Id, reviewers[(course.Id + i) % reviewers.Length], rating, reviewBodies[rating - 1][(course.Id + i) % 2],
+                    Today.AddDays(-(5 + (i * 11) + (course.Id % 7))).AddHours(10))
+                {
+                    InstructorReply = rating <= 3 && i == 0 ? "Thanks for the honest feedback. I've added more worked examples to the first module since your review." : null,
+                });
             }
         }
 
@@ -162,6 +265,32 @@ public static class LearningSeedData
     #endregion
 
     #region Private Methods
+
+    /// <summary>Three questions for a quiz lesson; the options are rotated so the right answer isn't always first.</summary>
+    private static IReadOnlyList<LearningQuestion> Quiz(int lessonId, string topic)
+    {
+        var name = topic.ToLowerInvariant();
+        var templates = new (string Prompt, string[] Options, string Explanation)[]
+        {
+            ($"What is the best first step when you start with {name}?",
+                new[] { "Pick one small, real task", "Change everything at once", "Skip the checklist to save time", "Copy the example exactly as it is" },
+                "Small, real tasks show whether the idea works before you invest more."),
+            ("Why check the result against the checklist at the end?",
+                new[] { "It catches mistakes before they spread", "It makes the work look more formal", "The checklist replaces testing", "Only beginners need it" },
+                "A quick check at the end finds problems while they are still cheap to fix."),
+            ($"Which of these is a common mistake with {name}?",
+                new[] { "Doing everything at once", "Working in small steps", "Checking each change", "Adapting the example to your case" },
+                "Big-bang changes hide which step caused a problem; the other options are good habits."),
+        };
+
+        return templates.Select((template, q) =>
+        {
+            var rotation = (lessonId + q) % template.Options.Length;
+            var options = template.Options.Skip(rotation).Concat(template.Options.Take(rotation)).ToList();
+
+            return new LearningQuestion((lessonId * 10) + q + 1, template.Prompt, options, (template.Options.Length - rotation) % template.Options.Length, template.Explanation);
+        }).ToList();
+    }
 
     private static string Body(string course, string topic, LearningLessonKind kind) => kind switch
     {
@@ -195,6 +324,10 @@ public static class LearningSeedData
             """,
         _ => $"""
             ## Check your understanding
+
+            Three questions on *{topic.ToLowerInvariant()}*. Get at least two right to pass and complete the lesson; you can try again as often as you like, and you'll see why each answer is right.
+
+            ### Before you start, reflect on these
 
             Answer these on your own, then compare with the notes below.
 

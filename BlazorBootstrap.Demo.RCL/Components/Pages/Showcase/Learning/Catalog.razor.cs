@@ -1,11 +1,13 @@
 using BlazorBootstrap.Demo.RCL.Models.Showcase.Learning;
+using BlazorBootstrap.Demo.RCL.Services.Showcase.Foundation;
 using BlazorBootstrap.Demo.RCL.Services.Showcase.Learning;
 
 namespace BlazorBootstrap.Demo.RCL.Components.Pages.Showcase.Learning;
 
 /// <summary>
-/// Catalog: a "continue learning" strip, search, category and level filters, and course cards. The filters live in the
-/// site state, so they are still set after opening a course and coming back.
+/// Catalog: a "continue learning" strip for the signed-in learner, an invitation to sign in or register for a visitor,
+/// search, category and level filters, and course cards (with "Enrolled" or "Completed" on the learner's courses). The
+/// filters live in the site state, so they are still set after opening a course and coming back.
 /// </summary>
 public partial class Catalog : ComponentBase, IDisposable
 {
@@ -62,11 +64,20 @@ public partial class Catalog : ComponentBase, IDisposable
 
     private void OnStateChanged() => InvokeAsync(StateHasChanged);
 
+    /// <summary>Returns the sign-in (or register) route that comes back to the catalog.</summary>
+    private static string SignInUrl(bool register) =>
+        $"{LearningLayout.SignInPath}?{(register ? "mode=register&" : string.Empty)}returnUrl={Uri.EscapeDataString(LearningLayout.Base)}";
+
     #endregion
 
     #endregion
 
     #region Properties, Indexers
+
+    /// <summary>Greets the signed-in account by first name; a visitor gets the school's promise.</summary>
+    private string Greeting => State.Identity.Current is { } account
+        ? $"Welcome back, {account.Name.Split(' ', StringSplitOptions.RemoveEmptyEntries).FirstOrDefault() ?? account.Name}"
+        : "Free courses, at your own pace";
 
     private IReadOnlyList<LearningCourse> InProgress => State.EnrolledCourses.Where(course => !State.IsComplete(course.Id)).ToList();
 
@@ -94,6 +105,8 @@ public partial class Catalog : ComponentBase, IDisposable
         1 => "1 course",
         var count => $"{count} courses",
     };
+
+    [CascadingParameter] private ShowcaseSession Session { get; set; } = default!;
 
     [Inject] private LearningState State { get; set; } = default!;
 

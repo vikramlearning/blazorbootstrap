@@ -1,0 +1,28 @@
+/* Label and value pairs that wrap at 375 px; the verify link breaks anywhere rather than widening the page. */
+::deep .qp-cert-facts {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: .25rem .75rem;
+}
+
+    ::deep .qp-cert-facts dt {
+        font-weight: 600;
+    }
+
+    ::deep .qp-cert-facts dd {
+        margin-bottom: 0;
+        min-width: 0;
+    }
+
+::deep .qp-cert-code {
+    font-size: .95em;
+    letter-spacing: .04em;
+    color: inherit;
+}
+
+::deep .qp-cert-url {
+    overflow-wrap: anywhere;
+    font-family: var(--bs-font-monospace);
+    font-size: .85em;
+    user-select: all;
+}

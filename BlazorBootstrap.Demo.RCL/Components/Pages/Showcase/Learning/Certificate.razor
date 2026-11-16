@@ -1,29 +1,39 @@
-@page "/showcase/learning/certificates/{Id:int}"
+@page "/showcase/learning/certificates/{Code}"
 @layout LearningLayout
 
-@if (Course is null)
-{
-    <LearningNotFound />
-}
-else if (!State.IsComplete(Course.Id))
-{
-    <PageTitle>Certificate not earned yet · @LearningSeedData.SchoolName</PageTitle>
+@* Public: a certificate is meant to be shared, so anyone with the link (or the ID) can open it without signing in. *@
+<div class="container-xl pb-4">
+    @* Always rendered, so "Loading…" is announced and then replaced. *@
+    <div class="@(Session.IsRestored ? "visually-hidden" : "d-flex align-items-center text-body-secondary")" role="status">
+        @if (!Session.IsRestored)
+        {
+            <Spinner Size="SpinnerSize.Small" Class="me-2" aria-hidden="true" /><span>Loading the certificate…</span>
+        }
+    </div>
 
-    <section class="qp-not-found">
-        <span class="qp-icon fs-4" aria-hidden="true"><Icon Name="IconName.Award" /></span>
-        <h1 class="qp-title fs-3 mt-3 mb-2">No certificate yet</h1>
-        <p class="text-body-secondary mb-4">
-            Finish every lesson of @Course.Title to earn its certificate.
-            @(State.IsEnrolled(Course.Id) ? $"You have completed {State.CompletedCount(Course.Id)} of {Course.Lessons.Count} lessons." : "You are not enrolled in this course yet.")
-        </p>
-        <Button Type="ButtonType.Link" To="@LearningDisplay.CourseUrl(Course.Id)" Color="ButtonColor.Primary">Go to the course</Button>
-    </section>
-}
-else
-{
-    <PageTitle>Certificate: @Course.Title · @LearningSeedData.SchoolName</PageTitle>
+    @* Nothing else until the tab's session is restored, so a certificate issued in this tab isn't shown as not found first. *@
+    @if (!Session.IsRestored)
+    {
+        <PageTitle>Certificate · @LearningSeedData.SchoolName</PageTitle>
+    }
+    else if (Found is null || Course is null)
+    {
+        <PageTitle>Certificate not found · @LearningSeedData.SchoolName</PageTitle>
 
-    <div class="container-xl pb-4">
+        <section class="qp-not-found" aria-labelledby="qp-certificate-missing">
+            <span class="qp-icon fs-4" aria-hidden="true"><Icon Name="IconName.Award" /></span>
+            <h1 class="qp-title fs-3 mt-3 mb-2" id="qp-certificate-missing">Certificate not found</h1>
+            <p class="text-body-secondary mb-4">
+                There is no certificate with the ID <code class="text-break">@Code</code>. Check it against the ID you were given:
+                it looks like QP-7K4M-R2XD.
+            </p>
+            <Button Type="ButtonType.Link" To="@Verify.PathFor(null)" Color="ButtonColor.Primary">Go to the verify page</Button>
+        </section>
+    }
+    else
+    {
+        <PageTitle>Certificate: @Course.Title · @LearningSeedData.SchoolName</PageTitle>
+
         <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3 sc-no-print">
             <Breadcrumb Items="BreadcrumbItems" />
             <Button Color="ButtonColor.Primary" Outline="true" Size="ButtonSize.Small" @onclick="PrintAsync">
@@ -36,21 +46,19 @@ else
             <p class="sc-eyebrow mb-2">@LearningSeedData.SchoolName</p>
             <h1 class="qp-title fs-2 mb-4" id="qp-certificate-title">Certificate of completion</h1>
             <p class="mb-1">This certifies that</p>
-            <p class="qp-certificate-name mb-3">@LearningSeedData.LearnerName</p>
-            <p class="mb-1">has completed all @Course.Lessons.Count lessons of</p>
+            <p class="qp-certificate-name mb-3">@Found.LearnerName</p>
+            <p class="mb-1">has completed all @Course.Lessons.Count lessons (@LearningDisplay.Duration(Course.Minutes)) of</p>
             <p class="h4 fw-bold mb-4">@Course.Title</p>
             <dl class="row justify-content-center small mb-4">
                 <dt class="col-6 col-sm-3 text-sm-end">Instructor</dt>
                 <dd class="col-6 col-sm-3 text-start">@Course.Instructor</dd>
-                <dt class="col-6 col-sm-3 text-sm-end">Length</dt>
-                <dd class="col-6 col-sm-3 text-start">@LearningDisplay.Duration(Course.Minutes)</dd>
                 <dt class="col-6 col-sm-3 text-sm-end">Issued</dt>
-                <dd class="col-6 col-sm-3 text-start">@LearningDisplay.Date(LearningSeedData.Today)</dd>
-                <dt class="col-6 col-sm-3 text-sm-end">Certificate ID</dt>
-                <dd class="col-6 col-sm-3 text-start">QPA-@Course.Id-2026</dd>
+                <dd class="col-6 col-sm-3 text-start">@LearningDisplay.Date(Found.IssuedOn)</dd>
             </dl>
-            <p class="small text-body-secondary mb-0">A demo certificate from a fictitious school. It has no value and cannot be verified.</p>
+            <p class="small mb-2 text-break">
+                Certificate ID <code class="text-reset fw-semibold">@Found.Code</code> · verify at @VerifyUrl
+            </p>
+            <p class="small text-body-secondary mb-0">A demo certificate from a fictitious school. It has no value outside this demo.</p>
         </article>
-    </div>
-}
-
+    }
+</div>

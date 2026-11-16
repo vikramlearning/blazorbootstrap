@@ -7,7 +7,7 @@
     <section class="qp-hero mb-4" aria-labelledby="qp-catalog-title">
         <div class="row align-items-center g-4">
             <div class="col-lg-7">
-                <span class="sc-eyebrow">Welcome back, @LearningSeedData.LearnerName.Split(' ')[0]</span>
+                <span class="sc-eyebrow">@Greeting</span>
                 <h1 class="qp-title mt-1" id="qp-catalog-title">Learn something useful this week</h1>
                 <p class="qp-lead">Short, practical courses with videos, readings, self-checks, and a handout for every course.</p>
             </div>
@@ -29,6 +29,27 @@
             }
         </div>
     </section>
+
+    @if (Session.IsRestored && !State.Identity.IsSignedIn)
+    {
+        @* Icon and text stay side by side; the buttons move under them on a narrow screen. *@
+        <section class="qp-panel d-flex flex-column flex-md-row align-items-md-center gap-3 mb-4" aria-labelledby="qp-catalog-sign-in">
+            <div class="d-flex align-items-start gap-3 flex-grow-1">
+                <span class="qp-icon flex-shrink-0" aria-hidden="true"><Icon Name="IconName.PersonCircle" /></span>
+                <div>
+                    <h2 class="h6 fw-bold mb-1" id="qp-catalog-sign-in">Sign in to enroll and track your progress</h2>
+                    <p class="mb-0">
+                        Browse every course without an account. To enroll, take the self-checks, and earn certificates, sign in:
+                        the sign-in page has a one-click demo account, or you can create your own. It only lives in this browser tab.
+                    </p>
+                </div>
+            </div>
+            <div class="d-flex flex-wrap gap-2 flex-shrink-0">
+                <a class="btn btn-primary" href="@SignInUrl(register: false)">Sign in</a>
+                <a class="btn btn-outline-primary" href="@SignInUrl(register: true)">Create an account</a>
+            </div>
+        </section>
+    }
 
     <div class="row g-4">
         <aside class="col-lg-3" aria-label="Filters">

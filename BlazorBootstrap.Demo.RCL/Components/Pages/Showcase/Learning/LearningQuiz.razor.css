@@ -1,0 +1,102 @@
+.qp-quiz-best {
+    font-size: .9375rem;
+}
+
+/* The status region stays in the page while empty (a hidden live region may not be announced); it gets its box once it has text. */
+.qp-quiz-result-pass,
+.qp-quiz-result-fail,
+.qp-quiz-result-error {
+    margin-bottom: 1rem;
+    padding: .75rem 1rem;
+    border: 1px solid var(--qp-border);
+    border-left-width: .3rem;
+    border-radius: .5rem;
+}
+
+.qp-quiz-result:focus-visible {
+    outline: 2px solid var(--sc-primary);
+    outline-offset: 2px;
+}
+
+.qp-quiz-result-error {
+    border-left-color: var(--bs-danger);
+}
+
+.qp-quiz-result-pass {
+    border-left-color: var(--bs-success);
+    background: var(--bs-success-bg-subtle);
+    color: var(--bs-success-text-emphasis);
+}
+
+.qp-quiz-result-fail {
+    border-left-color: var(--bs-warning);
+    background: var(--bs-warning-bg-subtle);
+    color: var(--bs-warning-text-emphasis);
+}
+
+.qp-quiz-question {
+    margin: 0 0 1.25rem;
+    padding: 0 0 1rem;
+    border-bottom: 1px solid var(--qp-border);
+    min-width: 0;
+}
+
+.qp-quiz-question-missing {
+    padding-left: .75rem;
+    border-left: .25rem solid var(--bs-danger);
+}
+
+.qp-quiz-legend {
+    float: none;
+    width: 100%;
+    margin-bottom: .5rem;
+    font-size: 1rem;
+    font-weight: 600;
+    overflow-wrap: anywhere;
+}
+
+.qp-quiz-number {
+    display: block;
+    font-size: .8125rem;
+    font-weight: 700;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    color: var(--bs-secondary-color);
+}
+
+.qp-quiz-option {
+    margin-bottom: .375rem;
+}
+
+    .qp-quiz-option .form-check-label {
+        overflow-wrap: anywhere;
+    }
+
+.qp-quiz-review {
+    margin: 0 0 1rem;
+    padding: 0;
+    list-style: none;
+}
+
+.qp-quiz-review-item {
+    padding-block: .75rem;
+    border-top: 1px solid var(--qp-border);
+    overflow-wrap: anywhere;
+}
+
+    .qp-quiz-review-item:first-child {
+        border-top: 0;
+        padding-top: 0;
+    }
+
+.qp-quiz-mark {
+    font-weight: 700;
+}
+
+.qp-quiz-mark-right {
+    color: var(--bs-success-text-emphasis);
+}
+
+.qp-quiz-mark-wrong {
+    color: var(--bs-danger-text-emphasis);
+}

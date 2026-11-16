@@ -12,33 +12,46 @@
             {
                 <Badge Color="BadgeColor.Warning" Class="rounded-pill">Popular</Badge>
             }
+            @if (IsEnrolled)
+            {
+                @* The learner's status in words, so it doesn't rest on the progress bar alone. *@
+                <Badge Color="@(IsComplete ? BadgeColor.Success : BadgeColor.Primary)" Class="rounded-pill">@(IsComplete ? "Completed" : "Enrolled")</Badge>
+            }
         </div>
         <h3 class="qp-card-title"><a href="@LearningDisplay.CourseUrl(Course.Id)">@Course.Title</a></h3>
         <p class="small text-body-secondary mb-2">@Course.Instructor</p>
         <div class="qp-stars small mb-2">
-            <span class="visually-hidden">Rated @LearningDisplay.Rating(Rating) out of 5 from @ReviewCount reviews</span>
-            <span aria-hidden="true">
-                @foreach (var star in LearningDisplay.Stars(Rating))
-                {
-                    <Icon Name="star" />
-                }
-                <span class="text-body-secondary ms-1">@LearningDisplay.Rating(Rating) (@ReviewCount)</span>
-            </span>
+            @if (ReviewCount == 0)
+            {
+                <span class="text-body-secondary">No reviews yet</span>
+            }
+            else
+            {
+                <span class="visually-hidden">Rated @LearningDisplay.Rating(Rating) out of 5 from @ReviewCountText</span>
+                <span aria-hidden="true">
+                    @foreach (var star in LearningDisplay.Stars(Rating))
+                    {
+                        <Icon Name="star" />
+                    }
+                    <span class="text-body-secondary ms-1">@LearningDisplay.Rating(Rating) (@ReviewCount)</span>
+                </span>
+            }
         </div>
         <div class="qp-meta mt-auto">
             <span><Icon Name="IconName.Clock" class="me-1" aria-hidden="true" />@LearningDisplay.Duration(Course.Minutes)</span>
             <span><Icon Name="IconName.Journal" class="me-1" aria-hidden="true" />@Course.Lessons.Count lessons</span>
         </div>
-        @if (State.IsEnrolled(Course.Id))
+        @if (IsEnrolled)
         {
             var percent = State.ProgressPercent(Course.Id);
+            var progressText = $"{State.CompletedCount(Course.Id)} of {Course.Lessons.Count} lessons complete";
             <div class="mt-3">
                 <Progress Height="8">
-                    <ProgressBar Width="percent"
+                    <ProgressBar Width="percent" Color="@(IsComplete ? ProgressColor.Success : ProgressColor.Primary)"
                                  aria-label="@($"{Course.Title} progress")" aria-valuenow="@percent" aria-valuemin="0" aria-valuemax="100"
-                                 aria-valuetext="@($"{percent}% complete")" />
+                                 aria-valuetext="@progressText" />
                 </Progress>
-                <p class="small text-body-secondary mt-1 mb-0">@(percent == 100 ? "Completed" : $"{percent}% complete")</p>
+                <p class="small text-body-secondary mt-1 mb-0">@progressText (@percent%)</p>
             </div>
         }
     </CardBody>

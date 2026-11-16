@@ -1,0 +1,60 @@
+@page "/showcase/learning/certificates"
+@layout LearningLayout
+
+<PageTitle>Your certificates · @LearningSeedData.SchoolName</PageTitle>
+
+@* The learner's certificates, newest first, each with its code and the public verify link to share. *@
+<div class="container-xl pb-4">
+    <ShowcaseRoleGuard Roles="@LearningSeedData.LearnerRole" SignInPath="@LearningLayout.SignInPath">
+        <div class="mb-4">
+            <h1 class="qp-title">Your certificates</h1>
+            <p class="qp-lead mb-0">
+                You earn a certificate when you finish every lesson of a course. Anyone can check a certificate with its ID on the
+                <a href="@Verify.PathFor(null)">verify page</a>, so you can share the ID or the verify link with an employer.
+            </p>
+        </div>
+
+        @if (State.MyCertificates.Count == 0)
+        {
+            <div class="qp-panel text-center py-5">
+                <span class="qp-icon fs-4" aria-hidden="true"><Icon Name="IconName.Award" /></span>
+                <h2 class="h5 fw-bold mt-3">No certificates yet</h2>
+                <p class="text-body-secondary">Finish every lesson of a course and its certificate appears here.</p>
+                <Button Type="ButtonType.Link" To="@($"{LearningLayout.Base}/progress")" Color="ButtonColor.Primary">Go to My learning</Button>
+            </div>
+        }
+        else
+        {
+            <ul class="list-unstyled row g-3 mb-0">
+                @foreach (var certificate in State.MyCertificates)
+                {
+                    var title = State.FindCourse(certificate.CourseId)?.Title ?? "A retired course";
+                    <li class="col-lg-6" @key="certificate.Code">
+                        <Card Class="qp-card h-100">
+                            <CardBody>
+                                <div class="d-flex align-items-start gap-3">
+                                    <span class="qp-icon flex-shrink-0" aria-hidden="true"><Icon Name="IconName.Award" /></span>
+                                    <div class="flex-grow-1 min-w-0">
+                                        <h2 class="qp-card-title">@title</h2>
+                                        <dl class="qp-cert-facts small mb-3">
+                                            <dt>Issued</dt>
+                                            <dd>@LearningDisplay.Date(certificate.IssuedOn)</dd>
+                                            <dt>Certificate ID</dt>
+                                            <dd><code class="qp-cert-code">@certificate.Code</code></dd>
+                                            <dt>Verify link</dt>
+                                            <dd class="qp-cert-url">@VerifyUrl(certificate.Code)</dd>
+                                        </dl>
+                                        @* No extra attributes on link Buttons: a parent re-render replaces them and drops the Button's own href and role. *@
+                                        <Button Type="ButtonType.Link" To="@Certificate.PathFor(certificate.Code)" Color="ButtonColor.Primary" Size="ButtonSize.Small">
+                                            <Icon Name="IconName.Award" class="me-1" aria-hidden="true" />View certificate<span class="visually-hidden"> for @title</span>
+                                        </Button>
+                                    </div>
+                                </div>
+                            </CardBody>
+                        </Card>
+                    </li>
+                }
+            </ul>
+        }
+    </ShowcaseRoleGuard>
+</div>
