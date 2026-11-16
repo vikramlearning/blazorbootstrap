@@ -1,0 +1,112 @@
+@page "/showcase/help-desk/agent/saved-replies"
+@layout HelpDeskAgentLayout
+
+<PageTitle>Saved replies · @HelpDeskSeedData.ProductName</PageTitle>
+
+@{
+    var replies = State.SavedReplies;
+}
+
+<div class="container-fluid px-lg-4">
+    <div class="hd-page-head">
+        <div>
+            <h1 class="hd-title">Saved replies</h1>
+            <p class="hd-lead">Answers you send often. Insert one from the reply box on any ticket, then adjust it before sending.</p>
+        </div>
+        <Button @ref="addButton" Color="ButtonColor.Primary" @onclick="AddAsync">
+            <Icon Name="IconName.Plus" class="me-1" aria-hidden="true" />Add saved reply
+        </Button>
+    </div>
+
+    <p class="hd-replies-error" role="alert">@pageError</p>
+    @* Always rendered and focusable, so a change is announced and focus has somewhere to go when its button is gone. *@
+    <p class="hd-replies-status" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
+
+    @if (replies.Count == 0)
+    {
+        <div class="hd-panel text-center py-5">
+            <span class="hd-icon fs-4" aria-hidden="true"><Icon Name="IconName.ChatQuote" /></span>
+            <p class="mt-3 mb-0 text-body-secondary">No saved replies yet. Choose "Add saved reply" to write one you can insert into any ticket.</p>
+        </div>
+    }
+    else
+    {
+        <ul class="list-unstyled d-grid gap-3 mb-0" aria-label="Saved replies">
+            @foreach (var reply in replies)
+            {
+                <li @key="reply.Id">
+                    <article class="hd-panel" aria-labelledby="@($"hd-saved-{reply.Id}-title")">
+                        <div class="hd-saved-head">
+                            <h2 class="hd-section-title mb-0" id="@($"hd-saved-{reply.Id}-title")">@reply.Title</h2>
+                            <div class="hd-saved-actions">
+                                <Button @ref="editButtons[reply.Id]" Color="ButtonColor.Secondary" Outline="true" Size="ButtonSize.Small" @onclick="() => EditAsync(reply)">
+                                    <Icon Name="IconName.PencilSquare" class="me-1" aria-hidden="true" />Edit<span class="visually-hidden"> @reply.Title</span>
+                                </Button>
+                                <Button @ref="deleteButtons[reply.Id]" Color="ButtonColor.Danger" Outline="true" Size="ButtonSize.Small" @onclick="() => AskDeleteAsync(reply)">
+                                    <Icon Name="IconName.Trash3" class="me-1" aria-hidden="true" />Delete<span class="visually-hidden"> @reply.Title</span>
+                                </Button>
+                            </div>
+                        </div>
+                        @* Saved replies are editor HTML: only allow-listed formatting comes back (OWASP A05). *@
+                        <div class="hd-message-body hd-saved-preview mt-2">@ShowcaseHtml.FromEditorHtml(reply.Html)</div>
+                    </article>
+                </li>
+            }
+        </ul>
+    }
+</div>
+
+<Modal @ref="editorModal"
+       IsVerticallyCentered="true"
+       IsScrollable="true"
+       Size="ModalSize.Large"
+       ShowCloseButton="false"
+       aria-labelledby="hd-saved-editor-title"
+       OnShown="OnEditorShownAsync"
+       OnHidden="OnEditorHiddenAsync">
+    <HeaderTemplate>
+        <h2 class="modal-title h5" id="hd-saved-editor-title">@(editingId == 0 ? "Add a saved reply" : "Edit saved reply")</h2>
+    </HeaderTemplate>
+    <BodyTemplate>
+        <div data-clarity-mask="true">
+            <ShowcaseDemoNotice Class="mb-3" Text="Demo only: saved replies stay in this browser tab. Nothing is sent." />
+            @* Only the title is in the form, so Enter there saves; the editor's toolbar stays out of it. *@
+            <form id="hd-saved-form" @onsubmit="SaveAsync" novalidate>
+                <label class="form-label fw-semibold" for="hd-saved-title">Title</label>
+                <input @ref="titleInput" id="hd-saved-title" class="form-control @(titleError is null ? null : "is-invalid")" value="@title" @oninput="OnTitleInput"
+                       maxlength="@MaxTitleLength" autocomplete="off" aria-describedby="hd-saved-title-help hd-saved-title-error" aria-invalid="@(titleError is null ? null : "true")" />
+                <div class="form-text" id="hd-saved-title-help">1 to @MaxTitleLength characters; agents pick replies by their title.</div>
+                <p class="hd-field-error" id="hd-saved-title-error" role="alert">@titleError</p>
+            </form>
+            <span class="form-label fw-semibold d-block mt-3" id="hd-saved-body-label">Reply</span>
+            @* The editor reads Value only when it is built, so a new key per open starts it with this reply's text. No Link button:
+               its dialog would open inside this one. *@
+            <RichTextEditor @key="editorVersion"
+                            Value="@editorStart"
+                            ValueChanged="OnBodyChanged"
+                            ToolbarItems="toolbarItems"
+                            AriaLabel="Saved reply text"
+                            Placeholder="Write the reply…"
+                            ShowFooter="false" />
+            <p class="hd-field-error mt-2" role="alert">@bodyError</p>
+            <p class="hd-field-error mt-2 mb-0" role="alert">@formError</p>
+        </div>
+    </BodyTemplate>
+    <FooterTemplate>
+        <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => editorModal.HideAsync()">Cancel</Button>
+        <Button Type="ButtonType.Submit" Color="ButtonColor.Primary" form="hd-saved-form">@(editingId == 0 ? "Add saved reply" : "Save changes")</Button>
+    </FooterTemplate>
+</Modal>
+
+<Modal @ref="deleteModal" IsVerticallyCentered="true" ShowCloseButton="false" aria-labelledby="hd-saved-delete-title" OnHidden="OnDeleteHiddenAsync">
+    <HeaderTemplate>
+        <h2 class="modal-title h5" id="hd-saved-delete-title">Delete the saved reply "@(deleting?.Title)"?</h2>
+    </HeaderTemplate>
+    <BodyTemplate>
+        <p class="mb-0">It's removed from the list and from every ticket's "Insert saved reply" choices. Replies already sent keep their text.</p>
+    </BodyTemplate>
+    <FooterTemplate>
+        <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => deleteModal.HideAsync()">Keep saved reply</Button>
+        <Button Color="ButtonColor.Danger" @onclick="ConfirmDeleteAsync">Delete saved reply</Button>
+    </FooterTemplate>
+</Modal>

@@ -1,12 +1,23 @@
-@* The site's not-found screen, shown by the catch-all route and for unknown tickets and articles. *@
+@* The site's not-found screen, shown by the catch-all routes and for unknown tickets, requests, and articles. *@
 <PageTitle>Page not found · @HelpDeskSeedData.ProductName</PageTitle>
 
 <section class="hd-not-found">
     <span class="hd-icon fs-4" aria-hidden="true"><Icon Name="IconName.SignpostSplit" /></span>
     <h1 class="hd-title fs-3 mt-3 mb-2">We couldn't find that page</h1>
-    <p class="text-body-secondary mb-4">The ticket or article may have been merged or removed.</p>
+    <p class="text-body-secondary mb-4">@Message</p>
     <div class="d-flex justify-content-center flex-wrap gap-2">
-        <Button Type="ButtonType.Link" To="@HelpDeskLayout.Base" Color="ButtonColor.Primary">Back to the queue</Button>
+        <Button Type="ButtonType.Link" To="@(BackPath ?? HelpDeskLayout.Base)" Color="ButtonColor.Primary">@(BackText ?? "Back to the help center")</Button>
         <Button Type="ButtonType.Link" To="@($"{HelpDeskLayout.Base}/kb")" Color="ButtonColor.Primary" Outline="true">Knowledge base</Button>
     </div>
 </section>
+
+@code {
+    /// <summary>Gets or sets where the main button goes; the help center by default.</summary>
+    [Parameter] public string? BackPath { get; set; }
+
+    /// <summary>Gets or sets the main button's text.</summary>
+    [Parameter] public string? BackText { get; set; }
+
+    /// <summary>Gets or sets the explanation under the heading.</summary>
+    [Parameter] public string Message { get; set; } = "The page may have moved, or what it pointed to no longer exists.";
+}

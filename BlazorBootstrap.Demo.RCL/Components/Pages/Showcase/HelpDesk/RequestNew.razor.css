@@ -1,0 +1,18 @@
+.hd-request-urgency {
+    display: grid;
+    gap: .75rem;
+}
+
+@media (min-width: 768px) {
+    .hd-request-urgency {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+.hd-request-suggestions {
+    padding: 1rem;
+    border: 1px solid var(--hd-border);
+    border-left: .25rem solid var(--sc-primary);
+    border-radius: .5rem;
+    background: rgba(var(--sc-primary-rgb), .05);
+}

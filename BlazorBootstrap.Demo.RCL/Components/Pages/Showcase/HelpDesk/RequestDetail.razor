@@ -1,0 +1,185 @@
+@page "/showcase/help-desk/requests/{Id:int}"
+@layout HelpDeskLayout
+
+<ShowcaseRoleGuard Roles="@HelpDeskSeedData.CustomerRole" SignInPath="@HelpDeskLayout.SignInPath">
+    @if (Ticket is not { } ticket)
+    {
+        <div class="container-fluid px-lg-4">
+            <HelpDeskNotFound BackPath="@($"{HelpDeskLayout.Base}/requests")" BackText="Back to my requests"
+                              Message="There's no request with that number in your account." />
+        </div>
+    }
+    else
+    {
+        var category = State.FindCategory(ticket.CategoryId);
+        var isSolved = ticket.Status == HelpDeskStatus.Resolved;
+
+        <PageTitle>Request #@ticket.Id · @HelpDeskSeedData.ProductName</PageTitle>
+
+        <div class="container-fluid px-lg-4">
+            <Breadcrumb Items="BreadcrumbItems" Class="mb-3" />
+
+            <div class="hd-page-head">
+                <div class="hd-request-head">
+                    <span class="hd-mono small text-body-secondary">Request #@ticket.Id · @category.Name</span>
+                    <h1 class="hd-title mt-1">@ticket.Subject</h1>
+                    <div class="d-flex flex-wrap align-items-center gap-2 mt-2">
+                        <Badge Color="@HelpDeskDisplay.StatusColor(ticket.Status)" Class="rounded-pill">@HelpDeskDisplay.CustomerStatus(ticket.Status)</Badge>
+                        <span class="small text-body-secondary">Opened @HelpDeskDisplay.Stamp(ticket.CreatedAt)</span>
+                    </div>
+                </div>
+                @if (!isSolved)
+                {
+                    <Button @ref="solveButton" Color="ButtonColor.Success" Outline="true" @onclick="AskSolveAsync">
+                        <Icon Name="IconName.CheckCircle" class="me-2" aria-hidden="true" />Mark as solved
+                    </Button>
+                }
+            </div>
+
+            @* Always rendered and focusable, so each change is announced and focus has somewhere to go when its control is gone. *@
+            <p class="hd-request-status" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
+
+            <div class="row g-4">
+                <div class="col-xl-8">
+                    <h2 class="visually-hidden" id="hd-thread-title">Conversation</h2>
+                    <ol class="list-unstyled d-grid gap-3 mb-4" aria-labelledby="hd-thread-title">
+                        @foreach (var message in VisibleMessages(ticket))
+                        {
+                            <li>
+                                <article class="hd-message @(message.IsAgent ? "hd-message-agent" : null)" aria-label="@MessageLabel(message)">
+                                    <header class="d-flex flex-wrap align-items-center gap-2 mb-2">
+                                        <span class="fw-bold">@(message.IsAgent ? message.Author : "You")</span>
+                                        @if (message.IsAgent)
+                                        {
+                                            <Badge Color="BadgeColor.Secondary">Support team</Badge>
+                                        }
+                                        <time class="small text-body-secondary ms-auto" datetime="@message.PostedAt.ToString("s", CultureInfo.InvariantCulture)"
+                                              title="@HelpDeskDisplay.Stamp(message.PostedAt)">@HelpDeskDisplay.Ago(message.PostedAt, State.Now)</time>
+                                    </header>
+                                    @if (message.IsAgent && message.IsRichText)
+                                    {
+                                        @* Editor HTML is decoded once, then encoded again; only allow-listed formatting tags come back (OWASP A05). *@
+                                        <div class="hd-message-body">@ShowcaseHtml.FromEditorHtml(message.Body)</div>
+                                    }
+                                    else
+                                    {
+                                        @* The customer's own text: Razor encodes it, and pre-line keeps its line breaks. *@
+                                        <div class="hd-message-body hd-plain">@message.Body</div>
+                                    }
+                                </article>
+                            </li>
+                        }
+                    </ol>
+
+                    @if (isSolved)
+                    {
+                        <section class="hd-panel mb-4" aria-labelledby="hd-rate-title">
+                            <h2 class="hd-section-title" id="hd-rate-title">How did we do?</h2>
+                            @if (ticket.Satisfaction is { } rated && !editingRating)
+                            {
+                                <p class="mb-2">
+                                    You rated this request
+                                    <strong>@(rated == HelpDeskSatisfaction.Good ? "Good, I'm satisfied" : "Bad, I'm unsatisfied")</strong>.
+                                </p>
+                                @if (ticket.SatisfactionComment is { } comment)
+                                {
+                                    <p class="small text-body-secondary hd-request-comment mb-3">Your comment: @comment</p>
+                                }
+                                <Button @ref="changeRatingButton" Color="ButtonColor.Secondary" Outline="true" Size="ButtonSize.Small" @onclick="StartChangeRating">Change your rating</Button>
+                            }
+                            else
+                            {
+                                <p class="small text-body-secondary">Your rating helps the team improve. Only they see it.</p>
+                                <fieldset class="mb-3">
+                                    <legend class="form-label fw-semibold fs-6">Your rating</legend>
+                                    <div class="d-flex flex-wrap gap-2">
+                                        <input type="radio" class="btn-check" name="hd-rating" id="hd-rating-good" autocomplete="off"
+                                               checked="@(rating == HelpDeskSatisfaction.Good)" @onchange="() => SetRating(HelpDeskSatisfaction.Good)" @ref="ratingGood" />
+                                        <label class="btn btn-outline-success" for="hd-rating-good"><Icon Name="IconName.HandThumbsUp" class="me-2" aria-hidden="true" />Good, I'm satisfied</label>
+                                        <input type="radio" class="btn-check" name="hd-rating" id="hd-rating-bad" autocomplete="off"
+                                               checked="@(rating == HelpDeskSatisfaction.Bad)" @onchange="() => SetRating(HelpDeskSatisfaction.Bad)" @ref="ratingBad" />
+                                        <label class="btn btn-outline-danger" for="hd-rating-bad"><Icon Name="IconName.HandThumbsDown" class="me-2" aria-hidden="true" />Bad, I'm unsatisfied</label>
+                                    </div>
+                                </fieldset>
+                                <label class="form-label fw-semibold" for="hd-rating-comment">Comment <span class="fw-normal text-body-secondary">(optional)</span></label>
+                                <textarea class="form-control" id="hd-rating-comment" rows="3" maxlength="@MaxRatingCommentLength"
+                                          aria-describedby="hd-rating-comment-help" @bind="ratingComment" @bind:event="oninput"></textarea>
+                                <div class="form-text" id="hd-rating-comment-help">What went well, or what could have been better. Up to 500 characters.</div>
+                                @* Always rendered, so a screen reader announces the error when it appears. *@
+                                <p class="text-danger small mt-2 mb-0" role="alert">@ratingError</p>
+                                <div class="d-flex flex-wrap gap-2 mt-3">
+                                    <Button Color="ButtonColor.Primary" @onclick="SubmitRating">Send rating</Button>
+                                    @if (ticket.Satisfaction is not null)
+                                    {
+                                        <Button Color="ButtonColor.Secondary" Outline="true" @onclick="CancelChangeRating">Keep my rating</Button>
+                                    }
+                                </div>
+                            }
+                        </section>
+                    }
+
+                    <section class="hd-panel" aria-labelledby="hd-reply-title" data-clarity-mask="true">
+                        <h2 class="hd-section-title" id="hd-reply-title">Reply</h2>
+                        @if (ticket.Messages.Count >= MaxMessages)
+                        {
+                            <p class="text-body-secondary mb-0">This conversation is full. Submit a new request to keep going.</p>
+                        }
+                        else
+                        {
+                            <p class="small text-body-secondary">@ReplyHint(ticket.Status)</p>
+                            <label class="form-label fw-semibold" for="hd-reply-text">Your message</label>
+                            <textarea class="form-control" id="hd-reply-text" rows="5" maxlength="@HelpDeskState.MaxCustomerMessageLength"
+                                      aria-describedby="hd-reply-help" @bind="replyText" @bind:event="oninput"></textarea>
+                            <div class="form-text" id="hd-reply-help">Up to 4,000 characters. It stays in this browser tab; nothing is emailed.</div>
+                            @* Always rendered, so a screen reader announces the error when it appears. *@
+                            <p class="text-danger small mt-2 mb-0" role="alert">@replyError</p>
+                            <div class="mt-3">
+                                <Button Color="ButtonColor.Primary" @onclick="SendReply"><Icon Name="IconName.Send" class="me-2" aria-hidden="true" />Send reply</Button>
+                            </div>
+                        }
+                    </section>
+                </div>
+
+                <aside class="col-xl-4" aria-labelledby="hd-request-summary-title">
+                    <div class="hd-panel">
+                        <h2 class="hd-section-title" id="hd-request-summary-title">About this request</h2>
+                        <dl class="row hd-summary small mb-0">
+                            <dt class="col-5">Status</dt>
+                            <dd class="col-7">@HelpDeskDisplay.CustomerStatus(ticket.Status)</dd>
+                            <dt class="col-5">Priority</dt>
+                            <dd class="col-7">@ticket.Priority</dd>
+                            <dt class="col-5">Category</dt>
+                            <dd class="col-7">@category.Name</dd>
+                            <dt class="col-5">Your agent</dt>
+                            <dd class="col-7">@(AgentFirstName(ticket) ?? "Not assigned yet")</dd>
+                            <dt class="col-5">Opened</dt>
+                            <dd class="col-7">@HelpDeskDisplay.Stamp(ticket.CreatedAt)</dd>
+                            @if (ticket.ResolvedAt is { } resolvedAt)
+                            {
+                                <dt class="col-5">Solved</dt>
+                                <dd class="col-7 mb-0">@HelpDeskDisplay.Stamp(resolvedAt)</dd>
+                            }
+                        </dl>
+                    </div>
+                    <p class="small text-body-secondary mt-3 mb-0">
+                        Looking for a quick answer? <a href="@($"{HelpDeskLayout.Base}/kb?category={Uri.EscapeDataString(category.Id)}")">Browse @category.Name articles</a> in the knowledge base.
+                    </p>
+                </aside>
+            </div>
+        </div>
+    }
+</ShowcaseRoleGuard>
+
+<Modal @ref="solveModal" IsVerticallyCentered="true" ShowCloseButton="false" aria-labelledby="hd-solve-title" OnHidden="OnSolveHiddenAsync">
+    <HeaderTemplate>
+        <h2 class="modal-title h5" id="hd-solve-title">Mark request #@Id as solved?</h2>
+    </HeaderTemplate>
+    <BodyTemplate>
+        <p class="mb-2">Do this when your question is answered. The support team sees that it's solved, and you can rate how they did.</p>
+        <p class="small text-body-secondary mb-0">You can still reply later; a reply reopens the request.</p>
+    </BodyTemplate>
+    <FooterTemplate>
+        <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => solveModal.HideAsync()">Keep it open</Button>
+        <Button Color="ButtonColor.Success" @onclick="ConfirmSolveAsync">Mark as solved</Button>
+    </FooterTemplate>
+</Modal>

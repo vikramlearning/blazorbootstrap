@@ -1,0 +1,34 @@
+@inherits LayoutComponentBase
+
+@* The agent desk (D-031): its own sidebar with the agent's modules, separate from the help center. *@
+<ShowcaseSessionHost State="State" SiteBase="@HelpDeskLayout.Base" SiteName="@HelpDeskSeedData.ProductName">
+    <HelpDeskFrame>
+        <Header>
+            <div class="hd-agent-bar">
+                <span class="hd-agent-bar-title">Agent desk</span>
+                <div class="hd-agent-bar-actions">
+                    <a class="btn btn-sm btn-outline-secondary" href="@HelpDeskLayout.Base">
+                        <Icon Name="IconName.BoxArrowUpRight" class="me-1" aria-hidden="true" />View help center
+                    </a>
+                    <ShowcaseAccountMenu SiteBase="@HelpDeskLayout.Base" SignInPath="@HelpDeskLayout.SignInPath" />
+                </div>
+            </div>
+        </Header>
+        <Sidebar>
+            @if (State.IsAgent)
+            {
+                <Sidebar Class="hd-sidebar"
+                         Href="@Base"
+                         IconName="IconName.LifePreserver"
+                         Title="@HelpDeskSeedData.ProductName"
+                         BadgeText="Agent"
+                         DataProvider="SidebarDataProvider" />
+            }
+        </Sidebar>
+        <ChildContent>
+            <ShowcaseRoleGuard Roles="@HelpDeskSeedData.AgentRole" SignInPath="@HelpDeskLayout.SignInPath">
+                @Body
+            </ShowcaseRoleGuard>
+        </ChildContent>
+    </HelpDeskFrame>
+</ShowcaseSessionHost>

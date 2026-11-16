@@ -1,0 +1,49 @@
+.hd-replies-status,
+.hd-replies-error {
+    font-size: .875rem;
+    font-weight: 600;
+}
+
+    .hd-replies-status:empty,
+    .hd-replies-error:empty {
+        margin: 0;
+    }
+
+.hd-replies-error,
+.hd-field-error {
+    color: var(--bs-danger-text-emphasis);
+}
+
+.hd-field-error {
+    margin: .25rem 0 0;
+    font-size: .875rem;
+}
+
+    .hd-field-error:empty {
+        margin: 0;
+    }
+
+.hd-saved-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: .5rem 1rem;
+}
+
+    .hd-saved-head h2 {
+        min-width: 0;
+        overflow-wrap: anywhere;
+    }
+
+.hd-saved-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .5rem;
+}
+
+.hd-saved-preview {
+    padding-left: .75rem;
+    border-left: .25rem solid var(--hd-border);
+    font-size: .9375rem;
+}

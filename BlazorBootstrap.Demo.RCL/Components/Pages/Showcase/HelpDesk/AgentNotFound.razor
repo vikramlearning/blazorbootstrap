@@ -1,0 +1,9 @@
+@page "/showcase/help-desk/agent/{*path}"
+@layout HelpDeskAgentLayout
+
+<HelpDeskNotFound BackPath="@HelpDeskAgentLayout.Base" BackText="Back to the queue" />
+
+@code {
+    /// <summary>Gets or sets the unknown path inside the agent desk.</summary>
+    [Parameter] public string? Path { get; set; }
+}

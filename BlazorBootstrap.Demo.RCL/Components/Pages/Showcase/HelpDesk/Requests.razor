@@ -1,0 +1,89 @@
+@page "/showcase/help-desk/requests"
+@layout HelpDeskLayout
+
+<PageTitle>My requests · @HelpDeskSeedData.ProductName</PageTitle>
+
+<div class="container-fluid px-lg-4">
+    <ShowcaseRoleGuard Roles="@HelpDeskSeedData.CustomerRole" SignInPath="@HelpDeskLayout.SignInPath">
+        @{
+            var requests = State.MyRequests();
+            var shown = requests.Where(ticket => InFilter(ticket, filter)).ToList();
+            var unread = State.UnreadRequestCount;
+        }
+
+        <div class="hd-page-head">
+            <div>
+                <h1 class="hd-title">My requests</h1>
+                <p class="hd-lead">
+                    Everything you've asked the support team, most recently updated first.
+                    @if (unread > 0)
+                    {
+                        <strong class="text-body">@(unread == 1 ? "1 request has a new reply." : $"{unread} requests have a new reply.")</strong>
+                    }
+                </p>
+            </div>
+            <a class="btn btn-primary" href="@($"{HelpDeskLayout.Base}/requests/new")"><Icon Name="IconName.Plus" class="me-1" aria-hidden="true" />Submit a request</a>
+        </div>
+
+        @if (requests.Count == 0)
+        {
+            <div class="hd-panel text-center py-5">
+                <span class="hd-icon fs-4" aria-hidden="true"><Icon Name="IconName.Inbox" /></span>
+                <h2 class="h5 fw-bold mt-3">No requests yet</h2>
+                <p class="text-body-secondary mb-4">When you ask the support team something, the request and their replies show up here.</p>
+                <a class="btn btn-primary" href="@($"{HelpDeskLayout.Base}/requests/new")">Submit a request</a>
+            </div>
+        }
+        else
+        {
+            <div class="hd-requests-filter mb-3" role="group" aria-label="Show requests">
+                @foreach (var option in filters)
+                {
+                    var isSelected = option == filter;
+                    <Button @ref="filterButtons[option]" Color="ButtonColor.Primary" Outline="!isSelected" Size="ButtonSize.Small" Class="rounded-pill"
+                            aria-pressed="@(isSelected ? "true" : "false")" @onclick="() => filter = option">
+                        @FilterLabel(option) <span class="hd-requests-filter-count">(@requests.Count(ticket => InFilter(ticket, option)))</span>
+                    </Button>
+                }
+            </div>
+
+            @if (shown.Count == 0)
+            {
+                <div class="hd-panel text-center py-4">
+                    <p class="text-body-secondary mb-3">@(filter == RequestFilter.Open ? "You have no open requests. Everything you've asked is solved." : "None of your requests is solved yet.")</p>
+                    <Button Color="ButtonColor.Primary" Outline="true" Size="ButtonSize.Small" @onclick="ShowOtherAsync">
+                        @(filter == RequestFilter.Open ? "Show solved requests" : "Show open requests")
+                    </Button>
+                </div>
+            }
+            else
+            {
+                <ul class="list-unstyled d-grid gap-3 mb-0" aria-label="@($"{FilterLabel(filter)} requests")">
+                    @foreach (var ticket in shown)
+                    {
+                        <li class="hd-panel hd-request @(ticket.CustomerUnread ? "hd-request-unread" : null)" @key="ticket.Id">
+                            <div class="d-flex flex-wrap align-items-start justify-content-between gap-2">
+                                <div class="hd-request-main">
+                                    <span class="hd-mono small text-body-secondary">#@ticket.Id · @State.FindCategory(ticket.CategoryId).Name</span>
+                                    <h2 class="h6 fw-bold mt-1 mb-1">
+                                        <a class="hd-ticket-link" href="@HelpDeskDisplay.RequestUrl(ticket.Id)">@ticket.Subject</a>
+                                    </h2>
+                                    <span class="small text-body-secondary">
+                                        Updated <time datetime="@ticket.CustomerUpdatedAt.ToString("s", CultureInfo.InvariantCulture)" title="@HelpDeskDisplay.Stamp(ticket.CustomerUpdatedAt)">@HelpDeskDisplay.Ago(ticket.CustomerUpdatedAt, State.Now)</time>
+                                    </span>
+                                </div>
+                                <div class="d-flex flex-wrap align-items-center gap-2">
+                                    @if (ticket.CustomerUnread)
+                                    {
+                                        <Badge Color="BadgeColor.Danger" Class="rounded-pill"><Icon Name="IconName.ChatDotsFill" class="me-1" aria-hidden="true" />New reply</Badge>
+                                    }
+                                    <Badge Color="@HelpDeskDisplay.StatusColor(ticket.Status)" Class="rounded-pill">@HelpDeskDisplay.CustomerStatus(ticket.Status)</Badge>
+                                </div>
+                            </div>
+                        </li>
+                    }
+                </ul>
+            }
+        }
+    </ShowcaseRoleGuard>
+</div>

@@ -1,0 +1,114 @@
+/* Column headers are buttons that look like the header text. */
+.hd-sort {
+    display: inline-flex;
+    align-items: center;
+    gap: .25rem;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: inherit;
+    font: inherit;
+    letter-spacing: inherit;
+    text-transform: inherit;
+    white-space: nowrap;
+}
+
+    .hd-sort:hover {
+        color: var(--hd-ink);
+    }
+
+    .hd-sort:focus-visible {
+        outline: 2px solid var(--sc-primary);
+        outline-offset: 2px;
+        border-radius: .25rem;
+    }
+
+th[aria-sort] .hd-sort {
+    color: var(--hd-ink);
+}
+
+.hd-select-col {
+    width: 2.5rem;
+}
+
+    .hd-select-col .form-check-input {
+        margin-top: 0;
+        vertical-align: middle;
+    }
+
+/* The "select all shown" button wears the checkbox look; its states come from aria-checked instead of :checked and :indeterminate. */
+.hd-check-all {
+    padding: 0;
+    font-size: 1rem;
+    border-radius: .25em;
+    cursor: pointer;
+}
+
+    .hd-check-all[aria-checked=true],
+    .hd-check-all[aria-checked=mixed] {
+        background-color: var(--sc-primary);
+        border-color: var(--sc-primary);
+    }
+
+    .hd-check-all[aria-checked=true] {
+        --bs-form-check-bg-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3e%3cpath fill='none' stroke='%23fff' stroke-linecap='round' stroke-linejoin='round' stroke-width='3' d='m6 10 3 3 6-6'/%3e%3c/svg%3e");
+    }
+
+    .hd-check-all[aria-checked=mixed] {
+        --bs-form-check-bg-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3e%3cpath fill='none' stroke='%23fff' stroke-linecap='round' stroke-linejoin='round' stroke-width='3' d='M6 10h8'/%3e%3c/svg%3e");
+    }
+
+.hd-row-selected > * {
+    --bs-table-bg-state: rgba(var(--sc-primary-rgb), .06);
+}
+
+.hd-queue-status,
+.hd-queue-error {
+    font-size: .875rem;
+    font-weight: 600;
+}
+
+    .hd-queue-status:empty,
+    .hd-queue-error:empty {
+        margin: 0;
+    }
+
+.hd-queue-error {
+    color: var(--bs-danger-text-emphasis);
+}
+
+/* The bulk bar wraps onto several lines at phone width. */
+.hd-bulk {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: .75rem 1rem;
+    margin-bottom: 1rem;
+    padding: .75rem 1rem;
+    border: 1px solid rgba(var(--sc-primary-rgb), .35);
+    border-radius: .75rem;
+    background: rgba(var(--sc-primary-rgb), .06);
+}
+
+.hd-bulk-count {
+    flex: 1 0 100%;
+    margin: 0;
+    font-size: .9375rem;
+    font-weight: 700;
+    color: var(--hd-ink);
+}
+
+.hd-bulk-field {
+    flex: 1 1 10rem;
+    min-width: 0;
+}
+
+    .hd-bulk-field .form-label {
+        margin-bottom: .25rem;
+    }
+
+.hd-bulk-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .5rem;
+}

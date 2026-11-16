@@ -1,0 +1,302 @@
+@page "/showcase/help-desk/agent/tickets/{Id:int}"
+@layout HelpDeskAgentLayout
+
+@if (Ticket is null)
+{
+    <HelpDeskNotFound BackPath="@HelpDeskAgentLayout.Base" BackText="Back to the queue" Message="There's no ticket with that number. It may have been merged or removed." />
+}
+else
+{
+    <PageTitle>#@Ticket.Id @Ticket.Subject · @HelpDeskSeedData.ProductName</PageTitle>
+
+    <div class="container-fluid px-lg-4">
+        <Breadcrumb Items="BreadcrumbItems" Class="mb-3" />
+
+        <div class="hd-page-head">
+            <div>
+                <span class="hd-mono small text-body-secondary">#@Ticket.Id · @Category.Name</span>
+                <h1 class="hd-title mt-1">@Ticket.Subject</h1>
+                <div class="d-flex flex-wrap align-items-center gap-2 mt-2">
+                    <Badge Color="@HelpDeskDisplay.PriorityColor(Ticket.Priority)">@Ticket.Priority priority</Badge>
+                    <Badge Color="@HelpDeskDisplay.StatusColor(Ticket.Status)">@Ticket.Status</Badge>
+                    <Badge Color="@HelpDeskDisplay.SlaColor(State.Sla(Ticket))">@HelpDeskDisplay.SlaText(State, Ticket)</Badge>
+                    <span class="small text-body-secondary">@Ticket.CustomerName@(Ticket.Company is null ? null : $", {Ticket.Company}") · opened @HelpDeskDisplay.Ago(Ticket.CreatedAt, State.Now)</span>
+                </div>
+            </div>
+            <div class="d-flex flex-wrap gap-2">
+                <Button Color="ButtonColor.Secondary" Outline="true" @onclick="AssignToMeAsync" Disabled="IsMine">
+                    <Icon Name="IconName.PersonCheck" class="me-2" aria-hidden="true" />@(IsMine ? "Assigned to you" : "Assign to me")
+                </Button>
+                @* One button whose text changes, so focus stays on it after each press. *@
+                <Button Color="@(Ticket.Status == HelpDeskStatus.Resolved ? ButtonColor.Secondary : ButtonColor.Success)" @onclick="ToggleResolved">
+                    <Icon Name="@(Ticket.Status == HelpDeskStatus.Resolved ? IconName.ArrowCounterclockwise : IconName.CheckCircle)" class="me-2" aria-hidden="true" />@(Ticket.Status == HelpDeskStatus.Resolved ? "Reopen" : "Resolve")
+                </Button>
+            </div>
+        </div>
+
+        @* Always rendered and focusable, so an action is announced and focus has somewhere to go. *@
+        <p class="small fw-semibold mb-3" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
+
+        @* Static tab titles: Tabs does not re-render titles, so a live count would go stale. *@
+        <Tabs NavStyle="NavStyle.Underline" @key="Ticket.Id">
+            <Tab Title="Conversation" Name="conversation" Active="true">
+                <Content>
+                    <div class="row g-4 pt-4">
+                        <div class="col-xl-8">
+                            <ol class="list-unstyled d-grid gap-3 mb-4" aria-label="Messages">
+                                @foreach (var message in Ticket.Messages)
+                                {
+                                    <li>
+                                        <article class="hd-message @(message.IsInternalNote ? "hd-message-note" : message.IsAgent ? "hd-message-agent" : null)">
+                                            <header class="d-flex flex-wrap align-items-center gap-2 mb-2">
+                                                <span class="fw-bold">@message.Author</span>
+                                                @if (message.IsInternalNote)
+                                                {
+                                                    <Badge Color="BadgeColor.Warning"><Icon Name="IconName.Lock" class="me-1" aria-hidden="true" />Internal note</Badge>
+                                                    <span class="small text-body-secondary">Only agents see this; the customer never does.</span>
+                                                }
+                                                else if (message.IsAgent)
+                                                {
+                                                    <Badge Color="BadgeColor.Secondary">Agent</Badge>
+                                                }
+                                                else
+                                                {
+                                                    <Badge Color="BadgeColor.Light">Customer</Badge>
+                                                }
+                                                <span class="small text-body-secondary ms-auto" title="@HelpDeskDisplay.Stamp(message.PostedAt)">@HelpDeskDisplay.Ago(message.PostedAt, State.Now)</span>
+                                            </header>
+                                            @if (message.IsRichText)
+                                            {
+                                                @* Editor HTML is decoded once, then encoded again; only allow-listed formatting tags come back (OWASP A05). *@
+                                                <div class="hd-message-body">@ShowcaseHtml.FromEditorHtml(message.Body)</div>
+                                            }
+                                            else
+                                            {
+                                                <div class="hd-message-body hd-plain">@message.Body</div>
+                                            }
+                                        </article>
+                                    </li>
+                                }
+                            </ol>
+
+                            @if (Ticket.Status == HelpDeskStatus.Resolved)
+                            {
+                                <div class="hd-panel text-body-secondary">This ticket is resolved. Reopen it to reply.</div>
+                            }
+                            else
+                            {
+                                <section class="hd-panel @(isInternalNote ? "hd-reply-note" : null)" aria-labelledby="hd-reply-heading" data-clarity-mask="true">
+                                    <h2 class="hd-section-title" id="hd-reply-heading">@(isInternalNote ? "Add an internal note" : $"Reply to {Ticket.CustomerName}")</h2>
+                                    <ShowcaseDemoNotice Class="mb-3" Text="Demo only: replies stay in this browser tab, and no email is sent." />
+                                    <div class="mb-3">
+                                        <Switch Value="isInternalNote" ValueExpression="() => isInternalNote" ValueChanged="OnInternalNoteChanged" Label="Internal note (only agents see it)" />
+                                    </div>
+
+                                    <div class="hd-saved-reply mb-3">
+                                        @if (State.SavedReplies.Count == 0)
+                                        {
+                                            <p class="small text-body-secondary mb-0">
+                                                No saved replies yet. <a href="@SavedRepliesUrl">Add saved replies</a> to insert them here.
+                                            </p>
+                                        }
+                                        else
+                                        {
+                                            <label class="form-label small fw-semibold" for="hd-saved-reply">Insert saved reply</label>
+                                            <div class="d-flex flex-wrap align-items-center gap-2">
+                                                <select id="hd-saved-reply" class="form-select form-select-sm hd-saved-reply-select" value="@savedReplyChoice" @onchange="OnSavedReplyChosen"
+                                                        aria-describedby="hd-saved-reply-help">
+                                                    <option value="">Choose a saved reply</option>
+                                                    @foreach (var reply in State.SavedReplies)
+                                                    {
+                                                        <option value="@(reply.Id.ToString(CultureInfo.InvariantCulture))">@reply.Title</option>
+                                                    }
+                                                </select>
+                                                <Button Color="ButtonColor.Secondary" Outline="true" Size="ButtonSize.Small" @onclick="InsertSavedReply">
+                                                    <Icon Name="IconName.ChatQuote" class="me-1" aria-hidden="true" />Insert
+                                                </Button>
+                                                <a class="small" href="@SavedRepliesUrl">Manage saved replies</a>
+                                            </div>
+                                            <div class="form-text" id="hd-saved-reply-help">It's added after what you've written.</div>
+                                        }
+                                    </div>
+
+                                    @* The editor keeps its own content; Value is only read when it is built. An empty paragraph (not an empty
+                                       value) gives lists, code blocks, and quotes a real block to work on, and Enter makes p lines. Its
+                                       ClearAsync does nothing (library finding), so a new key rebuilds it: empty after each send, or with the
+                                       draft plus a saved reply after an insert. *@
+                                    <RichTextEditor @key="(Ticket.Id, editorVersion)"
+                                                    Value="@editorValue"
+                                                    ValueChanged="OnReplyChanged"
+                                                    ToolbarItems="toolbarItems"
+                                                    AriaLabel="@(isInternalNote ? "Internal note" : "Reply")"
+                                                    Placeholder="Write your reply…"
+                                                    ShowFooter="false" />
+                                    @* Always rendered, so a screen reader announces the error when it appears. *@
+                                    <p class="text-danger small mt-2 mb-0" role="alert">@replyError</p>
+                                    <div class="d-flex flex-wrap align-items-center gap-2 mt-3">
+                                        <Button Color="ButtonColor.Primary" @onclick="Send">
+                                            <Icon Name="@(isInternalNote ? IconName.Lock : IconName.Send)" class="me-2" aria-hidden="true" />@(isInternalNote ? "Add note" : "Send reply")
+                                        </Button>
+                                        <span class="small text-body-secondary">@(isInternalNote ? "Only agents see it. The status stays as it is." : "The ticket moves to Pending until the customer answers.")</span>
+                                    </div>
+                                </section>
+                            }
+                        </div>
+                        <div class="col-xl-4 d-grid gap-3 align-content-start">
+                            <section class="hd-panel" aria-labelledby="hd-fields-heading">
+                                <h2 class="hd-section-title" id="hd-fields-heading">Ticket</h2>
+                                <p class="small text-body-secondary">Changes save as soon as you pick them.</p>
+                                <div class="d-grid gap-3" @key="fieldsVersion">
+                                    <div>
+                                        <label class="form-label small fw-semibold" for="hd-field-status">Status</label>
+                                        <select id="hd-field-status" class="form-select" value="@Ticket.Status" @onchange="OnStatusSelected">
+                                            @foreach (var status in Enum.GetValues<HelpDeskStatus>())
+                                            {
+                                                <option value="@status">@status</option>
+                                            }
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="form-label small fw-semibold" for="hd-field-priority">Priority</label>
+                                        <select id="hd-field-priority" class="form-select" value="@Ticket.Priority" @onchange="OnPrioritySelected" aria-describedby="hd-field-priority-help">
+                                            @foreach (var priority in Enum.GetValues<HelpDeskPriority>().Reverse())
+                                            {
+                                                <option value="@priority">@priority</option>
+                                            }
+                                        </select>
+                                        <div class="form-text" id="hd-field-priority-help">Resolve within @HelpDeskState.TargetHours(Ticket.Priority) hours of opening.</div>
+                                    </div>
+                                    <div>
+                                        <label class="form-label small fw-semibold" for="hd-field-category">Category</label>
+                                        <select id="hd-field-category" class="form-select" value="@Ticket.CategoryId" @onchange="OnCategorySelected">
+                                            @foreach (var category in State.Categories)
+                                            {
+                                                <option value="@category.Id">@category.Name</option>
+                                            }
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="form-label small fw-semibold" for="hd-field-assignee">Assignee</label>
+                                        <select id="hd-field-assignee" class="form-select" value="@(Ticket.Assignee ?? string.Empty)" @onchange="OnAssigneeSelected">
+                                            <option value="">Unassigned</option>
+                                            @foreach (var agent in State.Agents)
+                                            {
+                                                <option value="@agent">@agent</option>
+                                            }
+                                        </select>
+                                    </div>
+                                </div>
+                            </section>
+
+                            <section class="hd-panel" aria-labelledby="hd-customer-heading">
+                                <h2 class="hd-section-title" id="hd-customer-heading">Customer</h2>
+                                <p class="mb-1 fw-semibold">@Ticket.CustomerName</p>
+                                <p class="mb-1 small"><Icon Name="IconName.Envelope" class="me-2 text-body-secondary" aria-hidden="true" />@Ticket.CustomerEmail</p>
+                                <p class="mb-1 small"><Icon Name="IconName.Building" class="me-2 text-body-secondary" aria-hidden="true" />@(Ticket.Company ?? "No company")</p>
+                                @if (Ticket.CustomerAccountId is not null)
+                                {
+                                    <p class="mb-0 small"><Icon Name="IconName.PersonCheck" class="me-2 text-body-secondary" aria-hidden="true" />Has a help center account</p>
+                                }
+                                else
+                                {
+                                    <p class="mb-0 small"><Icon Name="IconName.EnvelopeOpen" class="me-2 text-body-secondary" aria-hidden="true" />Wrote in by email</p>
+                                }
+                            </section>
+
+                            @if (Ticket.Satisfaction is { } satisfaction)
+                            {
+                                <section class="hd-panel" aria-labelledby="hd-satisfaction-heading">
+                                    <h2 class="hd-section-title" id="hd-satisfaction-heading">Satisfaction</h2>
+                                    @if (satisfaction == HelpDeskSatisfaction.Good)
+                                    {
+                                        <Badge Color="BadgeColor.Success"><Icon Name="IconName.EmojiSmile" class="me-1" aria-hidden="true" />Good, satisfied</Badge>
+                                    }
+                                    else
+                                    {
+                                        <Badge Color="BadgeColor.Danger"><Icon Name="IconName.EmojiFrown" class="me-1" aria-hidden="true" />Bad, unsatisfied</Badge>
+                                    }
+                                    @if (!string.IsNullOrWhiteSpace(Ticket.SatisfactionComment))
+                                    {
+                                        @* Customer text is plain and Razor-encoded. *@
+                                        <blockquote class="hd-satisfaction-comment mt-2 mb-0">@Ticket.SatisfactionComment</blockquote>
+                                    }
+                                    else
+                                    {
+                                        <p class="small text-body-secondary mt-2 mb-0">No comment.</p>
+                                    }
+                                </section>
+                            }
+                        </div>
+                    </div>
+                </Content>
+            </Tab>
+            <Tab Title="Details" Name="details">
+                <Content>
+                    <div class="pt-4 hd-details">
+                        <dl class="row hd-summary mb-4">
+                            <dt class="col-sm-4">Category</dt>
+                            <dd class="col-sm-8">@Category.Name</dd>
+                            <dt class="col-sm-4">Priority</dt>
+                            <dd class="col-sm-8">@Ticket.Priority (resolve within @HelpDeskState.TargetHours(Ticket.Priority) h)</dd>
+                            <dt class="col-sm-4">Assignee</dt>
+                            <dd class="col-sm-8">@(Ticket.Assignee ?? "Unassigned")</dd>
+                            <dt class="col-sm-4">Opened</dt>
+                            <dd class="col-sm-8">@HelpDeskDisplay.Stamp(Ticket.CreatedAt)</dd>
+                            <dt class="col-sm-4">Due</dt>
+                            <dd class="col-sm-8">@HelpDeskDisplay.Stamp(HelpDeskState.DueAt(Ticket)) (@HelpDeskDisplay.SlaText(State, Ticket))</dd>
+                            @if (Ticket.ResolvedAt is { } resolvedAt)
+                            {
+                                <dt class="col-sm-4">Resolved</dt>
+                                <dd class="col-sm-8">@HelpDeskDisplay.Stamp(resolvedAt)</dd>
+                            }
+                        </dl>
+
+                        <section aria-labelledby="hd-activity-heading">
+                            <h2 class="hd-section-title" id="hd-activity-heading">Ticket activity</h2>
+                            @if (Ticket.Activity.Count == 0)
+                            {
+                                <p class="text-body-secondary">No activity yet.</p>
+                            }
+                            else
+                            {
+                                <p class="small text-body-secondary">Newest first.</p>
+                                <ol class="hd-activity list-unstyled mb-0">
+                                    @foreach (var entry in Ticket.Activity.AsEnumerable().Reverse())
+                                    {
+                                        <li class="hd-activity-entry">
+                                            <time class="hd-activity-time" datetime="@(entry.At.ToString("yyyy-MM-dd'T'HH:mm", CultureInfo.InvariantCulture))">@HelpDeskDisplay.Stamp(entry.At)</time>
+                                            <span><span class="fw-semibold">@entry.Actor</span><span class="visually-hidden">:</span> @entry.Text</span>
+                                        </li>
+                                    }
+                                </ol>
+                            }
+                        </section>
+                    </div>
+                </Content>
+            </Tab>
+            <Tab Title="Related articles" Name="articles">
+                <Content>
+                    <div class="pt-4 hd-details">
+                        @if (Related.Count == 0)
+                        {
+                            <p class="text-body-secondary">No articles in this category yet.</p>
+                        }
+                        else
+                        {
+                            <p class="text-body-secondary">Articles in @Category.Name you can link in a reply.</p>
+                            <ul class="list-unstyled d-grid gap-2 mb-0">
+                                @foreach (var article in Related)
+                                {
+                                    <li class="hd-panel py-2">
+                                        <a class="fw-semibold" href="@HelpDeskDisplay.ArticleUrl(article.Id)">@article.Title</a>
+                                        <span class="d-block small text-body-secondary">@article.Summary</span>
+                                    </li>
+                                }
+                            </ul>
+                        }
+                    </div>
+                </Content>
+            </Tab>
+        </Tabs>
+    </div>
+}
