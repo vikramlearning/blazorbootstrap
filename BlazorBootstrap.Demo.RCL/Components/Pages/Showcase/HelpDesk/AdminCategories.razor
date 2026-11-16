@@ -1,0 +1,193 @@
+@page "/showcase/help-desk/agent/admin/categories"
+@layout HelpDeskAgentLayout
+
+<PageTitle>Categories · @HelpDeskSeedData.ProductName</PageTitle>
+
+<div class="container-fluid px-lg-4">
+    <ShowcaseRoleGuard Roles="@HelpDeskSeedData.AdminRole" SignInPath="@HelpDeskLayout.SignInPath">
+        @{
+            var usage = Usage();
+        }
+
+        <div class="hd-page-head">
+            <div>
+                <h1 class="hd-title">Categories</h1>
+                <p class="hd-lead">Group tickets and articles, and send each category's new requests to the right team.</p>
+            </div>
+            <Button @ref="addButton" Color="ButtonColor.Primary" @onclick="AddAsync">
+                <Icon Name="IconName.Plus" class="me-1" aria-hidden="true" />Add category
+            </Button>
+        </div>
+
+        <p class="hd-admin-error" role="alert">@pageError</p>
+        @* Always rendered and focusable, so a change is announced and focus has somewhere to go when a row is gone. *@
+        <p class="hd-admin-status" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
+
+        <Card Class="hd-card">
+            <CardBody Class="p-3 p-lg-4">
+                <div class="table-responsive hd-grid">
+                    <table class="table">
+                        <caption class="visually-hidden">Categories, with the team their new requests go to and the tickets and articles in each</caption>
+                        <thead>
+                            <tr>
+                                <th scope="col">Category</th>
+                                <th scope="col">Routed to</th>
+                                <th scope="col" class="text-end">Tickets</th>
+                                <th scope="col" class="text-end">Open tickets</th>
+                                <th scope="col" class="text-end">Articles</th>
+                                <th scope="col">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var category in State.Categories)
+                            {
+                                var counts = usage.GetValueOrDefault(category.Id);
+
+                                <tr @key="category.Id">
+                                    <th scope="row" class="fw-normal hd-category-cell">
+                                        <span class="d-inline-flex align-items-center gap-2">
+                                            <span class="hd-icon" aria-hidden="true"><Icon Name="category.IconName" /></span>
+                                            <span class="fw-semibold text-body">@category.Name</span>
+                                        </span>
+                                    </th>
+                                    <td class="text-nowrap">@TeamName(category.TeamId)</td>
+                                    <td class="text-end">@counts.Tickets</td>
+                                    <td class="text-end">@counts.Open</td>
+                                    <td class="text-end">@counts.Articles</td>
+                                    <td>
+                                        <div class="hd-admin-actions">
+                                            <Button @ref="editButtons[category.Id]" Color="ButtonColor.Secondary" Outline="true" Size="ButtonSize.Small" @onclick="() => EditAsync(category)">
+                                                <Icon Name="IconName.PencilSquare" class="me-1" aria-hidden="true" />Edit<span class="visually-hidden"> @category.Name</span>
+                                            </Button>
+                                            <Button @ref="deleteButtons[category.Id]" Color="ButtonColor.Danger" Outline="true" Size="ButtonSize.Small" @onclick="() => AskDeleteAsync(category)">
+                                                <Icon Name="IconName.Trash3" class="me-1" aria-hidden="true" />Delete<span class="visually-hidden"> @category.Name</span>
+                                            </Button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                <p class="small text-body-secondary mt-2 mb-0">
+                    Articles include drafts. A category's unassigned tickets show in its team's queue until someone is assigned.
+                </p>
+            </CardBody>
+        </Card>
+
+        <Modal @ref="editorModal"
+               IsVerticallyCentered="true"
+               IsScrollable="true"
+               ShowCloseButton="false"
+               aria-labelledby="hd-category-editor-title"
+               OnShown="OnEditorShownAsync"
+               OnHidden="OnEditorHiddenAsync">
+            <HeaderTemplate>
+                <h2 class="modal-title h5 text-break" id="hd-category-editor-title">@(editing is null ? "Add a category" : $"Edit {editing.Name}")</h2>
+            </HeaderTemplate>
+            <BodyTemplate>
+                <form id="hd-category-form" @onsubmit="SaveAsync" novalidate>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold" for="hd-category-name">Name</label>
+                        <input @ref="nameInput" id="hd-category-name" class="form-control @(nameError is null ? null : "is-invalid")" @bind="name" @bind:event="oninput" @bind:after="OnNameInput"
+                               maxlength="@HelpDeskState.MaxGroupNameLength" autocomplete="off" aria-describedby="hd-category-name-help hd-category-name-error" aria-invalid="@(nameError is null ? null : "true")" />
+                        <div class="form-text" id="hd-category-name-help">Customers pick it when they submit a request. @CharacterCount(name, HelpDeskState.MaxGroupNameLength)</div>
+                        <p class="hd-field-error" id="hd-category-name-error" role="alert">@nameError</p>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold" for="hd-category-team">Team</label>
+                        <select @ref="teamSelect" id="hd-category-team" class="form-select @(teamError is null ? null : "is-invalid")" @bind="teamId" @bind:after="OnTeamChanged"
+                                aria-describedby="hd-category-team-help hd-category-team-error" aria-invalid="@(teamError is null ? null : "true")">
+                            @if (State.FindTeam(teamId) is null)
+                            {
+                                <option value="">Choose a team</option>
+                            }
+                            @foreach (var team in State.Teams)
+                            {
+                                <option value="@team.Id">@team.Name</option>
+                            }
+                        </select>
+                        <div class="form-text" id="hd-category-team-help">New requests in this category go to this team until someone is assigned.</div>
+                        <p class="hd-field-error" id="hd-category-team-error" role="alert">@teamError</p>
+                    </div>
+                    @* A native radio group: Tab reaches the chosen icon, arrow keys move between icons. *@
+                    <fieldset>
+                        <legend class="form-label fw-semibold fs-6 mb-2">Icon</legend>
+                        <div class="hd-icon-picker">
+                            @foreach (var icon in HelpDeskSeedData.CategoryIcons())
+                            {
+                                var iconId = $"hd-category-icon-{icon}";
+
+                                <input type="radio" class="btn-check" name="hd-category-icon" id="@iconId" autocomplete="off"
+                                       checked="@(icon == iconName)" @onchange="() => iconName = icon" />
+                                <label class="hd-icon-tile" for="@iconId">
+                                    <Icon Name="icon" class="fs-5" aria-hidden="true" />
+                                    <span class="hd-icon-tile-name">@IconLabel(icon)</span>
+                                </label>
+                            }
+                        </div>
+                    </fieldset>
+                </form>
+                <p class="hd-field-error mt-3 mb-0" role="alert">@formError</p>
+            </BodyTemplate>
+            <FooterTemplate>
+                <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => editorModal.HideAsync()">Cancel</Button>
+                <Button Type="ButtonType.Submit" Color="ButtonColor.Primary" form="hd-category-form">@(editing is null ? "Add category" : "Save changes")</Button>
+            </FooterTemplate>
+        </Modal>
+
+        <Modal @ref="deleteModal" IsVerticallyCentered="true" ShowCloseButton="false" aria-labelledby="hd-category-delete-title" OnShown="OnDeleteShownAsync" OnHidden="OnDeleteHiddenAsync">
+            <HeaderTemplate>
+                <h2 class="modal-title h5 text-break" id="hd-category-delete-title">
+                    @if (deleting is { } category)
+                    {
+                        @(IsLastCategory ? $"{category.Name} can't be deleted" : $"Delete the category \"{category.Name}\"?")
+                    }
+                </h2>
+            </HeaderTemplate>
+            <BodyTemplate>
+                @if (deleting is { } category)
+                {
+                    var counts = Usage().GetValueOrDefault(category.Id);
+
+                    if (IsLastCategory)
+                    {
+                        <p class="mb-0">It's the only category. Every ticket and article needs one, so add another category first.</p>
+                    }
+                    else
+                    {
+                        <form id="hd-category-delete-form" @onsubmit="ConfirmDeleteAsync" novalidate>
+                            <p>
+                                @(counts.Tickets + counts.Articles == 0
+                                    ? "No tickets or articles use it."
+                                    : $"{Count(counts.Tickets, "ticket", "tickets")} and {Count(counts.Articles, "article", "articles")} (drafts included) use it. They move to the category you choose, and each moved ticket's activity records it.")
+                            </p>
+                            <label class="form-label fw-semibold" for="hd-category-move">Move tickets and articles to</label>
+                            <select @ref="moveSelect" id="hd-category-move" class="form-select @(moveError is null ? null : "is-invalid")" @bind="moveToId" @bind:after="OnMoveChanged"
+                                    aria-describedby="hd-category-move-help hd-category-move-error" aria-invalid="@(moveError is null ? null : "true")">
+                                <option value="">Choose a category</option>
+                                @foreach (var other in State.Categories.Where(other => other.Id != category.Id))
+                                {
+                                    <option value="@other.Id">@other.Name</option>
+                                }
+                            </select>
+                            <div class="form-text" id="hd-category-move-help">Moved tickets that nobody is assigned to then show in that category's team queue.</div>
+                            <p class="hd-field-error mb-0" id="hd-category-move-error" role="alert">@moveError</p>
+                        </form>
+                    }
+                }
+            </BodyTemplate>
+            <FooterTemplate>
+                @if (deleting is not null && !IsLastCategory)
+                {
+                    <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => deleteModal.HideAsync()">Keep category</Button>
+                    <Button Type="ButtonType.Submit" Color="ButtonColor.Danger" form="hd-category-delete-form">Move and delete</Button>
+                }
+                else
+                {
+                    <Button Color="ButtonColor.Primary" @onclick="() => deleteModal.HideAsync()">Close</Button>
+                }
+            </FooterTemplate>
+        </Modal>
+    </ShowcaseRoleGuard>
+</div>

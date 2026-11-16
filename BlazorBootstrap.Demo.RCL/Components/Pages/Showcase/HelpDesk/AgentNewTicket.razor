@@ -63,7 +63,7 @@
                                     <ButtonGroupItem Value="priority" Id="@($"hd-priority-{priority}")">@priority</ButtonGroupItem>
                                 }
                             </RadioButtonGroup>
-                            <div class="form-text">Resolve within @HelpDeskState.TargetHours(form.Priority) hours.</div>
+                            <div class="form-text">Resolve within @State.TargetHours(form.Priority) hours.</div>
                         </div>
                         <div class="col-12">
                             <label class="form-label fw-semibold" for="hd-subject">Subject</label>

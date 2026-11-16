@@ -173,6 +173,11 @@
     position: relative;
 }
 
+    /* A table that scrolls sideways can round to one pixel taller than its box; never show a vertical scrollbar for it. */
+    .sc-helpdesk ::deep .hd-grid.table-responsive {
+        overflow-y: hidden;
+    }
+
     .sc-helpdesk ::deep .hd-grid .table {
         --bs-table-bg: var(--hd-surface);
         margin-bottom: 0;
@@ -252,7 +257,14 @@
         margin-top: 1.25rem;
     }
 
-    .sc-helpdesk ::deep .hd-article-body .blockquote {
+    .sc-helpdesk ::deep .hd-article-body h3 {
+        font-size: 1.0625rem;
+        font-weight: 700;
+        margin-top: 1rem;
+    }
+
+    .sc-helpdesk ::deep .hd-article-body blockquote {
+        margin: 0 0 1rem;
         font-size: 1rem;
         padding: .75rem 1rem;
         border-left: .25rem solid var(--sc-primary);

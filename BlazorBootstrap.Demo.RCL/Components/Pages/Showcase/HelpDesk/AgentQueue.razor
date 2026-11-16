@@ -43,7 +43,7 @@
     <Card Class="hd-card">
         <CardBody Class="p-3 p-lg-4">
             <div class="row g-2 align-items-end mb-3" role="search" aria-label="Filter tickets">
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <label class="form-label small fw-semibold" for="hd-search">Search</label>
                     <InputGroup>
                         <InputGroupText><Icon Name="IconName.Search" aria-hidden="true" /></InputGroupText>
@@ -52,7 +52,7 @@
                                    @oninput="OnSearchInput" Placeholder="Number, subject, or customer" />
                     </InputGroup>
                 </div>
-                <div class="col-6 col-md-3">
+                <div class="col-6 col-md-2">
                     <label class="form-label small fw-semibold" for="hd-status">Status</label>
                     <select id="hd-status" class="form-select" value="@State.Filter.Status" @onchange="OnStatusChanged">
                         <option value="@HelpDeskFilter.StatusAllOpen">All unresolved</option>
@@ -70,6 +70,17 @@
                         @foreach (var priority in Enum.GetValues<HelpDeskPriority>().Reverse())
                         {
                             <option value="@priority">@priority</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-6 col-md-2">
+                    @* A ticket's team is its assignee's, or its category's while unassigned. *@
+                    <label class="form-label small fw-semibold" for="hd-team">Team</label>
+                    <select id="hd-team" class="form-select" value="@State.Filter.TeamId" @onchange="OnTeamChanged">
+                        <option value="">Any</option>
+                        @foreach (var team in State.Teams)
+                        {
+                            <option value="@team.Id">@team.Name</option>
                         }
                     </select>
                 </div>

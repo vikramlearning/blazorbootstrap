@@ -54,8 +54,57 @@ public enum HelpDeskSlaState
     Missed,
 }
 
-/// <summary>A ticket and knowledge base category.</summary>
-public sealed record HelpDeskCategory(string Id, string Name, IconName IconName);
+/// <summary>A ticket and knowledge base category. New requests in it go to <see cref="TeamId" />'s queue until someone is assigned.</summary>
+public sealed record HelpDeskCategory(string Id, string Name, IconName IconName, string TeamId);
+
+/// <summary>A team of agents (a group, in help desk terms).</summary>
+public sealed record HelpDeskTeam(string Id, string Name, string Description);
+
+/// <summary>
+/// An agent on the support roster. Tickets are assigned by <see cref="Name" />. <see cref="AccountId" /> links the roster
+/// entry to a demo account that can sign in; agents an admin adds have none.
+/// </summary>
+public sealed record HelpDeskAgent(string Id, string Name, string Email, string TeamId, bool IsAdmin, bool IsActive, string? AccountId);
+
+/// <summary>The SLA targets of one priority: hours to the first public reply, and hours to resolution (paused while pending).</summary>
+public sealed record HelpDeskSlaPolicy(HelpDeskPriority Priority, int FirstReplyHours, int ResolveHours);
+
+/// <summary>The outcome of an admin or knowledge base change.</summary>
+public enum HelpDeskAdminResult
+{
+    /// <summary>The change was made.</summary>
+    Ok,
+
+    /// <summary>The signed-in account may not make it.</summary>
+    NotAllowed,
+
+    /// <summary>The item no longer exists.</summary>
+    NotFound,
+
+    /// <summary>A value is missing, too long, or out of range.</summary>
+    Invalid,
+
+    /// <summary>Another item already has that name or email.</summary>
+    Duplicate,
+
+    /// <summary>Something still uses the item (agents in a team, tickets in a category).</summary>
+    InUse,
+
+    /// <summary>The limit of items is reached.</summary>
+    LimitReached,
+
+    /// <summary>Nothing changed.</summary>
+    NoChange,
+}
+
+/// <summary>
+/// A day of archived tickets for one agent and priority (closed tickets no longer in the queue), so reports have a history
+/// before the live tickets. Generated from the seed, never stored.
+/// </summary>
+public sealed record HelpDeskArchiveDay(DateOnly Date, string AgentId, HelpDeskPriority Priority, int Created, int Resolved, int ResolvedInSla, int FirstReplyInSla, int Good, int Bad);
+
+/// <summary>A satisfaction comment shown in the satisfaction report.</summary>
+public sealed record HelpDeskRatingComment(DateTime At, int? TicketId, string Customer, string Agent, HelpDeskSatisfaction Satisfaction, string Comment);
 
 /// <summary>
 /// A message in a ticket's thread. Customer messages and ticket descriptions are plain text; agent replies are rich
@@ -120,6 +169,12 @@ public sealed class HelpDeskTicket
     /// <summary>Gets the thread, oldest first.</summary>
     public List<HelpDeskMessage> Messages { get; init; } = new();
 
+    /// <summary>Gets or sets the minutes the ticket has spent waiting on the customer (Pending) so far; the SLA pauses for them.</summary>
+    public double PausedMinutes { get; set; }
+
+    /// <summary>Gets or sets when the ticket went Pending, while it is Pending.</summary>
+    public DateTime? PendingSince { get; set; }
+
     /// <summary>Gets or sets the priority.</summary>
     public HelpDeskPriority Priority { get; set; }
 
@@ -142,19 +197,31 @@ public sealed class HelpDeskTicket
     [System.Text.Json.Serialization.JsonIgnore]
     public DateTime CustomerUpdatedAt => Messages.LastOrDefault(message => !message.IsInternalNote)?.PostedAt ?? CreatedAt;
 
+    /// <summary>Gets when an agent first replied publicly, or <see langword="null" /> before that.</summary>
+    [System.Text.Json.Serialization.JsonIgnore]
+    public DateTime? FirstReplyAt => Messages.FirstOrDefault(message => message.IsAgent && !message.IsInternalNote)?.PostedAt;
+
     /// <summary>Gets when the last message was posted, or the creation time.</summary>
     public DateTime UpdatedAt => Messages.Count == 0 ? CreatedAt : Messages[^1].PostedAt;
 
     #endregion
 }
 
-/// <summary>A knowledge base article. <see cref="Body" /> is seeded Markdown, never user input.</summary>
-public sealed record HelpDeskArticle(int Id, string Title, string CategoryId, string Summary, string Body, DateOnly UpdatedOn, int Views)
+/// <summary>
+/// A knowledge base article. <see cref="Html" /> is editor HTML (seeded or written by an agent) and is always rendered
+/// through <c>ShowcaseHtml.FromEditorHtml</c> (A05). Drafts show only to agents.
+/// </summary>
+public sealed record HelpDeskArticle(int Id, string Title, string CategoryId, string Summary, string Html, DateTime UpdatedAt, string UpdatedBy, int Views, bool IsPublished)
 {
     #region Properties, Indexers
 
+    /// <summary>Gets the article text without markup, for search and reading time.</summary>
+    [System.Text.Json.Serialization.JsonIgnore]
+    public string PlainText => System.Net.WebUtility.HtmlDecode(System.Text.RegularExpressions.Regex.Replace(Html, "<[^>]*>", " "));
+
     /// <summary>Gets the reading time in minutes, at about 200 words a minute.</summary>
-    public int ReadingMinutes => Math.Max(1, Body.Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries).Length / 200);
+    [System.Text.Json.Serialization.JsonIgnore]
+    public int ReadingMinutes => Math.Max(1, PlainText.Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries).Length / 200);
 
     #endregion
 }
@@ -178,7 +245,7 @@ public sealed class HelpDeskFilter
     public bool AssignedToMe { get; set; }
 
     /// <summary>Gets whether any filter narrows the queue beyond the default (every ticket that is not resolved).</summary>
-    public bool IsActive => AssignedToMe || Priority.Length > 0 || Status != StatusAllOpen || !string.IsNullOrWhiteSpace(Search);
+    public bool IsActive => AssignedToMe || Priority.Length > 0 || TeamId.Length > 0 || Status != StatusAllOpen || !string.IsNullOrWhiteSpace(Search);
 
     /// <summary>Gets or sets the priority name; empty means every priority.</summary>
     public string Priority { get; set; } = string.Empty;
@@ -188,6 +255,9 @@ public sealed class HelpDeskFilter
 
     /// <summary>Gets or sets the status filter: a status name, <see cref="StatusAllOpen" />, or <see cref="StatusAll" />.</summary>
     public string Status { get; set; } = StatusAllOpen;
+
+    /// <summary>Gets or sets the team ID; empty means every team. A ticket's team is its assignee's, or its category's while unassigned.</summary>
+    public string TeamId { get; set; } = string.Empty;
 
     #endregion
 
@@ -202,6 +272,7 @@ public sealed class HelpDeskFilter
         Priority = string.Empty;
         Search = string.Empty;
         Status = StatusAllOpen;
+        TeamId = string.Empty;
     }
 
     #endregion

@@ -1,0 +1,157 @@
+@page "/showcase/help-desk/agent/kb"
+@layout HelpDeskAgentLayout
+
+<PageTitle>Knowledge base articles · @HelpDeskSeedData.ProductName</PageTitle>
+
+@{
+    var all = State.AllArticles;
+    var rows = Filtered(all);
+}
+
+<div class="container-fluid px-lg-4">
+    <div class="hd-page-head">
+        <div>
+            <h1 class="hd-title">Knowledge base articles</h1>
+            <p class="hd-lead">Write and update the help center's articles. Drafts stay here until you publish them.</p>
+        </div>
+        <Button Type="ButtonType.Link" To="@NewArticleUrl" Color="ButtonColor.Primary">
+            <Icon Name="IconName.PlusCircle" class="me-2" aria-hidden="true" />New article
+        </Button>
+    </div>
+
+    <p class="hd-kb-error" role="alert">@pageError</p>
+    @* Always rendered and focusable, so a change is announced and focus has somewhere to go when its row is gone. *@
+    <p class="hd-kb-status" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
+
+    <Card Class="hd-card">
+        <CardBody Class="p-3 p-lg-4">
+            <div class="row g-2 align-items-end mb-3" role="search" aria-label="Filter articles">
+                <div class="col-md-5">
+                    <label class="form-label small fw-semibold" for="hd-kb-search">Search</label>
+                    <InputGroup>
+                        <InputGroupText><Icon Name="IconName.Search" aria-hidden="true" /></InputGroupText>
+                        <input id="hd-kb-search" type="search" class="form-control" value="@search" @oninput="OnSearchInput"
+                               placeholder="Title or summary" autocomplete="off" />
+                    </InputGroup>
+                </div>
+                <div class="col-6 col-md-3">
+                    <label class="form-label small fw-semibold" for="hd-kb-category">Category</label>
+                    <select id="hd-kb-category" class="form-select" value="@categoryId" @onchange="OnCategoryChanged">
+                        <option value="">Any</option>
+                        @foreach (var category in State.Categories)
+                        {
+                            <option value="@category.Id">@category.Name</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-6 col-md-2">
+                    <label class="form-label small fw-semibold" for="hd-kb-status-filter">Status</label>
+                    <select id="hd-kb-status-filter" class="form-select" value="@statusFilter" @onchange="OnStatusFilterChanged">
+                        <option value="@StatusAll">All</option>
+                        <option value="@StatusPublished">Published</option>
+                        <option value="@StatusDrafts">Drafts</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <Button Color="ButtonColor.Secondary" Outline="true" Size="ButtonSize.Small" @onclick="ClearFiltersAsync" Disabled="!FiltersActive">Clear filters</Button>
+                </div>
+            </div>
+
+            <p class="small text-body-secondary mb-2" aria-live="polite" tabindex="-1" @ref="countRegion">@CountText(rows.Count, all.Count)</p>
+
+            @if (all.Count == 0)
+            {
+                <div class="text-center py-5">
+                    <span class="hd-icon fs-4" aria-hidden="true"><Icon Name="IconName.JournalText" /></span>
+                    <p class="mt-3 mb-0 text-body-secondary">No articles yet. Choose "New article" to write the first one.</p>
+                </div>
+            }
+            else
+            {
+                @* Positioned (hd-grid), so the visually hidden text inside stays in the scroll box at phone width. *@
+                <div class="table-responsive hd-grid">
+                    <table class="table table-hover">
+                        <caption class="visually-hidden">Knowledge base articles, most recently updated first</caption>
+                        <thead>
+                            <tr>
+                                <th scope="col">Title</th>
+                                <th scope="col">Category</th>
+                                <th scope="col">Status</th>
+                                <th scope="col">Updated</th>
+                                <th scope="col" class="text-end">Views</th>
+                                <th scope="col" class="text-end">Helpful</th>
+                                <th scope="col"><span class="visually-hidden">Actions</span></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (rows.Count == 0)
+                            {
+                                <tr>
+                                    <td colspan="7" class="text-center text-body-secondary py-5">
+                                        No articles match these filters.
+                                        <Button Color="ButtonColor.Link" Size="ButtonSize.Small" Class="p-0 align-baseline" @onclick="ClearFiltersAsync">Clear filters</Button>
+                                    </td>
+                                </tr>
+                            }
+                            @foreach (var article in rows)
+                            {
+                                var (helpful, notHelpful) = State.Votes(article.Id);
+
+                                <tr @key="article.Id">
+                                    <th scope="row" class="fw-normal hd-kb-title-cell">
+                                        <a class="hd-ticket-link" href="@HelpDeskDisplay.ArticleEditUrl(article.Id)">@article.Title</a>
+                                        <span class="d-block small text-body-secondary hd-kb-summary">@article.Summary</span>
+                                    </th>
+                                    <td class="text-nowrap">@State.FindCategory(article.CategoryId).Name</td>
+                                    <td class="text-nowrap">
+                                        <Badge Color="@(article.IsPublished ? BadgeColor.Success : BadgeColor.Secondary)">@(article.IsPublished ? "Published" : "Draft")</Badge>
+                                    </td>
+                                    <td class="text-nowrap small">
+                                        <span title="@HelpDeskDisplay.Stamp(article.UpdatedAt)">@HelpDeskDisplay.Ago(article.UpdatedAt, State.Now)</span>
+                                        <span class="d-block text-body-secondary">by @article.UpdatedBy</span>
+                                    </td>
+                                    <td class="text-end">@article.Views.ToString("#,0", CultureInfo.InvariantCulture)</td>
+                                    <td class="text-end text-nowrap">
+                                        @helpful.ToString("#,0", CultureInfo.InvariantCulture)<span class="text-body-secondary small"> of @((helpful + notHelpful).ToString("#,0", CultureInfo.InvariantCulture))</span>
+                                    </td>
+                                    <td>
+                                        <div class="hd-kb-actions">
+                                            <Button Type="ButtonType.Link" To="@HelpDeskDisplay.ArticleEditUrl(article.Id)" Color="ButtonColor.Secondary" Outline="true" Size="ButtonSize.Small">
+                                                <Icon Name="IconName.PencilSquare" class="me-1" aria-hidden="true" />Edit<span class="visually-hidden"> @article.Title</span>
+                                            </Button>
+                                            <Button Color="ButtonColor.Secondary" Outline="true" Size="ButtonSize.Small" @onclick="() => TogglePublished(article)">
+                                                <Icon Name="@(article.IsPublished ? IconName.EyeSlash : IconName.Globe)" class="me-1" aria-hidden="true" />@(article.IsPublished ? "Unpublish" : "Publish")<span class="visually-hidden"> @article.Title</span>
+                                            </Button>
+                                            @if (article.IsPublished)
+                                            {
+                                                <a class="btn btn-sm btn-link px-1" href="@HelpDeskDisplay.ArticleUrl(article.Id)">
+                                                    View in help center<span class="visually-hidden">: @article.Title</span>
+                                                </a>
+                                            }
+                                            <Button @ref="deleteButtons[article.Id]" Color="ButtonColor.Danger" Outline="true" Size="ButtonSize.Small" @onclick="() => AskDeleteAsync(article)">
+                                                <Icon Name="IconName.Trash3" class="me-1" aria-hidden="true" />Delete<span class="visually-hidden"> @article.Title</span>
+                                            </Button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </CardBody>
+    </Card>
+</div>
+
+<Modal @ref="deleteModal" IsVerticallyCentered="true" ShowCloseButton="false" aria-labelledby="hd-kb-delete-title" OnHidden="OnDeleteHiddenAsync">
+    <HeaderTemplate>
+        <h2 class="modal-title h5" id="hd-kb-delete-title">Delete the article "@(deleting?.Title)"?</h2>
+    </HeaderTemplate>
+    <BodyTemplate>
+        <p class="mb-0">@DeleteConsequence(deleting)</p>
+    </BodyTemplate>
+    <FooterTemplate>
+        <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => deleteModal.HideAsync()">Keep article</Button>
+        <Button Color="ButtonColor.Danger" @onclick="ConfirmDeleteAsync">Delete article</Button>
+    </FooterTemplate>
+</Modal>

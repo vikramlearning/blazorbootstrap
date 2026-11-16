@@ -1,0 +1,80 @@
+.hd-admin-status,
+.hd-admin-error {
+    font-size: .875rem;
+    font-weight: 600;
+}
+
+    .hd-admin-status:empty,
+    .hd-admin-error:empty {
+        margin: 0;
+    }
+
+.hd-admin-error,
+.hd-field-error {
+    color: var(--bs-danger-text-emphasis);
+}
+
+.hd-field-error {
+    margin: .25rem 0 0;
+    font-size: .875rem;
+}
+
+    .hd-field-error:empty {
+        margin: 0;
+    }
+
+.hd-admin-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .5rem;
+}
+
+/* Icon tiles: the radio inputs are visually hidden (btn-check), so the tile shows the checked and focus states. */
+.hd-icon-picker {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(5.25rem, 1fr));
+    gap: .5rem;
+}
+
+.hd-icon-tile {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: .25rem;
+    min-height: 4.25rem;
+    padding: .5rem .25rem;
+    border: 1px solid var(--bs-border-color);
+    border-radius: .5rem;
+    background: var(--bs-body-bg);
+    color: var(--bs-body-color);
+    text-align: center;
+    cursor: pointer;
+}
+
+    .hd-icon-tile:hover {
+        border-color: var(--sc-primary);
+    }
+
+.hd-icon-tile-name {
+    font-size: .75rem;
+    line-height: 1.2;
+}
+
+.btn-check:checked + .hd-icon-tile {
+    border-color: var(--sc-primary);
+    box-shadow: inset 0 0 0 1px var(--sc-primary);
+    background: rgba(var(--sc-primary-rgb), .1);
+    color: var(--sc-primary-hover);
+    font-weight: 600;
+}
+
+.btn-check:focus-visible + .hd-icon-tile {
+    outline: 2px solid var(--sc-primary);
+    outline-offset: 2px;
+}
+
+/* Names wrap at spaces only; a long single word scrolls the table instead of breaking mid-word. */
+.hd-category-cell {
+    min-width: 11rem;
+}

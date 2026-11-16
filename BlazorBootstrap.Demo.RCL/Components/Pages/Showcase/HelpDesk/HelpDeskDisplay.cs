@@ -69,7 +69,7 @@ public static class HelpDeskDisplay
     public static string SlaText(HelpDeskState helpDesk, HelpDeskTicket ticket)
     {
         var state = helpDesk.Sla(ticket);
-        var left = HelpDeskState.DueAt(ticket) - helpDesk.Now;
+        var left = helpDesk.DueAt(ticket) - helpDesk.Now;
 
         return state switch
         {
@@ -100,6 +100,9 @@ public static class HelpDeskDisplay
         HelpDeskStatus.Pending => BadgeColor.Secondary,
         _ => BadgeColor.Success,
     };
+
+    /// <summary>Returns the agent desk's editor of an article.</summary>
+    public static string ArticleEditUrl(int articleId) => FormattableString.Invariant($"{HelpDeskAgentLayout.Base}/kb/{articleId}");
 
     /// <summary>Returns the route of a ticket.</summary>
     public static string TicketUrl(int ticketId) => FormattableString.Invariant($"{HelpDeskAgentLayout.Base}/tickets/{ticketId}");

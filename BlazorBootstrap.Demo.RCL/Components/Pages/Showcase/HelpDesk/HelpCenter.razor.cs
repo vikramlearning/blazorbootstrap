@@ -84,7 +84,7 @@ public partial class HelpCenter : ComponentBase, IDisposable
             return State.Articles
                 .Where(article => words.All(word => article.Title.Contains(word, StringComparison.OrdinalIgnoreCase)
                     || article.Summary.Contains(word, StringComparison.OrdinalIgnoreCase)
-                    || article.Body.Contains(word, StringComparison.OrdinalIgnoreCase)))
+                    || article.PlainText.Contains(word, StringComparison.OrdinalIgnoreCase)))
                 .OrderByDescending(article => words.Count(word => article.Title.Contains(word, StringComparison.OrdinalIgnoreCase)))
                 .ThenByDescending(article => article.Views)
                 .ToList();

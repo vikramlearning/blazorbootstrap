@@ -1,0 +1,40 @@
+.hd-admin-status,
+.hd-admin-error {
+    font-size: .875rem;
+    font-weight: 600;
+}
+
+    .hd-admin-status:empty,
+    .hd-admin-error:empty {
+        margin: 0;
+    }
+
+.hd-admin-error,
+.hd-field-error {
+    color: var(--bs-danger-text-emphasis);
+}
+
+.hd-field-error {
+    max-width: 12rem;
+    margin: .25rem 0 0;
+    font-size: .8125rem;
+    white-space: normal;
+}
+
+    .hd-field-error:empty {
+        margin: 0;
+    }
+
+/* Wide enough for "720", narrow enough that the table stays compact. */
+.hd-sla-input {
+    width: 6.5rem;
+}
+
+.hd-sla-notes {
+    padding-left: 1.25rem;
+    margin-bottom: 1rem;
+}
+
+    .hd-sla-notes li + li {
+        margin-top: .375rem;
+    }

@@ -18,9 +18,11 @@ public static partial class ShowcaseHtml
     #region Public Methods
 
     /// <summary>
-    /// Encodes <paramref name="html" /> and revives only the allow-listed formatting tags.
+    /// Encodes <paramref name="html" /> and revives only the allow-listed formatting tags. Headings become paragraphs, or
+    /// with <paramref name="keepHeadings" /> section headings (<c>h1</c>/<c>h2</c> → <c>h2</c>, <c>h3</c>–<c>h6</c> →
+    /// <c>h3</c>), so revived text never adds a page title.
     /// </summary>
-    public static MarkupString ToSafeMarkup(string? html)
+    public static MarkupString ToSafeMarkup(string? html, bool keepHeadings = false)
     {
         if (string.IsNullOrWhiteSpace(html))
             return new MarkupString(string.Empty);
@@ -29,7 +31,7 @@ public static partial class ShowcaseHtml
 
         encoded = AllowedLinkOpenTag().Replace(encoded, match => $"<a href=\"{match.Groups["href"].Value}\" target=\"_blank\" rel=\"noopener noreferrer nofollow\">");
         encoded = LinkCloseTag().Replace(encoded, "</a>");
-        encoded = AllowedFormattingTag().Replace(encoded, match => $"<{match.Groups["close"].Value}{match.Groups["tag"].Value.ToLowerInvariant()}>");
+        encoded = AllowedFormattingTag().Replace(encoded, match => $"<{match.Groups["close"].Value}{RevivedTag(match.Groups["tag"].Value.ToLowerInvariant(), keepHeadings)}>");
 
         return new MarkupString(encoded);
     }
@@ -42,9 +44,11 @@ public static partial class ShowcaseHtml
     /// on the allowlist (pasted spans, images, tables) are dropped and their text kept. Then the entities are decoded once
     /// and the result goes through <see cref="ToSafeMarkup" />, which encodes everything again and revives only the
     /// allow-listed tags. So typed text such as <c>&lt;img onerror=…&gt;</c> shows as written, while typed or applied
-    /// allow-listed formatting (for example <c>&lt;b&gt;</c>) is kept.
+    /// allow-listed formatting (for example <c>&lt;b&gt;</c>) is kept. With <paramref name="keepHeadings" /> (long-form
+    /// content such as knowledge base articles), headings are kept as section headings instead: <c>h1</c> and <c>h2</c>
+    /// become <c>h2</c>, <c>h3</c> to <c>h6</c> become <c>h3</c>, so an article never gets a second page title.
     /// </summary>
-    public static MarkupString FromEditorHtml(string? html)
+    public static MarkupString FromEditorHtml(string? html, bool keepHeadings = false)
     {
         if (string.IsNullOrWhiteSpace(html))
             return new MarkupString(string.Empty);
@@ -52,9 +56,9 @@ public static partial class ShowcaseHtml
         // Real tags only: typed text is still entity-encoded here, so a "<span>" or "<div>" the user typed is not touched.
         var cleaned = HtmlComment().Replace(html, string.Empty);
         cleaned = ScriptOrStyleBlock().Replace(cleaned, string.Empty);
-        cleaned = NormalizeEditorTags(cleaned);
+        cleaned = NormalizeEditorTags(cleaned, keepHeadings);
 
-        return ToSafeMarkup(WebUtility.HtmlDecode(cleaned));
+        return ToSafeMarkup(WebUtility.HtmlDecode(cleaned), keepHeadings);
     }
 
     #endregion
@@ -70,6 +74,14 @@ public static partial class ShowcaseHtml
     [GeneratedRegex(@"<(?<close>/?)(?<name>[a-zA-Z][a-zA-Z0-9-]*)(?<attributes>[^>]*)>")]
     private static partial Regex EditorTag();
 
+    /// <summary>Returns the tag an allow-listed tag is revived as: headings follow <see cref="ToSafeMarkup" />'s mapping.</summary>
+    private static string RevivedTag(string tag, bool keepHeadings) => tag switch
+    {
+        "h1" or "h2" => keepHeadings ? "h2" : "p",
+        "h3" or "h4" or "h5" or "h6" => keepHeadings ? "h3" : "p",
+        _ => tag,
+    };
+
     [GeneratedRegex(@"<!--.*?-->", RegexOptions.Singleline)]
     private static partial Regex HtmlComment();
 
@@ -77,7 +89,7 @@ public static partial class ShowcaseHtml
     /// Rewrites the editor's real tags (see <see cref="FromEditorHtml" />). Span replacements are tracked on a stack, so
     /// each closing span gets the closing tag its opening span became.
     /// </summary>
-    private static string NormalizeEditorTags(string html)
+    private static string NormalizeEditorTags(string html, bool keepHeadings)
     {
         var spans = new Stack<string>();
 
@@ -89,6 +101,12 @@ public static partial class ShowcaseHtml
 
             switch (name)
             {
+                case "h1" or "h2" when keepHeadings:
+                    return isClose ? "</h2>" : "<h2>";
+
+                case "h3" or "h4" or "h5" or "h6" when keepHeadings:
+                    return isClose ? "</h3>" : "<h3>";
+
                 case "div":
                 case "h1" or "h2" or "h3" or "h4" or "h5" or "h6":
                     return isClose ? "</p>" : "<p>";

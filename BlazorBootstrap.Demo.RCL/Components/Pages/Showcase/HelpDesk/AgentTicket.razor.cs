@@ -243,7 +243,7 @@ public partial class AgentTicket : ComponentBase, IDisposable
             return;
         }
 
-        SetStatus($"Priority set to {priority}: resolve within {HelpDeskState.TargetHours(priority)} hours ({HelpDeskDisplay.SlaText(State, ticket)}).");
+        SetStatus($"Priority set to {priority}: resolve within {State.TargetHours(priority)} hours ({HelpDeskDisplay.SlaText(State, ticket)}).");
     }
 
     private void OnReplyChanged(RichTextEditorChange change)
