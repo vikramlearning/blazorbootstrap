@@ -83,7 +83,7 @@
                         var headingId = $"hc-cal-doc-{doctor.Id}";
                         <section class="hc-cal-col" aria-labelledby="@headingId" @key="doctor.Id">
                             <div class="hc-cal-col-head">
-                                <span class="hc-avatar" aria-hidden="true">@doctor.Initials</span>
+                                <HcDoctorAvatar Doctor="doctor" />
                                 <div class="hc-cal-min">
                                     <h3 class="hc-cal-doc" id="@headingId">@doctor.Name</h3>
                                     <p class="small text-body-secondary mb-0">@HoursLine(column, date)</p>

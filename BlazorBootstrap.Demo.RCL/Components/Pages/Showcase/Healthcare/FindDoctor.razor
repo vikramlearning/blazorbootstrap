@@ -91,7 +91,7 @@
                         <li class="col" @key="doctor.Id">
                             <article class="hc-card hc-fd-card h-100" aria-labelledby="@($"hc-fd-name-{doctor.Id}")">
                                 <div class="d-flex gap-3 align-items-start">
-                                    <span class="hc-avatar" aria-hidden="true">@doctor.Initials</span>
+                                    <HcDoctorAvatar Doctor="doctor" Class="hc-fd-avatar" />
                                     <div class="hc-fd-min">
                                         <h2 class="hc-fd-name" id="@($"hc-fd-name-{doctor.Id}")"><a href="@HcDisplay.DoctorUrl(doctor.Id)">@doctor.Name</a></h2>
                                         <p class="mb-0 text-body-secondary">@doctor.Specialty · @(clinic?.Name)</p>

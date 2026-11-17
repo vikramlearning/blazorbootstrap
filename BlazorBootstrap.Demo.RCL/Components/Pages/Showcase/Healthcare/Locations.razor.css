@@ -3,6 +3,12 @@
     padding: 1.25rem;
 }
 
+::deep .hc-loc-photo {
+    width: 100%;
+    margin-bottom: 1rem;
+    border-radius: .5rem;
+}
+
 .hc-loc-number {
     display: inline-flex;
     align-items: center;

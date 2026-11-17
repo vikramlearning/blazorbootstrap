@@ -1,0 +1,22 @@
+@using BlazorBootstrap.Demo.RCL.Services.Showcase
+@* A doctor's avatar: their portrait when the licensed asset is committed, otherwise their initials. The name is always
+   next to it, so the image is decorative. *@
+@if (Doctor is not null && ShowcaseCatalog.IsAssetAvailable(Doctor.PhotoPath))
+{
+    <img src="@Doctor.PhotoPath" alt="" width="600" height="600" loading="@(Eager ? "eager" : "lazy")" decoding="async" class="hc-avatar hc-avatar-photo @Class" />
+}
+else
+{
+    <span class="hc-avatar @Class" aria-hidden="true">@Doctor?.Initials</span>
+}
+
+@code {
+    /// <summary>Gets or sets extra classes, such as a size.</summary>
+    [Parameter] public string? Class { get; set; }
+
+    /// <summary>Gets or sets the doctor, or <see langword="null" /> to show an empty avatar.</summary>
+    [Parameter] public HcDoctor? Doctor { get; set; }
+
+    /// <summary>Gets or sets whether the photo loads right away (for an avatar above the fold).</summary>
+    [Parameter] public bool Eager { get; set; }
+}

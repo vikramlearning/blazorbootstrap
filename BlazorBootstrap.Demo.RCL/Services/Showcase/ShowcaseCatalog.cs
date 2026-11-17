@@ -19,9 +19,11 @@ public static class ShowcaseCatalog
     private static readonly HashSet<string> committedAssets = new(
         Enumerable.Range(101, 31).Select(id => $"{AssetPrefix}/ecommerce/products/{id}.webp")
             .Concat(Enumerable.Range(1, 3).Select(slide => $"{AssetPrefix}/ecommerce/hero-{slide}.webp"))
-            .Concat(Enumerable.Range(201, 8).Select(id => $"{AssetPrefix}/learning/course-{id}.webp"))
+            .Concat(Enumerable.Range(201, 9).Select(id => $"{AssetPrefix}/learning/course-{id}.webp"))
             .Concat(new[] { "cape-town", "kyoto", "lisbon", "vancouver" }.Select(id => $"{AssetPrefix}/travel/destinations/{id}.webp"))
-            .Concat(Enumerable.Range(301, 18).SelectMany(id => Enumerable.Range(1, 3).Select(photo => $"{AssetPrefix}/travel/stays/{id}-{photo}.webp"))),
+            .Concat(Enumerable.Range(301, 18).SelectMany(id => Enumerable.Range(1, 3).Select(photo => $"{AssetPrefix}/travel/stays/{id}-{photo}.webp")))
+            .Concat(new[] { "okoye", "raman", "chen", "rossi", "whitaker", "bello" }.Select(id => $"{AssetPrefix}/healthcare/doctors/{id}.webp"))
+            .Concat(new[] { "downtown", "lakeview", "northfield" }.Select(id => $"{AssetPrefix}/healthcare/clinics/{id}.webp")),
         StringComparer.OrdinalIgnoreCase);
 
     private static readonly IReadOnlyList<ShowcaseSite> sites = new List<ShowcaseSite>

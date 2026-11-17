@@ -115,7 +115,7 @@ else
                 <div class="col-lg-5">
                     <aside class="hc-panel" aria-labelledby="hc-book-doctor-title">
                         <div class="d-flex align-items-center gap-3 mb-3">
-                            <span class="hc-avatar" aria-hidden="true">@doctor.Initials</span>
+                            <HcDoctorAvatar Doctor="doctor" Class="hc-book-avatar" Eager="true" />
                             <div class="hc-book-doctor">
                                 <h2 class="h5 fw-bold mb-0" id="hc-book-doctor-title"><a href="@HcDisplay.DoctorUrl(doctor.Id)">@doctor.Name</a></h2>
                                 <p class="small text-body-secondary mb-0">@doctor.Specialty</p>

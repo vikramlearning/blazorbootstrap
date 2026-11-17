@@ -87,7 +87,11 @@ public enum HcResult
 }
 
 /// <summary>A clinic location.</summary>
-public sealed record HcClinic(string Id, string Name, string Address, string Phone, string Hours, double Latitude, double Longitude);
+public sealed record HcClinic(string Id, string Name, string Address, string Phone, string Hours, double Latitude, double Longitude)
+{
+    /// <summary>Gets the path of the clinic's photo (licensed asset; see <c>wwwroot/showcase/CREDITS.md</c>).</summary>
+    public string PhotoPath => $"_content/BlazorBootstrap.Demo.RCL/showcase/healthcare/clinics/{Id}.webp";
+}
 
 /// <summary>One measurement of a lab panel, with its reference range.</summary>
 public sealed record HcAnalyte(string Name, string Unit, double Low, double High);
@@ -235,6 +239,9 @@ public sealed class HcDoctor
 
     /// <summary>Gets or sets the name, like "Dr. Samuel Okoye".</summary>
     public string Name { get; init; } = string.Empty;
+
+    /// <summary>Gets the path of the doctor's portrait (licensed asset; see <c>wwwroot/showcase/CREDITS.md</c>).</summary>
+    public string PhotoPath => $"_content/BlazorBootstrap.Demo.RCL/showcase/healthcare/doctors/{Id}.webp";
 
     /// <summary>Gets or sets the specialty.</summary>
     public string Specialty { get; init; } = string.Empty;

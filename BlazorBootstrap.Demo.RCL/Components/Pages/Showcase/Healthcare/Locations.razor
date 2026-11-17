@@ -23,6 +23,8 @@
             var doctors = DoctorsAt(clinic.Id);
             <li class="col" @key="clinic.Id">
                 <article class="hc-card hc-loc-card h-100" aria-labelledby="@($"hc-loc-{clinic.Id}")">
+                    <ShowcaseImage Src="@clinic.PhotoPath" Alt="@($"Reception and waiting area at {clinic.Name}")" Width="1200" Height="800"
+                                   Class="hc-loc-photo" PlaceholderIcon="IconName.Hospital" />
                     <div class="d-flex align-items-start gap-2 mb-3">
                         <span class="hc-loc-number" aria-hidden="true">@number</span>
                         <h2 class="hc-loc-name" id="@($"hc-loc-{clinic.Id}")"><span class="visually-hidden">Map pin @number: </span>@clinic.Name</h2>
