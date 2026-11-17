@@ -1,13 +1,13 @@
 @page "/showcase"
 @layout ShowcaseLayout
 
-<PageTitle>Showcase: real-world websites built with Blazor Bootstrap</PageTitle>
+<PageTitle>Showcase: example websites built with Blazor Bootstrap</PageTitle>
 
 <section class="sc-gallery-hero">
     <div class="container-xxl py-5">
         <div class="col-lg-8">
             <span class="sc-gallery-kicker">Showcase</span>
-            <h1 class="display-5 fw-bold mt-2 mb-3">Real-world websites built with Blazor Bootstrap</h1>
+            <h1 class="display-5 fw-bold mt-2 mb-3">Example websites you can build with Blazor Bootstrap</h1>
             <p class="lead mb-4">
                 Eleven complete, interactive sample apps &mdash; from AI chat and SaaS dashboards to clinics, travel, and storefronts.
                 Every screen is built only with Blazor Bootstrap components, runs on fictitious data, and works in Blazor Server and WebAssembly.
@@ -54,8 +54,7 @@
             <div class="col" @key="site.Slug">
                 <article class="card h-100 sc-gallery-card sc-card-hover" style="--sc-card-accent: @site.Accent;">
                     <a class="sc-gallery-shot" href="@site.Url" tabindex="-1" aria-hidden="true">
-                        <ShowcaseImage Src="@site.ScreenshotLight" Class="sc-shot-light" Width="1280" Height="800" Accent="@site.Accent" PlaceholderIcon="@site.IconName" Caption="@site.Name" />
-                        <ShowcaseImage Src="@site.ScreenshotDark" Class="sc-shot-dark" Width="1280" Height="800" Accent="@site.Accent" PlaceholderIcon="@site.IconName" Caption="@site.Name" />
+                        <ShowcaseShot Site="site" />
                     </a>
                     <div class="card-body d-flex flex-column">
                         <div class="d-flex align-items-center gap-2 mb-2">

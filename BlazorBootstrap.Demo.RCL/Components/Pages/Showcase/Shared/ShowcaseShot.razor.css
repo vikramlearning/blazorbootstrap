@@ -1,0 +1,10 @@
+/* The screenshot matching the theme. Only the background that applies is fetched, so the other one never loads. */
+.sc-shot {
+    display: block;
+    aspect-ratio: 1280 / 800;
+    background: var(--sc-shot-light) center top / cover no-repeat;
+}
+
+[data-bs-theme=dark] .sc-shot {
+    background-image: var(--sc-shot-dark);
+}

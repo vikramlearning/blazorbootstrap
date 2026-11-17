@@ -1,0 +1,9 @@
+@if (HasScreenshots)
+{
+    @* Background images, not two <img>s: browsers fetch only the rule that applies to the current theme. *@
+    <span class="sc-shot @Class" style="--sc-shot-light: @CssUrl(Site.ScreenshotLight); --sc-shot-dark: @CssUrl(Site.ScreenshotDark);" aria-hidden="true"></span>
+}
+else
+{
+    <ShowcaseImage Src="@Site.ScreenshotLight" Class="@Class" Width="1280" Height="800" Accent="@Site.Accent" PlaceholderIcon="@Site.IconName" Caption="@Site.Name" />
+}
