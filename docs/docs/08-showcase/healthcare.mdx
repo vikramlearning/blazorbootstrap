@@ -1,0 +1,130 @@
+---
+title: Healthcare Clinic Portal showcase
+description: A clinic portal where patients book visits, read records and lab reports, and pay bills, while doctors and the front desk work in a staff back office, built with Blazor Bootstrap.
+sidebar_label: Healthcare
+sidebar_position: 7
+---
+
+import CarbonAd from '/carbon-ad.mdx'
+
+# Healthcare Clinic Portal
+
+Cedarline Health is a fictitious network of three family clinics (Downtown, Lakeview, and Northfield) with six doctors. Patients find a doctor, book and change visits, read visit summaries and lab reports (with a PDF), ask for refills, and pay bills. Doctors run their visits, charts, lab results, and refill requests, and the front desk keeps the calendar, checks patients in, and sets doctors' hours. Nothing on the site is medical advice.
+
+<CarbonAd />
+
+[Open the live demo](https://demos.blazorbootstrap.com/showcase/healthcare) · [View source](https://github.com/vikramlearning/blazorbootstrap/tree/main/BlazorBootstrap.Demo.RCL/Components/Pages/Showcase/Healthcare)
+
+## Roles and demo accounts
+
+| Role | Demo account | Password | Start page |
+|:--|:--|:--|:--|
+| Patient | Maya Thompson (`maya.thompson@example.com`) | `care-demo-26` | `/showcase/healthcare/appointments` |
+| Doctor | Dr. Samuel Okoye (`samuel.okoye@example.com`) | `care-doc-26` | `/showcase/healthcare/staff/schedule` |
+| Front desk | Lena Fischer (`lena.fischer@example.com`) | `care-desk-26` | `/showcase/healthcare/staff/calendar` |
+
+You can also create an account ("Register as a patient" on the start page). A new account is a patient with an empty record, so you can book right away.
+
+Finding a doctor, doctor profiles, and locations are public. The other five doctors and seven other patients can't sign in.
+
+All data is fictitious and there is no backend. Each browser tab keeps its own data in `sessionStorage` (it survives a reload; other tabs start fresh), and "Reset demo data" in the account menu restores the seed: 8 patients, 17 appointments (today's clinic days, past visits, and upcoming ones), 5 lab orders, 4 prescriptions, and 4 bills. The sign-in page lists the demo accounts with one-click buttons; credentials are checked only against the tab's accounts. The clock starts on Tuesday, November 24, 2026, 8:20, before the first visit of the day, and moves on with real time.
+
+Bills are paid with a test card form that accepts only these published test numbers, with any future expiry and any CVC (4 digits for American Express). Only the brand and last four digits are kept.
+
+| Card number | Brand | Result |
+|:--|:--|:--|
+| `4242 4242 4242 4242` | Visa | Approved |
+| `5555 5555 5555 4444` | Mastercard | Approved |
+| `3782 822463 10005` | American Express | Approved |
+| `4000 0000 0000 0002` | Visa | Declined |
+| `4000 0000 0000 9995` | Visa | Insufficient funds |
+
+## What to try
+
+1. Without signing in, open **Find a doctor**, open Dr. Okoye's profile, and pick one of today's open times. Sign in as Maya when asked, give a reason, and book. Then sign in as Lena: **Check-in** lists the new visit.
+2. As Lena, check Maya in. Sign in as Dr. Okoye: **My schedule** shows her as checked in and waiting. **Start visit**, write notes and a summary, order a lab test, prescribe, and **Complete the visit**. As Maya, the appointment shows the summary (never the staff notes), the prescription, and a new bill.
+3. As Dr. Okoye, open **Lab results**, enter Maya's HbA1c, and release it (each released test bills $25.00). As Maya, open **Lab reports**: the report shows the values with flags in words, the doctor's comment, and the PDF with a download link.
+4. As Maya, open **Prescriptions** and request a refill of metformin (it has none left). As Dr. Okoye, approve it in **Refill requests**. Maya sees the answer and one refill left.
+5. As Lena, open **Doctors' hours** and add a day off for Dr. Okoye. His public profile then shows him away that day, with no open times.
+6. As Maya, open **Bills** and pay the dermatology bill with `4242 4242 4242 4242`. Try `4000 0000 0000 0002` first to see a decline.
+
+## Pages
+
+### Public and patient portal (layout: public, Navbar)
+
+| Page | Route | What it does |
+|:--|:--|:--|
+| Start page | `/showcase/healthcare` | What the portal does, with Find a doctor and Register; a signed-in patient's next appointment; the clinics. |
+| Find a doctor | `/showcase/healthcare/doctors` | Filters by name, specialty, clinic, language, and "accepting new patients" (all but the name are kept in the URL), each doctor's next open time, and Book. |
+| Doctor profile | `/showcase/healthcare/doctors/{Id}` | Bio, languages, weekly hours in words, time away (without the reason), and open times by week. |
+| Locations | `/showcase/healthcare/locations` | A map with numbered pins, then each clinic's address, phone, hours, and doctors. |
+| Book | `/showcase/healthcare/book/{DoctorId}` | Patients: pick a day and a 30-minute time, give a reason, and book (`?time=` preselects a time). |
+| Appointments | `/showcase/healthcare/appointments` | Your upcoming and past visits; you can hold up to 5 upcoming ones. |
+| Appointment | `/showcase/healthcare/appointments/{Id:int}` | Details, reschedule or cancel up to 2 hours before, and after the visit its summary, lab tests, prescriptions, and bill. |
+| Records | `/showcase/healthcare/records` | Visit summaries, conditions, allergies, and vaccinations. |
+| Lab reports | `/showcase/healthcare/lab-reports` | Your released lab reports. |
+| Lab report | `/showcase/healthcare/lab-reports/{Id:int}` | The results table with reference ranges and flags, the doctor's comment, and the report as a PDF with Download PDF. |
+| Prescriptions | `/showcase/healthcare/prescriptions` | Your medicines, refill requests, and the doctor's answers. |
+| Bills | `/showcase/healthcare/bills` | Total due, bills to pay with the inline test-card form, and paid bills. |
+| Profile | `/showcase/healthcare/profile` | Name, email, and password; date of birth and phone on file. |
+| Sign in | `/showcase/healthcare/sign-in` | Demo accounts, the sign-in form, and the register form (`?mode=register`). |
+| Not found | `/showcase/healthcare/{*path}` | The site's not-found panel, also shown for an unknown doctor, appointment, or report. |
+
+A doctor or the front desk who opens the portal sees a "Viewing the patient portal as …" bar with a link back to the staff area.
+
+### Doctor (layout: sidebar back office)
+
+| Page | Route | What it does |
+|:--|:--|:--|
+| My schedule | `/showcase/healthcare/staff/schedule` | The day's visits (`?date=`); checked-in patients stand out with Start visit; the rest of the week below. |
+| Visit | `/showcase/healthcare/staff/appointments/{Id:int}` | The patient's header with allergies, staff-only notes, the summary for the patient, lab orders, prescriptions, and Complete the visit, which bills it ($40.00 primary care, $60.00 specialist). Another doctor's visit is read-only. |
+| Patients | `/showcase/healthcare/staff/patients` | Every patient, searchable, with their next visit with you and their last visit. |
+| Patient chart | `/showcase/healthcare/staff/patients/{Id:int}` | Tabs for the health summary (add and remove allergies and conditions, immunizations), visits, lab results, and prescriptions (stop one). |
+| Lab results | `/showcase/healthcare/staff/labs` | Your lab orders: enter each value, check the flags, and release to the patient. |
+| Refill requests | `/showcase/healthcare/staff/refills` | Approve (adds one refill) or decline with a note for the patient. |
+| Account | `/showcase/healthcare/staff/account` | Name, email, and password. |
+
+### Front desk (layout: sidebar back office)
+
+| Page | Route | What it does |
+|:--|:--|:--|
+| Calendar | `/showcase/healthcare/staff/calendar` | A column per doctor for one day (`?date=`, `?clinic=`, `?doctor=`); open a visit to check in, mark a no-show, or cancel; a week overview table. |
+| Check-in | `/showcase/healthcare/staff/check-in` | Today's arrivals at every clinic, filtered by name and clinic; check in or mark a no-show. |
+| Doctors' hours | `/showcase/healthcare/staff/availability` | Each doctor's weekly hours (half hours from 07:00 to 20:00, no overlaps) and time off, and the booked visits that no longer fit and need rebooking. |
+| Account | `/showcase/healthcare/staff/account` | Name, email, and password. |
+
+## Components used
+
+- [PDF Viewer](/components/pdf-viewer): each lab report, which the site writes as a one-page PDF (`HcLabPdf.cs`) and shows from a data URL.
+- [Google Map](/components/google-map): the clinics on Locations. Without a `GoogleMap:ApiKey` setting the site shows a drawn map preview with the same numbered pins.
+- [Tabs](/components/tabs): the doctor's patient chart.
+- [Modal](/components/modal): cancel an appointment, complete a visit, release a lab result, stop a prescription, the calendar's visit actions, mark a no-show, and delete hours or time off.
+- [Sidebar](/components/sidebar): the staff back office, with the doctor's or the front desk's modules.
+- [Navbar](/components/navbar): the patient portal header.
+- [Breadcrumb](/components/breadcrumb): the booking, appointment, and lab report pages.
+- [Alert](/components/alerts): a PDF that fails to load.
+- [Input Group](/components/input-group): the test card form on Bills.
+- [Buttons](/components/buttons) and [Icons](/content/icons): actions and icons across the site.
+- [Text Input](/forms/text-input), [Avatar](/components/avatar), [Dropdown](/components/dropdown), and [Theme Switcher](/components/theme-switcher): through the shared sign-in, profile, account menu, and site bar.
+
+The booking times are toggle buttons in the site's `SlotPicker` component; other form fields are native inputs and selects. The site has no charts.
+
+## How the theme is built
+
+`HcFrame.razor` is the frame both layouts share: `HcLayout` (the public and patient portal, with a Navbar) and `HcStaffLayout` (the staff back office, with a top bar, "View patient portal", and a Sidebar). Its root is `.sc-site.sc-health`, and `HcFrame.razor.css` styles the pages of both through `::deep`.
+
+Color tokens in light mode: `--sc-primary` `#0e7490` (teal), `--sc-primary-hover` `#155e75`, contrast `#fff`, page background `#f4f8fa`. In dark mode (`[data-bs-theme=dark]`): `--sc-primary` `#67e8f9`, hover `#a5f3fc`, contrast `#062a33`, page background `#0a1519`. Because the dark primary is light, `.text-bg-primary` and `.progress-bar` text switch to the dark contrast color. The sidebar sets the `--bb-sidebar-*` variables to `#0b3440` with light text in both modes.
+
+Fonts come from Google Fonts: Source Sans 3 (400, 600, 700) for body and headings, and JetBrains Mono for times, hours, and medical record numbers.
+
+The shared stylesheet `wwwroot/css/blazorbootstrap.demo.rcl.css` maps the `--sc-*` tokens to Bootstrap (`--bs-primary`, link and focus colors, body and heading fonts, primary buttons).
+
+The site follows the shared split between the public side and the back office: patients use the portal, staff work in a separate back office with a sidebar, and staff who open the portal get the "viewing as" bar. Each page has its own role guard, and `HcState` checks the role and ownership on every action. Patients get copies of their records without the staff notes, without a summary before the visit is completed, and without lab values before release.
+
+## Accessibility and responsiveness
+
+- Open times are buttons with `aria-pressed`, grouped by day, so booking and rescheduling work with the keyboard.
+- Visit statuses and lab flags (such as "High") are written in words, not shown by color alone.
+- The PDF viewer's toolbar is mouse-only, so every report also has a Download PDF link, and the results are on the page as a table.
+- The map (or its preview) is described in words and the clinics are listed below it with matching numbers.
+- Every check-in, booking, payment, and refusal is announced in a status region, and focus returns to the button that opened a dialog. At 375 px the staff sidebar sits above the page, the calendar's doctor columns stack, and wide tables scroll.

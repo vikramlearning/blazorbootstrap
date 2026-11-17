@@ -27,7 +27,7 @@
     --hc-muted-bg: #0e1c21;
 }
 
-/* Bootstrap keeps white text on primary fills; on the light dark-mode violet that fails contrast. */
+/* Bootstrap keeps white text on primary fills; on the light dark-mode cyan that fails contrast. */
 [data-bs-theme=dark] .sc-health ::deep .text-bg-primary,
 [data-bs-theme=dark] .sc-health ::deep .progress-bar {
     color: var(--sc-primary-contrast) !important;

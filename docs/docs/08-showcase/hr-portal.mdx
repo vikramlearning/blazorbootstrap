@@ -1,0 +1,115 @@
+---
+title: HR & Employee Portal showcase
+description: An HR portal where employees find colleagues, request leave, and work through onboarding, managers approve leave and follow new hires, and HR admins manage people, policies, and headcount analytics, built with Blazor Bootstrap.
+sidebar_label: HR Portal
+sidebar_position: 12
+---
+
+import CarbonAd from '/carbon-ad.mdx'
+
+# HR & Employee Portal
+
+Teamhaven is the people portal of Brightfield Robotics, a fictitious company in 7 departments: 23 people work there today, one more joins on December 1, and three left this year. Employees find colleagues in the directory and the org chart, request leave against their balances, and tick off their onboarding checklist. Managers approve or reject their reports' leave and follow new hires, and HR admins manage employees, leave policies, onboarding templates, and headcount analytics.
+
+<CarbonAd />
+
+[Open the live demo](https://demos.blazorbootstrap.com/showcase/hr-portal) · [View source](https://github.com/vikramlearning/blazorbootstrap/tree/main/BlazorBootstrap.Demo.RCL/Components/Pages/Showcase/HrPortal)
+
+## Roles and demo accounts
+
+| Role | Demo account | Password | Start page |
+|:--|:--|:--|:--|
+| Employee | Theo Martin (`theo.martin@example.com`) | `hr-demo-26` | `/showcase/hr-portal/home` |
+| Manager | Rafael Costa (`rafael.costa@example.com`) | `hr-manager-26` | `/showcase/hr-portal/team` |
+| HR admin | Ingrid Larsen (`ingrid.larsen@example.com`) | `hr-admin-26` | `/showcase/hr-portal/admin/employees` |
+
+Theo is a software engineer on Rafael's team who started on November 2 and is still onboarding. You can also register ("New here? Register with your work email" on the start page), but only as someone HR has invited: a new account links to the employee record with the same work email. The seed invites Ana Pereira (`ana.pereira@example.com`), who joins on December 1; anyone HR adds later is invited the same way. Another email gets a panel saying the account isn't linked to an employee record.
+
+Everyone gets the directory, org chart, leave, and onboarding. Managers add their team, leave approvals, and new hires; the HR admin gets those for every team, plus the admin pages.
+
+All data is fictitious and there is no backend. Each browser tab keeps its own data in `sessionStorage` (it survives a reload; other tabs start fresh), and "Reset demo data" in the account menu restores the seed: 27 people (one joining soon and three who left this year), 4 leave policies, 11 leave requests (two waiting for Rafael), 8 company holidays, 2 onboarding templates, and 2 onboarding plans. The sign-in page lists the demo accounts with one-click buttons; credentials are checked only against the tab's accounts. The clock starts on Tuesday, November 24, 2026, 9:00 and moves on with real time.
+
+## What to try
+
+1. Sign in as Theo, open **My leave**, and request vacation for December 14 to 18; the form counts the working days as you pick them. Sign in as Rafael, open **Leave approvals**, check Theo's balance after approval, and approve. As Theo, the request shows who approved it and the days used.
+2. As Rafael, reject Jonas Berg's personal day with a note (a rejection needs one). The decided list shows it with the note.
+3. As Theo, open **My onboarding** and tick the overdue security training. As Rafael, **New hires** shows Theo's progress; tick his two-week check-in there.
+4. Sign in as Ingrid, open **Employees**, and add a new hire who reports to Rafael; then use "Next: start their onboarding". Sign out and register with the new hire's work email: the account links to the record and shows the checklist.
+5. As Ingrid, raise Vacation's yearly days in **Leave policies**. As Theo, the balance on **My leave** follows.
+6. As Ingrid, mark Elliot Grant as left on **Employees**. He leaves the directory, and **Headcount analytics** counts one fewer.
+
+## Pages
+
+### Public (layout: public, Navbar)
+
+| Page | Route | What it does |
+|:--|:--|:--|
+| Start page | `/showcase/hr-portal` | What the portal does for each role, with Sign in and register; a signed-in person gets "Open the portal". |
+| Sign in | `/showcase/hr-portal/sign-in` | Demo accounts, the sign-in form, and the register form (`?mode=register`). |
+| Not found | `/showcase/hr-portal/{*path}` | The site's not-found panel, also shown for an unknown person or template. |
+
+### Everyone signed in (layout: sidebar portal)
+
+| Page | Route | What it does |
+|:--|:--|:--|
+| Home | `/showcase/hr-portal/home` | Your leave balance, next time off, onboarding progress, who's away (whose leave you may see), and the next company holidays; managers and HR also see what's waiting for them, and HR gets links to its tools. |
+| Directory | `/showcase/hr-portal/people` | Everyone working here, searchable by name or job title and filtered by department and location (`?department=`, `?location=`). |
+| Person | `/showcase/hr-portal/people/{Id:int}` | Title, pronouns, contact details, bio, and reporting line, with a link to the person in the org chart. |
+| Org chart | `/showcase/hr-portal/org-chart` | Who reports to whom, as a mind map with find, department highlighting, and left-to-right or top-to-bottom layout, then the same chart as a nested list. `?focus=` opens one person. |
+| My leave | `/showcase/hr-portal/leave` | Balances for the year, a request form (also for editing a waiting request), your requests with cancel, and the company holidays. |
+| My onboarding | `/showcase/hr-portal/onboarding` | Your checklist by when tasks are due; you tick your own tasks. |
+| Profile | `/showcase/hr-portal/profile` | Name, email, and password; phone, pronouns, and bio for the directory; the details HR keeps. |
+
+### Manager and HR admin (layout: sidebar portal)
+
+| Page | Route | What it does |
+|:--|:--|:--|
+| My team | `/showcase/hr-portal/team` | Your direct reports with who's away, waiting requests, vacation left, and onboarding, and who's away in the next 4 weeks. HR picks any manager's team (`?manager=`). |
+| Leave approvals | `/showcase/hr-portal/approvals` | Requests waiting for a decision, with working days, the balance after approval, and teammates away then; approve with an optional note or reject with a required one; then the decided history. |
+| New hires | `/showcase/hr-portal/team/onboarding` | New hires' checklists (your reports, or everyone's for HR) with progress and overdue tasks; tick the manager's tasks. |
+
+### HR admin (layout: sidebar portal)
+
+| Page | Route | What it does |
+|:--|:--|:--|
+| Employees | `/showcase/hr-portal/admin/employees` | Everyone, including people joining and those who left, filtered by status, department, and name; start onboarding and mark as left in a dialog. |
+| Add employee | `/showcase/hr-portal/admin/employees/new` | Name, work email, job title, department, location, manager, start date, and phone; then "Next: start their onboarding". |
+| Edit employee | `/showcase/hr-portal/admin/employees/{Id:int}/edit` | The same form, their onboarding, and whether they have a sign-in. |
+| Leave policies | `/showcase/hr-portal/admin/leave-policies` | Leave types with yearly days (or no limit), minimum notice, and whether they're offered; a policy in use can only be turned off. |
+| Onboarding templates | `/showcase/hr-portal/admin/onboarding-templates` | The templates and a form for a new one. |
+| Onboarding template | `/showcase/hr-portal/admin/onboarding-templates/{Id:int}` | A template's tasks (owner, days from the first day, title), and its name and description. |
+| Headcount analytics | `/showcase/hr-portal/admin/analytics` | Headcount today, joining soon, hires, leavers, attrition, and average tenure; charts by department, location, month, tenure, and leave by policy. |
+
+## Components used
+
+- [Mind Map](/components/mind-map): the org chart, with department branch colors, search, and `?focus=`.
+- [Sidebar](/components/sidebar): the signed-in portal's navigation, with the role's modules.
+- [Navbar](/components/navbar): the public header.
+- [Bar chart](/data-visualization/bar-chart) and [Doughnut chart](/data-visualization/doughnut-chart) (BlazorExpress.ChartJS): headcount by department, hires and leavers by month, tenure, and leave by policy as bar charts; headcount by location as a doughnut.
+- [Progress](/components/progress): leave balances, onboarding progress, and the employees table.
+- [Modal](/components/modal): cancel a leave request, start onboarding, mark someone as left, and delete a policy or a template task.
+- [Badge](/components/badge): employee and policy status.
+- [Buttons](/components/buttons) and [Icons](/content/icons): actions and icons across the site.
+- [Text Input](/forms/text-input), [Avatar](/components/avatar), [Dropdown](/components/dropdown), and [Theme Switcher](/components/theme-switcher): through the shared sign-in, profile, account menu, and site bar.
+
+Form fields on the pages are native inputs, selects, and checkboxes.
+
+## How the theme is built
+
+`HrFrame.razor` is the frame both layouts share: `HrLayout` (the public start page and sign-in, with a Navbar) and `HrWorkLayout` (the signed-in portal, with a top bar and a Sidebar). Its root is `.sc-site.sc-hr`, and `HrFrame.razor.css` styles the pages of both through `::deep`.
+
+Color tokens in light mode: `--sc-primary` `#7e22ce` (purple), `--sc-primary-hover` `#6b21a8`, contrast `#fff`, page background `#f8f6fb`. In dark mode (`[data-bs-theme=dark]`): `--sc-primary` `#d8b4fe`, hover `#e9d5ff`, contrast `#2a0f45`, page background `#110c18`. Because the dark primary is light, `.text-bg-primary` and `.progress-bar` text switch to the dark contrast color. The sidebar sets the `--bb-sidebar-*` variables to `#2a0f45` with light text in both modes.
+
+Fonts come from Google Fonts: Nunito Sans (400 to 800) for body and headings, and JetBrains Mono for the figures in tables.
+
+The shared stylesheet `wwwroot/css/blazorbootstrap.demo.rcl.css` maps the `--sc-*` tokens to Bootstrap (`--bs-primary`, link and focus colors, body and heading fonts, primary buttons). Charts draw on a canvas, so `HrChartTheme.cs` holds their colors: series `#7e22ce`, `#047857`, `#b45309`, `#0369a1`, `#be185d` in light mode and `#d8b4fe`, `#34d399`, `#fbbf24`, `#60a5fa`, `#f472b6` in dark mode, plus axis, grid, legend, and tooltip colors. When you switch the theme, the site bar tells `HrState`, and the charts redraw.
+
+Following the shared pattern for business roles, there is one signed-in portal with a sidebar instead of role links in the public header. Each role page has its own role guard, and `HrState` checks the role on every action. Leave is counted in working days (weekdays that aren't company holidays), and balances run per calendar year.
+
+## Accessibility and responsiveness
+
+- The org chart mind map works with the keyboard and has a find box; the same chart is repeated as a nested list, and the department highlight is announced with a count.
+- Each chart has a text summary and a data table.
+- Every request, decision, tick, and refusal is announced in a status region, and focus returns to the button that opened a dialog. Note fields and checkboxes name the person and request they belong to.
+- Leave statuses and employee statuses ("Joining Dec 1", "Left Aug 28") are written in words, not shown by color alone.
+- At 375 px the sidebar sits above the page, and wide tables scroll sideways.

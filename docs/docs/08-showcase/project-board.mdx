@@ -1,0 +1,117 @@
+---
+title: Project & Client Board showcase
+description: A project and client board where team members work tasks on drag-and-drop boards, project managers plan projects and workload, and account managers run clients, deals, and the forecast, built with Blazor Bootstrap.
+sidebar_label: Project & Client Board
+sidebar_position: 5
+---
+
+import CarbonAd from '/carbon-ad.mdx'
+
+# Project & Client Board
+
+Tandem is the project and client board of Brightline Studio, a fictitious agency. Team members work their tasks on Kanban boards, project managers run projects, milestones, workload, the roadmap, and reports, and account managers keep clients, the deal pipeline, activity, and the revenue forecast. Winning a deal creates a planned project, so the sales side and the delivery side meet in one place.
+
+<CarbonAd />
+
+[Open the live demo](https://demos.blazorbootstrap.com/showcase/project-board) · [View source](https://github.com/vikramlearning/blazorbootstrap/tree/main/BlazorBootstrap.Demo.RCL/Components/Pages/Showcase/ProjectBoard)
+
+## Roles and demo accounts
+
+| Role | Demo account | Password | Start page |
+|:--|:--|:--|:--|
+| Team member | Jordan Lee (`jordan.lee@example.com`) | `board-demo-26` | `/showcase/project-board/my-tasks` |
+| Project manager | Nadia Okafor (`nadia.okafor@example.com`) | `board-pm-26` | `/showcase/project-board/manage/projects` |
+| Account manager | Elena Vasquez (`elena.vasquez@example.com`) | `board-am-26` | `/showcase/project-board/clients` |
+
+You can also create an account ("Join the team" on the start page). A new account joins the team as a team member.
+
+Everyone gets My tasks and Project boards. The project manager's pages and the account manager's pages are separate: an account manager doesn't see Workload or Reports, and a project manager doesn't see the pipeline. Five teammates (Kai, Amara, Ben, Lucia, and Hannah, a second account manager) appear on boards and deals but can't sign in.
+
+All data is fictitious and there is no backend. Each browser tab keeps its own data in `sessionStorage` (it survives a reload; other tabs start fresh), and "Reset demo data" in the account menu restores the seed: 4 projects with milestones and 28 tasks, 6 clients with 9 contacts, 12 deals, and 14 activity entries. The sign-in page lists the demo accounts with one-click buttons; credentials are checked only against the tab's accounts. The clock starts on Tuesday, November 24, 2026, 9:00 and moves on with real time.
+
+## What to try
+
+1. Sign in as Nadia, open the WEB board, and create a task for Jordan with **New task**. Sign in as Jordan: the task is in **My tasks**, and **Mark done** moves it to Done. Back as Nadia, **Reports** counts it under "Done this week".
+2. As Jordan, open the WEB board and drag a card from To do to In progress. Then do the same with the keyboard: use the card's **Move to** select, or the up and down buttons to change its place in the column.
+3. Open a task, tick checklist items, post a comment, and change the assignee or status. Switch the board to **List** and sort the table by a column.
+4. Sign in as Elena, open **Deal pipeline**, and move "Harbor & Pine holiday campaign" to Won with **Move to stage**. After you confirm, a planned project is created and the client's timeline logs it. Sign in as Nadia: **Manage projects** shows it under "New from a won deal", and the **Roadmap** includes it.
+5. As Nadia, open **Workload**, expand a person, and reassign one of their tasks to someone with more room this week.
+6. As Elena, open a client, log a call on its timeline, add a contact, and check **Forecast** for the won revenue against the $120,000 monthly target.
+
+## Pages
+
+### Public (layout: public, Navbar)
+
+| Page | Route | What it does |
+|:--|:--|:--|
+| Start page | `/showcase/project-board` | What Tandem does for each role, with Sign in and "Join the team"; a signed-in person gets "Open Tandem". |
+| Sign in | `/showcase/project-board/sign-in` | Demo accounts, the sign-in form, and the register form (`?mode=register`). |
+| Not found | `/showcase/project-board/{*path}` | The site's not-found panel, also shown for an unknown project, task, client, or deal. |
+
+### Everyone signed in (layout: sidebar app)
+
+| Page | Route | What it does |
+|:--|:--|:--|
+| My tasks | `/showcase/project-board/my-tasks` | Your tasks grouped Overdue, Today, This week, Later, and No due date, plus the ones done in the last 2 weeks; Mark done and Reopen. |
+| Project boards | `/showcase/project-board/projects` | Every project as a card with status, due date, progress, next milestone, and team; filter by status. |
+| Project board | `/showcase/project-board/projects/{Id:int}` | Board view: four columns (To do, In progress, Review, Done) with drag and drop, "Move to", and Move up/down. List view: a sortable table with a status select per row. Filters by assignee, priority, and text, "Only my tasks", and New task in a dialog. A completed project's board is read-only. |
+| Task | `/showcase/project-board/tasks/{Id:int}` | Status and assignee, details (priority, due date, estimate, milestone), description, checklist, and comments. Edit details in a dialog; the project manager can delete the task. |
+| Profile | `/showcase/project-board/profile` | Name, email, and password; your title, weekly capacity, projects, and task counts. |
+
+### Project manager (layout: sidebar app)
+
+| Page | Route | What it does |
+|:--|:--|:--|
+| Manage projects | `/showcase/project-board/manage/projects` | Every project with client, dates, team, and progress; a "New from a won deal" panel for projects that need a team; delete with a confirmation. |
+| New project | `/showcase/project-board/manage/projects/new` | Name, key (2 to 5 capital letters), client, description, status, dates, and team. |
+| Edit project | `/showcase/project-board/manage/projects/{Id:int}/edit` | The same form, a warning when removing someone unassigns their tasks, and the milestones (add, edit, delete). |
+| Workload | `/showcase/project-board/workload` | Hours due this week against each person's capacity as a chart, then each person's open tasks with Reassign. |
+| Roadmap | `/showcase/project-board/roadmap` | Projects that aren't completed and their milestones (optionally their open tasks) in a mind map with search and a details panel, then the same plan as a timeline list. |
+| Reports | `/showcase/project-board/reports` | Open, overdue, and done counts; tasks done per week; open tasks by status; progress by project; and the overdue tasks. |
+
+### Account manager (layout: sidebar app)
+
+| Page | Route | What it does |
+|:--|:--|:--|
+| Clients | `/showcase/project-board/clients` | Every client with industry, owner, primary contact, open deals, projects, and last activity. |
+| New client | `/showcase/project-board/clients/new` | Name, industry, website, and owner. |
+| Edit client | `/showcase/project-board/clients/{Id:int}/edit` | The same form, and Delete, which is refused while the client has projects or deals. |
+| Client | `/showcase/project-board/clients/{Id:int}` | The client's deals (new and edit in a dialog), projects, contacts (one primary), and timeline, where you log notes, calls, emails, and meetings. |
+| Deal pipeline | `/showcase/project-board/pipeline` | Six stages (Lead, Qualified, Proposal, Negotiation, Won, Lost) with drag and drop by a handle, "Move to stage", and Move up/down. Won and Lost ask first. Filter by text, owner, and "Closing this month". |
+| Activity | `/showcase/project-board/activity` | Every client's activity by day, including the wins and losses Tandem records; filter by client and kind. |
+| Forecast | `/showcase/project-board/forecast` | Open and weighted pipeline, won this month against the target, a chart by month with a data table, deals closing in the next 90 days, and totals by stage. |
+
+## Components used
+
+- [Sortable List](/components/sortable-list): the four task columns of a project board and the six stages of the deal pipeline.
+- [Mind Map](/components/mind-map): the roadmap of projects, milestones, and tasks.
+- [Sidebar](/components/sidebar): the signed-in app's navigation, with the role's modules.
+- [Navbar](/components/navbar): the public header.
+- [Modal](/components/modal): the task editor, the deal editor, the contact form, and the confirmations (delete a task, comment, project, milestone, client, contact, deal, or activity entry; mark a deal won or lost).
+- [Progress](/components/progress): project, milestone, and checklist progress, workload against capacity, and the monthly target.
+- [Bar chart](/data-visualization/bar-chart) and [Doughnut chart](/data-visualization/doughnut-chart) (BlazorExpress.ChartJS): tasks done per week and open tasks by status on Reports, hours against capacity on Workload, and won and weighted revenue by month on Forecast.
+- [Badge](/components/badge): project status in tables and on the roadmap.
+- [Buttons](/components/buttons) and [Icons](/content/icons): actions and icons across the site.
+- [Text Input](/forms/text-input), [Avatar](/components/avatar), [Dropdown](/components/dropdown), and [Theme Switcher](/components/theme-switcher): through the shared sign-in, profile, account menu, and site bar.
+
+Filters and most form fields on the pages are native inputs and selects.
+
+## How the theme is built
+
+`PbFrame.razor` is the frame both layouts share: `PbLayout` (the public start page and sign-in, with a Navbar) and `PbWorkLayout` (the signed-in app, with a top bar and a Sidebar). Its root is `.sc-site.sc-board`, and `PbFrame.razor.css` styles the pages of both through `::deep`.
+
+Color tokens in light mode: `--sc-primary` `#4338ca` (indigo), `--sc-primary-hover` `#3730a3`, contrast `#fff`, page background `#f6f7fb`. In dark mode (`[data-bs-theme=dark]`): `--sc-primary` `#a5b4fc`, hover `#c7d2fe`, contrast `#141a3a`, page background `#0d1020`. Because the dark primary is light, `.text-bg-primary` and `.progress-bar` text switch to the dark contrast color. The sidebar sets the `--bb-sidebar-*` variables to `#141a3a` with light text in both modes.
+
+Fonts come from Google Fonts: Manrope (400 to 800) for body and headings, and JetBrains Mono for task keys such as `WEB-5`.
+
+The shared stylesheet `wwwroot/css/blazorbootstrap.demo.rcl.css` maps the `--sc-*` tokens to Bootstrap (`--bs-primary`, link and focus colors, body and heading fonts, primary buttons). Charts draw on a canvas, so `PbChartTheme.cs` holds their colors: series `#4338ca`, `#047857`, `#b45309`, `#be185d`, `#0369a1` in light mode and `#a5b4fc`, `#34d399`, `#fbbf24`, `#f472b6`, `#60a5fa` in dark mode, a muted gray for targets, and axis, grid, legend, and tooltip colors. When you switch the theme, the site bar tells `PbState`, and the charts redraw.
+
+Following the shared pattern for business roles, there is one signed-in app with a sidebar instead of role links in the public header. Pages for one role sit behind `PbRoleGuard`, which shows a short panel to other roles, and `PbState` checks the role on every action.
+
+## Accessibility and responsiveness
+
+- Drag and drop always has a keyboard and single-pointer alternative: every task card has a labelled "Move to" select and Move up/down buttons, every deal card has "Move to stage" and Move up/down, and focus follows the moved card. Dragging turns off while board filters are on, and the board says why.
+- Every move, save, and refusal is announced in a status region, and focus returns to the button that opened a dialog.
+- Each chart has a text summary and a data table. The roadmap mind map is keyboard operable (arrow keys, Enter, and Space) and is repeated as a timeline list.
+- Statuses, priorities, and overdue dates are written in words, not shown by color alone.
+- At 375 px the sidebar sits above the page, the board columns scroll sideways in a labelled region, and wide tables scroll.

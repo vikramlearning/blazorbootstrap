@@ -1,0 +1,112 @@
+---
+title: IoT & DevOps Monitoring showcase
+description: A public status page with uptime history and email subscriptions, and an engineers' console with live metrics, incidents, logs and traces, on-call, and admin tools, built with Blazor Bootstrap.
+sidebar_label: Monitoring
+sidebar_position: 11
+---
+
+import CarbonAd from '/carbon-ad.mdx'
+
+# IoT & DevOps Monitoring
+
+Stackwatch is a fictitious company that monitors eight services, from an API gateway to warehouse sensors. Customers read the public "Stackwatch Status" page, its incident history, and subscribe to email updates. Engineers sign in to a separate console to watch live metrics, work incidents, post status page updates, follow logs and traces, and share on-call; admins also manage alert rules, failure drills, maintenance windows, and the monitored services.
+
+<CarbonAd />
+
+[Open the live demo](https://demos.blazorbootstrap.com/showcase/monitoring) · [View source](https://github.com/vikramlearning/blazorbootstrap/tree/main/BlazorBootstrap.Demo.RCL/Components/Pages/Showcase/Monitoring)
+
+## Roles and demo accounts
+
+| Role | Demo account | Password | Start page |
+|:--|:--|:--|:--|
+| Engineer | Priya Nair (`priya.nair@example.com`) | `watch-demo-26` | `/showcase/monitoring/console` |
+| Admin | Marcus Osei (`marcus.osei@example.com`) | `watch-admin-26` | `/showcase/monitoring/console` |
+
+There is no registration: engineers are staff, and the status page needs no account. Use "Engineer sign-in" in the status page header.
+
+All data is fictitious and there is no backend. Each browser tab keeps its own data in `sessionStorage` (it survives a reload; other tabs start fresh), and "Reset demo data" in the account menu restores the seed. The sign-in page lists the demo accounts with one-click buttons; credentials are checked only against the tab's accounts. The clock starts at Tuesday, November 24, 2026, 10:30 and moves on with real time. Metrics and log lines are generated from that clock every 2 seconds, without random numbers, so every fresh tab starts the same way. No email is sent: subscriber emails appear on the Subscribe page in the tab.
+
+## What to try
+
+1. Without signing in, open the status page: the Payments API shows an ongoing incident (#301). Point at the 90-day uptime bars, open "Days with incidents", then open the incident history and incident #298 to read its postmortem.
+2. Open **Subscribe to updates** and subscribe any email address to the Payments API. Sign in as Priya, open incident #301, and post an update with the stage **Identified**. Back on the Subscribe page, the email is listed under your subscription, and the status page shows the new update.
+3. As Priya, open incident #300 (search latency). It is acknowledged but not on the status page yet. Post a public update and it appears there; resolve it with a public message and it moves to the history.
+4. Open **Logs and traces**, filter by **Payments API** and the error level, and open a trace ID. The trace page shows a waterfall of spans and the same spans as a table. Press **Pause live updates** to freeze the log.
+5. Open **On-call**, take a primary or secondary shift for a coming week (a reason is optional), then set how alerts reach you in **Notifications**.
+6. Sign in as Marcus and open **Alert rules and drills**. Start a drill on Warehouse sensors with the **Outage** impact: after about 20 seconds its rule fires, opens an incident, notifies the on-call engineer, and posts on the status page. Then schedule a window in **Maintenance**, or hide a service from the status page in **Manage services**.
+
+## Pages
+
+### Public status page (layout: public, Navbar)
+
+| Page | Route | What it does |
+|:--|:--|:--|
+| Status | `/showcase/monitoring` | Overall status, ongoing incidents with their public updates, scheduled maintenance, and 90-day uptime bars per component. |
+| Incident history | `/showcase/monitoring/history` | Every published incident by month, filterable by component, with the last stage and a postmortem mark. |
+| Incident | `/showcase/monitoring/incidents/{Id:int}` | The public timeline, summary, and published postmortem; links to subscribe to that component (`?component=`). |
+| Subscribe to updates | `/showcase/monitoring/subscribe` | Subscribe an email to all or chosen components; edit components, unsubscribe, and read the emails sent in this tab. |
+| Engineer sign-in | `/showcase/monitoring/sign-in` | Demo accounts and the sign-in form (`?returnUrl=` returns to a page inside the site). |
+| Not found | `/showcase/monitoring/{*path}` | The site's not-found panel. |
+
+A signed-in engineer sees a "Viewing the public status page as" bar with a link back to the console, and a **Console** item in the Navbar.
+
+### Engineers' console (layout: sidebar back office)
+
+| Page | Route | What it does |
+|:--|:--|:--|
+| Overview | `/showcase/monitoring/console` | Active incident alerts, summary cards, live traffic and p95 latency charts, and service health with CPU bars. |
+| Services | `/showcase/monitoring/console/services` | All services with live status, latency, and error rate; filter by kind and status. |
+| Service | `/showcase/monitoring/console/services/{Id}` | The service's active incident, latency and error rate charts, resource bars, and recent logs. |
+| Incidents | `/showcase/monitoring/console/incidents` | Incidents filtered by status, severity, service, or status page; **Declare incident** opens a dialog. `?status=` and `?service=` set filters. |
+| Incident | `/showcase/monitoring/console/incidents/{Id:int}` | Acknowledge, change severity, resolve, or reopen; post on the status page by stage; add internal notes; write, publish, or unpublish the postmortem. |
+| Logs and traces | `/showcase/monitoring/console/logs` | Live log tail with search, service, and level filters (`?search=`, `?service=`). |
+| Trace | `/showcase/monitoring/console/traces/{TraceId}` | One request's spans as a waterfall and a table, and the services it passed through. |
+| On-call | `/showcase/monitoring/console/on-call` | Who is on call now, the escalation policy, and the next 8 weeks; take a shift or remove your override. |
+| Notifications | `/showcase/monitoring/console/notifications` | Your alerts and updates (all or unread, mark read), and how alerts reach you (email, push, text). |
+| Account | `/showcase/monitoring/console/account` | Your name, email, and password. |
+| Not found | `/showcase/monitoring/console/{*path}` | Keeps unknown console pages inside the console. |
+
+### Admin (layout: sidebar back office, admin only)
+
+| Page | Route | What it does |
+|:--|:--|:--|
+| Alert rules and drills | `/showcase/monitoring/console/admin/alerts` | Create, edit, turn off, or delete rules (some post on the status page on their own); start and stop failure drills. |
+| Maintenance | `/showcase/monitoring/console/admin/maintenance` | Schedule, edit, end, or cancel windows, optionally emailing subscribers; alert rules stay quiet during a window. |
+| Manage services | `/showcase/monitoring/console/admin/services` | The monitored services; show or hide each on the status page, or delete one. |
+| Add or edit service | `/showcase/monitoring/console/admin/services/new`, `/showcase/monitoring/console/admin/services/{Id}` | Name, kind, region, team, normal latency and traffic, status page visibility; live status, rules, and incidents of the service. |
+
+## Components used
+
+- [Navbar](/components/navbar): the status page header with the brand, links, and account menu or "Engineer sign-in".
+- [Sidebar](/components/sidebar): the console menu, with three extra admin items and an "Admin" or "Engineer" badge.
+- [Charts](/components/charts) ([line chart](/data-visualization/line-chart), BlazorExpress.ChartJS): live traffic and latency on the overview, latency and error rate per service.
+- [Progress](/components/progress): CPU bars on the overview, and CPU, memory, and disk on each service.
+- [Alert](/components/alerts): active incidents on the overview, and results on On-call and Notifications.
+- [Callout](/components/callout): the active incident, or "No active incidents", on each service page.
+- [Tooltip](/components/tooltips): explanations of error rate, p95 latency, and resource metrics.
+- [Modal](/components/modal): declare an incident, incident confirmations, alert rules, drills, maintenance, shifts, unsubscribe, and service deletion.
+- [Card](/components/card), [Badge](/components/badge), [Buttons](/components/buttons), and [Icons](/content/icons): panels, statuses, severities, and log levels across both sides.
+- [Breadcrumb](/components/breadcrumb): public incident, console incident, service, and service edit pages.
+- [Toasts](/components/toasts): the frame hosts them; deleting a service shows one.
+
+Tables (services, incidents, logs, spans, on-call weeks, rules) are plain Bootstrap tables, not the Grid component. The shared site bar uses [Theme Switcher](/components/theme-switcher), and the shared account menu uses [Avatar](/components/avatar) and [Dropdown](/components/dropdown).
+
+## How the theme is built
+
+`MonitoringFrame.razor` is the frame both layouts share. `MonitoringLayout` is the public side (Navbar on top), and `ConsoleLayout` is the back office (a top bar with "View status page" and a sidebar beside the page). The frame sets the color and font tokens on its `.sc-site.sc-monitoring` root in `MonitoringFrame.razor.css`, and styles the pages through `::deep`.
+
+- Light: primary `#15803d` (hover `#166534`, white text on it), page background `#f4f6f5`.
+- Dark (`[data-bs-theme=dark]`): primary `#4ade80` (hover `#86efac`, text `#052e16` on it), page background `#0a0f0c`. Because the dark green is light, the frame also gives primary badges and progress bars dark text.
+- The console sidebar is dark green (`#0f1f17`) with light green accents in both modes.
+
+The fonts come from Google Fonts: IBM Plex Sans for body text and headings, and IBM Plex Mono for metric values, times, log lines, and IDs. `wwwroot/css/blazorbootstrap.demo.rcl.css` bridges the tokens to Bootstrap (`--bs-primary`, link and focus colors, body and heading fonts, primary buttons).
+
+Charts draw on a canvas, so they take their colors from `MonitoringChartTheme.cs`: series `#15803d`, `#2563eb`, `#b45309`, `#be185d` in light mode and `#4ade80`, `#60a5fa`, `#fbbf24`, `#f472b6` in dark mode, with matching axis, grid, and tooltip colors. The site bar's theme change goes to the site state, and the charts redraw. Animation is off because the charts update every 2 seconds.
+
+## Accessibility and responsiveness
+
+- **Pause live updates** (WCAG 2.2.2) on the overview, services, service, logs, alert rules, and service edit pages stops the 2-second updates; the logs page can load new lines on request.
+- Live regions announce filter changes and action results, never each tick. Incident alerts on the overview keep a fixed start time so they are not announced again.
+- Each chart has a text label with the latest values. Each uptime bar is one group of labelled days (with a `title` for the mouse), plus a "Days with incidents" table for keyboard users. The trace waterfall has the same spans as a table.
+- Dialogs are named by their heading, have a Cancel button, and return focus to the button that opened them.
+- At 375 px, the console sidebar moves above the page, filters stack, and wide tables scroll inside their own box.

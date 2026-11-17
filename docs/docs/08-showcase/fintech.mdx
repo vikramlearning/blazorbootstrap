@@ -1,0 +1,117 @@
+---
+title: Personal Finance showcase
+description: An online bank with a one-time-code sign-in, accounts, transactions, transfers, payees with a name check, budgets, alerts, and disputes, plus a bank operations back office, built with Blazor Bootstrap.
+sidebar_label: Personal Finance
+sidebar_position: 6
+---
+
+import CarbonAd from '/carbon-ad.mdx'
+
+# Personal Finance
+
+Tallymint is a fictitious online bank. A customer signs in with a password and a one-time code, checks accounts and 90 days of transactions, moves money, manages payees, sets budgets and alerts, and disputes charges. Bank operations work in a separate back office: they review transfers held for a check, resolve disputes, follow customers and scheduled postings, and read the audit log. No money moves and no text messages are sent.
+
+<CarbonAd />
+
+[Open the live demo](https://demos.blazorbootstrap.com/showcase/fintech) · [View source](https://github.com/vikramlearning/blazorbootstrap/tree/main/BlazorBootstrap.Demo.RCL/Components/Pages/Showcase/Fintech)
+
+## Roles and demo accounts
+
+| Role | Demo account | Password | Start page |
+|:--|:--|:--|:--|
+| Customer | Jordan Ashdown (`jordan.ashdown@example.com`) | `bank-demo-26` | `/showcase/fintech` |
+| Bank operations | Priya Raman (`priya.raman@tallymint.example`) | `ops-demo-26` | `/showcase/fintech/ops` |
+
+There is no registration: a bank opens accounts in a branch or an app, so the sign-in page has no register form.
+
+After the password, both roles enter a one-time code before any page opens. In the demo the "text message" with the 6-digit code is shown on screen; a code expires after 5 minutes and allows 5 tries. Adding or changing a payee asks for a new code.
+
+Jordan has a checking account, a savings account, and a credit card. A $250 transfer to savings is scheduled for next week, a $2,400 payment to a payee added two days ago (Rowan Calloway) is held for a check, and a duplicate restaurant charge is under dispute. Operations also see four other customers, two of them with held transfers.
+
+All data is fictitious and there is no backend. Each browser tab keeps its own data in `sessionStorage` (it survives a reload; other tabs start fresh), and "Reset demo data" in the account menu restores the seed. The sign-in page lists the demo accounts with one-click buttons; credentials are checked only against the tab's accounts. The clock starts at November 24, 2026, 9:00 and moves on with real time; scheduled transfers are posted when their date comes.
+
+## What to try
+
+1. Sign in as Jordan and enter the code shown on screen. On **Overview**, open an account card, then a transaction.
+2. Choose **New transfer**: send $600 from Everyday Checking to Rowan Calloway. The form and the review screen say it will be held, because the payee was added in the last 7 days. Confirm, and read the receipt.
+3. Sign in as Priya (with a code). Open **Review queue**, review Jordan's transfer, and approve it or reject it with a reason. Sign in as Jordan: **Alerts** has the outcome, and the transfer's receipt shows the new status.
+4. As Jordan, add a payee: holder `Morgan Ellis`, routing number `123456789`, account `40001001`. "Check name" finds a match; try `M. Ellis` for a close match, or another account for "can't check". Confirm with the code.
+5. As Jordan, dispute a transaction from its page. As Priya, open it in **Disputes**, put it under review, then refund or decline it with a resolution. Jordan's dispute page shows the decision.
+6. As Jordan, freeze the checking account's card. As Priya, open Jordan in **Customers**: the card shows as frozen.
+
+## Pages
+
+### Customer bank (layout: public, Navbar)
+
+| Page | Route | What it does |
+|:--|:--|:--|
+| Overview | `/showcase/fintech` | Unread alerts, net worth, account cards, recent activity, transfers coming up, net worth and spending charts, and budgets near their limit. |
+| Account | `/showcase/fintech/accounts/{Id}` | Balance and what is available, the card with freeze or unfreeze, scheduled and held transfers, and 60 days of transactions. |
+| Transactions | `/showcase/fintech/transactions` | A table by period, account, and category with search and totals, 25 at a time. `?account=` preselects an account. |
+| Transaction | `/showcase/fintech/transactions/{Id:int}` | Details, change the category, a private note, and the dispute form. |
+| Transfers | `/showcase/fintech/transfers` | Coming up (scheduled and held, with Cancel) and recent transfers. |
+| New transfer | `/showcase/fintech/transfer` | From, to (own accounts and payees), amount, date up to 60 days ahead, and a note, with live hints about holds. `?from=` and `?to=` preselect. |
+| Review transfer | `/showcase/fintech/transfer/confirm` | What happens next (sent, scheduled, or held and why), then "Confirm transfer" or "Edit". |
+| Transfer receipt | `/showcase/fintech/transfers/{Reference}` | Status, details, and linked transactions; cancel a scheduled or held transfer; print. |
+| Payees | `/showcase/fintech/payees` | Payees with the name-check result and a "New" badge; pay, edit, set a nickname, or delete. |
+| New payee | `/showcase/fintech/payees/new` | Details, name check, then a one-time code. |
+| Edit payee | `/showcase/fintech/payees/{Id}` | The same two steps for an existing payee. |
+| Budgets | `/showcase/fintech/budgets` | This month's spending per category against its limit; add, change, and delete budgets. |
+| Alerts | `/showcase/fintech/alerts` | The alert feed with "Mark as read", and settings for each kind and the low-balance and large-transaction amounts. |
+| Disputes | `/showcase/fintech/disputes` | The customer's disputes with their status. |
+| Dispute | `/showcase/fintech/disputes/{Id:int}` | Status timeline, the disputed transaction, and the bank's decision. |
+| Profile | `/showcase/fintech/profile` | Name, email, and password. |
+| Sign in | `/showcase/fintech/sign-in` | Demo accounts and the sign-in form; the code step follows on the page you return to. |
+| Not found | `/showcase/fintech/{*path}` | The bank's not-found screen. |
+
+### Bank operations (layout: sidebar back office)
+
+| Page | Route | What it does |
+|:--|:--|:--|
+| Overview | `/showcase/fintech/ops` | Figure cards for held transfers, open disputes, scheduled postings, customers on watch, and today's audit entries; a "Needs attention" list; recent audit entries. |
+| Review queue | `/showcase/fintech/ops/queue` | Every held transfer, oldest first, with the hold reason and how long it has waited. |
+| Transfer | `/showcase/fintech/ops/transfers/{Reference}` | The transfer, the source account's balance, and its audit entries; approve, reject with a reason, or hold a scheduled one. |
+| Disputes | `/showcase/fintech/ops/disputes` | Every customer's disputes with counts and a status filter (open, closed, all). |
+| Dispute | `/showcase/fintech/ops/disputes/{Id:int}` | Put a dispute under review, then refund or decline it with a resolution the customer reads. |
+| Customers | `/showcase/fintech/ops/customers` | Customers with status, balances, and open items; search and a status filter. |
+| Customer | `/showcase/fintech/ops/customers/{Id}` | Profile, accounts and card status, transfers, disputes, and internal notes. |
+| Scheduled postings | `/showcase/fintech/ops/scheduled` | Scheduled transfers by date, "Run due postings", and the last posted and rejected. |
+| Audit log | `/showcase/fintech/ops/audit` | Every customer, operations, and system action, filtered and searched, 50 at a time; read-only. |
+| Account | `/showcase/fintech/ops/account` | The operations user's name, email, and password. |
+| Not found | `/showcase/fintech/ops/{*path}` | The back office's not-found screen. |
+
+## Components used
+
+- [Navbar](/components/navbar): the customer bank's header with its modules.
+- [Sidebar](/components/sidebar): the operations navigation.
+- [Card](/components/card): account cards, figure cards, and page sections.
+- [Currency input](/forms/currency-input): the transfer amount, budget limits, and the alert amounts.
+- [Line chart](/data-visualization/line-chart) and [Doughnut chart](/data-visualization/doughnut-chart) (BlazorExpress.ChartJS): net worth over 12 months and this month's spending on Overview.
+- [Progress](/components/progress): budgets on Budgets and Overview.
+- [Modal](/components/modal): freeze card, cancel transfer, budgets, delete payee, approve or reject a transfer, and resolve a dispute.
+- [Alert](/components/alerts): hold notices on the transfer form, review screen, and receipt, and the name-check results.
+- [Button group](/components/button-group) (`RadioButtonGroup`): the period on Transactions.
+- [Text input](/forms/text-input) and [Input group](/components/input-group): search on Transactions and the audit log.
+- [Badge](/components/badge) and [Breadcrumb](/components/breadcrumb): statuses in words, and the account and transaction pages.
+- [Buttons](/components/buttons) and [Icons](/content/icons): actions and icons across the site.
+- [Avatar](/components/avatar), [Dropdown](/components/dropdown), and [Theme switcher](/components/theme-switcher): through the shared account menu and site bar.
+
+The one-time code field is a native input with `autocomplete="one-time-code"`, and the alert settings use native switches.
+
+## How the theme is built
+
+`FintechFrame.razor` is the frame both layouts share: `FintechLayout` (the customer bank, with a Navbar) and `FintechOpsLayout` (an operations top bar and a Sidebar). Its root is `.sc-site.sc-fintech`, and `FintechFrame.razor.css` styles the pages of both through `::deep`. Operations have their own layout, separate from the bank (D-031). Both layouts wrap their pages in `FintechGuard`, which adds the one-time-code step to the role check.
+
+Color tokens in light mode: `--sc-primary` `#047857` (green), `--sc-primary-hover` `#065f46`, contrast `#fff`, page background `#f3f7f5`. In dark mode (`[data-bs-theme=dark]`): `--sc-primary` `#34d399`, hover `#6ee7b7`, contrast `#052e22`, page background `#08110e`. Because the dark primary is a light green, `.text-bg-primary` text switches to the dark contrast color. Money in and money out have their own tokens (`--tm-in`, `--tm-out`).
+
+Fonts come from Google Fonts: Manrope (400 to 800) for body and headings, and IBM Plex Mono for amounts, references, and account numbers.
+
+The shared stylesheet `wwwroot/css/blazorbootstrap.demo.rcl.css` maps the `--sc-*` tokens to Bootstrap (`--bs-primary`, link and focus colors, body and heading fonts, primary buttons). Charts draw on a canvas, so `FintechChartTheme.cs` holds their colors: the brand green for the net worth line, eight category colors for spending (`#047857`, `#2563eb`, `#d97706`, `#db2777`, `#7c3aed`, `#ea580c`, `#0d9488`, `#dc2626` in light mode; `#34d399`, `#60a5fa`, `#fbbf24`, `#f472b6`, `#a78bfa`, `#fb923c`, `#2dd4bf`, `#f87171` in dark mode), and axis, grid, legend, and tooltip colors. When you switch the theme, the frame's site bar tells `FintechState`, and the charts redraw.
+
+## Accessibility and responsiveness
+
+- The code step has one labelled field (`inputmode="numeric"`, `autocomplete="one-time-code"`) tied to the demo message, the tries left, and the error.
+- Transactions and the audit log are plain tables with a caption and header scopes. Statuses such as Pending, Held, Scheduled, and Disputed are words, not colors alone.
+- Each chart has a label and a visually hidden data table.
+- Outcomes (transfer held, payee saved, dispute resolved) are announced in status messages, and focus moves to the first problem or to the outcome.
+- At 375 px the Navbar collapses into a menu, and below the medium breakpoint the transaction table moves the category and account under the description. Receipts print without the site's chrome.
