@@ -1,0 +1,201 @@
+@page "/showcase/hr-portal/org-chart"
+@layout HrWorkLayout
+@implements IDisposable
+
+<PageTitle>Org chart · @HrSeedData.ProductName</PageTitle>
+
+<div class="container-fluid px-lg-4">
+    @{
+        var departmentName = State.FindDepartment(departmentId)?.Name;
+    }
+    <div class="mb-3">
+        <h1 class="hr-title mb-1">Org chart</h1>
+        <p class="hr-lead mb-0">
+            Who reports to whom at @HrSeedData.CompanyName, from the chief executive down. The same chart is listed person by person
+            below the map.
+        </p>
+    </div>
+
+    @* Always rendered: selections and the result of a ?focus= link are announced here. *@
+    <p class="visually-hidden" role="status">@statusText</p>
+
+    @if (focusMissing)
+    {
+        <p class="hr-oc-note mb-3">That person isn't in the org chart: they may have left, or the link is wrong. <a href="@($"{HrLayout.Base}/people")">Search the directory</a></p>
+    }
+
+    <div class="hr-panel hr-oc-controls mb-4">
+        <div>
+            <label class="form-label fw-semibold" for="hr-oc-department">Highlight a department</label>
+            <select id="hr-oc-department" class="form-select" value="@(departmentId ?? string.Empty)" @onchange="OnDepartmentChanged" aria-describedby="hr-oc-department-status">
+                <option value="">No highlight</option>
+                @foreach (var item in State.Departments)
+                {
+                    <option value="@item.Id">@item.Name</option>
+                }
+            </select>
+        </div>
+        <div>
+            <label class="form-label fw-semibold" for="hr-oc-direction">Layout</label>
+            <select id="hr-oc-direction" class="form-select" value="@direction" @onchange="OnDirectionChanged">
+                <option value="@MindMapDirection.Right">Left to right</option>
+                <option value="@MindMapDirection.Down">Top to bottom</option>
+            </select>
+        </div>
+        <p class="hr-oc-count mb-0" id="hr-oc-department-status" role="status">
+            @if (departmentName is not null)
+            {
+                <span>@DepartmentCountText(departmentName). They're marked in the map and the list.</span>
+            }
+        </p>
+    </div>
+
+    @if (tree is null)
+    {
+        <div class="hr-panel text-center py-5">
+            <span class="hr-icon fs-4" aria-hidden="true"><Icon Name="IconName.Diagram3" /></span>
+            <h2 class="h5 fw-bold mt-3">Nobody is at the top of the org chart</h2>
+            <p class="text-body-secondary mb-0">Everyone in the directory has a manager set, so there's no one to start the chart from. HR can fix the reporting lines.</p>
+        </div>
+    }
+    else
+    {
+        <div class="row g-4 mb-4">
+            <div class="col-xl-8">
+                <section class="hr-panel h-100" aria-labelledby="hr-oc-map-title">
+                    <h2 class="hr-section-title mb-1" id="hr-oc-map-title">Map</h2>
+                    <p class="small text-body-secondary">
+                        Select a person to see their details. Up and down arrows move between people, right and left arrows open and close
+                        a team, and Enter or Space selects. Drag the background to scroll.
+                    </p>
+                    <MindMap TItem="OrgChartNode"
+                             Root="tree"
+                             Children="node => node.Children"
+                             Label="node => node.Name"
+                             Direction="direction"
+                             InitialExpandDepth="2"
+                             ExpandedItems="expanded"
+                             ExpandedItemsChanged="OnExpandedChanged"
+                             SelectedItem="selected"
+                             SelectedItemChanged="OnSelectedChanged"
+                             BranchColor="BranchColor"
+                             SearchLabel="Find a person by name"
+                             SearchPlaceholder="Find a person…"
+                             SearchMatchesTextFormat="{0} people match"
+                             SearchOneMatchText="1 person matches"
+                             SearchNoMatchesText="Nobody matches"
+                             PathLabel="Reporting line of the selected person"
+                             Class="hr-oc-map"
+                             aria-labelledby="hr-oc-map-title">
+                        <NodeTemplate Context="node">
+                            @{
+                                var hit = departmentId is not null && node.Item.DepartmentId == departmentId;
+                                var name = node.Item.Name;
+                                var start = node.IsMatch && node.SearchText is { Length: > 0 } query ? name.IndexOf(query, StringComparison.OrdinalIgnoreCase) : -1;
+                                var length = start >= 0 ? node.SearchText!.Length : 0;
+                            }
+                            <span class="hr-oc-node @(hit ? "hr-oc-node-hit" : null)">
+                                <span class="hr-oc-initials" aria-hidden="true">@node.Item.Initials</span>
+                                <span class="hr-oc-text">
+                                    <span class="d-block fw-semibold">
+                                        @if (start >= 0)
+                                        {
+                                            @name[..start]<mark>@name.Substring(start, length)</mark>@name[(start + length)..]
+                                        }
+                                        else
+                                        {
+                                            @name
+                                        }
+                                    </span>
+                                    <span class="d-block small hr-oc-sub">@node.Item.Title</span>
+                                    @if (hit)
+                                    {
+                                        <span class="d-block small fw-semibold hr-oc-tag">In @departmentName</span>
+                                    }
+                                </span>
+                            </span>
+                        </NodeTemplate>
+                    </MindMap>
+                </section>
+            </div>
+
+            <div class="col-xl-4">
+                <section class="hr-panel h-100" aria-labelledby="hr-oc-details-title">
+                    <h2 class="hr-section-title" id="hr-oc-details-title">Details</h2>
+                    @if (SelectedPerson is { } person)
+                    {
+                        var manager = person.ManagerId is { } managerId ? State.FindEmployee(managerId) : null;
+                        var reports = State.DirectReports(person.Id);
+                        var teamSize = nodesById.TryGetValue(person.Id, out var personNode) ? personNode.TeamSize : 0;
+
+                        <div class="d-flex align-items-center gap-2 mb-2">
+                            <span class="hr-avatar" aria-hidden="true">@person.Initials</span>
+                            <h3 class="h6 fw-bold mb-0 hr-oc-wrap hr-oc-focus" tabindex="-1" @ref="selectedHeading">@person.Name</h3>
+                        </div>
+                        <p class="small mb-3 hr-oc-wrap">@person.Title@(person.Pronouns.Length > 0 ? $" · {person.Pronouns}" : null)</p>
+                        <dl class="hr-oc-facts small">
+                            <dt>Department</dt>
+                            <dd>@(State.FindDepartment(person.DepartmentId)?.Name)</dd>
+                            <dt>Location</dt>
+                            <dd>@person.Location</dd>
+                            <dt>Reports to</dt>
+                            <dd>
+                                @if (manager is not null)
+                                {
+                                    <a href="@HrDisplay.EmployeeUrl(manager.Id)">@manager.Name</a>
+                                }
+                                else
+                                {
+                                    <span>Nobody (the top of the chart)</span>
+                                }
+                            </dd>
+                            <dt>Direct reports</dt>
+                            <dd>@(reports.Count == 0 ? "None" : HrDisplay.Plural(reports.Count, "person", "people"))</dd>
+                            @if (teamSize > reports.Count)
+                            {
+                                <dt>Whole team</dt>
+                                <dd>@HrDisplay.Plural(teamSize, "person", "people") in their branch</dd>
+                            }
+                            @if (person.Status == HrEmployeeStatus.Joining && person.StartDate > State.Clock.Today)
+                            {
+                                <dt>Status</dt>
+                                <dd>@HrDisplay.StatusLabel(person, State.Clock.Today)</dd>
+                            }
+                        </dl>
+                        <a class="btn btn-sm btn-primary" href="@HrDisplay.EmployeeUrl(person.Id)">Open profile<span class="visually-hidden">: @person.Name</span></a>
+                    }
+                    else
+                    {
+                        <p class="small text-body-secondary mb-2">Select someone in the map to see their department, location, and team here, with a link to their profile.</p>
+                        <p class="small mb-0 hr-oc-wrap">
+                            @HrDisplay.Plural(State.Directory.Count, "person", "people") in the directory. @tree.Name (@tree.Title) leads, with
+                            @HrDisplay.Plural(tree.Children.Count, "direct report").
+                        </p>
+                    }
+                </section>
+            </div>
+        </div>
+
+        <section class="hr-panel" aria-labelledby="hr-oc-list-title">
+            <h2 class="hr-section-title mb-1" id="hr-oc-list-title">Everyone by reporting line</h2>
+            <p class="small text-body-secondary">
+                Each person with their title, department, and location. A manager's direct reports are listed under them; close a list
+                with its "Direct reports" button.
+            </p>
+            <ul class="hr-oc-list mb-0">
+                <OrgChartBranch Node="tree" HighlightDepartmentId="@departmentId" DepartmentName="DepartmentNameOf" />
+            </ul>
+            @if (Unplaced.Count > 0)
+            {
+                <h3 class="h6 fw-bold mt-4">Not placed in the chart yet</h3>
+                <p class="small text-body-secondary">Their manager isn't set, so they don't appear under anyone. HR can set it.</p>
+                <ul class="hr-oc-list mb-0">
+                    @foreach (var node in Unplaced)
+                    {
+                        <OrgChartBranch @key="@($"unplaced-{node.Id}")" Node="node" HighlightDepartmentId="@departmentId" DepartmentName="DepartmentNameOf" />
+                    }
+                </ul>
+            }
+        </section>
+    }
+</div>

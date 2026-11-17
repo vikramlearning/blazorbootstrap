@@ -1,0 +1,36 @@
+/* The org chart's list view: nested lists with a line down each manager's reports. */
+.hr-ocb-item {
+    margin: .25rem 0;
+    overflow-wrap: anywhere;
+}
+
+.hr-ocb-person {
+    display: inline;
+    padding: .0625rem .25rem;
+    border-radius: .25rem;
+}
+
+.hr-ocb-hit {
+    background: var(--hr-soft);
+    box-shadow: inset 3px 0 0 var(--sc-primary);
+    padding-left: .5rem;
+}
+
+.hr-ocb-reports {
+    margin: .25rem 0 .5rem;
+}
+
+    .hr-ocb-reports > summary {
+        width: fit-content;
+        max-width: 100%;
+        font-size: .875rem;
+        color: var(--bs-secondary-color);
+        cursor: pointer;
+    }
+
+.hr-ocb-list {
+    margin: .25rem 0 0 .375rem;
+    padding-left: 1rem;
+    border-left: 2px solid var(--hr-border);
+    list-style: disc;
+}

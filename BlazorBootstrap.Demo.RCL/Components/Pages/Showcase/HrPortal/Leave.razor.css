@@ -1,0 +1,135 @@
+/* My leave: the status message, balance cards, the request form, the request list, and the holidays. Modal and Progress
+   render their own elements; the markup inside the dialog's templates is this page's, so it takes these styles. */
+.hr-leave-status {
+    min-height: 1.5rem;
+    margin-bottom: 1rem;
+    overflow-wrap: anywhere;
+}
+
+    .hr-leave-status:focus {
+        outline: none;
+    }
+
+    .hr-leave-status:focus-visible {
+        outline: 2px solid var(--bs-focus-ring-color, var(--sc-primary));
+        outline-offset: 2px;
+    }
+
+.hr-leave-balances {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 14rem), 1fr));
+    gap: 1rem;
+}
+
+.hr-leave-balance {
+    min-width: 0;
+    padding: 1rem 1.25rem;
+}
+
+.hr-leave-balance-title {
+    margin-bottom: .5rem;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--hr-ink);
+    overflow-wrap: anywhere;
+}
+
+.hr-leave-big {
+    font-size: 1.5rem;
+    font-weight: 800;
+    line-height: 1.2;
+    color: var(--hr-ink);
+}
+
+.hr-leave-big-unit {
+    font-size: 1rem;
+    font-weight: 400;
+    color: var(--bs-secondary-color);
+}
+
+.hr-leave-error {
+    color: var(--bs-form-invalid-color);
+    font-size: .875rem;
+    overflow-wrap: anywhere;
+}
+
+    .hr-leave-error:empty {
+        display: none;
+    }
+
+.hr-leave-days {
+    padding: .5rem .75rem;
+    border-radius: .5rem;
+    background: var(--hr-soft);
+    color: var(--hr-ink);
+    overflow-wrap: anywhere;
+}
+
+.hr-leave-group-title {
+    margin-bottom: .5rem;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--hr-ink);
+}
+
+.hr-leave-list {
+    display: grid;
+    gap: .75rem;
+}
+
+.hr-leave-request {
+    min-width: 0;
+}
+
+.hr-leave-editing {
+    border-color: var(--sc-primary);
+    box-shadow: 0 0 0 1px var(--sc-primary);
+}
+
+.hr-leave-request-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: .25rem .75rem;
+    margin-bottom: .25rem;
+}
+
+.hr-leave-request-title {
+    margin: 0;
+    min-width: 0;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--hr-ink);
+    overflow-wrap: anywhere;
+}
+
+.hr-leave-decision {
+    padding: .5rem .75rem;
+    border-left: 3px solid var(--sc-primary);
+    border-radius: .25rem;
+    background: var(--hr-soft);
+    overflow-wrap: anywhere;
+}
+
+.hr-leave-holidays summary {
+    cursor: pointer;
+}
+
+.hr-leave-holiday-years {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+    gap: 1rem 2rem;
+}
+
+.hr-leave-holiday-list li {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .25rem .75rem;
+    padding-block: .25rem;
+    border-bottom: 1px solid var(--hr-border);
+}
+
+    .hr-leave-holiday-list li:last-child {
+        border-bottom: 0;
+    }

@@ -1,0 +1,117 @@
+@page "/showcase/hr-portal/team/onboarding"
+@layout HrWorkLayout
+
+<PageTitle>New hires · @HrSeedData.ProductName</PageTitle>
+
+@* New hires' onboarding checklists (a manager's reports, or everyone's for HR): progress, overdue tasks, and the tasks. *@
+<div class="container-fluid px-lg-4">
+    <ShowcaseRoleGuard Roles="@($"{HrSeedData.ManagerRole},{HrSeedData.HrAdminRole}")" SignInPath="@HrLayout.SignInPath">
+        @if (State.CurrentEmployee is { } me)
+        {
+            var today = State.Clock.Today;
+            var hires = Hires(today);
+            var soonCount = hires.Count(item => IsStartingSoon(item.Person, today));
+            var overdueCount = hires.Sum(item => item.Plan.Tasks.Count(task => task.DoneAt is null && task.Due.Date < today));
+
+            <h1 class="hr-title mb-1">New hires</h1>
+            <p class="hr-lead mb-3">
+                @if (State.IsHrAdmin)
+                {
+                    <span>Every onboarding checklist. As HR you can tick any task. Start a checklist for someone from <a href="@($"{HrLayout.Base}/admin/employees")">Employees</a>.</span>
+                }
+                else
+                {
+                    <span>Your direct reports' onboarding checklists. Tick the manager's tasks as you do them; the new hire and HR tick theirs, and you see them here.</span>
+                }
+            </p>
+
+            @* Always rendered, so every tick is announced; focus stays on the checkbox. *@
+            <p class="fw-semibold hr-tob-status @(statusIsError ? "text-danger-emphasis" : null)" role="status">@statusMessage</p>
+
+            @if (hires.Count == 0)
+            {
+                <section class="hr-panel hr-tob-empty" aria-labelledby="hr-tob-empty-title">
+                    <span class="hr-icon" aria-hidden="true"><Icon Name="IconName.PersonPlus" /></span>
+                    <div>
+                        <h2 class="hr-section-title mb-1" id="hr-tob-empty-title">No onboarding checklists</h2>
+                        <p class="mb-0 text-body-secondary">
+                            @(State.IsHrAdmin ? "No one has an onboarding checklist yet. Start one from Employees when someone joins." : "None of your direct reports has an onboarding checklist. HR starts one when someone joins your team.")
+                        </p>
+                    </div>
+                </section>
+            }
+            else
+            {
+                <p class="mb-4">
+                    @HrDisplay.Plural(hires.Count, "checklist")@(soonCount > 0 ? $", {HrDisplay.Plural(soonCount, "person", "people")} starting within {SoonDays} days" : null),
+                    and @(overdueCount == 0 ? "nothing overdue" : $"{HrDisplay.Plural(overdueCount, "task")} overdue").
+                </p>
+
+                @foreach (var (person, plan) in hires)
+                {
+                    var progress = HrState.Progress(plan);
+                    var percent = progress.Total == 0 ? 0 : Math.Round(progress.Done * 100.0 / progress.Total);
+                    var progressText = $"{progress.Done} of {progress.Total} done";
+                    var overdue = plan.Tasks.Where(task => task.DoneAt is null && task.Due.Date < today).OrderBy(task => task.Due).ToList();
+                    var soon = IsStartingSoon(person, today);
+                    var manager = person.ManagerId is { } managerId ? State.FindEmployee(managerId) : null;
+                    var titleId = $"hr-tob-person-{person.Id}";
+                    var myTasksLeft = plan.Tasks.Count(task => task.DoneAt is null && CanTick(task, person, me));
+
+                    <section class="hr-card hr-tob-person @(soon ? "hr-tob-soon" : null)" aria-labelledby="@titleId" @key="@($"hire-{person.Id}")">
+                        <div class="hr-tob-head">
+                            <span class="hr-avatar" aria-hidden="true">@person.Initials</span>
+                            <div class="hr-tob-head-text">
+                                <h2 class="hr-tob-name" id="@titleId"><a href="@HrDisplay.EmployeeUrl(person.Id)">@person.Name</a></h2>
+                                <p class="small text-body-secondary mb-0">@(person.Title)@(State.IsHrAdmin && manager is not null ? $" · reports to {(manager.Id == me.Id ? "you" : manager.Name)}" : null)</p>
+                            </div>
+                            @if (soon)
+                            {
+                                <span class="badge hr-tob-soon-badge"><Icon Name="IconName.Stars" class="me-1" aria-hidden="true" />Starting soon</span>
+                            }
+                        </div>
+
+                        <dl class="hr-tob-facts">
+                            <div>
+                                <dt>First day</dt>
+                                <dd>@HrDisplay.Date(person.StartDate) (@StartText(person.StartDate, today))</dd>
+                            </div>
+                            <div>
+                                <dt>Checklist</dt>
+                                <dd>@plan.TemplateName</dd>
+                            </div>
+                            <div>
+                                <dt>Progress</dt>
+                                <dd>@progressText</dd>
+                            </div>
+                            <div>
+                                <dt>@(State.IsHrAdmin ? "Open tasks" : "Your tasks left")</dt>
+                                <dd>@(myTasksLeft == 0 ? "None" : HrDisplay.Plural(myTasksLeft, "task"))</dd>
+                            </div>
+                        </dl>
+                        <Progress Height="8" Class="mb-3">
+                            <ProgressBar Width="percent" Color="@(progress.Done == progress.Total ? ProgressColor.Success : ProgressColor.Primary)"
+                                         aria-label="@($"{person.Name}'s onboarding progress")" aria-valuenow="@percent.ToString("0", CultureInfo.InvariantCulture)" aria-valuemin="0" aria-valuemax="100"
+                                         aria-valuetext="@($"{progressText} ({percent.ToString("0", CultureInfo.InvariantCulture)}%)")" />
+                        </Progress>
+
+                        @if (overdue.Count > 0)
+                        {
+                            <p class="hr-tob-overdue">
+                                <Icon Name="IconName.ExclamationTriangleFill" class="me-2 flex-shrink-0" aria-hidden="true" />
+                                <span><strong>@HrDisplay.Plural(overdue.Count, "task") overdue:</strong> @OverdueText(overdue, person, manager, me).</span>
+                            </p>
+                        }
+                        else
+                        {
+                            <p class="text-body-secondary">Nothing overdue.</p>
+                        }
+
+                        <OnboardingTaskList Plan="plan" Employee="person" Today="today" ViewerId="me.Id" HeadingLevel="3" IdPrefix="@($"hr-tob-{person.Id}")"
+                                            CanTick="@(task => CanTick(task, person, me))" OnToggle="@((task, done) => Toggle(person, task, done))" />
+                    </section>
+                }
+            }
+        }
+    </ShowcaseRoleGuard>
+</div>

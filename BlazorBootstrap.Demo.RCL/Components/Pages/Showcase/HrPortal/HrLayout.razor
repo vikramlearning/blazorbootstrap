@@ -1,0 +1,59 @@
+@inherits LayoutComponentBase
+@implements IDisposable
+
+@* The public side: the start page and sign-in. Signed-in people work in HrWorkLayout. *@
+<ShowcaseSessionHost State="State" SiteBase="@Base" SiteName="@HrSeedData.ProductName">
+<HrFrame>
+    <Header>
+    <Navbar Class="hr-header"
+            Placement="NavbarPlacement.StickyTop"
+            Container="NavbarContainer.Fluid"
+            AriaLabel="@HrSeedData.ProductName"
+            TogglerAriaLabel="Menu">
+        <Brand>
+            <NavbarBrand Href="@Base" Class="hr-brand">
+                <span class="hr-brand-mark" aria-hidden="true"><Icon Name="IconName.People" /></span>
+                <span>@HrSeedData.ProductName</span>
+            </NavbarBrand>
+            @if (State.Identity.IsSignedIn)
+            {
+                <ShowcaseAccountMenu SiteBase="@Base" SignInPath="@SignInPath" Class="ms-auto me-2 order-lg-last" />
+            }
+            else
+            {
+                <a class="btn btn-sm btn-outline-secondary ms-auto me-2 order-lg-last" href="@SignInPath">Sign in</a>
+            }
+        </Brand>
+        <ChildContent>
+            <NavbarNav Class="me-auto ms-lg-4 mb-3 mb-lg-0">
+                <NavbarItem Href="@Base" Match="NavLinkMatch.All">Home</NavbarItem>
+                @if (State.IsSignedIn)
+                {
+                    <NavbarItem Href="@($"{Base}/home")">Open the portal</NavbarItem>
+                }
+            </NavbarNav>
+        </ChildContent>
+    </Navbar>
+    </Header>
+    <ChildContent>
+        @Body
+    </ChildContent>
+</HrFrame>
+</ShowcaseSessionHost>
+
+@code {
+    /// <summary>Base route of the HR portal site.</summary>
+    public const string Base = DemoRouteConstants.Showcase_URL_HrPortal;
+
+    /// <summary>Route of the sign-in page.</summary>
+    public const string SignInPath = Base + "/sign-in";
+
+    [Inject] private HrState State { get; set; } = default!;
+
+    /// <summary>Stops listening to state changes.</summary>
+    public void Dispose() => State.Changed -= OnStateChanged;
+
+    protected override void OnInitialized() => State.Changed += OnStateChanged;
+
+    private void OnStateChanged() => InvokeAsync(StateHasChanged);
+}

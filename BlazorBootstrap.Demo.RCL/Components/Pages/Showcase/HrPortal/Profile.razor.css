@@ -1,0 +1,31 @@
+/* Profile: the directory details form and the facts HR keeps. */
+.hr-profile-short {
+    max-width: 20rem;
+}
+
+.hr-profile-facts {
+    display: grid;
+    grid-template-columns: max-content minmax(0, 1fr);
+    gap: .5rem 1rem;
+}
+
+    .hr-profile-facts dt {
+        font-weight: 600;
+        color: var(--bs-secondary-color);
+    }
+
+    .hr-profile-facts dd {
+        margin: 0;
+        overflow-wrap: anywhere;
+    }
+
+@media (max-width: 420px) {
+    .hr-profile-facts {
+        grid-template-columns: minmax(0, 1fr);
+        gap: .125rem;
+    }
+
+        .hr-profile-facts dd {
+            margin-bottom: .5rem;
+        }
+}

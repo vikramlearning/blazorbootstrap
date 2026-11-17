@@ -1,0 +1,60 @@
+/* Directory: the filter panel and one card per person. */
+.hr-dir-count:focus {
+    outline: none;
+}
+
+.hr-dir-count:focus-visible {
+    outline: 2px solid var(--bs-focus-ring-color, var(--sc-primary));
+    outline-offset: 2px;
+}
+
+.hr-dir-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 17rem), 1fr));
+    gap: 1rem;
+}
+
+.hr-dir-card {
+    display: flex;
+    align-items: flex-start;
+    gap: .875rem;
+    padding: 1rem 1.125rem;
+}
+
+.hr-dir-body {
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+.hr-dir-name {
+    margin: 0 0 .25rem;
+    font-size: 1.0625rem;
+    font-weight: 700;
+}
+
+    .hr-dir-name a {
+        color: var(--hr-ink);
+        text-decoration: none;
+    }
+
+        .hr-dir-name a:hover,
+        .hr-dir-name a:focus-visible {
+            color: var(--sc-primary-hover);
+            text-decoration: underline;
+        }
+
+[data-bs-theme=dark] .hr-dir-name a:hover,
+[data-bs-theme=dark] .hr-dir-name a:focus-visible {
+    color: var(--sc-primary);
+}
+
+.hr-dir-pronouns {
+    font-size: .8125rem;
+    font-weight: 400;
+    color: var(--bs-secondary-color);
+}
+
+.hr-dir-you {
+    background: var(--hr-soft);
+    color: var(--hr-ink);
+}

@@ -1,0 +1,106 @@
+/* Employees: the header, the filters, the "can't mark as left yet" panel, and the people table. */
+.hr-ae-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.hr-ae-status:empty {
+    margin: 0;
+}
+
+.hr-ae-status:focus {
+    outline: none;
+}
+
+.hr-ae-status:focus-visible {
+    outline: 2px solid var(--bs-focus-ring-color, var(--sc-primary));
+    outline-offset: 2px;
+}
+
+.min-w-0 {
+    min-width: 0;
+}
+
+.hr-ae-wrap {
+    overflow-wrap: anywhere;
+}
+
+.hr-ae-blocked {
+    padding: 1rem 1.25rem;
+    border: 2px solid var(--bs-warning-border-subtle);
+    border-radius: .875rem;
+    background: var(--bs-warning-bg-subtle);
+    color: var(--bs-warning-text-emphasis);
+}
+
+.hr-ae-report {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: .5rem .75rem;
+    padding: .5rem .75rem;
+    border: 1px solid var(--hr-border);
+    border-radius: .625rem;
+    background: var(--hr-surface);
+    color: var(--hr-ink);
+}
+
+.hr-ae-filters {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: .75rem 1rem;
+}
+
+.hr-ae-filter-status {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .5rem;
+}
+
+.hr-ae-field {
+    flex: 1 1 12rem;
+    max-width: 18rem;
+}
+
+.hr-ae-count {
+    font-variant-numeric: tabular-nums;
+}
+
+.hr-ae-caption {
+    caption-side: top;
+    padding-top: 0;
+    font-size: .8125rem;
+    color: var(--bs-secondary-color);
+}
+
+.hr-ae-table {
+    font-size: .875rem;
+}
+
+.hr-ae-name {
+    min-width: 14rem;
+    overflow-wrap: anywhere;
+}
+
+.hr-ae-title,
+.hr-ae-manager {
+    min-width: 10rem;
+    overflow-wrap: anywhere;
+}
+
+.hr-ae-dept {
+    min-width: 8rem;
+}
+
+.hr-ae-progress {
+    min-width: 9rem;
+}
+
+.hr-ae-row-left > * {
+    color: var(--bs-secondary-color);
+}

@@ -1,0 +1,51 @@
+/* Headcount analytics: KPI cards, four charts in a grid, and the leave chart, each with its table. */
+.hr-aa-kpi {
+    display: flex;
+    flex-direction: column;
+    gap: .25rem;
+    padding: 1rem 1.25rem;
+}
+
+.hr-aa-kpi-label {
+    font-size: .8125rem;
+    font-weight: 600;
+    color: var(--bs-secondary-color);
+}
+
+.hr-aa-kpi-value {
+    font-size: 1.75rem;
+    font-weight: 700;
+    line-height: 1.2;
+    color: var(--hr-ink);
+    font-variant-numeric: tabular-nums;
+}
+
+.hr-aa-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1.5rem;
+}
+
+@media (min-width: 1200px) {
+    .hr-aa-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+.hr-aa-details > summary {
+    width: fit-content;
+    font-size: .875rem;
+    font-weight: 600;
+    color: var(--sc-primary);
+    cursor: pointer;
+}
+
+    .hr-aa-details > summary:focus-visible {
+        outline: 2px solid var(--bs-focus-ring-color, var(--sc-primary));
+        outline-offset: 2px;
+        border-radius: .25rem;
+    }
+
+.hr-aa-details .table {
+    font-size: .8125rem;
+}

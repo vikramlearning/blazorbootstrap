@@ -1,0 +1,95 @@
+@page "/showcase/hr-portal/onboarding"
+@layout HrWorkLayout
+
+<PageTitle>My onboarding · @HrSeedData.ProductName</PageTitle>
+
+@* The signed-in employee's onboarding checklist: progress, then the tasks by when they're due. They tick their own tasks. *@
+<div class="container-fluid px-lg-4">
+    @if (State.CurrentEmployee is { } me)
+    {
+        var today = State.Clock.Today;
+        var plan = State.OnboardingOf(me.Id);
+
+        <h1 class="hr-title mb-1">My onboarding</h1>
+        <p class="hr-lead mb-3">
+            Your first weeks at @HrSeedData.CompanyName, as a checklist. Tick your own tasks as you finish them; your manager and HR tick
+            theirs, and you see them done here.
+        </p>
+
+        @* Always rendered, so every tick is announced; focus stays on the checkbox. *@
+        <p class="fw-semibold hr-onb-status @(statusIsError ? "text-danger-emphasis" : null)" role="status">@statusMessage</p>
+
+        @if (plan is null)
+        {
+            <section class="hr-panel hr-onb-empty" aria-labelledby="hr-onb-empty-title">
+                <span class="hr-icon" aria-hidden="true"><Icon Name="IconName.ListCheck" /></span>
+                <div>
+                    <h2 class="hr-section-title mb-1" id="hr-onb-empty-title">You don't have an onboarding checklist</h2>
+                    <p class="mb-2">
+                        HR starts one for each new hire from an onboarding template, usually a week or two before the first day. It lists what
+                        you, your manager, and HR do before day one, in the first week, and later.
+                    </p>
+                    <p class="text-body-secondary mb-0">
+                        If you've just joined and expected one, ask the People team. Meanwhile, see <a href="@($"{HrLayout.Base}/leave")">your leave</a>
+                        or <a href="@($"{HrLayout.Base}/people")">find colleagues in the directory</a>.
+                    </p>
+                </div>
+            </section>
+        }
+        else
+        {
+            var progress = HrState.Progress(plan);
+            var percent = progress.Total == 0 ? 0 : Math.Round(progress.Done * 100.0 / progress.Total);
+            var progressText = $"{progress.Done} of {progress.Total} done";
+            var overdue = plan.Tasks.Where(task => task.DoneAt is null && task.Due.Date < today).OrderBy(task => task.Due).ToList();
+            var myLeft = plan.Tasks.Count(task => task.Owner == HrTaskOwner.NewHire && task.DoneAt is null);
+            var manager = me.ManagerId is { } managerId ? State.FindEmployee(managerId) : null;
+
+            <section class="hr-panel mb-4" aria-labelledby="hr-onb-progress-title">
+                <h2 class="hr-section-title" id="hr-onb-progress-title">Your progress</h2>
+                <p class="hr-onb-big mb-2">@progressText</p>
+                <Progress Height="10" Class="mb-3">
+                    <ProgressBar Width="percent" Color="@(progress.Done == progress.Total ? ProgressColor.Success : ProgressColor.Primary)"
+                                 aria-label="Onboarding progress" aria-valuenow="@percent.ToString("0", CultureInfo.InvariantCulture)" aria-valuemin="0" aria-valuemax="100"
+                                 aria-valuetext="@($"{progressText} ({percent.ToString("0", CultureInfo.InvariantCulture)}%)")" />
+                </Progress>
+                <dl class="hr-onb-facts mb-0">
+                    <div>
+                        <dt>Checklist</dt>
+                        <dd>@plan.TemplateName, started by HR on @HrDisplay.Date(plan.CreatedAt)</dd>
+                    </div>
+                    <div>
+                        <dt>Your first day</dt>
+                        <dd>@HrDisplay.Date(me.StartDate) (@StartText(me.StartDate, today))</dd>
+                    </div>
+                    <div>
+                        <dt>Your tasks left</dt>
+                        <dd>@(myLeft == 0 ? "None: you've done all of yours" : HrDisplay.Plural(myLeft, "task"))</dd>
+                    </div>
+                    <div>
+                        <dt>Your manager</dt>
+                        <dd>@(manager?.Name ?? "None set")</dd>
+                    </div>
+                </dl>
+                @if (overdue.Count > 0)
+                {
+                    <p class="hr-onb-overdue mt-3 mb-0">
+                        <Icon Name="IconName.ExclamationTriangleFill" class="me-2 flex-shrink-0" aria-hidden="true" />
+                        <span><strong>@HrDisplay.Plural(overdue.Count, "task") overdue:</strong> @OverdueText(overdue, manager).</span>
+                    </p>
+                }
+                else if (progress.Done == progress.Total)
+                {
+                    <p class="mt-3 mb-0"><Icon Name="IconName.CheckCircleFill" class="me-1 text-success-emphasis" aria-hidden="true" />All done. Welcome aboard!</p>
+                }
+                else
+                {
+                    <p class="mt-3 mb-0 text-body-secondary">Nothing is overdue.</p>
+                }
+            </section>
+
+            <OnboardingTaskList Plan="plan" Employee="me" Today="today" ViewerId="me.Id" HeadingLevel="2" IdPrefix="hr-onb"
+                                CanTick="@(task => task.Owner == HrTaskOwner.NewHire)" OnToggle="Toggle" />
+        }
+    }
+</div>

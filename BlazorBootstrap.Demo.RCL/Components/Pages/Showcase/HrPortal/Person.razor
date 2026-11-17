@@ -1,0 +1,157 @@
+@page "/showcase/hr-portal/people/{Id:int}"
+@layout HrWorkLayout
+@implements IDisposable
+
+<div class="container-fluid px-lg-4">
+    @if (State.FindEmployee(Id) is not { } person)
+    {
+        <HrNotFound Message="This person isn't in the directory, or the link is wrong." />
+    }
+    else
+    {
+        var today = State.Clock.Today;
+        var me = State.CurrentEmployee;
+        var isMe = me?.Id == person.Id;
+        var left = person.Status == HrEmployeeStatus.Left;
+        var manager = person.ManagerId is { } managerId ? State.FindEmployee(managerId) : null;
+        var reports = State.DirectReports(person.Id);
+        var department = State.FindDepartment(person.DepartmentId)?.Name;
+
+        <PageTitle>@person.Name · @HrSeedData.ProductName</PageTitle>
+
+        <p class="small mb-3"><a href="@($"{HrLayout.Base}/people")">Back to the directory</a></p>
+
+        <div class="hr-person-head mb-4">
+            <span class="hr-avatar hr-person-avatar" aria-hidden="true">@person.Initials</span>
+            <div class="hr-person-min">
+                <h1 class="hr-title mb-1">@person.Name</h1>
+                <p class="hr-lead mb-1">
+                    @person.Title@(person.Pronouns.Length > 0 ? $" · {person.Pronouns}" : null)
+                </p>
+                <p class="d-flex flex-wrap gap-1 mb-0">
+                    @if (left)
+                    {
+                        <span class="badge text-bg-secondary">Left on @HrDisplay.Date(person.EndDate ?? today)</span>
+                    }
+                    else if (person.Status == HrEmployeeStatus.Joining && person.StartDate > today)
+                    {
+                        <span class="badge text-bg-info">@HrDisplay.StatusLabel(person, today)</span>
+                    }
+                    @if (isMe)
+                    {
+                        <span class="badge hr-person-you">You</span>
+                    }
+                </p>
+            </div>
+        </div>
+
+        @if (left)
+        {
+            <p class="hr-person-note mb-4" role="note">
+                @person.Name left @HrSeedData.CompanyName and isn't in the directory or the org chart. Only HR sees this page.
+            </p>
+        }
+
+        <div class="row g-4">
+            <div class="col-lg-7">
+                <section class="hr-panel mb-4" aria-labelledby="hr-person-details-title">
+                    <h2 class="hr-section-title" id="hr-person-details-title">Details</h2>
+                    <dl class="hr-person-facts mb-0">
+                        <dt>Department</dt>
+                        <dd>@department</dd>
+                        <dt>Location</dt>
+                        <dd>@person.Location</dd>
+                        <dt>Work email</dt>
+                        <dd><a href="@($"mailto:{person.Email}")">@person.Email</a></dd>
+                        <dt>Phone</dt>
+                        <dd>
+                            @if (person.Phone.Length > 0)
+                            {
+                                <a href="@($"tel:{TelNumber(person.Phone)}")">@person.Phone</a>
+                            }
+                            else
+                            {
+                                <span class="text-body-secondary">Not given</span>
+                            }
+                        </dd>
+                        <dt>@(person.StartDate > today ? "Starts" : "Started")</dt>
+                        <dd>@HrDisplay.Date(person.StartDate)</dd>
+                        <dt>Time here</dt>
+                        <dd>@TenureText(person, today)</dd>
+                    </dl>
+                </section>
+
+                <section class="hr-panel" aria-labelledby="hr-person-bio-title">
+                    <h2 class="hr-section-title" id="hr-person-bio-title">About @(isMe ? "you" : FirstName(person.Name))</h2>
+                    @if (person.Bio.Length > 0)
+                    {
+                        <p class="hr-plain mb-0">@person.Bio</p>
+                    }
+                    else
+                    {
+                        <p class="text-body-secondary mb-0">@(isMe ? "You haven't written a bio yet." : "No bio yet.")</p>
+                    }
+                    @if (isMe)
+                    {
+                        <p class="mt-3 mb-0"><a class="btn btn-sm btn-outline-primary" href="@($"{HrLayout.Base}/profile")">Edit your profile</a></p>
+                    }
+                </section>
+            </div>
+
+            <div class="col-lg-5">
+                <section class="hr-panel" aria-labelledby="hr-person-line-title">
+                    <h2 class="hr-section-title" id="hr-person-line-title">Reporting line</h2>
+
+                    <h3 class="hr-person-sub">Manager</h3>
+                    @if (manager is not null)
+                    {
+                        <p class="hr-person-row">
+                            <span class="hr-avatar" aria-hidden="true">@manager.Initials</span>
+                            <span class="hr-person-min"><a href="@HrDisplay.EmployeeUrl(manager.Id)">@manager.Name</a><span class="d-block small text-body-secondary">@manager.Title</span></span>
+                        </p>
+                    }
+                    else
+                    {
+                        <p class="small text-body-secondary">@(person.ManagerId is null ? "Nobody: the top of the org chart." : "Their manager isn't in the directory.")</p>
+                    }
+
+                    <h3 class="hr-person-sub">@(reports.Count == 0 ? "Direct reports" : $"Direct reports ({reports.Count})")</h3>
+                    @if (reports.Count == 0)
+                    {
+                        <p class="small text-body-secondary">Nobody reports to @(isMe ? "you" : FirstName(person.Name)).</p>
+                    }
+                    else
+                    {
+                        <ul class="list-unstyled d-grid gap-2">
+                            @foreach (var report in reports)
+                            {
+                                <li @key="report.Id" class="hr-person-row">
+                                    <span class="hr-avatar" aria-hidden="true">@report.Initials</span>
+                                    <span class="hr-person-min">
+                                        <a href="@HrDisplay.EmployeeUrl(report.Id)">@report.Name</a>
+                                        <span class="d-block small text-body-secondary">@report.Title@(report.Status == HrEmployeeStatus.Joining && report.StartDate > today ? $" · {HrDisplay.StatusLabel(report, today)}" : null)</span>
+                                    </span>
+                                </li>
+                            }
+                        </ul>
+                    }
+
+                    @if (!left)
+                    {
+                        <div class="d-flex flex-wrap gap-2">
+                            <a class="btn btn-sm btn-outline-primary" href="@(FormattableString.Invariant($"{HrLayout.Base}/org-chart?focus={person.Id}"))">
+                                Show in the org chart<span class="visually-hidden">: @person.Name</span>
+                            </a>
+                            @if (State.IsHrAdmin)
+                            {
+                                <a class="btn btn-sm btn-outline-secondary" href="@(FormattableString.Invariant($"{HrLayout.Base}/admin/employees/{person.Id}/edit"))">
+                                    Edit employee record<span class="visually-hidden">: @person.Name</span>
+                                </a>
+                            }
+                        </div>
+                    }
+                </section>
+            </div>
+        </div>
+    }
+</div>

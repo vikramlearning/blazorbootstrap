@@ -1,0 +1,68 @@
+/* An onboarding plan's task groups: one row per task with a checkbox (or a done mark) and a line of facts in words. */
+.hr-ob-group + .hr-ob-group {
+    margin-top: 1.25rem;
+}
+
+.hr-ob-group-title {
+    margin-bottom: .5rem;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--hr-ink);
+}
+
+.hr-ob-tasks {
+    display: grid;
+    gap: .5rem;
+    margin: 0;
+}
+
+.hr-ob-task {
+    min-width: 0;
+    padding: .625rem .75rem;
+    border: 1px solid var(--hr-border);
+    border-radius: .625rem;
+    background: var(--hr-surface);
+    overflow-wrap: anywhere;
+}
+
+.hr-ob-overdue {
+    border-left: 4px solid var(--bs-danger-border-subtle);
+}
+
+.hr-ob-done .form-check-label,
+.hr-ob-done .hr-ob-readonly .fw-semibold {
+    color: var(--bs-secondary-color);
+}
+
+.hr-ob-readonly {
+    display: flex;
+    align-items: flex-start;
+    gap: .5rem;
+}
+
+.hr-ob-mark {
+    flex: 0 0 auto;
+    color: var(--bs-secondary-color);
+}
+
+.hr-ob-mark-done {
+    color: var(--bs-success-text-emphasis);
+}
+
+.hr-ob-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .125rem 1rem;
+    margin: .25rem 0 0 1.75rem;
+    font-size: .875rem;
+    color: var(--bs-secondary-color);
+}
+
+.hr-ob-state-done {
+    color: var(--bs-success-text-emphasis);
+}
+
+.hr-ob-state-overdue {
+    font-weight: 700;
+    color: var(--bs-danger-text-emphasis);
+}

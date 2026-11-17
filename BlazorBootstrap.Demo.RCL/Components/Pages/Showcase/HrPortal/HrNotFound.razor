@@ -1,0 +1,17 @@
+@* The site's not-found screen, shown by the catch-all route and for unknown people, requests, and templates. *@
+<PageTitle>Page not found · @HrSeedData.ProductName</PageTitle>
+
+<section class="hr-not-found">
+    <span class="hr-icon fs-4" aria-hidden="true"><Icon Name="IconName.SignpostSplit" /></span>
+    <h1 class="hr-title fs-3 mt-3 mb-2">We couldn't find that page</h1>
+    <p class="text-body-secondary mb-4">@(Message ?? "It may have been removed, or the link is wrong.")</p>
+    <div class="d-flex justify-content-center flex-wrap gap-2">
+        <Button Type="ButtonType.Link" To="@($"{HrLayout.Base}/home")" Color="ButtonColor.Primary">Portal home</Button>
+        <Button Type="ButtonType.Link" To="@($"{HrLayout.Base}/people")" Color="ButtonColor.Primary" Outline="true">Directory</Button>
+    </div>
+</section>
+
+@code {
+    /// <summary>Gets or sets what is missing, like "This person isn't in the directory, or the link is wrong."</summary>
+    [Parameter] public string? Message { get; set; }
+}

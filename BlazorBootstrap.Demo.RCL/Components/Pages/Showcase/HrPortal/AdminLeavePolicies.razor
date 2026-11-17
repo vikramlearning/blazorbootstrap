@@ -1,0 +1,230 @@
+@page "/showcase/hr-portal/admin/leave-policies"
+@layout HrWorkLayout
+
+<PageTitle>Leave policies · @HrSeedData.ProductName</PageTitle>
+
+<div class="container-fluid px-lg-4">
+    <ShowcaseRoleGuard Roles="@HrSeedData.HrAdminRole" SignInPath="@HrLayout.SignInPath">
+        @{
+            var policies = State.AllPolicies;
+            var requests = AllRequests();
+            var year = State.Clock.Today.Year;
+            var editing = editId == 0 ? null : State.FindPolicy(editId);
+            var offerTurnOff = turnOffOfferId == 0 ? null : State.FindPolicy(turnOffOfferId);
+        }
+
+        <div class="mb-3">
+            <h1 class="hr-title">Leave policies</h1>
+            <p class="hr-lead mb-0">
+                The types of leave people can request, how many days each gives a year, and how much notice it needs. Balances follow
+                a change at once, for everyone.
+            </p>
+        </div>
+
+        @* Always rendered and focusable, so an outcome is announced and focus has somewhere to go once a dialog closes. *@
+        <p class="fw-semibold hr-alp-status @(statusIsError ? "text-danger-emphasis" : null)" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
+
+        @if (offerTurnOff is { IsActive: true })
+        {
+            <div class="hr-alp-offer mb-3">
+                <span class="small">Turning “@offerTurnOff.Name” off stops new requests; existing requests and this year's balances keep it.</span>
+                <button type="button" class="btn btn-sm btn-primary flex-shrink-0" @onclick="() => TurnOff(offerTurnOff.Id)">Turn off @offerTurnOff.Name</button>
+            </div>
+        }
+
+        <section class="hr-panel mb-4" aria-labelledby="hr-alp-table-title">
+            <h2 class="hr-section-title" id="hr-alp-table-title">Leave types (@policies.Count)</h2>
+            @if (policies.Count == 0)
+            {
+                <p class="text-body-secondary mb-0">There are no leave types yet. Add one below.</p>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table align-middle mb-0 hr-alp-table">
+                        <caption class="hr-alp-caption">
+                            Every leave type, offered or turned off. Requests and days used count @year so far: requests not cancelled, and approved days across the company.
+                        </caption>
+                        <thead>
+                            <tr>
+                                <th scope="col">Leave type</th>
+                                <th scope="col">Days a year</th>
+                                <th scope="col">Minimum notice</th>
+                                <th scope="col">Offered</th>
+                                <th scope="col" class="text-end">Requests in @year</th>
+                                <th scope="col" class="text-end">Days used in @year</th>
+                                <th scope="col"><span class="visually-hidden">Actions</span></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var policy in policies)
+                            {
+                                var thisYear = requests.Where(request => request.PolicyId == policy.Id && request.From.Year == year).ToList();
+                                var policyId = policy.Id;
+                                var editKey = "edit-" + policyId.ToString(CultureInfo.InvariantCulture);
+                                var deleteKey = "delete-" + policyId.ToString(CultureInfo.InvariantCulture);
+                                <tr @key="policy.Id" class="@(policy.Id == editId ? "hr-alp-row-editing" : null)">
+                                    <th scope="row" class="hr-alp-name">
+                                        @policy.Name@(policy.Id == editId ? " (editing)" : null)
+                                        @if (policy.Description.Length > 0)
+                                        {
+                                            <span class="d-block small fw-normal text-body-secondary">@policy.Description</span>
+                                        }
+                                    </th>
+                                    <td class="text-nowrap">@(policy.IsUnlimited ? "Unlimited" : HrDisplay.Days(policy.AnnualDays))</td>
+                                    <td class="text-nowrap">@(policy.MinNoticeDays == 0 ? "None" : HrDisplay.Days(policy.MinNoticeDays))</td>
+                                    <td class="text-nowrap">
+                                        <Badge Color="@(policy.IsActive ? BadgeColor.Success : BadgeColor.Secondary)">@(policy.IsActive ? "Offered" : "Turned off")</Badge>
+                                    </td>
+                                    <td class="text-end hr-mono">@thisYear.Count(request => request.Status != HrLeaveStatus.Cancelled).ToString(CultureInfo.InvariantCulture)</td>
+                                    <td class="text-end hr-mono">@thisYear.Where(request => request.Status == HrLeaveStatus.Approved).Sum(request => request.Days).ToString(CultureInfo.InvariantCulture)</td>
+                                    <td>
+                                        <div class="d-flex flex-nowrap gap-1 justify-content-end">
+                                            <button type="button" class="btn btn-sm btn-outline-secondary" @ref="rowButtons[editKey]" @onclick="() => StartEdit(policyId)">
+                                                Edit<span class="visually-hidden"> @policy.Name</span>
+                                            </button>
+                                            <button type="button" class="btn btn-sm btn-outline-danger" @ref="rowButtons[deleteKey]" @onclick="() => OpenDeleteAsync(policyId)">
+                                                Delete<span class="visually-hidden"> @policy.Name</span>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </section>
+
+        <section class="hr-panel hr-alp-form-panel" aria-labelledby="hr-alp-form-title">
+            <h2 class="hr-section-title hr-alp-wrap" id="hr-alp-form-title">@(editing is null ? "Add a leave type" : $"Edit “{editing.Name}”")</h2>
+            @if (editing is null && policies.Count >= HrState.MaxPolicies)
+            {
+                <p class="small text-body-secondary mb-0">There are @HrState.MaxPolicies leave types, the most the portal keeps. Delete one you don't use to add another.</p>
+            }
+            else
+            {
+                <form @onsubmit="Save" novalidate aria-labelledby="hr-alp-form-title">
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold" for="hr-alp-name">Name</label>
+                            <input id="hr-alp-name" class="form-control @(nameError is null ? null : "is-invalid")" @bind="name" @bind:event="oninput" @ref="nameInput"
+                                   maxlength="@HrState.MaxNameLength" autocomplete="off" aria-required="true" aria-invalid="@(nameError is null ? null : "true")"
+                                   aria-describedby="hr-alp-name-help hr-alp-name-error" />
+                            <div class="form-text" id="hr-alp-name-help">Like “Vacation”. Unique, up to @HrState.MaxNameLength characters.</div>
+                            <div class="invalid-feedback d-block" id="hr-alp-name-error">@nameError</div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold" for="hr-alp-description">Description <span class="fw-normal text-body-secondary">(optional)</span></label>
+                            <textarea id="hr-alp-description" class="form-control @(descriptionError is null ? null : "is-invalid")" rows="2" @bind="description" @bind:event="oninput"
+                                      @ref="descriptionInput" aria-invalid="@(descriptionError is null ? null : "true")" aria-describedby="hr-alp-description-help hr-alp-description-error"></textarea>
+                            <div class="form-text" id="hr-alp-description-help">
+                                Shown to people when they request leave. <span class="@(description.Trim().Length > HrState.MaxDescriptionLength ? "text-danger-emphasis" : null)">@AdminHelpers.Counter(description, HrState.MaxDescriptionLength)</span>
+                            </div>
+                            <div class="invalid-feedback d-block" id="hr-alp-description-error">@descriptionError</div>
+                        </div>
+                    </div>
+
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" id="hr-alp-unlimited" checked="@isUnlimited" @onchange="args => isUnlimited = args.Value is true"
+                               aria-describedby="hr-alp-unlimited-help" />
+                        <label class="form-check-label fw-semibold" for="hr-alp-unlimited">No yearly limit</label>
+                        <div class="form-text mt-0" id="hr-alp-unlimited-help">Like sick leave: use is tracked, but there's no balance to run out of.</div>
+                    </div>
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-sm-6">
+                            <label class="form-label fw-semibold" for="hr-alp-days">Days a year</label>
+                            <input id="hr-alp-days" type="number" inputmode="numeric" class="form-control @(daysError is null ? null : "is-invalid")" value="@daysText"
+                                   @oninput="args => daysText = args.Value as string ?? string.Empty" @ref="daysInput" min="1" max="@HrState.MaxAnnualDays" step="1"
+                                   disabled="@isUnlimited" aria-required="@(isUnlimited ? null : "true")" aria-invalid="@(daysError is null ? null : "true")"
+                                   aria-describedby="hr-alp-days-help hr-alp-days-error" />
+                            <div class="form-text" id="hr-alp-days-help">
+                                @(isUnlimited ? "Not used: this type has no yearly limit." : $"1 to {HrState.MaxAnnualDays}, per calendar year.")
+                                @(editing is not null && !editing.IsUnlimited && !isUnlimited && AdminHelpers.TryNumber(daysText) is { } newDays && newDays != editing.AnnualDays
+                                    ? $" Saving changes everyone's {editing.Name} balance from {HrDisplay.Days(editing.AnnualDays)} to {HrDisplay.Days(newDays)} at once."
+                                    : null)
+                            </div>
+                            <div class="invalid-feedback d-block" id="hr-alp-days-error">@daysError</div>
+                        </div>
+                        <div class="col-sm-6">
+                            <label class="form-label fw-semibold" for="hr-alp-notice">Minimum notice, in days</label>
+                            <input id="hr-alp-notice" type="number" inputmode="numeric" class="form-control @(noticeError is null ? null : "is-invalid")" value="@noticeText"
+                                   @oninput="args => noticeText = args.Value as string ?? string.Empty" @ref="noticeInput" min="0" max="@HrState.MaxNoticeDays" step="1"
+                                   aria-required="true" aria-invalid="@(noticeError is null ? null : "true")" aria-describedby="hr-alp-notice-help hr-alp-notice-error" />
+                            <div class="form-text" id="hr-alp-notice-help">
+                                0 to @HrState.MaxNoticeDays: how many days ahead a request must start; 0 for none.@(isUnlimited ? " Types with no yearly limit can also be recorded up to 30 days back." : null)
+                            </div>
+                            <div class="invalid-feedback d-block" id="hr-alp-notice-error">@noticeError</div>
+                        </div>
+                    </div>
+
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" id="hr-alp-active" checked="@isActive" @onchange="args => isActive = args.Value is true"
+                               aria-describedby="hr-alp-active-help" />
+                        <label class="form-check-label fw-semibold" for="hr-alp-active">Offered for new requests</label>
+                        <div class="form-text mt-0" id="hr-alp-active-help">Turned off, nobody can request it; existing requests and this year's balances keep it.</div>
+                    </div>
+
+                    <p class="small text-body-secondary">Balances update at once for everyone when you save.</p>
+
+                    <div class="d-flex flex-wrap gap-2">
+                        <Button Type="ButtonType.Submit" Color="ButtonColor.Primary">
+                            <Icon Name="@(editing is null ? IconName.PlusLg : IconName.CheckLg)" class="me-1" aria-hidden="true" />@(editing is null ? "Add leave type" : "Save changes")
+                        </Button>
+                        @if (editing is not null)
+                        {
+                            <Button Color="ButtonColor.Secondary" Outline="true" @onclick="CancelEdit">Cancel</Button>
+                        }
+                    </div>
+                </form>
+            }
+        </section>
+
+        <Modal @ref="deleteModal" IsVerticallyCentered="true" ShowCloseButton="false" aria-labelledby="hr-alp-dialog-title" OnHidden="OnDeleteHidden">
+            <HeaderTemplate>
+                <h2 class="modal-title h5 hr-alp-wrap" id="hr-alp-dialog-title">
+                    @(DialogPolicy is { } target ? (UsesOf(target.Id) > 0 ? $"“{target.Name}” can't be deleted" : $"Delete “{target.Name}”?") : "Delete this leave type?")
+                </h2>
+            </HeaderTemplate>
+            <BodyTemplate>
+                @if (DialogPolicy is { } target)
+                {
+                    var uses = UsesOf(target.Id);
+                    @if (uses > 0)
+                    {
+                        <p class="mb-0">
+                            @HrDisplay.Plural(uses, "request uses", "requests use") it, so it can't be deleted.
+                            @(target.IsActive
+                                ? "Turn it off instead: nobody can request it any more, and existing requests and this year's balances keep it."
+                                : "It's already turned off, so nobody can request it.")
+                        </p>
+                    }
+                    else
+                    {
+                        <p>No request uses it. It leaves the list of leave types and everyone's balances.</p>
+                        <p class="mb-0">This can't be undone.</p>
+                    }
+                }
+                else
+                {
+                    <p class="mb-0">This leave type was already deleted.</p>
+                }
+            </BodyTemplate>
+            <FooterTemplate>
+                <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => deleteModal.HideAsync()">Cancel</Button>
+                @if (DialogPolicy is { } target)
+                {
+                    @if (UsesOf(target.Id) == 0)
+                    {
+                        <Button Color="ButtonColor.Danger" @onclick="() => ConfirmAsync(PendingAction.Delete)"><Icon Name="IconName.Trash3" class="me-1" aria-hidden="true" />Delete leave type</Button>
+                    }
+                    else if (target.IsActive)
+                    {
+                        <Button Color="ButtonColor.Primary" @onclick="() => ConfirmAsync(PendingAction.TurnOff)">Turn it off</Button>
+                    }
+                }
+            </FooterTemplate>
+        </Modal>
+    </ShowcaseRoleGuard>
+</div>

@@ -1,0 +1,105 @@
+@inherits LayoutComponentBase
+@implements IDisposable
+
+@* The signed-in portal (D-031): one sidebar for everyone, with the manager's and the HR admin's modules added for those
+   roles. A signed-in account with no employee record gets an explanation instead of the page. Pages for one role add a
+   ShowcaseRoleGuard of their own. *@
+<ShowcaseSessionHost State="State" SiteBase="@HrLayout.Base" SiteName="@HrSeedData.ProductName">
+    <HrFrame>
+        <Header>
+            <div class="hr-app-bar">
+                <span class="hr-app-bar-title">@HrSeedData.CompanyName</span>
+                <div class="hr-app-bar-actions">
+                    <ShowcaseAccountMenu SiteBase="@HrLayout.Base" SignInPath="@HrLayout.SignInPath" />
+                </div>
+            </div>
+        </Header>
+        <Sidebar>
+            @if (State.IsSignedIn)
+            {
+                <Sidebar @key="State.Identity.Current?.Id"
+                         Class="hr-sidebar"
+                         Href="@($"{HrLayout.Base}/home")"
+                         IconName="IconName.People"
+                         Title="@HrSeedData.ProductName"
+                         BadgeText="@BadgeText"
+                         DataProvider="SidebarDataProvider" />
+            }
+        </Sidebar>
+        <ChildContent>
+            <ShowcaseRoleGuard Roles="@HrSeedData.SignedInRoles" SignInPath="@HrLayout.SignInPath">
+                @if (State.IsSignedIn)
+                {
+                    @Body
+                }
+                else if (State.IsFormerEmployee)
+                {
+                    <section class="hr-not-found" aria-labelledby="hr-left-title">
+                        <span class="hr-icon fs-4" aria-hidden="true"><Icon Name="IconName.PersonDash" /></span>
+                        <h1 class="hr-title fs-3 mt-3 mb-2" id="hr-left-title">Your time at @HrSeedData.CompanyName has ended</h1>
+                        <p class="text-body-secondary mb-4">HR marked your record as left, so the portal is closed to this account. Thanks for everything you did here.</p>
+                        <a class="btn btn-primary" href="@HrLayout.Base">Back to the start page</a>
+                    </section>
+                }
+                else
+                {
+                    <section class="hr-not-found" aria-labelledby="hr-unlinked-title">
+                        <span class="hr-icon fs-4" aria-hidden="true"><Icon Name="IconName.PersonExclamation" /></span>
+                        <h1 class="hr-title fs-3 mt-3 mb-2" id="hr-unlinked-title">Your account isn't linked to an employee record</h1>
+                        <p class="text-body-secondary mb-4">
+                            Teamhaven links a new account to the record HR created for you with the same work email. Ask HR to add you
+                            (or check the email they used), then sign out and register again with that email.
+                        </p>
+                        <a class="btn btn-primary" href="@HrLayout.Base">Back to the start page</a>
+                    </section>
+                }
+            </ShowcaseRoleGuard>
+        </ChildContent>
+    </HrFrame>
+</ShowcaseSessionHost>
+
+@code {
+    [Inject] private HrState State { get; set; } = default!;
+
+    private string BadgeText => State.IsHrAdmin ? "HR" : State.IsManager ? "Manager" : "Employee";
+
+    /// <summary>Stops listening to state changes.</summary>
+    public void Dispose() => State.Changed -= OnStateChanged;
+
+    protected override void OnInitialized() => State.Changed += OnStateChanged;
+
+    private void OnStateChanged() => InvokeAsync(StateHasChanged);
+
+    /// <summary>Everyone's modules, then the role's.</summary>
+    private Task<SidebarDataProviderResult> SidebarDataProvider(SidebarDataProviderRequest request)
+    {
+        var b = HrLayout.Base;
+        var items = new List<NavItem>
+        {
+            new() { Id = "home", Href = $"{b}/home", IconName = IconName.House, Text = "Home" },
+            new() { Id = "directory", Href = $"{b}/people", IconName = IconName.CardList, Text = "Directory" },
+            new() { Id = "org-chart", Href = $"{b}/org-chart", IconName = IconName.Diagram3, Text = "Org chart" },
+            new() { Id = "leave", Href = $"{b}/leave", IconName = IconName.Calendar3, Text = "My leave" },
+            new() { Id = "onboarding", Href = $"{b}/onboarding", IconName = IconName.ListCheck, Text = "My onboarding" },
+        };
+
+        if (State.IsManager || State.IsHrAdmin)
+        {
+            items.Add(new() { Id = "team", Href = $"{b}/team", IconName = IconName.People, Text = State.IsHrAdmin && !State.IsManager ? "Teams" : "My team" });
+            items.Add(new() { Id = "approvals", Href = $"{b}/approvals", IconName = IconName.CheckCircle, Text = "Leave approvals" });
+            items.Add(new() { Id = "team-onboarding", Href = $"{b}/team/onboarding", IconName = IconName.PersonPlus, Text = "New hires" });
+        }
+
+        if (State.IsHrAdmin)
+        {
+            items.Add(new() { Id = "employees", Href = $"{b}/admin/employees", IconName = IconName.PersonBadge, Text = "Employees" });
+            items.Add(new() { Id = "policies", Href = $"{b}/admin/leave-policies", IconName = IconName.Sliders, Text = "Leave policies" });
+            items.Add(new() { Id = "templates", Href = $"{b}/admin/onboarding-templates", IconName = IconName.CardChecklist, Text = "Onboarding templates" });
+            items.Add(new() { Id = "analytics", Href = $"{b}/admin/analytics", IconName = IconName.BarChart, Text = "Headcount analytics" });
+        }
+
+        items.Add(new() { Id = "profile", Href = $"{b}/profile", IconName = IconName.PersonGear, Text = "Profile" });
+
+        return Task.FromResult(request.ApplyTo(items));
+    }
+}

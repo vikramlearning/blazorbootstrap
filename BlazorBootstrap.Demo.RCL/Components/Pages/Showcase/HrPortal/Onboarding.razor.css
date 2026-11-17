@@ -1,0 +1,56 @@
+/* My onboarding: the status message, the progress panel, and the empty state (the task groups are OnboardingTaskList). */
+.hr-onb-status {
+    min-height: 1.5rem;
+    margin-bottom: 1rem;
+    overflow-wrap: anywhere;
+}
+
+.hr-onb-empty {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    max-width: 48rem;
+}
+
+    .hr-onb-empty > div {
+        min-width: 0;
+    }
+
+    .hr-onb-empty > .hr-icon {
+        flex: 0 0 auto;
+    }
+
+.hr-onb-big {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--hr-ink);
+}
+
+.hr-onb-facts {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr));
+    gap: .5rem 1rem;
+}
+
+    .hr-onb-facts dt {
+        font-size: .75rem;
+        font-weight: 700;
+        letter-spacing: .02em;
+        text-transform: uppercase;
+        color: var(--bs-secondary-color);
+    }
+
+    .hr-onb-facts dd {
+        margin: 0;
+        overflow-wrap: anywhere;
+    }
+
+.hr-onb-overdue {
+    display: flex;
+    align-items: flex-start;
+    padding: .625rem .75rem;
+    border-radius: .5rem;
+    background: var(--bs-danger-bg-subtle);
+    color: var(--bs-danger-text-emphasis);
+    overflow-wrap: anywhere;
+}

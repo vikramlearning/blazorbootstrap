@@ -1,0 +1,122 @@
+@page "/showcase/hr-portal/admin/onboarding-templates"
+@layout HrWorkLayout
+
+<PageTitle>Onboarding templates · @HrSeedData.ProductName</PageTitle>
+
+<div class="container-fluid px-lg-4">
+    <ShowcaseRoleGuard Roles="@HrSeedData.HrAdminRole" SignInPath="@HrLayout.SignInPath">
+        @{
+            var templates = State.Templates;
+            var plans = State.Onboardings;
+        }
+
+        <div class="mb-3">
+            <h1 class="hr-title">Onboarding templates</h1>
+            <p class="hr-lead mb-0">
+                Reusable checklists for new hires. Starting someone's onboarding copies a template's tasks, with due dates counted from
+                their start date; later changes to a template don't change plans already started.
+            </p>
+        </div>
+
+        @* Always rendered and focusable; filled after the page renders when a template was just deleted on its own page. *@
+        <p class="fw-semibold hr-at-status @(statusIsError ? "text-danger-emphasis" : null)" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
+
+        <div class="hr-at-grid">
+            <section class="hr-panel" aria-labelledby="hr-at-table-title">
+                <h2 class="hr-section-title" id="hr-at-table-title">Templates (@templates.Count)</h2>
+                @if (templates.Count == 0)
+                {
+                    <p class="text-body-secondary mb-0">There are no templates yet. Create one to start onboarding new hires.</p>
+                }
+                else
+                {
+                    <div class="table-responsive">
+                        <table class="table align-middle mb-0 hr-at-table">
+                            <caption class="hr-at-caption">Every onboarding template, by name, with the plans started from one with the same name.</caption>
+                            <thead>
+                                <tr>
+                                    <th scope="col">Template</th>
+                                    <th scope="col" class="text-end">Tasks</th>
+                                    <th scope="col">Plans started from it</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var template in templates)
+                                {
+                                    var started = plans.Where(plan => string.Equals(plan.TemplateName, template.Name, StringComparison.OrdinalIgnoreCase)).ToList();
+                                    <tr @key="template.Id">
+                                        <th scope="row" class="hr-at-name">
+                                            <a href="@AdminHelpers.TemplateUrl(template.Id)">@template.Name</a>
+                                            @if (template.Description.Length > 0)
+                                            {
+                                                <span class="d-block small fw-normal text-body-secondary">@template.Description</span>
+                                            }
+                                        </th>
+                                        <td class="text-end hr-mono">@(template.Tasks.Count == 0 ? "None yet" : template.Tasks.Count.ToString(CultureInfo.InvariantCulture))</td>
+                                        <td class="hr-at-plans">
+                                            @if (started.Count == 0)
+                                            {
+                                                <span class="text-body-secondary">None</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="d-block">@HrDisplay.Plural(started.Count, "plan")</span>
+                                                <span class="d-block small">
+                                                    @for (var index = 0; index < started.Count; index++)
+                                                    {
+                                                        var person = State.FindEmployee(started[index].EmployeeId);
+                                                        @(index == 0 ? null : ", ")
+                                                        @if (person is null)
+                                                        {
+                                                            <span>Someone who left</span>
+                                                        }
+                                                        else
+                                                        {
+                                                            <a href="@HrDisplay.EmployeeUrl(person.Id)">@person.Name</a>
+                                                        }
+                                                    }
+                                                </span>
+                                            }
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+            </section>
+
+            <section class="hr-panel" aria-labelledby="hr-at-new-title">
+                <h2 class="hr-section-title" id="hr-at-new-title">New template</h2>
+                @if (templates.Count >= HrState.MaxTemplates)
+                {
+                    <p class="small text-body-secondary mb-0">There are @HrState.MaxTemplates templates, the most the portal keeps. Delete one to create another.</p>
+                }
+                else
+                {
+                    <form @onsubmit="Create" novalidate aria-labelledby="hr-at-new-title">
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold" for="hr-at-name">Name</label>
+                            <input id="hr-at-name" class="form-control @(nameError is null ? null : "is-invalid")" @bind="name" @bind:event="oninput" @ref="nameInput"
+                                   maxlength="@HrState.MaxNameLength" autocomplete="off" aria-required="true" aria-invalid="@(nameError is null ? null : "true")"
+                                   aria-describedby="hr-at-name-help hr-at-name-error" />
+                            <div class="form-text" id="hr-at-name-help">Like “Sales new hire”. Unique, up to @HrState.MaxNameLength characters.</div>
+                            <div class="invalid-feedback d-block" id="hr-at-name-error">@nameError</div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold" for="hr-at-description">Description <span class="fw-normal text-body-secondary">(optional)</span></label>
+                            <textarea id="hr-at-description" class="form-control @(descriptionError is null ? null : "is-invalid")" rows="3" @bind="description" @bind:event="oninput"
+                                      @ref="descriptionInput" aria-invalid="@(descriptionError is null ? null : "true")" aria-describedby="hr-at-description-help hr-at-description-error"></textarea>
+                            <div class="form-text" id="hr-at-description-help">
+                                Who it's for. <span class="@(description.Trim().Length > HrState.MaxDescriptionLength ? "text-danger-emphasis" : null)">@AdminHelpers.Counter(description, HrState.MaxDescriptionLength)</span>
+                            </div>
+                            <div class="invalid-feedback d-block" id="hr-at-description-error">@descriptionError</div>
+                        </div>
+                        <p class="small text-body-secondary">You add its tasks on the next page.</p>
+                        <Button Type="ButtonType.Submit" Color="ButtonColor.Primary"><Icon Name="IconName.PlusLg" class="me-1" aria-hidden="true" />Create template</Button>
+                    </form>
+                }
+            </section>
+        </div>
+    </ShowcaseRoleGuard>
+</div>

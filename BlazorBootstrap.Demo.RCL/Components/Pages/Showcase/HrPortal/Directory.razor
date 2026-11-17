@@ -1,0 +1,110 @@
+@page "/showcase/hr-portal/people"
+@layout HrWorkLayout
+@implements IDisposable
+
+<PageTitle>Directory · @HrSeedData.ProductName</PageTitle>
+
+<div class="container-fluid px-lg-4">
+    @{
+        var results = Results;
+        var today = State.Clock.Today;
+        var me = State.CurrentEmployee;
+    }
+    <h1 class="hr-title mb-1">Directory</h1>
+    <p class="hr-lead mb-4">
+        Everyone at @HrSeedData.CompanyName, including people joining soon. Find someone by name or job title, or narrow the list by
+        department and location, then open a profile for their contact details and reporting line.
+    </p>
+
+    <div class="row g-4">
+        <div class="col-lg-3">
+            <div class="hr-panel" role="search" aria-label="Filter the directory">
+                <div class="mb-3">
+                    <label class="form-label fw-semibold" for="hr-dir-search">Name or job title</label>
+                    <input id="hr-dir-search" type="search" class="form-control" autocomplete="off" maxlength="@HrState.MaxNameLength" placeholder="For example, Leila or engineer"
+                           @bind="search" @bind:event="oninput" aria-describedby="hr-dir-count" />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-semibold" for="hr-dir-department">Department</label>
+                    <select id="hr-dir-department" class="form-select" value="@(departmentId ?? string.Empty)" @onchange="OnDepartmentChanged">
+                        <option value="">Any department</option>
+                        @foreach (var item in State.Departments)
+                        {
+                            <option value="@item.Id">@item.Name</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-semibold" for="hr-dir-location">Location</label>
+                    <select id="hr-dir-location" class="form-select" value="@(location ?? string.Empty)" @onchange="OnLocationChanged">
+                        <option value="">Any location</option>
+                        @foreach (var item in State.Locations)
+                        {
+                            <option value="@item">@item</option>
+                        }
+                    </select>
+                </div>
+
+                @if (HasFilters)
+                {
+                    <button type="button" class="btn btn-outline-secondary btn-sm w-100" @onclick="ClearFiltersAsync">Clear filters</button>
+                }
+            </div>
+        </div>
+
+        <div class="col-lg-9">
+            @* Always rendered, so every search and filter change is announced with the new count. *@
+            <p class="fw-semibold mb-3 hr-dir-count" id="hr-dir-count" role="status" tabindex="-1" @ref="countRegion">@CountText(results.Count, State.Directory.Count)</p>
+
+            @if (results.Count == 0)
+            {
+                <div class="hr-panel text-center py-5">
+                    <span class="hr-icon fs-4" aria-hidden="true"><Icon Name="IconName.PersonSlash" /></span>
+                    <h2 class="h5 fw-bold mt-3">Nobody matches</h2>
+                    <p class="text-body-secondary">Check the spelling, search for part of a name or title, or try another department or location.</p>
+                    <button type="button" class="btn btn-primary" @onclick="ClearFiltersAsync">Clear filters</button>
+                </div>
+            }
+            else
+            {
+                <ul class="list-unstyled hr-dir-list mb-0">
+                    @foreach (var person in results)
+                    {
+                        var joining = person.Status == HrEmployeeStatus.Joining && person.StartDate > today;
+                        <li @key="person.Id">
+                            <article class="hr-card hr-dir-card h-100" aria-labelledby="@($"hr-dir-name-{person.Id}")">
+                                <span class="hr-avatar" aria-hidden="true">@person.Initials</span>
+                                <div class="hr-dir-body">
+                                    <h2 class="hr-dir-name" id="@($"hr-dir-name-{person.Id}")">
+                                        <a href="@HrDisplay.EmployeeUrl(person.Id)">@person.Name</a>
+                                        @if (person.Pronouns.Length > 0)
+                                        {
+                                            <span class="hr-dir-pronouns">(@person.Pronouns)</span>
+                                        }
+                                    </h2>
+                                    <p class="mb-1">@person.Title</p>
+                                    <p class="small text-body-secondary mb-0">@(State.FindDepartment(person.DepartmentId)?.Name) · @person.Location</p>
+                                    @if (joining || person.Id == me?.Id)
+                                    {
+                                        <p class="d-flex flex-wrap gap-1 mt-2 mb-0">
+                                            @if (joining)
+                                            {
+                                                <span class="badge text-bg-info">@HrDisplay.StatusLabel(person, today)</span>
+                                            }
+                                            @if (person.Id == me?.Id)
+                                            {
+                                                <span class="badge hr-dir-you">You</span>
+                                            }
+                                        </p>
+                                    }
+                                </div>
+                            </article>
+                        </li>
+                    }
+                </ul>
+            }
+        </div>
+    </div>
+</div>

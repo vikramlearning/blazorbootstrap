@@ -1,0 +1,96 @@
+@page "/showcase/hr-portal/profile"
+@layout HrWorkLayout
+@implements IDisposable
+
+<PageTitle>Profile · @HrSeedData.ProductName</PageTitle>
+
+<div class="container-fluid px-lg-4">
+    <h1 class="hr-title mb-1">Profile</h1>
+    <p class="hr-lead mb-4">Your name, email, and password for this demo, and what colleagues see about you in the directory.</p>
+
+    <ShowcaseAccountProfile />
+
+    @if (State.CurrentEmployee is { } me)
+    {
+        var manager = me.ManagerId is { } managerId ? State.FindEmployee(managerId) : null;
+
+        <div class="row g-4 mt-1">
+            <div class="col-xl-7">
+                <section class="hr-panel h-100" aria-labelledby="hr-profile-dir-title">
+                    <h2 class="hr-section-title mb-1" id="hr-profile-dir-title">Your details in the directory</h2>
+                    <p class="small text-body-secondary mb-3">
+                        Everyone at @HrSeedData.CompanyName sees these on <a href="@HrDisplay.EmployeeUrl(me.Id)">your directory profile</a>.
+                        All three are optional.
+                    </p>
+
+                    <EditForm Model="form" OnSubmit="Save" FormName="hr-profile-details" novalidate>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold" for="hr-profile-phone">Phone</label>
+                            <input type="tel" id="hr-profile-phone" class="form-control hr-profile-short @(phoneError is null ? null : "is-invalid")" @bind="form.Phone" @ref="phoneInput"
+                                   maxlength="@HrState.MaxPhoneLength" autocomplete="tel"
+                                   aria-describedby="hr-profile-phone-help hr-profile-phone-error" aria-invalid="@(phoneError is null ? null : "true")" />
+                            <div class="form-text" id="hr-profile-phone-help">Shown as a link to call you. Up to @HrState.MaxPhoneLength characters.</div>
+                            <p class="text-danger-emphasis fw-semibold small mt-1 mb-0" id="hr-profile-phone-error">@phoneError</p>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold" for="hr-profile-pronouns">Pronouns</label>
+                            <input type="text" id="hr-profile-pronouns" class="form-control hr-profile-short @(pronounsError is null ? null : "is-invalid")" @bind="form.Pronouns" @ref="pronounsInput"
+                                   maxlength="@HrState.MaxPronounsLength" autocomplete="off" placeholder="For example, she/her"
+                                   aria-describedby="hr-profile-pronouns-help hr-profile-pronouns-error" aria-invalid="@(pronounsError is null ? null : "true")" />
+                            <div class="form-text" id="hr-profile-pronouns-help">Shown next to your name. Up to @HrState.MaxPronounsLength characters.</div>
+                            <p class="text-danger-emphasis fw-semibold small mt-1 mb-0" id="hr-profile-pronouns-error">@pronounsError</p>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold" for="hr-profile-bio">Bio</label>
+                            <textarea id="hr-profile-bio" class="form-control @(bioError is null ? null : "is-invalid")" rows="4" @bind="form.Bio" @bind:event="oninput" @ref="bioInput"
+                                      maxlength="@HrState.MaxBioLength"
+                                      aria-describedby="hr-profile-bio-help hr-profile-bio-count hr-profile-bio-error" aria-invalid="@(bioError is null ? null : "true")"></textarea>
+                            <div class="d-flex flex-wrap justify-content-between gap-2">
+                                <div class="form-text" id="hr-profile-bio-help">A few words about you and your work, as plain text. Line breaks are kept.</div>
+                                <div class="form-text" id="hr-profile-bio-count">@BioCountText</div>
+                            </div>
+                            <p class="text-danger-emphasis fw-semibold small mt-1 mb-0" id="hr-profile-bio-error">@bioError</p>
+                        </div>
+
+                        <Button Type="ButtonType.Submit" Color="ButtonColor.Primary">Save details</Button>
+                        <p class="small fw-semibold mt-3 mb-0 @(statusIsError ? "text-danger-emphasis" : "text-success-emphasis")" role="status">@statusMessage</p>
+                    </EditForm>
+                </section>
+            </div>
+
+            <div class="col-xl-5">
+                <section class="hr-panel h-100" aria-labelledby="hr-profile-hr-title">
+                    <h2 class="hr-section-title mb-1" id="hr-profile-hr-title">Details HR keeps</h2>
+                    <p class="small text-body-secondary mb-3">
+                        Ask HR to change these. The <a href="@($"{HrLayout.Base}/people?department=people")">People team</a> can help.
+                    </p>
+                    <dl class="hr-profile-facts mb-0">
+                        <dt>Job title</dt>
+                        <dd>@me.Title</dd>
+                        <dt>Department</dt>
+                        <dd>@(State.FindDepartment(me.DepartmentId)?.Name)</dd>
+                        <dt>Manager</dt>
+                        <dd>
+                            @if (manager is not null)
+                            {
+                                <a href="@HrDisplay.EmployeeUrl(manager.Id)">@manager.Name</a>
+                            }
+                            else
+                            {
+                                <span>Nobody: you're at the top of the org chart</span>
+                            }
+                        </dd>
+                        <dt>Location</dt>
+                        <dd>@me.Location</dd>
+                        <dt>Start date</dt>
+                        <dd>@HrDisplay.Date(me.StartDate) (@HrDisplay.Tenure(me.StartDate, State.Clock.Today))</dd>
+                        <dt>Work email</dt>
+                        <dd>@me.Email</dd>
+                    </dl>
+                </section>
+            </div>
+        </div>
+    }
+</div>

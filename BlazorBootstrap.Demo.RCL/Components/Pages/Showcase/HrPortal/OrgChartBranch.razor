@@ -1,0 +1,33 @@
+@* One person of the org chart's list view, with their direct reports in a nested list under a collapsible
+   "Direct reports" disclosure. It renders itself for each report. *@
+@{
+    var hit = HighlightDepartmentId is not null && Node.DepartmentId == HighlightDepartmentId;
+}
+<li class="hr-ocb-item">
+    <span class="@(hit ? "hr-ocb-person hr-ocb-hit" : "hr-ocb-person")">
+        <a class="fw-semibold" href="@HrDisplay.EmployeeUrl(Node.Id)">@Node.Name</a>,
+        <span>@Node.Title</span>
+        <span class="text-body-secondary">·</span>
+        @if (hit)
+        {
+            <strong>@DepartmentName(Node.DepartmentId)</strong>
+        }
+        else
+        {
+            <span>@DepartmentName(Node.DepartmentId)</span>
+        }
+        <span class="text-body-secondary">· @Node.Location</span>
+    </span>
+    @if (Node.Children.Count > 0)
+    {
+        <details class="hr-ocb-reports" open>
+            <summary>Direct reports of @Node.Name (@Node.Children.Count)</summary>
+            <ul class="hr-ocb-list">
+                @foreach (var child in Node.Children)
+                {
+                    <OrgChartBranch @key="child.Id" Node="child" HighlightDepartmentId="@HighlightDepartmentId" DepartmentName="DepartmentName" />
+                }
+            </ul>
+        </details>
+    }
+</li>

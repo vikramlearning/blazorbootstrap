@@ -1,0 +1,188 @@
+@page "/showcase/hr-portal/team"
+@layout HrWorkLayout
+
+<PageTitle>@(State.IsHrAdmin ? "Teams" : "My team") · @HrSeedData.ProductName</PageTitle>
+
+@* A manager's direct reports with who's away, waiting requests, vacation left, and onboarding; HR picks any manager's team. *@
+<div class="container-fluid px-lg-4">
+    <ShowcaseRoleGuard Roles="@($"{HrSeedData.ManagerRole},{HrSeedData.HrAdminRole}")" SignInPath="@HrLayout.SignInPath">
+        @if (State.CurrentEmployee is { } me)
+        {
+            var today = State.Clock.Today;
+            var managers = State.IsHrAdmin ? Managers() : Array.Empty<HrEmployee>();
+            var lead = TeamLead(me, managers);
+
+            if (lead is null)
+            {
+                <HrNotFound Message="That person isn't in the directory, or the link is wrong. Pick a manager from the Teams page." />
+            }
+            else
+            {
+                var isMine = lead.Id == me.Id;
+                var reports = State.DirectReports(lead.Id);
+                var away = AwaySoon(reports, today, AwayListDays);
+
+                <h1 class="hr-title mb-1">@(isMine ? "My team" : "Teams")</h1>
+                <p class="hr-lead mb-3">
+                    @(isMine ? "The people who report to you" : "Any manager's direct reports"): who's away, leave waiting for a decision, vacation left,
+                    and onboarding. Open someone's profile for their contact details.
+                </p>
+
+                @if (State.IsHrAdmin)
+                {
+                    <div class="hr-panel mb-4 hr-team-picker">
+                        <div class="hr-team-picker-field">
+                            <label class="form-label fw-semibold" for="hr-team-manager">Manager</label>
+                            <select id="hr-team-manager" class="form-select" value="@lead.Id" @onchange="OnManagerChanged" aria-describedby="hr-team-manager-help">
+                                @if (managers.All(item => item.Id != lead.Id))
+                                {
+                                    <option value="@lead.Id">@lead.Name</option>
+                                }
+                                @foreach (var item in managers)
+                                {
+                                    <option value="@item.Id">@(item.Name)@(item.Id == me.Id ? " (you)" : null)</option>
+                                }
+                            </select>
+                        </div>
+                        <p class="small text-body-secondary mb-0" id="hr-team-manager-help">
+                            As HR you can see every team. Showing @lead.Name, @lead.Title (@HrDisplay.Plural(reports.Count, "direct report")).
+                        </p>
+                    </div>
+                }
+
+                <section class="mb-4" aria-labelledby="hr-team-people-title">
+                    <h2 class="hr-section-title" id="hr-team-people-title">
+                        @(isMine ? "Your direct reports" : $"{lead.Name}'s direct reports") <span class="text-body-secondary fw-normal">(@reports.Count)</span>
+                    </h2>
+                    @if (reports.Count == 0)
+                    {
+                        <div class="hr-panel"><p class="mb-0 text-body-secondary">@(isMine ? "No one reports to you right now." : $"No one reports to {lead.Name} right now.")</p></div>
+                    }
+                    else
+                    {
+                        <ul class="list-unstyled hr-team-people mb-0">
+                            @foreach (var person in reports)
+                            {
+                                var requests = State.LeaveOf(person.Id);
+                                var awayNext = requests.Where(item => item.Status == HrLeaveStatus.Approved && item.To >= today && item.From <= today.AddDays(SoonDays - 1)).OrderBy(item => item.From).ToList();
+                                var waiting = requests.Count(item => item.Status == HrLeaveStatus.Pending);
+                                var vacation = State.Balances(person.Id).FirstOrDefault(item => !item.Policy.IsUnlimited && item.Policy.IsActive);
+                                var plan = State.OnboardingOf(person.Id);
+                                var nameId = $"hr-team-person-{person.Id}";
+
+                                <li class="hr-card hr-team-person" @key="@($"person-{person.Id}")">
+                                    <div class="hr-team-person-head">
+                                        <span class="hr-avatar" aria-hidden="true">@person.Initials</span>
+                                        <div class="hr-team-person-text">
+                                            <h3 class="hr-team-person-name" id="@nameId"><a href="@HrDisplay.EmployeeUrl(person.Id)">@person.Name</a></h3>
+                                            <p class="small text-body-secondary mb-0">@person.Title</p>
+                                        </div>
+                                    </div>
+                                    <dl class="hr-team-facts mb-0">
+                                        <div>
+                                            <dt>Status</dt>
+                                            <dd>@HrDisplay.StatusLabel(person, today)</dd>
+                                        </div>
+                                        <div>
+                                            <dt>Away in the next @SoonDays days</dt>
+                                            <dd>
+                                                @if (awayNext.Count == 0)
+                                                {
+                                                    <span>Not away</span>
+                                                }
+                                                else
+                                                {
+                                                    @foreach (var request in awayNext)
+                                                    {
+                                                        <span class="d-block" @key="@($"away-{request.Id}")">
+                                                            @if (request.From <= today)
+                                                            {
+                                                                <Icon Name="IconName.Airplane" class="me-1" aria-hidden="true" />
+                                                            }
+                                                            @Capitalize(LeaveText.AwayText(request, today)) (@(State.FindPolicy(request.PolicyId)?.Name ?? "leave"))
+                                                        </span>
+                                                    }
+                                                }
+                                            </dd>
+                                        </div>
+                                        <div>
+                                            <dt>Leave requests waiting</dt>
+                                            <dd>
+                                                @if (waiting == 0)
+                                                {
+                                                    <span>None</span>
+                                                }
+                                                else
+                                                {
+                                                    <a href="@($"{HrLayout.Base}/approvals")">@HrDisplay.Plural(waiting, "request") waiting<span class="visually-hidden"> from @person.Name</span></a>
+                                                }
+                                            </dd>
+                                        </div>
+                                        <div>
+                                            <dt>@(vacation?.Policy.Name ?? "Vacation") left for @today.Year</dt>
+                                            <dd>@(vacation is null ? "No limited leave type" : $"{HrDisplay.Days(vacation.Available)} available of {vacation.Allowance}")</dd>
+                                        </div>
+                                        @if (plan is not null)
+                                        {
+                                            var progress = HrState.Progress(plan);
+                                            var overdue = plan.Tasks.Count(task => task.DoneAt is null && task.Due.Date < today);
+                                            <div>
+                                                <dt>Onboarding</dt>
+                                                <dd>
+                                                    <a href="@($"{HrLayout.Base}/team/onboarding")">@progress.Done of @progress.Total done<span class="visually-hidden"> for @person.Name</span></a>@(overdue > 0 ? $", {overdue} overdue" : null)
+                                                </dd>
+                                            </div>
+                                        }
+                                    </dl>
+                                </li>
+                            }
+                        </ul>
+                    }
+                </section>
+
+                <section aria-labelledby="hr-team-away-title">
+                    <h2 class="hr-section-title" id="hr-team-away-title">Who's away in the next 4 weeks</h2>
+                    <p class="text-body-secondary small">
+                        Approved leave from @HrDisplay.Date(today) to @HrDisplay.Date(today.AddDays(AwayListDays - 1)). Requests still waiting for a decision
+                        aren't included; they're under <a href="@($"{HrLayout.Base}/approvals")">Leave approvals</a>.
+                    </p>
+                    @if (away.Count == 0)
+                    {
+                        <div class="hr-panel"><p class="mb-0 text-body-secondary">No one on the team is away in the next 4 weeks.</p></div>
+                    }
+                    else
+                    {
+                        <div class="hr-panel p-0">
+                            <div class="table-responsive">
+                                <table class="table table-sm align-middle mb-0 hr-team-table">
+                                    <caption class="visually-hidden">Approved leave on @(isMine ? "your" : $"{lead.Name}'s") team in the next 4 weeks</caption>
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">Person</th>
+                                            <th scope="col">Type</th>
+                                            <th scope="col">Dates</th>
+                                            <th scope="col">Working days</th>
+                                            <th scope="col">When</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var (person, request) in away)
+                                        {
+                                            <tr @key="@($"row-{request.Id}")">
+                                                <th scope="row">@person.Name</th>
+                                                <td>@(State.FindPolicy(request.PolicyId)?.Name ?? "Leave")</td>
+                                                <td class="text-nowrap">@HrDisplay.Range(request.From, request.To)</td>
+                                                <td>@request.Days</td>
+                                                <td class="text-nowrap">@WhenText(request, today)</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    }
+                </section>
+            }
+        }
+    </ShowcaseRoleGuard>
+</div>

@@ -1,0 +1,47 @@
+/* Onboarding templates: the templates table beside the new-template form. */
+.hr-at-status:empty {
+    margin: 0;
+}
+
+.hr-at-status:focus {
+    outline: none;
+}
+
+.hr-at-status:focus-visible {
+    outline: 2px solid var(--bs-focus-ring-color, var(--sc-primary));
+    outline-offset: 2px;
+}
+
+.hr-at-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1.5rem;
+    align-items: start;
+}
+
+@media (min-width: 1200px) {
+    .hr-at-grid {
+        grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+    }
+}
+
+.hr-at-caption {
+    caption-side: top;
+    padding-top: 0;
+    font-size: .8125rem;
+    color: var(--bs-secondary-color);
+}
+
+.hr-at-table {
+    font-size: .875rem;
+}
+
+.hr-at-name {
+    min-width: 14rem;
+    overflow-wrap: anywhere;
+}
+
+.hr-at-plans {
+    min-width: 10rem;
+    overflow-wrap: anywhere;
+}

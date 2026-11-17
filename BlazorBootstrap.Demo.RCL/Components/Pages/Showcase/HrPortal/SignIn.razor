@@ -1,0 +1,18 @@
+@page "/showcase/hr-portal/sign-in"
+@layout HrLayout
+
+<PageTitle>Sign in · @HrSeedData.ProductName</PageTitle>
+
+@* A new account registers as an employee and is linked to the employee record HR made with the same work email. *@
+<div class="container-xl">
+    <ShowcaseSignIn SiteBase="@HrLayout.Base" SiteName="@HrSeedData.ProductName" ReturnUrl="@ReturnUrl"
+                    RegisterRoleId="@HrSeedData.EmployeeRole" StartWithRegister="@(Mode == "register")" />
+</div>
+
+@code {
+    /// <summary>Gets or sets <c>?mode=register</c>, which opens the register form.</summary>
+    [SupplyParameterFromQuery(Name = "mode")] public string? Mode { get; set; }
+
+    /// <summary>Gets or sets the page to return to after signing in; only a page inside the site is used.</summary>
+    [SupplyParameterFromQuery(Name = "returnUrl")] public string? ReturnUrl { get; set; }
+}

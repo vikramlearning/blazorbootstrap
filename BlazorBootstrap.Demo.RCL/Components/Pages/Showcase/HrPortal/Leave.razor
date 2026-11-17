@@ -1,0 +1,264 @@
+@page "/showcase/hr-portal/leave"
+@layout HrWorkLayout
+
+<PageTitle>My leave · @HrSeedData.ProductName</PageTitle>
+
+@* The signed-in employee's balances, a request form (also used to edit a waiting request), their requests, and the company holidays. *@
+<div class="container-fluid px-lg-4">
+    @if (State.CurrentEmployee is { } me)
+    {
+        var today = State.Clock.Today;
+        var balances = State.Balances(me.Id);
+        var requests = State.LeaveOf(me.Id);
+        var upcoming = requests.Where(item => item.To >= today).OrderBy(item => item.From).ToList();
+        var past = requests.Where(item => item.To < today).ToList();
+        var approver = ApproverName(me);
+        var policy = State.FindPolicy(formPolicyId);
+
+        <h1 class="hr-title mb-1">My leave</h1>
+        <p class="hr-lead mb-3">
+            Request time off and follow your requests. @approver decides them; leave days are weekdays that aren't company holidays,
+            and balances run per calendar year.
+        </p>
+
+        @* Always rendered and focusable, so every outcome is announced and focus has somewhere to go when a request moves or a dialog closes. *@
+        <p class="fw-semibold hr-leave-status @(statusIsError ? "text-danger-emphasis" : null)" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
+
+        <section class="mb-4" aria-labelledby="hr-leave-balances-title">
+            <h2 class="hr-section-title" id="hr-leave-balances-title">Your balances for @today.Year</h2>
+            @if (balances.Count == 0)
+            {
+                <div class="hr-panel"><p class="mb-0 text-body-secondary">No leave types are offered right now. HR sets them up.</p></div>
+            }
+            else
+            {
+                <ul class="list-unstyled hr-leave-balances mb-0">
+                    @foreach (var balance in balances)
+                    {
+                        var item = balance.Policy;
+                        <li class="hr-card hr-leave-balance" @key="@($"balance-{item.Id}")">
+                            <h3 class="hr-leave-balance-title">
+                                @item.Name
+                                @if (!item.IsActive)
+                                {
+                                    <span class="fw-normal text-body-secondary small"> (no longer offered)</span>
+                                }
+                            </h3>
+                            @if (item.IsUnlimited)
+                            {
+                                <p class="hr-leave-big mb-1">@HrDisplay.Days(balance.Used) <span class="hr-leave-big-unit">used</span></p>
+                                <p class="small text-body-secondary mb-0">
+                                    No yearly limit: only the days you take are counted.
+                                    @if (balance.Pending > 0)
+                                    {
+                                        <span>@HrDisplay.Days(balance.Pending) waiting for approval.</span>
+                                    }
+                                </p>
+                            }
+                            else
+                            {
+                                var summary = BalanceSummary(balance);
+                                <p class="hr-leave-big mb-2">@HrDisplay.Days(balance.Available) <span class="hr-leave-big-unit">available</span></p>
+                                <Progress Height="10" Class="mb-2">
+                                    <ProgressBar Width="Percent(balance.Used, balance.Allowance)" Color="ProgressColor.Primary"
+                                                 aria-label="@($"{item.Name} used")" aria-valuenow="@Percent(balance.Used, balance.Allowance).ToString("0", CultureInfo.InvariantCulture)"
+                                                 aria-valuemin="0" aria-valuemax="100" aria-valuetext="@summary" />
+                                    <ProgressBar Width="Percent(balance.Pending, balance.Allowance)" Color="ProgressColor.Warning" Type="ProgressType.Striped"
+                                                 aria-label="@($"{item.Name} waiting for approval")" aria-valuenow="@Percent(balance.Pending, balance.Allowance).ToString("0", CultureInfo.InvariantCulture)"
+                                                 aria-valuemin="0" aria-valuemax="100" aria-valuetext="@($"{HrDisplay.Days(balance.Pending)} waiting for approval")" />
+                                </Progress>
+                                <p class="small text-body-secondary mb-0">@summary</p>
+                            }
+                        </li>
+                    }
+                </ul>
+            }
+        </section>
+
+        <div class="row g-4">
+            <section class="col-xl-5" aria-labelledby="hr-leave-form-title">
+                <div class="hr-panel">
+                    <h2 class="hr-section-title" id="hr-leave-form-title" tabindex="-1" @ref="formHeading">@(editingId == 0 ? "Request leave" : $"Edit your request: {editingLabel}")</h2>
+                    <form @onsubmit="Submit" novalidate>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold" for="hr-leave-policy">Type of leave</label>
+                            <select id="hr-leave-policy" class="form-select @(policyError is null ? null : "is-invalid")" value="@formPolicyId" @onchange="OnPolicyChanged" @ref="policyInput"
+                                    aria-invalid="@(policyError is null ? null : "true")" aria-describedby="hr-leave-policy-help hr-leave-policy-error">
+                                @foreach (var option in PolicyOptions())
+                                {
+                                    <option value="@option.Id">@(option.Name)@(option.IsActive ? null : " (no longer offered)")</option>
+                                }
+                            </select>
+                            <div class="form-text" id="hr-leave-policy-help">@PolicyHelp(policy)</div>
+                            <div class="hr-leave-error" id="hr-leave-policy-error">@policyError</div>
+                        </div>
+                        <div class="row g-3">
+                            <div class="col-sm-6">
+                                <label class="form-label fw-semibold" for="hr-leave-from">First day</label>
+                                <input id="hr-leave-from" type="date" class="form-control @(fromError is null && formError is null ? null : "is-invalid")" value="@formFrom" @onchange="OnFromChanged"
+                                       min="@(policy is null ? null : LeaveText.DateValue(Earliest(policy, today)))" @ref="fromInput"
+                                       aria-invalid="@(fromError is null && formError is null ? null : "true")" aria-describedby="hr-leave-from-error hr-leave-form-error" />
+                                <div class="hr-leave-error" id="hr-leave-from-error">@fromError</div>
+                            </div>
+                            <div class="col-sm-6">
+                                <label class="form-label fw-semibold" for="hr-leave-to">Last day</label>
+                                <input id="hr-leave-to" type="date" class="form-control @(toError is null && formError is null ? null : "is-invalid")" value="@formTo" @onchange="OnToChanged"
+                                       min="@(LeaveText.ParseDate(formFrom) is { } first ? LeaveText.DateValue(first) : null)" @ref="toInput"
+                                       aria-invalid="@(toError is null && formError is null ? null : "true")" aria-describedby="hr-leave-days hr-leave-to-error hr-leave-form-error" />
+                                <div class="hr-leave-error" id="hr-leave-to-error">@toError</div>
+                            </div>
+                        </div>
+                        <p class="hr-leave-days mt-2" id="hr-leave-days" aria-live="polite">@DaysText(me, policy)</p>
+                        <div class="mb-2">
+                            <label class="form-label fw-semibold" for="hr-leave-note">Note for @approver (optional)</label>
+                            <textarea id="hr-leave-note" class="form-control @(noteError is null ? null : "is-invalid")" rows="2" maxlength="@HrState.MaxNoteLength"
+                                      value="@formNote" @oninput="args => formNote = args.Value?.ToString() ?? string.Empty" @ref="noteInput"
+                                      aria-invalid="@(noteError is null ? null : "true")" aria-describedby="hr-leave-note-help hr-leave-note-error"></textarea>
+                            <div class="form-text" id="hr-leave-note-help">Plain text. @formNote.Length of @HrState.MaxNoteLength characters.</div>
+                            <div class="hr-leave-error" id="hr-leave-note-error">@noteError</div>
+                        </div>
+                        <div class="hr-leave-error" id="hr-leave-form-error">@formError</div>
+                        <div class="d-flex flex-wrap gap-2 mt-3">
+                            <button type="submit" class="btn btn-primary">@(editingId == 0 ? "Request leave" : "Save changes")</button>
+                            @if (editingId != 0)
+                            {
+                                <button type="button" class="btn btn-outline-secondary" @onclick="StopEditing">Stop editing</button>
+                            }
+                        </div>
+                    </form>
+                </div>
+            </section>
+
+            <section class="col-xl-7" aria-labelledby="hr-leave-requests-title">
+                <h2 class="hr-section-title" id="hr-leave-requests-title">My requests</h2>
+
+                @foreach (var group in new[] { (Id: "upcoming", Title: "Upcoming", Items: upcoming, Empty: "Nothing coming up. Requests you make show here until their last day."), (Id: "past", Title: "Past", Items: past, Empty: "No past requests yet.") })
+                {
+                    <div class="mb-4" @key="@($"group-{group.Id}")">
+                        <h3 class="hr-leave-group-title" id="@($"hr-leave-{group.Id}-title")">@group.Title <span class="text-body-secondary fw-normal">(@group.Items.Count)</span></h3>
+                        @if (group.Items.Count == 0)
+                        {
+                            <div class="hr-panel"><p class="mb-0 text-body-secondary">@group.Empty</p></div>
+                        }
+                        else
+                        {
+                            <ul class="list-unstyled hr-leave-list mb-0" aria-labelledby="@($"hr-leave-{group.Id}-title")">
+                                @foreach (var request in group.Items)
+                                {
+                                    var requestPolicy = State.FindPolicy(request.PolicyId);
+                                    var label = LeaveText.RequestLabel(request, requestPolicy);
+                                    var editKey = $"edit-{request.Id}";
+                                    var cancelKey = $"cancel-{request.Id}";
+                                    var canCancel = CanCancel(request, today);
+                                    var decider = request.DecidedById is { } deciderId ? DeciderName(deciderId, me) : "your manager";
+
+                                    <li class="hr-card-item hr-leave-request @(editingId == request.Id ? "hr-leave-editing" : null)" @key="@($"request-{request.Id}")">
+                                        <div class="hr-leave-request-head">
+                                            <h4 class="hr-leave-request-title">@(requestPolicy?.Name ?? "Leave") <span class="fw-normal">· @HrDisplay.Range(request.From, request.To)</span></h4>
+                                            <span class="@($"badge text-bg-{HrDisplay.LeaveColor(request.Status)}")">@HrDisplay.LeaveLabel(request.Status)</span>
+                                        </div>
+                                        <p class="small text-body-secondary mb-2">
+                                            @HrDisplay.Plural(request.Days, "working day") · requested @HrDisplay.Date(request.CreatedAt)@(request.Status == HrLeaveStatus.Approved && request.From <= today && request.To >= today ? " · under way" : null)@(editingId == request.Id ? " · editing in the form" : null)
+                                        </p>
+                                        @if (request.Note.Length > 0)
+                                        {
+                                            <p class="mb-2"><span class="fw-semibold">Your note:</span> <span class="hr-plain">@request.Note</span></p>
+                                        }
+                                        @if (request.Status == HrLeaveStatus.Pending)
+                                        {
+                                            <p class="mb-0">Waiting for @(approver)'s decision.</p>
+                                        }
+                                        else if (request.Status is HrLeaveStatus.Approved or HrLeaveStatus.Rejected)
+                                        {
+                                            <p class="mb-0">@(request.Status == HrLeaveStatus.Approved ? "Approved" : "Rejected") by @(decider)@(request.DecidedAt is { } at ? $" on {HrDisplay.Date(at)}" : null).</p>
+                                            @if (request.DecisionNote.Length > 0)
+                                            {
+                                                <p class="hr-leave-decision mt-2 mb-0"><span class="fw-semibold">Note from @decider:</span> <span class="hr-plain">@request.DecisionNote</span></p>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <p class="mb-0 text-body-secondary">You cancelled it, so its days aren't counted.</p>
+                                        }
+                                        @if (request.Status == HrLeaveStatus.Pending || canCancel)
+                                        {
+                                            <div class="d-flex flex-wrap gap-2 mt-3">
+                                                @if (request.Status == HrLeaveStatus.Pending)
+                                                {
+                                                    <button type="button" class="btn btn-sm btn-outline-primary" @ref="openers[editKey]" @onclick="() => Edit(request)">
+                                                        Edit<span class="visually-hidden"> @label</span>
+                                                    </button>
+                                                }
+                                                @if (canCancel)
+                                                {
+                                                    <button type="button" class="btn btn-sm btn-outline-danger" @ref="openers[cancelKey]" @onclick="() => AskCancelAsync(request, cancelKey)">
+                                                        Cancel<span class="visually-hidden"> @label</span>
+                                                    </button>
+                                                }
+                                            </div>
+                                        }
+                                    </li>
+                                }
+                            </ul>
+                        }
+                    </div>
+                }
+            </section>
+        </div>
+
+        <details class="hr-panel mt-4 hr-leave-holidays">
+            <summary class="hr-section-title mb-0">Company holidays in @today.Year and @(today.Year + 1)</summary>
+            <p class="small text-body-secondary mt-3">Holidays on weekdays are never counted as leave days, so a request that covers one takes a day less.</p>
+            <div class="hr-leave-holiday-years">
+                @foreach (var year in new[] { today.Year, today.Year + 1 })
+                {
+                    var holidays = State.Holidays.Where(item => item.Date.Year == year).OrderBy(item => item.Date).ToList();
+                    <div @key="@($"holidays-{year}")">
+                        <h3 class="hr-leave-group-title">@year</h3>
+                        @if (holidays.Count == 0)
+                        {
+                            <p class="text-body-secondary mb-0">No company holidays are set for @year yet.</p>
+                        }
+                        else
+                        {
+                            <ul class="list-unstyled mb-0 hr-leave-holiday-list">
+                                @foreach (var holiday in holidays)
+                                {
+                                    <li @key="@($"holiday-{LeaveText.DateValue(holiday.Date)}")">
+                                        <span class="hr-mono text-nowrap">@holiday.Date.ToString("ddd, MMM d", CultureInfo.InvariantCulture)</span>
+                                        <span>@holiday.Name</span>
+                                        @if (holiday.Date < today)
+                                        {
+                                            <span class="text-body-secondary small">(past)</span>
+                                        }
+                                        else if (holiday.Date.DayOfWeek is DayOfWeek.Saturday or DayOfWeek.Sunday)
+                                        {
+                                            <span class="text-body-secondary small">(on a weekend)</span>
+                                        }
+                                    </li>
+                                }
+                            </ul>
+                        }
+                    </div>
+                }
+            </div>
+        </details>
+    }
+</div>
+
+<Modal @ref="cancelModal" IsVerticallyCentered="true" ShowCloseButton="false" aria-labelledby="hr-leave-dialog-title" OnShown="OnDialogShownAsync" OnHidden="OnDialogHidden">
+    <HeaderTemplate>
+        <h2 class="modal-title h5" id="hr-leave-dialog-title">@(cancelRequest is { } shown ? $"Cancel your request for {LeaveText.RequestLabel(shown, State.FindPolicy(shown.PolicyId))}?" : "Cancel the request?")</h2>
+    </HeaderTemplate>
+    <BodyTemplate>
+        @if (cancelRequest is { } request)
+        {
+            <p class="mb-0">@CancelConsequence(request)</p>
+        }
+    </BodyTemplate>
+    <FooterTemplate>
+        <button type="button" class="btn btn-outline-secondary" @ref="dialogDismiss" @onclick="() => cancelModal.HideAsync()">Keep the request</button>
+        <button type="button" class="btn btn-danger" @onclick="ConfirmCancelAsync" disabled="@(pendingCancelId is not null)">Cancel the request</button>
+    </FooterTemplate>
+</Modal>
+

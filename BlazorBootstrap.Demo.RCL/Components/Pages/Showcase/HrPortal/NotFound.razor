@@ -1,0 +1,11 @@
+@page "/showcase/hr-portal/{*path}"
+@layout HrLayout
+
+<div class="container-xl">
+    <HrNotFound />
+</div>
+
+@code {
+    /// <summary>Gets or sets the unknown path.</summary>
+    [Parameter] public string? Path { get; set; }
+}
