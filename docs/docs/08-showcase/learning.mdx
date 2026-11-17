@@ -1,0 +1,112 @@
+---
+title: Online Learning showcase
+description: An online school where learners enroll, study Markdown lessons, take scored quizzes, ask questions, and earn verifiable certificates, plus an instructor back office for courses, lessons, quizzes, questions, reviews, and learners, built with Blazor Bootstrap.
+sidebar_label: Online Learning
+sidebar_position: 8
+---
+
+import CarbonAd from '/carbon-ad.mdx'
+
+# Online Learning
+
+Quillpath Academy is a fictitious online school with eight published courses and one draft. Learners enroll, work through video, reading, and quiz lessons, ask questions under a lesson, review courses, and earn certificates that anyone can verify. Instructors build their courses in a separate back office: details, modules, lessons with a rich-text editor, quizzes, publishing, the Q&A inbox, review replies, and the learner roster.
+
+<CarbonAd />
+
+[Open the live demo](https://demos.blazorbootstrap.com/showcase/learning) · [View source](https://github.com/vikramlearning/blazorbootstrap/tree/main/BlazorBootstrap.Demo.RCL/Components/Pages/Showcase/Learning)
+
+## Roles and demo accounts
+
+| Role | Demo account | Password | Start page |
+|:--|:--|:--|:--|
+| Learner | Jordan Ashdown (`jordan.ashdown@example.com`) | `learn-demo-26` | `/showcase/learning/progress` |
+| Instructor | Avery Calloway (`avery.calloway@example.com`) | `teach-demo-26` | `/showcase/learning/teach` |
+
+You can also register ("Create an account" in the account menu, or `?mode=register` on the sign-in page). A new account is a learner with no enrollments. Visitors can browse the catalog, open course pages, and verify certificates without signing in.
+
+Jordan has finished Practical SQL for Analysts (certificate `QP-7K4M-R2XD`), is four lessons into Blazor from First Principles, and has started Clear Writing at Work. Avery teaches Blazor from First Principles and Testing .NET Applications, both published with learners, and has a draft, Accessible Blazor Components, whose second module is not published yet.
+
+All data is fictitious and there is no backend. Each browser tab keeps its own data in `sessionStorage` (it survives a reload; other tabs start fresh), and "Reset demo data" in the account menu restores the seed. The sign-in page lists the demo accounts with one-click buttons; credentials are checked only against the tab's accounts. The clock starts at November 24, 2026, 9:00 and moves on with real time. Courses are free, so there is no payment form.
+
+## What to try
+
+1. Sign in as Jordan, open **My learning**, and continue Blazor from First Principles. Mark the reading lesson as complete, then take the quiz that follows: answer every question, submit, and read the score and the explanations. Passing completes the lesson.
+2. Under a lesson, ask a question. Sign in as Avery: the account menu counts the question, and the **Q&A inbox** lists it. Answer it, then sign in as Jordan and read the answer under the lesson.
+3. Open **Verify a certificate** and enter `QP-7K4M-R2XD`. The result names the learner, course, and issue date, and the URL (`?code=`) can be shared. Open the certificate from **Certificates** and print it.
+4. As Avery, open **Courses** and publish the Accessible Blazor Components draft (its first module is ready; the second module's lessons are drafts you can publish from the course editor). Back in the school, the course is in the catalog, and a learner can enroll.
+5. As Avery, edit a lesson with the rich-text editor and compare the preview with the lesson player, or open a quiz in the quiz builder and change the correct answer.
+6. As Jordan, review Blazor from First Principles on its course page. As Avery, reply to the review or hide it in **Reviews**; Jordan's course page says so.
+
+## Pages
+
+### School (layout: public, Navbar)
+
+| Page | Route | What it does |
+|:--|:--|:--|
+| Courses | `/showcase/learning` | The catalog with search, category, and level filters; a "continue learning" strip when signed in as a learner. |
+| Course | `/showcase/learning/courses/{Id:int}` | Overview, outcomes, the curriculum in an accordion, and reviews; enroll, unenroll, and write, edit, or delete your review. |
+| Lesson | `/showcase/learning/courses/{Id:int}/learn/{LessonId:int}` | The course outline, the lesson body (Markdown), "Mark as complete" or the quiz, previous and next, the lesson's questions, and the course handout (PDF). |
+| My learning | `/showcase/learning/progress` | Courses in progress with the next lesson, and completed courses with the certificate and a review link. |
+| Certificates | `/showcase/learning/certificates` | Your certificates with their IDs and verify links. |
+| Certificate | `/showcase/learning/certificates/{Code}` | The printable certificate; public, so it can be shared. |
+| Verify a certificate | `/showcase/learning/verify` | Checks a certificate ID; `?code=` fills it in and checks it. |
+| Profile | `/showcase/learning/profile` | Name, email, and password. New certificates use the saved name. |
+| Sign in | `/showcase/learning/sign-in` | Demo accounts, the sign-in form, and the register form (`?mode=register`). |
+| Not found | `/showcase/learning/{*path}` | The school's not-found screen, also shown for an unknown course or lesson. |
+
+### Teaching (layout: sidebar back office)
+
+| Page | Route | What it does |
+|:--|:--|:--|
+| Dashboard | `/showcase/learning/teach` | Learners, active learners, completions, average rating, and waiting questions; a completion funnel and a ratings chart; newest questions and reviews; your courses. |
+| Courses | `/showcase/learning/teach/courses` | Your published and draft courses with Edit, "View in school", Publish or Unpublish, and Delete. |
+| New course | `/showcase/learning/teach/courses/new` | Title, subtitle, category, level, description, and outcomes. |
+| Edit course | `/showcase/learning/teach/courses/{Id:int}` | Details, status, and the curriculum: rename, reorder, publish, and delete modules and lessons. |
+| New lesson | `/showcase/learning/teach/courses/{CourseId:int}/lessons/new` | Title, module, kind, minutes, and a rich-text body with a preview. `?module=` picks the module. |
+| Edit lesson | `/showcase/learning/teach/courses/{CourseId:int}/lessons/{LessonId:int}` | The same editor for an existing lesson; save, publish, unpublish, or delete. |
+| Quiz builder | `/showcase/learning/teach/courses/{CourseId:int}/lessons/{LessonId:int}/quiz` | Questions with two or more options, the correct answer, explanations, the pass mark, and a preview. |
+| Q&A inbox | `/showcase/learning/teach/questions` | Learners' questions on your courses, filtered by status and course; answer or delete your answers. |
+| Reviews | `/showcase/learning/teach/reviews` | Reviews of your courses, hidden ones included; reply, edit or delete a reply, hide with a reason, or show again. |
+| Learners | `/showcase/learning/teach/learners` | Your roster with filters by course, name, and status, a sort, progress, and certificate codes. |
+| Account | `/showcase/learning/teach/account` | The instructor's name, email, and password. |
+| Not found | `/showcase/learning/teach/{*path}` | The back office's not-found screen. |
+
+## Components used
+
+- [Card](/components/card): course cards, certificates, and page sections.
+- [Accordion](/components/accordion): the curriculum on the course page.
+- [Progress](/components/progress): course progress on cards, My learning, the course and lesson pages, and the learner roster.
+- [Markdown](/components/markdown): lesson bodies in the lesson player.
+- [Rich text editor](/forms/rich-text-editor): the lesson body in the lesson editor.
+- [PDF viewer](/components/pdf-viewer): the course handout under each lesson.
+- [Bar chart](/data-visualization/bar-chart) (BlazorExpress.ChartJS): the completion funnel and the ratings on the instructor dashboard.
+- [Navbar](/components/navbar): the school's header.
+- [Sidebar](/components/sidebar): the teaching navigation.
+- [Modal](/components/modal): confirmations such as unenroll, delete a review, question, answer, lesson, or course, unpublish a course, hide a review, and replace quiz results.
+- [Toasts](/components/toasts): messages after you leave a page, such as unenrolling from a course that left the catalog or deleting a lesson.
+- [Button group](/components/button-group) (`RadioButtonGroup`): the category and level filters in the catalog.
+- [Text input](/forms/text-input) and [Input group](/components/input-group): the catalog search.
+- [Spinner](/components/spinners): while the certificate loads and while an ID is checked.
+- [Alert](/components/alerts), [Badge](/components/badge), and [Breadcrumb](/components/breadcrumb): notices, statuses in words, and the course, lesson, and editor pages.
+- [Buttons](/components/buttons) and [Icons](/content/icons): actions and icons across the site.
+- [Avatar](/components/avatar), [Dropdown](/components/dropdown), and [Theme switcher](/components/theme-switcher): through the shared account menu and site bar.
+
+Quiz questions, review ratings, and the instructor's forms use native `fieldset`, radio, and text inputs with character counters.
+
+## How the theme is built
+
+`LearningFrame.razor` is the frame both layouts share: `LearningLayout` (the school, with a Navbar) and `TeachLayout` (a teaching top bar with "View school" and a Sidebar). Its root is `.sc-site.sc-learning`, and `LearningFrame.razor.css` styles the pages of both through `::deep`. Teaching has its own layout, separate from the school (D-031). When an instructor opens the school, a "Viewing the school as Avery Calloway (Instructor)" bar with "Back to teaching" sits above the header; enrolling is for learners (D-032).
+
+Color tokens in light mode: `--sc-primary` `#a16207` (amber), `--sc-primary-hover` `#854d0e`, contrast `#fff`, page background `#fbf8f1`. In dark mode (`[data-bs-theme=dark]`): `--sc-primary` `#facc15`, hover `#fde047`, contrast `#1c1400`, page background `#13110c`. Because the dark primary is a light yellow, `.text-bg-primary` and `.progress-bar` text switch to the dark contrast color.
+
+Fonts come from Google Fonts: Lora (500 to 700) for headings and Source Sans 3 for body text.
+
+The shared stylesheet `wwwroot/css/blazorbootstrap.demo.rcl.css` maps the `--sc-*` tokens to Bootstrap (`--bs-primary`, link and focus colors, body and heading fonts, primary buttons). Charts draw on a canvas, so `LearningChartTheme.cs` holds their colors. Unlike the other sites, the learning state doesn't track the color mode, so the charts don't redraw on a theme change: every color is picked to read on both the light panel (`#fff`) and the dark panel (`#1c1912`). The funnel stages are one amber hue stepped from light to dark (`#f59e0b`, `#d97706`, `#b45309`, `#92400e`), the rating bars are `#d97706`, and axis text is a neutral gray (`#7c7c84`).
+
+## Accessibility and responsiveness
+
+- Each quiz question is a `fieldset` with a `legend` and native radios. Submitting with a question unanswered names the missing ones and focuses the first; the score is announced, and each question says Right or Wrong in text.
+- Modules and lessons are reordered with Move up and Move down buttons, not drag and drop; focus stays on the moved item, and its new position is announced.
+- The PDF viewer's toolbar needs a mouse, so the handout is also a plain link ("Open the handout (PDF, new tab)").
+- Each dashboard chart has a heading, a summary in words, a label, and a visually hidden data table. The lesson outline marks the current lesson with `aria-current`, and completion is said in text.
+- At 375 px the Navbar collapses into a menu, and the lesson outline moves below the lesson. Certificates print without the site's chrome.

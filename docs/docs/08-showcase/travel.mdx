@@ -1,0 +1,118 @@
+---
+title: Travel & Stay Booking showcase
+description: A stay-booking site with search, a map, photo galleries, test-card checkout, and trip management for guests, plus a host back office for requests, calendars, listings, inbox, reviews, and earnings, built with Blazor Bootstrap.
+sidebar_label: Travel
+sidebar_position: 9
+---
+
+import CarbonAd from '/carbon-ad.mdx'
+
+# Travel & Stay Booking
+
+Driftwood Stays is a fictitious booking site with 18 stays in four real cities: Lisbon, Kyoto, Cape Town, and Vancouver. Guests search, compare stays on a map, book with a test card or send a request, and then change, cancel, or review their trips. Hosts work in a separate back office where they answer requests, block nights, edit listings, reply to guests and reviews, and follow their payouts.
+
+<CarbonAd />
+
+[Open the live demo](https://demos.blazorbootstrap.com/showcase/travel) · [View source](https://github.com/vikramlearning/blazorbootstrap/tree/main/BlazorBootstrap.Demo.RCL/Components/Pages/Showcase/Travel)
+
+## Roles and demo accounts
+
+| Role | Demo account | Password | Start page |
+|:--|:--|:--|:--|
+| Guest | Jordan Ashdown (`jordan.ashdown@example.com`) | `stay-demo-26` | `/showcase/travel/trips` |
+| Host | Aiko Tanaka (`aiko.tanaka@example.com`) | `host-demo-26` | `/showcase/travel/host` |
+
+You can create an account on the sign-in page ("Create an account", or `?mode=register`). A new account is a guest with no trips. Aiko hosts the four Kyoto stays; the other hosts have no sign-in.
+
+Jordan starts with an upcoming trip to Machiya Kotone, a request to Gion Lantern Inn that waits for Aiko, two completed stays (one already reviewed), two saved stays, and an unread message from Aiko. Aiko also has a second open request and one that expired unanswered.
+
+All data is fictitious and there is no backend. Each browser tab keeps its own data in `sessionStorage` (it survives a reload; other tabs start fresh), and "Reset demo data" in the account menu restores the seed. The sign-in page lists the demo accounts with one-click buttons; credentials are checked only against the tab's accounts. The clock starts at November 24, 2026, 10:00 and moves on with real time, so trips become in progress or completed and requests expire after 24 hours.
+
+Payments use the shared test-card form: only the published test cards are accepted (for example `4242 4242 4242 4242`), `4000 0000 0000 0002` is declined, and `4000 0000 0000 9995` fails for insufficient funds. Only the brand and last four digits are kept.
+
+## What to try
+
+1. Search Kyoto for your dates, filter by price or **Instant book only**, and match the numbered results to the map pins. Open a stay, look through the gallery and the availability calendar, and press **Reserve**.
+2. Sign in as Jordan, pay for an instant-book stay with a test card, and see the confirmation and receipt. Try the decline card to see the error. Then use **Change dates** or **Cancel trip** on the trip page and compare the refund with the cancellation policy.
+3. As Jordan, send **Request to book** for Bamboo Grove Cabin with a message. Sign in as Aiko, open the request from **Today** or **Reservations**, and accept it. Sign in as Jordan again: the trip is upcoming and shows the address.
+4. As Aiko, block a few nights in **Calendar**, then open that stay's page as a guest: the nights read as unavailable and can't be booked.
+5. As Jordan, use **Contact host** on a stay page. As Aiko, answer it in **Inbox** with a quick reply, then filter **Reviews** by "Needs a reply" and answer one; the reply shows on the stay page.
+6. As Jordan, open the completed trip to Casa do Miradouro and post a review with the rating stars.
+
+## Pages
+
+### Guest site (layout: public, Navbar)
+
+| Page | Route | What it does |
+|:--|:--|:--|
+| Search | `/showcase/travel` | Destination, guests, and dates; destination tiles; a signed-in guest's next trip, waiting requests, and unread messages. |
+| Results | `/showcase/travel/stays` | Stays that fit the search, with price, type, sort, free-cancellation, and instant-book filters beside a map; stays booked on your dates are listed below. `?destination=` picks the city. |
+| Stay | `/showcase/travel/stays/{Id:int}` | Gallery, rating, amenities, map, host with **Contact host**, policy, availability calendar, reviews, and the booking box with the price. |
+| Book | `/showcase/travel/stays/{Id:int}/book` | Guests only: dates and guests, message to the host (required for a request), test-card payment, price details. Reads `?checkIn=`, `?checkOut=`, `?guests=`. |
+| Trips | `/showcase/travel/trips` | Upcoming, past, and cancelled trips with their phase and what was paid. |
+| Trip | `/showcase/travel/trips/{Reference}` | Details, address once confirmed, payments and refunds, and the actions for the phase: withdraw, change dates, cancel, or review. |
+| Receipt | `/showcase/travel/trips/{Reference}/receipt` | A printable receipt; the site chrome doesn't print. |
+| Wishlist | `/showcase/travel/wishlist` | Saved stays with the heart to remove one and **Undo**. |
+| Messages | `/showcase/travel/messages` | Conversations with hosts, with unread markers. |
+| Conversation | `/showcase/travel/messages/{ThreadId:int}` | Messages oldest first and a reply box with a character counter. |
+| Profile | `/showcase/travel/account` | Name, email, and password. |
+| Sign in | `/showcase/travel/sign-in` | Demo accounts, sign-in form, and the register form. |
+| Not found | `/showcase/travel/{*path}` | The site's not-found screen, also shown for an unknown stay. |
+
+A host who opens the guest site sees a "Viewing the site as ... (Host)" bar with **Back to hosting**; booking, the wishlist, and trips are for guests.
+
+### Host back office (layout: sidebar back office)
+
+| Page | Route | What it does |
+|:--|:--|:--|
+| Today | `/showcase/travel/host` | Requests waiting, check-ins, guests staying, this month's earnings, 30-day occupancy, average rating, arrivals and departures, unread messages, and reviews without a reply. |
+| Reservations | `/showcase/travel/host/reservations` | Every booking in five groups, with a listing filter (`?stay=`) and a search by guest or reference. |
+| Reservation | `/showcase/travel/host/reservations/{Reference}` | Guest, dates, request message, charges, payout (taxes and the 3% host fee), and **Accept** or **Decline** for a request, each confirmed in a dialog. |
+| Calendar | `/showcase/travel/host/calendar` | One listing's month (`?stay=`) with booked, requested, blocked, and free nights; block nights and remove blocks. |
+| Listings | `/showcase/travel/host/listings` | Listing cards with bookings and rating; edit, calendar, public page, unlist, or delete (only without bookings, conversations, or reviews). |
+| New listing | `/showcase/travel/host/listings/new` | Name, place, type, description, prices, amenities, policy, booking type, address, and photos from a photo library. |
+| Edit listing | `/showcase/travel/host/listings/{Id:int}` | The same form for one of your listings. |
+| Inbox | `/showcase/travel/host/inbox` | Conversations with guests about your listings. |
+| Conversation | `/showcase/travel/host/inbox/{ThreadId:int}` | Messages, quick replies, and a reply box. |
+| Reviews | `/showcase/travel/host/reviews` | Average rating per listing, filters by listing and "Needs a reply", and public replies you can edit or remove. |
+| Earnings | `/showcase/travel/host/earnings` | Payout figures, a stacked bar chart of paid and upcoming payouts per month, and the payouts table. |
+| Account | `/showcase/travel/host/account` | Name, email, and password. |
+
+## Components used
+
+- [Navbar](/components/navbar): the guest site header with Search, Stays, Wishlist, Trips, and Messages.
+- [Sidebar](/components/sidebar): the host back office menu, with a "Host" badge.
+- [Carousel](/components/carousel): the photo gallery on the stay page, with indicators and no autoplay.
+- [Google Map](/components/google-map): the results and stay maps, through the shared map-or-placeholder component. Without a Google Maps API key, a placeholder with numbered pins and a numbered list of the same stays is shown instead.
+- [Modal](/components/modal): contact host, withdraw, cancel, and change dates (guest); accept, decline, remove a block, unlist or delete a listing, and remove a review reply (host).
+- [Bar chart](/data-visualization/bar-chart): monthly payouts on the earnings page (BlazorExpress.ChartJS).
+- [Date input](/forms/date-input): search dates, the booking box, checkout, date changes, and calendar blocks.
+- [Number input](/forms/number-input) and [Range input](/forms/range-input): the guests count and the price filter.
+- [Rating input](/forms/rating-input): the read-only average on the stay page and the guest's review stars.
+- [Switch](/forms/switch) and [Button group](/components/button-group) (`RadioButtonGroup`): the results filters and sort.
+- [Card](/components/card), [Badge](/components/badge), [Breadcrumb](/components/breadcrumb), [Alerts](/components/alerts), [Buttons](/components/buttons), and [Icons](/content/icons) throughout.
+- Shared showcase parts: [Avatar](/components/avatar) and [Dropdown](/components/dropdown) in the account menu, [Input group](/components/input-group) in the test-card form, and [Theme switcher](/components/theme-switcher) in the site bar.
+
+## How the theme is built
+
+`TravelFrame` is shared by both layouts: `TravelLayout` (the public guest site with a Navbar) and `HostLayout` (the host back office with a Sidebar and a host-only guard), so the two sides look like one product. Its stylesheet sets the tokens on the `.sc-site.sc-travel` root and styles the pages of both sides through `::deep`.
+
+| Token | Light | Dark |
+|:--|:--|:--|
+| `--sc-primary` | `#0369a1` | `#38bdf8` |
+| `--sc-primary-rgb` | `3, 105, 161` | `56, 189, 248` |
+| `--sc-primary-hover` | `#075985` | `#7dd3fc` |
+| `--sc-primary-contrast` | `#fff` | `#082f49` |
+| `--sc-page-bg` | `#f5f9fc` | `#07121b` |
+
+The fonts are DM Sans for body text and DM Serif Display for headings, loaded from Google Fonts in the frame. The frame also defines a deep-blue hero gradient, sets dark text on primary fills in dark mode (white fails contrast on the light blue), and gives the Sidebar a navy background (`#0c2233`) through its `--bb-sidebar-*` variables. `wwwroot/css/blazorbootstrap.demo.rcl.css` bridges the `--sc-*` tokens to `--bs-primary`, link and focus colors, the body and heading fonts, and the primary buttons.
+
+The earnings chart can't read CSS variables, so `TravelChartTheme.cs` sets its colors: paid `#0284c7`, upcoming `#ea580c`, gray axis text, and a slate tooltip. Each color is chosen to read on both the light and the dark panel, so the chart keeps the same colors when you switch theme.
+
+## Accessibility and responsiveness
+
+- The map placeholder has a text label, and its numbered pins match a numbered list and the numbered results; each result also names its pin for screen readers.
+- Availability calendars are tables with captions where every night says in words whether it's available, unavailable, or chosen; Previous and Next announce the months shown. The host calendar switches to a list of runs of nights on narrow screens.
+- The earnings chart has a summary label and a visually hidden table of the same figures.
+- The gallery never moves on its own, and results counts, wishlist removals (with **Undo**), sent messages, and booking errors are announced in live regions.
+- At phone width the host sidebar sits above the page, the availability calendar stacks its two months, and the results map moves below the list.

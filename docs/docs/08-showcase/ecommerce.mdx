@@ -1,0 +1,122 @@
+---
+title: E-commerce Storefront showcase
+description: An online store with catalog filters, product pages, a cart drawer, test-card checkout, and customer accounts, plus the retailer's back office for orders, products, pricing, offers, returns, reviews, and analytics, built with Blazor Bootstrap.
+sidebar_label: E-commerce
+sidebar_position: 4
+---
+
+import CarbonAd from '/carbon-ad.mdx'
+
+# E-commerce Storefront
+
+Kindred Goods is a fictitious home goods store. Shoppers browse and filter the catalog, read and write reviews, fill a cart, and check out with a test card; customers with an account track orders, request returns, and keep addresses and a wishlist. The retailer runs the store from a separate back office: fulfilment, products and stock, prices and coupons, customers, returns, review moderation, and sales analytics.
+
+<CarbonAd />
+
+[Open the live demo](https://demos.blazorbootstrap.com/showcase/ecommerce) · [View source](https://github.com/vikramlearning/blazorbootstrap/tree/main/BlazorBootstrap.Demo.RCL/Components/Pages/Showcase/Ecommerce)
+
+## Roles and demo accounts
+
+| Role | Demo account | Password | Start page |
+|:--|:--|:--|:--|
+| Customer | Maya Lindqvist (`maya@kindredgoods.example`) | `shop-demo-24` | `/showcase/ecommerce/account` |
+| Retailer | Owen Hart (`owen@kindredgoods.example`) | `store-demo-24` | `/showcase/ecommerce/admin` |
+
+You can also register ("Create an account" in the account menu, or `?mode=register` on the sign-in page). A new account is a customer. You don't need an account to shop: a visitor can check out as a guest.
+
+Maya starts with past orders, two saved addresses in the same-day delivery area, and a wishlist with one product in stock and one out of stock (with a back-in-stock notice requested).
+
+All data is fictitious and there is no backend. Each browser tab keeps its own data in `sessionStorage` (it survives a reload; other tabs start fresh), and "Reset demo data" in the account menu restores the seed. The sign-in page lists the demo accounts with one-click buttons; credentials are checked only against the tab's accounts. The clock starts at November 9, 2026, 10:00 and moves on with real time. Checkout accepts only the published test cards (for example `4242 4242 4242 4242`; `4000 0000 0000 0002` is declined and `4000 0000 0000 9995` fails for insufficient funds), with any future expiry.
+
+## What to try
+
+1. As a visitor, filter the catalog by category, price, and rating, add products from the cards or a product page, and open the cart drawer. On the cart page, apply `WELCOME10` (10% off a first order), then check out with `4242 4242 4242 4242`. Try the decline card first: the cart stays as it was.
+2. Sign in as Maya and check out to her saved Fairbank address with same-day local delivery: a map of the courier's route and the estimated arrival appear. `WELCOME10` is refused, since Maya has ordered before.
+3. Sign in as Owen. In **Orders**, use the fulfilment board to pack the new order, ship it with a tracking number, and mark it delivered. Sign in as Maya: each step is a notice on her account, and the order page shows the timeline.
+4. As Maya, request a return on a delivered order. As Owen, approve it in **Returns**: the items go back into stock and the amount is refunded.
+5. As Owen, open **Products**, give the Stoneware Bud Vase (out of stock) some stock. The store shows the change at once, and Maya gets a back-in-stock notice for the vase on her wishlist. A sale started in **Pricing** shows in the store the same way.
+6. As Owen, choose **View store**: a bar says you are viewing the store as the retailer, and the cart and checkout are not offered to staff.
+
+## Pages
+
+### Storefront (layout: public, Navbar)
+
+| Page | Route | What it does |
+|:--|:--|:--|
+| Home | `/showcase/ecommerce` | Hero carousel, categories, new arrivals, and products on sale. |
+| Products | `/showcase/ecommerce/products` | Search, category, price, rating, and sale filters with sorting and paging. `?category=` or `?sale=1` starts a fresh filter. |
+| Product | `/showcase/ecommerce/products/{Id:int}` | Images, rating, price, color and quantity, add to cart, wishlist heart, tabs for details, reviews (write, edit, delete your own), and shipping, and related products. |
+| Cart | `/showcase/ecommerce/cart` | Lines with quantity steppers, the promo code, and the order summary. The cart drawer opens from the header on every page. |
+| Checkout | `/showcase/ecommerce/checkout` | Contact and shipping, delivery choice (standard, express, or same-day local), the test-card form, and the summary. |
+| Order | `/showcase/ecommerce/orders/{Id:int}` | The confirmation after checkout, and later the order page with its status timeline and return requests. |
+| Sign in | `/showcase/ecommerce/sign-in` | Demo accounts, the sign-in form, and the register form (`?mode=register`). |
+| Not found | `/showcase/ecommerce/{*path}` | The store's not-found screen, also shown for an unknown product. |
+
+### Customer account (layout: public, Navbar, with account tabs)
+
+| Page | Route | What it does |
+|:--|:--|:--|
+| Overview | `/showcase/ecommerce/account` | Notices with "Mark all as read", recent orders, the default address, and a wishlist summary. |
+| Orders | `/showcase/ecommerce/account/orders` | Orders by status group, with "Buy again" and "Cancel" (before the order is packed). |
+| Addresses | `/showcase/ecommerce/account/addresses` | Up to ten addresses: add, edit, set as default, and delete. |
+| Wishlist | `/showcase/ecommerce/account/wishlist` | Saved products with stock in words, add to cart, and a "Tell me when it's back" switch. |
+| Profile | `/showcase/ecommerce/account/profile` | Name, email, and password. |
+
+### Store admin (layout: sidebar back office)
+
+| Page | Route | What it does |
+|:--|:--|:--|
+| Dashboard | `/showcase/ecommerce/admin` | Net revenue, orders to fulfil, average order value, and stock alerts for 30 days, recent orders, and best sellers. |
+| Orders | `/showcase/ecommerce/admin/orders` | A searchable, sortable grid with a status filter (`?status=`), and a fulfilment board with each order's next step. |
+| Order | `/showcase/ecommerce/admin/orders/{Id:int}` | Items, totals, customer, delivery, payment, history, and returns; pack, ship, deliver, cancel, or refund. |
+| Products | `/showcase/ecommerce/admin/products` | Every product, archived ones included, with filters and an "Adjust stock" dialog. |
+| New product | `/showcase/ecommerce/admin/products/new` | The product editor for a new product. |
+| Edit product | `/showcase/ecommerce/admin/products/{Id:int}` | The editor with sales and rating, "View in store", Archive or Restore, and Delete when nothing refers to the product. |
+| Pricing | `/showcase/ecommerce/admin/pricing` | A bulk price change or sale for a category, previewed row by row, and per-product prices. |
+| Offers & coupons | `/showcase/ecommerce/admin/offers` | Coupons with rules and status in words; create, edit, pause, resume, and delete. |
+| Customers | `/showcase/ecommerce/admin/customers` | Customers with order count and spend; choosing one (or `?email=`) shows their orders. |
+| Returns | `/showcase/ecommerce/admin/returns` | Return requests, waiting ones first; approve (restock and refund) or reject with a note. |
+| Reviews | `/showcase/ecommerce/admin/reviews` | Moderation: hide or publish reviews, and post, edit, or remove the store's public reply. |
+| Analytics | `/showcase/ecommerce/admin/analytics` | KPIs for 7, 14, or 30 days against the period before; revenue per day, revenue by category, orders by status, top products, and coupon usage. |
+| Account | `/showcase/ecommerce/admin/account` | The retailer's name, email, and password. |
+
+## Components used
+
+- [Navbar](/components/navbar): the store header, with a Categories dropdown.
+- [Offcanvas](/components/offcanvas): the cart drawer.
+- [Toasts](/components/toasts): "Added to cart" messages.
+- [Carousel](/components/carousel): the hero on Home.
+- [Card](/components/card): product cards.
+- [List group](/components/list-group), [Range input](/forms/range-input), [Switch](/forms/switch), and [Collapse](/components/collapse): the catalog filters (category, maximum price, sale only), which fold behind a toggle on small screens.
+- [Pagination](/components/pagination): the catalog, admin customers, and reviews.
+- [Rating input](/forms/rating-input): the average rating (read-only) and the review form on product pages.
+- [Tabs](/components/tabs): details, reviews, and shipping on product pages.
+- [Breadcrumb](/components/breadcrumb): the catalog and product pages.
+- [Timeline](/components/timeline): the order status on the order pages.
+- [Grid](/components/grid): the admin order and product lists.
+- [Sidebar](/components/sidebar): the store admin navigation.
+- [Modal](/components/modal): addresses, cancel and refund, ship with a tracking number, adjust stock, bulk pricing, coupons, returns, review edits, and deletes.
+- [Line chart](/data-visualization/line-chart), [Bar chart](/data-visualization/bar-chart), and [Doughnut chart](/data-visualization/doughnut-chart) (BlazorExpress.ChartJS): the admin analytics.
+- [Text input](/forms/text-input), [Text area input](/forms/textarea-input), [Number input](/forms/number-input), [Checkbox input](/forms/checkbox-input), [Date input](/forms/date-input), and [Input group](/components/input-group): checkout, the product editor, pricing, coupons, and search boxes.
+- [Button group](/components/button-group) (`RadioButtonGroup`): the minimum rating filter, color choice, delivery choice, order views, and date ranges.
+- [Google Map](/components/google-map): the same-day delivery route at checkout, when the host has a Maps API key (otherwise a static placeholder with the same places).
+- [Badge](/components/badge), [Alert](/components/alerts), [Buttons](/components/buttons), and [Icons](/content/icons): statuses, notes, and actions.
+- [Avatar](/components/avatar), [Dropdown](/components/dropdown), and [Theme switcher](/components/theme-switcher): through the shared account menu and site bar.
+
+## How the theme is built
+
+This is one of the older sites, so there is no shared frame component. The storefront layout, `EcommerceLayout.razor`, has the root `.sc-site.sc-ecommerce`; the back office, `EcommerceAdminLayout.razor`, has `.sc-site.sc-ecommerce.ea-admin`. Scoped CSS ties each layout's variables to its own elements, so `EcommerceAdminLayout.razor.css` repeats the store's color tokens (with a slightly darker page background, `#f7f4f0`). The admin has its own layout with the modules in a sidebar, separate from the storefront (D-031). When the retailer views the store, a "Viewing your store as Owen Hart (Retailer)" bar with "Back to admin" sits above the header, and buying is hidden (D-032).
+
+Color tokens in light mode: `--sc-primary` `#c2410c` (burnt orange), `--sc-primary-hover` `#9a3412`, contrast `#fff`, page background `#fdfaf6`. In dark mode (`[data-bs-theme=dark]`): `--sc-primary` `#fb923c`, hover `#fdba74`, contrast `#1c1009`, page background `#16110d`. Because the dark primary is a light orange, `.text-bg-primary` text switches to the dark contrast color. Sale prices and stars have their own tokens (`--ec-sale`, `--ec-star`).
+
+Fonts come from Google Fonts: Fraunces (600 and 700) for headings and DM Sans for body text.
+
+The shared stylesheet `wwwroot/css/blazorbootstrap.demo.rcl.css` maps the `--sc-*` tokens to Bootstrap (`--bs-primary`, link and focus colors, body and heading fonts, primary buttons). There is no chart theme class: the analytics page sets its chart colors itself. The series colors are mid-tones that keep 3:1 contrast on both the light and the dark panel (store orange `#ea580c`, and one color per order status), and the axis, grid, and legend colors follow the color mode. When you switch the theme, the admin's site bar tells `EcommerceState`, and the charts redraw.
+
+## Accessibility and responsiveness
+
+- The quantity stepper's minus and plus buttons stay enabled at the limits, so keyboard focus never drops; a press past a limit does nothing.
+- The wishlist heart uses `aria-pressed` and announces the change; star ratings on cards are icons with a text alternative, so a grid of cards adds no extra tab stops.
+- Each analytics chart has a visually hidden data table, and a status region announces the chosen range.
+- The account tabs mark the current page with `aria-current="page"` and a filled pill, not color alone. Dialogs return focus to the button that opened them, or to the status message when that button is gone.
+- At 375 px the catalog filters fold behind a "Show filters" button (with the number of active filters), the header collapses into a menu, and the account tabs wrap.

@@ -1,0 +1,110 @@
+---
+title: Help Desk & Ticketing showcase
+description: A customer help center and an agent desk with SLA timers, saved replies, knowledge base authoring, reports, and admin settings, built with Blazor Bootstrap.
+sidebar_label: Help Desk
+sidebar_position: 10
+---
+
+import CarbonAd from '/carbon-ad.mdx'
+
+# Help Desk & Ticketing
+
+Beacon Desk is the support site of a fictitious software product. Customers search the knowledge base and submit and follow their requests in the help center; agents work a ticket queue with SLA timers, rich-text replies, internal notes, and saved replies, write articles, and read SLA and satisfaction reports in a separate agent desk. Admins also manage agents and teams, SLA policies, and categories.
+
+<CarbonAd />
+
+[Open the live demo](https://demos.blazorbootstrap.com/showcase/help-desk) · [View source](https://github.com/vikramlearning/blazorbootstrap/tree/main/BlazorBootstrap.Demo.RCL/Components/Pages/Showcase/HelpDesk)
+
+## Roles and demo accounts
+
+| Role | Demo account | Password | Start page |
+|:--|:--|:--|:--|
+| Customer | Ana Ruiz (`ana.ruiz@example.com`) | `help-demo-26` | `/showcase/help-desk/requests` |
+| Support agent | Jordan Ashdown (`jordan@beacondesk.example`) | `desk-demo-26` | `/showcase/help-desk/agent` |
+| Admin | Morgan Lee (`morgan@beacondesk.example`) | `admin-demo-26` | `/showcase/help-desk/agent` |
+
+You can also create an account ("Create an account" on the sign-in page, or `?mode=register`). A new account is a customer with no requests yet. Ana starts with two requests: #1041 (in progress) and #1059 (solved, not yet rated). The roster also has two agents without a sign-in, Priya Nair and Marcus Osei.
+
+All data is fictitious and there is no backend; no email is sent. Each browser tab keeps its own data in `sessionStorage` (it survives a reload; other tabs start fresh), and "Reset demo data" in the account menu restores the seed. The sign-in page lists the demo accounts with one-click buttons; credentials are checked only against the tab's accounts. The clock starts at November 24, 2026, 10:30 and moves on with real time, so SLA timers count down while you watch.
+
+## What to try
+
+1. Sign in as Ana and choose **Submit a request**. Type "two-factor" in the subject: matching articles appear under "These might help". Submit the request.
+2. Switch to Jordan. The new ticket is in the queue as New. Open it, choose **Assign to me**, insert the saved reply "Thanks, looking into it", and send it. The ticket moves to Pending and its SLA shows "Paused". Switch back to Ana: **My requests** shows a "New reply" badge, and the request reads "Awaiting your reply".
+3. As Ana, open the solved request #1059 and rate it with a comment. As Jordan, open **Reports › Satisfaction**: the rating and comment are in the figures and under Recent comments.
+4. As Jordan, select several tickets in the queue and use the bulk bar to assign them or change their priority. Turn on **Assigned to me**, or filter by team.
+5. As Jordan, open **Knowledge base › New article**, write it in the editor, and save it as a draft. Publish it, then sign out: it shows in the help center search and its category.
+6. Sign in as Morgan. In **Admin › SLA policies**, lower a resolution target: the queue's overdue and at-risk counts change at once. In **Agents & teams**, deactivate Priya Nair: her open tickets go back unassigned.
+
+## Pages
+
+### Help center (layout: public, Navbar)
+
+| Page | Route | What it does |
+|:--|:--|:--|
+| Help center | `/showcase/help-desk` | Article search with a live result count, topic tiles per category, popular articles, and a "Still need help?" panel for your role. |
+| Knowledge base | `/showcase/help-desk/kb` | Published articles with search and a category filter (`?category=` preselects one). |
+| Article | `/showcase/help-desk/kb/{Id:int}` | The article, a "Was this article helpful?" vote, related articles, and an edit link for agents. |
+| Submit a request | `/showcase/help-desk/requests/new` | Category, company, urgency (Low, Normal, or High; only agents set Urgent) with its resolution target, subject with article suggestions, and description. Signed out, it asks you to sign in. |
+| My requests | `/showcase/help-desk/requests` | Your requests, most recently updated first, filtered by open or solved, with "New reply" badges. Customers only. |
+| Request | `/showcase/help-desk/requests/{Id:int}` | The conversation without internal notes, a reply box, "Mark as solved" (with a confirm dialog), and a rating once solved. |
+| Your account | `/showcase/help-desk/account` | Name, email, and password; new requests use them. |
+| Sign in | `/showcase/help-desk/sign-in` | Demo accounts, sign-in form, and the register form. |
+| Not found | `/showcase/help-desk/{*path}` | The site's not-found panel, also shown for an unknown article or request. |
+
+### Agent desk (layout: sidebar back office)
+
+| Page | Route | What it does |
+|:--|:--|:--|
+| Ticket queue | `/showcase/help-desk/agent` | KPI cards, filters (search, status, priority, team, assigned to me), sortable columns, row selection with bulk actions, and 10 tickets per page. Sorted by urgency: overdue, at risk, then by due time. |
+| Ticket | `/showcase/help-desk/agent/tickets/{Id:int}` | Tabs for Conversation (reply or internal note, saved replies, status, priority, category, assignee, customer, rating), Details (due time and activity log), and Related articles. |
+| New ticket | `/showcase/help-desk/agent/tickets/new` | Logs a request for a customer; a matching customer email puts it in that account's requests. |
+| Saved replies | `/showcase/help-desk/agent/saved-replies` | Add, edit, and delete reusable replies in a modal with a rich-text editor. |
+| Knowledge base articles | `/showcase/help-desk/agent/kb` | All articles, drafts included, with views and helpful votes; publish, unpublish, edit, or delete. |
+| New article / Edit article | `/showcase/help-desk/agent/kb/new`, `/showcase/help-desk/agent/kb/{Id:int}` | Title, category, summary, and body with a live preview; save a draft or publish. |
+| SLA report | `/showcase/help-desk/agent/reports/sla` | First-reply and resolution results for the last 7, 14, or 30 days, by day, priority, agent, and team. |
+| Satisfaction report | `/showcase/help-desk/agent/reports/satisfaction` | CSAT, ratings per day, results by agent, and recent comments with a good/bad filter. |
+| Account | `/showcase/help-desk/agent/account` | Your agent profile and password. |
+| Agents & teams | `/showcase/help-desk/agent/admin/agents` | Add and edit agents (team, admin), deactivate or reactivate them, and add, edit, or delete teams. Admins only. |
+| SLA policies | `/showcase/help-desk/agent/admin/sla` | First-reply and resolution hours per priority, with live breached, at-risk, and overdue counts. Admins only. |
+| Categories | `/showcase/help-desk/agent/admin/categories` | Add and edit categories (icon, routed team); delete one by moving its tickets and articles to another. Admins only. |
+| Not found | `/showcase/help-desk/agent/{*path}` | The not-found panel with "Back to the queue", also shown for an unknown ticket or article. |
+
+## Components used
+
+- [Sidebar](/components/sidebar): the agent desk navigation, with Reports and (for admins) Admin groups.
+- [Navbar](/components/navbar): the help center header.
+- [Rich text editor](/forms/rich-text-editor): ticket replies and internal notes, saved replies, and article bodies.
+- [Modal](/components/modal): mark as solved, the saved reply editor, delete confirmations, the agent, team, and category editors, deactivate agent, and move-and-delete category.
+- [Tabs](/components/tabs): Conversation, Details, and Related articles on the ticket page.
+- [Bar chart](/data-visualization/bar-chart) (BlazorExpress.ChartJS): stacked bars of tickets resolved per day (within SLA and late) and of good and bad ratings per day.
+- [Badge](/components/badge): priority, status, SLA state, "Customer replied", "New reply", internal note, and draft or published.
+- [Breadcrumb](/components/breadcrumb): article, request, ticket, new ticket, and article editor pages.
+- [Toasts](/components/toasts): assigned, reply sent, note added, resolved, reopened, ticket created, article deleted, and article feedback.
+- [Card](/components/card): KPI cards on the queue and reports, article cards, and admin panels.
+- [Switch](/forms/switch): "Assigned to me" in the queue and the internal note toggle.
+- [Text input](/forms/text-input), [Text area input](/forms/textarea-input), and [Input group](/components/input-group): search boxes and the new ticket form.
+- [Button group](/components/button-group) (`RadioButtonGroup`): the knowledge base category filter and the new ticket priority.
+- [Spinner](/components/spinners): "Submit a request" while the tab's session loads.
+- [Buttons](/components/buttons) and [Icons](/content/icons): actions and icons across the site.
+- [Avatar](/components/avatar), [Dropdown](/components/dropdown), and [Theme switcher](/components/theme-switcher): through the shared account menu and site bar.
+
+The customer request form uses Blazor's `InputSelect`, `InputText`, `InputRadioGroup`, and `InputTextArea`; the queue's filters and the ticket fields are native `select` elements.
+
+## How the theme is built
+
+`HelpDeskFrame.razor` is the frame both layouts share: `HelpDeskLayout` (help center with a Navbar) and `HelpDeskAgentLayout` (top bar with "View help center" and the account menu, plus a dark Sidebar shown only to signed-in staff). Its root is `.sc-site.sc-helpdesk`, and `HelpDeskFrame.razor.css` styles the pages of both through `::deep`.
+
+Color tokens in light mode: `--sc-primary` `#b91c1c`, `--sc-primary-hover` `#991b1b`, contrast `#fff`, page background `#f7f7f8`. In dark mode (`[data-bs-theme=dark]`): `--sc-primary` `#f87171`, hover `#fca5a5`, contrast `#2a0a0a`, page background `#0f0f12`. Because the dark primary is a light red, `.text-bg-primary` switches to the dark contrast color. Internal notes use amber tokens (`--hd-note-bg`, `--hd-note-border`), and the agent sidebar sets the `--bb-sidebar-*` variables to `#1c1b2e` with light text and a rose badge in both modes.
+
+Fonts come from Google Fonts: Figtree (400 to 800) for body and headings, and IBM Plex Mono (500) for ticket numbers.
+
+The shared stylesheet `wwwroot/css/blazorbootstrap.demo.rcl.css` maps the `--sc-*` tokens to Bootstrap (`--bs-primary`, link and focus colors, body and heading fonts, primary buttons). Charts draw on a canvas, so `HelpDeskChartTheme.cs` holds their colors: teal `#0d9488` for within SLA and good ratings, orange `#ea580c` for late and bad, gray `#7c7c84` axis and legend text, and a zinc `#3f3f46` tooltip. Unlike most showcase sites, these colors are picked to read on both the light and the dark card, so the charts don't redraw when you switch the theme.
+
+## Accessibility and responsiveness
+
+- Search result counts, queue counts, bulk changes, and ticket actions are announced in status regions, and errors in alert regions. Focus returns to the button that opened a dialog.
+- Queue rows have labelled checkboxes, and "select all" is a checkbox button with a mixed state; sortable headers carry `aria-sort`.
+- Each chart sits in a wrapper with a text label (`role="img"`) and has a visually hidden data table with a caption.
+- SLA states are written out ("Overdue by …", "Due in …", "Paused"), not shown by color alone.
+- At 375 px the agent sidebar sits above the page (it moves beside the page from 641 px), the help center Navbar collapses into a menu, and wide tables scroll sideways.

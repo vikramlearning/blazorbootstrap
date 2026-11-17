@@ -9,7 +9,7 @@
         @* An engineer sees the status page as customers do, with a way back to the console (D-032). *@
         <div class="mw-viewing-bar">
             <div class="container-xl d-flex flex-wrap align-items-center justify-content-between gap-2">
-                <span><Icon Name="IconName.Eye" class="me-2" aria-hidden="true" />Viewing the public status page as @State.Identity.Current!.Name (Engineer)</span>
+                <span><Icon Name="IconName.Eye" class="me-2" aria-hidden="true" />Viewing the public status page as @State.Identity.Current!.Name (@State.Identity.CurrentRole?.Label)</span>
                 <a href="@ConsoleLayout.Base"><Icon Name="IconName.ArrowLeft" class="me-1" aria-hidden="true" />Back to the console</a>
             </div>
         </div>

@@ -27,7 +27,7 @@
     --hr-column: #160f20;
 }
 
-/* Bootstrap keeps white text on primary fills; on the light dark-mode violet that fails contrast. */
+/* Bootstrap keeps white text on primary fills; on the light dark-mode purple that fails contrast. */
 [data-bs-theme=dark] .sc-hr ::deep .text-bg-primary,
 [data-bs-theme=dark] .sc-hr ::deep .progress-bar {
     color: var(--sc-primary-contrast) !important;

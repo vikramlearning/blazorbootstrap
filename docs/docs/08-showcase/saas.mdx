@@ -1,0 +1,124 @@
+---
+title: SaaS Product showcase
+description: A SaaS product with a public marketing site, trial sign-up, a customer workspace with team and billing, and an operator console, built with Blazor Bootstrap.
+sidebar_label: SaaS Product
+sidebar_position: 3
+---
+
+import CarbonAd from '/carbon-ad.mdx'
+
+# SaaS Product
+
+Lumora is a fictitious product analytics service. The site has three parts: a public marketing site with pricing and a trial sign-up, the workspace a customer signs in to (usage, team, billing, settings), and the console Lumora's operators use to run the business (tenants, leads, invoices, plans, revenue). The parts share one set of data, so a change in one shows up in the others.
+
+<CarbonAd />
+
+[Open the live demo](https://demos.blazorbootstrap.com/showcase/saas) · [View source](https://github.com/vikramlearning/blazorbootstrap/tree/main/BlazorBootstrap.Demo.RCL/Components/Pages/Showcase/Saas)
+
+## Roles and demo accounts
+
+| Role | Demo account | Password | Start page |
+|:--|:--|:--|:--|
+| Customer | Amara Okafor (`amara@northwind.example`) | `lumora-demo-26` | `/showcase/saas/app` |
+| Operator | Sam Ortega (`sam@lumora.example`) | `ops-demo-26` | `/showcase/saas/admin` |
+
+Amara owns the Northwind Outfitters workspace (Growth plan, billed annually, 12 seats). Its team has an admin, a billing member, members, and one open invitation; only Amara can sign in.
+
+There is no separate register form: at Lumora an account comes with a workspace, so "Create an account" opens the trial sign-up. A new account becomes the owner of a new workspace: Growth starts a 14-day trial without a card, and Starter is free. Enterprise is sold through "Contact sales".
+
+All data is fictitious and there is no backend. Each browser tab keeps its own data in `sessionStorage` (it survives a reload; other tabs start fresh), and "Reset demo data" in the account menu restores the seed. The sign-in page lists the demo accounts with one-click buttons; credentials are checked only against the tab's accounts. The clock starts at November 9, 2026, 9:00 and moves on with real time. Card forms accept only the published test cards (for example `4242 4242 4242 4242`; `4000 0000 0000 0002` is declined).
+
+## What to try
+
+1. Start a trial from **Pricing** or **Start free trial**: pick Growth, fill in your name, company, work email, and a password, and you land in your new workspace with a trial banner. On **Billing**, choose a plan, add a test card, and convert the trial.
+2. Sign in as Amara. On **Team**, invite a teammate and change a member's role. On **Billing**, change the seats or switch to monthly and read the prorated quote before you confirm.
+3. As a visitor, send a message from **Contact sales**. Sign in as Sam: the message is in **Leads**. Open it, set its status, and use the link to create a tenant prefilled from the lead.
+4. As Sam, open **Plans & prices** and change the Growth price. The public **Pricing** page, the sign-up, and Billing show the new price at once.
+5. As Sam, open the Northwind Outfitters tenant and suspend it, or refund one of its invoices. Sign in as Amara: the workspace shows the suspension (changes are turned off) and a new notification.
+
+## Pages
+
+### Public site (layout: public, Navbar)
+
+| Page | Route | What it does |
+|:--|:--|:--|
+| Home | `/showcase/saas` | Hero, feature highlights, customer stories and quotes, and calls to action. Signed in, the header offers "Open workspace" or "Open console". |
+| Features | `/showcase/saas/features` | The product's capabilities, with category filters (Analyze, Act, Connect) and details that open per feature. |
+| Pricing | `/showcase/saas/pricing` | Starter, Growth, and Enterprise with a monthly or annual switch, and a plan comparison that expands. |
+| Customers | `/showcase/saas/customers` | A carousel of customer quotes and customer stories with an industry filter. |
+| FAQ | `/showcase/saas/faq` | Questions in accordions by topic, with a search box that filters as you type. |
+| Contact sales | `/showcase/saas/contact` | The Enterprise enquiry form; a sent message waits in the operator's sales inbox. |
+| Start your trial | `/showcase/saas/signup` | Creates the account and its workspace and signs you in. `?plan=` preselects a plan. |
+| Sign in | `/showcase/saas/sign-in` | Demo accounts and the sign-in form; `?mode=register` goes to the trial sign-up. |
+| Not found | `/showcase/saas/{*path}` | The site's not-found screen. |
+
+### Customer workspace (layout: sidebar back office)
+
+| Page | Route | What it does |
+|:--|:--|:--|
+| Dashboard | `/showcase/saas/app` | Usage against the plan's limits, plan and renewal, a product-traffic chart with a period switch, top pages, traffic sources, activity, and notifications. |
+| Team | `/showcase/saas/app/team` | Members and invitations with roles and seats in use; owners and admins invite, change roles, resend, and remove. |
+| Billing | `/showcase/saas/app/billing` | Current plan, a plan picker with a live prorated quote, the card on file (test-card form), invoices, and "Pay now" for open invoices. Owners and billing members make changes. |
+| Invoice | `/showcase/saas/app/billing/invoices/{Number}` | A printable invoice of the workspace, with how it was paid and any refund. |
+| Settings | `/showcase/saas/app/settings` | Workspace name, time zone, first day of the week, data region, and email switches (owners and admins). |
+| Notifications | `/showcase/saas/app/notifications` | Notices from billing and the operator, newest first, with "Mark all as read". |
+| Your account | `/showcase/saas/app/account` | Your role in the workspace, and your name, email, and password. |
+| Not found | `/showcase/saas/app/{*path}` | The workspace's not-found screen. |
+
+### Operator console (layout: sidebar back office)
+
+| Page | Route | What it does |
+|:--|:--|:--|
+| Overview | `/showcase/saas/admin` | KPI tiles, 12-month MRR against target, plan mix, trials ending soon, newest leads, and recent activity. |
+| Tenants | `/showcase/saas/admin/tenants` | Every workspace with owner, plan, seats, status, and MRR; search, filters, sorting, and paging. `?status=Trial` opens it filtered. |
+| New tenant | `/showcase/saas/admin/tenants/new` | Creates a workspace and its owner, with a live price summary. `?lead={id}` prefills it from a lead. |
+| Tenant | `/showcase/saas/admin/tenants/{Id:int}` | Subscription summary, members, invoices, and activity; edit plan, seats, and status in a dialog; delete an archived tenant. |
+| Leads | `/showcase/saas/admin/leads` | The sales inbox from "Contact sales": status, note, and a link to create a tenant. `?lead={id}` opens a lead. |
+| Invoices | `/showcase/saas/admin/invoices` | Every invoice with status filters, search, and totals. `?status=open` opens it filtered. |
+| Invoice | `/showcase/saas/admin/invoices/{Number}` | Invoice detail and history; refund a paid invoice (full or part) or retry payment on an open one. |
+| Plans & prices | `/showcase/saas/admin/plans` | A card per plan with the workspaces on it; an editor dialog with a preview of the public price and the MRR change. |
+| Revenue | `/showcase/saas/admin/revenue` | MRR, ARR, ARPA, collected and refunded money, MRR by plan, tenants by status, top tenants, and the trial funnel. |
+| Site analytics | `/showcase/saas/admin/analytics` | Traffic to Lumora's own site: sessions, sources, sign-ups, and top pages for a chosen range. |
+| Audit log | `/showcase/saas/admin/audit` | What operators and automatic billing did, with filters, search, and links to the targets. |
+| Account | `/showcase/saas/admin/account` | The operator's name, email, and password. |
+| Not found | `/showcase/saas/admin/{*path}` | The console's not-found screen. |
+
+## Components used
+
+- [Navbar](/components/navbar): the public site's header.
+- [Sidebar](/components/sidebar): the workspace and console navigation.
+- [Card](/components/card): page sections, plan cards, and KPI tiles throughout.
+- [Modal](/components/modal): invite, change role, and remove on Team; the tenant editor, refund, plan editor, lead, and delete-tenant dialogs.
+- [Line chart](/data-visualization/line-chart), [Bar chart](/data-visualization/bar-chart), and [Doughnut chart](/data-visualization/doughnut-chart) (BlazorExpress.ChartJS): product traffic, MRR, plan mix, revenue, tenants by status, sessions, sources, and sign-ups.
+- [Progress](/components/progress): usage meters on the Dashboard, seats on Team and Tenant, and site analytics.
+- [Timeline](/components/timeline): recent activity on the Dashboard, Overview, and Tenant pages.
+- [Switch](/forms/switch): the monthly or annual price toggle on Pricing and sign-up, and the email switches in Settings.
+- [Button group](/components/button-group) (`RadioButtonGroup`): billing periods, chart periods, and the first day of the week.
+- [Carousel](/components/carousel): customer quotes on Customers.
+- [Accordion](/components/accordion): the FAQ.
+- [Collapse](/components/collapse): the plan comparison on Pricing.
+- [Callout](/components/callout): notes on Home and Pricing.
+- [Alert](/components/alerts): the suspended or archived workspace banner.
+- [Text input](/forms/text-input), [Number input](/forms/number-input), and [Input group](/components/input-group): search boxes and seats (refund amounts use a native number field).
+- [Avatar](/components/avatar), [Badge](/components/badge), and [Breadcrumb](/components/breadcrumb): members and owners, statuses, and the console's detail pages.
+- [Buttons](/components/buttons) and [Icons](/content/icons): actions and icons across the site.
+- [Dropdown](/components/dropdown) and [Theme switcher](/components/theme-switcher): through the shared account menu and site bar.
+
+Forms also use Blazor's `EditForm` with `InputText`, `InputSelect`, `InputRadioGroup`, and `InputTextArea`.
+
+## How the theme is built
+
+This is one of the older sites, so there is no shared frame component. The public site's layout, `SaasLayout.razor`, has the root `.sc-site.sc-lumora`. The workspace (`SaasAppLayout`) and the console (`SaasAdminLayout`) both render `SaasShell.razor`, the app shell with the Sidebar and a top bar; its root is `.sc-site.sc-saas`, and `SaasShell.razor.css` styles the pages of both through `::deep`. Each part keeps its own layout, so the public site never shows the app's sidebar (D-031).
+
+Both stylesheets set the same brand tokens. Light mode: `--sc-primary` `#c026d3` (magenta), `--sc-primary-hover` `#a21caf`, contrast `#fff`. Dark mode (`[data-bs-theme=dark]`): `--sc-primary` `#e879f9`, hover `#f0abfc`, contrast `#2e1065`. The app shell adds a dark purple sidebar (`#1e1033`, `#120a1f` in dark mode) and page background `#f4f6fb` (`#0b1220` in dark mode).
+
+Fonts come from Google Fonts: Sora (600 to 800) for headings and Inter for body text; the app shell also loads JetBrains Mono for figures and invoice numbers.
+
+The shared stylesheet `wwwroot/css/blazorbootstrap.demo.rcl.css` maps the `--sc-*` tokens to Bootstrap (`--bs-primary`, link and focus colors, body and heading fonts, primary buttons). Charts draw on a canvas, so `SaasChartTheme.cs` holds their colors: series `#c026d3`, `#2563eb`, `#059669`, `#b45309`, `#7c3aed` in light mode and `#e879f9`, `#60a5fa`, `#34d399`, `#fbbf24`, `#a78bfa` in dark mode, a muted gray for targets, and axis, grid, legend, and tooltip colors. When you switch the theme, the app shell's site bar tells `SaasState`, and the charts redraw.
+
+## Accessibility and responsiveness
+
+- Each chart has a summary sentence and a visually hidden data table.
+- Every action on Team, Billing, Settings, and the console ends in a status message or an error; a repeated message is announced again. Focus returns to the button that opened a dialog, or to the status message when that button is gone.
+- Statuses (trial, past due, suspended, paid, refunded) are written as words in badges, not shown by color alone.
+- At 375 px the tenant table folds its columns into the tenant cell and a "Sort by" list replaces the column headers; the public Navbar collapses into a menu.

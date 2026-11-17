@@ -1,0 +1,89 @@
+---
+title: Showcase
+description: Eleven complete sample websites built with Blazor Bootstrap components, each with demo accounts for its roles, fictitious data, and a light and dark theme.
+sidebar_label: Overview
+sidebar_position: 1
+---
+
+import CarbonAd from '/carbon-ad.mdx'
+
+# Showcase
+
+The Showcase is a set of eleven complete sample websites built with Blazor Bootstrap: an AI chat workspace, a SaaS product, a storefront, a project and client board, a bank, a clinic, an online school, a travel booking site, a help desk, a monitoring console, and an HR portal. Each one has its own brand and theme, several roles with demo accounts, and end-to-end flows you can follow from one role to another. They run in both Blazor Server and Blazor WebAssembly.
+
+<CarbonAd />
+
+[Open the gallery](https://demos.blazorbootstrap.com/showcase) · [View source](https://github.com/vikramlearning/blazorbootstrap/tree/main/BlazorBootstrap.Demo.RCL/Components/Pages/Showcase)
+
+## The sites
+
+| Site | What it shows | Roles | Live demo |
+|:--|:--|:--|:--|
+| [AI Assistant Workspace](./ai-assistant.mdx) | Members chat with streaming answers, attachments, and a prompt library; workspace admins manage members, shared prompts, usage, and model policy. | Member, Workspace admin | [Open](https://demos.blazorbootstrap.com/showcase/ai-assistant) |
+| [SaaS Product](./saas.mdx) | Public site, trial sign-up, a customer workspace with team and billing, and an operator console. | Customer, Operator | [Open](https://demos.blazorbootstrap.com/showcase/saas) |
+| [E-commerce Storefront](./ecommerce.mdx) | Customers shop with catalog filters, product pages, a cart drawer, and checkout; the retailer runs orders, products, pricing, offers, returns, reviews, customers, and analytics in a back office. | Customer, Retailer | [Open](https://demos.blazorbootstrap.com/showcase/ecommerce) |
+| [Project & Client Board](./project-board.mdx) | Team members work tasks on boards; project managers run projects, workload, the roadmap, and reports; account managers handle clients, the deal pipeline, and the forecast. | Team member, Project manager, Account manager | [Open](https://demos.blazorbootstrap.com/showcase/project-board) |
+| [Personal Finance](./fintech.mdx) | Customers bank with a one-time-code sign-in, transfers, payees, and disputes; operations review held transfers and disputes. | Customer, Bank operations | [Open](https://demos.blazorbootstrap.com/showcase/fintech) |
+| [Healthcare Clinic Portal](./healthcare.mdx) | Patients book visits, read records and lab reports, and pay bills; doctors run visits, charts, and lab results; the front desk checks patients in and keeps doctors' hours. | Patient, Doctor, Front desk | [Open](https://demos.blazorbootstrap.com/showcase/healthcare) |
+| [Online Learning](./learning.mdx) | Learners enroll, take scored quizzes, ask questions, and earn verifiable certificates; instructors build and publish courses and quizzes, answer questions, and reply to reviews. | Learner, Instructor | [Open](https://demos.blazorbootstrap.com/showcase/learning) |
+| [Travel & Stay Booking](./travel.mdx) | Guests search, book, and manage trips; hosts answer requests and run calendars, listings, inbox, reviews, and earnings. | Guest, Host | [Open](https://demos.blazorbootstrap.com/showcase/travel) |
+| [Help Desk & Ticketing](./help-desk.mdx) | Help center for customers, an agent desk with SLAs and saved replies, knowledge base authoring, reports, and admin. | Customer, Support agent, Admin | [Open](https://demos.blazorbootstrap.com/showcase/help-desk) |
+| [IoT & DevOps Monitoring](./monitoring.mdx) | A public status page with history and subscriptions; engineers work incidents, publish updates, follow live logs and traces, and share on-call. | Engineer, Admin (the status page is public) | [Open](https://demos.blazorbootstrap.com/showcase/monitoring) |
+| [HR & Employee Portal](./hr-portal.mdx) | Employees find colleagues, request leave, and work through onboarding; managers approve leave and follow new hires; HR admins manage people, leave policies, onboarding templates, and headcount analytics. | Employee, Manager, HR admin | [Open](https://demos.blazorbootstrap.com/showcase/hr-portal) |
+
+Each site's page lists its demo accounts, flows to try, every page and route, the components it uses, and how its theme is built.
+
+## What every site has in common
+
+### Fictitious data, kept in your browser tab
+
+All names, companies, and records are made up, and there is no backend. Each site starts from fixed seed data, and every change you make is kept in the tab's `sessionStorage` (under `bb-showcase:<slug>`). Your changes survive a reload, but each browser tab has its own copy, and closing the tab discards it. No demo data is written to `localStorage` (only your theme choice is kept there), and nothing is sent anywhere. To start over, choose **Reset demo data** in the account menu. If the stored data can't be read back, the site starts again from its seed.
+
+### Demo sign-in
+
+Every site has a sign-in page with one-click demo accounts for each role, showing each account's name, email, and password. Credentials are checked only against the tab's demo accounts; don't use a real password. Most sites also let you create an account, which lives only in that tab and gets the site's default role (for example, a patient or a team member). To see both sides of a flow in one tab, use **Switch account** in the account menu.
+
+### A moving clock
+
+Each site starts at a fixed seed time (for most sites, a morning on Tuesday, November 24, 2026), so a fresh tab always shows the same content, and then moves on with real time. Countdowns change, and records you create get later times. A reload continues from where the tab was.
+
+### Test cards
+
+The sites that take payments (E-commerce, SaaS, Healthcare, and Travel) use a test card form that accepts only these published test numbers, with any future expiry and any CVC (4 digits for American Express). Any other number, including a real card, is refused, and only the brand and last four digits are kept.
+
+| Card number | Brand | Result |
+|:--|:--|:--|
+| `4242 4242 4242 4242` | Visa | Approved |
+| `5555 5555 5555 4444` | Mastercard | Approved |
+| `3782 822463 10005` | American Express | Approved |
+| `4000 0000 0000 0002` | Visa | Declined |
+| `4000 0000 0000 9995` | Visa | Insufficient funds |
+
+### Public side and back office
+
+Each site has a public side (a start page and sign-in, and on some sites a catalog, help center, or status page) with a Navbar. Business roles such as a retailer, a host, a doctor, or an operator work in a separate back office: its own layout with the role's modules in a Sidebar and a slim top bar with the account menu. When staff open the public side, E-commerce, Healthcare, Learning, Monitoring, and Travel show a slim "viewing as" bar with a link back to the back office; on the storefront, staff see the shop as customers do but can't place orders.
+
+A thin site bar above every site links back to the gallery, to the site's docs page, and to its source, and holds the theme switcher (light, dark, or auto to follow your system).
+
+### Accessibility and small screens
+
+Every site works with the keyboard: drag and drop always has a "Move to" control or buttons, outcomes are announced in status regions, and focus returns to where you were after a dialog. Charts come with a text summary and a data table, and maps and PDFs have text alternatives. Every page fits a 375 px wide screen, in light and dark mode.
+
+## Run the Showcase locally
+
+The sites live in the `BlazorBootstrap.Demo.RCL` project (`Components/Pages/Showcase/`), which both demo hosts in the repository use. You need the .NET 10 SDK.
+
+```shell
+git clone https://github.com/vikramlearning/blazorbootstrap.git
+cd blazorbootstrap
+
+# Blazor Server
+dotnet run --project BlazorBootstrap.Demo.Server
+# then open https://localhost:5031/showcase (or http://localhost:5030/showcase)
+
+# Blazor WebAssembly
+dotnet run --project BlazorBootstrap.Demo.WebAssembly
+# then open https://localhost:5011/showcase (or http://localhost:5010/showcase)
+```
+
+The maps on the E-commerce, Healthcare, and Travel sites use the Google Maps JavaScript API. Set `GoogleMap:ApiKey` in `BlazorBootstrap.Demo.Server/appsettings.json` or `BlazorBootstrap.Demo.WebAssembly/wwwroot/appsettings.json`; without a key, the sites show a drawn map preview with the same pins.

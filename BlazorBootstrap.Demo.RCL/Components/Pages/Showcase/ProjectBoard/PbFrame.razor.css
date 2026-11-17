@@ -27,7 +27,7 @@
     --tb-column: #11162a;
 }
 
-/* Bootstrap keeps white text on primary fills; on the light dark-mode violet that fails contrast. */
+/* Bootstrap keeps white text on primary fills; on the light dark-mode indigo that fails contrast. */
 [data-bs-theme=dark] .sc-board ::deep .text-bg-primary,
 [data-bs-theme=dark] .sc-board ::deep .progress-bar {
     color: var(--sc-primary-contrast) !important;

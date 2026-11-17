@@ -1,0 +1,100 @@
+---
+title: AI Assistant Workspace showcase
+description: An AI chat workspace with streaming Markdown replies, attachments, a prompt library, and a workspace admin back office, built with Blazor Bootstrap.
+sidebar_label: AI Assistant
+sidebar_position: 2
+---
+
+import CarbonAd from '/carbon-ad.mdx'
+
+# AI Assistant Workspace
+
+Parley is the AI assistant of Halcyon Studio, a fictitious company. Members chat with simulated models whose answers stream in as Markdown, attach files, and keep a prompt library; workspace admins manage members, shared prompts, usage, and the model policy in a separate back office. No model is called: replies are prewritten templates picked by keywords in your message.
+
+<CarbonAd />
+
+[Open the live demo](https://demos.blazorbootstrap.com/showcase/ai-assistant) · [View source](https://github.com/vikramlearning/blazorbootstrap/tree/main/BlazorBootstrap.Demo.RCL/Components/Pages/Showcase/AiAssistant)
+
+## Roles and demo accounts
+
+| Role | Demo account | Password | Start page |
+|:--|:--|:--|:--|
+| Member | Sam Rivera (`sam.rivera@example.com`) | `chat-demo-26` | `/showcase/ai-assistant/chat` |
+| Workspace admin | Alex Morgan (`alex.morgan@example.com`) | `chat-admin-26` | `/showcase/ai-assistant/admin` |
+
+You can also create an account ("Join the workspace" on the start page). A new account joins as an active member. If you register with the email of an open invitation (the seed has one for `nora.kim@example.com`), the account takes up that invitation and its role.
+
+Access comes from the workspace membership, not the sign-in role: an admin can promote, demote, or deactivate members in the tab, and the pages follow at once.
+
+All data is fictitious and there is no backend. Each browser tab keeps its own data in `sessionStorage` (it survives a reload; other tabs start fresh), and "Reset demo data" in the account menu restores the seed. The sign-in page lists the demo accounts with one-click buttons; credentials are checked only against the tab's accounts. The clock starts at November 24, 2026, 9:30 and moves on with real time.
+
+## What to try
+
+1. Sign in as Sam, open **Chat**, and pick a starter such as "Write a SQL query". Watch the reply stream in, press **Stop** on another one, then rate a reply and press **Regenerate**.
+2. In a conversation, choose **Prompts** to insert a saved prompt, attach a file (only its name and size are kept), and send. Then open **Usage** to see the new tokens against the monthly quota.
+3. Open **Prompts**, create a prompt with tags, and use **Use in chat** to put it in the message box.
+4. Sign in as Alex. In **Models and policy**, turn off Parley Swift, lower the monthly quota, or add a blocked term. Sign in as Sam again: the chat shows the model notice, refuses messages over the quota, and answers a message with a blocked term with a policy refusal.
+5. As Alex, open **Members and roles**: invite someone, promote Sam to admin (Sam's header then shows **Workspace admin**), or deactivate Sam (Sam's chat then says access was removed).
+
+## Pages
+
+### Members' app (layout: public, Navbar)
+
+| Page | Route | What it does |
+|:--|:--|:--|
+| Start page | `/showcase/ai-assistant` | What Parley does; for a signed-in member, recent conversations and a "New chat" button. |
+| Sign in | `/showcase/ai-assistant/sign-in` | Demo accounts, sign-in form, and the register form (`?mode=register`). |
+| Chat | `/showcase/ai-assistant/chat` | New chat with four starters; the composer has model choice, attachments, saved prompts, and Enter-to-send. |
+| Conversation | `/showcase/ai-assistant/chat/{Id:int}` | Streaming replies with Stop, rating, and Regenerate; conversation list with search, pin, rename, and delete. `?prompt={id}` fills the message box. |
+| Prompt library | `/showcase/ai-assistant/prompts` | Your prompts (edit, delete) and the shared workspace prompts (read-only), with a filter and tag buttons. |
+| New prompt | `/showcase/ai-assistant/prompts/new` | Title, text, and comma-separated tags, with checks under each field. |
+| Edit prompt | `/showcase/ai-assistant/prompts/{Id:int}/edit` | Edits one of your prompts; a shared prompt opens read-only. |
+| Usage | `/showcase/ai-assistant/usage` | This month's tokens against the quota, tokens per day (30 days), and tokens by model. |
+| Profile | `/showcase/ai-assistant/profile` | Name, email, and password; default model and Enter-to-send; workspace membership. |
+| Not found | `/showcase/ai-assistant/{*path}` | The site's not-found panel, also shown for an unknown conversation or prompt. |
+
+### Workspace admin (layout: sidebar back office)
+
+| Page | Route | What it does |
+|:--|:--|:--|
+| Usage analytics | `/showcase/ai-assistant/admin` | KPI cards, workspace tokens per day stacked by model, tokens by model, and top members with their share of the quota. |
+| Members and roles | `/showcase/ai-assistant/admin/members` | Invite form and a member table with a status filter; change role, deactivate, reactivate, or remove an invitation. |
+| Shared prompts | `/showcase/ai-assistant/admin/prompts` | Every shared prompt, the most used first, with Edit and Delete. |
+| New shared prompt | `/showcase/ai-assistant/admin/prompts/new` | Adds a prompt every member can use. |
+| Edit shared prompt | `/showcase/ai-assistant/admin/prompts/{Id:int}/edit` | Edits a shared prompt. |
+| Models and policy | `/showcase/ai-assistant/admin/settings` | Enabled models and the default, monthly token quota, attachments and size limit, retention, and blocked terms. |
+
+## Components used
+
+- [Markdown](/components/markdown): every assistant reply, re-rendered as it streams.
+- [Offcanvas](/components/offcanvas): the conversation list on narrow screens.
+- [Modal](/components/modal): rename and delete a conversation, insert a saved prompt, delete a prompt, member changes, and the retention warning.
+- [Placeholders](/components/placeholders): the glowing lines while a reply has no text yet.
+- [Sidebar](/components/sidebar): the admin back office navigation.
+- [Navbar](/components/navbar): the members' app header.
+- [Bar chart](/data-visualization/bar-chart) and [Doughnut chart](/data-visualization/doughnut-chart) (BlazorExpress.ChartJS): bar charts for tokens per day and by model on Usage, and for workspace tokens per day on Usage analytics; a doughnut for tokens by model on Usage analytics.
+- [Progress](/components/progress): the quota bar on Usage and each top member's share on Usage analytics.
+- [Breadcrumb](/components/breadcrumb): the prompt editors.
+- [Badge](/components/badge): member status in the members table.
+- [Buttons](/components/buttons) and [Icons](/content/icons): actions and icons across the site.
+- [Avatar](/components/avatar), [Dropdown](/components/dropdown), and [Theme switcher](/components/theme-switcher): through the shared account menu and site bar.
+
+Form fields are native inputs (`textarea`, `select`, checkboxes, number inputs) and Blazor's `InputFile` for attachments.
+
+## How the theme is built
+
+`AiFrame.razor` is the frame both layouts share: `AiLayout` (members' app with a Navbar) and `AiAdminLayout` (top bar with "Back to chat" and a dark violet Sidebar). Its root is `.sc-site.sc-ai`, and `AiFrame.razor.css` styles the pages of both through `::deep`.
+
+Color tokens in light mode: `--sc-primary` `#6d28d9`, `--sc-primary-hover` `#5b21b6`, contrast `#fff`, page background `#f7f5fc`. In dark mode (`[data-bs-theme=dark]`): `--sc-primary` `#c4b5fd`, hover `#ddd6fe`, contrast `#1e1338`, page background `#0f0c18`. Because the dark primary is a light violet, `.text-bg-primary` and `.progress-bar` text switch to the dark contrast color. The admin sidebar sets the `--bb-sidebar-*` variables to `#1e1338` with light text in both modes.
+
+Fonts come from Google Fonts: Plus Jakarta Sans (400 to 700) for body and headings, and JetBrains Mono for code blocks and figures.
+
+The shared stylesheet `wwwroot/css/blazorbootstrap.demo.rcl.css` maps the `--sc-*` tokens to Bootstrap (`--bs-primary`, link and focus colors, body and heading fonts, primary buttons). Charts draw on a canvas, so `AiChartTheme.cs` holds their colors: series `#6d28d9`, `#2563eb`, `#059669`, `#b45309`, `#be185d` in light mode and `#c4b5fd`, `#60a5fa`, `#34d399`, `#fbbf24`, `#f472b6` in dark mode, plus axis, grid, legend, and tooltip colors. When you switch the theme, the site bar tells `AiState`, and the charts redraw.
+
+## Accessibility and responsiveness
+
+- Streamed text is not read aloud token by token: a status region says once when a reply starts and once when it ends, and the reply is `aria-busy` while it streams. When Stop disappears, focus moves to the rating buttons.
+- Every outcome (sent, refused and why, saved, deleted) is announced in a status region, and focus returns to the button that opened a dialog, or to the status message when that button is gone.
+- Each chart has a text summary and a data table with a caption.
+- Enter sends and Shift+Enter adds a line (Ctrl+Enter or ⌘+Enter when Enter-to-send is off in the profile); the pin toggle uses `aria-pressed`.
+- At 375 px the conversation list moves into an Offcanvas drawer, the admin sidebar sits above the page, and wide tables scroll sideways.
