@@ -107,6 +107,7 @@
     </HeaderTemplate>
     <BodyTemplate>
         <EditForm id="tm-budget-form" EditContext="editContext" OnValidSubmit="SaveAsync" FormName="tm-budget">
+            <ShowcaseFormErrors />
             <DataAnnotationsValidator />
             @if (adding)
             {

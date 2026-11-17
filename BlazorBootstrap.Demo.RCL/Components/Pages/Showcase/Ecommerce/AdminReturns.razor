@@ -146,6 +146,7 @@
         {
             <p>@ApproveConsequence(deciding)</p>
             <EditForm id="ea-approve-form" EditContext="approveContext" OnValidSubmit="ConfirmApproveAsync" FormName="ea-approve">
+                <ShowcaseFormErrors />
                 <DataAnnotationsValidator />
                 <label class="form-label" for="ea-approve-note">Note (optional)</label>
                 <TextAreaInput Id="ea-approve-note" @bind-Value="approveForm.Note" Rows="3" MaxLength="200" aria-describedby="ea-approve-note-help" />
@@ -169,6 +170,7 @@
         {
             <p>Nothing is refunded and the items stay with the customer. The return can't be reopened afterwards.</p>
             <EditForm id="ea-reject-form" EditContext="rejectContext" OnValidSubmit="ConfirmRejectAsync" FormName="ea-reject">
+                <ShowcaseFormErrors />
                 <DataAnnotationsValidator />
                 <label class="form-label" for="ea-reject-note">Reason for the customer</label>
                 <TextAreaInput Id="ea-reject-note" @bind-Value="rejectForm.Note" Rows="3" MaxLength="200" aria-describedby="ea-reject-note-help" />

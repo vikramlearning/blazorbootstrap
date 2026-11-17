@@ -28,12 +28,13 @@ else
                 }
             </p>
 
-            <div class="row g-4 g-lg-5">
+            <div class="row g-4 g-xl-5">
                 <div class="col-lg-7">
                     <div class="ds-panel" data-clarity-mask="true">
                         <ShowcaseDemoNotice Class="mb-4" Text="Demo only: use one of the listed test cards; real cards are never accepted and nothing is really charged. The booking stays in this browser tab." />
 
                         <EditForm EditContext="editContext" OnSubmit="Submit" FormName="ds-book" novalidate>
+                            <ShowcaseFormErrors FocusFirstInvalid="false" />
                             <h2 class="h5 fw-bold">Your trip</h2>
                             <div class="row g-3">
                                 <div class="col-sm-4">

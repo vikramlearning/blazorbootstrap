@@ -157,10 +157,11 @@
 
             <ShowcaseDemoNotice Class="mb-3" Text="Demo only: no email is sent. The invitation appears in your team list and holds a seat until it's cancelled." />
             <EditForm id="lu-invite-form" EditContext="inviteContext" OnValidSubmit="InviteAsync" FormName="lu-invite">
+                <ShowcaseFormErrors />
                 <DataAnnotationsValidator />
                 <div class="mb-3">
                     <label class="form-label" for="lu-invite-email">Email</label>
-                    <InputText @ref="emailInput" id="lu-invite-email" type="email" class="form-control" @bind-Value="inviteForm.Email" maxlength="120" autocomplete="email" />
+                    <InputText @ref="emailInput" id="lu-invite-email" inputmode="email" autocapitalize="none" spellcheck="false" class="form-control" @bind-Value="inviteForm.Email" maxlength="120" autocomplete="off" />
                     <ValidationMessage For="() => inviteForm.Email" />
                 </div>
                 <div class="mb-3">
@@ -217,6 +218,7 @@
         @if (roleTarget is not null)
         {
             <EditForm id="lu-role-form" EditContext="roleContext" OnValidSubmit="SaveRoleAsync" FormName="lu-role">
+                <ShowcaseFormErrors />
                 <fieldset>
                     <legend class="form-label fs-6">Role</legend>
                     <InputRadioGroup @bind-Value="roleForm.Role">

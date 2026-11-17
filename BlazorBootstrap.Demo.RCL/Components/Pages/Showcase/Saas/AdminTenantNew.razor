@@ -28,6 +28,7 @@
 }
 
 <EditForm EditContext="editContext" OnValidSubmit="Submit" FormName="sd-tenant-new">
+    <ShowcaseFormErrors />
     <DataAnnotationsValidator />
     <div class="row g-3">
         <div class="col-lg-8">
@@ -49,7 +50,7 @@
                         </div>
                         <div class="col-md-6">
                             <label class="form-label" for="sd-new-email">Owner email</label>
-                            <InputText id="sd-new-email" type="email" class="form-control" @bind-Value="form.OwnerEmail" maxlength="@ShowcaseIdentity.MaxEmailLength" autocomplete="off" aria-describedby="sd-new-email-help" />
+                            <InputText id="sd-new-email" inputmode="email" autocapitalize="none" spellcheck="false" class="form-control" @bind-Value="form.OwnerEmail" maxlength="@ShowcaseIdentity.MaxEmailLength" autocomplete="off" aria-describedby="sd-new-email-help" />
                             <div class="form-text" id="sd-new-email-help">The owner is added as an invitation. In this demo they have no sign-in, and nothing is sent.</div>
                             <ValidationMessage For="() => form.OwnerEmail" />
                         </div>

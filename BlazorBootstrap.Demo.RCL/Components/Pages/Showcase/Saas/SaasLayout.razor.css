@@ -103,8 +103,9 @@
         text-decoration: none;
     }
 
+        /* The darker shade: the primary color is only 4.4:1 on the footer tint (WCAG 1.4.3). */
         .mk-footer a:hover {
-            color: var(--sc-primary);
+            color: var(--sc-primary-hover);
         }
 
     .mk-footer li + li {
@@ -373,6 +374,11 @@
 .sc-lumora ::deep .mk-quote-band {
     background: var(--mk-soft);
 }
+
+    /* The primary color is 4.4:1 on this tint; the darker hover shade keeps text links above 4.5:1 (WCAG 1.4.3). */
+    .sc-lumora ::deep .mk-quote-band a:not(.btn-primary) {
+        color: var(--sc-primary-hover);
+    }
 
 .sc-lumora ::deep .mk-big-quote {
     font-family: var(--sc-font-heading);

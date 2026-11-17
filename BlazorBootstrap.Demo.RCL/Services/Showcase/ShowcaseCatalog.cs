@@ -77,10 +77,10 @@ public static class ShowcaseCatalog
     #region Properties, Indexers
 
     /// <summary>
-    /// Gets whether the Showcase is advertised from the home page and the site navigation.
-    /// Kept <see langword="false" /> until every sample site is complete; <c>/showcase</c> stays reachable by direct URL.
+    /// Gets whether the Showcase is advertised from the home page and the site navigation. Set to
+    /// <see langword="false" /> to hide the entry points again; <c>/showcase</c> stays reachable by direct URL either way.
     /// </summary>
-    public static bool IsPublished { get; } = false;
+    public static bool IsPublished { get; } = true;
 
     /// <summary>
     /// Gets every Showcase site in gallery order.

@@ -16,15 +16,16 @@
                 <p class="text-body-secondary">A demo @RegisterRoleLabel account. It lives only in this browser tab.</p>
                 <ShowcaseDemoNotice Class="mb-3" Text="Demo only: don't use a real password. Nothing is sent anywhere." />
                 <EditForm Model="registerForm" OnValidSubmit="Register" FormName="@($"sc-register-{SiteSlug}")">
+                    <ShowcaseFormErrors />
                     <DataAnnotationsValidator />
                     <div class="mb-3">
                         <label class="form-label fw-semibold" for="sc-register-name">Full name</label>
-                        <TextInput Id="sc-register-name" @bind-Value="registerForm.Name" MaxLength="80" />
+                        <InputText id="sc-register-name" class="form-control" @bind-Value="registerForm.Name" maxlength="80" autocomplete="name" />
                         <ValidationMessage For="() => registerForm.Name" />
                     </div>
                     <div class="mb-3">
                         <label class="form-label fw-semibold" for="sc-register-email">Email</label>
-                        <TextInput Id="sc-register-email" @bind-Value="registerForm.Email" MaxLength="120" />
+                        <InputText id="sc-register-email" inputmode="email" autocapitalize="none" spellcheck="false" class="form-control" @bind-Value="registerForm.Email" maxlength="120" autocomplete="email" />
                         <div class="form-text">Use a made-up address, for example you@example.com.</div>
                         <ValidationMessage For="() => registerForm.Email" />
                     </div>
@@ -47,10 +48,11 @@
                 <p class="text-body-secondary">Use a demo account from the list, or type its email and password.</p>
                 <ShowcaseDemoNotice Class="mb-3" Text="Demo only: these are made-up accounts. Don't use a real password. Nothing is sent anywhere." />
                 <EditForm Model="signInForm" OnValidSubmit="SignIn" FormName="@($"sc-sign-in-{SiteSlug}")">
+                    <ShowcaseFormErrors />
                     <DataAnnotationsValidator />
                     <div class="mb-3">
                         <label class="form-label fw-semibold" for="sc-signin-email">Email</label>
-                        <TextInput Id="sc-signin-email" @bind-Value="signInForm.Email" MaxLength="120" />
+                        <InputText id="sc-signin-email" inputmode="email" autocapitalize="none" spellcheck="false" class="form-control" @bind-Value="signInForm.Email" maxlength="120" autocomplete="email" />
                         <ValidationMessage For="() => signInForm.Email" />
                     </div>
                     <div class="mb-3">

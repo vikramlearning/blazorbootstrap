@@ -26,6 +26,7 @@
                     <ShowcaseDemoNotice Class="mb-4" Text="Demo only: nothing you enter here is sent or charged. Use one of the listed test cards; real cards are never accepted." />
 
                     <EditForm EditContext="editContext" OnValidSubmit="PlaceOrder" FormName="ec-checkout">
+                        <ShowcaseFormErrors />
                         <DataAnnotationsValidator />
 
                         <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
@@ -73,32 +74,32 @@
                         <div class="row g-3">
                             <div class="col-md-6">
                                 <label class="form-label" for="ec-name">Full name</label>
-                                <TextInput Id="ec-name" @bind-Value="form.FullName" />
+                                <InputText id="ec-name" class="form-control" @bind-Value="form.FullName" autocomplete="name" />
                                 <ValidationMessage For="() => form.FullName" />
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label" for="ec-email">Email</label>
-                                <TextInput Id="ec-email" @bind-Value="form.Email" />
+                                <InputText id="ec-email" inputmode="email" autocapitalize="none" spellcheck="false" class="form-control" @bind-Value="form.Email" autocomplete="email" />
                                 <ValidationMessage For="() => form.Email" />
                             </div>
                             <div class="col-12">
                                 <label class="form-label" for="ec-street">Street address</label>
-                                <TextInput Id="ec-street" @bind-Value="form.Street" />
+                                <InputText id="ec-street" class="form-control" @bind-Value="form.Street" autocomplete="address-line1" />
                                 <ValidationMessage For="() => form.Street" />
                             </div>
                             <div class="col-md-5">
                                 <label class="form-label" for="ec-city">City</label>
-                                <TextInput Id="ec-city" @bind-Value="form.City" />
+                                <InputText id="ec-city" class="form-control" @bind-Value="form.City" autocomplete="address-level2" />
                                 <ValidationMessage For="() => form.City" />
                             </div>
                             <div class="col-md-3">
                                 <label class="form-label" for="ec-postal">Postal code</label>
-                                <TextInput Id="ec-postal" @bind-Value="form.PostalCode" />
+                                <InputText id="ec-postal" class="form-control" @bind-Value="form.PostalCode" autocomplete="postal-code" />
                                 <ValidationMessage For="() => form.PostalCode" />
                             </div>
                             <div class="col-md-4">
                                 <label class="form-label" for="ec-country">Country</label>
-                                <InputSelect id="ec-country" class="form-select" @bind-Value="form.Country">
+                                <InputSelect id="ec-country" class="form-select" @bind-Value="form.Country" autocomplete="country-name">
                                     @foreach (var country in CountryOptions)
                                     {
                                         <option value="@country">@country</option>

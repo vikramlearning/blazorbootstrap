@@ -97,6 +97,7 @@
                                         <h4 class="h6 fw-bold" id="hc-bills-pay-title" tabindex="-1" @ref="payHeading">Pay @amount for @bill.Description</h4>
                                         <ShowcaseDemoNotice Class="mb-3" Text="Demo only: use one of the listed test cards; real cards are never accepted and nothing is really charged. Only the card's brand and last four digits are kept." />
                                         <EditForm EditContext="payContext" OnSubmit="Pay" FormName="hc-bills-pay" aria-labelledby="hc-bills-pay-title" novalidate>
+                                            <ShowcaseFormErrors FocusFirstInvalid="false" />
                                             @* Only the published test cards pass (D-026). *@
                                             <div id="hc-bills-card-fields">
                                                 <ShowcaseCardForm Card="card" Today="State.Clock.Today" IdPrefix="hc-pay" />

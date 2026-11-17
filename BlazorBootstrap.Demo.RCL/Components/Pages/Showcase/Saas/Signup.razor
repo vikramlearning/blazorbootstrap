@@ -44,6 +44,7 @@
                     }
 
                     <EditForm Model="form" OnValidSubmit="Submit" FormName="saas-signup">
+                        <ShowcaseFormErrors />
                         <DataAnnotationsValidator />
                         <fieldset class="mb-4">
                             <legend class="h6 fw-bold" id="su-plan-legend">Choose a plan</legend>
@@ -77,7 +78,7 @@
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label" for="su-email">Work email</label>
-                                <InputText id="su-email" type="email" class="form-control" @bind-Value="form.Email" maxlength="@ShowcaseIdentity.MaxEmailLength" autocomplete="email" aria-describedby="su-email-help" />
+                                <InputText id="su-email" inputmode="email" autocapitalize="none" spellcheck="false" class="form-control" @bind-Value="form.Email" maxlength="@ShowcaseIdentity.MaxEmailLength" autocomplete="email" aria-describedby="su-email-help" />
                                 <div class="form-text" id="su-email-help">Use a made-up address, for example you@example.com. You sign in with it.</div>
                                 <ValidationMessage For="() => form.Email" />
                             </div>

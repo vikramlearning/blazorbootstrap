@@ -165,6 +165,7 @@
                 <footer class="text-body-secondary"><span data-clarity-mask="true">@acting.Author</span>, rated @acting.Rating out of 5</footer>
             </blockquote>
             <EditForm id="ea-reply-form" EditContext="replyContext" OnValidSubmit="SaveReplyAsync" FormName="ea-reply">
+                <ShowcaseFormErrors />
                 <DataAnnotationsValidator />
                 <label class="form-label" for="ea-reply-text">Your reply</label>
                 <TextAreaInput Id="ea-reply-text" @bind-Value="replyForm.Text" Rows="5" MaxLength="600" aria-describedby="ea-reply-help" />

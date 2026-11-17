@@ -126,3 +126,57 @@ window.showcaseStore = {
         }
     }
 };
+
+/**
+ * Form errors for the Showcase sample sites (WCAG 3.3.1, 4.1.3). Called by ShowcaseFormErrors after each render of a form
+ * whose validation state changed: links every visible validation message to its field through aria-describedby, so a
+ * screen reader reads it with the field, and after a failed submit moves focus to the first invalid field.
+ */
+window.showcaseForms = {
+    count: 0,
+
+    sync(anchor, focusFirstInvalid) {
+        const form = anchor?.closest('form');
+        if (!form) return false;
+        const fieldSelector = 'input:not([type=hidden]), select, textarea';
+        // Forget links to messages that are gone.
+        form.querySelectorAll('[data-sc-error-ids]').forEach(field => {
+            const own = field.dataset.scErrorIds.split(' ').filter(Boolean);
+            const kept = (field.getAttribute('aria-describedby') || '').split(' ').filter(id => id && !(own.includes(id) && !document.getElementById(id)));
+            const ownKept = own.filter(id => document.getElementById(id));
+            kept.length ? field.setAttribute('aria-describedby', kept.join(' ')) : field.removeAttribute('aria-describedby');
+            ownKept.length ? field.dataset.scErrorIds = ownKept.join(' ') : delete field.dataset.scErrorIds;
+        });
+        // Link each message to the nearest field in its group (the message follows its field in the same wrapper).
+        form.querySelectorAll(".validation-message").forEach(message => {
+            // The field is the last one before the message in its wrapper, looking at most three wrappers up and at most
+            // as far as the form itself (a message can sit directly in the form).
+            let group = message.parentElement, field = null;
+            for (let depth = 0; group && !field && depth < 3; depth++, group = group.parentElement) {
+                field = [...group.querySelectorAll(fieldSelector)]
+                    .filter(candidate => candidate.compareDocumentPosition(message) & Node.DOCUMENT_POSITION_FOLLOWING)
+                    .pop() || null;
+                if (group === form) break;
+            }
+            if (!field) return;
+            // A radio or checkbox group is described as a whole, not by its last option.
+            if (field.matches('input[type=radio], input[type=checkbox]')) {
+                field = field.closest('fieldset, [role=radiogroup], [role=group]') || field;
+            }
+            // Skip a field that already points at a wrapper holding this message, so it isn't read twice.
+            const current = (field.getAttribute('aria-describedby') || '').split(' ').filter(Boolean);
+            if (current.some(id => id !== message.id && document.getElementById(id)?.contains(message))) return;
+            if (!message.id) message.id = `sc-form-error-${++this.count}`;
+            const ids = (field.getAttribute('aria-describedby') || '').split(' ').filter(Boolean);
+            if (!ids.includes(message.id)) field.setAttribute('aria-describedby', [...ids, message.id].join(' '));
+            const own = (field.dataset.scErrorIds || '').split(' ').filter(Boolean);
+            if (!own.includes(message.id)) field.dataset.scErrorIds = [...own, message.id].join(' ');
+        });
+        if (!focusFirstInvalid) return false;
+        // Blazor's own inputs set aria-invalid; Blazor Bootstrap's inputs only carry the "invalid" class.
+        const first = form.querySelector('[aria-invalid=true]:not([type=hidden]), :is(input, select, textarea):is(.invalid, .is-invalid)');
+        if (!first) return false;
+        first.focus();
+        return true;
+    }
+};
