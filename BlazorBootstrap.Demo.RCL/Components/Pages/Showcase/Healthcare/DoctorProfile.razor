@@ -25,7 +25,7 @@ else
         <p class="mb-3"><a href="@($"{HcLayout.Base}/doctors")"><Icon Name="IconName.ArrowLeft" class="me-1" aria-hidden="true" />All doctors</a></p>
 
         <div class="d-flex align-items-center gap-3 mb-4">
-            <span class="hc-avatar hc-dp-avatar" aria-hidden="true">@doctor.Initials</span>
+            <HcDoctorAvatar Doctor="doctor" Class="hc-dp-avatar" Eager="true" />
             <div class="hc-dp-min">
                 <h1 class="hc-title">@doctor.Name</h1>
                 <p class="hc-lead mb-0">@doctor.Specialty · @(clinic?.Name)</p>

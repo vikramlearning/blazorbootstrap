@@ -6,7 +6,7 @@ namespace BlazorBootstrap.Demo.RCL.Components.Pages.Showcase.Healthcare;
 /// <summary>
 /// Find a doctor (public): filters for specialty, clinic, language, and "Accepting new patients", kept in the query string
 /// (<c>?specialty=</c>, <c>?clinic=</c>, <c>?language=</c>, <c>?accepting=yes</c>) so a filtered list can be linked, and a
-/// name search that stays on the page. Each result card has the doctor's initials, name, specialty, clinic, languages,
+/// name search that stays on the page. Each result card has the doctor's photo (or initials), name, specialty, clinic, languages,
 /// whether they take new patients (in words), the next open time as a link to book it, and a link to the profile. The
 /// count is announced in a status line; an empty result says how to widen the search.
 /// </summary>

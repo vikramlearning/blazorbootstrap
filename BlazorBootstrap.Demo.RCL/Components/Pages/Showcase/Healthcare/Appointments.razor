@@ -40,7 +40,7 @@
                                         <span class="badge text-bg-@HcDisplay.StatusColor(appointment.Status)">@HcDisplay.StatusLabel(appointment.Status)</span>
                                     </div>
                                     <div class="hc-appts-who">
-                                        <span class="hc-avatar" aria-hidden="true">@doctor?.Initials</span>
+                                        <HcDoctorAvatar Doctor="doctor" />
                                         <div class="hc-appts-text">
                                             <p class="fw-semibold mb-0">@(doctor?.Name ?? "Unknown doctor")<span class="fw-normal text-body-secondary"> · @doctor?.Specialty</span></p>
                                             <p class="small text-body-secondary mb-0">@clinic?.Name, @clinic?.Address</p>

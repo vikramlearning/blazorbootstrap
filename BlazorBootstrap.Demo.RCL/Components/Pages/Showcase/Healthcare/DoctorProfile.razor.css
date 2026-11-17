@@ -3,12 +3,6 @@
     min-width: 0;
 }
 
-.hc-dp-avatar {
-    width: 4rem;
-    height: 4rem;
-    font-size: 1.375rem;
-}
-
 .hc-dp-facts {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(min(100%, 11rem), 1fr));

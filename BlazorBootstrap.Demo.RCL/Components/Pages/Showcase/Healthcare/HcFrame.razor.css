@@ -231,7 +231,7 @@
     overflow-y: hidden;
 }
 
-/* Shared clinic pieces: doctor and patient initials, status pills, and the open-time buttons. */
+/* Shared clinic pieces: doctor photos and doctor and patient initials, status pills, and the open-time buttons. */
 .sc-health ::deep .hc-avatar {
     display: inline-flex;
     align-items: center;
@@ -243,6 +243,29 @@
     background: var(--hc-soft);
     color: var(--sc-primary-hover);
     font-weight: 700;
+}
+
+.sc-health ::deep .hc-avatar-photo {
+    object-fit: cover;
+    object-position: center top;
+}
+
+.sc-health ::deep .hc-avatar.hc-book-avatar {
+    width: 3.5rem;
+    height: 3.5rem;
+    font-size: 1.125rem;
+}
+
+.sc-health ::deep .hc-avatar.hc-fd-avatar {
+    width: 4rem;
+    height: 4rem;
+    font-size: 1.25rem;
+}
+
+.sc-health ::deep .hc-avatar.hc-dp-avatar {
+    width: 5.5rem;
+    height: 5.5rem;
+    font-size: 1.5rem;
 }
 
 [data-bs-theme=dark] .sc-health ::deep .hc-avatar {
