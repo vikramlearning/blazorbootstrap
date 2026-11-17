@@ -3,37 +3,17 @@
 
 <PageTitle>Showcase: example websites built with Blazor Bootstrap</PageTitle>
 
-<section class="sc-gallery-hero">
-    <div class="container-xxl py-5">
-        <div class="col-lg-8">
-            <span class="sc-gallery-kicker">Showcase</span>
-            <h1 class="display-5 fw-bold mt-2 mb-3">Example websites you can build with Blazor Bootstrap</h1>
-            <p class="lead mb-4">
-                Eleven complete, interactive sample apps &mdash; from AI chat and SaaS dashboards to clinics, travel, and storefronts.
-                Every screen is built only with Blazor Bootstrap components, runs on fictitious data, and works in Blazor Server and WebAssembly.
-            </p>
-            <div class="d-flex flex-wrap gap-2">
-                <a class="btn btn-light btn-lg fw-semibold" href="#examples">Browse examples</a>
-                <a class="btn btn-outline-light btn-lg" href="@DemoRouteConstants.Showcase_Source_URL_Prefix" target="_blank" rel="noopener">
-                    <Icon Name="IconName.Github" class="me-1" aria-hidden="true" /> View source
-                </a>
-            </div>
-        </div>
-        <dl class="sc-gallery-stats row row-cols-3 g-3 mt-4 mb-0 col-lg-6">
-            <div class="col"><dt>Sites</dt><dd>@ShowcaseCatalog.Sites.Count</dd></div>
-            <div class="col"><dt>Screens</dt><dd>80+</dd></div>
-            <div class="col"><dt>Backend</dt><dd>None</dd></div>
-        </dl>
-    </div>
-</section>
-
-<section class="container-xxl py-5" id="examples" aria-labelledby="examples-heading">
-    <div class="d-flex flex-column flex-md-row align-items-md-end justify-content-between gap-3 mb-4">
+<section class="container-xxl pt-4 pb-5" aria-labelledby="examples-heading">
+    <div class="d-flex flex-column flex-lg-row align-items-lg-end justify-content-between gap-3 mb-3">
         <div>
-            <h2 class="h3 fw-bold mb-1" id="examples-heading">Pick an example</h2>
-            <p class="text-body-secondary mb-0">Open any site, click around, and toggle light or dark mode &mdash; nothing you do is sent anywhere.</p>
+            <h1 class="h2 fw-bold mb-1" id="examples-heading">Example websites built with Blazor Bootstrap</h1>
+            <p class="text-body-secondary mb-0">
+                @ShowcaseCatalog.Sites.Count complete, interactive sites with 80+ screens and no backend.
+                Open any site and click around &mdash; nothing you do is sent anywhere.
+                <a class="text-nowrap" href="@DemoRouteConstants.Showcase_Source_URL_Prefix" target="_blank" rel="noopener">View source</a>
+            </p>
         </div>
-        <div class="sc-gallery-filters" role="group" aria-label="Filter examples by category">
+        <div class="d-flex flex-wrap gap-1 flex-shrink-0" role="group" aria-label="Filter examples by category">
             @foreach (var category in categories)
             {
                 <button type="button"
@@ -46,38 +26,50 @@
         </div>
     </div>
 
-    <p class="visually-hidden" aria-live="polite">@VisibleSites.Count() examples shown</p>
+    <p class="visually-hidden" aria-live="polite">@(VisibleSites.Count() == 1 ? "1 example shown" : $"{VisibleSites.Count()} examples shown")</p>
 
-    <div class="row row-cols-1 row-cols-sm-2 row-cols-xl-3 g-4">
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 row-cols-xl-4 g-3">
         @foreach (var site in VisibleSites)
         {
             <div class="col" @key="site.Slug">
-                <article class="card h-100 sc-gallery-card sc-card-hover" style="--sc-card-accent: @site.Accent;">
-                    <a class="sc-gallery-shot" href="@site.Url" tabindex="-1" aria-hidden="true">
-                        <ShowcaseShot Site="site" />
-                    </a>
-                    <div class="card-body d-flex flex-column">
-                        <div class="d-flex align-items-center gap-2 mb-2">
-                            <span class="sc-gallery-icon" aria-hidden="true"><Icon Name="@site.IconName" /></span>
-                            <span class="badge rounded-pill text-bg-light border">@site.Category</span>
+                @* p-0: the library stylesheet pads every <article> from 641px up. *@
+                <article class="card h-100 p-0 overflow-hidden sc-gallery-card sc-card-hover" style="--sc-card-accent: @site.Accent;">
+                    <div class="sc-gallery-stage px-3 pt-3 border-bottom">
+                        <div class="bg-body border border-bottom-0 rounded-top-2 overflow-hidden">
+                            <div class="sc-gallery-bar d-flex align-items-center gap-1 px-2 py-1 border-bottom" aria-hidden="true">
+                                <span class="sc-gallery-dot rounded-circle flex-shrink-0"></span>
+                                <span class="sc-gallery-dot rounded-circle flex-shrink-0"></span>
+                                <span class="sc-gallery-dot rounded-circle flex-shrink-0"></span>
+                                <span class="ms-1 text-body-secondary text-truncate">@site.Url</span>
+                            </div>
+                            <ShowcaseShot Site="site" Class="sc-gallery-shot" />
                         </div>
-                        <h3 class="h5 fw-bold card-title mb-1">
-                            <a class="text-decoration-none text-body" href="@site.Url">@site.Name</a>
-                        </h3>
-                        <p class="card-text text-body-secondary mb-3">@site.Tagline</p>
-                        <ul class="sc-gallery-components list-unstyled d-flex flex-wrap gap-1 mb-3" aria-label="Components used">
-                            @foreach (var component in site.Components.Take(6))
+                    </div>
+                    <div class="card-body d-flex flex-column p-3">
+                        <p class="sc-gallery-category text-body-secondary fw-semibold mb-1">@site.Category</p>
+                        <h2 class="h6 fw-bold card-title mb-1">@site.Name</h2>
+                        <p class="card-text small text-body-secondary mb-2">@site.Summary</p>
+                        <ul class="list-unstyled d-flex flex-wrap gap-1 mb-2" aria-label="Components used">
+                            @foreach (var component in site.Components.Take(VisibleComponentCount))
                             {
                                 <li><span class="badge bg-body-tertiary text-body-secondary border fw-medium">@component</span></li>
                             }
-                            @if (site.Components.Count > 6)
+                            @if (site.Components.Count > VisibleComponentCount)
                             {
-                                <li><span class="badge bg-body-tertiary text-body-secondary border fw-medium">+@(site.Components.Count - 6) more</span></li>
+                                <li>
+                                    <span class="badge bg-body-tertiary text-body-secondary border fw-medium">
+                                        +@(site.Components.Count - VisibleComponentCount)<span class="visually-hidden"> more: @string.Join(", ", site.Components.Skip(VisibleComponentCount))</span>
+                                    </span>
+                                </li>
                             }
                         </ul>
-                        <div class="mt-auto d-flex gap-2">
-                            <a class="btn btn-primary btn-sm" href="@site.Url">Live demo <span class="visually-hidden">of @site.Name</span></a>
-                            <a class="btn btn-outline-secondary btn-sm" href="@site.DocsUrl" target="_blank" rel="noopener">How it's built <span class="visually-hidden">: @site.Name</span></a>
+                        <div class="mt-auto d-flex align-items-center justify-content-between gap-2 small">
+                            <a class="stretched-link fw-semibold text-decoration-none py-1" href="@site.Url">
+                                Live demo<span class="visually-hidden"> of @site.Name</span> <Icon Name="IconName.ArrowRight" aria-hidden="true" />
+                            </a>
+                            <a class="text-body-secondary position-relative z-2 py-1" href="@site.DocsUrl" target="_blank" rel="noopener">
+                                How it's built<span class="visually-hidden">: @site.Name</span>
+                            </a>
                         </div>
                     </div>
                 </article>
