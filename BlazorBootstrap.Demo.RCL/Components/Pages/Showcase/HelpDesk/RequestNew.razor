@@ -67,6 +67,7 @@
                     <p class="small text-body-secondary mb-4">From your account. <a href="@($"{HelpDeskLayout.Base}/account")">Change them in your account</a>.</p>
 
                     <EditForm EditContext="editContext" OnValidSubmit="Submit" FormName="hd-request-new">
+                        <ShowcaseFormErrors />
                         <DataAnnotationsValidator />
                         <h2 class="hd-section-title">Your request</h2>
                         <div class="row g-3">

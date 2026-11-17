@@ -89,6 +89,7 @@
     <BodyTemplate>
         <ShowcaseDemoNotice Class="mb-3" Text="Demo only: coupons stay in this browser tab and are gone when it closes." />
         <EditForm id="ea-coupon-form" EditContext="editContext" OnValidSubmit="SaveAsync" FormName="ea-coupon">
+            <ShowcaseFormErrors />
             <DataAnnotationsValidator />
             <div class="row g-3">
                 <div class="col-md-5">

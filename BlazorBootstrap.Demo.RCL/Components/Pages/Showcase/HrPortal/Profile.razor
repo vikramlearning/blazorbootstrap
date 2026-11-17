@@ -24,6 +24,7 @@
                     </p>
 
                     <EditForm Model="form" OnSubmit="Save" FormName="hr-profile-details" novalidate>
+                        <ShowcaseFormErrors />
                         <div class="mb-3">
                             <label class="form-label fw-semibold" for="hr-profile-phone">Phone</label>
                             <input type="tel" id="hr-profile-phone" class="form-control hr-profile-short @(phoneError is null ? null : "is-invalid")" @bind="form.Phone" @ref="phoneInput"

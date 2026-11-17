@@ -155,6 +155,7 @@
         {
             <p class="mb-3">@shipping.ShipTo.FullName · @shipping.ShipTo.City, @shipping.ShipTo.Country · @shipping.Delivery delivery</p>
             <EditForm id="ao-ship-form" EditContext="shipContext" OnValidSubmit="ConfirmShipAsync" FormName="ao-ship">
+                <ShowcaseFormErrors />
                 <DataAnnotationsValidator />
                 <label class="form-label" for="ao-tracking">Tracking number</label>
                 <TextInput @ref="trackingInput" Id="ao-tracking" @bind-Value="shipForm.TrackingNumber" MaxLength="40" aria-describedby="ao-tracking-help" />

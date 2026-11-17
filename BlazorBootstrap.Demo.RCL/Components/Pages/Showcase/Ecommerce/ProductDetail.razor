@@ -12,7 +12,7 @@ else
     <div class="container-xl pt-4 pb-5">
         <Breadcrumb Items="BreadcrumbItems" Class="ec-breadcrumb mb-3" />
 
-        <div class="row g-4 g-lg-5">
+        <div class="row g-4 g-xl-5">
             <div class="col-md-6">
                 <div class="position-relative">
                     <ShowcaseImage Src="@Product.ImagePath" Alt="@Product.Name" Width="900" Height="900" Eager="true"
@@ -188,6 +188,7 @@ else
                                     <h2 class="h5 fw-bold">Write a review</h2>
                                     <ShowcaseDemoNotice Class="mb-3" Text="Demo only: your review stays in this browser tab until you close it or reset the demo." />
                                     <EditForm EditContext="reviewContext" OnValidSubmit="SubmitReview" FormName="ec-review">
+                                        <ShowcaseFormErrors />
                                         <DataAnnotationsValidator />
                                         <div class="mb-3">
                                             <span class="form-label d-block" id="ec-review-rating-label">Your rating</span>
@@ -256,6 +257,7 @@ else
         <BodyTemplate>
             <div data-clarity-mask="true">
                 <EditForm id="ec-edit-review-form" EditContext="editReviewContext" OnValidSubmit="SaveReviewEditAsync" FormName="ec-edit-review">
+                    <ShowcaseFormErrors />
                     <DataAnnotationsValidator />
                     <div class="mb-3">
                         <span class="form-label d-block" id="ec-edit-review-rating-label">Your rating</span>

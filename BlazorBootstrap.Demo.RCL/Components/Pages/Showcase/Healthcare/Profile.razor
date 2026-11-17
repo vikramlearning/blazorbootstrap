@@ -18,6 +18,7 @@
                 <p class="small text-body-secondary mb-4">Give this number when you call a clinic. It never changes.</p>
 
                 <EditForm Model="form" OnSubmit="Save" FormName="hc-profile-details" novalidate>
+                    <ShowcaseFormErrors />
                     <div class="mb-3">
                         <label class="form-label fw-semibold" for="hc-profile-dob">Date of birth</label>
                         <input type="date" id="hc-profile-dob" class="form-control hc-profile-date @(dobError is null ? null : "is-invalid")" value="@form.DateOfBirth" @onchange="OnDateOfBirthChanged" @ref="dobInput"

@@ -184,6 +184,7 @@
                                 <h3 class="h6 fw-bold" id="lu-card-form-title" tabindex="-1" @ref="cardFormHeading">@(cardText is null ? "Add a card" : "Replace the card")</h3>
                                 <ShowcaseDemoNotice Class="mb-3" Text="Demo only: use one of the listed test cards; real cards are never accepted. The card is checked with a zero-amount test charge, and only its brand, last four digits, and expiry are kept." />
                                 <EditForm Model="card" OnValidSubmit="SaveCardAsync" FormName="lu-card" aria-labelledby="lu-card-form-title">
+                                    <ShowcaseFormErrors />
                                     <ShowcaseCardForm Card="card" Today="State.Clock.Today" IdPrefix="lu" />
                                     <div class="lu-error mt-3" role="alert">
                                         @if (cardError is not null)

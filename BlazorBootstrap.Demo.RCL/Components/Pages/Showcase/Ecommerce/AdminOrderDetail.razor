@@ -224,6 +224,7 @@ else
         <BodyTemplate>
             <p class="mb-3">@order.ShipTo.FullName · @order.ShipTo.City, @order.ShipTo.Country · @order.Delivery delivery</p>
             <EditForm id="aod-ship-form" EditContext="shipContext" OnValidSubmit="ConfirmShipAsync" FormName="aod-ship">
+                <ShowcaseFormErrors />
                 <DataAnnotationsValidator />
                 <label class="form-label" for="aod-tracking">Tracking number</label>
                 <TextInput @ref="trackingInput" Id="aod-tracking" @bind-Value="shipForm.TrackingNumber" MaxLength="40" aria-describedby="aod-tracking-help" />
@@ -247,6 +248,7 @@ else
                 A cancelled order can't be reopened.
             </p>
             <EditForm id="aod-cancel-form" EditContext="cancelContext" OnValidSubmit="ConfirmCancelAsync" FormName="aod-cancel">
+                <ShowcaseFormErrors />
                 <DataAnnotationsValidator />
                 <label class="form-label" for="aod-cancel-reason">Reason (optional)</label>
                 <TextAreaInput Id="aod-cancel-reason" @bind-Value="cancelForm.Reason" Rows="3" MaxLength="200" aria-describedby="aod-cancel-help" />
@@ -277,6 +279,7 @@ else
                 in <a href="@($"{EcommerceAdminLayout.Base}/returns")">Returns</a> instead. A refunded order can't be reopened.
             </p>
             <EditForm id="aod-refund-form" EditContext="refundContext" OnValidSubmit="ConfirmRefundAsync" FormName="aod-refund">
+                <ShowcaseFormErrors />
                 <DataAnnotationsValidator />
                 <label class="form-label" for="aod-refund-reason">Reason</label>
                 <TextAreaInput Id="aod-refund-reason" @bind-Value="refundForm.Reason" Rows="3" MaxLength="200" aria-describedby="aod-refund-help" />

@@ -204,6 +204,7 @@ else
 
             <ShowcaseDemoNotice Class="mb-3" Text="Demo only: the refund stays in this browser tab. No money moves and no one is emailed." />
             <EditForm id="sd-refund-form" Model="refund" OnSubmit="RefundAsync" FormName="sd-refund">
+                <ShowcaseFormErrors />
                 <div class="mb-3">
                     <label class="form-label" for="sd-refund-amount">Amount to refund (USD)</label>
                     <div class="d-flex flex-wrap align-items-center gap-2">

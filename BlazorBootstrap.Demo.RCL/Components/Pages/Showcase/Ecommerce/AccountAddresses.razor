@@ -104,6 +104,7 @@
         <div data-clarity-mask="true">
             <ShowcaseDemoNotice Class="mb-3" Text="Demo only: addresses stay in this browser tab and are gone when it closes. Nothing is sent." />
             <EditForm id="ec-address-form" EditContext="editContext" OnValidSubmit="SaveAsync" FormName="ec-address">
+                <ShowcaseFormErrors />
                 <DataAnnotationsValidator />
                 <div class="row g-3">
                     <div class="col-md-4">
@@ -119,7 +120,7 @@
                     </div>
                     <div class="col-12">
                         <label class="form-label" for="ec-address-street">Street address</label>
-                        <InputText id="ec-address-street" class="form-control" @bind-Value="form.Street" maxlength="100" autocomplete="street-address" />
+                        <InputText id="ec-address-street" class="form-control" @bind-Value="form.Street" maxlength="100" autocomplete="address-line1" />
                         <ValidationMessage For="() => form.Street" />
                     </div>
                     <div class="col-md-5">

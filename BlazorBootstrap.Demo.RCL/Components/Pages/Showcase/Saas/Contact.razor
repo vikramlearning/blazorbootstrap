@@ -50,6 +50,7 @@
                     <ShowcaseDemoNotice Class="mb-4" Text="Demo only: make up every detail. Nothing is emailed; the message stays in this browser tab." />
 
                     <EditForm Model="form" OnValidSubmit="Submit" FormName="saas-contact">
+                        <ShowcaseFormErrors />
                         <DataAnnotationsValidator />
                         <div class="row g-3">
                             <div class="col-md-6">
@@ -59,7 +60,7 @@
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label" for="ct-email">Work email</label>
-                                <InputText id="ct-email" type="email" class="form-control" @bind-Value="form.Email" maxlength="@ShowcaseIdentity.MaxEmailLength" autocomplete="email" aria-describedby="ct-email-help" />
+                                <InputText id="ct-email" inputmode="email" autocapitalize="none" spellcheck="false" class="form-control" @bind-Value="form.Email" maxlength="@ShowcaseIdentity.MaxEmailLength" autocomplete="email" aria-describedby="ct-email-help" />
                                 <div class="form-text" id="ct-email-help">Use a made-up address, for example you@example.com.</div>
                                 <ValidationMessage For="() => form.Email" />
                             </div>

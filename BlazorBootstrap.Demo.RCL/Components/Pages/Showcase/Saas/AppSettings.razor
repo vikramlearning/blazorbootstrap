@@ -23,6 +23,7 @@
     }
 
     <EditForm EditContext="editContext" OnValidSubmit="Save" FormName="app-settings">
+        <ShowcaseFormErrors />
         <DataAnnotationsValidator />
         @* A disabled fieldset turns every field inside it off at once for members who can only read the settings. *@
         <fieldset class="app-settings-fieldset" disabled="@readOnly" aria-describedby="@(readOnly ? "app-settings-readonly" : null)">
