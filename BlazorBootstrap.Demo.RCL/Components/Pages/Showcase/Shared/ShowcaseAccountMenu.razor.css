@@ -14,6 +14,12 @@
         border-color: var(--sc-primary, var(--bs-primary));
     }
 
+    /* A plain .btn has no focus ring in Bootstrap 5.3 (no variant sets its shadow color), so keyboard focus needs its own (WCAG 2.4.7). */
+    .sc-account-menu ::deep .sc-account-toggle:focus-visible {
+        outline: 2px solid var(--sc-primary, var(--bs-primary));
+        outline-offset: 2px;
+    }
+
 .sc-account-menu ::deep .sc-account-signed-out {
     gap: 0;
     padding-inline: .625rem;

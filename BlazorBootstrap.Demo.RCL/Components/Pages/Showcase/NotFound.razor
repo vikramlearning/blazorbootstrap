@@ -1,0 +1,18 @@
+@page "/showcase/{*path}"
+@layout ShowcaseLayout
+@* The gallery's not-found screen: an unknown or removed example under /showcase. Each site's own catch-all route is more
+   specific, so it still handles unknown pages inside that site. *@
+
+<PageTitle>Example not found · Showcase</PageTitle>
+
+<section class="container-xxl py-5 text-center" aria-labelledby="sc-not-found-title">
+    <Icon Name="IconName.SignpostSplit" class="fs-1 text-body-secondary" aria-hidden="true" />
+    <h1 class="h2 fw-bold mt-3 mb-2" id="sc-not-found-title">This example isn't in the Showcase</h1>
+    <p class="text-body-secondary mb-4">The link may be old: some examples were renamed or merged into others.</p>
+    <a class="btn btn-primary" href="@DemoRouteConstants.Showcase_URL_Prefix">Browse all examples</a>
+</section>
+
+@code {
+    /// <summary>Gets or sets the unmatched part of the URL.</summary>
+    [Parameter] public string? Path { get; set; }
+}

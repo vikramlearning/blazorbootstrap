@@ -302,6 +302,14 @@
     width: 3rem;
 }
 
+    /* Bootstrap removes the controls' focus outline; keyboard users need to see which one is focused (WCAG 2.4.7). */
+    .sc-ecommerce ::deep .ec-hero .carousel-control-prev:focus-visible,
+    .sc-ecommerce ::deep .ec-hero .carousel-control-next:focus-visible {
+        outline: 2px solid var(--sc-primary, var(--bs-primary));
+        outline-offset: -4px;
+        border-radius: .5rem;
+    }
+
 .sc-ecommerce ::deep .ec-hero .carousel-control-prev-icon,
 .sc-ecommerce ::deep .ec-hero .carousel-control-next-icon {
     filter: invert(1) grayscale(100);

@@ -114,17 +114,19 @@
                         </div>
 
                         <nav class="qp-lesson-pager mb-4" aria-label="Previous and next lesson">
-                            @if (Previous is not null)
+                            @* Locals, not the Previous/Next properties: a Button can re-render its child content after moving to
+                               the last lesson, before this pager removes it, and the property would be null by then. *@
+                            @if (Previous is { } previous)
                             {
                                 @* No extra attributes on link Buttons: a parent re-render replaces them and drops the Button's own href and role. *@
-                                <Button Type="ButtonType.Link" To="@LearningDisplay.LessonUrl(course.Id, Previous.Id)" Color="ButtonColor.Secondary" Outline="true">
-                                    <Icon Name="IconName.ArrowLeft" class="me-1" aria-hidden="true" />Previous<span class="visually-hidden"> lesson: @Previous.Title</span>
+                                <Button Type="ButtonType.Link" To="@LearningDisplay.LessonUrl(course.Id, previous.Id)" Color="ButtonColor.Secondary" Outline="true">
+                                    <Icon Name="IconName.ArrowLeft" class="me-1" aria-hidden="true" />Previous<span class="visually-hidden"> lesson: @previous.Title</span>
                                 </Button>
                             }
-                            @if (Next is not null)
+                            @if (Next is { } next)
                             {
-                                <Button Type="ButtonType.Link" To="@LearningDisplay.LessonUrl(course.Id, Next.Id)" Color="ButtonColor.Primary">
-                                    Next<span class="visually-hidden"> lesson: @Next.Title</span><Icon Name="IconName.ArrowRight" class="ms-1" aria-hidden="true" />
+                                <Button Type="ButtonType.Link" To="@LearningDisplay.LessonUrl(course.Id, next.Id)" Color="ButtonColor.Primary">
+                                    Next<span class="visually-hidden"> lesson: @next.Title</span><Icon Name="IconName.ArrowRight" class="ms-1" aria-hidden="true" />
                                 </Button>
                             }
                             else if (State.IsComplete(course.Id) && State.CertificateFor(course.Id) is { } issued)

@@ -135,6 +135,12 @@
         color: var(--sc-primary-hover);
     }
 
+    /* .btn:focus-visible drops the outline and this link has no variant shadow, so draw one (WCAG 2.4.7). */
+    .ea-view-store:focus-visible {
+        outline: 2px solid var(--sc-primary);
+        outline-offset: 2px;
+    }
+
 [data-bs-theme=dark] .ea-view-store:hover,
 [data-bs-theme=dark] .ea-view-store:focus-visible {
     color: var(--sc-primary);

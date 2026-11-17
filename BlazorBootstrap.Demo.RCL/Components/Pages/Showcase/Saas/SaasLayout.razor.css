@@ -157,7 +157,9 @@
         font-size: 1.125rem;
     }
 
+/* overflow-x: clip keeps the hero glow from scrolling the page sideways at any width, without making a scroll container. */
 .sc-lumora ::deep .mk-hero {
+    overflow-x: clip;
     padding-block: 4.5rem 3.5rem;
     background:
         radial-gradient(ellipse at 10% 10%, rgba(var(--sc-primary-rgb), .16), transparent 50%),
@@ -240,13 +242,6 @@
         opacity: .35;
         border-radius: 2rem;
     }
-
-/* On narrow screens the glow would stick out past the right edge and scroll the page sideways. */
-@media (max-width: 575.98px) {
-    .sc-lumora ::deep .mk-hero-visual::before {
-        right: 0;
-    }
-}
 
 .sc-lumora ::deep .mk-mock-window {
     position: relative;
