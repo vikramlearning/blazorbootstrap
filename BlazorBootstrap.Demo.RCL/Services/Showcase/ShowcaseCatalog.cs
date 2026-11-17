@@ -11,21 +11,6 @@ public static class ShowcaseCatalog
 
     private const string AssetPrefix = "_content/BlazorBootstrap.Demo.RCL/showcase";
 
-    /// <summary>
-    /// Static asset paths (relative to the app base) that are committed to the repository; each is listed in
-    /// <c>wwwroot/showcase/CREDITS.md</c>. <see cref="Components.Pages.Showcase.Shared.ShowcaseImage" /> shows a
-    /// placeholder for any path not listed here, so a site keeps working until its licensed assets are supplied.
-    /// </summary>
-    private static readonly HashSet<string> committedAssets = new(
-        Enumerable.Range(101, 31).Select(id => $"{AssetPrefix}/ecommerce/products/{id}.webp")
-            .Concat(Enumerable.Range(1, 3).Select(slide => $"{AssetPrefix}/ecommerce/hero-{slide}.webp"))
-            .Concat(Enumerable.Range(201, 9).Select(id => $"{AssetPrefix}/learning/course-{id}.webp"))
-            .Concat(new[] { "cape-town", "kyoto", "lisbon", "vancouver" }.Select(id => $"{AssetPrefix}/travel/destinations/{id}.webp"))
-            .Concat(Enumerable.Range(301, 18).SelectMany(id => Enumerable.Range(1, 3).Select(photo => $"{AssetPrefix}/travel/stays/{id}-{photo}.webp")))
-            .Concat(new[] { "okoye", "raman", "chen", "rossi", "whitaker", "bello" }.Select(id => $"{AssetPrefix}/healthcare/doctors/{id}.webp"))
-            .Concat(new[] { "downtown", "lakeview", "northfield" }.Select(id => $"{AssetPrefix}/healthcare/clinics/{id}.webp")),
-        StringComparer.OrdinalIgnoreCase);
-
     private static readonly IReadOnlyList<ShowcaseSite> sites = new List<ShowcaseSite>
     {
         new("ai-assistant", "AI Assistant Workspace", "Members chat with streaming answers, attachments, and a prompt library; workspace admins manage members, shared prompts, usage, and model policy.", "SaaS", IconName.Stars, "#7c3aed", "AiAssistant",
@@ -51,6 +36,23 @@ public static class ShowcaseCatalog
         new("hr-portal", "HR & Employee Portal", "Employees find colleagues, request leave, and work through onboarding; managers approve leave and follow new hires; HR admins manage people, leave policies, onboarding templates, and headcount analytics.", "Extras", IconName.People, "#9333ea", "HrPortal",
             new[] { "MindMap", "Sidebar", "Charts", "Modal", "Progress", "Form inputs" }),
     };
+
+    /// <summary>
+    /// Static asset paths (relative to the app base) that are committed to the repository; each is listed in
+    /// <c>wwwroot/showcase/CREDITS.md</c>. <see cref="Components.Pages.Showcase.Shared.ShowcaseImage" /> shows a
+    /// placeholder for any path not listed here, so a site keeps working until its licensed assets are supplied.
+    /// Declared after <c>sites</c> because it lists each site's gallery screenshots.
+    /// </summary>
+    private static readonly HashSet<string> committedAssets = new(
+        Enumerable.Range(101, 31).Select(id => $"{AssetPrefix}/ecommerce/products/{id}.webp")
+            .Concat(Enumerable.Range(1, 3).Select(slide => $"{AssetPrefix}/ecommerce/hero-{slide}.webp"))
+            .Concat(Enumerable.Range(201, 9).Select(id => $"{AssetPrefix}/learning/course-{id}.webp"))
+            .Concat(new[] { "cape-town", "kyoto", "lisbon", "vancouver" }.Select(id => $"{AssetPrefix}/travel/destinations/{id}.webp"))
+            .Concat(Enumerable.Range(301, 18).SelectMany(id => Enumerable.Range(1, 3).Select(photo => $"{AssetPrefix}/travel/stays/{id}-{photo}.webp")))
+            .Concat(new[] { "okoye", "raman", "chen", "rossi", "whitaker", "bello" }.Select(id => $"{AssetPrefix}/healthcare/doctors/{id}.webp"))
+            .Concat(new[] { "downtown", "lakeview", "northfield" }.Select(id => $"{AssetPrefix}/healthcare/clinics/{id}.webp"))
+            .Concat(sites.SelectMany(site => new[] { site.ScreenshotLight, site.ScreenshotDark })),
+        StringComparer.OrdinalIgnoreCase);
 
     #endregion
 

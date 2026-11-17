@@ -150,3 +150,28 @@ courses, people, and text are fictitious.
 | `learning/handout-206.pdf` | Online Learning: course 206 handout (PdfViewer) | Generated for the showcase from plain text (Helvetica, two pages) |
 | `learning/handout-207.pdf` | Online Learning: course 207 handout (PdfViewer) | Generated for the showcase from plain text (Helvetica, two pages) |
 | `learning/handout-208.pdf` | Online Learning: course 208 handout (PdfViewer) | Generated for the showcase from plain text (Helvetica, two pages) |
+
+## Gallery screenshots
+
+These are screenshots of each site's home screen, captured from the showcase itself on 2026-11-17. They are the
+project's own work under the repository's license. The licensed images some of them show keep their Magnific license.
+
+To refresh one after its home screen changes, capture it the same way:
+- signed out, at 1280 x 800 with a device pixel ratio of 1, scrolled to the top;
+- once with `localStorage["blazorbootstrap-theme"]` set to `light` and once set to `dark`;
+- after the page is interactive and its images have loaded;
+- saved as WebP at quality 80, with no metadata.
+
+| File | Used for | Source | License | Attribution |
+|---|---|---|---|---|
+| `gallery/ai-assistant-light.webp`, `gallery/ai-assistant-dark.webp` | Gallery and README: AI Assistant Workspace home screen | Own work | Repository license | Not required |
+| `gallery/saas-light.webp`, `gallery/saas-dark.webp` | Gallery and README: SaaS Product home screen | Own work | Repository license | Not required |
+| `gallery/ecommerce-light.webp`, `gallery/ecommerce-dark.webp` | Gallery and README: E-commerce Storefront home screen | Own work; shows `ecommerce/hero-1.webp` (Magnific license above) | Repository license | Not required |
+| `gallery/project-board-light.webp`, `gallery/project-board-dark.webp` | Gallery and README: Project & Client Board home screen | Own work | Repository license | Not required |
+| `gallery/fintech-light.webp`, `gallery/fintech-dark.webp` | Gallery and README: Personal Finance home screen | Own work; the site's sign-in page, where its home link lands when signed out | Repository license | Not required |
+| `gallery/healthcare-light.webp`, `gallery/healthcare-dark.webp` | Gallery and README: Healthcare Clinic Portal home screen | Own work | Repository license | Not required |
+| `gallery/learning-light.webp`, `gallery/learning-dark.webp` | Gallery and README: Online Learning home screen | Own work; shows `learning/course-201.webp` to `learning/course-203.webp` (Magnific license above) | Repository license | Not required |
+| `gallery/travel-light.webp`, `gallery/travel-dark.webp` | Gallery and README: Travel & Stay Booking home screen | Own work | Repository license | Not required |
+| `gallery/help-desk-light.webp`, `gallery/help-desk-dark.webp` | Gallery and README: Help Desk & Ticketing home screen | Own work | Repository license | Not required |
+| `gallery/monitoring-light.webp`, `gallery/monitoring-dark.webp` | Gallery and README: IoT & DevOps Monitoring home screen | Own work | Repository license | Not required |
+| `gallery/hr-portal-light.webp`, `gallery/hr-portal-dark.webp` | Gallery and README: HR & Employee Portal home screen | Own work | Repository license | Not required |

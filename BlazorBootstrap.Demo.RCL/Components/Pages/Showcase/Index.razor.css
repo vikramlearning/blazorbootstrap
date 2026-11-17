@@ -58,22 +58,6 @@
     border-bottom: 1px solid var(--bs-border-color-translucent);
 }
 
-    .sc-gallery-shot ::deep .sc-shot-dark {
-        display: none;
-    }
-
-[data-bs-theme=dark] .sc-gallery-shot ::deep .sc-shot-light {
-    display: none;
-}
-
-[data-bs-theme=dark] .sc-gallery-shot ::deep .sc-shot-dark {
-    display: flex;
-}
-
-[data-bs-theme=dark] .sc-gallery-shot ::deep img.sc-shot-dark {
-    display: block;
-}
-
 .sc-gallery-icon {
     display: inline-flex;
     align-items: center;
