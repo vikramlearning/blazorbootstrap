@@ -5,7 +5,8 @@ namespace BlazorBootstrap.Demo.RCL.Models.Showcase;
 /// </summary>
 /// <param name="Slug">Stable kebab-case route segment under <c>/showcase</c>.</param>
 /// <param name="Name">Display name.</param>
-/// <param name="Tagline">One-line description shown on the gallery card.</param>
+/// <param name="Tagline">One-sentence description shown on the home page.</param>
+/// <param name="Summary">Short summary shown on the gallery card.</param>
 /// <param name="Category">Gallery grouping, such as "SaaS" or "Industry".</param>
 /// <param name="IconName">Bootstrap icon shown when no screenshot is available.</param>
 /// <param name="Accent">CSS color used for the card accent and placeholder.</param>
@@ -15,6 +16,7 @@ public sealed record ShowcaseSite(
     string Slug,
     string Name,
     string Tagline,
+    string Summary,
     string Category,
     IconName IconName,
     string Accent,
