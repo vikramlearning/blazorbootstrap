@@ -194,48 +194,103 @@ h1:focus-visible {
     }
 }
 
-.masthead-followup h2, .masthead-followup h3, .masthead-followup h4 {
-    --bs-heading-color: var(--bs-emphasis-color);
-}
-
-.masthead-followup h4 {
-    --bs-heading-color: var(--bs-link-color-rgb) !important;
-}
-
-.masthead-followup .lead {
-    font-size: 1rem
-}
-
-.masthead-followup .highlight {
-    border-radius: .5rem
-}
-
-@media (min-width: 768px) {
-    .masthead-followup .lead {
-        font-size: 1.25rem
-    }
-}
-
 .bd-btn-lg {
     padding: .8rem 2rem
 }
 
-.masthead-followup-icon {
-    padding: 1rem;
-    color: rgba(var(--bg-rgb), 1);
-    background-color: rgba(var(--bg-rgb), 0.1);
-    background-blend-mode: multiple;
-    border-radius: 1rem;
-    mix-blend-mode: darken
-}
-
-    .masthead-followup-icon svg {
-        filter: drop-shadow(0 1px 1px #fff)
-    }
-
+/* The accent background is the same yellow in both themes, so the text stays dark in both. */
 .masthead-notice {
+    color: #212529;
     background-color: var(--bd-accent);
     box-shadow: inset 0 -1px 1px rgba(var(--bs-body-color-rgb), 0.15),0 0.25rem 1.5rem rgba(var(--bs-body-bg-rgb), 0.75)
+}
+
+.bd-home-notice:hover span,
+.bd-home-notice:focus-visible span {
+    text-decoration: underline;
+}
+
+.bd-home-install {
+    background-color: rgba(var(--bs-body-color-rgb), 0.075);
+}
+
+.bd-home-copy {
+    min-width: 2rem;
+    min-height: 2rem;
+    color: var(--bs-body-color);
+}
+
+.bd-home-stats > div {
+    background-color: rgba(var(--bs-body-bg-rgb), 0.75);
+    border: var(--bs-border-width) solid var(--bs-border-color);
+}
+
+/*
+ * Reserve the Carbon cover ad's space so the content below does not move when it loads.
+ * Carbon's cover format is up to 400px wide. At 360px and wider it lays out side by side
+ * (measured 261-265px tall); below 360px it stacks, and its height depends on the creative's
+ * image (measured 388-546px, largest for a square image at a 359px container). Each reserve
+ * includes a small margin for longer ad text.
+ */
+.bd-home-ad {
+    max-width: min(400px, 100%);
+    margin-inline: auto;
+    container-type: inline-size;
+}
+
+.bd-home-ad-slot {
+    min-height: 280px;
+}
+
+@container (max-width: 359.98px) {
+    .bd-home-ad-slot {
+        min-height: 560px;
+    }
+}
+
+/* Keep the catalog heading, and any control scrolled into view by keyboard focus, clear of the sticky navbar. */
+#components,
+.bd-home :is(a, button, input) {
+    scroll-margin-top: 5rem;
+}
+
+/* Bootstrap's default focus glow is below 3:1, so home page controls get a solid outline in the theme's emphasis color. */
+.bd-home :is(a, button, input):focus-visible {
+    outline: 2px solid var(--bs-emphasis-color);
+    outline-offset: 2px;
+    box-shadow: none;
+}
+
+.bd-home-card .stretched-link:focus-visible {
+    outline: none;
+}
+
+.bd-home-card:has(.stretched-link:focus-visible) {
+    outline: 2px solid var(--bs-emphasis-color);
+    outline-offset: 2px;
+}
+
+/* The outline-secondary gray falls below 4.5:1 on the hero gradient, so this button uses the emphasis color. */
+.bd-home-browse {
+    --bs-btn-color: var(--bs-emphasis-color);
+    --bs-btn-border-color: var(--bs-emphasis-color);
+    --bs-btn-hover-color: var(--bs-body-bg);
+    --bs-btn-hover-bg: var(--bs-emphasis-color);
+    --bs-btn-hover-border-color: var(--bs-emphasis-color);
+    --bs-btn-active-color: var(--bs-body-bg);
+    --bs-btn-active-bg: var(--bs-emphasis-color);
+    --bs-btn-active-border-color: var(--bs-emphasis-color);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .bd-home-card {
+        transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+    }
+}
+
+.bd-home-card:hover {
+    border-color: var(--bs-primary-border-subtle);
+    box-shadow: var(--bs-box-shadow-sm);
 }
 
 .bd-gutter {

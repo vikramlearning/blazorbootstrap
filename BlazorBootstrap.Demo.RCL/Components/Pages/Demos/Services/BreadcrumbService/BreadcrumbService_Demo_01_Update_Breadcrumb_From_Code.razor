@@ -1,0 +1,46 @@
+<Breadcrumb />
+
+<div class="d-flex flex-wrap gap-2 mt-3">
+    <Button Color="ButtonColor.Primary" @onclick="ShowOrders">Orders</Button>
+    <Button Color="ButtonColor.Primary" @onclick="ShowOrder">Order 1001</Button>
+    <Button Color="ButtonColor.Primary" @onclick="ShowSettings">Settings</Button>
+</div>
+
+@code {
+    [Inject] BreadcrumbService BreadcrumbService { get; set; } = default!;
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        // The Breadcrumb subscribes when it initializes, so send the first trail after the first render.
+        if (firstRender)
+            ShowOrders();
+    }
+
+    private void ShowOrders()
+    {
+        BreadcrumbService.Notify(new List<BreadcrumbItem>
+        {
+            new BreadcrumbItem { Text = "Home", Href = "/" },
+            new BreadcrumbItem { Text = "Orders", IsCurrentPage = true }
+        });
+    }
+
+    private void ShowOrder()
+    {
+        BreadcrumbService.Notify(new List<BreadcrumbItem>
+        {
+            new BreadcrumbItem { Text = "Home", Href = "/" },
+            new BreadcrumbItem { Text = "Orders", Href = DemoRouteConstants.Demos_URL_BreadcrumbService },
+            new BreadcrumbItem { Text = "Order 1001", IsCurrentPage = true }
+        });
+    }
+
+    private void ShowSettings()
+    {
+        BreadcrumbService.Notify(new List<BreadcrumbItem>
+        {
+            new BreadcrumbItem { Text = "Home", Href = "/" },
+            new BreadcrumbItem { Text = "Settings", IsCurrentPage = true }
+        });
+    }
+}

@@ -1,0 +1,14 @@
+@code {
+    [Inject] BreadcrumbService BreadcrumbService { get; set; } = default!;
+
+    protected override void OnInitialized()
+    {
+        BreadcrumbService.Notify(new List<BreadcrumbItem>
+        {
+            new BreadcrumbItem { Text = "Home", Href = "/" },
+            new BreadcrumbItem { Text = "Orders", IsCurrentPage = true }
+        });
+
+        base.OnInitialized();
+    }
+}
