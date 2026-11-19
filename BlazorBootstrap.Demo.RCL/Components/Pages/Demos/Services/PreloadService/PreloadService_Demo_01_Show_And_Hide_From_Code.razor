@@ -1,0 +1,48 @@
+<div class="d-flex flex-wrap gap-2">
+    <Button Color="ButtonColor.Primary" @onclick="ShowAsync">Show for 2 seconds</Button>
+    <Button Color="ButtonColor.Secondary" @onclick="ShowWithLoadingTextAsync">Show with loading text</Button>
+    <Button Color="ButtonColor.Dark" @onclick="ShowWithPrimarySpinnerAsync">Show with a primary spinner</Button>
+</div>
+
+@code {
+    [Inject] PreloadService PreloadService { get; set; } = default!;
+
+    private async Task ShowAsync()
+    {
+        try
+        {
+            PreloadService.Show();
+            await Task.Delay(2000); // call the service/api
+        }
+        finally
+        {
+            PreloadService.Hide();
+        }
+    }
+
+    private async Task ShowWithLoadingTextAsync()
+    {
+        try
+        {
+            PreloadService.Show(SpinnerColor.Light, "Loading orders...");
+            await Task.Delay(2000); // call the service/api
+        }
+        finally
+        {
+            PreloadService.Hide();
+        }
+    }
+
+    private async Task ShowWithPrimarySpinnerAsync()
+    {
+        try
+        {
+            PreloadService.Show(SpinnerColor.Primary);
+            await Task.Delay(2000); // call the service/api
+        }
+        finally
+        {
+            PreloadService.Hide();
+        }
+    }
+}

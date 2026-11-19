@@ -1,0 +1,49 @@
+@using BlazorBootstrap.Demo.RCL.Components.Pages.Demos.Preload
+
+@attribute [Route(pageUrl)]
+@layout DemosMainLayout
+
+<DemosPageHeadSection PageUrl="@pageUrl"
+                      PageTitle="@pageTitle"
+                      PageDescription="@pageDescription"
+                      MetaTitle="@metaTitle"
+                      MetaDescription="@metaDescription"
+                      ImageUrl="@imageUrl" />
+
+<DocsLink Href="@DemoRouteConstants.Docs_URL_PreloadService" />
+
+<div class="mt-3">Use Blazor PreloadService to show and hide a loading overlay from anywhere in your app.</div>
+
+<Section Size="HeadingSize.H2" Name="How it works" PageUrl="@pageUrl" Link="how-it-works">
+    <div class="mb-3">
+        <code>PreloadService</code> shows the <code>Preload</code> overlay placed in your layout while work runs, then hides it.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Inject <code>PreloadService</code> in the page or component that starts the work.</li>
+                <li>Call <code>Show()</code> before the work starts. Pass a <code>SpinnerColor</code> and a loading text to change how the overlay looks.</li>
+                <li>Call <code>Hide()</code> in a <code>finally</code> block, so the overlay closes even when the work fails.</li>
+            </ol>
+        </div>
+        Each button shows the overlay for 2 seconds, standing in for a call to a service or API.
+    </div>
+    <Demo Type="typeof(PreloadService_Demo_01_Show_And_Hide_From_Code)" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="How to setup" PageUrl="@pageUrl" Link="how-to-setup">
+    <div class="mb-3">1. Add the <code>Preload</code> component in <code>MainLayout.razor</code> page as shown below.</div>
+    <Demo Type="typeof(Preload_Demo_01_Global_Preload_For_Application_A)" ShowCodeOnly="true" />
+
+    <div class="mb-3">2. Inject <code>PreloadService</code>, then call the <code>Show()</code> and <code>Hide()</code> methods as shown below.</div>
+    <Demo Type="typeof(Preload_Demo_01_Global_Preload_For_Application_B)" ShowCodeOnly="true" />
+</Section>
+
+@code {
+    private const string pageUrl = DemoRouteConstants.Demos_URL_PreloadService;
+    private const string pageTitle = "Blazor Preload Service";
+    private const string pageDescription = "Use Blazor Bootstrap preload service to show and hide a loading overlay from anywhere in your app.";
+    private const string metaTitle = "Blazor Preload Service";
+    private const string metaDescription = "Use Blazor Bootstrap preload service to show and hide a loading overlay from anywhere in your app.";
+    private const string imageUrl = DemoScreenshotSrcConstants.Demos_URL_PreloadService;
+}
