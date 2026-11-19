@@ -248,9 +248,47 @@ h1:focus-visible {
 }
 
     .bd-footer a:hover, .bd-footer a:focus {
-        color: #0d6efd;
+        color: var(--bs-link-hover-color);
         text-decoration: underline
     }
+
+.bb-footer.bd-footer-host {
+    padding: 0 !important;
+}
+
+.bd-footer-host .container {
+    max-width: none;
+}
+
+/* Layout footer link colors (.bb-footer a) must not repaint the section buttons. */
+.bd-more-libraries .btn, .bd-more-libraries .btn:focus {
+    color: var(--bs-btn-color);
+    text-decoration: none;
+}
+
+.bd-more-libraries .btn:hover, .bd-more-libraries .btn:focus-visible {
+    color: var(--bs-btn-hover-color);
+    text-decoration: none;
+}
+
+.bd-more-libraries .btn:active {
+    color: var(--bs-btn-active-color);
+}
+
+[data-bs-theme=dark] .bd-more-libraries .btn-outline-primary {
+    --bs-btn-color: var(--bs-primary-text-emphasis);
+    --bs-btn-border-color: var(--bs-primary-text-emphasis);
+}
+
+[data-bs-theme=dark] .bd-more-libraries .btn-outline-secondary {
+    --bs-btn-color: var(--bs-secondary-color);
+}
+
+.bd-lib-logo {
+    width: 48px;
+    height: 48px;
+    object-fit: contain;
+}
 
 /*** END: home ***/
 

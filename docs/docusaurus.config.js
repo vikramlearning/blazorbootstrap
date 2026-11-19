@@ -82,10 +82,11 @@ const config = {
                 ],
             },
             footer: {
-                style: 'dark',
+                style: 'light',
                 logo: {
                     alt: 'Blazor Bootstrap home',
-                    src: 'img/logo/wordmark-night.svg',
+                    src: 'img/logo/wordmark.svg',
+                    srcDark: 'img/logo/wordmark-night.svg',
                     href: '/',
                     target: '_self',
                     width: 176,
@@ -93,19 +94,20 @@ const config = {
                 },
                 links: [
                     {
-                        title: 'Links',
+                        title: 'Product',
                         items: [
-                            { label: 'Home', to: '/', },
                             { label: 'Demos', href: 'https://demos.blazorbootstrap.com/', },
+                            { label: 'Docs', to: '/getting-started/blazor-webassembly-net-8', },
+                            { label: 'Showcase', href: 'https://demos.blazorbootstrap.com/showcase', },
                             { label: 'Blog', to: '/blog', },
                         ],
                     },
                     {
-                        title: 'Guides',
+                        title: 'Resources',
                         items: [
                             { label: 'Getting started', to: '/getting-started/blazor-webassembly-net-8', },
-                            { label: 'Install Nuget', to: '/getting-started/blazor-webassembly-net-8#install-nuget-package', },
-                            { label: 'Starter templates', to: 'https://github.com/vikramlearning/blazorbootstrap-starter-templates', },
+                            { label: 'Install NuGet', to: '/getting-started/blazor-webassembly-net-8#install-nuget-package', },
+                            { label: 'Starter templates', href: 'https://github.com/vikramlearning/blazorbootstrap-starter-templates', },
                         ],
                     },
                     {
@@ -113,12 +115,12 @@ const config = {
                         items: [
                             { label: 'Issues', href: 'https://github.com/vikramlearning/blazorbootstrap/issues', },
                             { label: 'Discussions', href: 'https://github.com/vikramlearning/blazorbootstrap/discussions', },
+                            { label: 'Open Collective', href: 'https://opencollective.com/blazorbootstrap', },
                             { label: 'Stack Overflow', href: 'https://stackoverflow.com/questions/tagged/blazor-bootstrap', },
-                            { label: 'Twitter', href: 'https://twitter.com/blazorbootstrap', },
                         ],
                     },
                 ],
-                copyright: `Copyright © ${new Date().getFullYear()} Blazor Bootstrap.`,
+                copyright: `© ${new Date().getFullYear()} Blazor Bootstrap`,
             },
             prism: {
                 theme: lightCodeTheme,
