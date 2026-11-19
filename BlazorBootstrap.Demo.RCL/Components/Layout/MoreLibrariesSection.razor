@@ -1,0 +1,28 @@
+@namespace BlazorBootstrap.Demo.RCL
+@inherits ComponentBase
+
+<section class="bd-more-libraries bg-body-secondary border-top py-5" aria-labelledby="bd-more-libraries-heading">
+    <div class="container px-4 px-md-3">
+        <h2 id="bd-more-libraries-heading" class="h4 text-center mb-1">More libraries from the team</h2>
+        <p class="text-body-secondary text-center mb-4">Free, open-source .NET libraries built by the same team.</p>
+        <div class="row row-cols-1 row-cols-md-3 g-3">
+            @foreach (var library in libraries)
+            {
+                <div class="col">
+                    <div class="card h-100">
+                        <div class="card-body d-flex flex-column gap-2">
+                            <img class="bd-lib-logo" src="@library.LogoUrl" width="48" height="48" alt="" />
+                            <h3 class="h6 fw-semibold mb-0">@library.Name</h3>
+                            <p class="small text-body-secondary flex-grow-1 mb-1">@library.Description</p>
+                            <div class="d-flex flex-wrap gap-2">
+                                <a class="btn btn-sm btn-outline-primary" href="@library.WebsiteUrl" target="_blank" rel="noopener">Website<span class="visually-hidden"> for @library.Name</span></a>
+                                <a class="btn btn-sm btn-outline-secondary" href="@library.GithubUrl" target="_blank" rel="noopener">GitHub<span class="visually-hidden"> for @library.Name</span></a>
+                                <a class="btn btn-sm btn-outline-secondary" href="@library.NugetUrl" target="_blank" rel="noopener">NuGet<span class="visually-hidden"> for @library.Name</span></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</section>

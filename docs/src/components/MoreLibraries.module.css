@@ -1,0 +1,79 @@
+.section {
+  padding: 3rem 0;
+  background-color: var(--ifm-color-emphasis-200);
+  border-top: 1px solid var(--ifm-color-emphasis-300);
+}
+
+.heading {
+  margin-bottom: 0.25rem;
+  text-align: center;
+  font-size: 1.5rem;
+}
+
+.intro {
+  margin-bottom: 1.5rem;
+  text-align: center;
+  color: var(--ifm-color-emphasis-800);
+}
+
+.col {
+  margin-bottom: 1rem;
+}
+
+.card {
+  height: 100%;
+  border: 1px solid var(--ifm-color-emphasis-300);
+  box-shadow: none;
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  height: 100%;
+  padding: 1rem;
+}
+
+.logo {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+}
+
+.name {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.description {
+  flex-grow: 1;
+  margin: 0 0 0.25rem;
+  font-size: 0.875rem;
+  color: var(--ifm-color-emphasis-800);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.action {
+  text-decoration: none;
+}
+
+:global([data-theme='dark']) .action:global(.button--primary) {
+  --ifm-button-border-color: var(--ifm-color-primary-lighter);
+}
+
+.visuallyHidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
