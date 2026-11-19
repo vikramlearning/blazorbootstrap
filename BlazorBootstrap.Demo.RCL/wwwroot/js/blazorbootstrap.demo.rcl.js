@@ -6,16 +6,21 @@
 async function copyToClipboard(text, dotNetHelper) {
     let isCopied = true;
 
+    // The component may be disposed before a callback runs (for example, the user leaves the page
+    // before the reset timer fires), so a rejected .NET call is ignored instead of surfacing an error.
+    const invokeDotNet = (methodName, ...args) =>
+        dotNetHelper.invokeMethodAsync(methodName, ...args).catch(() => { });
+
     try {
         await navigator.clipboard.writeText(text);
-        dotNetHelper.invokeMethodAsync('OnCopySuccessJS');
+        invokeDotNet('OnCopySuccessJS');
     } catch (err) {
         isCopied = false;
-        dotNetHelper.invokeMethodAsync('OnCopyFailJS', err);
+        invokeDotNet('OnCopyFailJS', err?.message ?? String(err));
     }
 
     setTimeout(
-        () => { dotNetHelper.invokeMethodAsync('ResetCopyStatusJS'); },
+        () => { invokeDotNet('ResetCopyStatusJS'); },
         isCopied ? 2000 : 3000
     );
 }
