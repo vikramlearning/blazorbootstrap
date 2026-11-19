@@ -52,4 +52,9 @@
     color: #ddd6fe;
 }
 
+/* The gallery nav never collapses, so ThemeSwitcher's "Toggle theme" label (shown below lg for collapsed navbars)
+   would push the row past 320 px. The button keeps its own aria-label. */
+.sc-gallery-nav ::deep .sc-gallery-theme #bb-theme-text {
+    display: none;
+}
 
