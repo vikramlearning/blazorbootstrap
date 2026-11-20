@@ -1,3 +1,5 @@
+using System.Text.RegularExpressions;
+
 namespace BlazorBootstrap.Demo.RCL.Components.Pages.Home;
 
 /// <summary>
@@ -13,7 +15,22 @@ public partial class Index : BlazorBootstrapComponentBase
 
     private const string GettingStartedUrl = "/getting-started/blazor-webassembly";
 
+    // The same shields.io sources as the production NuGet and GitHub badges, in JSON form.
+    // shields.io caches them for 30 minutes and allows cross-origin requests from the WebAssembly host.
+    private const string GitHubStarsBadgeUrl = "https://img.shields.io/github/stars/vikramlearning/blazorbootstrap.json";
+
     private const string InstallCommand = "dotnet add package Blazor.Bootstrap";
+
+    private const string NuGetDownloadsBadgeUrl = "https://img.shields.io/nuget/dt/Blazor.Bootstrap.json";
+
+    private const string NuGetPackageUrl = "https://www.nuget.org/packages/Blazor.Bootstrap/";
+
+    private static readonly TimeSpan LiveStatsTimeout = TimeSpan.FromSeconds(5);
+
+    // A shields.io count such as "2.9M" or "1.2k". Error messages such as "inaccessible" are rejected.
+    private static readonly Regex ShieldsCountPattern = new(@"^\d+(\.\d+)?[kMB]?$", RegexOptions.CultureInvariant);
+
+    private readonly CancellationTokenSource disposeCts = new();
 
     private string copyStatus = string.Empty;
 
@@ -31,7 +48,13 @@ public partial class Index : BlazorBootstrapComponentBase
 
     private string releaseShortDescription = default!;
 
-    private IReadOnlyList<(string Label, string Value)> stats = Array.Empty<(string Label, string Value)>();
+    private string? githubStars;
+
+    private string? githubUrl;
+
+    private string? nugetDownloads;
+
+    private IReadOnlyList<(string Label, string Value, string? Url)> stats = Array.Empty<(string Label, string Value, string? Url)>();
 
     private string title = "Blazor Bootstrap Component Library";
 
@@ -46,27 +69,35 @@ public partial class Index : BlazorBootstrapComponentBase
     protected override async ValueTask DisposeAsyncCore(bool disposing)
     {
         if (disposing)
+        {
+            // Cancelled but not disposed, so a fetch still in flight can safely observe it.
+            disposeCts.Cancel();
             objRef?.Dispose();
+        }
 
         await base.DisposeAsyncCore(disposing);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await base.OnAfterRenderAsync(firstRender);
+
+        // After the first interactive render, so prerendering and first paint never wait on the network.
+        if (firstRender)
+            await RefreshLiveStatsAsync();
     }
 
     protected override void OnInitialized()
     {
         version = $"v{Configuration["version"]}"; // example: v4.0.1
         releaseShortDescription = Configuration["release:short_description"]!;
-        releaseNotesUrl = $"{Configuration["urls:github"]}/releases";
+        githubUrl = Configuration["urls:github"];
+        releaseNotesUrl = $"{githubUrl}/releases";
 
-        // A stat with no configured value is left out instead of showing an empty box.
-        stats = new (string Label, string? Value)[]
-            {
-                ("NuGet downloads", Configuration["stats:nuget_downloads"]),
-                ("GitHub stars", Configuration["stats:github_stars"]),
-                ("Components", Configuration["stats:components"])
-            }
-            .Where(stat => !string.IsNullOrWhiteSpace(stat.Value))
-            .Select(stat => (stat.Label, stat.Value!))
-            .ToList();
+        // The configured values show until the live values arrive, and stay if they cannot be fetched.
+        nugetDownloads = Configuration["stats:nuget_downloads"];
+        githubStars = Configuration["stats:github_stars"];
+        BuildStats();
 
         base.OnInitialized();
     }
@@ -110,10 +141,61 @@ public partial class Index : BlazorBootstrapComponentBase
 
     #region Private Methods
 
+    private void BuildStats()
+    {
+        // A stat with no value is left out instead of showing an empty box.
+        stats = new (string Label, string? Value, string? Url)[]
+            {
+                ("NuGet downloads", nugetDownloads, NuGetPackageUrl),
+                ("GitHub stars", githubStars, string.IsNullOrWhiteSpace(githubUrl) ? null : githubUrl),
+                ("Components", Configuration["stats:components"], null)
+            }
+            .Where(stat => !string.IsNullOrWhiteSpace(stat.Value))
+            .Select(stat => (stat.Label, stat.Value!, stat.Url))
+            .ToList();
+    }
+
     private async Task CopyInstallCommandAsync()
     {
         objRef ??= DotNetObjectReference.Create(this);
         await SafeInvokeVoidAsync("copyToClipboard", InstallCommand, objRef);
+    }
+
+    /// <summary>
+    /// Gets the count from a shields.io JSON badge, or <see langword="null" /> when it cannot be fetched or is not a count.
+    /// </summary>
+    private async Task<string?> GetShieldsCountAsync(string url, CancellationToken cancellationToken)
+    {
+        try
+        {
+            var badge = await HttpClient.GetFromJsonAsync<ShieldsBadge>(url, cancellationToken);
+            var value = badge?.Value?.Trim();
+
+            return value is not null && ShieldsCountPattern.IsMatch(value) ? value : null;
+        }
+        catch (Exception ex) when (ex is HttpRequestException or OperationCanceledException or System.Text.Json.JsonException or NotSupportedException)
+        {
+            return null;
+        }
+    }
+
+    private async Task RefreshLiveStatsAsync()
+    {
+        using var timeoutCts = CancellationTokenSource.CreateLinkedTokenSource(disposeCts.Token);
+        timeoutCts.CancelAfter(LiveStatsTimeout);
+
+        var downloadsTask = GetShieldsCountAsync(NuGetDownloadsBadgeUrl, timeoutCts.Token);
+        var starsTask = GetShieldsCountAsync(GitHubStarsBadgeUrl, timeoutCts.Token);
+        var liveDownloads = await downloadsTask;
+        var liveStars = await starsTask;
+
+        if (disposeCts.IsCancellationRequested || (liveDownloads is null && liveStars is null))
+            return;
+
+        nugetDownloads = liveDownloads ?? nugetDownloads;
+        githubStars = liveStars ?? githubStars;
+        BuildStats();
+        StateHasChanged();
     }
 
     #endregion
@@ -123,6 +205,8 @@ public partial class Index : BlazorBootstrapComponentBase
     #region Properties, Indexers
 
     [Inject] public IConfiguration Configuration { get; set; } = default!;
+
+    [Inject] public HttpClient HttpClient { get; set; } = default!;
 
     private string FilterStatusText
     {
@@ -161,4 +245,9 @@ public partial class Index : BlazorBootstrapComponentBase
     }
 
     #endregion
+
+    /// <summary>
+    /// The part of a shields.io JSON badge this page reads, such as <c>{"value":"2.9M"}</c>.
+    /// </summary>
+    private sealed record ShieldsBadge(string? Value);
 }

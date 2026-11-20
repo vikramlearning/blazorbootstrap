@@ -225,6 +225,11 @@ h1:focus-visible {
     border: var(--bs-border-width) solid var(--bs-border-color);
 }
 
+.bd-home-stats > div:has(a:hover),
+.bd-home-stats > div:has(a:focus-visible) {
+    border-color: var(--bs-primary);
+}
+
 /*
  * Reserve the Carbon cover ad's space so the content below does not move when it loads.
  * Carbon's cover format is up to 400px wide. At 360px and wider it lays out side by side
