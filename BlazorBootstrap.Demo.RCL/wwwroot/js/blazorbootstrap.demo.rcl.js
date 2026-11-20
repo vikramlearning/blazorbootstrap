@@ -140,7 +140,7 @@ window.showcaseStore = {
 window.showcaseForms = {
     count: 0,
 
-    sync(anchor, focusFirstInvalid) {
+    sync(anchor, focusFirstInvalid, summary) {
         const form = anchor?.closest('form');
         if (!form) return false;
         const fieldSelector = 'input:not([type=hidden]), select, textarea';
@@ -177,11 +177,56 @@ window.showcaseForms = {
             const own = (field.dataset.scErrorIds || '').split(' ').filter(Boolean);
             if (!own.includes(message.id)) field.dataset.scErrorIds = [...own, message.id].join(' ');
         });
+        const invalidSelector = '[aria-invalid=true]:not([type=hidden]), :is(input, select, textarea):is(.invalid, .is-invalid)';
+        if (summary && this.updateSummary(form, summary, invalidSelector, focusFirstInvalid)) return true;
         if (!focusFirstInvalid) return false;
         // Blazor's own inputs set aria-invalid; Blazor Bootstrap's inputs only carry the "invalid" class.
-        const first = form.querySelector('[aria-invalid=true]:not([type=hidden]), :is(input, select, textarea):is(.invalid, .is-invalid)');
+        const first = form.querySelector(invalidSelector);
         if (!first) return false;
         first.focus();
+        return true;
+    },
+
+    // The opt-in summary (rule WR-002): after a failed submit it names each invalid field with its message and links to it,
+    // takes focus, and then stays up to date until no error is left. Returns whether it took focus.
+    updateSummary(form, summary, invalidSelector, afterSubmit) {
+        const fields = [...new Set([...form.querySelectorAll(invalidSelector)].map(field =>
+            field.matches('input[type=radio], input[type=checkbox]') ? (field.closest('fieldset, [role=radiogroup], [role=group]') || field) : field))];
+        if (!fields.length) {
+            summary.hidden = true;
+            summary.replaceChildren();
+            delete summary.dataset.shown;
+            return false;
+        }
+        if (!afterSubmit && !summary.dataset.shown) return false;
+        const heading = document.createElement('p');
+        heading.className = 'fw-semibold mb-1';
+        heading.textContent = `Fix ${fields.length} ${fields.length === 1 ? 'field' : 'fields'} to continue:`;
+        const list = document.createElement('ul');
+        list.className = 'mb-0';
+        fields.forEach(field => {
+            if (!field.id) field.id = `sc-form-field-${++this.count}`;
+            const label = (form.querySelector(`label[for="${CSS.escape(field.id)}"]`)?.textContent
+                || field.querySelector?.('legend')?.textContent || field.getAttribute('aria-label') || field.name || 'Field').trim();
+            const messageIds = (field.dataset.scErrorIds || '').split(' ').filter(Boolean);
+            const message = messageIds.map(id => document.getElementById(id)?.textContent?.trim()).find(Boolean);
+            const link = document.createElement('a');
+            link.href = `#${field.id}`;
+            link.className = 'alert-link';
+            link.textContent = message ? `${label.replace(/\s*\*$/, '')}: ${message}` : label;
+            link.addEventListener('click', event => {
+                event.preventDefault();
+                (field.matches('fieldset, [role=radiogroup], [role=group]') ? field.querySelector('input, select, textarea') : field)?.focus();
+            });
+            const item = document.createElement('li');
+            item.append(link);
+            list.append(item);
+        });
+        summary.replaceChildren(heading, list);
+        summary.hidden = false;
+        summary.dataset.shown = '1';
+        if (!afterSubmit) return false;
+        summary.focus();
         return true;
     }
 };

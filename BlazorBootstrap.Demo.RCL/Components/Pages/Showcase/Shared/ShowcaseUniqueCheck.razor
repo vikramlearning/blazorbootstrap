@@ -1,0 +1,7 @@
+@* Place right after the field it checks, inside the EditForm. The pending text is announced politely while the check runs. *@
+<div class="form-text" aria-live="polite">
+    @if (isChecking)
+    {
+        <span class="spinner-border spinner-border-sm me-1" aria-hidden="true"></span>@CheckingText
+    }
+</div>

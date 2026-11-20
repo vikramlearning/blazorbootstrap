@@ -1,0 +1,10 @@
+.sc-notification-dot {
+    width: .5rem;
+    height: .5rem;
+}
+
+/* Wide enough for a two-line notification; Bootstrap has no min-width utility. */
+::deep .sc-notifications-list {
+    min-width: 20rem;
+    max-width: min(24rem, calc(100vw - 2rem));
+}

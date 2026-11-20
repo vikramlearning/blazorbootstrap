@@ -5,7 +5,8 @@ namespace BlazorBootstrap.Demo.RCL.Components.Pages.Showcase.Shared;
 /// <summary>
 /// Makes a form's validation errors reach screen readers (WCAG 3.3.1, 4.1.3): each visible validation message is linked
 /// to its field through <c>aria-describedby</c>, and after a submit that leaves errors, focus moves to the first invalid
-/// field. Place it inside an <see cref="EditForm" />; it follows the form's <see cref="EditContext" />.
+/// field. With <see cref="ShowSummary" />, a failed submit also shows a summary that links to each invalid field.
+/// Place it inside an <see cref="EditForm" />; it follows the form's <see cref="EditContext" />.
 /// </summary>
 public partial class ShowcaseFormErrors : ComponentBase, IDisposable
 {
@@ -15,6 +16,7 @@ public partial class ShowcaseFormErrors : ComponentBase, IDisposable
     private static readonly TimeSpan SubmitWindow = TimeSpan.FromSeconds(3);
 
     private ElementReference anchor;
+    private ElementReference summary;
     private DateTime? submittedAt;
     private EditContext? subscribed;
     private bool syncPending;
@@ -49,7 +51,10 @@ public partial class ShowcaseFormErrors : ComponentBase, IDisposable
         await Task.Yield();
         try
         {
-            await JS.InvokeAsync<bool>("showcaseForms.sync", anchor, focus);
+            if (ShowSummary)
+                await JS.InvokeAsync<bool>("showcaseForms.sync", anchor, focus, summary);
+            else
+                await JS.InvokeAsync<bool>("showcaseForms.sync", anchor, focus);
         }
         catch (Exception ex) when (ex is JSDisconnectedException or TaskCanceledException or JSException or InvalidOperationException)
         {
@@ -119,6 +124,13 @@ public partial class ShowcaseFormErrors : ComponentBase, IDisposable
     [CascadingParameter] private EditContext? EditContext { get; set; }
 
     [Inject] private IJSRuntime JS { get; set; } = default!;
+
+    /// <summary>
+    /// Gets or sets whether a failed submit shows a summary where this component sits, naming each invalid field with
+    /// its message and linking to it, and moves focus to the summary instead of the first field (rule WR-002).
+    /// Off by default, so existing forms are unchanged.
+    /// </summary>
+    [Parameter] public bool ShowSummary { get; set; }
 
     #endregion
 }

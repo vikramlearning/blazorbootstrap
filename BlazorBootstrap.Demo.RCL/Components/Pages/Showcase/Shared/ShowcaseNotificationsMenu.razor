@@ -1,0 +1,71 @@
+@* The header's notifications menu (rule WR-001). Renders nothing for sites that don't implement
+   IShowcaseEnterpriseState, and nothing while signed out. *@
+@if (Enterprise is not null && Session.Identity.IsSignedIn)
+{
+    var notifications = Enterprise.GetNotificationsForCurrentAccount();
+    var unread = notifications.Count(n => !n.IsRead);
+
+    <div class="sc-notifications-menu @Class">
+        <Dropdown Color="DropdownColor.None" AutoCloseBehavior="DropdownAutoCloseBehavior.Outside">
+            <DropdownToggleButton Class="btn-sm position-relative" aria-label="@(unread == 0 ? "Notifications" : $"Notifications, {unread} unread")">
+                <Icon Name="IconName.Bell" aria-hidden="true" />
+                @if (unread > 0)
+                {
+                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill text-bg-danger" aria-hidden="true">@(unread > 9 ? "9+" : unread.ToString(System.Globalization.CultureInfo.InvariantCulture))</span>
+                }
+            </DropdownToggleButton>
+            <DropdownMenu Position="DropdownMenuPosition.End" Class="p-0 sc-notifications-list">
+                <li class="d-flex align-items-center justify-content-between gap-2 px-3 py-2 border-bottom">
+                    <span class="fw-semibold">Notifications</span>
+                    @if (unread > 0)
+                    {
+                        <button type="button" class="btn btn-sm btn-link p-0" @onclick="Enterprise.MarkAllNotificationsRead">Mark all as read</button>
+                    }
+                </li>
+                @if (notifications.Count == 0)
+                {
+                    <li class="px-3 py-3 small text-body-secondary">You're all caught up.</li>
+                }
+                else
+                {
+                    @foreach (var notification in notifications.Take(MaxShown))
+                    {
+                        <li class="border-bottom">
+                            @if (notification.Url is not null)
+                            {
+                                <a class="d-flex gap-2 px-3 py-2 text-decoration-none text-body" href="@notification.Url" @onclick="() => Enterprise.MarkNotificationRead(notification.Id)">
+                                    @Entry(notification)
+                                </a>
+                            }
+                            else
+                            {
+                                <button type="button" class="d-flex gap-2 w-100 px-3 py-2 border-0 bg-transparent text-start text-body" @onclick="() => Enterprise.MarkNotificationRead(notification.Id)">
+                                    @Entry(notification)
+                                </button>
+                            }
+                        </li>
+                    }
+                }
+            </DropdownMenu>
+        </Dropdown>
+    </div>
+}
+
+@code {
+    private RenderFragment Entry(ShowcaseNotification notification) => __builder =>
+    {
+        <span class="flex-shrink-0 mt-2 rounded-circle @(notification.IsRead ? "" : "bg-primary") sc-notification-dot" aria-hidden="true"></span>
+        <span class="flex-grow-1">
+            @if (!notification.IsRead)
+            {
+                <span class="visually-hidden">Unread: </span>
+            }
+            <span class="d-block @(notification.IsRead ? "" : "fw-semibold")">@notification.Title</span>
+            @if (!string.IsNullOrWhiteSpace(notification.Text))
+            {
+                <span class="d-block small text-body-secondary">@notification.Text</span>
+            }
+            <span class="d-block small text-body-secondary">@FormatAge(notification.At)</span>
+        </span>
+    };
+}

@@ -1,0 +1,45 @@
+@* A site's audit log as a Grid record list (rules WR-001 and "Showcase record lists use Grid"). *@
+@if (Enterprise is not null)
+{
+    <Grid TItem="ShowcaseAuditEntry"
+          Class="table table-hover align-middle mb-0"
+          Data="entries"
+          AllowFiltering="true"
+          AllowSorting="true"
+          AllowPaging="true"
+          PageSize="25"
+          PageSizeSelectorVisible="true"
+          PageSizeSelectorItems="@(new[] { 10, 25, 50 })"
+          PaginationItemsTextFormat="{0}–{1} of {2} entries"
+          AllowColumnChooser="true"
+          AllowExport="true"
+          ExportFileName="@ExportFileName"
+          Responsive="true"
+          EmptyText="Nothing has been recorded yet."
+          aria-label="@AriaLabel">
+        <GridColumns>
+            <GridColumn TItem="ShowcaseAuditEntry" HeaderText="When" PropertyName="At" SortKeySelector="entry => entry.At" IsDefaultSortColumn="true" SortDirection="SortDirection.Descending" TextNoWrap="true" AlwaysVisible="true">
+                @context.At.ToString("d MMM yyyy, HH:mm", System.Globalization.CultureInfo.InvariantCulture)
+            </GridColumn>
+            <GridColumn TItem="ShowcaseAuditEntry" HeaderText="Who" PropertyName="Actor" SortKeySelector="entry => entry.Actor">
+                @context.Actor
+            </GridColumn>
+            <GridColumn TItem="ShowcaseAuditEntry" HeaderText="Action" PropertyName="Action" SortKeySelector="entry => entry.Action">
+                @context.Action
+            </GridColumn>
+            <GridColumn TItem="ShowcaseAuditEntry" HeaderText="Record" PropertyName="Target" SortKeySelector="entry => entry.Target">
+                @if (context.TargetUrl is not null)
+                {
+                    <a href="@context.TargetUrl">@context.Target</a>
+                }
+                else
+                {
+                    @context.Target
+                }
+            </GridColumn>
+            <GridColumn TItem="ShowcaseAuditEntry" HeaderText="Details" PropertyName="Details" Sortable="false">
+                @context.Details
+            </GridColumn>
+        </GridColumns>
+    </Grid>
+}
