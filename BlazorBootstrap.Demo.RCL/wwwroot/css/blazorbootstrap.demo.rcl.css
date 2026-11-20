@@ -205,8 +205,22 @@ h1:focus-visible {
     box-shadow: inset 0 -1px 1px rgba(var(--bs-body-color-rgb), 0.15),0 0.25rem 1.5rem rgba(var(--bs-body-bg-rgb), 0.75)
 }
 
-.bd-home-notice:hover span,
-.bd-home-notice:focus-visible span {
+/* Announcement pill. The radius is fixed rather than 50rem so it stays a soft rounded box when the text wraps on narrow screens. */
+.bd-home-notice {
+    max-width: 100%;
+    font-size: .875rem;
+    background-color: rgba(var(--bs-body-bg-rgb), 0.75);
+    border: var(--bs-border-width) solid rgba(var(--bd-violet-rgb), 0.25);
+    border-radius: 1.25rem;
+}
+
+.bd-home-notice:hover,
+.bd-home-notice:focus-visible {
+    border-color: rgba(var(--bd-violet-rgb), 0.6);
+}
+
+.bd-home-notice:hover > span,
+.bd-home-notice:focus-visible > span {
     text-decoration: underline;
 }
 
