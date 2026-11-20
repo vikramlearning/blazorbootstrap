@@ -12,10 +12,12 @@
     <div class="container-xxl bd-gutter">
         <div class="col-md-8 mx-auto text-center">
             <img src="images/logo/logo.svg" width="184" height="165" alt="Blazor Bootstrap" class="bb-site-brand d-block mx-auto mb-3">
-            <a class="bd-home-notice d-inline-flex flex-column flex-lg-row justify-content-center align-items-center gap-2 mb-4 lh-sm text-decoration-none"
+            @* Announcement pill: version chip, short release summary, arrow. Its accessible name reads "New in v4.0.0 RichTextEditor, …". *@
+            <a class="bd-home-notice d-inline-flex align-items-center gap-2 mb-4 p-1 pe-3 lh-sm text-start text-decoration-none"
                href="@releaseNotesUrl" target="_blank" rel="noopener">
-                <strong class="d-inline-block p-2 rounded-3 masthead-notice">New in @version</strong>
+                <strong class="flex-shrink-0 px-2 py-1 rounded-pill masthead-notice"><span class="visually-hidden">New in </span>@version</strong>
                 <span class="text-body">@releaseShortDescription</span>
+                <Icon Name="IconName.ArrowRight" class="flex-shrink-0 text-body-secondary" aria-hidden="true" />
             </a>
             <h1 class="mb-3 fw-semibold" id="home-title">Build fast, responsive sites with Blazor Bootstrap</h1>
             <p class="lead mb-4">
