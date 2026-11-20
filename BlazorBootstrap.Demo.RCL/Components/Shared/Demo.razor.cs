@@ -11,6 +11,11 @@ public partial class Demo : BlazorBootstrapComponentBase
     private string? clipboardTooltipTitle = "Copy to clipboard";
 
     /// <summary>
+    /// The copy result announced to assistive technology through the status region; empty when there is nothing to announce.
+    /// </summary>
+    private string copyStatus = string.Empty;
+
+    /// <summary>
     /// A reference to this component instance for use in JavaScript calls.
     /// </summary>
     private DotNetObjectReference<Demo> objRef = default!;
@@ -68,7 +73,9 @@ public partial class Demo : BlazorBootstrapComponentBase
     [JSInvokable]
     public void OnCopyFailJS(string errorMessage)
     {
-        // TODO: show message
+        copyStatus = "Couldn't copy. Select the code to copy it.";
+
+        StateHasChanged();
     }
 
     /// <summary>
@@ -80,6 +87,7 @@ public partial class Demo : BlazorBootstrapComponentBase
         clipboardTooltipTitle = "Copied!";
         clipboardTooltipIconName = IconName.Check2;
         clipboardTooltipIconColor = IconColor.Success;
+        copyStatus = "Copied to clipboard";
 
         StateHasChanged();
     }
@@ -93,6 +101,7 @@ public partial class Demo : BlazorBootstrapComponentBase
         clipboardTooltipTitle = "Copy to clipboard";
         clipboardTooltipIconName = IconName.Clipboard;
         clipboardTooltipIconColor = IconColor.None;
+        copyStatus = string.Empty;
 
         StateHasChanged();
     }

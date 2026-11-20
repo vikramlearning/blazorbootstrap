@@ -2459,6 +2459,81 @@ window.blazorBootstrap = {
         },
         update: (elementId) => window.blazorBootstrap.popover.getInstance(elementId)?.update()
     },
+    preload: {
+        // One entry per shown preload root: { inertElements, focusedElement, timeoutId }.
+        instances: new Map(),
+        // Blazor's reconnect and error UI must stay usable if the connection drops while the overlay is shown.
+        keepReachableSelector: 'script, template, .modal-page-loading, #components-reconnect-modal, #blazor-error-ui',
+        getStatusElement: (preloadEl) => preloadEl?.querySelector(':scope > [role="status"]'),
+        hide: (elementId) => {
+            let state = window.blazorBootstrap.preload.instances.get(elementId);
+            if (state == null)
+                return;
+
+            window.blazorBootstrap.preload.instances.delete(elementId);
+            clearTimeout(state.timeoutId);
+
+            let preloadEl = document.getElementById(elementId);
+            let statusEl = window.blazorBootstrap.preload.getStatusElement(preloadEl);
+            if (statusEl != null)
+                statusEl.textContent = '';
+
+            state.inertElements.forEach((el) => el.inert = false);
+
+            // Return focus only when it was lost to the inert page or left inside the hidden overlay, never when it moved on.
+            let activeEl = document.activeElement;
+            let focusIsLost = activeEl == null || activeEl === document.body || (preloadEl?.contains(activeEl) ?? false);
+            if (focusIsLost && state.focusedElement?.isConnected)
+                state.focusedElement.focus({ preventScroll: true });
+        },
+        // Status messages (WCAG 2.2 SC 4.1.3): the text goes into a status region that is already rendered, so it is announced
+        // without moving focus. Without text, the overlay's custom content supplies the words.
+        setStatusText: (preloadEl, text) => {
+            let statusEl = window.blazorBootstrap.preload.getStatusElement(preloadEl);
+            if (statusEl == null)
+                return;
+
+            let bodyEl = preloadEl.querySelector('.modal-body');
+            statusEl.textContent = text ?? (bodyEl?.textContent ?? '').replace(/\s+/g, ' ').trim();
+        },
+        show: (elementId, text) => {
+            let preloadEl = document.getElementById(elementId);
+            if (preloadEl == null)
+                return;
+
+            window.blazorBootstrap.preload.hide(elementId);
+
+            let focusedEl = document.activeElement;
+            let state = {
+                inertElements: [],
+                focusedElement: focusedEl != null && focusedEl !== document.body ? focusedEl : null,
+                timeoutId: 0
+            };
+
+            // Keyboard and assistive technology users can't reach the page behind the overlay, as mouse users can't.
+            for (let el = preloadEl; el.parentElement != null && el !== document.body; el = el.parentElement) {
+                for (let siblingEl of el.parentElement.children) {
+                    if (siblingEl === el || siblingEl.inert || siblingEl.matches(window.blazorBootstrap.preload.keepReachableSelector))
+                        continue;
+
+                    siblingEl.inert = true;
+                    state.inertElements.push(siblingEl);
+                }
+            }
+
+            // Wait until the shown region is in the accessibility tree; screen readers skip text added together with the region.
+            state.timeoutId = setTimeout(() => window.blazorBootstrap.preload.setStatusText(preloadEl, text), 100);
+            window.blazorBootstrap.preload.instances.set(elementId, state);
+        },
+        update: (elementId, text) => {
+            let state = window.blazorBootstrap.preload.instances.get(elementId);
+            if (state == null)
+                return;
+
+            clearTimeout(state.timeoutId);
+            window.blazorBootstrap.preload.setStatusText(document.getElementById(elementId), text);
+        }
+    },
     radioInput: {
         isChanging: false,
         initialize: (elementId, elementName, dotNetHelper) => {

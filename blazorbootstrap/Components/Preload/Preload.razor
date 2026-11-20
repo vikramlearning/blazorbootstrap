@@ -11,8 +11,8 @@
                 }
                 else
                 {
-                    <div class="text-center @spinnerColor">
-                        <div class="spinner-border" role="status">
+                    <div class="text-center">
+                        <div class="spinner-border @spinnerColor" aria-hidden="true">
                             <span class="visually-hidden">Loading...</span>
                         </div>
                         @if (!string.IsNullOrWhiteSpace(loadingText))
@@ -28,6 +28,8 @@
             </div>
         </div>
     </div>
+    @* Filled by blazor.bootstrap.js after the overlay shows, so screen readers announce it (see Preload.OnAfterRenderAsync). *@
+    <div class="visually-hidden" role="status"></div>
 </div>
 
 @if (showBackdrop)

@@ -2,10 +2,11 @@
 @inherits BlazorBootstrapComponentBase
 
 <div>
-    <Button Color="ButtonColor.Info" Type="ButtonType.Link" To="@Href">
+    @* A plain link: it navigates, so it needs no role="button" (rules.md: native elements first). *@
+    <a class="btn btn-info" href="@Href">
         <span>@Text</span>
-        <Icon Class="ml-1" Name="IconName.BoxArrowUpRight" />
-    </Button>
+        <Icon Class="ml-1" Name="IconName.BoxArrowUpRight" aria-hidden="true" />
+    </a>
 </div>
 
 @code {

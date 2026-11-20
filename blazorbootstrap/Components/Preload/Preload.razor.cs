@@ -4,6 +4,10 @@ public partial class Preload : BlazorBootstrapComponentBase
 {
     #region Fields and Constants
 
+    private bool isBlockingApplied;
+
+    private string? lastAnnouncedText;
+
     private string? loadingText;
 
     private bool showBackdrop;
@@ -14,6 +18,8 @@ public partial class Preload : BlazorBootstrapComponentBase
 
     #region Methods
 
+    #region Protected Override Methods
+
     /// <inheritdoc />
     protected override async ValueTask DisposeAsyncCore(bool disposing)
     {
@@ -21,34 +27,99 @@ public partial class Preload : BlazorBootstrapComponentBase
         {
             PageLoadingService.OnShow -= OnShow;
             PageLoadingService.OnHide -= OnHide;
+
+            // Never leave the page blocked when the overlay goes away while it is shown.
+            if (isBlockingApplied)
+            {
+                isBlockingApplied = false;
+                await SafeInvokeVoidAsync("window.blazorBootstrap.preload.hide", Id);
+            }
         }
 
         await base.DisposeAsyncCore(disposing);
     }
 
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        // Call the browser only when the rendered state changes, so Show() followed by Hide() in one handler does nothing.
+        if (showBackdrop)
+        {
+            var announcedText = GetAnnouncedText();
+
+            if (!isBlockingApplied)
+            {
+                isBlockingApplied = true;
+                lastAnnouncedText = announcedText;
+                await SafeInvokeVoidAsync("window.blazorBootstrap.preload.show", Id, announcedText);
+            }
+            else if (announcedText != lastAnnouncedText)
+            {
+                lastAnnouncedText = announcedText;
+                await SafeInvokeVoidAsync("window.blazorBootstrap.preload.update", Id, announcedText);
+            }
+        }
+        else if (isBlockingApplied)
+        {
+            isBlockingApplied = false;
+            await SafeInvokeVoidAsync("window.blazorBootstrap.preload.hide", Id);
+        }
+
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
     protected override void OnInitialized()
     {
+        base.OnInitialized();
+
         PageLoadingService.OnShow += OnShow;
         PageLoadingService.OnHide += OnHide;
     }
 
-    private void OnHide()
-    {
-        showBackdrop = false;
+    #endregion
 
-        StateHasChanged();
+    #region Private Methods
+
+    /// <summary>
+    /// Gets the text announced while the overlay is shown: the visible loading text, otherwise <see cref="VisuallyHiddenText" />.
+    /// Returns <see langword="null"/> for custom content, whose own text is announced instead.
+    /// </summary>
+    private string? GetAnnouncedText()
+    {
+        if (ChildContent is not null)
+            return null;
+
+        if (!string.IsNullOrWhiteSpace(loadingText))
+            return loadingText;
+
+        if (!string.IsNullOrWhiteSpace(LoadingText))
+            return LoadingText;
+
+        return VisuallyHiddenText;
     }
 
-    private void OnShow(SpinnerColor spinnerColor, string? loadingText)
-    {
-        this.spinnerColor = spinnerColor.ToSpinnerColorClass();
+    // PreloadService events can be raised off the renderer's thread (for example from Task.Run), so render through InvokeAsync;
+    // otherwise Hide() fails on the Server host and the page stays blocked.
+    private void OnHide() =>
+        _ = InvokeAsync(() =>
+        {
+            showBackdrop = false;
 
-        showBackdrop = true;
+            StateHasChanged();
+        });
 
-        this.loadingText = loadingText;
+    private void OnShow(SpinnerColor spinnerColor, string? loadingText) =>
+        _ = InvokeAsync(() =>
+        {
+            this.spinnerColor = spinnerColor.ToSpinnerColorClass();
 
-        StateHasChanged();
-    }
+            showBackdrop = true;
+
+            this.loadingText = loadingText;
+
+            StateHasChanged();
+        });
+
+    #endregion
 
     #endregion
 
@@ -95,6 +166,18 @@ public partial class Preload : BlazorBootstrapComponentBase
     /// </summary>
     [Inject]
     private PreloadService PageLoadingService { get; set; } = default!;
+
+    /// <summary>
+    /// Gets or sets the text screen readers announce while the overlay is shown and no loading text is set.
+    /// <para>
+    /// Default value is 'Loading...'.
+    /// </para>
+    /// </summary>
+    [AddedVersion("4.1.0")]
+    [DefaultValue("Loading...")]
+    [Description("Gets or sets the text screen readers announce while the overlay is shown and no loading text is set.")]
+    [Parameter]
+    public string VisuallyHiddenText { get; set; } = "Loading...";
 
     #endregion
 }

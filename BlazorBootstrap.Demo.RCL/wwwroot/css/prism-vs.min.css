@@ -54,7 +54,7 @@ pre[class*=language-] {
 }
 
 .prism-token.prism-boolean, .prism-token.prism-constant, .prism-token.prism-inserted, .prism-token.prism-number, .prism-token.prism-symbol, .prism-token.prism-url, .prism-token.prism-variable {
-    color: #36acaa
+    color: #007672
 }
 
 .language-autohotkey .prism-token.prism-selector, .prism-language-json .prism-token.prism-boolean, .prism-language-json .prism-token.prism-number, .prism-token.prism-atrule, .prism-token.prism-attr-value, .prism-token.prism-keyword, code[class*=language-css] {
@@ -86,7 +86,7 @@ pre[class*=language-] {
 }
 
 .language-json .prism-token.prism-property, .prism-token.prism-class-name {
-    color: #2b91af
+    color: #1a6f8a
 }
 
 .prism-token.prism-selector, .prism-token.prism-tag {
@@ -94,7 +94,7 @@ pre[class*=language-] {
 }
 
 .prism-token.prism-attr-name, .prism-token.prism-entity, .prism-token.prism-property, .prism-token.prism-regex {
-    color: red
+    color: #d00000
 }
 
 .prism-token.prism-directive.prism-tag .prism-tag {

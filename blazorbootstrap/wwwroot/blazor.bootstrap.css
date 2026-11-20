@@ -180,6 +180,15 @@
     border: inherit !important;
 }
 
+/* WCAG 1.4.3: light text over a darker backdrop keeps loading text at least 4.5:1 over any page; SpinnerColor colors only the spinner. */
+.modal.modal-page-loading {
+    --bs-modal-color: var(--bs-light);
+}
+
+.modal-backdrop.modal-backdrop-page-loading {
+    --bs-backdrop-opacity: 0.6;
+}
+
 /* confirm dialog */
 .modal-confirmation {
     z-index: var(--bb-confirm-dialog-z-index) !important;
