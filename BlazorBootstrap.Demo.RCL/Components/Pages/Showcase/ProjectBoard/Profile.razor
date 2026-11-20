@@ -17,6 +17,37 @@
         var person = State.CurrentPerson;
     }
 
+    @if (person is not null)
+    {
+        <section class="tb-panel mt-4" aria-labelledby="tb-profile-details-title">
+            <h2 class="tb-section-title" id="tb-profile-details-title">Work details</h2>
+            <p class="small text-body-secondary">Your job title shows next to your name on project teams; your weekly capacity sets how full the workload view says you are.</p>
+            <EditForm EditContext="editContext" OnSubmit="SaveWork" FormName="pb-profile-work" novalidate>
+                <DataAnnotationsValidator />
+                <ShowcaseFormErrors ShowSummary="true" />
+                <div class="row g-3 mb-3">
+                    <div class="col-sm-7 col-lg-5">
+                        <label class="form-label fw-semibold" for="tb-profile-title">Job title</label>
+                        <InputText id="tb-profile-title" class="form-control" @bind-Value="form.Title" maxlength="@PbState.MaxContactFieldLength" autocomplete="organization-title" />
+                        <ValidationMessage For="() => form.Title" />
+                    </div>
+                    <div class="col-sm-5 col-lg-3">
+                        <label class="form-label fw-semibold" for="tb-profile-capacity">Weekly capacity in hours</label>
+                        <InputNumber TValue="int?" id="tb-profile-capacity" class="form-control" @bind-Value="form.CapacityHours" inputmode="numeric" step="1" min="0" max="@PbState.MaxCapacityHours"
+                                     ParsingErrorMessage="Enter your weekly capacity as whole hours, like 32." aria-describedby="tb-profile-capacity-help" />
+                        <div class="form-text" id="tb-profile-capacity-help">0 to @PbState.MaxCapacityHours hours a week.</div>
+                        <ValidationMessage For="() => form.CapacityHours" />
+                    </div>
+                </div>
+                <div class="d-flex flex-wrap align-items-center gap-3">
+                    <Button Type="ButtonType.Submit" Color="ButtonColor.Primary">Save work details</Button>
+                    @* Always rendered, so the outcome is announced; a counter makes a repeat announce again. *@
+                    <span class="small fw-semibold @(workIsError ? "text-danger-emphasis" : null)" role="status">@workStatus</span>
+                </div>
+            </EditForm>
+        </section>
+    }
+
     <section class="tb-panel mt-4" aria-labelledby="tb-profile-work-title">
         <h2 class="tb-section-title" id="tb-profile-work-title">Your work</h2>
         @if (person is null)
@@ -26,7 +57,9 @@
         else
         {
             var today = State.Clock.Today;
-            var projects = State.Projects.Where(project => project.MemberIds.Contains(person.Id)).ToList();
+            var allProjects = State.Projects.Where(project => project.MemberIds.Contains(person.Id)).ToList();
+            var projects = allProjects.Where(project => project.Status != PbProjectStatus.Completed).ToList();
+            var completed = allProjects.Count - projects.Count;
             var open = State.AllTasks.Where(task => task.AssigneeId == person.Id && task.Status != PbTaskStatus.Done).ToList();
             var overdue = open.Count(task => PbDisplay.IsOverdue(task, today));
             var sunday = PbState.WeekStart(today).AddDays(6);
@@ -63,9 +96,13 @@
             </dl>
 
             <h3 class="h6 fw-bold mt-4">Projects you're on</h3>
+            @if (completed > 0)
+            {
+                <p class="small text-body-secondary">The ones still running. You were also on @TaskCard.Plural(completed, "completed project"); find them on <a href="@($"{PbLayout.Base}/projects")">Project boards</a>.</p>
+            }
             @if (projects.Count == 0)
             {
-                <p class="mb-0 text-body-secondary">You aren't on a project team yet. A project manager adds people to projects.</p>
+                <p class="mb-0 text-body-secondary">You aren't on a running project team right now. A project manager adds people to projects.</p>
             }
             else
             {

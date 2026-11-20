@@ -3,98 +3,148 @@
 
 <PageTitle>Project boards · @PbSeedData.ProductName</PageTitle>
 
-@* Every project as a card (status, due date, progress, team, next milestone), filtered by status, each linking to its board. *@
+@* Every project in a Grid (key, name linking to its board, client, status, project manager, due date, progress, the person's
+   open tasks, next milestone, team), searched and filtered by status and by the projects the person is on. *@
 <div class="container-fluid px-lg-4">
     @{
         var all = State.Projects;
-        var shown = all.Where(project => filter is not { } status || project.Status == status).ToList();
-        var today = State.Clock.Today;
-        var me = State.CurrentPerson;
     }
 
     <h1 class="tb-title mb-1">Project boards</h1>
     <p class="tb-lead mb-3">Every project at @PbSeedData.AgencyName. Open one for its board of tasks, in columns or as a list.</p>
 
-    <div class="tb-projects-filter mb-2" role="group" aria-label="Show projects by status">
-        @foreach (var option in FilterOptions)
-        {
-            var pressed = filter == option.Status;
-            <button type="button" class="btn btn-sm @(pressed ? "btn-primary" : "btn-outline-secondary")" aria-pressed="@(pressed ? "true" : "false")"
-                    @onclick="() => SetFilter(option.Status)" @key="option.Text">
-                @option.Text <span class="tb-projects-count">(@(option.Status is { } status ? all.Count(project => project.Status == status) : all.Count))</span>
-            </button>
-        }
-    </div>
-
-    @* Always rendered, so the filter's result is announced. *@
-    <p class="small text-body-secondary mb-3" role="status">@ShownText(shown.Count, all.Count)</p>
-
-    @if (all.Count == 0)
-    {
-        <section class="tb-panel" aria-labelledby="tb-projects-empty-title">
-            <h2 class="tb-section-title" id="tb-projects-empty-title">No projects yet</h2>
-            <p class="mb-0">A project manager sets up projects, and a won deal becomes one. They'll show here.</p>
-        </section>
-    }
-    else if (shown.Count == 0)
-    {
-        <p class="tb-panel mb-0">No @FilterWord projects right now. <button type="button" class="btn btn-link p-0 align-baseline" @onclick="() => SetFilter(null)">Show all projects</button></p>
-    }
-    else
-    {
-        <ul class="list-unstyled row row-cols-1 row-cols-md-2 row-cols-xxl-3 g-3 mb-0">
-            @foreach (var project in shown)
+    <section class="tb-panel mb-3" aria-labelledby="tb-projects-filters-title">
+        <h2 class="tb-section-title" id="tb-projects-filters-title">Filter projects</h2>
+        <div class="tb-list-filters" role="search" aria-labelledby="tb-projects-filters-title">
+            <div class="tb-list-search">
+                <label class="form-label small fw-semibold" for="tb-projects-search">Search</label>
+                @* Filters on every keystroke; the bound value changes only on change, so a render during typing never writes an older value back. *@
+                <input id="tb-projects-search" type="search" class="form-control" value="@searchBoxValue" placeholder="Key, name, or client" autocomplete="off" maxlength="120"
+                       @oninput="OnSearchInputAsync" @onchange="OnSearchChanged" />
+            </div>
+            <div>
+                <label class="form-label small fw-semibold" for="tb-projects-status">Status</label>
+                <select id="tb-projects-status" class="form-select" @bind="statusFilter" @bind:after="FiltersChangedAsync">
+                    <option value="">All statuses (@Count(StatusCount(null)))</option>
+                    @foreach (var status in Enum.GetValues<PbProjectStatus>())
+                    {
+                        <option value="@status" @key="status">@PbDisplay.ProjectStatusLabel(status) (@Count(StatusCount(status)))</option>
+                    }
+                </select>
+            </div>
+            <div class="align-self-center pt-sm-4">
+                <div class="form-check mb-0">
+                    <input class="form-check-input" type="checkbox" id="tb-projects-mine" @bind="mineOnly" @bind:after="FiltersChangedAsync" />
+                    <label class="form-check-label fw-semibold" for="tb-projects-mine">Only projects I'm on</label>
+                </div>
+            </div>
+        </div>
+        <div class="tb-list-meta">
+            <p class="small text-body-secondary mb-0" aria-live="polite" tabindex="-1" @ref="countRegion">Showing @Count(Shown.Count) of @Count(all.Count) projects.</p>
+            @if (IsFiltered)
             {
-                var client = State.FindClient(project.ClientId);
-                var progress = State.ProjectProgress(project.Id);
-                var percent = progress.Total == 0 ? 0 : progress.Done * 100.0 / progress.Total;
-                var progressText = $"{progress.Done} of {TaskCard.Plural(progress.Total, "task")} done";
-                var team = State.People.Where(person => project.MemberIds.Contains(person.Id)).ToList();
-                var next = project.Milestones.Where(milestone => milestone.Due.Date >= today).OrderBy(milestone => milestone.Due).FirstOrDefault();
-                var mine = me is null ? 0 : State.TasksOf(project.Id).Count(task => task.AssigneeId == me.Id && task.Status != PbTaskStatus.Done);
-                var titleId = $"tb-projects-{project.Id}";
-                <li class="col" @key="@($"project-{project.Id}")">
-                    <article class="tb-card tb-projects-card h-100" aria-labelledby="@titleId">
-                        <div class="d-flex justify-content-between align-items-start gap-2 mb-1">
-                            <span class="tb-key">@project.Key</span>
-                            <span class="@($"badge text-bg-{PbDisplay.ProjectStatusColor(project.Status)}")">@PbDisplay.ProjectStatusLabel(project.Status)</span>
-                        </div>
-                        <h2 class="tb-projects-name" id="@titleId"><a href="@PbDisplay.ProjectUrl(project.Id)">@project.Name</a></h2>
-                        <p class="small text-body-secondary mb-3">@(client?.Name ?? "Internal project") · Due @PbDisplay.Date(project.DueDate)</p>
-
-                        <Progress Height="8" Class="mb-1">
-                            <ProgressBar Width="percent" aria-label="@($"Progress of {project.Name}")" aria-valuenow="@Math.Round(percent).ToString(CultureInfo.InvariantCulture)"
-                                         aria-valuemin="0" aria-valuemax="100" aria-valuetext="@progressText" />
-                        </Progress>
-                        <p class="small mb-3">@progressText@(mine > 0 ? $" · {TaskCard.Plural(mine, "open task")} of yours" : null)</p>
-
-                        <dl class="tb-projects-facts mb-0">
-                            <div>
-                                <dt>Next milestone</dt>
-                                <dd>@(next is null ? "None coming up" : $"{next.Title}, {PbDisplay.Date(next.Due)}")</dd>
-                            </div>
-                            <div>
-                                <dt>Team</dt>
-                                <dd>
-                                    @if (team.Count == 0)
-                                    {
-                                        <span>Nobody yet</span>
-                                    }
-                                    else
-                                    {
-                                        <ul class="tb-projects-team list-unstyled mb-0">
-                                            @foreach (var person in team)
-                                            {
-                                                <li @key="@($"team-{project.Id}-{person.Id}")"><span class="tb-person" title="@person.Name" aria-hidden="true">@person.Initials</span><span class="visually-hidden">@person.Name</span></li>
-                                            }
-                                        </ul>
-                                    }
-                                </dd>
-                            </div>
-                        </dl>
-                    </article>
-                </li>
+                <Button Color="ButtonColor.Link" Size="ButtonSize.Small" Class="p-0" @onclick="ClearFiltersAsync">Show every project</Button>
             }
-        </ul>
-    }
+            @* Back to the saved view's defaults: active first, then planned, on hold, and completed, by due date; 25 a page; every column in its place. *@
+            <Button Color="ButtonColor.Link" Size="ButtonSize.Small" Class="p-0" @onclick="ResetViewAsync">Reset view</Button>
+        </div>
+    </section>
+
+    @* Always rendered, so a reset is announced. *@
+    <p class="tb-list-status mb-2" role="status">@statusMessage</p>
+
+    <section class="tb-panel" aria-label="Project list">
+        <ShowcaseDataState Status="@(viewLoaded ? ShowcaseDataStatus.Ready : ShowcaseDataStatus.Loading)"
+                           IsEmpty="@(all.Count == 0)"
+                           EmptyIcon="IconName.Kanban"
+                           EmptyTitle="No projects yet"
+                           EmptyText="A project manager sets up projects, and a won deal becomes one. They'll show here."
+                           LoadingText="Loading projects…"
+                           OnRetry="RefreshGridAsync">
+            <ChildContent>
+                <Grid @ref="grid"
+                      @key="gridVersion"
+                      TItem="BoardRow"
+                      Class="table table-hover align-middle tb-table-wide sc-grid-row-links"
+                      GridContainerClass="tb-grid border rounded-3"
+                      DataProvider="ProvideProjectsAsync"
+                      SettingsProvider="view.GetSettingsAsync"
+                      GridSettingsChanged="SaveSettingsAsync"
+                      AllowPaging="true"
+                      PageSize="@pageSize"
+                      PageSizeSelectorVisible="true"
+                      PageSizeSelectorItems="@(new[] { 10, 25, 50, 100 })"
+                      PaginationItemsTextFormat="{0}–{1} of {2} projects"
+                      AllowSorting="true"
+                      AllowColumnChooser="true"
+                      AllowExport="true"
+                      ExportFileName="project-board-projects"
+                      Responsive="true"
+                      EmptyText="No projects match these filters. Clear a filter, or search for part of a key or name."
+                      aria-label="Projects">
+                    <GridColumns>
+                        <GridColumn TItem="BoardRow" HeaderText="Key" PropertyName="Key" SortString="key" SortKeySelector="row => row.Key"
+                                    IsDefaultSortColumn="@view.IsSortColumn("key")" SortDirection="@view.DirectionFor("key")" TextNoWrap="true">
+                            <span class="tb-key">@context.Key</span>
+                        </GridColumn>
+                        <GridColumn TItem="BoardRow" HeaderText="Project" PropertyName="Name" SortString="name" SortKeySelector="row => row.Name"
+                                    IsDefaultSortColumn="@view.IsSortColumn("name")" SortDirection="@view.DirectionFor("name")" AlwaysVisible="true">
+                            @* The stretched link makes the whole row open the project's board. *@
+                            <a class="tb-row-link stretched-link" href="@PbDisplay.ProjectUrl(context.Id)">@context.Name</a>
+                        </GridColumn>
+                        <GridColumn TItem="BoardRow" HeaderText="Client" PropertyName="Client" SortString="client" SortKeySelector="row => row.Client"
+                                    IsDefaultSortColumn="@view.IsSortColumn("client")" SortDirection="@view.DirectionFor("client")">
+                            @context.Client
+                        </GridColumn>
+                        <GridColumn TItem="BoardRow" HeaderText="Status" PropertyName="Status" SortString="status" SortKeySelector="row => row.StatusOrder"
+                                    IsDefaultSortColumn="@view.IsSortColumn("status")" SortDirection="@view.DirectionFor("status")" TextNoWrap="true">
+                            <span class="@($"badge text-bg-{PbDisplay.ProjectStatusColor(context.StatusValue)}")">@context.Status</span>
+                        </GridColumn>
+                        <GridColumn TItem="BoardRow" HeaderText="Project manager" PropertyName="Manager" SortString="manager" SortKeySelector="row => row.Manager"
+                                    IsDefaultSortColumn="@view.IsSortColumn("manager")" SortDirection="@view.DirectionFor("manager")" TextNoWrap="true">
+                            @context.Manager
+                        </GridColumn>
+                        <GridColumn TItem="BoardRow" HeaderText="Due" PropertyName="DueText" SortString="due" SortKeySelector="row => row.Due"
+                                    IsDefaultSortColumn="@view.IsSortColumn("due")" SortDirection="@view.DirectionFor("due")" TextNoWrap="true">
+                            @context.DueText
+                        </GridColumn>
+                        <GridColumn TItem="BoardRow" HeaderText="Progress" PropertyName="ProgressText" SortString="progress" SortKeySelector="row => row.Percent"
+                                    IsDefaultSortColumn="@view.IsSortColumn("progress")" SortDirection="@view.DirectionFor("progress")">
+                            <div class="tb-projects-progress">
+                                <Progress Height="6" Class="mb-1">
+                                    <ProgressBar Width="@context.Percent" aria-label="@($"Progress of {context.Name}")" aria-valuenow="@Math.Round(context.Percent).ToString(CultureInfo.InvariantCulture)"
+                                                 aria-valuemin="0" aria-valuemax="100" aria-valuetext="@context.ProgressText" />
+                                </Progress>
+                                <span class="small text-nowrap">@context.ProgressText</span>
+                            </div>
+                        </GridColumn>
+                        <GridColumn TItem="BoardRow" HeaderText="My open tasks" PropertyName="MyOpenTasks" SortString="mine" SortKeySelector="row => row.MyOpenTasks"
+                                    IsDefaultSortColumn="@view.IsSortColumn("mine")" SortDirection="@view.DirectionFor("mine")" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End">
+                            @(context.MyOpenTasks == 0 ? "None" : context.MyOpenTasks.ToString(CultureInfo.InvariantCulture))
+                        </GridColumn>
+                        <GridColumn TItem="BoardRow" HeaderText="Next milestone" PropertyName="NextMilestone" SortString="milestone" SortKeySelector="row => row.NextMilestoneDue ?? DateTime.MaxValue"
+                                    IsDefaultSortColumn="@view.IsSortColumn("milestone")" SortDirection="@view.DirectionFor("milestone")">
+                            @context.NextMilestone
+                        </GridColumn>
+                        <GridColumn TItem="BoardRow" HeaderText="Team" PropertyName="TeamText" SortString="team" SortKeySelector="row => row.TeamCount"
+                                    IsDefaultSortColumn="@view.IsSortColumn("team")" SortDirection="@view.DirectionFor("team")">
+                            @if (context.Team.Count == 0)
+                            {
+                                <span>Nobody yet</span>
+                            }
+                            else
+                            {
+                                <ul class="tb-projects-team list-unstyled mb-0">
+                                    @foreach (var person in context.Team)
+                                    {
+                                        <li @key="@($"team-{context.Id}-{person.Id}")"><span class="tb-person" title="@person.Name" aria-hidden="true">@person.Initials</span><span class="visually-hidden">@person.Name</span></li>
+                                    }
+                                </ul>
+                            }
+                        </GridColumn>
+                    </GridColumns>
+                </Grid>
+            </ChildContent>
+        </ShowcaseDataState>
+    </section>
 </div>

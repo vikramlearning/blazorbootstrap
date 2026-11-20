@@ -1,0 +1,26 @@
+@page "/showcase/project-board/audit"
+@layout PbWorkLayout
+
+<PageTitle>Audit log · @PbSeedData.ProductName</PageTitle>
+
+@* Project and account managers see it: the guard keeps team members out, and the state shows the log to managers only. The
+   client Activity page stays the account managers' relationship timeline (calls, emails, meetings, notes); this is the record
+   of every change. *@
+<div class="container-fluid px-lg-4">
+    <PbRoleGuard Role="@PbSeedData.ManagerRoles">
+        <div class="mb-3">
+            <h1 class="tb-title">Audit log</h1>
+            <p class="tb-lead mb-0">
+                Who changed what, and when, newest first: clients and contacts, projects and milestones, tasks (created, changed, moved between columns,
+                assigned, completed, deleted), checklists and comments, deals, and logged activity. Each record links to its page.
+            </p>
+        </div>
+
+        <section class="tb-panel" aria-label="Audit log entries">
+            <p class="small text-body-secondary mb-3">
+                <Icon Name="IconName.Lock" class="me-1" aria-hidden="true" />Kept for this browser tab. Entries can't be changed or deleted.
+            </p>
+            <ShowcaseAuditLog ExportFileName="project-board-audit-log" />
+        </section>
+    </PbRoleGuard>
+</div>

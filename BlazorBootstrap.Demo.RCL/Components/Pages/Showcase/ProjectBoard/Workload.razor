@@ -159,7 +159,7 @@
                                                         </select>
                                                         <button type="button" class="btn btn-sm btn-primary text-nowrap" disabled="@(draft == (task.AssigneeId ?? string.Empty))"
                                                                 @onclick="() => Reassign(taskId, personId)">
-                                                            Reassign<span class="visually-hidden"> @taskKey</span>
+                                                            Reassign<span class="visually-hidden">&#32;@taskKey</span>
                                                         </button>
                                                     </div>
                                                 </td>

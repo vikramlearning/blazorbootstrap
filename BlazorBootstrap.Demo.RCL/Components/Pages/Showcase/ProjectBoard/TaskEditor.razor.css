@@ -2,21 +2,3 @@
 .tb-editor-title {
     overflow-wrap: anywhere;
 }
-
-.tb-editor-status {
-    margin-bottom: .75rem;
-    overflow-wrap: anywhere;
-}
-
-    .tb-editor-status:empty {
-        margin: 0;
-    }
-
-    .tb-editor-status:focus {
-        outline: none;
-    }
-
-    .tb-editor-status:focus-visible {
-        outline: 2px solid var(--bs-focus-ring-color, var(--sc-primary));
-        outline-offset: 2px;
-    }

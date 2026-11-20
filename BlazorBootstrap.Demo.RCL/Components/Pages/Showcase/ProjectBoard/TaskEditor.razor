@@ -9,50 +9,46 @@
         @{
             var project = State.FindProject(projectId);
             var members = Members(project);
-            var current = State.FindPerson(assigneeId.Length == 0 ? null : assigneeId);
+            var current = State.FindPerson(string.IsNullOrEmpty(form.AssigneeId) ? null : form.AssigneeId);
         }
-
-        @* Always rendered, so a refusal from the board's state is announced. *@
-        <p class="tb-editor-status fw-semibold text-danger-emphasis" role="status" tabindex="-1" @ref="formStatus">@formError</p>
 
         @if (open && project is not null)
         {
-            <form id="tb-editor-form" @onsubmit="SaveAsync" novalidate aria-labelledby="tb-editor-title">
+            <EditForm id="tb-editor-form" EditContext="editContext" OnSubmit="SaveAsync" FormName="pb-task" novalidate>
+                <DataAnnotationsValidator />
+                <ShowcaseFormErrors ShowSummary="true" />
                 <div class="mb-3">
                     <label class="form-label fw-semibold" for="tb-editor-name">Title</label>
-                    <input id="tb-editor-name" class="@InputClass("form-control", titleError)" @bind="title" @bind:event="oninput" @ref="titleInput"
-                           maxlength="@PbState.MaxTaskTitleLength" autocomplete="off" aria-required="true"
-                           aria-invalid="@(titleError is null ? null : "true")" aria-describedby="tb-editor-name-help tb-editor-name-error" />
-                    <div class="form-text" id="tb-editor-name-help">Required. Up to @PbState.MaxTaskTitleLength characters (@title.Length now).</div>
-                    <div class="invalid-feedback d-block" id="tb-editor-name-error">@titleError</div>
+                    <InputText @ref="titleInput" id="tb-editor-name" class="form-control" @bind-Value="form.Title" maxlength="@PbState.MaxTaskTitleLength" autocomplete="off"
+                               aria-describedby="tb-editor-name-help" />
+                    <div class="form-text" id="tb-editor-name-help">Required. Up to @PbState.MaxTaskTitleLength characters (@((form.Title ?? string.Empty).Length) now).</div>
+                    <ValidationMessage For="() => form.Title" />
                 </div>
 
                 <div class="mb-3">
                     <label class="form-label fw-semibold" for="tb-editor-description">Description <span class="fw-normal text-body-secondary">(optional)</span></label>
-                    <textarea id="tb-editor-description" class="@InputClass("form-control", descriptionError)" rows="4" @bind="description" @ref="descriptionInput"
-                              maxlength="@PbState.MaxDescriptionLength" aria-invalid="@(descriptionError is null ? null : "true")"
-                              aria-describedby="tb-editor-description-help tb-editor-description-error"></textarea>
+                    <InputTextArea id="tb-editor-description" class="form-control" rows="4" @bind-Value="form.Description" maxlength="@PbState.MaxDescriptionLength"
+                                   aria-describedby="tb-editor-description-help" />
                     <div class="form-text" id="tb-editor-description-help">Plain text, up to @PbState.MaxDescriptionLength characters. Line breaks are kept.</div>
-                    <div class="invalid-feedback d-block" id="tb-editor-description-error">@descriptionError</div>
+                    <ValidationMessage For="() => form.Description" />
                 </div>
 
-                <div class="row g-3 mb-3">
+                <div class="row g-3 mb-1">
                     @if (taskId == 0)
                     {
                         <div class="col-sm-6">
                             <label class="form-label fw-semibold" for="tb-editor-column">Column</label>
-                            <select id="tb-editor-column" class="form-select" @bind="status">
+                            <InputSelect id="tb-editor-column" class="form-select" @bind-Value="form.Status">
                                 @foreach (var option in Enum.GetValues<PbTaskStatus>())
                                 {
                                     <option value="@option" @key="option">@PbDisplay.StatusLabel(option)</option>
                                 }
-                            </select>
+                            </InputSelect>
                         </div>
                     }
                     <div class="col-sm-6">
                         <label class="form-label fw-semibold" for="tb-editor-assignee">Assignee</label>
-                        <select id="tb-editor-assignee" class="@InputClass("form-select", assigneeError)" @bind="assigneeId" @ref="assigneeInput"
-                                aria-invalid="@(assigneeError is null ? null : "true")" aria-describedby="tb-editor-assignee-help tb-editor-assignee-error">
+                        <InputSelect id="tb-editor-assignee" class="form-select" @bind-Value="form.AssigneeId" aria-describedby="tb-editor-assignee-help">
                             <option value="">Unassigned</option>
                             @if (current is not null && members.All(person => person.Id != current.Id))
                             {
@@ -62,54 +58,55 @@
                             {
                                 <option value="@person.Id" @key="person.Id">@person.Name@(person.Id == State.CurrentPerson?.Id ? " (you)" : null)</option>
                             }
-                        </select>
-                        <div class="form-text" id="tb-editor-assignee-help">People on @project.Key only.</div>
-                        <div class="invalid-feedback d-block" id="tb-editor-assignee-error">@assigneeError</div>
+                        </InputSelect>
+                        <div class="form-text" id="tb-editor-assignee-help">People on @project.Key only. Someone else who can sign in is told.</div>
+                        <ValidationMessage For="() => form.AssigneeId" />
                     </div>
                     <div class="col-sm-6">
                         <label class="form-label fw-semibold" for="tb-editor-priority">Priority</label>
-                        <select id="tb-editor-priority" class="form-select" @bind="priority">
+                        <InputSelect id="tb-editor-priority" class="form-select" @bind-Value="form.Priority">
                             @foreach (var option in Enum.GetValues<PbTaskPriority>())
                             {
                                 <option value="@option" @key="option">@option</option>
                             }
-                        </select>
+                        </InputSelect>
                     </div>
                     <div class="col-sm-6">
                         <label class="form-label fw-semibold" for="tb-editor-due">Due date <span class="fw-normal text-body-secondary">(optional)</span></label>
-                        <input id="tb-editor-due" type="date" class="@InputClass("form-control", dueError)" value="@dueText" @onchange="args => dueText = args.Value?.ToString() ?? string.Empty" @ref="dueInput"
-                               min="@MinDate.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)" max="@MaxDate.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)"
-                               aria-invalid="@(dueError is null ? null : "true")" aria-describedby="tb-editor-due-help tb-editor-due-error" />
-                        <div class="form-text" id="tb-editor-due-help">Leave empty for no due date.</div>
-                        <div class="invalid-feedback d-block" id="tb-editor-due-error">@dueError</div>
+                        <InputDate TValue="DateTime?" id="tb-editor-due" class="form-control" @bind-Value="form.DueDate"
+                                   min="@project.StartDate.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)" max="@project.DueDate.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)"
+                                   ParsingErrorMessage="Enter the due date as a full date, like 2026-12-03, or leave it empty." aria-describedby="tb-editor-due-help" />
+                        <div class="form-text" id="tb-editor-due-help">Within @project.Key's dates, @PbDisplay.Date(project.StartDate) to @PbDisplay.Date(project.DueDate). Leave empty for no due date.</div>
+                        <ValidationMessage For="() => form.DueDate" />
                     </div>
                     <div class="col-sm-6">
                         <label class="form-label fw-semibold" for="tb-editor-estimate">Estimate in hours</label>
-                        <input id="tb-editor-estimate" type="number" inputmode="numeric" class="@InputClass("form-control", estimateError)" @bind="estimateText" @ref="estimateInput"
-                               min="0" max="@PbState.MaxEstimateHours" step="1" aria-invalid="@(estimateError is null ? null : "true")"
-                               aria-describedby="tb-editor-estimate-help tb-editor-estimate-error" />
+                        <InputNumber TValue="int?" id="tb-editor-estimate" class="form-control" @bind-Value="form.EstimateHours" inputmode="numeric" min="0" max="@PbState.MaxEstimateHours" step="1"
+                                     ParsingErrorMessage="Enter the estimate as whole hours, like 8, or leave it empty." aria-describedby="tb-editor-estimate-help" />
                         <div class="form-text" id="tb-editor-estimate-help">Whole hours from 0 to @PbState.MaxEstimateHours. 0 or empty: no estimate.</div>
-                        <div class="invalid-feedback d-block" id="tb-editor-estimate-error">@estimateError</div>
+                        <ValidationMessage For="() => form.EstimateHours" />
                     </div>
                     <div class="col-sm-6">
                         <label class="form-label fw-semibold" for="tb-editor-milestone">Milestone</label>
-                        <select id="tb-editor-milestone" class="@InputClass("form-select", milestoneError)" @bind="milestoneText" @ref="milestoneInput"
-                                aria-invalid="@(milestoneError is null ? null : "true")" aria-describedby="tb-editor-milestone-error">
+                        <InputSelect TValue="int?" id="tb-editor-milestone" class="form-select" @bind-Value="form.MilestoneId">
                             <option value="">None</option>
                             @foreach (var milestone in project.Milestones)
                             {
                                 <option value="@milestone.Id" @key="milestone.Id">@milestone.Title (@PbDisplay.Date(milestone.Due))</option>
                             }
-                        </select>
-                        <div class="invalid-feedback d-block" id="tb-editor-milestone-error">@milestoneError</div>
+                        </InputSelect>
+                        <ValidationMessage For="() => form.MilestoneId" />
                     </div>
                 </div>
-            </form>
+            </EditForm>
         }
         else if (open)
         {
             <p class="mb-0">@(taskId == 0 ? "This project was deleted, so it can't take new tasks." : "This task or its project was deleted, so there's nothing to edit.")</p>
         }
+
+        @* Always rendered, so a refusal from the board's state is announced; a counter makes a repeat announce again. *@
+        <p class="tb-form-error small mt-3 mb-0" role="alert">@formError</p>
     </BodyTemplate>
     <FooterTemplate>
         <button type="button" class="btn btn-outline-secondary" @onclick="CancelAsync">Cancel</button>

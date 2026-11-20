@@ -22,6 +22,25 @@ public enum PbActivityKind
     Project,
 }
 
+/// <summary>What a contact does for the agency's work with their company.</summary>
+public enum PbContactRole
+{
+    /// <summary>Signs off scope and budget.</summary>
+    DecisionMaker,
+
+    /// <summary>Works with the team day to day.</summary>
+    DayToDay,
+
+    /// <summary>Receives invoices and handles payment.</summary>
+    Billing,
+
+    /// <summary>Owns the client's systems and integrations.</summary>
+    Technical,
+
+    /// <summary>Anything else.</summary>
+    Other,
+}
+
 /// <summary>The stage of a deal on the pipeline board.</summary>
 public enum PbDealStage
 {
@@ -155,9 +174,24 @@ public sealed class PbChecklistItem
     public string Text { get; set; } = string.Empty;
 }
 
-/// <summary>A client company of the agency.</summary>
+/// <summary>
+/// A client company of the agency. The billing fields (currency, billing email, contract dates) are where the client's
+/// invoices will come from once hours are billed.
+/// </summary>
 public sealed class PbClient
 {
+    /// <summary>Gets or sets the currency the client is billed in, an ISO 4217 code like "USD".</summary>
+    public string BillingCurrency { get; set; } = "USD";
+
+    /// <summary>Gets or sets where invoices go, or empty for none yet (shown as text, never linked).</summary>
+    public string BillingEmail { get; set; } = string.Empty;
+
+    /// <summary>Gets or sets the last day of the current contract, if any (on or after <see cref="ContractStart" />).</summary>
+    public DateTime? ContractEnd { get; set; }
+
+    /// <summary>Gets or sets the first day of the current contract, if any.</summary>
+    public DateTime? ContractStart { get; set; }
+
     /// <summary>Gets or sets when it was added.</summary>
     public DateTime CreatedAt { get; init; }
 
@@ -172,6 +206,9 @@ public sealed class PbClient
 
     /// <summary>Gets or sets the account manager who owns the relationship (a person ID).</summary>
     public string OwnerId { get; set; } = string.Empty;
+
+    /// <summary>Gets or sets the main phone number, or empty (shown as text, never linked).</summary>
+    public string Phone { get; set; } = string.Empty;
 
     /// <summary>Gets or sets the website (shown as text, never linked).</summary>
     public string Website { get; set; } = string.Empty;
@@ -211,8 +248,11 @@ public sealed class PbContact
     /// <summary>Gets or sets the name.</summary>
     public string Name { get; set; } = string.Empty;
 
-    /// <summary>Gets or sets the phone number (free text).</summary>
+    /// <summary>Gets or sets the phone number (digits, spaces, and + - ( ) .).</summary>
     public string Phone { get; set; } = string.Empty;
+
+    /// <summary>Gets or sets what they do for the work with the agency.</summary>
+    public PbContactRole Role { get; set; } = PbContactRole.DayToDay;
 
     /// <summary>Gets or sets the job title.</summary>
     public string Title { get; set; } = string.Empty;
@@ -293,6 +333,12 @@ public sealed class PbPerson
 /// <summary>A client project the team delivers.</summary>
 public sealed class PbProject
 {
+    /// <summary>Gets or sets the agreed budget in the client's billing currency (whole units), or 0 for none; billed hours will count against it.</summary>
+    public int BudgetAmount { get; set; }
+
+    /// <summary>Gets or sets the agreed budget in hours, or 0 for none; logged hours will count against it.</summary>
+    public int BudgetHours { get; set; }
+
     /// <summary>Gets or sets the client, or <see langword="null" /> for an internal project.</summary>
     public int? ClientId { get; set; }
 
@@ -398,7 +444,36 @@ public sealed class PbTask
 public sealed record PbTaskInput(string Title, string Description, string? AssigneeId, PbTaskPriority Priority, DateTime? DueDate, int EstimateHours, int? MilestoneId);
 
 /// <summary>The fields of a project the project manager saves at once.</summary>
-public sealed record PbProjectInput(string Name, string Key, int? ClientId, string Description, PbProjectStatus Status, DateTime StartDate, DateTime DueDate, IReadOnlyList<string> MemberIds);
+public sealed record PbProjectInput(
+    string Name,
+    string Key,
+    int? ClientId,
+    string Description,
+    PbProjectStatus Status,
+    DateTime StartDate,
+    DateTime DueDate,
+    IReadOnlyList<string> MemberIds,
+    string OwnerId,
+    int BudgetHours,
+    int BudgetAmount);
+
+/// <summary>The fields of a client the account manager saves at once.</summary>
+public sealed record PbClientInput(
+    string Name,
+    string Industry,
+    string Website,
+    string OwnerId,
+    string BillingCurrency,
+    string BillingEmail,
+    string Phone,
+    DateTime? ContractStart,
+    DateTime? ContractEnd);
+
+/// <summary>The fields of a client contact the account manager saves at once.</summary>
+public sealed record PbContactInput(string Name, string Title, string Email, string Phone, PbContactRole Role, bool IsPrimary);
 
 /// <summary>The fields of a deal the account manager saves at once.</summary>
 public sealed record PbDealInput(int ClientId, string Title, int Value, DateTime CloseDate);
+
+/// <summary>The outcome of a bulk change from a list: the result, and how many records changed and how many were left as they were.</summary>
+public sealed record PbBulkOutcome(PbResult Result, int Changed, int Unchanged);

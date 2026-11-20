@@ -3,19 +3,20 @@
 
 <PageTitle>My tasks · @PbSeedData.ProductName</PageTitle>
 
-@* The signed-in person's tasks by due date (overdue, today, this week, later, none), and the ones done in the last two weeks. *@
+@* The signed-in person's tasks in a Grid, filtered by when they're due (overdue, today, this week, later, none) or done in the
+   last two weeks, with Mark done or Reopen in each row and bulk changes for several at once. *@
 <div class="container-fluid px-lg-4">
     @{
         var today = State.Clock.Today;
         var groups = Groups(today);
-        var open = groups.Where(group => !group.IsDone).Sum(group => group.Tasks.Count);
-        var done = groups.First(group => group.IsDone).Tasks;
+        var open = groups.Where(group => !group.IsDone).Sum(group => group.Count);
+        var people = State.People;
     }
 
     <h1 class="tb-title mb-1">My tasks</h1>
     <p class="tb-lead mb-3">Everything assigned to you across @PbSeedData.AgencyName's projects, by due date. Open a task for its checklist and comments.</p>
 
-    <p class="tb-mytasks-summary mb-2">
+    <p class="tb-mytasks-summary mb-3">
         @if (open == 0)
         {
             <span>You have no open tasks.</span>
@@ -26,40 +27,167 @@
         }
     </p>
 
-    @* Always rendered and focusable, so every Mark done or Reopen is announced and focus has somewhere to go. *@
-    <p class="fw-semibold tb-mytasks-status @(statusIsError ? "text-danger-emphasis" : null)" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
-
-    @if (open == 0)
-    {
-        <section class="tb-panel tb-mytasks-empty mb-4" aria-labelledby="tb-mytasks-empty-title">
-            <span class="tb-icon mb-2" aria-hidden="true"><Icon Name="IconName.CheckAll" /></span>
-            <h2 class="tb-section-title" id="tb-mytasks-empty-title">All clear</h2>
-            <p class="mb-3">Nothing is assigned to you right now. Pick up an unassigned task on a project board, or ask your project manager what's next.</p>
-            <a class="btn btn-primary" href="@($"{PbLayout.Base}/projects")">Open project boards</a>
-        </section>
-    }
-
-    @foreach (var group in groups.Where(group => !group.IsDone && group.Tasks.Count > 0))
-    {
-        <section class="mb-4" aria-labelledby="@($"tb-mytasks-{group.Id}")" @key="@($"group-{group.Id}")">
-            <h2 class="tb-section-title" id="@($"tb-mytasks-{group.Id}")">
-                @group.Title <span class="text-body-secondary fw-normal">(@group.Tasks.Count)</span>
-            </h2>
-            <MyTasksList GroupId="@group.Id" Tasks="group.Tasks" OnToggleDone="ToggleDone" />
-        </section>
-    }
-
-    <details class="tb-panel tb-mytasks-done">
-        <summary class="tb-section-title mb-0">Done in the last 2 weeks <span class="text-body-secondary fw-normal">(@done.Count)</span></summary>
-        <div class="mt-3">
-            @if (done.Count == 0)
-            {
-                <p class="text-body-secondary mb-0">Nothing finished in the last 14 days yet.</p>
-            }
-            else
-            {
-                <MyTasksList GroupId="done" Tasks="done" OnToggleDone="ToggleDone" />
-            }
+    <section class="tb-panel mb-3" aria-labelledby="tb-mytasks-filters-title">
+        <h2 class="tb-section-title" id="tb-mytasks-filters-title">Filter tasks</h2>
+        <div class="tb-list-filters" role="search" aria-labelledby="tb-mytasks-filters-title">
+            <div class="tb-list-search">
+                <label class="form-label small fw-semibold" for="tb-mytasks-search">Search</label>
+                @* Filters on every keystroke; the bound value changes only on change, so a render during typing never writes an older value back. *@
+                <input id="tb-mytasks-search" type="search" class="form-control" value="@searchBoxValue" placeholder="Key, title, or project" autocomplete="off" maxlength="120"
+                       @oninput="OnSearchInputAsync" @onchange="OnSearchChanged" />
+            </div>
+            <div>
+                <label class="form-label small fw-semibold" for="tb-mytasks-due">Due</label>
+                <select id="tb-mytasks-due" class="form-select" @bind="dueFilter" @bind:after="FiltersChangedAsync">
+                    <option value="@OpenFilter">All open (@open)</option>
+                    @foreach (var group in groups)
+                    {
+                        <option value="@group.Id" @key="group.Id">@group.Title (@group.Count)</option>
+                    }
+                </select>
+            </div>
         </div>
-    </details>
+        <div class="tb-list-meta">
+            <p class="small text-body-secondary mb-0" aria-live="polite" tabindex="-1" @ref="countRegion">Showing @Shown.Count of @State.MyTasks.Count tasks.</p>
+            @if (IsFiltered)
+            {
+                <Button Color="ButtonColor.Link" Size="ButtonSize.Small" Class="p-0" @onclick="ClearFiltersAsync">Show every open task</Button>
+            }
+            @* Back to the saved view's defaults: by due date, 25 a page, every column in its place. *@
+            <Button Color="ButtonColor.Link" Size="ButtonSize.Small" Class="p-0" @onclick="ResetViewAsync">Reset view</Button>
+        </div>
+    </section>
+
+    @* Always rendered and focusable, so every Mark done, Reopen, and bulk change is announced and focus has somewhere to go when a row leaves the list. *@
+    <p class="tb-list-status mb-2 @(statusIsError ? "text-danger-emphasis" : null)" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
+    <p class="tb-list-error mb-2" role="alert">@bulkError</p>
+
+    @if (selected.Count > 0)
+    {
+        <section class="tb-bulk" aria-labelledby="tb-mytasks-bulk-count">
+            <h2 class="tb-bulk-count" id="tb-mytasks-bulk-count">@(selected.Count == 1 ? "1 task selected" : $"{selected.Count} tasks selected")</h2>
+            <div class="tb-bulk-actions">
+                <Button Color="ButtonColor.Success" Outline="true" Size="ButtonSize.Small" @onclick="BulkCompleteAsync">
+                    <Icon Name="IconName.Check2" class="me-1" aria-hidden="true" />Mark done<span class="visually-hidden">: the selected tasks</span>
+                </Button>
+            </div>
+            <div class="tb-bulk-field">
+                <label class="form-label small fw-semibold" for="tb-mytasks-bulk-due">New due date</label>
+                <input id="tb-mytasks-bulk-due" type="date" class="form-control form-control-sm" value="@bulkDueText" @onchange="args => bulkDueText = args.Value?.ToString() ?? string.Empty"
+                       min="@MinDate.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)" max="@MaxDate.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)" aria-describedby="tb-mytasks-bulk-due-help" />
+                <span class="form-text d-block" id="tb-mytasks-bulk-due-help">Leave empty to clear the due date. A task whose project's dates don't include it keeps its date.</span>
+                <Button Color="ButtonColor.Secondary" Outline="true" Size="ButtonSize.Small" Class="mt-1" @onclick="BulkDueAsync">
+                    @(bulkDueText.Length == 0 ? "Clear due dates" : "Set due date")<span class="visually-hidden">&#32;of the selected tasks</span>
+                </Button>
+            </div>
+            <div class="tb-bulk-field">
+                <label class="form-label small fw-semibold" for="tb-mytasks-bulk-assignee">Reassign to</label>
+                <select id="tb-mytasks-bulk-assignee" class="form-select form-select-sm" @bind="bulkAssignee" aria-describedby="tb-mytasks-bulk-assignee-help">
+                    <option value="">Choose a person</option>
+                    <option value="@UnassignValue">Nobody (unassign)</option>
+                    @foreach (var person in people.Where(person => person.Id != State.CurrentPerson?.Id))
+                    {
+                        <option value="@person.Id" @key="person.Id">@person.Name</option>
+                    }
+                </select>
+                <span class="form-text d-block" id="tb-mytasks-bulk-assignee-help">Only tasks on projects the person is on move to them; they leave this list, and someone who can sign in is told.</span>
+                <Button Color="ButtonColor.Secondary" Outline="true" Size="ButtonSize.Small" Class="mt-1" @onclick="BulkReassignAsync">Reassign<span class="visually-hidden">&#32;the selected tasks</span></Button>
+            </div>
+            <div class="tb-bulk-actions">
+                <Button Color="ButtonColor.Secondary" Outline="true" Size="ButtonSize.Small" @onclick="ClearSelectionAsync">Clear selection</Button>
+            </div>
+        </section>
+    }
+
+    <section class="tb-panel" aria-label="My task list">
+        <ShowcaseDataState Status="@(viewLoaded ? ShowcaseDataStatus.Ready : ShowcaseDataStatus.Loading)"
+                           IsEmpty="@(State.MyTasks.Count == 0)"
+                           EmptyIcon="IconName.CheckAll"
+                           EmptyTitle="All clear"
+                           EmptyText="Nothing is assigned to you right now. Pick up an unassigned task on a project board, or ask your project manager what's next."
+                           LoadingText="Loading your tasks…"
+                           OnRetry="RefreshGridAsync">
+            <EmptyActions>
+                <Button Type="ButtonType.Link" To="@($"{PbLayout.Base}/projects")" Color="ButtonColor.Primary" Size="ButtonSize.Small">Open project boards</Button>
+            </EmptyActions>
+            <ChildContent>
+                <Grid @ref="grid"
+                      @key="gridVersion"
+                      TItem="TaskRow"
+                      Class="table table-hover align-middle tb-table-wide sc-grid-row-links"
+                      GridContainerClass="tb-grid border rounded-3"
+                      DataProvider="ProvideTasksAsync"
+                      SettingsProvider="view.GetSettingsAsync"
+                      GridSettingsChanged="SaveSettingsAsync"
+                      AllowPaging="true"
+                      PageSize="@pageSize"
+                      PageSizeSelectorVisible="true"
+                      PageSizeSelectorItems="@(new[] { 10, 25, 50 })"
+                      PaginationItemsTextFormat="{0}–{1} of {2} tasks"
+                      AllowSorting="true"
+                      AllowSelection="true"
+                      SelectionMode="GridSelectionMode.Multiple"
+                      RowSelectionLabel="@(row => $"Select {row.Key} {row.Title}")"
+                      SelectAllRowsText="Select all shown tasks"
+                      SelectedItemsChanged="OnSelectionChanged"
+                      RowClass="RowClass"
+                      AllowColumnChooser="true"
+                      AllowExport="true"
+                      ExportFileName="project-board-my-tasks"
+                      Responsive="true"
+                      EmptyText="No tasks match. Choose All open, or clear the search."
+                      aria-label="My tasks">
+                    <GridColumns>
+                        <GridColumn TItem="TaskRow" HeaderText="Key" PropertyName="Key" SortString="key" SortKeySelector="row => row.Key"
+                                    IsDefaultSortColumn="@view.IsSortColumn("key")" SortDirection="@view.DirectionFor("key")" TextNoWrap="true">
+                            <span class="tb-key">@context.Key</span>
+                        </GridColumn>
+                        <GridColumn TItem="TaskRow" HeaderText="Task" PropertyName="Title" SortString="title" SortKeySelector="row => row.Title"
+                                    IsDefaultSortColumn="@view.IsSortColumn("title")" SortDirection="@view.DirectionFor("title")" AlwaysVisible="true">
+                            @* The stretched link makes the whole row open the task; the checkbox and Mark done stay above it. *@
+                            <a class="tb-row-link stretched-link" href="@PbDisplay.TaskUrl(context.Id)"><span class="visually-hidden">@context.Key, </span>@context.Title</a>
+                        </GridColumn>
+                        <GridColumn TItem="TaskRow" HeaderText="Project" PropertyName="Project" SortString="project" SortKeySelector="row => row.Project"
+                                    IsDefaultSortColumn="@view.IsSortColumn("project")" SortDirection="@view.DirectionFor("project")">
+                            @context.Project
+                        </GridColumn>
+                        <GridColumn TItem="TaskRow" HeaderText="Status" PropertyName="Status" SortString="status" SortKeySelector="row => row.StatusValue"
+                                    IsDefaultSortColumn="@view.IsSortColumn("status")" SortDirection="@view.DirectionFor("status")" TextNoWrap="true">
+                            @context.Status
+                        </GridColumn>
+                        <GridColumn TItem="TaskRow" HeaderText="Priority" PropertyName="Priority" SortString="priority" SortKeySelector="row => row.PriorityValue"
+                                    IsDefaultSortColumn="@view.IsSortColumn("priority")" SortDirection="@view.DirectionFor("priority")" TextNoWrap="true">
+                            <span class="@($"badge text-bg-{PbDisplay.PriorityColor(context.PriorityValue)}")">@context.Priority<span class="visually-hidden"> priority</span></span>
+                        </GridColumn>
+                        <GridColumn TItem="TaskRow" HeaderText="Due" PropertyName="DueText" SortString="due" SortKeySelector="row => row.Due ?? DateTime.MaxValue"
+                                    IsDefaultSortColumn="@view.IsSortColumn("due")" SortDirection="@view.DirectionFor("due")" TextNoWrap="true">
+                            <span class="@(context.IsOverdue ? "tb-mytask-overdue" : null)">
+                                @if (context.IsOverdue)
+                                {
+                                    <Icon Name="IconName.ExclamationTriangleFill" class="me-1" aria-hidden="true" />
+                                }
+                                @context.DueText
+                            </span>
+                        </GridColumn>
+                        <GridColumn TItem="TaskRow" HeaderText="Estimate" PropertyName="EstimateText" SortString="estimate" SortKeySelector="row => row.Estimate"
+                                    IsDefaultSortColumn="@view.IsSortColumn("estimate")" SortDirection="@view.DirectionFor("estimate")" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" TextNoWrap="true">
+                            @context.EstimateText
+                        </GridColumn>
+                        <GridColumn TItem="TaskRow" HeaderText="Checklist" PropertyName="ChecklistText" SortString="checklist" SortKeySelector="row => row.ChecklistText"
+                                    IsDefaultSortColumn="@view.IsSortColumn("checklist")" SortDirection="@view.DirectionFor("checklist")" TextNoWrap="true">
+                            @context.ChecklistText
+                        </GridColumn>
+                        <GridColumn TItem="TaskRow" HeaderText="Action" Sortable="false" Exportable="false" TextNoWrap="true">
+                            @{
+                                var row = context;
+                            }
+                            <button type="button" class="@(row.IsDone ? "btn btn-sm btn-outline-secondary" : "btn btn-sm btn-outline-success")" @onclick="() => ToggleDoneAsync(row.Id)">
+                                <Icon Name="@(row.IsDone ? IconName.ArrowCounterclockwise : IconName.Check2)" class="me-1" aria-hidden="true" />@(row.IsDone ? "Reopen" : "Mark done")<span class="visually-hidden">&#32;@row.Key</span>
+                            </button>
+                        </GridColumn>
+                    </GridColumns>
+                </Grid>
+            </ChildContent>
+        </ShowcaseDataState>
+    </section>
 </div>

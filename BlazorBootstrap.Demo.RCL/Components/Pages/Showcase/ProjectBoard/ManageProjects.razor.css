@@ -1,23 +1,10 @@
-/* Manage projects: the won-deal callout, the status filter, and the projects table. */
+/* Manage projects: the won-deal callout and the progress cell; the Grid list's styles are in PbFrame.razor.css. */
 .tb-mp-head {
     display: flex;
     flex-wrap: wrap;
     align-items: flex-start;
     justify-content: space-between;
     gap: 1rem;
-}
-
-.tb-mp-status:empty {
-    margin: 0;
-}
-
-.tb-mp-status:focus {
-    outline: none;
-}
-
-.tb-mp-status:focus-visible {
-    outline: 2px solid var(--bs-focus-ring-color, var(--sc-primary));
-    outline-offset: 2px;
 }
 
 .tb-mp-callout {
@@ -48,37 +35,6 @@
     overflow-wrap: anywhere;
 }
 
-.tb-mp-filters {
-    display: flex;
-    flex-wrap: wrap;
-    gap: .5rem;
-}
-
-.tb-mp-count {
-    font-variant-numeric: tabular-nums;
-}
-
-.tb-mp-caption {
-    caption-side: top;
-    padding-top: 0;
-    font-size: .8125rem;
-    color: var(--bs-secondary-color);
-}
-
-.tb-mp-name {
-    min-width: 12rem;
-    overflow-wrap: anywhere;
-}
-
-.tb-mp-client {
-    min-width: 9rem;
-    overflow-wrap: anywhere;
-}
-
 .tb-mp-progress {
     min-width: 9rem;
-}
-
-.tb-mp-row-fresh > * {
-    background-color: rgba(var(--sc-primary-rgb), .07);
 }

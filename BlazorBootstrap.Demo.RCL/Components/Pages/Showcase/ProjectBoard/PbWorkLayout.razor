@@ -2,13 +2,18 @@
 @implements IDisposable
 
 @* The signed-in app (D-031): one sidebar for everyone, with the project manager's and account manager's modules added for
-   those roles. Pages for one role add their own PbRoleGuard. *@
+   those roles, and the audit log for both. Pages for some roles add their own PbRoleGuard. The header has the global search
+   and the notifications (not on the public start page or the sign-in page). *@
 <ShowcaseSessionHost State="State" SiteBase="@PbLayout.Base" SiteName="@PbSeedData.ProductName">
     <PbFrame>
         <Header>
             <div class="tb-app-bar">
                 <span class="tb-app-bar-title">@PbSeedData.AgencyName</span>
                 <div class="tb-app-bar-actions">
+                    @* The search and the notifications show once someone is signed in. *@
+                    <ShowcaseGlobalSearch Class="tb-global-search" Placeholder="Search projects, tasks, clients"
+                                          Label="@(State.IsAccountManager ? "Search projects by key or name, tasks by key or title, clients, and contacts" : "Search projects by key or name, and tasks by key or title")" />
+                    <ShowcaseNotificationsMenu />
                     <ShowcaseAccountMenu SiteBase="@PbLayout.Base" SignInPath="@PbLayout.SignInPath" />
                 </div>
             </div>
@@ -70,6 +75,9 @@
             items.Add(new() { Id = "activity", Href = $"{b}/activity", IconName = IconName.ClockHistory, Text = "Activity" });
             items.Add(new() { Id = "forecast", Href = $"{b}/forecast", IconName = IconName.GraphUpArrow, Text = "Forecast" });
         }
+
+        if (State.IsProjectManager || State.IsAccountManager)
+            items.Add(new() { Id = "audit", Href = $"{b}/audit", IconName = IconName.JournalText, Text = "Audit log" });
 
         items.Add(new() { Id = "profile", Href = $"{b}/profile", IconName = IconName.PersonGear, Text = "Profile" });
 

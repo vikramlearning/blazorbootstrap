@@ -7,133 +7,211 @@
     <PbRoleGuard Role="@PbSeedData.AccountManagerRole">
         @{
             var all = State.Clients;
-            var rows = Rows;
             var owners = State.AccountManagers;
         }
 
         <div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-3">
             <div>
                 <h1 class="tb-title">Clients</h1>
-                <p class="tb-lead mb-0">The companies @PbSeedData.AgencyName works with: who owns each relationship, the main contact, open deals, and projects.</p>
+                <p class="tb-lead mb-0">
+                    The @Count(all.Count) companies @PbSeedData.AgencyName works with: who owns each relationship, the main contact, open deals, and projects.
+                    Open a client for its contacts, deals, and timeline, or select several to hand them to another account manager.
+                </p>
             </div>
             <Button Type="ButtonType.Link" To="@DealDisplay.NewClientUrl" Color="ButtonColor.Primary">
                 <Icon Name="IconName.PlusLg" class="me-1" aria-hidden="true" />New client
             </Button>
         </div>
 
-        @* Always rendered, so the outcome of a deletion on the edit page is announced here. *@
-        <p class="fw-semibold pb-clients-status" role="status">@statusMessage</p>
-
-        <section class="tb-panel" aria-labelledby="pb-clients-list-title">
-            <h2 class="visually-hidden" id="pb-clients-list-title">Client list</h2>
-            <div class="row g-3 align-items-start mb-3" role="search" aria-label="Find clients">
-                <div class="col-sm-7 col-lg-5">
-                    <label class="form-label fw-semibold" for="pb-clients-search">Search</label>
-                    <input id="pb-clients-search" type="search" class="form-control" @bind="search" @bind:event="oninput" autocomplete="off"
-                           aria-describedby="pb-clients-search-help" />
-                    <div class="form-text" id="pb-clients-search-help">Name, industry, or a contact's name.</div>
+        <section class="tb-panel mb-3" aria-labelledby="pb-clients-filters-title">
+            <h2 class="tb-section-title" id="pb-clients-filters-title">Filter clients</h2>
+            <div class="tb-list-filters" role="search" aria-labelledby="pb-clients-filters-title">
+                <div class="tb-list-search">
+                    <label class="form-label small fw-semibold" for="pb-clients-search">Search</label>
+                    @* Filters on every keystroke; the bound value changes only on change, so a render during typing never writes an older value back. *@
+                    <input id="pb-clients-search" type="search" class="form-control" value="@searchBoxValue" placeholder="Name, industry, or a contact's name" autocomplete="off" maxlength="120"
+                           @oninput="OnSearchInputAsync" @onchange="OnSearchChanged" />
                 </div>
-                <div class="col-sm-5 col-lg-3">
-                    <label class="form-label fw-semibold" for="pb-clients-owner">Owner</label>
-                    <select id="pb-clients-owner" class="form-select" @bind="ownerFilter" aria-describedby="pb-clients-owner-help">
+                <div>
+                    <label class="form-label small fw-semibold" for="pb-clients-owner">Owner</label>
+                    <select id="pb-clients-owner" class="form-select" @bind="ownerFilter" @bind:after="FiltersChangedAsync">
                         <option value="">Everyone</option>
                         @foreach (var owner in owners)
                         {
                             <option value="@owner.Id" @key="owner.Id">@owner.Name@(owner.Id == State.CurrentPerson?.Id ? " (you)" : null)</option>
                         }
                     </select>
-                    <div class="form-text" id="pb-clients-owner-help">Who owns the relationship.</div>
+                </div>
+                <div>
+                    <label class="form-label small fw-semibold" for="pb-clients-industry">Industry</label>
+                    <select id="pb-clients-industry" class="form-select" @bind="industryFilter" @bind:after="FiltersChangedAsync">
+                        <option value="">Every industry</option>
+                        @foreach (var industry in all.Select(client => client.Industry).Distinct(StringComparer.OrdinalIgnoreCase).Order(StringComparer.OrdinalIgnoreCase))
+                        {
+                            <option value="@industry" @key="industry">@industry</option>
+                        }
+                    </select>
                 </div>
             </div>
+            <div class="tb-list-meta">
+                <p class="small text-body-secondary mb-0" aria-live="polite" tabindex="-1" @ref="countRegion">Showing @Count(Shown.Count) of @Count(all.Count) clients.</p>
+                @if (IsFiltered)
+                {
+                    <Button Color="ButtonColor.Link" Size="ButtonSize.Small" Class="p-0" @onclick="ClearFiltersAsync">Show every client</Button>
+                }
+                @* Back to the saved view's defaults: by name, 25 a page, every column in its place. *@
+                <Button Color="ButtonColor.Link" Size="ButtonSize.Small" Class="p-0" @onclick="ResetViewAsync">Reset view</Button>
+            </div>
+        </section>
 
-            @if (rows.Count == 0)
-            {
-                <p class="mb-0">
-                    @if (all.Count == 0)
-                    {
-                        @("There are no clients yet. Add the first one with New client.")
-                    }
-                    else
-                    {
-                        @("No clients match. Change the search or the owner.")
-                    }
-                </p>
-            }
-            else
-            {
-                <div class="table-responsive">
-                    <table class="table align-middle mb-0">
-                        <caption class="pb-clients-caption">
-                            @(rows.Count == all.Count ? $"All {DealDisplay.Plural(all.Count, "client")}, by name." : $"{DealDisplay.Plural(rows.Count, "client")} of {all.Count} match, by name.")
-                            Open deal value is the total of deals not yet won or lost.
-                        </caption>
-                        <thead>
-                            <tr>
-                                <th scope="col">Name</th>
-                                <th scope="col">Industry</th>
-                                <th scope="col">Owner</th>
-                                <th scope="col">Primary contact</th>
-                                <th scope="col" class="text-end">Open deals</th>
-                                <th scope="col" class="text-end">Projects</th>
-                                <th scope="col">Last activity</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var client in rows)
-                            {
-                                var open = State.DealsOf(client.Id).Where(DealDisplay.IsOpen).ToList();
-                                var projects = State.Projects.Count(project => project.ClientId == client.Id);
-                                var primary = State.ContactsOf(client.Id).FirstOrDefault(contact => contact.IsPrimary);
-                                var last = State.ActivitiesOf(client.Id).FirstOrDefault();
-                                var owner = State.FindPerson(client.OwnerId);
-                                <tr @key="client.Id">
-                                    <th scope="row" class="pb-clients-name"><a href="@PbDisplay.ClientUrl(client.Id)">@client.Name</a></th>
-                                    <td class="pb-clients-wrap">@client.Industry</td>
-                                    <td class="text-nowrap">@(owner?.Name ?? "Nobody")@(owner is not null && owner.Id == State.CurrentPerson?.Id ? " (you)" : null)</td>
-                                    <td class="pb-clients-wrap">
-                                        @if (primary is null)
-                                        {
-                                            <span class="text-body-secondary">None yet</span>
-                                        }
-                                        else
-                                        {
-                                            @primary.Name
-                                            @if (!string.IsNullOrEmpty(primary.Title))
-                                            {
-                                                <span class="d-block small text-body-secondary">@primary.Title</span>
-                                            }
-                                        }
-                                    </td>
-                                    <td class="text-end text-nowrap">
-                                        @if (open.Count == 0)
-                                        {
-                                            <span class="text-body-secondary">None</span>
-                                        }
-                                        else
-                                        {
-                                            @DealDisplay.Plural(open.Count, "deal")
-                                            <span class="d-block small text-body-secondary">@PbDisplay.Money(open.Sum(deal => (long)deal.Value))</span>
-                                        }
-                                    </td>
-                                    <td class="text-end">@projects</td>
-                                    <td class="text-nowrap">
-                                        @if (last is null)
-                                        {
-                                            <span class="text-body-secondary">None yet</span>
-                                        }
-                                        else
-                                        {
-                                            <span title="@DealDisplay.FullTime(last.At)">@PbDisplay.Ago(last.At, State.Clock.Now)</span>
-                                            <span class="visually-hidden"> (@DealDisplay.FullTime(last.At))</span>
-                                            <span class="d-block small text-body-secondary">@DealDisplay.KindLabel(last.Kind)</span>
-                                        }
-                                    </td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
+        @* Always rendered and focusable, so an outcome (a bulk change, or a deletion on the edit page) is announced and focus has somewhere to go when the bulk bar closes. *@
+        <p class="tb-list-status mb-2 @(statusIsError ? "text-danger-emphasis" : null)" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
+        <p class="tb-list-error mb-2" role="alert">@bulkError</p>
+
+        @if (selected.Count > 0)
+        {
+            <section class="tb-bulk" aria-labelledby="pb-clients-bulk-count">
+                <h2 class="tb-bulk-count" id="pb-clients-bulk-count">@(selected.Count == 1 ? "1 client selected" : $"{Count(selected.Count)} clients selected")</h2>
+                <div class="tb-bulk-field">
+                    <label class="form-label small fw-semibold" for="pb-clients-bulk-owner">Hand to account manager</label>
+                    <select id="pb-clients-bulk-owner" class="form-select form-select-sm" @bind="bulkOwner" aria-describedby="pb-clients-bulk-owner-help">
+                        <option value="">Choose an account manager</option>
+                        @foreach (var owner in owners)
+                        {
+                            <option value="@owner.Id" @key="owner.Id">@owner.Name@(owner.Id == State.CurrentPerson?.Id ? " (you)" : null)</option>
+                        }
+                    </select>
+                    <span class="form-text d-block" id="pb-clients-bulk-owner-help">A new owner who can sign in is told. Clients they already own stay as they are.</span>
                 </div>
-            }
+                <div class="tb-bulk-actions">
+                    <Button Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="ApplyBulkAsync">Apply<span class="visually-hidden">&#32;to the selected clients</span></Button>
+                    <Button Color="ButtonColor.Secondary" Outline="true" Size="ButtonSize.Small" @onclick="ClearSelectionAsync">Clear selection</Button>
+                </div>
+            </section>
+        }
+
+        <section class="tb-panel" aria-label="Client list">
+            <ShowcaseDataState Status="@(viewLoaded ? ShowcaseDataStatus.Ready : ShowcaseDataStatus.Loading)"
+                               IsEmpty="@(all.Count == 0)"
+                               EmptyIcon="IconName.Building"
+                               EmptyTitle="No clients yet"
+                               EmptyText="Add the first company you work with. Its contacts, deals, and notes go on its page."
+                               LoadingText="Loading clients…"
+                               OnRetry="RefreshGridAsync">
+                <EmptyActions>
+                    <Button Type="ButtonType.Link" To="@DealDisplay.NewClientUrl" Color="ButtonColor.Primary" Size="ButtonSize.Small">New client</Button>
+                </EmptyActions>
+                <ChildContent>
+                    <Grid @ref="grid"
+                          @key="gridVersion"
+                          TItem="ClientRow"
+                          Class="table table-hover align-middle tb-table-wide sc-grid-row-links"
+                          GridContainerClass="tb-grid border rounded-3"
+                          DataProvider="ProvideClientsAsync"
+                          SettingsProvider="view.GetSettingsAsync"
+                          GridSettingsChanged="SaveSettingsAsync"
+                          AllowPaging="true"
+                          PageSize="@pageSize"
+                          PageSizeSelectorVisible="true"
+                          PageSizeSelectorItems="@(new[] { 10, 25, 50, 100 })"
+                          PaginationItemsTextFormat="{0}–{1} of {2} clients"
+                          AllowSorting="true"
+                          AllowSelection="true"
+                          SelectionMode="GridSelectionMode.Multiple"
+                          RowSelectionLabel="@(row => $"Select {row.Name}")"
+                          SelectAllRowsText="Select all shown clients"
+                          SelectedItemsChanged="OnSelectionChanged"
+                          RowClass="RowClass"
+                          AllowColumnChooser="true"
+                          AllowExport="true"
+                          ExportFileName="project-board-clients"
+                          Responsive="true"
+                          EmptyText="No clients match these filters. Clear a filter, or search for part of a name."
+                          aria-label="Clients">
+                        <GridColumns>
+                            <GridColumn TItem="ClientRow" HeaderText="Client" PropertyName="Name" SortString="name" SortKeySelector="row => row.Name"
+                                        IsDefaultSortColumn="@view.IsSortColumn("name")" SortDirection="@view.DirectionFor("name")" AlwaysVisible="true">
+                                @* The stretched link makes the whole row open the client; the row's checkbox stays above it. *@
+                                <a class="tb-row-link stretched-link" href="@PbDisplay.ClientUrl(context.Id)">@context.Name</a>
+                                <span class="d-block small text-body-secondary">@context.Website</span>
+                            </GridColumn>
+                            <GridColumn TItem="ClientRow" HeaderText="Industry" PropertyName="Industry" SortString="industry" SortKeySelector="row => row.Industry"
+                                        IsDefaultSortColumn="@view.IsSortColumn("industry")" SortDirection="@view.DirectionFor("industry")">
+                                @context.Industry
+                            </GridColumn>
+                            <GridColumn TItem="ClientRow" HeaderText="Owner" PropertyName="Owner" SortString="owner" SortKeySelector="row => row.Owner"
+                                        IsDefaultSortColumn="@view.IsSortColumn("owner")" SortDirection="@view.DirectionFor("owner")" TextNoWrap="true">
+                                @context.Owner@(context.OwnerId == State.CurrentPerson?.Id ? " (you)" : null)
+                            </GridColumn>
+                            <GridColumn TItem="ClientRow" HeaderText="Primary contact" PropertyName="PrimaryContact" SortString="contact" SortKeySelector="row => row.PrimaryContact"
+                                        IsDefaultSortColumn="@view.IsSortColumn("contact")" SortDirection="@view.DirectionFor("contact")">
+                                @if (context.PrimaryContact.Length == 0)
+                                {
+                                    <span class="text-body-secondary">None yet</span>
+                                }
+                                else
+                                {
+                                    @context.PrimaryContact
+                                    <span class="d-block small text-body-secondary">@context.PrimaryTitle</span>
+                                }
+                            </GridColumn>
+                            <GridColumn TItem="ClientRow" HeaderText="Contacts" PropertyName="Contacts" SortString="contacts" SortKeySelector="row => row.Contacts"
+                                        IsDefaultSortColumn="@view.IsSortColumn("contacts")" SortDirection="@view.DirectionFor("contacts")" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End">
+                                @context.Contacts
+                            </GridColumn>
+                            <GridColumn TItem="ClientRow" HeaderText="Open deals" PropertyName="OpenDealValue" SortString="deals" SortKeySelector="row => row.OpenDealValue"
+                                        IsDefaultSortColumn="@view.IsSortColumn("deals")" SortDirection="@view.DirectionFor("deals")" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End"
+                                        TextNoWrap="true">
+                                @if (context.OpenDeals == 0)
+                                {
+                                    <span class="text-body-secondary">None</span>
+                                }
+                                else
+                                {
+                                    @DealDisplay.Plural(context.OpenDeals, "deal")
+                                    <span class="d-block small text-body-secondary">@PbDisplay.Money(context.OpenDealValue)</span>
+                                }
+                            </GridColumn>
+                            <GridColumn TItem="ClientRow" HeaderText="Projects" PropertyName="ProjectsText" SortString="projects" SortKeySelector="row => row.Projects"
+                                        IsDefaultSortColumn="@view.IsSortColumn("projects")" SortDirection="@view.DirectionFor("projects")" TextNoWrap="true">
+                                @context.ProjectsText
+                            </GridColumn>
+                            <GridColumn TItem="ClientRow" HeaderText="Currency" PropertyName="Currency" SortString="currency" SortKeySelector="row => row.Currency"
+                                        IsDefaultSortColumn="@view.IsSortColumn("currency")" SortDirection="@view.DirectionFor("currency")" TextNoWrap="true">
+                                <span class="tb-mono">@context.Currency</span>
+                            </GridColumn>
+                            <GridColumn TItem="ClientRow" HeaderText="Contract ends" PropertyName="ContractEndText" SortString="contract" SortKeySelector="row => row.ContractEnd ?? DateTime.MaxValue"
+                                        IsDefaultSortColumn="@view.IsSortColumn("contract")" SortDirection="@view.DirectionFor("contract")" TextNoWrap="true">
+                                @if (context.ContractEnd is { } end && end < State.Clock.Today)
+                                {
+                                    <span class="text-danger-emphasis">@context.ContractEndText (ended)</span>
+                                }
+                                else
+                                {
+                                    @context.ContractEndText
+                                }
+                            </GridColumn>
+                            <GridColumn TItem="ClientRow" HeaderText="Last activity" PropertyName="LastActivityText" SortString="activity" SortKeySelector="row => row.LastActivity ?? DateTime.MinValue"
+                                        IsDefaultSortColumn="@view.IsSortColumn("activity")" SortDirection="@view.DirectionFor("activity")" TextNoWrap="true">
+                                @if (context.LastActivity is not { } last)
+                                {
+                                    <span class="text-body-secondary">None yet</span>
+                                }
+                                else
+                                {
+                                    <span title="@DealDisplay.FullTime(last)">@PbDisplay.Ago(last, State.Clock.Now)</span>
+                                    <span class="visually-hidden"> (@DealDisplay.FullTime(last))</span>
+                                    <span class="d-block small text-body-secondary">@context.LastActivityKind</span>
+                                }
+                            </GridColumn>
+                            <GridColumn TItem="ClientRow" HeaderText="Client since" PropertyName="CreatedText" SortString="created" SortKeySelector="row => row.Created"
+                                        IsDefaultSortColumn="@view.IsSortColumn("created")" SortDirection="@view.DirectionFor("created")" TextNoWrap="true">
+                                @context.CreatedText
+                            </GridColumn>
+                        </GridColumns>
+                    </Grid>
+                </ChildContent>
+            </ShowcaseDataState>
         </section>
     </PbRoleGuard>
 </div>

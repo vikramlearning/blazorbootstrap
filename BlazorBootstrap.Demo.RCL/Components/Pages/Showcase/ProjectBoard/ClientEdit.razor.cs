@@ -1,37 +1,50 @@
+using System.ComponentModel.DataAnnotations;
+using System.Globalization;
+using System.Linq.Expressions;
+using BlazorBootstrap.Demo.RCL.Components.Pages.Showcase.Shared;
 using BlazorBootstrap.Demo.RCL.Models.Showcase.ProjectBoard;
+using BlazorBootstrap.Demo.RCL.Services.Showcase.Foundation;
 using BlazorBootstrap.Demo.RCL.Services.Showcase.ProjectBoard;
+using Microsoft.AspNetCore.Components.Forms;
 
 namespace BlazorBootstrap.Demo.RCL.Components.Pages.Showcase.ProjectBoard;
 
 /// <summary>
-/// Adds a client (<c>/clients/new</c>) or edits one (<c>/clients/{id}/edit</c>), for account managers: name (with a
-/// counter), industry, website (plain text, never a link), and owner (an account manager; the signed-in one by default).
-/// Each problem is shown under its field and tied to it, and the first invalid field takes focus after the render that
-/// shows it; the state's refusals (Duplicate name, Invalid, NotFound, NoChange) go to the field or the status message. A
-/// save goes to the client's page, which announces it. On the edit page, Delete opens a <see cref="Modal" /> that names
-/// what goes with the client (contacts and activity), or lists the projects and deals that keep it; the deletion runs once
-/// the dialog is hidden and goes back to the client list. An unknown ID shows <see cref="PbNotFound" />.
+/// Adds a client (<c>/clients/new</c>) or edits one (<c>/clients/{id}/edit</c>), for account managers, in an
+/// <see cref="EditForm" /> (rule WR-002): name (required, with a counter, unique, checked as you type), industry
+/// (required), website (a domain, optional; plain text, never a link), owner (an account manager; the signed-in one by
+/// default), phone (digits and + - ( ) ., optional), billing currency (required), billing email (an email, optional), and the
+/// contract's start and end (optional; an end needs a start and falls on or after it, a cross-field rule). Messages show
+/// after a field is touched or on submit, and a failed submit shows a summary that links to each field. The state's
+/// refusals (a taken name, an owner who is no longer an account manager) go to their field; the others to the alert. A
+/// save goes to the client's page, which announces it. On the edit page, Delete opens a <see cref="Modal" /> that names what
+/// goes with the client (contacts and activity), or lists the projects and deals that keep it; the deletion runs once the
+/// dialog is hidden and goes back to the client list. An unknown ID shows <see cref="PbNotFound" />.
 /// </summary>
 public partial class ClientEdit : ComponentBase, IDisposable
 {
     #region Fields and Constants
 
+    /// <summary>Whether the client was saved and the page is moving to it.</summary>
+    private bool busy;
+
     private Button? deleteButton;
 
     private Modal deleteModal = default!;
+
+    private EditContext editContext = default!;
+
+    private int errorCount;
+
+    private string? errorMessage;
+
+    private string? errorText;
 
     private bool focusDelete;
 
     private bool focusStatus;
 
-    /// <summary>Returns the field to focus after the next render (the first invalid one).</summary>
-    private Func<ElementReference?>? focusTarget;
-
-    private string industry = string.Empty;
-
-    private string? industryError;
-
-    private ElementReference? industryInput;
+    private ClientForm form = new();
 
     /// <summary>The client was just deleted and the list is loading: no not-found flash in between.</summary>
     private bool leaving;
@@ -39,32 +52,19 @@ public partial class ClientEdit : ComponentBase, IDisposable
     /// <summary>The route ID the form was loaded for (0 for a new client), or <see langword="null" /> before the first load.</summary>
     private int? loadedId;
 
-    private string name = string.Empty;
-
-    private string? nameError;
-
-    private ElementReference? nameInput;
-
-    private string? ownerError;
-
-    private string ownerId = string.Empty;
-
-    private ElementReference? ownerInput;
+    private ShowcaseUniqueCheck? nameCheck;
 
     /// <summary>Whether Delete was confirmed in the dialog: it runs once the dialog is hidden.</summary>
     private bool pendingDelete;
+
+    /// <summary>The state's answers that belong to a field (a taken name, an owner who can't own clients), shown like the form's own messages.</summary>
+    private ValidationMessageStore? serverErrors;
 
     private bool statusIsError;
 
     private string? statusMessage;
 
     private ElementReference? statusRegion;
-
-    private string website = string.Empty;
-
-    private string? websiteError;
-
-    private ElementReference? websiteInput;
 
     #endregion
 
@@ -74,12 +74,6 @@ public partial class ClientEdit : ComponentBase, IDisposable
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (focusTarget is { } target)
-        {
-            focusTarget = null;
-            await PbDisplay.FocusAsync(target());
-        }
-
         if (focusDelete)
         {
             focusDelete = false;
@@ -106,21 +100,23 @@ public partial class ClientEdit : ComponentBase, IDisposable
         statusMessage = null;
         statusIsError = false;
         pendingDelete = false;
-        nameError = industryError = websiteError = ownerError = null;
+        ClearError();
 
         if (Client is { } client)
         {
-            name = client.Name;
-            industry = client.Industry;
-            website = client.Website;
-            ownerId = client.OwnerId;
+            ResetForm(new ClientForm
+            {
+                Name = client.Name, Industry = client.Industry, Website = client.Website, OwnerId = client.OwnerId, Phone = client.Phone, BillingCurrency = client.BillingCurrency,
+                BillingEmail = client.BillingEmail, ContractStart = client.ContractStart, ContractEnd = client.ContractEnd,
+            });
         }
         else
         {
-            name = industry = website = string.Empty;
-            ownerId = State.AccountManagers.Any(person => person.Id == State.CurrentPerson?.Id)
-                ? State.CurrentPerson!.Id
-                : State.AccountManagers.FirstOrDefault()?.Id ?? string.Empty;
+            ResetForm(new ClientForm
+            {
+                OwnerId = State.AccountManagers.Any(person => person.Id == State.CurrentPerson?.Id) ? State.CurrentPerson!.Id : State.AccountManagers.FirstOrDefault()?.Id ?? string.Empty,
+                BillingCurrency = PbSeedData.Currencies[0],
+            });
         }
     }
 
@@ -128,8 +124,12 @@ public partial class ClientEdit : ComponentBase, IDisposable
 
     #region Public Methods
 
-    /// <summary>Stops listening to state changes.</summary>
-    public void Dispose() => State.Changed -= OnStateChanged;
+    /// <summary>Stops listening to state and form changes.</summary>
+    public void Dispose()
+    {
+        State.Changed -= OnStateChanged;
+        editContext.OnFieldChanged -= OnFieldChanged;
+    }
 
     /// <summary>
     /// Clears <see cref="Id" /> first: the new-client route has no ID, and the router reuses this page when moving between
@@ -146,6 +146,20 @@ public partial class ClientEdit : ComponentBase, IDisposable
 
     #region Private Methods
 
+    private static string CurrencyName(string code) => code switch
+    {
+        "USD" => "US dollar",
+        "EUR" => "Euro",
+        "GBP" => "Pound sterling",
+        "CAD" => "Canadian dollar",
+        "AUD" => "Australian dollar",
+        _ => code,
+    };
+
+    private static string DateValue(DateTime date) => date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
+
+    private static string DuplicateText(string name) => $"A client named “{name.Trim()}” already exists. Use another name, or open the existing client from the client list.";
+
     private void Announce(bool ok, string message)
     {
         statusIsError = !ok;
@@ -157,6 +171,12 @@ public partial class ClientEdit : ComponentBase, IDisposable
         State.Projects.Where(project => project.ClientId == client.Id).Select(project => $"project {project.Key}")
             .Concat(State.DealsOf(client.Id).Select(deal => $"deal “{deal.Title}”"))
             .ToList();
+
+    private void ClearError()
+    {
+        errorMessage = errorText = null;
+        errorCount = 0;
+    }
 
     private async Task ConfirmDeleteAsync()
     {
@@ -171,6 +191,10 @@ public partial class ClientEdit : ComponentBase, IDisposable
 
         return $"{client.Name} leaves the client list, with its {DealDisplay.Plural(contacts, "contact")} and {DealDisplay.Plural(activities, "activity entry", "activity entries")}.";
     }
+
+    private Task<bool> IsNameTakenAsync(string name) => Task.FromResult(State.IsClientNameTaken(name, Client?.Id ?? 0));
+
+    private string NameTakenMessage(string name) => DuplicateText(name);
 
     /// <summary>Runs a confirmed deletion now that the dialog is hidden, and says what happened.</summary>
     private void OnDeleteHidden()
@@ -216,6 +240,17 @@ public partial class ClientEdit : ComponentBase, IDisposable
         StateHasChanged();
     }
 
+    /// <summary>A change clears the last error and the state's message on that field; a new start date checks the end again.</summary>
+    private void OnFieldChanged(object? sender, FieldChangedEventArgs args)
+    {
+        serverErrors?.Clear(args.FieldIdentifier);
+
+        if (args.FieldIdentifier.FieldName == nameof(ClientForm.ContractStart))
+            editContext.NotifyFieldChanged(FieldIdentifier.Create(() => form.ContractEnd));
+
+        ClearError();
+    }
+
     private void OnStateChanged() => InvokeAsync(StateHasChanged);
 
     private async Task OpenDeleteAsync()
@@ -224,50 +259,51 @@ public partial class ClientEdit : ComponentBase, IDisposable
         await deleteModal.ShowAsync();
     }
 
-    /// <summary>Checks the fields, saves, and maps the state's answer to a field or the status message.</summary>
-    private void Save()
+    private void ResetForm(ClientForm next)
     {
-        var trimmedName = name.Trim();
-        var trimmedIndustry = industry.Trim();
-        var trimmedWebsite = website.Trim();
-        var existing = Client;
+        if (editContext is not null)
+            editContext.OnFieldChanged -= OnFieldChanged;
 
-        nameError = trimmedName.Length == 0 ? "Enter the client's name."
-            : trimmedName.Length > PbState.MaxClientNameLength ? $"Shorten the name to {PbState.MaxClientNameLength} characters or fewer (now {trimmedName.Length})."
-            : State.Clients.FirstOrDefault(item => item != existing && string.Equals(item.Name, trimmedName, StringComparison.OrdinalIgnoreCase)) is { } taken ? DuplicateText(taken)
-            : null;
-        industryError = trimmedIndustry.Length == 0 ? "Enter the client's industry, like Retail."
-            : trimmedIndustry.Length > PbState.MaxContactFieldLength ? $"Shorten the industry to {PbState.MaxContactFieldLength} characters or fewer (now {trimmedIndustry.Length})."
-            : null;
-        websiteError = trimmedWebsite.Length > PbState.MaxWebsiteLength ? $"Shorten the website to {PbState.MaxWebsiteLength} characters or fewer (now {trimmedWebsite.Length})." : null;
-        ownerError = State.AccountManagers.All(person => person.Id != ownerId) ? "Choose the account manager who owns the client." : null;
+        form = next;
+        editContext = new EditContext(form);
+        serverErrors = new ValidationMessageStore(editContext);
+        editContext.OnFieldChanged += OnFieldChanged;
+    }
 
-        focusTarget = nameError is not null ? () => nameInput
-            : industryError is not null ? () => industryInput
-            : websiteError is not null ? () => websiteInput
-            : ownerError is not null ? () => ownerInput
-            : null;
-
-        if (focusTarget is not null)
-        {
-            Announce(false, "Fix the highlighted fields, then save again.");
-
+    /// <summary>
+    /// Saves once the form is valid: the uniqueness check finishes first, then every rule runs, and a failed submit shows the
+    /// summary (rule WR-002). The state checks again; its answer maps to a field, the status message, or the alert.
+    /// </summary>
+    private async Task SaveAsync()
+    {
+        if (busy)
             return;
-        }
+
+        serverErrors?.Clear();
+        editContext.NotifyValidationStateChanged();
+
+        var nameFree = nameCheck is null || await nameCheck.CheckNowAsync();
+
+        if (!editContext.Validate() || !nameFree)
+            return;
+
+        var existing = Client;
 
         if (existing is null && State.Clients.Count >= PbState.MaxClients)
         {
-            Announce(false, $"The board holds up to {PbState.MaxClients} clients, and it's full. Delete a client you don't need first. Nothing was added.");
-            focusStatus = true;
+            ShowError($"The board holds up to {PbState.MaxClients} clients, and it's full. Delete a client you don't need first. Nothing was added.");
 
             return;
         }
 
-        var result = State.SaveClient(existing?.Id ?? 0, trimmedName, trimmedIndustry, trimmedWebsite, ownerId, out var saved);
+        var input = new PbClientInput(form.Name, form.Industry, form.Website ?? string.Empty, form.OwnerId, form.BillingCurrency, form.BillingEmail ?? string.Empty, form.Phone ?? string.Empty,
+            form.ContractStart, form.ContractEnd);
+        var result = State.SaveClient(existing?.Id ?? 0, input, out var saved);
 
         switch (result)
         {
             case PbResult.Ok when saved is not null:
+                busy = true;
                 Navigation.NavigateTo(PbDisplay.ClientUrl(saved.Id) + (existing is null ? "?created=1" : "?saved=1"));
 
                 return;
@@ -279,48 +315,51 @@ public partial class ClientEdit : ComponentBase, IDisposable
                 return;
 
             case PbResult.Duplicate:
-                nameError = State.Clients.FirstOrDefault(item => item != existing && string.Equals(item.Name, trimmedName, StringComparison.OrdinalIgnoreCase)) is { } other
-                    ? DuplicateText(other)
-                    : $"A client named “{trimmedName}” already exists.";
-                focusTarget = () => nameInput;
-                Announce(false, "That name is taken. Nothing was saved.");
+                ServerError(() => form.Name, DuplicateText(form.Name));
 
                 return;
 
             case PbResult.NotFound:
-                Announce(false, "This client was deleted meanwhile, so there's nothing to save.");
-                focusStatus = true;
+                ShowError("This client was deleted meanwhile, so there's nothing to save.");
 
                 return;
 
-            case PbResult.Invalid when State.AccountManagers.All(person => person.Id != ownerId):
-                ownerError = "That person is no longer an account manager. Choose another owner.";
-                focusTarget = () => ownerInput;
-                Announce(false, "Nothing was saved.");
+            case PbResult.Invalid when State.AccountManagers.All(person => person.Id != form.OwnerId):
+                ServerError(() => form.OwnerId, "That person is no longer an account manager. Choose another owner.");
 
                 return;
 
             case PbResult.Invalid:
-                Announce(false, DealDisplay.StorageFull);
-                focusStatus = true;
+                ShowError(DealDisplay.StorageFull);
 
                 return;
 
             case PbResult.NotAllowed:
-                Announce(false, "Only account managers can add or edit clients. Nothing was saved.");
-                focusStatus = true;
+                ShowError("Only account managers can add or edit clients. Nothing was saved.");
 
                 return;
 
             default:
-                Announce(false, "That didn't work, and nothing was saved. Try again.");
-                focusStatus = true;
+                ShowError("That didn't work, and nothing was saved. Try again.");
 
                 return;
         }
     }
 
-    private static string DuplicateText(PbClient taken) => $"A client named “{taken.Name}” already exists. Use another name, or open the existing client.";
+    /// <summary>Shows a state answer under its field, like the form's own messages; the summary and focus follow.</summary>
+    private void ServerError(Expression<Func<object?>> field, string message)
+    {
+        serverErrors?.Clear();
+        serverErrors?.Add(FieldIdentifier.Create(field), message);
+        editContext.NotifyValidationStateChanged();
+    }
+
+    private void ShowError(string message)
+    {
+        errorCount = message == errorText ? errorCount + 1 : 1;
+        errorText = message;
+        errorMessage = errorCount == 1 ? message : string.Create(CultureInfo.InvariantCulture, $"{message} ({errorCount})");
+    }
 
     #endregion
 
@@ -333,9 +372,76 @@ public partial class ClientEdit : ComponentBase, IDisposable
 
     private PbClient? Client => Id is { } id ? State.FindClient(id) : null;
 
+    /// <summary>The latest date the state accepts (three years after the seed time).</summary>
+    private static DateTime MaxDate => PbSeedData.Now.AddYears(3).Date;
+
+    /// <summary>The earliest date the state accepts (three years before the seed time, rounded up to a whole day).</summary>
+    private static DateTime MinDate => PbSeedData.Now.AddYears(-3).Date.AddDays(1);
+
     [Inject] private NavigationManager Navigation { get; set; } = default!;
 
     [Inject] private PbState State { get; set; } = default!;
+
+    #endregion
+
+    #region Nested Types
+
+    /// <summary>
+    /// The client's fields, with the limits of <see cref="PbState.SaveClient" />: required text with lengths, a website, an
+    /// email, and a phone number's form, a currency, and two cross-field rules on the contract dates.
+    /// </summary>
+    private sealed class ClientForm : IValidatableObject
+    {
+        [Required(ErrorMessage = "Choose the currency the client is billed in.")]
+        public string BillingCurrency { get; set; } = string.Empty;
+
+        [StringLength(ShowcaseIdentity.MaxEmailLength, ErrorMessage = "Use 120 characters or fewer for the billing email.")]
+        [RegularExpression(@"^\s*[^@\s]{1,64}@[^@\s]+\.[^@\s]{2,}\s*$", ErrorMessage = "Enter the billing email like accounts@example.com, or leave it empty.")]
+        public string? BillingEmail { get; set; } = string.Empty;
+
+        public DateTime? ContractEnd { get; set; }
+
+        public DateTime? ContractStart { get; set; }
+
+        [Required(ErrorMessage = "Enter the client's industry, like Retail.")]
+        [StringLength(PbState.MaxContactFieldLength, ErrorMessage = "Use 80 characters or fewer for the industry.")]
+        public string Industry { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Enter the client's name.")]
+        [StringLength(PbState.MaxClientNameLength, ErrorMessage = "Use 80 characters or fewer for the name.")]
+        public string Name { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Choose the account manager who owns the client.")]
+        public string OwnerId { get; set; } = string.Empty;
+
+        [StringLength(PbState.MaxPhoneLength, ErrorMessage = "Use 30 characters or fewer for the phone number.")]
+        [RegularExpression(@"^\s*\+?[0-9 ().\-]+\s*$", ErrorMessage = "Enter the phone number with digits, spaces, and + - ( ) . only, like +1 555 0100.")]
+        public string? Phone { get; set; } = string.Empty;
+
+        [StringLength(PbState.MaxWebsiteLength, ErrorMessage = "Use 80 characters or fewer for the website.")]
+        public string? Website { get; set; } = string.Empty;
+
+        /// <summary>Runs once the fields are filled in: the website's and phone's forms, and the contract dates in order.</summary>
+        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+        {
+            if (!string.IsNullOrWhiteSpace(Website) && !PbState.IsWebsite(Website.Trim()))
+                yield return new ValidationResult("Enter the website as a domain like example.com, or leave it empty.", new[] { nameof(Website) });
+
+            if (!string.IsNullOrWhiteSpace(Phone) && Phone.Trim().Length <= PbState.MaxPhoneLength && !PbState.IsPhone(Phone.Trim()))
+                yield return new ValidationResult("Enter a phone number with at least 7 digits, like +1 555 0100.", new[] { nameof(Phone) });
+
+            if (ContractEnd is not null && ContractStart is null)
+                yield return new ValidationResult("Enter when the contract starts, or clear its end date.", new[] { nameof(ContractStart) });
+
+            if (ContractStart is { } start && ContractEnd is { } end && end.Date < start.Date)
+            {
+                yield return new ValidationResult($"Choose a contract end on or after the start, {PbDisplay.Date(start)}.", new[] { nameof(ContractEnd) });
+            }
+
+            if ((ContractStart is { } from && (from < MinDate || from > MaxDate)) || (ContractEnd is { } to && (to < MinDate || to > MaxDate)))
+                yield return new ValidationResult($"Choose contract dates from {PbDisplay.Date(MinDate)} to {PbDisplay.Date(MaxDate)}.", new[] { ContractStart is { } s && (s < MinDate || s > MaxDate) ? nameof(ContractStart) : nameof(ContractEnd) });
+        }
+    }
 
     #endregion
 }

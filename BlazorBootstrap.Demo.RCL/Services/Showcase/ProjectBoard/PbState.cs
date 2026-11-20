@@ -1,4 +1,6 @@
+using System.Globalization;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 using BlazorBootstrap.Demo.RCL.Models.Showcase.ProjectBoard;
 using BlazorBootstrap.Demo.RCL.Services.Showcase.Foundation;
@@ -13,17 +15,20 @@ public sealed record PbWeekThroughput(DateTime WeekStart, int Tasks, int Hours);
 
 /// <summary>
 /// State of "Tandem", the project and client board of Brightline Studio, for the current browser tab: the team, projects
-/// with milestones and tasks, clients and contacts, the deal pipeline, client activity, and the demo sign-in. It is kept in
-/// the tab's <c>sessionStorage</c> through the showcase foundation; nothing is sent anywhere.
+/// with milestones and tasks, clients and contacts, the deal pipeline, client activity, the audit log, notifications, and
+/// the demo sign-in. It is kept in the tab's <c>sessionStorage</c> through the showcase foundation (only what differs from
+/// the deterministic seed); nothing is sent anywhere. The enterprise baseline (audit log, notifications, global search,
+/// uniqueness checks, and the lists' bulk changes) is in <c>PbState.Enterprise.cs</c>.
 /// </summary>
 /// <remarks>
 /// Rights come from the identity role: every signed-in person works tasks on the project boards (create, edit, move,
 /// comment, checklists); a project manager also creates and edits projects and milestones, deletes tasks, and sees the
-/// workload, roadmap, and reports; an account manager also manages clients, contacts, deals, and activity. Moving a deal to
-/// Won creates a planned project for the project managers. Tasks of a completed project are read-only: moving, editing,
-/// reassigning, and checklist changes return <see cref="PbResult.WrongState" />; comments are still allowed.
+/// workload, roadmap, reports, and audit log; an account manager also manages clients, contacts, deals, and activity, and
+/// sees the audit log. Moving a deal to Won creates a planned project for the project managers. Tasks of a completed
+/// project are read-only: moving, editing, reassigning, and checklist changes return <see cref="PbResult.WrongState" />;
+/// comments are still allowed.
 /// </remarks>
-public sealed partial class PbState : IShowcaseSiteState
+public sealed partial class PbState : IShowcaseEnterpriseState
 {
     #region Fields and Constants
 
@@ -31,7 +36,13 @@ public sealed partial class PbState : IShowcaseSiteState
     public const int MaxActivityLength = 1000;
 
     /// <summary>The most activity entries.</summary>
-    public const int MaxActivities = 400;
+    public const int MaxActivities = 2000;
+
+    /// <summary>The highest project budget, in the client's currency.</summary>
+    public const int MaxBudgetAmount = 5_000_000;
+
+    /// <summary>The highest project budget in hours.</summary>
+    public const int MaxBudgetHours = 10_000;
 
     /// <summary>The most checklist items on a task.</summary>
     public const int MaxChecklistItems = 20;
@@ -40,7 +51,7 @@ public sealed partial class PbState : IShowcaseSiteState
     public const int MaxChecklistTextLength = 120;
 
     /// <summary>The most clients.</summary>
-    public const int MaxClients = 60;
+    public const int MaxClients = 300;
 
     /// <summary>The longest client name.</summary>
     public const int MaxClientNameLength = 80;
@@ -52,7 +63,7 @@ public sealed partial class PbState : IShowcaseSiteState
     public const int MaxComments = 50;
 
     /// <summary>The most contacts.</summary>
-    public const int MaxContacts = 200;
+    public const int MaxContacts = 2000;
 
     /// <summary>The longest contact name, job title, or industry.</summary>
     public const int MaxContactFieldLength = 80;
@@ -72,6 +83,9 @@ public sealed partial class PbState : IShowcaseSiteState
     /// <summary>The highest task estimate, in hours.</summary>
     public const int MaxEstimateHours = 80;
 
+    /// <summary>The highest weekly capacity a person can set, in hours.</summary>
+    public const int MaxCapacityHours = 60;
+
     /// <summary>The most milestones on a project.</summary>
     public const int MaxMilestones = 10;
 
@@ -79,7 +93,7 @@ public sealed partial class PbState : IShowcaseSiteState
     public const int MaxMilestoneTitleLength = 60;
 
     /// <summary>The most people on the team: the seeded team plus every account the demo sign-in allows.</summary>
-    public const int MaxPeople = 10 + ShowcaseIdentity.MaxAccounts;
+    public const int MaxPeople = 40 + ShowcaseIdentity.MaxAccounts;
 
     /// <summary>The longest phone number.</summary>
     public const int MaxPhoneLength = 30;
@@ -88,47 +102,70 @@ public sealed partial class PbState : IShowcaseSiteState
     public const int MaxProjectNameLength = 80;
 
     /// <summary>The most projects.</summary>
-    public const int MaxProjects = 30;
+    public const int MaxProjects = 600;
 
     /// <summary>The longest task title.</summary>
     public const int MaxTaskTitleLength = 120;
 
     /// <summary>The most tasks.</summary>
-    public const int MaxTasks = 400;
+    public const int MaxTasks = 5000;
 
     /// <summary>The longest client website.</summary>
     public const int MaxWebsiteLength = 80;
+
+    private const int MaxAudit = 3000;
+
+    /// <summary>The longest audit text (action, record, details).</summary>
+    private const int MaxAuditTextLength = 300;
+
+    private const int MaxNotifications = 1000;
 
     /// <summary>The largest the site's snapshot may grow: the store's limit less room for its envelope.</summary>
     private const int MaxSnapshotLength = ShowcaseSessionStore.MaxSnapshotLength - (48 * 1024);
 
     private const int NextIdLimit = 1_000_000;
 
+    /// <summary>The fresh tab's data, built once and never changed: a snapshot keeps only what differs from it.</summary>
+    private static readonly Lazy<PbSeedSet> seed = new(PbSeedData.Build);
+
     private static readonly JsonSerializerOptions snapshotOptions = new(JsonSerializerDefaults.Web) { MaxDepth = 32 };
 
-    private readonly List<PbActivity> activities = PbSeedData.Activities();
+    private readonly List<PbActivity> activities;
 
-    private readonly List<PbClient> clients = PbSeedData.Clients();
+    private readonly List<ShowcaseAuditEntry> audit;
 
-    private readonly List<PbContact> contacts = PbSeedData.Contacts();
+    private readonly List<PbClient> clients;
 
-    private readonly List<PbDeal> deals = PbSeedData.Deals();
+    private readonly List<PbContact> contacts;
 
-    private readonly List<PbPerson> people = PbSeedData.People();
+    private readonly List<PbDeal> deals;
 
-    private readonly List<PbProject> projects = PbSeedData.Projects();
+    private readonly List<ShowcaseNotification> notifications;
 
-    private readonly List<PbTask> tasks = PbSeedData.Tasks();
+    private readonly List<PbPerson> people;
+
+    private readonly List<PbProject> projects;
+
+    private readonly List<PbTask> tasks;
+
+    /// <summary>How many bulk changes are running; <see cref="Changed" /> is raised once when the outermost one ends.</summary>
+    private int batchDepth;
+
+    private bool changedInBatch;
 
     private bool isDarkTheme;
 
     private int nextActivityId;
+
+    private int nextAuditId;
 
     private int nextClientId;
 
     private int nextContactId;
 
     private int nextDealId;
+
+    private int nextNotificationId;
 
     private int nextProjectId;
 
@@ -141,15 +178,17 @@ public sealed partial class PbState : IShowcaseSiteState
     /// <summary>Seeds a fresh tab, signed out.</summary>
     public PbState()
     {
-        nextActivityId = activities.Max(item => item.Id) + 1;
-        nextClientId = clients.Max(item => item.Id) + 1;
-        nextContactId = contacts.Max(item => item.Id) + 1;
-        nextDealId = deals.Max(item => item.Id) + 1;
-        nextProjectId = projects.Max(item => item.Id) + 1;
-        nextTaskId = tasks.Max(item => item.Id) + 1;
-
-        foreach (var project in projects)
-            project.NextTaskNumber = tasks.Where(task => task.ProjectId == project.Id).Select(task => task.Number).DefaultIfEmpty(0).Max() + 1;
+        var data = PbSeedData.Build();
+        activities = data.Activities;
+        audit = data.Audit;
+        clients = data.Clients;
+        contacts = data.Contacts;
+        deals = data.Deals;
+        notifications = data.Notifications;
+        people = data.People;
+        projects = data.Projects;
+        tasks = data.Tasks;
+        ResetCounters(data);
 
         Identity = new ShowcaseIdentity(PbSeedData.Roles(), PbSeedData.DemoAccounts());
         Identity.Changed += OnIdentityChanged;
@@ -173,7 +212,7 @@ public sealed partial class PbState : IShowcaseSiteState
         if (FindTask(taskId) is not { } task)
             return PbResult.NotFound;
 
-        if (!IsOpen(FindTask(taskId)!))
+        if (!IsOpen(task))
             return PbResult.WrongState;
 
         text = text?.Trim() ?? string.Empty;
@@ -188,10 +227,13 @@ public sealed partial class PbState : IShowcaseSiteState
         {
             task.Checklist.Remove(item);
             task.NextItemId--;
-        });
+        }, () => Record("Checklist item added", TaskTarget(task), TaskPath(task.Id), text));
     }
 
-    /// <summary>Adds a comment to a task as the signed-in person (plain text).</summary>
+    /// <summary>
+    /// Adds a comment to a task as the signed-in person (plain text). The task's assignee is told, and so is everyone
+    /// mentioned with @ and their first or full name (people who can sign in, not the writer).
+    /// </summary>
     public PbResult AddComment(int taskId, string text)
     {
         if (Staff() is not { } person)
@@ -212,26 +254,68 @@ public sealed partial class PbState : IShowcaseSiteState
         {
             task.Comments.Remove(comment);
             task.NextItemId--;
+        }, () =>
+        {
+            Record("Comment added", TaskTarget(task), TaskPath(task.Id), Clip(text, 120));
+            var key = TaskKey(task);
+            var mentioned = Mentioned(text);
+
+            foreach (var other in mentioned)
+                NotifyPerson(other.Id, $"{person.Name} mentioned you on {key}", Clip(text, 160), TaskPath(task.Id));
+
+            if (task.AssigneeId is { } assigneeId && mentioned.All(other => other.Id != assigneeId))
+                NotifyPerson(assigneeId, $"{person.Name} commented on {key}", Clip(text, 160), TaskPath(task.Id));
         });
     }
 
-    /// <summary>Returns the snapshot: every collection and the ID counters.</summary>
-    public object CaptureData() => new PbSnapshot
+    /// <summary>
+    /// Returns the snapshot: the ID counters and, of every list, only what differs from the fresh tab's seed (records changed
+    /// or added, and the IDs of seeded records removed). The seed is the same in every tab, so the restore rebuilds the rest
+    /// from it; a fresh tab's snapshot is a few hundred bytes although it holds thousands of records (devspec finding F-4).
+    /// </summary>
+    public object CaptureData()
     {
-        Activities = activities.ToList(),
-        Clients = clients.ToList(),
-        Contacts = contacts.ToList(),
-        Deals = deals.ToList(),
-        NextActivityId = nextActivityId,
-        NextClientId = nextClientId,
-        NextContactId = nextContactId,
-        NextDealId = nextDealId,
-        NextProjectId = nextProjectId,
-        NextTaskId = nextTaskId,
-        People = people.ToList(),
-        Projects = projects.ToList(),
-        Tasks = tasks.ToList(),
-    };
+        var data = seed.Value;
+        var (changedActivities, removedActivities) = Diff(activities, data.Activities, item => item.Id, SameJson);
+        var (changedAudit, removedAudit) = Diff(audit, data.Audit, entry => entry.Id, SameAudit);
+        var (changedClients, removedClients) = Diff(clients, data.Clients, client => client.Id, SameClient);
+        var (changedContacts, removedContacts) = Diff(contacts, data.Contacts, contact => contact.Id, SameContact);
+        var (changedDeals, removedDeals) = Diff(deals, data.Deals, deal => deal.Id, SameJson);
+        var (changedNotifications, removedNotifications) = Diff(notifications, data.Notifications, notice => notice.Id, SameNotification);
+        var (changedPeople, removedPeople) = Diff(people, data.People, person => person.Id, SameJson);
+        var (changedProjects, removedProjects) = Diff(projects, data.Projects, project => project.Id, SameProject);
+        var (changedTasks, removedTasks) = Diff(tasks, data.Tasks, task => task.Id, SameTask);
+
+        return new PbSnapshot
+        {
+            Activities = changedActivities,
+            RemovedActivityIds = removedActivities,
+            Audit = changedAudit,
+            RemovedAuditIds = removedAudit,
+            Clients = changedClients,
+            RemovedClientIds = removedClients,
+            Contacts = changedContacts,
+            RemovedContactIds = removedContacts,
+            Deals = changedDeals,
+            RemovedDealIds = removedDeals,
+            Notifications = changedNotifications,
+            RemovedNotificationIds = removedNotifications,
+            People = changedPeople,
+            RemovedPersonIds = removedPeople,
+            Projects = changedProjects,
+            RemovedProjectIds = removedProjects,
+            Tasks = changedTasks,
+            RemovedTaskIds = removedTasks,
+            NextActivityId = nextActivityId,
+            NextAuditId = nextAuditId,
+            NextClientId = nextClientId,
+            NextContactId = nextContactId,
+            NextDealId = nextDealId,
+            NextNotificationId = nextNotificationId,
+            NextProjectId = nextProjectId,
+            NextTaskId = nextTaskId,
+        };
+    }
 
     /// <summary>Returns the tasks finished in each of the last <paramref name="weeks" /> weeks (Monday to Sunday), oldest first, this week last.</summary>
     public IReadOnlyList<PbWeekThroughput> CompletedPerWeek(int weeks)
@@ -251,7 +335,10 @@ public sealed partial class PbState : IShowcaseSiteState
     public IReadOnlyList<PbContact> ContactsOf(int clientId) =>
         contacts.Where(item => item.ClientId == clientId).OrderByDescending(item => item.IsPrimary).ThenBy(item => item.Name, StringComparer.OrdinalIgnoreCase).ToList();
 
-    /// <summary>Creates a task at the end of a column (any signed-in person; not on a completed project).</summary>
+    /// <summary>
+    /// Creates a task at the end of a column (any signed-in person; not on a completed project). Its due date, when set,
+    /// falls within the project's start and due dates. Someone assigned other than the creator is told.
+    /// </summary>
     public PbResult CreateTask(int projectId, PbTaskStatus status, PbTaskInput input, out PbTask? created)
     {
         created = null;
@@ -282,6 +369,10 @@ public sealed partial class PbState : IShowcaseSiteState
             tasks.Remove(task);
             nextTaskId--;
             project.NextTaskNumber--;
+        }, () =>
+        {
+            Record("Task created", TaskTarget(task), TaskPath(task.Id), $"{task.Title}, in {StatusWord(task.Status)}{(task.AssigneeId is null ? ", unassigned" : $", assigned to {FindPerson(task.AssigneeId)?.Name}")}");
+            NotifyAssigned(task);
         });
 
         if (result == PbResult.Ok)
@@ -310,7 +401,8 @@ public sealed partial class PbState : IShowcaseSiteState
             return PbResult.WrongState;
 
         activities.Remove(activity);
-        Changed?.Invoke();
+        Record("Activity deleted", ClientTarget(activity.ClientId), ClientPath(activity.ClientId), $"{activity.Kind}: {Clip(activity.Text, 120)}");
+        RaiseChanged();
 
         return PbResult.Ok;
     }
@@ -321,14 +413,15 @@ public sealed partial class PbState : IShowcaseSiteState
         if (Staff() is null)
             return PbResult.NotAllowed;
 
-        if (FindTask(taskId)?.Checklist.FirstOrDefault(item => item.Id == itemId) is not { } item)
+        if (FindTask(taskId) is not { } task || task.Checklist.FirstOrDefault(item => item.Id == itemId) is not { } item)
             return PbResult.NotFound;
 
-        if (!IsOpen(FindTask(taskId)!))
+        if (!IsOpen(task))
             return PbResult.WrongState;
 
-        FindTask(taskId)!.Checklist.Remove(item);
-        Changed?.Invoke();
+        task.Checklist.Remove(item);
+        Record("Checklist item removed", TaskTarget(task), TaskPath(task.Id), item.Text);
+        RaiseChanged();
 
         return PbResult.Ok;
     }
@@ -345,10 +438,12 @@ public sealed partial class PbState : IShowcaseSiteState
         if (projects.Any(item => item.ClientId == clientId) || deals.Any(item => item.ClientId == clientId))
             return PbResult.WrongState;
 
+        var contactCount = contacts.Count(item => item.ClientId == clientId);
         clients.Remove(client);
         contacts.RemoveAll(item => item.ClientId == clientId);
         activities.RemoveAll(item => item.ClientId == clientId);
-        Changed?.Invoke();
+        Record("Client deleted", $"Client {client.Name}", null, Invariant($"With {contactCount} contact(s) and its activity"));
+        RaiseChanged();
 
         return PbResult.Ok;
     }
@@ -366,7 +461,8 @@ public sealed partial class PbState : IShowcaseSiteState
             return PbResult.WrongState;
 
         task.Comments.Remove(comment);
-        Changed?.Invoke();
+        Record("Comment deleted", TaskTarget(task), TaskPath(task.Id), Clip(comment.Text, 120));
+        RaiseChanged();
 
         return PbResult.Ok;
     }
@@ -381,7 +477,8 @@ public sealed partial class PbState : IShowcaseSiteState
             return PbResult.NotFound;
 
         contacts.Remove(contact);
-        Changed?.Invoke();
+        Record("Contact deleted", ContactTarget(contact), ClientPath(contact.ClientId), contact.Email);
+        RaiseChanged();
 
         return PbResult.Ok;
     }
@@ -400,7 +497,8 @@ public sealed partial class PbState : IShowcaseSiteState
 
         deals.Remove(deal);
         Renumber(DealsIn(deal.Stage));
-        Changed?.Invoke();
+        Record("Deal deleted", DealTarget(deal), null, $"{deal.Stage}, {Dollars(deal.Value)}");
+        RaiseChanged();
 
         return PbResult.Ok;
     }
@@ -419,7 +517,8 @@ public sealed partial class PbState : IShowcaseSiteState
         foreach (var task in tasks.Where(item => item.ProjectId == projectId && item.MilestoneId == milestoneId))
             task.MilestoneId = null;
 
-        Changed?.Invoke();
+        Record("Milestone deleted", ProjectTarget(project), ProjectPath(project.Id), milestone.Title);
+        RaiseChanged();
 
         return PbResult.Ok;
     }
@@ -433,13 +532,15 @@ public sealed partial class PbState : IShowcaseSiteState
         if (FindProject(projectId) is not { } project)
             return PbResult.NotFound;
 
+        var taskCount = tasks.Count(item => item.ProjectId == projectId);
         projects.Remove(project);
         tasks.RemoveAll(item => item.ProjectId == projectId);
 
         foreach (var deal in deals.Where(item => item.ProjectId == projectId))
             deal.ProjectId = null;
 
-        Changed?.Invoke();
+        Record("Project deleted", ProjectTarget(project), null, Invariant($"With {taskCount} task(s)"));
+        RaiseChanged();
 
         return PbResult.Ok;
     }
@@ -453,9 +554,11 @@ public sealed partial class PbState : IShowcaseSiteState
         if (FindTask(taskId) is not { } task)
             return PbResult.NotFound;
 
+        var target = TaskTarget(task);
         tasks.Remove(task);
         Renumber(TasksIn(task.ProjectId, task.Status));
-        Changed?.Invoke();
+        Record("Task deleted", target, null, task.Title);
+        RaiseChanged();
 
         return PbResult.Ok;
     }
@@ -504,7 +607,7 @@ public sealed partial class PbState : IShowcaseSiteState
         {
             activities.Remove(activity);
             nextActivityId--;
-        });
+        }, () => Record("Activity logged", ClientTarget(clientId), ClientPath(clientId), $"{kind}: {Clip(text, 120)}"));
 
         if (result == PbResult.Ok)
             logged = activity;
@@ -522,7 +625,8 @@ public sealed partial class PbState : IShowcaseSiteState
 
     /// <summary>
     /// Moves a deal to a stage and position (account managers). Won creates a planned project for the client (returned in
-    /// <paramref name="createdProject" />) and logs it; Lost closes the deal. A won deal whose project exists can't leave Won.
+    /// <paramref name="createdProject" />), logs it, and tells its project manager; Lost closes the deal. A won deal whose
+    /// project exists can't leave Won.
     /// </summary>
     public PbResult MoveDeal(int dealId, PbDealStage stage, int index, out PbProject? createdProject)
     {
@@ -551,7 +655,7 @@ public sealed partial class PbState : IShowcaseSiteState
             column.RemoveAt(oldIndex);
             column.Insert(index, deal);
             Renumber(column);
-            Changed?.Invoke();
+            RaiseChanged();
 
             return PbResult.Ok;
         }
@@ -576,9 +680,10 @@ public sealed partial class PbState : IShowcaseSiteState
             var start = WeekStart(Clock.Today).AddDays(7);
             project = new PbProject
             {
-                Id = nextProjectId++, Key = key, Name = Clip(deal.Title, MaxProjectNameLength), ClientId = deal.ClientId,
+                Id = nextProjectId++, Key = key, Name = FreeProjectName(Clip(deal.Title, MaxProjectNameLength), deal.ClientId), ClientId = deal.ClientId,
                 Status = PbProjectStatus.Planned, StartDate = start, DueDate = start.AddDays(7 * 8), OwnerId = DefaultProjectManagerId(), FromDealId = deal.Id, CreatedAt = Clock.Now,
-                Description = $"Created from the won deal “{deal.Title}”. Plan the scope, team, and milestones.",
+                Description = $"Created from the won deal “{deal.Title}”. Plan the scope, team, and milestones.", BudgetAmount = Math.Min(deal.Value, MaxBudgetAmount),
+                BudgetHours = Math.Min(deal.Value / 150, MaxBudgetHours),
             };
             projects.Add(project);
 
@@ -605,20 +710,30 @@ public sealed partial class PbState : IShowcaseSiteState
         if (stage is PbDealStage.Won or PbDealStage.Lost && activities.Count < MaxActivities && nextActivityId < NextIdLimit)
         {
             var text = stage == PbDealStage.Lost
-                ? $"Lost “{deal.Title}” (${deal.Value:#,0})."
-                : project is not null ? $"Won “{deal.Title}” (${deal.Value:#,0}). Project {project.Key} created for the project managers." : $"Won “{deal.Title}” (${deal.Value:#,0}).";
+                ? $"Lost “{deal.Title}” ({Dollars(deal.Value)})."
+                : project is not null ? $"Won “{deal.Title}” ({Dollars(deal.Value)}). Project {project.Key} created for the project managers." : $"Won “{deal.Title}” ({Dollars(deal.Value)}).";
             activities.Add(new PbActivity { Id = nextActivityId++, ClientId = deal.ClientId, DealId = deal.Id, Kind = PbActivityKind.Deal, AuthorId = person.Id, At = Clock.Now, Text = text });
         }
 
+        Record(stage switch { PbDealStage.Won => "Deal won", PbDealStage.Lost => "Deal lost", _ => "Deal moved" }, DealTarget(deal), DealPath(),
+            $"{from} → {stage}, {Dollars(deal.Value)}");
+
+        if (project is not null)
+        {
+            Record("Project created", ProjectTarget(project), ProjectPath(project.Id), $"From the won deal “{deal.Title}”, planned for {Day(project.StartDate)}");
+            NotifyPerson(project.OwnerId, $"{project.Key} was created from a won deal", $"{person.Name} won “{deal.Title}”. Plan its team and milestones.", ProjectEditPath(project.Id));
+        }
+
         createdProject = project;
-        Changed?.Invoke();
+        RaiseChanged();
 
         return PbResult.Ok;
     }
 
     /// <summary>
     /// Moves a task to a column and position (any signed-in person): drag and drop on the board, or the "Move to" menu.
-    /// Moving to Done records when it was finished; moving out of Done clears it.
+    /// Moving to Done records when it was finished; moving out of Done clears it. Moving to In review tells the project
+    /// manager.
     /// </summary>
     public PbResult MoveTask(int taskId, PbTaskStatus status, int index)
     {
@@ -628,7 +743,7 @@ public sealed partial class PbState : IShowcaseSiteState
         if (FindTask(taskId) is not { } task)
             return PbResult.NotFound;
 
-        if (!IsOpen(FindTask(taskId)!))
+        if (!IsOpen(task))
             return PbResult.WrongState;
 
         if (!Enum.IsDefined(status))
@@ -646,11 +761,12 @@ public sealed partial class PbState : IShowcaseSiteState
             column.RemoveAt(oldIndex);
             column.Insert(index, task);
             Renumber(column);
-            Changed?.Invoke();
+            RaiseChanged();
 
             return PbResult.Ok;
         }
 
+        var from = task.Status;
         var oldColumn = TasksIn(task.ProjectId, task.Status).Where(item => item != task).ToList();
         var newColumn = TasksIn(task.ProjectId, status).ToList();
         newColumn.Insert(Math.Clamp(index, 0, newColumn.Count), task);
@@ -658,7 +774,16 @@ public sealed partial class PbState : IShowcaseSiteState
         task.CompletedAt = status == PbTaskStatus.Done ? Clock.Now : null;
         Renumber(oldColumn);
         Renumber(newColumn);
-        Changed?.Invoke();
+        Record(status == PbTaskStatus.Done ? "Task completed" : from == PbTaskStatus.Done ? "Task reopened" : "Task moved", TaskTarget(task), TaskPath(task.Id),
+            $"{StatusWord(from)} → {StatusWord(status)}");
+
+        if (status == PbTaskStatus.Review && FindProject(task.ProjectId) is { } project)
+        {
+            NotifyPerson(project.OwnerId, $"{TaskKey(task)} is ready for review",
+                $"{Identity.Current?.Name ?? "Someone"} moved “{task.Title}” to In review.", TaskPath(task.Id));
+        }
+
+        RaiseChanged();
 
         return PbResult.Ok;
     }
@@ -685,7 +810,11 @@ public sealed partial class PbState : IShowcaseSiteState
         return (list.Count(item => item.Status == PbTaskStatus.Done), list.Count);
     }
 
-    /// <summary>Assigns a task to one of its project's people, or unassigns it (any signed-in person).</summary>
+    /// <summary>Returns every project's tasks done and total, by project ID, in one pass (for lists).</summary>
+    public IReadOnlyDictionary<int, (int Done, int Total)> ProgressByProject() =>
+        tasks.GroupBy(task => task.ProjectId).ToDictionary(group => group.Key, group => (group.Count(task => task.Status == PbTaskStatus.Done), group.Count()));
+
+    /// <summary>Assigns a task to one of its project's people, or unassigns it (any signed-in person); the new assignee is told.</summary>
     public PbResult Reassign(int taskId, string? personId)
     {
         if (Staff() is null)
@@ -694,7 +823,7 @@ public sealed partial class PbState : IShowcaseSiteState
         if (FindTask(taskId) is not { } task)
             return PbResult.NotFound;
 
-        if (!IsOpen(FindTask(taskId)!))
+        if (!IsOpen(task))
             return PbResult.WrongState;
 
         if (personId is not null && FindProject(task.ProjectId)?.MemberIds.Contains(personId) != true)
@@ -703,14 +832,21 @@ public sealed partial class PbState : IShowcaseSiteState
         if (task.AssigneeId == personId)
             return PbResult.NoChange;
 
+        var before = task.AssigneeId;
         task.AssigneeId = personId;
-        Changed?.Invoke();
+        RecordAssignment(task, before);
+        NotifyAssigned(task);
+        RaiseChanged();
 
         return PbResult.Ok;
     }
 
-    /// <summary>Creates (<paramref name="clientId" /> 0) or edits a client (account managers); names are unique.</summary>
-    public PbResult SaveClient(int clientId, string name, string industry, string website, string ownerId, out PbClient? saved)
+    /// <summary>
+    /// Creates (<paramref name="clientId" /> 0) or edits a client (account managers). Names are unique; the website, billing
+    /// email, and phone have their formats; the currency is one of <see cref="PbSeedData.Currencies" />; a contract end needs a
+    /// start and falls on or after it. A new owner other than the signed-in person is told.
+    /// </summary>
+    public PbResult SaveClient(int clientId, PbClientInput input, out PbClient? saved)
     {
         saved = null;
 
@@ -722,27 +858,43 @@ public sealed partial class PbState : IShowcaseSiteState
         if (clientId != 0 && existing is null)
             return PbResult.NotFound;
 
-        name = name?.Trim() ?? string.Empty;
-        industry = industry?.Trim() ?? string.Empty;
-        website = website?.Trim() ?? string.Empty;
+        var name = input?.Name?.Trim() ?? string.Empty;
+        var industry = input?.Industry?.Trim() ?? string.Empty;
+        var website = input?.Website?.Trim() ?? string.Empty;
+        var billingEmail = (input?.BillingEmail ?? string.Empty).Trim().ToLowerInvariant();
+        var phone = input?.Phone?.Trim() ?? string.Empty;
+        var ownerId = input?.OwnerId ?? string.Empty;
 
-        if (!IsText(name, MaxClientNameLength) || !IsText(industry, MaxContactFieldLength) || website.Length > MaxWebsiteLength || AccountManagers.All(person => person.Id != ownerId))
+        if (input is null || !IsText(name, MaxClientNameLength) || !IsText(industry, MaxContactFieldLength) || !(website.Length == 0 || IsWebsite(website))
+            || !(billingEmail.Length == 0 || IsEmail(billingEmail)) || !(phone.Length == 0 || IsPhone(phone)) || !PbSeedData.Currencies.Contains(input.BillingCurrency)
+            || !ValidContract(input.ContractStart, input.ContractEnd) || AccountManagers.All(person => person.Id != ownerId))
             return PbResult.Invalid;
 
-        if (clients.Any(item => item != existing && string.Equals(item.Name, name, StringComparison.OrdinalIgnoreCase)))
+        if (IsClientNameTaken(name, existing?.Id ?? 0))
             return PbResult.Duplicate;
+
+        var start = input.ContractStart?.Date;
+        var end = input.ContractEnd?.Date;
 
         if (existing is null)
         {
             if (clients.Count >= MaxClients || nextClientId >= NextIdLimit)
                 return PbResult.Invalid;
 
-            var client = new PbClient { Id = nextClientId++, Name = name, Industry = industry, Website = website, OwnerId = ownerId, CreatedAt = Clock.Now };
+            var client = new PbClient
+            {
+                Id = nextClientId++, Name = name, Industry = industry, Website = website, OwnerId = ownerId, CreatedAt = Clock.Now, BillingCurrency = input.BillingCurrency,
+                BillingEmail = billingEmail, Phone = phone, ContractStart = start, ContractEnd = end,
+            };
             clients.Add(client);
             var result = Commit(() =>
             {
                 clients.Remove(client);
                 nextClientId--;
+            }, () =>
+            {
+                Record("Client added", ClientTarget(client.Id), ClientPath(client.Id), $"{client.Industry}, billed in {client.BillingCurrency}, owner {FindPerson(ownerId)?.Name}");
+                NotifyOwner(client);
             });
 
             if (result == PbResult.Ok)
@@ -751,18 +903,55 @@ public sealed partial class PbState : IShowcaseSiteState
             return result;
         }
 
-        if (existing.Name == name && existing.Industry == industry && existing.Website == website && existing.OwnerId == ownerId)
+        var before = (existing.Name, existing.Industry, existing.Website, existing.OwnerId, existing.BillingCurrency, existing.BillingEmail, existing.Phone, existing.ContractStart, existing.ContractEnd);
+        var after = (name, industry, website, ownerId, input.BillingCurrency, billingEmail, phone, start, end);
+
+        if (before == after)
             return PbResult.NoChange;
 
-        var previous = (existing.Name, existing.Industry, existing.Website, existing.OwnerId);
-        (existing.Name, existing.Industry, existing.Website, existing.OwnerId) = (name, industry, website, ownerId);
+        (existing.Name, existing.Industry, existing.Website, existing.OwnerId, existing.BillingCurrency, existing.BillingEmail, existing.Phone, existing.ContractStart, existing.ContractEnd) = after;
         saved = existing;
 
-        return Commit(() => (existing.Name, existing.Industry, existing.Website, existing.OwnerId) = previous);
+        return Commit(
+            () => (existing.Name, existing.Industry, existing.Website, existing.OwnerId, existing.BillingCurrency, existing.BillingEmail, existing.Phone, existing.ContractStart, existing.ContractEnd) = before,
+            () =>
+            {
+                var changes = new List<string>();
+
+                if (before.Name != name)
+                    changes.Add($"name “{before.Name}” → “{name}”");
+
+                if (before.Industry != industry)
+                    changes.Add("industry");
+
+                if (before.Website != website)
+                    changes.Add("website");
+
+                if (before.OwnerId != ownerId)
+                    changes.Add($"owner {FindPerson(before.OwnerId)?.Name ?? "nobody"} → {FindPerson(ownerId)?.Name}");
+
+                if (before.BillingCurrency != input.BillingCurrency)
+                    changes.Add($"currency {before.BillingCurrency} → {input.BillingCurrency}");
+
+                if (before.BillingEmail != billingEmail || before.Phone != phone)
+                    changes.Add("billing contact details");
+
+                if (before.ContractStart != start || before.ContractEnd != end)
+                    changes.Add("contract dates");
+
+                Record("Client changed", ClientTarget(existing.Id), ClientPath(existing.Id), UpperFirst(string.Join(", ", changes)));
+
+                if (before.OwnerId != ownerId)
+                    NotifyOwner(existing);
+            });
     }
 
-    /// <summary>Creates (<paramref name="contactId" /> 0) or edits a contact (account managers); a client has at most one primary contact.</summary>
-    public PbResult SaveContact(int contactId, int clientId, string name, string title, string email, string phone, bool isPrimary, out PbContact? saved)
+    /// <summary>
+    /// Creates (<paramref name="contactId" /> 0) or edits a contact (account managers): an email unique at the client, a role,
+    /// and at most one primary contact per client. A contact added by someone other than the client's owner is told to the
+    /// owner.
+    /// </summary>
+    public PbResult SaveContact(int contactId, int clientId, PbContactInput input, out PbContact? saved)
     {
         saved = null;
 
@@ -771,18 +960,20 @@ public sealed partial class PbState : IShowcaseSiteState
 
         var existing = contactId == 0 ? null : FindContact(contactId);
 
-        if ((contactId != 0 && existing is null) || FindClient(clientId) is null)
+        if ((contactId != 0 && existing is null) || FindClient(clientId) is not { } client)
             return PbResult.NotFound;
 
-        name = name?.Trim() ?? string.Empty;
-        title = title?.Trim() ?? string.Empty;
-        email = (email ?? string.Empty).Trim().ToLowerInvariant();
-        phone = phone?.Trim() ?? string.Empty;
+        var name = input?.Name?.Trim() ?? string.Empty;
+        var title = input?.Title?.Trim() ?? string.Empty;
+        var email = (input?.Email ?? string.Empty).Trim().ToLowerInvariant();
+        var phone = input?.Phone?.Trim() ?? string.Empty;
+        var isPrimary = input?.IsPrimary ?? false;
 
-        if (!IsText(name, MaxContactFieldLength) || title.Length > MaxContactFieldLength || !IsEmail(email) || phone.Length > MaxPhoneLength || (existing is not null && existing.ClientId != clientId))
+        if (input is null || !IsText(name, MaxContactFieldLength) || title.Length > MaxContactFieldLength || !IsEmail(email) || !(phone.Length == 0 || IsPhone(phone))
+            || !Enum.IsDefined(input.Role) || (existing is not null && existing.ClientId != clientId))
             return PbResult.Invalid;
 
-        if (contacts.Any(item => item != existing && item.ClientId == clientId && item.Email == email))
+        if (IsContactEmailTaken(clientId, email, existing?.Id ?? 0))
             return PbResult.Duplicate;
 
         var contact = existing ?? new PbContact { Id = nextContactId, ClientId = clientId };
@@ -790,13 +981,14 @@ public sealed partial class PbState : IShowcaseSiteState
         if (existing is null && (contacts.Count >= MaxContacts || nextContactId >= NextIdLimit))
             return PbResult.Invalid;
 
-        if (existing is not null && existing.Name == name && existing.Title == title && existing.Email == email && existing.Phone == phone && existing.IsPrimary == isPrimary)
+        if (existing is not null && existing.Name == name && existing.Title == title && existing.Email == email && existing.Phone == phone && existing.Role == input.Role
+            && existing.IsPrimary == isPrimary)
             return PbResult.NoChange;
 
         var before = contacts.Where(item => item.ClientId == clientId).ToDictionary(item => item.Id, item => item.IsPrimary);
-        var previous = (contact.Name, contact.Title, contact.Email, contact.Phone, contact.IsPrimary);
+        var previous = (contact.Name, contact.Title, contact.Email, contact.Phone, contact.Role, contact.IsPrimary);
 
-        (contact.Name, contact.Title, contact.Email, contact.Phone, contact.IsPrimary) = (name, title, email, phone, isPrimary);
+        (contact.Name, contact.Title, contact.Email, contact.Phone, contact.Role, contact.IsPrimary) = (name, title, email, phone, input.Role, isPrimary);
 
         if (isPrimary)
         {
@@ -819,11 +1011,18 @@ public sealed partial class PbState : IShowcaseSiteState
             }
             else
             {
-                (contact.Name, contact.Title, contact.Email, contact.Phone, contact.IsPrimary) = previous;
+                (contact.Name, contact.Title, contact.Email, contact.Phone, contact.Role, contact.IsPrimary) = previous;
             }
 
             foreach (var other in contacts.Where(item => before.ContainsKey(item.Id)))
                 other.IsPrimary = before[other.Id];
+        }, () =>
+        {
+            Record(existing is null ? "Contact added" : "Contact changed", ContactTarget(contact), ClientPath(clientId),
+                $"{RoleWord(contact.Role)}{(contact.IsPrimary ? ", primary" : null)}, {contact.Email}");
+
+            if (existing is null)
+                NotifyPerson(client.OwnerId, $"A contact was added at {client.Name}", $"{Identity.Current?.Name} added {contact.Name} ({RoleWord(contact.Role).ToLowerInvariant()}).", ClientPath(clientId));
         });
 
         if (result == PbResult.Ok)
@@ -868,7 +1067,7 @@ public sealed partial class PbState : IShowcaseSiteState
             {
                 deals.Remove(deal);
                 nextDealId--;
-            });
+            }, () => Record("Deal added", DealTarget(deal), DealPath(), $"{ClientName(deal.ClientId)}, {Dollars(deal.Value)}, closes {Day(deal.CloseDate)}"));
 
             if (result == PbResult.Ok)
                 saved = deal;
@@ -883,7 +1082,8 @@ public sealed partial class PbState : IShowcaseSiteState
         (existing.ClientId, existing.Title, existing.Value, existing.CloseDate) = (input.ClientId, title, input.Value, input.CloseDate.Date);
         saved = existing;
 
-        return Commit(() => (existing.ClientId, existing.Title, existing.Value, existing.CloseDate) = previous);
+        return Commit(() => (existing.ClientId, existing.Title, existing.Value, existing.CloseDate) = previous,
+            () => Record("Deal changed", DealTarget(existing), DealPath(), $"{Dollars(existing.Value)}, closes {Day(existing.CloseDate)}"));
     }
 
     /// <summary>Creates (<paramref name="milestoneId" /> 0) or edits a project milestone (project managers).</summary>
@@ -932,19 +1132,20 @@ public sealed partial class PbState : IShowcaseSiteState
                 (milestone.Title, milestone.Due) = previous;
                 project.Milestones.Sort((a, b) => a.Due.CompareTo(b.Due));
             }
-        });
+        }, () => Record(existing is null ? "Milestone added" : "Milestone changed", ProjectTarget(project), ProjectPath(project.Id), $"{title}, due {Day(due)}"));
     }
 
     /// <summary>
-    /// Creates (<paramref name="projectId" /> 0, owned by the signed-in project manager) or edits a project (project
-    /// managers). Keys are 2 to 5 capital letters and unique. Tasks assigned to someone removed from the project become
-    /// unassigned.
+    /// Creates (<paramref name="projectId" /> 0) or edits a project (project managers). Keys are 2 to 5 capital letters and
+    /// unique, and names are unique per client; the project manager is someone who runs projects; the due date is on or
+    /// after the start; budgets are within their ranges. Tasks assigned to someone removed from the project become
+    /// unassigned. A new project manager and, on a status change, the project's manager are told when someone else did it.
     /// </summary>
     public PbResult SaveProject(int projectId, PbProjectInput input, out PbProject? saved)
     {
         saved = null;
 
-        if (ProjectManager() is not { } person)
+        if (ProjectManager() is null)
             return PbResult.NotAllowed;
 
         var existing = projectId == 0 ? null : FindProject(projectId);
@@ -959,10 +1160,11 @@ public sealed partial class PbState : IShowcaseSiteState
 
         if (input is null || !IsText(name, MaxProjectNameLength) || !KeyPattern().IsMatch(key) || description.Length > MaxDescriptionLength || !Enum.IsDefined(input.Status)
             || (input.ClientId is { } clientId && FindClient(clientId) is null) || !IsPlausible(input.StartDate) || !IsPlausible(input.DueDate) || input.DueDate.Date < input.StartDate.Date
-            || memberIds.Any(id => FindPerson(id) is null))
+            || memberIds.Any(id => FindPerson(id) is null) || ProjectManagers.All(person => person.Id != input.OwnerId) || input.BudgetHours is < 0 or > MaxBudgetHours
+            || input.BudgetAmount is < 0 or > MaxBudgetAmount)
             return PbResult.Invalid;
 
-        if (projects.Any(item => item != existing && item.Key == key))
+        if (IsProjectKeyTaken(key, existing?.Id ?? 0) || IsProjectNameTaken(name, input.ClientId, existing?.Id ?? 0))
             return PbResult.Duplicate;
 
         if (existing is null)
@@ -970,13 +1172,18 @@ public sealed partial class PbState : IShowcaseSiteState
             if (projects.Count >= MaxProjects || nextProjectId >= NextIdLimit)
                 return PbResult.Invalid;
 
-            var project = new PbProject { Id = nextProjectId++, OwnerId = person.Id, CreatedAt = Clock.Now };
+            var project = new PbProject { Id = nextProjectId++, CreatedAt = Clock.Now };
             ApplyProject(project, name, key, description, input, memberIds);
             projects.Add(project);
             var result = Commit(() =>
             {
                 projects.Remove(project);
                 nextProjectId--;
+            }, () =>
+            {
+                Record("Project created", ProjectTarget(project), ProjectPath(project.Id),
+                    $"{ProjectStatusWord(project.Status)}, {Day(project.StartDate)} to {Day(project.DueDate)}, managed by {FindPerson(project.OwnerId)?.Name}");
+                NotifyPerson(project.OwnerId, $"You're the project manager of {project.Key}", $"{Identity.Current?.Name} created {project.Name}.", ProjectEditPath(project.Id));
             });
 
             if (result == PbResult.Ok)
@@ -986,14 +1193,12 @@ public sealed partial class PbState : IShowcaseSiteState
         }
 
         if (existing.Name == name && existing.Key == key && existing.ClientId == input.ClientId && existing.Description == description && existing.Status == input.Status
-            && existing.StartDate == input.StartDate.Date && existing.DueDate == input.DueDate.Date && existing.MemberIds.Order().SequenceEqual(memberIds.Order()))
+            && existing.StartDate == input.StartDate.Date && existing.DueDate == input.DueDate.Date && existing.MemberIds.Order().SequenceEqual(memberIds.Order())
+            && existing.OwnerId == input.OwnerId && existing.BudgetHours == input.BudgetHours && existing.BudgetAmount == input.BudgetAmount)
             return PbResult.NoChange;
 
-        var before = new PbProject
-        {
-            Id = existing.Id, Name = existing.Name, Key = existing.Key, ClientId = existing.ClientId, Description = existing.Description, Status = existing.Status,
-            StartDate = existing.StartDate, DueDate = existing.DueDate, MemberIds = existing.MemberIds.ToList(),
-        };
+        var before = new PbProjectInput(existing.Name, existing.Key, existing.ClientId, existing.Description, existing.Status, existing.StartDate, existing.DueDate, existing.MemberIds.ToList(),
+            existing.OwnerId, existing.BudgetHours, existing.BudgetAmount);
         var unassigned = tasks.Where(task => task.ProjectId == existing.Id && task.AssigneeId is not null && !memberIds.Contains(task.AssigneeId)).ToList();
         var previousAssignees = unassigned.ToDictionary(task => task.Id, task => task.AssigneeId);
 
@@ -1006,11 +1211,36 @@ public sealed partial class PbState : IShowcaseSiteState
 
         return Commit(() =>
         {
-            ApplyProject(existing, before.Name, before.Key, before.Description,
-                new PbProjectInput(before.Name, before.Key, before.ClientId, before.Description, before.Status, before.StartDate, before.DueDate, before.MemberIds), before.MemberIds);
+            ApplyProject(existing, before.Name, before.Key, before.Description, before, before.MemberIds.ToList());
 
             foreach (var task in unassigned)
                 task.AssigneeId = previousAssignees[task.Id];
+        }, () =>
+        {
+            var changes = new List<string>();
+
+            if (before.Name != name || before.Key != key)
+                changes.Add($"{before.Key} · {before.Name} → {key} · {name}");
+
+            if (before.ClientId != input.ClientId)
+                changes.Add($"client {ClientName(before.ClientId)} → {ClientName(input.ClientId)}");
+
+            if (before.StartDate != input.StartDate.Date || before.DueDate != input.DueDate.Date)
+                changes.Add($"dates {Day(input.StartDate)} to {Day(input.DueDate)}");
+
+            if (before.BudgetHours != input.BudgetHours || before.BudgetAmount != input.BudgetAmount)
+                changes.Add(Invariant($"budget {input.BudgetHours} h, {input.BudgetAmount:#,0}"));
+
+            if (!before.MemberIds.Order().SequenceEqual(memberIds.Order()))
+                changes.Add(Invariant($"team of {memberIds.Count}") + (unassigned.Count > 0 ? Invariant($" ({unassigned.Count} task(s) unassigned)") : null));
+
+            if (before.Description != description)
+                changes.Add("description");
+
+            if (changes.Count > 0)
+                Record("Project changed", ProjectTarget(existing), ProjectPath(existing.Id), UpperFirst(string.Join(", ", changes)));
+
+            TellAboutProjectChange(existing, before.Status, before.OwnerId);
         });
     }
 
@@ -1020,17 +1250,18 @@ public sealed partial class PbState : IShowcaseSiteState
         if (Staff() is null)
             return PbResult.NotAllowed;
 
-        if (FindTask(taskId)?.Checklist.FirstOrDefault(item => item.Id == itemId) is not { } item)
+        if (FindTask(taskId) is not { } task || task.Checklist.FirstOrDefault(item => item.Id == itemId) is not { } item)
             return PbResult.NotFound;
 
-        if (!IsOpen(FindTask(taskId)!))
+        if (!IsOpen(task))
             return PbResult.WrongState;
 
         if (item.Done == done)
             return PbResult.NoChange;
 
         item.Done = done;
-        Changed?.Invoke();
+        Record(done ? "Checklist item ticked" : "Checklist item unticked", TaskTarget(task), TaskPath(task.Id), item.Text);
+        RaiseChanged();
 
         return PbResult.Ok;
     }
@@ -1058,7 +1289,11 @@ public sealed partial class PbState : IShowcaseSiteState
     public IReadOnlyList<PbTask> TasksIn(int projectId, PbTaskStatus status) =>
         tasks.Where(item => item.ProjectId == projectId && item.Status == status).OrderBy(item => item.Position).ThenBy(item => item.Id).ToList();
 
-    /// <summary>Validates a stored snapshot against its own data and applies it only when every part is valid.</summary>
+    /// <summary>
+    /// Rebuilds the board from the seed and a stored snapshot's changes, validates every part against itself, and applies it
+    /// only when everything is valid: known IDs and references, defined enum values, numbers and dates in range, bounded
+    /// text, and links that stay on this site.
+    /// </summary>
     public bool TryRestoreData(JsonElement data)
     {
         PbSnapshot? snapshot;
@@ -1072,43 +1307,54 @@ public sealed partial class PbState : IShowcaseSiteState
             return false;
         }
 
-        if (snapshot is not
-            {
-                Activities: { Count: <= MaxActivities } storedActivities,
-                Clients: { Count: <= MaxClients } storedClients,
-                Contacts: { Count: <= MaxContacts } storedContacts,
-                Deals: { Count: <= MaxDeals } storedDeals,
-                People: { Count: > 0 and <= MaxPeople } storedPeople,
-                Projects: { Count: <= MaxProjects } storedProjects,
-                Tasks: { Count: <= MaxTasks } storedTasks,
-            }
-            || new[] { snapshot.NextActivityId, snapshot.NextClientId, snapshot.NextContactId, snapshot.NextDealId, snapshot.NextProjectId, snapshot.NextTaskId }.Any(id => id is < 1 or > NextIdLimit))
+        if (snapshot is null
+            || new[] { snapshot.NextActivityId, snapshot.NextAuditId, snapshot.NextClientId, snapshot.NextContactId, snapshot.NextDealId, snapshot.NextNotificationId, snapshot.NextProjectId, snapshot.NextTaskId }
+                .Any(id => id is < 1 or > NextIdLimit))
             return false;
 
-        var seededPeople = PbSeedData.People().Select(person => person.Id).ToHashSet();
+        // A fresh copy of the seed: the stored changes replace, remove, and add records on it; an inconsistent change list discards the snapshot.
+        var fresh = PbSeedData.Build();
+
+        if (Overlay(fresh.Activities, snapshot.Activities, snapshot.RemovedActivityIds, item => item.Id) is not { Count: <= MaxActivities } storedActivities
+            || Overlay(fresh.Audit, snapshot.Audit, snapshot.RemovedAuditIds, entry => entry.Id) is not { Count: <= MaxAudit } storedAudit
+            || Overlay(fresh.Clients, snapshot.Clients, snapshot.RemovedClientIds, client => client.Id) is not { Count: <= MaxClients } storedClients
+            || Overlay(fresh.Contacts, snapshot.Contacts, snapshot.RemovedContactIds, contact => contact.Id) is not { Count: <= MaxContacts } storedContacts
+            || Overlay(fresh.Deals, snapshot.Deals, snapshot.RemovedDealIds, deal => deal.Id) is not { Count: <= MaxDeals } storedDeals
+            || Overlay(fresh.Notifications, snapshot.Notifications, snapshot.RemovedNotificationIds, notice => notice.Id) is not { Count: <= MaxNotifications } storedNotifications
+            || Overlay(fresh.People, snapshot.People, snapshot.RemovedPersonIds, person => person.Id) is not { Count: > 0 and <= MaxPeople } storedPeople
+            || Overlay(fresh.Projects, snapshot.Projects, snapshot.RemovedProjectIds, project => project.Id) is not { Count: <= MaxProjects } storedProjects
+            || Overlay(fresh.Tasks, snapshot.Tasks, snapshot.RemovedTaskIds, task => task.Id) is not { Count: <= MaxTasks } storedTasks)
+            return false;
+
+        var seededPeople = fresh.People.Select(person => person.Id).ToHashSet();
 
         // A person with a sign-in has the account's ID; a demo account's or a registered account's person always has its account.
         if (storedPeople.Any(person => person is null || !(seededPeople.Contains(person.Id) || IsAccountId(person.Id)) || (person.AccountId is not null && (person.AccountId != person.Id || !IsAccountId(person.AccountId)))
                 || (IsAccountId(person.Id) && person.AccountId != person.Id)
-                || !IsText(person.Name, ShowcaseIdentity.MaxNameLength) || !IsText(person.Initials, 3) || !IsText(person.Title, MaxContactFieldLength) || person.CapacityHours is < 0 or > 60)
+                || !IsText(person.Name, ShowcaseIdentity.MaxNameLength) || !IsText(person.Initials, 3) || !IsText(person.Title, MaxContactFieldLength) || person.CapacityHours is < 0 or > MaxCapacityHours)
             || !Unique(storedPeople.Select(person => person.Id)))
             return false;
 
         var personIds = storedPeople.Select(person => person.Id).ToHashSet();
 
         if (storedClients.Any(client => client is null || client.Id < 1 || client.Id >= snapshot.NextClientId || !IsText(client.Name, MaxClientNameLength) || !IsText(client.Industry, MaxContactFieldLength)
-                || client.Website is not { Length: <= MaxWebsiteLength } || !personIds.Contains(client.OwnerId) || !IsPlausible(client.CreatedAt))
-            || !Unique(storedClients.Select(client => client.Id)) || !Unique(storedClients.Select(client => client.Name.ToLowerInvariant())))
+                || client.Website is not { } website || !(website.Length == 0 || IsWebsite(website)) || !personIds.Contains(client.OwnerId) || !IsPlausible(client.CreatedAt)
+                || client.BillingCurrency is null || !PbSeedData.Currencies.Contains(client.BillingCurrency) || client.BillingEmail is not { } billing || !(billing.Length == 0 || IsEmail(billing))
+                || client.Phone is not { } phone || !(phone.Length == 0 || IsPhone(phone)) || !ValidContract(client.ContractStart, client.ContractEnd))
+            || !Unique(storedClients.Select(client => client.Id)) || !Unique(storedClients.Select(client => client.Name.Trim().ToLowerInvariant())))
             return false;
 
         var clientIds = storedClients.Select(client => client.Id).ToHashSet();
 
         if (storedContacts.Any(contact => contact is null || contact.Id < 1 || contact.Id >= snapshot.NextContactId || !clientIds.Contains(contact.ClientId) || !IsText(contact.Name, MaxContactFieldLength)
-                || contact.Title is not { Length: <= MaxContactFieldLength } || !IsEmail(contact.Email) || contact.Phone is not { Length: <= MaxPhoneLength })
-            || !Unique(storedContacts.Select(contact => contact.Id)) || storedContacts.GroupBy(contact => contact.ClientId).Any(group => group.Count(contact => contact.IsPrimary) > 1))
+                || contact.Title is not { Length: <= MaxContactFieldLength } || !IsEmail(contact.Email) || contact.Phone is not { } phone || !(phone.Length == 0 || IsPhone(phone))
+                || !Enum.IsDefined(contact.Role))
+            || !Unique(storedContacts.Select(contact => contact.Id)) || !Unique(storedContacts.Select(contact => (contact.ClientId, contact.Email)))
+            || storedContacts.GroupBy(contact => contact.ClientId).Any(group => group.Count(contact => contact.IsPrimary) > 1))
             return false;
 
-        if (storedProjects.Any(project => !ValidProject(project, snapshot, clientIds, personIds)) || !Unique(storedProjects.Select(project => project.Id)) || !Unique(storedProjects.Select(project => project.Key)))
+        if (storedProjects.Any(project => !ValidProject(project, snapshot, clientIds, personIds)) || !Unique(storedProjects.Select(project => project.Id)) || !Unique(storedProjects.Select(project => project.Key))
+            || !Unique(storedProjects.Select(project => (project.ClientId, project.Name.Trim().ToLowerInvariant()))))
             return false;
 
         var projectsById = storedProjects.ToDictionary(project => project.Id);
@@ -1129,24 +1375,66 @@ public sealed partial class PbState : IShowcaseSiteState
             || !Unique(storedActivities.Select(activity => activity.Id)))
             return false;
 
+        if (storedAudit.Any(entry => entry is null || entry.Id < 1 || entry.Id >= snapshot.NextAuditId || !IsPlausible(entry.At) || !IsText(entry.Actor, ShowcaseIdentity.MaxNameLength)
+                || !IsText(entry.Action, MaxAuditTextLength) || !IsText(entry.Target, MaxAuditTextLength) || (entry.Details is not null && !IsText(entry.Details, MaxAuditTextLength))
+                || !IsSiteLink(entry.TargetUrl))
+            || !Unique(storedAudit.Select(entry => entry.Id)))
+            return false;
+
+        if (storedNotifications.Any(notice => notice is null || notice.Id < 1 || notice.Id >= snapshot.NextNotificationId || !IsAccountId(notice.AccountId) || !IsPlausible(notice.At)
+                || !IsText(notice.Title, MaxNoticeTitleLength) || (notice.Text is not null && !IsText(notice.Text, MaxNoticeTextLength)) || !IsSiteLink(notice.Url))
+            || !Unique(storedNotifications.Select(notice => notice.Id)))
+            return false;
+
         Replace(activities, storedActivities);
+        Replace(audit, storedAudit.OrderBy(entry => entry.Id).ToList());
         Replace(clients, storedClients);
         Replace(contacts, storedContacts);
         Replace(deals, storedDeals);
+        Replace(notifications, storedNotifications.OrderByDescending(notice => notice.At).ThenByDescending(notice => notice.Id).ToList());
         Replace(people, storedPeople);
         Replace(projects, storedProjects);
         Replace(tasks, storedTasks);
         nextActivityId = snapshot.NextActivityId;
+        nextAuditId = snapshot.NextAuditId;
         nextClientId = snapshot.NextClientId;
         nextContactId = snapshot.NextContactId;
         nextDealId = snapshot.NextDealId;
+        nextNotificationId = snapshot.NextNotificationId;
         nextProjectId = snapshot.NextProjectId;
         nextTaskId = snapshot.NextTaskId;
 
         return true;
     }
 
-    /// <summary>Saves a task's fields (any signed-in person); the assignee must be on the project.</summary>
+    /// <summary>
+    /// Saves the signed-in person's work details from their profile: job title (required, up to
+    /// <see cref="MaxContactFieldLength" /> characters) and weekly capacity (0 to <see cref="MaxCapacityHours" /> hours).
+    /// </summary>
+    public PbResult UpdateMyWork(string title, int capacityHours)
+    {
+        if (Staff() is not { } person)
+            return PbResult.NotAllowed;
+
+        title = title?.Trim() ?? string.Empty;
+
+        if (!IsText(title, MaxContactFieldLength) || capacityHours is < 0 or > MaxCapacityHours)
+            return PbResult.Invalid;
+
+        if (person.Title == title && person.CapacityHours == capacityHours)
+            return PbResult.NoChange;
+
+        var previous = (person.Title, person.CapacityHours);
+        (person.Title, person.CapacityHours) = (title, capacityHours);
+
+        return Commit(() => (person.Title, person.CapacityHours) = previous,
+            () => Record("Profile updated", person.Name, null, Invariant($"{title}, {capacityHours} h a week")));
+    }
+
+    /// <summary>
+    /// Saves a task's fields (any signed-in person): the assignee must be on the project, and a due date falls within the
+    /// project's dates. A new assignee other than the signed-in person is told.
+    /// </summary>
     public PbResult UpdateTask(int taskId, PbTaskInput input)
     {
         if (Staff() is null)
@@ -1155,7 +1443,7 @@ public sealed partial class PbState : IShowcaseSiteState
         if (FindTask(taskId) is not { } task || FindProject(task.ProjectId) is not { } project)
             return PbResult.NotFound;
 
-        if (!IsOpen(FindTask(taskId)!))
+        if (!IsOpen(task))
             return PbResult.WrongState;
 
         if (!ValidTaskInput(project, input))
@@ -1169,17 +1457,49 @@ public sealed partial class PbState : IShowcaseSiteState
 
         Apply(task, next);
 
-        return Commit(() => Apply(task, current));
+        return Commit(() => Apply(task, current), () =>
+        {
+            var changes = new List<string>();
+
+            if (current.Title != next.Title)
+                changes.Add("title");
+
+            if (current.Description != next.Description)
+                changes.Add("description");
+
+            if (current.Priority != next.Priority)
+                changes.Add($"priority {current.Priority} → {next.Priority}");
+
+            if (current.DueDate != next.DueDate)
+                changes.Add($"due {(next.DueDate is { } due ? Day(due) : "none")}");
+
+            if (current.EstimateHours != next.EstimateHours)
+                changes.Add(Invariant($"estimate {next.EstimateHours} h"));
+
+            if (current.MilestoneId != next.MilestoneId)
+                changes.Add("milestone");
+
+            if (changes.Count > 0)
+                Record("Task changed", TaskTarget(task), TaskPath(task.Id), UpperFirst(string.Join(", ", changes)));
+
+            if (current.AssigneeId != next.AssigneeId)
+            {
+                RecordAssignment(task, current.AssigneeId);
+                NotifyAssigned(task);
+            }
+        });
     }
 
     /// <summary>Returns everyone's open work (not on completed projects), the busiest (this week, against capacity) first.</summary>
     public IReadOnlyList<PbWorkload> Workload()
     {
         var weekEnd = WeekStart(Clock.Today).AddDays(7);
+        var openProjects = projects.Where(project => project.Status != PbProjectStatus.Completed).Select(project => project.Id).ToHashSet();
+        var openByPerson = tasks.Where(task => task.AssigneeId is not null && task.Status != PbTaskStatus.Done && openProjects.Contains(task.ProjectId)).ToLookup(task => task.AssigneeId!);
 
         return people.Select(person =>
             {
-                var open = tasks.Where(task => task.AssigneeId == person.Id && task.Status != PbTaskStatus.Done && IsOpen(task)).OrderBy(task => task.DueDate ?? DateTime.MaxValue).ToList();
+                var open = openByPerson[person.Id].OrderBy(task => task.DueDate ?? DateTime.MaxValue).ToList();
                 var thisWeek = open.Where(task => task.DueDate is { } due && due < weekEnd).Sum(task => task.EstimateHours);
 
                 return new PbWorkload(person, open, thisWeek, open.Sum(task => task.EstimateHours) - thisWeek);
@@ -1199,7 +1519,36 @@ public sealed partial class PbState : IShowcaseSiteState
 
     #region Private Methods
 
-    private static string Clip(string value, int maxLength) => value.Length <= maxLength ? value : value[..maxLength];
+    private static string Clip(string value, int maxLength) => value.Length <= maxLength ? value : string.Concat(value.AsSpan(0, maxLength - 1), "…");
+
+    private static string Day(DateTime date) => date.ToString("MMM d, yyyy", CultureInfo.InvariantCulture);
+
+    /// <summary>
+    /// Returns the records that differ from the seed (changed or added, in list order) and the keys of seeded records that
+    /// were removed; <see langword="null" /> for an empty list, so it is left out of the snapshot.
+    /// </summary>
+    private static (List<T>? Changed, List<TKey>? Removed) Diff<T, TKey>(IReadOnlyList<T> current, IReadOnlyList<T> seeded, Func<T, TKey> key, Func<T, T, bool> equals)
+        where TKey : notnull
+    {
+        var seededByKey = seeded.ToDictionary(key);
+        var currentKeys = new HashSet<TKey>();
+        var changed = new List<T>();
+
+        foreach (var item in current)
+        {
+            var itemKey = key(item);
+            currentKeys.Add(itemKey);
+
+            if (!seededByKey.TryGetValue(itemKey, out var original) || !equals(original, item))
+                changed.Add(item);
+        }
+
+        var removed = seeded.Where(item => !currentKeys.Contains(key(item))).Select(key).ToList();
+
+        return (changed.Count == 0 ? null : changed, removed.Count == 0 ? null : removed);
+    }
+
+    private static string Dollars(int value) => value.ToString("$#,0", CultureInfo.InvariantCulture);
 
     [GeneratedRegex(@"^[^@\s]{1,64}@[^@\s]+\.[^@\s]{2,}$")]
     private static partial Regex EmailPattern();
@@ -1216,10 +1565,10 @@ public sealed partial class PbState : IShowcaseSiteState
         }).ToUpperInvariant();
     }
 
+    private static string Invariant(FormattableString text) => text.ToString(CultureInfo.InvariantCulture);
+
     private static bool IsAccountId(string? accountId) =>
         accountId is not null && (PbSeedData.DemoAccounts().Any(demo => demo.Id == accountId) || (accountId.StartsWith("u-", StringComparison.Ordinal) && accountId.Length <= 12));
-
-    private static bool IsEmail(string? value) => value is not null && value.Length <= ShowcaseIdentity.MaxEmailLength && EmailPattern().IsMatch(value);
 
     private static bool IsPlausible(DateTime value) => value >= PbSeedData.Now.AddYears(-3) && value <= PbSeedData.Now.AddYears(3);
 
@@ -1227,6 +1576,52 @@ public sealed partial class PbState : IShowcaseSiteState
 
     [GeneratedRegex("^[A-Z]{2,5}$")]
     private static partial Regex KeyPattern();
+
+    /// <summary>
+    /// Rebuilds a list from the seed and a snapshot's changes: seeded records in their order (replaced by a stored record
+    /// with the same key, left out when removed), then the added records in their stored order. Returns
+    /// <see langword="null" /> for an inconsistent change list (a missing record, a repeated key, or a removed key that isn't
+    /// seeded), which discards the snapshot.
+    /// </summary>
+    private static List<T>? Overlay<T, TKey>(IReadOnlyList<T> seeded, List<T>? changed, List<TKey>? removed, Func<T, TKey> key)
+        where TKey : notnull
+    {
+        changed ??= new List<T>();
+        removed ??= new List<TKey>();
+
+        if (changed.Count > 20_000 || removed.Count > 20_000 || changed.Any(item => item is null) || removed.Any(item => item is null))
+            return null;
+
+        var replacements = new Dictionary<TKey, T>();
+
+        foreach (var item in changed)
+        {
+            if (key(item) is not { } itemKey || !replacements.TryAdd(itemKey, item))
+                return null;
+        }
+
+        var seededKeys = seeded.Select(key).ToHashSet();
+        var removedKeys = removed.ToHashSet();
+
+        if (removedKeys.Count != removed.Count || removedKeys.Any(item => !seededKeys.Contains(item) || replacements.ContainsKey(item)))
+            return null;
+
+        var result = new List<T>(seeded.Count + changed.Count);
+
+        foreach (var item in seeded)
+        {
+            var itemKey = key(item);
+
+            if (replacements.TryGetValue(itemKey, out var replacement))
+                result.Add(replacement);
+            else if (!removedKeys.Contains(itemKey))
+                result.Add(item);
+        }
+
+        result.AddRange(changed.Where(item => !seededKeys.Contains(key(item))));
+
+        return result;
+    }
 
     private static void Renumber(IEnumerable<PbTask> column)
     {
@@ -1250,12 +1645,57 @@ public sealed partial class PbState : IShowcaseSiteState
         target.AddRange(source);
     }
 
+    private static bool SameAudit(ShowcaseAuditEntry left, ShowcaseAuditEntry right) =>
+        left.Id == right.Id && left.At == right.At && left.Actor == right.Actor && left.Action == right.Action && left.Target == right.Target
+        && left.TargetUrl == right.TargetUrl && left.Details == right.Details;
+
+    private static bool SameClient(PbClient left, PbClient right) =>
+        left.Id == right.Id && left.Name == right.Name && left.Industry == right.Industry && left.Website == right.Website && left.OwnerId == right.OwnerId && left.CreatedAt == right.CreatedAt
+        && left.BillingCurrency == right.BillingCurrency && left.BillingEmail == right.BillingEmail && left.Phone == right.Phone && left.ContractStart == right.ContractStart
+        && left.ContractEnd == right.ContractEnd;
+
+    private static bool SameContact(PbContact left, PbContact right) =>
+        left.Id == right.Id && left.ClientId == right.ClientId && left.Name == right.Name && left.Title == right.Title && left.Email == right.Email && left.Phone == right.Phone
+        && left.Role == right.Role && left.IsPrimary == right.IsPrimary;
+
+    private static bool SameJson<T>(T left, T right) => JsonSerializer.Serialize(left, snapshotOptions) == JsonSerializer.Serialize(right, snapshotOptions);
+
+    private static bool SameNotification(ShowcaseNotification left, ShowcaseNotification right) =>
+        left.Id == right.Id && left.AccountId == right.AccountId && left.At == right.At && left.IsRead == right.IsRead && left.Title == right.Title && left.Text == right.Text
+        && left.Url == right.Url;
+
+    private static bool SameProject(PbProject left, PbProject right) =>
+        left.Id == right.Id && left.Key == right.Key && left.Name == right.Name && left.ClientId == right.ClientId && left.Description == right.Description && left.Status == right.Status
+        && left.StartDate == right.StartDate && left.DueDate == right.DueDate && left.OwnerId == right.OwnerId && left.FromDealId == right.FromDealId && left.CreatedAt == right.CreatedAt
+        && left.BudgetHours == right.BudgetHours && left.BudgetAmount == right.BudgetAmount && left.NextMilestoneId == right.NextMilestoneId && left.NextTaskNumber == right.NextTaskNumber
+        && left.MemberIds.SequenceEqual(right.MemberIds)
+        && left.Milestones.Count == right.Milestones.Count
+        && left.Milestones.Zip(right.Milestones).All(pair => pair.First.Id == pair.Second.Id && pair.First.Title == pair.Second.Title && pair.First.Due == pair.Second.Due);
+
+    private static bool SameTask(PbTask left, PbTask right) =>
+        left.Id == right.Id && left.ProjectId == right.ProjectId && left.Number == right.Number && left.Title == right.Title && left.Description == right.Description
+        && left.Status == right.Status && left.Position == right.Position && left.AssigneeId == right.AssigneeId && left.Priority == right.Priority && left.DueDate == right.DueDate
+        && left.EstimateHours == right.EstimateHours && left.MilestoneId == right.MilestoneId && left.CreatedAt == right.CreatedAt && left.CompletedAt == right.CompletedAt
+        && left.NextItemId == right.NextItemId
+        && left.Checklist.Count == right.Checklist.Count
+        && left.Checklist.Zip(right.Checklist).All(pair => pair.First.Id == pair.Second.Id && pair.First.Text == pair.Second.Text && pair.First.Done == pair.Second.Done)
+        && left.Comments.Count == right.Comments.Count
+        && left.Comments.Zip(right.Comments).All(pair => pair.First.Id == pair.Second.Id && pair.First.Text == pair.Second.Text && pair.First.AuthorId == pair.Second.AuthorId
+            && pair.First.At == pair.Second.At);
+
     private static bool Unique<T>(IEnumerable<T> values)
     {
         var list = values.ToList();
 
         return list.Distinct().Count() == list.Count;
     }
+
+    /// <summary>Upper-cases the first letter only, so names and dates inside stay as they are.</summary>
+    private static string UpperFirst(string text) => text.Length == 0 ? text : char.ToUpperInvariant(text[0]) + text[1..];
+
+    /// <summary>A contract has no dates, a start only, or a start and an end on or after it, all plausible.</summary>
+    private static bool ValidContract(DateTime? start, DateTime? end) =>
+        (start is null && end is null) || (start is { } from && IsPlausible(from) && (end is null || (end.Value.Date >= from.Date && IsPlausible(end.Value))));
 
     private static void ApplyProject(PbProject project, string name, string key, string description, PbProjectInput input, List<string> memberIds)
     {
@@ -1267,6 +1707,9 @@ public sealed partial class PbState : IShowcaseSiteState
         project.StartDate = input.StartDate.Date;
         project.DueDate = input.DueDate.Date;
         project.MemberIds = memberIds.ToList();
+        project.OwnerId = input.OwnerId;
+        project.BudgetHours = input.BudgetHours;
+        project.BudgetAmount = input.BudgetAmount;
     }
 
     private static void Apply(PbTask task, PbTaskInput input)
@@ -1283,8 +1726,11 @@ public sealed partial class PbState : IShowcaseSiteState
     /// <summary>The signed-in person when they are an account manager, or <see langword="null" />.</summary>
     private PbPerson? AccountManager() => Identity.Current?.RoleId == PbSeedData.AccountManagerRole ? Staff() : null;
 
-    /// <summary>Raises <see cref="Changed" /> when the snapshot still fits; otherwise undoes the change and reports Invalid.</summary>
-    private PbResult Commit(Action undo)
+    /// <summary>
+    /// Raises <see cref="Changed" /> when the snapshot still fits, after <paramref name="committed" /> (the audit entries
+    /// and notifications of the change); otherwise undoes the change and reports Invalid.
+    /// </summary>
+    private PbResult Commit(Action undo, Action? committed = null)
     {
         if (!FitsSnapshot())
         {
@@ -1293,7 +1739,8 @@ public sealed partial class PbState : IShowcaseSiteState
             return PbResult.Invalid;
         }
 
-        Changed?.Invoke();
+        committed?.Invoke();
+        RaiseChanged();
 
         return PbResult.Ok;
     }
@@ -1319,7 +1766,23 @@ public sealed partial class PbState : IShowcaseSiteState
         }
     }
 
-    /// <summary>A new account joins the team as a person; a person's name follows their profile.</summary>
+    /// <summary>A project name that is free at the client: the name itself, or with " (2)", " (3)", and so on.</summary>
+    private string FreeProjectName(string name, int? clientId)
+    {
+        if (!IsProjectNameTaken(name, clientId))
+            return name;
+
+        for (var number = 2; ; number++)
+        {
+            var tail = Invariant($" ({number})");
+            var candidate = name[..Math.Min(name.Length, MaxProjectNameLength - tail.Length)] + tail;
+
+            if (!IsProjectNameTaken(candidate, clientId))
+                return candidate;
+        }
+    }
+
+    /// <summary>A new account joins the team as a person; a person's name follows their profile. The person hears about tasks due soon.</summary>
     private void OnIdentityChanged()
     {
         if (Identity.Current is { } account)
@@ -1335,6 +1798,8 @@ public sealed partial class PbState : IShowcaseSiteState
             {
                 people.Add(new PbPerson { Id = account.Id, AccountId = account.Id, Name = name, Initials = Initials(name), Title = "Team member", CapacityHours = 32 });
             }
+
+            RemindDueTasks();
         }
 
         Changed?.Invoke();
@@ -1345,6 +1810,32 @@ public sealed partial class PbState : IShowcaseSiteState
 
     /// <summary>The signed-in project manager, or <see langword="null" />.</summary>
     private PbPerson? ProjectManager() => Identity.Current?.RoleId == PbSeedData.ProjectManagerRole ? Staff() : null;
+
+    /// <summary>Raises <see cref="Changed" />, or once at the end of a bulk change.</summary>
+    private void RaiseChanged()
+    {
+        if (batchDepth > 0)
+        {
+            changedInBatch = true;
+
+            return;
+        }
+
+        Changed?.Invoke();
+    }
+
+    /// <summary>Sets the ID counters past the highest IDs of a fresh tab's data.</summary>
+    private void ResetCounters(PbSeedSet data)
+    {
+        nextActivityId = data.Activities.Max(item => item.Id) + 1;
+        nextAuditId = data.Audit.Count == 0 ? 1 : data.Audit.Max(item => item.Id) + 1;
+        nextClientId = data.Clients.Max(item => item.Id) + 1;
+        nextContactId = data.Contacts.Max(item => item.Id) + 1;
+        nextDealId = data.Deals.Max(item => item.Id) + 1;
+        nextNotificationId = data.Notifications.Count == 0 ? 1 : data.Notifications.Max(item => item.Id) + 1;
+        nextProjectId = data.Projects.Max(item => item.Id) + 1;
+        nextTaskId = data.Tasks.Max(item => item.Id) + 1;
+    }
 
     /// <summary>The signed-in person (any role), or <see langword="null" />.</summary>
     private PbPerson? Staff() => Identity.Current is { } account ? people.FirstOrDefault(person => person.AccountId == account.Id) : null;
@@ -1376,6 +1867,7 @@ public sealed partial class PbState : IShowcaseSiteState
         project is not null && project.Id >= 1 && project.Id < snapshot.NextProjectId && IsText(project.Name, MaxProjectNameLength) && project.Key is not null && KeyPattern().IsMatch(project.Key)
         && (project.ClientId is null || clientIds.Contains(project.ClientId.Value)) && project.Description is { Length: <= MaxDescriptionLength } && Enum.IsDefined(project.Status)
         && IsPlausible(project.StartDate) && IsPlausible(project.DueDate) && project.DueDate >= project.StartDate && IsPlausible(project.CreatedAt) && personIds.Contains(project.OwnerId)
+        && project.BudgetHours is >= 0 and <= MaxBudgetHours && project.BudgetAmount is >= 0 and <= MaxBudgetAmount
         && project.MemberIds is { Count: <= MaxPeople } && project.MemberIds.All(id => id is not null && personIds.Contains(id)) && Unique(project.MemberIds)
         && project.Milestones is { Count: <= MaxMilestones } && project.NextMilestoneId is >= 1 and < NextIdLimit && project.NextTaskNumber is >= 1 and <= NextIdLimit
         && project.Milestones.All(milestone => milestone is not null && milestone.Id >= 1 && milestone.Id < project.NextMilestoneId && IsText(milestone.Title, MaxMilestoneTitleLength) && IsPlausible(milestone.Due))
@@ -1396,10 +1888,15 @@ public sealed partial class PbState : IShowcaseSiteState
             && Unique(task.Checklist.Select(item => item.Id).Concat(task.Comments.Select(comment => comment.Id)));
     }
 
+    /// <summary>
+    /// The state's rules for a task's fields: a title, bounded text, a defined priority, an assignee on the project, an
+    /// estimate in range, a milestone of the project, and a due date (when set) within the project's start and due dates.
+    /// </summary>
     private bool ValidTaskInput(PbProject project, PbTaskInput? input) =>
         input is not null && IsText(input.Title?.Trim(), MaxTaskTitleLength) && (input.Description?.Trim().Length ?? 0) <= MaxDescriptionLength && Enum.IsDefined(input.Priority)
         && (input.AssigneeId is null || project.MemberIds.Contains(input.AssigneeId)) && input.EstimateHours is >= 0 and <= MaxEstimateHours
-        && (input.MilestoneId is null || project.Milestones.Any(milestone => milestone.Id == input.MilestoneId)) && (input.DueDate is null || IsPlausible(input.DueDate.Value));
+        && (input.MilestoneId is null || project.Milestones.Any(milestone => milestone.Id == input.MilestoneId))
+        && (input.DueDate is null || (IsPlausible(input.DueDate.Value) && IsDueInProject(project, input.DueDate.Value)));
 
     #endregion
 
@@ -1412,7 +1909,8 @@ public sealed partial class PbState : IShowcaseSiteState
     {
         get => people.Where(person => person.AccountId is not null
                 ? Identity.FindAccount(person.AccountId)?.RoleId == PbSeedData.AccountManagerRole
-                : person.Title == "Account manager")
+                : person.Title == PbSeedData.AccountManagerTitle)
+            .OrderBy(person => person.Name, StringComparer.OrdinalIgnoreCase)
             .ToList();
     }
 
@@ -1421,6 +1919,9 @@ public sealed partial class PbState : IShowcaseSiteState
 
     /// <summary>Gets every task (for reports and workload).</summary>
     public IReadOnlyList<PbTask> AllTasks => tasks.ToList();
+
+    /// <summary>Gets the contacts of every client (for lists that need them all at once).</summary>
+    public IReadOnlyList<PbContact> AllContacts => contacts.ToList();
 
     /// <summary>Gets the clients, by name.</summary>
     public IReadOnlyList<PbClient> Clients => clients.OrderBy(item => item.Name, StringComparer.OrdinalIgnoreCase).ToList();
@@ -1469,6 +1970,16 @@ public sealed partial class PbState : IShowcaseSiteState
     /// <summary>Gets the team.</summary>
     public IReadOnlyList<PbPerson> People => people.OrderBy(item => item.Name, StringComparer.OrdinalIgnoreCase).ToList();
 
+    /// <summary>Gets the people who can run projects: project managers with a sign-in, and teammates with that job title.</summary>
+    public IReadOnlyList<PbPerson> ProjectManagers
+    {
+        get => people.Where(person => person.AccountId is not null
+                ? Identity.FindAccount(person.AccountId)?.RoleId == PbSeedData.ProjectManagerRole
+                : person.Title == PbSeedData.ProjectManagerTitle)
+            .OrderBy(person => person.Name, StringComparer.OrdinalIgnoreCase)
+            .ToList();
+    }
+
     /// <summary>Gets the projects: active, then planned, on hold, and completed; by due date within each.</summary>
     public IReadOnlyList<PbProject> Projects =>
         projects.OrderBy(item => item.Status switch { PbProjectStatus.Active => 0, PbProjectStatus.Planned => 1, PbProjectStatus.OnHold => 2, _ => 3 }).ThenBy(item => item.DueDate).ToList();
@@ -1476,8 +1987,8 @@ public sealed partial class PbState : IShowcaseSiteState
     /// <summary>Gets the site's slug, used in the storage key.</summary>
     public string SiteSlug => "project-board";
 
-    /// <summary>Gets the snapshot format version.</summary>
-    public int SnapshotVersion => 1;
+    /// <summary>Gets the snapshot format version: 2 stores only what differs from the seed, and adds the audit log, notifications, client billing fields, contact roles, and project budgets.</summary>
+    public int SnapshotVersion => 2;
 
     #endregion
 
@@ -1493,18 +2004,31 @@ public sealed partial class PbState : IShowcaseSiteState
 
     #region Other
 
-    /// <summary>The stored form of the state.</summary>
+    /// <summary>
+    /// The stored form of the state: the ID counters and, of each list, the records that differ from the seed (changed or
+    /// added) and the IDs of seeded records that were removed; it is rebuilt over the seed on restore. Empty change lists are
+    /// left out of the JSON.
+    /// </summary>
     private sealed class PbSnapshot
     {
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public List<PbActivity>? Activities { get; set; }
 
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public List<ShowcaseAuditEntry>? Audit { get; set; }
+
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public List<PbClient>? Clients { get; set; }
 
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public List<PbContact>? Contacts { get; set; }
 
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public List<PbDeal>? Deals { get; set; }
 
         public int NextActivityId { get; set; }
+
+        public int NextAuditId { get; set; }
 
         public int NextClientId { get; set; }
 
@@ -1512,14 +2036,49 @@ public sealed partial class PbState : IShowcaseSiteState
 
         public int NextDealId { get; set; }
 
+        public int NextNotificationId { get; set; }
+
         public int NextProjectId { get; set; }
 
         public int NextTaskId { get; set; }
 
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public List<ShowcaseNotification>? Notifications { get; set; }
+
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public List<PbPerson>? People { get; set; }
 
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public List<PbProject>? Projects { get; set; }
 
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public List<int>? RemovedActivityIds { get; set; }
+
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public List<int>? RemovedAuditIds { get; set; }
+
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public List<int>? RemovedClientIds { get; set; }
+
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public List<int>? RemovedContactIds { get; set; }
+
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public List<int>? RemovedDealIds { get; set; }
+
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public List<int>? RemovedNotificationIds { get; set; }
+
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public List<string>? RemovedPersonIds { get; set; }
+
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public List<int>? RemovedProjectIds { get; set; }
+
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public List<int>? RemovedTaskIds { get; set; }
+
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public List<PbTask>? Tasks { get; set; }
     }
 
