@@ -599,6 +599,17 @@ pre[class*=language-] {
     display: none;
 }
 
+/* Keep the one-line site header inside narrow viewports. The theme button keeps its aria-label, and the Showcase link keeps aria-label="Showcase". */
+.bb-site-header-theme-switcher #bb-theme-text {
+    display: none;
+}
+
+@media (max-width: 359.98px) {
+    .bb-site-header-showcase-label {
+        display: none;
+    }
+}
+
 /* ---------------------------------------------------------------------------
    Showcase sample websites (/showcase)
    Each site layout sets --sc-primary, --sc-primary-rgb, --sc-primary-hover,
