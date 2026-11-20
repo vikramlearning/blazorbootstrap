@@ -11,7 +11,8 @@ namespace BlazorBootstrap.Demo.RCL.Services.Showcase.Saas;
 /// operator console: the plans, the customer workspaces with their teams, invoices, and activity, notifications, sales leads,
 /// the audit log, and the demo sign-in. It is kept in the tab's <c>sessionStorage</c> through the showcase foundation, so
 /// it survives a reload in the tab; nothing is sent or charged. The enterprise baseline (audit log, notifications, global
-/// search, and the lists' bulk actions) is in <c>SaasState.Enterprise.cs</c>.
+/// search, and the lists' bulk actions) is in <c>SaasState.Enterprise.cs</c>, and dunning (failed payments, retries,
+/// grace, and suspension) in <c>SaasState.Dunning.cs</c>.
 /// </summary>
 public sealed partial class SaasState : IShowcaseEnterpriseState
 {
@@ -118,6 +119,12 @@ public sealed partial class SaasState : IShowcaseEnterpriseState
 
     private int nextWorkspaceId;
 
+    private readonly List<SaasDunningCase> dunning;
+
+    private SaasDunningPolicy dunningPolicy = SaasSeedData.DefaultDunningPolicy();
+
+    private int nextDunningId;
+
     #endregion
 
     #region Constructors and Finalizers
@@ -134,6 +141,8 @@ public sealed partial class SaasState : IShowcaseEnterpriseState
         notices = data.Notices.ToList();
         leads = data.Leads.ToList();
         audit = data.Audit.ToList();
+        dunning = data.Dunning.ToList();
+        nextDunningId = dunning.Count == 0 ? 1 : dunning.Max(item => item.Id) + 1;
         nextAuditId = audit.Count + 1;
         nextWorkspaceId = workspaces.Max(workspace => workspace.Id) + 1;
         nextMemberId = members.Max(member => member.Id) + 1;
@@ -156,9 +165,10 @@ public sealed partial class SaasState : IShowcaseEnterpriseState
     #region Public Methods
 
     /// <summary>
-    /// Bills whatever has come due since the tab's clock last looked: trials that ended and renewals that passed. A card on
-    /// file pays the invoice; without one the invoice stays open and the workspace is past due. Pages call this when they
-    /// open; it does nothing on a fresh tab, where every date is in the future.
+    /// Bills whatever has come due since the tab's clock last looked: trials that ended and renewals that passed, then the
+    /// dunning steps that came due (retries, grace, suspensions). A working card on file pays the invoice; otherwise the
+    /// invoice stays open, the workspace is past due, and dunning starts. A workspace in dunning renews once it recovers.
+    /// Pages call this when they open; it does nothing on a fresh tab, where every date is in the future.
     /// </summary>
     public void CatchUpBilling()
     {
@@ -170,12 +180,14 @@ public sealed partial class SaasState : IShowcaseEnterpriseState
             var workspace = original;
 
             for (var run = 0; run < MaxRenewalsPerRun && workspace.Status is SaasWorkspaceStatus.Trial or SaasWorkspaceStatus.Active or SaasWorkspaceStatus.PastDue
-                 && workspace.RenewsOn.Date <= today; run++)
+                 && workspace.RenewsOn.Date <= today && OpenDunningCase(workspace.Id) is null; run++)
             {
                 workspace = Renew(workspace);
                 changed = true;
             }
         }
+
+        changed |= RunDunning();
 
         if (changed)
             Changed?.Invoke();
@@ -183,7 +195,9 @@ public sealed partial class SaasState : IShowcaseEnterpriseState
 
     /// <summary>
     /// Charges the card on file for an open invoice (operator "Retry payment"); a past-due workspace with nothing else open
-    /// becomes active. The workspace's owners and billing members who can sign in are told the payment was received.
+    /// becomes active. The workspace's owners and billing members who can sign in are told the payment was received. An
+    /// invoice in dunning is retried like "Retry now" on the dunning page; a card that fails gives
+    /// <see cref="SaasResult.CardDeclined" /> (and starts dunning when it hadn't started).
     /// </summary>
     public SaasResult CollectInvoice(string number)
     {
@@ -193,8 +207,20 @@ public sealed partial class SaasState : IShowcaseEnterpriseState
         if (invoices.FirstOrDefault(invoice => invoice.Number == number) is not { Status: SaasInvoiceStatus.Open } invoice || FindWorkspace(invoice.WorkspaceId) is not { } workspace)
             return SaasResult.NotFound;
 
+        if (dunning.FirstOrDefault(item => item.IsOpen && item.InvoiceNumber == number) is { } open)
+            return RetryDunningNow(open.Id);
+
         if (workspace.CardLast4 is null)
             return SaasResult.CardRequired;
+
+        if (workspace.CardFails is { } reason)
+        {
+            StartCase(workspace, invoice.Number, invoice.Amount, reason, Clock.Now);
+            Replace((FindWorkspace(workspace.Id) ?? workspace) with { Status = SaasWorkspaceStatus.PastDue });
+            Changed?.Invoke();
+
+            return SaasResult.CardDeclined;
+        }
 
         Pay(invoice, workspace);
         Record("Payment collected", InvoiceTarget(invoice.Number), InvoicePath(invoice.Number), $"{workspace.Name}: {Money(invoice.Amount)} from the {workspace.CardBrand} ending in {workspace.CardLast4}");
@@ -310,6 +336,7 @@ public sealed partial class SaasState : IShowcaseEnterpriseState
         members.RemoveAll(member => member.WorkspaceId == workspaceId);
         invoices.RemoveAll(invoice => invoice.WorkspaceId == workspaceId);
         activities.RemoveAll(activity => activity.WorkspaceId == workspaceId);
+        dunning.RemoveAll(item => item.WorkspaceId == workspaceId);
         Record("Tenant deleted", workspace.Name, null, "Archived tenant removed with its members, invoices, and activity.");
         Changed?.Invoke();
 
@@ -319,10 +346,14 @@ public sealed partial class SaasState : IShowcaseEnterpriseState
     /// <summary>Returns a lead by its ID, or <see langword="null" />.</summary>
     public SaasLead? FindLead(int leadId) => leads.FirstOrDefault(lead => lead.Id == leadId);
 
-    /// <summary>Pays every open invoice of the signed-in member's workspace with the card on file; a past-due workspace becomes active.</summary>
+    /// <summary>
+    /// Pays every open invoice of the signed-in member's workspace with the card on file; a past-due workspace becomes active,
+    /// and so does one suspended by dunning. A card that fails (<see cref="SaasWorkspace.CardFails" />) pays nothing: the
+    /// attempt goes on the dunning case and the result is <see cref="SaasResult.CardDeclined" />.
+    /// </summary>
     public SaasResult PayOpenInvoices()
     {
-        if (!CanManageBilling || CurrentWorkspace is not { } workspace)
+        if (!CanFixPayment || CurrentWorkspace is not { } workspace)
             return SaasResult.NotAllowed;
 
         var open = invoices.Where(invoice => invoice.WorkspaceId == workspace.Id && invoice.Status == SaasInvoiceStatus.Open).ToList();
@@ -333,8 +364,23 @@ public sealed partial class SaasState : IShowcaseEnterpriseState
         if (workspace.CardLast4 is null)
             return SaasResult.CardRequired;
 
+        if (workspace.CardFails is not null)
+        {
+            if (OpenDunningCase(workspace.Id) is { } failing)
+                Attempt(failing.Id, Clock.Now, Identity.Current!.Name, AttemptKind.Customer);
+
+            Changed?.Invoke();
+
+            return SaasResult.CardDeclined;
+        }
+
         foreach (var invoice in open)
-            Pay(invoice, FindWorkspace(workspace.Id)!);
+        {
+            if (dunning.FirstOrDefault(item => item.IsOpen && item.InvoiceNumber == invoice.Number) is { } item)
+                Attempt(item.Id, Clock.Now, Identity.Current!.Name, AttemptKind.Customer);
+            else if (invoices.Contains(invoice))
+                Pay(invoice, FindWorkspace(workspace.Id)!);
+        }
 
         var summary = $"{open.Count} open {(open.Count == 1 ? "invoice" : "invoices")}, {Money(open.Sum(invoice => invoice.Amount))}";
         Log(workspace.Id, "Invoices paid", summary, IconName.Receipt);
@@ -478,6 +524,9 @@ public sealed partial class SaasState : IShowcaseEnterpriseState
         var (changedNotices, removedNotices) = Diff(notices, data.Notices, notice => notice.Id);
         var (changedLeads, removedLeads) = Diff(leads, data.Leads, lead => lead.Id);
         var (changedAudit, removedAudit) = Diff(audit, data.Audit, entry => entry.Id, equals: SameAuditEntry);
+        var (changedDunning, removedDunning) = Diff(dunning, data.Dunning, item => item.Id, item => workspaceIds.Contains(item.WorkspaceId));
+        var seededPolicy = SaasSeedData.DefaultDunningPolicy();
+        var policyChanged = !dunningPolicy.RetryDays.SequenceEqual(seededPolicy.RetryDays) || dunningPolicy.GraceDays != seededPolicy.GraceDays || dunningPolicy.EmailCustomer != seededPolicy.EmailCustomer;
 
         // Activity has no key: entries not in the seed are added, seeded entries gone (and not with their workspace) are removed.
         var seededActivity = data.Activities.ToHashSet();
@@ -508,6 +557,10 @@ public sealed partial class SaasState : IShowcaseEnterpriseState
             Plans = plans.ToList(),
             Workspaces = changedWorkspaces,
             RemovedWorkspaceIds = removedWorkspaces,
+            Dunning = changedDunning,
+            RemovedDunningIds = removedDunning,
+            DunningPolicy = policyChanged ? dunningPolicy : null,
+            NextDunningId = nextDunningId,
         };
     }
 
@@ -838,7 +891,7 @@ public sealed partial class SaasState : IShowcaseEnterpriseState
     /// <summary>Saves a card the page charged as a zero-amount check (only approved test cards reach here); it pays the next invoices.</summary>
     public SaasResult UpdatePaymentMethod(ShowcaseCardCharge check, int expiryMonth, int expiryYear)
     {
-        if (!CanManageBilling || CurrentWorkspace is not { } workspace)
+        if (!CanFixPayment || CurrentWorkspace is not { } workspace)
             return SaasResult.NotAllowed;
 
         if (!check.IsApproved)
@@ -847,9 +900,10 @@ public sealed partial class SaasState : IShowcaseEnterpriseState
         if (!cardBrands.Contains(check.Brand) || check.Last4 is not { Length: 4 } || !check.Last4.All(char.IsAsciiDigit) || expiryMonth is < 1 or > 12 || expiryYear is < 2000 or > 2100)
             return SaasResult.Invalid;
 
-        Replace(workspace with { CardBrand = check.Brand, CardLast4 = check.Last4, CardExpiryMonth = expiryMonth, CardExpiryYear = expiryYear });
+        Replace(workspace with { CardBrand = check.Brand, CardLast4 = check.Last4, CardExpiryMonth = expiryMonth, CardExpiryYear = expiryYear, CardFails = null });
         Log(workspace.Id, "Payment method updated", $"{check.Brand} ending in {check.Last4}", IconName.CreditCard);
         Record("Payment method updated", workspace.Name, TenantPath(workspace.Id), $"{check.Brand} ending in {check.Last4}");
+        NoteCardUpdate(workspace, $"{check.Brand} ending in {check.Last4}");
         Changed?.Invoke();
 
         return SaasResult.Ok;
@@ -908,6 +962,7 @@ public sealed partial class SaasState : IShowcaseEnterpriseState
             Changes(("Plan", PlanOf(workspace).Name, plan.Name), ("Seats", Number(workspace.Seats), Number(seats)), ("Status", workspace.Status.ToString(), status.ToString()),
                 ("Account manager", SaasSeedData.ManagerName(workspace.ManagerId) ?? "none", SaasSeedData.ManagerName(managerId) ?? "none")));
         TellAboutOperatorChange(workspace, updated);
+        ReopenGraceAfterReactivation(workspace, updated);
         Changed?.Invoke();
 
         return SaasResult.Ok;
@@ -948,7 +1003,13 @@ public sealed partial class SaasState : IShowcaseEnterpriseState
             || Overlay(fresh.Notices, snapshot.Notices, snapshot.RemovedNoticeIds, notice => notice.Id) is not { Count: <= MaxNotices } storedNotices
             || Overlay(fresh.Leads, snapshot.Leads, snapshot.RemovedLeadIds, lead => lead.Id) is not { Count: <= MaxLeads } storedLeads
             || Overlay(fresh.Audit, snapshot.Audit, snapshot.RemovedAuditIds, entry => entry.Id) is not { Count: <= MaxAudit } storedAudit
-            || OverlayActivities(fresh.Activities, snapshot.Activities, snapshot.RemovedActivities, remaining) is not { Count: <= MaxActivities } storedActivities)
+            || OverlayActivities(fresh.Activities, snapshot.Activities, snapshot.RemovedActivities, remaining) is not { Count: <= MaxActivities } storedActivities
+            || Overlay(fresh.Dunning, snapshot.Dunning, snapshot.RemovedDunningIds, item => item.Id, item => remaining.Contains(item.WorkspaceId)) is not { Count: <= MaxDunningCases } storedDunning)
+            return false;
+
+        var storedPolicy = snapshot.DunningPolicy ?? SaasSeedData.DefaultDunningPolicy();
+
+        if (storedPolicy.RetryDays is null || PolicyProblem(storedPolicy.RetryDays, storedPolicy.GraceDays) is not null || snapshot.NextDunningId is < 1 or > 1_000_000)
             return false;
 
         var seededPlanIds = SaasSeedData.Plans().Select(plan => plan.Id).ToList();
@@ -1009,8 +1070,14 @@ public sealed partial class SaasState : IShowcaseEnterpriseState
             || !Unique(storedAudit.Select(entry => entry.Id)))
             return false;
 
+        if (!ValidDunning(storedDunning, storedWorkspaces, storedInvoices, snapshot.NextDunningId))
+            return false;
+
         Reload(plans, storedPlans);
         Reload(audit, storedAudit);
+        Reload(dunning, storedDunning);
+        dunningPolicy = new SaasDunningPolicy(storedPolicy.RetryDays.ToArray(), storedPolicy.GraceDays, storedPolicy.EmailCustomer);
+        nextDunningId = snapshot.NextDunningId;
         Reload(workspaces, storedWorkspaces);
         Reload(members, storedMembers);
         Reload(invoices, storedInvoices);
@@ -1262,7 +1329,7 @@ public sealed partial class SaasState : IShowcaseEnterpriseState
     /// invoice stays open: the workspace is past due, the audit log says the payment failed, and Lumora's operators are told
     /// the invoice is overdue (the follow-up steps for a failed payment are a separate workflow).
     /// </summary>
-    private SaasWorkspace Renew(SaasWorkspace workspace)
+    private SaasWorkspace Renew(SaasWorkspace workspace, bool early = false)
     {
         var plan = PlanOf(workspace);
         var dueOn = workspace.RenewsOn.Date;
@@ -1280,9 +1347,10 @@ public sealed partial class SaasState : IShowcaseEnterpriseState
         var amount = SaasPricing.PeriodAmount(plan, workspace.Period, workspace.Seats);
         var fromCredit = Math.Min(workspace.CreditBalance, amount);
         var due = amount - fromCredit;
-        var hasCard = workspace.CardLast4 is not null;
+        // A card that fails (expired, declined, too little money) is no better than none: the charge fails and dunning starts.
+        var hasCard = workspace.CardLast4 is not null && workspace.CardFails is null;
         var description = $"{plan.Name} plan, {workspace.Seats} seats, {SaasSeedData.PeriodLabel(workspace.Period)}{(wasTrial ? " (trial ended)" : string.Empty)}"
-            + (fromCredit > 0 ? $", {Money(fromCredit)} paid from credit" : string.Empty);
+            + (fromCredit > 0 ? $", {Money(fromCredit)} paid from credit" : string.Empty) + (early ? " (charged early)" : string.Empty);
         var number = due > 0 ? AddInvoice(workspace.Id, dueOn, nextRenewal, description, due, hasCard ? workspace.CardBrand : null, hasCard ? workspace.CardLast4 : null,
             hasCard ? SaasInvoiceStatus.Paid : SaasInvoiceStatus.Open) : null;
 
@@ -1302,27 +1370,28 @@ public sealed partial class SaasState : IShowcaseEnterpriseState
         var next = nextRenewal.ToString("MMM d, yyyy", CultureInfo.InvariantCulture);
         var text = due == 0
             ? $"Your credit balance paid the {Money(amount)} renewal. Next renewal: {next}."
-            : hasCard
-                ? $"{Money(due)} was charged to the {workspace.CardBrand} ending in {workspace.CardLast4}. Next renewal: {next}."
-                : $"{Money(due)} is due. Add a card in Billing and pay the open invoice.";
+            : $"{Money(due)} was charged to the {workspace.CardBrand} ending in {workspace.CardLast4}. Next renewal: {next}.";
         Log(workspace.Id, wasTrial ? "Trial ended" : "Renewed", description, wasTrial ? IconName.HourglassBottom : IconName.ArrowRepeat);
 
-        // Automatic billing does this, so it reaches the signed-in person too.
-        foreach (var owner in members.Where(member => member.WorkspaceId == workspace.Id && member.AccountId is not null && member.Role is SaasMemberRole.Owner or SaasMemberRole.Billing)
-                     .Select(member => member.AccountId!).Distinct().ToList())
-            Notify(owner, title, text, number is null ? BillingPath : AppInvoicePath(number), paidOrCovered ? IconName.Receipt : IconName.ExclamationTriangle, fromSystem: true);
-
-        if (number is not null)
+        // A failed charge is told by dunning; a paid one here. Automatic billing does this, so it reaches the signed-in person too.
+        if (paidOrCovered)
         {
-            Record(Clock.Now, SaasSeedData.SystemActorName, hasCard ? "Invoice paid" : "Payment failed", InvoiceTarget(number), InvoicePath(number), hasCard
-                ? $"{workspace.Name}: {Money(due)} charged to the {workspace.CardBrand} ending in {workspace.CardLast4}"
-                : $"{workspace.Name}: {Money(due)} due on {dueOn.ToString("MMM d", CultureInfo.InvariantCulture)}; no card on file. The tenant is past due.");
+            foreach (var owner in members.Where(member => member.WorkspaceId == workspace.Id && member.AccountId is not null && member.Role is SaasMemberRole.Owner or SaasMemberRole.Billing)
+                         .Select(member => member.AccountId!).Distinct().ToList())
+                Notify(owner, title, text, number is null ? BillingPath : AppInvoicePath(number), IconName.Receipt, fromSystem: true);
         }
 
-        if (!hasCard && number is not null)
+        if (number is not null && hasCard)
         {
-            NotifyOperators($"Invoice {number} is overdue", $"{workspace.Name}: {Money(due)} with no card on file. The tenant is past due.", InvoicePath(number),
-                IconName.ExclamationTriangle, fromSystem: true);
+            Record(Clock.Now, SaasSeedData.SystemActorName, "Invoice paid", InvoiceTarget(number), InvoicePath(number),
+                $"{workspace.Name}: {Money(due)} charged to the {workspace.CardBrand} ending in {workspace.CardLast4}");
+        }
+
+        if (number is not null && !hasCard)
+        {
+            var reason = workspace.CardLast4 is null ? SaasFailureReason.NoCard : workspace.CardFails ?? SaasFailureReason.CardDeclined;
+            var failedAt = early ? Clock.Now : dueOn.AddHours(6) < Clock.Now ? dueOn.AddHours(6) : Clock.Now;
+            StartCase(renewed, number, due, reason, failedAt);
         }
 
         return renewed;
@@ -1462,6 +1531,36 @@ public sealed partial class SaasState : IShowcaseEnterpriseState
     private bool SeatsFit(SaasWorkspace workspace, SaasPlan plan, int seats) =>
         seats >= Math.Max(1, SeatsUsed(workspace.Id)) && seats <= (plan.SeatLimit == 0 ? SaasSeedData.MaxSeats : plan.SeatLimit);
 
+    /// <summary>
+    /// Checks the stored dunning cases: known tenants and invoices, defined values, a valid schedule, dates in range, the
+    /// fields each stage needs, a bounded timeline, one open case per tenant on an open invoice, and a recovered case on a
+    /// paid one.
+    /// </summary>
+    private static bool ValidDunning(List<SaasDunningCase> cases, List<SaasWorkspace> storedWorkspaces, List<SaasInvoice> storedInvoices, int nextId)
+    {
+        var workspaceIds = storedWorkspaces.Select(workspace => workspace.Id).ToHashSet();
+        var invoiceByNumber = storedInvoices.ToDictionary(invoice => invoice.Number);
+
+        foreach (var item in cases)
+        {
+            if (item is null || item.Id < 1 || item.Id >= nextId || !workspaceIds.Contains(item.WorkspaceId) || !invoiceByNumber.TryGetValue(item.InvoiceNumber ?? string.Empty, out var invoice)
+                || invoice.WorkspaceId != item.WorkspaceId || !IsMoney(item.Amount) || item.Amount <= 0 || !Enum.IsDefined(item.Reason) || !Enum.IsDefined(item.Stage)
+                || !IsPlausibleDate(item.FailedAt) || item.RetryDays is null || PolicyProblem(item.RetryDays, item.GraceDays) is not null
+                || item.RetriesDone < 0 || item.RetriesDone > item.RetryDays.Count
+                || (item.NextRetryAt is { } next && !IsPlausibleDate(next)) || (item.GraceEndsAt is { } ends && !IsPlausibleDate(ends)) || (item.ClosedAt is { } closed && !IsPlausibleDate(closed))
+                || (item.Stage == SaasDunningStage.Retrying) != (item.NextRetryAt is not null)
+                || (item.Stage is SaasDunningStage.Grace && item.GraceEndsAt is null)
+                || (item.Stage == SaasDunningStage.Recovered) != (item.ClosedAt is not null)
+                || (item.Stage == SaasDunningStage.Recovered ? invoice.Status == SaasInvoiceStatus.Open : invoice.Status != SaasInvoiceStatus.Open)
+                || item.Events is not { Count: >= 1 and <= MaxDunningEvents }
+                || item.Events.Any(step => step is null || !Enum.IsDefined(step.Kind) || !IsPlausibleDate(step.At) || !IsText(step.By, ShowcaseIdentity.MaxNameLength)
+                    || (step.Detail is not null && !IsText(step.Detail, MaxAuditTextLength))))
+                return false;
+        }
+
+        return Unique(cases.Select(item => item.Id)) && Unique(cases.Where(item => item.IsOpen).Select(item => item.WorkspaceId));
+    }
+
     private bool ValidWorkspace(SaasWorkspace? workspace, Dictionary<string, SaasPlan> planById, int nextId) =>
         workspace is not null && workspace.Id >= 1 && workspace.Id < nextId && IsText(workspace.Name, MaxWorkspaceNameLength) && IsSubdomain(workspace.Subdomain)
         && (workspace.ManagerId is null || SaasSeedData.ManagerName(workspace.ManagerId) is not null)
@@ -1475,6 +1574,7 @@ public sealed partial class SaasState : IShowcaseEnterpriseState
             ? workspace.CardBrand is null && workspace.CardExpiryMonth == 0 && workspace.CardExpiryYear == 0
             : workspace.CardBrand is not null && cardBrands.Contains(workspace.CardBrand) && IsLast4(workspace.CardLast4) && workspace.CardExpiryMonth is >= 1 and <= 12
               && workspace.CardExpiryYear is >= 2000 and <= 2100)
+        && (workspace.CardFails is null || (Enum.IsDefined(workspace.CardFails.Value) && workspace.CardFails != SaasFailureReason.NoCard && workspace.CardLast4 is not null))
         && ValidSettings(workspace.Settings);
 
     #endregion
@@ -1581,8 +1681,8 @@ public sealed partial class SaasState : IShowcaseEnterpriseState
     /// <summary>Gets the site's slug, used in the storage key.</summary>
     public string SiteSlug => "saas";
 
-    /// <summary>Gets the snapshot format version (3: hundreds of tenants stored as changes to the seed, subdomains, account managers, and the shared audit log).</summary>
-    public int SnapshotVersion => 3;
+    /// <summary>Gets the snapshot format version (4: dunning cases, the dunning policy, and failing cards, on top of 3's changes to the seed).</summary>
+    public int SnapshotVersion => 4;
 
     /// <summary>Gets the number of suspended workspaces.</summary>
     public int SuspendedCount => workspaces.Count(workspace => workspace.Status == SaasWorkspaceStatus.Suspended);
@@ -1674,6 +1774,18 @@ public sealed partial class SaasState : IShowcaseEnterpriseState
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public List<SaasWorkspace>? Workspaces { get; set; }
 
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public List<SaasDunningCase>? Dunning { get; set; }
+
+        /// <summary>The dunning policy, or <see langword="null" /> while it is the seeded one.</summary>
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public SaasDunningPolicy? DunningPolicy { get; set; }
+
+        public int NextDunningId { get; set; }
+
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public List<int>? RemovedDunningIds { get; set; }
+
         #endregion
     }
 
@@ -1686,7 +1798,8 @@ public sealed partial class SaasState : IShowcaseEnterpriseState
         IReadOnlyList<SaasActivity> Activities,
         IReadOnlyList<SaasNotice> Notices,
         IReadOnlyList<SaasLead> Leads,
-        IReadOnlyList<ShowcaseAuditEntry> Audit)
+        IReadOnlyList<ShowcaseAuditEntry> Audit,
+        IReadOnlyList<SaasDunningCase> Dunning)
     {
         public static SeedSet Build()
         {
@@ -1694,9 +1807,10 @@ public sealed partial class SaasState : IShowcaseEnterpriseState
             var members = SaasSeedData.Members(workspaces);
             var invoices = SaasSeedData.Invoices(workspaces);
             var leads = SaasSeedData.Leads();
+            var dunning = SaasSeedData.DunningCases(workspaces, invoices, members);
 
-            return new SeedSet(SaasSeedData.Plans(), workspaces, members, invoices, SaasSeedData.Activities(workspaces), SaasSeedData.Notices(workspaces, members, invoices), leads,
-                SaasSeedData.Audit(workspaces, members, invoices, leads));
+            return new SeedSet(SaasSeedData.Plans(), workspaces, members, invoices, SaasSeedData.Activities(workspaces), SaasSeedData.Notices(workspaces, members, invoices, dunning), leads,
+                SaasSeedData.Audit(workspaces, members, invoices, leads, dunning), dunning);
         }
     }
 

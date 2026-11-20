@@ -1,0 +1,11 @@
+/* The dunning summary under the key metrics: what is at risk, and a way to the dunning page. */
+.sd-dunning-strip {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: .75rem 1rem;
+    padding: .875rem 1.25rem;
+    border: 1px solid var(--sd-border);
+    border-radius: .75rem;
+    background: var(--sd-surface);
+}

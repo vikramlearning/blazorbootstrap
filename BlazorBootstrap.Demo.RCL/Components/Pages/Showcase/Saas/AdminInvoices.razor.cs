@@ -269,7 +269,7 @@ public partial class AdminInvoices : ComponentBase, IDisposable
     /// </summary>
     private async Task RetrySelectedAsync()
     {
-        int paid = 0, noCard = 0, other = 0;
+        int paid = 0, noCard = 0, declined = 0, other = 0;
 
         foreach (var row in selected.Where(row => row.Invoice.Status == SaasInvoiceStatus.Open))
         {
@@ -280,6 +280,9 @@ public partial class AdminInvoices : ComponentBase, IDisposable
                     break;
                 case SaasResult.CardRequired:
                     noCard++;
+                    break;
+                case SaasResult.CardDeclined:
+                    declined++;
                     break;
                 default:
                     other++;
@@ -294,6 +297,9 @@ public partial class AdminInvoices : ComponentBase, IDisposable
 
         if (noCard > 0)
             parts.Add($"{Plural(noCard, "tenant has", "tenants have")} no card on file, so {(noCard == 1 ? "its invoice stays" : "their invoices stay")} open until the customer adds one.");
+
+        if (declined > 0)
+            parts.Add($"{Plural(declined, "card was", "cards were")} declined again, so {(declined == 1 ? "that tenant stays" : "those tenants stay")} in dunning until the customer replaces the card.");
 
         if (other > 0)
             parts.Add($"{Plural(other, "invoice", "invoices")} couldn't be retried: already paid, or no longer in this tab.");

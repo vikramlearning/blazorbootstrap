@@ -1,7 +1,9 @@
+using System.ComponentModel.DataAnnotations;
 using System.Globalization;
 using BlazorBootstrap.Demo.RCL.Models.Showcase.Saas;
 using BlazorBootstrap.Demo.RCL.Services.Showcase.Foundation;
 using BlazorBootstrap.Demo.RCL.Services.Showcase.Saas;
+using Microsoft.AspNetCore.Components.Forms;
 
 namespace BlazorBootstrap.Demo.RCL.Components.Pages.Showcase.Saas;
 
@@ -9,7 +11,10 @@ namespace BlazorBootstrap.Demo.RCL.Components.Pages.Showcase.Saas;
 /// Tenant detail in the operator console: the workspace's subscription summary (with its subdomain and account manager),
 /// members and invoices as <see cref="Grid{TItem}" /> lists (each with a saved view, sorting, paging, the column chooser, and
 /// CSV export; an invoice row opens the invoice), and activity, with an "Edit tenant" action that opens
-/// <see cref="SaasTenantEditor" />. An archived tenant can be deleted after a confirmation
+/// <see cref="SaasTenantEditor" />. A "Payments and dunning" card shows an open failed payment (invoice, reason, attempts,
+/// the next step, and its timeline) with Retry now, Extend grace, and Suspend now (validated dialogs with a reason and a
+/// preview, rule WR-002), earlier failed payments, and a demo action that simulates a failed charge on a tenant in good
+/// standing. An archived tenant can be deleted after a confirmation
 /// (<see cref="SaasState.DeleteWorkspaceAsOperator" />), which opens the tenant list; a tenant someone signs in to in this
 /// demo is kept, and the dialog says why. An unknown ID renders the not-found screen.
 /// </summary>
@@ -36,6 +41,35 @@ public partial class AdminTenantDetail : ComponentBase, IDisposable
     private Modal deleteModal = default!;
 
     private Button? editButton;
+
+    private InputNumber<int?>? daysInput;
+
+    private EditContext dunningContext = new(new DunningForm());
+
+    private DunningDialog dunningDialog;
+
+    private string? dunningError;
+
+    private DunningForm dunningForm = new();
+
+    private Modal dunningModal = default!;
+
+    /// <summary>Whether the dunning dialog closed after its action, so focus goes to the status message.</summary>
+    private bool dunningDone;
+
+    private Button? extendButton;
+
+    private bool focusStatus;
+
+    private InputTextArea? reasonInput;
+
+    private Button? retryButton;
+
+    private Button? simulateButton;
+
+    private ElementReference? statusRegion;
+
+    private Button? suspendButton;
 
     private SaasTenantEditor? editor;
 
@@ -77,6 +111,12 @@ public partial class AdminTenantDetail : ComponentBase, IDisposable
     /// <summary>Loads the lists' saved views once the page is interactive, then shows the grids.</summary>
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        if (focusStatus)
+        {
+            focusStatus = false;
+            await SaasDisplay.FocusAsync(statusRegion);
+        }
+
         if (!firstRender)
             return;
 
@@ -243,6 +283,142 @@ public partial class AdminTenantDetail : ComponentBase, IDisposable
 
     private void OnSaved(SaasTenantSavedEventArgs args) => ShowStatus(args.Message);
 
+    private static string CardOnFileText(SaasWorkspace workspace) => workspace.CardLast4 is null
+        ? "No card on file"
+        : $"{workspace.CardBrand} ending in {workspace.CardLast4}{(workspace.CardFails is { } fails ? $" ({SaasDisplay.FailureName(fails).ToLowerInvariant()})" : string.Empty)}";
+
+    /// <summary>Runs the dialog's action once its form is valid (rule WR-002); the state checks again, and its answer becomes the status message.</summary>
+    private async Task ConfirmDunningAsync()
+    {
+        if (!dunningContext.Validate() || Workspace is not { } workspace || State.OpenDunningCase(workspace.Id) is not { } item)
+            return;
+
+        var reason = dunningForm.Reason.Trim();
+        var result = dunningDialog == DunningDialog.Extend ? State.ExtendGrace(item.Id, dunningForm.Days ?? 0, reason) : State.SuspendForNonPayment(item.Id, reason);
+
+        if (result != SaasResult.Ok)
+        {
+            dunningError = result switch
+            {
+                SaasResult.WrongState => dunningDialog == DunningDialog.Extend ? "Only a case in grace or suspended can be extended." : "Only a case retrying or in grace can be suspended now.",
+                SaasResult.NotAllowed => "Sign in as a Lumora operator to do this.",
+                _ => "That didn't work. Check the days and the reason, and try again.",
+            };
+
+            return;
+        }
+
+        var after = State.FindDunningCase(item.Id);
+        ShowStatus(dunningDialog == DunningDialog.Extend
+            ? $"{workspace.Name} has until {SaasDisplay.Date(after?.GraceEndsAt ?? State.Clock.Now)} to pay. Its billing contacts who can sign in were told."
+            : $"{workspace.Name} is suspended until {item.InvoiceNumber} is paid. Its billing contacts who can sign in were told.");
+        dunningDone = true;
+        await dunningModal.HideAsync();
+    }
+
+    /// <summary>What the dialog's action does, in words, as the form is filled in.</summary>
+    private string DunningPreview
+    {
+        get
+        {
+            if (Workspace is not { } workspace || State.OpenDunningCase(workspace.Id) is not { } item)
+                return "This tenant has no open failed payment.";
+
+            if (dunningDialog == DunningDialog.Suspend)
+                return $"{workspace.Name} is suspended now: its members can't change anything until {SaasDisplay.MoneyCents(item.Amount)} is paid. Paying restores it at once.";
+
+            return dunningForm.Days is { } days and >= 1 and <= SaasState.MaxExtensionDays && State.GraceEndAfterExtension(item.Id, days) is { } ends
+                ? $"Grace ends on {SaasDisplay.Date(ends)}{(item.Stage == SaasDunningStage.Suspended ? ", and the workspace is usable again until then" : string.Empty)}. If nothing is paid by then, it is suspended."
+                : string.Create(CultureInfo.InvariantCulture, $"Choose 1 to {SaasState.MaxExtensionDays} days to see the new end of grace.");
+        }
+    }
+
+    /// <summary>The dialog opens from code, so focus returns by hand: to its button, or to the status message after its action.</summary>
+    private async Task OnDunningHiddenAsync()
+    {
+        if (dunningDone)
+        {
+            dunningDone = false;
+            focusStatus = true;
+            StateHasChanged();
+
+            return;
+        }
+
+        await SaasDisplay.FocusAsync(dunningDialog == DunningDialog.Extend ? extendButton?.Element : suspendButton?.Element);
+    }
+
+    private Task OnDunningShownAsync() => dunningDialog == DunningDialog.Extend ? SaasDisplay.FocusAsync(daysInput?.Element) : SaasDisplay.FocusAsync(reasonInput?.Element);
+
+    private async Task OpenDunningDialogAsync(DunningDialog dialog)
+    {
+        dunningDialog = dialog;
+        dunningForm = new DunningForm { IsExtension = dialog == DunningDialog.Extend, Days = dialog == DunningDialog.Extend ? 7 : null };
+        dunningContext = new EditContext(dunningForm);
+        dunningError = null;
+        dunningDone = false;
+        await dunningModal.ShowAsync();
+    }
+
+    /// <summary>Retries the open case now; the result goes in the status message, and focus stays on the button (or moves to the message once the case is recovered).</summary>
+    private async Task RetryNowAsync()
+    {
+        if (Workspace is not { } workspace || State.OpenDunningCase(workspace.Id) is not { } item)
+            return;
+
+        var result = State.RetryDunningNow(item.Id);
+        ShowStatus(result switch
+        {
+            SaasResult.Ok => $"The payment went through: {item.InvoiceNumber} is paid, and {workspace.Name} is recovered.",
+            SaasResult.CardRequired => "The retry failed: there's no card on file. The customer needs to add one in Billing.",
+            SaasResult.CardDeclined => $"The retry failed again ({SaasDisplay.FailureName(State.FindWorkspace(workspace.Id)?.CardFails ?? item.Reason).ToLowerInvariant()}). The customer needs to replace the card in Billing.",
+            _ => "That didn't work: the case is no longer open.",
+        });
+
+        if (result == SaasResult.Ok)
+            focusStatus = true;
+
+        await Task.CompletedTask;
+    }
+
+    /// <summary>Starts dunning on a tenant in good standing (demo); the card's button goes away, so focus moves to the status message.</summary>
+    private Task SimulateFailureAsync()
+    {
+        if (Workspace is not { } workspace)
+            return Task.CompletedTask;
+
+        var result = State.SimulateFailedCharge(workspace.Id);
+        ShowStatus(result == SaasResult.Ok && State.OpenDunningCase(workspace.Id) is { } item
+            ? $"The renewal charge of {SaasDisplay.MoneyCents(item.Amount)} failed ({SaasDisplay.FailureName(item.Reason).ToLowerInvariant()}). Dunning started: {SaasDisplay.LowerFirst(AdminDunning.NextStepText(item))}. The workspace's billing contacts were notified."
+            : "A failed charge can only be simulated on an active tenant on a paid plan without an open failed payment.");
+        focusStatus = true;
+
+        return Task.CompletedTask;
+    }
+
+    private static IconName StepIcon(SaasDunningEventKind kind) => kind switch
+    {
+        SaasDunningEventKind.Paid => IconName.CheckCircle,
+        SaasDunningEventKind.GraceStarted or SaasDunningEventKind.GraceExtended => IconName.HourglassSplit,
+        SaasDunningEventKind.Suspended => IconName.SlashCircle,
+        SaasDunningEventKind.Reactivated => IconName.ArrowCounterclockwise,
+        SaasDunningEventKind.CardUpdated => IconName.CreditCard,
+        SaasDunningEventKind.RetryFailed => IconName.ArrowRepeat,
+        _ => IconName.ExclamationTriangle,
+    };
+
+    private static string StepTitle(SaasDunningEventKind kind) => kind switch
+    {
+        SaasDunningEventKind.Failed => "Charge failed",
+        SaasDunningEventKind.RetryFailed => "Retry failed",
+        SaasDunningEventKind.Paid => "Paid",
+        SaasDunningEventKind.GraceStarted => "Grace period started",
+        SaasDunningEventKind.GraceExtended => "Grace extended",
+        SaasDunningEventKind.Suspended => "Suspended",
+        SaasDunningEventKind.Reactivated => "Usable again",
+        _ => "Card updated",
+    };
+
     /// <summary>Another screen or the editor changed the state: the lists read the tenant's members and invoices again.</summary>
     private void OnStateChanged() => InvokeAsync(async () =>
     {
@@ -350,6 +526,34 @@ public partial class AdminTenantDetail : ComponentBase, IDisposable
     #endregion
 
     #region Nested Types
+
+    /// <summary>Which dunning dialog is open.</summary>
+    private enum DunningDialog
+    {
+        Extend,
+        Suspend,
+    }
+
+    /// <summary>The dunning dialog's fields, with the rules of <see cref="SaasState.ExtendGrace" /> and <see cref="SaasState.SuspendForNonPayment" />.</summary>
+    private sealed class DunningForm : IValidatableObject
+    {
+        [Range(1, SaasState.MaxExtensionDays, ErrorMessage = "Extend by 1 to 14 days.")]
+        public int? Days { get; set; }
+
+        /// <summary>Whether the dialog extends grace (the days are needed); set by the page.</summary>
+        public bool IsExtension { get; set; }
+
+        [Required(ErrorMessage = "Give a reason: it goes on the timeline and the audit log.")]
+        [StringLength(SaasState.MaxDunningReasonLength, ErrorMessage = "Use 200 characters or fewer for the reason.")]
+        public string Reason { get; set; } = string.Empty;
+
+        /// <summary>An extension needs its number of days.</summary>
+        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+        {
+            if (IsExtension && Days is null)
+                yield return new ValidationResult("Enter how many days to add, from 1 to 14.", new[] { nameof(Days) });
+        }
+    }
 
     /// <summary>What the delete dialog says about the tenant: its members and invitations, and its invoices.</summary>
     private sealed record DeleteInfo(int Id, string Name, int Members, int Invoices);

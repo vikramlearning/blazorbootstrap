@@ -46,6 +46,7 @@ public partial class SaasAdminLayout : LayoutComponentBase, IDisposable
             new() { Id = "tenants", Href = $"{Base}/tenants", IconName = IconName.Buildings, Text = "Tenants" },
             new() { Id = "leads", Href = $"{Base}/leads", IconName = IconName.Inbox, Text = "Leads" },
             new() { Id = "invoices", Href = $"{Base}/invoices", IconName = IconName.Receipt, Text = "Invoices" },
+            new() { Id = "dunning", Href = $"{Base}/dunning", IconName = IconName.ExclamationOctagon, Text = "Dunning" },
             new() { Id = "plans", Href = $"{Base}/plans", IconName = IconName.Tags, Text = "Plans & prices" },
             new() { Id = "revenue", Href = $"{Base}/revenue", IconName = IconName.GraphUp, Text = "Revenue" },
             new() { Id = "analytics", Href = $"{Base}/analytics", IconName = IconName.BarChartLine, Text = "Site analytics" },

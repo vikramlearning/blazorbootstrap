@@ -616,6 +616,26 @@
     text-align: start;
 }
 
+/* The failed-payment banner above the workspace pages: an icon and words, not color alone. */
+.sc-saas ::deep .sd-dunning-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: .5rem .75rem;
+    padding: .75rem 1rem;
+    margin-bottom: 1.25rem;
+    border: 1px solid var(--bs-warning-border-subtle);
+    border-radius: .75rem;
+    background: var(--bs-warning-bg-subtle);
+    color: var(--bs-warning-text-emphasis);
+}
+
+    .sc-saas ::deep .sd-dunning-bar.is-suspended {
+        border-color: var(--bs-danger-border-subtle);
+        background: var(--bs-danger-bg-subtle);
+        color: var(--bs-danger-text-emphasis);
+    }
+
 /* Trial banner above the workspace pages (rendered by the layout inside this shell, so ::deep). */
 .sc-saas ::deep .sd-trial-bar {
     display: flex;

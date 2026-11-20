@@ -50,6 +50,23 @@
     }
 </section>
 
+@{
+    var openCases = State.DunningCases.Where(item => item.IsOpen).ToList();
+}
+<section class="sd-dunning-strip mb-4" aria-labelledby="sd-overview-dunning-title">
+    <span class="sd-kpi-icon" aria-hidden="true"><Icon Name="IconName.ExclamationOctagon" /></span>
+    <div class="flex-grow-1">
+        <h2 class="h6 fw-bold mb-1" id="sd-overview-dunning-title">
+            Dunning: @(openCases.Count == 1 ? "1 tenant" : $"{Count(openCases.Count)} tenants"), @SaasDisplay.Money(State.DunningAtRisk) at risk
+        </h2>
+        <p class="small text-body-secondary mb-0">
+            @Count(openCases.Count(item => item.Stage == SaasDunningStage.Retrying)) retrying, @Count(openCases.Count(item => item.Stage == SaasDunningStage.Grace)) in grace,
+            @Count(openCases.Count(item => item.Stage == SaasDunningStage.Suspended)) suspended for non-payment.
+        </p>
+    </div>
+    <a class="btn btn-sm btn-outline-primary" href="@($"{SaasAdminLayout.Base}/dunning")">Open dunning</a>
+</section>
+
 <div class="row g-3 mb-4">
     <div class="col-xl-8">
         <Card Class="sd-card h-100">

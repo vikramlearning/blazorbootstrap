@@ -173,6 +173,7 @@ public sealed partial class SaasState
 
             Log(workspace.Id, "Changed by Lumora", string.Create(CultureInfo.InvariantCulture, $"{targetPlan.Name}, {updated.Seats} seats, {updated.Status}"), IconName.ShieldCheck);
             TellAboutOperatorChange(workspace, updated);
+            ReopenGraceAfterReactivation(workspace, updated);
             changed++;
         }
 

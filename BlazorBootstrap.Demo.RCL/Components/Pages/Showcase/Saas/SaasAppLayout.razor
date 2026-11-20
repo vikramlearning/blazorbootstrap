@@ -34,7 +34,28 @@
             <ShowcaseRoleGuard Roles="@SaasSeedData.CustomerRole" SignInPath="@SaasLayout.SignInPath">
                 @if (State.CurrentWorkspace is { } current)
                 {
-                    @if (current.Status is SaasWorkspaceStatus.Suspended or SaasWorkspaceStatus.Archived)
+                    @if (State.OpenDunningCase(current.Id) is { } failing)
+                    {
+                        @* A failed payment: said in words with an icon (not color alone), with the amount, the next date, and the way to fix it. *@
+                        <div class="sd-dunning-bar @(failing.Stage == SaasDunningStage.Suspended ? "is-suspended" : null)" role="alert">
+                            <Icon Name="@(failing.Stage == SaasDunningStage.Suspended ? IconName.SlashCircle : IconName.ExclamationTriangleFill)" class="flex-shrink-0 mt-1" aria-hidden="true" />
+                            <div class="flex-grow-1">
+                                <p class="fw-bold mb-1">@DunningTitle(failing)</p>
+                                <p class="mb-0">@DunningText(current, failing)</p>
+                            </div>
+                            @if (State.CanFixPayment)
+                            {
+                                <a class="btn btn-sm btn-primary ms-sm-auto" href="@($"{Base}/billing?card=1")">
+                                    @(failing.Stage == SaasDunningStage.Suspended ? "Update card and pay" : "Update card")
+                                </a>
+                            }
+                            else
+                            {
+                                <span class="small ms-sm-auto">Ask an owner or billing member to update the card.</span>
+                            }
+                        </div>
+                    }
+                    else if (current.Status is SaasWorkspaceStatus.Suspended or SaasWorkspaceStatus.Archived)
                     {
                         <Alert Color="AlertColor.Danger" Class="d-flex align-items-start gap-2">
                             <Icon Name="IconName.SlashCircle" class="mt-1" aria-hidden="true" />

@@ -1,6 +1,6 @@
 ---
 title: SaaS Product showcase
-description: A SaaS product with a public marketing site, trial sign-up, a customer workspace with team and billing, and an operator console, built with Blazor Bootstrap.
+description: A SaaS product with a public marketing site, trial sign-up, a customer workspace with team and billing, and an operator console with tenants, invoices, dunning for failed payments, Grid lists with saved views and CSV export, and an audit log, built with Blazor Bootstrap.
 sidebar_label: SaaS Product
 sidebar_position: 3
 ---
@@ -9,7 +9,9 @@ import CarbonAd from '/carbon-ad.mdx'
 
 # SaaS Product
 
-Lumora is a fictitious product analytics service. The site has three parts: a public marketing site with pricing and a trial sign-up, the workspace a customer signs in to (usage, team, billing, settings), and the console Lumora's operators use to run the business (tenants, leads, invoices, plans, revenue). The parts share one set of data, so a change in one shows up in the others.
+Lumora is a fictitious product analytics service. The site has three parts: a public marketing site with pricing and a trial sign-up, the workspace a customer signs in to (usage, team, billing, settings), and the console Lumora's operators use to run the business (tenants, leads, invoices, dunning, plans, revenue). The parts share one set of data, so a change in one shows up in the others.
+
+Every record list in the workspace and the console is a [Grid](/components/grid) with a saved view, a column chooser, and CSV export; forms validate with a linked error summary; and both headers have a global search and notifications. Every change lands in an audit log. The signature workflow is **dunning**: when a charge fails, Lumora retries it on a schedule, then gives the customer a grace period, then suspends the workspace; the customer sees a payment-failed banner and updates the card, and a successful payment recovers the tenant. Operators follow every failed payment on a Dunning page and can retry it, extend the grace period, or suspend early.
 
 <CarbonAd />
 
@@ -22,19 +24,31 @@ Lumora is a fictitious product analytics service. The site has three parts: a pu
 | Customer | Amara Okafor (`amara@northwind.example`) | `lumora-demo-26` | `/showcase/saas/app` |
 | Operator | Sam Ortega (`sam@lumora.example`) | `ops-demo-26` | `/showcase/saas/admin` |
 
-Amara owns the Northwind Outfitters workspace (Growth plan, billed annually, 12 seats). Its team has an admin, a billing member, members, and one open invitation; only Amara can sign in.
+Amara owns the Northwind Outfitters workspace (Growth plan, billed annually, 12 seats, a Visa ending in 4242). Its team has an admin, a billing member, members, and one open invitation; only Amara can sign in. Sam runs the console and is also one of four account managers who look after tenants.
 
 There is no separate register form: at Lumora an account comes with a workspace, so "Create an account" opens the trial sign-up. A new account becomes the owner of a new workspace: Growth starts a 14-day trial without a card, and Starter is free. Enterprise is sold through "Contact sales".
 
-All data is fictitious and there is no backend. Each browser tab keeps its own data in `sessionStorage` (it survives a reload; other tabs start fresh), and "Reset demo data" in the account menu restores the seed. The sign-in page lists the demo accounts with one-click buttons; credentials are checked only against the tab's accounts. The clock starts at November 9, 2026, 9:00 and moves on with real time. Card forms accept only the published test cards (for example `4242 4242 4242 4242`; `4000 0000 0000 0002` is declined).
+The seed holds 260 tenants created over two and a half years (182 active, 17 on trial, 10 past due, 18 suspended, 33 cancelled; 59 on Starter, 168 on Growth, 33 on Enterprise), 1,395 members and invitations, 1,171 invoices from the last year, 64 sales leads, 300 audit entries, and 20 dunning cases: 3 retrying, 7 in grace, 5 suspended when their grace ended, and 5 recovered in the last two months after the owner replaced the card ($51,170 at risk). Sam has 8 notifications and Amara 4, the 2 newest of each unread.
+
+All data is fictitious and there is no backend. Each browser tab keeps its own data in `sessionStorage` (it survives a reload; other tabs start fresh), and "Reset demo data" in the account menu restores the seed. The tab stores only what changed since the seed, which is built the same way in every tab, so a fresh tab's data is about 1 KB although it has hundreds of tenants. The sign-in page lists the demo accounts with one-click buttons; credentials are checked only against the tab's accounts. The clock starts at Monday, November 9, 2026, 9:00 and moves on with real time; for dunning, which counts days, a demo control moves it forward a day at a time (up to 30 days). Card forms accept only the published test cards (for example `4242 4242 4242 4242`; `4000 0000 0000 0002` is declined). Nothing is emailed or charged.
 
 ## What to try
 
-1. Start a trial from **Pricing** or **Start free trial**: pick Growth, fill in your name, company, work email, and a password, and you land in your new workspace with a trial banner. On **Billing**, choose a plan, add a test card, and convert the trial.
-2. Sign in as Amara. On **Team**, invite a teammate and change a member's role. On **Billing**, change the seats or switch to monthly and read the prorated quote before you confirm.
-3. As a visitor, send a message from **Contact sales**. Sign in as Sam: the message is in **Leads**. Open it, set its status, and use the link to create a tenant prefilled from the lead.
-4. As Sam, open **Plans & prices** and change the Growth price. The public **Pricing** page, the sign-up, and Billing show the new price at once.
-5. As Sam, open the Northwind Outfitters tenant and suspend it, or refund one of its invoices. Sign in as Amara: the workspace shows the suspension (changes are turned off) and a new notification.
+1. Start a trial from **Pricing** or **Start free trial**. Submit the empty form: a summary above it links to each failing field. Type `amara@northwind.example` as the email: "already has a Lumora account" appears while you type; type `Orbitworks` as the company: the workspace name is taken. A password without a digit, or one that contains your email's name, is refused, and the terms must be accepted. Fill it in properly and you land in your new workspace with a trial banner; Sam gets a "New sign-up" notification.
+2. Sign in as Amara. On **Team**, invite `jonah.pike@northwind.example`: "Jonah Pike is already in the team" appears while you type. Invite three new teammates: the third takes the last seat, and Sam is told the tenant uses all its seats. Use **Accept (demo)** on Ines Duarte's invitation: she becomes active and your bell says she accepted. On **Settings**, rename the workspace to `Orbitworks`: another workspace has that name.
+3. Use the header search: as Amara, type `ines` or an invoice number such as `0002`; as Sam, type a tenant name, a subdomain, an owner's name, `LUM-001`, or a lead's company, and press Enter to open the first match.
+4. As a visitor, send a message from **Contact sales**: a `gmail.com` address or a message under 20 characters is refused. Sign in as Sam: the bell has "New lead from …", and the lead is in **Leads**. Open it, set it to Closed without a note (a note is required), and use **Create tenant** to open the new-tenant form prefilled from the lead. Select two leads and give them the status Closed: the bulk bar asks for a reason and adds it to each note.
+5. As Sam, open **Tenants**. Filter by status (each option has its count), sort by MRR, hide a column with **Columns**, and set 50 a page: the view is kept when you open a tenant and come back, and **Reset view** restores it. **Export CSV** downloads the filtered tenants. Select a few and use the bulk bar to move them to a plan, suspend or reactivate them, or assign an account manager.
+6. As Sam, open **New tenant**. Type `Orbitworks` as the name, `admin` or `1abc` as the subdomain, or 10 seats on Starter: each gets its message (taken, reserved, format, more seats than the plan allows).
+7. As Sam, open **Plans & prices** and edit Growth: name it `Starter` and "Another plan is already called" appears while you type. Edit Enterprise and turn on **Most popular**: only a self-serve plan can have it. Change the Growth price: the public **Pricing** page, the sign-up, and Billing show the new price at once.
+8. As Sam, open **Invoices**, choose **Open**, select some invoices, and choose **Retry payment**: the message says how many were paid, how many tenants have no card, and how many cards were declined again.
+9. Run dunning on Amara's workspace (a few minutes, both roles):
+   1. As Sam, open **Dunning**. The summary shows the seeded cases (retrying, in grace, suspended) and the money at risk; the policy reads "Retry 1, 3, and 7 days after a failed charge, then 7 days of grace, then suspend the workspace." Choose **Edit policy** to see the preview follow the retry days and grace period as you type, then cancel.
+   2. Open the **Northwind Outfitters** tenant. In **Payments and dunning**, choose **Demo: simulate a failed charge**: the next renewal ($5,616.00) is charged now with a card that declines. Dunning starts, with the first retry tomorrow. Choose **Retry now**: it fails again, and the timeline shows both attempts.
+   3. Choose **Switch account** and sign in as Amara. Every workspace page shows a "Payment failed" banner with the amount, the reason, and the next retry date; the bell has "Payment failed: $5,616.00". On **Billing**, the "Payment failed" panel offers **Update card**, **Pay now**, and **Demo: move the clock forward one day**. Choose **Pay now**: the card on file is declined again.
+   4. Move the clock forward one day at a time (from Billing, or Sam's Dunning page). On the 1st, 3rd, and 7th day the retries fail, and each one notifies Amara. After the 7th day the banner says "Payment overdue: last days to pay" with the date the workspace will be suspended, and Sam's bell says Northwind Outfitters is in its grace period.
+   5. As Sam, on the tenant (or select the case on **Dunning**), choose **Extend grace**: give 3 days and a reason, and the dialog previews the new end. Amara is told the new date. (To see a suspension, use **Suspend now** with a reason, or keep moving the clock past the end of grace: the workspace becomes read-only, and Billing still lets the owner pay.)
+   6. As Amara, choose **Update card** and save a test card such as `4242 4242 4242 4242` with a future expiry, a 3-digit code, and a postal code; then choose **Pay now**. The invoice is paid, the banner disappears, and the workspace is in good standing. Sam's bell says Amara updated the card and that the payment was recovered. The **Audit log** lists the simulated charge, every failed attempt, the grace period, the extension, the card update (last four digits only), and the recovery.
 
 ## Pages
 
@@ -47,51 +61,87 @@ All data is fictitious and there is no backend. Each browser tab keeps its own d
 | Pricing | `/showcase/saas/pricing` | Starter, Growth, and Enterprise with a monthly or annual switch, and a plan comparison that expands. |
 | Customers | `/showcase/saas/customers` | A carousel of customer quotes and customer stories with an industry filter. |
 | FAQ | `/showcase/saas/faq` | Questions in accordions by topic, with a search box that filters as you type. |
-| Contact sales | `/showcase/saas/contact` | The Enterprise enquiry form; a sent message waits in the operator's sales inbox. |
-| Start your trial | `/showcase/saas/signup` | Creates the account and its workspace and signs you in. `?plan=` preselects a plan. |
+| Contact sales | `/showcase/saas/contact` | The validated Enterprise enquiry form (a work email, a message of at least 20 characters); a sent message waits in the operator's sales inbox. |
+| Start your trial | `/showcase/saas/signup` | A validated form that creates the account and its workspace and signs you in. `?plan=` preselects a plan. |
 | Sign in | `/showcase/saas/sign-in` | Demo accounts and the sign-in form; `?mode=register` goes to the trial sign-up. |
 | Not found | `/showcase/saas/{*path}` | The site's not-found screen. |
+
+The public site has no search or notifications bell: those are in the workspace and the console.
 
 ### Customer workspace (layout: sidebar back office)
 
 | Page | Route | What it does |
 |:--|:--|:--|
 | Dashboard | `/showcase/saas/app` | Usage against the plan's limits, plan and renewal, a product-traffic chart with a period switch, top pages, traffic sources, activity, and notifications. |
-| Team | `/showcase/saas/app/team` | Members and invitations with roles and seats in use; owners and admins invite, change roles, resend, and remove. |
-| Billing | `/showcase/saas/app/billing` | Current plan, a plan picker with a live prorated quote, the card on file (test-card form), invoices, and "Pay now" for open invoices. Owners and billing members make changes. |
+| Team | `/showcase/saas/app/team` | A Grid of members and invitations with roles, status, and last activity, and the seats in use; owners and admins invite (validated), change roles (the name opens the dialog), resend, accept an invitation for the demo, and remove. |
+| Billing | `/showcase/saas/app/billing` | Current plan, a plan picker with a live prorated quote, the card on file (a validated test-card form), "Pay now" for open invoices, the "Payment failed" panel while a payment is in dunning, and the invoices as a Grid. `?card=1` opens the card form. |
 | Invoice | `/showcase/saas/app/billing/invoices/{Number}` | A printable invoice of the workspace, with how it was paid and any refund. |
-| Settings | `/showcase/saas/app/settings` | Workspace name, time zone, first day of the week, data region, and email switches (owners and admins). |
-| Notifications | `/showcase/saas/app/notifications` | Notices from billing and the operator, newest first, with "Mark all as read". |
+| Settings | `/showcase/saas/app/settings` | A validated form for the workspace name (unique), time zone, first day of the week, data region (EU workspaces keep EU data), and email switches (owners and admins). |
+| Notifications | `/showcase/saas/app/notifications` | Notices from billing, dunning, the team, and the operator, newest first, with "Mark read" and "Mark all as read"; the header's bell shows the same list. |
 | Your account | `/showcase/saas/app/account` | Your role in the workspace, and your name, email, and password. |
 | Not found | `/showcase/saas/app/{*path}` | The workspace's not-found screen. |
+
+Every workspace page shows a banner while a payment is failing (with the amount, the next retry or the end of grace, and "Update card"), while the workspace is suspended or archived, or while its trial runs.
 
 ### Operator console (layout: sidebar back office)
 
 | Page | Route | What it does |
 |:--|:--|:--|
-| Overview | `/showcase/saas/admin` | KPI tiles, 12-month MRR against target, plan mix, trials ending soon, newest leads, and recent activity. |
-| Tenants | `/showcase/saas/admin/tenants` | Every workspace with owner, plan, seats, status, and MRR; search, filters, sorting, and paging. `?status=Trial` opens it filtered. |
-| New tenant | `/showcase/saas/admin/tenants/new` | Creates a workspace and its owner, with a live price summary. `?lead={id}` prefills it from a lead. |
-| Tenant | `/showcase/saas/admin/tenants/{Id:int}` | Subscription summary, members, invoices, and activity; edit plan, seats, and status in a dialog; delete an archived tenant. |
-| Leads | `/showcase/saas/admin/leads` | The sales inbox from "Contact sales": status, note, and a link to create a tenant. `?lead={id}` opens a lead. |
-| Invoices | `/showcase/saas/admin/invoices` | Every invoice with status filters, search, and totals. `?status=open` opens it filtered. |
+| Overview | `/showcase/saas/admin` | KPI tiles, the dunning summary ("Dunning: N tenants, $X at risk"), 12-month MRR against target, plan mix, trials ending soon, newest leads, and recent activity. |
+| Tenants | `/showcase/saas/admin/tenants` | The tenant queue: a Grid of every workspace (name and subdomain, owner, plan, seats used, status, MRR, account manager, country, dates) with search, status, plan, and manager filters, a saved view, CSV export, and bulk plan, status, and account manager changes. `?status=Trial` opens it filtered. |
+| New tenant | `/showcase/saas/admin/tenants/new` | A validated form for a workspace (unique name and subdomain), its owner, account manager, plan, period, seats, and trial, with a live price summary. `?lead={id}` prefills it from a lead. |
+| Tenant | `/showcase/saas/admin/tenants/{Id:int}` | Subscription summary, **Payments and dunning** (the open failed payment, its timeline, Retry now, Extend grace, Suspend now, and a demo failed charge), members and invoices as Grids, and activity; edit plan, seats, status, and account manager in a validated dialog; delete an archived tenant. |
+| Leads | `/showcase/saas/admin/leads` | The sales inbox as a Grid with status filters and search; a lead opens in a dialog with a validated status and note; **Add lead** for calls and events; bulk status with a reason. `?lead={id}` opens a lead. |
+| Invoices | `/showcase/saas/admin/invoices` | Every invoice in a Grid with status filters, search, totals, CSV export, and bulk **Retry payment** for open invoices. `?status=open` opens it filtered. |
 | Invoice | `/showcase/saas/admin/invoices/{Number}` | Invoice detail and history; refund a paid invoice (full or part) or retry payment on an open one. |
-| Plans & prices | `/showcase/saas/admin/plans` | A card per plan with the workspaces on it; an editor dialog with a preview of the public price and the MRR change. |
+| Dunning | `/showcase/saas/admin/dunning` | The failed payments: summary cards, the policy with a validated editor and preview, the demo clock, and a Grid of cases (stage, amount, reason, attempts, next step, account manager) with a stage filter, saved view, CSV export, and bulk **Retry now** and **Extend grace**. |
+| Plans & prices | `/showcase/saas/admin/plans` | A card per plan with the workspaces on it; a validated editor dialog (unique name, price range, seat limit, Most popular only on a self-serve plan) with a preview of the public price and the MRR change. |
 | Revenue | `/showcase/saas/admin/revenue` | MRR, ARR, ARPA, collected and refunded money, MRR by plan, tenants by status, top tenants, and the trial funnel. |
 | Site analytics | `/showcase/saas/admin/analytics` | Traffic to Lumora's own site: sessions, sources, sign-ups, and top pages for a chosen range. |
-| Audit log | `/showcase/saas/admin/audit` | What operators and automatic billing did, with filters, search, and links to the targets. |
+| Audit log | `/showcase/saas/admin/audit` | Who did what and when, newest first, in a Grid with column filters, paging, and CSV export: operators, automatic billing, and customers in their workspaces. Each record links to its page. |
 | Account | `/showcase/saas/admin/account` | The operator's name, email, and password. |
 | Not found | `/showcase/saas/admin/{*path}` | The console's not-found screen. |
 
+## Dunning
+
+**The policy.** Retry the failed charge on 1 to 5 days after the failure (each from day 1 to day 30, each later than the one before), then give 0 to 30 days of grace after the last failed retry, then suspend the workspace. The seed's policy is days 1, 3, and 7 and 7 days of grace. "Email the customer" is a label in this demo: billing contacts get in-app notifications either way. A policy change applies to charges that fail from then on; open cases keep the schedule they started with. The editor previews the policy in words and explains what is wrong ("List the retry days in order, each later than the one before (like 1, 3, 7)").
+
+**When a charge fails.** A renewal, a trial's end, or a payment someone tries fails when the workspace has no card, or its card fails (expired, declined, or insufficient funds). The invoice stays open, the workspace becomes past due, and a case starts with the first retry scheduled. A workspace in dunning doesn't renew again until it recovers.
+
+**The stages.**
+
+1. **Retrying**: each scheduled retry charges the card on file. It goes through once the customer has saved a working card; otherwise it fails with the same reason, and the next retry is scheduled.
+2. **In grace**: after the last failed retry, the workspace stays usable (past due) until the grace period ends.
+3. **Suspended**: when grace ends, the workspace is suspended: its members can't change anything, but owners and billing members can still update the card and pay.
+4. **Recovered**: a successful payment (a retry, an operator's **Retry now**, or the customer's **Pay now**) pays the invoice, and the workspace is active again.
+
+**What operators can do.** **Retry now** charges the card at once (it doesn't change the schedule). **Extend grace** adds 1 to 14 days with a required reason; a suspended workspace becomes usable again until the new end. **Suspend now** suspends a retrying or grace case early, with a reason. Making a dunning-suspended tenant active again in the tenant editor or the bulk bar gives it a new grace period. **Demo: simulate a failed charge** charges an active tenant's next renewal now with a declining card, to start dunning on a tenant in good standing.
+
+**The engine** runs on the site's clock whenever billing catches up: when a workspace or console page opens, when a tab's data is restored, and when the demo clock moves a day. Steps that came due while nobody looked run in time order, with their due times.
+
+**Notifications.** The workspace's owners, admins, and billing members who can sign in are told when the charge fails, at each failed retry, when grace starts, when an operator extends it, at the suspension, and at the recovery. Lumora's operators are told when a charge fails, when a tenant enters grace, is suspended, or recovers, and when a customer in dunning updates the card.
+
+**Audit.** Every step is recorded: "Payment failed", each "Payment retry failed" (by automatic billing, an operator, or the customer), "Grace period started", "Grace period extended" (with the reason), "Tenant suspended", "Tenant reactivated", "Payment method updated" (brand and last four digits only), "Payment recovered", "Failed charge simulated", and "Dunning policy updated".
+
+## Enterprise features
+
+- **Grid lists**: tenants, invoices, dunning cases, leads, the audit log, a tenant's members and invoices, the customer's team, and the billing history use the [Grid](/components/grid) with sorting, paging, a column chooser, and CSV export of the filtered rows. Each list keeps its view (sort, page size, hidden and reordered columns) in the tab's `sessionStorage` until **Reset view**. A whole row opens its record (or, without a page of its own, its dialog). The tenant, invoice, lead, and dunning lists have multi-row selection with a bulk bar.
+- **Validated forms**: required, length, and format rules (emails, subdomains, card numbers with the Luhn check, expiry, security code, postal code), uniqueness checks with a "Checking…" state (tenant name and subdomain, plan name, an open lead's email, a teammate's email, an account's email, the workspace name), cross-field rules (seats within the plan, Most popular only on a self-serve plan, a closed lead's note, an EU workspace's data region, a password that doesn't contain the email, a dunning schedule in order), and a summary that links each failing field after a failed submit.
+- **Global search** in both headers: operators find tenants (name, subdomain, owner), leads, invoices, and plans; customers find their team and their invoices.
+- **Notifications** with an unread count and mark as read: for operators, new sign-ups and leads, failed payments and dunning steps, tenants out of seats, and tenants they now manage; for customers, dunning steps, payments and refunds, plan changes by Lumora, renewals, and accepted invitations.
+- **Audit log** of operators (tenants, plans, leads, refunds, payments, dunning), automatic billing (renewals, failed charges, retries, suspensions), and customers (sign-ups, plan and payment changes, team changes, settings).
+- **Loading, empty, and error states** on every list, with a "Demo: simulate a loading error" control to show the error state and its Retry.
+
 ## Components used
 
+- [Grid](/components/grid): every record list in the workspace and the console, with the column chooser, CSV export, paging, and multi-row selection on the tenant, invoice, lead, and dunning lists.
 - [Navbar](/components/navbar): the public site's header.
 - [Sidebar](/components/sidebar): the workspace and console navigation.
 - [Card](/components/card): page sections, plan cards, and KPI tiles throughout.
-- [Modal](/components/modal): invite, change role, and remove on Team; the tenant editor, refund, plan editor, lead, and delete-tenant dialogs.
+- [Modal](/components/modal): invite, change role, and remove on Team; the tenant editor, refund, plan editor, lead, add lead, dunning policy, extend grace, suspend now, and delete-tenant dialogs.
 - [Line chart](/data-visualization/line-chart), [Bar chart](/data-visualization/bar-chart), and [Doughnut chart](/data-visualization/doughnut-chart) (BlazorExpress.ChartJS): product traffic, MRR, plan mix, revenue, tenants by status, sessions, sources, and sign-ups.
 - [Progress](/components/progress): usage meters on the Dashboard, seats on Team and Tenant, and site analytics.
-- [Timeline](/components/timeline): recent activity on the Dashboard, Overview, and Tenant pages.
+- [Timeline](/components/timeline): recent activity on the Dashboard, Overview, and Tenant pages, and a dunning case's timeline.
 - [Switch](/forms/switch): the monthly or annual price toggle on Pricing and sign-up, and the email switches in Settings.
 - [Button group](/components/button-group) (`RadioButtonGroup`): billing periods, chart periods, and the first day of the week.
 - [Carousel](/components/carousel): customer quotes on Customers.
@@ -99,16 +149,16 @@ All data is fictitious and there is no backend. Each browser tab keeps its own d
 - [Collapse](/components/collapse): the plan comparison on Pricing.
 - [Callout](/components/callout): notes on Home and Pricing.
 - [Alert](/components/alerts): the suspended or archived workspace banner.
-- [Text input](/forms/text-input), [Number input](/forms/number-input), and [Input group](/components/input-group): search boxes and seats (refund amounts use a native number field).
-- [Avatar](/components/avatar), [Badge](/components/badge), and [Breadcrumb](/components/breadcrumb): members and owners, statuses, and the console's detail pages.
+- [Placeholders](/components/placeholders): the lists' loading state.
+- [Avatar](/components/avatar), [Badge](/components/badge), and [Breadcrumb](/components/breadcrumb): members and owners, statuses and dunning stages, and the console's detail pages.
 - [Buttons](/components/buttons) and [Icons](/content/icons): actions and icons across the site.
-- [Dropdown](/components/dropdown) and [Theme switcher](/components/theme-switcher): through the shared account menu and site bar.
+- [Dropdown](/components/dropdown) and [Theme switcher](/components/theme-switcher): through the shared account menu, notifications, and site bar.
 
-Forms also use Blazor's `EditForm` with `InputText`, `InputSelect`, `InputRadioGroup`, and `InputTextArea`.
+Forms use Blazor's `EditForm` with `DataAnnotationsValidator`, `InputText`, `InputTextArea`, `InputNumber`, `InputSelect`, `InputCheckbox`, and `InputRadioGroup`. Plain Bootstrap tables remain where the content is not a record list: revenue and analytics reports, an invoice's lines and history, and the plan comparison on Pricing.
 
 ## How the theme is built
 
-This is one of the older sites, so there is no shared frame component. The public site's layout, `SaasLayout.razor`, has the root `.sc-site.sc-lumora`. The workspace (`SaasAppLayout`) and the console (`SaasAdminLayout`) both render `SaasShell.razor`, the app shell with the Sidebar and a top bar; its root is `.sc-site.sc-saas`, and `SaasShell.razor.css` styles the pages of both through `::deep`. Each part keeps its own layout, so the public site never shows the app's sidebar (D-031).
+This is one of the older sites, so there is no shared frame component. The public site's layout, `SaasLayout.razor`, has the root `.sc-site.sc-lumora`. The workspace (`SaasAppLayout`) and the console (`SaasAdminLayout`) both render `SaasShell.razor`, the app shell with the Sidebar and a top bar (the global search, the site link, the notifications, and the account menu); its root is `.sc-site.sc-saas`, and `SaasShell.razor.css` styles the pages of both through `::deep`. Each part keeps its own layout, so the public site never shows the app's sidebar (D-031).
 
 Both stylesheets set the same brand tokens. Light mode: `--sc-primary` `#c026d3` (magenta), `--sc-primary-hover` `#a21caf`, contrast `#fff`. Dark mode (`[data-bs-theme=dark]`): `--sc-primary` `#e879f9`, hover `#f0abfc`, contrast `#2e1065`. The app shell adds a dark purple sidebar (`#1e1033`, `#120a1f` in dark mode) and page background `#f4f6fb` (`#0b1220` in dark mode).
 
@@ -119,6 +169,8 @@ The shared stylesheet `wwwroot/css/blazorbootstrap.demo.rcl.css` maps the `--sc-
 ## Accessibility and responsiveness
 
 - Each chart has a summary sentence and a visually hidden data table.
-- Every action on Team, Billing, Settings, and the console ends in a status message or an error; a repeated message is announced again. Focus returns to the button that opened a dialog, or to the status message when that button is gone.
-- Statuses (trial, past due, suspended, paid, refunded) are written as words in badges, not shown by color alone.
-- At 375 px the tenant table folds its columns into the tenant cell and a "Sort by" list replaces the column headers; the public Navbar collapses into a menu.
+- Every action ends in a status message or an error; a repeated message is announced again. Focus returns to the button that opened a dialog, or to the status message when that button is gone.
+- Statuses and dunning stages (trial, past due, suspended, retrying, in grace, recovered, paid, refunded) are written as words in badges, not shown by color alone. The payment-failed banner is an alert with an icon and a sentence that names the amount and the next date.
+- Each list row's checkbox is labelled with its record ("Select Northwind Outfitters"), and the header checkbox reads "Select all shown tenants". A row opens its record through a stretched link or button, so the row has no extra interactive role.
+- After a failed submit, the error summary takes focus and links to each field; each message is tied to its field with `aria-describedby`. Visually hidden button text keeps its leading space, so names read "Remove Jonah Pike" rather than "RemoveJonah Pike".
+- At 375 px, filters and bulk bars stack, the header search wraps onto its own line, wide grids scroll inside their own box, and the public Navbar collapses into a menu.

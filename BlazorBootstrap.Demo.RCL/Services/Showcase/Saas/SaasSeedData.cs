@@ -184,11 +184,14 @@ public static class SaasSeedData
     /// <summary>
     /// The audit log at seed time, oldest first and numbered from 1, so it agrees with the seeded data: tenants set up by
     /// sales, account managers assigned, failed renewal payments, suspensions, cancellations, refunds, the work on the seeded
-    /// leads, and the demo workspace's own team changes. Each entry links to the operator's page of its record.
+    /// leads, every step of the seeded dunning cases, and the demo workspace's own team changes. Each entry links to the
+    /// operator's page of its record.
     /// </summary>
-    public static List<ShowcaseAuditEntry> Audit(IReadOnlyList<SaasWorkspace> workspaces, IReadOnlyList<SaasMember> members, IReadOnlyList<SaasInvoice> invoices, IReadOnlyList<SaasLead> leads)
+    public static List<ShowcaseAuditEntry> Audit(IReadOnlyList<SaasWorkspace> workspaces, IReadOnlyList<SaasMember> members, IReadOnlyList<SaasInvoice> invoices, IReadOnlyList<SaasLead> leads,
+        IReadOnlyList<SaasDunningCase> dunning)
     {
         var entries = new List<(DateTime At, string Actor, string Action, string Target, string? Url, string? Details)>();
+        var inDunning = dunning.Select(item => item.WorkspaceId).ToHashSet();
         var owners = members.Where(member => member.Role == SaasMemberRole.Owner).GroupBy(member => member.WorkspaceId).ToDictionary(group => group.Key, group => group.First());
 
         foreach (var workspace in workspaces)
@@ -209,13 +212,14 @@ public static class SaasSeedData
 
             var open = invoices.FirstOrDefault(invoice => invoice.WorkspaceId == workspace.Id && invoice.Status == SaasInvoiceStatus.Open);
 
-            if (open is not null && workspace.Status is SaasWorkspaceStatus.PastDue or SaasWorkspaceStatus.Suspended)
+            // A tenant in dunning gets its entries from the case's timeline below; the others were suspended by hand.
+            if (open is not null && workspace.Status is SaasWorkspaceStatus.PastDue or SaasWorkspaceStatus.Suspended && !inDunning.Contains(workspace.Id))
             {
                 entries.Add((open.IssuedOn.AddHours(6), SystemActorName, "Payment failed", workspace.Name, url,
                     $"{Money(open.Amount)} due on {open.IssuedOn.ToString("MMM d", CultureInfo.InvariantCulture)}; no card on file. The tenant is past due."));
             }
 
-            if (workspace.Status == SaasWorkspaceStatus.Suspended)
+            if (workspace.Status == SaasWorkspaceStatus.Suspended && !inDunning.Contains(workspace.Id))
             {
                 // A few days after the payment failed, and before the tab's clock starts.
                 var suspendedOn = Min((open?.IssuedOn ?? Today.AddDays(-14)).AddDays(3 + (workspace.Id % 5)).AddHours(11), SeedTime.AddMinutes(-30));
@@ -224,6 +228,14 @@ public static class SaasSeedData
 
             if (workspace.Status == SaasWorkspaceStatus.Archived)
                 entries.Add((CancelledOn(workspace).AddHours(17), ManagerName(workspace.ManagerId) ?? OperatorName, "Tenant archived", workspace.Name, url, "The owner cancelled the subscription."));
+        }
+
+        foreach (var item in dunning)
+        {
+            var workspace = workspaces.First(candidate => candidate.Id == item.WorkspaceId);
+
+            foreach (var step in item.Events)
+                entries.Add(DunningAudit(item, step, workspace.Name));
         }
 
         foreach (var invoice in invoices.Where(invoice => invoice.RefundedAmount > 0))
@@ -260,6 +272,98 @@ public static class SaasSeedData
             })
             .ToList();
     }
+
+    /// <summary>The dunning policy a fresh tab starts with: retry 1, 3, and 7 days after a failed charge, then 7 days of grace.</summary>
+    public static SaasDunningPolicy DefaultDunningPolicy() => new(new[] { 1, 3, 7 }, 7, EmailCustomer: true);
+
+    /// <summary>
+    /// The audit entry of one step of a dunning case (the state writes the same wording): who did it, the action, and the
+    /// record. Charges and suspensions name the invoice or the tenant and link to the operator's page of it.
+    /// </summary>
+    public static (DateTime At, string Actor, string Action, string Target, string? Url, string? Details) DunningAudit(SaasDunningCase item, SaasDunningEvent step, string workspaceName)
+    {
+        var invoice = InvoiceTarget(item.InvoiceNumber);
+        var invoiceUrl = InvoiceUrl(item.InvoiceNumber);
+        var tenantUrl = TenantUrl(item.WorkspaceId);
+        var amount = Money(item.Amount);
+
+        return step.Kind switch
+        {
+            SaasDunningEventKind.Failed => (step.At, step.By, "Payment failed", invoice, invoiceUrl, $"{workspaceName}: {amount}, {FailureText(item.Reason)}. Retries on {DaysText(item.RetryDays)}."),
+            SaasDunningEventKind.RetryFailed => (step.At, step.By, "Payment retry failed", invoice, invoiceUrl, $"{workspaceName}: {step.Detail ?? FailureText(item.Reason)}"),
+            SaasDunningEventKind.GraceStarted => (step.At, step.By, "Grace period started", workspaceName, tenantUrl, step.Detail),
+            SaasDunningEventKind.GraceExtended => (step.At, step.By, "Grace period extended", workspaceName, tenantUrl, step.Detail),
+            SaasDunningEventKind.Suspended => (step.At, step.By, "Tenant suspended", workspaceName, tenantUrl, step.Detail ?? $"Grace period ended with {amount} unpaid."),
+            SaasDunningEventKind.Reactivated => (step.At, step.By, "Tenant reactivated", workspaceName, tenantUrl, step.Detail),
+            SaasDunningEventKind.CardUpdated => (step.At, step.By, "Payment method updated", workspaceName, tenantUrl, step.Detail),
+            _ => (step.At, step.By, "Payment recovered", invoice, invoiceUrl, $"{workspaceName}: {amount} paid. {step.Detail}".Trim()),
+        };
+    }
+
+    /// <summary>
+    /// The seeded dunning cases, each built by the same steps the state's engine takes on the policy: the past-due tenants
+    /// (their renewal failed 1 to 12 days ago, so some are retrying and some are in grace), about half of the suspended
+    /// tenants (suspended when their grace ended; the others were suspended by hand), and six tenants that recovered in the
+    /// last two months after their owner replaced the card.
+    /// </summary>
+    public static List<SaasDunningCase> DunningCases(IReadOnlyList<SaasWorkspace> workspaces, IReadOnlyList<SaasInvoice> invoices, IReadOnlyList<SaasMember> members)
+    {
+        var policy = DefaultDunningPolicy();
+        var cases = new List<SaasDunningCase>();
+        var owners = members.Where(member => member.Role == SaasMemberRole.Owner).GroupBy(member => member.WorkspaceId).ToDictionary(group => group.Key, group => group.First().Name);
+        var fullRun = TimeSpan.FromDays(policy.RetryDays[^1] + policy.GraceDays + 1);
+
+        foreach (var workspace in workspaces.Where(workspace => workspace.Status is SaasWorkspaceStatus.PastDue or SaasWorkspaceStatus.Suspended))
+        {
+            if (invoices.FirstOrDefault(invoice => invoice.WorkspaceId == workspace.Id && invoice.Status == SaasInvoiceStatus.Open) is not { } open)
+                continue;
+
+            var failedAt = open.IssuedOn.AddHours(6);
+
+            if (workspace.Status == SaasWorkspaceStatus.Suspended && (SeedTime - failedAt < fullRun || workspace.Id % 2 == 1))
+                continue;
+
+            cases.Add(Simulate(cases.Count + 1, workspace, open, failedAt, policy, null, null));
+        }
+
+        // Recovered: the owner replaced the card after the first retry failed, and the next retry went through.
+        foreach (var workspace in workspaces.Where(workspace => workspace is { Status: SaasWorkspaceStatus.Active, PlanId: "growth", Period: SaasBillingPeriod.Monthly, CardLast4: not null }
+                     && workspace.Id % 7 == 2).Take(6))
+        {
+            var paid = invoices.Where(invoice => invoice.WorkspaceId == workspace.Id && invoice is { Status: SaasInvoiceStatus.Paid, RefundedAmount: 0 }
+                    && invoice.IssuedOn >= Today.AddDays(-60) && invoice.IssuedOn <= Today.AddDays(-20))
+                .OrderBy(invoice => invoice.IssuedOn)
+                .FirstOrDefault();
+
+            if (paid is not null)
+                cases.Add(Simulate(cases.Count + 1, workspace, paid, paid.IssuedOn.AddHours(6), policy, 2, owners.GetValueOrDefault(workspace.Id) ?? "The owner"));
+        }
+
+        return cases;
+    }
+
+    /// <summary>Returns "1, 3, and 7 days after the failure".</summary>
+    public static string DaysText(IReadOnlyList<int> days)
+    {
+        var parts = days.Select(day => day.ToString(CultureInfo.InvariantCulture)).ToList();
+        var list = parts.Count switch
+        {
+            1 => parts[0],
+            2 => $"{parts[0]} and {parts[1]}",
+            _ => $"{string.Join(", ", parts.Take(parts.Count - 1))}, and {parts[^1]}",
+        };
+
+        return days.Count == 1 && days[0] == 1 ? "1 day after the failure" : $"{list} days after the failure";
+    }
+
+    /// <summary>Returns a failure reason in words, such as "card declined".</summary>
+    public static string FailureText(SaasFailureReason reason) => reason switch
+    {
+        SaasFailureReason.ExpiredCard => "the card on file has expired",
+        SaasFailureReason.InsufficientFunds => "insufficient funds",
+        SaasFailureReason.NoCard => "no card on file",
+        _ => "the card was declined",
+    };
 
     /// <summary>Returns when a cancelled (archived) workspace was cancelled, from its ID.</summary>
     public static DateTime CancelledOn(SaasWorkspace workspace) => Max(workspace.CreatedOn.AddDays(35), Today.AddDays(-(7 + Pick(workspace.Id, 6, 180))));
@@ -526,7 +630,7 @@ public static class SaasSeedData
     /// The seeded notifications: the customer's (an upcoming renewal, usage, an invitation, a product update) and the
     /// operator's (new leads and sign-ups, overdue invoices, a tenant out of seats), the two newest of each unread.
     /// </summary>
-    public static List<SaasNotice> Notices(IReadOnlyList<SaasWorkspace> workspaces, IReadOnlyList<SaasMember> members, IReadOnlyList<SaasInvoice> invoices)
+    public static List<SaasNotice> Notices(IReadOnlyList<SaasWorkspace> workspaces, IReadOnlyList<SaasMember> members, IReadOnlyList<SaasInvoice> invoices, IReadOnlyList<SaasDunningCase> dunning)
     {
         var notices = new List<SaasNotice>
         {
@@ -550,11 +654,19 @@ public static class SaasSeedData
 
         var pastDue = workspaces.Where(workspace => workspace.Status == SaasWorkspaceStatus.PastDue).Select(workspace => workspace.Id).ToHashSet();
 
-        foreach (var open in invoices.Where(invoice => invoice.Status == SaasInvoiceStatus.Open && pastDue.Contains(invoice.WorkspaceId)).OrderByDescending(invoice => invoice.IssuedOn).Take(2))
+        foreach (var item in dunning.Where(item => item.Stage == SaasDunningStage.Retrying && pastDue.Contains(item.WorkspaceId)).OrderByDescending(item => item.FailedAt).Take(2))
         {
-            var name = workspaces.First(workspace => workspace.Id == open.WorkspaceId).Name;
-            operatorNotices.Add(($"Invoice {open.Number} is overdue", $"{name}: {Money(open.Amount)} with no card on file. The tenant is past due.", InvoiceUrl(open.Number),
-                IconName.ExclamationTriangle, open.IssuedOn.AddHours(6)));
+            var name = workspaces.First(workspace => workspace.Id == item.WorkspaceId).Name;
+            operatorNotices.Add(($"Payment failed: {name}", $"{item.InvoiceNumber}, {Money(item.Amount)}: {FailureText(item.Reason)}. Retries on {DaysText(item.RetryDays)}.", InvoiceUrl(item.InvoiceNumber),
+                IconName.ExclamationTriangle, item.FailedAt));
+        }
+
+        // The newest tenant whose retries ran out: someone should call before it is suspended.
+        if (dunning.SelectMany(item => item.Events.Where(step => step.Kind == SaasDunningEventKind.GraceStarted).Select(step => (Case: item, step.At))).OrderByDescending(pair => pair.At).FirstOrDefault() is { Case: { } graced } grace)
+        {
+            var name = workspaces.First(workspace => workspace.Id == graced.WorkspaceId).Name;
+            operatorNotices.Add(($"{name} is in its grace period", $"Every retry of {graced.InvoiceNumber} ({Money(graced.Amount)}) failed. It is suspended on {graced.GraceEndsAt?.ToString("MMM d", CultureInfo.InvariantCulture)} unless paid.",
+                "/showcase/saas/admin/dunning", IconName.HourglassSplit, grace.At));
         }
 
         // A paying tenant whose members and invitations fill every seat: a chance to sell more.
@@ -711,6 +823,13 @@ public static class SaasSeedData
             createdOn = trialEndsOn.Value.AddDays(-TrialDays);
             renewsOn = trialEndsOn.Value;
         }
+        else if (status == SaasWorkspaceStatus.PastDue)
+        {
+            // The renewal that failed started 1 to 12 days ago, so the tenant is somewhere in its retries or its grace period.
+            var lastStart = Today.AddDays(-(1 + Pick(index, 30, 12)));
+            createdOn = period == SaasBillingPeriod.Annual ? lastStart.AddYears(-(1 + Pick(index, 32, 2))) : lastStart.AddMonths(-(2 + Pick(index, 32, 20)));
+            renewsOn = NextRenewal(createdOn, period);
+        }
         else
         {
             createdOn = Today.AddDays(-(40 + Pick(index, 5, 860)));
@@ -722,7 +841,8 @@ public static class SaasSeedData
         var hasCard = planId != "starter" && status switch
         {
             SaasWorkspaceStatus.Trial => Pick(index, 9, 2) == 0,
-            SaasWorkspaceStatus.PastDue or SaasWorkspaceStatus.Suspended => false,
+            SaasWorkspaceStatus.PastDue => Pick(index, 29, 3) != 0,
+            SaasWorkspaceStatus.Suspended => false,
             _ => true,
         };
         var card = Pick(index, 10, cardBrands.Length);
@@ -733,14 +853,81 @@ public static class SaasSeedData
             _ => null,
         };
 
+        // A past-due tenant with a card has one that fails: expired, declined, or without the money.
+        SaasFailureReason? cardFails = status == SaasWorkspaceStatus.PastDue && hasCard
+            ? (Pick(index, 31, 3)) switch { 0 => SaasFailureReason.ExpiredCard, 1 => SaasFailureReason.CardDeclined, _ => SaasFailureReason.InsufficientFunds }
+            : null;
+        var expired = cardFails == SaasFailureReason.ExpiredCard;
+
         return new SaasWorkspace(id, name, planId, period, seats, status, createdOn, trialEndsOn, renewsOn, country, events,
             planId == "starter" ? 1 + Pick(index, 19, 5) : 2 + Pick(index, 19, 39), 0m,
             hasCard ? cardBrands[card] : null, hasCard ? cardLast4[card] : null,
-            hasCard ? 1 + Pick(index, 20, 12) : 0, hasCard ? 2027 + Pick(index, 20, 3) : 0, DefaultSettings(country))
+            hasCard ? (expired ? 9 : 1 + Pick(index, 20, 12)) : 0, hasCard ? (expired ? 2026 : 2027 + Pick(index, 20, 3)) : 0, DefaultSettings(country))
         {
             Subdomain = SubdomainFrom(name),
             ManagerId = managerId,
+            CardFails = cardFails,
         };
+    }
+
+    /// <summary>
+    /// Builds one seeded dunning case the way the engine runs it: the failed charge, then each scheduled retry up to the
+    /// tab's start time, the grace period after the last one, and the suspension when grace ends. With
+    /// <paramref name="recoverAtRetry" />, the card is replaced the day before that retry, and the retry goes through.
+    /// </summary>
+    private static SaasDunningCase Simulate(int id, SaasWorkspace workspace, SaasInvoice invoice, DateTime failedAt, SaasDunningPolicy policy, int? recoverAtRetry, string? owner)
+    {
+        var reason = workspace.CardLast4 is null ? SaasFailureReason.NoCard : workspace.CardFails ?? SaasFailureReason.CardDeclined;
+        var events = new List<SaasDunningEvent> { new(failedAt, SaasDunningEventKind.Failed, SystemActorName, FailureText(reason)) };
+        var stage = SaasDunningStage.Retrying;
+        var retries = 0;
+        DateTime? next = failedAt.AddDays(policy.RetryDays[0]);
+        DateTime? graceEnds = null;
+        DateTime? closed = null;
+
+        while (true)
+        {
+            if (stage == SaasDunningStage.Retrying && next is { } due && due <= SeedTime)
+            {
+                if (recoverAtRetry == retries + 1)
+                {
+                    events.Add(new SaasDunningEvent(due.AddDays(-1).AddHours(4), SaasDunningEventKind.CardUpdated, owner ?? "The owner", $"{workspace.CardBrand} ending in {workspace.CardLast4}"));
+                    events.Add(new SaasDunningEvent(due, SaasDunningEventKind.Paid, SystemActorName, $"Charged to the {workspace.CardBrand} ending in {workspace.CardLast4} on retry {retries + 1}."));
+                    stage = SaasDunningStage.Recovered;
+                    closed = due;
+                    next = null;
+
+                    break;
+                }
+
+                retries++;
+                events.Add(new SaasDunningEvent(due, SaasDunningEventKind.RetryFailed, SystemActorName,
+                    string.Create(CultureInfo.InvariantCulture, $"Retry {retries} of {policy.RetryDays.Count}: {FailureText(reason)}")));
+
+                if (retries < policy.RetryDays.Count)
+                {
+                    next = failedAt.AddDays(policy.RetryDays[retries]);
+                    continue;
+                }
+
+                next = null;
+                stage = SaasDunningStage.Grace;
+                graceEnds = due.AddDays(policy.GraceDays);
+                events.Add(new SaasDunningEvent(due, SaasDunningEventKind.GraceStarted, SystemActorName,
+                    $"Suspends on {graceEnds.Value.ToString("MMM d", CultureInfo.InvariantCulture)} unless the invoice is paid."));
+                continue;
+            }
+
+            if (stage == SaasDunningStage.Grace && graceEnds is { } ends && ends <= SeedTime)
+            {
+                stage = SaasDunningStage.Suspended;
+                events.Add(new SaasDunningEvent(ends, SaasDunningEventKind.Suspended, SystemActorName, $"Grace period ended with {Money(invoice.Amount)} unpaid."));
+            }
+
+            break;
+        }
+
+        return new SaasDunningCase(id, workspace.Id, invoice.Number, invoice.Amount, reason, failedAt, policy.RetryDays.ToArray(), policy.GraceDays, stage, retries, next, graceEnds, closed, events);
     }
 
     private static string InvoiceTarget(string number) => $"Invoice {number}";

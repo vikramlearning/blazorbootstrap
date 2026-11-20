@@ -8,6 +8,8 @@
     var plan = State.PlanOf(workspace);
     var used = State.SeatsUsed(workspace.Id);
     var canManage = State.CanManageBilling;
+    var canFix = State.CanFixPayment;
+    var failing = State.OpenDunningCase(workspace.Id);
     var isTrial = workspace.Status == SaasWorkspaceStatus.Trial;
     var isFree = plan.MonthlyPricePerSeat == 0;
     var invoices = State.InvoicesOf(workspace.Id);
@@ -22,7 +24,7 @@
         </div>
     </div>
 
-    @if (!canManage)
+    @if (!canManage && !canFix)
     {
         <div class="lu-note mb-3" role="note">
             <Icon Name="IconName.InfoCircle" class="flex-shrink-0 mt-1" aria-hidden="true" />
@@ -37,9 +39,56 @@
     @* Always rendered and focusable, so each change is announced and focus has somewhere to go. *@
     <p class="lu-status" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
 
-    @* Payment due: open invoices (a renewal without a card, or a workspace set up by Lumora) wait for payment here. *@
-    @if (openInvoices.Count > 0)
+    @* A failed payment in dunning: what failed, what happens next, and the way to fix it. *@
+    @if (failing is not null)
     {
+        <section class="lu-due lu-failed mb-4" aria-labelledby="lu-failed-title">
+            <Icon Name="@(failing.Stage == SaasDunningStage.Suspended ? IconName.SlashCircle : IconName.ExclamationTriangleFill)" class="lu-due-icon flex-shrink-0" aria-hidden="true" />
+            <div class="flex-grow-1">
+                <h2 class="h5 fw-bold mb-1" id="lu-failed-title">@(failing.Stage == SaasDunningStage.Suspended ? "Suspended for an unpaid invoice" : "Payment failed")</h2>
+                <p class="mb-2">
+                    <strong class="sd-mono">@SaasDisplay.MoneyCents(failing.Amount)</strong> for invoice
+                    <a href="@($"{SaasState.BillingPath}/invoices/{Uri.EscapeDataString(failing.InvoiceNumber)}")">@failing.InvoiceNumber</a>
+                    couldn't be charged: @SaasSeedData.FailureText(failing.Reason). @FailingNextText(workspace, failing)
+                </p>
+                <dl class="lu-failed-facts small mb-2">
+                    <div><dt>Attempts</dt><dd>@failing.Attempts</dd></div>
+                    <div><dt>Card on file</dt><dd>@(cardText ?? "None")@(workspace.CardFails is { } fails ? $" ({SaasDisplay.FailureName(fails).ToLowerInvariant()})" : null)</dd></div>
+                    @if (failing.NextRetryAt is { } nextRetry)
+                    {
+                        <div><dt>Next retry</dt><dd>@SaasDisplay.Date(nextRetry)</dd></div>
+                    }
+                    @if (failing.Stage == SaasDunningStage.Grace && failing.GraceEndsAt is { } graceEnds)
+                    {
+                        <div><dt>Grace ends</dt><dd>@SaasDisplay.Date(graceEnds)</dd></div>
+                    }
+                </dl>
+                @if (canFix)
+                {
+                    <div class="d-flex flex-wrap gap-2">
+                        @if (!cardFormOpen)
+                        {
+                            <Button Color="ButtonColor.Primary" @onclick="OpenCardFromFailureAsync">
+                                <Icon Name="IconName.CreditCard" class="me-1" aria-hidden="true" />Update card
+                            </Button>
+                        }
+                        <Button @ref="payButton" Color="ButtonColor.Danger" Outline="true" @onclick="PayNowAsync">
+                            Pay now<span class="visually-hidden">, @SaasDisplay.MoneyCents(failing.Amount)</span>
+                        </Button>
+                        <Button Color="ButtonColor.Link" Size="ButtonSize.Small" Class="px-0" @onclick="AdvanceDayAsync">Demo: move the clock forward one day</Button>
+                    </div>
+                }
+                else
+                {
+                    <p class="small mb-0">An owner or billing member can update the card and pay.</p>
+                }
+                <p class="lu-error mt-2 mb-0" role="alert">@payError</p>
+            </div>
+        </section>
+    }
+    else if (openInvoices.Count > 0)
+    {
+        @* Payment due: open invoices (a workspace set up by Lumora) wait for payment here. *@
         var openTotal = openInvoices.Sum(invoice => invoice.Amount);
 
         <section class="lu-due mb-4" aria-labelledby="lu-due-title">
@@ -48,13 +97,13 @@
                 <h2 class="h5 fw-bold mb-1" id="lu-due-title">Payment due</h2>
                 <p class="mb-2">
                     @(openInvoices.Count == 1 ? "1 invoice is" : $"{openInvoices.Count.ToString(CultureInfo.InvariantCulture)} invoices are") open, <strong class="sd-mono">@SaasDisplay.MoneyCents(openTotal)</strong> in total.
-                    @(canManage
+                    @(canFix
                         ? (cardText is null ? "There's no card on file: Pay now opens the card form first." : $"Pay now charges the {cardText}.")
                         : (me.Role is SaasMemberRole.Owner or SaasMemberRole.Billing
                             ? "Payments are turned off while the workspace is suspended or archived."
                             : "An owner or billing member can pay them."))
                 </p>
-                @if (canManage)
+                @if (canFix)
                 {
                     <Button @ref="payButton" Color="ButtonColor.Danger" @onclick="PayNowAsync">
                         <Icon Name="IconName.CreditCard" class="me-1" aria-hidden="true" />Pay now<span class="visually-hidden">, @SaasDisplay.MoneyCents(openTotal)</span>
@@ -170,7 +219,7 @@
                         <p class="text-body-secondary mb-0">No card on file.@(isFree ? " The free plan doesn't need one." : string.Empty)</p>
                     }
 
-                    @if (canManage)
+                    @if (canFix)
                     {
                         @if (!cardFormOpen)
                         {
@@ -183,9 +232,16 @@
                             <div class="lu-card-form mt-3">
                                 <h3 class="h6 fw-bold" id="lu-card-form-title" tabindex="-1" @ref="cardFormHeading">@(cardText is null ? "Add a card" : "Replace the card")</h3>
                                 <ShowcaseDemoNotice Class="mb-3" Text="Demo only: use one of the listed test cards; real cards are never accepted. The card is checked with a zero-amount test charge, and only its brand, last four digits, and expiry are kept." />
-                                <EditForm Model="card" OnValidSubmit="SaveCardAsync" FormName="lu-card" aria-labelledby="lu-card-form-title">
-                                    <ShowcaseFormErrors />
+                                <EditForm EditContext="cardContext" OnSubmit="SaveCardAsync" FormName="lu-card" novalidate aria-labelledby="lu-card-form-title">
+                                    <DataAnnotationsValidator />
+                                    <ShowcaseFormErrors ShowSummary="true" />
                                     <ShowcaseCardForm Card="card" Today="State.Clock.Today" IdPrefix="lu" />
+                                    <div class="mt-3">
+                                        <label class="form-label" for="lu-card-postal">Billing postal code</label>
+                                        <InputText id="lu-card-postal" class="form-control" @bind-Value="cardForm.PostalCode" maxlength="10" autocomplete="off" aria-describedby="lu-card-postal-help" />
+                                        <div class="form-text" id="lu-card-postal-help">The postal code of the card's billing address, like 94107 or SW1A 1AA. It isn't kept.</div>
+                                        <ValidationMessage For="() => cardForm.PostalCode" />
+                                    </div>
                                     <div class="lu-error mt-3" role="alert">
                                         @if (cardError is not null)
                                         {

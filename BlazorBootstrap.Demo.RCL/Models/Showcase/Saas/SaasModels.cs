@@ -73,9 +73,9 @@ public sealed record SaasInvoice(
     string Description,
     decimal Amount,
     SaasInvoiceStatus Status,
-    string? CardBrand,
-    string? CardLast4,
-    decimal RefundedAmount);
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] string? CardBrand,
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] string? CardLast4,
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)] decimal RefundedAmount);
 
 /// <summary>What a plan change costs today and what it leaves.</summary>
 /// <param name="ChargeToday">The amount charged now to the card on file, after the credit balance is used (0 when nothing is due).</param>
@@ -119,6 +119,9 @@ public enum SaasResult
 
     /// <summary>Another record already has the name, subdomain, or email (a tenant, a plan, or an open lead).</summary>
     Duplicate,
+
+    /// <summary>The record isn't in a state that allows the action (for example a dunning case that is already recovered).</summary>
+    WrongState,
 }
 
 /// <summary>What a bulk change from a list did.</summary>
@@ -172,16 +175,16 @@ public sealed record SaasWorkspace(
     int Seats,
     SaasWorkspaceStatus Status,
     DateTime CreatedOn,
-    DateTime? TrialEndsOn,
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] DateTime? TrialEndsOn,
     DateTime RenewsOn,
     string Country,
     long EventsThisMonth,
     int Dashboards,
-    decimal CreditBalance,
-    string? CardBrand,
-    string? CardLast4,
-    int CardExpiryMonth,
-    int CardExpiryYear,
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)] decimal CreditBalance,
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] string? CardBrand,
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] string? CardLast4,
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)] int CardExpiryMonth,
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)] int CardExpiryYear,
     SaasWorkspaceSettings Settings)
 {
     /// <summary>
@@ -193,6 +196,13 @@ public sealed record SaasWorkspace(
     /// <summary>Gets the ID of the Lumora account manager who looks after the tenant (<see cref="SaasAccountManager.Id" />), or <see langword="null" /> for none.</summary>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string? ManagerId { get; init; }
+
+    /// <summary>
+    /// Gets why the card on file fails a charge (demo: an expired card, a decline, or too little money), or
+    /// <see langword="null" /> when charges go through. Saving a new card clears it.
+    /// </summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public SaasFailureReason? CardFails { get; init; }
 }
 
 /// <summary>
@@ -276,6 +286,117 @@ public enum SaasLeadStatus
 /// <see cref="Note" /> is the sales team's own note.
 /// </summary>
 public sealed record SaasLead(int Id, string Name, string Email, string Company, string TeamSize, string Message, DateTime CreatedOn, SaasLeadStatus Status, string? Note = null);
+
+#endregion
+
+#region Dunning
+
+/// <summary>Why a charge failed.</summary>
+public enum SaasFailureReason
+{
+    /// <summary>The bank declined the card.</summary>
+    CardDeclined,
+
+    /// <summary>The card on file has expired.</summary>
+    ExpiredCard,
+
+    /// <summary>The account didn't have enough money.</summary>
+    InsufficientFunds,
+
+    /// <summary>There was no card on file to charge.</summary>
+    NoCard,
+}
+
+/// <summary>Where a failed payment stands in dunning.</summary>
+public enum SaasDunningStage
+{
+    /// <summary>Waiting for the next scheduled retry; the workspace is past due.</summary>
+    Retrying,
+
+    /// <summary>Every retry failed; the workspace stays usable until the grace period ends.</summary>
+    Grace,
+
+    /// <summary>The grace period ended (or an operator suspended it): the workspace is suspended until the invoice is paid.</summary>
+    Suspended,
+
+    /// <summary>The invoice was paid; the workspace is back in good standing.</summary>
+    Recovered,
+}
+
+/// <summary>What happened in a dunning case, for its timeline.</summary>
+public enum SaasDunningEventKind
+{
+    /// <summary>The first charge failed and dunning started.</summary>
+    Failed,
+
+    /// <summary>A retry (scheduled, by an operator, or by the customer's "Pay now") failed.</summary>
+    RetryFailed,
+
+    /// <summary>A charge went through and the case is recovered.</summary>
+    Paid,
+
+    /// <summary>The last scheduled retry failed and the grace period started.</summary>
+    GraceStarted,
+
+    /// <summary>An operator gave the customer more days of grace.</summary>
+    GraceExtended,
+
+    /// <summary>The workspace was suspended for the unpaid invoice.</summary>
+    Suspended,
+
+    /// <summary>An operator made the suspended workspace usable again while the invoice is still open.</summary>
+    Reactivated,
+
+    /// <summary>The customer saved a new card.</summary>
+    CardUpdated,
+}
+
+/// <summary>One step on a dunning case's timeline.</summary>
+/// <param name="At">When it happened, on the site's clock.</param>
+/// <param name="Kind">What happened.</param>
+/// <param name="By">Who did it: automatic billing, an operator, or a person in the workspace.</param>
+/// <param name="Detail">An optional detail, such as the failure reason or the extension's reason.</param>
+public sealed record SaasDunningEvent(DateTime At, SaasDunningEventKind Kind, string By, [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] string? Detail = null);
+
+/// <summary>
+/// The operator's dunning policy: when a failed charge is retried (days after the failure, strictly increasing), how many
+/// days of grace follow the last failed retry, and then the workspace is suspended. A policy change applies to charges that
+/// fail from then on; open cases keep the schedule they started with.
+/// </summary>
+/// <param name="RetryDays">The retry days after the failure, such as 1, 3, and 7.</param>
+/// <param name="GraceDays">Days the workspace stays usable after the last failed retry (0 suspends it at once).</param>
+/// <param name="EmailCustomer">Whether the customer is emailed at each step (a label in this demo: nothing is sent).</param>
+public sealed record SaasDunningPolicy(IReadOnlyList<int> RetryDays, int GraceDays, bool EmailCustomer);
+
+/// <summary>
+/// The dunning of one failed invoice: why the charge failed, the retry schedule it follows (the policy in force when it
+/// failed), how many retries ran, when the next retry or the end of grace is due, and its timeline. The workspace is past
+/// due while the case is retrying or in grace, suspended once it is suspended, and active again when it is recovered.
+/// </summary>
+public sealed record SaasDunningCase(
+    int Id,
+    int WorkspaceId,
+    string InvoiceNumber,
+    decimal Amount,
+    SaasFailureReason Reason,
+    DateTime FailedAt,
+    IReadOnlyList<int> RetryDays,
+    int GraceDays,
+    SaasDunningStage Stage,
+    int RetriesDone,
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] DateTime? NextRetryAt,
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] DateTime? GraceEndsAt,
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] DateTime? ClosedAt,
+    IReadOnlyList<SaasDunningEvent> Events)
+{
+    /// <summary>Gets whether the case still waits for a payment (retrying, in grace, or suspended).</summary>
+    [JsonIgnore]
+    public bool IsOpen => Stage != SaasDunningStage.Recovered;
+
+    /// <summary>Gets how many charges were tried: the first one and every retry.</summary>
+    [JsonIgnore]
+    public int Attempts => Events.Count(item => item.Kind is SaasDunningEventKind.Failed or SaasDunningEventKind.RetryFailed or SaasDunningEventKind.Paid);
+}
 
 #endregion
 
