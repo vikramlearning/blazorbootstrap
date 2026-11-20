@@ -336,7 +336,8 @@ h1:focus-visible {
 }
 
 [data-bs-theme=dark] .bd-more-libraries .btn-outline-secondary {
-    --bs-btn-color: var(--bs-secondary-color);
+    --bs-btn-color: var(--bs-secondary-text-emphasis);
+    --bs-btn-border-color: var(--bs-secondary-text-emphasis);
 }
 
 .bd-lib-logo {
@@ -346,6 +347,37 @@ h1:focus-visible {
 }
 
 /*** END: home ***/
+
+/*
+ * Demo-site focus indicator (rules.md): Bootstrap's default focus glow is below 3:1, so keyboard focus
+ * gets a solid outline in the theme's emphasis color. The selector's specificity (0,2,1) beats
+ * Bootstrap's .btn:focus-visible (0,2,0), while Showcase sites' scoped focus rules (0,3,0) still win.
+ */
+html :is(a, button, input, select, textarea, summary, .btn, .form-control, .form-select, .form-check-input, .nav-link, .dropdown-item, .page-link, .accordion-button, .list-group-item-action):focus-visible {
+    outline: 2px solid var(--bs-emphasis-color);
+    outline-offset: 2px;
+    box-shadow: none;
+}
+
+/* Button-style toggles hide the real input, so the visible label shows the focus outline instead.
+   The :checked variant (0,4,1) is needed to beat Bootstrap's .btn-check:checked:focus-visible + .btn glow (0,4,0). */
+html .btn-check:focus-visible + .btn,
+html .btn-check:checked:focus-visible + .btn {
+    outline: 2px solid var(--bs-emphasis-color);
+    outline-offset: 2px;
+    box-shadow: none;
+}
+
+/* Copy-to-clipboard button in demo code snippets: icon-only, at least 24px. */
+.bd-demo-copy {
+    border: 0;
+    background: transparent;
+    color: inherit;
+    padding: .25rem;
+    line-height: 1;
+    min-width: 1.5rem;
+    min-height: 1.5rem;
+}
 
 .bb-anchor-link {
     font-weight: 400;

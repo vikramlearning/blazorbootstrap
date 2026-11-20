@@ -174,11 +174,11 @@ pre[class*=language-] {
 }
 
     .prism-token.prism-tag .prism-token.prism-punctuation {
-        color: grey
+        color: #999999
     }
 
 .prism-token.prism-cdata {
-    color: grey
+    color: #999999
 }
 
 .prism-token.prism-attr-name {

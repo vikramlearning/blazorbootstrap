@@ -7,9 +7,12 @@
         <div class="d-flex align-items-center highlight-toolbar px-4 py-2 border">
             <small class="font-monospace text-body-secondary text-uppercase">@LanguageCode.ToLanguageCodeString()</small>
             <div class="d-flex ms-auto">
-                <Tooltip Title="@clipboardTooltipTitle" role="button" @onclick="CopyToClipboardAsync">
-                    <Icon Name="@clipboardTooltipIconName" Color="@clipboardTooltipIconColor" />
+                <Tooltip Title="@clipboardTooltipTitle">
+                    <button type="button" class="bd-demo-copy" aria-label="Copy to clipboard" @onclick="CopyToClipboardAsync">
+                        <Icon Name="@clipboardTooltipIconName" Color="@clipboardTooltipIconColor" aria-hidden="true" />
+                    </button>
                 </Tooltip>
+                <span class="visually-hidden" role="status">@copyStatus</span>
             </div>
         </div>
         <div class="highlight border border-top-0">
@@ -33,9 +36,12 @@ else if (!Tabs)
         <div class="d-flex align-items-center highlight-toolbar px-4 py-2 border border-top-0">
             <small class="font-monospace text-body-secondary text-uppercase">@LanguageCode.ToLanguageCodeString()</small>
             <div class="d-flex ms-auto">
-                <Tooltip Title="@clipboardTooltipTitle" role="button" @onclick="CopyToClipboardAsync">
-                    <Icon Name="@clipboardTooltipIconName" Color="@clipboardTooltipIconColor" />
+                <Tooltip Title="@clipboardTooltipTitle">
+                    <button type="button" class="bd-demo-copy" aria-label="Copy to clipboard" @onclick="CopyToClipboardAsync">
+                        <Icon Name="@clipboardTooltipIconName" Color="@clipboardTooltipIconColor" aria-hidden="true" />
+                    </button>
                 </Tooltip>
+                <span class="visually-hidden" role="status">@copyStatus</span>
             </div>
         </div>
         <div class="highlight border border-top-0">
@@ -69,9 +75,12 @@ else // Tabs = true
             </TitleTemplate>
             <Content>
                 <div class="position-relative d-block float-end mt-3 me-3 me-sm-4">
-                    <Tooltip Title="@clipboardTooltipTitle" role="button" @onclick="CopyToClipboardAsync">
-                        <Icon Name="@clipboardTooltipIconName" Color="@clipboardTooltipIconColor" />
+                    <Tooltip Title="@clipboardTooltipTitle">
+                        <button type="button" class="bd-demo-copy" aria-label="Copy to clipboard" @onclick="CopyToClipboardAsync">
+                            <Icon Name="@clipboardTooltipIconName" Color="@clipboardTooltipIconColor" aria-hidden="true" />
+                        </button>
                     </Tooltip>
+                    <span class="visually-hidden" role="status">@copyStatus</span>
                 </div>
                 <div class="highlight border border-top-0">
                     <pre class="mt-0 me-4">
