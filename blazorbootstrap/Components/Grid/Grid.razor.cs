@@ -544,7 +544,7 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
             builder.OpenElement(104, "input");
             builder.AddAttribute(105, "class", "form-check-input bb-grid-form-check-input");
             builder.AddAttribute(106, "type", "checkbox");
-            builder.AddAttribute(107, "role", "button");
+            builder.AddAttribute(107, "aria-label", RowSelectionLabel?.Invoke(rowData) ?? SelectRowText);
 
             if (IsItemSelected(rowData)) builder.AddAttribute(108, "checked", "checked");
 
@@ -1379,7 +1379,7 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
                                             builder.OpenElement(105, "input");
                                             builder.AddAttribute(106, "class", "form-check-input");
                                             builder.AddAttribute(107, "type", "checkbox");
-                                            builder.AddAttribute(108, "role", "button");
+                                            builder.AddAttribute(108, "aria-label", SelectAllRowsText);
 
                                             // disable the checkbox
                                             // remove the onchange event binding
@@ -1397,6 +1397,14 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
 
                                             builder.CloseElement(); // close: input
                                             builder.CloseElement(); // close: div
+                                        }
+                                        else
+                                        {
+                                            // A header cell needs a name even when single selection has no "select all" checkbox.
+                                            builder.OpenElement(113, "span");
+                                            builder.AddAttribute(114, "class", "visually-hidden");
+                                            builder.AddContent(115, SelectRowText);
+                                            builder.CloseElement(); // close: span
                                         }
 
                                         builder.CloseElement(); // close: th
@@ -1531,6 +1539,19 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     public Func<TItem, string>? RowClass { get; set; }
 
     /// <summary>
+    /// Gets or sets the accessible name of each row's selection checkbox, for example <c>item => $"Select ticket {item.Id}"</c>.
+    /// When <see langword="null" />, <see cref="SelectRowText" /> is used.
+    /// <para>
+    /// Default value is <see langword="null"/>.
+    /// </para>
+    /// </summary>
+    [AddedVersion("4.1.0")]
+    [DefaultValue(null)]
+    [Description("Gets or sets the accessible name of each row's selection checkbox. When <b>null</b>, <b>SelectRowText</b> is used.")]
+    [Parameter]
+    public Func<TItem, string>? RowSelectionLabel { get; set; }
+
+    /// <summary>
     /// Gets or sets the function used to extract a unique key from a row item.
     /// <para>
     /// The key returned by the function is used to uniquely identify each row in the data set.  This
@@ -1564,6 +1585,30 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     [Description("This event is fired when the item selection changes.")]
     [Parameter]
     public EventCallback<HashSet<TItem>> SelectedItemsChanged { get; set; }
+
+    /// <summary>
+    /// Gets or sets the accessible name of the select-all checkbox in the header.
+    /// <para>
+    /// Default value is 'Select all rows'.
+    /// </para>
+    /// </summary>
+    [AddedVersion("4.1.0")]
+    [DefaultValue("Select all rows")]
+    [Description("Gets or sets the accessible name of the select-all checkbox in the header.")]
+    [Parameter]
+    public string SelectAllRowsText { get; set; } = "Select all rows";
+
+    /// <summary>
+    /// Gets or sets the accessible name of a row's selection checkbox when <c>RowSelectionLabel</c> is not set, and of the selection column header in single selection mode.
+    /// <para>
+    /// Default value is 'Select row'.
+    /// </para>
+    /// </summary>
+    [AddedVersion("4.1.0")]
+    [DefaultValue("Select row")]
+    [Description("Gets or sets the accessible name of a row's selection checkbox when <b>RowSelectionLabel</b> is not set, and of the selection column header in single selection mode.")]
+    [Parameter]
+    public string SelectRowText { get; set; } = "Select row";
 
     /// <summary>
     /// Gets or sets the grid selection mode.

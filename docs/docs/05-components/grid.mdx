@@ -65,7 +65,10 @@ Use Blazor Bootstrap grid component to display tabular data from the data source
 | PaginationItemsTextFormat | string | `{0} - {1} of {2} items` | ✔️ | Gets or sets the pagination items text format. | 1.8.0 |
 | Responsive | bool | false | | Gets or sets a value indicating whether Grid is responsive. | 1.0.0 |
 | RowClass | `Func<TItem, string>?` | | | Gets or sets the row class. | 1.6.0 |
+| RowSelectionLabel | `Func<TItem, string>?` | null | | Gets or sets the accessible name of each row's selection checkbox, for example `item => $"Select ticket {item.Id}"`. When null, `SelectRowText` is used. | 4.1.0 |
+| SelectAllRowsText | string | `Select all rows` | | Gets or sets the accessible name of the select-all checkbox in the header. | 4.1.0 |
 | SelectionMode | `GridSelectionMode` | `GridSelectionMode.Single` | | Gets or sets the grid selection mode. | 1.8.0 |
+| SelectRowText | string | `Select row` | | Gets or sets the accessible name of a row's selection checkbox when `RowSelectionLabel` is not set, and of the selection column header in single selection mode. | 4.1.0 |
 | SettingsProvider | `GridSettingsProviderDelegate` | null | | Settings are for the grid to render. The provider should always return an instance of 'GridSettings', and 'null' is not allowed. | 1.0.0 |
 | THeadCssClass | `string?` | null | | Gets or sets the thead css class. | 1.10.3 | 
 | Unit | `Unit` | `Unit.px` | | Gets or sets the units. | 1.10.3 |
