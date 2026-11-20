@@ -38,7 +38,7 @@ public partial class Index : BlazorBootstrapComponentBase
 
     private string filterText = string.Empty;
 
-    private string imageUrl = "https://i.imgur.com/HEJciCp.png";
+    private string imageUrl = "https://demos.blazorbootstrap.com/_content/BlazorBootstrap.Demo.RCL/images/social-card.png";
 
     private DotNetObjectReference<Index>? objRef;
 
