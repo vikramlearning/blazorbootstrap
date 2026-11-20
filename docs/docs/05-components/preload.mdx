@@ -30,6 +30,7 @@ Indicate the loading state of a page with Blazor Bootstrap preload component.
 |:--|:--|:--|:--|:--|:--|
 | ChildContent | RenderFragment | null | ✔️ | Gets or sets the content to be rendered within the component. | 1.1.0 |
 | LoadingText | `string?` | null | | Gets or sets the loading text. | 1.10.4 |
+| VisuallyHiddenText | `string` | Loading... | | Gets or sets the text screen readers announce while the overlay is shown and no loading text is set. | 4.1.0 |
 
 ## Preload Service
 
@@ -40,6 +41,12 @@ Indicate the loading state of a page with Blazor Bootstrap preload component.
 | Show(SpinnerColor spinnerColor = SpinnerColor.Light) | void | Shows the preload. | 1.1.0 |
 | Show(SpinnerColor spinnerColor = SpinnerColor.Light, string? loadingText = null) | void | Shows the preload. | 1.10.4 |
 | Hide() | void | Hides the preload. | 1.1.0 |
+
+## Accessibility
+
+- **Screen readers:** when the preload shows, screen readers announce it as a status message, without moving focus. They hear the text passed to `Show(...)`, otherwise `LoadingText`, otherwise `VisuallyHiddenText` (default "Loading..."). Set `VisuallyHiddenText` to localize that default. A new text passed to `Show(...)` while the preload is shown is announced again; nothing is announced when it hides.
+- **Keyboard:** while the preload is shown, the page behind it can't be reached with the keyboard or by assistive technology, just as the backdrop already stops mouse clicks. When it hides, the page is reachable again, and focus returns to the element that had it.
+- **Custom content:** if you pass your own `ChildContent`, its text is what screen readers announce, so include visible text such as "Uploading files...". Content with only an image or a spinner is not announced.
 
 ## Global preload service for the application
 

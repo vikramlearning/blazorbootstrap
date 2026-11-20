@@ -41,6 +41,16 @@
     <Demo Type="typeof(Preload_Demo_03_Change_Spinner_Color)" />
 </Section>
 
+<Section Size="HeadingSize.H2" Name="Accessibility" PageUrl="@pageUrl" Link="accessibility">
+    <div class="mb-3">
+        <ul>
+            <li>When the preload shows, screen readers announce it as a status message, without moving focus. They hear the text passed to <code>Show(...)</code>, otherwise <code>LoadingText</code>, otherwise <code>VisuallyHiddenText</code> (default "Loading..."), which you can set to localize it. A new text passed to <code>Show(...)</code> while the preload is shown is announced again.</li>
+            <li>While the preload is shown, the page behind it can't be reached with the keyboard or by assistive technology, just as the backdrop stops mouse clicks. When it hides, focus returns to the element that had it.</li>
+            <li>If you pass your own <code>ChildContent</code>, its text is what screen readers announce, so include visible text such as "Uploading files...".</li>
+        </ul>
+    </div>
+</Section>
+
 @code {
     private const string pageUrl = DemoRouteConstants.Demos_URL_Preload;
     private const string pageTitle = "Blazor Preload";
