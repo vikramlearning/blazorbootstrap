@@ -35,31 +35,31 @@
 
 ## Showcase
 
-Eleven example websites, built by developers for developers to show what you can make with Blazor Bootstrap: from an AI assistant and a SaaS product to a clinic portal and a storefront. Each uses only Blazor Bootstrap components, runs on fictitious data with no backend, works in Blazor Server and WebAssembly, and supports light and dark mode. Browse them all in the [Showcase gallery](https://demos.blazorbootstrap.com/showcase), read [how each one is built](https://docs.blazorbootstrap.com/showcase), or [view the source](https://github.com/vikramlearning/blazorbootstrap/tree/main/BlazorBootstrap.Demo.RCL/Components/Pages/Showcase).
+Eleven example websites that the Blazor Bootstrap team built to show the enterprise applications you can make with Blazor Bootstrap: from a help desk, an HR portal, and DevOps monitoring to a SaaS product and a clinic portal. They are listed by enterprise value, highest first. Each uses only Blazor Bootstrap components, runs on fictitious data with no backend, works in Blazor Server and WebAssembly, and supports light and dark mode. Browse them all in the [Showcase gallery](https://demos.blazorbootstrap.com/showcase), read [how each one is built](https://docs.blazorbootstrap.com/showcase), or [view the source](https://github.com/vikramlearning/blazorbootstrap/tree/main/BlazorBootstrap.Demo.RCL/Components/Pages/Showcase).
 
 <table>
   <tr>
     <td width="33%" valign="top">
-      <a href="https://demos.blazorbootstrap.com/showcase/ai-assistant"><picture><source media="(prefers-color-scheme: dark)" srcset="BlazorBootstrap.Demo.RCL/wwwroot/showcase/gallery/ai-assistant-dark.webp"><img src="BlazorBootstrap.Demo.RCL/wwwroot/showcase/gallery/ai-assistant-light.webp" alt="AI Assistant Workspace home screen" width="100%"></picture></a><br>
-      <b>AI Assistant Workspace</b><br>
-      <a href="https://demos.blazorbootstrap.com/showcase/ai-assistant">Live demo</a> · <a href="https://docs.blazorbootstrap.com/showcase/ai-assistant">How it's built</a>
+      <a href="https://demos.blazorbootstrap.com/showcase/help-desk"><picture><source media="(prefers-color-scheme: dark)" srcset="BlazorBootstrap.Demo.RCL/wwwroot/showcase/gallery/help-desk-dark.webp"><img src="BlazorBootstrap.Demo.RCL/wwwroot/showcase/gallery/help-desk-light.webp" alt="Help Desk &amp; Ticketing home screen" width="100%"></picture></a><br>
+      <b>Help Desk &amp; Ticketing</b><br>
+      <a href="https://demos.blazorbootstrap.com/showcase/help-desk">Live demo</a> · <a href="https://docs.blazorbootstrap.com/showcase/help-desk">How it's built</a>
     </td>
     <td width="33%" valign="top">
-      <a href="https://demos.blazorbootstrap.com/showcase/saas"><picture><source media="(prefers-color-scheme: dark)" srcset="BlazorBootstrap.Demo.RCL/wwwroot/showcase/gallery/saas-dark.webp"><img src="BlazorBootstrap.Demo.RCL/wwwroot/showcase/gallery/saas-light.webp" alt="SaaS Product home screen" width="100%"></picture></a><br>
-      <b>SaaS Product</b><br>
-      <a href="https://demos.blazorbootstrap.com/showcase/saas">Live demo</a> · <a href="https://docs.blazorbootstrap.com/showcase/saas">How it's built</a>
+      <a href="https://demos.blazorbootstrap.com/showcase/hr-portal"><picture><source media="(prefers-color-scheme: dark)" srcset="BlazorBootstrap.Demo.RCL/wwwroot/showcase/gallery/hr-portal-dark.webp"><img src="BlazorBootstrap.Demo.RCL/wwwroot/showcase/gallery/hr-portal-light.webp" alt="HR &amp; Employee Portal home screen" width="100%"></picture></a><br>
+      <b>HR &amp; Employee Portal</b><br>
+      <a href="https://demos.blazorbootstrap.com/showcase/hr-portal">Live demo</a> · <a href="https://docs.blazorbootstrap.com/showcase/hr-portal">How it's built</a>
     </td>
     <td width="33%" valign="top">
-      <a href="https://demos.blazorbootstrap.com/showcase/ecommerce"><picture><source media="(prefers-color-scheme: dark)" srcset="BlazorBootstrap.Demo.RCL/wwwroot/showcase/gallery/ecommerce-dark.webp"><img src="BlazorBootstrap.Demo.RCL/wwwroot/showcase/gallery/ecommerce-light.webp" alt="E-commerce Storefront home screen" width="100%"></picture></a><br>
-      <b>E-commerce Storefront</b><br>
-      <a href="https://demos.blazorbootstrap.com/showcase/ecommerce">Live demo</a> · <a href="https://docs.blazorbootstrap.com/showcase/ecommerce">How it's built</a>
+      <a href="https://demos.blazorbootstrap.com/showcase/monitoring"><picture><source media="(prefers-color-scheme: dark)" srcset="BlazorBootstrap.Demo.RCL/wwwroot/showcase/gallery/monitoring-dark.webp"><img src="BlazorBootstrap.Demo.RCL/wwwroot/showcase/gallery/monitoring-light.webp" alt="IoT &amp; DevOps Monitoring home screen" width="100%"></picture></a><br>
+      <b>IoT &amp; DevOps Monitoring</b><br>
+      <a href="https://demos.blazorbootstrap.com/showcase/monitoring">Live demo</a> · <a href="https://docs.blazorbootstrap.com/showcase/monitoring">How it's built</a>
     </td>
   </tr>
   <tr>
     <td width="33%" valign="top">
-      <a href="https://demos.blazorbootstrap.com/showcase/project-board"><picture><source media="(prefers-color-scheme: dark)" srcset="BlazorBootstrap.Demo.RCL/wwwroot/showcase/gallery/project-board-dark.webp"><img src="BlazorBootstrap.Demo.RCL/wwwroot/showcase/gallery/project-board-light.webp" alt="Project &amp; Client Board home screen" width="100%"></picture></a><br>
-      <b>Project &amp; Client Board</b><br>
-      <a href="https://demos.blazorbootstrap.com/showcase/project-board">Live demo</a> · <a href="https://docs.blazorbootstrap.com/showcase/project-board">How it's built</a>
+      <a href="https://demos.blazorbootstrap.com/showcase/saas"><picture><source media="(prefers-color-scheme: dark)" srcset="BlazorBootstrap.Demo.RCL/wwwroot/showcase/gallery/saas-dark.webp"><img src="BlazorBootstrap.Demo.RCL/wwwroot/showcase/gallery/saas-light.webp" alt="SaaS Product home screen" width="100%"></picture></a><br>
+      <b>SaaS Product</b><br>
+      <a href="https://demos.blazorbootstrap.com/showcase/saas">Live demo</a> · <a href="https://docs.blazorbootstrap.com/showcase/saas">How it's built</a>
     </td>
     <td width="33%" valign="top">
       <a href="https://demos.blazorbootstrap.com/showcase/fintech"><picture><source media="(prefers-color-scheme: dark)" srcset="BlazorBootstrap.Demo.RCL/wwwroot/showcase/gallery/fintech-dark.webp"><img src="BlazorBootstrap.Demo.RCL/wwwroot/showcase/gallery/fintech-light.webp" alt="Personal Finance home screen" width="100%"></picture></a><br>
@@ -67,9 +67,26 @@ Eleven example websites, built by developers for developers to show what you can
       <a href="https://demos.blazorbootstrap.com/showcase/fintech">Live demo</a> · <a href="https://docs.blazorbootstrap.com/showcase/fintech">How it's built</a>
     </td>
     <td width="33%" valign="top">
+      <a href="https://demos.blazorbootstrap.com/showcase/project-board"><picture><source media="(prefers-color-scheme: dark)" srcset="BlazorBootstrap.Demo.RCL/wwwroot/showcase/gallery/project-board-dark.webp"><img src="BlazorBootstrap.Demo.RCL/wwwroot/showcase/gallery/project-board-light.webp" alt="Project &amp; Client Board home screen" width="100%"></picture></a><br>
+      <b>Project &amp; Client Board</b><br>
+      <a href="https://demos.blazorbootstrap.com/showcase/project-board">Live demo</a> · <a href="https://docs.blazorbootstrap.com/showcase/project-board">How it's built</a>
+    </td>
+  </tr>
+  <tr>
+    <td width="33%" valign="top">
+      <a href="https://demos.blazorbootstrap.com/showcase/ecommerce"><picture><source media="(prefers-color-scheme: dark)" srcset="BlazorBootstrap.Demo.RCL/wwwroot/showcase/gallery/ecommerce-dark.webp"><img src="BlazorBootstrap.Demo.RCL/wwwroot/showcase/gallery/ecommerce-light.webp" alt="E-commerce Storefront home screen" width="100%"></picture></a><br>
+      <b>E-commerce Storefront</b><br>
+      <a href="https://demos.blazorbootstrap.com/showcase/ecommerce">Live demo</a> · <a href="https://docs.blazorbootstrap.com/showcase/ecommerce">How it's built</a>
+    </td>
+    <td width="33%" valign="top">
       <a href="https://demos.blazorbootstrap.com/showcase/healthcare"><picture><source media="(prefers-color-scheme: dark)" srcset="BlazorBootstrap.Demo.RCL/wwwroot/showcase/gallery/healthcare-dark.webp"><img src="BlazorBootstrap.Demo.RCL/wwwroot/showcase/gallery/healthcare-light.webp" alt="Healthcare Clinic Portal home screen" width="100%"></picture></a><br>
       <b>Healthcare Clinic Portal</b><br>
       <a href="https://demos.blazorbootstrap.com/showcase/healthcare">Live demo</a> · <a href="https://docs.blazorbootstrap.com/showcase/healthcare">How it's built</a>
+    </td>
+    <td width="33%" valign="top">
+      <a href="https://demos.blazorbootstrap.com/showcase/ai-assistant"><picture><source media="(prefers-color-scheme: dark)" srcset="BlazorBootstrap.Demo.RCL/wwwroot/showcase/gallery/ai-assistant-dark.webp"><img src="BlazorBootstrap.Demo.RCL/wwwroot/showcase/gallery/ai-assistant-light.webp" alt="AI Assistant Workspace home screen" width="100%"></picture></a><br>
+      <b>AI Assistant Workspace</b><br>
+      <a href="https://demos.blazorbootstrap.com/showcase/ai-assistant">Live demo</a> · <a href="https://docs.blazorbootstrap.com/showcase/ai-assistant">How it's built</a>
     </td>
   </tr>
   <tr>
@@ -82,23 +99,6 @@ Eleven example websites, built by developers for developers to show what you can
       <a href="https://demos.blazorbootstrap.com/showcase/travel"><picture><source media="(prefers-color-scheme: dark)" srcset="BlazorBootstrap.Demo.RCL/wwwroot/showcase/gallery/travel-dark.webp"><img src="BlazorBootstrap.Demo.RCL/wwwroot/showcase/gallery/travel-light.webp" alt="Travel &amp; Stay Booking home screen" width="100%"></picture></a><br>
       <b>Travel &amp; Stay Booking</b><br>
       <a href="https://demos.blazorbootstrap.com/showcase/travel">Live demo</a> · <a href="https://docs.blazorbootstrap.com/showcase/travel">How it's built</a>
-    </td>
-    <td width="33%" valign="top">
-      <a href="https://demos.blazorbootstrap.com/showcase/help-desk"><picture><source media="(prefers-color-scheme: dark)" srcset="BlazorBootstrap.Demo.RCL/wwwroot/showcase/gallery/help-desk-dark.webp"><img src="BlazorBootstrap.Demo.RCL/wwwroot/showcase/gallery/help-desk-light.webp" alt="Help Desk &amp; Ticketing home screen" width="100%"></picture></a><br>
-      <b>Help Desk &amp; Ticketing</b><br>
-      <a href="https://demos.blazorbootstrap.com/showcase/help-desk">Live demo</a> · <a href="https://docs.blazorbootstrap.com/showcase/help-desk">How it's built</a>
-    </td>
-  </tr>
-  <tr>
-    <td width="33%" valign="top">
-      <a href="https://demos.blazorbootstrap.com/showcase/monitoring"><picture><source media="(prefers-color-scheme: dark)" srcset="BlazorBootstrap.Demo.RCL/wwwroot/showcase/gallery/monitoring-dark.webp"><img src="BlazorBootstrap.Demo.RCL/wwwroot/showcase/gallery/monitoring-light.webp" alt="IoT &amp; DevOps Monitoring home screen" width="100%"></picture></a><br>
-      <b>IoT &amp; DevOps Monitoring</b><br>
-      <a href="https://demos.blazorbootstrap.com/showcase/monitoring">Live demo</a> · <a href="https://docs.blazorbootstrap.com/showcase/monitoring">How it's built</a>
-    </td>
-    <td width="33%" valign="top">
-      <a href="https://demos.blazorbootstrap.com/showcase/hr-portal"><picture><source media="(prefers-color-scheme: dark)" srcset="BlazorBootstrap.Demo.RCL/wwwroot/showcase/gallery/hr-portal-dark.webp"><img src="BlazorBootstrap.Demo.RCL/wwwroot/showcase/gallery/hr-portal-light.webp" alt="HR &amp; Employee Portal home screen" width="100%"></picture></a><br>
-      <b>HR &amp; Employee Portal</b><br>
-      <a href="https://demos.blazorbootstrap.com/showcase/hr-portal">Live demo</a> · <a href="https://docs.blazorbootstrap.com/showcase/hr-portal">How it's built</a>
     </td>
   </tr>
 </table>
