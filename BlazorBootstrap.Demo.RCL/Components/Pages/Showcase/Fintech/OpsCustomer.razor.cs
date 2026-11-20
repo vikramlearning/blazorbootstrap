@@ -13,7 +13,7 @@ namespace BlazorBootstrap.Demo.RCL.Components.Pages.Showcase.Fintech;
 /// the card's status, and every transaction in a <see cref="Grid{TItem}" /> (13 months, with column filters; a disputed
 /// payment's row opens its dispute). For everyone, their disputes, their transfers in a <see cref="Grid{TItem}" /> (held and
 /// scheduled first, then the most recent; the whole row opens the transfer's operations page), and the internal notes,
-/// newest first with author and time, with an <see cref="EditForm" /> to add one (rule WR-002: required, 1–500 characters,
+/// newest first with author and time, a Risk panel with the customer's AML cases and alerts not in a case, with an <see cref="EditForm" /> to add one (rule WR-002: required, 1–500 characters,
 /// with a counter; customers never see notes). Both grids keep a saved view for the visit, with the column chooser and CSV
 /// export. An unknown ID shows a not-found screen.
 /// </summary>
@@ -232,6 +232,12 @@ public partial class OpsCustomer : ComponentBase, IDisposable
     #region Properties, Indexers
 
     private FintechCustomer? Customer => State.FindCustomer(Id);
+
+    /// <summary>Gets the AML alerts on the customer, newest first.</summary>
+    private IReadOnlyList<FintechAmlAlert> CustomerAlerts => State.AmlAlerts.Where(alert => alert.CustomerId == Id).ToList();
+
+    /// <summary>Gets the AML cases on the customer, newest first.</summary>
+    private IReadOnlyList<FintechAmlCase> CustomerCases => State.AmlCases.Where(amlCase => amlCase.CustomerId == Id).ToList();
 
     /// <summary>Gets the customer's disputes, newest first.</summary>
     private IReadOnlyList<FintechDispute> CustomerDisputes => State.AllDisputes.Where(dispute => dispute.CustomerId == Id).ToList();

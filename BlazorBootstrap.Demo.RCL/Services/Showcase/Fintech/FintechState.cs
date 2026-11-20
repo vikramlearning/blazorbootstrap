@@ -110,6 +110,10 @@ public sealed partial class FintechState : IShowcaseEnterpriseState
 
     private readonly List<FintechAccount> accounts;
 
+    private readonly List<FintechAmlAlert> amlAlerts;
+
+    private readonly List<FintechAmlCase> amlCases;
+
     private readonly List<ShowcaseAuditEntry> audit;
 
     private readonly List<FintechBudget> budgets;
@@ -140,6 +144,12 @@ public sealed partial class FintechState : IShowcaseEnterpriseState
     private int challengeAttempts;
 
     private bool isDarkTheme;
+
+    private int nextAmlAlertId;
+
+    private int nextAmlCaseId;
+
+    private int nextAmlEventId;
 
     private int nextAuditId;
 
@@ -177,6 +187,11 @@ public sealed partial class FintechState : IShowcaseEnterpriseState
         staffNotices = fresh.StaffNotifications;
         transactions = fresh.Transactions;
         transfers = fresh.Transfers;
+        amlAlerts = fresh.AmlAlerts;
+        amlCases = fresh.AmlCases;
+        nextAmlAlertId = NextId(amlAlerts.Select(alert => alert.Id));
+        nextAmlCaseId = NextId(amlCases.Select(amlCase => amlCase.Id));
+        nextAmlEventId = NextId(amlCases.SelectMany(amlCase => amlCase.Events).Select(entry => entry.Id));
         seedNetWorth = NetWorth;
         nextAuditId = NextId(audit.Select(entry => entry.Id));
         nextNoteId = NextId(customerNotes.Select(note => note.Id));
@@ -428,6 +443,8 @@ public sealed partial class FintechState : IShowcaseEnterpriseState
                 $"{Money(transfer.Amount)} to {transfer.ToName} on {Day(transfer.Date)}.");
         }
 
+        // The monitoring rules look at every payment to a payee as it is confirmed (staff are told; the customer never is).
+        CheckAmlRules(transfer);
         LastTransferReference = transfer.Reference;
         RaiseChanged();
 
@@ -451,6 +468,8 @@ public sealed partial class FintechState : IShowcaseEnterpriseState
         var (changedStaff, removedStaff) = Diff(staffNotices, data.StaffNotifications, notice => notice.Id, SameStaffNotice);
         var (changedNotes, removedNotes) = Diff(customerNotes, data.CustomerNotes, note => note.Id);
         var (changedAudit, removedAudit) = Diff(audit, data.Audit, entry => entry.Id, SameAudit);
+        var (changedAlerts, removedAlerts) = Diff(amlAlerts, data.AmlAlerts, alert => alert.Id, SameJson);
+        var (changedCases, removedCases) = Diff(amlCases, data.AmlCases, amlCase => amlCase.Id, SameJson);
 
         return new FintechSnapshot
         {
@@ -481,6 +500,13 @@ public sealed partial class FintechState : IShowcaseEnterpriseState
             Transfers = changedTransfers,
             RemovedTransferReferences = removedTransfers,
             VerifiedAccountId = verifiedAccountId,
+            AmlAlerts = changedAlerts,
+            RemovedAmlAlertIds = removedAlerts,
+            AmlCases = changedCases,
+            RemovedAmlCaseIds = removedCases,
+            NextAmlAlertId = nextAmlAlertId,
+            NextAmlCaseId = nextAmlCaseId,
+            NextAmlEventId = nextAmlEventId,
         };
     }
 
@@ -666,7 +692,7 @@ public sealed partial class FintechState : IShowcaseEnterpriseState
     /// </summary>
     public FintechResult RequestCode(FintechCodePurpose purpose)
     {
-        if (Identity.Current is not { RoleId: FintechSeedData.CustomerRole or FintechSeedData.OpsRole } || !Enum.IsDefined(purpose)
+        if (Identity.Current is not { RoleId: FintechSeedData.CustomerRole or FintechSeedData.OpsRole or FintechSeedData.SeniorRole } || !Enum.IsDefined(purpose)
             || (purpose != FintechCodePurpose.SignIn && !IsVerified))
             return FintechResult.NotAllowed;
 
@@ -969,7 +995,7 @@ public sealed partial class FintechState : IShowcaseEnterpriseState
             || !Unique(storedNotices.Select(notice => notice.Id)))
             return false;
 
-        var opsAccountIds = FintechSeedData.DemoAccounts().Where(account => account.RoleId == FintechSeedData.OpsRole).Select(account => account.Id).ToHashSet(StringComparer.Ordinal);
+        var opsAccountIds = FintechSeedData.DemoAccounts().Where(account => IsStaffRole(account.RoleId)).Select(account => account.Id).ToHashSet(StringComparer.Ordinal);
 
         if (storedStaff.Any(notice => notice is null || notice.Id < 1 || notice.Id >= snapshot.NextStaffNoticeId || !opsAccountIds.Contains(notice.AccountId) || !IsPlausible(notice.At)
                 || !IsText(notice.Title, 80) || (notice.Text is not null && !IsText(notice.Text, 200)) || !IsSiteLink(notice.Url))
@@ -993,8 +1019,16 @@ public sealed partial class FintechState : IShowcaseEnterpriseState
             || !Unique(storedNotes.Select(note => note.Id)))
             return false;
 
+        if (!TryRebuildAml(snapshot, fresh, storedTransfers, out var storedAmlAlerts, out var storedAmlCases))
+            return false;
+
         accounts.Clear();
         accounts.AddRange(storedAccounts.OrderBy(account => seeded.FindIndex(seed => seed.Id == account.Id)));
+        Reload(amlAlerts, storedAmlAlerts);
+        Reload(amlCases, storedAmlCases);
+        nextAmlAlertId = snapshot.NextAmlAlertId;
+        nextAmlCaseId = snapshot.NextAmlCaseId;
+        nextAmlEventId = snapshot.NextAmlEventId;
         Reload(budgets, storedBudgets);
         Reload(transactions, storedTransactions.OrderByDescending(item => item.Date).ThenByDescending(item => item.Id).ToList());
         Reload(payees, storedPayees);
@@ -1374,7 +1408,7 @@ public sealed partial class FintechState : IShowcaseEnterpriseState
     /// <summary>Confirms the second sign-in step with the code from the (demo) text message.</summary>
     public FintechResult VerifySignIn(string code)
     {
-        if (Identity.Current is not { RoleId: FintechSeedData.CustomerRole or FintechSeedData.OpsRole } account)
+        if (Identity.Current is not { RoleId: FintechSeedData.CustomerRole or FintechSeedData.OpsRole or FintechSeedData.SeniorRole } account)
             return FintechResult.NotAllowed;
 
         if (!TryCode(FintechCodePurpose.SignIn, code))
@@ -1383,7 +1417,7 @@ public sealed partial class FintechState : IShowcaseEnterpriseState
         verifiedAccountId = account.Id;
         Record("Signed in", account.Name, account.RoleId == FintechSeedData.CustomerRole ? CustomerOpsPath(account.Id) : null, "Password and one-time code.");
 
-        if (account.RoleId == FintechSeedData.OpsRole)
+        if (IsStaffRole(account.RoleId))
         {
             RaiseChanged();
 
@@ -1704,8 +1738,14 @@ public sealed partial class FintechState : IShowcaseEnterpriseState
     /// <summary>Gets whether the signed-in account (customer or operations) has entered the sign-in code.</summary>
     public bool IsCodeVerified => Identity.Current is { } account && verifiedAccountId == account.Id;
 
-    /// <summary>Gets whether an operations user is signed in and has entered the code: every operations action needs it.</summary>
-    public bool IsOps => Identity.Current is { RoleId: FintechSeedData.OpsRole } account && verifiedAccountId == account.Id;
+    /// <summary>
+    /// Gets whether bank operations staff (an analyst or a senior reviewer) are signed in and have entered the code: every
+    /// operations action needs it.
+    /// </summary>
+    public bool IsOps => Identity.Current is { } account && IsStaffRole(account.RoleId) && verifiedAccountId == account.Id;
+
+    /// <summary>Gets whether a senior reviewer is signed in and has entered the code: deciding escalated AML cases needs it.</summary>
+    public bool IsSenior => Identity.Current is { RoleId: FintechSeedData.SeniorRole } account && verifiedAccountId == account.Id;
 
     /// <summary>Gets whether a customer is signed in and has entered the one-time code: every banking action needs it.</summary>
     public bool IsVerified => Identity.Current is { RoleId: FintechSeedData.CustomerRole } account && verifiedAccountId == account.Id;
@@ -1735,8 +1775,8 @@ public sealed partial class FintechState : IShowcaseEnterpriseState
     /// <summary>Gets the site's slug, used in the storage key.</summary>
     public string SiteSlug => "fintech";
 
-    /// <summary>Gets the snapshot format version: 2 stores the differences from the larger seed, with the shared audit log and staff notifications.</summary>
-    public int SnapshotVersion => 2;
+    /// <summary>Gets the snapshot format version: 3 adds the AML alerts and cases (as differences from the seed) and the senior reviewer.</summary>
+    public int SnapshotVersion => 3;
 
     /// <summary>Gets the site's today, on its clock.</summary>
     public DateOnly Today => DateOnly.FromDateTime(Clock.Now);
@@ -1771,6 +1811,24 @@ public sealed partial class FintechState : IShowcaseEnterpriseState
         #region Properties, Indexers
 
         public List<FintechAccount>? Accounts { get; set; }
+
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public List<FintechAmlAlert>? AmlAlerts { get; set; }
+
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public List<FintechAmlCase>? AmlCases { get; set; }
+
+        public int NextAmlAlertId { get; set; }
+
+        public int NextAmlCaseId { get; set; }
+
+        public int NextAmlEventId { get; set; }
+
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public List<int>? RemovedAmlAlertIds { get; set; }
+
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public List<int>? RemovedAmlCaseIds { get; set; }
 
         public FintechAlertSettings? AlertSettings { get; set; }
 

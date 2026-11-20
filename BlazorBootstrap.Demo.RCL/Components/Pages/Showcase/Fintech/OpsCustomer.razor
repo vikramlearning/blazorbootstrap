@@ -129,6 +129,52 @@ else
                     </section>
                 }
 
+                <section class="tm-panel mb-4" aria-labelledby="tm-opscustomer-risk-title">
+                    <h2 class="tm-section-title mb-0" id="tm-opscustomer-risk-title">Risk</h2>
+                    <p class="small text-body-secondary mb-0">AML alerts and cases on this customer, newest first. Confidential: the customer is never told.</p>
+                    @if (CustomerCases.Count == 0 && CustomerAlerts.Count == 0)
+                    {
+                        <p class="small text-body-secondary mt-3 mb-0">No AML alerts or cases.</p>
+                    }
+                    else
+                    {
+                        <ul class="list-unstyled mt-2 mb-0">
+                            @foreach (var amlCase in CustomerCases)
+                            {
+                                <li class="tm-row tm-opscustomer-row" @key="@($"case-{amlCase.Id}")">
+                                    <span class="tm-icon" aria-hidden="true"><Icon Name="IconName.Folder2Open" /></span>
+                                    <span class="tm-row-text">
+                                        <a class="tm-row-title" href="@AmlDisplay.CasePath(amlCase.Id)">Case @amlCase.Id</a>
+                                        <span class="tm-row-sub">
+                                            <Badge Color="AmlDisplay.CaseStatusColor(amlCase.Status)" Class="me-1">@AmlDisplay.CaseStatusText(amlCase.Status)</Badge>
+                                            @if (AmlDisplay.IsOverdue(amlCase, State.Today))
+                                            {
+                                                <Badge Color="BadgeColor.Danger" Class="me-1">Overdue</Badge>
+                                            }
+                                            @(amlCase.Disposition is { } disposition ? FintechSeedData.DispositionName(disposition) : $"{AmlDisplay.StaffText(amlCase.AssigneeId)} · {AmlDisplay.DueText(amlCase, State.Today)}")
+                                        </span>
+                                    </span>
+                                    <Badge Color="AmlDisplay.RiskColor(amlCase.Priority)">@amlCase.Priority</Badge>
+                                </li>
+                            }
+                            @foreach (var alert in CustomerAlerts.Where(alert => alert.CaseId is null))
+                            {
+                                <li class="tm-row tm-opscustomer-row" @key="@($"alert-{alert.Id}")">
+                                    <span class="tm-icon" aria-hidden="true"><Icon Name="IconName.Radar" /></span>
+                                    <span class="tm-row-text">
+                                        <a class="tm-row-title" href="@AmlDisplay.AlertPath(alert.Id)">Alert @alert.Id: @FintechSeedData.RuleName(alert.Rule)</a>
+                                        <span class="tm-row-sub">
+                                            <Badge Color="AmlDisplay.AlertStatusColor(alert.Status)" Class="me-1">@AmlDisplay.AlertStatusText(alert.Status)</Badge>
+                                            Raised @Disputes.DayText(alert.CreatedAt)
+                                        </span>
+                                    </span>
+                                    <Badge Color="AmlDisplay.RiskColor(alert.Risk)">@alert.Risk</Badge>
+                                </li>
+                            }
+                        </ul>
+                    }
+                </section>
+
                 <section class="tm-panel" aria-labelledby="tm-opscustomer-disputes-title">
                     <h2 class="tm-section-title mb-0" id="tm-opscustomer-disputes-title">Disputes</h2>
                     <p class="small text-body-secondary mb-0">Newest first. The full list, with filters, is on the Disputes page.</p>

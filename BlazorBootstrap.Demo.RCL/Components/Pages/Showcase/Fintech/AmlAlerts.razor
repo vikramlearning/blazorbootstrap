@@ -1,0 +1,221 @@
+@page "/showcase/fintech/ops/aml/alerts"
+@layout FintechOpsLayout
+
+<PageTitle>AML alerts · Operations · @FintechSeedData.ProductName</PageTitle>
+
+<div class="container-fluid px-lg-4">
+    <div class="tm-page-head">
+        <div>
+            <span class="sc-eyebrow">Anti-money laundering</span>
+            <h1 class="tm-title">AML alerts <span class="tm-count-pill">@Count(OpenCount) open</span></h1>
+            <p class="tm-lead">
+                What the monitoring rules raised on customers' payments, newest first. Triage each one: dismiss a false positive with a reason, or open a
+                case from one or more alerts on the same customer. Customers are never told about alerts or cases.
+            </p>
+        </div>
+        <a class="btn btn-outline-secondary" href="@AmlDisplay.CasesPath"><Icon Name="IconName.Folder2Open" class="me-2" aria-hidden="true" />AML cases</a>
+    </div>
+
+    <Card Class="tm-card mb-3">
+        <CardBody Class="p-3 p-lg-4">
+            <h2 class="tm-section-title mb-3" id="tm-aa-filters-title">Filter alerts</h2>
+            <div class="tm-list-filters" role="group" aria-labelledby="tm-aa-filters-title">
+                <div class="tm-list-search">
+                    <label class="form-label small fw-semibold" for="tm-aa-search">Search</label>
+                    <input id="tm-aa-search" type="search" class="form-control" value="@searchBoxValue" placeholder="Alert number or customer"
+                           autocomplete="off" maxlength="80" @oninput="OnSearchInputAsync" @onchange="OnSearchChanged" />
+                </div>
+                <div>
+                    <label class="form-label small fw-semibold" for="tm-aa-status">Status</label>
+                    <select id="tm-aa-status" class="form-select" @bind="statusFilter" @bind:after="FiltersChangedAsync">
+                        <option value="@OpenValue">Open: new and in triage (@Count(OpenCount))</option>
+                        @foreach (var status in Enum.GetValues<FintechAmlAlertStatus>())
+                        {
+                            <option value="@status">@AmlDisplay.AlertStatusText(status) (@Count(State.AmlAlerts.Count(alert => alert.Status == status)))</option>
+                        }
+                        <option value="">All (@Count(State.AmlAlerts.Count))</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="form-label small fw-semibold" for="tm-aa-risk">Risk</label>
+                    <select id="tm-aa-risk" class="form-select" @bind="riskFilter" @bind:after="FiltersChangedAsync">
+                        <option value="">Any risk</option>
+                        @foreach (var risk in Enum.GetValues<FintechAmlRisk>().Reverse())
+                        {
+                            <option value="@risk">@AmlDisplay.RiskText(risk)</option>
+                        }
+                    </select>
+                </div>
+                <div>
+                    <label class="form-label small fw-semibold" for="tm-aa-rule">Rule</label>
+                    <select id="tm-aa-rule" class="form-select" @bind="ruleFilter" @bind:after="FiltersChangedAsync">
+                        <option value="">Any rule</option>
+                        @foreach (var rule in Enum.GetValues<FintechAmlRule>())
+                        {
+                            <option value="@rule">@FintechSeedData.RuleName(rule)</option>
+                        }
+                    </select>
+                </div>
+                <div>
+                    <label class="form-label small fw-semibold" for="tm-aa-assignee">Assigned to</label>
+                    <select id="tm-aa-assignee" class="form-select" @bind="assigneeFilter" @bind:after="FiltersChangedAsync">
+                        <option value="">Anyone</option>
+                        <option value="@UnassignedValue">Nobody yet</option>
+                        @foreach (var member in FintechSeedData.Staff())
+                        {
+                            <option value="@member.Id">@member.Name@(member.Id == State.CurrentStaffId ? " (you)" : null)</option>
+                        }
+                    </select>
+                </div>
+            </div>
+            <div class="tm-list-meta mb-0">
+                <p class="small text-body-secondary mb-0" aria-live="polite" tabindex="-1" @ref="countRegion">Showing @Count(Rows.Count) of @Count(State.AmlAlerts.Count) alerts.</p>
+                @if (IsFiltered)
+                {
+                    <Button Color="ButtonColor.Link" Size="ButtonSize.Small" Class="p-0" @onclick="ClearFiltersAsync">Show open alerts</Button>
+                }
+                <Button Color="ButtonColor.Link" Size="ButtonSize.Small" Class="p-0" @onclick="ResetViewAsync">Reset view</Button>
+            </div>
+        </CardBody>
+    </Card>
+
+    @* Always rendered and focusable, so an outcome is announced and focus has somewhere to go when the bulk bar closes. *@
+    <p class="tm-list-status @(statusIsError ? "text-danger-emphasis" : null)" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
+
+    @if (selected.Count > 0)
+    {
+        <section class="tm-bulk" aria-labelledby="tm-aa-bulk-count">
+            <h2 class="tm-bulk-count" id="tm-aa-bulk-count">@(selected.Count == 1 ? "1 alert selected" : $"{Count(selected.Count)} alerts selected")@(SelectedCustomers == 1 ? $", all on {selected[0].Customer}" : $", on {Count(SelectedCustomers)} customers")</h2>
+            <EditForm EditContext="bulkContext" OnSubmit="ApplyBulkAsync" FormName="tm-aa-bulk" class="tm-bulk-form" novalidate>
+                <DataAnnotationsValidator />
+                <ShowcaseFormErrors />
+                <div class="tm-bulk-field">
+                    <label class="form-label small fw-semibold" for="tm-aa-bulk-action">Action</label>
+                    <InputSelect id="tm-aa-bulk-action" class="form-select form-select-sm" @bind-Value="bulkForm.Action" aria-describedby="tm-aa-bulk-action-help">
+                        <option value="">Choose an action</option>
+                        <option value="@AssignAction">Assign</option>
+                        <option value="@DismissAction">Dismiss as false positive</option>
+                        <option value="@CaseAction">Open one case from them</option>
+                    </InputSelect>
+                    <span class="form-text d-block" id="tm-aa-bulk-action-help">A case is opened from alerts on one customer. Alerts already dismissed or in a case are left as they are.</span>
+                    <ValidationMessage For="() => bulkForm.Action" />
+                </div>
+                @if (bulkForm.Action is AssignAction or CaseAction)
+                {
+                    <div class="tm-bulk-field">
+                        <label class="form-label small fw-semibold" for="tm-aa-bulk-assignee">@(bulkForm.Action == CaseAction ? "Case analyst" : "Assign to")</label>
+                        <InputSelect id="tm-aa-bulk-assignee" class="form-select form-select-sm" @bind-Value="bulkForm.AssigneeId">
+                            <option value="">Choose someone</option>
+                            @foreach (var member in FintechSeedData.Staff())
+                            {
+                                <option value="@member.Id">@member.Name@(member.Id == State.CurrentStaffId ? " (you)" : null)@(member.IsSeniorReviewer ? ", senior reviewer" : null)</option>
+                            }
+                        </InputSelect>
+                        <ValidationMessage For="() => bulkForm.AssigneeId" />
+                    </div>
+                }
+                @if (bulkForm.Action == DismissAction)
+                {
+                    <div class="tm-bulk-field tm-bulk-wide">
+                        <label class="form-label small fw-semibold" for="tm-aa-bulk-reason">Why it's a false positive</label>
+                        <InputTextArea id="tm-aa-bulk-reason" class="form-control form-control-sm" rows="2" maxlength="@FintechState.MaxAmlReason" @bind-Value="bulkForm.Reason"
+                                       aria-describedby="tm-aa-bulk-reason-help" />
+                        <span class="form-text d-block" id="tm-aa-bulk-reason-help">Required: @FintechState.MinAmlNote to @FintechState.MaxAmlReason characters. It's kept on each alert and in the audit log.</span>
+                        <ValidationMessage For="() => bulkForm.Reason" />
+                    </div>
+                }
+                <div class="tm-bulk-actions">
+                    <Button Type="ButtonType.Submit" Color="ButtonColor.Primary" Size="ButtonSize.Small">Apply<span class="visually-hidden">&#32;to the selected alerts</span></Button>
+                    <Button Color="ButtonColor.Secondary" Outline="true" Size="ButtonSize.Small" @onclick="ClearSelectionAsync">Clear selection</Button>
+                </div>
+            </EditForm>
+        </section>
+    }
+
+    <Card Class="tm-card">
+        <CardBody Class="p-3 p-lg-4">
+            <ShowcaseDataState Status="@(viewLoaded ? ShowcaseDataStatus.Ready : ShowcaseDataStatus.Loading)"
+                               IsEmpty="@(State.AmlAlerts.Count == 0)"
+                               EmptyIcon="IconName.Radar"
+                               EmptyTitle="No AML alerts"
+                               EmptyText="The monitoring rules haven't raised anything yet. Alerts appear here as customers' payments trip a rule."
+                               LoadingText="Loading AML alerts…"
+                               OnRetry="RefreshGridAsync">
+                <EmptyActions>
+                    <a class="btn btn-sm btn-outline-primary" href="@AmlDisplay.CasesPath">Go to AML cases</a>
+                </EmptyActions>
+                <ChildContent>
+                    <Grid @ref="grid"
+                          @key="gridVersion"
+                          TItem="AlertRow"
+                          Class="table table-hover align-middle tm-table-wide sc-grid-row-links"
+                          GridContainerClass="tm-grid border rounded-3"
+                          DataProvider="ProvideRowsAsync"
+                          SettingsProvider="view.GetSettingsAsync"
+                          GridSettingsChanged="SaveSettingsAsync"
+                          AllowPaging="true"
+                          PageSize="@pageSize"
+                          PageSizeSelectorVisible="true"
+                          PageSizeSelectorItems="@(new[] { 10, 25, 50, 100 })"
+                          PaginationItemsTextFormat="{0}–{1} of {2} alerts"
+                          AllowSorting="true"
+                          AllowSelection="true"
+                          SelectionMode="GridSelectionMode.Multiple"
+                          RowSelectionLabel="@(row => $"Select alert {row.Id}, {row.Rule} on {row.Customer}")"
+                          SelectAllRowsText="Select all shown alerts"
+                          SelectedItemsChanged="OnSelectionChanged"
+                          RowClass="RowClass"
+                          AllowColumnChooser="true"
+                          AllowExport="true"
+                          ExportFileName="banking-aml-alerts"
+                          Responsive="true"
+                          EmptyText="No alerts match these filters. Show open alerts, or clear a filter."
+                          aria-label="AML alerts">
+                        <GridColumns>
+                            <GridColumn TItem="AlertRow" HeaderText="Alert" PropertyName="Id" SortString="id" SortKeySelector="row => row.Id"
+                                        IsDefaultSortColumn="@view.IsSortColumn("id")" SortDirection="@view.DirectionFor("id")" AlwaysVisible="true" TextNoWrap="true">
+                                @* The stretched link makes the whole row open the alert; the row's checkbox stays above it. *@
+                                <a class="tm-row-link tm-mono stretched-link" href="@AmlDisplay.AlertPath(context.Id)">@context.Id</a>
+                            </GridColumn>
+                            <GridColumn TItem="AlertRow" HeaderText="Customer" PropertyName="Customer" SortString="customer" SortKeySelector="row => row.Customer"
+                                        IsDefaultSortColumn="@view.IsSortColumn("customer")" SortDirection="@view.DirectionFor("customer")" TextNoWrap="true">
+                                @context.Customer
+                                @if (context.OnWatch)
+                                {
+                                    <Badge Color="BadgeColor.Warning" Class="ms-1">Watch</Badge>
+                                }
+                            </GridColumn>
+                            <GridColumn TItem="AlertRow" HeaderText="Rule" PropertyName="Rule" SortString="rule" SortKeySelector="row => row.Rule"
+                                        IsDefaultSortColumn="@view.IsSortColumn("rule")" SortDirection="@view.DirectionFor("rule")">
+                                @context.Rule
+                                <span class="d-block small text-body-secondary">@context.Summary</span>
+                            </GridColumn>
+                            <GridColumn TItem="AlertRow" HeaderText="Risk" PropertyName="Risk" SortString="risk" SortKeySelector="row => row.Score"
+                                        IsDefaultSortColumn="@view.IsSortColumn("risk")" SortDirection="@view.DirectionFor("risk")" TextNoWrap="true">
+                                <Badge Color="AmlDisplay.RiskColor(context.RiskValue)" Class="rounded-pill">@context.Risk</Badge>
+                                <span class="d-block small text-body-secondary">Score @context.Score</span>
+                            </GridColumn>
+                            <GridColumn TItem="AlertRow" HeaderText="Status" PropertyName="Status" SortString="status" SortKeySelector="row => row.StatusValue"
+                                        IsDefaultSortColumn="@view.IsSortColumn("status")" SortDirection="@view.DirectionFor("status")" TextNoWrap="true">
+                                <Badge Color="AmlDisplay.AlertStatusColor(context.StatusValue)" Class="rounded-pill">@context.Status</Badge>
+                                @if (context.CaseId is { } caseId)
+                                {
+                                    <a class="d-block small" href="@AmlDisplay.CasePath(caseId)">Case @caseId</a>
+                                }
+                            </GridColumn>
+                            <GridColumn TItem="AlertRow" HeaderText="Assigned to" PropertyName="Assignee" SortString="assignee" SortKeySelector="row => row.Assignee"
+                                        IsDefaultSortColumn="@view.IsSortColumn("assignee")" SortDirection="@view.DirectionFor("assignee")" TextNoWrap="true">
+                                <span class="small">@context.Assignee</span>
+                            </GridColumn>
+                            <GridColumn TItem="AlertRow" HeaderText="Raised" PropertyName="Age" SortString="raised" SortKeySelector="row => row.Raised"
+                                        IsDefaultSortColumn="@view.IsSortColumn("raised")" SortDirection="@view.DirectionFor("raised")" TextNoWrap="true">
+                                <span class="small">@Transfers.StampText(context.Raised)</span>
+                                <span class="d-block small text-body-secondary">@context.Age ago</span>
+                            </GridColumn>
+                        </GridColumns>
+                    </Grid>
+                </ChildContent>
+            </ShowcaseDataState>
+        </CardBody>
+    </Card>
+</div>

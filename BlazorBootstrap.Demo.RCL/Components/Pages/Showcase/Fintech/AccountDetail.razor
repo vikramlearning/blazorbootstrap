@@ -191,41 +191,72 @@ else
             <div class="d-flex flex-wrap justify-content-between align-items-baseline gap-2">
                 <div>
                     <h2 class="tm-section-title mb-0" id="tm-account-transactions-title">Transactions</h2>
-                    <p class="small text-body-secondary mb-0">Last 60 days, newest first</p>
+                    <p class="small text-body-secondary mb-0">Last 60 days, newest first. Open one to change its category, add a note, or dispute it.</p>
                 </div>
-                <a class="small fw-semibold" href="@($"{FintechLayout.Base}/transactions?account={Uri.EscapeDataString(account.Id)}")">Search all of this account's transactions</a>
+                <div class="d-flex flex-wrap gap-3">
+                    <a class="small fw-semibold" href="@($"{FintechLayout.Base}/transactions?account={Uri.EscapeDataString(account.Id)}")">Search all of this account's transactions</a>
+                    <Button Color="ButtonColor.Link" Size="ButtonSize.Small" Class="p-0" @onclick="ResetViewAsync">Reset view<span class="visually-hidden">&#32;of the transactions</span></Button>
+                </div>
             </div>
-            @if (RecentTransactions.Count == 0)
-            {
-                <p class="small text-body-secondary mt-3 mb-0">No transactions in the last 60 days.</p>
-            }
-            else
-            {
-                <ul class="list-unstyled mt-2 mb-0">
-                    @foreach (var item in RecentTransactions)
-                    {
-                        var category = State.FindCategory(item.CategoryId);
-                        <li class="tm-row" @key="item.Id">
-                            <span class="tm-icon" aria-hidden="true"><Icon Name="@category.IconName" /></span>
-                            <span class="tm-row-text">
-                                <a class="tm-row-title" href="@TransactionPath(item.Id)">@item.Description</a>
-                                <span class="tm-row-sub">
-                                    @FintechDisplay.Day(item.Date) · @category.Name
-                                    @if (item.IsPending)
-                                    {
-                                        <Badge Color="BadgeColor.Secondary" Class="ms-1">Pending</Badge>
-                                    }
-                                    @if (item.DisputeId is not null)
-                                    {
-                                        <Badge Color="BadgeColor.Info" Class="ms-1">Disputed</Badge>
-                                    }
-                                </span>
-                            </span>
-                            <span class="tm-mono fw-semibold text-nowrap @FintechDisplay.AmountClass(item.Amount)">@FintechDisplay.SignedMoney(item.Amount)</span>
-                        </li>
-                    }
-                </ul>
-            }
+            <p class="tm-list-status mt-2" role="status">@viewMessage</p>
+            <ShowcaseDataState Status="@(viewLoaded ? ShowcaseDataStatus.Ready : ShowcaseDataStatus.Loading)"
+                               IsEmpty="@(TransactionRows.Count == 0)"
+                               EmptyIcon="IconName.Receipt"
+                               EmptyTitle="No transactions in the last 60 days"
+                               EmptyText="Payments in and out of this account appear here. Older ones are on the Transactions page."
+                               LoadingText="Loading transactions…"
+                               LoadingRows="3"
+                               OnRetry="RefreshGridAsync">
+                <EmptyActions>
+                    <a class="btn btn-sm btn-outline-primary" href="@($"{FintechLayout.Base}/transactions?account={Uri.EscapeDataString(account.Id)}")">Go to transactions</a>
+                </EmptyActions>
+                <ChildContent>
+                    <Grid @ref="grid"
+                          @key="gridVersion"
+                          TItem="TransactionRow"
+                          Class="table table-hover align-middle tm-table-mid sc-grid-row-links"
+                          GridContainerClass="tm-grid border rounded-3"
+                          DataProvider="ProvideRowsAsync"
+                          SettingsProvider="view.GetSettingsAsync"
+                          GridSettingsChanged="SaveSettingsAsync"
+                          AllowPaging="true"
+                          PageSize="@pageSize"
+                          PageSizeSelectorVisible="true"
+                          PageSizeSelectorItems="@(new[] { 10, 25, 50 })"
+                          PaginationItemsTextFormat="{0}–{1} of {2} transactions"
+                          AllowSorting="true"
+                          AllowColumnChooser="true"
+                          AllowExport="true"
+                          ExportFileName="@($"banking-account-{account.Id}-transactions")"
+                          Responsive="true"
+                          EmptyText="No transactions."
+                          aria-label="@($"Transactions of {account.Name} in the last 60 days")">
+                        <GridColumns>
+                            <GridColumn TItem="TransactionRow" HeaderText="Date" PropertyName="Date" SortString="date" SortKeySelector="row => row.Date"
+                                        IsDefaultSortColumn="@view.IsSortColumn("date")" SortDirection="@view.DirectionFor("date")" TextNoWrap="true">
+                                <span class="tm-mono small">@FintechDisplay.Day(context.Date)</span>
+                            </GridColumn>
+                            <GridColumn TItem="TransactionRow" HeaderText="Description" PropertyName="Description" SortString="description" SortKeySelector="row => row.Description"
+                                        IsDefaultSortColumn="@view.IsSortColumn("description")" SortDirection="@view.DirectionFor("description")" AlwaysVisible="true">
+                                @* The stretched link makes the whole row open the transaction. *@
+                                <a class="tm-row-link stretched-link text-break" href="@TransactionPath(context.Id)">@context.Description</a>
+                                @if (context.Status.Length > 0)
+                                {
+                                    <Badge Color="@(context.Status == "Disputed" ? BadgeColor.Info : BadgeColor.Secondary)" Class="ms-1">@context.Status</Badge>
+                                }
+                            </GridColumn>
+                            <GridColumn TItem="TransactionRow" HeaderText="Category" PropertyName="Category" SortString="category" SortKeySelector="row => row.Category"
+                                        IsDefaultSortColumn="@view.IsSortColumn("category")" SortDirection="@view.DirectionFor("category")" TextNoWrap="true">
+                                <span class="small">@context.Category</span>
+                            </GridColumn>
+                            <GridColumn TItem="TransactionRow" HeaderText="Amount" PropertyName="Amount" SortString="amount" SortKeySelector="row => row.Amount"
+                                        IsDefaultSortColumn="@view.IsSortColumn("amount")" SortDirection="@view.DirectionFor("amount")" TextAlignment="Alignment.End" TextNoWrap="true">
+                                <span class="tm-mono fw-semibold @FintechDisplay.AmountClass(context.Amount)">@FintechDisplay.SignedMoney(context.Amount)</span>
+                            </GridColumn>
+                        </GridColumns>
+                    </Grid>
+                </ChildContent>
+            </ShowcaseDataState>
         </section>
 
         @if (account.CardLast4 is { } freezeLast4)

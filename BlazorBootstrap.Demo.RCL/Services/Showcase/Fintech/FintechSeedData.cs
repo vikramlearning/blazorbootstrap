@@ -9,9 +9,10 @@ namespace BlazorBootstrap.Demo.RCL.Services.Showcase.Fintech;
 /// is generated from fixed patterns relative to the site's "today", so every tab starts with exactly the same data: about
 /// 240 customers, 13 months of the demo customer's transactions, the transfers of every customer (dozens held for a check
 /// and scheduled), about 60 disputes in every state, the audit log behind them, and the alerts and staff notifications.
-/// The tab's snapshot stores only what differs from this seed (<see cref="FintechState.CaptureData" />).
+/// The tab's snapshot stores only what differs from this seed (<see cref="FintechState.CaptureData" />). The AML alerts and
+/// cases are in <c>FintechSeedData.Aml.cs</c>.
 /// </summary>
-public static class FintechSeedData
+public static partial class FintechSeedData
 {
     #region Fields and Constants
 
@@ -171,16 +172,19 @@ public static class FintechSeedData
         }
 
         var notes = CustomerNotes();
+        var (alerts, cases) = Aml(transfers);
 
         return new FintechSeedSet(
             Accounts(),
-            Audit(transfers, disputes, notes),
+            alerts,
+            cases,
+            Audit(transfers, disputes, notes, alerts, cases),
             Budgets(),
             notes,
             disputes,
             Notices(),
             Payees(),
-            StaffNotifications(transfers, disputes),
+            StaffNotifications(transfers, disputes, alerts, cases),
             transactions.OrderByDescending(item => item.Date).ThenByDescending(item => item.Id).ToList(),
             transfers);
     }
@@ -206,10 +210,14 @@ public static class FintechSeedData
     /// </summary>
     public static IReadOnlyList<FintechCustomer> Customers() => customers.Value;
 
-    /// <summary>The demo accounts: one operations user and one bank customer, operations first. There is no self-registration: banks open accounts in a branch or an app.</summary>
+    /// <summary>
+    /// The demo accounts, in the sign-in page's order: an operations analyst, a senior reviewer (who also decides escalated AML
+    /// cases), and one bank customer. There is no self-registration: banks open accounts in a branch or an app.
+    /// </summary>
     public static IReadOnlyList<ShowcaseDemoAccount> DemoAccounts() => new List<ShowcaseDemoAccount>
     {
         new(OpsAccountId, OpsRole, OpsName, "priya.raman@tallymint.example", "ops-demo-26", "PR"),
+        new(SeniorAccountId, SeniorRole, SeniorName, "mei.lin@tallymint.example", "senior-demo-26", "ML"),
         new(SeededCustomerId, CustomerRole, CustomerName, "jordan.ashdown@example.com", "bank-demo-26", "JA"),
     };
 
@@ -255,7 +263,8 @@ public static class FintechSeedData
     /// <summary>The roles of the site, the back office first: the sign-in page lists them in this order.</summary>
     public static IReadOnlyList<ShowcaseRole> Roles() => new List<ShowcaseRole>
     {
-        new(OpsRole, "Bank operations", OpsBase, OpsBase + "/account", "Works the transfer review queue, decides disputes, follows customers and scheduled postings, and reads the audit log."),
+        new(OpsRole, "Bank operations", OpsBase, OpsBase + "/account", "Works the transfer review queue and AML alerts and cases, decides disputes, follows customers and scheduled postings, and reads the audit log."),
+        new(SeniorRole, "Senior reviewer", OpsBase, OpsBase + "/account", "Everything bank operations do, plus deciding escalated AML cases: approving a closure or a SAR, or returning the case to the analyst."),
         new(CustomerRole, "Customer", SiteBase, SiteBase + "/profile", "Checks accounts, moves money, manages payees, budgets, and alerts, and disputes charges."),
     };
 
@@ -264,7 +273,8 @@ public static class FintechSeedData
     #region Private Methods
 
     /// <summary>The audit log when the tab starts, oldest first, built from the seeded transfers, disputes, and notes.</summary>
-    private static List<ShowcaseAuditEntry> Audit(IReadOnlyList<FintechTransfer> transfers, IReadOnlyList<FintechDispute> disputes, IReadOnlyList<FintechCustomerNote> notes)
+    private static List<ShowcaseAuditEntry> Audit(IReadOnlyList<FintechTransfer> transfers, IReadOnlyList<FintechDispute> disputes, IReadOnlyList<FintechCustomerNote> notes,
+        IReadOnlyList<FintechAmlAlert> alerts, IReadOnlyList<FintechAmlCase> cases)
     {
         var entries = new List<(DateTime At, string Actor, string Action, string Target, string? Url, string? Details)>();
 
@@ -332,6 +342,7 @@ public static class FintechSeedData
 
         entries.Add((Now.AddDays(-2), CustomerName, "Payee added", $"Rowan Calloway · {CustomerName}", SiteBase + "/payees", "Name confirmed; Northline Bank •••• 3076."));
         entries.Add((Now.AddDays(-1).AddHours(-1), OpsName, "Signed in", OpsName, null, "Password and one-time code."));
+        AmlAudit(entries, alerts, cases);
 
         return entries
             .Where(entry => entry.At <= Now)
@@ -695,10 +706,13 @@ public static class FintechSeedData
     private static string Ref(int number) => string.Create(CultureInfo.InvariantCulture, $"TM-{number}");
 
     /// <summary>
-    /// The demo operations user's notifications when the tab starts, newest first: transfers held for review, new disputes,
-    /// and disputes escalated past the answer target. The newest two are unread.
+    /// The staff's notifications when the tab starts, newest first. Both staff accounts that can sign in get transfers held
+    /// for review, new disputes, disputes escalated past the answer target, and new high-risk AML alerts; the analyst also gets
+    /// the AML cases assigned or returned to her, and the senior reviewer the cases escalated to her. Each account's newest two
+    /// are unread, and so are the AML cases waiting for that person.
     /// </summary>
-    private static List<ShowcaseNotification> StaffNotifications(IReadOnlyList<FintechTransfer> transfers, IReadOnlyList<FintechDispute> disputes)
+    private static List<ShowcaseNotification> StaffNotifications(IReadOnlyList<FintechTransfer> transfers, IReadOnlyList<FintechDispute> disputes,
+        IReadOnlyList<FintechAmlAlert> alerts, IReadOnlyList<FintechAmlCase> cases)
     {
         var items = new List<(DateTime At, string Title, string Text, string Url)>();
 
@@ -711,11 +725,43 @@ public static class FintechSeedData
         foreach (var dispute in disputes.Where(dispute => dispute.EscalatedAt is not null).OrderByDescending(dispute => dispute.EscalatedAt).Take(3))
             items.Add((dispute.EscalatedAt!.Value, $"Dispute {Number(dispute.Id)} is overdue", $"Open more than {FintechState.DisputeTargetDays} days: {Money(dispute.Amount)} at {dispute.Merchant} for {NameOf(dispute.CustomerId)}.", OpsBase + "/disputes/" + Number(dispute.Id)));
 
-        var ordered = items.Where(item => item.At <= Now).OrderByDescending(item => item.At).ToList();
+        foreach (var alert in alerts.Where(alert => alert.Status == FintechAmlAlertStatus.New && alert.Risk == FintechAmlRisk.High).OrderByDescending(alert => alert.CreatedAt).Take(2))
+            items.Add((alert.CreatedAt, $"New AML alert {Number(alert.Id)}", $"{RuleName(alert.Rule)} on {NameOf(alert.CustomerId)}, high risk.", $"{OpsBase}/aml/alerts/{Number(alert.Id)}"));
 
-        return ordered.Select((item, index) => new ShowcaseNotification
+        var personal = new List<(string AccountId, DateTime At, string Title, string Text, string Url)>();
+
+        foreach (var amlCase in cases.Where(amlCase => amlCase.Status != FintechAmlCaseStatus.Closed))
         {
-            Id = ordered.Count - index, AccountId = OpsAccountId, At = item.At, Title = Clip(item.Title, 80), Text = Clip(item.Text, 200), Url = item.Url, IsRead = index >= 2,
+            var url = $"{OpsBase}/aml/cases/{Number(amlCase.Id)}";
+            var customer = NameOf(amlCase.CustomerId);
+
+            if (amlCase.Status == FintechAmlCaseStatus.Escalated)
+            {
+                var escalated = amlCase.Events.Last(entry => entry.Kind == FintechAmlEventKind.Escalated);
+                personal.Add((SeniorAccountId, escalated.At, $"Case {Number(amlCase.Id)} is escalated to you",
+                    amlCase.ProposedDisposition == FintechAmlDisposition.Reported ? $"{StaffName(amlCase.EscalatedById)} proposes a SAR for {customer}; it needs your approval." : $"{StaffName(amlCase.EscalatedById)} asks for a decision on {customer}.", url));
+            }
+            else if (amlCase.Events.LastOrDefault(entry => entry.Kind == FintechAmlEventKind.Returned) is { } returned && amlCase.AssigneeId == OpsAccountId)
+            {
+                personal.Add((OpsAccountId, returned.At, $"Case {Number(amlCase.Id)} is returned to you", $"{returned.Actor}: {returned.Text}", url));
+            }
+            else if (amlCase.AssigneeId == OpsAccountId && amlCase.Status == FintechAmlCaseStatus.Open)
+            {
+                personal.Add((OpsAccountId, amlCase.OpenedAt, $"Case {Number(amlCase.Id)} is assigned to you", $"AML case on {customer}, {amlCase.Priority} priority, due {amlCase.DueOn.ToString("MMM d", CultureInfo.InvariantCulture)}.", url));
+            }
+        }
+
+        var all = items.SelectMany(item => new[] { OpsAccountId, SeniorAccountId }.Select(accountId => (AccountId: accountId, item.At, item.Title, item.Text, item.Url, Personal: false)))
+            .Concat(personal.Select(item => (item.AccountId, item.At, item.Title, item.Text, item.Url, Personal: true)))
+            .Where(item => item.At <= Now)
+            .OrderByDescending(item => item.At)
+            .ToList();
+        var unread = new Dictionary<string, int>(StringComparer.Ordinal);
+
+        return all.Select((item, index) => new ShowcaseNotification
+        {
+            Id = all.Count - index, AccountId = item.AccountId, At = item.At, Title = Clip(item.Title, 80), Text = Clip(item.Text, 200), Url = item.Url,
+            IsRead = (unread[item.AccountId] = unread.GetValueOrDefault(item.AccountId) + 1) > 2 && !item.Personal,
         }).ToList();
     }
 
@@ -809,6 +855,8 @@ public static class FintechSeedData
 /// <summary>A fresh tab's data, as <see cref="FintechSeedData.Build" /> makes it.</summary>
 public sealed record FintechSeedSet(
     List<FintechAccount> Accounts,
+    List<FintechAmlAlert> AmlAlerts,
+    List<FintechAmlCase> AmlCases,
     List<ShowcaseAuditEntry> Audit,
     List<FintechBudget> Budgets,
     List<FintechCustomerNote> CustomerNotes,

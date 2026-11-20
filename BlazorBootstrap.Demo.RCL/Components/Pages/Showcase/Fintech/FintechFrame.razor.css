@@ -559,3 +559,38 @@
     gap: .75rem 1rem;
     min-width: 0;
 }
+
+/* A count beside a page title, like "12 open". */
+.sc-fintech ::deep .tm-count-pill {
+    display: inline-block;
+    margin-left: .5rem;
+    padding: .125rem .625rem;
+    border-radius: 999px;
+    vertical-align: middle;
+    font-size: .875rem;
+    font-weight: 700;
+    letter-spacing: 0;
+    color: var(--tm-ink);
+    background: rgba(var(--sc-primary-rgb), .12);
+}
+
+/* An AML case's timeline: each entry with its kind, who, and when; notes keep their line breaks. */
+.sc-fintech ::deep .tm-aml-timeline {
+    display: grid;
+    gap: .75rem;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+}
+
+    .sc-fintech ::deep .tm-aml-timeline > li {
+        padding: .75rem 1rem;
+        border: 1px solid var(--tm-border);
+        border-radius: .75rem;
+        background: var(--tm-surface);
+    }
+
+.sc-fintech ::deep .tm-aml-text {
+    white-space: pre-line;
+    overflow-wrap: anywhere;
+}

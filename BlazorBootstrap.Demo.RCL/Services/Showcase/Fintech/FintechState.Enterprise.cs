@@ -1,4 +1,5 @@
 using System.Globalization;
+using System.Text.Json;
 using BlazorBootstrap.Demo.RCL.Models.Showcase.Fintech;
 using BlazorBootstrap.Demo.RCL.Services.Showcase.Foundation;
 
@@ -153,7 +154,8 @@ public sealed partial class FintechState
     /// <summary>
     /// The header's global search, best matches first (exactly the term, then starting with it, then containing it), and
     /// among equal matches by kind and then newest first. Operations find customers (by name, ID, or email), transfers (by
-    /// reference), and disputes (by number), each opening its operations page; the customer finds their own transactions
+    /// reference), disputes (by number), and AML cases and alerts (by number, like "Case 517" or "Alert 7012"), each opening
+    /// its operations page; the customer finds their own transactions
     /// (by merchant or description), payees (by name or nickname), transfers (by reference or recipient), and disputes (by
     /// number or merchant). Returns nothing for a blank term, or until the one-time code is entered.
     /// </summary>
@@ -180,7 +182,9 @@ public sealed partial class FintechState
 
         if (IsOps)
         {
-            // Kind: 0 a customer, 1 a transfer, 2 a dispute.
+            SearchAml(term, Rank, matches);
+
+            // Kind: 0 a customer, 1 a transfer, 2 a dispute (3 an AML case, 4 an AML alert).
             foreach (var customer in FintechSeedData.Customers())
             {
                 if (Rank(customer.Name, customer.Id, customer.Email) is { } found)
@@ -386,6 +390,7 @@ public sealed partial class FintechState
         {
             AccountId = notice.AccountId, At = notice.At, Id = notice.Id, IsRead = notice.IsRead, Text = notice.Text, Title = notice.Title, Url = notice.Url,
         },
+        FintechAmlAlert or FintechAmlCase => JsonSerializer.Deserialize<T>(JsonSerializer.Serialize(item, snapshotOptions), snapshotOptions)!,
         _ => item,
     };
 
@@ -471,7 +476,7 @@ public sealed partial class FintechState
     /// </summary>
     private void NotifyStaff(string accountId, string title, string text, string? url, bool fromSystem = false)
     {
-        if (Identity.FindAccount(accountId) is not { RoleId: FintechSeedData.OpsRole } || (!fromSystem && accountId == Identity.Current?.Id))
+        if (Identity.FindAccount(accountId) is not { } account || !IsStaffRole(account.RoleId) || (!fromSystem && accountId == Identity.Current?.Id))
             return;
 
         staffNotices.Insert(0, new ShowcaseNotification
@@ -491,7 +496,7 @@ public sealed partial class FintechState
     /// <summary>Tells every operations user who can sign in: a transfer held for review, a new dispute, a dispute past its target.</summary>
     private void NotifyOps(string title, string text, string? url, bool fromSystem = false)
     {
-        foreach (var account in Identity.Accounts.Where(account => account.RoleId == FintechSeedData.OpsRole).ToList())
+        foreach (var account in Identity.Accounts.Where(account => IsStaffRole(account.RoleId)).ToList())
             NotifyStaff(account.Id, title, text, url, fromSystem);
     }
 

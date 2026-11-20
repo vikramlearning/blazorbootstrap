@@ -8,7 +8,7 @@
                 <span class="tm-ops-bar-title">Banking operations</span>
                 <div class="tm-ops-bar-actions">
                     @* The search and the notifications show only once the one-time code is entered. *@
-                    <ShowcaseGlobalSearch Class="tm-global-search" Placeholder="Search customers, transfers, disputes" Label="Search customers by name, ID, or email, transfers by reference, and disputes by number" />
+                    <ShowcaseGlobalSearch Class="tm-global-search" Placeholder="Search customers, transfers, disputes, AML" Label="Search customers by name, ID, or email, transfers by reference, and disputes, AML cases, and alerts by number" />
                     <ShowcaseNotificationsMenu />
                     <ShowcaseAccountMenu SiteBase="@FintechLayout.Base" SignInPath="@FintechLayout.SignInPath" />
                 </div>
@@ -22,12 +22,12 @@
                          Href="@Base"
                          IconName="IconName.Coin"
                          Title="@FintechSeedData.ProductName"
-                         BadgeText="Ops"
+                         BadgeText="@(State.IsSenior ? "Senior" : "Ops")"
                          DataProvider="SidebarDataProvider" />
             }
         </Sidebar>
         <ChildContent>
-            <FintechGuard Role="@FintechSeedData.OpsRole">
+            <FintechGuard Role="@StaffRoles">
                 @Body
             </FintechGuard>
         </ChildContent>

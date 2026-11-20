@@ -1,6 +1,7 @@
 using System.Globalization;
 using BlazorBootstrap.Demo.RCL.Models.Showcase.Fintech;
 using BlazorBootstrap.Demo.RCL.Services.Showcase.Fintech;
+using BlazorBootstrap.Demo.RCL.Services.Showcase.Foundation;
 
 namespace BlazorBootstrap.Demo.RCL.Components.Pages.Showcase.Fintech;
 
@@ -8,8 +9,10 @@ namespace BlazorBootstrap.Demo.RCL.Components.Pages.Showcase.Fintech;
 /// One of the customer's accounts: the balance, what is available now and how much is set aside for scheduled and held
 /// transfers (or, for the credit card, what is owed, the limit, and the credit available), the linked card with its status
 /// in text and a freeze (confirmed in a <see cref="Modal" /> that says what stops and what still goes) or unfreeze
-/// button, the scheduled and held transfers from the account, and its last 60 days of transactions, each linking to its
-/// page. "Move money" opens the transfer form from this account. An unknown account shows a not-found screen.
+/// button, the scheduled and held transfers from the account, and its last 60 days of transactions in a
+/// <see cref="Grid{TItem}" /> (each row opens the transaction; sorting, paging, the column chooser, CSV export, and a saved
+/// view per account that can be reset). "Move money" opens the transfer form from this account. An unknown account shows a
+/// not-found screen.
 /// </summary>
 public partial class AccountDetail : ComponentBase, IDisposable
 {
@@ -17,6 +20,8 @@ public partial class AccountDetail : ComponentBase, IDisposable
 
     /// <summary>How many days of transactions the page lists.</summary>
     private const int TransactionDays = 60;
+
+    private const int DefaultPageSize = 10;
 
     private Button? cardButton;
 
@@ -29,13 +34,25 @@ public partial class AccountDetail : ComponentBase, IDisposable
 
     private Modal freezeModal = default!;
 
+    private Grid<TransactionRow>? grid;
+
+    private int gridVersion;
+
     private string? loadedId;
+
+    private int pageSize = DefaultPageSize;
 
     private bool statusIsError;
 
     private string? statusMessage;
 
     private ElementReference statusRegion;
+
+    private ShowcaseGridView view = default!;
+
+    private bool viewLoaded;
+
+    private string? viewMessage;
 
     #endregion
 
@@ -45,6 +62,14 @@ public partial class AccountDetail : ComponentBase, IDisposable
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        if (firstRender)
+        {
+            await view.LoadAsync();
+            pageSize = (await view.GetSettingsAsync()).PageSize;
+            viewLoaded = true;
+            StateHasChanged();
+        }
+
         if (focusStatus)
         {
             focusStatus = false;
@@ -54,12 +79,24 @@ public partial class AccountDetail : ComponentBase, IDisposable
 
     protected override void OnInitialized() => State.Changed += OnStateChanged;
 
-    protected override void OnParametersSet()
+    /// <summary>Each account keeps its own saved view; another account reuses the page, so the grid starts over with that view.</summary>
+    protected override async Task OnParametersSetAsync()
     {
         if (loadedId == Id)
             return;
 
+        var reused = loadedId is not null;
         loadedId = Id;
+        view = GridViews.Get(State.SiteSlug, $"account-{Id}-transactions", DefaultPageSize, "date", SortDirection.Descending);
+        viewMessage = null;
+
+        if (reused)
+        {
+            await view.LoadAsync();
+            pageSize = (await view.GetSettingsAsync()).PageSize;
+            gridVersion++;
+        }
+
         statusMessage = null;
         statusIsError = false;
         dialogError = null;
@@ -75,6 +112,32 @@ public partial class AccountDetail : ComponentBase, IDisposable
     #endregion
 
     #region Private Methods
+
+    private Task<GridDataProviderResult<TransactionRow>> ProvideRowsAsync(GridDataProviderRequest<TransactionRow> request) => view.ApplyAsync(request, TransactionRows);
+
+    private async Task RefreshGridAsync()
+    {
+        if (grid is not null)
+            await grid.RefreshDataAsync();
+    }
+
+    private async Task ResetViewAsync()
+    {
+        const string message = "The view is reset: newest first, 10 transactions a page, and every column shown.";
+
+        await view.ResetAsync();
+        pageSize = DefaultPageSize;
+        gridVersion++;
+        viewMessage = viewMessage == message ? message + " (2)" : message;
+    }
+
+    private async Task SaveSettingsAsync(GridSettings settings)
+    {
+        if (settings.PageSize > 0)
+            pageSize = settings.PageSize;
+
+        await view.SaveSettingsAsync(settings);
+    }
 
     /// <summary>Returns the name of the card linked to an account: the checking account's debit card or the credit card.</summary>
     private static string CardName(FintechAccount account) => account.Kind == FintechAccountKind.CreditCard ? "Credit card" : "Debit card";
@@ -145,7 +208,11 @@ public partial class AccountDetail : ComponentBase, IDisposable
         }
     }
 
-    private void OnStateChanged() => InvokeAsync(StateHasChanged);
+    private void OnStateChanged() => InvokeAsync(async () =>
+    {
+        await RefreshGridAsync();
+        StateHasChanged();
+    });
 
     /// <summary>Unfreezing only lets payments through again, so it needs no confirmation; the outcome is announced.</summary>
     private void Unfreeze()
@@ -201,7 +268,22 @@ public partial class AccountDetail : ComponentBase, IDisposable
         }
     }
 
+    [Inject] private ShowcaseGridViewStore GridViews { get; set; } = default!;
+
     [Inject] private FintechState State { get; set; } = default!;
+
+    /// <summary>Gets the account's last 60 days of transactions as grid rows, newest first.</summary>
+    private IReadOnlyList<TransactionRow> TransactionRows => RecentTransactions
+        .Select(item => new TransactionRow(item.Id, item.Date, item.Description, State.FindCategory(item.CategoryId).Name, item.Amount,
+            item.DisputeId is not null ? "Disputed" : item.IsPending ? "Pending" : string.Empty))
+        .ToList();
+
+    #endregion
+
+    #region Nested Types
+
+    /// <summary>One transaction as the grid shows and exports it: every column is a property, so CSV export includes it.</summary>
+    private sealed record TransactionRow(int Id, DateTime Date, string Description, string Category, decimal Amount, string Status);
 
     #endregion
 }
