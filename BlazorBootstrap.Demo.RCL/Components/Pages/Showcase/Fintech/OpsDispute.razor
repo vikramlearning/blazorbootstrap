@@ -38,6 +38,11 @@ else
                 <h1 class="tm-title">@FintechDisplay.Money(dispute.Amount) at @dispute.Merchant</h1>
                 <p class="tm-lead">
                     <Badge Color="Disputes.StatusColor(dispute.Status)" Class="rounded-pill me-2">@Disputes.StatusText(dispute.Status)</Badge>
+                    @if (open && dispute.EscalatedAt is { } escalatedAt)
+                    {
+                        <Badge Color="BadgeColor.Danger" Class="rounded-pill me-2">Overdue</Badge>
+                        <span class="d-block small mt-1">Escalated on @Transfers.StampText(escalatedAt): open more than @FintechState.DisputeTargetDays days, past the 10-business-day answer target.</span>
+                    }
                     @StatusSentence(dispute)
                 </p>
             </div>
@@ -136,7 +141,7 @@ else
                                         <span class="tm-icon" aria-hidden="true"><Icon Name="IconName.JournalText" /></span>
                                         <span class="tm-row-text">
                                             <span class="tm-row-title">@entry.Action</span>
-                                            <span class="tm-row-sub">@Transfers.StampText(entry.At) · @entry.Actor (@entry.Role)</span>
+                                            <span class="tm-row-sub">@Transfers.StampText(entry.At) · @entry.Actor</span>
                                             @if (!string.IsNullOrWhiteSpace(entry.Details))
                                             {
                                                 <span class="small tm-opsdispute-text">@entry.Details</span>
@@ -215,7 +220,9 @@ else
                 <h2 class="modal-title h5" id="tm-opsdispute-resolve-title">@(resolveRefund ? "Refund" : "Decline") dispute @dispute.Id?</h2>
             </HeaderTemplate>
             <BodyTemplate>
-                <form id="tm-opsdispute-resolve-form" @onsubmit="ConfirmResolveAsync" novalidate>
+                <EditForm id="tm-opsdispute-resolve-form" EditContext="resolveContext" OnSubmit="ConfirmResolveAsync" FormName="tm-opsdispute-resolve" novalidate>
+                    <DataAnnotationsValidator />
+                    <ShowcaseFormErrors />
                     @if (resolveRefund)
                     {
                         <p class="mb-2">@FintechDisplay.Money(dispute.Amount) is credited back to @RefundTarget(customerName, account), and the customer is told.</p>
@@ -227,16 +234,17 @@ else
                     <p class="small text-body-secondary mb-3">This closes the dispute and can't be undone.</p>
 
                     <label class="form-label fw-semibold" for="tm-opsdispute-resolution">Resolution (@customerName reads this)</label>
-                    <textarea id="tm-opsdispute-resolution" class="form-control @(resolutionError is null ? null : "is-invalid")" rows="4" maxlength="@MaxResolution"
-                              @bind="resolutionText" @bind:event="oninput" @ref="resolutionInput" aria-required="true"
-                              aria-invalid="@(resolutionError is null ? null : "true")"
-                              aria-describedby="tm-opsdispute-resolution-help tm-opsdispute-resolution-count tm-opsdispute-resolution-error"></textarea>
+                    <InputTextArea id="tm-opsdispute-resolution" class="form-control" rows="4" maxlength="@MaxResolution" @bind-Value="resolveForm.Resolution"
+                                   @oninput="OnResolutionInput" @ref="resolutionInput" aria-required="true"
+                                   aria-describedby="tm-opsdispute-resolution-help tm-opsdispute-resolution-count" />
                     <div class="form-text" id="tm-opsdispute-resolution-help">
                         @(resolveRefund ? "Say what you found and that the money is back." : "Say why the charge stands and what the customer can do next.") @MinResolution to @MaxResolution.ToString("#,0", CultureInfo.InvariantCulture) characters.
                     </div>
-                    <div class="form-text text-end" id="tm-opsdispute-resolution-count">@(resolutionText?.Length ?? 0) of @MaxResolution.ToString("#,0", CultureInfo.InvariantCulture) characters</div>
-                    <p class="text-danger-emphasis fw-semibold small mb-0" id="tm-opsdispute-resolution-error" role="alert">@resolutionError</p>
-                </form>
+                    <div class="form-text text-end" id="tm-opsdispute-resolution-count">@resolutionLength of @MaxResolution.ToString("#,0", CultureInfo.InvariantCulture) characters</div>
+                    <ValidationMessage For="() => resolveForm.Resolution" />
+                    @* Always rendered, so a refusal from the bank is announced; a counter makes a repeat announce again. *@
+                    <p class="text-danger-emphasis fw-semibold small mb-0" role="alert">@resolutionError</p>
+                </EditForm>
             </BodyTemplate>
             <FooterTemplate>
                 <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => resolveModal.HideAsync()">Cancel</Button>

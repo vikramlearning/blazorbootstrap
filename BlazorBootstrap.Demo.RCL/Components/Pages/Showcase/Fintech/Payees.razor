@@ -16,86 +16,126 @@
     @* Always rendered and focusable, so an action's outcome is announced and focus has somewhere to go. *@
     <p class="tm-py-status" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
 
-    @{
-        var payees = State.Payees;
-    }
+    <Card Class="tm-card">
+        <CardBody Class="p-3 p-lg-4">
+            <div class="tm-list-meta mt-0">
+                <p class="small text-body-secondary mb-0">
+                    @CountText(State.Payees.Count) A payee added or changed in the last @FintechState.NewPayeeDays days is marked New: transfers of
+                    @FintechDisplay.Money(FintechState.HoldNewPayeeAmount) or more to it are held for a check.
+                </p>
+                <Button Color="ButtonColor.Link" Size="ButtonSize.Small" Class="p-0" @onclick="ResetViewAsync">Reset view</Button>
+            </div>
 
-    @if (payees.Count == 0)
-    {
-        <section class="tm-panel text-center py-5" aria-labelledby="tm-py-empty-title">
-            <span class="tm-icon fs-4" aria-hidden="true"><Icon Name="IconName.People" /></span>
-            <h2 class="h5 fw-bold mt-3" id="tm-py-empty-title">No payees yet</h2>
-            <p class="text-body-secondary">Add someone you pay, like a landlord or a friend. We check their name against the account before you send anything.</p>
-            <a class="btn btn-primary" href="@($"{FintechLayout.Base}/payees/new")">Add payee</a>
-        </section>
-    }
-    else
-    {
-        <p class="small text-body-secondary">@CountText(payees.Count) A payee added or changed in the last @FintechState.NewPayeeDays days is marked New: transfers of @FintechDisplay.Money(FintechState.HoldNewPayeeAmount) or more to it are held for a check.</p>
-
-        <ul class="tm-py-list list-unstyled mb-0">
-            @foreach (var payee in payees)
-            {
-                var headingId = $"tm-py-name-{payee.Id}";
-                var isNew = Transfer.IsNewPayee(State, payee);
-                <li class="tm-panel" @key="payee.Id">
-                    <div class="tm-py-item">
-                        <span class="tm-icon" aria-hidden="true"><Icon Name="IconName.Person" /></span>
-                        <div class="tm-py-text">
-                            <h2 class="tm-py-name" id="@headingId">
-                                @payee.Name
-                                @if (isNew)
+            <ShowcaseDataState Status="@(viewLoaded ? ShowcaseDataStatus.Ready : ShowcaseDataStatus.Loading)"
+                               IsEmpty="@(State.Payees.Count == 0)"
+                               EmptyIcon="IconName.People"
+                               EmptyTitle="No payees yet"
+                               EmptyText="Add someone you pay, like a landlord or a friend. We check their name against the account before you send anything."
+                               LoadingText="Loading your payees…"
+                               LoadingRows="3"
+                               OnRetry="RefreshGridAsync">
+                <EmptyActions>
+                    <a class="btn btn-sm btn-primary" href="@($"{FintechLayout.Base}/payees/new")">Add payee</a>
+                </EmptyActions>
+                <ChildContent>
+                    <Grid @ref="grid"
+                          @key="gridVersion"
+                          TItem="PayeeRow"
+                          Class="table table-hover align-middle tm-table-wide sc-grid-row-links"
+                          GridContainerClass="tm-grid border rounded-3"
+                          DataProvider="ProvideRowsAsync"
+                          SettingsProvider="view.GetSettingsAsync"
+                          GridSettingsChanged="SaveSettingsAsync"
+                          AllowPaging="true"
+                          PageSize="@pageSize"
+                          PageSizeSelectorVisible="true"
+                          PageSizeSelectorItems="@(new[] { 10, 25, 50 })"
+                          PaginationItemsTextFormat="{0}–{1} of {2} payees"
+                          AllowSorting="true"
+                          AllowColumnChooser="true"
+                          AllowExport="true"
+                          ExportFileName="banking-payees"
+                          Responsive="true"
+                          EmptyText="No payees."
+                          aria-label="Your payees">
+                        <GridColumns>
+                            <GridColumn TItem="PayeeRow" HeaderText="Name" PropertyName="Name" SortString="name" SortKeySelector="row => row.Name"
+                                        IsDefaultSortColumn="@view.IsSortColumn("name")" SortDirection="@view.DirectionFor("name")" AlwaysVisible="true">
+                                @* The stretched link makes the whole row open the payee's details; the row's buttons stay above it. *@
+                                <a class="tm-row-link stretched-link" href="@PayeeEdit.EditUrl(context.Id)" aria-label="@($"Edit {context.Name}'s details")">@context.Name</a>
+                                @if (context.IsNew)
                                 {
-                                    <Badge Color="BadgeColor.Warning" Class="rounded-pill ms-1 align-middle">New</Badge>
+                                    <Badge Color="BadgeColor.Warning" Class="rounded-pill ms-1">New</Badge>
                                 }
-                            </h2>
-                            @if (payee.Nickname is { } nickname)
-                            {
-                                <span class="d-block small">Nickname: @nickname</span>
-                            }
-                            <span class="d-block small text-body-secondary">@payee.BankName · account <span class="tm-mono">@payee.MaskedAccount</span></span>
-                            <span class="d-block small">
-                                <Icon Name="@MatchIcon(payee.Match)" class="me-1" aria-hidden="true" />@MatchText(payee.Match) · Added @payee.AddedAt.ToString("MMM d, yyyy", CultureInfo.InvariantCulture)
-                            </span>
-                            @if (isNew)
-                            {
-                                <span class="d-block small text-body-secondary">New until @payee.AddedAt.AddDays(FintechState.NewPayeeDays).ToString("MMM d", CultureInfo.InvariantCulture): transfers of @FintechDisplay.Money(FintechState.HoldNewPayeeAmount) or more are held for a check.</span>
-                            }
-                        </div>
-                    </div>
-
-                    @if (renamingId == payee.Id)
-                    {
-                        <form class="tm-py-rename" @onsubmit="SaveNickname" @onsubmit:preventDefault novalidate>
-                            <label class="form-label small fw-semibold" for="tm-py-nickname">Nickname for @payee.Name</label>
-                            <div class="d-flex flex-wrap gap-2">
-                                <input id="tm-py-nickname" class="form-control form-control-sm tm-py-nickname @(renameError is null ? null : "is-invalid")" type="text" maxlength="30"
-                                       @bind="nicknameText" @bind:event="oninput" @ref="renameInput" aria-describedby="tm-py-nickname-help tm-py-nickname-error" />
-                                <Button Type="ButtonType.Submit" Color="ButtonColor.Primary" Size="ButtonSize.Small">Save nickname</Button>
-                                <Button Color="ButtonColor.Secondary" Outline="true" Size="ButtonSize.Small" @onclick="CancelRename">Cancel</Button>
-                            </div>
-                            <div class="form-text" id="tm-py-nickname-help">Up to 30 characters; leave it empty to remove it. Only you see it, and it doesn't need a code.</div>
-                            <p class="text-danger-emphasis small fw-semibold mt-1 mb-0" id="tm-py-nickname-error" role="alert">@renameError</p>
-                        </form>
-                    }
-
-                    <div class="tm-py-actions">
-                        <a class="btn btn-primary btn-sm" href="@($"{FintechLayout.Base}/transfer?to={Uri.EscapeDataString(payee.Id)}")" aria-label="@($"Pay {payee.Name}")">
-                            <Icon Name="IconName.Send" class="me-1" aria-hidden="true" />Pay
-                        </a>
-                        <a class="btn btn-outline-secondary btn-sm" href="@PayeeEdit.EditUrl(payee.Id)" aria-label="@($"Edit {payee.Name}'s details")">Edit</a>
-                        <button type="button" class="btn btn-outline-secondary btn-sm" @ref="renameButtons[payee.Id]" @onclick="() => StartRename(payee)"
-                                aria-label="@($"{(payee.Nickname is null ? "Add a nickname for" : "Rename the nickname of")} {payee.Name}")">
-                            @(payee.Nickname is null ? "Add nickname" : "Rename nickname")
-                        </button>
-                        <button type="button" class="btn btn-outline-danger btn-sm" @ref="deleteButtons[payee.Id]" @onclick="() => AskDeleteAsync(payee)"
-                                aria-label="@($"Delete {payee.Name}")">Delete</button>
-                    </div>
-                </li>
-            }
-        </ul>
-    }
+                            </GridColumn>
+                            <GridColumn TItem="PayeeRow" HeaderText="Nickname" PropertyName="Nickname" SortString="nickname" SortKeySelector="row => row.Nickname"
+                                        IsDefaultSortColumn="@view.IsSortColumn("nickname")" SortDirection="@view.DirectionFor("nickname")">
+                                @if (context.Nickname.Length == 0)
+                                {
+                                    <span class="text-body-secondary">None</span>
+                                }
+                                else
+                                {
+                                    @context.Nickname
+                                }
+                            </GridColumn>
+                            <GridColumn TItem="PayeeRow" HeaderText="Bank" PropertyName="Bank" SortString="bank" SortKeySelector="row => row.Bank"
+                                        IsDefaultSortColumn="@view.IsSortColumn("bank")" SortDirection="@view.DirectionFor("bank")">
+                                <span class="small">@context.Bank</span>
+                            </GridColumn>
+                            <GridColumn TItem="PayeeRow" HeaderText="Account" PropertyName="Account" Sortable="false" TextNoWrap="true">
+                                <span class="tm-mono small">@context.Account</span>
+                            </GridColumn>
+                            <GridColumn TItem="PayeeRow" HeaderText="Name check" PropertyName="NameCheck" SortString="check" SortKeySelector="row => row.NameCheck"
+                                        IsDefaultSortColumn="@view.IsSortColumn("check")" SortDirection="@view.DirectionFor("check")" TextNoWrap="true">
+                                <span class="small"><Icon Name="@MatchIcon(context.Match)" class="me-1" aria-hidden="true" />@context.NameCheck</span>
+                            </GridColumn>
+                            <GridColumn TItem="PayeeRow" HeaderText="Added" PropertyName="Added" SortString="added" SortKeySelector="row => row.Added"
+                                        IsDefaultSortColumn="@view.IsSortColumn("added")" SortDirection="@view.DirectionFor("added")" TextNoWrap="true">
+                                <span class="small">@context.Added.ToString("MMM d, yyyy", CultureInfo.InvariantCulture)</span>
+                            </GridColumn>
+                            <GridColumn TItem="PayeeRow" HeaderText="Actions" PropertyName="Id" Sortable="false" Exportable="false" TextNoWrap="true">
+                                <div class="d-flex flex-wrap gap-2">
+                                    <a class="btn btn-primary btn-sm" href="@($"{FintechLayout.Base}/transfer?to={Uri.EscapeDataString(context.Id)}")" aria-label="@($"Pay {context.Name}")">
+                                        <Icon Name="IconName.Send" class="me-1" aria-hidden="true" />Pay
+                                    </a>
+                                    <button type="button" class="btn btn-outline-secondary btn-sm" @ref="renameButtons[context.Id]" @onclick="() => StartRenameAsync(context.Id)"
+                                            aria-label="@($"{(context.Nickname.Length == 0 ? "Add a nickname for" : "Change the nickname of")} {context.Name}")">Nickname</button>
+                                    <button type="button" class="btn btn-outline-danger btn-sm" @ref="deleteButtons[context.Id]" @onclick="() => AskDeleteAsync(context.Id)"
+                                            aria-label="@($"Delete {context.Name}")">Delete</button>
+                                </div>
+                            </GridColumn>
+                        </GridColumns>
+                    </Grid>
+                </ChildContent>
+            </ShowcaseDataState>
+        </CardBody>
+    </Card>
 </div>
+
+@* The nickname dialog needs no one-time code: a nickname doesn't change where money goes. *@
+<Modal @ref="renameModal" IsVerticallyCentered="true" ShowCloseButton="false" aria-labelledby="tm-py-rename-title" OnShown="OnRenameShownAsync" OnHidden="OnRenameHiddenAsync">
+    <HeaderTemplate>
+        <h2 class="modal-title h5" id="tm-py-rename-title">Nickname for @renaming?.Name</h2>
+    </HeaderTemplate>
+    <BodyTemplate>
+        <EditForm id="tm-py-rename-form" EditContext="renameContext" OnSubmit="SaveNicknameAsync" FormName="tm-py-rename" novalidate>
+            <DataAnnotationsValidator />
+            <ShowcaseFormErrors />
+            <label class="form-label fw-semibold" for="tm-py-nickname">Nickname <span class="fw-normal text-body-secondary">(optional)</span></label>
+            <InputText id="tm-py-nickname" class="form-control" maxlength="@FintechState.MaxNicknameLength" autocomplete="off" @bind-Value="renameForm.Nickname"
+                       @ref="renameInput" aria-describedby="tm-py-nickname-help" />
+            <ShowcaseUniqueCheck @ref="nicknameCheck" For="() => renameForm.Nickname" IsTakenAsync="IsNicknameTakenAsync" TakenMessage="NicknameTakenMessage" />
+            <div class="form-text mt-0" id="tm-py-nickname-help">Up to @FintechState.MaxNicknameLength characters, like "Landlord", and different from your other payees' nicknames. Leave it empty to remove it. Only you see it.</div>
+            <ValidationMessage For="() => renameForm.Nickname" />
+        </EditForm>
+        <p class="text-danger-emphasis fw-semibold small mt-2 mb-0" role="alert">@renameError</p>
+    </BodyTemplate>
+    <FooterTemplate>
+        <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => renameModal.HideAsync()">Cancel</Button>
+        <Button Type="ButtonType.Submit" Color="ButtonColor.Primary" form="tm-py-rename-form">Save nickname</Button>
+    </FooterTemplate>
+</Modal>
 
 @* Outside the list, so the dialog is never removed while it is open. *@
 <Modal @ref="deleteModal" IsVerticallyCentered="true" ShowCloseButton="false" aria-labelledby="tm-py-delete-title" OnHidden="OnDeleteHiddenAsync">

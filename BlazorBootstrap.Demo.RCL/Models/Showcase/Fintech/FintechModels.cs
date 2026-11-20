@@ -24,6 +24,9 @@ public enum FintechPeriod
 
     /// <summary>The last 90 days.</summary>
     Last90Days = 90,
+
+    /// <summary>The last 12 months (365 days).</summary>
+    Last12Months = 365,
 }
 
 /// <summary>Where a transfer is.</summary>
@@ -325,6 +328,12 @@ public sealed class FintechDispute
     /// <summary>Gets the customer's explanation.</summary>
     public string Details { get; init; } = string.Empty;
 
+    /// <summary>
+    /// Gets or sets when the dispute passed the answer target (<c>FintechState.DisputeTargetDays</c>) while still open and was
+    /// escalated to operations, or <see langword="null" /> when it hasn't been.
+    /// </summary>
+    public DateTime? EscalatedAt { get; set; }
+
     /// <summary>Gets the dispute number.</summary>
     public int Id { get; init; }
 
@@ -426,5 +435,5 @@ public sealed record FintechCustomer(string Id, string Name, string Email, strin
 /// <summary>An internal note operations wrote about a customer (customers never see it).</summary>
 public sealed record FintechCustomerNote(int Id, string CustomerId, DateTime At, string Author, string Text);
 
-/// <summary>One entry in the audit log: who did what, when, to what.</summary>
-public sealed record FintechAuditEntry(int Id, DateTime At, string Actor, string Role, string Action, string Subject, string Details);
+/// <summary>The outcome of an operations action on several transfers at once: the overall result, how many changed, and how many were left as they were.</summary>
+public sealed record FintechBulkOutcome(FintechResult Result, int Changed, int Unchanged);

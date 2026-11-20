@@ -1,6 +1,7 @@
 using System.Globalization;
 using BlazorBootstrap.Demo.RCL.Models.Showcase.Fintech;
 using BlazorBootstrap.Demo.RCL.Services.Showcase.Fintech;
+using BlazorBootstrap.Demo.RCL.Services.Showcase.Foundation;
 
 namespace BlazorBootstrap.Demo.RCL.Components.Pages.Showcase.Fintech;
 
@@ -83,7 +84,7 @@ public partial class OpsOverview : ComponentBase, IDisposable
     #region Properties, Indexers
 
     /// <summary>Gets how many audit entries were recorded since midnight on the site's clock.</summary>
-    private int ActionsToday => State.AuditLog.Count(entry => entry.At >= State.Clock.Now.Date);
+    private int ActionsToday => State.AuditEntries.Count(entry => entry.At >= State.Clock.Now.Date);
 
     private static string AuditPath => $"{FintechOpsLayout.Base}/audit";
 
@@ -153,7 +154,7 @@ public partial class OpsOverview : ComponentBase, IDisposable
 
     private static string QueuePath => $"{FintechOpsLayout.Base}/queue";
 
-    private IReadOnlyList<FintechAuditEntry> Recent => State.AuditLog.Take(RecentCount).ToList();
+    private IReadOnlyList<ShowcaseAuditEntry> Recent => State.AuditEntries.Take(RecentCount).ToList();
 
     private static string ScheduledPath => $"{FintechOpsLayout.Base}/scheduled";
 

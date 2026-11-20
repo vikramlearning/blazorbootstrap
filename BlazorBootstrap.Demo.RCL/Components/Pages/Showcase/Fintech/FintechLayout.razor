@@ -15,8 +15,14 @@
             </NavbarBrand>
             @if (State.Identity.IsSignedIn)
             {
-                <ShowcaseAccountMenu SiteBase="@Base" SignInPath="@SignInPath" Class="ms-auto me-2 order-lg-last"
-                                     NoticeCount="@State.UnreadNoticeCount" NoticesPath="@($"{Base}/alerts")" />
+                @* The bell reads the same list as the Alerts page, so the unread count lives on the bell and the account menu only links to the page. *@
+                <div class="tm-header-tools ms-auto me-2 order-lg-last">
+                    @if (!IsSignInPage)
+                    {
+                        <ShowcaseNotificationsMenu />
+                    }
+                    <ShowcaseAccountMenu SiteBase="@Base" SignInPath="@SignInPath" NoticesPath="@($"{Base}/alerts")" />
+                </div>
             }
             else
             {
@@ -34,6 +40,8 @@
                     <NavbarItem Href="@($"{Base}/budgets")">Budgets</NavbarItem>
                     <NavbarItem Href="@($"{Base}/alerts")">Alerts@(State.UnreadNoticeCount > 0 ? $" ({State.UnreadNoticeCount})" : null)</NavbarItem>
                 </NavbarNav>
+                @* The search shows only once the one-time code is entered; never on the sign-in page. *@
+                <ShowcaseGlobalSearch Class="tm-global-search mb-3 mb-lg-0" Placeholder="Search transactions, payees, transfers" Label="Search your transactions, payees, transfers, and disputes" />
             }
         </ChildContent>
     </Navbar>

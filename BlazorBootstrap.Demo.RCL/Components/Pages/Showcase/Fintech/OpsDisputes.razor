@@ -7,7 +7,10 @@
     <div class="tm-page-head">
         <div>
             <h1 class="tm-title">Disputes</h1>
-            <p class="tm-lead">Charges customers asked us to look into: start a review, then refund or decline each one.</p>
+            <p class="tm-lead">
+                Charges customers asked us to look into: start a review, then refund or decline each one. A dispute still open after
+                @FintechState.DisputeTargetDays days is overdue and escalated to operations.
+            </p>
         </div>
     </div>
 
@@ -21,65 +24,132 @@
                     <dd class="tm-amount">@All.Count(dispute => dispute.Status == status)</dd>
                 </div>
             }
+            <div>
+                <dt>Overdue</dt>
+                <dd class="tm-amount">@All.Count(IsOverdue)</dd>
+            </div>
         </dl>
     </section>
 
+    <Card Class="tm-card mb-3">
+        <CardBody Class="p-3 p-lg-4">
+            <h2 class="tm-section-title mb-3" id="tm-opsdisputes-filters-title">Filter disputes</h2>
+            <div class="tm-list-filters" role="group" aria-labelledby="tm-opsdisputes-filters-title">
+                <div class="tm-list-search">
+                    <label class="form-label small fw-semibold" for="tm-opsdisputes-search">Search</label>
+                    <input id="tm-opsdisputes-search" type="search" class="form-control" value="@searchBoxValue" placeholder="Number, customer, or merchant"
+                           autocomplete="off" maxlength="80" @oninput="OnSearchInputAsync" @onchange="OnSearchChanged" />
+                </div>
+                <div>
+                    <label class="form-label small fw-semibold" for="tm-opsdisputes-status">Status</label>
+                    <select id="tm-opsdisputes-status" class="form-select" @bind="statusFilter" @bind:after="FiltersChangedAsync">
+                        <option value="@OpenValue">Open (@Count(OpenValue))</option>
+                        <option value="@OverdueValue">Overdue (@Count(OverdueValue))</option>
+                        @foreach (var status in Enum.GetValues<FintechDisputeStatus>())
+                        {
+                            <option value="@status">@Disputes.StatusText(status) (@Count(status.ToString()))</option>
+                        }
+                        <option value="">All (@All.Count)</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="form-label small fw-semibold" for="tm-opsdisputes-reason">Reason</label>
+                    <select id="tm-opsdisputes-reason" class="form-select" @bind="reasonFilter" @bind:after="FiltersChangedAsync">
+                        <option value="">Any reason</option>
+                        @foreach (var reason in Enum.GetValues<FintechDisputeReason>())
+                        {
+                            <option value="@reason">@ReasonText(reason)</option>
+                        }
+                    </select>
+                </div>
+            </div>
+            <div class="tm-list-meta mb-0">
+                <p class="small text-body-secondary mb-0" aria-live="polite" tabindex="-1" @ref="countRegion">Showing @Shown.Count of @All.Count disputes.</p>
+                @if (IsFiltered)
+                {
+                    <Button Color="ButtonColor.Link" Size="ButtonSize.Small" Class="p-0" @onclick="ClearFiltersAsync">Show open disputes</Button>
+                }
+                <Button Color="ButtonColor.Link" Size="ButtonSize.Small" Class="p-0" @onclick="ResetViewAsync">Reset view</Button>
+            </div>
+            <p class="tm-list-status mt-2" role="status">@statusMessage</p>
+        </CardBody>
+    </Card>
+
     <Card Class="tm-card">
         <CardBody Class="p-3 p-lg-4">
-            <fieldset class="mb-3">
-                <legend class="form-label small fw-semibold mb-2">Show</legend>
-                <div class="btn-group flex-wrap" role="group">
-                    @foreach (var option in FilterOptions)
-                    {
-                        var optionId = $"tm-opsdisputes-filter-{option.Filter.ToString().ToLowerInvariant()}";
-                        <input type="radio" class="btn-check" name="tm-opsdisputes-filter" id="@optionId" checked="@(filter == option.Filter)"
-                               @onchange="() => filter = option.Filter" />
-                        <label class="btn btn-outline-primary btn-sm" for="@optionId">@option.Label (@Count(option.Filter))</label>
-                    }
-                </div>
-            </fieldset>
-
-            @* Announces the new count when the filter changes; the caption says the same for table navigation. *@
-            <p class="visually-hidden" role="status">@CaptionText</p>
-
-            <div class="table-responsive tm-grid">
-                <table class="table table-hover align-middle mb-0">
-                    <caption class="caption-top small">@CaptionText</caption>
-                    <thead>
-                        <tr>
-                            <th scope="col">Dispute</th>
-                            <th scope="col">Customer</th>
-                            <th scope="col">Merchant</th>
-                            <th scope="col" class="text-end">Amount</th>
-                            <th scope="col">Reason</th>
-                            <th scope="col">Status</th>
-                            <th scope="col">Opened</th>
-                            <th scope="col">Age</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @if (Shown.Count == 0)
-                        {
-                            <tr>
-                                <td colspan="8" class="text-body-secondary py-4 text-center">@EmptyText</td>
-                            </tr>
-                        }
-                        @foreach (var dispute in Shown)
-                        {
-                            <tr @key="dispute.Id">
-                                <td class="text-nowrap"><a class="fw-semibold tm-mono" href="@DisputePath(dispute.Id)">@dispute.Id</a></td>
-                                <td class="text-nowrap"><a href="@OpsCustomers.CustomerPath(dispute.CustomerId)">@CustomerName(dispute.CustomerId)</a></td>
-                                <td>@dispute.Merchant</td>
-                                <td class="tm-mono text-end text-nowrap">@FintechDisplay.Money(dispute.Amount)</td>
-                                <td>@ReasonText(dispute.Reason)</td>
-                                <td><Badge Color="Disputes.StatusColor(dispute.Status)" Class="rounded-pill text-nowrap">@Disputes.StatusText(dispute.Status)</Badge></td>
-                                <td class="tm-mono small text-nowrap">@Disputes.DayText(dispute.CreatedAt)</td>
-                                <td class="small text-nowrap">@AgeText(dispute, State.Clock.Now)</td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            </div>
+            <ShowcaseDataState Status="@(viewLoaded ? ShowcaseDataStatus.Ready : ShowcaseDataStatus.Loading)"
+                               IsEmpty="@(All.Count == 0)"
+                               EmptyIcon="IconName.ExclamationOctagon"
+                               EmptyTitle="No disputes yet"
+                               EmptyText="Disputes appear here when customers ask us to look into a charge."
+                               LoadingText="Loading disputes…"
+                               OnRetry="RefreshGridAsync">
+                <EmptyActions>
+                    <a class="btn btn-sm btn-outline-primary" href="@($"{FintechOpsLayout.Base}/queue")">Go to the review queue</a>
+                </EmptyActions>
+                <ChildContent>
+                    <Grid @ref="grid"
+                          @key="gridVersion"
+                          TItem="DisputeRow"
+                          Class="table table-hover align-middle tm-table-wide sc-grid-row-links"
+                          GridContainerClass="tm-grid border rounded-3"
+                          DataProvider="ProvideRowsAsync"
+                          SettingsProvider="view.GetSettingsAsync"
+                          GridSettingsChanged="SaveSettingsAsync"
+                          AllowPaging="true"
+                          PageSize="@pageSize"
+                          PageSizeSelectorVisible="true"
+                          PageSizeSelectorItems="@(new[] { 10, 25, 50, 100 })"
+                          PaginationItemsTextFormat="{0}–{1} of {2} disputes"
+                          AllowSorting="true"
+                          AllowColumnChooser="true"
+                          AllowExport="true"
+                          ExportFileName="banking-disputes"
+                          Responsive="true"
+                          EmptyText="No disputes match these filters. Choose another status, or search for part of a name or merchant."
+                          aria-label="Disputes">
+                        <GridColumns>
+                            <GridColumn TItem="DisputeRow" HeaderText="Dispute" PropertyName="Id" SortString="id" SortKeySelector="row => row.Id"
+                                        IsDefaultSortColumn="@view.IsSortColumn("id")" SortDirection="@view.DirectionFor("id")" AlwaysVisible="true" TextNoWrap="true">
+                                @* The stretched link makes the whole row open the dispute. *@
+                                <a class="tm-row-link tm-mono stretched-link" href="@DisputePath(context.Id)">@context.Id</a>
+                            </GridColumn>
+                            <GridColumn TItem="DisputeRow" HeaderText="Customer" PropertyName="Customer" SortString="customer" SortKeySelector="row => row.Customer"
+                                        IsDefaultSortColumn="@view.IsSortColumn("customer")" SortDirection="@view.DirectionFor("customer")" TextNoWrap="true">
+                                @context.Customer
+                            </GridColumn>
+                            <GridColumn TItem="DisputeRow" HeaderText="Merchant" PropertyName="Merchant" SortString="merchant" SortKeySelector="row => row.Merchant"
+                                        IsDefaultSortColumn="@view.IsSortColumn("merchant")" SortDirection="@view.DirectionFor("merchant")">
+                                @context.Merchant
+                            </GridColumn>
+                            <GridColumn TItem="DisputeRow" HeaderText="Amount" PropertyName="Amount" SortString="amount" SortKeySelector="row => row.Amount"
+                                        IsDefaultSortColumn="@view.IsSortColumn("amount")" SortDirection="@view.DirectionFor("amount")" TextAlignment="Alignment.End" TextNoWrap="true">
+                                <span class="tm-mono">@FintechDisplay.Money(context.Amount)</span>
+                            </GridColumn>
+                            <GridColumn TItem="DisputeRow" HeaderText="Reason" PropertyName="Reason" SortString="reason" SortKeySelector="row => row.Reason"
+                                        IsDefaultSortColumn="@view.IsSortColumn("reason")" SortDirection="@view.DirectionFor("reason")">
+                                @context.Reason
+                            </GridColumn>
+                            <GridColumn TItem="DisputeRow" HeaderText="Status" PropertyName="Status" SortString="status" SortKeySelector="row => row.StatusValue"
+                                        IsDefaultSortColumn="@view.IsSortColumn("status")" SortDirection="@view.DirectionFor("status")" TextNoWrap="true">
+                                <Badge Color="Disputes.StatusColor(context.StatusValue)" Class="rounded-pill">@context.Status</Badge>
+                                @if (context.Overdue)
+                                {
+                                    <Badge Color="BadgeColor.Danger" Class="rounded-pill ms-1">Overdue</Badge>
+                                }
+                            </GridColumn>
+                            <GridColumn TItem="DisputeRow" HeaderText="Opened" PropertyName="Opened" SortString="opened" SortKeySelector="row => row.Opened"
+                                        IsDefaultSortColumn="@view.IsSortColumn("opened")" SortDirection="@view.DirectionFor("opened")" TextNoWrap="true">
+                                <span class="tm-mono small">@Disputes.DayText(context.Opened)</span>
+                            </GridColumn>
+                            <GridColumn TItem="DisputeRow" HeaderText="Age" PropertyName="Age" SortString="age" SortKeySelector="row => row.AgeDays"
+                                        IsDefaultSortColumn="@view.IsSortColumn("age")" SortDirection="@view.DirectionFor("age")" TextNoWrap="true">
+                                <span class="small">@context.Age</span>
+                            </GridColumn>
+                        </GridColumns>
+                    </Grid>
+                </ChildContent>
+            </ShowcaseDataState>
         </CardBody>
     </Card>
 </div>

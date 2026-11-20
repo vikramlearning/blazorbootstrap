@@ -19,80 +19,110 @@
     @* Always rendered and focusable, so a cancellation is announced and focus has somewhere to go once the dialog closes. *@
     <p class="tm-tr-status" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
 
-    @{
-        var transfers = State.MyTransfers();
-        var upcoming = transfers.Where(IsWaiting).OrderBy(transfer => transfer.Date).ThenBy(transfer => transfer.CreatedAt).ToList();
-        var recent = transfers.Where(transfer => !IsWaiting(transfer)).OrderByDescending(transfer => transfer.ClosedAt ?? transfer.CreatedAt).ToList();
-    }
-
-    <section class="tm-panel mb-4" aria-labelledby="tm-tr-upcoming-title">
-        <h2 class="tm-section-title" id="tm-tr-upcoming-title">Coming up</h2>
-        @if (upcoming.Count == 0)
-        {
-            <p class="text-body-secondary mb-0">Nothing coming up. Transfers you schedule for a later date, and transfers held for a check, appear here until they're sent.</p>
-        }
-        else
-        {
-            <p class="small text-body-secondary">The money for these is set aside in the account they're sent from. Cancel one to release it.</p>
-            <ul class="list-unstyled mb-0">
-                @foreach (var transfer in upcoming)
+    <Card Class="tm-card">
+        <CardBody Class="p-3 p-lg-4">
+            <h2 class="visually-hidden" id="tm-tr-filters-title">Filter transfers</h2>
+            <div class="tm-list-filters" role="group" aria-labelledby="tm-tr-filters-title">
+                <div class="tm-list-search">
+                    <label class="form-label small fw-semibold" for="tm-tr-search">Search</label>
+                    <input id="tm-tr-search" type="search" class="form-control" value="@searchBoxValue" placeholder="Recipient, reference, or note"
+                           autocomplete="off" maxlength="80" @oninput="OnSearchInputAsync" @onchange="OnSearchChanged" />
+                </div>
+                <div>
+                    <label class="form-label small fw-semibold" for="tm-tr-status-filter">Show</label>
+                    <select id="tm-tr-status-filter" class="form-select" @bind="statusFilter" @bind:after="FiltersChangedAsync">
+                        <option value="">All transfers (@Mine.Count)</option>
+                        <option value="@WaitingValue">Coming up and held (@Mine.Count(IsWaiting))</option>
+                        @foreach (var status in Enum.GetValues<FintechTransferStatus>())
+                        {
+                            <option value="@status">@StatusText(status) (@Mine.Count(transfer => transfer.Status == status))</option>
+                        }
+                    </select>
+                </div>
+            </div>
+            <div class="tm-list-meta">
+                <p class="small text-body-secondary mb-0" aria-live="polite">Showing @Rows.Count of @Mine.Count transfers. The money for scheduled and held ones is set aside; cancel one to release it.</p>
+                @if (searchBoxValue.Length > 0 || statusFilter.Length > 0)
                 {
-                    <li class="tm-row tm-tr-row" @key="transfer.Reference">
-                        <span class="tm-icon" aria-hidden="true"><Icon Name="@(transfer.Status == FintechTransferStatus.Held ? IconName.ShieldExclamation : IconName.CalendarEvent)" /></span>
-                        <span class="tm-row-text">
-                            <a class="tm-row-title tm-tr-link" href="@ReceiptUrl(transfer.Reference)">To @transfer.ToName</a>
-                            <span class="tm-row-sub">From @AccountName(transfer.FromAccountId) · @DateText(transfer.Date) · <span class="tm-mono">@transfer.Reference</span></span>
-                            @if (transfer.HoldReason is { } reason)
-                            {
-                                <span class="tm-row-sub">Held for a check: @reason. We usually check within one business day.</span>
-                            }
-                        </span>
-                        <span class="tm-tr-side">
-                            <span class="tm-mono fw-semibold">@FintechDisplay.Money(transfer.Amount)</span>
-                            <Badge Color="StatusColor(transfer.Status)" Class="rounded-pill">@StatusText(transfer.Status)</Badge>
-                            <button type="button" class="btn btn-sm btn-outline-danger" @ref="cancelButtons[transfer.Reference]" @onclick="() => AskCancelAsync(transfer)"
-                                    aria-label="@($"Cancel the {FintechDisplay.Money(transfer.Amount)} transfer to {transfer.ToName}")">Cancel</button>
-                        </span>
-                    </li>
+                    <Button Color="ButtonColor.Link" Size="ButtonSize.Small" Class="p-0" @onclick="ClearFiltersAsync">Show every transfer</Button>
                 }
-            </ul>
-        }
-    </section>
+                <Button Color="ButtonColor.Link" Size="ButtonSize.Small" Class="p-0" @onclick="ResetViewAsync">Reset view</Button>
+            </div>
 
-    <section class="tm-panel" aria-labelledby="tm-tr-recent-title">
-        <h2 class="tm-section-title" id="tm-tr-recent-title">Recent</h2>
-        @if (recent.Count == 0)
-        {
-            <p class="text-body-secondary mb-3">No sent, rejected, or cancelled transfers yet.</p>
-            <a class="btn btn-primary" href="@($"{FintechLayout.Base}/transfer")">New transfer</a>
-        }
-        else
-        {
-            <ul class="list-unstyled mb-0">
-                @foreach (var transfer in recent)
-                {
-                    <li class="tm-row tm-tr-row" @key="transfer.Reference">
-                        <span class="tm-icon" aria-hidden="true"><Icon Name="@StatusIcon(transfer.Status)" /></span>
-                        <span class="tm-row-text">
-                            <a class="tm-row-title tm-tr-link" href="@ReceiptUrl(transfer.Reference)">To @transfer.ToName</a>
-                            <span class="tm-row-sub">From @AccountName(transfer.FromAccountId) · @ClosedText(transfer) · <span class="tm-mono">@transfer.Reference</span></span>
-                            @if (transfer.Status == FintechTransferStatus.Rejected && transfer.RejectReason is { } reason)
-                            {
-                                <span class="tm-row-sub">Not sent: @reason</span>
-                            }
-                        </span>
-                        <span class="tm-tr-side">
-                            <span class="tm-mono fw-semibold">@FintechDisplay.Money(transfer.Amount)</span>
-                            <Badge Color="StatusColor(transfer.Status)" Class="rounded-pill">@StatusText(transfer.Status)</Badge>
-                        </span>
-                    </li>
-                }
-            </ul>
-        }
-    </section>
+            <ShowcaseDataState Status="@(viewLoaded ? ShowcaseDataStatus.Ready : ShowcaseDataStatus.Loading)"
+                               IsEmpty="@(Mine.Count == 0)"
+                               EmptyIcon="IconName.ArrowLeftRight"
+                               EmptyTitle="No transfers yet"
+                               EmptyText="Move money between your accounts or to someone you pay. Scheduled and held transfers show here until they're sent."
+                               LoadingText="Loading transfers…"
+                               OnRetry="RefreshGridAsync">
+                <EmptyActions>
+                    <a class="btn btn-sm btn-primary" href="@($"{FintechLayout.Base}/transfer")">New transfer</a>
+                </EmptyActions>
+                <ChildContent>
+                    <Grid @ref="grid"
+                          @key="gridVersion"
+                          TItem="TransferRow"
+                          Class="table table-hover align-middle tm-table-mid sc-grid-row-links"
+                          GridContainerClass="tm-grid border rounded-3"
+                          DataProvider="ProvideRowsAsync"
+                          SettingsProvider="view.GetSettingsAsync"
+                          GridSettingsChanged="SaveSettingsAsync"
+                          AllowPaging="true"
+                          PageSize="@pageSize"
+                          PageSizeSelectorVisible="true"
+                          PageSizeSelectorItems="@(new[] { 10, 25, 50 })"
+                          PaginationItemsTextFormat="{0}–{1} of {2} transfers"
+                          AllowSorting="true"
+                          AllowColumnChooser="true"
+                          AllowExport="true"
+                          ExportFileName="banking-transfers"
+                          Responsive="true"
+                          EmptyText="No transfers match these filters. Show every transfer, or search for part of a name."
+                          aria-label="Your transfers">
+                        <GridColumns>
+                            <GridColumn TItem="TransferRow" HeaderText="To" PropertyName="To" SortString="to" SortKeySelector="row => row.To"
+                                        IsDefaultSortColumn="@view.IsSortColumn("to")" SortDirection="@view.DirectionFor("to")" AlwaysVisible="true">
+                                @* The stretched link makes the whole row open the receipt; the Cancel button stays above it. *@
+                                <a class="tm-row-link stretched-link" href="@ReceiptUrl(context.Reference)">@context.To</a>
+                                <span class="d-block small text-body-secondary">From @context.From</span>
+                                @if (context.Reason.Length > 0)
+                                {
+                                    <span class="d-block small">@context.Reason</span>
+                                }
+                            </GridColumn>
+                            <GridColumn TItem="TransferRow" HeaderText="Reference" PropertyName="Reference" SortString="reference" SortKeySelector="row => row.Reference"
+                                        IsDefaultSortColumn="@view.IsSortColumn("reference")" SortDirection="@view.DirectionFor("reference")" TextNoWrap="true">
+                                <span class="tm-mono small">@context.Reference</span>
+                            </GridColumn>
+                            <GridColumn TItem="TransferRow" HeaderText="Date" PropertyName="Date" SortString="date" SortKeySelector="row => row.Date"
+                                        IsDefaultSortColumn="@view.IsSortColumn("date")" SortDirection="@view.DirectionFor("date")" TextNoWrap="true">
+                                <span class="small">@DateText(context.Date)</span>
+                            </GridColumn>
+                            <GridColumn TItem="TransferRow" HeaderText="Amount" PropertyName="Amount" SortString="amount" SortKeySelector="row => row.Amount"
+                                        IsDefaultSortColumn="@view.IsSortColumn("amount")" SortDirection="@view.DirectionFor("amount")" TextAlignment="Alignment.End" TextNoWrap="true">
+                                <span class="tm-mono fw-semibold">@FintechDisplay.Money(context.Amount)</span>
+                            </GridColumn>
+                            <GridColumn TItem="TransferRow" HeaderText="Status" PropertyName="Status" SortString="status" SortKeySelector="row => row.Order"
+                                        IsDefaultSortColumn="@view.IsSortColumn("status")" SortDirection="@view.DirectionFor("status")" TextNoWrap="true">
+                                <Badge Color="StatusColor(context.StatusValue)" Class="rounded-pill">@context.Status</Badge>
+                            </GridColumn>
+                            <GridColumn TItem="TransferRow" HeaderText="Action" PropertyName="Reference" Sortable="false" Exportable="false" TextNoWrap="true">
+                                @if (IsWaiting(context.StatusValue))
+                                {
+                                    <button type="button" class="btn btn-sm btn-outline-danger" @ref="cancelButtons[context.Reference]" @onclick="() => AskCancelAsync(context.Reference)"
+                                            aria-label="@($"Cancel the {FintechDisplay.Money(context.Amount)} transfer to {context.To}")">Cancel</button>
+                                }
+                            </GridColumn>
+                        </GridColumns>
+                    </Grid>
+                </ChildContent>
+            </ShowcaseDataState>
+        </CardBody>
+    </Card>
 </div>
 
-@* Outside the lists, so the dialog is never removed while it is open. *@
+@* Outside the list, so the dialog is never removed while it is open. *@
 <Modal @ref="cancelModal" IsVerticallyCentered="true" ShowCloseButton="false" aria-labelledby="tm-tr-cancel-title" OnHidden="OnCancelHiddenAsync">
     <HeaderTemplate>
         <h2 class="modal-title h5" id="tm-tr-cancel-title">Cancel the transfer to @cancelling?.ToName?</h2>

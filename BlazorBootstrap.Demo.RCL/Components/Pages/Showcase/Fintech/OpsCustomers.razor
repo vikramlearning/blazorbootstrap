@@ -7,87 +7,141 @@
     <div class="tm-page-head">
         <div>
             <h1 class="tm-title">Customers</h1>
-            <p class="tm-lead">Everyone who banks with us, their standing, and what's waiting on operations for each.</p>
+            <p class="tm-lead">Everyone who banks with us, their standing, and what's waiting on operations for each. Open a customer for their accounts, transfers, disputes, and notes.</p>
         </div>
     </div>
 
-    <Card Class="tm-card">
+    <Card Class="tm-card mb-3">
         <CardBody Class="p-3 p-lg-4">
-            <div class="row g-2 align-items-end mb-3" role="search" aria-label="Filter customers">
-                <div class="col-md-6 col-lg-5">
-                    <label class="form-label small fw-semibold" for="tm-opscustomers-search">Search by name, email, or city</label>
-                    <input type="search" id="tm-opscustomers-search" class="form-control" maxlength="100" autocomplete="off"
-                           placeholder="For example, Lena or Denver" @bind="search" @bind:event="oninput" />
+            <h2 class="tm-section-title mb-3" id="tm-opscustomers-filters-title">Filter customers</h2>
+            <div class="tm-list-filters" role="group" aria-labelledby="tm-opscustomers-filters-title">
+                <div class="tm-list-search">
+                    <label class="form-label small fw-semibold" for="tm-opscustomers-search">Search</label>
+                    <input id="tm-opscustomers-search" type="search" class="form-control" value="@searchBoxValue" placeholder="Name, customer ID, email, or city"
+                           autocomplete="off" maxlength="100" @oninput="OnSearchInputAsync" @onchange="OnSearchChanged" />
                 </div>
-                <div class="col-sm-6 col-md-3 col-lg-2">
+                <div>
                     <label class="form-label small fw-semibold" for="tm-opscustomers-status">Status</label>
-                    <select id="tm-opscustomers-status" class="form-select" value="@statusFilter" @onchange="OnStatusChanged">
+                    <select id="tm-opscustomers-status" class="form-select" @bind="statusFilter" @bind:after="FiltersChangedAsync">
                         <option value="">All statuses</option>
                         <option value="@nameof(FintechCustomerStatus.Active)">@StatusText(FintechCustomerStatus.Active)</option>
                         <option value="@nameof(FintechCustomerStatus.Watch)">@StatusText(FintechCustomerStatus.Watch)</option>
                     </select>
                 </div>
-                <div class="col-md-3 col-lg-5 d-flex flex-wrap align-items-center gap-2 justify-content-md-end">
-                    @* Polite, so the count is read after typing pauses or the filter changes. *@
-                    <span class="small text-body-secondary" role="status">@MatchText</span>
-                    @if (HasFilters)
-                    {
-                        <Button Color="ButtonColor.Link" Size="ButtonSize.Small" Class="p-0" @onclick="ClearFilters">Clear filters</Button>
-                    }
+                <div>
+                    <label class="form-label small fw-semibold" for="tm-opscustomers-segment">Segment</label>
+                    <select id="tm-opscustomers-segment" class="form-select" @bind="segmentFilter" @bind:after="FiltersChangedAsync">
+                        <option value="">All segments</option>
+                        @foreach (var segment in Segments)
+                        {
+                            <option value="@segment">@segment</option>
+                        }
+                    </select>
+                </div>
+                <div>
+                    <label class="form-label small fw-semibold" for="tm-opscustomers-open">Open items</label>
+                    <select id="tm-opscustomers-open" class="form-select" @bind="openFilter" @bind:after="FiltersChangedAsync">
+                        <option value="">Anyone</option>
+                        <option value="@WithOpenValue">With held transfers or open disputes</option>
+                    </select>
                 </div>
             </div>
-
-            <div class="table-responsive tm-grid">
-                <table class="table table-hover align-middle mb-0">
-                    <caption class="caption-top small">Customers by name. Open items are held transfers and open disputes.</caption>
-                    <thead>
-                        <tr>
-                            <th scope="col">Name</th>
-                            <th scope="col">Email</th>
-                            <th scope="col">City</th>
-                            <th scope="col">Segment</th>
-                            <th scope="col">Customer since</th>
-                            <th scope="col">Status</th>
-                            <th scope="col" class="text-end">Accounts</th>
-                            <th scope="col" class="text-end">Total balance</th>
-                            <th scope="col" class="text-end">Open items</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @if (Shown.Count == 0)
-                        {
-                            <tr>
-                                <td colspan="9" class="text-body-secondary py-4 text-center">No customers match these filters.</td>
-                            </tr>
-                        }
-                        @foreach (var customer in Shown)
-                        {
-                            var open = OpenItems(customer.Id);
-                            <tr @key="customer.Id">
-                                <td class="text-nowrap"><a class="fw-semibold" href="@CustomerPath(customer.Id)">@customer.Name</a></td>
-                                <td class="text-break small">@customer.Email</td>
-                                <td>@customer.City</td>
-                                <td>@customer.Segment</td>
-                                <td class="tm-mono small text-nowrap">@SinceText(customer.Since)</td>
-                                <td><Badge Color="StatusColor(customer.Status)" Class="text-nowrap">@StatusText(customer.Status)</Badge></td>
-                                <td class="tm-mono text-end">@customer.AccountCount</td>
-                                <td class="tm-mono text-end text-nowrap">@(customer.TotalBalance < 0 ? "−" : null)@FintechDisplay.Money(customer.TotalBalance)</td>
-                                <td class="text-end text-nowrap">
-                                    @if (open.Total == 0)
-                                    {
-                                        <span class="text-body-secondary">None</span>
-                                    }
-                                    else
-                                    {
-                                        <span class="fw-semibold">@open.Total</span>
-                                        <span class="d-block small text-body-secondary">@OpenItemsText(open)</span>
-                                    }
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
+            <div class="tm-list-meta mb-0">
+                <p class="small text-body-secondary mb-0" aria-live="polite" tabindex="-1" @ref="countRegion">Showing @Count(Shown.Count) of @Count(State.Customers.Count) customers.</p>
+                @if (IsFiltered)
+                {
+                    <Button Color="ButtonColor.Link" Size="ButtonSize.Small" Class="p-0" @onclick="ClearFiltersAsync">Clear filters</Button>
+                }
+                <Button Color="ButtonColor.Link" Size="ButtonSize.Small" Class="p-0" @onclick="ResetViewAsync">Reset view</Button>
             </div>
+            <p class="tm-list-status mt-2" role="status">@statusMessage</p>
+        </CardBody>
+    </Card>
+
+    <Card Class="tm-card">
+        <CardBody Class="p-3 p-lg-4">
+            <ShowcaseDataState Status="@(viewLoaded ? ShowcaseDataStatus.Ready : ShowcaseDataStatus.Loading)"
+                               IsEmpty="@(State.Customers.Count == 0)"
+                               EmptyIcon="IconName.People"
+                               EmptyTitle="No customers"
+                               EmptyText="Customers appear here once they open an account in a branch or the app."
+                               LoadingText="Loading customers…"
+                               OnRetry="RefreshGridAsync">
+                <ChildContent>
+                    <Grid @ref="grid"
+                          @key="gridVersion"
+                          TItem="CustomerRow"
+                          Class="table table-hover align-middle tm-table-wide sc-grid-row-links"
+                          GridContainerClass="tm-grid border rounded-3"
+                          DataProvider="ProvideRowsAsync"
+                          SettingsProvider="view.GetSettingsAsync"
+                          GridSettingsChanged="SaveSettingsAsync"
+                          AllowPaging="true"
+                          PageSize="@pageSize"
+                          PageSizeSelectorVisible="true"
+                          PageSizeSelectorItems="@(new[] { 10, 25, 50, 100 })"
+                          PaginationItemsTextFormat="{0}–{1} of {2} customers"
+                          AllowSorting="true"
+                          AllowColumnChooser="true"
+                          AllowExport="true"
+                          ExportFileName="banking-customers"
+                          Responsive="true"
+                          EmptyText="No customers match these filters. Clear a filter, or search for part of a name, ID, or email."
+                          aria-label="Customers">
+                        <GridColumns>
+                            <GridColumn TItem="CustomerRow" HeaderText="Name" PropertyName="Name" SortString="name" SortKeySelector="row => row.Name"
+                                        IsDefaultSortColumn="@view.IsSortColumn("name")" SortDirection="@view.DirectionFor("name")" AlwaysVisible="true" TextNoWrap="true">
+                                @* The stretched link makes the whole row open the customer. *@
+                                <a class="tm-row-link stretched-link" href="@CustomerPath(context.Id)">@context.Name</a>
+                            </GridColumn>
+                            <GridColumn TItem="CustomerRow" HeaderText="Customer ID" PropertyName="Id" SortString="id" SortKeySelector="row => row.Id"
+                                        IsDefaultSortColumn="@view.IsSortColumn("id")" SortDirection="@view.DirectionFor("id")" TextNoWrap="true">
+                                <span class="tm-mono small">@context.Id</span>
+                            </GridColumn>
+                            <GridColumn TItem="CustomerRow" HeaderText="Email" PropertyName="Email" SortString="email" SortKeySelector="row => row.Email"
+                                        IsDefaultSortColumn="@view.IsSortColumn("email")" SortDirection="@view.DirectionFor("email")">
+                                <span class="small text-break">@context.Email</span>
+                            </GridColumn>
+                            <GridColumn TItem="CustomerRow" HeaderText="City" PropertyName="City" SortString="city" SortKeySelector="row => row.City"
+                                        IsDefaultSortColumn="@view.IsSortColumn("city")" SortDirection="@view.DirectionFor("city")" TextNoWrap="true">
+                                @context.City
+                            </GridColumn>
+                            <GridColumn TItem="CustomerRow" HeaderText="Segment" PropertyName="Segment" SortString="segment" SortKeySelector="row => row.Segment"
+                                        IsDefaultSortColumn="@view.IsSortColumn("segment")" SortDirection="@view.DirectionFor("segment")" TextNoWrap="true">
+                                @context.Segment
+                            </GridColumn>
+                            <GridColumn TItem="CustomerRow" HeaderText="Customer since" PropertyName="Since" SortString="since" SortKeySelector="row => row.Since"
+                                        IsDefaultSortColumn="@view.IsSortColumn("since")" SortDirection="@view.DirectionFor("since")" TextNoWrap="true">
+                                <span class="tm-mono small">@SinceText(context.Since)</span>
+                            </GridColumn>
+                            <GridColumn TItem="CustomerRow" HeaderText="Status" PropertyName="Status" SortString="status" SortKeySelector="row => row.Status"
+                                        IsDefaultSortColumn="@view.IsSortColumn("status")" SortDirection="@view.DirectionFor("status")" TextNoWrap="true">
+                                <Badge Color="StatusColor(context.StatusValue)">@context.Status</Badge>
+                            </GridColumn>
+                            <GridColumn TItem="CustomerRow" HeaderText="Accounts" PropertyName="Accounts" SortString="accounts" SortKeySelector="row => row.Accounts"
+                                        IsDefaultSortColumn="@view.IsSortColumn("accounts")" SortDirection="@view.DirectionFor("accounts")" TextAlignment="Alignment.End">
+                                <span class="tm-mono">@context.Accounts</span>
+                            </GridColumn>
+                            <GridColumn TItem="CustomerRow" HeaderText="Total balance" PropertyName="TotalBalance" SortString="balance" SortKeySelector="row => row.TotalBalance"
+                                        IsDefaultSortColumn="@view.IsSortColumn("balance")" SortDirection="@view.DirectionFor("balance")" TextAlignment="Alignment.End" TextNoWrap="true">
+                                <span class="tm-mono">@(context.TotalBalance < 0 ? "−" : null)@FintechDisplay.Money(context.TotalBalance)</span>
+                            </GridColumn>
+                            <GridColumn TItem="CustomerRow" HeaderText="Open items" PropertyName="OpenItems" SortString="open" SortKeySelector="row => row.OpenCount"
+                                        IsDefaultSortColumn="@view.IsSortColumn("open")" SortDirection="@view.DirectionFor("open")" TextNoWrap="true">
+                                @if (context.OpenCount == 0)
+                                {
+                                    <span class="text-body-secondary">None</span>
+                                }
+                                else
+                                {
+                                    <span class="fw-semibold">@context.OpenCount</span>
+                                    <span class="d-block small text-body-secondary">@context.OpenItems</span>
+                                }
+                            </GridColumn>
+                        </GridColumns>
+                    </Grid>
+                </ChildContent>
+            </ShowcaseDataState>
         </CardBody>
     </Card>
 </div>

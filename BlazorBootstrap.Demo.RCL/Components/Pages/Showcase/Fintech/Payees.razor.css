@@ -1,4 +1,4 @@
-/* The payees list. Badge, Button, and Icon render their own elements, so those need ::deep. */
+/* The payees page: the list is a Grid (styled by the site frame); only the status line is styled here. */
 
 /* Empty until an action reports, so it takes no space then. */
 .tm-py-status {
@@ -12,54 +12,3 @@
     .tm-py-status:focus {
         outline: none;
     }
-
-.tm-py-list {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr);
-    gap: 1rem;
-}
-
-@media (min-width: 992px) {
-    .tm-py-list {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-}
-
-.tm-py-item {
-    display: flex;
-    align-items: flex-start;
-    gap: .75rem;
-}
-
-.tm-py-text {
-    min-width: 0;
-    flex: 1 1 auto;
-    line-height: 1.45;
-}
-
-.tm-py-name {
-    margin: 0 0 .125rem;
-    font-size: 1rem;
-    font-weight: 700;
-    color: var(--tm-ink);
-    overflow-wrap: anywhere;
-}
-
-.tm-py-rename {
-    margin-top: 1rem;
-    padding-top: 1rem;
-    border-top: 1px solid var(--tm-border);
-}
-
-.tm-py-nickname {
-    flex: 1 1 12rem;
-    width: auto;
-    min-width: 0;
-}
-
-.tm-py-actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: .5rem;
-    margin-top: 1rem;
-}

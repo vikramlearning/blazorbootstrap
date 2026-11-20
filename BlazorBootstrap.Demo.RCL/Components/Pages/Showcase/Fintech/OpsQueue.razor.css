@@ -1,4 +1,4 @@
-/* The review queue. Icon renders its own element, but the site's .tm-icon reaches it through ::deep. */
+/* The review queue: the waiting count beside the heading. */
 
 .tm-oq-count {
     display: inline-block;
@@ -11,21 +11,4 @@
     letter-spacing: 0;
     color: var(--tm-ink);
     background: rgba(var(--sc-primary-rgb), .12);
-}
-
-.tm-oq-empty {
-    display: flex;
-    align-items: flex-start;
-    gap: .75rem;
-}
-
-/* The payee and the hold reason wrap; the other columns stay on one line and the table scrolls inside its box. */
-.tm-oq-wrap {
-    min-width: 9rem;
-    overflow-wrap: anywhere;
-}
-
-.tm-oq-reason {
-    min-width: 14rem;
-    font-size: .875rem;
 }

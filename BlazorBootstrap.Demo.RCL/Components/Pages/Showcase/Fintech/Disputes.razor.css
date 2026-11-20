@@ -1,32 +1,4 @@
-/* The disputes list. Card, CardBody, and Badge render their own elements, so styles inside them need ::deep. */
-
-::deep .tm-dispute-row {
-    align-items: flex-start;
-}
-
-::deep .tm-dispute-link {
-    white-space: normal;
-    text-decoration: underline;
-    text-underline-offset: .2em;
-}
-
-    ::deep .tm-dispute-link:hover {
-        text-decoration-thickness: 2px;
-    }
-
-::deep .tm-dispute-side {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: .25rem;
-    flex: 0 0 auto;
-    text-align: end;
-}
-
-::deep .tm-disputes-empty {
-    padding-block: 2rem;
-    text-align: center;
-}
+/* The disputes page: the list is a Grid (styled by the site frame); the steps beside it are styled here. */
 
 .tm-disputes-steps {
     display: grid;

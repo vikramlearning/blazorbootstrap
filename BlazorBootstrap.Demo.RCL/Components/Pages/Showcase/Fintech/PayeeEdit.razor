@@ -51,12 +51,14 @@
 
                 @if (step == EditStep.Details)
                 {
-                    <form class="tm-panel" @onsubmit="CheckName" @onsubmit:preventDefault novalidate aria-labelledby="tm-pe-details-title">
+                    <EditForm class="tm-panel" EditContext="editContext" OnSubmit="CheckNameAsync" FormName="tm-payee" novalidate aria-labelledby="tm-pe-details-title">
+                        <DataAnnotationsValidator />
                         <h2 class="tm-section-title" id="tm-pe-details-title" tabindex="-1" @ref="detailsTitle">Their details</h2>
+                        <ShowcaseFormErrors ShowSummary="true" />
 
                         <div class="tm-pe-demo mb-4" role="note" aria-label="Demo accounts">
                             <p class="fw-semibold mb-1"><Icon Name="IconName.InfoCircle" class="me-2" aria-hidden="true" />Demo: use made-up numbers only, never real bank details.</p>
-                            <p class="small mb-1">The name check knows four fictitious accounts, with any 9-digit routing number (for example 123456789):</p>
+                            <p class="small mb-1">The name check knows four fictitious accounts, with any valid routing number (for example 123456780):</p>
                             <ul class="small mb-1">
                                 <li><span class="tm-mono">40001001</span>: Morgan Ellis</li>
                                 <li><span class="tm-mono">40001002</span>: Brightwater Plumbing</li>
@@ -68,37 +70,39 @@
 
                         <div class="mb-3">
                             <label class="form-label fw-semibold" for="tm-pe-name">Account holder's name</label>
-                            <input id="tm-pe-name" class="form-control @Invalid("name")" type="text" maxlength="60" autocomplete="off"
-                                   @bind="draft.Name" @bind:after="DetailsChanged" @ref="nameInput" aria-describedby="tm-pe-name-help tm-pe-name-error" />
-                            <div class="form-text" id="tm-pe-name-help">Their full name, or the company's name, as their bank has it.</div>
-                            <p class="text-danger-emphasis small fw-semibold mt-1 mb-0" id="tm-pe-name-error">@Error("name")</p>
+                            <InputText id="tm-pe-name" class="form-control" maxlength="@FintechState.MaxPayeeNameLength" autocomplete="off" @bind-Value="form.Name"
+                                       aria-describedby="tm-pe-name-help" />
+                            <ShowcaseUniqueCheck @ref="nameCheck" For="() => form.Name" IsTakenAsync="IsNameTakenAsync" TakenMessage="NameTakenMessage" />
+                            <div class="form-text mt-0" id="tm-pe-name-help">Their full name, or the company's name, as their bank has it. It must differ from your other payees' names.</div>
+                            <ValidationMessage For="() => form.Name" />
                         </div>
 
                         <div class="row g-3 mb-3">
                             <div class="col-sm-6">
                                 <label class="form-label fw-semibold" for="tm-pe-routing">Routing number</label>
-                                <input id="tm-pe-routing" class="form-control tm-mono @Invalid("routing")" type="text" inputmode="numeric" maxlength="11" autocomplete="off"
-                                       @bind="draft.RoutingNumber" @bind:after="DetailsChanged" @ref="routingInput" aria-describedby="tm-pe-routing-help tm-pe-routing-error" />
-                                <div class="form-text" id="tm-pe-routing-help">9 digits.</div>
-                                <p class="text-danger-emphasis small fw-semibold mt-1 mb-0" id="tm-pe-routing-error">@Error("routing")</p>
+                                <InputText id="tm-pe-routing" class="form-control tm-mono" inputmode="numeric" maxlength="11" autocomplete="off" @bind-Value="form.RoutingNumber"
+                                           aria-describedby="tm-pe-routing-help" />
+                                <div class="form-text" id="tm-pe-routing-help">The 9-digit number of their bank (ABA number), on a check or their bank's website. We check its check digit.</div>
+                                <ValidationMessage For="() => form.RoutingNumber" />
                             </div>
                             <div class="col-sm-6">
                                 <label class="form-label fw-semibold" for="tm-pe-account">Account number</label>
-                                <input id="tm-pe-account" class="form-control tm-mono @Invalid("account")" type="text" inputmode="numeric" maxlength="21" autocomplete="off"
-                                       @bind="draft.AccountNumber" @bind:after="DetailsChanged" @ref="accountInput" aria-describedby="tm-pe-account-help tm-pe-account-error" />
+                                <InputText id="tm-pe-account" class="form-control tm-mono" inputmode="numeric" maxlength="21" autocomplete="off" @bind-Value="form.AccountNumber"
+                                           aria-describedby="tm-pe-account-help" />
                                 <div class="form-text" id="tm-pe-account-help">
                                     4 to 17 digits.@(existing is not null ? $" We only keep the last four ({existing.MaskedAccount}), so enter the full number again." : string.Empty)
                                 </div>
-                                <p class="text-danger-emphasis small fw-semibold mt-1 mb-0" id="tm-pe-account-error">@Error("account")</p>
+                                <ValidationMessage For="() => form.AccountNumber" />
                             </div>
                         </div>
 
                         <div class="mb-4">
                             <label class="form-label fw-semibold" for="tm-pe-nickname">Nickname <span class="fw-normal text-body-secondary">(optional)</span></label>
-                            <input id="tm-pe-nickname" class="form-control @Invalid("nickname")" type="text" maxlength="30" autocomplete="off"
-                                   @bind="draft.Nickname" @ref="nicknameInput" aria-describedby="tm-pe-nickname-help tm-pe-nickname-error" />
-                            <div class="form-text" id="tm-pe-nickname-help">Up to 30 characters, like "Landlord". Only you see it.</div>
-                            <p class="text-danger-emphasis small fw-semibold mt-1 mb-0" id="tm-pe-nickname-error">@Error("nickname")</p>
+                            <InputText id="tm-pe-nickname" class="form-control" maxlength="@FintechState.MaxNicknameLength" autocomplete="off" @bind-Value="form.Nickname"
+                                       aria-describedby="tm-pe-nickname-help" />
+                            <ShowcaseUniqueCheck @ref="nicknameCheck" For="() => form.Nickname" IsTakenAsync="IsNicknameTakenAsync" TakenMessage="NicknameTakenMessage" />
+                            <div class="form-text mt-0" id="tm-pe-nickname-help">Up to @FintechState.MaxNicknameLength characters, like "Landlord", and different from your other payees' nicknames. Only you see it.</div>
+                            <ValidationMessage For="() => form.Nickname" />
                         </div>
 
                         @* Always rendered, so the name-check result is announced when it appears. *@
@@ -110,7 +114,7 @@
                                     case FintechPayeeMatch.Match:
                                         <Alert Color="AlertColor.Success" Class="mb-3">
                                             <h3 class="h6 fw-bold mb-1"><Icon Name="IconName.PatchCheckFill" class="me-2" aria-hidden="true" />Name confirmed</h3>
-                                            <p class="mb-0">The account at @result.BankName is in the name of @(result.ActualName ?? draft.Name).</p>
+                                            <p class="mb-0">The account at @result.BankName is in the name of @(result.ActualName ?? form.Name).</p>
                                         </Alert>
                                         break;
 
@@ -119,7 +123,7 @@
                                             <h3 class="h6 fw-bold mb-1"><Icon Name="IconName.PatchExclamationFill" class="me-2" aria-hidden="true" />Close match</h3>
                                             <p class="mb-2">The account at @result.BankName is in the name of <strong>@result.ActualName</strong>, not @checkedName. Use the account holder's name so the payee is easy to recognize.</p>
                                             <div class="d-flex flex-wrap gap-2">
-                                                <Button Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="UseActualName">Use @result.ActualName</Button>
+                                                <Button Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="UseActualNameAsync">Use @result.ActualName</Button>
                                             </div>
                                             <p class="small mb-0 mt-2">You can continue with the name you typed; the payee is then marked as a close match.</p>
                                         </Alert>
@@ -160,7 +164,7 @@
                             }
                             <a class="btn btn-link" href="@ListUrl">Cancel</a>
                         </div>
-                    </form>
+                    </EditForm>
                 }
                 else
                 {
@@ -168,13 +172,13 @@
                         <h2 class="tm-section-title" id="tm-pe-review-title" tabindex="-1" @ref="reviewTitle">Check the payee</h2>
                         <dl class="row tm-summary mb-3">
                             <dt class="col-sm-4">Name</dt>
-                            <dd class="col-sm-8 text-break">@draft.Name.Trim()</dd>
+                            <dd class="col-sm-8 text-break">@form.Name.Trim()</dd>
                             <dt class="col-sm-4">Nickname</dt>
-                            <dd class="col-sm-8 text-break">@(string.IsNullOrWhiteSpace(draft.Nickname) ? "None" : draft.Nickname.Trim())</dd>
+                            <dd class="col-sm-8 text-break">@(string.IsNullOrWhiteSpace(form.Nickname) ? "None" : form.Nickname.Trim())</dd>
                             <dt class="col-sm-4">Bank</dt>
                             <dd class="col-sm-8">@check?.BankName</dd>
                             <dt class="col-sm-4">Account</dt>
-                            <dd class="col-sm-8 tm-mono">•••• @LastFour(draft.AccountNumber)</dd>
+                            <dd class="col-sm-8 tm-mono">•••• @LastFour(form.AccountNumber)</dd>
                             <dt class="col-sm-4">Name check</dt>
                             <dd class="col-sm-8">@(check is null ? "Not checked" : Payees.MatchText(check.Match))</dd>
                         </dl>

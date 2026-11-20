@@ -1,19 +1,26 @@
 using System.Globalization;
 using BlazorBootstrap.Demo.RCL.Models.Showcase.Fintech;
 using BlazorBootstrap.Demo.RCL.Services.Showcase.Fintech;
+using BlazorBootstrap.Demo.RCL.Services.Showcase.Foundation;
 
 namespace BlazorBootstrap.Demo.RCL.Components.Pages.Showcase.Fintech;
 
 /// <summary>
-/// The transfers hub: "Coming up" lists scheduled transfers and transfers held for a check, by date, with the hold reason
-/// and a Cancel action (a dialog says the money set aside is released); "Recent" lists sent, rejected (with the reason),
-/// and cancelled transfers, newest first. Every row links to the transfer's receipt, statuses are words, and a prominent
-/// "New transfer" button opens the transfer form. The status texts and the cancel messages are shared with
-/// <see cref="TransferDetail" />.
+/// The transfers hub: every transfer of the customer in a <see cref="Grid{TItem}" />, coming up and held first by date,
+/// then the closed ones newest first, with paging, sorting, the column chooser, and CSV export. It is searched by recipient,
+/// reference, or note and filtered by status ("Coming up and held", or one status). Each row has the recipient (linking to
+/// the receipt; the whole row opens it) with the account it's sent from and the hold or reject reason, the reference, the
+/// date, the amount, the status in words, and, for scheduled and held transfers, a Cancel action (a dialog says the money set
+/// aside is released). The grid's view is saved for the visit and can be reset; a prominent "New transfer" button opens the
+/// transfer form. The status texts and the cancel messages are shared with <see cref="TransferDetail" />.
 /// </summary>
 public partial class Transfers : ComponentBase, IDisposable
 {
     #region Fields and Constants
+
+    private const int DefaultPageSize = 25;
+
+    private const string WaitingValue = "waiting";
 
     private readonly Dictionary<string, ElementReference> cancelButtons = new(StringComparer.Ordinal);
 
@@ -29,12 +36,28 @@ public partial class Transfers : ComponentBase, IDisposable
 
     private string? dialogError;
 
+    private Grid<TransferRow>? grid;
+
+    private int gridVersion;
+
     /// <summary>The button that opened the dialog, so focus can go back to it.</summary>
     private ElementReference? opener;
+
+    private int pageSize = DefaultPageSize;
+
+    private string search = string.Empty;
+
+    private string searchBoxValue = string.Empty;
+
+    private string statusFilter = string.Empty;
 
     private string? statusMessage;
 
     private ElementReference statusRegion;
+
+    private ShowcaseGridView view = default!;
+
+    private bool viewLoaded;
 
     #endregion
 
@@ -42,7 +65,23 @@ public partial class Transfers : ComponentBase, IDisposable
 
     #region Protected Override Methods
 
-    protected override void OnInitialized() => State.Changed += OnStateChanged;
+    /// <summary>Loads the saved view once the page is interactive (it lives in the tab's session storage), then shows the grid.</summary>
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender)
+            return;
+
+        await view.LoadAsync();
+        pageSize = (await view.GetSettingsAsync()).PageSize;
+        viewLoaded = true;
+        StateHasChanged();
+    }
+
+    protected override void OnInitialized()
+    {
+        view = GridViews.Get(State.SiteSlug, "transfers", DefaultPageSize, "status", SortDirection.Ascending);
+        State.Changed += OnStateChanged;
+    }
 
     #endregion
 
@@ -113,12 +152,17 @@ public partial class Transfers : ComponentBase, IDisposable
 
     #region Private Methods
 
-    private static bool IsWaiting(FintechTransfer transfer) => transfer.Status is FintechTransferStatus.Scheduled or FintechTransferStatus.Held;
+    private static bool IsWaiting(FintechTransfer transfer) => IsWaiting(transfer.Status);
+
+    private static bool IsWaiting(FintechTransferStatus status) => status is FintechTransferStatus.Scheduled or FintechTransferStatus.Held;
 
     private string AccountName(string accountId) => State.FindAccount(accountId)?.Name ?? "your account";
 
-    private async Task AskCancelAsync(FintechTransfer transfer)
+    private async Task AskCancelAsync(string reference)
     {
+        if (State.FindTransfer(reference) is not { } transfer)
+            return;
+
         cancelling = transfer;
         dialogError = null;
         actionDone = false;
@@ -128,17 +172,11 @@ public partial class Transfers : ComponentBase, IDisposable
         await cancelModal.ShowAsync();
     }
 
-    /// <summary>Says when a sent, rejected, or cancelled transfer closed.</summary>
-    private static string ClosedText(FintechTransfer transfer)
+    /// <summary>The link disappears with the filters it clears, so the count announces the new total.</summary>
+    private async Task ClearFiltersAsync()
     {
-        var at = transfer.ClosedAt ?? transfer.CreatedAt;
-
-        return transfer.Status switch
-        {
-            FintechTransferStatus.Completed => $"Sent {FintechDisplay.Day(at)}",
-            FintechTransferStatus.Rejected => $"Not sent {FintechDisplay.Day(at)}",
-            _ => $"Cancelled {FintechDisplay.Day(at)}",
-        };
+        search = searchBoxValue = statusFilter = string.Empty;
+        await FiltersChangedAsync();
     }
 
     private async Task ConfirmCancelAsync()
@@ -190,7 +228,56 @@ public partial class Transfers : ComponentBase, IDisposable
         opener = null;
     }
 
-    private void OnStateChanged() => InvokeAsync(StateHasChanged);
+    private async Task FiltersChangedAsync()
+    {
+        if (grid is not null)
+            await grid.ResetPageNumber();
+    }
+
+    private void OnSearchChanged(ChangeEventArgs args) => searchBoxValue = search = args.Value?.ToString() ?? string.Empty;
+
+    private async Task OnSearchInputAsync(ChangeEventArgs args)
+    {
+        var value = args.Value?.ToString() ?? string.Empty;
+
+        if (value == search)
+            return;
+
+        search = value;
+        await FiltersChangedAsync();
+    }
+
+    private void OnStateChanged() => InvokeAsync(async () =>
+    {
+        await RefreshGridAsync();
+        StateHasChanged();
+    });
+
+    private Task<GridDataProviderResult<TransferRow>> ProvideRowsAsync(GridDataProviderRequest<TransferRow> request) => view.ApplyAsync(request, Rows);
+
+    private async Task RefreshGridAsync()
+    {
+        if (grid is not null)
+            await grid.RefreshDataAsync();
+    }
+
+    private async Task ResetViewAsync()
+    {
+        const string message = "The view is reset: coming up first, 25 transfers a page, and every column shown.";
+
+        await view.ResetAsync();
+        pageSize = DefaultPageSize;
+        gridVersion++;
+        statusMessage = statusMessage == message ? message + " (2)" : message;
+    }
+
+    private async Task SaveSettingsAsync(GridSettings settings)
+    {
+        if (settings.PageSize > 0)
+            pageSize = settings.PageSize;
+
+        await view.SaveSettingsAsync(settings);
+    }
 
     #endregion
 
@@ -198,7 +285,44 @@ public partial class Transfers : ComponentBase, IDisposable
 
     #region Properties, Indexers
 
+    [Inject] private ShowcaseGridViewStore GridViews { get; set; } = default!;
+
+    private IReadOnlyList<FintechTransfer> Mine => State.MyTransfers();
+
+    /// <summary>
+    /// Gets the transfers that pass the filters as grid rows: coming up and held ones first, by date, then the closed ones,
+    /// newest first (the status column's order keeps that).
+    /// </summary>
+    private IReadOnlyList<TransferRow> Rows
+    {
+        get
+        {
+            var term = search.Trim();
+
+            return Mine
+                .Where(transfer => (statusFilter.Length == 0 || (statusFilter == WaitingValue ? IsWaiting(transfer) : transfer.Status.ToString() == statusFilter))
+                    && (term.Length == 0 || transfer.ToName.Contains(term, StringComparison.OrdinalIgnoreCase) || transfer.Reference.Contains(term, StringComparison.OrdinalIgnoreCase)
+                        || (transfer.Note?.Contains(term, StringComparison.OrdinalIgnoreCase) ?? false)))
+                .OrderBy(transfer => IsWaiting(transfer) ? 0 : 1)
+                .ThenBy(transfer => IsWaiting(transfer) ? transfer.Date.DayNumber : -(transfer.ClosedAt ?? transfer.CreatedAt).Ticks / TimeSpan.TicksPerMinute)
+                .Select((transfer, index) => new TransferRow(transfer.Reference, transfer.ToName, AccountName(transfer.FromAccountId), transfer.Date, transfer.Amount,
+                    StatusText(transfer.Status), transfer.Status, index,
+                    transfer.HoldReason is { } held ? $"Held for a check: {held}." : transfer.Status == FintechTransferStatus.Rejected && transfer.RejectReason is { } why ? $"Not sent: {why}" : string.Empty))
+                .ToList();
+        }
+    }
+
     [Inject] private FintechState State { get; set; } = default!;
+
+    #endregion
+
+    #region Nested Types
+
+    /// <summary>
+    /// One transfer as the grid shows and exports it. The status column sorts by <see cref="Order" />, so coming up and held
+    /// transfers stay first.
+    /// </summary>
+    private sealed record TransferRow(string Reference, string To, string From, DateOnly Date, decimal Amount, string Status, FintechTransferStatus StatusValue, int Order, string Reason);
 
     #endregion
 }

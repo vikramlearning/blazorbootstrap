@@ -5,8 +5,13 @@
     <FintechFrame>
         <Header>
             <div class="tm-ops-bar">
-                <span class="tm-ops-bar-title">Operations</span>
-                <ShowcaseAccountMenu SiteBase="@FintechLayout.Base" SignInPath="@FintechLayout.SignInPath" />
+                <span class="tm-ops-bar-title">Banking operations</span>
+                <div class="tm-ops-bar-actions">
+                    @* The search and the notifications show only once the one-time code is entered. *@
+                    <ShowcaseGlobalSearch Class="tm-global-search" Placeholder="Search customers, transfers, disputes" Label="Search customers by name, ID, or email, transfers by reference, and disputes by number" />
+                    <ShowcaseNotificationsMenu />
+                    <ShowcaseAccountMenu SiteBase="@FintechLayout.Base" SignInPath="@FintechLayout.SignInPath" />
+                </div>
             </div>
         </Header>
         <Sidebar>

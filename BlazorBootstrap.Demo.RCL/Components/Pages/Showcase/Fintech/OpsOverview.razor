@@ -141,7 +141,7 @@
                         else
                         {
                             <ul class="list-unstyled mb-0">
-                                @foreach (var dispute in SubmittedDisputes)
+                                @foreach (var dispute in SubmittedDisputes.Take(AttentionCount))
                                 {
                                     <li class="tm-row" @key="dispute.Id">
                                         <span class="tm-icon" aria-hidden="true"><Icon Name="IconName.Flag" /></span>
@@ -181,8 +181,15 @@
                                     <time class="tm-mono small text-body-secondary tm-ops-time" datetime="@entry.At.ToString("yyyy-MM-ddTHH:mm", CultureInfo.InvariantCulture)">@TimeText(entry.At)</time>
                                     <span class="tm-row-text">
                                         <span class="fw-semibold text-body">@entry.Action</span>
-                                        <span class="tm-row-sub tm-ops-wrap">@entry.Subject</span>
-                                        <span class="tm-row-sub">By @entry.Actor (@OpsAudit.RoleText(entry.Role))</span>
+                                        @if (entry.TargetUrl is not null)
+                                        {
+                                            <a class="tm-row-sub tm-ops-wrap" href="@entry.TargetUrl">@entry.Target</a>
+                                        }
+                                        else
+                                        {
+                                            <span class="tm-row-sub tm-ops-wrap">@entry.Target</span>
+                                        }
+                                        <span class="tm-row-sub">By @entry.Actor</span>
                                     </span>
                                 </li>
                             }

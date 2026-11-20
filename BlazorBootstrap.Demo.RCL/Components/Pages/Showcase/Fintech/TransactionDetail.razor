@@ -135,15 +135,18 @@ else
 
                 <section class="tm-panel mb-4" aria-labelledby="tm-note-title">
                     <h2 class="tm-section-title" id="tm-note-title">Your note</h2>
-                    <form @onsubmit="SaveNote" novalidate>
+                    <EditForm EditContext="noteContext" OnSubmit="SaveNote" FormName="tm-note" novalidate>
+                        <DataAnnotationsValidator />
+                        <ShowcaseFormErrors />
                         <label class="form-label small fw-semibold" for="tm-note">Note (only you can see it)</label>
-                        <textarea id="tm-note" class="form-control" rows="2" maxlength="@FintechState.MaxNoteLength" @bind="noteText" @bind:event="oninput"
-                                  @ref="noteInput" aria-describedby="tm-note-count tm-note-status"></textarea>
-                        <div class="form-text text-end" id="tm-note-count">@(noteText?.Length ?? 0) of @FintechState.MaxNoteLength characters</div>
+                        <InputTextArea id="tm-note" class="form-control" rows="2" maxlength="@FintechState.MaxNoteLength" @bind-Value="noteForm.Text"
+                                       @oninput="args => noteLength = args.Value?.ToString()?.Length ?? 0" @ref="noteInput" aria-describedby="tm-note-count tm-note-status" />
+                        <div class="form-text text-end" id="tm-note-count">@noteLength of @FintechState.MaxNoteLength characters. Leave it empty to remove the note.</div>
+                        <ValidationMessage For="() => noteForm.Text" />
                         <div class="d-flex flex-wrap gap-2 mt-1">
                             <Button Type="ButtonType.Submit" Color="ButtonColor.Primary" Outline="true">Save note</Button>
                         </div>
-                    </form>
+                    </EditForm>
                     <p class="small fw-semibold mt-2 mb-0 tm-transaction-message @(noteIsError ? "text-danger-emphasis" : null)" id="tm-note-status" role="status">@noteMessage</p>
                 </section>
 
@@ -183,47 +186,51 @@ else
                     }
                     else
                     {
-                        <form id="tm-dispute-form" @onsubmit="SendDispute" novalidate>
-                            <fieldset class="mb-3" aria-describedby="tm-dispute-reason-error">
+                        <EditForm id="tm-dispute-form" EditContext="disputeContext" OnSubmit="SendDispute" FormName="tm-dispute" novalidate>
+                            <DataAnnotationsValidator />
+                            <ShowcaseFormErrors ShowSummary="true" />
+                            <fieldset class="mb-3">
                                 <legend class="form-label fw-semibold fs-6">What's wrong with this payment?</legend>
-                                @foreach (var option in disputeReasons)
-                                {
-                                    var optionId = $"tm-dispute-reason-{option.Reason}";
-                                    <div class="form-check mb-2">
-                                        @if (option.Reason == disputeReasons[0].Reason)
-                                        {
-                                            <input class="form-check-input" type="radio" name="tm-dispute-reason" id="@optionId" checked="@(disputeReason == option.Reason)"
-                                                   @onchange="() => SelectReason(option.Reason)" @ref="firstReasonInput" aria-describedby="@($"{optionId}-hint")" />
-                                        }
-                                        else
-                                        {
-                                            <input class="form-check-input" type="radio" name="tm-dispute-reason" id="@optionId" checked="@(disputeReason == option.Reason)"
-                                                   @onchange="() => SelectReason(option.Reason)" aria-describedby="@($"{optionId}-hint")" />
-                                        }
-                                        <label class="form-check-label" for="@optionId">@option.Label</label>
-                                        <div class="form-text mt-0" id="@($"{optionId}-hint")">@option.Hint</div>
-                                    </div>
-                                }
-                                <p class="text-danger-emphasis fw-semibold small mb-0" id="tm-dispute-reason-error">@reasonError</p>
+                                <InputRadioGroup TValue="FintechDisputeReason?" @bind-Value="disputeForm.Reason" Name="tm-dispute-reason">
+                                    @foreach (var option in disputeReasons)
+                                    {
+                                        var optionId = $"tm-dispute-reason-{option.Reason}";
+                                        <div class="form-check mb-2" @key="option.Reason">
+                                            <InputRadio TValue="FintechDisputeReason?" class="form-check-input" id="@optionId" Value="option.Reason" aria-describedby="@($"{optionId}-hint")" />
+                                            <label class="form-check-label" for="@optionId">@option.Label</label>
+                                            <div class="form-text mt-0" id="@($"{optionId}-hint")">@option.Hint</div>
+                                        </div>
+                                    }
+                                </InputRadioGroup>
+                                <ValidationMessage For="() => disputeForm.Reason" />
                             </fieldset>
 
                             <div class="mb-3">
+                                <label class="form-label fw-semibold" for="tm-dispute-amount">Amount you dispute</label>
+                                <CurrencyInput TValue="decimal?" Id="tm-dispute-amount" @bind-Value="disputeForm.Amount" Locale="en-US" Placeholder="$0.00" aria-describedby="tm-dispute-amount-help" />
+                                <div class="form-text" id="tm-dispute-amount-help">
+                                    Up to the @FintechDisplay.Money(item.Amount) you paid. If the amount is wrong, dispute only what you were overcharged.
+                                </div>
+                                <ValidationMessage For="() => disputeForm.Amount" />
+                            </div>
+
+                            <div class="mb-3">
                                 <label class="form-label fw-semibold" for="tm-dispute-details">What happened?</label>
-                                <textarea id="tm-dispute-details" class="form-control @(detailsError is null ? null : "is-invalid")" rows="4" maxlength="@FintechState.MaxDisputeDetails"
-                                          @bind="disputeDetails" @bind:event="oninput" @ref="detailsInput" aria-required="true"
-                                          aria-invalid="@(detailsError is null ? null : "true")" aria-describedby="tm-dispute-details-help tm-dispute-details-count tm-dispute-details-error"></textarea>
+                                <InputTextArea id="tm-dispute-details" class="form-control" rows="4" maxlength="@FintechState.MaxDisputeDetails" @bind-Value="disputeForm.Details"
+                                               @oninput="args => detailsLength = args.Value?.ToString()?.Length ?? 0" @ref="detailsInput" aria-required="true"
+                                               aria-describedby="tm-dispute-details-help tm-dispute-details-count" />
                                 <div class="form-text" id="tm-dispute-details-help">Dates, what you expected, and anything the merchant told you. At least @MinDisputeDetails characters.</div>
-                                <div class="form-text text-end" id="tm-dispute-details-count">@(disputeDetails?.Length ?? 0) of @FintechState.MaxDisputeDetails characters</div>
-                                <p class="text-danger-emphasis fw-semibold small mb-0" id="tm-dispute-details-error">@detailsError</p>
+                                <div class="form-text text-end" id="tm-dispute-details-count">@detailsLength of @FintechState.MaxDisputeDetails.ToString("#,0", CultureInfo.InvariantCulture) characters</div>
+                                <ValidationMessage For="() => disputeForm.Details" />
                             </div>
 
                             <div class="tm-dispute-next mb-3">
                                 <h3 class="h6 fw-bold mb-2">What happens next</h3>
                                 <ul class="small mb-0">
-                                    <li>We send your dispute of @FintechDisplay.Money(item.Amount) to @item.Description and look into it, usually within 10 business days.</li>
+                                    <li>We send your dispute of @FintechDisplay.Money(disputeForm.Amount ?? -item.Amount) to @item.Description and look into it, usually within 10 business days.</li>
                                     <li>You get an alert when it's updated, and you can follow it on the dispute's page.</li>
-                                    <li>If it's resolved in your favor, @FintechDisplay.Money(item.Amount) goes back to @(account?.Name ?? "your account").</li>
-                                    @if (account?.CardLast4 is not null && disputeReason == FintechDisputeReason.NotRecognized)
+                                    <li>If it's resolved in your favor, the amount goes back to @(account?.Name ?? "your account").</li>
+                                    @if (account?.CardLast4 is not null && disputeForm.Reason == FintechDisputeReason.NotRecognized)
                                     {
                                         <li>If you think someone else used your card, <a href="@AccountPath(account.Id)">freeze it on the account page</a> as well.</li>
                                     }
@@ -234,7 +241,7 @@ else
                                 <Button Type="ButtonType.Submit" Color="ButtonColor.Primary">Send dispute</Button>
                                 <Button Color="ButtonColor.Secondary" Outline="true" @onclick="CancelDispute">Cancel</Button>
                             </div>
-                        </form>
+                        </EditForm>
                     }
                 </section>
             </div>
