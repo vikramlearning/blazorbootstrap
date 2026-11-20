@@ -11,6 +11,10 @@ public static class ShowcaseCatalog
 
     private const string AssetPrefix = "_content/BlazorBootstrap.Demo.RCL/showcase";
 
+    // The home page's four Showcase cards, highest enterprise value first
+    // (ranking in blazorbootstrap.sdd devspec/research/showcase-enterprise-review.md).
+    private static readonly string[] featuredSlugs = { "help-desk", "hr-portal", "monitoring", "saas" };
+
     private static readonly IReadOnlyList<ShowcaseSite> sites = new List<ShowcaseSite>
     {
         new("ai-assistant", "AI Assistant Workspace", "Members chat with streaming answers, attachments, and a prompt library; workspace admins manage members, shared prompts, usage, and model policy.", "Chat, prompt library, and workspace admin", "SaaS", IconName.Stars, "#7c3aed", "AiAssistant",
@@ -75,6 +79,11 @@ public static class ShowcaseCatalog
     #endregion
 
     #region Properties, Indexers
+
+    /// <summary>
+    /// Gets the sites the home page features, in display order. Declared after <c>sites</c> so it is initialized after it.
+    /// </summary>
+    public static IReadOnlyList<ShowcaseSite> FeaturedSites { get; } = featuredSlugs.Select(Get).ToList();
 
     /// <summary>
     /// Gets whether the Showcase is advertised from the home page and the site navigation. Set to
