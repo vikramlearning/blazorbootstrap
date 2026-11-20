@@ -7,16 +7,24 @@ using Microsoft.AspNetCore.Components.Forms;
 namespace BlazorBootstrap.Demo.RCL.Components.Pages.Showcase.Saas;
 
 /// <summary>
-/// Lumora's "Contact sales" page for Enterprise: name, work email, company, team size, and a message, with a short summary
-/// of the Enterprise plan beside it. A sent message waits in the sales inbox in this tab (the leads the operator console
-/// reads); nothing is emailed.
+/// Lumora's "Contact sales" page for Enterprise: name, work email (not a personal mailbox such as Gmail), company, team
+/// size, and a message of at least 20 characters, with a short summary of the Enterprise plan beside it. The form follows
+/// rule WR-002: messages show after a field is touched or on submit, and a failed submit shows a summary that links to each
+/// field. A sent message waits in the sales inbox in this tab (the leads the operator console reads, and its operators are
+/// notified); nothing is emailed.
 /// </summary>
 public partial class Contact : ComponentBase, IDisposable
 {
     #region Fields and Constants
 
     /// <summary>The longest message the sales inbox keeps.</summary>
-    private const int MaxMessageLength = 1000;
+    private const int MaxMessageLength = SaasState.MaxLeadMessageLength;
+
+    /// <summary>The shortest message: enough for sales to know what to prepare.</summary>
+    private const int MinMessageLength = 20;
+
+    /// <summary>Personal mailboxes; sales replies to company addresses.</summary>
+    private static readonly string[] personalDomains = { "gmail.com", "googlemail.com", "outlook.com", "hotmail.com", "live.com", "yahoo.com", "icloud.com", "aol.com", "proton.me", "protonmail.com" };
 
     /// <summary>The longest name or company the sales inbox keeps.</summary>
     private const int MaxTextLength = 60;
@@ -106,19 +114,20 @@ public partial class Contact : ComponentBase, IDisposable
 
     #region Nested Types
 
-    private sealed class ContactForm
+    /// <summary>The contact form's fields, with the limits of <see cref="SaasState.SubmitLead" /> and a work email rule.</summary>
+    private sealed class ContactForm : IValidatableObject
     {
         [Required(ErrorMessage = "Enter your company.")]
         [StringLength(MaxTextLength, ErrorMessage = "Use {1} characters or fewer.")]
         public string Company { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Enter your work email.")]
-        [EmailAddress(ErrorMessage = "Enter an email address like name@example.com.")]
+        [RegularExpression(@"^\s*[^@\s]+@[^@\s]+\.[^@\s]+\s*$", ErrorMessage = "Enter an email address like name@example.com.")]
         [StringLength(ShowcaseIdentity.MaxEmailLength, ErrorMessage = "Use {1} characters or fewer.")]
         public string Email { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Tell us how we can help.")]
-        [StringLength(MaxMessageLength, ErrorMessage = "Use {1} characters or fewer.")]
+        [StringLength(MaxMessageLength, MinimumLength = MinMessageLength, ErrorMessage = "Write {2} to {1} characters, so sales knows what to prepare.")]
         public string Message { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Enter your name.")]
@@ -127,6 +136,16 @@ public partial class Contact : ComponentBase, IDisposable
 
         [Required(ErrorMessage = "Choose your team size.")]
         public string TeamSize { get; set; } = string.Empty;
+
+        /// <summary>Runs once the fields are filled in: sales replies to a work address, not a personal mailbox.</summary>
+        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+        {
+            var at = Email.Trim().LastIndexOf('@');
+            var domain = at < 0 ? string.Empty : Email.Trim()[(at + 1)..].ToLowerInvariant();
+
+            if (personalDomains.Contains(domain))
+                yield return new ValidationResult($"Use your work email: sales replies to company addresses, not {domain}.", new[] { nameof(Email) });
+        }
     }
 
     #endregion

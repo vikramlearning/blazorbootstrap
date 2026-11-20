@@ -1,11 +1,5 @@
 /* The invoice list. Shell styles (sd-*) come from SaasShell.razor.css; these cover the page's own elements. */
 
-.sd-invoice-filter {
-    display: flex;
-    flex-wrap: wrap;
-    gap: .5rem;
-}
-
 /* The totals of the current filter, in one line that wraps on a phone. */
 .sd-invoice-totals {
     display: flex;
@@ -23,7 +17,14 @@
         margin: 0;
     }
 
-/* Keeps the description readable when the table scrolls sideways on a phone. */
+/* The status filter is a group of native radios drawn as buttons; a visible ring shows the keyboard focus. */
+.btn-check:focus-visible + .btn {
+    outline: 2px solid var(--sc-primary);
+    outline-offset: 2px;
+}
+
+/* Keeps the description readable when the grid scrolls sideways on a phone. */
 .sd-invoice-description {
+    display: inline-block;
     min-width: 14rem;
 }

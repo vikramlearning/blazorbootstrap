@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace BlazorBootstrap.Demo.RCL.Models.Showcase.Saas;
 
 #region Public site content
@@ -114,7 +116,16 @@ public enum SaasResult
 
     /// <summary>Nothing changes.</summary>
     NoChange,
+
+    /// <summary>Another record already has the name, subdomain, or email (a tenant, a plan, or an open lead).</summary>
+    Duplicate,
 }
+
+/// <summary>What a bulk change from a list did.</summary>
+/// <param name="Result">The outcome: <see cref="SaasResult.Ok" /> when at least one record changed.</param>
+/// <param name="Changed">How many records changed.</param>
+/// <param name="Unchanged">How many selected records were left as they were (they already had the values, or the change doesn't apply to them).</param>
+public sealed record SaasBulkOutcome(SaasResult Result, int Changed, int Unchanged);
 
 #endregion
 
@@ -129,13 +140,13 @@ public enum SaasWorkspaceStatus
     /// <summary>On a free or paid plan in good standing.</summary>
     Active,
 
-    /// <summary>A renewal payment failed.</summary>
+    /// <summary>A renewal payment failed, or an invoice is still open after its renewal (the dunning steps that follow are a separate workflow).</summary>
     PastDue,
 
     /// <summary>Suspended by the operator; members can't use it.</summary>
     Suspended,
 
-    /// <summary>Closed and kept for the record.</summary>
+    /// <summary>Cancelled: closed and kept for the record.</summary>
     Archived,
 }
 
@@ -171,7 +182,24 @@ public sealed record SaasWorkspace(
     string? CardLast4,
     int CardExpiryMonth,
     int CardExpiryYear,
-    SaasWorkspaceSettings Settings);
+    SaasWorkspaceSettings Settings)
+{
+    /// <summary>
+    /// Gets the workspace's subdomain, such as <c>northwind-outfitters</c> in <c>northwind-outfitters.lumora.example</c>: lower-case
+    /// letters, digits, and hyphens, unique on Lumora. It can't change after the workspace is created.
+    /// </summary>
+    public string Subdomain { get; init; } = string.Empty;
+
+    /// <summary>Gets the ID of the Lumora account manager who looks after the tenant (<see cref="SaasAccountManager.Id" />), or <see langword="null" /> for none.</summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public string? ManagerId { get; init; }
+}
+
+/// <summary>
+/// A person at Lumora who looks after tenants (their account manager). <see cref="Id" /> is also their demo account ID when
+/// they can sign in to the operator console; the others are on the roster only.
+/// </summary>
+public sealed record SaasAccountManager(string Id, string Name);
 
 /// <summary>A member's role in a workspace.</summary>
 public enum SaasMemberRole
@@ -217,7 +245,10 @@ public sealed record SaasMember(
 /// <summary>One entry in a workspace's activity history.</summary>
 public sealed record SaasActivity(int WorkspaceId, DateTime At, string Title, string Detail, IconName IconName);
 
-/// <summary>A notification for one signed-in account.</summary>
+/// <summary>
+/// A notification for one account: the customer's Notifications page and the header's bell (for customers and operators)
+/// read the same list.
+/// </summary>
 public sealed record SaasNotice(int Id, string AccountId, string Title, string Text, string? Link, IconName IconName, DateTime CreatedOn, bool IsRead);
 
 #endregion
@@ -240,18 +271,15 @@ public enum SaasLeadStatus
     Closed,
 }
 
-/// <summary>A message sent from the public "Contact sales" form; <see cref="Note" /> is the sales team's own note.</summary>
+/// <summary>
+/// A sales lead: a message sent from the public "Contact sales" form, or one an operator added (a call or an event).
+/// <see cref="Note" /> is the sales team's own note.
+/// </summary>
 public sealed record SaasLead(int Id, string Name, string Email, string Company, string TeamSize, string Message, DateTime CreatedOn, SaasLeadStatus Status, string? Note = null);
 
 #endregion
 
 #region Operations
-
-/// <summary>
-/// One entry in the operator's audit log: who did what to which record. <see cref="ActorId" /> is an account ID, or
-/// <c>system</c> for automatic billing.
-/// </summary>
-public sealed record SaasAuditEntry(int Id, DateTime At, string ActorId, string ActorName, string Action, string Target, string Detail, string? Link);
 
 /// <summary>Money collected and refunded in one calendar month, from the invoices.</summary>
 public sealed record SaasMonthRevenue(DateTime Month, decimal Collected, decimal Refunded);

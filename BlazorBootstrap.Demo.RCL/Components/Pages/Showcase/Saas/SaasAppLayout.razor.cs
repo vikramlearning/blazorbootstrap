@@ -4,8 +4,9 @@ using BlazorBootstrap.Demo.RCL.Services.Showcase.Saas;
 namespace BlazorBootstrap.Demo.RCL.Components.Pages.Showcase.Saas;
 
 /// <summary>
-/// Layout of the customer workspace: the shell with the workspace's modules, the workspace name and plan in the top bar,
-/// and the page behind a customer-only guard, with a trial or suspension banner above it.
+/// Layout of the customer workspace: the shell with the workspace's modules, the workspace name and plan, the global search
+/// (the team and the workspace's invoices), and the notifications bell (the same list as the Notifications page) in the top
+/// bar, and the page behind a customer-only guard, with a trial or suspension banner above it.
 /// </summary>
 public partial class SaasAppLayout : LayoutComponentBase, IDisposable
 {

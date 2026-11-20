@@ -122,8 +122,8 @@
             var otherPopular = OtherPopular(plan.Id);
 
             <ShowcaseDemoNotice Class="mb-3" Text="Demo only: changes stay in this browser tab. No one is emailed and no card is charged." />
-            <EditForm id="ap-plan-form" Model="form" OnSubmit="SaveAsync" FormName="ap-plan">
-                <ShowcaseFormErrors />
+            <EditForm id="ap-plan-form" EditContext="planContext" OnSubmit="SaveAsync" FormName="ap-plan" novalidate>
+                <ShowcaseFormErrors ShowSummary="true" />
                 <div class="row g-4">
                     <div class="col-lg-7">
                         <div class="row g-3">
@@ -132,11 +132,9 @@
                                 <input @ref="nameInput" id="ap-name" class="form-control @InvalidClass(nameof(SaasPlanDraft.Name))" maxlength="@SaasPlanDraft.MaxNameLength" autocomplete="off"
                                        @bind="form.Name" @bind:after="() => Edited(nameof(SaasPlanDraft.Name))"
                                        aria-invalid="@AriaInvalid(nameof(SaasPlanDraft.Name))" aria-describedby="@Describe(nameof(SaasPlanDraft.Name), "ap-name-help")" />
-                                <div class="form-text" id="ap-name-help">@SaasPlanDraft.MinNameLength to @SaasPlanDraft.MaxNameLength characters.</div>
-                                @if (ErrorOf(nameof(SaasPlanDraft.Name)) is { } nameError)
-                                {
-                                    <div class="invalid-feedback d-block" id="ap-name-help-error">@nameError</div>
-                                }
+                                <ShowcaseUniqueCheck @ref="nameCheck" For="() => form.Name" IsTakenAsync="IsNameTakenAsync" TakenMessage="NameTakenMessage" />
+                                <div class="form-text mt-0" id="ap-name-help">@SaasPlanDraft.MinNameLength to @SaasPlanDraft.MaxNameLength characters, unique among the plans.</div>
+                                <ValidationMessage For="() => form.Name" />
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label" for="ap-price">Price per seat a month (US dollars)</label>
@@ -149,10 +147,7 @@
                                 <div class="form-text" id="ap-price-help">
                                     @(isFree ? $"{plan.Name} is free and stays free." : $"Dollars and cents, from {SaasDisplay.Money(SaasState.MinPaidSeatPrice)} to {SaasDisplay.Money(SaasPlanDraft.MaxPrice)}. A paid plan stays paid.")
                                 </div>
-                                @if (ErrorOf(nameof(SaasPlanDraft.Price)) is { } priceError)
-                                {
-                                    <div class="invalid-feedback d-block" id="ap-price-help-error">@priceError</div>
-                                }
+                                <ValidationMessage For="() => form.Price" />
                             </div>
                             <div class="col-12">
                                 <label class="form-label" for="ap-description">Description</label>
@@ -160,10 +155,7 @@
                                           @bind="form.Description" @bind:after="() => Edited(nameof(SaasPlanDraft.Description))"
                                           aria-invalid="@AriaInvalid(nameof(SaasPlanDraft.Description))" aria-describedby="@Describe(nameof(SaasPlanDraft.Description), "ap-description-help")"></textarea>
                                 <div class="form-text" id="ap-description-help">Up to @SaasPlanDraft.MaxDescriptionLength characters, shown under the plan's name.</div>
-                                @if (ErrorOf(nameof(SaasPlanDraft.Description)) is { } descriptionError)
-                                {
-                                    <div class="invalid-feedback d-block" id="ap-description-help-error">@descriptionError</div>
-                                }
+                                <ValidationMessage For="() => form.Description" />
                             </div>
                             <div class="col-12">
                                 <label class="form-label" for="ap-highlights">Highlights</label>
@@ -171,10 +163,7 @@
                                           @bind="form.Highlights" @bind:after="() => Edited(nameof(SaasPlanDraft.Highlights))"
                                           aria-invalid="@AriaInvalid(nameof(SaasPlanDraft.Highlights))" aria-describedby="@Describe(nameof(SaasPlanDraft.Highlights), "ap-highlights-help")"></textarea>
                                 <div class="form-text" id="ap-highlights-help">One per line: 1 to @SaasPlanDraft.MaxHighlights lines of up to @SaasPlanDraft.MaxHighlightLength characters. Empty lines are dropped.</div>
-                                @if (ErrorOf(nameof(SaasPlanDraft.Highlights)) is { } highlightsError)
-                                {
-                                    <div class="invalid-feedback d-block" id="ap-highlights-help-error">@highlightsError</div>
-                                }
+                                <ValidationMessage For="() => form.Highlights" />
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label" for="ap-cta">Button text</label>
@@ -182,10 +171,7 @@
                                        @bind="form.CallToAction" @bind:after="() => Edited(nameof(SaasPlanDraft.CallToAction))"
                                        aria-invalid="@AriaInvalid(nameof(SaasPlanDraft.CallToAction))" aria-describedby="@Describe(nameof(SaasPlanDraft.CallToAction), "ap-cta-help")" />
                                 <div class="form-text" id="ap-cta-help">The call to action on the pricing page, up to @SaasPlanDraft.MaxCallToActionLength characters.</div>
-                                @if (ErrorOf(nameof(SaasPlanDraft.CallToAction)) is { } callToActionError)
-                                {
-                                    <div class="invalid-feedback d-block" id="ap-cta-help-error">@callToActionError</div>
-                                }
+                                <ValidationMessage For="() => form.CallToAction" />
                             </div>
 
                             <fieldset class="col-12">
@@ -202,10 +188,7 @@
                                             <label class="form-check-label small" for="ap-seats-unlimited">Unlimited seats</label>
                                         </div>
                                         <div class="form-text" id="ap-seats-help">@SeatsHelp(plan, summary)</div>
-                                        @if (ErrorOf(nameof(SaasPlanDraft.SeatLimit)) is { } seatError)
-                                        {
-                                            <div class="invalid-feedback d-block" id="ap-seats-help-error">@seatError</div>
-                                        }
+                                        <ValidationMessage For="() => form.SeatLimit" />
                                     </div>
                                     <div class="col-sm-4">
                                         <label class="form-label small fw-semibold" for="ap-events">Tracked events a month</label>
@@ -218,10 +201,7 @@
                                             <label class="form-check-label small" for="ap-events-unlimited">Unlimited events</label>
                                         </div>
                                         <div class="form-text" id="ap-events-help">@Count(SaasPlanDraft.MinEvents) to @Count(SaasPlanDraft.MaxEvents).</div>
-                                        @if (ErrorOf(nameof(SaasPlanDraft.EventLimit)) is { } eventError)
-                                        {
-                                            <div class="invalid-feedback d-block" id="ap-events-help-error">@eventError</div>
-                                        }
+                                        <ValidationMessage For="() => form.EventLimit" />
                                     </div>
                                     <div class="col-sm-4">
                                         <label class="form-label small fw-semibold" for="ap-dashboards">Dashboards</label>
@@ -234,10 +214,7 @@
                                             <label class="form-check-label small" for="ap-dashboards-unlimited">Unlimited dashboards</label>
                                         </div>
                                         <div class="form-text" id="ap-dashboards-help">1 to @Count(SaasPlanDraft.MaxDashboards).</div>
-                                        @if (ErrorOf(nameof(SaasPlanDraft.DashboardLimit)) is { } dashboardError)
-                                        {
-                                            <div class="invalid-feedback d-block" id="ap-dashboards-help-error">@dashboardError</div>
-                                        }
+                                        <ValidationMessage For="() => form.DashboardLimit" />
                                     </div>
                                 </div>
                             </fieldset>
@@ -252,20 +229,19 @@
                                 <div class="form-text mt-0" id="ap-self-serve-help">
                                     On: visitors choose @plan.Name at sign-up and customers switch to it in Billing. Off: its button on the pricing page goes to Contact sales.
                                 </div>
-                                @if (ErrorOf(nameof(SaasPlanDraft.IsSelfServe)) is { } selfServeError)
-                                {
-                                    <div class="invalid-feedback d-block" id="ap-self-serve-help-error">@selfServeError</div>
-                                }
+                                <ValidationMessage For="() => form.IsSelfServe" />
                             </div>
                             <div class="col-12">
                                 <div class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox" role="switch" id="ap-popular"
-                                           @bind="form.IsPopular" @bind:after="() => Edited(nameof(SaasPlanDraft.IsPopular))" aria-describedby="ap-popular-help" />
+                                    <input class="form-check-input @InvalidClass(nameof(SaasPlanDraft.IsPopular))" type="checkbox" role="switch" id="ap-popular"
+                                           @bind="form.IsPopular" @bind:after="() => Edited(nameof(SaasPlanDraft.IsPopular))"
+                                           aria-invalid="@AriaInvalid(nameof(SaasPlanDraft.IsPopular))" aria-describedby="ap-popular-help" />
                                     <label class="form-check-label fw-semibold" for="ap-popular">Most popular</label>
                                 </div>
                                 <div class="form-text mt-0" id="ap-popular-help">
-                                    @PopularHelp(otherPopular)
+                                    @PopularHelp(otherPopular) Only a self-serve plan can have it.
                                 </div>
+                                <ValidationMessage For="() => form.IsPopular" />
                             </div>
                         </div>
                     </div>

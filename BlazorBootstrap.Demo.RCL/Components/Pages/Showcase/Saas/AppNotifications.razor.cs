@@ -1,12 +1,15 @@
 using System.Globalization;
+using BlazorBootstrap.Demo.RCL.Models.Showcase.Saas;
 using BlazorBootstrap.Demo.RCL.Services.Showcase.Saas;
 
 namespace BlazorBootstrap.Demo.RCL.Components.Pages.Showcase.Saas;
 
 /// <summary>
-/// The signed-in customer's notifications, newest first: icon, title, text, time, a link when the notice has a same-site
-/// one, and a "New" badge on unread ones. "Mark all as read" marks them with <see cref="SaasState.MarkNoticesRead" />;
-/// the button then goes away, so focus moves to the status message. With no notifications, the page says so.
+/// The signed-in customer's notifications, newest first: the inbox behind the header's bell, which reads the same list
+/// (<see cref="SaasState.GetNotificationsForCurrentAccount" />), so the unread count agrees. Each shows its icon, title,
+/// text, time, a link when the notice has a same-site one, a "New" badge, and "Mark read" while unread. "Mark all as read"
+/// marks them with <see cref="SaasState.MarkNoticesRead" />; a button that goes away moves focus to the status message.
+/// With no notifications, the page says so.
 /// </summary>
 public partial class AppNotifications : ComponentBase, IDisposable
 {
@@ -70,6 +73,14 @@ public partial class AppNotifications : ComponentBase, IDisposable
         var all = total == 1 ? "1 notification" : $"{total.ToString(CultureInfo.InvariantCulture)} notifications";
 
         return unread == 0 ? $"{all}, all read." : $"{all}, {unread.ToString(CultureInfo.InvariantCulture)} unread.";
+    }
+
+    /// <summary>Marks one notice read (the bell's count follows); its button goes away, so focus moves to the status message.</summary>
+    private void MarkRead(SaasNotice notice)
+    {
+        State.MarkNotificationRead(notice.Id);
+        SetStatus($"\"{notice.Title}\" is marked as read.");
+        focusStatus = true;
     }
 
     private void MarkAllRead()

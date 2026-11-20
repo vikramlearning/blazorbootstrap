@@ -27,9 +27,9 @@
     </div>
 }
 
-<EditForm EditContext="editContext" OnValidSubmit="Submit" FormName="sd-tenant-new">
-    <ShowcaseFormErrors />
+<EditForm EditContext="editContext" OnSubmit="SubmitAsync" FormName="sd-tenant-new" novalidate>
     <DataAnnotationsValidator />
+    <ShowcaseFormErrors ShowSummary="true" />
     <div class="row g-3">
         <div class="col-lg-8">
             <Card Class="sd-card mb-3">
@@ -37,32 +37,62 @@
                 <CardBody Class="pt-0">
                     <ShowcaseDemoNotice Class="mb-3" Text="Demo only: the tenant stays in this browser tab. No one is emailed and no card is charged." />
                     <div class="row g-3">
-                        <div class="col-12">
-                            <label class="form-label" for="sd-new-name">Workspace name</label>
+                        <div class="col-md-7">
+                            <label class="form-label fw-semibold" for="sd-new-name">Workspace name</label>
                             <InputText id="sd-new-name" class="form-control" @bind-Value="form.Name" maxlength="@SaasState.MaxWorkspaceNameLength" autocomplete="off" aria-describedby="sd-new-name-help" />
-                            <div class="form-text" id="sd-new-name-help">Usually the company's name. The owner can change it later in Settings.</div>
+                            <ShowcaseUniqueCheck @ref="nameCheck" For="() => form.Name" IsTakenAsync="IsNameTakenAsync" TakenMessage="NameTakenMessage" />
+                            <div class="form-text d-flex flex-wrap justify-content-between gap-2 mt-0" id="sd-new-name-help">
+                                <span>Usually the company's name; unique on @SaasSeedData.ProductName. The owner can change it later in Settings.</span>
+                                <span class="text-nowrap">Up to @SaasState.MaxWorkspaceNameLength characters</span>
+                            </div>
                             <ValidationMessage For="() => form.Name" />
                         </div>
+                        <div class="col-md-5">
+                            <label class="form-label fw-semibold" for="sd-new-subdomain">Subdomain</label>
+                            <div class="input-group">
+                                <InputText id="sd-new-subdomain" class="form-control sd-mono" @bind-Value="form.Subdomain" maxlength="@SaasState.MaxSubdomainLength" autocomplete="off"
+                                           spellcheck="false" autocapitalize="none" aria-describedby="sd-new-subdomain-help" @oninput="OnSubdomainInput" />
+                                <span class="input-group-text small" aria-hidden="true">.lumora.example</span>
+                            </div>
+                            <ShowcaseUniqueCheck @ref="subdomainCheck" For="() => form.Subdomain" IsTakenAsync="IsSubdomainTakenAsync" TakenMessage="SubdomainTakenMessage" />
+                            <div class="form-text mt-0" id="sd-new-subdomain-help">
+                                The workspace's address, at .lumora.example: @SaasState.MinSubdomainLength to @SaasState.MaxSubdomainLength lower-case letters, digits, and hyphens,
+                                starting with a letter. Made from the name until you change it; it can't change later.
+                            </div>
+                            <ValidationMessage For="() => form.Subdomain" />
+                        </div>
                         <div class="col-md-6">
-                            <label class="form-label" for="sd-new-owner">Owner name</label>
+                            <label class="form-label fw-semibold" for="sd-new-owner">Owner name</label>
                             <InputText id="sd-new-owner" class="form-control" @bind-Value="form.OwnerName" maxlength="@ShowcaseIdentity.MaxNameLength" autocomplete="off" />
                             <ValidationMessage For="() => form.OwnerName" />
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label" for="sd-new-email">Owner email</label>
+                            <label class="form-label fw-semibold" for="sd-new-email">Owner email</label>
                             <InputText id="sd-new-email" inputmode="email" autocapitalize="none" spellcheck="false" class="form-control" @bind-Value="form.OwnerEmail" maxlength="@ShowcaseIdentity.MaxEmailLength" autocomplete="off" aria-describedby="sd-new-email-help" />
                             <div class="form-text" id="sd-new-email-help">The owner is added as an invitation. In this demo they have no sign-in, and nothing is sent.</div>
                             <ValidationMessage For="() => form.OwnerEmail" />
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label" for="sd-new-country">Country</label>
+                            <label class="form-label fw-semibold" for="sd-new-country">Country</label>
                             <InputSelect id="sd-new-country" class="form-select" @bind-Value="form.Country" autocomplete="off">
+                                <option value="">Choose a country</option>
                                 @foreach (var country in SaasSeedData.Countries)
                                 {
                                     <option value="@country">@country</option>
                                 }
                             </InputSelect>
                             <ValidationMessage For="() => form.Country" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold" for="sd-new-manager">Account manager</label>
+                            <InputSelect id="sd-new-manager" class="form-select" @bind-Value="form.ManagerId" aria-describedby="sd-new-manager-help">
+                                <option value="">Nobody yet</option>
+                                @foreach (var manager in SaasSeedData.AccountManagers)
+                                {
+                                    <option value="@manager.Id">@manager.Name@(manager.Id == State.Identity.Current?.Id ? " (you)" : null)</option>
+                                }
+                            </InputSelect>
+                            <div class="form-text" id="sd-new-manager-help">Who at @SaasSeedData.ProductName looks after the tenant. Another operator who can sign in is notified.</div>
                         </div>
                     </div>
                 </CardBody>
@@ -72,8 +102,8 @@
                 <CardHeader><h2 class="sd-card-title">Subscription</h2></CardHeader>
                 <CardBody Class="pt-0">
                     <fieldset class="mb-3">
-                        <legend class="form-label fs-6 mb-2">Plan</legend>
-                        <InputRadioGroup @bind-Value="form.PlanId">
+                        <legend class="form-label fw-semibold fs-6 mb-2">Plan</legend>
+                        <InputRadioGroup @bind-Value="form.PlanId" Name="sd-new-plan">
                             <div class="sd-new-options">
                                 @foreach (var option in State.Plans)
                                 {
@@ -95,8 +125,8 @@
                         {
                             <div class="col-md-6">
                                 <fieldset>
-                                    <legend class="form-label fs-6 mb-2">Billing period</legend>
-                                    <InputRadioGroup @bind-Value="form.Period">
+                                    <legend class="form-label fw-semibold fs-6 mb-2">Billing period</legend>
+                                    <InputRadioGroup @bind-Value="form.Period" Name="sd-new-period">
                                         @foreach (var period in Enum.GetValues<SaasBillingPeriod>())
                                         {
                                             <div class="form-check" @key="period">
@@ -111,10 +141,11 @@
                             </div>
                         }
                         <div class="col-md-6">
-                            <label class="form-label" for="sd-new-seats">Seats</label>
-                            <NumberInput TValue="int" Id="sd-new-seats" Value="form.Seats" ValueExpression="() => form.Seats" ValueChanged="OnSeatsChanged"
-                                         Min="1" Max="cap" EnableMinMax="true" Step="1" aria-describedby="sd-new-seats-help" />
+                            <label class="form-label fw-semibold" for="sd-new-seats">Seats</label>
+                            <InputNumber TValue="int?" id="sd-new-seats" class="form-control" @bind-Value="form.Seats" inputmode="numeric" step="1" min="1" max="@cap"
+                                         ParsingErrorMessage="Enter the number of seats as a whole number, like 10." aria-describedby="sd-new-seats-help" />
                             <div class="form-text" id="sd-new-seats-help">@SeatsHelp(plan)</div>
+                            <ValidationMessage For="() => form.Seats" />
                         </div>
                         @if (TrialAllowed(plan))
                         {
@@ -140,9 +171,11 @@
                             <dt class="col-5">Plan</dt>
                             <dd class="col-7"><Badge Color="SaasDisplay.PlanColor(plan.Id)" Class="rounded-pill">@plan.Name</Badge></dd>
                             <dt class="col-5">Seats</dt>
-                            <dd class="col-7">@SeatsText(form.Seats)</dd>
+                            <dd class="col-7">@SeatsText(SeatsOrOne)</dd>
                             <dt class="col-5">Status</dt>
                             <dd class="col-7">@(StartsTrial ? "Trial" : "Active")</dd>
+                            <dt class="col-5">Address</dt>
+                            <dd class="col-7 text-break sd-mono">@(string.IsNullOrWhiteSpace(form.Subdomain) ? "—" : $"{form.Subdomain.Trim()}.lumora.example")</dd>
                             <dt class="col-5">Price</dt>
                             <dd class="col-7">
                                 <span class="sd-mono">@PriceText(plan)</span>

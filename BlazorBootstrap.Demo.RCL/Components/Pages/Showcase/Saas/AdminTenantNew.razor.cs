@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.Globalization;
+using BlazorBootstrap.Demo.RCL.Components.Pages.Showcase.Shared;
 using BlazorBootstrap.Demo.RCL.Models.Showcase.Saas;
 using BlazorBootstrap.Demo.RCL.Services.Showcase.Foundation;
 using BlazorBootstrap.Demo.RCL.Services.Showcase.Saas;
@@ -8,11 +9,15 @@ using Microsoft.AspNetCore.Components.Forms;
 namespace BlazorBootstrap.Demo.RCL.Components.Pages.Showcase.Saas;
 
 /// <summary>
-/// The operator's form for a new tenant: the workspace name, its owner (added as an invitation with no demo sign-in), the
-/// plan (Enterprise included, since it is sold through sales), the billing period for a paid plan, seats, country, and an
-/// optional 14-day trial on a paid self-serve plan. A live summary shows the price per period and whether a first invoice is
-/// issued. <c>?lead={id}</c> prefills the form from a sales lead and closes that lead when the tenant is created. Creating
-/// calls <see cref="SaasState.CreateWorkspaceAsOperator" /> and opens the new tenant; any other result is explained.
+/// The operator's form for a new tenant, in an <see cref="EditForm" /> (rule WR-002): the workspace name (unique on Lumora,
+/// checked as you type), its subdomain (made from the name until edited; format and uniqueness checked as you type), its
+/// owner (added as an invitation with no demo sign-in) and their email, the country, an account manager, the plan
+/// (Enterprise included, since it is sold through sales), the billing period for a paid plan, seats (within the plan's
+/// limit, a cross-field rule), and an optional 14-day trial on a paid self-serve plan. Messages show after a field is
+/// touched or on submit, and a failed submit shows a summary that links to each field. A live summary shows the price per
+/// period and whether a first invoice is issued. <c>?lead={id}</c> prefills the form from a sales lead and closes that lead
+/// when the tenant is created. Creating calls <see cref="SaasState.CreateWorkspaceAsOperator" /> and opens the new tenant;
+/// the state's refusals are shown on their field or in the alert.
 /// </summary>
 public partial class AdminTenantNew : ComponentBase, IDisposable
 {
@@ -46,6 +51,16 @@ public partial class AdminTenantNew : ComponentBase, IDisposable
 
     /// <summary>What the form says about the lead in <c>?lead=</c>.</summary>
     private string? leadNote;
+
+    private ShowcaseUniqueCheck? nameCheck;
+
+    /// <summary>The state's answers that belong to a field (a taken name or subdomain, seats out of range), shown like the form's own messages.</summary>
+    private ValidationMessageStore? serverErrors;
+
+    private ShowcaseUniqueCheck? subdomainCheck;
+
+    /// <summary>Whether the operator typed in the subdomain; until then it follows the name.</summary>
+    private bool subdomainEdited;
 
     #endregion
 
@@ -89,12 +104,14 @@ public partial class AdminTenantNew : ComponentBase, IDisposable
         ResetForm(new TenantForm
         {
             Name = lead.Company,
+            Subdomain = State.FreeSubdomain(lead.Company),
             OwnerName = lead.Name,
             OwnerEmail = lead.Email,
             PlanId = plan.Id,
             Period = SaasBillingPeriod.Annual,
             Seats = Math.Clamp(SeatsFor(lead.TeamSize), 1, SeatCap(plan)),
             Country = SaasSeedData.Countries[0],
+            ManagerId = State.Identity.Current?.Id is { } me && SaasSeedData.ManagerName(me) is not null ? me : string.Empty,
         });
 
         if (lead.Status == SaasLeadStatus.Closed)
@@ -157,7 +174,7 @@ public partial class AdminTenantNew : ComponentBase, IDisposable
             return $"{plan.Name} is free, so no invoices are issued.";
 
         var period = form.Period;
-        var amount = SaasDisplay.MoneyCents(SaasPricing.PeriodAmount(plan, period, form.Seats));
+        var amount = SaasDisplay.MoneyCents(SaasPricing.PeriodAmount(plan, period, SeatsOrOne));
 
         if (StartsTrial)
         {
@@ -175,52 +192,55 @@ public partial class AdminTenantNew : ComponentBase, IDisposable
         errorCount = 0;
     }
 
-    private string ErrorFor(SaasResult result, SaasPlan plan) => result switch
-    {
-        SaasResult.SeatsOutOfRange => $"Choose 1 to {Count(SeatCap(plan))} seats for the {plan.Name} plan.",
-        SaasResult.NotFound => "That plan is no longer offered in this tab, or a trial was asked for on a free plan. Choose the plan again.",
-        SaasResult.Invalid => $"Check the workspace name (up to {SaasState.MaxWorkspaceNameLength} characters), the owner's name and email, and the country. "
-            + "This demo tab also holds at most 500 tenants and 5,000 members.",
-        SaasResult.NotAllowed => "Only a signed-in Lumora operator can create a tenant. Sign in as an operator and try again.",
-        _ => "The tenant couldn't be created. Check the form and try again.",
-    };
+    private Task<bool> IsNameTakenAsync(string name) => Task.FromResult(State.IsWorkspaceNameTaken(name));
+
+    private Task<bool> IsSubdomainTakenAsync(string subdomain) => Task.FromResult(State.IsSubdomainTaken(subdomain));
+
+    private string NameTakenMessage(string name) =>
+        $"A workspace called \"{name.Trim()}\" already exists on {SaasSeedData.ProductName}. Open it from the tenant list, or choose a different name.";
 
     private TenantForm NewForm()
     {
         var plan = DefaultPlan;
 
-        return new TenantForm { PlanId = plan.Id, Seats = Math.Min(5, SeatCap(plan)), Country = SaasSeedData.Countries[0] };
+        return new TenantForm { PlanId = plan.Id, Seats = Math.Min(5, SeatCap(plan)) };
     }
 
     /// <summary>
-    /// A plan change keeps the seats inside the new plan's limit and drops a trial the plan can't have; any change clears
-    /// the last error.
+    /// While the subdomain hasn't been typed in, it follows the name (a free one made from it), and its own check runs. A plan
+    /// that can't have a trial drops it; any change clears the last error and the state's message on that field.
     /// </summary>
     private void OnFieldChanged(object? sender, FieldChangedEventArgs args)
     {
+        serverErrors?.Clear(args.FieldIdentifier);
+
+        if (args.FieldIdentifier.FieldName == nameof(TenantForm.Name) && !subdomainEdited)
+        {
+            var proposed = string.IsNullOrWhiteSpace(form.Name) ? string.Empty : State.FreeSubdomain(form.Name);
+
+            if (proposed != form.Subdomain)
+            {
+                form.Subdomain = proposed;
+                editContext.NotifyFieldChanged(FieldIdentifier.Create(() => form.Subdomain));
+            }
+        }
+
         if (args.FieldIdentifier.FieldName == nameof(TenantForm.PlanId))
         {
-            var plan = SelectedPlan;
-            form.Seats = Math.Clamp(form.Seats, 1, SeatCap(plan));
+            form.SeatCap = SeatCap(SelectedPlan);
+            form.SeatPlanName = SelectedPlan.Name;
 
-            if (!TrialAllowed(plan))
+            if (!TrialAllowed(SelectedPlan))
                 form.StartTrial = false;
         }
 
         ClearError();
     }
 
-    /// <summary><see cref="NumberInput{TValue}" /> raises ValueChanged on its first render; an unchanged value is ignored.</summary>
-    private void OnSeatsChanged(int value)
-    {
-        if (value == form.Seats)
-            return;
-
-        form.Seats = value;
-        ClearError();
-    }
-
     private void OnStateChanged() => InvokeAsync(StateHasChanged);
+
+    /// <summary>Typing in the subdomain stops it following the name; clearing it lets the name fill it again.</summary>
+    private void OnSubdomainInput(ChangeEventArgs args) => subdomainEdited = !string.IsNullOrWhiteSpace(args.Value?.ToString());
 
     private string PlanHint(SaasPlan plan)
     {
@@ -233,7 +253,7 @@ public partial class AdminTenantNew : ComponentBase, IDisposable
 
     private string PriceText(SaasPlan plan) => plan.MonthlyPricePerSeat == 0
         ? "Free"
-        : $"{SaasDisplay.MoneyCents(SaasPricing.PeriodAmount(plan, form.Period, form.Seats))} per {PeriodWord(form.Period)}";
+        : $"{SaasDisplay.MoneyCents(SaasPricing.PeriodAmount(plan, form.Period, SeatsOrOne))} per {PeriodWord(form.Period)}";
 
     private void ResetForm(TenantForm next)
     {
@@ -241,7 +261,11 @@ public partial class AdminTenantNew : ComponentBase, IDisposable
             editContext.OnFieldChanged -= OnFieldChanged;
 
         form = next;
+        form.SeatCap = SeatCap(SelectedPlan);
+        form.SeatPlanName = SelectedPlan.Name;
+        subdomainEdited = false;
         editContext = new EditContext(form);
+        serverErrors = new ValidationMessageStore(editContext);
         editContext.OnFieldChanged += OnFieldChanged;
     }
 
@@ -253,6 +277,14 @@ public partial class AdminTenantNew : ComponentBase, IDisposable
         ? $"From 1 to {Count(SeatCap(plan))}. {plan.Name} has no seat limit; {SaasSeedData.ProductName} allows up to {Count(SaasSeedData.MaxSeats)}."
         : $"From 1 to {Count(plan.SeatLimit)}, the {plan.Name} plan's limit. The owner's invitation takes one seat.";
 
+    /// <summary>Shows a state answer under its field, like the form's own messages; the summary and focus follow.</summary>
+    private void ServerError(Expression<Func<object?>> field, string message)
+    {
+        serverErrors?.Clear();
+        serverErrors?.Add(FieldIdentifier.Create(field), message);
+        editContext.NotifyValidationStateChanged();
+    }
+
     private void ShowError(string message)
     {
         errorCount = message == errorText ? errorCount + 1 : 1;
@@ -260,25 +292,74 @@ public partial class AdminTenantNew : ComponentBase, IDisposable
         errorMessage = errorCount == 1 ? message : $"{message} ({errorCount})";
     }
 
-    private void Submit()
+    private string SubdomainTakenMessage(string subdomain) =>
+        $"{subdomain.Trim().ToLowerInvariant()}.lumora.example is taken by another workspace. Choose a different subdomain, like {State.FreeSubdomain(subdomain)}.";
+
+    /// <summary>
+    /// Creates the tenant once the form is valid: the uniqueness checks finish first, then every rule runs, and a failed
+    /// submit shows the summary (rule WR-002). The state checks again; its answer maps to a field or the alert.
+    /// </summary>
+    private async Task SubmitAsync()
     {
         if (busy)
             return;
 
+        serverErrors?.Clear();
+        form.SeatCap = SeatCap(SelectedPlan);
+        form.SeatPlanName = SelectedPlan.Name;
+        editContext.NotifyValidationStateChanged();
+
+        var nameFree = nameCheck is null || await nameCheck.CheckNowAsync();
+        var subdomainFree = subdomainCheck is null || await subdomainCheck.CheckNowAsync();
+
+        if (!editContext.Validate() || !nameFree || !subdomainFree)
+            return;
+
         var plan = SelectedPlan;
         var period = plan.MonthlyPricePerSeat > 0 ? form.Period : SaasBillingPeriod.Monthly;
-        var (result, workspaceId) = State.CreateWorkspaceAsOperator(form.Name, form.OwnerName, form.OwnerEmail, plan.Id, period, form.Seats, form.Country, StartsTrial,
-            linkedLeadId);
+        var subdomain = form.Subdomain.Trim().ToLowerInvariant();
+        var (result, workspaceId) = State.CreateWorkspaceAsOperator(form.Name, subdomain, form.OwnerName, form.OwnerEmail, plan.Id, period, form.Seats!.Value, form.Country,
+            StartsTrial, linkedLeadId, string.IsNullOrEmpty(form.ManagerId) ? null : form.ManagerId);
 
-        if (result == SaasResult.Ok && workspaceId is { } id)
+        switch (result)
         {
-            busy = true;
-            Navigation.NavigateTo(string.Create(CultureInfo.InvariantCulture, $"{TenantsPath}/{id}"));
+            case SaasResult.Ok when workspaceId is { } id:
+                busy = true;
+                Navigation.NavigateTo(string.Create(CultureInfo.InvariantCulture, $"{TenantsPath}/{id}"));
 
-            return;
+                return;
+
+            case SaasResult.Duplicate when State.IsWorkspaceNameTaken(form.Name):
+                ServerError(() => form.Name, NameTakenMessage(form.Name));
+
+                return;
+
+            case SaasResult.Duplicate:
+                ServerError(() => form.Subdomain, SubdomainTakenMessage(subdomain));
+
+                return;
+
+            case SaasResult.SeatsOutOfRange:
+                ServerError(() => form.Seats, $"Choose 1 to {Count(SeatCap(plan))} seats for the {plan.Name} plan.");
+
+                return;
+
+            case SaasResult.NotFound:
+                ServerError(() => form.PlanId, "That plan is no longer offered in this tab, or a trial was asked for on a free plan. Choose the plan again.");
+
+                return;
+
+            case SaasResult.NotAllowed:
+                ShowError("Only a signed-in Lumora operator can create a tenant. Sign in as an operator and try again.");
+
+                return;
+
+            default:
+                ShowError(string.Create(CultureInfo.InvariantCulture,
+                    $"The tenant couldn't be created. This demo tab holds at most {SaasState.MaxWorkspaces} tenants; delete an archived one, or reset the demo data."));
+
+                return;
         }
-
-        ShowError(ErrorFor(result, plan));
     }
 
     #endregion
@@ -308,6 +389,9 @@ public partial class AdminTenantNew : ComponentBase, IDisposable
 
     [Inject] private NavigationManager Navigation { get; set; } = default!;
 
+    /// <summary>The seats typed, or 1 while the field is empty, for the live summary.</summary>
+    private int SeatsOrOne => Math.Max(1, form.Seats ?? 1);
+
     private SaasPlan SelectedPlan => State.FindPlan(form.PlanId) ?? DefaultPlan;
 
     [Inject] private SaasState State { get; set; } = default!;
@@ -319,22 +403,29 @@ public partial class AdminTenantNew : ComponentBase, IDisposable
 
     #region Nested Types
 
-    private sealed class TenantForm
+    /// <summary>
+    /// The new tenant's fields, with the limits of <see cref="SaasState.CreateWorkspaceAsOperator" />: required text with
+    /// lengths, an email, a subdomain's form, and one cross-field rule (seats within the chosen plan's limit).
+    /// </summary>
+    private sealed class TenantForm : IValidatableObject
     {
-        [Required(ErrorMessage = "Choose a country.")]
+        [Required(ErrorMessage = "Choose the country the customer is in.")]
         public string Country { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "Enter the workspace name.")]
-        [StringLength(SaasState.MaxWorkspaceNameLength, ErrorMessage = "Use 60 characters or fewer.")]
+        /// <summary>The chosen account manager's ID, or empty for nobody.</summary>
+        public string ManagerId { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Enter the workspace name, usually the company's name.")]
+        [StringLength(SaasState.MaxWorkspaceNameLength, ErrorMessage = "Use 60 characters or fewer for the workspace name.")]
         public string Name { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Enter the owner's email.")]
-        [StringLength(ShowcaseIdentity.MaxEmailLength, ErrorMessage = "Use 120 characters or fewer.")]
-        [RegularExpression(@"^\s*[^@\s]+@[^@\s]+\s*$", ErrorMessage = "Enter an email such as name@example.com.")]
+        [StringLength(ShowcaseIdentity.MaxEmailLength, ErrorMessage = "Use 120 characters or fewer for the email.")]
+        [RegularExpression(@"^\s*[^@\s]+@[^@\s]+\.[^@\s]+\s*$", ErrorMessage = "Enter the owner's email like name@example.com.")]
         public string OwnerEmail { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Enter the owner's name.")]
-        [StringLength(ShowcaseIdentity.MaxNameLength, ErrorMessage = "Use 80 characters or fewer.")]
+        [StringLength(ShowcaseIdentity.MaxNameLength, ErrorMessage = "Use 80 characters or fewer for the owner's name.")]
         public string OwnerName { get; set; } = string.Empty;
 
         public SaasBillingPeriod Period { get; set; } = SaasBillingPeriod.Monthly;
@@ -342,9 +433,35 @@ public partial class AdminTenantNew : ComponentBase, IDisposable
         [Required(ErrorMessage = "Choose a plan.")]
         public string PlanId { get; set; } = string.Empty;
 
-        public int Seats { get; set; } = 5;
+        /// <summary>The chosen plan's seat limit (the most Lumora allows when it has none); set by the page, not by a field.</summary>
+        public int SeatCap { get; set; } = SaasSeedData.MaxSeats;
+
+        /// <summary>The chosen plan's name, for the seats message; set by the page.</summary>
+        public string SeatPlanName { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Enter the number of seats.")]
+        [Range(1, SaasSeedData.MaxSeats, ErrorMessage = "Use from 1 to 500 seats.")]
+        public int? Seats { get; set; } = 5;
 
         public bool StartTrial { get; set; }
+
+        [Required(ErrorMessage = "Enter a subdomain, like northwind-outfitters.")]
+        [StringLength(SaasState.MaxSubdomainLength, MinimumLength = SaasState.MinSubdomainLength, ErrorMessage = "Use 3 to 30 characters for the subdomain.")]
+        [RegularExpression(@"^\s*[a-z]([a-z0-9]|-(?!-))*[a-z0-9]\s*$", ErrorMessage = "Use lower-case letters, digits, and single hyphens, starting with a letter and ending with a letter or digit.")]
+        public string Subdomain { get; set; } = string.Empty;
+
+        /// <summary>Runs once the fields are filled in: the seats fit the chosen plan, and the subdomain isn't one Lumora keeps for itself.</summary>
+        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+        {
+            if (Seats is { } seats && seats > SeatCap)
+            {
+                yield return new ValidationResult(
+                    string.Create(CultureInfo.InvariantCulture, $"{SeatPlanName} allows up to {SeatCap} seats. Choose fewer seats, or a plan with more."), new[] { nameof(Seats) });
+            }
+
+            if (SaasSeedData.ReservedSubdomains.Contains(Subdomain.Trim().ToLowerInvariant()))
+                yield return new ValidationResult($"\"{Subdomain.Trim()}\" is kept for {SaasSeedData.ProductName} itself. Choose a different subdomain.", new[] { nameof(Subdomain) });
+        }
     }
 
     #endregion

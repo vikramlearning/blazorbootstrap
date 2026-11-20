@@ -1,18 +1,23 @@
 using System.Globalization;
 using BlazorBootstrap.Demo.RCL.Models.Showcase.Saas;
+using BlazorBootstrap.Demo.RCL.Services.Showcase.Foundation;
 using BlazorBootstrap.Demo.RCL.Services.Showcase.Saas;
 
 namespace BlazorBootstrap.Demo.RCL.Components.Pages.Showcase.Saas;
 
 /// <summary>
-/// Tenant detail in the operator console: the workspace's subscription summary, members, invoices, and activity, with an
-/// "Edit tenant" action that opens <see cref="SaasTenantEditor" />. An archived tenant can be deleted after a confirmation
+/// Tenant detail in the operator console: the workspace's subscription summary (with its subdomain and account manager),
+/// members and invoices as <see cref="Grid{TItem}" /> lists (each with a saved view, sorting, paging, the column chooser, and
+/// CSV export; an invoice row opens the invoice), and activity, with an "Edit tenant" action that opens
+/// <see cref="SaasTenantEditor" />. An archived tenant can be deleted after a confirmation
 /// (<see cref="SaasState.DeleteWorkspaceAsOperator" />), which opens the tenant list; a tenant someone signs in to in this
 /// demo is kept, and the dialog says why. An unknown ID renders the not-found screen.
 /// </summary>
 public partial class AdminTenantDetail : ComponentBase, IDisposable
 {
     #region Fields and Constants
+
+    private const int DefaultPageSize = 10;
 
     private Button? deleteButton;
 
@@ -34,6 +39,24 @@ public partial class AdminTenantDetail : ComponentBase, IDisposable
 
     private SaasTenantEditor? editor;
 
+    private Grid<SaasInvoice>? invoicesGrid;
+
+    private int invoicesPageSize = DefaultPageSize;
+
+    /// <summary>Changes when the tenant changes, so the invoice grid starts on its first page.</summary>
+    private int invoicesVersion;
+
+    private ShowcaseGridView invoicesView = default!;
+
+    private Grid<SaasMember>? membersGrid;
+
+    private int membersPageSize = DefaultPageSize;
+
+    /// <summary>Changes when the tenant changes, so the member grid starts on its first page.</summary>
+    private int membersVersion;
+
+    private ShowcaseGridView membersView = default!;
+
     private int shownId;
 
     private int statusCount;
@@ -42,15 +65,37 @@ public partial class AdminTenantDetail : ComponentBase, IDisposable
 
     private string? statusText;
 
+    /// <summary>Whether the lists' saved views are loaded (they live in the tab's session storage).</summary>
+    private bool viewsLoaded;
+
     #endregion
 
     #region Methods
 
     #region Protected Override Methods
 
-    protected override void OnInitialized() => State.Changed += OnStateChanged;
+    /// <summary>Loads the lists' saved views once the page is interactive, then shows the grids.</summary>
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender)
+            return;
 
-    /// <summary>A message about one tenant is cleared when the route moves to another tenant.</summary>
+        await membersView.LoadAsync();
+        await invoicesView.LoadAsync();
+        membersPageSize = (await membersView.GetSettingsAsync()).PageSize;
+        invoicesPageSize = (await invoicesView.GetSettingsAsync()).PageSize;
+        viewsLoaded = true;
+        StateHasChanged();
+    }
+
+    protected override void OnInitialized()
+    {
+        membersView = GridViews.Get(State.SiteSlug, "tenant-members", DefaultPageSize, "role");
+        invoicesView = GridViews.Get(State.SiteSlug, "tenant-invoices", DefaultPageSize, "issued", SortDirection.Descending);
+        State.Changed += OnStateChanged;
+    }
+
+    /// <summary>A message about one tenant is cleared when the route moves to another tenant, and its lists start again on their first page.</summary>
     protected override void OnParametersSet()
     {
         if (shownId == Id)
@@ -60,6 +105,8 @@ public partial class AdminTenantDetail : ComponentBase, IDisposable
         statusMessage = statusText = null;
         statusCount = 0;
         deletedName = null;
+        membersVersion++;
+        invoicesVersion++;
     }
 
     #endregion
@@ -86,13 +133,6 @@ public partial class AdminTenantDetail : ComponentBase, IDisposable
     private static string EventsText(SaasWorkspace workspace, SaasPlan plan) => plan.EventLimit == 0
         ? $"{SaasDisplay.Events(workspace.EventsThisMonth)} (no limit)"
         : $"{SaasDisplay.Events(workspace.EventsThisMonth)} of {SaasDisplay.Events(plan.EventLimit)}";
-
-    private static BadgeColor InvoiceColor(SaasInvoiceStatus status) => status switch
-    {
-        SaasInvoiceStatus.Paid => BadgeColor.Success,
-        SaasInvoiceStatus.Open => BadgeColor.Warning,
-        _ => BadgeColor.Secondary,
-    };
 
     private static string MembersText(IReadOnlyList<SaasMember> members)
     {
@@ -201,14 +241,75 @@ public partial class AdminTenantDetail : ComponentBase, IDisposable
         await SaasDisplay.FocusAsync(deleteButton?.Element);
     }
 
-    private void OnSaved(SaasTenantSavedEventArgs args)
+    private void OnSaved(SaasTenantSavedEventArgs args) => ShowStatus(args.Message);
+
+    /// <summary>Another screen or the editor changed the state: the lists read the tenant's members and invoices again.</summary>
+    private void OnStateChanged() => InvokeAsync(async () =>
     {
-        statusCount = args.Message == statusText ? statusCount + 1 : 1;
-        statusText = args.Message;
-        statusMessage = statusCount == 1 ? args.Message : $"{args.Message} ({statusCount})";
+        await RefreshGridsAsync();
+        StateHasChanged();
+    });
+
+    /// <summary>The page of invoices the grid asked for, newest first unless a column is sorted.</summary>
+    private Task<GridDataProviderResult<SaasInvoice>> ProvideInvoicesAsync(GridDataProviderRequest<SaasInvoice> request) =>
+        invoicesView.ApplyAsync(request, State.InvoicesOf(Id));
+
+    /// <summary>The page of members the grid asked for: owners first, then by role and name, unless a column is sorted.</summary>
+    private Task<GridDataProviderResult<SaasMember>> ProvideMembersAsync(GridDataProviderRequest<SaasMember> request) =>
+        membersView.ApplyAsync(request, State.MembersOf(Id));
+
+    private async Task RefreshGridsAsync()
+    {
+        if (membersGrid is not null)
+            await membersGrid.RefreshDataAsync();
+
+        if (invoicesGrid is not null)
+            await invoicesGrid.RefreshDataAsync();
     }
 
-    private void OnStateChanged() => InvokeAsync(StateHasChanged);
+    /// <summary>Forgets the invoice list's saved view and builds it again with its defaults; the status message says so.</summary>
+    private async Task ResetInvoicesViewAsync()
+    {
+        await invoicesView.ResetAsync();
+        invoicesPageSize = DefaultPageSize;
+        invoicesVersion++;
+        ShowStatus("The invoice list's view is reset: newest first, 10 a page, and every column shown.");
+    }
+
+    /// <summary>Forgets the member list's saved view and builds it again with its defaults; the status message says so.</summary>
+    private async Task ResetMembersViewAsync()
+    {
+        await membersView.ResetAsync();
+        membersPageSize = DefaultPageSize;
+        membersVersion++;
+        ShowStatus("The member list's view is reset: owners first, 10 a page, and every column shown.");
+    }
+
+    /// <summary>Shows a status message; the same message again gets a counter, so a screen reader announces it again.</summary>
+    private void ShowStatus(string message)
+    {
+        statusCount = message == statusText ? statusCount + 1 : 1;
+        statusText = message;
+        statusMessage = statusCount == 1 ? message : $"{message} ({statusCount})";
+    }
+
+    /// <summary>Keeps the invoice grid's settings in its saved view, and follows the page size the selector chose.</summary>
+    private async Task SaveInvoicesSettingsAsync(GridSettings settings)
+    {
+        if (settings.PageSize > 0)
+            invoicesPageSize = settings.PageSize;
+
+        await invoicesView.SaveSettingsAsync(settings);
+    }
+
+    /// <summary>Keeps the member grid's settings in its saved view, and follows the page size the selector chose.</summary>
+    private async Task SaveMembersSettingsAsync(GridSettings settings)
+    {
+        if (settings.PageSize > 0)
+            membersPageSize = settings.PageSize;
+
+        await membersView.SaveSettingsAsync(settings);
+    }
 
     /// <summary>Shows why the delete was refused; the same message again gets a counter, so a screen reader announces it again.</summary>
     private void ShowDeleteError(string message)
@@ -231,8 +332,14 @@ public partial class AdminTenantDetail : ComponentBase, IDisposable
         new() { Text = Workspace?.Name, IsCurrentPage = true },
     };
 
+    [Inject] private ShowcaseGridViewStore GridViews { get; set; } = default!;
+
     /// <summary>Gets or sets the tenant (workspace) ID from the route.</summary>
     [Parameter] public int Id { get; set; }
+
+    private string InvoicesExportName => string.Create(CultureInfo.InvariantCulture, $"saas-tenant-{Id}-invoices");
+
+    private string MembersExportName => string.Create(CultureInfo.InvariantCulture, $"saas-tenant-{Id}-members");
 
     [Inject] private NavigationManager Navigation { get; set; } = default!;
 

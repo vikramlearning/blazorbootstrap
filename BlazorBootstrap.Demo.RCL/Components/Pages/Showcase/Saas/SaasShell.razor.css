@@ -106,9 +106,10 @@
     top: 0;
     z-index: 3;
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
-    gap: 1rem;
+    gap: .5rem 1rem;
     min-height: 3.5rem;
     padding: .5rem 1.5rem;
     background: color-mix(in srgb, var(--sd-surface) 90%, transparent);
@@ -159,8 +160,19 @@
 
 .sd-topbar-actions {
     display: flex;
+    flex: 1 1 auto;
+    flex-wrap: wrap;
     align-items: center;
+    justify-content: flex-end;
     gap: .5rem;
+}
+
+/* The header's global search (the layouts render it, so ::deep) takes the room the bar has, and wraps onto its own line
+   when there is too little. */
+.sc-saas ::deep .sd-global-search {
+    flex: 1 1 12rem;
+    min-width: 10rem;
+    max-width: 22rem;
 }
 
 .sc-saas ::deep .sd-icon-btn {
@@ -504,6 +516,104 @@
 /* Bootstrap's text-bg-primary keeps white text; on the light dark-mode blue that fails contrast, so use dark text there. */
 [data-bs-theme=dark] .sc-saas ::deep .text-bg-primary {
     color: var(--sc-primary-contrast) !important;
+}
+
+/* Grid lists: a selected row is tinted, status lines under a list collapse while empty, and a queue's bulk bar wraps onto
+   several lines at phone width. */
+.sc-saas ::deep .sd-row-selected > * {
+    --bs-table-bg-state: rgba(var(--sc-primary-rgb), .06);
+}
+
+.sc-saas ::deep .sd-list-status,
+.sc-saas ::deep .sd-list-error {
+    font-size: .875rem;
+    font-weight: 600;
+}
+
+    .sc-saas ::deep .sd-list-status:empty,
+    .sc-saas ::deep .sd-list-error:empty {
+        margin: 0;
+    }
+
+.sc-saas ::deep .sd-list-error {
+    color: var(--bs-danger-text-emphasis);
+}
+
+.sc-saas ::deep .sd-bulk {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: .75rem 1rem;
+    margin-bottom: 1rem;
+    padding: .75rem 1rem;
+    border: 1px solid rgba(var(--sc-primary-rgb), .35);
+    border-radius: .75rem;
+    background: rgba(var(--sc-primary-rgb), .06);
+}
+
+.sc-saas ::deep .sd-bulk-count {
+    flex: 1 0 100%;
+    margin: 0;
+    font-size: .9375rem;
+    font-weight: 700;
+}
+
+.sc-saas ::deep .sd-bulk-field {
+    flex: 1 1 10rem;
+    min-width: 0;
+}
+
+    .sc-saas ::deep .sd-bulk-field .form-label {
+        margin-bottom: .25rem;
+    }
+
+.sc-saas ::deep .sd-bulk-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .5rem;
+}
+
+/* A list's filters side by side on wide screens, stacked at phone width; the "Reset view" row under them. */
+.sc-saas ::deep .sd-list-filters {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: .75rem 1rem;
+}
+
+    .sc-saas ::deep .sd-list-filters > * {
+        flex: 1 1 11rem;
+        min-width: 0;
+    }
+
+    .sc-saas ::deep .sd-list-filters > .sd-list-search {
+        flex: 2 1 16rem;
+    }
+
+.sc-saas ::deep .sd-list-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: .25rem 1rem;
+    margin: .75rem 0 1rem;
+}
+
+/* A Grid with many columns scrolls sideways on narrow screens instead of squeezing its names (Grid renders the table, so
+   the class is styled here). */
+.sc-saas ::deep .sd-table-wide {
+    min-width: 60rem;
+}
+
+.sc-saas ::deep .sd-table-xwide {
+    min-width: 72rem;
+}
+
+/* A Grid's primary link or button in the first column keeps a readable width when the grid scrolls sideways. */
+.sc-saas ::deep .sd-row-link {
+    display: inline-block;
+    min-width: 10rem;
+    font-weight: 600;
+    text-align: start;
 }
 
 /* Trial banner above the workspace pages (rendered by the layout inside this shell, so ::deep). */

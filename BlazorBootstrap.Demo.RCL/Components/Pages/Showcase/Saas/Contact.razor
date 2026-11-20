@@ -49,9 +49,9 @@
                     <h2 class="h4 fw-bold">Send us a message</h2>
                     <ShowcaseDemoNotice Class="mb-4" Text="Demo only: make up every detail. Nothing is emailed; the message stays in this browser tab." />
 
-                    <EditForm Model="form" OnValidSubmit="Submit" FormName="saas-contact">
-                        <ShowcaseFormErrors />
+                    <EditForm Model="form" OnValidSubmit="Submit" FormName="saas-contact" novalidate>
                         <DataAnnotationsValidator />
+                        <ShowcaseFormErrors ShowSummary="true" />
                         <div class="row g-3">
                             <div class="col-md-6">
                                 <label class="form-label" for="ct-name">Full name</label>
@@ -61,7 +61,7 @@
                             <div class="col-md-6">
                                 <label class="form-label" for="ct-email">Work email</label>
                                 <InputText id="ct-email" inputmode="email" autocapitalize="none" spellcheck="false" class="form-control" @bind-Value="form.Email" maxlength="@ShowcaseIdentity.MaxEmailLength" autocomplete="email" aria-describedby="ct-email-help" />
-                                <div class="form-text" id="ct-email-help">Use a made-up address, for example you@example.com.</div>
+                                <div class="form-text" id="ct-email-help">Your work address, so sales can reply from your company's side. Make one up, for example you@example.com.</div>
                                 <ValidationMessage For="() => form.Email" />
                             </div>
                             <div class="col-md-6">
@@ -83,7 +83,7 @@
                             <div class="col-12">
                                 <label class="form-label" for="ct-message">How can we help?</label>
                                 <InputTextArea id="ct-message" class="form-control" rows="5" @bind-Value="form.Message" maxlength="@MaxMessageLength" aria-describedby="ct-message-help" />
-                                <div class="form-text" id="ct-message-help">Up to @MaxMessageLength.ToString("#,0", CultureInfo.InvariantCulture) characters. For example: seats, security review, or data region.</div>
+                                <div class="form-text" id="ct-message-help">@MinMessageLength to @MaxMessageLength.ToString("#,0", CultureInfo.InvariantCulture) characters. For example: seats, security review, or data region.</div>
                                 <ValidationMessage For="() => form.Message" />
                             </div>
                         </div>

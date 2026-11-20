@@ -7,7 +7,8 @@
         margin: 0;
     }
 
-/* Keeps the invoice description readable when the table scrolls sideways on a phone. */
+/* Keeps the invoice description readable when the grid scrolls sideways on a phone. */
 .sd-tenant-description {
+    display: inline-block;
     min-width: 14rem;
 }

@@ -10,8 +10,9 @@ namespace BlazorBootstrap.Demo.RCL.Components.Pages.Showcase.Saas;
 /// prorated quote from <see cref="SaasState.QuotePlan" />, the card on file with a test-card form to add or replace it,
 /// and the invoices. Open invoices show a "Payment due" panel whose "Pay now" calls <see cref="SaasState.PayOpenInvoices" />
 /// (without a card it opens the card form first). On trial, the same picker converts the trial. Owners and billing members make changes; everyone else
-/// sees the plan and invoices read-only. Every action ends in a status message or an error, and focus returns to the
-/// button that opened the card form.
+/// sees the plan and invoices read-only. The invoices (the billing history) are a <see cref="Grid{TItem}" /> with a saved
+/// view, sorting, paging, the column chooser, and CSV export; a row opens the invoice. Every action ends in a status message
+/// or an error, and focus returns to the button that opened the card form.
 /// </summary>
 public partial class AppBilling : ComponentBase, IDisposable
 {
@@ -19,6 +20,8 @@ public partial class AppBilling : ComponentBase, IDisposable
 
     /// <summary>Where Enterprise is sold.</summary>
     internal const string ContactPath = SaasLayout.Base + "/contact";
+
+    private const int InvoicePageSize = 10;
 
     /// <summary>The annual discount, such as ", save 20%".</summary>
     private static readonly string annualSavingText = $", save {(SaasPricing.AnnualDiscount * 100).ToString("0", CultureInfo.InvariantCulture)}%";
@@ -69,14 +72,43 @@ public partial class AppBilling : ComponentBase, IDisposable
 
     private string? statusText;
 
+    private ElementReference? invoiceCountRegion;
+
+    private Grid<SaasInvoice>? invoiceGrid;
+
+    /// <summary>Changes when the view is reset, so the grid is built again with its defaults.</summary>
+    private int invoiceGridVersion;
+
+    /// <summary>The invoice grid's page size: the saved one once the view is loaded, then whatever the page size selector chose.</summary>
+    private int invoicePageSize = InvoicePageSize;
+
+    private ShowcaseGridView invoiceView = default!;
+
+    private bool invoiceViewLoaded;
+
     #endregion
 
     #region Methods
 
     #region Protected Override Methods
 
+    /// <summary>Loads the invoice list's saved view once the page is interactive (it lives in the tab's session storage), then shows the grid.</summary>
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await invoiceView.LoadAsync();
+            invoicePageSize = (await invoiceView.GetSettingsAsync()).PageSize;
+            invoiceViewLoaded = true;
+            StateHasChanged();
+        }
+
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
     protected override void OnInitialized()
     {
+        invoiceView = GridViews.Get(State.SiteSlug, "billing-invoices", InvoicePageSize, "date", SortDirection.Descending);
         EnsurePicker();
         State.Changed += OnStateChanged;
     }
@@ -221,11 +253,51 @@ public partial class AppBilling : ComponentBase, IDisposable
         planError = string.Empty;
     }
 
-    private void OnStateChanged() => InvokeAsync(() =>
+    private void OnStateChanged() => InvokeAsync(async () =>
     {
         EnsurePicker();
+        await RefreshInvoicesAsync();
         StateHasChanged();
     });
+
+    private static string InvoiceCountText(IReadOnlyList<SaasInvoice> invoices)
+    {
+        var open = invoices.Count(invoice => invoice.Status == SaasInvoiceStatus.Open);
+        var all = invoices.Count == 1 ? "1 invoice" : $"{invoices.Count.ToString(CultureInfo.InvariantCulture)} invoices";
+
+        return open == 0 ? $"{all}, all paid or refunded." : $"{all}, {open.ToString(CultureInfo.InvariantCulture)} open.";
+    }
+
+    /// <summary>The page of the workspace's invoices the grid asked for, newest first unless a column is sorted.</summary>
+    private Task<GridDataProviderResult<SaasInvoice>> ProvideInvoicesAsync(GridDataProviderRequest<SaasInvoice> request) =>
+        invoiceView.ApplyAsync(request, State.CurrentWorkspace is { } workspace ? State.InvoicesOf(workspace.Id) : Array.Empty<SaasInvoice>());
+
+    private async Task RefreshInvoicesAsync()
+    {
+        if (invoiceGrid is not null)
+            await invoiceGrid.RefreshDataAsync();
+    }
+
+    /// <summary>Forgets the invoice list's saved view and builds it again with its defaults; focus moves to the count above it.</summary>
+    private async Task ResetInvoiceViewAsync()
+    {
+        await invoiceView.ResetAsync();
+        invoicePageSize = InvoicePageSize;
+        invoiceGridVersion++;
+        StateHasChanged();
+
+        await Task.Yield();
+        await SaasDisplay.FocusAsync(invoiceCountRegion);
+    }
+
+    /// <summary>Keeps the invoice grid's settings in its saved view, and follows the page size the selector chose.</summary>
+    private async Task SaveInvoiceSettingsAsync(GridSettings settings)
+    {
+        if (settings.PageSize > 0)
+            invoicePageSize = settings.PageSize;
+
+        await invoiceView.SaveSettingsAsync(settings);
+    }
 
     private Task OpenCardAsync() => OpenCardFormAsync(fromPlan: false);
 
@@ -450,6 +522,8 @@ public partial class AppBilling : ComponentBase, IDisposable
     #endregion
 
     #region Properties, Indexers
+
+    [Inject] private ShowcaseGridViewStore GridViews { get; set; } = default!;
 
     [Inject] private SaasState State { get; set; } = default!;
 

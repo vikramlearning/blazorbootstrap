@@ -124,5 +124,6 @@
 }
 
 .lu-invoice-description {
+    display: inline-block;
     min-width: 14rem;
 }

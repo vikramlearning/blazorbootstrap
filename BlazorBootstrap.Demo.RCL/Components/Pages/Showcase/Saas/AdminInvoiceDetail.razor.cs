@@ -1,5 +1,6 @@
 using System.Globalization;
 using BlazorBootstrap.Demo.RCL.Models.Showcase.Saas;
+using BlazorBootstrap.Demo.RCL.Services.Showcase.Foundation;
 using BlazorBootstrap.Demo.RCL.Services.Showcase.Saas;
 
 namespace BlazorBootstrap.Demo.RCL.Components.Pages.Showcase.Saas;
@@ -135,11 +136,11 @@ public partial class AdminInvoiceDetail : ComponentBase, IDisposable
         await SaasDisplay.FocusAsync(statusRegion);
     }
 
-    private IReadOnlyList<SaasAuditEntry> History(SaasInvoice invoice)
+    private IReadOnlyList<ShowcaseAuditEntry> History(SaasInvoice invoice)
     {
         var path = $"{SaasAdminLayout.Base}/invoices/{invoice.Number}";
 
-        return State.AuditLog().Where(entry => entry.Link == path).ToList();
+        return State.AuditEntries.Where(entry => entry.TargetUrl == path).ToList();
     }
 
     private Task HideRefundAsync() => refundModal.HideAsync();

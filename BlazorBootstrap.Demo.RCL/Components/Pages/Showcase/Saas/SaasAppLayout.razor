@@ -21,11 +21,14 @@
             }
         </TopbarStart>
         <TopbarEnd>
+            @* The search and the notifications show only while someone is signed in. The bell reads the same list as the
+               Notifications page, so the unread count lives on the bell and the account menu only links to the page. *@
+            <ShowcaseGlobalSearch Class="sd-global-search" Placeholder="Search your team and invoices" Label="Search your team and invoices" />
             <a class="btn btn-sm btn-outline-secondary" href="@SaasLayout.Base">
                 <Icon Name="IconName.BoxArrowUpRight" class="me-1" aria-hidden="true" />Lumora site
             </a>
-            <ShowcaseAccountMenu SiteBase="@SaasLayout.Base" SignInPath="@SaasLayout.SignInPath"
-                                 NoticeCount="@State.UnreadNoticeCount(State.Identity.Current?.Id)" NoticesPath="@SaasLayout.NoticesPath" />
+            <ShowcaseNotificationsMenu />
+            <ShowcaseAccountMenu SiteBase="@SaasLayout.Base" SignInPath="@SaasLayout.SignInPath" NoticesPath="@SaasLayout.NoticesPath" />
         </TopbarEnd>
         <ChildContent>
             <ShowcaseRoleGuard Roles="@SaasSeedData.CustomerRole" SignInPath="@SaasLayout.SignInPath">

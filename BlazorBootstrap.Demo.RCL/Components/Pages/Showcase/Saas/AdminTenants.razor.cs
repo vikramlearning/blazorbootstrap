@@ -1,58 +1,84 @@
 using System.Globalization;
 using BlazorBootstrap.Demo.RCL.Models.Showcase.Saas;
+using BlazorBootstrap.Demo.RCL.Services.Showcase.Foundation;
 using BlazorBootstrap.Demo.RCL.Services.Showcase.Saas;
 
 namespace BlazorBootstrap.Demo.RCL.Components.Pages.Showcase.Saas;
 
 /// <summary>
-/// Tenant list of the operator console: every customer workspace with its owner, plan, seats, status, MRR, and dates,
-/// searchable by name or owner, filtered by status and plan, sortable by any column, and paged. Each row links to the
-/// tenant's detail screen, and "New tenant" opens the form that creates one. On a phone the table folds most columns into
-/// the tenant cell and a "Sort by" list replaces the column headers. <c>?status=Trial</c> (or another status) opens the list
-/// filtered.
+/// The operator's tenant queue: every customer workspace in a <see cref="Grid{TItem}" /> (name and subdomain linking to the
+/// tenant, owner, plan and billing period, seats used, status, MRR, account manager, country, and dates) with paging,
+/// sorting, the column chooser, and CSV export, searched by name, subdomain, or owner and filtered by status, plan, and
+/// account manager. The grid's view (page size, sort, columns) is saved for the visit and can be reset. Rows can be selected
+/// with the grid's checkboxes and changed together from a bulk bar: move to a plan, suspend or reactivate, and assign an
+/// account manager (<see cref="SaasState.BulkUpdateTenants" />). <c>?status=Trial</c> (or another status) opens the list
+/// filtered, for the overview's links.
 /// </summary>
 public partial class AdminTenants : ComponentBase, IDisposable
 {
     #region Fields and Constants
 
-    private static readonly Column[] columns =
-    {
-        new(SortKey.Name, "Tenant", null),
-        new(SortKey.Owner, "Owner", "d-none d-lg-table-cell"),
-        new(SortKey.Plan, "Plan", "d-none d-lg-table-cell"),
-        new(SortKey.Seats, "Seats", "d-none d-lg-table-cell text-end"),
-        new(SortKey.Status, "Status", "d-none d-lg-table-cell"),
-        new(SortKey.Mrr, "MRR", "text-end"),
-        new(SortKey.Created, "Created", "d-none d-lg-table-cell"),
-        new(SortKey.Renewal, "Renews", "d-none d-lg-table-cell"),
-    };
+    private const int DefaultPageSize = 25;
 
-    private static readonly int[] pageSizes = { 10, 25, 50 };
+    /// <summary>The manager filter's value for tenants without an account manager.</summary>
+    private const string NoManagerValue = "none";
 
-    private Button? nextButton;
+    /// <summary>The bulk bar's account manager value that leaves it as it is (an empty value removes it).</summary>
+    private const string NoChangeValue = "keep";
 
-    private int pageNumber = 1;
+    private string? appliedStatusQuery;
 
-    private int pageSize = 10;
+    private string? bulkError;
+
+    private int bulkErrors;
+
+    private string bulkManager = NoChangeValue;
+
+    private string bulkPlan = string.Empty;
+
+    private string bulkStatus = string.Empty;
+
+    private ElementReference? countRegion;
+
+    private bool focusStatus;
+
+    private Grid<TenantRow>? grid;
+
+    /// <summary>Changes when the view is reset, so the grid is built again with its defaults.</summary>
+    private int gridVersion;
+
+    private string managerFilter = string.Empty;
+
+    /// <summary>The grid's page size: the saved one once the view is loaded, then whatever the page size selector chose.</summary>
+    private int pageSize = DefaultPageSize;
 
     private string planFilter = string.Empty;
 
-    private Button? previousButton;
-
     private string search = string.Empty;
 
-    /// <summary>The value bound to the search box; it trails <see cref="search" /> while the user types (see <see cref="OnSearchInput" />).</summary>
+    /// <summary>The value bound to the search box; it trails <see cref="search" /> while the user types.</summary>
     private string searchBoxValue = string.Empty;
 
-    private TextInput? searchInput;
+    private ElementReference searchInput;
 
-    private bool sortDescending = true;
+    /// <summary>The tenants selected in the grid (on its current page).</summary>
+    private List<TenantRow> selected = new();
 
-    private SortKey sortKey = SortKey.Created;
+    private int statusCount;
 
     private string statusFilter = string.Empty;
 
-    private string? appliedStatusQuery;
+    private bool statusIsError;
+
+    private string? statusMessage;
+
+    private ElementReference? statusRegion;
+
+    private string? statusText;
+
+    private ShowcaseGridView view = default!;
+
+    private bool viewLoaded;
 
     #endregion
 
@@ -60,19 +86,41 @@ public partial class AdminTenants : ComponentBase, IDisposable
 
     #region Protected Override Methods
 
-    protected override void OnInitialized() => State.Changed += OnStateChanged;
+    /// <summary>Loads the saved view once the page is interactive (it lives in the tab's session storage), then shows the grid.</summary>
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await view.LoadAsync();
+            pageSize = (await view.GetSettingsAsync()).PageSize;
+            viewLoaded = true;
+            StateHasChanged();
+        }
+
+        if (focusStatus)
+        {
+            focusStatus = false;
+            await SaasDisplay.FocusAsync(statusRegion);
+        }
+    }
+
+    protected override void OnInitialized()
+    {
+        view = GridViews.Get(State.SiteSlug, "tenants", DefaultPageSize, "created", SortDirection.Descending);
+        State.Changed += OnStateChanged;
+    }
 
     /// <summary>The status filter follows <c>?status=</c>, so the sidebar's plain Tenants link clears a filter set by a link.</summary>
-    protected override void OnParametersSet()
+    protected override async Task OnParametersSetAsync()
     {
         var requested = Enum.TryParse<SaasWorkspaceStatus>(StatusQuery, ignoreCase: true, out var status) && Enum.IsDefined(status) ? status.ToString() : null;
 
-        if (requested != appliedStatusQuery)
-        {
-            appliedStatusQuery = requested;
-            statusFilter = requested ?? string.Empty;
-            pageNumber = 1;
-        }
+        if (requested == appliedStatusQuery)
+            return;
+
+        appliedStatusQuery = requested;
+        statusFilter = requested ?? string.Empty;
+        await FiltersChangedAsync();
     }
 
     #endregion
@@ -88,211 +136,210 @@ public partial class AdminTenants : ComponentBase, IDisposable
 
     private static string Count(int value) => value.ToString("#,0", CultureInfo.InvariantCulture);
 
-    private static bool DefaultDescending(SortKey key) => key is SortKey.Seats or SortKey.Mrr or SortKey.Created;
+    private static string StatusOption(SaasWorkspaceStatus status) => status == SaasWorkspaceStatus.Archived ? "Cancelled (archived)" : SaasDisplay.StatusName(status);
 
-    private static DateTime RenewalDate(SaasWorkspace workspace) =>
-        workspace is { Status: SaasWorkspaceStatus.Trial, TrialEndsOn: { } endsOn } ? endsOn : workspace.RenewsOn;
-
-    private static string RenewalText(SaasWorkspace workspace) => workspace.Status == SaasWorkspaceStatus.Trial
-        ? $"trial ends {SaasDisplay.Date(RenewalDate(workspace))}"
-        : $"renews {SaasDisplay.Date(workspace.RenewsOn)}";
-
-    private static string SortValue(SortKey key, bool descending) => $"{key}-{(descending ? "desc" : "asc")}";
-
-    private string? AriaSort(SortKey key) => key != sortKey ? null : sortDescending ? "descending" : "ascending";
-
-    private async Task ClearFiltersAsync()
-    {
-        search = searchBoxValue = statusFilter = planFilter = string.Empty;
-        pageNumber = 1;
-        StateHasChanged();
-
-        // The button is gone once nothing is filtered, so focus moves to the search box.
-        await Task.Yield();
-        await SaasDisplay.FocusAsync(searchInput?.Element);
-    }
-
-    private IReadOnlyList<TenantRow> FilteredRows()
-    {
-        IEnumerable<TenantRow> rows = State.Workspaces
-            .Select(workspace => new TenantRow(workspace, State.OwnerOf(workspace.Id), State.PlanOf(workspace), State.SeatsUsed(workspace.Id), State.MonthlyRevenueFor(workspace)))
-            .ToList();
-        var term = search.Trim();
-
-        if (term.Length > 0)
-            rows = rows.Where(row =>
-                row.Workspace.Name.Contains(term, StringComparison.OrdinalIgnoreCase)
-                || (row.Owner?.Name.Contains(term, StringComparison.OrdinalIgnoreCase) ?? false)
-                || (row.Owner?.Email.Contains(term, StringComparison.OrdinalIgnoreCase) ?? false));
-
-        if (Enum.TryParse<SaasWorkspaceStatus>(statusFilter, out var status))
-            rows = rows.Where(row => row.Workspace.Status == status);
-
-        if (planFilter.Length > 0)
-            rows = rows.Where(row => row.Workspace.PlanId == planFilter);
-
-        var ordered = sortKey switch
-        {
-            SortKey.Owner => Sort(rows, row => row.Owner?.Name ?? string.Empty, StringComparer.OrdinalIgnoreCase),
-            SortKey.Plan => Sort(rows, row => PlanIndex(row.Plan)),
-            SortKey.Seats => Sort(rows, row => row.Workspace.Seats),
-            SortKey.Status => Sort(rows, row => row.Workspace.Status),
-            SortKey.Mrr => Sort(rows, row => row.Mrr),
-            SortKey.Created => Sort(rows, row => row.Workspace.CreatedOn),
-            SortKey.Renewal => Sort(rows, row => RenewalDate(row.Workspace)),
-            _ => Sort(rows, row => row.Workspace.Name, StringComparer.OrdinalIgnoreCase),
-        };
-
-        return ordered.ThenBy(row => row.Workspace.Name, StringComparer.OrdinalIgnoreCase).ThenBy(row => row.Workspace.Id).ToList();
-    }
+    private static string TenantPath(int id) => string.Create(CultureInfo.InvariantCulture, $"{SaasAdminLayout.Base}/tenants/{id}");
 
     /// <summary>
-    /// Moves to a page. The button just pressed is disabled on the first and last page, so focus moves to the other one
-    /// instead of being lost.
+    /// Applies the bulk bar's choices to the selected tenants in one <see cref="SaasState.BulkUpdateTenants" /> call, then
+    /// refreshes the grid and clears the selection; the bar closes, so focus moves to the announcement.
     /// </summary>
-    private async Task GoToPageAsync(int target, int totalPages)
+    private async Task ApplyBulkAsync()
     {
-        target = Math.Clamp(target, 1, totalPages);
+        var planId = State.FindPlan(bulkPlan)?.Id;
+        SaasWorkspaceStatus? status = Enum.TryParse<SaasWorkspaceStatus>(bulkStatus, out var parsed) && parsed is SaasWorkspaceStatus.Suspended or SaasWorkspaceStatus.Active ? parsed : null;
+        string? managerId = bulkManager == NoChangeValue ? null : SaasSeedData.ManagerName(bulkManager) is null ? string.Empty : bulkManager;
 
-        if (target == Math.Clamp(pageNumber, 1, totalPages))
+        if (planId is null && status is null && managerId is null)
+        {
+            bulkErrors++;
+            const string problem = "Choose a plan, a status, or an account manager to apply.";
+            bulkError = bulkErrors == 1 ? problem : string.Create(CultureInfo.InvariantCulture, $"{problem} ({bulkErrors})");
+
             return;
+        }
 
-        pageNumber = target;
+        bulkError = null;
+        bulkErrors = 0;
+
+        var outcome = State.BulkUpdateTenants(selected.Select(row => row.Id).ToList(), planId, status, managerId);
+        var message = outcome.Result switch
+        {
+            SaasResult.Ok => $"Updated {Plural(outcome.Changed, "tenant", "tenants")}."
+                + (outcome.Unchanged > 0 ? $" {Plural(outcome.Unchanged, "tenant was", "tenants were")} left as they were: cancelled, too many members for the plan, or already like that." : string.Empty),
+            SaasResult.NoChange => "No tenants changed: the selected tenants already had those values, are cancelled, or have more members than the plan allows.",
+            SaasResult.NotAllowed => "Sign in as a Lumora operator to change tenants. Nothing changed.",
+            SaasResult.NotFound => "That plan or account manager is no longer available. Nothing changed.",
+            _ => "Those changes couldn't be saved. Nothing changed.",
+        };
+
+        SetStatus(message, outcome.Result is not (SaasResult.Ok or SaasResult.NoChange));
+        bulkPlan = bulkStatus = string.Empty;
+        bulkManager = NoChangeValue;
+
+        if (grid is not null)
+        {
+            await grid.RefreshDataAsync();
+            await grid.UnSelectAllItemsAsync();
+        }
+
+        selected = new List<TenantRow>();
+        focusStatus = true;
         StateHasChanged();
-
-        if (totalPages < 2)
-            return;
-
-        await Task.Yield();
-
-        if (target == totalPages)
-            await SaasDisplay.FocusAsync(previousButton?.Element);
-        else if (target == 1)
-            await SaasDisplay.FocusAsync(nextButton?.Element);
     }
 
-    private void OnPageSizeChanged(ChangeEventArgs args)
+    /// <summary>The link disappears with the filters it clears, so focus moves to the count, which also announces the new total.</summary>
+    private async Task ClearFiltersAsync()
     {
-        if (int.TryParse(args.Value?.ToString(), NumberStyles.Integer, CultureInfo.InvariantCulture, out var size) && pageSizes.Contains(size))
+        search = searchBoxValue = statusFilter = planFilter = managerFilter = string.Empty;
+        await FiltersChangedAsync();
+        await SaasDisplay.FocusAsync(countRegion);
+    }
+
+    /// <summary>The bar closes, so focus moves to the announcement.</summary>
+    private async Task ClearSelectionAsync()
+    {
+        if (grid is not null)
+            await grid.UnSelectAllItemsAsync();
+
+        selected = new List<TenantRow>();
+        bulkError = null;
+        SetStatus("Selection cleared.", false);
+        focusStatus = true;
+    }
+
+    /// <summary>A filter changed: back to the first page of the filtered tenants.</summary>
+    private async Task FiltersChangedAsync()
+    {
+        if (grid is not null)
+            await grid.ResetPageNumber();
+    }
+
+    /// <summary>Returns the tenants that pass every filter (but the status filter when <paramref name="byStatus" /> is off), as grid rows.</summary>
+    private IEnumerable<TenantRow> Matching(bool byStatus = true)
+    {
+        var owners = State.OwnersByWorkspace();
+        var seats = State.SeatsUsedByWorkspace();
+        var term = search.Trim();
+        var planOrder = State.Plans.Select((plan, index) => (plan.Id, index)).ToDictionary(pair => pair.Id, pair => pair.index);
+
+        foreach (var workspace in State.Workspaces)
         {
-            pageSize = size;
-            pageNumber = 1;
+            var owner = owners.GetValueOrDefault(workspace.Id);
+
+            if (term.Length > 0 && !(workspace.Name.Contains(term, StringComparison.OrdinalIgnoreCase) || workspace.Subdomain.Contains(term, StringComparison.OrdinalIgnoreCase)
+                    || (owner?.Name.Contains(term, StringComparison.OrdinalIgnoreCase) ?? false) || (owner?.Email.Contains(term, StringComparison.OrdinalIgnoreCase) ?? false)))
+                continue;
+
+            if (byStatus && statusFilter.Length > 0 && workspace.Status.ToString() != statusFilter)
+                continue;
+
+            if (planFilter.Length > 0 && workspace.PlanId != planFilter)
+                continue;
+
+            if (managerFilter.Length > 0 && (managerFilter == NoManagerValue ? workspace.ManagerId is not null : workspace.ManagerId != managerFilter))
+                continue;
+
+            var plan = State.PlanOf(workspace);
+            var used = seats.GetValueOrDefault(workspace.Id);
+
+            yield return new TenantRow(
+                workspace.Id,
+                workspace.Name,
+                workspace.Subdomain,
+                owner?.Name ?? "None",
+                owner?.Email ?? string.Empty,
+                plan.Name,
+                plan.Id,
+                planOrder.GetValueOrDefault(plan.Id),
+                plan.MonthlyPricePerSeat == 0 ? "Free" : workspace.Period == SaasBillingPeriod.Annual ? "Annual" : "Monthly",
+                used,
+                workspace.Seats,
+                SaasDisplay.StatusName(workspace.Status),
+                workspace.Status,
+                State.MonthlyRevenueFor(workspace),
+                SaasSeedData.ManagerName(workspace.ManagerId) ?? string.Empty,
+                workspace.Country,
+                workspace.CreatedOn,
+                workspace is { Status: SaasWorkspaceStatus.Trial, TrialEndsOn: { } trialEndsOn } ? trialEndsOn : workspace.RenewsOn);
         }
     }
 
-    private void OnPlanChanged(ChangeEventArgs args)
+    private void OnSelectionChanged(HashSet<TenantRow> items)
     {
-        planFilter = args.Value?.ToString() ?? string.Empty;
-        pageNumber = 1;
+        selected = items.ToList();
+
+        if (selected.Count > 0)
+            bulkError = null;
     }
 
-    private void OnSearchChanged(string value)
-    {
-        searchBoxValue = value;
+    private void OnSearchChanged(ChangeEventArgs args) => searchBoxValue = search = args.Value?.ToString() ?? string.Empty;
 
-        if (search == value)
-            return;
-
-        search = value;
-        pageNumber = 1;
-    }
-
-    /// <summary>
-    /// Filters on every keystroke without changing the box's bound value. On Blazor Server a render answering an earlier
-    /// keystroke would otherwise write that older text back into the box and drop what was typed since.
-    /// </summary>
-    private void OnSearchInput(ChangeEventArgs args)
+    /// <summary>Filters on every keystroke without changing the box's bound value, so a slower render never overwrites newer typing.</summary>
+    private async Task OnSearchInputAsync(ChangeEventArgs args)
     {
         var value = args.Value?.ToString() ?? string.Empty;
 
-        if (search == value)
+        if (value == search)
             return;
 
         search = value;
-        pageNumber = 1;
+        await FiltersChangedAsync();
     }
 
-    private void OnSortChanged(ChangeEventArgs args)
+    /// <summary>Another screen or a bulk change changed the state: the grid reads the tenants again.</summary>
+    private void OnStateChanged() => InvokeAsync(async () =>
     {
-        var parts = (args.Value?.ToString() ?? string.Empty).Split('-');
+        await RefreshGridAsync();
+        StateHasChanged();
+    });
 
-        if (parts.Length == 2 && Enum.TryParse<SortKey>(parts[0], out var key) && Enum.IsDefined(key))
-        {
-            sortKey = key;
-            sortDescending = parts[1] == "desc";
-            pageNumber = 1;
-        }
+    private static string Plural(int count, string one, string many) => count == 1 ? $"1 {one}" : $"{Count(count)} {many}";
+
+    /// <summary>The page of tenants the grid asked for, from the filtered list, newest first unless a column is sorted.</summary>
+    private Task<GridDataProviderResult<TenantRow>> ProvideTenantsAsync(GridDataProviderRequest<TenantRow> request) => view.ApplyAsync(request, Shown);
+
+    private async Task RefreshGridAsync()
+    {
+        if (grid is not null)
+            await grid.RefreshDataAsync();
     }
 
-    private void OnStateChanged() => InvokeAsync(StateHasChanged);
-
-    private void OnStatusChanged(ChangeEventArgs args)
+    /// <summary>Forgets the saved view and builds the grid again with its defaults; focus moves to the count.</summary>
+    private async Task ResetViewAsync()
     {
-        statusFilter = args.Value?.ToString() ?? string.Empty;
-        pageNumber = 1;
+        await view.ResetAsync();
+        pageSize = DefaultPageSize;
+        selected = new List<TenantRow>();
+        gridVersion++;
+        SetStatus("The view is reset: newest first, 25 tenants a page, and every column shown.", false);
+        StateHasChanged();
+
+        await Task.Yield();
+        await SaasDisplay.FocusAsync(countRegion);
     }
 
-    private int PlanIndex(SaasPlan plan)
-    {
-        for (var index = 0; index < State.Plans.Count; index++)
-        {
-            if (State.Plans[index].Id == plan.Id)
-                return index;
-        }
+    private string RowClass(TenantRow row) => selected.Any(item => item.Id == row.Id) ? "sd-row-selected" : string.Empty;
 
-        return State.Plans.Count;
+    /// <summary>Keeps the grid's settings in the saved view, and follows the page size the selector chose.</summary>
+    private async Task SaveSettingsAsync(GridSettings settings)
+    {
+        if (settings.PageSize > 0)
+            pageSize = settings.PageSize;
+
+        await view.SaveSettingsAsync(settings);
     }
 
-    private IOrderedEnumerable<TenantRow> Sort<TKey>(IEnumerable<TenantRow> rows, Func<TenantRow, TKey> key, IComparer<TKey>? comparer = null) =>
-        sortDescending ? rows.OrderByDescending(key, comparer) : rows.OrderBy(key, comparer);
-
-    /// <summary>Sorts by a column: the same column again flips the order; another column starts in its natural order.</summary>
-    private void SortBy(SortKey key)
+    /// <summary>Shows a status message; the same message again gets a counter, so a screen reader announces it again.</summary>
+    private void SetStatus(string message, bool isError)
     {
-        if (key == sortKey)
-        {
-            sortDescending = !sortDescending;
-        }
-        else
-        {
-            sortKey = key;
-            sortDescending = DefaultDescending(key);
-        }
-
-        pageNumber = 1;
+        statusCount = message == statusText ? statusCount + 1 : 1;
+        statusText = message;
+        statusIsError = isError;
+        statusMessage = statusCount == 1 ? message : string.Create(CultureInfo.InvariantCulture, $"{message} ({statusCount})");
     }
 
-    private IconName SortIcon(SortKey key) => key != sortKey ? IconName.ArrowDownUp : sortDescending ? IconName.ArrowDown : IconName.ArrowUp;
-
-    private string SortLabel(SortKey key, bool descending) => key switch
-    {
-        SortKey.Name => descending ? "Tenant name, Z to A" : "Tenant name, A to Z",
-        SortKey.Owner => descending ? "Owner, Z to A" : "Owner, A to Z",
-        SortKey.Plan => $"Plan, {(descending ? State.Plans[^1].Name : State.Plans[0].Name)} first",
-        SortKey.Seats => descending ? "Seats, most first" : "Seats, fewest first",
-        SortKey.Status => $"Status, {SaasDisplay.StatusName(descending ? Enum.GetValues<SaasWorkspaceStatus>()[^1] : Enum.GetValues<SaasWorkspaceStatus>()[0])} first",
-        SortKey.Mrr => descending ? "MRR, highest first" : "MRR, lowest first",
-        SortKey.Created => descending ? "Created, newest first" : "Created, oldest first",
-        _ => descending ? "Renewal, latest first" : "Renewal, soonest first",
-    };
-
-    private string SummaryText(int matches, int page, int shown)
-    {
-        var total = State.Workspaces.Count;
-
-        if (matches == 0)
-            return $"No tenants match these filters (0 of {Count(total)}).";
-
-        var from = ((page - 1) * pageSize) + 1;
-        var range = $"{Count(from)}–{Count(from + shown - 1)}";
-        var sort = SortLabel(sortKey, sortDescending);
-
-        return matches == total
-            ? $"Showing {range} of {Count(total)} tenants · {sort}"
-            : $"{Count(matches)} of {Count(total)} tenants match · showing {range} · {sort}";
-    }
-
-    private int TotalPages(int count) => Math.Max(1, (int)Math.Ceiling(count / (double)pageSize));
+    private int StatusCount(SaasWorkspaceStatus? status) => Matching(byStatus: false).Count(row => status is null || row.StatusValue == status);
 
     #endregion
 
@@ -300,7 +347,15 @@ public partial class AdminTenants : ComponentBase, IDisposable
 
     #region Properties, Indexers
 
-    private bool HasFilters => search.Trim().Length > 0 || statusFilter.Length > 0 || planFilter.Length > 0;
+    [Inject] private ShowcaseGridViewStore GridViews { get; set; } = default!;
+
+    private bool IsFiltered => search.Trim().Length > 0 || statusFilter.Length > 0 || planFilter.Length > 0 || managerFilter.Length > 0;
+
+    private static string NewTenantPath => $"{SaasAdminLayout.Base}/tenants/new";
+
+    private int PastDueCount => State.Workspaces.Count(workspace => workspace.Status == SaasWorkspaceStatus.PastDue);
+
+    private IReadOnlyList<TenantRow> Shown => Matching().ToList();
 
     [Inject] private SaasState State { get; set; } = default!;
 
@@ -311,22 +366,33 @@ public partial class AdminTenants : ComponentBase, IDisposable
 
     #region Nested Types
 
-    /// <summary>The columns of the list, in order.</summary>
-    private enum SortKey
+    /// <summary>One tenant as the grid shows and exports it: every column is a property, so CSV export includes it.</summary>
+    private sealed record TenantRow(
+        int Id,
+        string Name,
+        string Subdomain,
+        string Owner,
+        string OwnerEmail,
+        string Plan,
+        string PlanId,
+        int PlanOrder,
+        string Billing,
+        int SeatsUsed,
+        int Seats,
+        string Status,
+        SaasWorkspaceStatus StatusValue,
+        decimal Mrr,
+        string Manager,
+        string Country,
+        DateTime Created,
+        DateTime Renews)
     {
-        Name,
-        Owner,
-        Plan,
-        Seats,
-        Status,
-        Mrr,
-        Created,
-        Renewal,
+        /// <summary>Gets the owner with their email, as exported.</summary>
+        public string OwnerText => OwnerEmail.Length == 0 ? Owner : $"{Owner} <{OwnerEmail}>";
+
+        /// <summary>Gets the seats used of the seats bought, such as "9/12".</summary>
+        public string SeatsText => string.Create(CultureInfo.InvariantCulture, $"{SeatsUsed}/{Seats}");
     }
-
-    private sealed record Column(SortKey Key, string Text, string? Class);
-
-    private sealed record TenantRow(SaasWorkspace Workspace, SaasMember? Owner, SaasPlan Plan, int SeatsUsed, decimal Mrr);
 
     #endregion
 }

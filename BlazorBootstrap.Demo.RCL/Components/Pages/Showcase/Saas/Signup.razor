@@ -43,9 +43,9 @@
                         </p>
                     }
 
-                    <EditForm Model="form" OnValidSubmit="Submit" FormName="saas-signup">
-                        <ShowcaseFormErrors />
+                    <EditForm EditContext="editContext" OnSubmit="SubmitAsync" FormName="saas-signup" novalidate>
                         <DataAnnotationsValidator />
+                        <ShowcaseFormErrors ShowSummary="true" />
                         <fieldset class="mb-4">
                             <legend class="h6 fw-bold" id="su-plan-legend">Choose a plan</legend>
                             @* The layout's picker has three columns; this one shows only the self-serve plans. *@
@@ -79,19 +79,21 @@
                             <div class="col-md-6">
                                 <label class="form-label" for="su-email">Work email</label>
                                 <InputText id="su-email" inputmode="email" autocapitalize="none" spellcheck="false" class="form-control" @bind-Value="form.Email" maxlength="@ShowcaseIdentity.MaxEmailLength" autocomplete="email" aria-describedby="su-email-help" />
-                                <div class="form-text" id="su-email-help">Use a made-up address, for example you@example.com. You sign in with it.</div>
+                                <ShowcaseUniqueCheck @ref="emailCheck" For="() => form.Email" IsTakenAsync="IsEmailTakenAsync" TakenMessage="EmailTakenMessage" />
+                                <div class="form-text mt-0" id="su-email-help">Use a made-up address, for example you@example.com. You sign in with it, so it can't already have an account.</div>
                                 <ValidationMessage For="() => form.Email" />
                             </div>
                             <div class="col-12">
                                 <label class="form-label" for="su-password">Password</label>
                                 <ShowcasePasswordInput Id="su-password" @bind-Value="form.Password" aria-describedby="su-password-help" />
-                                <div class="form-text" id="su-password-help">At least @ShowcaseIdentity.MinPasswordLength characters. Make one up.</div>
+                                <div class="form-text" id="su-password-help">At least @ShowcaseIdentity.MinPasswordLength characters with a letter and a digit, and not your email. Make one up.</div>
                                 <ValidationMessage For="() => form.Password" />
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label" for="su-company">Company</label>
                                 <InputText id="su-company" class="form-control" @bind-Value="form.Company" maxlength="@SaasState.MaxWorkspaceNameLength" autocomplete="organization" aria-describedby="su-company-help" />
-                                <div class="form-text" id="su-company-help">This becomes your workspace's name. You can change it later in Settings.</div>
+                                <ShowcaseUniqueCheck @ref="companyCheck" For="() => form.Company" IsTakenAsync="IsCompanyTakenAsync" TakenMessage="CompanyTakenMessage" />
+                                <div class="form-text mt-0" id="su-company-help">This becomes your workspace's name, unique on @SaasSeedData.ProductName. You can change it later in Settings.</div>
                                 <ValidationMessage For="() => form.Company" />
                             </div>
                             <div class="col-md-6">
@@ -104,6 +106,14 @@
                                     }
                                 </InputSelect>
                                 <ValidationMessage For="() => form.Country" />
+                            </div>
+                            <div class="col-12">
+                                <div class="form-check">
+                                    <InputCheckbox id="su-terms" class="form-check-input" @bind-Value="form.AcceptTerms" aria-describedby="su-terms-help" />
+                                    <label class="form-check-label" for="su-terms">I accept the (fictitious) terms of service and privacy notice</label>
+                                </div>
+                                <div class="form-text mt-0" id="su-terms-help">Required to create a workspace. In this demo there's nothing to read and nothing is stored outside this tab.</div>
+                                <ValidationMessage For="() => form.AcceptTerms" />
                             </div>
                         </div>
 

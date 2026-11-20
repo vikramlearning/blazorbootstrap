@@ -3,95 +3,176 @@
 
 <PageTitle>Leads · @SaasSeedData.ProductName</PageTitle>
 
-@{
-    var leads = State.Leads;
-    var shown = FilteredLeads(leads);
-}
-
 <div class="sd-page-head">
     <div>
         <span class="sc-eyebrow">Leads</span>
         <h1 class="sd-page-title">Sales inbox</h1>
-        <p class="sd-page-lead">Messages from the public "Contact sales" form, newest first. @CountText(leads.Count(lead => lead.Status == SaasLeadStatus.New), "new lead", "new leads").</p>
+        <p class="sd-page-lead">
+            Messages from the public "Contact sales" form and leads the team added, newest first. @CountText(State.Leads.Count(lead => lead.Status == SaasLeadStatus.New), "new lead", "new leads").
+            Open a lead to reply in its note, or select several to change their status together.
+        </p>
     </div>
+    <Button @ref="addButton" Color="ButtonColor.Primary" @onclick="OpenNewAsync">
+        <Icon Name="IconName.PlusCircle" class="me-1" aria-hidden="true" />Add lead
+    </Button>
 </div>
 
-@* Always rendered and focusable, so a saved lead is announced and focus has somewhere to go when its row is filtered away. *@
-<p class="sd-leads-status" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
-
-<Card Class="sd-card">
+<Card Class="sd-card mb-3">
     <CardBody Class="p-3 p-lg-4">
-        <div class="sd-leads-controls mb-3" role="search" aria-label="Filter leads">
-            <div class="sd-leads-filters" role="group" aria-label="Show leads by status">
-                @foreach (var option in filters)
-                {
-                    var isSelected = option == filter;
-
-                    <button type="button" class="btn btn-sm rounded-pill @(isSelected ? "btn-primary" : "btn-outline-primary")" aria-pressed="@(isSelected ? "true" : "false")"
-                            @onclick="() => SelectFilter(option)" @key="option">
-                        @FilterLabel(option) <span class="sd-leads-filter-count">(@CountIn(leads, option))</span>
-                    </button>
-                }
-            </div>
-            <div class="sd-leads-search">
+        <h2 class="sd-card-title mb-3" id="sd-lead-filters-title">Filter leads</h2>
+        <div class="sd-list-filters" role="group" aria-labelledby="sd-lead-filters-title">
+            <div class="sd-list-search">
                 <label class="form-label small fw-semibold" for="sd-lead-search">Search</label>
-                <div class="input-group">
-                    <span class="input-group-text"><Icon Name="IconName.Search" aria-hidden="true" /></span>
-                    @* Filters on every keystroke; the bound value changes only on change, so a render during typing never writes an older value back. *@
-                    <input @ref="searchInput" id="sd-lead-search" type="search" class="form-control" value="@searchBoxValue" placeholder="Name, company, or email"
-                           autocomplete="off" maxlength="120" @oninput="OnSearchInput" @onchange="OnSearchChanged" />
+                @* Filters on every keystroke; the bound value changes only on change, so a render during typing never writes an older value back. *@
+                <input @ref="searchInput" id="sd-lead-search" type="search" class="form-control" value="@searchBoxValue" placeholder="Name, company, or email"
+                       autocomplete="off" maxlength="120" @oninput="OnSearchInputAsync" @onchange="OnSearchChanged" />
+            </div>
+            <fieldset class="m-0 p-0 border-0">
+                <legend class="form-label small fw-semibold mb-1">Status</legend>
+                <div class="d-flex flex-wrap gap-1">
+                    @foreach (var option in filters)
+                    {
+                        var inputId = $"sd-lead-status-{option?.ToString() ?? "all"}";
+                        <input type="radio" class="btn-check" name="sd-lead-status" id="@inputId" checked="@(filter == option)" @onchange="() => SelectFilterAsync(option)" />
+                        <label class="btn btn-sm btn-outline-secondary" for="@inputId">@FilterLabel(option) (@Count(CountIn(option)))</label>
+                    }
                 </div>
-            </div>
+            </fieldset>
         </div>
-
-        <p class="small text-body-secondary mb-3" role="status">@SummaryText(shown.Count, leads.Count)</p>
-
-        @if (shown.Count == 0)
-        {
-            <div class="text-center py-5">
-                <span class="sd-leads-empty-icon" aria-hidden="true"><Icon Name="IconName.Inbox" /></span>
-                @if (leads.Count == 0)
-                {
-                    <h2 class="h6 fw-bold mt-3 mb-1">No leads yet</h2>
-                    <p class="text-body-secondary mb-0">Messages sent from the public "Contact sales" form show up here.</p>
-                }
-                else
-                {
-                    <h2 class="h6 fw-bold mt-3 mb-1">No leads match</h2>
-                    <p class="text-body-secondary mb-3">@EmptyText</p>
-                    <Button Color="ButtonColor.Secondary" Outline="true" Size="ButtonSize.Small" @onclick="ClearFiltersAsync">Show all leads</Button>
-                }
-            </div>
-        }
-        else
-        {
-            <ul class="sd-leads" aria-label="Leads">
-                @foreach (var lead in shown)
-                {
-                    <li class="sd-lead" @key="lead.Id">
-                        <div class="sd-lead-main">
-                            <div class="d-flex flex-wrap align-items-center gap-2">
-                                <button type="button" class="sd-lead-open" @ref="openButtons[lead.Id]" @onclick="() => OpenAsync(lead.Id)">
-                                    @lead.Name<span class="visually-hidden">, @lead.Company. Open the lead</span>
-                                </button>
-                                <Badge Color="SaasDisplay.LeadColor(lead.Status)" Class="rounded-pill">@lead.Status</Badge>
-                            </div>
-                            <span class="sd-person-email">@lead.Company · @lead.TeamSize people · Received @SaasDisplay.DateTimeShort(lead.CreatedOn)</span>
-                            <p class="sd-lead-excerpt">@FirstLine(lead.Message)</p>
-                        </div>
-                        @if (lead.Status != SaasLeadStatus.Closed)
-                        {
-                            <a class="btn btn-sm btn-outline-primary sd-lead-create" href="@CreateTenantPath(lead.Id)">
-                                <Icon Name="IconName.BuildingAdd" class="me-1" aria-hidden="true" />Create tenant<span class="visually-hidden"> from the lead of @lead.Name, @lead.Company</span>
-                            </a>
-                        }
-                    </li>
-                }
-            </ul>
-        }
+        <div class="sd-list-meta mb-0">
+            <p class="small text-body-secondary mb-0" aria-live="polite" tabindex="-1" @ref="countRegion">Showing @Count(Shown.Count) of @CountText(State.Leads.Count, "lead", "leads").</p>
+            @if (IsFiltered)
+            {
+                <Button Color="ButtonColor.Link" Size="ButtonSize.Small" Class="p-0" @onclick="ClearFiltersAsync">Show every lead</Button>
+            }
+            @* Back to the saved view's defaults: newest first, 25 a page, every column in its place. *@
+            <Button Color="ButtonColor.Link" Size="ButtonSize.Small" Class="p-0" @onclick="ResetViewAsync">Reset view</Button>
+        </div>
     </CardBody>
 </Card>
 
+@* Always rendered and focusable, so a saved lead or a bulk change is announced and focus has somewhere to go when its row or the bulk bar is gone. *@
+<p class="sd-list-status @(statusIsError ? "text-danger-emphasis" : null)" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
+<p class="sd-list-error" role="alert">@bulkError</p>
+
+@if (selected.Count > 0)
+{
+    <section class="sd-bulk" aria-labelledby="sd-bulk-count">
+        <h2 class="sd-bulk-count" id="sd-bulk-count">@(selected.Count == 1 ? "1 lead selected" : $"{Count(selected.Count)} leads selected")</h2>
+        <div class="sd-bulk-field">
+            <label class="form-label small fw-semibold" for="sd-bulk-lead-status">Set status</label>
+            <select id="sd-bulk-lead-status" class="form-select form-select-sm" @bind="bulkStatus">
+                <option value="">Choose a status</option>
+                @foreach (var status in Enum.GetValues<SaasLeadStatus>())
+                {
+                    <option value="@status.ToString()">@status</option>
+                }
+            </select>
+        </div>
+        <div class="sd-bulk-field">
+            <label class="form-label small fw-semibold" for="sd-bulk-lead-reason">Reason or note</label>
+            <input id="sd-bulk-lead-reason" class="form-control form-control-sm" maxlength="@SaasState.MaxLeadReasonLength" @bind="bulkReason" @bind:event="oninput"
+                   autocomplete="off" aria-describedby="sd-bulk-lead-reason-help" />
+            <span class="form-text d-block" id="sd-bulk-lead-reason-help">Required to close leads; added to the front of each note.</span>
+        </div>
+        <div class="sd-bulk-actions">
+            <Button Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="ApplyBulkAsync">Apply<span class="visually-hidden">&#32;to the selected leads</span></Button>
+            <Button Color="ButtonColor.Secondary" Outline="true" Size="ButtonSize.Small" @onclick="ClearSelectionAsync">Clear selection</Button>
+        </div>
+    </section>
+}
+
+<Card Class="sd-card">
+    <CardBody Class="p-3 p-lg-4">
+        <ShowcaseDataState Status="@(viewLoaded ? ShowcaseDataStatus.Ready : ShowcaseDataStatus.Loading)"
+                           IsEmpty="@(State.Leads.Count == 0)"
+                           EmptyIcon="IconName.Inbox"
+                           EmptyTitle="No leads yet"
+                           EmptyText="Messages sent from the public “Contact sales” form show up here. You can also add a lead from a call or an event."
+                           LoadingText="Loading leads…"
+                           OnRetry="RefreshGridAsync">
+            <EmptyActions>
+                <Button Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="OpenNewAsync">Add lead</Button>
+            </EmptyActions>
+            <ChildContent>
+                <Grid @ref="grid"
+                      @key="gridVersion"
+                      TItem="SaasLead"
+                      Class="table table-hover align-middle sd-table-wide sc-grid-row-links"
+                      GridContainerClass="sd-grid border rounded-3"
+                      DataProvider="ProvideLeadsAsync"
+                      SettingsProvider="view.GetSettingsAsync"
+                      GridSettingsChanged="SaveSettingsAsync"
+                      AllowPaging="true"
+                      PageSize="@pageSize"
+                      PageSizeSelectorVisible="true"
+                      PageSizeSelectorItems="@(new[] { 10, 25, 50 })"
+                      PaginationItemsTextFormat="{0}–{1} of {2} leads"
+                      AllowSorting="true"
+                      AllowSelection="true"
+                      SelectionMode="GridSelectionMode.Multiple"
+                      RowSelectionLabel="@(lead => $"Select the lead from {lead.Name}, {lead.Company}")"
+                      SelectAllRowsText="Select all shown leads"
+                      SelectedItemsChanged="OnSelectionChanged"
+                      RowClass="RowClass"
+                      AllowColumnChooser="true"
+                      AllowExport="true"
+                      ExportFileName="saas-leads"
+                      Responsive="true"
+                      EmptyText="@EmptyText"
+                      aria-label="Leads">
+                    <GridColumns>
+                        <GridColumn TItem="SaasLead" HeaderText="Lead" PropertyName="Name" SortString="name" SortKeySelector="lead => lead.Name"
+                                    IsDefaultSortColumn="@view.IsSortColumn("name")" SortDirection="@view.DirectionFor("name")" AlwaysVisible="true">
+                            @* A lead has no page of its own: the name opens it in the dialog, and its stretched area makes the whole row do so. *@
+                            <button type="button" class="btn btn-link p-0 sd-row-link stretched-link" @ref="openButtons[context.Id]" @onclick="() => OpenAsync(context.Id)">
+                                @context.Name<span class="visually-hidden">, @context.Company. Open the lead</span>
+                            </button>
+                            <span class="d-block small text-body-secondary">@context.Email</span>
+                        </GridColumn>
+                        <GridColumn TItem="SaasLead" HeaderText="Company" PropertyName="Company" SortString="company" SortKeySelector="lead => lead.Company"
+                                    IsDefaultSortColumn="@view.IsSortColumn("company")" SortDirection="@view.DirectionFor("company")" TextNoWrap="true">
+                            @context.Company
+                        </GridColumn>
+                        <GridColumn TItem="SaasLead" HeaderText="Team size" PropertyName="TeamSize" SortString="size" SortKeySelector="lead => TeamSizeIndex(lead.TeamSize)"
+                                    IsDefaultSortColumn="@view.IsSortColumn("size")" SortDirection="@view.DirectionFor("size")" TextNoWrap="true">
+                            @context.TeamSize people
+                        </GridColumn>
+                        <GridColumn TItem="SaasLead" HeaderText="Status" PropertyName="Status" SortString="status" SortKeySelector="lead => lead.Status"
+                                    IsDefaultSortColumn="@view.IsSortColumn("status")" SortDirection="@view.DirectionFor("status")" TextNoWrap="true">
+                            <Badge Color="SaasDisplay.LeadColor(context.Status)" Class="rounded-pill">@context.Status</Badge>
+                        </GridColumn>
+                        <GridColumn TItem="SaasLead" HeaderText="Received" PropertyName="CreatedOn" SortString="received" SortKeySelector="lead => lead.CreatedOn"
+                                    IsDefaultSortColumn="@view.IsSortColumn("received")" SortDirection="@view.DirectionFor("received")" TextNoWrap="true">
+                            @SaasDisplay.DateTimeShort(context.CreatedOn)
+                        </GridColumn>
+                        <GridColumn TItem="SaasLead" HeaderText="Message" PropertyName="Message" Sortable="false">
+                            <span class="sd-lead-excerpt">@FirstLine(context.Message)</span>
+                        </GridColumn>
+                        <GridColumn TItem="SaasLead" HeaderText="Note" PropertyName="Note" Sortable="false">
+                            <span class="sd-lead-excerpt">@(context.Note ?? "—")</span>
+                        </GridColumn>
+                        @* Links only; no property, so CSV export leaves it out. *@
+                        <GridColumn TItem="SaasLead" HeaderText="Next step" Sortable="false" TextNoWrap="true">
+                            @if (context.Status != SaasLeadStatus.Closed)
+                            {
+                                <a class="btn btn-sm btn-outline-primary" href="@CreateTenantPath(context.Id)">
+                                    <Icon Name="IconName.BuildingAdd" class="me-1" aria-hidden="true" />Create tenant<span class="visually-hidden">&#32;from the lead of @context.Name, @context.Company</span>
+                                </a>
+                            }
+                            else
+                            {
+                                <span class="small text-body-secondary">Closed</span>
+                            }
+                        </GridColumn>
+                    </GridColumns>
+                </Grid>
+            </ChildContent>
+        </ShowcaseDataState>
+    </CardBody>
+</Card>
+
+@* The lead dialog: the full message, and the status and note in an EditForm (rule WR-002). *@
 <Modal @ref="leadModal"
        IsVerticallyCentered="true"
        IsScrollable="true"
@@ -122,11 +203,12 @@
             <h3 class="h6 fw-bold mb-2">Message</h3>
             <p class="sd-lead-message">@lead.Message</p>
 
-            <EditForm id="sd-lead-form" EditContext="editContext" OnSubmit="SaveAsync" FormName="sd-lead">
-                <ShowcaseFormErrors />
+            <EditForm id="sd-lead-form" EditContext="editContext" OnSubmit="SaveAsync" FormName="sd-lead" novalidate>
+                <DataAnnotationsValidator />
+                <ShowcaseFormErrors ShowSummary="true" />
                 <div class="row g-3">
                     <div class="col-md-5">
-                        <label class="form-label" for="sd-lead-status">Status</label>
+                        <label class="form-label fw-semibold" for="sd-lead-status">Status</label>
                         <InputSelect @ref="statusSelect" id="sd-lead-status" class="form-select" @bind-Value="form.Status" aria-describedby="sd-lead-status-help">
                             @foreach (var status in Enum.GetValues<SaasLeadStatus>())
                             {
@@ -136,10 +218,11 @@
                         <div class="form-text" id="sd-lead-status-help">@StatusHint(form.Status)</div>
                     </div>
                     <div class="col-12">
-                        <label class="form-label" for="sd-lead-note">Sales note</label>
-                        <InputTextArea id="sd-lead-note" class="form-control" rows="4" @bind-Value="form.Note" @oninput="OnNoteInput" maxlength="@MaxNoteLength"
+                        <label class="form-label fw-semibold" for="sd-lead-note">Sales note</label>
+                        <InputTextArea id="sd-lead-note" class="form-control" rows="4" @bind-Value="form.Note" @oninput="OnNoteInput" maxlength="@SaasState.MaxLeadMessageLength"
                                        aria-describedby="sd-lead-note-help" />
-                        <div class="form-text" id="sd-lead-note-help">For the sales team only; the lead never sees it. @NoteLengthText</div>
+                        <div class="form-text" id="sd-lead-note-help">For the sales team only; the lead never sees it. A closed lead needs a note saying why. @NoteLengthText</div>
+                        <ValidationMessage For="() => form.Note" />
                     </div>
                 </div>
                 <p class="sd-lead-error mt-3 mb-0" role="alert">@errorMessage</p>
@@ -156,5 +239,83 @@
         }
         <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => leadModal.HideAsync()">Close</Button>
         <Button Type="ButtonType.Submit" Color="ButtonColor.Primary" form="sd-lead-form">Save</Button>
+    </FooterTemplate>
+</Modal>
+
+@* The add-lead dialog, for a lead from a call or an event (rule WR-002). *@
+<Modal @ref="newModal"
+       IsVerticallyCentered="true"
+       IsScrollable="true"
+       Size="ModalSize.Large"
+       ShowCloseButton="false"
+       aria-labelledby="sd-new-lead-title"
+       OnShown="OnNewShownAsync"
+       OnHidden="OnNewHiddenAsync">
+    <HeaderTemplate>
+        <h2 class="modal-title h5" id="sd-new-lead-title">Add a lead</h2>
+    </HeaderTemplate>
+    <BodyTemplate>
+        <ShowcaseDemoNotice Class="mb-3" Text="Demo only: make up the details. The lead stays in this browser tab, and nobody is emailed." />
+        <EditForm id="sd-new-lead-form" EditContext="newContext" OnSubmit="CreateAsync" FormName="sd-new-lead" novalidate>
+            <DataAnnotationsValidator />
+            <ShowcaseFormErrors ShowSummary="true" />
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold" for="sd-new-lead-name">Name</label>
+                    <InputText @ref="newNameInput" id="sd-new-lead-name" class="form-control" @bind-Value="newForm.Name" maxlength="@SaasState.MaxLeadTextLength" autocomplete="off" />
+                    <ValidationMessage For="() => newForm.Name" />
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold" for="sd-new-lead-email">Email</label>
+                    <InputText id="sd-new-lead-email" class="form-control" inputmode="email" autocapitalize="none" spellcheck="false" @bind-Value="newForm.Email"
+                               maxlength="@ShowcaseIdentity.MaxEmailLength" autocomplete="off" aria-describedby="sd-new-lead-email-help" />
+                    <ShowcaseUniqueCheck @ref="emailCheck" For="() => newForm.Email" IsTakenAsync="IsEmailTakenAsync" TakenMessage="EmailTakenMessage" />
+                    <div class="form-text mt-0" id="sd-new-lead-email-help">One open lead per email: an existing conversation is updated instead.</div>
+                    <ValidationMessage For="() => newForm.Email" />
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold" for="sd-new-lead-company">Company</label>
+                    <InputText id="sd-new-lead-company" class="form-control" @bind-Value="newForm.Company" maxlength="@SaasState.MaxLeadTextLength" autocomplete="off" />
+                    <ValidationMessage For="() => newForm.Company" />
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold" for="sd-new-lead-size">Team size</label>
+                    <InputSelect id="sd-new-lead-size" class="form-select" @bind-Value="newForm.TeamSize">
+                        <option value="">Choose a team size</option>
+                        @foreach (var size in SaasSeedData.TeamSizes)
+                        {
+                            <option value="@size">@size people</option>
+                        }
+                    </InputSelect>
+                    <ValidationMessage For="() => newForm.TeamSize" />
+                </div>
+                <div class="col-12">
+                    <label class="form-label fw-semibold" for="sd-new-lead-message">What they asked about</label>
+                    <InputTextArea id="sd-new-lead-message" class="form-control" rows="3" @bind-Value="newForm.Message" maxlength="@SaasState.MaxLeadMessageLength" aria-describedby="sd-new-lead-message-help" />
+                    <div class="form-text" id="sd-new-lead-message-help">Up to 1,000 characters, like seats, a security review, or a data region.</div>
+                    <ValidationMessage For="() => newForm.Message" />
+                </div>
+                <div class="col-md-5">
+                    <label class="form-label fw-semibold" for="sd-new-lead-status">Status</label>
+                    <InputSelect id="sd-new-lead-status" class="form-select" @bind-Value="newForm.Status" aria-describedby="sd-new-lead-status-help">
+                        @foreach (var status in Enum.GetValues<SaasLeadStatus>())
+                        {
+                            <option value="@status">@status</option>
+                        }
+                    </InputSelect>
+                    <div class="form-text" id="sd-new-lead-status-help">@StatusHint(newForm.Status)</div>
+                </div>
+                <div class="col-12">
+                    <label class="form-label fw-semibold" for="sd-new-lead-note">Sales note <span class="fw-normal text-body-secondary">(optional, needed for a closed lead)</span></label>
+                    <InputTextArea id="sd-new-lead-note" class="form-control" rows="2" @bind-Value="newForm.Note" maxlength="@SaasState.MaxLeadMessageLength" />
+                    <ValidationMessage For="() => newForm.Note" />
+                </div>
+            </div>
+            <p class="sd-lead-error mt-3 mb-0" role="alert">@newError</p>
+        </EditForm>
+    </BodyTemplate>
+    <FooterTemplate>
+        <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => newModal.HideAsync()">Cancel</Button>
+        <Button Type="ButtonType.Submit" Color="ButtonColor.Primary" form="sd-new-lead-form">Add lead</Button>
     </FooterTemplate>
 </Modal>

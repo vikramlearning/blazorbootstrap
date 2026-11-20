@@ -1,14 +1,20 @@
 using System.Globalization;
+using BlazorBootstrap.Demo.RCL.Components.Pages.Showcase.Shared;
 using BlazorBootstrap.Demo.RCL.Models.Showcase.Saas;
 using BlazorBootstrap.Demo.RCL.Services.Showcase.Saas;
+using Microsoft.AspNetCore.Components.Forms;
 
 namespace BlazorBootstrap.Demo.RCL.Components.Pages.Showcase.Saas;
 
 /// <summary>
 /// Plans and prices in the operator console: a card per plan with its fields, the workspaces on it, their MRR, and the
-/// largest seat count among them (the lowest seat limit allowed), and a dialog that edits the plan. The dialog checks the
-/// rules of <see cref="SaasState.UpdatePlan" /> field by field (<see cref="SaasPlanDraft" />), previews the public price
-/// and the MRR change, and turns each <see cref="SaasResult" /> into a message. Plans can't be added or removed.
+/// largest seat count among them (the lowest seat limit allowed), and a dialog that edits the plan in an
+/// <see cref="EditForm" /> (rule WR-002). The dialog checks the rules of <see cref="SaasState.UpdatePlan" /> field by field
+/// (<see cref="SaasPlanDraft" />: lengths, the price range, whole-number limits, a seat limit no lower than the largest
+/// workspace on the plan, at least one self-serve plan, and Most popular only on a self-serve plan), checks as you type that
+/// no other plan has the name, and on a failed save shows a summary that links to each field. It previews the public price
+/// and the MRR change, and turns each <see cref="SaasResult" /> into a message, a taken name or a seat limit on its field.
+/// Plans can't be added or removed.
 /// </summary>
 public partial class AdminPlans : ComponentBase, IDisposable
 {
@@ -28,11 +34,10 @@ public partial class AdminPlans : ComponentBase, IDisposable
         [nameof(SaasPlanDraft.EventLimit)] = "Event limit",
         [nameof(SaasPlanDraft.DashboardLimit)] = "Dashboard limit",
         [nameof(SaasPlanDraft.IsSelfServe)] = "Self-serve",
+        [nameof(SaasPlanDraft.IsPopular)] = "Most popular",
     };
 
     private readonly Dictionary<string, ElementReference> editButtons = new();
-
-    private readonly Dictionary<string, string> errors = new();
 
     private ElementReference callToActionInput;
 
@@ -55,6 +60,14 @@ public partial class AdminPlans : ComponentBase, IDisposable
     private ElementReference highlightsInput;
 
     private Modal modal = default!;
+
+    /// <summary>The dialog's edit context: the draft's rule messages, the name check's, and the state's answers live here, so the summary lists them.</summary>
+    private EditContext planContext = new(new SaasPlanDraft());
+
+    /// <summary>The draft's rule messages and the state's answers, by field.</summary>
+    private ValidationMessageStore? planErrors;
+
+    private ShowcaseUniqueCheck? nameCheck;
 
     private ElementReference nameInput;
 
@@ -156,7 +169,7 @@ public partial class AdminPlans : ComponentBase, IDisposable
         _ => "no change",
     };
 
-    private string? AriaInvalid(string field) => errors.ContainsKey(field) ? "true" : null;
+    private string? AriaInvalid(string field) => ErrorOf(field) is null ? null : "true";
 
     private void ClearMessages()
     {
@@ -164,8 +177,8 @@ public partial class AdminPlans : ComponentBase, IDisposable
         errorCount = noteCount = 0;
     }
 
-    /// <summary>The <c>aria-describedby</c> of a field: its help text, and its error while it has one.</summary>
-    private string Describe(string field, string helpId) => errors.ContainsKey(field) ? $"{helpId} {helpId}-error" : helpId;
+    /// <summary>The <c>aria-describedby</c> of a field: its help text; the form's script adds its message while it has one.</summary>
+    private static string Describe(string field, string helpId) => helpId;
 
     private async Task EditAsync(string planId)
     {
@@ -175,20 +188,28 @@ public partial class AdminPlans : ComponentBase, IDisposable
         editingId = plan.Id;
         returnFocusId = plan.Id;
         draft = SaasPlanDraft.From(plan);
-        errors.Clear();
+        planContext = new EditContext(draft);
+        planErrors = new ValidationMessageStore(planContext);
+        planContext.OnValidationStateChanged += (_, _) => InvokeAsync(StateHasChanged);
         ClearMessages();
 
         await modal.ShowAsync();
     }
 
-    /// <summary>A field changed: its error and the dialog's messages no longer apply.</summary>
+    /// <summary>A field changed: its message and the dialog's messages no longer apply, and the name check runs again for a new name.</summary>
     private void Edited(string field)
     {
-        errors.Remove(field);
+        if (draft is null)
+            return;
+
+        var identifier = new FieldIdentifier(draft, field);
+        planErrors?.Clear(identifier);
+        planContext.NotifyFieldChanged(identifier);
+        planContext.NotifyValidationStateChanged();
         ClearMessages();
     }
 
-    private string? ErrorOf(string field) => errors.TryGetValue(field, out var message) ? message : null;
+    private string? ErrorOf(string field) => draft is null ? null : planContext.GetValidationMessages(new FieldIdentifier(draft, field)).FirstOrDefault();
 
     private ElementReference? FieldElement(string field) => field switch
     {
@@ -206,7 +227,12 @@ public partial class AdminPlans : ComponentBase, IDisposable
 
     private Task HideAsync() => modal.HideAsync();
 
-    private string InvalidClass(string field) => errors.ContainsKey(field) ? "is-invalid" : string.Empty;
+    private string InvalidClass(string field) => ErrorOf(field) is null ? string.Empty : "is-invalid";
+
+    /// <summary>Whether another plan has this name; the plan being edited doesn't count.</summary>
+    private Task<bool> IsNameTakenAsync(string name) => Task.FromResult(State.IsPlanNameTaken(name, editingId));
+
+    private string NameTakenMessage(string name) => $"Another plan is already called \"{name.Trim()}\". Plan names show side by side on the pricing page, so choose a different name.";
 
     /// <summary>The MRR of the plan's paying workspaces now and at a price, and how many pay.</summary>
     private (decimal Before, decimal After, int Paying) MrrAt(SaasPlan plan, decimal price)
@@ -225,7 +251,7 @@ public partial class AdminPlans : ComponentBase, IDisposable
         returnFocusId = null;
         editingId = null;
         draft = null;
-        errors.Clear();
+        planErrors?.Clear();
         ClearMessages();
 
         await SaasDisplay.FocusAsync(target);
@@ -267,18 +293,21 @@ public partial class AdminPlans : ComponentBase, IDisposable
         }
 
         var summary = Summary(current);
-        errors.Clear();
+        planErrors?.Clear();
+
+        // The name check finishes first; then every rule runs, and a failed save shows the summary, which takes focus (rule WR-002).
+        var nameFree = nameCheck is null || await nameCheck.CheckNowAsync();
+        planContext.Validate();
 
         foreach (var (field, message) in draft.Validate(current, State.Plans, summary.Workspaces, summary.LargestSeats))
-            errors[field] = message;
+            planErrors?.Add(new FieldIdentifier(draft, field), message);
 
-        if (errors.Count > 0)
+        planContext.NotifyValidationStateChanged();
+
+        if (!nameFree || planContext.GetValidationMessages().Any())
         {
-            var names = errors.Keys.Select(field => fieldNames.TryGetValue(field, out var name) ? name : field).ToList();
-            ShowError($"Check {(errors.Count == 1 ? "this field" : $"these {errors.Count} fields")}: {JoinNames(names)}.");
-            StateHasChanged();
-            await Task.Yield();
-            await SaasDisplay.FocusAsync(FieldElement(errors.Keys.First()));
+            var names = fieldNames.Keys.Where(field => ErrorOf(field) is not null).Select(field => fieldNames[field]).ToList();
+            ShowError(names.Count == 0 ? "Check the highlighted fields." : $"Check {(names.Count == 1 ? "this field" : $"these {names.Count} fields")}: {JoinNames(names)}.");
 
             return;
         }
@@ -301,11 +330,18 @@ public partial class AdminPlans : ComponentBase, IDisposable
             case SaasResult.SeatsOutOfRange:
                 // A workspace may have grown since the dialog opened: read the seats again.
                 var now = Summary(current);
-                errors[nameof(SaasPlanDraft.SeatLimit)] = SaasPlanDraft.SeatLimitMessage(current.Name, now.Workspaces, now.LargestSeats);
+                planErrors?.Add(new FieldIdentifier(draft, nameof(SaasPlanDraft.SeatLimit)), SaasPlanDraft.SeatLimitMessage(current.Name, now.Workspaces, now.LargestSeats));
+                planContext.NotifyValidationStateChanged();
                 ShowError(SaasPlanDraft.SeatLimitMessage(current.Name, now.Workspaces, now.LargestSeats));
                 StateHasChanged();
                 await Task.Yield();
                 await SaasDisplay.FocusAsync(seatInput);
+                break;
+
+            case SaasResult.Duplicate:
+                planErrors?.Add(new FieldIdentifier(draft, nameof(SaasPlanDraft.Name)), NameTakenMessage(draft.Name));
+                planContext.NotifyValidationStateChanged();
+                ShowError("That name is taken by another plan. Nothing was saved.");
                 break;
 
             case SaasResult.NotAllowed:
@@ -317,7 +353,7 @@ public partial class AdminPlans : ComponentBase, IDisposable
                 break;
 
             default:
-                ShowError($"{current.Name} couldn't be saved: a value is out of range. A free plan stays free, a paid plan stays paid, and at least one plan stays self-serve.");
+                ShowError($"{current.Name} couldn't be saved: a value is out of range. A free plan stays free, a paid plan stays paid, at least one plan stays self-serve, and only a self-serve plan can be Most popular.");
                 break;
         }
     }

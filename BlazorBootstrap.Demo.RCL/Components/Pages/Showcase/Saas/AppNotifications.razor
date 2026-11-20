@@ -13,7 +13,8 @@
             <span class="sc-eyebrow">Notifications</span>
             <h1 class="sd-page-title">Notifications</h1>
             <p class="sd-page-lead">
-                Updates about @workspace.Name and your account, newest first. In this demo they only show up here; nothing is emailed.
+                Updates about @workspace.Name and your account, newest first. The bell in the header shows the same list, so reading one there marks it read here too.
+                In this demo they only show up here; nothing is emailed.
             </p>
         </div>
         @if (unread > 0)
@@ -63,7 +64,13 @@
                                     }
                                 </h2>
                                 <p class="app-notice-text">@notice.Text</p>
-                                <time class="app-notice-time" datetime="@(notice.CreatedOn.ToString("yyyy-MM-ddTHH:mm", CultureInfo.InvariantCulture))">@SaasDisplay.DateTimeShort(notice.CreatedOn)</time>
+                                <div class="d-flex flex-wrap align-items-center gap-3">
+                                    <time class="app-notice-time" datetime="@(notice.CreatedOn.ToString("yyyy-MM-ddTHH:mm", CultureInfo.InvariantCulture))">@SaasDisplay.DateTimeShort(notice.CreatedOn)</time>
+                                    @if (!notice.IsRead)
+                                    {
+                                        <button type="button" class="btn btn-link btn-sm p-0" @onclick="() => MarkRead(notice)">Mark read<span class="visually-hidden">: @notice.Title</span></button>
+                                    }
+                                </div>
                             </div>
                         </li>
                     }

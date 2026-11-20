@@ -3,8 +3,9 @@ using BlazorBootstrap.Demo.RCL.Services.Showcase.Saas;
 namespace BlazorBootstrap.Demo.RCL.Components.Pages.Showcase.Saas;
 
 /// <summary>
-/// Layout of Lumora's operator console: the shell with the operator's modules and the page behind an operator-only guard.
-/// Each module appears in the sidebar once its screen exists, so the sidebar never links to a missing page.
+/// Layout of Lumora's operator console: the shell with the operator's modules, a top bar with the global search (tenants,
+/// invoices, leads, and plans) and the notifications bell, and the page behind an operator-only guard. Each module appears
+/// in the sidebar once its screen exists, so the sidebar never links to a missing page; the Audit log is one of them.
 /// </summary>
 public partial class SaasAdminLayout : LayoutComponentBase, IDisposable
 {

@@ -390,54 +390,75 @@
     <section class="sd-card card mt-4" aria-labelledby="lu-invoices-title">
         <div class="card-header">
             <h2 class="sd-card-title" id="lu-invoices-title">Invoices</h2>
+            <p class="sd-card-sub">Newest first. Open one to see its lines, or print it.</p>
         </div>
-        @if (invoices.Count == 0)
-        {
-            <div class="card-body pt-2">
-                <p class="text-body-secondary mb-0">No invoices yet. An invoice appears here each time a paid plan is charged.</p>
+        <div class="card-body pt-2">
+            <div class="d-flex flex-wrap align-items-center gap-3 mb-2">
+                <p class="small text-body-secondary mb-0" tabindex="-1" @ref="invoiceCountRegion">@InvoiceCountText(invoices)</p>
+                @* Back to the saved view's defaults: newest first, 10 a page, every column in its place. *@
+                <Button Color="ButtonColor.Link" Size="ButtonSize.Small" Class="p-0" @onclick="ResetInvoiceViewAsync">Reset view</Button>
             </div>
-        }
-        else
-        {
-            <div class="table-responsive sd-grid">
-                <table class="table align-middle">
-                    <caption class="visually-hidden">Invoices of @workspace.Name, newest first</caption>
-                    <thead>
-                        <tr>
-                            <th scope="col">Number</th>
-                            <th scope="col">Date</th>
-                            <th scope="col">Description</th>
-                            <th scope="col" class="text-end">Amount</th>
-                            <th scope="col">Status</th>
-                            <th scope="col">Card</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var invoice in invoices)
-                        {
-                            <tr @key="invoice.Number">
-                                <th scope="row" class="sd-mono fw-medium text-nowrap">
-                                    <a href="@($"{SaasState.BillingPath}/invoices/{Uri.EscapeDataString(invoice.Number)}")">@invoice.Number</a>
-                                </th>
-                                <td class="text-nowrap">@SaasDisplay.Date(invoice.IssuedOn)</td>
-                                <td class="lu-invoice-description">@invoice.Description</td>
-                                <td class="text-end sd-mono text-nowrap">@SaasDisplay.MoneyCents(invoice.Amount)</td>
-                                <td class="text-nowrap"><Badge Color="InvoiceColor(invoice.Status)" Class="rounded-pill">@InvoiceStatusText(invoice)</Badge></td>
-                                <td class="text-nowrap">
-                                    @if (CardText(invoice.CardBrand, invoice.CardLast4) is { } invoiceCard)
-                                    {
-                                        @invoiceCard
-                                    }
-                                    else
-                                    {
-                                        <span aria-hidden="true">—</span><span class="visually-hidden">None</span>
-                                    }
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            </div>
-        }
+            <ShowcaseDataState Status="@(invoiceViewLoaded ? ShowcaseDataStatus.Ready : ShowcaseDataStatus.Loading)"
+                               IsEmpty="@(invoices.Count == 0)"
+                               EmptyIcon="IconName.Receipt"
+                               EmptyTitle="No invoices yet"
+                               EmptyText="An invoice appears here each time a paid plan is charged."
+                               LoadingText="Loading invoices…"
+                               OnRetry="RefreshInvoicesAsync">
+                <Grid @ref="invoiceGrid"
+                      @key="invoiceGridVersion"
+                      TItem="SaasInvoice"
+                      Class="table table-hover align-middle sc-grid-row-links"
+                      GridContainerClass="sd-grid border rounded-3"
+                      DataProvider="ProvideInvoicesAsync"
+                      SettingsProvider="invoiceView.GetSettingsAsync"
+                      GridSettingsChanged="SaveInvoiceSettingsAsync"
+                      AllowPaging="true"
+                      PageSize="@invoicePageSize"
+                      PageSizeSelectorVisible="true"
+                      PageSizeSelectorItems="@(new[] { 10, 25, 50 })"
+                      PaginationItemsTextFormat="{0}–{1} of {2} invoices"
+                      AllowSorting="true"
+                      AllowColumnChooser="true"
+                      AllowExport="true"
+                      ExportFileName="saas-billing-history"
+                      Responsive="true"
+                      EmptyText="No invoices."
+                      aria-labelledby="lu-invoices-title">
+                    <GridColumns>
+                        <GridColumn TItem="SaasInvoice" HeaderText="Number" PropertyName="Number" SortString="number" SortKeySelector="invoice => invoice.Number"
+                                    IsDefaultSortColumn="@invoiceView.IsSortColumn("number")" SortDirection="@invoiceView.DirectionFor("number")" TextNoWrap="true" AlwaysVisible="true">
+                            @* The stretched link makes the whole row open the invoice. *@
+                            <a class="sd-mono fw-semibold stretched-link" href="@($"{SaasState.BillingPath}/invoices/{Uri.EscapeDataString(context.Number)}")">@context.Number</a>
+                        </GridColumn>
+                        <GridColumn TItem="SaasInvoice" HeaderText="Date" PropertyName="IssuedOn" SortString="date" SortKeySelector="invoice => invoice.IssuedOn"
+                                    IsDefaultSortColumn="@invoiceView.IsSortColumn("date")" SortDirection="@invoiceView.DirectionFor("date")" TextNoWrap="true">
+                            @SaasDisplay.Date(context.IssuedOn)
+                        </GridColumn>
+                        <GridColumn TItem="SaasInvoice" HeaderText="Description" PropertyName="Description" Sortable="false">
+                            <span class="lu-invoice-description">@context.Description</span>
+                        </GridColumn>
+                        <GridColumn TItem="SaasInvoice" HeaderText="Amount" PropertyName="Amount" SortString="amount" SortKeySelector="invoice => invoice.Amount"
+                                    IsDefaultSortColumn="@invoiceView.IsSortColumn("amount")" SortDirection="@invoiceView.DirectionFor("amount")" TextNoWrap="true">
+                            <span class="sd-mono">@SaasDisplay.MoneyCents(context.Amount)</span>
+                        </GridColumn>
+                        <GridColumn TItem="SaasInvoice" HeaderText="Status" PropertyName="Status" SortString="status" SortKeySelector="invoice => invoice.Status"
+                                    IsDefaultSortColumn="@invoiceView.IsSortColumn("status")" SortDirection="@invoiceView.DirectionFor("status")" TextNoWrap="true">
+                            <Badge Color="InvoiceColor(context.Status)" Class="rounded-pill">@InvoiceStatusText(context)</Badge>
+                        </GridColumn>
+                        <GridColumn TItem="SaasInvoice" HeaderText="Card" PropertyName="CardLast4" Sortable="false" TextNoWrap="true">
+                            @if (CardText(context.CardBrand, context.CardLast4) is { } invoiceCard)
+                            {
+                                @invoiceCard
+                            }
+                            else
+                            {
+                                <span aria-hidden="true">—</span><span class="visually-hidden">None</span>
+                            }
+                        </GridColumn>
+                    </GridColumns>
+                </Grid>
+            </ShowcaseDataState>
+        </div>
     </section>
 }
