@@ -38,8 +38,18 @@
                 <dl class="bd-home-stats d-flex flex-wrap justify-content-center gap-3 mt-4 mb-0">
                     @foreach (var stat in stats)
                     {
-                        <div class="d-flex flex-column-reverse px-3 py-2 rounded-3">
-                            <dt class="small fw-normal text-body-secondary">@stat.Label</dt>
+                        <div class="position-relative d-flex flex-column-reverse px-3 py-2 rounded-3">
+                            <dt class="small fw-normal text-body-secondary">
+                                @if (stat.Url is null)
+                                {
+                                    @stat.Label
+                                }
+                                else
+                                {
+                                    @* The stretched link makes the whole box clickable; its name stays the stat label. *@
+                                    <a class="stretched-link text-reset" href="@stat.Url">@stat.Label</a>
+                                }
+                            </dt>
                             <dd class="fs-4 fw-semibold mb-0">@stat.Value</dd>
                         </div>
                     }
