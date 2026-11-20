@@ -4,12 +4,7 @@
 <PageTitle>Ticket queue · @HelpDeskSeedData.ProductName</PageTitle>
 
 @{
-    var rows = SortedTickets();
-    var totalPages = TotalPages(rows.Count);
-    var page = Math.Clamp(pageNumber, 1, totalPages);
-    var pageRows = rows.Skip((page - 1) * PageSize).Take(PageSize).ToList();
-    var selected = pageRows.Where(ticket => selectedIds.Contains(ticket.Id)).ToList();
-    var selectAllState = selected.Count == 0 ? "false" : selected.Count == pageRows.Count ? "true" : "mixed";
+    var queueCount = State.Queue().Count;
 }
 
 <div class="container-fluid px-lg-4">
@@ -23,7 +18,7 @@
         </Button>
     </div>
 
-    <section aria-label="Queue summary" class="row row-cols-2 row-cols-lg-4 g-3 mb-4">
+    <section aria-label="Queue summary" class="row row-cols-2 row-cols-md-3 row-cols-xl-5 g-3 mb-4">
         @foreach (var (label, value, icon) in Summary)
         {
             <div class="col">
@@ -87,16 +82,15 @@
                 <div class="col-md-3 d-flex flex-wrap align-items-center gap-3">
                     @* "Me" is the signed-in agent (State.AgentName). *@
                     <Switch Value="State.Filter.AssignedToMe" ValueExpression="() => State.Filter.AssignedToMe" ValueChanged="OnAssignedToMeChanged" Label="Assigned to me" />
+                    <Switch Value="State.Filter.EscalatedOnly" ValueExpression="() => State.Filter.EscalatedOnly" ValueChanged="OnEscalatedOnlyChanged" Label="Escalated" />
                     <Button Color="ButtonColor.Secondary" Outline="true" Size="ButtonSize.Small" @onclick="ClearFiltersAsync" Disabled="!State.Filter.IsActive">Clear filters</Button>
                 </div>
             </div>
 
             <div class="d-flex flex-wrap align-items-center column-gap-3 row-gap-1 mb-2">
-                <p class="small text-body-secondary mb-0" id="hd-count" aria-live="polite" tabindex="-1" @ref="countRegion">@CountText(rows.Count, page, pageRows.Count)</p>
-                @if (sortKey is not null)
-                {
-                    <Button Color="ButtonColor.Link" Size="ButtonSize.Small" Class="p-0" @onclick="SortByUrgencyAsync">Sort by urgency again</Button>
-                }
+                <p class="small text-body-secondary mb-0" id="hd-count" aria-live="polite" tabindex="-1" @ref="countRegion">@CountText(queueCount)</p>
+                @* Back to the saved view's defaults: urgency order, first page, 10 per page, every column in its place. *@
+                <Button Color="ButtonColor.Link" Size="ButtonSize.Small" Class="p-0" @onclick="ResetViewAsync">Reset view</Button>
             </div>
 
             @* Always rendered, so a bulk change or a cleared selection is announced, and focus has somewhere to go when the bar closes. *@
@@ -139,92 +133,107 @@
                         </select>
                     </div>
                     <div class="hd-bulk-actions">
-                        <Button Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="() => ApplyBulkAsync(selected)">Apply<span class="visually-hidden"> to the selected tickets</span></Button>
+                        <Button Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="ApplyBulkAsync">Apply<span class="visually-hidden"> to the selected tickets</span></Button>
                         <Button Color="ButtonColor.Secondary" Outline="true" Size="ButtonSize.Small" @onclick="ClearSelectionAsync">Clear selection</Button>
                     </div>
                 </section>
             }
 
-            @* Positioned (hd-grid), so the visually hidden text inside stays in the scroll box at phone width. *@
-            <div class="table-responsive hd-grid">
-                <table class="table table-hover">
-                    <caption class="visually-hidden">Tickets, @SortLabel</caption>
-                    <thead>
-                        <tr>
-                            <th scope="col" class="hd-select-col">
-                                @if (pageRows.Count > 0)
-                                {
-                                    @* A button with the checkbox role carries the mixed state without script; a native checkbox needs JS for it. *@
-                                    <button @ref="selectAllButton" type="button" role="checkbox" class="form-check-input hd-check-all" aria-checked="@selectAllState"
-                                            @onclick="() => ToggleAllShown(pageRows, selectAllState)">
-                                        <span class="visually-hidden">Select all shown tickets</span>
-                                    </button>
-                                }
-                                else
-                                {
-                                    <span class="visually-hidden">Select</span>
-                                }
-                            </th>
-                            @foreach (var column in columns)
-                            {
-                                <th scope="col" aria-sort="@AriaSort(column.Key)" @key="column.Key">
-                                    <button type="button" class="hd-sort" @onclick="() => SortBy(column.Key)">
-                                        @column.Text<Icon Name="@SortIcon(column.Key)" aria-hidden="true" />
-                                    </button>
-                                </th>
-                            }
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @if (pageRows.Count == 0)
-                        {
-                            <tr>
-                                <td colspan="@(columns.Length + 1)" class="text-center text-body-secondary py-5">No tickets match these filters.</td>
-                            </tr>
-                        }
-                        @foreach (var ticket in pageRows)
-                        {
-                            var checkboxId = FormattableString.Invariant($"hd-select-{ticket.Id}");
-                            var isSelected = selectedIds.Contains(ticket.Id);
-
-                            <tr @key="ticket.Id" class="@(isSelected ? "hd-row-selected" : null)">
-                                <td class="hd-select-col">
-                                    <input class="form-check-input" type="checkbox" id="@checkboxId" checked="@isSelected" @onchange="args => ToggleTicket(ticket.Id, args)" />
-                                    <label class="visually-hidden" for="@checkboxId">Select ticket #@ticket.Id, @ticket.Subject</label>
-                                </td>
-                                <td class="text-nowrap"><span class="hd-mono small">#@ticket.Id</span></td>
-                                <th scope="row" class="fw-normal">
-                                    <a class="hd-ticket-link" href="@HelpDeskDisplay.TicketUrl(ticket.Id)">@ticket.Subject</a>
-                                    @if (CustomerReplied(ticket))
+            <ShowcaseDataState Status="@(viewLoaded ? ShowcaseDataStatus.Ready : ShowcaseDataStatus.Loading)"
+                               IsEmpty="@(State.Tickets.Count == 0)"
+                               EmptyTitle="No tickets yet"
+                               EmptyText="New requests from the help center and tickets you open for customers show here."
+                               LoadingText="Loading tickets…"
+                               OnRetry="RefreshGridAsync">
+                <EmptyActions>
+                    <Button Type="ButtonType.Link" To="@($"{HelpDeskAgentLayout.Base}/tickets/new")" Color="ButtonColor.Primary" Size="ButtonSize.Small">New ticket</Button>
+                </EmptyActions>
+                <ChildContent>
+                    @* With no column sorted, the rows keep the queue's urgency order. *@
+                    <div class="hd-queue-grid">
+                        <Grid @ref="grid"
+                              @key="gridVersion"
+                              TItem="HelpDeskTicket"
+                              Class="table table-hover sc-grid-row-links"
+                              GridContainerClass="hd-grid"
+                              DataProvider="ProvideTicketsAsync"
+                              SettingsProvider="view.GetSettingsAsync"
+                              GridSettingsChanged="SaveSettingsAsync"
+                              AllowPaging="true"
+                              PageSize="@pageSize"
+                              PageSizeSelectorVisible="true"
+                              PageSizeSelectorItems="@(new[] { 10, 25, 50 })"
+                              PaginationItemsTextFormat="{0}–{1} of {2} tickets"
+                              AllowSorting="true"
+                              AllowSelection="true"
+                              SelectionMode="GridSelectionMode.Multiple"
+                              RowSelectionLabel="@(ticket => FormattableString.Invariant($"Select ticket #{ticket.Id}, {ticket.Subject}"))"
+                              SelectAllRowsText="Select all shown tickets"
+                              SelectedItemsChanged="OnSelectionChanged"
+                              RowClass="RowClass"
+                              AllowColumnChooser="true"
+                              AllowExport="true"
+                              ExportFileName="help-desk-tickets"
+                              Responsive="true"
+                              EmptyText="No tickets match these filters."
+                              aria-label="Tickets">
+                            <GridColumns>
+                                <GridColumn TItem="HelpDeskTicket" HeaderText="Ticket" PropertyName="Id" SortString="ticket" SortKeySelector="ticket => ticket.Id"
+                                            IsDefaultSortColumn="@view.IsSortColumn("ticket")" SortDirection="@view.DirectionFor("ticket")" TextNoWrap="true">
+                                    <span class="hd-mono small">#@context.Id</span>
+                                </GridColumn>
+                                <GridColumn TItem="HelpDeskTicket" HeaderText="Subject" PropertyName="Subject" SortString="subject" SortKeySelector="ticket => ticket.Subject"
+                                            IsDefaultSortColumn="@view.IsSortColumn("subject")" SortDirection="@view.DirectionFor("subject")" AlwaysVisible="true">
+                                    @* The stretched link makes the whole row open the ticket; the row's checkbox stays above it. *@
+                                    <a class="hd-ticket-link stretched-link" href="@HelpDeskDisplay.TicketUrl(context.Id)">@context.Subject</a>
+                                    @if (CustomerReplied(context))
                                     {
                                         <Badge Color="BadgeColor.Primary" Class="ms-1"><Icon Name="IconName.Reply" class="me-1" aria-hidden="true" />Customer replied</Badge>
                                     }
-                                    <span class="d-block small text-body-secondary">@ticket.CustomerName@(ticket.Company is null ? null : $" · {ticket.Company}")</span>
-                                </th>
-                                <td class="text-nowrap"><Badge Color="@HelpDeskDisplay.PriorityColor(ticket.Priority)">@ticket.Priority</Badge></td>
-                                <td class="text-nowrap"><Badge Color="@HelpDeskDisplay.StatusColor(ticket.Status)">@ticket.Status</Badge></td>
-                                @* The SLA moves with the site's clock; it is worked out again on every render. *@
-                                <td class="text-nowrap"><Badge Color="@HelpDeskDisplay.SlaColor(State.Sla(ticket))">@HelpDeskDisplay.SlaText(State, ticket)</Badge></td>
-                                <td class="text-nowrap">@(ticket.Assignee ?? "Unassigned")</td>
-                                <td class="text-nowrap"><span class="small" title="@HelpDeskDisplay.Stamp(ticket.UpdatedAt)">@HelpDeskDisplay.Ago(ticket.UpdatedAt, State.Now)</span></td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            </div>
-
-            @if (totalPages > 1)
-            {
-                <nav class="d-flex flex-wrap align-items-center justify-content-end gap-2 mt-3" aria-label="Queue pages">
-                    <Button @ref="previousButton" Color="ButtonColor.Secondary" Outline="true" Size="ButtonSize.Small" Disabled="@(page <= 1)" @onclick="() => GoToPageAsync(page - 1, totalPages)">
-                        <Icon Name="IconName.ChevronLeft" class="me-1" aria-hidden="true" />Previous
-                    </Button>
-                    <span class="small text-body-secondary text-nowrap">Page @(page) of @totalPages</span>
-                    <Button @ref="nextButton" Color="ButtonColor.Secondary" Outline="true" Size="ButtonSize.Small" Disabled="@(page >= totalPages)" @onclick="() => GoToPageAsync(page + 1, totalPages)">
-                        Next<Icon Name="IconName.ChevronRight" class="ms-1" aria-hidden="true" />
-                    </Button>
-                </nav>
-            }
+                                    <span class="d-block small text-body-secondary">@context.CustomerName@(context.Company is null ? null : $" · {context.Company}")</span>
+                                </GridColumn>
+                                <GridColumn TItem="HelpDeskTicket" HeaderText="Priority" PropertyName="Priority" SortString="priority" SortKeySelector="ticket => ticket.Priority"
+                                            IsDefaultSortColumn="@view.IsSortColumn("priority")" SortDirection="@view.DirectionFor("priority")" TextNoWrap="true">
+                                    <Badge Color="@HelpDeskDisplay.PriorityColor(context.Priority)">@context.Priority</Badge>
+                                </GridColumn>
+                                <GridColumn TItem="HelpDeskTicket" HeaderText="Status" PropertyName="Status" SortString="status" SortKeySelector="ticket => ticket.Status"
+                                            IsDefaultSortColumn="@view.IsSortColumn("status")" SortDirection="@view.DirectionFor("status")" TextNoWrap="true">
+                                    <Badge Color="@HelpDeskDisplay.StatusColor(context.Status)">@context.Status</Badge>
+                                </GridColumn>
+                                @* The SLA moves with the site's clock, so it is worked out on every render. It has no property, so CSV export leaves it out. *@
+                                @* Escalation rules move a ticket up a tier; an escalated ticket is flagged here (AC-7a). *@
+                                <GridColumn TItem="HelpDeskTicket" HeaderText="Tier" PropertyName="Tier" SortString="tier" SortKeySelector="ticket => ticket.Tier"
+                                            IsDefaultSortColumn="@view.IsSortColumn("tier")" SortDirection="@view.DirectionFor("tier")" TextNoWrap="true">
+                                    @if (context.IsEscalated)
+                                    {
+                                        <Badge Color="BadgeColor.Danger"><Icon Name="IconName.ArrowUpCircleFill" class="me-1" aria-hidden="true" />Tier @context.Tier<span class="visually-hidden">, escalated</span></Badge>
+                                    }
+                                    else
+                                    {
+                                        <span class="small text-body-secondary">Tier 1</span>
+                                    }
+                                </GridColumn>
+                                <GridColumn TItem="HelpDeskTicket" HeaderText="SLA" SortString="sla" SortKeySelector="ticket => State.DueAt(ticket)"
+                                            IsDefaultSortColumn="@view.IsSortColumn("sla")" SortDirection="@view.DirectionFor("sla")" TextNoWrap="true">
+                                    <Badge Color="@HelpDeskDisplay.SlaColor(State.Sla(context))">@HelpDeskDisplay.SlaText(State, context)</Badge>
+                                </GridColumn>
+                                <GridColumn TItem="HelpDeskTicket" HeaderText="Assignee" PropertyName="Assignee" SortString="assignee" SortKeySelector="ticket => ticket.Assignee ?? string.Empty"
+                                            IsDefaultSortColumn="@view.IsSortColumn("assignee")" SortDirection="@view.DirectionFor("assignee")" TextNoWrap="true">
+                                    @(context.Assignee ?? "Unassigned")
+                                </GridColumn>
+                                <GridColumn TItem="HelpDeskTicket" HeaderText="Category" PropertyName="CategoryId" SortString="category" SortKeySelector="ticket => State.FindCategory(ticket.CategoryId).Name"
+                                            IsDefaultSortColumn="@view.IsSortColumn("category")" SortDirection="@view.DirectionFor("category")" TextNoWrap="true">
+                                    @State.FindCategory(context.CategoryId).Name
+                                </GridColumn>
+                                <GridColumn TItem="HelpDeskTicket" HeaderText="Updated" PropertyName="UpdatedAt" SortString="updated" SortKeySelector="ticket => ticket.UpdatedAt"
+                                            IsDefaultSortColumn="@view.IsSortColumn("updated")" SortDirection="@view.DirectionFor("updated")" TextNoWrap="true">
+                                    <span class="small" title="@HelpDeskDisplay.Stamp(context.UpdatedAt)">@HelpDeskDisplay.Ago(context.UpdatedAt, State.Now)</span>
+                                </GridColumn>
+                            </GridColumns>
+                        </Grid>
+                    </div>
+                </ChildContent>
+            </ShowcaseDataState>
         </CardBody>
     </Card>
 </div>

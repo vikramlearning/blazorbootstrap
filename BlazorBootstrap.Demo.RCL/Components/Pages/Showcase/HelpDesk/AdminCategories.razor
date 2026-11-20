@@ -23,52 +23,86 @@
         @* Always rendered and focusable, so a change is announced and focus has somewhere to go when a row is gone. *@
         <p class="hd-admin-status" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
 
+        <div class="d-flex justify-content-end mb-2">
+            @* Back to the saved view's defaults: the categories' own order, 10 a page, every column in its place. *@
+            <Button Color="ButtonColor.Link" Size="ButtonSize.Small" Class="p-0" @onclick="ResetViewAsync">Reset view</Button>
+        </div>
+
         <Card Class="hd-card">
             <CardBody Class="p-3 p-lg-4">
-                <div class="table-responsive hd-grid">
-                    <table class="table">
-                        <caption class="visually-hidden">Categories, with the team their new requests go to and the tickets and articles in each</caption>
-                        <thead>
-                            <tr>
-                                <th scope="col">Category</th>
-                                <th scope="col">Routed to</th>
-                                <th scope="col" class="text-end">Tickets</th>
-                                <th scope="col" class="text-end">Open tickets</th>
-                                <th scope="col" class="text-end">Articles</th>
-                                <th scope="col">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var category in State.Categories)
-                            {
-                                var counts = usage.GetValueOrDefault(category.Id);
-
-                                <tr @key="category.Id">
-                                    <th scope="row" class="fw-normal hd-category-cell">
+                <ShowcaseDataState Status="@(viewLoaded ? ShowcaseDataStatus.Ready : ShowcaseDataStatus.Loading)"
+                                   IsEmpty="@(State.Categories.Count == 0)"
+                                   EmptyIcon="IconName.Tags"
+                                   EmptyTitle="No categories yet"
+                                   EmptyText="Add a category, so customers can choose one when they submit a request."
+                                   LoadingText="Loading categories…"
+                                   OnRetry="RefreshGridAsync">
+                    <EmptyActions>
+                        <Button Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="AddAsync">Add category</Button>
+                    </EmptyActions>
+                    <ChildContent>
+                        <div class="hd-category-grid">
+                            <Grid @ref="grid"
+                                  @key="gridVersion"
+                                  TItem="HelpDeskCategory"
+                                  Class="table table-hover sc-grid-row-links"
+                                  GridContainerClass="hd-grid"
+                                  DataProvider="ProvideCategoriesAsync"
+                                  SettingsProvider="view.GetSettingsAsync"
+                                  GridSettingsChanged="SaveSettingsAsync"
+                                  AllowPaging="true"
+                                  PageSize="@pageSize"
+                                  PageSizeSelectorVisible="true"
+                                  PageSizeSelectorItems="@(new[] { 10, 25, 50 })"
+                                  PaginationItemsTextFormat="{0}–{1} of {2} categories"
+                                  AllowSorting="true"
+                                  AllowColumnChooser="true"
+                                  AllowExport="true"
+                                  ExportFileName="help-desk-categories"
+                                  Responsive="true"
+                                  EmptyText="No categories yet."
+                                  aria-label="Categories">
+                                <GridColumns>
+                                    <GridColumn TItem="HelpDeskCategory" HeaderText="Category" PropertyName="Name" SortString="name" SortKeySelector="category => category.Name"
+                                                IsDefaultSortColumn="@view.IsSortColumn("name")" SortDirection="@view.DirectionFor("name")" AlwaysVisible="true" Class="hd-category-cell">
                                         <span class="d-inline-flex align-items-center gap-2">
-                                            <span class="hd-icon" aria-hidden="true"><Icon Name="category.IconName" /></span>
-                                            <span class="fw-semibold text-body">@category.Name</span>
+                                            <span class="hd-icon" aria-hidden="true"><Icon Name="context.IconName" /></span>
+                                            @* A category has no page of its own: the name opens the editor, and its stretched area makes the whole row do so. *@
+                                            <button type="button" class="btn btn-link p-0 text-start hd-ticket-link stretched-link" @onclick="() => EditAsync(context)">@context.Name</button>
                                         </span>
-                                    </th>
-                                    <td class="text-nowrap">@TeamName(category.TeamId)</td>
-                                    <td class="text-end">@counts.Tickets</td>
-                                    <td class="text-end">@counts.Open</td>
-                                    <td class="text-end">@counts.Articles</td>
-                                    <td>
+                                    </GridColumn>
+                                    <GridColumn TItem="HelpDeskCategory" HeaderText="Routed to" PropertyName="TeamId" SortString="team" SortKeySelector="category => TeamName(category.TeamId)"
+                                                IsDefaultSortColumn="@view.IsSortColumn("team")" SortDirection="@view.DirectionFor("team")" TextNoWrap="true">
+                                        @TeamName(context.TeamId)
+                                    </GridColumn>
+                                    @* The counts come from the tickets and articles, not the category, so CSV export leaves them out. *@
+                                    <GridColumn TItem="HelpDeskCategory" HeaderText="Tickets" SortString="tickets" SortKeySelector="category => usage.GetValueOrDefault(category.Id).Tickets"
+                                                IsDefaultSortColumn="@view.IsSortColumn("tickets")" SortDirection="@view.DirectionFor("tickets")" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End">
+                                        @usage.GetValueOrDefault(context.Id).Tickets
+                                    </GridColumn>
+                                    <GridColumn TItem="HelpDeskCategory" HeaderText="Open tickets" SortString="open" SortKeySelector="category => usage.GetValueOrDefault(category.Id).Open"
+                                                IsDefaultSortColumn="@view.IsSortColumn("open")" SortDirection="@view.DirectionFor("open")" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End">
+                                        @usage.GetValueOrDefault(context.Id).Open
+                                    </GridColumn>
+                                    <GridColumn TItem="HelpDeskCategory" HeaderText="Articles" SortString="articles" SortKeySelector="category => usage.GetValueOrDefault(category.Id).Articles"
+                                                IsDefaultSortColumn="@view.IsSortColumn("articles")" SortDirection="@view.DirectionFor("articles")" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End">
+                                        @usage.GetValueOrDefault(context.Id).Articles
+                                    </GridColumn>
+                                    <GridColumn TItem="HelpDeskCategory" HeaderText="Actions" Sortable="false" Exportable="false">
                                         <div class="hd-admin-actions">
-                                            <Button @ref="editButtons[category.Id]" Color="ButtonColor.Secondary" Outline="true" Size="ButtonSize.Small" @onclick="() => EditAsync(category)">
-                                                <Icon Name="IconName.PencilSquare" class="me-1" aria-hidden="true" />Edit<span class="visually-hidden"> @category.Name</span>
+                                            <Button @ref="editButtons[context.Id]" Color="ButtonColor.Secondary" Outline="true" Size="ButtonSize.Small" @onclick="() => EditAsync(context)">
+                                                <Icon Name="IconName.PencilSquare" class="me-1" aria-hidden="true" />Edit<span class="visually-hidden">&#32;@context.Name</span>
                                             </Button>
-                                            <Button @ref="deleteButtons[category.Id]" Color="ButtonColor.Danger" Outline="true" Size="ButtonSize.Small" @onclick="() => AskDeleteAsync(category)">
-                                                <Icon Name="IconName.Trash3" class="me-1" aria-hidden="true" />Delete<span class="visually-hidden"> @category.Name</span>
+                                            <Button @ref="deleteButtons[context.Id]" Color="ButtonColor.Danger" Outline="true" Size="ButtonSize.Small" @onclick="() => AskDeleteAsync(context)">
+                                                <Icon Name="IconName.Trash3" class="me-1" aria-hidden="true" />Delete<span class="visually-hidden">&#32;@context.Name</span>
                                             </Button>
                                         </div>
-                                    </td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
-                </div>
+                                    </GridColumn>
+                                </GridColumns>
+                            </Grid>
+                        </div>
+                    </ChildContent>
+                </ShowcaseDataState>
                 <p class="small text-body-secondary mt-2 mb-0">
                     Articles include drafts. A category's unassigned tickets show in its team's queue until someone is assigned.
                 </p>
@@ -86,19 +120,22 @@
                 <h2 class="modal-title h5 text-break" id="hd-category-editor-title">@(editing is null ? "Add a category" : $"Edit {editing.Name}")</h2>
             </HeaderTemplate>
             <BodyTemplate>
-                <form id="hd-category-form" @onsubmit="SaveAsync" novalidate>
+                <EditForm id="hd-category-form" EditContext="editContext" OnSubmit="SaveAsync" FormName="hd-category" novalidate>
+                    <DataAnnotationsValidator />
+                    <ShowcaseFormErrors ShowSummary="true" />
                     <div class="mb-3">
                         <label class="form-label fw-semibold" for="hd-category-name">Name</label>
-                        <input @ref="nameInput" id="hd-category-name" class="form-control @(nameError is null ? null : "is-invalid")" @bind="name" @bind:event="oninput" @bind:after="OnNameInput"
-                               maxlength="@HelpDeskState.MaxGroupNameLength" autocomplete="off" aria-describedby="hd-category-name-help hd-category-name-error" aria-invalid="@(nameError is null ? null : "true")" />
-                        <div class="form-text" id="hd-category-name-help">Customers pick it when they submit a request. @CharacterCount(name, HelpDeskState.MaxGroupNameLength)</div>
-                        <p class="hd-field-error" id="hd-category-name-error" role="alert">@nameError</p>
+                        <InputText @ref="nameInput" id="hd-category-name" class="form-control" @bind-Value="form.Name"
+                                   maxlength="@HelpDeskState.MaxGroupNameLength" autocomplete="off" aria-describedby="hd-category-name-help" />
+                        <ShowcaseUniqueCheck @ref="nameCheck" For="() => form.Name" IsTakenAsync="IsNameTakenAsync"
+                                             TakenMessage="@(value => $"Another category is already called {value}.")" />
+                        <div class="form-text mt-0" id="hd-category-name-help">Customers pick it when they submit a request. Up to @HelpDeskState.MaxGroupNameLength characters.</div>
+                        <ValidationMessage For="() => form.Name" />
                     </div>
                     <div class="mb-3">
                         <label class="form-label fw-semibold" for="hd-category-team">Team</label>
-                        <select @ref="teamSelect" id="hd-category-team" class="form-select @(teamError is null ? null : "is-invalid")" @bind="teamId" @bind:after="OnTeamChanged"
-                                aria-describedby="hd-category-team-help hd-category-team-error" aria-invalid="@(teamError is null ? null : "true")">
-                            @if (State.FindTeam(teamId) is null)
+                        <InputSelect id="hd-category-team" class="form-select" @bind-Value="form.TeamId" aria-describedby="hd-category-team-help">
+                            @if (State.FindTeam(form.TeamId) is null)
                             {
                                 <option value="">Choose a team</option>
                             }
@@ -106,9 +143,9 @@
                             {
                                 <option value="@team.Id">@team.Name</option>
                             }
-                        </select>
+                        </InputSelect>
                         <div class="form-text" id="hd-category-team-help">New requests in this category go to this team until someone is assigned.</div>
-                        <p class="hd-field-error" id="hd-category-team-error" role="alert">@teamError</p>
+                        <ValidationMessage For="() => form.TeamId" />
                     </div>
                     @* A native radio group: Tab reaches the chosen icon, arrow keys move between icons. *@
                     <fieldset>
@@ -127,7 +164,7 @@
                             }
                         </div>
                     </fieldset>
-                </form>
+                </EditForm>
                 <p class="hd-field-error mt-3 mb-0" role="alert">@formError</p>
             </BodyTemplate>
             <FooterTemplate>

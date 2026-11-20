@@ -1,19 +1,25 @@
+using System.ComponentModel.DataAnnotations;
 using System.Globalization;
+using BlazorBootstrap.Demo.RCL.Components.Pages.Showcase.Shared;
 using BlazorBootstrap.Demo.RCL.Models.Showcase.HelpDesk;
 using BlazorBootstrap.Demo.RCL.Services.Showcase.Foundation;
 using BlazorBootstrap.Demo.RCL.Services.Showcase.HelpDesk;
+using Microsoft.AspNetCore.Components.Forms;
 
 namespace BlazorBootstrap.Demo.RCL.Components.Pages.Showcase.HelpDesk;
 
 /// <summary>
-/// The admin's roster and teams: a table of agents (team, role, status, open tickets) with a dialog to add or edit one and
-/// a confirmed deactivate that reports how many open tickets went back to the queue, and a card per team (members and the
-/// categories routed to it) with a dialog to add or edit one and a delete that explains why a team still in use can't go.
-/// Focus returns to the button that opened a dialog, or to the section's status message when that button is gone.
+/// The admin's roster and teams: a <see cref="Grid{TItem}" /> of agents (team, role, status, open tickets) with a saved view,
+/// the column chooser, and CSV export, a validated dialog to add or edit one (unique name and email, checked as you type),
+/// and a confirmed deactivate that reports how many open tickets went back to the queue; and a card per team (members and
+/// the categories routed to it) with a validated dialog to add or edit one and a delete that explains why a team still in
+/// use can't go. Focus returns to the button that opened a dialog, or to the section's status message when that button is gone.
 /// </summary>
 public partial class AdminAgents : ComponentBase, IDisposable
 {
     #region Fields and Constants
+
+    private const int DefaultPageSize = 10;
 
     private Button? addAgentButton;
 
@@ -21,27 +27,23 @@ public partial class AdminAgents : ComponentBase, IDisposable
 
     private readonly Dictionary<string, Button> agentActiveButtons = new();
 
-    private string agentEmail = string.Empty;
-
-    private string? agentEmailError;
-
-    private ElementReference agentEmailInput;
+    private EditContext agentContext = new(new AgentForm());
 
     private readonly Dictionary<string, Button> agentEditButtons = new();
 
+    private ShowcaseUniqueCheck? agentEmailCheck;
+
     private readonly LiveMessage agentError = new();
+
+    private AgentForm agentForm = new();
 
     private readonly LiveMessage agentFormError = new();
 
-    private bool agentIsAdmin;
-
     private Modal agentModal = default!;
 
-    private string agentName = string.Empty;
+    private ShowcaseUniqueCheck? agentNameCheck;
 
-    private string? agentNameError;
-
-    private ElementReference agentNameInput;
+    private InputText? agentNameInput;
 
     private bool agentSaved;
 
@@ -50,12 +52,6 @@ public partial class AdminAgents : ComponentBase, IDisposable
     private readonly LiveMessage agentStatus = new();
 
     private ElementReference agentStatusRegion;
-
-    private string? agentTeamError;
-
-    private string agentTeamId = string.Empty;
-
-    private ElementReference agentTeamSelect;
 
     private Modal deactivateModal = default!;
 
@@ -71,29 +67,33 @@ public partial class AdminAgents : ComponentBase, IDisposable
     /// <summary>The team being edited; <see langword="null" /> while adding one.</summary>
     private HelpDeskTeam? editingTeam;
 
+    private Grid<HelpDeskAgent>? grid;
+
+    /// <summary>Changes when the view is reset, so the grid is built again with its defaults.</summary>
+    private int gridVersion;
+
+    /// <summary>The grid's page size: the saved one once the view is loaded, then whatever the page size selector chose.</summary>
+    private int pageSize = DefaultPageSize;
+
+    private EditContext teamContext = new(new TeamForm());
+
     private bool teamDeleted;
 
     private readonly Dictionary<string, Button> teamDeleteButtons = new();
-
-    private string teamDescription = string.Empty;
-
-    private string? teamDescriptionError;
-
-    private ElementReference teamDescriptionInput;
 
     private readonly Dictionary<string, Button> teamEditButtons = new();
 
     private readonly LiveMessage teamError = new();
 
+    private TeamForm teamForm = new();
+
     private readonly LiveMessage teamFormError = new();
 
     private Modal teamModal = default!;
 
-    private string teamName = string.Empty;
+    private ShowcaseUniqueCheck? teamNameCheck;
 
-    private string? teamNameError;
-
-    private ElementReference teamNameInput;
+    private InputText? teamNameInput;
 
     private bool teamSaved;
 
@@ -103,13 +103,33 @@ public partial class AdminAgents : ComponentBase, IDisposable
 
     private ElementReference teamStatusRegion;
 
+    private ShowcaseGridView view = default!;
+
+    private bool viewLoaded;
+
     #endregion
 
     #region Methods
 
     #region Protected Override Methods
 
-    protected override void OnInitialized() => State.Changed += OnStateChanged;
+    /// <summary>Loads the saved view once the page is interactive (it lives in the tab's session storage), then shows the grid.</summary>
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender)
+            return;
+
+        await view.LoadAsync();
+        pageSize = (await view.GetSettingsAsync()).PageSize;
+        viewLoaded = true;
+        StateHasChanged();
+    }
+
+    protected override void OnInitialized()
+    {
+        view = GridViews.Get(State.SiteSlug, "agents", DefaultPageSize, "name");
+        State.Changed += OnStateChanged;
+    }
 
     #endregion
 
@@ -122,51 +142,12 @@ public partial class AdminAgents : ComponentBase, IDisposable
 
     #region Private Methods
 
-    private static string CharacterCount(string? value, int max) =>
-        string.Create(CultureInfo.InvariantCulture, $"{value?.Length ?? 0} of {max} characters.");
-
     private static string Count(int count, string singular, string plural) =>
         count == 1 ? $"1 {singular}" : string.Create(CultureInfo.InvariantCulture, $"{count} {plural}");
-
-    private static bool IsEmail(string value) =>
-        value.IndexOf('@') is > 0 and var at && at < value.Length - 1 && !value.Any(char.IsWhiteSpace);
 
     private Task AddAgentAsync() => OpenAgentAsync(null);
 
     private Task AddTeamAsync() => OpenTeamAsync(null);
-
-    private string? AgentEmailProblem(string value)
-    {
-        var email = value.Trim();
-
-        if (email.Length == 0)
-            return "Enter the agent's email address.";
-
-        if (email.Length > ShowcaseIdentity.MaxEmailLength)
-            return string.Create(CultureInfo.InvariantCulture, $"Use {ShowcaseIdentity.MaxEmailLength} characters or fewer.");
-
-        if (!IsEmail(email))
-            return "Enter an email address like name@example.com.";
-
-        return State.Roster.Any(agent => agent.Id != editingAgent?.Id && string.Equals(agent.Email, email, StringComparison.OrdinalIgnoreCase))
-            ? "Another agent already has that email address."
-            : null;
-    }
-
-    private string? AgentNameProblem(string value)
-    {
-        var name = value.Trim();
-
-        if (name.Length == 0)
-            return "Enter the agent's name.";
-
-        if (name.Length > ShowcaseIdentity.MaxNameLength)
-            return string.Create(CultureInfo.InvariantCulture, $"Use {ShowcaseIdentity.MaxNameLength} characters or fewer.");
-
-        return State.Roster.Any(agent => agent.Id != editingAgent?.Id && string.Equals(agent.Name, name, StringComparison.OrdinalIgnoreCase))
-            ? "Another agent already has that name."
-            : null;
-    }
 
     private async Task AskDeleteTeamAsync(HelpDeskTeam team)
     {
@@ -233,6 +214,25 @@ public partial class AdminAgents : ComponentBase, IDisposable
 
     private Task EditTeamAsync(HelpDeskTeam team) => OpenTeamAsync(team);
 
+    /// <summary>Whether another agent already has this email address (the agent being edited doesn't count).</summary>
+    private Task<bool> IsAgentEmailTakenAsync(string email) =>
+        Task.FromResult(State.Roster.Any(agent => agent.Id != editingAgent?.Id && string.Equals(agent.Email, email, StringComparison.OrdinalIgnoreCase)));
+
+    /// <summary>Whether another agent already has this name (the agent being edited doesn't count).</summary>
+    private Task<bool> IsAgentNameTakenAsync(string name) =>
+        Task.FromResult(State.Roster.Any(agent => agent.Id != editingAgent?.Id && string.Equals(agent.Name, name, StringComparison.OrdinalIgnoreCase)));
+
+    /// <summary>Whether another team already has this name (the team being edited doesn't count).</summary>
+    private Task<bool> IsTeamNameTakenAsync(string name) =>
+        Task.FromResult(State.Teams.Any(team => team.Id != editingTeam?.Id && string.Equals(team.Name, name, StringComparison.OrdinalIgnoreCase)));
+
+    /// <summary>The agents who can lead a team: its active members, by name.</summary>
+    private IReadOnlyList<HelpDeskAgent> LeadChoices(string? teamId) =>
+        teamId is null ? Array.Empty<HelpDeskAgent>() : State.Roster.Where(agent => agent.TeamId == teamId && agent.IsActive).ToList();
+
+    /// <summary>A team's lead by name, or "None".</summary>
+    private string LeadText(HelpDeskTeam team) => State.FindAgent(team.LeadAgentId)?.Name ?? "None";
+
     /// <summary>A member count like "3 agents (1 inactive)"; inactive agents still belong to the team.</summary>
     private string MemberText(string teamId)
     {
@@ -245,12 +245,6 @@ public partial class AdminAgents : ComponentBase, IDisposable
         var text = Count(members.Count, "agent", "agents");
 
         return inactive == 0 ? text : string.Create(CultureInfo.InvariantCulture, $"{text} ({inactive} inactive)");
-    }
-
-    private void OnAgentEmailInput()
-    {
-        if (agentEmailError is not null && AgentEmailProblem(agentEmail) is null)
-            agentEmailError = null;
     }
 
     /// <summary>
@@ -277,19 +271,7 @@ public partial class AdminAgents : ComponentBase, IDisposable
             await HelpDeskDisplay.FocusAsync(agentStatusRegion);
     }
 
-    private void OnAgentNameInput()
-    {
-        if (agentNameError is not null && AgentNameProblem(agentName) is null)
-            agentNameError = null;
-    }
-
-    private Task OnAgentShownAsync() => HelpDeskDisplay.FocusAsync(agentNameInput);
-
-    private void OnAgentTeamChanged()
-    {
-        if (State.FindTeam(agentTeamId) is not null)
-            agentTeamError = null;
-    }
+    private Task OnAgentShownAsync() => HelpDeskDisplay.FocusAsync(agentNameInput?.Element);
 
     /// <summary>The dialog opens from code, so Bootstrap does not return focus: it goes back to the agent's Deactivate/Reactivate button.</summary>
     private async Task OnDeactivateHiddenAsync()
@@ -320,13 +302,12 @@ public partial class AdminAgents : ComponentBase, IDisposable
         }
     }
 
-    private void OnStateChanged() => InvokeAsync(StateHasChanged);
-
-    private void OnTeamDescriptionInput()
+    /// <summary>The roster or the teams changed (here or elsewhere): the grid reads the roster again.</summary>
+    private void OnStateChanged() => InvokeAsync(async () =>
     {
-        if (teamDescriptionError is not null && teamDescription.Trim().Length <= HelpDeskState.MaxTeamDescriptionLength)
-            teamDescriptionError = null;
-    }
+        await RefreshGridAsync();
+        StateHasChanged();
+    });
 
     /// <summary>Returns focus after the team dialog closes, like the agent dialog.</summary>
     private async Task OnTeamHiddenAsync()
@@ -349,13 +330,7 @@ public partial class AdminAgents : ComponentBase, IDisposable
             await HelpDeskDisplay.FocusAsync(teamStatusRegion);
     }
 
-    private void OnTeamNameInput()
-    {
-        if (teamNameError is not null && TeamNameProblem(teamName) is null)
-            teamNameError = null;
-    }
-
-    private Task OnTeamShownAsync() => HelpDeskDisplay.FocusAsync(teamNameInput);
+    private Task OnTeamShownAsync() => HelpDeskDisplay.FocusAsync(teamNameInput?.Element);
 
     /// <summary>Open (not resolved) tickets per assignee name.</summary>
     private Dictionary<string, int> OpenTicketCounts() =>
@@ -369,13 +344,14 @@ public partial class AdminAgents : ComponentBase, IDisposable
         editingAgent = agent;
         agentSaved = false;
         agentSavedId = null;
-        agentName = agent?.Name ?? string.Empty;
-        agentEmail = agent?.Email ?? string.Empty;
-        agentTeamId = agent?.TeamId ?? State.Teams.FirstOrDefault()?.Id ?? string.Empty;
-        agentIsAdmin = agent?.IsAdmin ?? false;
-        agentNameError = null;
-        agentEmailError = null;
-        agentTeamError = null;
+        agentForm = new AgentForm
+        {
+            Name = agent?.Name ?? string.Empty,
+            Email = agent?.Email ?? string.Empty,
+            TeamId = agent?.TeamId ?? State.Teams.FirstOrDefault()?.Id ?? string.Empty,
+            IsAdmin = agent?.IsAdmin ?? false,
+        };
+        agentContext = new EditContext(agentForm);
         agentFormError.Clear();
         agentError.Clear();
 
@@ -387,47 +363,31 @@ public partial class AdminAgents : ComponentBase, IDisposable
         editingTeam = team;
         teamSaved = false;
         teamSavedId = null;
-        teamName = team?.Name ?? string.Empty;
-        teamDescription = team?.Description ?? string.Empty;
-        teamNameError = null;
-        teamDescriptionError = null;
+        teamForm = new TeamForm { Name = team?.Name ?? string.Empty, Description = team?.Description ?? string.Empty, LeadAgentId = team?.LeadAgentId ?? string.Empty };
+        teamContext = new EditContext(teamForm);
         teamFormError.Clear();
         teamError.Clear();
 
         await teamModal.ShowAsync();
     }
 
+    /// <summary>
+    /// Saves the agent once the form is valid: the uniqueness checks finish first, then every rule runs, and a failed save
+    /// shows the summary (rule WR-002). The state checks again and its answer maps to a message, as before.
+    /// </summary>
     private async Task SaveAgentAsync()
     {
-        agentNameError = AgentNameProblem(agentName);
-        agentEmailError = AgentEmailProblem(agentEmail);
-        agentTeamError = State.FindTeam(agentTeamId) is null ? "Choose the agent's team." : null;
         agentFormError.Clear();
 
-        if (agentNameError is not null)
-        {
-            await HelpDeskDisplay.FocusAsync(agentNameInput);
+        var nameFree = agentNameCheck is null || await agentNameCheck.CheckNowAsync();
+        var emailFree = agentEmailCheck is null || await agentEmailCheck.CheckNowAsync();
 
+        if (!agentContext.Validate() || !nameFree || !emailFree)
             return;
-        }
-
-        if (agentEmailError is not null)
-        {
-            await HelpDeskDisplay.FocusAsync(agentEmailInput);
-
-            return;
-        }
-
-        if (agentTeamError is not null)
-        {
-            await HelpDeskDisplay.FocusAsync(agentTeamSelect);
-
-            return;
-        }
 
         var oldName = editingAgent is null ? null : State.FindAgent(editingAgent.Id)?.Name;
         var assigned = oldName is null ? 0 : State.Tickets.Count(ticket => ticket.Assignee == oldName);
-        var result = State.SaveAgent(editingAgent?.Id, agentName, agentEmail, agentTeamId, agentIsAdmin, out var saved);
+        var result = State.SaveAgent(editingAgent?.Id, agentForm.Name, agentForm.Email, agentForm.TeamId, agentForm.IsAdmin, out var saved);
 
         switch (result)
         {
@@ -439,7 +399,7 @@ public partial class AdminAgents : ComponentBase, IDisposable
                         : $"{saved.Name} is saved.");
                 break;
             case HelpDeskAdminResult.NoChange:
-                agentStatus.Set($"Nothing changed for {oldName ?? agentName.Trim()}.");
+                agentStatus.Set($"Nothing changed for {oldName ?? agentForm.Name.Trim()}.");
                 break;
             case HelpDeskAdminResult.Duplicate:
                 agentFormError.Set("Another agent already has that name or email. Use a different one.");
@@ -469,29 +429,17 @@ public partial class AdminAgents : ComponentBase, IDisposable
         await agentModal.HideAsync();
     }
 
+    /// <summary>Saves the team once the form is valid, like the agent dialog.</summary>
     private async Task SaveTeamAsync()
     {
-        teamNameError = TeamNameProblem(teamName);
-        teamDescriptionError = teamDescription.Trim().Length > HelpDeskState.MaxTeamDescriptionLength
-            ? string.Create(CultureInfo.InvariantCulture, $"Use {HelpDeskState.MaxTeamDescriptionLength} characters or fewer.")
-            : null;
         teamFormError.Clear();
 
-        if (teamNameError is not null)
-        {
-            await HelpDeskDisplay.FocusAsync(teamNameInput);
+        var nameFree = teamNameCheck is null || await teamNameCheck.CheckNowAsync();
 
+        if (!teamContext.Validate() || !nameFree)
             return;
-        }
 
-        if (teamDescriptionError is not null)
-        {
-            await HelpDeskDisplay.FocusAsync(teamDescriptionInput);
-
-            return;
-        }
-
-        var result = State.SaveTeam(editingTeam?.Id, teamName, teamDescription, out var saved);
+        var result = State.SaveTeam(editingTeam?.Id, teamForm.Name, teamForm.Description, teamForm.LeadAgentId, out var saved);
 
         switch (result)
         {
@@ -501,11 +449,10 @@ public partial class AdminAgents : ComponentBase, IDisposable
                     : $"The team {saved.Name} is saved.");
                 break;
             case HelpDeskAdminResult.NoChange:
-                teamStatus.Set($"Nothing changed for {editingTeam?.Name ?? teamName.Trim()}.");
+                teamStatus.Set($"Nothing changed for {editingTeam?.Name ?? teamForm.Name.Trim()}.");
                 break;
             case HelpDeskAdminResult.Duplicate:
-                teamNameError = "Another team already has that name.";
-                await HelpDeskDisplay.FocusAsync(teamNameInput);
+                teamFormError.Set("Another team already has that name. Use a different one.");
 
                 return;
             case HelpDeskAdminResult.LimitReached:
@@ -513,7 +460,7 @@ public partial class AdminAgents : ComponentBase, IDisposable
 
                 return;
             case HelpDeskAdminResult.Invalid:
-                teamFormError.Set("Check the name and description: one of them isn't valid.");
+                teamFormError.Set("Check the name, description, and lead: the lead must be an active agent on this team.");
 
                 return;
             case HelpDeskAdminResult.NotFound:
@@ -530,6 +477,37 @@ public partial class AdminAgents : ComponentBase, IDisposable
         teamSavedId = saved?.Id ?? editingTeam?.Id;
 
         await teamModal.HideAsync();
+    }
+
+    /// <summary>The page of agents the grid asked for, by name unless a column is sorted.</summary>
+    private Task<GridDataProviderResult<HelpDeskAgent>> ProvideAgentsAsync(GridDataProviderRequest<HelpDeskAgent> request) => view.ApplyAsync(request, State.Roster);
+
+    private async Task RefreshGridAsync()
+    {
+        if (grid is not null)
+            await grid.RefreshDataAsync();
+    }
+
+    /// <summary>Forgets the saved view and builds the grid again with its defaults; focus moves to the agents' status.</summary>
+    private async Task ResetViewAsync()
+    {
+        await view.ResetAsync();
+        pageSize = DefaultPageSize;
+        gridVersion++;
+        agentStatus.Set("The view is reset: agents by name, 10 a page, and every column shown.");
+        StateHasChanged();
+
+        await Task.Yield();
+        await HelpDeskDisplay.FocusAsync(agentStatusRegion);
+    }
+
+    /// <summary>Keeps the grid's settings in the saved view, and follows the page size the selector chose.</summary>
+    private async Task SaveSettingsAsync(GridSettings settings)
+    {
+        if (settings.PageSize > 0)
+            pageSize = settings.PageSize;
+
+        await view.SaveSettingsAsync(settings);
     }
 
     /// <summary>
@@ -567,21 +545,6 @@ public partial class AdminAgents : ComponentBase, IDisposable
 
     private string TeamName(string? teamId) => State.FindTeam(teamId)?.Name ?? "No team";
 
-    private string? TeamNameProblem(string value)
-    {
-        var name = value.Trim();
-
-        if (name.Length == 0)
-            return "Enter the team name.";
-
-        if (name.Length > HelpDeskState.MaxGroupNameLength)
-            return string.Create(CultureInfo.InvariantCulture, $"Use {HelpDeskState.MaxGroupNameLength} characters or fewer.");
-
-        return State.Teams.Any(team => team.Id != editingTeam?.Id && string.Equals(team.Name, name, StringComparison.OrdinalIgnoreCase))
-            ? "Another team already has that name."
-            : null;
-    }
-
     /// <summary>Deactivate asks first (it unassigns tickets); reactivate happens right away.</summary>
     private async Task ToggleActiveAsync(HelpDeskAgent agent)
     {
@@ -617,12 +580,34 @@ public partial class AdminAgents : ComponentBase, IDisposable
 
     #region Properties, Indexers
 
+    [Inject] private ShowcaseGridViewStore GridViews { get; set; } = default!;
+
     /// <summary>Gets whether the agent being edited signs in to the demo, so their admin flag comes from their account.</summary>
     private bool IsLinked => editingAgent?.AccountId is not null;
 
     [Inject] private HelpDeskState State { get; set; } = default!;
 
     #endregion
+
+    #region Nested Types
+
+    /// <summary>The agent dialog's fields, with the same limits as <see cref="HelpDeskState.SaveAgent" />.</summary>
+    private sealed class AgentForm
+    {
+        [Required(ErrorMessage = "Enter the agent's email address.")]
+        [StringLength(ShowcaseIdentity.MaxEmailLength, ErrorMessage = "Use 120 characters or fewer.")]
+        [RegularExpression(@"^\s*[^@\s]+@[^@\s]+\s*$", ErrorMessage = "Enter an email address like name@example.com.")]
+        public string Email { get; set; } = string.Empty;
+
+        public bool IsAdmin { get; set; }
+
+        [Required(ErrorMessage = "Enter the agent's name.")]
+        [StringLength(ShowcaseIdentity.MaxNameLength, ErrorMessage = "Use 80 characters or fewer.")]
+        public string Name { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Choose the agent's team.")]
+        public string TeamId { get; set; } = string.Empty;
+    }
 
     /// <summary>A message for a live region; the same message again gets a counter, so a screen reader announces it again.</summary>
     private sealed class LiveMessage
@@ -666,4 +651,20 @@ public partial class AdminAgents : ComponentBase, IDisposable
 
         #endregion
     }
+
+    /// <summary>The team dialog's fields, with the same limits as <see cref="HelpDeskState.SaveTeam" />.</summary>
+    private sealed class TeamForm
+    {
+        [StringLength(HelpDeskState.MaxTeamDescriptionLength, ErrorMessage = "Use 120 characters or fewer.")]
+        public string? Description { get; set; }
+
+        /// <summary>The lead's agent ID; empty for no lead.</summary>
+        public string LeadAgentId { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Enter the team name.")]
+        [StringLength(HelpDeskState.MaxGroupNameLength, ErrorMessage = "Use 40 characters or fewer.")]
+        public string Name { get; set; } = string.Empty;
+    }
+
+    #endregion
 }

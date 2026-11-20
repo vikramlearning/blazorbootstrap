@@ -800,6 +800,18 @@ pre[class*=language-] {
     }
 }
 
+/* Showcase Grid lists: a whole row opens its record through the row's primary link (class stretched-link), without
+   making the row itself interactive (no nested controls). The row is the link's containing block, and the row's other
+   controls sit above the stretched link so they stay clickable. Opt in with Class="... sc-grid-row-links" on the Grid. */
+.sc-grid-row-links > tbody > tr {
+    position: relative;
+}
+
+    .sc-grid-row-links > tbody > tr :is(input, button, select, label, a):not(.stretched-link) {
+        position: relative;
+        z-index: 2;
+    }
+
 /* Printing a showcase page (for example the Learning certificate) keeps only the page content. */
 @media print {
     .sc-site > :not(.sc-main),

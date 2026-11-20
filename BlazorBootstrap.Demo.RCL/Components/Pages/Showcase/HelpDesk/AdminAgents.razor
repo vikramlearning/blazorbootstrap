@@ -6,7 +6,6 @@
 <div class="container-fluid px-lg-4">
     <ShowcaseRoleGuard Roles="@HelpDeskSeedData.AdminRole" SignInPath="@HelpDeskLayout.SignInPath">
         @{
-            var roster = State.Roster;
             var openCounts = OpenTicketCounts();
         }
 
@@ -29,69 +28,100 @@
             @* Always rendered and focusable, so a change is announced and focus has somewhere to go. *@
             <p class="hd-admin-status" role="status" tabindex="-1" @ref="agentStatusRegion">@agentStatus.Text</p>
 
+            <div class="d-flex justify-content-end mb-2">
+                @* Back to the saved view's defaults: by name, 10 a page, every column in its place. *@
+                <Button Color="ButtonColor.Link" Size="ButtonSize.Small" Class="p-0" @onclick="ResetViewAsync">Reset view</Button>
+            </div>
             <Card Class="hd-card">
                 <CardBody Class="p-3 p-lg-4">
-                    <div class="table-responsive hd-grid">
-                        <table class="table">
-                            <caption class="visually-hidden">Agents on the roster, by name</caption>
-                            <thead>
-                                <tr>
-                                    <th scope="col">Name</th>
-                                    <th scope="col">Email</th>
-                                    <th scope="col">Team</th>
-                                    <th scope="col">Role</th>
-                                    <th scope="col">Status</th>
-                                    <th scope="col" class="text-end">Open tickets</th>
-                                    <th scope="col">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var agent in roster)
-                                {
-                                    var open = openCounts.GetValueOrDefault(agent.Name);
-
-                                    <tr @key="agent.Id">
-                                        <th scope="row" class="fw-normal">
-                                            <span class="fw-semibold text-body">@agent.Name</span>
-                                            @if (agent.Name == State.AgentName)
+                    <ShowcaseDataState Status="@(viewLoaded ? ShowcaseDataStatus.Ready : ShowcaseDataStatus.Loading)"
+                                       IsEmpty="@(State.Roster.Count == 0)"
+                                       EmptyIcon="IconName.People"
+                                       EmptyTitle="No agents yet"
+                                       EmptyText="Add the first agent, so tickets can be assigned."
+                                       LoadingText="Loading agents…"
+                                       OnRetry="RefreshGridAsync">
+                        <EmptyActions>
+                            <Button Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="AddAgentAsync">Add agent</Button>
+                        </EmptyActions>
+                        <ChildContent>
+                            <Grid @ref="grid"
+                                  @key="gridVersion"
+                                  TItem="HelpDeskAgent"
+                                  Class="table table-hover sc-grid-row-links"
+                                  GridContainerClass="hd-grid"
+                                  DataProvider="ProvideAgentsAsync"
+                                  SettingsProvider="view.GetSettingsAsync"
+                                  GridSettingsChanged="SaveSettingsAsync"
+                                  AllowPaging="true"
+                                  PageSize="@pageSize"
+                                  PageSizeSelectorVisible="true"
+                                  PageSizeSelectorItems="@(new[] { 10, 25, 50 })"
+                                  PaginationItemsTextFormat="{0}–{1} of {2} agents"
+                                  AllowSorting="true"
+                                  AllowColumnChooser="true"
+                                  AllowExport="true"
+                                  ExportFileName="help-desk-agents"
+                                  Responsive="true"
+                                  EmptyText="No agents on the roster."
+                                  aria-label="Agents">
+                                <GridColumns>
+                                    <GridColumn TItem="HelpDeskAgent" HeaderText="Name" PropertyName="Name" SortString="name" SortKeySelector="agent => agent.Name"
+                                                IsDefaultSortColumn="@view.IsSortColumn("name")" SortDirection="@view.DirectionFor("name")" AlwaysVisible="true">
+                                        @* The agent has no page of their own: the name opens the editor, and its stretched area makes the whole row do so. *@
+                                        <button type="button" class="btn btn-link p-0 text-start hd-ticket-link stretched-link" @onclick="() => EditAgentAsync(context)">@context.Name</button>
+                                        @if (context.Name == State.AgentName)
+                                        {
+                                            <span class="small text-body-secondary"> (you)</span>
+                                        }
+                                        @if (context.AccountId is not null)
+                                        {
+                                            <Badge Color="BadgeColor.Secondary" Class="ms-1">Demo sign-in</Badge>
+                                        }
+                                    </GridColumn>
+                                    <GridColumn TItem="HelpDeskAgent" HeaderText="Email" PropertyName="Email" SortString="email" SortKeySelector="agent => agent.Email"
+                                                IsDefaultSortColumn="@view.IsSortColumn("email")" SortDirection="@view.DirectionFor("email")">
+                                        @context.Email
+                                    </GridColumn>
+                                    <GridColumn TItem="HelpDeskAgent" HeaderText="Team" PropertyName="TeamId" SortString="team" SortKeySelector="agent => TeamName(agent.TeamId)"
+                                                IsDefaultSortColumn="@view.IsSortColumn("team")" SortDirection="@view.DirectionFor("team")" TextNoWrap="true">
+                                        @TeamName(context.TeamId)
+                                    </GridColumn>
+                                    <GridColumn TItem="HelpDeskAgent" HeaderText="Admin" PropertyName="IsAdmin" SortString="role" SortKeySelector="agent => agent.IsAdmin"
+                                                IsDefaultSortColumn="@view.IsSortColumn("role")" SortDirection="@view.DirectionFor("role")">
+                                        @(context.IsAdmin ? "Admin" : "Agent")
+                                    </GridColumn>
+                                    <GridColumn TItem="HelpDeskAgent" HeaderText="Active" PropertyName="IsActive" SortString="status" SortKeySelector="agent => agent.IsActive"
+                                                IsDefaultSortColumn="@view.IsSortColumn("status")" SortDirection="@view.DirectionFor("status")">
+                                        <Badge Color="@(context.IsActive ? BadgeColor.Success : BadgeColor.Secondary)">@(context.IsActive ? "Active" : "Inactive")</Badge>
+                                    </GridColumn>
+                                    @* Counted from the tickets, not stored on the agent, so CSV export leaves it out. *@
+                                    <GridColumn TItem="HelpDeskAgent" HeaderText="Open tickets" SortString="open" SortKeySelector="agent => openCounts.GetValueOrDefault(agent.Name)"
+                                                IsDefaultSortColumn="@view.IsSortColumn("open")" SortDirection="@view.DirectionFor("open")" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End">
+                                        @openCounts.GetValueOrDefault(context.Name)
+                                    </GridColumn>
+                                    <GridColumn TItem="HelpDeskAgent" HeaderText="Actions" Sortable="false" Exportable="false">
+                                        <div class="hd-admin-actions">
+                                            <Button @ref="agentEditButtons[context.Id]" Color="ButtonColor.Secondary" Outline="true" Size="ButtonSize.Small" @onclick="() => EditAgentAsync(context)">
+                                                <Icon Name="IconName.PencilSquare" class="me-1" aria-hidden="true" />Edit<span class="visually-hidden">&#32;@context.Name</span>
+                                            </Button>
+                                            @if (context.AccountId is null)
                                             {
-                                                <span class="small text-body-secondary"> (you)</span>
-                                            }
-                                            @if (agent.AccountId is not null)
-                                            {
-                                                <Badge Color="BadgeColor.Secondary" Class="ms-1">Demo sign-in</Badge>
-                                            }
-                                        </th>
-                                        <td>@agent.Email</td>
-                                        <td class="text-nowrap">@TeamName(agent.TeamId)</td>
-                                        <td>@(agent.IsAdmin ? "Admin" : "Agent")</td>
-                                        <td>
-                                            <Badge Color="@(agent.IsActive ? BadgeColor.Success : BadgeColor.Secondary)">@(agent.IsActive ? "Active" : "Inactive")</Badge>
-                                        </td>
-                                        <td class="text-end">@open</td>
-                                        <td>
-                                            <div class="hd-admin-actions">
-                                                <Button @ref="agentEditButtons[agent.Id]" Color="ButtonColor.Secondary" Outline="true" Size="ButtonSize.Small" @onclick="() => EditAgentAsync(agent)">
-                                                    <Icon Name="IconName.PencilSquare" class="me-1" aria-hidden="true" />Edit<span class="visually-hidden"> @agent.Name</span>
+                                                <Button @ref="agentActiveButtons[context.Id]" Color="@(context.IsActive ? ButtonColor.Danger : ButtonColor.Success)" Outline="true" Size="ButtonSize.Small"
+                                                        @onclick="() => ToggleActiveAsync(context)">
+                                                    @(context.IsActive ? "Deactivate" : "Reactivate")<span class="visually-hidden">&#32;@context.Name</span>
                                                 </Button>
-                                                @if (agent.AccountId is null)
-                                                {
-                                                    <Button @ref="agentActiveButtons[agent.Id]" Color="@(agent.IsActive ? ButtonColor.Danger : ButtonColor.Success)" Outline="true" Size="ButtonSize.Small"
-                                                            @onclick="() => ToggleActiveAsync(agent)">
-                                                        @(agent.IsActive ? "Deactivate" : "Reactivate")<span class="visually-hidden"> @agent.Name</span>
-                                                    </Button>
-                                                }
-                                                else
-                                                {
-                                                    <span class="hd-admin-note">Always active: signs in to the demo</span>
-                                                }
-                                            </div>
-                                        </td>
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
-                    </div>
+                                            }
+                                            else
+                                            {
+                                                <span class="hd-admin-note">Always active: signs in to the demo</span>
+                                            }
+                                        </div>
+                                    </GridColumn>
+                                </GridColumns>
+                            </Grid>
+                        </ChildContent>
+                    </ShowcaseDataState>
                 </CardBody>
             </Card>
             <p class="small text-body-secondary mt-2 mb-0">
@@ -124,15 +154,17 @@
                             <dl class="hd-summary hd-team-facts">
                                 <dt>Agents</dt>
                                 <dd>@MemberText(team.Id)</dd>
+                                <dt>Lead</dt>
+                                <dd>@LeadText(team)</dd>
                                 <dt>Categories routed here</dt>
                                 <dd>@(routed.Count == 0 ? "None" : string.Join(", ", routed.Select(category => category.Name)))</dd>
                             </dl>
                             <div class="hd-admin-actions mt-auto">
                                 <Button @ref="teamEditButtons[team.Id]" Color="ButtonColor.Secondary" Outline="true" Size="ButtonSize.Small" @onclick="() => EditTeamAsync(team)">
-                                    <Icon Name="IconName.PencilSquare" class="me-1" aria-hidden="true" />Edit<span class="visually-hidden"> @team.Name</span>
+                                    <Icon Name="IconName.PencilSquare" class="me-1" aria-hidden="true" />Edit<span class="visually-hidden">&#32;@team.Name</span>
                                 </Button>
                                 <Button @ref="teamDeleteButtons[team.Id]" Color="ButtonColor.Danger" Outline="true" Size="ButtonSize.Small" @onclick="() => AskDeleteTeamAsync(team)">
-                                    <Icon Name="IconName.Trash3" class="me-1" aria-hidden="true" />Delete<span class="visually-hidden"> @team.Name</span>
+                                    <Icon Name="IconName.Trash3" class="me-1" aria-hidden="true" />Delete<span class="visually-hidden">&#32;@team.Name</span>
                                 </Button>
                             </div>
                         </article>
@@ -154,31 +186,36 @@
             <BodyTemplate>
                 <div data-clarity-mask="true">
                     <ShowcaseDemoNotice Class="mb-3" Text="Demo only: the roster stays in this browser tab. Nothing is sent." />
-                    <form id="hd-agent-form" @onsubmit="SaveAgentAsync" novalidate>
+                    <EditForm id="hd-agent-form" EditContext="agentContext" OnSubmit="SaveAgentAsync" FormName="hd-agent" novalidate>
+                        <DataAnnotationsValidator />
+                        <ShowcaseFormErrors ShowSummary="true" />
                         <div class="mb-3">
                             <label class="form-label fw-semibold" for="hd-agent-name">Name</label>
-                            <input @ref="agentNameInput" id="hd-agent-name" class="form-control @(agentNameError is null ? null : "is-invalid")" @bind="agentName" @bind:event="oninput" @bind:after="OnAgentNameInput"
-                                   maxlength="@ShowcaseIdentity.MaxNameLength" autocomplete="off" aria-describedby="hd-agent-name-help hd-agent-name-error" aria-invalid="@(agentNameError is null ? null : "true")" />
-                            <div class="form-text" id="hd-agent-name-help">
+                            <InputText @ref="agentNameInput" id="hd-agent-name" class="form-control" @bind-Value="agentForm.Name"
+                                       maxlength="@ShowcaseIdentity.MaxNameLength" autocomplete="off" aria-describedby="hd-agent-name-help" />
+                            <ShowcaseUniqueCheck @ref="agentNameCheck" For="() => agentForm.Name" IsTakenAsync="IsAgentNameTakenAsync"
+                                                 TakenMessage="@(value => $"Another agent is already called {value}. Names must be unique, because tickets are assigned by name.")" />
+                            <div class="form-text mt-0" id="hd-agent-name-help">
                                 Tickets are assigned by name, so each agent's name is unique.
                                 @if (editingAgent is not null)
                                 {
                                     @($" Tickets assigned to {editingAgent.Name} follow a rename.")
                                 }
                             </div>
-                            <p class="hd-field-error" id="hd-agent-name-error" role="alert">@agentNameError</p>
+                            <ValidationMessage For="() => agentForm.Name" />
                         </div>
                         <div class="mb-3">
                             <label class="form-label fw-semibold" for="hd-agent-email">Email</label>
-                            <input @ref="agentEmailInput" id="hd-agent-email" type="email" class="form-control @(agentEmailError is null ? null : "is-invalid")" @bind="agentEmail" @bind:event="oninput" @bind:after="OnAgentEmailInput"
-                                   maxlength="@ShowcaseIdentity.MaxEmailLength" autocomplete="off" spellcheck="false" aria-describedby="hd-agent-email-error" aria-invalid="@(agentEmailError is null ? null : "true")" />
-                            <p class="hd-field-error" id="hd-agent-email-error" role="alert">@agentEmailError</p>
+                            <InputText id="hd-agent-email" type="email" inputmode="email" autocapitalize="none" class="form-control" @bind-Value="agentForm.Email"
+                                       maxlength="@ShowcaseIdentity.MaxEmailLength" autocomplete="off" spellcheck="false" />
+                            <ShowcaseUniqueCheck @ref="agentEmailCheck" For="() => agentForm.Email" IsTakenAsync="IsAgentEmailTakenAsync"
+                                                 TakenMessage="@(value => $"Another agent already has the email address {value}.")" />
+                            <ValidationMessage For="() => agentForm.Email" />
                         </div>
                         <div class="mb-3">
                             <label class="form-label fw-semibold" for="hd-agent-team">Team</label>
-                            <select @ref="agentTeamSelect" id="hd-agent-team" class="form-select @(agentTeamError is null ? null : "is-invalid")" @bind="agentTeamId" @bind:after="OnAgentTeamChanged"
-                                    aria-describedby="hd-agent-team-error" aria-invalid="@(agentTeamError is null ? null : "true")">
-                                @if (State.FindTeam(agentTeamId) is null)
+                            <InputSelect id="hd-agent-team" class="form-select" @bind-Value="agentForm.TeamId">
+                                @if (State.FindTeam(agentForm.TeamId) is null)
                                 {
                                     <option value="">Choose a team</option>
                                 }
@@ -186,12 +223,12 @@
                                 {
                                     <option value="@team.Id">@team.Name</option>
                                 }
-                            </select>
-                            <p class="hd-field-error" id="hd-agent-team-error" role="alert">@agentTeamError</p>
+                            </InputSelect>
+                            <ValidationMessage For="() => agentForm.TeamId" />
                         </div>
                         <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="hd-agent-admin" @bind="agentIsAdmin" disabled="@IsLinked"
-                                   aria-describedby="hd-agent-admin-help" />
+                            <InputCheckbox class="form-check-input" id="hd-agent-admin" @bind-Value="agentForm.IsAdmin" disabled="@IsLinked"
+                                           aria-describedby="hd-agent-admin-help" />
                             <label class="form-check-label fw-semibold" for="hd-agent-admin">Admin</label>
                             <div class="form-text mt-0" id="hd-agent-admin-help">
                                 @if (IsLinked)
@@ -210,7 +247,7 @@
                                 New agents appear on the roster and can be assigned tickets, but they can't sign in to the demo.
                             </p>
                         }
-                    </form>
+                    </EditForm>
                     <p class="hd-field-error mt-3 mb-0" role="alert">@agentFormError.Text</p>
                 </div>
             </BodyTemplate>
@@ -242,7 +279,7 @@
             </BodyTemplate>
             <FooterTemplate>
                 <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => deactivateModal.HideAsync()">Keep active</Button>
-                <Button Color="ButtonColor.Danger" @onclick="ConfirmDeactivateAsync">Deactivate<span class="visually-hidden"> @(deactivating?.Name)</span></Button>
+                <Button Color="ButtonColor.Danger" @onclick="ConfirmDeactivateAsync">Deactivate<span class="visually-hidden">&#32;@(deactivating?.Name)</span></Button>
             </FooterTemplate>
         </Modal>
 
@@ -258,20 +295,44 @@
             </HeaderTemplate>
             <BodyTemplate>
                 <div data-clarity-mask="true">
-                    <form id="hd-team-form" @onsubmit="SaveTeamAsync" novalidate>
+                    <EditForm id="hd-team-form" EditContext="teamContext" OnSubmit="SaveTeamAsync" FormName="hd-team" novalidate>
+                        <DataAnnotationsValidator />
+                        <ShowcaseFormErrors ShowSummary="true" />
                         <div class="mb-3">
                             <label class="form-label fw-semibold" for="hd-team-name">Name</label>
-                            <input @ref="teamNameInput" id="hd-team-name" class="form-control @(teamNameError is null ? null : "is-invalid")" @bind="teamName" @bind:event="oninput" @bind:after="OnTeamNameInput"
-                                   maxlength="@HelpDeskState.MaxGroupNameLength" autocomplete="off" aria-describedby="hd-team-name-help hd-team-name-error" aria-invalid="@(teamNameError is null ? null : "true")" />
-                            <div class="form-text" id="hd-team-name-help">@CharacterCount(teamName, HelpDeskState.MaxGroupNameLength)</div>
-                            <p class="hd-field-error" id="hd-team-name-error" role="alert">@teamNameError</p>
+                            <InputText @ref="teamNameInput" id="hd-team-name" class="form-control" @bind-Value="teamForm.Name"
+                                       maxlength="@HelpDeskState.MaxGroupNameLength" autocomplete="off" aria-describedby="hd-team-name-help" />
+                            <ShowcaseUniqueCheck @ref="teamNameCheck" For="() => teamForm.Name" IsTakenAsync="IsTeamNameTakenAsync"
+                                                 TakenMessage="@(value => $"Another team is already called {value}.")" />
+                            <div class="form-text mt-0" id="hd-team-name-help">Up to @HelpDeskState.MaxGroupNameLength characters.</div>
+                            <ValidationMessage For="() => teamForm.Name" />
                         </div>
-                        <label class="form-label fw-semibold" for="hd-team-description">Description <span class="fw-normal text-body-secondary">(optional)</span></label>
-                        <textarea @ref="teamDescriptionInput" id="hd-team-description" class="form-control @(teamDescriptionError is null ? null : "is-invalid")" rows="3" @bind="teamDescription" @bind:event="oninput" @bind:after="OnTeamDescriptionInput"
-                                  maxlength="@HelpDeskState.MaxTeamDescriptionLength" aria-describedby="hd-team-description-help hd-team-description-error" aria-invalid="@(teamDescriptionError is null ? null : "true")"></textarea>
-                        <div class="form-text" id="hd-team-description-help">What the team handles. @CharacterCount(teamDescription, HelpDeskState.MaxTeamDescriptionLength)</div>
-                        <p class="hd-field-error" id="hd-team-description-error" role="alert">@teamDescriptionError</p>
-                    </form>
+                        <div>
+                            <label class="form-label fw-semibold" for="hd-team-description">Description <span class="fw-normal text-body-secondary">(optional)</span></label>
+                            <InputTextArea id="hd-team-description" class="form-control" rows="3" @bind-Value="teamForm.Description"
+                                           maxlength="@HelpDeskState.MaxTeamDescriptionLength" aria-describedby="hd-team-description-help" />
+                            <div class="form-text" id="hd-team-description-help">What the team handles, in up to @HelpDeskState.MaxTeamDescriptionLength characters.</div>
+                            <ValidationMessage For="() => teamForm.Description" />
+                        </div>
+                        @{
+                            var leadChoices = LeadChoices(editingTeam?.Id);
+                        }
+                        <div class="mt-3">
+                            <label class="form-label fw-semibold" for="hd-team-lead">Team lead <span class="fw-normal text-body-secondary">(optional)</span></label>
+                            <InputSelect id="hd-team-lead" class="form-select" @bind-Value="teamForm.LeadAgentId" aria-describedby="hd-team-lead-help" disabled="@(leadChoices.Count == 0)">
+                                <option value="">No lead</option>
+                                @foreach (var agent in leadChoices)
+                                {
+                                    <option value="@agent.Id">@agent.Name</option>
+                                }
+                            </InputSelect>
+                            <div class="form-text" id="hd-team-lead-help">
+                                @(leadChoices.Count == 0
+                                    ? "Add active agents to the team first; then one of them can lead it."
+                                    : "An active agent on the team. The lead is notified when one of the team's tickets is escalated.")
+                            </div>
+                        </div>
+                    </EditForm>
                     <p class="hd-field-error mt-3 mb-0" role="alert">@teamFormError.Text</p>
                 </div>
             </BodyTemplate>

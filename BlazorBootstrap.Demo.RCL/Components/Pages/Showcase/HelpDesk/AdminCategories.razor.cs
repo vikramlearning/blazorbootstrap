@@ -1,13 +1,18 @@
+using System.ComponentModel.DataAnnotations;
 using System.Globalization;
+using BlazorBootstrap.Demo.RCL.Components.Pages.Showcase.Shared;
 using BlazorBootstrap.Demo.RCL.Models.Showcase.HelpDesk;
+using BlazorBootstrap.Demo.RCL.Services.Showcase.Foundation;
 using BlazorBootstrap.Demo.RCL.Services.Showcase.HelpDesk;
+using Microsoft.AspNetCore.Components.Forms;
 
 namespace BlazorBootstrap.Demo.RCL.Components.Pages.Showcase.HelpDesk;
 
 /// <summary>
-/// The admin's categories: a table of each category's team and how many tickets (all and open) and articles (drafts
-/// included) use it, a dialog to add or edit one (name, team, and an icon from a radio group of icon tiles), and a delete
-/// that first moves the category's tickets and articles to another category the admin chooses. Focus returns to the button
+/// The admin's categories: a <see cref="Grid{TItem}" /> of each category's team and how many tickets (all and open) and
+/// articles (drafts included) use it, with a saved view, the column chooser, and CSV export; a validated dialog to add or
+/// edit one (a unique name, checked as you type, a team, and an icon from a radio group of icon tiles); and a delete that
+/// first moves the category's tickets and articles to another category the admin chooses. Focus returns to the button
 /// that opened a dialog, or to the status message when that button is gone.
 /// </summary>
 public partial class AdminCategories : ComponentBase, IDisposable
@@ -31,6 +36,8 @@ public partial class AdminCategories : ComponentBase, IDisposable
         [IconName.QuestionCircle] = "Question mark",
     };
 
+    private const int DefaultPageSize = 10;
+
     private Button? addButton;
 
     private bool deleted;
@@ -46,11 +53,20 @@ public partial class AdminCategories : ComponentBase, IDisposable
     /// <summary>The category being edited; <see langword="null" /> while adding one.</summary>
     private HelpDeskCategory? editing;
 
+    private EditContext editContext = new(new CategoryForm());
+
     private Modal editorModal = default!;
+
+    private CategoryForm form = new();
 
     private int formErrorCount;
 
     private string? formError;
+
+    private Grid<HelpDeskCategory>? grid;
+
+    /// <summary>Changes when the view is reset, so the grid is built again with its defaults.</summary>
+    private int gridVersion;
 
     private IconName iconName;
 
@@ -60,13 +76,14 @@ public partial class AdminCategories : ComponentBase, IDisposable
 
     private string moveToId = string.Empty;
 
-    private string name = string.Empty;
+    private ShowcaseUniqueCheck? nameCheck;
 
-    private string? nameError;
-
-    private ElementReference nameInput;
+    private InputText? nameInput;
 
     private string? pageError;
+
+    /// <summary>The grid's page size: the saved one once the view is loaded, then whatever the page size selector chose.</summary>
+    private int pageSize = DefaultPageSize;
 
     private bool saved;
 
@@ -80,11 +97,9 @@ public partial class AdminCategories : ComponentBase, IDisposable
 
     private string? statusText;
 
-    private string? teamError;
+    private ShowcaseGridView view = default!;
 
-    private string teamId = string.Empty;
-
-    private ElementReference teamSelect;
+    private bool viewLoaded;
 
     #endregion
 
@@ -92,7 +107,23 @@ public partial class AdminCategories : ComponentBase, IDisposable
 
     #region Protected Override Methods
 
-    protected override void OnInitialized() => State.Changed += OnStateChanged;
+    /// <summary>Loads the saved view once the page is interactive (it lives in the tab's session storage), then shows the grid.</summary>
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender)
+            return;
+
+        await view.LoadAsync();
+        pageSize = (await view.GetSettingsAsync()).PageSize;
+        viewLoaded = true;
+        StateHasChanged();
+    }
+
+    protected override void OnInitialized()
+    {
+        view = GridViews.Get(State.SiteSlug, "categories", DefaultPageSize);
+        State.Changed += OnStateChanged;
+    }
 
     #endregion
 
@@ -104,9 +135,6 @@ public partial class AdminCategories : ComponentBase, IDisposable
     #endregion
 
     #region Private Methods
-
-    private static string CharacterCount(string? value, int max) =>
-        string.Create(CultureInfo.InvariantCulture, $"{value?.Length ?? 0} of {max} characters.");
 
     private static string Count(int count, string singular, string plural) =>
         count == 1 ? $"1 {singular}" : string.Create(CultureInfo.InvariantCulture, $"{count} {plural}");
@@ -175,20 +203,9 @@ public partial class AdminCategories : ComponentBase, IDisposable
 
     private Task EditAsync(HelpDeskCategory category) => OpenEditorAsync(category);
 
-    private string? NameProblem(string value)
-    {
-        var trimmed = value.Trim();
-
-        if (trimmed.Length == 0)
-            return "Enter the category name.";
-
-        if (trimmed.Length > HelpDeskState.MaxGroupNameLength)
-            return string.Create(CultureInfo.InvariantCulture, $"Use {HelpDeskState.MaxGroupNameLength} characters or fewer.");
-
-        return State.Categories.Any(category => category.Id != editing?.Id && string.Equals(category.Name, trimmed, StringComparison.OrdinalIgnoreCase))
-            ? "Another category already has that name."
-            : null;
-    }
+    /// <summary>Whether another category already has this name (the category being edited doesn't count).</summary>
+    private Task<bool> IsNameTakenAsync(string value) =>
+        Task.FromResult(State.Categories.Any(category => category.Id != editing?.Id && string.Equals(category.Name, value, StringComparison.OrdinalIgnoreCase)));
 
     /// <summary>The dialog opens from code, so Bootstrap does not return focus: after a delete the row is gone, so focus goes to the status.</summary>
     private async Task OnDeleteHiddenAsync()
@@ -237,7 +254,7 @@ public partial class AdminCategories : ComponentBase, IDisposable
             await HelpDeskDisplay.FocusAsync(statusRegion);
     }
 
-    private Task OnEditorShownAsync() => HelpDeskDisplay.FocusAsync(nameInput);
+    private Task OnEditorShownAsync() => HelpDeskDisplay.FocusAsync(nameInput?.Element);
 
     private void OnMoveChanged()
     {
@@ -245,30 +262,21 @@ public partial class AdminCategories : ComponentBase, IDisposable
             moveError = null;
     }
 
-    private void OnNameInput()
+    /// <summary>A category, team, ticket, or article changed (here or elsewhere): the grid reads the categories again.</summary>
+    private void OnStateChanged() => InvokeAsync(async () =>
     {
-        if (nameError is not null && NameProblem(name) is null)
-            nameError = null;
-    }
-
-    private void OnStateChanged() => InvokeAsync(StateHasChanged);
-
-    private void OnTeamChanged()
-    {
-        if (State.FindTeam(teamId) is not null)
-            teamError = null;
-    }
+        await RefreshGridAsync();
+        StateHasChanged();
+    });
 
     private async Task OpenEditorAsync(HelpDeskCategory? category)
     {
         editing = category;
         saved = false;
         savedId = null;
-        name = category?.Name ?? string.Empty;
-        teamId = category?.TeamId ?? State.Teams.FirstOrDefault()?.Id ?? string.Empty;
+        form = new CategoryForm { Name = category?.Name ?? string.Empty, TeamId = category?.TeamId ?? State.Teams.FirstOrDefault()?.Id ?? string.Empty };
+        editContext = new EditContext(form);
         iconName = category?.IconName ?? HelpDeskSeedData.CategoryIcons()[^1];
-        nameError = null;
-        teamError = null;
         formError = null;
         formErrorCount = 0;
         pageError = null;
@@ -276,29 +284,22 @@ public partial class AdminCategories : ComponentBase, IDisposable
         await editorModal.ShowAsync();
     }
 
+    /// <summary>
+    /// Saves the category once the form is valid: the uniqueness check finishes first, then every rule runs, and a failed save
+    /// shows the summary (rule WR-002). The state checks again and its answer maps to a message, as before.
+    /// </summary>
     private async Task SaveAsync()
     {
-        nameError = NameProblem(name);
-        teamError = State.FindTeam(teamId) is null ? "Choose the team this category's requests go to." : null;
         formError = null;
 
-        if (nameError is not null)
-        {
-            await HelpDeskDisplay.FocusAsync(nameInput);
+        var nameFree = nameCheck is null || await nameCheck.CheckNowAsync();
 
+        if (!editContext.Validate() || !nameFree)
             return;
-        }
-
-        if (teamError is not null)
-        {
-            await HelpDeskDisplay.FocusAsync(teamSelect);
-
-            return;
-        }
 
         var previousTeamId = editing is null ? null : State.Categories.FirstOrDefault(category => category.Id == editing.Id)?.TeamId;
 
-        switch (State.SaveCategory(editing?.Id, name, iconName, teamId, out var result))
+        switch (State.SaveCategory(editing?.Id, form.Name, iconName, form.TeamId, out var result))
         {
             case HelpDeskAdminResult.Ok when result is not null:
                 var team = TeamName(result.TeamId);
@@ -309,11 +310,10 @@ public partial class AdminCategories : ComponentBase, IDisposable
                         : $"{result.Name} is saved.");
                 break;
             case HelpDeskAdminResult.NoChange:
-                SetStatus($"Nothing changed for {editing?.Name ?? name.Trim()}.");
+                SetStatus($"Nothing changed for {editing?.Name ?? form.Name.Trim()}.");
                 break;
             case HelpDeskAdminResult.Duplicate:
-                nameError = "Another category already has that name.";
-                await HelpDeskDisplay.FocusAsync(nameInput);
+                SetFormError("Another category already has that name. Use a different one.");
 
                 return;
             case HelpDeskAdminResult.LimitReached:
@@ -338,6 +338,37 @@ public partial class AdminCategories : ComponentBase, IDisposable
         savedId = result?.Id ?? editing?.Id;
 
         await editorModal.HideAsync();
+    }
+
+    /// <summary>The page of categories the grid asked for, in their own order unless a column is sorted.</summary>
+    private Task<GridDataProviderResult<HelpDeskCategory>> ProvideCategoriesAsync(GridDataProviderRequest<HelpDeskCategory> request) => view.ApplyAsync(request, State.Categories);
+
+    private async Task RefreshGridAsync()
+    {
+        if (grid is not null)
+            await grid.RefreshDataAsync();
+    }
+
+    /// <summary>Forgets the saved view and builds the grid again with its defaults; focus moves to the status.</summary>
+    private async Task ResetViewAsync()
+    {
+        await view.ResetAsync();
+        pageSize = DefaultPageSize;
+        gridVersion++;
+        SetStatus("The view is reset: categories in their own order, 10 a page, and every column shown.");
+        StateHasChanged();
+
+        await Task.Yield();
+        await HelpDeskDisplay.FocusAsync(statusRegion);
+    }
+
+    /// <summary>Keeps the grid's settings in the saved view, and follows the page size the selector chose.</summary>
+    private async Task SaveSettingsAsync(GridSettings settings)
+    {
+        if (settings.PageSize > 0)
+            pageSize = settings.PageSize;
+
+        await view.SaveSettingsAsync(settings);
     }
 
     /// <summary>Shows a dialog error; the same error again gets a counter, so a screen reader announces it again.</summary>
@@ -383,10 +414,27 @@ public partial class AdminCategories : ComponentBase, IDisposable
 
     #region Properties, Indexers
 
+    [Inject] private ShowcaseGridViewStore GridViews { get; set; } = default!;
+
     /// <summary>Gets whether only one category is left; it can't be deleted.</summary>
     private bool IsLastCategory => State.Categories.Count <= 1;
 
     [Inject] private HelpDeskState State { get; set; } = default!;
+
+    #endregion
+
+    #region Nested Types
+
+    /// <summary>The category dialog's fields, with the same limits as <see cref="HelpDeskState.SaveCategory" />; the icon is chosen from tiles.</summary>
+    private sealed class CategoryForm
+    {
+        [Required(ErrorMessage = "Enter the category name.")]
+        [StringLength(HelpDeskState.MaxGroupNameLength, ErrorMessage = "Use 40 characters or fewer.")]
+        public string Name { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Choose the team this category's requests go to.")]
+        public string TeamId { get; set; } = string.Empty;
+    }
 
     #endregion
 }

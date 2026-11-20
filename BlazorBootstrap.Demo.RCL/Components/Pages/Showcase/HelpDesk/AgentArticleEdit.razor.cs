@@ -1,14 +1,17 @@
+using System.ComponentModel.DataAnnotations;
 using System.Globalization;
 using System.Net;
 using System.Text.RegularExpressions;
 using BlazorBootstrap.Demo.RCL.Models.Showcase.HelpDesk;
 using BlazorBootstrap.Demo.RCL.Services.Showcase;
 using BlazorBootstrap.Demo.RCL.Services.Showcase.HelpDesk;
+using Microsoft.AspNetCore.Components.Forms;
 
 namespace BlazorBootstrap.Demo.RCL.Components.Pages.Showcase.HelpDesk;
 
 /// <summary>
-/// Writes a new knowledge base article or edits one: title, category, summary, and a rich-text body, with a preview
+/// Writes a new knowledge base article or edits one: title, category, and summary in a validated form (rule WR-002), and a
+/// rich-text body, with a preview
 /// rendered exactly as the help center renders it (<see cref="ShowcaseHtml.FromEditorHtml" />, A05). A new or draft
 /// article can be saved as a draft or published; a published one updated or unpublished; an existing one deleted after
 /// a confirmation. Every <see cref="HelpDeskAdminResult" /> maps to a message. An unknown ID shows the not-found screen.
@@ -46,17 +49,13 @@ public partial class AgentArticleEdit : ComponentBase, IDisposable
 
     private string bodyText = string.Empty;
 
-    private string? categoryError;
-
-    private string categoryId = string.Empty;
-
-    private ElementReference categorySelect;
-
     /// <summary>Set by "Delete article"; the delete itself runs once the dialog is hidden, so the page never leaves under an open dialog.</summary>
     private bool confirmDelete;
 
     /// <summary>The ID a new article got on its first save: its edit route keeps the form as it is instead of reloading it.</summary>
     private int? createdId;
+
+    private EditContext editContext = new(new ArticleForm());
 
     private Button? deleteButton;
 
@@ -68,6 +67,8 @@ public partial class AgentArticleEdit : ComponentBase, IDisposable
     /// <summary>Changes on every load, so the editor is rebuilt with <see cref="editorStart" />.</summary>
     private int editorVersion;
 
+    private ArticleForm form = new();
+
     private int formErrors;
 
     private string? formError;
@@ -78,6 +79,9 @@ public partial class AgentArticleEdit : ComponentBase, IDisposable
     /// <summary>The route ID the form was filled from (0 for a new article); <see langword="null" /> before the first load.</summary>
     private int? loadedId;
 
+    /// <summary>The state's answers about a field (for example a duplicate title); each clears when its field changes.</summary>
+    private ValidationMessageStore? serverErrors;
+
     private int statusCount;
 
     private string? statusMessage;
@@ -86,17 +90,13 @@ public partial class AgentArticleEdit : ComponentBase, IDisposable
 
     private string? statusText;
 
+    /// <summary>The summary as typed, for the counter and the preview; the form's value follows on change.</summary>
     private string summary = string.Empty;
 
-    private string? summaryError;
-
-    private ElementReference summaryInput;
-
+    /// <summary>The title as typed, for the counter and the preview; the form's value follows on change.</summary>
     private string title = string.Empty;
 
-    private string? titleError;
-
-    private ElementReference titleInput;
+    private InputText? titleInput;
 
     #endregion
 
@@ -161,20 +161,8 @@ public partial class AgentArticleEdit : ComponentBase, IDisposable
     private static string PlainText(string html) =>
         WebUtility.HtmlDecode(TagPattern().Replace(html, " ")).Replace(' ', ' ').Trim();
 
-    private static string? SummaryProblem(string value) =>
-        string.IsNullOrWhiteSpace(value) ? "Write a summary: one sentence on what the article helps with."
-        : value.Trim().Length > HelpDeskState.MaxArticleSummaryLength
-            ? string.Create(CultureInfo.InvariantCulture, $"Shorten the summary to {HelpDeskState.MaxArticleSummaryLength} characters or fewer (now {value.Trim().Length}).")
-        : null;
-
     [GeneratedRegex("<[^>]*>", RegexOptions.CultureInvariant)]
     private static partial Regex TagPattern();
-
-    private static string? TitleProblem(string value) =>
-        string.IsNullOrWhiteSpace(value) ? "Give the article a title."
-        : value.Trim().Length > HelpDeskState.MaxArticleTitleLength
-            ? string.Create(CultureInfo.InvariantCulture, $"Shorten the title to {HelpDeskState.MaxArticleTitleLength} characters or fewer (now {value.Trim().Length}).")
-        : null;
 
     private async Task AskDeleteAsync()
     {
@@ -219,14 +207,14 @@ public partial class AgentArticleEdit : ComponentBase, IDisposable
     {
         title = article?.Title ?? string.Empty;
         summary = article?.Summary ?? string.Empty;
-        categoryId = article?.CategoryId ?? State.Categories.FirstOrDefault()?.Id ?? string.Empty;
+        form = new ArticleForm { Title = title, Summary = summary, CategoryId = article?.CategoryId ?? State.Categories.FirstOrDefault()?.Id ?? string.Empty };
+        editContext = new EditContext(form);
+        serverErrors = new ValidationMessageStore(editContext);
+        editContext.OnFieldChanged += (_, args) => serverErrors?.Clear(args.FieldIdentifier);
         // The editor renders its value as markup, so a stored body goes through the allowlist first (A05).
         editorStart = article is null ? EmptyBody : ShowcaseHtml.FromEditorHtml(article.Html, keepHeadings: true).Value;
         bodyHtml = article?.Html ?? string.Empty;
         bodyText = article is null ? string.Empty : PlainText(article.Html);
-        titleError = null;
-        summaryError = null;
-        categoryError = null;
         bodyError = null;
         formError = null;
         formErrors = 0;
@@ -243,12 +231,6 @@ public partial class AgentArticleEdit : ComponentBase, IDisposable
 
         if (bodyError is not null && BodyProblem() is null)
             bodyError = null;
-    }
-
-    private void OnCategoryChanged(ChangeEventArgs args)
-    {
-        categoryId = args.Value?.ToString() ?? string.Empty;
-        categoryError = null;
     }
 
     /// <summary>
@@ -296,21 +278,9 @@ public partial class AgentArticleEdit : ComponentBase, IDisposable
 
     private void OnStateChanged() => InvokeAsync(StateHasChanged);
 
-    private void OnSummaryInput(ChangeEventArgs args)
-    {
-        summary = args.Value?.ToString() ?? string.Empty;
+    private void OnSummaryInput(ChangeEventArgs args) => summary = args.Value?.ToString() ?? string.Empty;
 
-        if (summaryError is not null && SummaryProblem(summary) is null)
-            summaryError = null;
-    }
-
-    private void OnTitleInput(ChangeEventArgs args)
-    {
-        title = args.Value?.ToString() ?? string.Empty;
-
-        if (titleError is not null && TitleProblem(title) is null)
-            titleError = null;
-    }
+    private void OnTitleInput(ChangeEventArgs args) => title = args.Value?.ToString() ?? string.Empty;
 
     /// <summary>
     /// Saves the article, as a draft or published. A first save moves to the article's edit route; when the buttons change
@@ -319,37 +289,14 @@ public partial class AgentArticleEdit : ComponentBase, IDisposable
     private async Task SaveAsync(bool publish)
     {
         formError = null;
-        titleError = TitleProblem(title);
-        categoryError = State.Categories.Any(category => category.Id == categoryId) ? null : "Choose a category.";
-        summaryError = SummaryProblem(summary);
         bodyError = BodyProblem();
 
-        if (titleError is not null)
-        {
-            await HelpDeskDisplay.FocusAsync(titleInput);
-
-            return;
-        }
-
-        if (categoryError is not null)
-        {
-            await HelpDeskDisplay.FocusAsync(categorySelect);
-
-            return;
-        }
-
-        if (summaryError is not null)
-        {
-            await HelpDeskDisplay.FocusAsync(summaryInput);
-
-            return;
-        }
-
-        if (bodyError is not null)
+        // Every field rule runs (the summary lists the failing fields); the body is outside the form and shows its own message.
+        if (!editContext.Validate() || bodyError is not null)
             return;
 
         var before = Item;
-        var result = State.SaveArticle(before?.Id ?? 0, title, categoryId, summary, bodyHtml, publish, out var saved);
+        var result = State.SaveArticle(before?.Id ?? 0, form.Title, form.CategoryId, form.Summary, bodyHtml, publish, out var saved);
 
         if (result != HelpDeskAdminResult.Ok || saved is null)
         {
@@ -358,8 +305,8 @@ public partial class AgentArticleEdit : ComponentBase, IDisposable
             return;
         }
 
-        title = saved.Title;
-        summary = saved.Summary;
+        title = form.Title = saved.Title;
+        summary = form.Summary = saved.Summary;
         formErrors = 0;
         SetStatus(before is null
             ? publish ? $"The article \"{saved.Title}\" is published. Customers can find it in the help center." : $"The draft \"{saved.Title}\" is saved. Only agents see it."
@@ -405,13 +352,14 @@ public partial class AgentArticleEdit : ComponentBase, IDisposable
         switch (result)
         {
             case HelpDeskAdminResult.Duplicate:
-                titleError = "Another article already has this title. Use a different one, so customers can tell them apart.";
-                await HelpDeskDisplay.FocusAsync(titleInput);
+                serverErrors?.Add(() => form.Title, "Another article already has this title. Use a different one, so customers can tell them apart.");
+                editContext.NotifyValidationStateChanged();
+                await HelpDeskDisplay.FocusAsync(titleInput?.Element);
                 break;
 
-            case HelpDeskAdminResult.Invalid when State.Categories.All(category => category.Id != categoryId):
-                categoryError = "The chosen category no longer exists. Choose another one.";
-                await HelpDeskDisplay.FocusAsync(categorySelect);
+            case HelpDeskAdminResult.Invalid when State.Categories.All(category => category.Id != form.CategoryId):
+                serverErrors?.Add(() => form.CategoryId, "The chosen category no longer exists. Choose another one.");
+                editContext.NotifyValidationStateChanged();
                 break;
 
             case HelpDeskAdminResult.Invalid:
@@ -469,6 +417,25 @@ public partial class AgentArticleEdit : ComponentBase, IDisposable
     private bool TitleOver => title.Trim().Length > HelpDeskState.MaxArticleTitleLength;
 
     [Inject] private ToastService Toasts { get; set; } = default!;
+
+    #endregion
+
+    #region Nested Types
+
+    /// <summary>The article's text fields, with the same limits as <see cref="HelpDeskState.SaveArticle" />.</summary>
+    private sealed class ArticleForm
+    {
+        [Required(ErrorMessage = "Choose a category.")]
+        public string CategoryId { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Write a summary: one sentence on what the article helps with.")]
+        [StringLength(HelpDeskState.MaxArticleSummaryLength, ErrorMessage = "Shorten the summary to 200 characters or fewer.")]
+        public string Summary { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Give the article a title.")]
+        [StringLength(HelpDeskState.MaxArticleTitleLength, ErrorMessage = "Shorten the title to 120 characters or fewer.")]
+        public string Title { get; set; } = string.Empty;
+    }
 
     #endregion
 }

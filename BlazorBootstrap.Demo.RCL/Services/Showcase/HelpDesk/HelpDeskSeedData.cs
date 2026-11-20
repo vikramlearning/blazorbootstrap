@@ -35,6 +35,15 @@ public static class HelpDeskSeedData
     /// <summary>The fictitious product name.</summary>
     public const string ProductName = "Beacon Desk";
 
+    /// <summary>The number of the newest generated ticket; the others count down from it, so the hand-written tickets stay the newest.</summary>
+    private const int FirstGeneratedTicketId = 1040;
+
+    /// <summary>How many older tickets are generated behind the hand-written queue (about 250 tickets in all).</summary>
+    private const int GeneratedTicketCount = 231;
+
+    /// <summary>The base route of the site, for the links in seeded audit entries and notifications.</summary>
+    private const string SiteBase = DemoRouteConstants.Showcase_URL_HelpDesk;
+
     /// <summary>When a fresh tab's clock starts; the seeded times are relative to it, and the clock moves on from there (D-029).</summary>
     public static readonly DateTime Now = new(2026, 11, 24, 10, 30, 0);
 
@@ -130,6 +139,50 @@ public static class HelpDeskSeedData
             "Describe the problem you want solved, not only the solution.", "We group similar requests and review them monthly.", "You'll get an update on the ticket when something ships."), At(2026, 7, 21), "Beacon Desk team", 640, IsPublished: true),
     };
 
+    /// <summary>
+    /// The audit log a fresh tab starts with: the staff's most recent assignments and resolutions from the seeded tickets'
+    /// activity, plus a few knowledge base and admin changes, numbered oldest first.
+    /// </summary>
+    public static List<ShowcaseAuditEntry> AuditEntries(IReadOnlyList<HelpDeskTicket> tickets, IReadOnlyList<HelpDeskArticle> articles, IReadOnlyList<HelpDeskAgent> agents)
+    {
+        var staff = agents.Select(agent => agent.Name).ToHashSet(StringComparer.Ordinal);
+        var lines = new List<(DateTime At, string Actor, string Action, string Target, string? Url, string? Details)>();
+
+        foreach (var ticket in tickets)
+        {
+            foreach (var activity in ticket.Activity.Where(activity => staff.Contains(activity.Actor) && activity.At <= Now))
+            {
+                if (activity.Text.StartsWith("Assigned to ", StringComparison.Ordinal))
+                    lines.Add((activity.At, activity.Actor, "Assigned", TicketTarget(ticket.Id), TicketUrl(ticket.Id), activity.Text));
+                else if (activity.Text == "Resolved the ticket")
+                    lines.Add((activity.At, activity.Actor, "Resolved", TicketTarget(ticket.Id), TicketUrl(ticket.Id), null));
+            }
+        }
+
+        var entries = lines.OrderByDescending(line => line.At).Take(34).ToList();
+
+        foreach (var article in articles.OrderByDescending(article => article.UpdatedAt).Take(3))
+            entries.Add((article.UpdatedAt, article.UpdatedBy, "Published", $"Article: {article.Title}", FormattableString.Invariant($"{SiteBase}/agent/kb/{article.Id}"), null));
+
+        entries.Add((Now.AddDays(-6).AddHours(-2), AdminName, "Updated", "SLA policy: Normal", $"{SiteBase}/agent/admin/sla", "First reply 4 h, resolution 24 h"));
+        entries.Add((Now.AddDays(-9).AddHours(-5), AdminName, "Updated", "Category: Integrations", $"{SiteBase}/agent/admin/categories", "Routed to Technical support"));
+        entries.Add((Now.AddDays(-14).AddHours(-1), AdminName, "Added", "Saved reply: Fixed, please confirm", $"{SiteBase}/agent/saved-replies", null));
+
+        return entries
+            .OrderBy(entry => entry.At)
+            .Select((entry, index) => new ShowcaseAuditEntry
+            {
+                Id = index + 1,
+                At = entry.At,
+                Actor = entry.Actor,
+                Action = entry.Action,
+                Target = entry.Target,
+                TargetUrl = entry.Url,
+                Details = entry.Details,
+            })
+            .ToList();
+    }
+
     /// <summary>The demo accounts: a customer with tickets of her own, an agent, and an admin.</summary>
     public static IReadOnlyList<ShowcaseDemoAccount> DemoAccounts() => new List<ShowcaseDemoAccount>
     {
@@ -144,6 +197,46 @@ public static class HelpDeskSeedData
         IconName.CreditCard, IconName.PersonLock, IconName.Bug, IconName.Plug, IconName.Lightbulb, IconName.ShieldLock,
         IconName.Gear, IconName.Phone, IconName.Globe, IconName.Truck, IconName.BoxSeam, IconName.QuestionCircle,
     };
+
+    /// <summary>
+    /// The notifications a fresh tab starts with, for each staff account on the roster: its latest assignments and customer
+    /// replies on its tickets, from the seeded activity. The two newest of each account are unread.
+    /// </summary>
+    public static List<ShowcaseNotification> Notifications(IReadOnlyList<HelpDeskTicket> tickets, IReadOnlyList<HelpDeskAgent> agents)
+    {
+        var items = new List<(string AccountId, DateTime At, string Title, string Text, string Url, bool IsRead)>();
+
+        foreach (var agent in agents.Where(agent => agent.AccountId is not null))
+        {
+            var mine = tickets.Where(ticket => ticket.Assignee == agent.Name).ToList();
+            var assigned = mine
+                .SelectMany(ticket => ticket.Activity
+                    .Where(activity => activity.Text == $"Assigned to {agent.Name}" && activity.At <= Now)
+                    .Select(activity => (At: activity.At, Title: FormattableString.Invariant($"Ticket #{ticket.Id} was assigned to you"), Text: ticket.Subject, Url: TicketUrl(ticket.Id))));
+            var replies = mine
+                .Where(ticket => ticket.Status != HelpDeskStatus.Resolved && ticket.Messages.Count > 1 && ticket.Messages[^1] is { IsAgent: false } && ticket.Messages[^1].PostedAt <= Now)
+                .Select(ticket => (At: ticket.Messages[^1].PostedAt, Title: FormattableString.Invariant($"{ticket.CustomerName} replied on ticket #{ticket.Id}"), Text: ticket.Subject, Url: TicketUrl(ticket.Id)));
+
+            items.AddRange(assigned.Concat(replies)
+                .OrderByDescending(item => item.At)
+                .Take(5)
+                .Select((item, index) => (agent.AccountId!, item.At, item.Title, item.Text, item.Url, IsRead: index >= 2)));
+        }
+
+        return items
+            .OrderBy(item => item.At)
+            .Select((item, index) => new ShowcaseNotification
+            {
+                Id = index + 1,
+                AccountId = item.AccountId,
+                At = item.At,
+                Title = item.Title,
+                Text = item.Text,
+                Url = item.Url,
+                IsRead = item.IsRead,
+            })
+            .ToList();
+    }
 
     /// <summary>The roles of the site.</summary>
     public static IReadOnlyList<ShowcaseRole> Roles() => new List<ShowcaseRole>
@@ -162,11 +255,19 @@ public static class HelpDeskSeedData
         new(HelpDeskPriority.Urgent, FirstReplyHours: 1, ResolveHours: 4),
     };
 
-    /// <summary>The support teams.</summary>
+    /// <summary>The support teams and their leads, who are notified when one of the team's tickets is escalated.</summary>
     public static List<HelpDeskTeam> Teams() => new()
     {
-        new("care", "Customer care", "Billing, accounts, and feature requests."),
-        new("tech", "Technical support", "Bugs, performance, and integrations."),
+        new("care", "Customer care", "Billing, accounts, and feature requests.", LeadAgentId: "morgan"),
+        new("tech", "Technical support", "Bugs, performance, and integrations.", LeadAgentId: "priya"),
+    };
+
+    /// <summary>The SLA escalation rules a fresh tab starts with (AC-7a).</summary>
+    public static List<HelpDeskEscalationRule> EscalationRules() => new()
+    {
+        new(1, "Urgent not resolved in 1 hour", HelpDeskPriority.Urgent, HelpDeskEscalationTrigger.NotResolved, 1, IsActive: true),
+        new(2, "High with no first reply in 2 hours", HelpDeskPriority.High, HelpDeskEscalationTrigger.NoFirstReply, 2, IsActive: true),
+        new(3, "Open longer than 3 days", null, HelpDeskEscalationTrigger.NotResolved, 72, IsActive: true),
     };
 
     /// <summary>The agents' saved replies.</summary>
@@ -233,7 +334,13 @@ public static class HelpDeskSeedData
                 "Our finance team needs a purchase order number on every invoice. Can you add one?"),
         };
 
-        var tickets = new List<HelpDeskTicket>(rows.Length);
+        // The hand-written tickets are the newest (1041 on); the generated history comes before them (FirstGeneratedTicketId down).
+        var seeds = rows
+            .Select((row, index) => new SeedTicket(1041 + index, row.Subject, row.Customer, row.Email, row.Company, row.Category, row.Priority, row.Status, row.Assignee,
+                row.CreatedHoursAgo, row.ResolvedHoursAgo, row.Question, null, null))
+            .Concat(GeneratedTickets())
+            .ToList();
+        var tickets = new List<HelpDeskTicket>(seeds.Count);
         var rating = new Dictionary<int, (HelpDeskSatisfaction Satisfaction, string? Comment)>
         {
             [1046] = (HelpDeskSatisfaction.Good, "Quick fix, thanks for updating the address."),
@@ -241,13 +348,16 @@ public static class HelpDeskSeedData
             [1056] = (HelpDeskSatisfaction.Good, null),
         };
 
-        for (var index = 0; index < rows.Length; index++)
+        foreach (var seed in seeds.Where(seed => seed.Satisfaction is not null))
+            rating[seed.Id] = (seed.Satisfaction!.Value, seed.Comment);
+
+        for (var index = 0; index < seeds.Count; index++)
         {
-            var row = rows[index];
+            var row = seeds[index];
             var created = Now.AddHours(-row.CreatedHoursAgo);
             var ticket = new HelpDeskTicket
             {
-                Id = 1041 + index,
+                Id = row.Id,
                 Subject = row.Subject,
                 CustomerName = row.Customer,
                 CustomerEmail = row.Email,
@@ -314,6 +424,146 @@ public static class HelpDeskSeedData
 
     private static DateTime At(int year, int month, int day) => new(year, month, day, 9, 0, 0);
 
+    /// <summary>
+    /// The older tickets behind the hand-written queue: one every nine hours or so, from about four and a half to ninety days
+    /// ago, mostly resolved by the category's team within its SLA, a few still pending, open, or new, and about four in ten
+    /// rated. Customers, companies, and subjects come from small word lists through <see cref="Mix(int)" />, so every tab
+    /// gets the same history.
+    /// </summary>
+    private static IEnumerable<SeedTicket> GeneratedTickets()
+    {
+        var firstNames = new[]
+        {
+            "Aaron", "Bella", "Caleb", "Daria", "Elias", "Fatima", "Gavin", "Helena", "Isaac", "Jasmine", "Kai", "Lena", "Mateo", "Nadia", "Oscar",
+            "Paige", "Rafael", "Sara", "Theo", "Uma", "Viktor", "Wren", "Yusuf", "Zara", "Adele", "Bruno", "Clara", "Diego", "Esme", "Felix",
+        };
+        var lastNames = new[]
+        {
+            "Abbott", "Bianchi", "Castro", "Dubois", "Eriksen", "Fischer", "Gallagher", "Hughes", "Ibrahim", "Jensen", "Kowalski", "Lindqvist", "Moreau", "Nakamura", "Obi",
+            "Price", "Quintero", "Rossi", "Schmidt", "Tanaka", "Underwood", "Varga", "Weber", "Young", "Zimmer", "Alvarez", "Becker", "Chen", "Doyle", "Evans",
+        };
+        var companies = new[]
+        {
+            "Northwind Traders", "Bluebird Clinics", "Copperline Studio", "Granite Payroll", "Harborview Realty", "Ironwood Labs", "Juniper Foods", "Keystone Legal",
+            "Larkspur Media", "Maple & Main", "Nimbus Software", "Oakridge Schools", "Pebble Retail", "Quill Publishing", "Redfern Logistics", "Saltmarsh Travel",
+            "Thistle Dental", "Upland Energy", "Vista Hotels", "Willow Health", null, null, null, null,
+        };
+        var apps = new[] { "Salesforce", "HubSpot", "Slack", "Jira", "Zapier", "Microsoft Teams" };
+        var reports = new[] { "SLA", "Satisfaction", "Agent activity", "Backlog" };
+
+        // {0} is filled per ticket: the previous month for billing, a report for troubleshooting, an app for integrations.
+        var topics = new (string Category, string Subject, string Question)[]
+        {
+            ("billing", "Card declined on renewal", "Our card was declined when the subscription renewed this morning. How can we retry the payment?"),
+            ("billing", "Need a copy of the {0} invoice", "Could you send us a PDF of the {0} invoice? Our accountant needs it."),
+            ("billing", "VAT number missing from invoices", "Our VAT number isn't printed on the invoices. Can you add it?"),
+            ("billing", "Charged for seats we removed", "We removed three seats last week but were still charged for them."),
+            ("billing", "Switch to annual billing", "We'd like to move from monthly to annual billing. What would it cost?"),
+            ("billing", "Refund for an accidental upgrade", "Someone on our team upgraded the plan by mistake. Can we get a refund?"),
+            ("account", "Can't change my email address", "When I change my email in the profile, the Save button does nothing."),
+            ("account", "Two-factor codes rejected", "The codes from my authenticator app are always rejected."),
+            ("account", "Remove a former employee's access", "A colleague left the company. How do I remove their access?"),
+            ("account", "Transfer workspace ownership", "Our owner is leaving. How do we transfer ownership to me?"),
+            ("account", "Sign-in link expired", "The sign-in link in the email says it has expired every time I open it."),
+            ("account", "Locked out after a password change", "I changed my password and now I can't sign in on my phone."),
+            ("bugs", "{0} report shows no data", "The {0} report is empty although we had tickets this month."),
+            ("bugs", "Search results are out of date", "Search doesn't find the tickets I created this morning."),
+            ("bugs", "Attachments fail to upload", "Uploading a PDF attachment fails with an error after a few seconds."),
+            ("bugs", "Page freezes when filtering", "The page freezes for several seconds whenever I change a filter."),
+            ("bugs", "Dates show in the wrong time zone", "Every date shows one hour off since the clocks changed."),
+            ("bugs", "Notifications arrive twice", "We get every email notification twice since yesterday."),
+            ("integrations", "{0} sync stopped", "Our {0} sync stopped yesterday and new records aren't coming through."),
+            ("integrations", "{0} connection keeps expiring", "We have to reconnect {0} every few days. Is that expected?"),
+            ("integrations", "Webhook retries flood our server", "Your webhook retries the same event dozens of times."),
+            ("integrations", "API rate limit hit during import", "We hit the API rate limit during our nightly import."),
+            ("integrations", "Map custom fields in {0}", "How do we map our custom ticket fields to {0}?"),
+            ("integrations", "Duplicate contacts from {0}", "Every contact from {0} shows up twice after the last sync."),
+            ("features", "Request: bulk edit for tags", "It would save us hours if we could edit the tags of many tickets at once."),
+            ("features", "Request: scheduled reports by email", "Could reports be emailed to our managers every Monday?"),
+            ("features", "Request: custom ticket statuses", "We'd like a status for tickets waiting on a third party."),
+            ("features", "Request: Spanish help center", "Many of our customers speak Spanish. Can the help center be translated?"),
+            ("features", "Request: keyboard shortcuts", "Keyboard shortcuts for assigning and resolving would help our agents."),
+            ("features", "Request: export audit history", "Our auditors want the change history as a spreadsheet."),
+        };
+        var goodComments = new[] { "Fast and friendly, thank you!", "Clear steps, it works now.", "Solved on the first reply." };
+        var badComments = new[] { "Took too long to get an answer.", "I had to explain the problem twice.", "The fix only worked for a day." };
+        var policies = SlaPolicies();
+
+        for (var i = 0; i < GeneratedTicketCount; i++)
+        {
+            var id = FirstGeneratedTicketId - i;
+            var hoursAgo = 108 + (i * 8.9) + (Mix(id * 19) % 60 / 10.0);
+            var created = Now.AddHours(-hoursAgo);
+
+            // Billing and troubleshooting come in most often, feature requests least.
+            var categoryPick = (int)(Mix(id * 3) % 100);
+            var category = categoryPick switch { < 25 => "billing", < 45 => "account", < 70 => "bugs", < 88 => "integrations", _ => "features" };
+            var categoryTopics = topics.Where(topic => topic.Category == category).ToArray();
+            var topic = categoryTopics[(int)(Mix(id * 5) % (ulong)categoryTopics.Length)];
+            var fill = category switch
+            {
+                "billing" => created.AddMonths(-1).ToString("MMMM", System.Globalization.CultureInfo.InvariantCulture),
+                "bugs" => reports[(int)(Mix(id * 23) % (ulong)reports.Length)],
+                _ => apps[(int)(Mix(id * 23) % (ulong)apps.Length)],
+            };
+
+            // Ana Ruiz, the demo customer, has a few older requests of her own.
+            var isAna = i % 40 == 7;
+            var first = firstNames[(int)(Mix(id * 7) % (ulong)firstNames.Length)];
+            var last = lastNames[(int)(Mix(id * 11) % (ulong)lastNames.Length)];
+            var customer = isAna ? "Ana Ruiz" : $"{first} {last}";
+            var email = isAna ? SeededCustomerEmail : $"{first}.{last}@example.com".ToLowerInvariant();
+            var company = isAna ? "Fernwood Studio" : companies[(int)(Mix(id * 13) % (ulong)companies.Length)];
+
+            var priorityPick = (int)(Mix(id * 17) % 100);
+            var priority = category == "features"
+                ? (priorityPick < 60 ? HelpDeskPriority.Low : HelpDeskPriority.Normal)
+                : priorityPick switch { < 20 => HelpDeskPriority.Low, < 62 => HelpDeskPriority.Normal, < 90 => HelpDeskPriority.High, _ => HelpDeskPriority.Urgent };
+
+            // A handful are still in the queue: pending on the customer (the last three weeks or so), open, or never picked up.
+            var status = i switch
+            {
+                3 or 11 or 23 or 37 => HelpDeskStatus.Open,
+                6 or 19 => HelpDeskStatus.New,
+                < 60 when i % 6 == 2 => HelpDeskStatus.Pending,
+                _ => HelpDeskStatus.Resolved,
+            };
+
+            // The category's team works the ticket: Jordan and Morgan in customer care, Priya and Marcus in technical support.
+            var teamPick = (int)(Mix(id * 29) % 100);
+            var careCategory = category is "billing" or "account" or "features";
+            string? assignee = status == HelpDeskStatus.New || i == 37
+                ? null
+                : careCategory ? (teamPick < 72 ? AgentName : AdminName) : (teamPick < 52 ? "Priya Nair" : "Marcus Osei");
+
+            // About 85% are resolved within the resolution target; the rest run over.
+            double? resolvedAgo = null;
+            HelpDeskSatisfaction? satisfaction = null;
+            string? comment = null;
+
+            if (status == HelpDeskStatus.Resolved)
+            {
+                var target = policies.First(policy => policy.Priority == priority).ResolveHours;
+                var speed = (int)(Mix(id * 31) % 100);
+                var share = speed < 85 ? 0.2 + (speed / 100.0 * 0.75) : 1.05 + ((speed - 85) / 20.0);
+                var duration = Math.Max(1.5, target * share);
+                resolvedAgo = Math.Max(2, hoursAgo - duration);
+
+                if (Mix(id * 37) % 100 < 40)
+                {
+                    var inSla = hoursAgo - resolvedAgo.Value <= target;
+                    var bad = (int)(Mix(id * 41) % 100) < (inSla ? 8 : 40);
+                    var comments = bad ? badComments : goodComments;
+                    satisfaction = bad ? HelpDeskSatisfaction.Bad : HelpDeskSatisfaction.Good;
+                    comment = Mix(id * 43) % 4 == 0 ? comments[(int)(Mix(id * 47) % (ulong)comments.Length)] : null;
+                }
+            }
+
+            yield return new SeedTicket(id, string.Format(System.Globalization.CultureInfo.InvariantCulture, topic.Subject, fill), customer, email, company, category,
+                priority, status, assignee, hoursAgo, resolvedAgo, string.Format(System.Globalization.CultureInfo.InvariantCulture, topic.Question, fill), satisfaction, comment);
+        }
+    }
+
     private static ulong Mix(int value)
     {
         var x = (ulong)(value + 0x9E37) * 0x9E3779B97F4A7C15UL;
@@ -334,7 +584,21 @@ public static class HelpDeskSeedData
     private static string Inline(string text) =>
         System.Text.RegularExpressions.Regex.Replace(System.Text.RegularExpressions.Regex.Replace(text, @"\*\*(.+?)\*\*", "<b>$1</b>"), "`(.+?)`", "<code>$1</code>");
 
+    /// <summary>The audit log's name for a ticket, like "Ticket #1047".</summary>
+    private static string TicketTarget(int ticketId) => FormattableString.Invariant($"Ticket #{ticketId}");
+
+    /// <summary>The agent desk's page of a ticket (the same link as <c>HelpDeskDisplay.TicketUrl</c>).</summary>
+    private static string TicketUrl(int ticketId) => FormattableString.Invariant($"{SiteBase}/agent/tickets/{ticketId}");
+
     #endregion
+
+    #endregion
+
+    #region Nested Types
+
+    /// <summary>One seeded ticket before it is built: the hand-written rows and the generated history share this shape.</summary>
+    private sealed record SeedTicket(int Id, string Subject, string Customer, string Email, string? Company, string Category, HelpDeskPriority Priority, HelpDeskStatus Status,
+        string? Assignee, double CreatedHoursAgo, double? ResolvedHoursAgo, string Question, HelpDeskSatisfaction? Satisfaction, string? Comment);
 
     #endregion
 }

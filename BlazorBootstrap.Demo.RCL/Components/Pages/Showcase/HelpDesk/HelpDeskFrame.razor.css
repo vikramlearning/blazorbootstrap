@@ -349,7 +349,16 @@
 
 .sc-helpdesk ::deep .hd-agent-bar-actions {
     display: flex;
+    flex: 1 1 auto;
     flex-wrap: wrap;
     align-items: center;
+    justify-content: flex-end;
     gap: .5rem;
+}
+
+/* The global search takes the room the header has, and wraps onto its own line when there is too little. */
+.sc-helpdesk ::deep .hd-global-search {
+    flex: 1 1 12rem;
+    min-width: 10rem;
+    max-width: 22rem;
 }

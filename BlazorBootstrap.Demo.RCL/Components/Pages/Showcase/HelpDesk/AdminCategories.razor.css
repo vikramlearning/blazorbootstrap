@@ -74,7 +74,8 @@
     outline-offset: 2px;
 }
 
-/* Names wrap at spaces only; a long single word scrolls the table instead of breaking mid-word. */
-.hd-category-cell {
+/* Names wrap at spaces only; a long single word scrolls the table instead of breaking mid-word. Grid renders the cell, so
+   its class is reached through ::deep. */
+.hd-category-grid ::deep .hd-category-cell {
     min-width: 11rem;
 }

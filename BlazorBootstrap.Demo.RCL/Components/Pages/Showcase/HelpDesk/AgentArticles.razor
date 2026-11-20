@@ -57,88 +57,100 @@
                 </div>
             </div>
 
-            <p class="small text-body-secondary mb-2" aria-live="polite" tabindex="-1" @ref="countRegion">@CountText(rows.Count, all.Count)</p>
+            <div class="d-flex flex-wrap align-items-center column-gap-3 row-gap-1 mb-2">
+                <p class="small text-body-secondary mb-0" aria-live="polite" tabindex="-1" @ref="countRegion">@CountText(rows.Count, all.Count)</p>
+                @* Back to the saved view's defaults: most recently updated first, 10 a page, every column in its place. *@
+                <Button Color="ButtonColor.Link" Size="ButtonSize.Small" Class="p-0" @onclick="ResetViewAsync">Reset view</Button>
+            </div>
 
-            @if (all.Count == 0)
-            {
-                <div class="text-center py-5">
-                    <span class="hd-icon fs-4" aria-hidden="true"><Icon Name="IconName.JournalText" /></span>
-                    <p class="mt-3 mb-0 text-body-secondary">No articles yet. Choose "New article" to write the first one.</p>
-                </div>
-            }
-            else
-            {
-                @* Positioned (hd-grid), so the visually hidden text inside stays in the scroll box at phone width. *@
-                <div class="table-responsive hd-grid">
-                    <table class="table table-hover">
-                        <caption class="visually-hidden">Knowledge base articles, most recently updated first</caption>
-                        <thead>
-                            <tr>
-                                <th scope="col">Title</th>
-                                <th scope="col">Category</th>
-                                <th scope="col">Status</th>
-                                <th scope="col">Updated</th>
-                                <th scope="col" class="text-end">Views</th>
-                                <th scope="col" class="text-end">Helpful</th>
-                                <th scope="col"><span class="visually-hidden">Actions</span></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @if (rows.Count == 0)
-                            {
-                                <tr>
-                                    <td colspan="7" class="text-center text-body-secondary py-5">
-                                        No articles match these filters.
-                                        <Button Color="ButtonColor.Link" Size="ButtonSize.Small" Class="p-0 align-baseline" @onclick="ClearFiltersAsync">Clear filters</Button>
-                                    </td>
-                                </tr>
-                            }
-                            @foreach (var article in rows)
-                            {
-                                var (helpful, notHelpful) = State.Votes(article.Id);
-
-                                <tr @key="article.Id">
-                                    <th scope="row" class="fw-normal hd-kb-title-cell">
-                                        <a class="hd-ticket-link" href="@HelpDeskDisplay.ArticleEditUrl(article.Id)">@article.Title</a>
-                                        <span class="d-block small text-body-secondary hd-kb-summary">@article.Summary</span>
-                                    </th>
-                                    <td class="text-nowrap">@State.FindCategory(article.CategoryId).Name</td>
-                                    <td class="text-nowrap">
-                                        <Badge Color="@(article.IsPublished ? BadgeColor.Success : BadgeColor.Secondary)">@(article.IsPublished ? "Published" : "Draft")</Badge>
-                                    </td>
-                                    <td class="text-nowrap small">
-                                        <span title="@HelpDeskDisplay.Stamp(article.UpdatedAt)">@HelpDeskDisplay.Ago(article.UpdatedAt, State.Now)</span>
-                                        <span class="d-block text-body-secondary">by @article.UpdatedBy</span>
-                                    </td>
-                                    <td class="text-end">@article.Views.ToString("#,0", CultureInfo.InvariantCulture)</td>
-                                    <td class="text-end text-nowrap">
-                                        @helpful.ToString("#,0", CultureInfo.InvariantCulture)<span class="text-body-secondary small"> of @((helpful + notHelpful).ToString("#,0", CultureInfo.InvariantCulture))</span>
-                                    </td>
-                                    <td>
-                                        <div class="hd-kb-actions">
-                                            <Button Type="ButtonType.Link" To="@HelpDeskDisplay.ArticleEditUrl(article.Id)" Color="ButtonColor.Secondary" Outline="true" Size="ButtonSize.Small">
-                                                <Icon Name="IconName.PencilSquare" class="me-1" aria-hidden="true" />Edit<span class="visually-hidden"> @article.Title</span>
-                                            </Button>
-                                            <Button Color="ButtonColor.Secondary" Outline="true" Size="ButtonSize.Small" @onclick="() => TogglePublished(article)">
-                                                <Icon Name="@(article.IsPublished ? IconName.EyeSlash : IconName.Globe)" class="me-1" aria-hidden="true" />@(article.IsPublished ? "Unpublish" : "Publish")<span class="visually-hidden"> @article.Title</span>
-                                            </Button>
-                                            @if (article.IsPublished)
-                                            {
-                                                <a class="btn btn-sm btn-link px-1" href="@HelpDeskDisplay.ArticleUrl(article.Id)">
-                                                    View in help center<span class="visually-hidden">: @article.Title</span>
-                                                </a>
-                                            }
-                                            <Button @ref="deleteButtons[article.Id]" Color="ButtonColor.Danger" Outline="true" Size="ButtonSize.Small" @onclick="() => AskDeleteAsync(article)">
-                                                <Icon Name="IconName.Trash3" class="me-1" aria-hidden="true" />Delete<span class="visually-hidden"> @article.Title</span>
-                                            </Button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
-                </div>
-            }
+            <ShowcaseDataState Status="@(viewLoaded ? ShowcaseDataStatus.Ready : ShowcaseDataStatus.Loading)"
+                               IsEmpty="@(all.Count == 0)"
+                               EmptyIcon="IconName.JournalText"
+                               EmptyTitle="No articles yet"
+                               EmptyText="Write the first one: it stays a draft until you publish it to the help center."
+                               LoadingText="Loading articles…"
+                               OnRetry="RefreshGridAsync">
+                <EmptyActions>
+                    <Button Type="ButtonType.Link" To="@NewArticleUrl" Color="ButtonColor.Primary" Size="ButtonSize.Small">New article</Button>
+                </EmptyActions>
+                <ChildContent>
+                    <div class="hd-kb-grid">
+                        <Grid @ref="grid"
+                              @key="gridVersion"
+                              TItem="HelpDeskArticle"
+                              Class="table table-hover sc-grid-row-links"
+                              GridContainerClass="hd-grid"
+                              DataProvider="ProvideArticlesAsync"
+                              SettingsProvider="view.GetSettingsAsync"
+                              GridSettingsChanged="SaveSettingsAsync"
+                              AllowPaging="true"
+                              PageSize="@pageSize"
+                              PageSizeSelectorVisible="true"
+                              PageSizeSelectorItems="@(new[] { 10, 25, 50 })"
+                              PaginationItemsTextFormat="{0}–{1} of {2} articles"
+                              AllowSorting="true"
+                              AllowColumnChooser="true"
+                              AllowExport="true"
+                              ExportFileName="help-desk-articles"
+                              Responsive="true"
+                              EmptyText="No articles match these filters."
+                              aria-label="Knowledge base articles">
+                            <GridColumns>
+                                <GridColumn TItem="HelpDeskArticle" HeaderText="Title" PropertyName="Title" SortString="title" SortKeySelector="article => article.Title"
+                                            IsDefaultSortColumn="@view.IsSortColumn("title")" SortDirection="@view.DirectionFor("title")" AlwaysVisible="true" Class="hd-kb-title-cell">
+                                    @* The stretched link makes the whole row open the editor; the row's buttons stay above it. *@
+                                    <a class="hd-ticket-link stretched-link" href="@HelpDeskDisplay.ArticleEditUrl(context.Id)">@context.Title</a>
+                                    <span class="d-block small text-body-secondary hd-kb-summary">@context.Summary</span>
+                                </GridColumn>
+                                <GridColumn TItem="HelpDeskArticle" HeaderText="Category" PropertyName="CategoryId" SortString="category" SortKeySelector="article => State.FindCategory(article.CategoryId).Name"
+                                            IsDefaultSortColumn="@view.IsSortColumn("category")" SortDirection="@view.DirectionFor("category")" TextNoWrap="true">
+                                    @State.FindCategory(context.CategoryId).Name
+                                </GridColumn>
+                                <GridColumn TItem="HelpDeskArticle" HeaderText="Published" PropertyName="IsPublished" SortString="status" SortKeySelector="article => article.IsPublished"
+                                            IsDefaultSortColumn="@view.IsSortColumn("status")" SortDirection="@view.DirectionFor("status")" TextNoWrap="true">
+                                    <Badge Color="@(context.IsPublished ? BadgeColor.Success : BadgeColor.Secondary)">@(context.IsPublished ? "Published" : "Draft")</Badge>
+                                </GridColumn>
+                                <GridColumn TItem="HelpDeskArticle" HeaderText="Updated" PropertyName="UpdatedAt" SortString="updated" SortKeySelector="article => article.UpdatedAt"
+                                            IsDefaultSortColumn="@view.IsSortColumn("updated")" SortDirection="@view.DirectionFor("updated")" TextNoWrap="true">
+                                    <span class="small" title="@HelpDeskDisplay.Stamp(context.UpdatedAt)">@HelpDeskDisplay.Ago(context.UpdatedAt, State.Now)</span>
+                                    <span class="d-block small text-body-secondary">by @context.UpdatedBy</span>
+                                </GridColumn>
+                                <GridColumn TItem="HelpDeskArticle" HeaderText="Views" PropertyName="Views" SortString="views" SortKeySelector="article => article.Views"
+                                            IsDefaultSortColumn="@view.IsSortColumn("views")" SortDirection="@view.DirectionFor("views")" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End">
+                                    @context.Views.ToString("#,0", CultureInfo.InvariantCulture)
+                                </GridColumn>
+                                @* Votes live in the state, not on the article, so CSV export leaves them out. *@
+                                <GridColumn TItem="HelpDeskArticle" HeaderText="Helpful" SortString="helpful" SortKeySelector="article => State.Votes(article.Id).Helpful"
+                                            IsDefaultSortColumn="@view.IsSortColumn("helpful")" SortDirection="@view.DirectionFor("helpful")" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" TextNoWrap="true">
+                                    @{
+                                        var (helpful, notHelpful) = State.Votes(context.Id);
+                                    }
+                                    @helpful.ToString("#,0", CultureInfo.InvariantCulture)<span class="text-body-secondary small"> of @((helpful + notHelpful).ToString("#,0", CultureInfo.InvariantCulture))</span>
+                                </GridColumn>
+                                <GridColumn TItem="HelpDeskArticle" HeaderText="Actions" Sortable="false" Exportable="false">
+                                    <div class="hd-kb-actions">
+                                        <Button Type="ButtonType.Link" To="@HelpDeskDisplay.ArticleEditUrl(context.Id)" Color="ButtonColor.Secondary" Outline="true" Size="ButtonSize.Small">
+                                            <Icon Name="IconName.PencilSquare" class="me-1" aria-hidden="true" />Edit<span class="visually-hidden">&#32;@context.Title</span>
+                                        </Button>
+                                        <Button Color="ButtonColor.Secondary" Outline="true" Size="ButtonSize.Small" @onclick="() => TogglePublished(context)">
+                                            <Icon Name="@(context.IsPublished ? IconName.EyeSlash : IconName.Globe)" class="me-1" aria-hidden="true" />@(context.IsPublished ? "Unpublish" : "Publish")<span class="visually-hidden">&#32;@context.Title</span>
+                                        </Button>
+                                        @if (context.IsPublished)
+                                        {
+                                            <a class="btn btn-sm btn-link px-1" href="@HelpDeskDisplay.ArticleUrl(context.Id)">
+                                                View in help center<span class="visually-hidden">: @context.Title</span>
+                                            </a>
+                                        }
+                                        <Button @ref="deleteButtons[context.Id]" Color="ButtonColor.Danger" Outline="true" Size="ButtonSize.Small" @onclick="() => AskDeleteAsync(context)">
+                                            <Icon Name="IconName.Trash3" class="me-1" aria-hidden="true" />Delete<span class="visually-hidden">&#32;@context.Title</span>
+                                        </Button>
+                                    </div>
+                                </GridColumn>
+                            </GridColumns>
+                        </Grid>
+                    </div>
+                </ChildContent>
+            </ShowcaseDataState>
         </CardBody>
     </Card>
 </div>

@@ -40,10 +40,10 @@
                             <h2 class="hd-section-title mb-0" id="@($"hd-saved-{reply.Id}-title")">@reply.Title</h2>
                             <div class="hd-saved-actions">
                                 <Button @ref="editButtons[reply.Id]" Color="ButtonColor.Secondary" Outline="true" Size="ButtonSize.Small" @onclick="() => EditAsync(reply)">
-                                    <Icon Name="IconName.PencilSquare" class="me-1" aria-hidden="true" />Edit<span class="visually-hidden"> @reply.Title</span>
+                                    <Icon Name="IconName.PencilSquare" class="me-1" aria-hidden="true" />Edit<span class="visually-hidden">&#32;@reply.Title</span>
                                 </Button>
                                 <Button @ref="deleteButtons[reply.Id]" Color="ButtonColor.Danger" Outline="true" Size="ButtonSize.Small" @onclick="() => AskDeleteAsync(reply)">
-                                    <Icon Name="IconName.Trash3" class="me-1" aria-hidden="true" />Delete<span class="visually-hidden"> @reply.Title</span>
+                                    <Icon Name="IconName.Trash3" class="me-1" aria-hidden="true" />Delete<span class="visually-hidden">&#32;@reply.Title</span>
                                 </Button>
                             </div>
                         </div>

@@ -1,6 +1,6 @@
 ---
 title: Help Desk & Ticketing showcase
-description: A customer help center and an agent desk with SLA timers, saved replies, knowledge base authoring, reports, and admin settings, built with Blazor Bootstrap.
+description: A customer help center and an agent desk with SLA timers and escalation rules, Grid lists with saved views and CSV export, saved replies, knowledge base authoring, reports, an audit log, and admin settings, built with Blazor Bootstrap.
 sidebar_label: Help Desk
 sidebar_position: 10
 ---
@@ -9,7 +9,9 @@ import CarbonAd from '/carbon-ad.mdx'
 
 # Help Desk & Ticketing
 
-Beacon Desk is the support site of a fictitious software product. Customers search the knowledge base and submit and follow their requests in the help center; agents work a ticket queue with SLA timers, rich-text replies, internal notes, and saved replies, write articles, and read SLA and satisfaction reports in a separate agent desk. Admins also manage agents and teams, SLA policies, and categories.
+Beacon Desk is the support site of a fictitious software product. Customers search the knowledge base and submit and follow their requests in the help center; agents work a ticket queue with SLA timers, rich-text replies, internal notes, and saved replies, write articles, and read SLA and satisfaction reports in a separate agent desk. Admins also manage agents and teams, SLA policies and escalation rules, and categories.
+
+Every list in the agent desk is a [Grid](/components/grid) with a saved view, a column chooser, and CSV export; forms validate with a linked error summary; and the header has a global search and notifications. Every change lands in an audit log. The signature workflow is **SLA escalation**: admins define rules such as "Urgent not resolved in 1 hour", and a ticket that meets one moves up a support tier, is flagged in the queue, its team lead and assignee are notified, and the escalation shows on the ticket's history.
 
 <CarbonAd />
 
@@ -23,7 +25,9 @@ Beacon Desk is the support site of a fictitious software product. Customers sear
 | Support agent | Jordan Ashdown (`jordan@beacondesk.example`) | `desk-demo-26` | `/showcase/help-desk/agent` |
 | Admin | Morgan Lee (`morgan@beacondesk.example`) | `admin-demo-26` | `/showcase/help-desk/agent` |
 
-You can also create an account ("Create an account" on the sign-in page, or `?mode=register`). A new account is a customer with no requests yet. Ana starts with two requests: #1041 (in progress) and #1059 (solved, not yet rated). The roster also has two agents without a sign-in, Priya Nair and Marcus Osei.
+You can also create an account ("Create an account" on the sign-in page, or `?mode=register`). A new account is a customer with no requests yet. Ana starts with two requests: #1041 (in progress) and #1059 (solved, not yet rated). The roster also has two agents without a sign-in, Priya Nair and Marcus Osei. Morgan leads Customer care and Priya leads Technical support.
+
+The seed holds about 250 tickets (31 unresolved), 40 audit entries, and three escalation rules that have already escalated 11 open tickets to Tier 2.
 
 All data is fictitious and there is no backend; no email is sent. Each browser tab keeps its own data in `sessionStorage` (it survives a reload; other tabs start fresh), and "Reset demo data" in the account menu restores the seed. The sign-in page lists the demo accounts with one-click buttons; credentials are checked only against the tab's accounts. The clock starts at November 24, 2026, 10:30 and moves on with real time, so SLA timers count down while you watch.
 
@@ -32,9 +36,11 @@ All data is fictitious and there is no backend; no email is sent. Each browser t
 1. Sign in as Ana and choose **Submit a request**. Type "two-factor" in the subject: matching articles appear under "These might help". Submit the request.
 2. Switch to Jordan. The new ticket is in the queue as New. Open it, choose **Assign to me**, insert the saved reply "Thanks, looking into it", and send it. The ticket moves to Pending and its SLA shows "Paused". Switch back to Ana: **My requests** shows a "New reply" badge, and the request reads "Awaiting your reply".
 3. As Ana, open the solved request #1059 and rate it with a comment. As Jordan, open **Reports › Satisfaction**: the rating and comment are in the figures and under Recent comments.
-4. As Jordan, select several tickets in the queue and use the bulk bar to assign them or change their priority. Turn on **Assigned to me**, or filter by team.
+4. As Jordan, select several tickets in the queue and use the bulk bar to assign them or change their priority. Turn on **Assigned to me** or **Escalated**, or filter by team. Hide a column with **Columns**, sort by another, and change the page size: the view is kept when you open a ticket and come back, and **Reset view** restores it. **Export CSV** downloads the filtered tickets.
 5. As Jordan, open **Knowledge base › New article**, write it in the editor, and save it as a draft. Publish it, then sign out: it shows in the help center search and its category.
 6. Sign in as Morgan. In **Admin › SLA policies**, lower a resolution target: the queue's overdue and at-risk counts change at once. In **Agents & teams**, deactivate Priya Nair: her open tickets go back unassigned.
+7. Run an escalation. As Morgan, open **Admin › SLA policies** and choose **Add rule**. Name it "Normal with no first reply in 1 hour", apply it to Normal tickets, choose **No first reply yet**, and enter 1 hour: the dialog says how many open tickets it will escalate. Save it. The bell shows a new notification (Morgan leads Customer care), the queue's **Escalated** card goes up, and the tickets show **Tier 2** or **Tier 3**. Open one: the **Details** tab shows its tier and the rules that escalated it, and its activity log has the escalation. **Audit log** lists the new rule and each escalation by "Escalation rules".
+8. Use the search box in the header: type a ticket number, a customer, or an article title, and press Enter to open the first match.
 
 ## Pages
 
@@ -56,40 +62,59 @@ All data is fictitious and there is no backend; no email is sent. Each browser t
 
 | Page | Route | What it does |
 |:--|:--|:--|
-| Ticket queue | `/showcase/help-desk/agent` | KPI cards, filters (search, status, priority, team, assigned to me), sortable columns, row selection with bulk actions, and 10 tickets per page. Sorted by urgency: overdue, at risk, then by due time. |
-| Ticket | `/showcase/help-desk/agent/tickets/{Id:int}` | Tabs for Conversation (reply or internal note, saved replies, status, priority, category, assignee, customer, rating), Details (due time and activity log), and Related articles. |
-| New ticket | `/showcase/help-desk/agent/tickets/new` | Logs a request for a customer; a matching customer email puts it in that account's requests. |
+| Ticket queue | `/showcase/help-desk/agent` | KPI cards (unresolved, overdue, at risk, unassigned, escalated), filters (search, status, priority, team, assigned to me, escalated), and a Grid with a saved view, column chooser, CSV export, page sizes of 10, 25, or 50, row selection with bulk actions, and a Tier column that flags escalated tickets. Sorted by urgency: overdue, at risk, then by due time. |
+| Ticket | `/showcase/help-desk/agent/tickets/{Id:int}` | Tabs for Conversation (reply or internal note, saved replies, status, priority, category, assignee, customer, rating), Details (due time, support tier and the rules that escalated it, and the activity log), and Related articles. An escalated ticket shows an "Escalated to Tier N" badge. |
+| New ticket | `/showcase/help-desk/agent/tickets/new` | Logs a request for a customer, with a validated form and error summary; a matching customer email puts it in that account's requests. |
 | Saved replies | `/showcase/help-desk/agent/saved-replies` | Add, edit, and delete reusable replies in a modal with a rich-text editor. |
-| Knowledge base articles | `/showcase/help-desk/agent/kb` | All articles, drafts included, with views and helpful votes; publish, unpublish, edit, or delete. |
+| Knowledge base articles | `/showcase/help-desk/agent/kb` | A Grid of all articles, drafts included, with views and helpful votes, a saved view, and CSV export; publish, unpublish, edit, or delete. |
 | New article / Edit article | `/showcase/help-desk/agent/kb/new`, `/showcase/help-desk/agent/kb/{Id:int}` | Title, category, summary, and body with a live preview; save a draft or publish. |
 | SLA report | `/showcase/help-desk/agent/reports/sla` | First-reply and resolution results for the last 7, 14, or 30 days, by day, priority, agent, and team. |
 | Satisfaction report | `/showcase/help-desk/agent/reports/satisfaction` | CSAT, ratings per day, results by agent, and recent comments with a good/bad filter. |
+| Audit log | `/showcase/help-desk/agent/audit` | Who changed what and when (tickets, articles, saved replies, agents, teams, categories, SLA policies, and escalation rules), newest first, in a Grid with column filters, paging, and CSV export. |
 | Account | `/showcase/help-desk/agent/account` | Your agent profile and password. |
-| Agents & teams | `/showcase/help-desk/agent/admin/agents` | Add and edit agents (team, admin), deactivate or reactivate them, and add, edit, or delete teams. Admins only. |
-| SLA policies | `/showcase/help-desk/agent/admin/sla` | First-reply and resolution hours per priority, with live breached, at-risk, and overdue counts. Admins only. |
-| Categories | `/showcase/help-desk/agent/admin/categories` | Add and edit categories (icon, routed team); delete one by moving its tickets and articles to another. Admins only. |
+| Agents & teams | `/showcase/help-desk/agent/admin/agents` | A Grid of agents; add and edit agents (unique name and email, team, admin), deactivate or reactivate them, and add, edit, or delete teams. Each team can have a lead, an active agent on the team, who is notified of the team's escalations. Admins only. |
+| SLA policies | `/showcase/help-desk/agent/admin/sla` | First-reply and resolution hours per priority, with live breached, at-risk, and overdue counts, and the escalation rules: add, edit, switch off, or delete a rule (priority, no first reply or not resolved, hours), with a preview of the tickets it escalates and the count each rule has escalated. Admins only. |
+| Categories | `/showcase/help-desk/agent/admin/categories` | A Grid of categories; add and edit them (unique name, icon, routed team); delete one by moving its tickets and articles to another. Admins only. |
 | Not found | `/showcase/help-desk/agent/{*path}` | The not-found panel with "Back to the queue", also shown for an unknown ticket or article. |
+
+## SLA escalation
+
+An escalation rule names a priority (or any priority), a condition, and a number of hours:
+
+- **No first reply yet**: no public agent reply the set hours after the ticket was created (1 to 168 hours).
+- **Not resolved yet**: still unresolved after the set hours on the SLA clock, which pauses while the ticket is Pending (1 to 720 hours).
+
+The rules run whenever the agent desk opens a page, when a tab's data is restored, and when an admin saves a rule. Each rule escalates a ticket once. An escalation moves the ticket from Tier 1 to Tier 2, then Tier 3 (a ticket already at Tier 3 is flagged again but stays there), adds "Escalated to Tier N by the rule …" to the ticket's activity log, writes an audit entry by "Escalation rules", and notifies the lead of the ticket's team and its assignee. Deleting or switching off a rule stops new escalations; tickets keep their tier.
+
+## Enterprise features
+
+- **Grid lists**: the queue, articles, agents, categories, SLA policies, escalation rules, and the audit log use the [Grid](/components/grid) with sorting, a column chooser, and CSV export of the filtered rows. Each list keeps its view (sort, page size, hidden and reordered columns) in the tab's `sessionStorage` until **Reset view**.
+- **Validated forms**: required, length, and format rules, uniqueness checks (agent email and name, team, category, and rule names) with a "Checking…" state, cross-field rules (a first reply shorter than the resolution; a first reply rule of a week at most), and a summary that links each failing field after a failed submit.
+- **Global search** in both headers: tickets, articles, and (for admins) agents for staff; your own requests and published articles for customers.
+- **Notifications**: assignments, customer replies, and escalations, with an unread count and mark as read.
+- **Loading, empty, and error states** on every list, with a "Demo: simulate a loading error" control to show the error state and its Retry.
 
 ## Components used
 
+- [Grid](/components/grid): every list in the agent desk, with the column chooser, CSV export, paging, and multi-row selection on the queue.
 - [Sidebar](/components/sidebar): the agent desk navigation, with Reports and (for admins) Admin groups.
 - [Navbar](/components/navbar): the help center header.
 - [Rich text editor](/forms/rich-text-editor): ticket replies and internal notes, saved replies, and article bodies.
-- [Modal](/components/modal): mark as solved, the saved reply editor, delete confirmations, the agent, team, and category editors, deactivate agent, and move-and-delete category.
+- [Modal](/components/modal): mark as solved, the saved reply editor, delete confirmations, the agent, team, category, SLA, and escalation rule editors, deactivate agent, and move-and-delete category.
 - [Tabs](/components/tabs): Conversation, Details, and Related articles on the ticket page.
 - [Bar chart](/data-visualization/bar-chart) (BlazorExpress.ChartJS): stacked bars of tickets resolved per day (within SLA and late) and of good and bad ratings per day.
-- [Badge](/components/badge): priority, status, SLA state, "Customer replied", "New reply", internal note, and draft or published.
+- [Badge](/components/badge): priority, status, SLA state, support tier, "Customer replied", "New reply", internal note, draft or published, and rule on or off.
 - [Breadcrumb](/components/breadcrumb): article, request, ticket, new ticket, and article editor pages.
 - [Toasts](/components/toasts): assigned, reply sent, note added, resolved, reopened, ticket created, article deleted, and article feedback.
 - [Card](/components/card): KPI cards on the queue and reports, article cards, and admin panels.
-- [Switch](/forms/switch): "Assigned to me" in the queue and the internal note toggle.
+- [Switch](/forms/switch): "Assigned to me" and "Escalated" in the queue and the internal note toggle.
 - [Text input](/forms/text-input), [Text area input](/forms/textarea-input), and [Input group](/components/input-group): search boxes and the new ticket form.
 - [Button group](/components/button-group) (`RadioButtonGroup`): the knowledge base category filter and the new ticket priority.
 - [Spinner](/components/spinners): "Submit a request" while the tab's session loads.
 - [Buttons](/components/buttons) and [Icons](/content/icons): actions and icons across the site.
-- [Avatar](/components/avatar), [Dropdown](/components/dropdown), and [Theme switcher](/components/theme-switcher): through the shared account menu and site bar.
+- [Avatar](/components/avatar), [Dropdown](/components/dropdown), and [Theme switcher](/components/theme-switcher): through the shared account menu, notifications, and site bar.
 
-The customer request form uses Blazor's `InputSelect`, `InputText`, `InputRadioGroup`, and `InputTextArea`; the queue's filters and the ticket fields are native `select` elements.
+The forms use Blazor's `EditForm` with `DataAnnotationsValidator`, `InputSelect`, `InputText`, `InputNumber`, `InputCheckbox`, `InputRadioGroup`, and `InputTextArea`; the queue's filters and the ticket fields are native `select` elements.
 
 ## How the theme is built
 
@@ -103,8 +128,9 @@ The shared stylesheet `wwwroot/css/blazorbootstrap.demo.rcl.css` maps the `--sc-
 
 ## Accessibility and responsiveness
 
-- Search result counts, queue counts, bulk changes, and ticket actions are announced in status regions, and errors in alert regions. Focus returns to the button that opened a dialog.
-- Queue rows have labelled checkboxes, and "select all" is a checkbox button with a mixed state; sortable headers carry `aria-sort`.
+- Search result counts, queue counts, bulk changes, rule saves, and ticket actions are announced in status regions, and errors in alert regions. Focus returns to the button that opened a dialog, or moves to the announcement after a save.
+- Each queue row's checkbox is labelled with its ticket ("Select ticket #1003, …"), and the header checkbox reads "Select all shown tickets"; sortable headers carry `aria-sort`. A row opens its record through a stretched link, so the row has no extra interactive role.
+- After a failed submit, the error summary takes focus and links to each field; each message is tied to its field with `aria-describedby`.
 - Each chart sits in a wrapper with a text label (`role="img"`) and has a visually hidden data table with a caption.
-- SLA states are written out ("Overdue by …", "Due in …", "Paused"), not shown by color alone.
+- SLA states are written out ("Overdue by …", "Due in …", "Paused"), and so is the tier ("Tier 2, escalated"), not shown by color alone.
 - At 375 px the agent sidebar sits above the page (it moves beside the page from 641 px), the help center Navbar collapses into a menu, and wide tables scroll sideways.

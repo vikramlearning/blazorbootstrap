@@ -369,6 +369,22 @@ public partial class AgentTicket : ComponentBase, IDisposable
 
     #region Properties, Indexers
 
+    /// <summary>The ticket's tier and the rules that escalated it, like "Tier 2, escalated by Urgent not resolved in 1 hour".</summary>
+    private string EscalationText
+    {
+        get
+        {
+            if (Ticket is not { IsEscalated: true } ticket)
+                return "Tier 1 (not escalated)";
+
+            var rules = (ticket.EscalatedByRuleIds ?? new List<int>())
+                .Select(id => State.FindEscalationRule(id)?.Name ?? "a deleted rule")
+                .ToList();
+
+            return string.Create(CultureInfo.InvariantCulture, $"Tier {ticket.Tier}, escalated by {string.Join(", ", rules)}");
+        }
+    }
+
     private List<BreadcrumbItem> BreadcrumbItems => new()
     {
         new() { Text = "Queue", Href = HelpDeskAgentLayout.Base },
