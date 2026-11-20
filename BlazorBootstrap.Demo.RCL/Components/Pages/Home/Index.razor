@@ -72,7 +72,7 @@
         <p class="text-muted mb-0">See what you can build: @ShowcaseCatalog.Sites.Count complete, interactive sample websites the Blazor Bootstrap team built with only Blazor Bootstrap components.</p>
     </div>
     <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-4 g-3">
-        @foreach (var site in ShowcaseCatalog.Sites.Take(4))
+        @foreach (var site in ShowcaseCatalog.FeaturedSites)
         {
             <div class="col">
                 <a class="card h-100 text-decoration-none overflow-hidden" href="@site.Url">
