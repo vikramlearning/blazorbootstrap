@@ -1,4 +1,4 @@
-/* The admins' services list. The table scrolls inside its box on narrow screens; long names and teams wrap. */
+/* The admins' services list. The grid scrolls inside its box on narrow screens; long names and teams wrap. Grid renders the cells, so ::deep. */
 .mw-adsvc-add {
     display: flex;
     flex-direction: column;
@@ -21,34 +21,25 @@
         outline-offset: 2px;
     }
 
-.mw-adsvc-caption {
-    caption-side: top;
-    padding: .875rem 1rem .5rem;
-    font-size: .8125rem;
-    color: var(--bs-secondary-color);
-}
-
-.mw-adsvc-table th[scope=row] {
-    font-weight: 600;
-}
-
-.mw-adsvc-name {
+::deep .mw-adsvc-name {
+    display: inline-block;
     min-width: 10rem;
+    font-weight: 600;
     overflow-wrap: anywhere;
 }
 
-.mw-adsvc-wrap {
+::deep .mw-adsvc-wrap {
     min-width: 7rem;
     overflow-wrap: anywhere;
 }
 
-.mw-adsvc-actions {
+::deep .mw-adsvc-actions {
     display: flex;
     flex-wrap: nowrap;
     gap: .375rem;
 }
 
-    .mw-adsvc-actions ::deep .btn {
+    ::deep .mw-adsvc-actions .btn {
         white-space: nowrap;
     }
 

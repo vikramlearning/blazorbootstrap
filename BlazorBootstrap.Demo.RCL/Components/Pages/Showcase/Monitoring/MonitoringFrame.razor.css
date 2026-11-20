@@ -331,8 +331,72 @@
 
 .sc-monitoring ::deep .mw-console-bar-actions {
     display: flex;
+    flex: 1 1 auto;
     flex-wrap: wrap;
     align-items: center;
+    justify-content: flex-end;
+    gap: .5rem;
+}
+
+/* The global search takes the room the bar has, and wraps onto its own line when there is too little. */
+.sc-monitoring ::deep .mw-global-search {
+    flex: 1 1 12rem;
+    min-width: 10rem;
+    max-width: 22rem;
+}
+
+/* Grid lists: a selected row is tinted, and status lines under a list collapse while empty. */
+.sc-monitoring ::deep .mw-row-selected > * {
+    --bs-table-bg-state: rgba(var(--sc-primary-rgb), .06);
+}
+
+.sc-monitoring ::deep .mw-list-status,
+.sc-monitoring ::deep .mw-list-error {
+    font-size: .875rem;
+    font-weight: 600;
+}
+
+    .sc-monitoring ::deep .mw-list-status:empty,
+    .sc-monitoring ::deep .mw-list-error:empty {
+        margin: 0;
+    }
+
+.sc-monitoring ::deep .mw-list-error {
+    color: var(--bs-danger-text-emphasis);
+}
+
+/* A queue's bulk bar wraps onto several lines at phone width. */
+.sc-monitoring ::deep .mw-bulk {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: .75rem 1rem;
+    margin-bottom: 1rem;
+    padding: .75rem 1rem;
+    border: 1px solid rgba(var(--sc-primary-rgb), .35);
+    border-radius: .75rem;
+    background: rgba(var(--sc-primary-rgb), .06);
+}
+
+.sc-monitoring ::deep .mw-bulk-count {
+    flex: 1 0 100%;
+    margin: 0;
+    font-size: .9375rem;
+    font-weight: 700;
+}
+
+.sc-monitoring ::deep .mw-bulk-field {
+    flex: 1 1 10rem;
+    min-width: 0;
+}
+
+    .sc-monitoring ::deep .mw-bulk-field .form-label {
+        margin-bottom: .25rem;
+    }
+
+.sc-monitoring ::deep .mw-bulk-actions {
+    display: flex;
+    flex-wrap: wrap;
     gap: .5rem;
 }
 

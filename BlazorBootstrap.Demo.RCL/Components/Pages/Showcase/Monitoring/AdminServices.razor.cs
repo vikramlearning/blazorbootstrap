@@ -1,11 +1,14 @@
 using BlazorBootstrap.Demo.RCL.Models.Showcase.Monitoring;
+using BlazorBootstrap.Demo.RCL.Services.Showcase.Foundation;
 using BlazorBootstrap.Demo.RCL.Services.Showcase.Monitoring;
 
 namespace BlazorBootstrap.Demo.RCL.Components.Pages.Showcase.Monitoring;
 
 /// <summary>
-/// Admins' list of every monitored service: name (a link to its edit page), ID, kind, region, team, whether it is on the
-/// public status page (in words), and how many alert rules, incidents, and subscribers (who follow it by name) it has.
+/// Admins' list of every monitored service, in a <see cref="Grid{TItem}" /> with sorting, the column chooser, CSV export,
+/// and a saved view that can be reset: name (a link to its edit page; the whole row opens it), ID, kind, region, team,
+/// whether it is on the public status page (in words), and how many alert rules, incidents, and subscribers (who follow it
+/// by name) it has.
 /// "Show on" or "Hide from the status page" saves the service with only that changed, in one click, and says what changes
 /// publicly. Delete opens a <see cref="Modal" /> that names what goes with the service (its alert rules and failure drills);
 /// when the service can't be deleted (incidents, subscribers, maintenance, or the last service) the dialog says why up
@@ -20,12 +23,19 @@ public partial class AdminServices : ComponentBase, IDisposable
     /// <summary>The Delete buttons by service ID, for focus after the dialog.</summary>
     private readonly Dictionary<string, Button> deleteButtons = new();
 
+    private ElementReference? countRegion;
+
     private Modal dialogModal = default!;
 
     /// <summary>The service the dialog is about.</summary>
     private string? dialogServiceId;
 
     private bool focusStatus;
+
+    private Grid<ServiceRow>? grid;
+
+    /// <summary>Changes when the view is reset, so the grid is built again with its defaults.</summary>
+    private int gridVersion;
 
     /// <summary>Returns the element to focus after the next render.</summary>
     private Func<ElementReference?>? focusTarget;
@@ -39,6 +49,10 @@ public partial class AdminServices : ComponentBase, IDisposable
 
     private ElementReference? statusRegion;
 
+    private ShowcaseGridView view = default!;
+
+    private bool viewLoaded;
+
     #endregion
 
     #region Methods
@@ -47,6 +61,14 @@ public partial class AdminServices : ComponentBase, IDisposable
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        // The saved view lives in the tab's session storage, so it loads once the page is interactive; then the grid shows.
+        if (firstRender)
+        {
+            await view.LoadAsync();
+            viewLoaded = true;
+            StateHasChanged();
+        }
+
         if (focusTarget is { } target)
         {
             focusTarget = null;
@@ -60,7 +82,12 @@ public partial class AdminServices : ComponentBase, IDisposable
         }
     }
 
-    protected override void OnInitialized() => State.Changed += OnStateChanged;
+    protected override void OnInitialized()
+    {
+        // With no column sorted, the rows keep the site's order of services.
+        view = GridViews.Get(State.SiteSlug, "manage-services", 25);
+        State.Changed += OnStateChanged;
+    }
 
     #endregion
 
@@ -237,7 +264,12 @@ public partial class AdminServices : ComponentBase, IDisposable
         focusTarget = () => serviceId is not null && deleteButtons.TryGetValue(serviceId, out var button) ? button.Element : null;
     }
 
-    private void OnStateChanged() => InvokeAsync(StateHasChanged);
+    /// <summary>A service, rule, incident, or subscription changed (here or elsewhere): the grid reads the rows again.</summary>
+    private void OnStateChanged() => InvokeAsync(async () =>
+    {
+        await RefreshGridAsync();
+        StateHasChanged();
+    });
 
     private async Task OpenDeleteAsync(MonitoringService service)
     {
@@ -265,6 +297,27 @@ public partial class AdminServices : ComponentBase, IDisposable
         await dialogModal.HideAsync();
     }
 
+    /// <summary>The rows the grid asked for, in the site's order of services unless a column is sorted.</summary>
+    private Task<GridDataProviderResult<ServiceRow>> ProvideRowsAsync(GridDataProviderRequest<ServiceRow> request) => view.ApplyAsync(request, Rows);
+
+    private async Task RefreshGridAsync()
+    {
+        if (grid is not null)
+            await grid.RefreshDataAsync();
+    }
+
+    /// <summary>Forgets the saved view and builds the grid again with its defaults; focus moves to the count.</summary>
+    private async Task ResetViewAsync()
+    {
+        await view.ResetAsync();
+        gridVersion++;
+        Announce(true, "The view is reset: services in the site's order, and every column shown.");
+        StateHasChanged();
+
+        await Task.Yield();
+        await MonitoringDisplay.FocusAsync(countRegion);
+    }
+
     /// <summary>Shows or hides a service on the status page in one click; the button stays and its text changes, so focus stays on it.</summary>
     private void TogglePublic(MonitoringService service)
     {
@@ -279,6 +332,8 @@ public partial class AdminServices : ComponentBase, IDisposable
     #region Properties, Indexers
 
     private MonitoringService? DialogService => State.FindService(dialogServiceId);
+
+    [Inject] private ShowcaseGridViewStore GridViews { get; set; } = default!;
 
     /// <summary>Gets the route of the admins' services list.</summary>
     internal static string ListUrl => $"{ConsoleLayout.AdminBase}/services";
@@ -301,8 +356,21 @@ public partial class AdminServices : ComponentBase, IDisposable
 
     #region Nested Types
 
-    /// <summary>One row of the table: a service and its counts.</summary>
-    private sealed record ServiceRow(MonitoringService Service, int Rules, int Incidents, int ActiveIncidents, int Followers);
+    /// <summary>One row of the list: a service and its counts, with properties the CSV export can read.</summary>
+    private sealed record ServiceRow(MonitoringService Service, int Rules, int Incidents, int ActiveIncidents, int Followers)
+    {
+        public string Id => Service.Id;
+
+        public string Kind => MonitoringDisplay.KindLabel(Service.Kind);
+
+        public string Name => Service.Name;
+
+        public string OnStatusPage => Service.IsPublic ? "Yes" : "No, engineers only";
+
+        public string Region => Service.Region;
+
+        public string Team => Service.Team;
+    }
 
     #endregion
 }

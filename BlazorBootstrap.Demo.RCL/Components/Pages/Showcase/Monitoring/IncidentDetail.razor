@@ -93,6 +93,24 @@ else
                                 </Button>
                             }
                         </div>
+                        @if (!resolved)
+                        {
+                            @* Assigning keeps the status: someone still acknowledges an open incident. The assignee is notified. *@
+                            <div class="d-flex flex-wrap align-items-end gap-2 mt-3" role="group" aria-labelledby="mw-incd-assign-label">
+                                <div>
+                                    <label class="form-label small fw-semibold mb-1" id="mw-incd-assign-label" for="mw-incd-assign">Assign to</label>
+                                    <select id="mw-incd-assign" class="form-select form-select-sm" @bind="assignEngineerId">
+                                        @foreach (var engineer in State.Engineers)
+                                        {
+                                            <option value="@engineer.Id">@engineer.Name@(engineer.Name == incident.Assignee ? " (assigned)" : null)@(engineer.Id == State.Identity.Current?.Id ? " (you)" : null)</option>
+                                        }
+                                    </select>
+                                </div>
+                                <Button Color="ButtonColor.Secondary" Outline="true" Size="ButtonSize.Small" @onclick="Assign">
+                                    <Icon Name="IconName.PersonCheck" class="me-1" aria-hidden="true" />Assign
+                                </Button>
+                            </div>
+                        }
                     </CardBody>
                 </Card>
 
@@ -111,32 +129,36 @@ else
                         }
                         else
                         {
-                            <form @onsubmit="SubmitPostAsync" novalidate aria-labelledby="mw-incd-post-title">
+                            <EditForm EditContext="postContext" OnSubmit="SubmitPostAsync" FormName="mw-incident-post" novalidate aria-labelledby="mw-incd-post-title">
+                                <DataAnnotationsValidator />
+                                <ShowcaseFormErrors ShowSummary="true" />
                                 <fieldset class="mb-3">
                                     <legend class="form-label fw-semibold fs-6">Stage</legend>
-                                    <div class="mw-incd-stages">
-                                        @foreach (var stage in Enum.GetValues<MonitoringPublicStage>())
-                                        {
-                                            var inputId = $"mw-incd-stage-{stage}";
-                                            <div class="form-check">
-                                                <input class="form-check-input" type="radio" name="mw-incd-stage" id="@inputId" checked="@(postStage == stage)"
-                                                       @onchange="() => postStage = stage" aria-describedby="@($"{inputId}-help")" />
-                                                <label class="form-check-label fw-semibold" for="@inputId">@MonitoringDisplay.StageLabel(stage)</label>
-                                                <div class="form-text mt-0" id="@($"{inputId}-help")">@StageHelp(stage)</div>
-                                            </div>
-                                        }
-                                    </div>
+                                    <InputRadioGroup @bind-Value="postForm.Stage" Name="mw-incd-stage">
+                                        <div class="mw-incd-stages">
+                                            @foreach (var stage in Enum.GetValues<MonitoringPublicStage>())
+                                            {
+                                                var inputId = $"mw-incd-stage-{stage}";
+                                                <div class="form-check">
+                                                    <InputRadio class="form-check-input" id="@inputId" Value="stage" aria-describedby="@($"{inputId}-help")" />
+                                                    <label class="form-check-label fw-semibold" for="@inputId">@MonitoringDisplay.StageLabel(stage)</label>
+                                                    <div class="form-text mt-0" id="@($"{inputId}-help")">@StageHelp(stage)</div>
+                                                </div>
+                                            }
+                                        </div>
+                                    </InputRadioGroup>
                                 </fieldset>
 
-                                <label class="form-label fw-semibold" for="mw-incd-post-text">Message</label>
-                                <textarea id="mw-incd-post-text" class="form-control @(postError is null ? null : "is-invalid")" rows="4" maxlength="@MonitoringState.MaxUpdateLength"
-                                          @bind="postText" @bind:event="oninput" @ref="postInput" aria-required="true" aria-invalid="@(postError is null ? null : "true")"
-                                          aria-describedby="mw-incd-post-help mw-incd-post-error"></textarea>
-                                <div class="form-text d-flex flex-wrap justify-content-between gap-2" id="mw-incd-post-help">
-                                    <span>Plain words for customers: what they notice and what happens next. No internal details.</span>
-                                    <span class="text-nowrap">@postText.Length of @MonitoringDisplay.Number(MonitoringState.MaxUpdateLength) characters</span>
+                                <div>
+                                    <label class="form-label fw-semibold" for="mw-incd-post-text">Message</label>
+                                    <InputTextArea id="mw-incd-post-text" class="form-control" rows="4" maxlength="@MonitoringState.MaxUpdateLength"
+                                                   @bind-Value="postForm.Text" aria-describedby="mw-incd-post-help" />
+                                    <div class="form-text d-flex flex-wrap justify-content-between gap-2" id="mw-incd-post-help">
+                                        <span>Plain words for customers: what they notice and what happens next. No internal details.</span>
+                                        <span class="text-nowrap">Up to @MonitoringDisplay.Number(MonitoringState.MaxUpdateLength) characters</span>
+                                    </div>
+                                    <ValidationMessage For="() => postForm.Text" />
                                 </div>
-                                <div class="invalid-feedback d-block" id="mw-incd-post-error">@postError</div>
 
                                 <p class="small mt-2 mb-3">
                                     @if (incident.IsPublished)
@@ -147,7 +169,7 @@ else
                                     {
                                         @($"#{incident.Id} is engineers-only. Your first update makes it public on the status page; you confirm before it goes out.")
                                     }
-                                    @if (postStage == MonitoringPublicStage.Resolved)
+                                    @if (postForm.Stage == MonitoringPublicStage.Resolved)
                                     {
                                         @(" Posting \"Resolved\" also resolves the incident.")
                                     }
@@ -155,7 +177,7 @@ else
                                 <Button @ref="postButton" Type="ButtonType.Submit" Color="ButtonColor.Primary">
                                     <Icon Name="IconName.Broadcast" class="me-1" aria-hidden="true" />@(incident.IsPublished ? "Post update" : "Post and make public")
                                 </Button>
-                            </form>
+                            </EditForm>
                         }
                     </CardBody>
                 </Card>
@@ -166,20 +188,23 @@ else
                         <span class="small text-body-secondary">Engineers only</span>
                     </CardHeader>
                     <CardBody>
-                        <form @onsubmit="SubmitNote" novalidate aria-labelledby="mw-incd-note-title">
-                            <label class="form-label fw-semibold" for="mw-incd-note-text">Note</label>
-                            <textarea id="mw-incd-note-text" class="form-control @(noteError is null ? null : "is-invalid")" rows="3" maxlength="@MonitoringState.MaxUpdateLength"
-                                      @bind="noteText" @bind:event="oninput" @ref="noteInput" aria-required="true" aria-invalid="@(noteError is null ? null : "true")"
-                                      aria-describedby="mw-incd-note-help mw-incd-note-error"></textarea>
-                            <div class="form-text d-flex flex-wrap justify-content-between gap-2" id="mw-incd-note-help">
-                                <span>Never shown on the status page or emailed: for what you tried, found, or handed over.</span>
-                                <span class="text-nowrap">@noteText.Length of @MonitoringDisplay.Number(MonitoringState.MaxUpdateLength) characters</span>
+                        <EditForm EditContext="noteContext" OnSubmit="SubmitNote" FormName="mw-incident-note" novalidate aria-labelledby="mw-incd-note-title">
+                            <DataAnnotationsValidator />
+                            <ShowcaseFormErrors ShowSummary="true" />
+                            <div>
+                                <label class="form-label fw-semibold" for="mw-incd-note-text">Note</label>
+                                <InputTextArea id="mw-incd-note-text" class="form-control" rows="3" maxlength="@MonitoringState.MaxUpdateLength"
+                                               @bind-Value="noteForm.Text" aria-describedby="mw-incd-note-help" />
+                                <div class="form-text d-flex flex-wrap justify-content-between gap-2" id="mw-incd-note-help">
+                                    <span>Never shown on the status page or emailed: for what you tried, found, or handed over.</span>
+                                    <span class="text-nowrap">Up to @MonitoringDisplay.Number(MonitoringState.MaxUpdateLength) characters</span>
+                                </div>
+                                <ValidationMessage For="() => noteForm.Text" />
                             </div>
-                            <div class="invalid-feedback d-block" id="mw-incd-note-error">@noteError</div>
                             <Button Type="ButtonType.Submit" Color="ButtonColor.Secondary" Class="mt-2">
                                 <Icon Name="IconName.JournalPlus" class="me-1" aria-hidden="true" />Add note
                             </Button>
-                        </form>
+                        </EditForm>
                     </CardBody>
                 </Card>
 
@@ -244,29 +269,29 @@ else
 
                             @if (editingPostmortem && resolved)
                             {
-                                <form @onsubmit="SavePostmortemDraftAsync" novalidate aria-labelledby="mw-incd-pm-title">
+                                <EditForm EditContext="pmContext" OnSubmit="SavePostmortemDraftAsync" FormName="mw-postmortem" novalidate aria-labelledby="mw-incd-pm-title">
+                                    <DataAnnotationsValidator />
+                                    <ShowcaseFormErrors ShowSummary="true" />
                                     <div class="mb-3">
                                         <label class="form-label fw-semibold" for="mw-incd-pm-summary">What happened</label>
-                                        <textarea id="mw-incd-pm-summary" class="form-control @(pmSummaryError is null ? null : "is-invalid")" rows="4" maxlength="@MonitoringState.MaxPostmortemLength"
-                                                  @bind="pmSummary" @bind:event="oninput" @ref="pmSummaryInput" aria-required="true" aria-invalid="@(pmSummaryError is null ? null : "true")"
-                                                  aria-describedby="mw-incd-pm-summary-help mw-incd-pm-summary-error"></textarea>
+                                        <InputTextArea @ref="pmSummaryInput" id="mw-incd-pm-summary" class="form-control" rows="4" maxlength="@MonitoringState.MaxPostmortemLength"
+                                                       @bind-Value="pmForm.Summary" aria-describedby="mw-incd-pm-summary-help" />
                                         <div class="form-text d-flex flex-wrap justify-content-between gap-2" id="mw-incd-pm-summary-help">
                                             <span>The impact on customers, and how long it lasted.</span>
-                                            <span class="text-nowrap">@pmSummary.Length of @MonitoringDisplay.Number(MonitoringState.MaxPostmortemLength) characters</span>
+                                            <span class="text-nowrap">Up to @MonitoringDisplay.Number(MonitoringState.MaxPostmortemLength) characters</span>
                                         </div>
-                                        <div class="invalid-feedback d-block" id="mw-incd-pm-summary-error">@pmSummaryError</div>
+                                        <ValidationMessage For="() => pmForm.Summary" />
                                     </div>
 
                                     <div class="mb-3">
                                         <label class="form-label fw-semibold" for="mw-incd-pm-cause">Root cause</label>
-                                        <textarea id="mw-incd-pm-cause" class="form-control @(pmRootCauseError is null ? null : "is-invalid")" rows="4" maxlength="@MonitoringState.MaxPostmortemLength"
-                                                  @bind="pmRootCause" @bind:event="oninput" @ref="pmRootCauseInput" aria-required="true" aria-invalid="@(pmRootCauseError is null ? null : "true")"
-                                                  aria-describedby="mw-incd-pm-cause-help mw-incd-pm-cause-error"></textarea>
+                                        <InputTextArea id="mw-incd-pm-cause" class="form-control" rows="4" maxlength="@MonitoringState.MaxPostmortemLength"
+                                                       @bind-Value="pmForm.RootCause" aria-describedby="mw-incd-pm-cause-help" />
                                         <div class="form-text d-flex flex-wrap justify-content-between gap-2" id="mw-incd-pm-cause-help">
                                             <span>Why it happened, not who.</span>
-                                            <span class="text-nowrap">@pmRootCause.Length of @MonitoringDisplay.Number(MonitoringState.MaxPostmortemLength) characters</span>
+                                            <span class="text-nowrap">Up to @MonitoringDisplay.Number(MonitoringState.MaxPostmortemLength) characters</span>
                                         </div>
-                                        <div class="invalid-feedback d-block" id="mw-incd-pm-cause-error">@pmRootCauseError</div>
+                                        <ValidationMessage For="() => pmForm.RootCause" />
                                     </div>
 
                                     <fieldset class="mb-3">
@@ -330,7 +355,7 @@ else
                                         }
                                         <Button Color="ButtonColor.Secondary" Outline="true" @onclick="CancelPostmortemEdit">Cancel</Button>
                                     </div>
-                                </form>
+                                </EditForm>
                             }
                             else if (postmortem is null)
                             {
@@ -484,53 +509,57 @@ else
                 <h2 class="modal-title h5" id="mw-incd-dialog-title">@DialogTitle(incident)</h2>
             </HeaderTemplate>
             <BodyTemplate>
-                <form id="mw-incd-dialog-form" @onsubmit="SubmitDialogAsync" novalidate>
+                <EditForm id="mw-incd-dialog-form" EditContext="dialogContext" OnSubmit="SubmitDialogAsync" FormName="mw-incident-dialog" novalidate>
+                    <DataAnnotationsValidator />
+                    <ShowcaseFormErrors ShowSummary="true" />
                     @switch (dialog)
                     {
                         case DialogKind.Severity:
                             <p>Now <strong>@incident.Severity</strong>. The change and your reason go on the timeline.</p>
                             <div class="mb-3">
                                 <label class="form-label fw-semibold" for="mw-incd-severity">New severity</label>
-                                <select id="mw-incd-severity" class="form-select @(severityError is null ? null : "is-invalid")" @bind="severityChoice" @ref="severityInput"
-                                        aria-invalid="@(severityError is null ? null : "true")" aria-describedby="mw-incd-severity-help mw-incd-severity-error">
+                                <InputSelect @ref="severityInput" id="mw-incd-severity" class="form-select" @bind-Value="dialogForm.Severity" aria-describedby="mw-incd-severity-help">
                                     @foreach (var severity in Enum.GetValues<MonitoringSeverity>())
                                     {
                                         <option value="@severity">@(severity == incident.Severity ? $"{severity} (current)" : severity.ToString())</option>
                                     }
-                                </select>
+                                </InputSelect>
                                 <div class="form-text" id="mw-incd-severity-help">
-                                    @Incidents.SeverityHelp(severityChoice)
-                                    @if (incident.IsPublished && severityChoice != incident.Severity)
+                                    @Incidents.SeverityHelp(dialogForm.Severity)
+                                    @if (incident.IsPublished && dialogForm.Severity != incident.Severity)
                                     {
-                                        @($" #{incident.Id} is public, so the status page will show {serviceName} as \"{MonitoringDisplay.PublicStatusLabel(PublicStatusOf(severityChoice))}\".")
+                                        @($" #{incident.Id} is public, so the status page will show {serviceName} as \"{MonitoringDisplay.PublicStatusLabel(PublicStatusOf(dialogForm.Severity))}\".")
                                     }
                                 </div>
-                                <div class="invalid-feedback d-block" id="mw-incd-severity-error">@severityError</div>
+                                <ValidationMessage For="() => dialogForm.Severity" />
                             </div>
-                            <label class="form-label fw-semibold" for="mw-incd-severity-reason">Reason</label>
-                            <textarea id="mw-incd-severity-reason" class="form-control @(reasonError is null ? null : "is-invalid")" rows="3" maxlength="@MonitoringState.MaxUpdateLength"
-                                      @bind="reasonText" @bind:event="oninput" @ref="reasonInput" aria-required="true" aria-invalid="@(reasonError is null ? null : "true")"
-                                      aria-describedby="mw-incd-severity-reason-help mw-incd-severity-reason-error"></textarea>
-                            <div class="form-text" id="mw-incd-severity-reason-help">Why it's worse or better than first thought. Engineers only. @reasonText.Length of @MonitoringDisplay.Number(MonitoringState.MaxUpdateLength) characters.</div>
-                            <div class="invalid-feedback d-block" id="mw-incd-severity-reason-error">@reasonError</div>
+                            <div>
+                                <label class="form-label fw-semibold" for="mw-incd-severity-reason">Reason</label>
+                                <InputTextArea @ref="reasonInput" id="mw-incd-severity-reason" class="form-control" rows="3" maxlength="@MonitoringState.MaxUpdateLength"
+                                               @bind-Value="dialogForm.Reason" aria-describedby="mw-incd-severity-reason-help" />
+                                <div class="form-text" id="mw-incd-severity-reason-help">Why it's worse or better than first thought. Engineers only. Up to @MonitoringDisplay.Number(MonitoringState.MaxUpdateLength) characters.</div>
+                                <ValidationMessage For="() => dialogForm.Reason" />
+                            </div>
                             break;
 
                         case DialogKind.Resolve:
                             <p>@serviceName's metrics return to normal from the next sample, and the incident leaves the active list.</p>
                             <div class="mb-3">
                                 <label class="form-label fw-semibold" for="mw-incd-resolve-note">Note for engineers (optional)</label>
-                                <textarea id="mw-incd-resolve-note" class="form-control" rows="3" maxlength="@MonitoringState.MaxUpdateLength"
-                                          @bind="reasonText" @bind:event="oninput" @ref="reasonInput" aria-describedby="mw-incd-resolve-note-help"></textarea>
-                                <div class="form-text" id="mw-incd-resolve-note-help">What fixed it. Goes on the timeline only. @reasonText.Length of @MonitoringDisplay.Number(MonitoringState.MaxUpdateLength) characters.</div>
+                                <InputTextArea @ref="reasonInput" id="mw-incd-resolve-note" class="form-control" rows="3" maxlength="@MonitoringState.MaxUpdateLength"
+                                               @bind-Value="dialogForm.Reason" aria-describedby="mw-incd-resolve-note-help" />
+                                <div class="form-text" id="mw-incd-resolve-note-help">What fixed it. Goes on the timeline only. Up to @MonitoringDisplay.Number(MonitoringState.MaxUpdateLength) characters.</div>
+                                <ValidationMessage For="() => dialogForm.Reason" />
                             </div>
                             @if (incident.IsPublished)
                             {
-                                <label class="form-label fw-semibold" for="mw-incd-resolve-public">"Resolved" message on the status page</label>
-                                <textarea id="mw-incd-resolve-public" class="form-control @(publicError is null ? null : "is-invalid")" rows="4" maxlength="@MonitoringState.MaxUpdateLength"
-                                          @bind="publicText" @bind:event="oninput" @ref="publicInput" aria-required="true" aria-invalid="@(publicError is null ? null : "true")"
-                                          aria-describedby="mw-incd-resolve-public-help mw-incd-resolve-public-error"></textarea>
-                                <div class="form-text" id="mw-incd-resolve-public-help">A draft to edit. @publicText.Length of @MonitoringDisplay.Number(MonitoringState.MaxUpdateLength) characters.</div>
-                                <div class="invalid-feedback d-block" id="mw-incd-resolve-public-error">@publicError</div>
+                                <div>
+                                    <label class="form-label fw-semibold" for="mw-incd-resolve-public">"Resolved" message on the status page</label>
+                                    <InputTextArea id="mw-incd-resolve-public" class="form-control" rows="4" maxlength="@MonitoringState.MaxUpdateLength"
+                                                   @bind-Value="dialogForm.PublicText" aria-describedby="mw-incd-resolve-public-help" />
+                                    <div class="form-text" id="mw-incd-resolve-public-help">A draft to edit. Up to @MonitoringDisplay.Number(MonitoringState.MaxUpdateLength) characters.</div>
+                                    <ValidationMessage For="() => dialogForm.PublicText" />
+                                </div>
                                 <p class="fw-semibold mt-3 mb-0">This is published on the status page and @EmailedText(subscribers).</p>
                             }
                             else
@@ -543,20 +572,20 @@ else
                             <p>The incident becomes active again and is assigned to you. The on-call engineers are notified.@(incident.Postmortem?.PublishedAt is not null ? " Its published postmortem comes off the status page until the incident is resolved again." : null)</p>
                             <div class="mb-3">
                                 <label class="form-label fw-semibold" for="mw-incd-reopen-reason">Reason</label>
-                                <textarea id="mw-incd-reopen-reason" class="form-control @(reasonError is null ? null : "is-invalid")" rows="3" maxlength="@MonitoringState.MaxUpdateLength"
-                                          @bind="reasonText" @bind:event="oninput" @ref="reasonInput" aria-required="true" aria-invalid="@(reasonError is null ? null : "true")"
-                                          aria-describedby="mw-incd-reopen-reason-help mw-incd-reopen-reason-error"></textarea>
-                                <div class="form-text" id="mw-incd-reopen-reason-help">What came back. Engineers only. @reasonText.Length of @MonitoringDisplay.Number(MonitoringState.MaxUpdateLength) characters.</div>
-                                <div class="invalid-feedback d-block" id="mw-incd-reopen-reason-error">@reasonError</div>
+                                <InputTextArea @ref="reasonInput" id="mw-incd-reopen-reason" class="form-control" rows="3" maxlength="@MonitoringState.MaxUpdateLength"
+                                               @bind-Value="dialogForm.Reason" aria-describedby="mw-incd-reopen-reason-help" />
+                                <div class="form-text" id="mw-incd-reopen-reason-help">What came back. Engineers only. Up to @MonitoringDisplay.Number(MonitoringState.MaxUpdateLength) characters.</div>
+                                <ValidationMessage For="() => dialogForm.Reason" />
                             </div>
                             @if (incident.IsPublished)
                             {
-                                <label class="form-label fw-semibold" for="mw-incd-reopen-public">"Investigating" message on the status page</label>
-                                <textarea id="mw-incd-reopen-public" class="form-control @(publicError is null ? null : "is-invalid")" rows="4" maxlength="@MonitoringState.MaxUpdateLength"
-                                          @bind="publicText" @bind:event="oninput" @ref="publicInput" aria-required="true" aria-invalid="@(publicError is null ? null : "true")"
-                                          aria-describedby="mw-incd-reopen-public-help mw-incd-reopen-public-error"></textarea>
-                                <div class="form-text" id="mw-incd-reopen-public-help">A draft to edit. @publicText.Length of @MonitoringDisplay.Number(MonitoringState.MaxUpdateLength) characters.</div>
-                                <div class="invalid-feedback d-block" id="mw-incd-reopen-public-error">@publicError</div>
+                                <div>
+                                    <label class="form-label fw-semibold" for="mw-incd-reopen-public">"Investigating" message on the status page</label>
+                                    <InputTextArea id="mw-incd-reopen-public" class="form-control" rows="4" maxlength="@MonitoringState.MaxUpdateLength"
+                                                   @bind-Value="dialogForm.PublicText" aria-describedby="mw-incd-reopen-public-help" />
+                                    <div class="form-text" id="mw-incd-reopen-public-help">A draft to edit. Up to @MonitoringDisplay.Number(MonitoringState.MaxUpdateLength) characters.</div>
+                                    <ValidationMessage For="() => dialogForm.PublicText" />
+                                </div>
                                 <p class="fw-semibold mt-3 mb-0">#@incident.Id is back to "Investigating" on the status page, and this message is @EmailedText(subscribers).</p>
                             }
                             else
@@ -567,8 +596,8 @@ else
 
                         case DialogKind.FirstPublic:
                             <p class="fw-semibold">This makes #@incident.Id public on the status page: customers see it, @serviceName shows as "@MonitoringDisplay.PublicStatusLabel(PublicStatusOf(incident.Severity))", and the update is @EmailedText(subscribers).</p>
-                            <p class="mb-1">You're posting <strong>@MonitoringDisplay.StageLabel(postStage)</strong>@(postStage == MonitoringPublicStage.Resolved ? ", which also resolves the incident" : null):</p>
-                            <blockquote class="mw-incd-quote mw-incd-text mb-0">@postText.Trim()</blockquote>
+                            <p class="mb-1">You're posting <strong>@MonitoringDisplay.StageLabel(postForm.Stage)</strong>@(postForm.Stage == MonitoringPublicStage.Resolved ? ", which also resolves the incident" : null):</p>
+                            <blockquote class="mw-incd-quote mw-incd-text mb-0">@postForm.Text.Trim()</blockquote>
                             break;
 
                         case DialogKind.PublishPostmortem:
@@ -585,7 +614,7 @@ else
                             <p class="small text-body-secondary mb-0">It stays here as an engineers-only draft, and you can publish it again.</p>
                             break;
                     }
-                </form>
+                </EditForm>
             </BodyTemplate>
             <FooterTemplate>
                 <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => dialogModal.HideAsync()">Cancel</Button>

@@ -154,6 +154,9 @@ public enum MonitoringNotificationKind
 
     /// <summary>An on-call shift starts, or someone took one over.</summary>
     OnCall,
+
+    /// <summary>A maintenance window was scheduled, cancelled, or started on a service the engineer is on call for.</summary>
+    Maintenance,
 }
 
 /// <summary>Which on-call position a shift fills.</summary>
@@ -220,6 +223,13 @@ public enum MonitoringResult
     Duplicate,
 }
 
+/// <summary>The outcome of a bulk change on the incident queue.</summary>
+/// <param name="Result">Whether anything changed, or why nothing could.</param>
+/// <param name="Changed">How many incidents changed.</param>
+/// <param name="Unchanged">How many already had those values, or were resolved.</param>
+/// <param name="PublishedNotResolved">How many weren't resolved because they are on the status page (they need a public "Resolved" message).</param>
+public sealed record MonitoringBulkOutcome(MonitoringResult Result, int Changed, int Unchanged, int PublishedNotResolved);
+
 /// <summary>A monitored service with its normal ranges. Names and numbers are fictitious.</summary>
 public sealed record MonitoringService(
     string Id,
@@ -254,6 +264,7 @@ public sealed record MonitoringIncidentUpdate(DateTime Time, string Author, stri
     #region Properties, Indexers
 
     /// <summary>Gets the author's demo account, or <see langword="null" /> for a seeded entry or the monitoring system.</summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string? AccountId { get; init; }
 
     /// <summary>Gets the entry number.</summary>
@@ -267,6 +278,7 @@ public sealed record MonitoringIncidentUpdate(DateTime Time, string Author, stri
     public MonitoringUpdateKind Kind { get; init; } = MonitoringUpdateKind.Note;
 
     /// <summary>Gets the stage a public update announces; <see langword="null" /> for other entries.</summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public MonitoringPublicStage? Stage { get; init; }
 
     #endregion
@@ -303,19 +315,22 @@ public sealed class MonitoringIncident
 {
     #region Properties, Indexers
 
-    /// <summary>Gets or sets the engineer working on it (their name), if someone acknowledged it.</summary>
+    /// <summary>Gets or sets the engineer working on it (their name): whoever acknowledged it or was assigned it.</summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string? Assignee { get; set; }
 
     /// <summary>Gets the incident number.</summary>
     public int Id { get; init; }
 
     /// <summary>Gets the alert rule that opened it, or <see langword="null" /> for a seeded or declared incident.</summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public int? RuleId { get; init; }
 
     /// <summary>
     /// Gets the failure drill running when a rule opened it, if any. Such an incident doesn't bend the metrics itself (the
     /// drill does), so they recover when the drill ends.
     /// </summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public int? FaultId { get; init; }
 
     /// <summary>Gets what the incident does to its service's metrics while it is active.</summary>
@@ -326,6 +341,7 @@ public sealed class MonitoringIncident
     public bool IsPublished => Updates.Any(update => update.IsPublic);
 
     /// <summary>Gets or sets the postmortem, once one is written.</summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public MonitoringPostmortem? Postmortem { get; set; }
 
     /// <summary>Gets the stage of the latest public update, or <see langword="null" /> when nothing is published.</summary>
@@ -333,6 +349,7 @@ public sealed class MonitoringIncident
     public MonitoringPublicStage? PublicStage => Updates.LastOrDefault(update => update.IsPublic)?.Stage;
 
     /// <summary>Gets or sets when the incident was resolved; <see langword="null" /> while it is active.</summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public DateTime? ResolvedAt { get; set; }
 
     /// <summary>Gets the affected service ID.</summary>
@@ -441,6 +458,13 @@ public sealed class MonitoringNotification
 
     /// <summary>Gets the headline.</summary>
     public string Title { get; init; } = string.Empty;
+
+    /// <summary>
+    /// Gets the page it opens when it isn't about an incident (for example the maintenance page), or <see langword="null" />
+    /// to open its incident, or the on-call page for an on-call notification.
+    /// </summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public string? Url { get; init; }
 
     #endregion
 }
@@ -615,6 +639,9 @@ public sealed class MonitoringMaintenance
 
     /// <summary>Gets or sets when it starts.</summary>
     public DateTime Start { get; set; }
+
+    /// <summary>Gets or sets whether the on-call engineers were told it started (or it ended unseen), so they are told once.</summary>
+    public bool StartNotified { get; set; }
 
     /// <summary>Gets or sets the title.</summary>
     public string Title { get; set; } = string.Empty;

@@ -50,48 +50,50 @@
                 <span class="small text-body-secondary">Inject a failure and check that the right rule fires</span>
             </CardHeader>
             <CardBody>
-                <form @onsubmit="SubmitDrillAsync" novalidate aria-labelledby="mw-al-drill-title">
+                <EditForm EditContext="drillContext" OnSubmit="SubmitDrillAsync" FormName="mw-drill" novalidate aria-labelledby="mw-al-drill-title">
+                    <DataAnnotationsValidator />
+                    <ShowcaseFormErrors ShowSummary="true" />
                     <div class="row g-3">
                         <div class="col-md-6 col-xl-4">
                             <label class="form-label fw-semibold" for="mw-al-drill-service">Service</label>
-                            <select id="mw-al-drill-service" class="form-select @(drillServiceError is null ? null : "is-invalid")" @bind="drillServiceId" @ref="drillServiceInput"
-                                    aria-required="true" aria-invalid="@(drillServiceError is null ? null : "true")" aria-describedby="mw-al-drill-service-error">
+                            <InputSelect id="mw-al-drill-service" class="form-select" @bind-Value="drillForm.ServiceId">
                                 <option value="">Choose a service</option>
                                 @foreach (var service in State.Services)
                                 {
                                     <option value="@service.Id">@service.Name@(State.ActiveFault(service.Id) is not null ? " (drill running)" : null)</option>
                                 }
-                            </select>
-                            <div class="invalid-feedback d-block" id="mw-al-drill-service-error">@drillServiceError</div>
+                            </InputSelect>
+                            <ValidationMessage For="() => drillForm.ServiceId" />
 
                             <label class="form-label fw-semibold mt-3" for="mw-al-drill-length">Length</label>
-                            <select id="mw-al-drill-length" class="form-select" @bind="drillSeconds" aria-describedby="mw-al-drill-length-help">
+                            <InputSelect id="mw-al-drill-length" class="form-select" @bind-Value="drillForm.Seconds" aria-describedby="mw-al-drill-length-help">
                                 @foreach (var seconds in DrillLengths)
                                 {
                                     <option value="@seconds">@LengthLabel(seconds)</option>
                                 }
-                            </select>
+                            </InputSelect>
                             <div class="form-text" id="mw-al-drill-length-help">The metrics return to normal when it ends, or when you stop it.</div>
                         </div>
 
                         <fieldset class="col-md-6 col-xl-4">
                             <legend class="form-label fw-semibold fs-6">Impact</legend>
-                            @foreach (var impact in Enum.GetValues<MonitoringImpact>())
-                            {
-                                var inputId = $"mw-al-drill-impact-{impact}";
-                                <div class="form-check mb-2">
-                                    <input class="form-check-input" type="radio" name="mw-al-drill-impact" id="@inputId" checked="@(drillImpact == impact)"
-                                           @onchange="() => drillImpact = impact" aria-describedby="@($"{inputId}-help")" />
-                                    <label class="form-check-label fw-semibold" for="@inputId">@MonitoringDisplay.ImpactLabel(impact)</label>
-                                    <div class="form-text mt-0" id="@($"{inputId}-help")">@Incidents.ImpactHelp(impact)</div>
-                                </div>
-                            }
+                            <InputRadioGroup @bind-Value="drillForm.Impact" Name="mw-al-drill-impact">
+                                @foreach (var impact in Enum.GetValues<MonitoringImpact>())
+                                {
+                                    var inputId = $"mw-al-drill-impact-{impact}";
+                                    <div class="form-check mb-2">
+                                        <InputRadio class="form-check-input" id="@inputId" Value="impact" aria-describedby="@($"{inputId}-help")" />
+                                        <label class="form-check-label fw-semibold" for="@inputId">@MonitoringDisplay.ImpactLabel(impact)</label>
+                                        <div class="form-text mt-0" id="@($"{inputId}-help")">@Incidents.ImpactHelp(impact)</div>
+                                    </div>
+                                }
+                            </InputRadioGroup>
                         </fieldset>
 
                         <div class="col-xl-4">
                             <h3 class="mw-label mb-2" id="mw-al-preview-title">What this drill would do</h3>
                             <section class="mw-al-preview" aria-labelledby="mw-al-preview-title">
-                                @if (State.FindService(drillServiceId) is not { } drillService)
+                                @if (State.FindService(drillForm.ServiceId) is not { } drillService)
                                 {
                                     <p class="small text-body-secondary mb-0">Choose a service to see which rules watch it and whether they would post on the status page.</p>
                                 }
@@ -141,7 +143,7 @@
                                                 <li @key="rule.Id">
                                                     <span class="fw-semibold mw-al-text">@rule.Name</span>
                                                     <span class="d-block text-body-secondary">@Condition(rule) · @(rule.AutoPublish ? "Posts on the status page" : "Engineers only")</span>
-                                                    <span class="d-block">@Outlook(rule, drillService, drillImpact, drillSeconds, blockedBy is not null || maintenance is not null)</span>
+                                                    <span class="d-block">@Outlook(rule, drillService, drillForm.Impact, drillForm.Seconds, blockedBy is not null || maintenance is not null)</span>
                                                 </li>
                                             }
                                         </ul>
@@ -161,8 +163,9 @@
                         </Button>
                         <span class="small text-body-secondary">Rules only fire while live updates run on a console page.</span>
                     </div>
-                </form>
+                </EditForm>
 
+                @* Running and recent drills stay plain tables: a handful of short-lived rows with a live countdown, not a record list to page or export. *@
                 <h3 class="h6 fw-bold mt-4 mb-2" id="mw-al-running-title">Running drills</h3>
                 @if (RunningFaults.Count == 0)
                 {
@@ -263,276 +266,301 @@
         <div class="d-flex flex-wrap align-items-end justify-content-between gap-2 mb-2">
             <div>
                 <h2 class="h5 fw-bold mb-1" id="mw-al-rules-title">Alert rules</h2>
-                <p class="small text-body-secondary mb-0">
+                <p class="small text-body-secondary mb-0" tabindex="-1" @ref="rulesCountRegion">
                     @State.Rules.Count of @MonitoringState.MaxRules rules. A rule opens an incident when its metric stays above the threshold for the whole duration,
                     unless the service already has an active incident or is in maintenance.
                 </p>
             </div>
-            <Button @ref="newRuleButton" Color="ButtonColor.Primary" @onclick="OpenNewRuleAsync">
-                <Icon Name="IconName.PlusCircle" class="me-1" aria-hidden="true" />New rule
-            </Button>
+            <div class="d-flex flex-wrap align-items-center gap-3">
+                @* Back to the saved view's defaults: rule number order and every column in its place. *@
+                <Button Color="ButtonColor.Link" Size="ButtonSize.Small" Class="p-0" @onclick="ResetViewAsync">Reset view</Button>
+                <Button @ref="newRuleButton" Color="ButtonColor.Primary" @onclick="OpenNewRuleAsync">
+                    <Icon Name="IconName.PlusCircle" class="me-1" aria-hidden="true" />New rule
+                </Button>
+            </div>
         </div>
 
-        <div class="table-responsive mw-grid border rounded-3 mb-4">
-            <table class="table mw-al-rules-table mb-0">
-                <caption class="visually-hidden">Alert rules. Current values are as of the last sample.</caption>
-                <thead>
-                    <tr>
-                        <th scope="col">Rule</th>
-                        <th scope="col">Service</th>
-                        <th scope="col">Condition</th>
-                        <th scope="col">Severity</th>
-                        <th scope="col">State</th>
-                        <th scope="col">Posts on the status page</th>
-                        <th scope="col">Current value</th>
-                        <th scope="col">Last fired</th>
-                        <th scope="col"><span class="visually-hidden">Actions</span></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @if (State.Rules.Count == 0)
-                    {
-                        <tr><td colspan="9" class="text-body-secondary py-4 text-center">No alert rules. Nothing opens incidents on its own until you add one.</td></tr>
-                    }
-                    @foreach (var rule in State.Rules)
-                    {
-                        var service = State.FindService(rule.ServiceId);
-                        var current = service is null ? (double?)null : MonitoringDisplay.MetricOf(rule.Metric, State.Latest(service.Id));
-                        var breaching = current > rule.Threshold;
-                        var lastIncident = rule.LastIncidentId is { } lastId ? State.FindIncident(lastId) : null;
-                        <tr @key="rule.Id">
-                            <th scope="row" class="mw-al-name-cell mw-al-text">@rule.Name</th>
-                            <td>
-                                @if (service is not null)
-                                {
-                                    <a href="@MonitoringDisplay.ServiceUrl(service.Id)">@service.Name</a>
-                                }
-                                else
-                                {
-                                    @rule.ServiceId
-                                }
-                            </td>
-                            <td>@Condition(rule)</td>
-                            <td><Badge Color="@MonitoringDisplay.SeverityColor(rule.Severity)">@rule.Severity</Badge></td>
-                            <td>
-                                @if (rule.IsEnabled)
-                                {
-                                    <span class="d-inline-flex align-items-center gap-1"><Icon Name="IconName.CheckCircleFill" class="text-success" aria-hidden="true" />Enabled</span>
-                                    @if (service is not null && State.ActiveIncident(service.Id) is { } active)
+        <Card Class="mw-card mb-4">
+            <CardBody Class="p-3 p-lg-4">
+                <ShowcaseDataState Status="@(viewLoaded ? ShowcaseDataStatus.Ready : ShowcaseDataStatus.Loading)"
+                                   IsEmpty="@(State.Rules.Count == 0)"
+                                   EmptyIcon="IconName.BellSlash"
+                                   EmptyTitle="No alert rules"
+                                   EmptyText="Nothing opens incidents on its own until you add one."
+                                   LoadingText="Loading alert rules…"
+                                   OnRetry="RefreshGridAsync">
+                    <EmptyActions>
+                        <Button Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="OpenNewRuleAsync">New rule</Button>
+                    </EmptyActions>
+                    <ChildContent>
+                        <Grid @ref="grid"
+                              @key="gridVersion"
+                              TItem="MonitoringAlertRule"
+                              Class="table table-hover mw-al-rules-table sc-grid-row-links"
+                              GridContainerClass="mw-grid"
+                              DataProvider="ProvideRulesAsync"
+                              SettingsProvider="view.GetSettingsAsync"
+                              GridSettingsChanged="view.SaveSettingsAsync"
+                              AllowSorting="true"
+                              AllowColumnChooser="true"
+                              AllowExport="true"
+                              ExportFileName="monitoring-alert-rules"
+                              Responsive="true"
+                              EmptyText="No alert rules."
+                              aria-label="Alert rules, with current values from the last sample">
+                            <GridColumns>
+                                <GridColumn TItem="MonitoringAlertRule" HeaderText="Rule" PropertyName="Name" SortString="name" SortKeySelector="rule => rule.Name"
+                                            IsDefaultSortColumn="@view.IsSortColumn("name")" SortDirection="@view.DirectionFor("name")" AlwaysVisible="true">
+                                    @* A rule has no page of its own: the name opens the editor, and its stretched area makes the whole row do so. *@
+                                    <button type="button" class="btn btn-link p-0 text-start mw-al-name stretched-link" @onclick="() => OpenEditRuleAsync(context)">@context.Name</button>
+                                </GridColumn>
+                                <GridColumn TItem="MonitoringAlertRule" HeaderText="Service" PropertyName="ServiceId" SortString="service" SortKeySelector="rule => ServiceName(rule.ServiceId)"
+                                            IsDefaultSortColumn="@view.IsSortColumn("service")" SortDirection="@view.DirectionFor("service")" TextNoWrap="true">
+                                    @if (State.FindService(context.ServiceId) is { } service)
                                     {
-                                        <span class="d-block small text-body-secondary">Waiting: #@active.Id is active</span>
-                                    }
-                                    else if (service is not null && State.ActiveMaintenance(service.Id) is not null)
-                                    {
-                                        <span class="d-block small text-body-secondary">Silenced by maintenance</span>
-                                    }
-                                }
-                                else
-                                {
-                                    <span class="d-inline-flex align-items-center gap-1 text-body-secondary"><Icon Name="IconName.PauseCircle" aria-hidden="true" />Disabled</span>
-                                }
-                            </td>
-                            <td>@(rule.AutoPublish ? "Yes" : "No")</td>
-                            <td class="text-nowrap">
-                                @if (current is { } value)
-                                {
-                                    <span class="mw-mono">@MonitoringDisplay.MetricValue(rule.Metric, value)</span>
-                                    @if (breaching)
-                                    {
-                                        <span class="d-block small fw-semibold text-danger-emphasis"><Icon Name="IconName.ExclamationTriangleFill" class="me-1" aria-hidden="true" />Breaching</span>
+                                        <a href="@MonitoringDisplay.ServiceUrl(service.Id)">@service.Name</a>
                                     }
                                     else
                                     {
-                                        <span class="d-block small text-body-secondary">Below the threshold</span>
+                                        @context.ServiceId
                                     }
-                                }
-                                else
-                                {
-                                    <span class="text-body-secondary">No data</span>
-                                }
-                            </td>
-                            <td class="text-nowrap">
-                                @if (rule.LastFiredAt is { } firedAt)
-                                {
-                                    <span class="mw-mono">@MonitoringDisplay.Stamp(firedAt)</span>
-                                    @if (rule.LastIncidentId is { } firedId)
+                                </GridColumn>
+                                <GridColumn TItem="MonitoringAlertRule" HeaderText="Metric" PropertyName="Metric" SortString="metric" SortKeySelector="rule => rule.Metric"
+                                            IsDefaultSortColumn="@view.IsSortColumn("metric")" SortDirection="@view.DirectionFor("metric")" TextNoWrap="true">
+                                    @MonitoringDisplay.MetricLabel(context.Metric)
+                                </GridColumn>
+                                <GridColumn TItem="MonitoringAlertRule" HeaderText="Above" PropertyName="Threshold" SortString="threshold" SortKeySelector="rule => rule.Threshold"
+                                            IsDefaultSortColumn="@view.IsSortColumn("threshold")" SortDirection="@view.DirectionFor("threshold")" TextNoWrap="true">
+                                    <span class="mw-mono">@MonitoringDisplay.MetricValue(context.Metric, context.Threshold)</span>
+                                </GridColumn>
+                                <GridColumn TItem="MonitoringAlertRule" HeaderText="For (s)" PropertyName="ForSeconds" SortString="duration" SortKeySelector="rule => rule.ForSeconds"
+                                            IsDefaultSortColumn="@view.IsSortColumn("duration")" SortDirection="@view.DirectionFor("duration")" TextNoWrap="true">
+                                    <span class="mw-mono">@context.ForSeconds s</span>
+                                </GridColumn>
+                                <GridColumn TItem="MonitoringAlertRule" HeaderText="Severity" PropertyName="Severity" SortString="severity" SortKeySelector="rule => rule.Severity"
+                                            IsDefaultSortColumn="@view.IsSortColumn("severity")" SortDirection="@view.DirectionFor("severity")" TextNoWrap="true">
+                                    <Badge Color="@MonitoringDisplay.SeverityColor(context.Severity)">@context.Severity</Badge>
+                                </GridColumn>
+                                <GridColumn TItem="MonitoringAlertRule" HeaderText="Enabled" PropertyName="IsEnabled" SortString="enabled" SortKeySelector="rule => rule.IsEnabled"
+                                            IsDefaultSortColumn="@view.IsSortColumn("enabled")" SortDirection="@view.DirectionFor("enabled")">
+                                    @if (context.IsEnabled)
                                     {
-                                        <span class="d-block small">
-                                            @if (lastIncident is not null)
-                                            {
-                                                <a href="@MonitoringDisplay.IncidentUrl(firedId)">Incident #@firedId</a>
-                                            }
-                                            else
-                                            {
-                                                @($"Incident #{firedId} (no longer kept)")
-                                            }
-                                        </span>
+                                        <span class="d-inline-flex align-items-center gap-1 text-nowrap"><Icon Name="IconName.CheckCircleFill" class="text-success" aria-hidden="true" />Enabled</span>
+                                        @if (State.ActiveIncident(context.ServiceId) is { } active)
+                                        {
+                                            <span class="d-block small text-body-secondary">Waiting: #@active.Id is active</span>
+                                        }
+                                        else if (State.ActiveMaintenance(context.ServiceId) is not null)
+                                        {
+                                            <span class="d-block small text-body-secondary">Silenced by maintenance</span>
+                                        }
                                     }
-                                }
-                                else
-                                {
-                                    <span class="text-body-secondary">Never</span>
-                                }
-                            </td>
-                            <td>
-                                <div class="d-flex flex-nowrap gap-1 justify-content-end">
-                                    <Button @ref="editButtons[rule.Id]" Color="ButtonColor.Secondary" Outline="true" Size="ButtonSize.Small" @onclick="() => OpenEditRuleAsync(rule)">
-                                        Edit<span class="visually-hidden"> @rule.Name</span>
-                                    </Button>
-                                    <Button Color="ButtonColor.Secondary" Outline="true" Size="ButtonSize.Small" @onclick="() => ToggleRule(rule)">
-                                        @(rule.IsEnabled ? "Disable" : "Enable")<span class="visually-hidden"> @rule.Name</span>
-                                    </Button>
-                                    <Button @ref="deleteButtons[rule.Id]" Color="ButtonColor.Danger" Outline="true" Size="ButtonSize.Small" @onclick="() => OpenDeleteRuleAsync(rule)">
-                                        Delete<span class="visually-hidden"> @rule.Name</span>
-                                    </Button>
-                                </div>
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        </div>
+                                    else
+                                    {
+                                        <span class="d-inline-flex align-items-center gap-1 text-body-secondary text-nowrap"><Icon Name="IconName.PauseCircle" aria-hidden="true" />Disabled</span>
+                                    }
+                                </GridColumn>
+                                <GridColumn TItem="MonitoringAlertRule" HeaderText="Posts on the status page" PropertyName="AutoPublish" SortString="publish" SortKeySelector="rule => rule.AutoPublish"
+                                            IsDefaultSortColumn="@view.IsSortColumn("publish")" SortDirection="@view.DirectionFor("publish")">
+                                    @(context.AutoPublish ? "Yes" : "No")
+                                </GridColumn>
+                                @* Live: it changes with every sample, so it isn't sorted or exported. *@
+                                <GridColumn TItem="MonitoringAlertRule" HeaderText="Current value" Sortable="false" Exportable="false" TextNoWrap="true">
+                                    @if (State.FindService(context.ServiceId) is { } watched)
+                                    {
+                                        var current = MonitoringDisplay.MetricOf(context.Metric, State.Latest(watched.Id));
+                                        <span class="mw-mono">@MonitoringDisplay.MetricValue(context.Metric, current)</span>
+                                        @if (current > context.Threshold)
+                                        {
+                                            <span class="d-block small fw-semibold text-danger-emphasis"><Icon Name="IconName.ExclamationTriangleFill" class="me-1" aria-hidden="true" />Breaching</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="d-block small text-body-secondary">Below the threshold</span>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <span class="text-body-secondary">No data</span>
+                                    }
+                                </GridColumn>
+                                <GridColumn TItem="MonitoringAlertRule" HeaderText="Last fired" PropertyName="LastFiredAt" SortString="fired" SortKeySelector="rule => rule.LastFiredAt ?? DateTime.MinValue"
+                                            IsDefaultSortColumn="@view.IsSortColumn("fired")" SortDirection="@view.DirectionFor("fired")" TextNoWrap="true">
+                                    @if (context.LastFiredAt is { } firedAt)
+                                    {
+                                        <span class="mw-mono">@MonitoringDisplay.Stamp(firedAt)</span>
+                                        @if (context.LastIncidentId is { } firedId)
+                                        {
+                                            <span class="d-block small">
+                                                @if (State.FindIncident(firedId) is not null)
+                                                {
+                                                    <a href="@MonitoringDisplay.IncidentUrl(firedId)">Incident #@firedId</a>
+                                                }
+                                                else
+                                                {
+                                                    @($"Incident #{firedId} (no longer kept)")
+                                                }
+                                            </span>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <span class="text-body-secondary">Never</span>
+                                    }
+                                </GridColumn>
+                                <GridColumn TItem="MonitoringAlertRule" HeaderText="Actions" Sortable="false" Exportable="false">
+                                    <div class="d-flex flex-nowrap gap-1 justify-content-end">
+                                        <Button @ref="editButtons[context.Id]" Color="ButtonColor.Secondary" Outline="true" Size="ButtonSize.Small" @onclick="() => OpenEditRuleAsync(context)">
+                                            Edit<span class="visually-hidden">&#32;@context.Name</span>
+                                        </Button>
+                                        <Button Color="ButtonColor.Secondary" Outline="true" Size="ButtonSize.Small" @onclick="() => ToggleRule(context)">
+                                            @(context.IsEnabled ? "Disable" : "Enable")<span class="visually-hidden">&#32;@context.Name</span>
+                                        </Button>
+                                        <Button @ref="deleteButtons[context.Id]" Color="ButtonColor.Danger" Outline="true" Size="ButtonSize.Small" @onclick="() => OpenDeleteRuleAsync(context)">
+                                            Delete<span class="visually-hidden">&#32;@context.Name</span>
+                                        </Button>
+                                    </div>
+                                </GridColumn>
+                            </GridColumns>
+                        </Grid>
+                    </ChildContent>
+                </ShowcaseDataState>
+            </CardBody>
+        </Card>
 
         @* The rule form, for a new rule or an edit. Opened from code, so focus is returned by hand; the heading names it and Cancel closes it. *@
         <Modal @ref="ruleModal" Size="ModalSize.Large" IsScrollable="true" ShowCloseButton="false" aria-labelledby="mw-al-rule-title"
-               OnShown="OnRuleShown" OnHidden="OnRuleHidden">
+               OnShown="OnRuleShownAsync" OnHidden="OnRuleHidden">
             <HeaderTemplate>
                 <h2 class="modal-title h5" id="mw-al-rule-title">@(editingRuleId == 0 ? "New alert rule" : "Edit alert rule")</h2>
             </HeaderTemplate>
             <BodyTemplate>
-                <form id="mw-al-rule-form" @onsubmit="SubmitRuleAsync" novalidate>
-                    @if (ruleFormError is not null)
-                    {
-                        <p class="text-danger-emphasis fw-semibold" id="mw-al-rule-form-error">@ruleFormError</p>
-                    }
+                <EditForm id="mw-al-rule-form" EditContext="ruleContext" OnSubmit="SubmitRuleAsync" FormName="mw-alert-rule" novalidate>
+                    <DataAnnotationsValidator />
+                    <ShowcaseFormErrors ShowSummary="true" />
 
                     <div class="mb-3">
                         <label class="form-label fw-semibold" for="mw-al-rule-name">Name</label>
-                        <input id="mw-al-rule-name" class="form-control @(ruleNameError is null ? null : "is-invalid")" maxlength="@MonitoringState.MaxRuleNameLength"
-                               @bind="ruleName" @bind:event="oninput" @ref="ruleNameInput" aria-required="true" aria-invalid="@(ruleNameError is null ? null : "true")"
-                               aria-describedby="mw-al-rule-name-help mw-al-rule-name-error" />
-                        <div class="form-text d-flex flex-wrap justify-content-between gap-2" id="mw-al-rule-name-help">
+                        <InputText @ref="ruleNameInput" id="mw-al-rule-name" class="form-control" maxlength="@MonitoringState.MaxRuleNameLength" @bind-Value="ruleForm.Name"
+                                   autocomplete="off" aria-describedby="mw-al-rule-name-help" />
+                        <ShowcaseUniqueCheck @ref="ruleNameCheck" For="() => ruleForm.Name" IsTakenAsync="IsRuleNameTakenAsync"
+                                             TakenMessage="@(value => $"Another rule is already called \"{value}\". Rule names are unique, because they become incident titles.")" />
+                        <div class="form-text d-flex flex-wrap justify-content-between gap-2 mt-0" id="mw-al-rule-name-help">
                             <span>Also the title of the incident it opens, like "Payments error rate above 2%".</span>
-                            <span class="text-nowrap">@ruleName.Length of @MonitoringState.MaxRuleNameLength characters</span>
+                            <span class="text-nowrap">Up to @MonitoringState.MaxRuleNameLength characters, unique</span>
                         </div>
-                        <div class="invalid-feedback d-block" id="mw-al-rule-name-error">@ruleNameError</div>
+                        <ValidationMessage For="() => ruleForm.Name" />
                     </div>
 
                     <div class="row g-3 mb-3">
                         <div class="col-md-6">
                             <label class="form-label fw-semibold" for="mw-al-rule-service">Service</label>
-                            <select id="mw-al-rule-service" class="form-select @(ruleServiceError is null ? null : "is-invalid")" @bind="ruleServiceId" @ref="ruleServiceInput"
-                                    aria-required="true" aria-invalid="@(ruleServiceError is null ? null : "true")" aria-describedby="mw-al-rule-service-error">
+                            <InputSelect id="mw-al-rule-service" class="form-select" @bind-Value="ruleForm.ServiceId">
                                 <option value="">Choose a service</option>
                                 @foreach (var service in State.Services)
                                 {
-                                    <option value="@service.Id">@service.Name</option>
+                                    <option value="@service.Id">@service.Name@(service.IsPublic ? null : " (not on the status page)")</option>
                                 }
-                            </select>
-                            <div class="invalid-feedback d-block" id="mw-al-rule-service-error">@ruleServiceError</div>
+                            </InputSelect>
+                            <ValidationMessage For="() => ruleForm.ServiceId" />
                         </div>
                         <div class="col-md-6">
                             <label class="form-label fw-semibold" for="mw-al-rule-metric">Metric</label>
-                            <select id="mw-al-rule-metric" class="form-select @(ruleMetricError is null ? null : "is-invalid")" @bind="ruleMetric" @bind:after="OnRuleMetricChanged" @ref="ruleMetricInput"
-                                    aria-invalid="@(ruleMetricError is null ? null : "true")" aria-describedby="mw-al-rule-metric-help mw-al-rule-metric-error">
+                            <InputSelect id="mw-al-rule-metric" class="form-select" @bind-Value="ruleForm.Metric" @bind-Value:after="OnRuleMetricChanged" aria-describedby="mw-al-rule-metric-help">
                                 @foreach (var metric in Enum.GetValues<MonitoringAlertMetric>())
                                 {
                                     <option value="@metric">@MonitoringDisplay.MetricLabel(metric)</option>
                                 }
-                            </select>
-                            <div class="form-text" id="mw-al-rule-metric-help">@MetricHelp(ruleMetric)</div>
-                            <div class="invalid-feedback d-block" id="mw-al-rule-metric-error">@ruleMetricError</div>
+                            </InputSelect>
+                            <div class="form-text" id="mw-al-rule-metric-help">@MetricHelp(ruleForm.Metric)</div>
                         </div>
                     </div>
 
                     <div class="row g-3 mb-3">
                         <div class="col-md-6">
-                            @{ var (low, high) = MonitoringState.ThresholdRange(ruleMetric); }
-                            <label class="form-label fw-semibold" for="mw-al-rule-threshold">Threshold</label>
-                            <div class="input-group has-validation">
-                                <input id="mw-al-rule-threshold" type="number" class="form-control @(ruleThresholdError is null ? null : "is-invalid")" step="any"
-                                       min="@low.ToString(CultureInfo.InvariantCulture)" max="@high.ToString(CultureInfo.InvariantCulture)"
-                                       @bind="ruleThreshold" @ref="ruleThresholdInput" aria-required="true" aria-invalid="@(ruleThresholdError is null ? null : "true")"
-                                       aria-describedby="mw-al-rule-threshold-help mw-al-rule-threshold-error" />
-                                <span class="input-group-text">@UnitSymbol(ruleMetric)</span>
-                            </div>
+                            @{ var (low, high) = MonitoringState.ThresholdRange(ruleForm.Metric); }
+                            <label class="form-label fw-semibold" for="mw-al-rule-threshold">Threshold (@UnitSymbol(ruleForm.Metric))</label>
+                            <InputNumber TValue="double?" id="mw-al-rule-threshold" class="form-control" step="any" @bind-Value="ruleForm.Threshold"
+                                         min="@low.ToString(CultureInfo.InvariantCulture)" max="@high.ToString(CultureInfo.InvariantCulture)"
+                                         ParsingErrorMessage="Enter the threshold as a number." aria-describedby="mw-al-rule-threshold-help" />
                             <div class="form-text" id="mw-al-rule-threshold-help">
-                                Fires when the metric is above this. From @low.ToString(CultureInfo.InvariantCulture) to @MonitoringDisplay.Number(high) @UnitWords(ruleMetric).
-                                @if (State.FindService(ruleServiceId) is { } formService)
+                                Fires when the metric is above this. From @low.ToString(CultureInfo.InvariantCulture) to @MonitoringDisplay.Number(high) @UnitWords(ruleForm.Metric), and above the service's normal level.
+                                @if (State.FindService(ruleForm.ServiceId) is { } formService)
                                 {
-                                    @($" {formService.Name} is at {MonitoringDisplay.MetricValue(ruleMetric, MonitoringDisplay.MetricOf(ruleMetric, State.Latest(formService.Id)))} now.")
+                                    @($" {formService.Name} is at {MonitoringDisplay.MetricValue(ruleForm.Metric, MonitoringDisplay.MetricOf(ruleForm.Metric, State.Latest(formService.Id)))} now.")
                                 }
                             </div>
-                            <div class="invalid-feedback d-block" id="mw-al-rule-threshold-error">@ruleThresholdError</div>
+                            <ValidationMessage For="() => ruleForm.Threshold" />
                         </div>
                         <div class="col-md-6">
                             <label class="form-label fw-semibold" for="mw-al-rule-duration">For at least</label>
-                            <select id="mw-al-rule-duration" class="form-select @(ruleDurationError is null ? null : "is-invalid")" @bind="ruleForSeconds" @ref="ruleDurationInput"
-                                    aria-invalid="@(ruleDurationError is null ? null : "true")" aria-describedby="mw-al-rule-duration-help mw-al-rule-duration-error">
+                            <InputSelect id="mw-al-rule-duration" class="form-select" @bind-Value="ruleForm.ForSeconds" aria-describedby="mw-al-rule-duration-help">
                                 @foreach (var seconds in RuleDurations)
                                 {
                                     <option value="@seconds">@seconds seconds</option>
                                 }
-                            </select>
+                            </InputSelect>
                             <div class="form-text" id="mw-al-rule-duration-help">Every sample in this window must be above the threshold. Shorter fires sooner but also on brief spikes.</div>
-                            <div class="invalid-feedback d-block" id="mw-al-rule-duration-error">@ruleDurationError</div>
+                            <ValidationMessage For="() => ruleForm.ForSeconds" />
                         </div>
                     </div>
 
                     <fieldset class="mb-3">
                         <legend class="form-label fw-semibold fs-6">Severity of the incident it opens</legend>
-                        <div class="mw-al-severities">
-                            @foreach (var severity in Enum.GetValues<MonitoringSeverity>())
-                            {
-                                var inputId = $"mw-al-rule-severity-{severity}";
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="mw-al-rule-severity" id="@inputId" checked="@(ruleSeverity == severity)"
-                                           @onchange="() => ruleSeverity = severity" aria-describedby="@($"{inputId}-help")" />
-                                    <label class="form-check-label fw-semibold" for="@inputId">@severity</label>
-                                    <div class="form-text mt-0" id="@($"{inputId}-help")">@Incidents.SeverityHelp(severity)</div>
-                                </div>
-                            }
-                        </div>
+                        <InputRadioGroup @bind-Value="ruleForm.Severity" Name="mw-al-rule-severity">
+                            <div class="mw-al-severities">
+                                @foreach (var severity in Enum.GetValues<MonitoringSeverity>())
+                                {
+                                    var inputId = $"mw-al-rule-severity-{severity}";
+                                    <div class="form-check">
+                                        <InputRadio class="form-check-input" id="@inputId" Value="severity" aria-describedby="@($"{inputId}-help")" />
+                                        <label class="form-check-label fw-semibold" for="@inputId">@severity</label>
+                                        <div class="form-text mt-0" id="@($"{inputId}-help")">@Incidents.SeverityHelp(severity)</div>
+                                    </div>
+                                }
+                            </div>
+                        </InputRadioGroup>
                     </fieldset>
 
                     <div class="form-check mb-2">
-                        <input class="form-check-input" type="checkbox" id="mw-al-rule-publish" @bind="ruleAutoPublish" aria-describedby="mw-al-rule-publish-help" />
+                        <InputCheckbox class="form-check-input" id="mw-al-rule-publish" @bind-Value="ruleForm.AutoPublish" aria-describedby="mw-al-rule-publish-help" />
                         <label class="form-check-label fw-semibold" for="mw-al-rule-publish">Post on the status page automatically</label>
                         <div class="form-text mt-0" id="mw-al-rule-publish-help">
                             When the rule fires, the message below is posted on the public status page as "Investigating" at once, without an engineer
-                            checking first, and emailed to @SubscribersText(ruleServiceId).
+                            checking first, and emailed to @SubscribersText(ruleForm.ServiceId). Only for a service on the status page.
                         </div>
+                        <ValidationMessage For="() => ruleForm.AutoPublish" />
                     </div>
 
-                    @if (ruleEnabled && WouldFireOnSave)
+                    @if (ruleForm.IsEnabled && WouldFireOnSave)
                     {
                         @* Saving a rule whose metric is already past the threshold isn't a drill: it fires on the next samples. *@
                         <p class="small fw-semibold text-danger-emphasis mb-3" id="mw-al-rule-breach-warning">
-                            @(State.FindService(ruleServiceId)?.Name) is past this threshold right now, so saving opens an incident within seconds@(ruleAutoPublish ? $" and posts the message on the public status page, emailed to {SubscribersText(ruleServiceId)}" : null).
+                            @(State.FindService(ruleForm.ServiceId)?.Name) is past this threshold right now, so saving opens an incident within seconds@(ruleForm.AutoPublish ? $" and posts the message on the public status page, emailed to {SubscribersText(ruleForm.ServiceId)}" : null).
                         </p>
                     }
 
-                    @if (ruleAutoPublish)
+                    @if (ruleForm.AutoPublish)
                     {
                         <div class="mb-3 ms-md-4">
                             <label class="form-label fw-semibold" for="mw-al-rule-message">Status page message</label>
-                            <textarea id="mw-al-rule-message" class="form-control @(ruleMessageError is null ? null : "is-invalid")" rows="3" maxlength="@MonitoringState.MaxUpdateLength"
-                                      @bind="rulePublicMessage" @bind:event="oninput" @ref="ruleMessageInput" aria-required="true" aria-invalid="@(ruleMessageError is null ? null : "true")"
-                                      aria-describedby="mw-al-rule-message-help mw-al-rule-message-error"></textarea>
+                            <InputTextArea id="mw-al-rule-message" class="form-control" rows="3" maxlength="@MonitoringState.MaxUpdateLength"
+                                           @bind-Value="ruleForm.PublicMessage" aria-describedby="mw-al-rule-message-help" />
                             <div class="form-text d-flex flex-wrap justify-content-between gap-2" id="mw-al-rule-message-help">
                                 <span>Customers read this. Plain words about what they notice, no internal details.</span>
-                                <span class="text-nowrap">@rulePublicMessage.Length of @MonitoringDisplay.Number(MonitoringState.MaxUpdateLength) characters</span>
+                                <span class="text-nowrap">Up to @MonitoringDisplay.Number(MonitoringState.MaxUpdateLength) characters</span>
                             </div>
-                            <div class="invalid-feedback d-block" id="mw-al-rule-message-error">@ruleMessageError</div>
+                            <ValidationMessage For="() => ruleForm.PublicMessage" />
                         </div>
                     }
 
                     <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="mw-al-rule-enabled" @bind="ruleEnabled" aria-describedby="mw-al-rule-enabled-help" />
+                        <InputCheckbox class="form-check-input" id="mw-al-rule-enabled" @bind-Value="ruleForm.IsEnabled" aria-describedby="mw-al-rule-enabled-help" />
                         <label class="form-check-label fw-semibold" for="mw-al-rule-enabled">Enabled</label>
                         <div class="form-text mt-0" id="mw-al-rule-enabled-help">A disabled rule is kept but never fires.</div>
                     </div>
-                </form>
+                </EditForm>
+                <p class="text-danger-emphasis fw-semibold mt-3 mb-0" role="alert">@ruleFormError</p>
             </BodyTemplate>
             <FooterTemplate>
                 <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => ruleModal.HideAsync()">Cancel</Button>

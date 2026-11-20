@@ -1,14 +1,17 @@
+using System.ComponentModel.DataAnnotations;
 using BlazorBootstrap.Demo.RCL.Models.Showcase.Monitoring;
 using BlazorBootstrap.Demo.RCL.Services.Showcase.Monitoring;
+using Microsoft.AspNetCore.Components.Forms;
 
 namespace BlazorBootstrap.Demo.RCL.Components.Pages.Showcase.Monitoring;
 
 /// <summary>
 /// The signed-in engineer's notifications (<see cref="MonitoringState.Notifications" />), newest first, filtered by All or
-/// Unread and by kind. Each shows its kind in words with an icon, its title, text, and age, a link to its incident when it
-/// has one, and Mark read or unread; "Mark all read" clears the unread count. "How you're notified" saves the engineer's
-/// <see cref="MonitoringState.Preferences" /> with native checkboxes. Results are announced in a status message; when a
-/// notification leaves the Unread list, focus moves to that message.
+/// Unread and by kind: the inbox behind the header's bell, which reads the same list. Each shows its kind in words with an
+/// icon, its title, text, and age, a link to its incident (or its page) when it has one, and Mark read or unread; "Mark all
+/// read" clears the unread count. "How you're notified" is an <see cref="EditForm" /> (rule WR-002) that saves the engineer's
+/// <see cref="MonitoringState.Preferences" />; someone on call this week or next must keep one channel outside the console.
+/// Results are announced in a status message; when a notification leaves the Unread list, focus moves to that message.
 /// </summary>
 public partial class Notifications : ComponentBase, IDisposable
 {
@@ -22,13 +25,9 @@ public partial class Notifications : ComponentBase, IDisposable
     /// <summary>The preferences the checkboxes were last loaded from, so unsaved changes survive a state change.</summary>
     private MonitoringNotificationPreferences loaded = new();
 
-    private bool prefEmail;
+    private EditContext prefsContext = new(new PrefsForm());
 
-    private bool prefPush;
-
-    private bool prefSms;
-
-    private bool prefUpdates;
+    private PrefsForm prefsForm = new();
 
     private AlertColor statusColor = AlertColor.Success;
 
@@ -77,6 +76,7 @@ public partial class Notifications : ComponentBase, IDisposable
         MonitoringNotificationKind.Alert => IconName.ExclamationOctagon,
         MonitoringNotificationKind.Assigned => IconName.PersonCheck,
         MonitoringNotificationKind.Update => IconName.ChatLeftText,
+        MonitoringNotificationKind.Maintenance => IconName.Tools,
         _ => IconName.CalendarWeek,
     };
 
@@ -85,21 +85,27 @@ public partial class Notifications : ComponentBase, IDisposable
         MonitoringNotificationKind.Alert => "Alert",
         MonitoringNotificationKind.Assigned => "Assigned to you",
         MonitoringNotificationKind.Update => "Incident update",
+        MonitoringNotificationKind.Maintenance => "Maintenance",
         _ => "On-call",
     };
 
     private static string NotAllowedText => "Sign in as an engineer to manage your notifications. Nothing changed.";
 
-    /// <summary>Copies the saved preferences into the checkboxes.</summary>
+    /// <summary>Copies the saved preferences into the form, with a new edit context so no old message stays.</summary>
     private void LoadPreferences()
     {
         var saved = State.Preferences;
         loaded = new MonitoringNotificationPreferences { Email = saved.Email, Push = saved.Push, SmsForCritical = saved.SmsForCritical, IncidentUpdates = saved.IncidentUpdates };
-        prefEmail = saved.Email;
-        prefPush = saved.Push;
-        prefSms = saved.SmsForCritical;
-        prefUpdates = saved.IncidentUpdates;
+        prefsForm = new PrefsForm
+        {
+            Email = saved.Email, Push = saved.Push, SmsForCritical = saved.SmsForCritical, IncidentUpdates = saved.IncidentUpdates, IsOnCallSoon = IsOnCallSoon(),
+        };
+        prefsContext = new EditContext(prefsForm);
     }
+
+    /// <summary>Whether the signed-in engineer is primary or secondary on call this week or next (the state's own rule).</summary>
+    private bool IsOnCallSoon() =>
+        State.Identity.Current is { } account && State.Shifts(0, 2).Any(shift => shift.PrimaryId == account.Id || shift.SecondaryId == account.Id);
 
     private void MarkAllRead()
     {
@@ -126,9 +132,15 @@ public partial class Notifications : ComponentBase, IDisposable
         StateHasChanged();
     });
 
+    /// <summary>Saves once the form is valid (a failed submit shows the summary, rule WR-002); the state checks again and its answer maps to a message.</summary>
     private void SavePreferences()
     {
-        var value = new MonitoringNotificationPreferences { Email = prefEmail, Push = prefPush, SmsForCritical = prefSms, IncidentUpdates = prefUpdates };
+        prefsForm.IsOnCallSoon = IsOnCallSoon();
+
+        if (!prefsContext.Validate())
+            return;
+
+        var value = new MonitoringNotificationPreferences { Email = prefsForm.Email, Push = prefsForm.Push, SmsForCritical = prefsForm.SmsForCritical, IncidentUpdates = prefsForm.IncidentUpdates };
         var result = State.SavePreferences(value);
 
         if (result == MonitoringResult.Ok)
@@ -139,6 +151,7 @@ public partial class Notifications : ComponentBase, IDisposable
             MonitoringResult.Ok => $"Saved. {ChannelsText(value)}",
             MonitoringResult.NoChange => "These are already your settings. Nothing changed.",
             MonitoringResult.Invalid => "Those settings couldn't be saved. Try again; nothing changed.",
+            MonitoringResult.WrongState => "You're on call this week or next: keep email, push, or text messages on, so a page reaches you. Nothing changed.",
             MonitoringResult.NotAllowed => NotAllowedText,
             _ => "That didn't work, and nothing changed. Try again.",
         });
@@ -208,7 +221,8 @@ public partial class Notifications : ComponentBase, IDisposable
         }
     }
 
-    private bool IsDirty => prefEmail != loaded.Email || prefPush != loaded.Push || prefSms != loaded.SmsForCritical || prefUpdates != loaded.IncidentUpdates;
+    private bool IsDirty =>
+        prefsForm.Email != loaded.Email || prefsForm.Push != loaded.Push || prefsForm.SmsForCritical != loaded.SmsForCritical || prefsForm.IncidentUpdates != loaded.IncidentUpdates;
 
     /// <summary>Gets the notifications matching the filters, newest first.</summary>
     private List<MonitoringNotification> Shown =>
@@ -222,6 +236,32 @@ public partial class Notifications : ComponentBase, IDisposable
         1 => "1 unread.",
         var count => $"{count} unread.",
     };
+
+    #endregion
+
+    #region Nested Types
+
+    /// <summary>"How you're notified", with the rule of <see cref="MonitoringState.SavePreferences" />: on call soon means one channel stays on.</summary>
+    private sealed class PrefsForm : IValidatableObject
+    {
+        public bool Email { get; set; }
+
+        public bool IncidentUpdates { get; set; }
+
+        /// <summary>Whether the engineer is on call this week or next; set by the page, not by a field.</summary>
+        public bool IsOnCallSoon { get; set; }
+
+        public bool Push { get; set; }
+
+        public bool SmsForCritical { get; set; }
+
+        /// <summary>The message goes with the first channel, so it is read with the group.</summary>
+        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+        {
+            if (IsOnCallSoon && !Email && !Push && !SmsForCritical)
+                yield return new ValidationResult("You're on call this week or next: choose email, push, or text messages, so a page reaches you outside the console.", new[] { nameof(Email) });
+        }
+    }
 
     #endregion
 }

@@ -1,20 +1,25 @@
+using System.ComponentModel.DataAnnotations;
 using System.Globalization;
+using System.Linq.Expressions;
 using System.Text.RegularExpressions;
+using BlazorBootstrap.Demo.RCL.Components.Pages.Showcase.Shared;
 using BlazorBootstrap.Demo.RCL.Models.Showcase.Monitoring;
 using BlazorBootstrap.Demo.RCL.Services.Showcase.Monitoring;
+using Microsoft.AspNetCore.Components.Forms;
 
 namespace BlazorBootstrap.Demo.RCL.Components.Pages.Showcase.Monitoring;
 
 /// <summary>
-/// Adds a monitored service (<c>/new</c>) or edits one (admins): name (with a counter and, for a new service, the ID made
-/// from it, which can't change later), kind, region, team, description, normal p95 latency and traffic, instances (devices
-/// for a device fleet), and whether it is on the public status page. Each problem is shown under its field, tied to it,
-/// and the first invalid field takes focus after the render that shows it; the state's refusals (Duplicate, Invalid,
-/// NotFound, NoChange) are mapped to the field or the status message. Adding a service moves to its edit route and keeps
-/// the status message. For an existing service a side panel shows its live status (a timer adds a sample every two
-/// seconds unless paused), its alert rules and incidents, links to its console page and logs, and Delete, with the same
-/// rules as the list: the dialog names what goes with it, or says why it can't be deleted and offers to hide it from the
-/// status page instead. An unknown ID shows a not-found panel.
+/// Adds a monitored service (<c>/new</c>) or edits one (admins), in an <see cref="EditForm" /> (rule WR-002): name (unique,
+/// checked as you type, together with the ID made from it for a new service, which can't change later), kind, region (a
+/// region code like us-east-1), team, description, normal p95 latency and traffic, instances (devices for a device
+/// fleet; other kinds run at most <see cref="MonitoringState.MaxServiceInstances" />), and whether it is on the public
+/// status page. Messages show after a field is touched or on submit, and a failed submit shows a summary that links to
+/// each field; the state's refusals (Duplicate, Invalid, NotFound, NoChange) are mapped to the field or the status
+/// message. Adding a service moves to its edit route and keeps the status message. For an existing service a side panel
+/// shows its live status (a timer adds a sample every two seconds unless paused), its alert rules and incidents, links to
+/// its console page and logs, and Delete, with the same rules as the list: the dialog names what goes with it, or says why
+/// it can't be deleted and offers to hide it from the status page instead. An unknown ID shows a not-found panel.
 /// </summary>
 public partial class AdminServiceEdit : ComponentBase, IDisposable
 {
@@ -25,36 +30,18 @@ public partial class AdminServiceEdit : ComponentBase, IDisposable
 
     private Button? deleteButton;
 
-    private string description = string.Empty;
-
-    private string? descriptionError;
-
-    private ElementReference? descriptionInput;
-
     private Modal dialogModal = default!;
 
     private bool disposed;
 
+    private EditContext editContext = new(new ServiceForm());
+
     private bool focusStatus;
 
-    /// <summary>Returns the element to focus after the next render (the first field with an error, or the Delete button).</summary>
+    /// <summary>Returns the element to focus after the next render (the Delete button after its dialog).</summary>
     private Func<ElementReference?>? focusTarget;
 
-    private string? instancesError;
-
-    private ElementReference? instancesInput;
-
-    private string instancesText = string.Empty;
-
-    private bool isPublic;
-
-    private MonitoringServiceKind kind = MonitoringServiceKind.Api;
-
-    private string? latencyError;
-
-    private ElementReference? latencyInput;
-
-    private string latencyText = string.Empty;
+    private ServiceForm form = new();
 
     /// <summary>The service was just deleted and the list is loading: no not-found flash in between.</summary>
     private bool leaving;
@@ -62,20 +49,18 @@ public partial class AdminServiceEdit : ComponentBase, IDisposable
     /// <summary>The route ID the form was loaded for ("" for a new service).</summary>
     private string? loadedId;
 
-    private string name = string.Empty;
+    private ShowcaseUniqueCheck? nameCheck;
 
-    private string? nameError;
+    private InputText? nameInput;
 
-    private ElementReference? nameInput;
+    /// <summary>The name as typed, before the field's change event, so the ID preview follows each keystroke.</summary>
+    private string? namePreview;
 
     /// <summary>The confirmed action, run once the dialog is hidden. It returns whether the Delete button is still there to take focus back.</summary>
     private Func<bool>? pendingAction;
 
-    private string region = string.Empty;
-
-    private string? regionError;
-
-    private ElementReference? regionInput;
+    /// <summary>The state's answers that belong to a field (a taken name), shown like the form's own messages.</summary>
+    private ValidationMessageStore? serverErrors;
 
     private bool statusIsError;
 
@@ -83,19 +68,7 @@ public partial class AdminServiceEdit : ComponentBase, IDisposable
 
     private ElementReference? statusRegion;
 
-    private string team = string.Empty;
-
-    private string? teamError;
-
-    private ElementReference? teamInput;
-
     private MonitoringLiveTimer? timer;
-
-    private string? trafficError;
-
-    private ElementReference? trafficInput;
-
-    private string trafficText = string.Empty;
 
     #endregion
 
@@ -188,26 +161,6 @@ public partial class AdminServiceEdit : ComponentBase, IDisposable
 
     #region Private Methods
 
-    private static string CounterText(string value, int max)
-    {
-        var length = value.Trim().Length;
-
-        return length > max
-            ? string.Create(CultureInfo.InvariantCulture, $"{length} of {max} characters: {length - max} over the limit")
-            : string.Create(CultureInfo.InvariantCulture, $"{length} of {max} characters");
-    }
-
-    private static string Format(double value) => value.ToString("R", CultureInfo.InvariantCulture);
-
-    private static string? TextProblem(string value, int max, string missing, string what)
-    {
-        var length = value.Trim().Length;
-
-        return length == 0 ? missing
-            : length > max ? string.Create(CultureInfo.InvariantCulture, $"Shorten the {what} to {max} characters or fewer (now {length}).")
-            : null;
-    }
-
     [GeneratedRegex("[^a-z0-9]+", RegexOptions.CultureInvariant)]
     private static partial Regex SlugPattern();
 
@@ -259,7 +212,7 @@ public partial class AdminServiceEdit : ComponentBase, IDisposable
         Announce(result == MonitoringResult.Ok, message);
 
         if (result is MonitoringResult.Ok or MonitoringResult.NoChange)
-            isPublic = false;
+            form.IsPublic = false;
 
         return true;
     }
@@ -282,21 +235,38 @@ public partial class AdminServiceEdit : ComponentBase, IDisposable
         await dialogModal.HideAsync();
     }
 
-    /// <summary>Fills the form from a service, or with a new service's starting values.</summary>
+    /// <summary>Whether another service has this name, or (for a new service) the ID made from it; the service being edited doesn't count.</summary>
+    private Task<bool> IsNameTakenAsync(string name) => Task.FromResult(TakenBy(name) is not null);
+
+    /// <summary>Fills the form from a service, or with a new service's starting values, in a new edit context.</summary>
     private void Load(MonitoringService? service)
     {
-        name = service?.Name ?? string.Empty;
-        kind = service?.Kind ?? MonitoringServiceKind.Api;
-        region = service?.Region ?? string.Empty;
-        team = service?.Team ?? string.Empty;
-        description = service?.Description ?? string.Empty;
-        latencyText = service is null ? "100" : Format(service.BaseLatencyMs);
-        trafficText = service is null ? "100" : Format(service.BaseRequests);
-        instancesText = service is null ? "2" : service.Instances.ToString(CultureInfo.InvariantCulture);
-        isPublic = service?.IsPublic ?? false;
-        nameError = regionError = teamError = descriptionError = null;
-        latencyError = trafficError = instancesError = null;
+        form = new ServiceForm
+        {
+            IsNew = service is null,
+            Name = service?.Name ?? string.Empty,
+            Kind = service?.Kind ?? MonitoringServiceKind.Api,
+            Region = service?.Region ?? string.Empty,
+            Team = service?.Team ?? string.Empty,
+            Description = service?.Description ?? string.Empty,
+            LatencyMs = service?.BaseLatencyMs ?? 100,
+            Traffic = service?.BaseRequests ?? 100,
+            Instances = service?.Instances ?? 2,
+            IsPublic = service?.IsPublic ?? false,
+        };
+        namePreview = null;
+        editContext = new EditContext(form);
+        serverErrors = new ValidationMessageStore(editContext);
+        editContext.OnFieldChanged += (_, args) => serverErrors?.Clear(args.FieldIdentifier);
     }
+
+    /// <summary>Says why a name can't be used: another service has it, or the ID made from it.</summary>
+    private string NameTakenMessage(string name) => TakenBy(name) switch
+    {
+        { } same when string.Equals(same.Name, name.Trim(), StringComparison.OrdinalIgnoreCase) => $"Another service is already called \"{same.Name}\". Choose a different name.",
+        { } other => $"The ID \"{IdFromName(name)}\" made from this name is taken by {other.Name}. Choose a different name.",
+        _ => "That name is taken. Choose a different name.",
+    };
 
     private void OnDialogHidden()
     {
@@ -308,6 +278,8 @@ public partial class AdminServiceEdit : ComponentBase, IDisposable
         else if (!leaving)
             focusTarget = () => deleteButton?.Element;
     }
+
+    private void OnNameInput(ChangeEventArgs args) => namePreview = args.Value?.ToString();
 
     private void OnStateChanged() => InvokeAsync(StateHasChanged);
 
@@ -340,66 +312,24 @@ public partial class AdminServiceEdit : ComponentBase, IDisposable
         await dialogModal.ShowAsync();
     }
 
-    /// <summary>Checks the form, saves it, and maps the state's answer to a field or the status message.</summary>
-    private void Save()
+    /// <summary>
+    /// Saves the service once the form is valid: the name check finishes first, then every rule runs, and a failed submit
+    /// shows the summary (rule WR-002). The state checks again; its answer maps to the name or the status message.
+    /// </summary>
+    private async Task SaveAsync()
     {
         var existing = Service;
 
         if (Id is not null && existing is null)
             return;
 
-        var trimmedName = name.Trim();
-        var newId = existing is null ? IdFromName(trimmedName) : null;
-        var unit = MonitoringDisplay.RequestUnit(kind);
-        var countWord = kind == MonitoringServiceKind.Devices ? "devices" : "instances";
+        serverErrors?.Clear();
+        editContext.NotifyValidationStateChanged();
 
-        nameError = TextProblem(name, MonitoringState.MaxServiceNameLength, "Give the service a name.", "name");
+        var nameFree = nameCheck is null || await nameCheck.CheckNowAsync();
 
-        if (nameError is null && State.Services.FirstOrDefault(service => service.Id != existing?.Id && string.Equals(service.Name, trimmedName, StringComparison.OrdinalIgnoreCase)) is { } sameName)
-            nameError = $"Another service is already called \"{sameName.Name}\". Choose a different name.";
-
-        if (nameError is null && newId is not null)
-        {
-            nameError = newId.Length < 2 ? "Use at least two letters or digits in the name: the service ID is made from them."
-                : newId == "new" ? "The ID \"new\" is reserved for the Add service page. Choose a different name."
-                : State.FindService(newId) is { } sameId ? $"The ID \"{newId}\" made from this name is taken by {sameId.Name}. Choose a different name."
-                : null;
-        }
-
-        regionError = TextProblem(region, MonitoringState.MaxServiceTagLength, "Enter the region it runs in, like us-east-1.", "region");
-        teamError = TextProblem(team, MonitoringState.MaxServiceTagLength, "Enter the team that owns it.", "team");
-        descriptionError = TextProblem(description, MonitoringState.MaxServiceDescriptionLength, "Say in a sentence what the service does.", "description");
-
-        var latencyOk = double.TryParse(latencyText.Trim(), NumberStyles.Float, CultureInfo.InvariantCulture, out var latency) && double.IsFinite(latency);
-        latencyError = !latencyOk ? "Enter the normal p95 latency in milliseconds, like 120."
-            : latency is < 0.1 or > 10_000 ? "Use a latency from 0.1 to 10,000 ms."
-            : null;
-
-        var trafficOk = double.TryParse(trafficText.Trim(), NumberStyles.Float, CultureInfo.InvariantCulture, out var traffic) && double.IsFinite(traffic);
-        trafficError = !trafficOk ? $"Enter the normal traffic in {unit}, like 250."
-            : traffic is < 1 or > 100_000 ? $"Use from 1 to 100,000 {unit}."
-            : null;
-
-        var instancesOk = int.TryParse(instancesText.Trim(), NumberStyles.Integer, CultureInfo.InvariantCulture, out var instances);
-        instancesError = !instancesOk ? $"Enter the number of {countWord} as a whole number, like 3."
-            : instances is < 1 or > 10_000 ? $"Use from 1 to 10,000 {countWord}."
-            : null;
-
-        focusTarget = nameError is not null ? () => nameInput
-            : regionError is not null ? () => regionInput
-            : teamError is not null ? () => teamInput
-            : descriptionError is not null ? () => descriptionInput
-            : latencyError is not null ? () => latencyInput
-            : trafficError is not null ? () => trafficInput
-            : instancesError is not null ? () => instancesInput
-            : null;
-
-        if (focusTarget is not null)
-        {
-            Announce(false, "Fix the highlighted fields, then save again.");
-
+        if (!editContext.Validate() || !nameFree)
             return;
-        }
 
         if (existing is null && State.Services.Count >= MonitoringState.MaxServices)
         {
@@ -409,8 +339,10 @@ public partial class AdminServiceEdit : ComponentBase, IDisposable
             return;
         }
 
+        var trimmedName = form.Name.Trim();
         var wasPublic = existing?.IsPublic;
-        var result = State.SaveService(existing?.Id, trimmedName, kind, region, team, description, latency, traffic, instances, isPublic, out var saved);
+        var result = State.SaveService(existing?.Id, trimmedName, form.Kind, form.Region.Trim(), form.Team.Trim(), form.Description.Trim(), form.LatencyMs!.Value, form.Traffic!.Value,
+            form.Instances!.Value, form.IsPublic, out var saved);
 
         switch (result)
         {
@@ -435,10 +367,7 @@ public partial class AdminServiceEdit : ComponentBase, IDisposable
                 return;
 
             case MonitoringResult.Duplicate:
-                nameError = newId is not null && State.FindService(newId) is { } taken && !string.Equals(taken.Name, trimmedName, StringComparison.OrdinalIgnoreCase)
-                    ? $"The ID \"{newId}\" made from this name is taken by {taken.Name}. Choose a different name."
-                    : $"Another service is already called \"{trimmedName}\". Choose a different name.";
-                focusTarget = () => nameInput;
+                ServerError(() => form.Name, NameTakenMessage(trimmedName));
                 Announce(false, "That name is taken. Nothing was saved.");
 
                 return;
@@ -476,6 +405,26 @@ public partial class AdminServiceEdit : ComponentBase, IDisposable
         }
     }
 
+    /// <summary>Shows a state answer under its field, like the form's own messages; the summary and focus follow.</summary>
+    private void ServerError(Expression<Func<object>> field, string message)
+    {
+        serverErrors?.Clear();
+        serverErrors?.Add(field, message);
+        editContext.NotifyValidationStateChanged();
+    }
+
+    /// <summary>The service whose name (or, for a new service, whose ID) this name would clash with, or <see langword="null" />.</summary>
+    private MonitoringService? TakenBy(string name)
+    {
+        var trimmed = name.Trim();
+        var current = Service?.Id;
+
+        if (State.Services.FirstOrDefault(service => service.Id != current && string.Equals(service.Name, trimmed, StringComparison.OrdinalIgnoreCase)) is { } same)
+            return same;
+
+        return current is null && IdFromName(trimmed) is { Length: >= 2 } id ? State.FindService(id) : null;
+    }
+
     #endregion
 
     #endregion
@@ -491,9 +440,9 @@ public partial class AdminServiceEdit : ComponentBase, IDisposable
     /// <summary>Gets or sets the service ID from the route, or <see langword="null" /> on the add-service route.</summary>
     [Parameter] public string? Id { get; set; }
 
-    private string IdPreview => IdFromName(name);
+    private string IdPreview => IdFromName(namePreview ?? form.Name);
 
-    private string InstancesLabel => kind == MonitoringServiceKind.Devices ? "Devices" : "Instances";
+    private string InstancesLabel => form.Kind == MonitoringServiceKind.Devices ? "Devices" : "Instances";
 
     private static string AlertsUrl => $"{ConsoleLayout.AdminBase}/alerts";
 
@@ -510,6 +459,72 @@ public partial class AdminServiceEdit : ComponentBase, IDisposable
     [Inject] private MonitoringState State { get; set; } = default!;
 
     [Inject] private ToastService Toasts { get; set; } = default!;
+
+    #endregion
+
+    #region Nested Types
+
+    /// <summary>
+    /// The service form's fields, with the limits of <see cref="MonitoringState.SaveService" />: required text with lengths, a
+    /// region code, ranges for the normal values, and two cross-field rules (a new service's ID, and instances by kind).
+    /// </summary>
+    private sealed class ServiceForm : IValidatableObject
+    {
+        [Required(ErrorMessage = "Say in a sentence what the service does.")]
+        [StringLength(MonitoringState.MaxServiceDescriptionLength, ErrorMessage = "Use 300 characters or fewer for the description.")]
+        public string Description { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Enter the number of instances or devices.")]
+        [Range(1, 10_000, ErrorMessage = "Use from 1 to 10,000.")]
+        public int? Instances { get; set; }
+
+        /// <summary>Whether the form adds a service (its ID is made from the name); set by the page.</summary>
+        public bool IsNew { get; set; }
+
+        public bool IsPublic { get; set; }
+
+        public MonitoringServiceKind Kind { get; set; }
+
+        [Required(ErrorMessage = "Enter the normal p95 latency in milliseconds, like 120.")]
+        [Range(0.1, 10_000, ErrorMessage = "Use a latency from 0.1 to 10,000 ms.")]
+        public double? LatencyMs { get; set; }
+
+        [Required(ErrorMessage = "Give the service a name.")]
+        [StringLength(MonitoringState.MaxServiceNameLength, ErrorMessage = "Use 60 characters or fewer for the name.")]
+        public string Name { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Enter the region it runs in, like us-east-1.")]
+        [StringLength(MonitoringState.MaxServiceTagLength, ErrorMessage = "Use 40 characters or fewer for the region.")]
+        [RegularExpression(@"^\s*[a-z][a-z0-9]*(-[a-z0-9]+)+\s*$", ErrorMessage = "Use a region code like us-east-1: lower-case letters and digits joined by hyphens.")]
+        public string Region { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Enter the team that owns it.")]
+        [StringLength(MonitoringState.MaxServiceTagLength, ErrorMessage = "Use 40 characters or fewer for the team.")]
+        public string Team { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Enter the normal traffic, like 250.")]
+        [Range(1, 100_000, ErrorMessage = "Use from 1 to 100,000 a second.")]
+        public double? Traffic { get; set; }
+
+        /// <summary>Runs once the fields are filled in: a new service needs an ID from its name, and only a device fleet counts more than 500.</summary>
+        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+        {
+            if (IsNew)
+            {
+                var id = IdFromName(Name);
+
+                if (id.Length < 2)
+                    yield return new ValidationResult("Use at least two letters or digits in the name: the service ID is made from them.", new[] { nameof(Name) });
+                else if (id == "new")
+                    yield return new ValidationResult("The ID \"new\" is reserved for the Add service page. Choose a different name.", new[] { nameof(Name) });
+            }
+
+            if (Kind != MonitoringServiceKind.Devices && Instances > MonitoringState.MaxServiceInstances)
+                yield return new ValidationResult(
+                    string.Create(CultureInfo.InvariantCulture, $"Only a device fleet counts more than {MonitoringState.MaxServiceInstances}: use up to {MonitoringState.MaxServiceInstances} instances, or choose the kind Devices."),
+                    new[] { nameof(Instances) });
+        }
+    }
 
     #endregion
 }

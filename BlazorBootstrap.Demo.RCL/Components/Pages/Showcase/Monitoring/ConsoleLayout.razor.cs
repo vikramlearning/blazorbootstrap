@@ -3,9 +3,9 @@ using BlazorBootstrap.Demo.RCL.Services.Showcase.Monitoring;
 namespace BlazorBootstrap.Demo.RCL.Components.Pages.Showcase.Monitoring;
 
 /// <summary>
-/// Layout of the Stackwatch engineers' console (D-031): a top bar with "View status page" and the account menu (its
-/// notice count is the engineer's unread notifications), a sidebar with the engineer's modules (and, for an admin, the
-/// admin pages), and the page behind a guard for engineers and admins. The sidebar shows only to them.
+/// Layout of the Stackwatch engineers' console (D-031): a top bar with the global search, "View status page", the
+/// notifications (the same list as the Notifications page), and the account menu, a sidebar with the engineer's modules
+/// (and, for an admin, the admin pages), and the page behind a guard for engineers and admins. The sidebar shows only to them.
 /// </summary>
 public partial class ConsoleLayout : LayoutComponentBase, IDisposable
 {
@@ -49,6 +49,7 @@ public partial class ConsoleLayout : LayoutComponentBase, IDisposable
             new() { Id = "logs", Href = $"{Base}/logs", IconName = IconName.Terminal, Text = "Logs and traces" },
             new() { Id = "on-call", Href = $"{Base}/on-call", IconName = IconName.CalendarWeek, Text = "On-call" },
             new() { Id = "notifications", Href = $"{Base}/notifications", IconName = IconName.Bell, Text = "Notifications" },
+            new() { Id = "audit", Href = $"{Base}/audit", IconName = IconName.ClockHistory, Text = "Audit log" },
             new() { Id = "account", Href = $"{Base}/account", IconName = IconName.PersonGear, Text = "Account" },
         };
 
@@ -68,6 +69,9 @@ public partial class ConsoleLayout : LayoutComponentBase, IDisposable
     #endregion
 
     #region Properties, Indexers
+
+    /// <summary>What the header's search finds for the signed-in role.</summary>
+    private string SearchPlaceholder => State.IsAdmin ? "Search incidents, services, rules, maintenance" : "Search incidents, services, trace IDs";
 
     [Inject] private MonitoringState State { get; set; } = default!;
 

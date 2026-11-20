@@ -1,5 +1,6 @@
 using System.Globalization;
 using BlazorBootstrap.Demo.RCL.Models.Showcase.Monitoring;
+using BlazorBootstrap.Demo.RCL.Services.Showcase.Monitoring;
 
 namespace BlazorBootstrap.Demo.RCL.Components.Pages.Showcase.Monitoring;
 
@@ -259,8 +260,9 @@ public static class MonitoringDisplay
     /// <summary>Formats a time of day like "10:31:04".</summary>
     public static string Time(DateTime time) => time.ToString("HH:mm:ss", CultureInfo.InvariantCulture);
 
-    /// <summary>Formats a date and time like "Nov 24, 10:12".</summary>
-    public static string Stamp(DateTime time) => time.ToString("MMM d, HH:mm", CultureInfo.InvariantCulture);
+    /// <summary>Formats a date and time like "Nov 24, 10:12", with the year for another year than the site's, like "Dec 3, 2025, 14:05".</summary>
+    public static string Stamp(DateTime time) =>
+        time.ToString(time.Year == MonitoringSeedData.Now.Year ? "MMM d, HH:mm" : "MMM d, yyyy, HH:mm", CultureInfo.InvariantCulture);
 
     #endregion
 

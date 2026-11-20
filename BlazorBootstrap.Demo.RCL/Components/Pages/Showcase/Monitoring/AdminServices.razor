@@ -6,7 +6,6 @@
 <div class="container-fluid px-lg-4">
     <ShowcaseRoleGuard Roles="@MonitoringSeedData.AdminRole" SignInPath="@MonitoringLayout.SignInPath">
         @{
-            var rows = Rows;
             var full = State.Services.Count >= MonitoringState.MaxServices;
         }
 
@@ -28,92 +27,124 @@
             }
         </div>
 
-        <p class="mb-2">@CountText()</p>
+        <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-2">
+            <p class="mb-0" tabindex="-1" @ref="countRegion">@CountText()</p>
+            @* Back to the saved view's defaults: the site's order and every column in its place. *@
+            <Button Color="ButtonColor.Link" Size="ButtonSize.Small" Class="p-0" @onclick="ResetViewAsync">Reset view</Button>
+        </div>
 
         @* Always rendered and focusable, so an outcome is announced and focus has somewhere to go when a deleted row disappears. *@
         <p class="fw-semibold mw-adsvc-status @(statusIsError ? "text-danger-emphasis" : null)" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
 
         <Card Class="mw-card">
-            <CardBody Class="p-0">
-                <div class="table-responsive mw-grid">
-                    <table class="table mw-adsvc-table mb-0">
-                        <caption class="mw-adsvc-caption">
-                            Every monitored service. "Subscribers" counts the status page subscribers who follow the service by name.
-                        </caption>
-                        <thead>
-                            <tr>
-                                <th scope="col">Service</th>
-                                <th scope="col">ID</th>
-                                <th scope="col">Kind</th>
-                                <th scope="col">Region</th>
-                                <th scope="col">Team</th>
-                                <th scope="col">On the status page</th>
-                                <th scope="col" class="text-end">Alert rules</th>
-                                <th scope="col" class="text-end">Incidents</th>
-                                <th scope="col" class="text-end">Subscribers</th>
-                                <th scope="col">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var row in rows)
-                            {
-                                var service = row.Service;
-                                <tr @key="service.Id">
-                                    <th scope="row" class="mw-adsvc-name">
-                                        <a class="mw-row-link" href="@EditUrl(service.Id)">@service.Name</a>
-                                    </th>
-                                    <td class="mw-mono text-nowrap">@service.Id</td>
-                                    <td class="text-nowrap"><Icon Name="@MonitoringDisplay.KindIcon(service.Kind)" class="me-1 text-body-secondary" aria-hidden="true" />@MonitoringDisplay.KindLabel(service.Kind)</td>
-                                    <td class="mw-mono text-nowrap">@service.Region</td>
-                                    <td class="mw-adsvc-wrap">@service.Team</td>
-                                    <td class="text-nowrap">
-                                        @if (service.IsPublic)
-                                        {
-                                            <Icon Name="IconName.Broadcast" class="me-1 text-success-emphasis" aria-hidden="true" /><span>Yes</span>
-                                        }
-                                        else
-                                        {
-                                            <Icon Name="IconName.EyeSlash" class="me-1 text-body-secondary" aria-hidden="true" /><span>No, engineers only</span>
-                                        }
-                                    </td>
-                                    <td class="mw-mono text-end">@row.Rules</td>
-                                    <td class="text-end text-nowrap">
-                                        <span class="mw-mono">@row.Incidents</span>
-                                        @if (row.ActiveIncidents > 0)
-                                        {
-                                            <span class="d-block small text-body-secondary">@row.ActiveIncidents active</span>
-                                        }
-                                    </td>
-                                    <td class="mw-mono text-end">@row.Followers</td>
-                                    <td>
-                                        <div class="mw-adsvc-actions">
-                                            <Button Type="ButtonType.Link" To="@EditUrl(service.Id)" Color="ButtonColor.Secondary" Outline="true" Size="ButtonSize.Small">
-                                                Edit<span class="visually-hidden"> @service.Name</span>
-                                            </Button>
-                                            <Button Color="ButtonColor.Secondary" Outline="true" Size="ButtonSize.Small" @onclick="() => TogglePublic(service)">
-                                                @if (service.IsPublic)
-                                                {
-                                                    <Icon Name="IconName.EyeSlash" class="me-1" aria-hidden="true" /><span>Hide<span class="visually-hidden"> @service.Name</span> from the status page</span>
-                                                }
-                                                else
-                                                {
-                                                    <Icon Name="IconName.Broadcast" class="me-1" aria-hidden="true" /><span>Show<span class="visually-hidden"> @service.Name</span> on the status page</span>
-                                                }
-                                            </Button>
-                                            <Button @ref="deleteButtons[service.Id]" Color="ButtonColor.Danger" Outline="true" Size="ButtonSize.Small" @onclick="() => OpenDeleteAsync(service)">
-                                                <Icon Name="IconName.Trash3" class="me-1" aria-hidden="true" />Delete<span class="visually-hidden"> @service.Name</span>
-                                            </Button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
-                </div>
+            <CardBody Class="p-3 p-lg-4">
+                <ShowcaseDataState Status="@(viewLoaded ? ShowcaseDataStatus.Ready : ShowcaseDataStatus.Loading)"
+                                   IsEmpty="@(State.Services.Count == 0)"
+                                   EmptyIcon="IconName.HddStack"
+                                   EmptyTitle="No services yet"
+                                   EmptyText="Add the first service, so Stackwatch starts sampling it."
+                                   LoadingText="Loading services…"
+                                   OnRetry="RefreshGridAsync">
+                    <EmptyActions>
+                        <Button Type="ButtonType.Link" To="@NewUrl" Color="ButtonColor.Primary" Size="ButtonSize.Small">Add service</Button>
+                    </EmptyActions>
+                    <ChildContent>
+                        <Grid @ref="grid"
+                              @key="gridVersion"
+                              TItem="ServiceRow"
+                              Class="table table-hover mw-adsvc-table sc-grid-row-links"
+                              GridContainerClass="mw-grid"
+                              DataProvider="ProvideRowsAsync"
+                              SettingsProvider="view.GetSettingsAsync"
+                              GridSettingsChanged="view.SaveSettingsAsync"
+                              AllowSorting="true"
+                              AllowColumnChooser="true"
+                              AllowExport="true"
+                              ExportFileName="monitoring-manage-services"
+                              Responsive="true"
+                              EmptyText="No services yet."
+                              aria-label="Monitored services">
+                            <GridColumns>
+                                <GridColumn TItem="ServiceRow" HeaderText="Service" PropertyName="Name" SortString="name" SortKeySelector="row => row.Name"
+                                            IsDefaultSortColumn="@view.IsSortColumn("name")" SortDirection="@view.DirectionFor("name")" AlwaysVisible="true">
+                                    @* The stretched link makes the whole row open the service's edit page; the row's buttons stay above it. *@
+                                    <a class="mw-row-link mw-adsvc-name stretched-link" href="@EditUrl(context.Id)">@context.Name</a>
+                                </GridColumn>
+                                <GridColumn TItem="ServiceRow" HeaderText="ID" PropertyName="Id" SortString="id" SortKeySelector="row => row.Id"
+                                            IsDefaultSortColumn="@view.IsSortColumn("id")" SortDirection="@view.DirectionFor("id")" TextNoWrap="true">
+                                    <span class="mw-mono">@context.Id</span>
+                                </GridColumn>
+                                <GridColumn TItem="ServiceRow" HeaderText="Kind" PropertyName="Kind" SortString="kind" SortKeySelector="row => row.Kind"
+                                            IsDefaultSortColumn="@view.IsSortColumn("kind")" SortDirection="@view.DirectionFor("kind")" TextNoWrap="true">
+                                    <Icon Name="@MonitoringDisplay.KindIcon(context.Service.Kind)" class="me-1 text-body-secondary" aria-hidden="true" />@context.Kind
+                                </GridColumn>
+                                <GridColumn TItem="ServiceRow" HeaderText="Region" PropertyName="Region" SortString="region" SortKeySelector="row => row.Region"
+                                            IsDefaultSortColumn="@view.IsSortColumn("region")" SortDirection="@view.DirectionFor("region")" TextNoWrap="true">
+                                    <span class="mw-mono">@context.Region</span>
+                                </GridColumn>
+                                <GridColumn TItem="ServiceRow" HeaderText="Team" PropertyName="Team" SortString="team" SortKeySelector="row => row.Team"
+                                            IsDefaultSortColumn="@view.IsSortColumn("team")" SortDirection="@view.DirectionFor("team")">
+                                    <span class="mw-adsvc-wrap d-inline-block">@context.Team</span>
+                                </GridColumn>
+                                <GridColumn TItem="ServiceRow" HeaderText="On the status page" PropertyName="OnStatusPage" SortString="public" SortKeySelector="row => row.Service.IsPublic"
+                                            IsDefaultSortColumn="@view.IsSortColumn("public")" SortDirection="@view.DirectionFor("public")" TextNoWrap="true">
+                                    @if (context.Service.IsPublic)
+                                    {
+                                        <Icon Name="IconName.Broadcast" class="me-1 text-success-emphasis" aria-hidden="true" /><span>Yes</span>
+                                    }
+                                    else
+                                    {
+                                        <Icon Name="IconName.EyeSlash" class="me-1 text-body-secondary" aria-hidden="true" /><span>No, engineers only</span>
+                                    }
+                                </GridColumn>
+                                <GridColumn TItem="ServiceRow" HeaderText="Alert rules" PropertyName="Rules" SortString="rules" SortKeySelector="row => row.Rules"
+                                            IsDefaultSortColumn="@view.IsSortColumn("rules")" SortDirection="@view.DirectionFor("rules")" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End">
+                                    <span class="mw-mono">@context.Rules</span>
+                                </GridColumn>
+                                <GridColumn TItem="ServiceRow" HeaderText="Incidents" PropertyName="Incidents" SortString="incidents" SortKeySelector="row => row.Incidents"
+                                            IsDefaultSortColumn="@view.IsSortColumn("incidents")" SortDirection="@view.DirectionFor("incidents")" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" TextNoWrap="true">
+                                    <span class="mw-mono">@context.Incidents</span>
+                                    @if (context.ActiveIncidents > 0)
+                                    {
+                                        <span class="d-block small text-body-secondary">@context.ActiveIncidents active</span>
+                                    }
+                                </GridColumn>
+                                <GridColumn TItem="ServiceRow" HeaderText="Subscribers" PropertyName="Followers" SortString="followers" SortKeySelector="row => row.Followers"
+                                            IsDefaultSortColumn="@view.IsSortColumn("followers")" SortDirection="@view.DirectionFor("followers")" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End">
+                                    <span class="mw-mono">@context.Followers</span>
+                                </GridColumn>
+                                <GridColumn TItem="ServiceRow" HeaderText="Actions" Sortable="false" Exportable="false">
+                                    @{
+                                        var service = context.Service;
+                                    }
+                                    <div class="mw-adsvc-actions">
+                                        <Button Type="ButtonType.Link" To="@EditUrl(service.Id)" Color="ButtonColor.Secondary" Outline="true" Size="ButtonSize.Small">
+                                            Edit<span class="visually-hidden">&#32;@service.Name</span>
+                                        </Button>
+                                        <Button Color="ButtonColor.Secondary" Outline="true" Size="ButtonSize.Small" @onclick="() => TogglePublic(service)">
+                                            @if (service.IsPublic)
+                                            {
+                                                <Icon Name="IconName.EyeSlash" class="me-1" aria-hidden="true" /><span>Hide<span class="visually-hidden">&#32;@service.Name</span> from the status page</span>
+                                            }
+                                            else
+                                            {
+                                                <Icon Name="IconName.Broadcast" class="me-1" aria-hidden="true" /><span>Show<span class="visually-hidden">&#32;@service.Name</span> on the status page</span>
+                                            }
+                                        </Button>
+                                        <Button @ref="deleteButtons[service.Id]" Color="ButtonColor.Danger" Outline="true" Size="ButtonSize.Small" @onclick="() => OpenDeleteAsync(service)">
+                                            <Icon Name="IconName.Trash3" class="me-1" aria-hidden="true" />Delete<span class="visually-hidden">&#32;@service.Name</span>
+                                        </Button>
+                                    </div>
+                                </GridColumn>
+                            </GridColumns>
+                        </Grid>
+                    </ChildContent>
+                </ShowcaseDataState>
             </CardBody>
         </Card>
 
         <p class="small text-body-secondary mt-3 mb-0">
+            "Subscribers" counts the status page subscribers who follow the service by name.
             "Show on" and "Hide from the status page" change what customers see at once. Hiding a service keeps its metrics, alert rules, and incidents in the console.
             <a href="@MonitoringLayout.Base">View the status page</a>.
         </p>

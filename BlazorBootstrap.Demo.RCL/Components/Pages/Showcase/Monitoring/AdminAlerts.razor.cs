@@ -1,20 +1,28 @@
+using System.ComponentModel.DataAnnotations;
+using System.Linq.Expressions;
+using BlazorBootstrap.Demo.RCL.Components.Pages.Showcase.Shared;
 using BlazorBootstrap.Demo.RCL.Models.Showcase.Monitoring;
+using BlazorBootstrap.Demo.RCL.Services.Showcase.Foundation;
 using BlazorBootstrap.Demo.RCL.Services.Showcase.Monitoring;
+using Microsoft.AspNetCore.Components.Forms;
 
 namespace BlazorBootstrap.Demo.RCL.Components.Pages.Showcase.Monitoring;
 
 /// <summary>
-/// The admins' alert rules and failure drills. A drill form (service, impact with what it does to the metrics, length)
-/// shows before starting which enabled rules watch the service, whether each would post on the status page and how likely
-/// it is to fire, and warns when the service already has an active incident or maintenance running (rules don't fire) or a
-/// drill running. A drill that could make a rule post on the status page is confirmed in a <see cref="Modal" /> that names
-/// the public message and the subscribers it is emailed to. Running drills show their time left from the clock and a Stop
-/// button; recent drills show how long they ran and the incident they opened. The rules table shows each rule's
-/// condition, severity, state, "posts on the status page", the current value ("Breaching" in words), and when it last
-/// fired with a link to the incident; Edit opens the rule form (also for a new rule) in a <see cref="Modal" />, Enable or
-/// Disable toggles it, and Delete is confirmed (its incidents stay). Saving and deleting run after the dialog is hidden.
-/// Rules are evaluated on every tick, so the page runs the live timer (with <see cref="LivePauseButton" />); a rule that
-/// fires while the page is open, and a drill that ends on its own, are announced once in the status region.
+/// The admins' alert rules and failure drills. A drill form (an <see cref="EditForm" />, rule WR-002: service, impact with
+/// what it does to the metrics, length) shows before starting which enabled rules watch the service, whether each would
+/// post on the status page and how likely it is to fire, and warns when the service already has an active incident or
+/// maintenance running (rules don't fire) or a drill running. A drill that could make a rule post on the status page is
+/// confirmed in a <see cref="Modal" /> that names the public message and the subscribers it is emailed to. Running drills
+/// show their time left from the clock and a Stop button; recent drills show how long they ran and the incident they
+/// opened. The rules are a <see cref="Grid{TItem}" /> (metric, threshold, duration, severity, enabled, "posts on the
+/// status page", the current value with "Breaching" in words, and when it last fired with a link to the incident) with
+/// sorting, the column chooser, CSV export, and a saved view; the whole row opens the rule form (also for a new rule) in a
+/// <see cref="Modal" />, an <see cref="EditForm" /> with a unique name checked as you type, the metric's threshold range,
+/// a threshold above the service's normal level, and posting only for a service on the status page. Enable or Disable
+/// toggles a rule, and Delete is confirmed (its incidents stay). Rules are evaluated on every tick, so the page runs the
+/// live timer (with <see cref="LivePauseButton" />); a rule that fires while the page is open, and a drill that ends on its
+/// own, are announced once in the status region.
 /// </summary>
 public partial class AdminAlerts : ComponentBase, IDisposable
 {
@@ -41,15 +49,12 @@ public partial class AdminAlerts : ComponentBase, IDisposable
 
     private bool disposed;
 
-    private MonitoringImpact drillImpact = MonitoringImpact.Errors;
+    private EditContext drillContext = new(new DrillForm());
 
-    private int drillSeconds = 60;
+    private DrillForm drillForm = new();
 
-    private string drillServiceId = string.Empty;
-
-    private string? drillServiceError;
-
-    private ElementReference? drillServiceInput;
+    /// <summary>The state's answers that belong to a drill field (a drill already running), shown like the form's own messages.</summary>
+    private ValidationMessageStore? drillServerErrors;
 
     private readonly Dictionary<int, Button> editButtons = new();
 
@@ -58,8 +63,13 @@ public partial class AdminAlerts : ComponentBase, IDisposable
 
     private bool focusStatus;
 
-    /// <summary>Returns the element to focus after the next render (a field with an error, or the button that opened a dialog).</summary>
+    /// <summary>Returns the element to focus after the next render (the button that opened a dialog).</summary>
     private Func<ElementReference?>? focusTarget;
+
+    private Grid<MonitoringAlertRule>? grid;
+
+    /// <summary>Changes when the view is reset, so the grid is built again with its defaults.</summary>
+    private int gridVersion;
 
     /// <summary>The incidents already on the page, so a rule firing is announced once.</summary>
     private readonly HashSet<int> knownIncidentIds = new();
@@ -72,57 +82,25 @@ public partial class AdminAlerts : ComponentBase, IDisposable
     /// <summary>The drill waiting for the "it could go public" confirmation.</summary>
     private DrillRequest? pendingDrill;
 
-    /// <summary>The validated rule, saved once the form's dialog is hidden.</summary>
-    private RuleRequest? pendingRule;
+    private EditContext ruleContext = new(new RuleForm());
 
-    private bool ruleAutoPublish;
-
-    private string? ruleDurationError;
-
-    private ElementReference? ruleDurationInput;
-
-    private bool ruleEnabled = true;
-
-    private int ruleForSeconds = 20;
+    private RuleForm ruleForm = new();
 
     private string? ruleFormError;
 
-    private string? ruleMessageError;
-
-    private ElementReference? ruleMessageInput;
-
-    private MonitoringAlertMetric ruleMetric = MonitoringAlertMetric.ErrorRate;
-
-    private string? ruleMetricError;
-
-    private ElementReference? ruleMetricInput;
-
     private Modal ruleModal = default!;
 
-    private string ruleName = string.Empty;
+    private ShowcaseUniqueCheck? ruleNameCheck;
 
-    private string? ruleNameError;
-
-    private ElementReference? ruleNameInput;
+    private InputText? ruleNameInput;
 
     /// <summary>The button that opened the rule form.</summary>
     private Button? ruleOpener;
 
-    private string rulePublicMessage = string.Empty;
+    private ElementReference? rulesCountRegion;
 
-    private string ruleServiceId = string.Empty;
-
-    private string? ruleServiceError;
-
-    private ElementReference? ruleServiceInput;
-
-    private MonitoringSeverity ruleSeverity = MonitoringSeverity.Major;
-
-    private double? ruleThreshold = 2;
-
-    private string? ruleThresholdError;
-
-    private ElementReference? ruleThresholdInput;
+    /// <summary>The state's answers that belong to a rule field (a taken name, posting for a hidden service), shown like the form's own messages.</summary>
+    private ValidationMessageStore? ruleServerErrors;
 
     /// <summary>The drills running when last checked, so one that ends on its own is announced once.</summary>
     private readonly HashSet<int> runningFaultIds = new();
@@ -137,6 +115,10 @@ public partial class AdminAlerts : ComponentBase, IDisposable
 
     private MonitoringLiveTimer? timer;
 
+    private ShowcaseGridView view = default!;
+
+    private bool viewLoaded;
+
     #endregion
 
     #region Methods
@@ -145,8 +127,14 @@ public partial class AdminAlerts : ComponentBase, IDisposable
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        // The saved view lives in the tab's session storage, so it loads once the page is interactive; then the grid shows and the timer starts.
         if (firstRender && !disposed)
+        {
+            await view.LoadAsync();
+            viewLoaded = true;
+            StateHasChanged();
             timer = new MonitoringLiveTimer(TimeSpan.FromSeconds(MonitoringSeedData.TickSeconds), OnTickAsync);
+        }
 
         if (focusTarget is { } target)
         {
@@ -167,8 +155,11 @@ public partial class AdminAlerts : ComponentBase, IDisposable
         if (!State.IsPaused)
             State.Tick();
 
+        // With no column sorted, the rules keep their number order.
+        view = GridViews.Get(State.SiteSlug, "alert-rules", 25);
         knownIncidentIds.UnionWith(State.Incidents.Select(incident => incident.Id));
         runningFaultIds.UnionWith(RunningFaults.Select(fault => fault.Id));
+        NewDrillForm(string.Empty, MonitoringImpact.Errors, 60);
         State.Changed += OnStateChanged;
     }
 
@@ -301,31 +292,10 @@ public partial class AdminAlerts : ComponentBase, IDisposable
             _ => SharedRefusal(result) ?? "That didn't work. No drill started.",
         });
 
+        if (result == MonitoringResult.Ok)
+            NewDrillForm(string.Empty, request.Impact, request.Seconds);
+
         return result == MonitoringResult.Ok;
-    }
-
-    private bool ApplyRule(RuleRequest request)
-    {
-        var result = State.SaveRule(request.RuleId, request.Name, request.ServiceId, request.Metric, request.Threshold, request.ForSeconds, request.Severity,
-            request.AutoPublish, request.PublicMessage, request.IsEnabled, out var saved);
-        var serviceName = ServiceName(request.ServiceId);
-
-        Announce(result is MonitoringResult.Ok or MonitoringResult.NoChange, result switch
-        {
-            MonitoringResult.Ok when request.RuleId == 0 => $"Created rule \"{saved!.Name}\" on {serviceName}." + (saved.IsEnabled ? " It checks every sample from now on." : " It's disabled until you turn it on."),
-            MonitoringResult.Ok => $"Saved rule \"{saved!.Name}\". Incidents it already opened don't change.",
-            MonitoringResult.NoChange => $"Nothing changed: \"{request.Name}\" already has these settings.",
-            MonitoringResult.NotFound => request.RuleId != 0 && State.Rules.All(rule => rule.Id != request.RuleId)
-                ? "That rule was deleted meanwhile, so nothing was saved."
-                : "The service was deleted meanwhile, so nothing was saved.",
-            MonitoringResult.Invalid => request.RuleId == 0 && State.Rules.Count >= MonitoringState.MaxRules
-                ? $"The rule couldn't be created: this tab already has {MonitoringState.MaxRules} rules. Delete one first."
-                : "The rule couldn't be saved: " + (MonitoringState.RuleProblem(request.Name, request.Metric, request.Threshold, request.ForSeconds, request.Severity, request.AutoPublish, request.PublicMessage) ?? "this tab's storage is full."),
-            _ => SharedRefusal(result) ?? "That didn't work, and nothing was saved.",
-        });
-
-        // A new rule's row is added below; the opener (New rule, or the row's Edit) is still there.
-        return result is MonitoringResult.Ok or MonitoringResult.NoChange;
     }
 
     private async Task ConfirmAsync()
@@ -393,6 +363,18 @@ public partial class AdminAlerts : ComponentBase, IDisposable
             .OrderBy(incident => incident.Id)
             .FirstOrDefault();
 
+    /// <summary>Whether another rule already has this name (the rule being edited doesn't count).</summary>
+    private Task<bool> IsRuleNameTakenAsync(string name) => Task.FromResult(State.IsRuleNameTaken(name, editingRuleId));
+
+    /// <summary>A fresh drill form in a new edit context, so no old message stays.</summary>
+    private void NewDrillForm(string serviceId, MonitoringImpact impact, int seconds)
+    {
+        drillForm = new DrillForm { ServiceId = serviceId, Impact = impact, Seconds = seconds };
+        drillContext = new EditContext(drillForm);
+        drillServerErrors = new ValidationMessageStore(drillContext);
+        drillContext.OnFieldChanged += (_, args) => drillServerErrors?.Clear(args.FieldIdentifier);
+    }
+
     /// <summary>
     /// The dialog opens from code, so Bootstrap does not return focus. A confirmed action runs now that the dialog is gone;
     /// focus then goes back to the button that opened it, or to the status message when that button is gone.
@@ -409,32 +391,30 @@ public partial class AdminAlerts : ComponentBase, IDisposable
             focusTarget = () => opener?.Element;
     }
 
+    /// <summary>The rule was saved before the dialog closed (or it was cancelled): focus goes back to the button that opened it.</summary>
     private void OnRuleHidden()
     {
-        var request = pendingRule;
-        pendingRule = null;
         var opener = ruleOpener;
-
-        if (request is not null && !ApplyRule(request))
-            focusStatus = true;
-        else
-            focusTarget = () => opener?.Element;
+        focusTarget = () => opener?.Element;
     }
 
+    /// <summary>A new metric starts from its usual threshold, which is checked again.</summary>
     private void OnRuleMetricChanged()
     {
-        ruleThreshold = DefaultThreshold(ruleMetric);
-        ruleThresholdError = null;
+        ruleForm.Threshold = DefaultThreshold(ruleForm.Metric);
+        ruleContext.NotifyFieldChanged(FieldIdentifier.Create(() => ruleForm.Threshold));
     }
 
-    private void OnRuleShown() => focusTarget = () => ruleNameInput;
+    private Task OnRuleShownAsync() => MonitoringDisplay.FocusAsync(ruleNameInput?.Element);
 
-    private void OnStateChanged() => InvokeAsync(() =>
+    /// <summary>A rule fired, a drill ended, or another screen changed the rules: announce it, and the grid reads the rules again.</summary>
+    private void OnStateChanged() => InvokeAsync(async () =>
     {
         if (disposed)
             return;
 
         DetectEvents();
+        await RefreshGridAsync();
         StateHasChanged();
     });
 
@@ -475,41 +455,56 @@ public partial class AdminAlerts : ComponentBase, IDisposable
     {
         editingRuleId = rule.Id;
         ruleOpener = editButtons.GetValueOrDefault(rule.Id);
-        ruleName = rule.Name;
-        ruleServiceId = rule.ServiceId;
-        ruleMetric = rule.Metric;
-        ruleThreshold = rule.Threshold;
-        ruleForSeconds = rule.ForSeconds;
-        ruleSeverity = rule.Severity;
-        ruleAutoPublish = rule.AutoPublish;
-        rulePublicMessage = rule.PublicMessage ?? string.Empty;
-        ruleEnabled = rule.IsEnabled;
 
-        await ShowRuleFormAsync();
+        await ShowRuleFormAsync(new RuleForm
+        {
+            Name = rule.Name, ServiceId = rule.ServiceId, Metric = rule.Metric, Threshold = rule.Threshold, ForSeconds = rule.ForSeconds, Severity = rule.Severity,
+            AutoPublish = rule.AutoPublish, PublicMessage = rule.PublicMessage ?? string.Empty, IsEnabled = rule.IsEnabled,
+        });
     }
 
     private async Task OpenNewRuleAsync()
     {
         editingRuleId = 0;
         ruleOpener = newRuleButton;
-        ruleName = string.Empty;
-        ruleServiceId = string.Empty;
-        ruleMetric = MonitoringAlertMetric.ErrorRate;
-        ruleThreshold = DefaultThreshold(ruleMetric);
-        ruleForSeconds = 20;
-        ruleSeverity = MonitoringSeverity.Major;
-        ruleAutoPublish = false;
-        rulePublicMessage = string.Empty;
-        ruleEnabled = true;
 
-        await ShowRuleFormAsync();
+        await ShowRuleFormAsync(new RuleForm { Threshold = DefaultThreshold(MonitoringAlertMetric.ErrorRate) });
     }
+
+    /// <summary>The rules the grid asked for, in number order unless a column is sorted.</summary>
+    private Task<GridDataProviderResult<MonitoringAlertRule>> ProvideRulesAsync(GridDataProviderRequest<MonitoringAlertRule> request) => view.ApplyAsync(request, State.Rules);
 
     /// <summary>The enabled rules on a service that post on the status page and could fire during the pending drill.</summary>
     private IReadOnlyList<MonitoringAlertRule> PublishingRules(string serviceId) =>
         State.FindService(serviceId) is { } service && pendingDrill is { } drill
             ? State.Rules.Where(rule => rule.ServiceId == serviceId && rule.IsEnabled && rule.AutoPublish && CouldFire(rule, service, drill.Impact, drill.Seconds)).ToList()
             : Array.Empty<MonitoringAlertRule>();
+
+    private async Task RefreshGridAsync()
+    {
+        if (grid is not null)
+            await grid.RefreshDataAsync();
+    }
+
+    /// <summary>Forgets the saved view and builds the grid again with its defaults; focus moves to the rule count.</summary>
+    private async Task ResetViewAsync()
+    {
+        await view.ResetAsync();
+        gridVersion++;
+        Announce(true, "The view is reset: rules in number order, and every column shown.");
+        StateHasChanged();
+
+        await Task.Yield();
+        await MonitoringDisplay.FocusAsync(rulesCountRegion);
+    }
+
+    /// <summary>Shows a state answer under its field, like the form's own messages; the summary and focus follow.</summary>
+    private void RuleServerError(Expression<Func<object>> field, string message)
+    {
+        ruleServerErrors?.Clear();
+        ruleServerErrors?.Add(field, message);
+        ruleContext.NotifyValidationStateChanged();
+    }
 
     private string ServiceName(string serviceId) => State.FindService(serviceId)?.Name ?? serviceId;
 
@@ -521,10 +516,14 @@ public partial class AdminAlerts : ComponentBase, IDisposable
         _ => null,
     };
 
-    private async Task ShowRuleFormAsync()
+    private async Task ShowRuleFormAsync(RuleForm form)
     {
-        pendingRule = null;
-        ruleFormError = ruleNameError = ruleServiceError = ruleMetricError = ruleThresholdError = ruleDurationError = ruleMessageError = null;
+        form.Lookup = State.FindService;
+        ruleForm = form;
+        ruleContext = new EditContext(ruleForm);
+        ruleServerErrors = new ValidationMessageStore(ruleContext);
+        ruleContext.OnFieldChanged += (_, args) => ruleServerErrors?.Clear(args.FieldIdentifier);
+        ruleFormError = null;
 
         await ruleModal.ShowAsync();
     }
@@ -552,20 +551,34 @@ public partial class AdminAlerts : ComponentBase, IDisposable
         focusStatus = true;
     }
 
-    /// <summary>Checks the drill form; a drill that could post on the status page is confirmed first.</summary>
+    /// <summary>
+    /// Starts the drill once the form is valid (a failed submit shows the summary, rule WR-002); a drill already running on
+    /// the service is the state's answer, shown on the field. A drill that could post on the status page is confirmed first.
+    /// </summary>
     private async Task SubmitDrillAsync()
     {
-        drillServiceError = State.FindService(drillServiceId) is null ? "Choose the service to inject the failure into."
-            : State.ActiveFault(drillServiceId) is not null ? $"A drill is already running on {ServiceName(drillServiceId)}. Stop it first, or choose another service."
-            : null;
+        drillServerErrors?.Clear();
 
-        if (drillServiceError is not null)
+        if (!drillContext.Validate())
+            return;
+
+        if (State.FindService(drillForm.ServiceId) is not { } service)
         {
-            focusTarget = () => drillServiceInput;
+            drillServerErrors?.Add(() => drillForm.ServiceId, "That service no longer exists. Choose another one.");
+            drillContext.NotifyValidationStateChanged();
+
             return;
         }
 
-        var request = new DrillRequest(drillServiceId, drillImpact, Math.Clamp(drillSeconds, MonitoringState.MinFaultSeconds, MonitoringState.MaxFaultSeconds));
+        if (State.ActiveFault(service.Id) is not null)
+        {
+            drillServerErrors?.Add(() => drillForm.ServiceId, $"A drill is already running on {service.Name}. Stop it first, or choose another service.");
+            drillContext.NotifyValidationStateChanged();
+
+            return;
+        }
+
+        var request = new DrillRequest(service.Id, drillForm.Impact, Math.Clamp(drillForm.Seconds, MonitoringState.MinFaultSeconds, MonitoringState.MaxFaultSeconds));
         var silenced = State.ActiveIncident(request.ServiceId) is not null || State.ActiveMaintenance(request.ServiceId) is not null;
         pendingDrill = request;
 
@@ -582,55 +595,78 @@ public partial class AdminAlerts : ComponentBase, IDisposable
         ApplyDrill(request);
     }
 
-    /// <summary>Checks the rule form with the state's own rule check, field by field; the dialog closes and the rule is saved once it is valid.</summary>
+    /// <summary>
+    /// Saves the rule once the form is valid: the name check finishes first, then every rule runs, and a failed submit shows
+    /// the summary (rule WR-002). The state checks again; its answer maps to a field or the form's message, and the dialog
+    /// closes once the rule is saved.
+    /// </summary>
     private async Task SubmitRuleAsync()
     {
-        if (pendingRule is not null)
+        ruleFormError = null;
+        ruleServerErrors?.Clear();
+        ruleContext.NotifyValidationStateChanged();
+
+        var nameFree = ruleNameCheck is null || await ruleNameCheck.CheckNowAsync();
+
+        if (!ruleContext.Validate() || !nameFree)
             return;
 
-        var name = ruleName.Trim();
-        var message = rulePublicMessage.Trim();
-        var (low, high) = MonitoringState.ThresholdRange(ruleMetric);
-        const MonitoringAlertMetric okMetric = MonitoringAlertMetric.ErrorRate;
-        const MonitoringSeverity okSeverity = MonitoringSeverity.Major;
-
-        // Each field is checked with valid values for the others, so every error shows at once in the state's own words.
-        ruleNameError = MonitoringState.RuleProblem(name, okMetric, 2, 20, okSeverity, false, null);
-        ruleServiceError = State.FindService(ruleServiceId) is null ? "Choose the service this rule watches." : null;
-        ruleMetricError = MonitoringState.RuleProblem("x", ruleMetric, low, 20, ruleSeverity, false, null);
-        ruleThresholdError = ruleThreshold is { } threshold
-            ? (ruleMetricError is null ? MonitoringState.RuleProblem("x", ruleMetric, threshold, 20, okSeverity, false, null) : null)
-            : FormattableString.Invariant($"Enter a threshold from {low} to {high} {UnitWords(ruleMetric)}.");
-        ruleDurationError = MonitoringState.RuleProblem("x", okMetric, 2, ruleForSeconds, okSeverity, false, null);
-        ruleMessageError = ruleAutoPublish && message.Length == 0
-            ? "Write the message customers will read, or turn off posting on the status page."
-            : MonitoringState.RuleProblem("x", okMetric, 2, 20, okSeverity, ruleAutoPublish, message);
-        ruleFormError = editingRuleId == 0 && State.Rules.Count >= MonitoringState.MaxRules
-            ? $"This tab already has {MonitoringState.MaxRules} rules, the most it keeps. Delete one first."
-            : editingRuleId != 0 && State.Rules.All(rule => rule.Id != editingRuleId) ? "This rule was deleted meanwhile. Cancel and create a new one." : null;
-
-        focusTarget = ruleNameError is not null ? () => ruleNameInput
-            : ruleServiceError is not null ? () => ruleServiceInput
-            : ruleMetricError is not null ? () => ruleMetricInput
-            : ruleThresholdError is not null ? () => ruleThresholdInput
-            : ruleDurationError is not null ? () => ruleDurationInput
-            : ruleMessageError is not null ? () => ruleMessageInput
-            : ruleFormError is not null ? () => ruleNameInput
-            : null;
-
-        if (focusTarget is not null)
-            return;
-
-        // The same check as a whole, in case a combination is refused.
-        if (MonitoringState.RuleProblem(name, ruleMetric, ruleThreshold!.Value, ruleForSeconds, ruleSeverity, ruleAutoPublish, message) is { } problem)
+        if (editingRuleId == 0 && State.Rules.Count >= MonitoringState.MaxRules)
         {
-            ruleFormError = problem;
-            focusTarget = () => ruleNameInput;
+            ruleFormError = $"This tab already has {MonitoringState.MaxRules} rules, the most it keeps. Delete one first.";
             return;
         }
 
-        pendingRule = new RuleRequest(editingRuleId, name, ruleServiceId, ruleMetric, ruleThreshold.Value, ruleForSeconds, ruleSeverity, ruleAutoPublish, message, ruleEnabled);
-        await ruleModal.HideAsync();
+        var name = ruleForm.Name.Trim();
+        var message = ruleForm.PublicMessage.Trim();
+        var threshold = ruleForm.Threshold!.Value;
+        var result = State.SaveRule(editingRuleId, name, ruleForm.ServiceId, ruleForm.Metric, threshold, ruleForm.ForSeconds, ruleForm.Severity,
+            ruleForm.AutoPublish, message, ruleForm.IsEnabled, out var saved);
+        var serviceName = ServiceName(ruleForm.ServiceId);
+
+        switch (result)
+        {
+            case MonitoringResult.Ok or MonitoringResult.NoChange:
+                Announce(true, result switch
+                {
+                    MonitoringResult.Ok when editingRuleId == 0 => $"Created rule \"{saved!.Name}\" on {serviceName}." + (saved.IsEnabled ? " It checks every sample from now on." : " It's disabled until you turn it on."),
+                    MonitoringResult.Ok => $"Saved rule \"{saved!.Name}\". Incidents it already opened don't change.",
+                    _ => $"Nothing changed: \"{name}\" already has these settings.",
+                });
+                await ruleModal.HideAsync();
+
+                return;
+
+            case MonitoringResult.Duplicate:
+                RuleServerError(() => ruleForm.Name, $"Another rule is already called \"{name}\". Rule names are unique, because they become incident titles.");
+
+                return;
+
+            case MonitoringResult.WrongState:
+                RuleServerError(() => ruleForm.AutoPublish, $"{serviceName} isn't on the status page, so the rule can't post there. Turn this off, or show the service on the status page first.");
+
+                return;
+
+            case MonitoringResult.NotFound:
+                ruleFormError = editingRuleId != 0 && State.Rules.All(rule => rule.Id != editingRuleId)
+                    ? "This rule was deleted meanwhile. Cancel and create a new one."
+                    : "The service was deleted meanwhile. Choose another service.";
+
+                return;
+
+            case MonitoringResult.Invalid:
+                ruleFormError = "The rule couldn't be saved: "
+                    + (MonitoringState.RuleProblem(name, ruleForm.Metric, threshold, ruleForm.ForSeconds, ruleForm.Severity, ruleForm.AutoPublish, message)
+                       ?? (State.FindService(ruleForm.ServiceId) is { } service ? MonitoringState.NormalRangeProblem(service, ruleForm.Metric, threshold) : null)
+                       ?? "this tab's storage is full.");
+
+                return;
+
+            default:
+                ruleFormError = SharedRefusal(result) ?? "That didn't work, and nothing was saved.";
+
+                return;
+        }
     }
 
     /// <summary>Says who a status page post on a service is emailed to.</summary>
@@ -678,8 +714,8 @@ public partial class AdminAlerts : ComponentBase, IDisposable
     /// the latest samples of the window are all past the threshold.
     /// </summary>
     private bool WouldFireOnSave =>
-        State.FindService(ruleServiceId) is { } service && ruleThreshold is double threshold && State.ActiveIncident(service.Id) is null && State.ActiveMaintenance(service.Id) is null
-        && State.History(service.Id).TakeLast(Math.Max(1, ruleForSeconds / MonitoringSeedData.TickSeconds)).All(sample => MonitoringDisplay.MetricOf(ruleMetric, sample) > threshold);
+        State.FindService(ruleForm.ServiceId) is { } service && ruleForm.Threshold is double threshold && State.ActiveIncident(service.Id) is null && State.ActiveMaintenance(service.Id) is null
+        && State.History(service.Id).TakeLast(Math.Max(1, ruleForm.ForSeconds / MonitoringSeedData.TickSeconds)).All(sample => MonitoringDisplay.MetricOf(ruleForm.Metric, sample) > threshold);
 
     private string ConfirmTitle => confirm switch
     {
@@ -690,6 +726,8 @@ public partial class AdminAlerts : ComponentBase, IDisposable
 
     /// <summary>The drill lengths within the state's limits.</summary>
     private static IEnumerable<int> DrillLengths => drillLengthChoices.Where(seconds => seconds is >= MonitoringState.MinFaultSeconds and <= MonitoringState.MaxFaultSeconds);
+
+    [Inject] private ShowcaseGridViewStore GridViews { get; set; } = default!;
 
     /// <summary>The finished drills, newest first.</summary>
     private IReadOnlyList<MonitoringFault> PastFaults => State.Faults.Where(fault => fault.End <= State.Clock.Now).Take(PastDrillCount).ToList();
@@ -715,12 +753,77 @@ public partial class AdminAlerts : ComponentBase, IDisposable
         StartDrill,
     }
 
+    /// <summary>The drill form's fields: the service is required; a drill already running on it is the state's answer.</summary>
+    private sealed class DrillForm
+    {
+        public MonitoringImpact Impact { get; set; } = MonitoringImpact.Errors;
+
+        public int Seconds { get; set; } = 60;
+
+        [Required(ErrorMessage = "Choose the service to inject the failure into.")]
+        public string ServiceId { get; set; } = string.Empty;
+    }
+
     /// <summary>A validated drill to start.</summary>
     private sealed record DrillRequest(string ServiceId, MonitoringImpact Impact, int Seconds);
 
-    /// <summary>A validated rule to save.</summary>
-    private sealed record RuleRequest(int RuleId, string Name, string ServiceId, MonitoringAlertMetric Metric, double Threshold, int ForSeconds, MonitoringSeverity Severity,
-        bool AutoPublish, string PublicMessage, bool IsEnabled);
+    /// <summary>
+    /// The rule form's fields, with the limits of <see cref="MonitoringState.SaveRule" />: a name and a service, the metric's
+    /// threshold range, a duration in sample steps, a message when it posts on the status page, and two cross-field rules:
+    /// the threshold is above the service's normal level, and only a service on the status page can post there.
+    /// </summary>
+    private sealed class RuleForm : IValidatableObject
+    {
+        public bool AutoPublish { get; set; }
+
+        public int ForSeconds { get; set; } = 20;
+
+        public bool IsEnabled { get; set; } = true;
+
+        /// <summary>Finds the chosen service for the cross-field rules; set by the page.</summary>
+        public Func<string?, MonitoringService?>? Lookup { get; set; }
+
+        public MonitoringAlertMetric Metric { get; set; } = MonitoringAlertMetric.ErrorRate;
+
+        [Required(ErrorMessage = "Give the rule a name.")]
+        [StringLength(MonitoringState.MaxRuleNameLength, ErrorMessage = "Use 80 characters or fewer for the name.")]
+        public string Name { get; set; } = string.Empty;
+
+        [StringLength(MonitoringState.MaxUpdateLength, ErrorMessage = "Use 1,000 characters or fewer for the message.")]
+        public string PublicMessage { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Choose the service this rule watches.")]
+        public string ServiceId { get; set; } = string.Empty;
+
+        public MonitoringSeverity Severity { get; set; } = MonitoringSeverity.Major;
+
+        [Required(ErrorMessage = "Enter the threshold the metric must stay above.")]
+        public double? Threshold { get; set; }
+
+        /// <summary>Runs once the fields are filled in: the threshold's range and the service's normal level, the duration, and posting.</summary>
+        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+        {
+            var (low, high) = MonitoringState.ThresholdRange(Metric);
+            var service = Lookup?.Invoke(ServiceId);
+
+            if (Threshold is { } threshold)
+            {
+                if (!double.IsFinite(threshold) || threshold < low || threshold > high)
+                    yield return new ValidationResult(FormattableString.Invariant($"Set a threshold from {low} to {high} {UnitWords(Metric)}."), new[] { nameof(Threshold) });
+                else if (service is not null && MonitoringState.NormalRangeProblem(service, Metric, threshold) is { } normal)
+                    yield return new ValidationResult(normal, new[] { nameof(Threshold) });
+            }
+
+            if (MonitoringState.RuleProblem("x", MonitoringAlertMetric.ErrorRate, 2, ForSeconds, MonitoringSeverity.Major, false, null) is { } duration)
+                yield return new ValidationResult(duration, new[] { nameof(ForSeconds) });
+
+            if (AutoPublish && string.IsNullOrWhiteSpace(PublicMessage))
+                yield return new ValidationResult("Write the message customers will read, or turn off posting on the status page.", new[] { nameof(PublicMessage) });
+
+            if (AutoPublish && service is { IsPublic: false })
+                yield return new ValidationResult($"{service.Name} isn't on the status page, so the rule can't post there. Turn this off, or show the service on the status page first.", new[] { nameof(AutoPublish) });
+        }
+    }
 
     /// <summary>One line of the status region, with a link to an incident when it is about one.</summary>
     private sealed record StatusNote(string Text, int? IncidentId, bool IsPublic);

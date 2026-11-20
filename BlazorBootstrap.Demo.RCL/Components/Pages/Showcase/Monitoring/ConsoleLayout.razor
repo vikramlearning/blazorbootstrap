@@ -7,11 +7,13 @@
             <div class="mw-console-bar">
                 <span class="mw-console-bar-title">Console</span>
                 <div class="mw-console-bar-actions">
+                    @* The search and the notifications show only while someone is signed in; the bell reads the same list as the Notifications page. *@
+                    <ShowcaseGlobalSearch Class="mw-global-search" Placeholder="@SearchPlaceholder" />
                     <a class="btn btn-sm btn-outline-secondary" href="@MonitoringLayout.Base">
                         <Icon Name="IconName.BoxArrowUpRight" class="me-1" aria-hidden="true" />View status page
                     </a>
-                    <ShowcaseAccountMenu SiteBase="@MonitoringLayout.Base" SignInPath="@MonitoringLayout.SignInPath"
-                                         NoticeCount="@State.UnreadCount" NoticesPath="@($"{Base}/notifications")" />
+                    <ShowcaseNotificationsMenu />
+                    <ShowcaseAccountMenu SiteBase="@MonitoringLayout.Base" SignInPath="@MonitoringLayout.SignInPath" />
                 </div>
             </div>
         </Header>

@@ -1,0 +1,22 @@
+@page "/showcase/monitoring/console/audit"
+@layout ConsoleLayout
+
+<PageTitle>Audit log · @MonitoringSeedData.ProductName</PageTitle>
+
+@* Engineers and admins see it: the console's guard keeps everyone else out, and the state shows the log to them only. *@
+<div class="container-fluid px-lg-4">
+    <div class="mw-page-head">
+        <div>
+            <h1 class="mw-title">Audit log</h1>
+            <p class="mw-lead">
+                Who did what, and when: incidents (declared, acknowledged, assigned, updated, resolved), alerts the rules fired, alert rules and drills,
+                maintenance windows, services, on-call overrides, notification settings, and status page subscriptions. Newest first.
+            </p>
+        </div>
+    </div>
+    <Card Class="mw-card">
+        <CardBody Class="p-3 p-lg-4">
+            <ShowcaseAuditLog ExportFileName="monitoring-audit-log" />
+        </CardBody>
+    </Card>
+</div>
