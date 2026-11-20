@@ -36,6 +36,7 @@
 <Section Size="HeadingSize.H2" Name="Change spinner color" PageUrl="@pageUrl" Link="change-spinner-color">
     <div class="mb-3">
         Change the default spinner color by passing the <code>SpinnerColor</code> enum to the <code>Show(...)</code> method.
+        The color applies to the spinner only; the loading text stays light so it remains readable.
         In the below example, we are using a <a href="@($"{pageUrl}#global-preload-service-for-the-application")">global preload service</a>, as shown in the above section.
     </div>
     <Demo Type="typeof(Preload_Demo_03_Change_Spinner_Color)" />
@@ -47,6 +48,7 @@
             <li>When the preload shows, screen readers announce it as a status message, without moving focus. They hear the text passed to <code>Show(...)</code>, otherwise <code>LoadingText</code>, otherwise <code>VisuallyHiddenText</code> (default "Loading..."), which you can set to localize it. A new text passed to <code>Show(...)</code> while the preload is shown is announced again.</li>
             <li>While the preload is shown, the page behind it can't be reached with the keyboard or by assistive technology, just as the backdrop stops mouse clicks. When it hides, focus returns to the element that had it.</li>
             <li>If you pass your own <code>ChildContent</code>, its text is what screen readers announce, so include visible text such as "Uploading files...".</li>
+            <li>The loading text is always light, and the backdrop dims the page enough for the text to stay readable over any page, in light and dark mode. Custom content gets the same light text unless it sets its own color. A colored spinner shown without loading text may not stand out enough from the page, so add loading text or use <code>SpinnerColor.Light</code>.</li>
         </ul>
     </div>
 </Section>
