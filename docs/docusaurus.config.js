@@ -58,6 +58,7 @@ const config = {
     themeConfig:
         /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
         ({
+            image: 'img/social-card.png',
             announcementBar: {
                 id: 'support_us',
                 content: '⭐️ If you like Blazor Bootstrap, give it a star on <a target="_blank" rel="noopener noreferrer" href="https://github.com/vikramlearning/blazorbootstrap">GitHub</a>! ⭐️',
