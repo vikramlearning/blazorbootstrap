@@ -35,7 +35,7 @@
 
 ## Showcase
 
-Eleven example websites that the Blazor Bootstrap team built to show the enterprise applications you can make with Blazor Bootstrap: from a help desk, an HR portal, and DevOps monitoring to a SaaS product and a clinic portal. They are listed by enterprise value, highest first. Each uses only Blazor Bootstrap components, runs on fictitious data with no backend, works in Blazor Server and WebAssembly, and supports light and dark mode. Browse them all in the [Showcase gallery](https://demos.blazorbootstrap.com/showcase), read [how each one is built](https://docs.blazorbootstrap.com/showcase), or [view the source](https://github.com/vikramlearning/blazorbootstrap/tree/main/BlazorBootstrap.Demo.RCL/Components/Pages/Showcase).
+Example websites that the Blazor Bootstrap team built to show the enterprise applications you can make with Blazor Bootstrap: from a help desk, an HR portal, and DevOps monitoring to a SaaS product and a clinic portal. They are listed by enterprise value, highest first. Each uses only Blazor Bootstrap components, runs on fictitious data with no backend, works in Blazor Server and WebAssembly, and supports light and dark mode. Browse them all in the [Showcase gallery](https://demos.blazorbootstrap.com/showcase), read [how each one is built](https://docs.blazorbootstrap.com/showcase), or [view the source](https://github.com/vikramlearning/blazorbootstrap/tree/main/BlazorBootstrap.Demo.RCL/Components/Pages/Showcase).
 
 <table>
   <tr>
@@ -87,18 +87,6 @@ Eleven example websites that the Blazor Bootstrap team built to show the enterpr
       <a href="https://demos.blazorbootstrap.com/showcase/ai-assistant"><picture><source media="(prefers-color-scheme: dark)" srcset="BlazorBootstrap.Demo.RCL/wwwroot/showcase/gallery/ai-assistant-dark.webp"><img src="BlazorBootstrap.Demo.RCL/wwwroot/showcase/gallery/ai-assistant-light.webp" alt="AI Assistant Workspace home screen" width="100%"></picture></a><br>
       <b>AI Assistant Workspace</b><br>
       <a href="https://demos.blazorbootstrap.com/showcase/ai-assistant">Live demo</a> · <a href="https://docs.blazorbootstrap.com/showcase/ai-assistant">How it's built</a>
-    </td>
-  </tr>
-  <tr>
-    <td width="33%" valign="top">
-      <a href="https://demos.blazorbootstrap.com/showcase/learning"><picture><source media="(prefers-color-scheme: dark)" srcset="BlazorBootstrap.Demo.RCL/wwwroot/showcase/gallery/learning-dark.webp"><img src="BlazorBootstrap.Demo.RCL/wwwroot/showcase/gallery/learning-light.webp" alt="Online Learning home screen" width="100%"></picture></a><br>
-      <b>Online Learning</b><br>
-      <a href="https://demos.blazorbootstrap.com/showcase/learning">Live demo</a> · <a href="https://docs.blazorbootstrap.com/showcase/learning">How it's built</a>
-    </td>
-    <td width="33%" valign="top">
-      <a href="https://demos.blazorbootstrap.com/showcase/travel"><picture><source media="(prefers-color-scheme: dark)" srcset="BlazorBootstrap.Demo.RCL/wwwroot/showcase/gallery/travel-dark.webp"><img src="BlazorBootstrap.Demo.RCL/wwwroot/showcase/gallery/travel-light.webp" alt="Travel &amp; Stay Booking home screen" width="100%"></picture></a><br>
-      <b>Travel &amp; Stay Booking</b><br>
-      <a href="https://demos.blazorbootstrap.com/showcase/travel">Live demo</a> · <a href="https://docs.blazorbootstrap.com/showcase/travel">How it's built</a>
     </td>
   </tr>
 </table>
