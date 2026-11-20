@@ -1352,6 +1352,20 @@ window.blazorBootstrap = {
                 ele.checked = isChecked;
             });
         },
+        // Saves text as a file through a temporary object URL; used by the grid's CSV export.
+        // The byte order mark lets spreadsheet apps read the CSV as UTF-8.
+        downloadFile: (fileName, mimeType, text) => {
+            let blob = new Blob(['﻿', text], { type: mimeType });
+            let url = URL.createObjectURL(blob);
+            let link = document.createElement('a');
+            link.href = url;
+            link.download = fileName;
+            link.style.display = 'none';
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            setTimeout(() => URL.revokeObjectURL(url), 0);
+        },
         scroll: (elementId) => {
             let tableEl = document.getElementById(elementId);
             if (tableEl === null)

@@ -10,9 +10,22 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
 
     private Dictionary<int, string> checkboxIds = new();
 
+    /// <summary>
+    /// Column keys in the user's display order; <see langword="null" /> keeps the declared order.
+    /// </summary>
+    private List<string>? columnOrder;
+
+    private string columnChooserSearch = string.Empty;
+
+    private string columnChooserStatus = string.Empty;
+
     private List<GridColumn<TItem>> columns = new();
 
     private GridDetailView<TItem>? detailView;
+
+    private string? draggedColumnKey;
+
+    private string exportStatus = string.Empty;
 
     public GridEmptyDataTemplate<TItem>? emptyDataTemplate;
 
@@ -24,6 +37,11 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     private string headerCheckboxId = default!;
 
     private RenderFragment? headerSelectionTemplate;
+
+    /// <summary>
+    /// Keys of the columns the user has hidden. Separate from <see cref="GridColumn{TItem}.IsVisible" />, which the app owns.
+    /// </summary>
+    private HashSet<string> hiddenColumns = new(StringComparer.Ordinal);
 
     private bool isColumnVisibilityChanged = false;
 
@@ -126,6 +144,60 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     }
 
     /// <summary>
+    /// Downloads a CSV file of every row that matches the current filters and sort, across all pages, with the visible columns in display order.
+    /// With a <c>DataProvider</c>, the provider is called once with <c>PageNumber</c> and <c>PageSize</c> set to 0, which means all rows.
+    /// When no row matches, or the data cannot be read, nothing is downloaded and a status message says so.
+    /// </summary>
+    /// <returns>Task</returns>
+    [AddedVersion("4.1.0")]
+    [Description("Downloads a CSV file of every row that matches the current filters and sort, across all pages, with the visible columns in display order.")]
+    public async Task ExportToCsvAsync()
+    {
+        exportStatus = string.Empty;
+
+        List<TItem> rows;
+
+        try
+        {
+            var request = new GridDataProviderRequest<TItem>
+            {
+                PageNumber = 0,
+                PageSize = 0,
+                Sorting = AllowSorting ? gridCurrentState.Sorting ?? GetDefaultSorting()! : null!,
+                Filters = AllowFiltering ? GetFilters()! : null!
+            };
+
+            var result = DataProvider is not null ? await DataProvider.Invoke(request) : request.ApplyTo(Data!);
+            rows = result?.Data?.ToList() ?? new List<TItem>();
+        }
+        catch (Exception)
+        {
+            // A data source failure must not break the page; the status message reports it.
+            exportStatus = ExportErrorText;
+            await InvokeAsync(StateHasChanged);
+            return;
+        }
+
+        if (rows.Count == 0)
+        {
+            exportStatus = ExportNoDataText;
+            await InvokeAsync(StateHasChanged);
+            return;
+        }
+
+        var exportColumns = GetDisplayColumns()
+                            .Where(column => column.Exportable && !string.IsNullOrWhiteSpace(column.PropertyName))
+                            .Select(column => (GetColumnLabel(column), column.PropertyName!))
+                            .ToList();
+
+        var csv = GridCsvUtility.Write(rows, exportColumns, GetCultureInfo());
+        var fileName = ExportFileName.EndsWith(".csv", StringComparison.OrdinalIgnoreCase) ? ExportFileName : $"{ExportFileName}.csv";
+
+        await SafeInvokeVoidAsync("window.blazorBootstrap.grid.downloadFile", fileName, "text/csv;charset=utf-8", csv);
+        await InvokeAsync(StateHasChanged);
+    }
+
+    /// <summary>
     /// Get filters.
     /// </summary>
     /// <returns>IEnumerable</returns>
@@ -183,6 +255,21 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     public async Task RefreshDataAsync(CancellationToken cancellationToken = default) => await RefreshDataAsync(false, cancellationToken);
 
     /// <summary>
+    /// Restores the declared column order and shows every column the user has hidden, then saves the grid settings.
+    /// </summary>
+    /// <returns>Task</returns>
+    [AddedVersion("4.1.0")]
+    [Description("Restores the declared column order and shows every column the user has hidden, then saves the grid settings.")]
+    public async Task ResetColumnsAsync()
+    {
+        columnOrder = null;
+        hiddenColumns.Clear();
+
+        await SaveGridSettingsAsync();
+        await InvokeAsync(StateHasChanged);
+    }
+
+    /// <summary>
     /// Reset the page number to 1 and refresh the grid.
     /// </summary>
     [AddedVersion("1.4.3")]
@@ -217,6 +304,99 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
             StateHasChanged();
         }
     }
+
+    /// <summary>
+    /// Moves a column one place up or down among the columns the column chooser lists, then saves the grid settings.
+    /// </summary>
+    internal async Task MoveColumnAsync(GridColumn<TItem> column, int offset)
+    {
+        var listed = GetChooserColumns();
+        var index = listed.IndexOf(column);
+        var target = index + offset;
+
+        if (index < 0 || target < 0 || target >= listed.Count)
+            return;
+
+        await MoveColumnBeforeAsync(column, offset < 0 ? listed[target] : (target + 1 < listed.Count ? listed[target + 1] : null));
+    }
+
+    /// <summary>
+    /// Moves a column so it comes just before <paramref name="target" /> (or last when <paramref name="target" /> is <see langword="null" />),
+    /// then saves the grid settings and announces the new position.
+    /// </summary>
+    internal async Task MoveColumnBeforeAsync(GridColumn<TItem> column, GridColumn<TItem>? target)
+    {
+        if (column == target)
+            return;
+
+        var ordered = GetOrderedColumns();
+        ordered.Remove(column);
+        ordered.Insert(target is null ? ordered.Count : ordered.IndexOf(target), column);
+
+        var keys = ordered.Select(c => c.ColumnKey).Where(key => key is not null).Select(key => key!).ToList();
+        var declared = columns.Select(c => c.ColumnKey).Where(key => key is not null).Select(key => key!).ToList();
+
+        // Back at the declared order means no saved order, so default grids keep saving null.
+        columnOrder = keys.SequenceEqual(declared, StringComparer.Ordinal) ? null : keys;
+
+        var listed = GetChooserColumns();
+        columnChooserStatus = string.Format(ColumnChooserMovedText, GetColumnLabel(column), listed.IndexOf(column) + 1, listed.Count);
+
+        await SaveGridSettingsAsync();
+        await InvokeAsync(StateHasChanged);
+    }
+
+    /// <summary>
+    /// Hides or shows a column for the user, then saves the grid settings. A column marked <c>AlwaysVisible</c>,
+    /// a column without a key, and the last shown column cannot be hidden.
+    /// </summary>
+    internal async Task SetColumnHiddenAsync(GridColumn<TItem> column, bool hidden)
+    {
+        if (column.ColumnKey is null || (hidden && IsColumnLocked(column)))
+            return;
+
+        if (hidden)
+            hiddenColumns.Add(column.ColumnKey);
+        else
+            hiddenColumns.Remove(column.ColumnKey);
+
+        columnChooserStatus = string.Empty;
+
+        await SaveGridSettingsAsync();
+        await InvokeAsync(StateHasChanged);
+    }
+
+    /// <summary>
+    /// Gets every column in display order, including hidden ones. Columns missing from the saved order
+    /// (new columns, or columns without a key) keep their declared position.
+    /// </summary>
+    internal List<GridColumn<TItem>> GetOrderedColumns()
+    {
+        if (columnOrder is null || columnOrder.Count == 0)
+            return columns.ToList();
+
+        var ordered = new List<GridColumn<TItem>>(columns.Count);
+
+        foreach (var key in columnOrder)
+        {
+            var column = columns.FirstOrDefault(c => c.ColumnKey == key && !ordered.Contains(c));
+
+            if (column is not null)
+                ordered.Add(column);
+        }
+
+        for (var index = 0; index < columns.Count; index++)
+            if (!ordered.Contains(columns[index]))
+                ordered.Insert(Math.Min(index, ordered.Count), columns[index]);
+
+        return ordered;
+    }
+
+    /// <summary>
+    /// Determines whether the user has hidden the column. A column marked <c>AlwaysVisible</c>, or one without a key, is never hidden by the user.
+    /// </summary>
+    internal bool IsHiddenByUser(GridColumn<TItem> column) =>
+        !column.AlwaysVisible && column.ColumnKey is not null && hiddenColumns.Contains(column.ColumnKey);
 
     internal async Task FilterChangedAsync()
     {
@@ -411,6 +591,30 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
               ?
               .SelectMany(item => item.GetSorting());
 
+    /// <summary>
+    /// Gets the columns the column chooser lists, in display order: those the app shows and that have a key.
+    /// </summary>
+    private List<GridColumn<TItem>> GetChooserColumns() =>
+        GetOrderedColumns().Where(c => c.IsVisible && c.ColumnKey is not null).ToList();
+
+    private static string GetColumnLabel(GridColumn<TItem> column) =>
+        !string.IsNullOrWhiteSpace(column.HeaderText) ? column.HeaderText! : column.PropertyName ?? string.Empty;
+
+    /// <summary>
+    /// Gets the columns to render, in display order: visible to the app and not hidden by the user.
+    /// </summary>
+    private List<GridColumn<TItem>> GetDisplayColumns()
+    {
+        var ordered = GetOrderedColumns();
+        var shown = ordered.Where(c => c.IsVisible && !IsHiddenByUser(c)).ToList();
+
+        // The user can never hide every column; ignore saved hidden columns that would.
+        if (shown.Count == 0 && hiddenColumns.Count > 0)
+            shown = ordered.Where(c => c.IsVisible).ToList();
+
+        return shown;
+    }
+
     private string GetGridContainerStyle()
     {
         var styleAttributes = new HashSet<string>();
@@ -458,6 +662,12 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     }
 
     /// <summary>
+    /// Determines whether the user cannot hide the column: it is marked <c>AlwaysVisible</c>, or it is the only column still shown.
+    /// </summary>
+    private bool IsColumnLocked(GridColumn<TItem> column) =>
+        column.AlwaysVisible || (!IsHiddenByUser(column) && GetDisplayColumns().Count <= 1);
+
+    /// <summary>
     /// Determines whether the item is already selected.
     /// </summary>
     /// <param name="item"></param>
@@ -474,6 +684,16 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
         if (settings is null)
             return;
 
+        // Settings saved before column order and hidden columns existed have nulls here and keep the defaults.
+        columnOrder = settings.ColumnOrder?.Where(key => !string.IsNullOrWhiteSpace(key)).Distinct(StringComparer.Ordinal).ToList();
+
+        if (columnOrder is { Count: 0 })
+            columnOrder = null;
+
+        hiddenColumns = settings.HiddenColumns is null
+                            ? new HashSet<string>(StringComparer.Ordinal)
+                            : new HashSet<string>(settings.HiddenColumns.Where(key => !string.IsNullOrWhiteSpace(key)), StringComparer.Ordinal);
+
         if (settings.Filters is not null && settings.Filters.Any())
             SetFilters(settings.Filters);
 
@@ -487,6 +707,15 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
             gridCurrentState = new GridState<TItem>(1, null);
             pageSize = 10;
         }
+    }
+
+    private async Task OnColumnDroppedAsync(GridColumn<TItem> target)
+    {
+        var dragged = columns.FirstOrDefault(c => c.ColumnKey is not null && c.ColumnKey == draggedColumnKey);
+        draggedColumnKey = null;
+
+        if (dragged is not null)
+            await MoveColumnBeforeAsync(dragged, target);
     }
 
     private async Task OnHeaderCheckboxChanged(ChangeEventArgs args)
@@ -601,7 +830,14 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
         if (!GridSettingsChanged.HasDelegate)
             return;
 
-        var settings = new GridSettings { PageNumber = AllowPaging ? gridCurrentState.PageIndex : 0, PageSize = AllowPaging ? pageSize : 0, Filters = AllowFiltering ? GetFilters() : null };
+        var settings = new GridSettings
+        {
+            ColumnOrder = columnOrder?.ToList(),
+            Filters = AllowFiltering ? GetFilters() : null,
+            HiddenColumns = hiddenColumns.Count > 0 ? hiddenColumns.ToList() : null,
+            PageNumber = AllowPaging ? gridCurrentState.PageIndex : 0,
+            PageSize = AllowPaging ? pageSize : 0
+        };
 
         await GridSettingsChanged.InvokeAsync(settings);
     }
@@ -680,6 +916,19 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     //[Parameter] public int AllowEdit { get; set; }
 
     /// <summary>
+    /// If <see langword="true" />, a Columns button above the grid lets the user hide, show, search, and reorder columns.
+    /// The choice is part of the grid settings (<c>GridSettingsChanged</c> and <c>SettingsProvider</c>).
+    /// <para>
+    /// Default value is <see langword="false"/>.
+    /// </para>
+    /// </summary>
+    [AddedVersion("4.1.0")]
+    [DefaultValue(false)]
+    [Description("If <b>true</b>, a Columns button above the grid lets the user hide, show, search, and reorder columns.")]
+    [Parameter]
+    public bool AllowColumnChooser { get; set; }
+
+    /// <summary>
     /// Gets or sets a value indicating whether the grid detail view is enabled.
     /// <para>
     /// Default value is <see langword="false"/>.
@@ -690,6 +939,18 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     [Description("Gets or sets a value indicating whether the grid detail view is enabled.")]
     [Parameter]
     public bool AllowDetailView { get; set; }
+
+    /// <summary>
+    /// If <see langword="true" />, an Export CSV button above the grid downloads every row that matches the current filters and sort, with the visible columns.
+    /// <para>
+    /// Default value is <see langword="false"/>.
+    /// </para>
+    /// </summary>
+    [AddedVersion("4.1.0")]
+    [DefaultValue(false)]
+    [Description("If <b>true</b>, an Export CSV button above the grid downloads every row that matches the current filters and sort, with the visible columns.")]
+    [Parameter]
+    public bool AllowExport { get; set; }
 
     /// <summary>
     /// Gets or sets the grid filtering.
@@ -790,6 +1051,102 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     public RenderFragment? ChildContent { get; set; }
 
     /// <summary>
+    /// Gets or sets the column chooser button text.
+    /// <para>
+    /// Default value is 'Columns'.
+    /// </para>
+    /// </summary>
+    [AddedVersion("4.1.0")]
+    [DefaultValue("Columns")]
+    [Description("Gets or sets the column chooser button text.")]
+    [Parameter]
+    public string ColumnChooserButtonText { get; set; } = "Columns";
+
+    /// <summary>
+    /// Gets or sets the note shown when a column cannot be hidden.
+    /// <para>
+    /// Default value is 'At least one column stays visible.'.
+    /// </para>
+    /// </summary>
+    [AddedVersion("4.1.0")]
+    [DefaultValue("At least one column stays visible.")]
+    [Description("Gets or sets the note shown when a column cannot be hidden.")]
+    [Parameter]
+    public string ColumnChooserLastColumnText { get; set; } = "At least one column stays visible.";
+
+    /// <summary>
+    /// Gets or sets the announcement after a column moves. {0} is the column name, {1} its new position, and {2} the number of columns.
+    /// <para>
+    /// Default value is '{0} moved to position {1} of {2}.'.
+    /// </para>
+    /// </summary>
+    [AddedVersion("4.1.0")]
+    [DefaultValue("{0} moved to position {1} of {2}.")]
+    [Description("Gets or sets the announcement after a column moves. {0} is the column name, {1} its new position, and {2} the number of columns.")]
+    [Parameter]
+    public string ColumnChooserMovedText { get; set; } = "{0} moved to position {1} of {2}.";
+
+    /// <summary>
+    /// Gets or sets the accessible name of the move-down button. {0} is the column name.
+    /// <para>
+    /// Default value is 'Move {0} down'.
+    /// </para>
+    /// </summary>
+    [AddedVersion("4.1.0")]
+    [DefaultValue("Move {0} down")]
+    [Description("Gets or sets the accessible name of the move-down button. {0} is the column name.")]
+    [Parameter]
+    public string ColumnChooserMoveDownText { get; set; } = "Move {0} down";
+
+    /// <summary>
+    /// Gets or sets the accessible name of the move-up button. {0} is the column name.
+    /// <para>
+    /// Default value is 'Move {0} up'.
+    /// </para>
+    /// </summary>
+    [AddedVersion("4.1.0")]
+    [DefaultValue("Move {0} up")]
+    [Description("Gets or sets the accessible name of the move-up button. {0} is the column name.")]
+    [Parameter]
+    public string ColumnChooserMoveUpText { get; set; } = "Move {0} up";
+
+    /// <summary>
+    /// Gets or sets the text shown when the column search matches nothing.
+    /// <para>
+    /// Default value is 'No columns match'.
+    /// </para>
+    /// </summary>
+    [AddedVersion("4.1.0")]
+    [DefaultValue("No columns match")]
+    [Description("Gets or sets the text shown when the column search matches nothing.")]
+    [Parameter]
+    public string ColumnChooserNoMatchText { get; set; } = "No columns match";
+
+    /// <summary>
+    /// Gets or sets the column chooser reset button text.
+    /// <para>
+    /// Default value is 'Reset to default'.
+    /// </para>
+    /// </summary>
+    [AddedVersion("4.1.0")]
+    [DefaultValue("Reset to default")]
+    [Description("Gets or sets the column chooser reset button text.")]
+    [Parameter]
+    public string ColumnChooserResetText { get; set; } = "Reset to default";
+
+    /// <summary>
+    /// Gets or sets the column search box placeholder and accessible name.
+    /// <para>
+    /// Default value is 'Search columns'.
+    /// </para>
+    /// </summary>
+    [AddedVersion("4.1.0")]
+    [DefaultValue("Search columns")]
+    [Description("Gets or sets the column search box placeholder and accessible name.")]
+    [Parameter]
+    public string ColumnChooserSearchPlaceholderText { get; set; } = "Search columns";
+
+    /// <summary>
     /// Gets or sets the grid data.
     /// <para>
     /// Default value is <see langword="null"/>.
@@ -862,6 +1219,54 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     [Description("Gets or sets the enum filter select text.")]
     [Parameter]
     public string EnumFilterSelectText { get; set; } = "Select";
+
+    /// <summary>
+    /// Gets or sets the export button text.
+    /// <para>
+    /// Default value is 'Export CSV'.
+    /// </para>
+    /// </summary>
+    [AddedVersion("4.1.0")]
+    [DefaultValue("Export CSV")]
+    [Description("Gets or sets the export button text.")]
+    [Parameter]
+    public string ExportButtonText { get; set; } = "Export CSV";
+
+    /// <summary>
+    /// Gets or sets the message shown when the rows cannot be read for export.
+    /// <para>
+    /// Default value is 'The rows could not be exported. Try again.'.
+    /// </para>
+    /// </summary>
+    [AddedVersion("4.1.0")]
+    [DefaultValue("The rows could not be exported. Try again.")]
+    [Description("Gets or sets the message shown when the rows cannot be read for export.")]
+    [Parameter]
+    public string ExportErrorText { get; set; } = "The rows could not be exported. Try again.";
+
+    /// <summary>
+    /// Gets or sets the downloaded file name; .csv is added when missing.
+    /// <para>
+    /// Default value is 'export'.
+    /// </para>
+    /// </summary>
+    [AddedVersion("4.1.0")]
+    [DefaultValue("export")]
+    [Description("Gets or sets the downloaded file name; .csv is added when missing.")]
+    [Parameter]
+    public string ExportFileName { get; set; } = "export";
+
+    /// <summary>
+    /// Gets or sets the message shown when no row matches the current filters.
+    /// <para>
+    /// Default value is 'There are no rows to export.'.
+    /// </para>
+    /// </summary>
+    [AddedVersion("4.1.0")]
+    [DefaultValue("There are no rows to export.")]
+    [Description("Gets or sets the message shown when no row matches the current filters.")]
+    [Parameter]
+    public string ExportNoDataText { get; set; } = "There are no rows to export.";
 
     /// <summary>
     /// Gets or sets the filters row css class.

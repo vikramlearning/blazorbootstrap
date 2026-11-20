@@ -8,10 +8,116 @@
 
 @if (columns.Any())
 {   
-    var columnCount = columns.Where(c => c.IsVisible).Count();
+    var displayColumns = GetDisplayColumns();
+    var columnCount = displayColumns.Count;
     if (AllowSelection) columnCount += 1;
     if (AllowDetailView) columnCount += 1;
     
+    @if (AllowColumnChooser || AllowExport)
+    {
+        var chooserColumns = GetChooserColumns();
+        var search = columnChooserSearch.Trim();
+        var matchingColumns = search.Length == 0
+                                ? chooserColumns
+                                : chooserColumns.Where(c => GetColumnLabel(c).Contains(search, StringComparison.CurrentCultureIgnoreCase)).ToList();
+        var lockedNoteId = $"{Id}-columns-locked";
+
+        <div class="d-flex flex-wrap justify-content-end align-items-center gap-2 mb-2">
+            @if (AllowExport)
+            {
+                <span class="small text-body-secondary" role="status">@exportStatus</span>
+                <Button Size="ButtonSize.Small" Color="ButtonColor.Secondary" @onclick="ExportToCsvAsync">
+                    <Icon Name="IconName.Download" class="me-1" aria-hidden="true" />@ExportButtonText
+                </Button>
+            }
+            @if (AllowColumnChooser)
+            {
+            <Dropdown AutoCloseBehavior="DropdownAutoCloseBehavior.Outside" Size="DropdownSize.Small" Color="DropdownColor.Secondary">
+                <DropdownToggleButton>
+                    <Icon Name="IconName.LayoutThreeColumns" class="me-1" aria-hidden="true" />@ColumnChooserButtonText
+                </DropdownToggleButton>
+                <DropdownMenu Class="p-2 bb-grid-column-chooser">
+                    <li>
+                        <input type="search"
+                               class="form-control form-control-sm mb-2"
+                               placeholder="@ColumnChooserSearchPlaceholderText"
+                               aria-label="@ColumnChooserSearchPlaceholderText"
+                               autocomplete="off"
+                               value="@columnChooserSearch"
+                               @oninput="args => columnChooserSearch = args.Value?.ToString() ?? string.Empty" />
+                    </li>
+                    <li>
+                        @if (matchingColumns.Count == 0)
+                        {
+                            <p class="small text-body-secondary mb-2">@ColumnChooserNoMatchText</p>
+                        }
+                        else
+                        {
+                            <ul class="list-unstyled mb-2 overflow-auto bb-grid-column-chooser-list" aria-label="@ColumnChooserButtonText">
+                                @foreach (var column in matchingColumns)
+                                {
+                                    var label = GetColumnLabel(column);
+                                    var checkboxId = $"{Id}-column-{chooserColumns.IndexOf(column)}";
+                                    var position = chooserColumns.IndexOf(column);
+                                    var isLocked = IsColumnLocked(column);
+                                    var isLastShown = isLocked && !column.AlwaysVisible;
+
+                                    <li @key="column.ColumnKey"
+                                        class="d-flex align-items-center gap-1 py-1 @(draggedColumnKey == column.ColumnKey ? "opacity-50" : "")"
+                                        draggable="true"
+                                        @ondragstart="() => draggedColumnKey = column.ColumnKey"
+                                        @ondragend="() => draggedColumnKey = null"
+                                        @ondragover:preventDefault="true"
+                                        @ondragover="() => { }"
+                                        @ondrop="() => OnColumnDroppedAsync(column)">
+                                        <span class="bb-grid-column-chooser-handle text-body-secondary px-1" aria-hidden="true">
+                                            <Icon Name="IconName.GripVertical" />
+                                        </span>
+                                        <div class="form-check mb-0 flex-grow-1">
+                                            <input class="form-check-input"
+                                                   type="checkbox"
+                                                   id="@checkboxId"
+                                                   checked="@(!IsHiddenByUser(column))"
+                                                   disabled="@isLocked"
+                                                   aria-describedby="@(isLastShown ? lockedNoteId : null)"
+                                                   @onchange="args => SetColumnHiddenAsync(column, !(args.Value is bool shown && shown))" />
+                                            <label class="form-check-label text-nowrap" for="@checkboxId">@label</label>
+                                        </div>
+                                        <button type="button"
+                                                class="btn btn-sm btn-link p-1 text-body-secondary"
+                                                aria-label="@string.Format(ColumnChooserMoveUpText, label)"
+                                                title="@string.Format(ColumnChooserMoveUpText, label)"
+                                                disabled="@(position == 0)"
+                                                @onclick="() => MoveColumnAsync(column, -1)">
+                                            <Icon Name="IconName.ArrowUp" aria-hidden="true" />
+                                        </button>
+                                        <button type="button"
+                                                class="btn btn-sm btn-link p-1 text-body-secondary"
+                                                aria-label="@string.Format(ColumnChooserMoveDownText, label)"
+                                                title="@string.Format(ColumnChooserMoveDownText, label)"
+                                                disabled="@(position == chooserColumns.Count - 1)"
+                                                @onclick="() => MoveColumnAsync(column, 1)">
+                                            <Icon Name="IconName.ArrowDown" aria-hidden="true" />
+                                        </button>
+                                    </li>
+                                }
+                            </ul>
+                        }
+                        @if (chooserColumns.Any(c => !c.AlwaysVisible && IsColumnLocked(c)))
+                        {
+                            <p id="@lockedNoteId" class="small text-body-secondary mb-2">@ColumnChooserLastColumnText</p>
+                        }
+                    </li>
+                    <li class="border-top pt-2">
+                        <button type="button" class="btn btn-sm btn-link px-0" @onclick="ResetColumnsAsync">@ColumnChooserResetText</button>
+                        <span class="visually-hidden" role="status">@columnChooserStatus</span>
+                    </li>
+                </DropdownMenu>
+            </Dropdown>
+            }
+        </div>
+    }
+
     <div class="@GridContainerClassNames" style="@GridContainerStyleNames" onscroll="@OnScroll">
         <table @ref="@Element" id="@Id" class="@ClassNames" style="@StyleNames" @attributes="@AdditionalAttributes">
             <thead class="@THeadCssClass">
@@ -24,12 +130,8 @@
                     {
                         @HeaderSelectionTemplate
                     }
-                    @foreach (var column in columns)
+                    @foreach (var column in displayColumns)
                     {
-                        @if (!column.IsVisible)
-                        {
-                            continue;
-                        }
                         @column.HeaderTemplate
                     }
                 </tr>
@@ -44,12 +146,8 @@
                         {
                             <th></th>
                         }
-                        @foreach (var column in columns)
+                        @foreach (var column in displayColumns)
                         {
-                            @if (!column.IsVisible)
-                            {
-                                continue;
-                            }
                             var columnClassList = new HashSet<string>();
                             var columnStyleList = new List<string>();
 
@@ -173,12 +271,8 @@
                                     @ChildSelectionTemplate(rowIndex, item)
                                 }
 
-                                @foreach (var column in columns)
+                                @foreach (var column in displayColumns)
                                 {
-                                    @if (!column.IsVisible)
-                                    {
-                                        continue;
-                                    }
                                     @column.CellTemplate(item)
                                 }
                             </tr>
@@ -214,13 +308,9 @@
                             {
                                 <td></td>
                             }
-                            foreach (var column in columns)
+                            foreach (var column in displayColumns)
                             {
-                                @if (!column.IsVisible)
-                                {
-                                    continue;
-                                }
-                                else if (column.SummaryType == GridSummaryColumnType.None)
+                                @if (column.SummaryType == GridSummaryColumnType.None)
                                 {
                                     <td></td>
                                 }

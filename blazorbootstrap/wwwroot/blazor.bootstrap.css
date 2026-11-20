@@ -59,6 +59,9 @@
     --bb-table-selected-row-hover-background-color: rgba(0,0,0,0.075);
     /* enum filter */
     --bb-grid-filter-dropdown-max-height: 300px;
+    /* grid column chooser */
+    --bb-grid-column-chooser-min-width: 16rem;
+    --bb-grid-column-chooser-list-max-height: 20rem;
     /* callout */
     --bb-callout-link: 10, 88, 202;
     --bb-callout-code-color: #ab296a;
@@ -227,6 +230,19 @@ table button.dropdown-toggle.bb-grid-filter::after {
 
 .bb-grid-pagination-text {
     padding: .375rem;
+}
+
+/* grid - column chooser (Bootstrap has no utility for these three) */
+.bb-grid-column-chooser {
+    min-width: var(--bb-grid-column-chooser-min-width);
+}
+
+.bb-grid-column-chooser-list {
+    max-height: var(--bb-grid-column-chooser-list-max-height);
+}
+
+.bb-grid-column-chooser-handle {
+    cursor: grab;
 }
 
 /* forms - validation */

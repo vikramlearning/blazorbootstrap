@@ -140,6 +140,19 @@ public partial class GridColumn<TItem> : BlazorBootstrapComponentBase
     #region Properties, Indexers
 
     /// <summary>
+    /// If <see langword="true" />, the user cannot hide the column (for example from the column chooser).
+    /// It still follows <see cref="IsVisible" />.
+    /// <para>
+    /// Default value is <see langword="false"/>.
+    /// </para>
+    /// </summary>
+    [AddedVersion("4.1.0")]
+    [DefaultValue(false)]
+    [Description("If <b>true</b>, the user cannot hide the column (for example from the column chooser). It still follows <b>IsVisible</b>.")]
+    [Parameter]
+    public bool AlwaysVisible { get; set; }
+
+    /// <summary>
     /// Cell template.
     /// </summary>
     internal RenderFragment<TItem> CellTemplate =>
@@ -218,6 +231,25 @@ public partial class GridColumn<TItem> : BlazorBootstrapComponentBase
     [Description("Gets or sets the column class.")]
     [Parameter]
     public Func<TItem, string>? ColumnClass { get; set; }
+
+    /// <summary>
+    /// Gets the key that identifies the column in saved grid settings and the column chooser:
+    /// its <see cref="PropertyName" />, or its <see cref="HeaderText" /> when it has none.
+    /// <see langword="null" /> when it has neither; such a column keeps its declared position and cannot be hidden by the user.
+    /// </summary>
+    internal string? ColumnKey => !string.IsNullOrWhiteSpace(PropertyName) ? PropertyName : string.IsNullOrWhiteSpace(HeaderText) ? null : HeaderText;
+
+    /// <summary>
+    /// If <see langword="true" />, the column is included in the grid's CSV export when it is shown and has a <see cref="PropertyName" />.
+    /// <para>
+    /// Default value is <see langword="true"/>.
+    /// </para>
+    /// </summary>
+    [AddedVersion("4.1.0")]
+    [DefaultValue(true)]
+    [Description("If <b>true</b>, the column is included in the grid's CSV export when it is shown and has a <b>PropertyName</b>.")]
+    [Parameter]
+    public bool Exportable { get; set; } = true;
 
     /// <summary>
     /// If <see langword="true" />, filter is enabled.

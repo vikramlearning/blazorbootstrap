@@ -21,7 +21,9 @@ Use Blazor Bootstrap grid component to display tabular data from the data source
 
 | Name | Type | Default | Required | Description | Added Version |
 |:--|:--|:--|:--|:--|:--|
+| AllowColumnChooser | bool | false | | If true, a Columns button above the grid lets the user hide, show, search, and reorder columns. The choice is part of the grid settings. | 4.1.0 |
 | AllowDetailView | bool | false | | Gets or sets a value indicating whether the grid detail view is enabled. | 3.0.0 |
+| AllowExport | bool | false | | If true, an Export CSV button above the grid downloads every row that matches the current filters and sort, with the visible columns. | 4.1.0 |
 | AllowFiltering | bool | false | | Gets or sets the grid filtering. | 1.0.0 |
 | AllowPaging | bool | false | | Gets or sets the grid paging. | 1.0.0 |
 | AllowRowClick | bool | false | | Gets or sets the allow row click. | 1.9.5 |
@@ -29,6 +31,14 @@ Use Blazor Bootstrap grid component to display tabular data from the data source
 | AllowSorting | bool | false | | Gets or sets the grid sorting. | 1.0.0 |
 | AutoHidePaging | bool | false | | Automatically hides the paging controls when the grid item count is less than or equal to the `PageSize` and this property is set to `true`. | 1.10.5 |
 | ChildContent | RenderFragment | null | ✔️ | Gets or sets the content to be rendered within the component. | 1.0.0 |
+| ColumnChooserButtonText | string | `Columns` | | Gets or sets the column chooser button text. | 4.1.0 |
+| ColumnChooserLastColumnText | string | `At least one column stays visible.` | | Gets or sets the note shown when a column cannot be hidden. | 4.1.0 |
+| ColumnChooserMovedText | string | `{0} moved to position {1} of {2}.` | | Gets or sets the announcement after a column moves. {0} is the column name, {1} its new position, and {2} the number of columns. | 4.1.0 |
+| ColumnChooserMoveDownText | string | `Move {0} down` | | Gets or sets the accessible name of the move-down button. {0} is the column name. | 4.1.0 |
+| ColumnChooserMoveUpText | string | `Move {0} up` | | Gets or sets the accessible name of the move-up button. {0} is the column name. | 4.1.0 |
+| ColumnChooserNoMatchText | string | `No columns match` | | Gets or sets the text shown when the column search matches nothing. | 4.1.0 |
+| ColumnChooserResetText | string | `Reset to default` | | Gets or sets the column chooser reset button text. | 4.1.0 |
+| ColumnChooserSearchPlaceholderText | string | `Search columns` | | Gets or sets the column search box placeholder and accessible name. | 4.1.0 |
 | Data | `IEnumerable<TItem>` | null | | Gets or sets the grid data. | 1.4.3 |
 | DataProvider | `GridDataProviderDelegate<TItem>` | null | | DataProvider is for items to render. The provider should always return an instance of `GridDataProviderResult`, and `null` is not allowed. | 1.0.0 |
 | DisableAllRowsSelection | `Func<IEnumerable<TItem>, bool>?` | | | Enable or disable the header checkbox selection. | 1.8.0 |
@@ -36,6 +46,10 @@ Use Blazor Bootstrap grid component to display tabular data from the data source
 | EmptyDataTemplate | RenderFragment | null | ✔️ | Template to render when there are no rows to display. | 1.0.0 |
 | EmptyText | string | `No records to display` | | Shows text on no records. | 1.0.0 |
 | EnumFilterSelectText | string | `Select` | | Gets or sets the enum filter select text. | 3.1.0 |
+| ExportButtonText | string | `Export CSV` | | Gets or sets the export button text. | 4.1.0 |
+| ExportErrorText | string | `The rows could not be exported. Try again.` | | Gets or sets the message shown when the rows cannot be read for export. | 4.1.0 |
+| ExportFileName | string | `export` | | Gets or sets the downloaded file name; .csv is added when missing. | 4.1.0 |
+| ExportNoDataText | string | `There are no rows to export.` | | Gets or sets the message shown when no row matches the current filters. | 4.1.0 |
 | FiltersRowCssClass | string | null | | Gets or sets the filters row css class. | 1.9.2 |
 | FiltersTranslationProvider | `GridFiltersTranslationDelegate` | null | | Filters transalation is for grid filters to render. The provider should always return a 'FilterOperatorInfo' collection, and 'null' is not allowed. | 1.10.0 |
 | FixedHeader | bool | false | | Gets or sets the grid fixed header. | 1.10.3 |
@@ -72,16 +86,20 @@ Grid requires either `Data` or `DataProvider` parameter, but not both.
 ## Grid Methods
 | Name | Return Type | Description | Added Version |
 |:--|:--|:--|:--|
+| ExportToCsvAsync() | Task | Downloads a CSV file of every row that matches the current filters and sort, across all pages, with the visible columns in display order. | 4.1.0 |
 | GetFilters() | `IEnumerable<FilterItem>` | Get filters. | 1.0.0 |
 | RefreshDataAsync(CancellationToken cancellationToken = default) | Task | Refresh the grid data. | 1.0.0 |
+| ResetColumnsAsync() | Task | Restores the declared column order and shows every column the user has hidden, then saves the grid settings. | 4.1.0 |
 | ResetPageNumber() | ValueTask | Reset the page number to 1 and refresh the grid. | 1.4.3 |
 
 ## GridColumn Parameters
 
 | Name | Type | Default | Required | Description | Added Version |
 |:--|:--|:--|:--|:--|:--|
+| AlwaysVisible | bool | false | | If true, the user cannot hide the column (for example from the column chooser). It still follows `IsVisible`. | 4.1.0 |
 | ChildContent | RenderFragment | null | ✔️ | Gets or sets the content to be rendered within the component. | 1.0.0 |
 | ColumnClass | `Func<TItem, string>?` | | | Gets or sets the column class. | 1.6.0 |
+| Exportable | bool | true | | If true, the column is included in the grid's CSV export when it is shown and has a `PropertyName`. | 4.1.0 |
 | Filterable | bool | true | | If true, filter is enabled. The filter is enabled or disabled based on the grid `AllowFiltering` parameter. | 1.0.0 |
 | FilterButtonColor | `ButtonColor` | `ButtonColor.Light` | | Gets or sets the filter button color. | 3.0.0 |
 | FilterButtonCSSClass | `string?` | null | | Gets or sets the filter button CSS class. | 3.0.0 |
@@ -113,6 +131,8 @@ Grid requires either `Data` or `DataProvider` parameter, but not both.
 
 | Name | Type | Default | Required | Description | Added Version |
 |:--|:--|:--|:--|:--|:--|
+| ColumnOrder | `IEnumerable<string>?` | null | | Column keys (`PropertyName`, or `HeaderText` when there is none) in display order. null keeps the declared order. | 4.1.0 |
+| HiddenColumns | `IEnumerable<string>?` | null | | Keys of the columns the user has hidden. null hides none. | 4.1.0 |
 | PageNumber | int | | | Page number. | 1.0.0 |
 | PageSize | int | | | Size of the page. | 1.0.0 |
 | Filters | `IEnumerable<FilterItem>` | | | Current filters. | 1.0.0 |
@@ -4457,3 +4477,167 @@ Summaries can be combined with detail view and row selection. Set the `AllowSumm
 ```
 
 [See demo here](https://demos.blazorbootstrap.com/demos/grid/summary#summary-with-detail-view)
+
+### Column chooser
+
+Set `AllowColumnChooser="true"` to show a **Columns** button above the grid. It opens a list with a search box, a checkbox for each column, and move up and move down buttons; columns can also be dragged. The last visible column, and columns with `AlwaysVisible="true"`, cannot be hidden. The choice is part of the grid settings (`GridSettings.ColumnOrder` and `GridSettings.HiddenColumns`), so handle `GridSettingsChanged` and `SettingsProvider` to keep it. **Reset to default**, or `ResetColumnsAsync()`, restores the declared columns.
+
+```cshtml {} showLineNumbers
+<Grid TItem="Employee1"
+      Class="table table-hover table-bordered table-striped"
+      DataProvider="EmployeesDataProvider"
+      AllowColumnChooser="true"
+      AllowPaging="true"
+      PageSize="5"
+      AllowSorting="true"
+      Responsive="true"
+      GridSettingsChanged="OnGridSettingsChanged"
+      SettingsProvider="GridSettingsProvider">
+
+    <GridColumns>
+        <GridColumn TItem="Employee1" HeaderText="Id" PropertyName="Id" AlwaysVisible="true" SortKeySelector="item => item.Id">
+            @context.Id
+        </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Employee Name" PropertyName="Name" SortKeySelector="item => item.Name">
+            @context.Name
+        </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Designation" PropertyName="Designation" SortKeySelector="item => item.Designation">
+            @context.Designation
+        </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="DOJ" PropertyName="DOJ" SortKeySelector="item => item.DOJ">
+            @context.DOJ
+        </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Active" PropertyName="IsActive" SortKeySelector="item => item.IsActive">
+            @context.IsActive
+        </GridColumn>
+    </GridColumns>
+
+</Grid>
+
+@code {
+    private IEnumerable<Employee1> employees = default!;
+
+    // Kept for this page visit only. Save it to local storage or your database to keep it longer.
+    private GridSettings? savedSettings;
+
+    private async Task<GridDataProviderResult<Employee1>> EmployeesDataProvider(GridDataProviderRequest<Employee1> request)
+    {
+        if (employees is null) // pull employees only one time for client-side filtering, sorting, and paging
+            employees = GetEmployees(); // call a service or an API to pull the employees
+
+        return await Task.FromResult(request.ApplyTo(employees));
+    }
+
+    private Task<GridSettings> GridSettingsProvider() => Task.FromResult(savedSettings ?? new GridSettings());
+
+    private Task OnGridSettingsChanged(GridSettings settings)
+    {
+        savedSettings = settings; // includes ColumnOrder and HiddenColumns
+        return Task.CompletedTask;
+    }
+
+    private IEnumerable<Employee1> GetEmployees()
+    {
+        return new List<Employee1>
+        {
+            new Employee1 { Id = 107, Name = "Alice", Designation = "AI Engineer", DOJ = new DateOnly(1998, 11, 17), IsActive = true },
+            new Employee1 { Id = 103, Name = "Bob", Designation = "Senior DevOps Engineer", DOJ = new DateOnly(1985, 1, 5), IsActive = true },
+            new Employee1 { Id = 106, Name = "John", Designation = "Data Engineer", DOJ = new DateOnly(1995, 4, 17), IsActive = true },
+            new Employee1 { Id = 104, Name = "Pop", Designation = "Associate Architect", DOJ = new DateOnly(1985, 6, 8), IsActive = false },
+            new Employee1 { Id = 105, Name = "Ronald", Designation = "Senior Data Engineer", DOJ = new DateOnly(1991, 8, 23), IsActive = true },
+            new Employee1 { Id = 102, Name = "Line", Designation = "Architect", DOJ = new DateOnly(1977, 1, 12), IsActive = true },
+            new Employee1 { Id = 101, Name = "Daniel", Designation = "Architect", DOJ = new DateOnly(1977, 1, 12), IsActive = true },
+            new Employee1 { Id = 113, Name = "Merlin", Designation = "Senior Consultant", DOJ = new DateOnly(1989, 10, 2), IsActive = true },
+            new Employee1 { Id = 117, Name = "Sharna", Designation = "Data Analyst", DOJ = new DateOnly(1994, 5, 12), IsActive = true },
+            new Employee1 { Id = 108, Name = "Zayne", Designation = "Data Analyst", DOJ = new DateOnly(1991, 1, 1), IsActive = true },
+            new Employee1 { Id = 109, Name = "Isha", Designation = "App Maker", DOJ = new DateOnly(1996, 7, 1), IsActive = true },
+            new Employee1 { Id = 111, Name = "Glenda", Designation = "Data Engineer", DOJ = new DateOnly(1994, 1, 12), IsActive = true },
+        };
+    }
+}
+```
+
+[See demo here](https://demos.blazorbootstrap.com/demos/grid/other#column-chooser)
+
+### Export to CSV
+
+Set `AllowExport="true"` to show an **Export CSV** button above the grid. It downloads every row that matches the current filters and sort, across all pages, with the visible columns in display order. Columns without a `PropertyName`, and columns with `Exportable="false"`, are left out. Call `ExportToCsvAsync()` to export from your own button.
+
+:::note
+With a `DataProvider`, export calls the provider once with `PageNumber` and `PageSize` set to `0`, which means all matching rows. `request.ApplyTo(...)` already handles it; a provider that pages on its own must return all matching rows in that case.
+:::
+
+:::tip
+Text values that start with `=`, `+`, `-`, or `@` are written with a leading apostrophe, so spreadsheet apps don't run them as formulas.
+:::
+
+```cshtml {} showLineNumbers
+<Grid TItem="Employee1"
+      Class="table table-hover table-bordered table-striped"
+      DataProvider="EmployeesDataProvider"
+      AllowExport="true"
+      ExportFileName="employees"
+      AllowColumnChooser="true"
+      AllowFiltering="true"
+      AllowPaging="true"
+      PageSize="5"
+      AllowSorting="true"
+      Responsive="true">
+
+    <GridColumns>
+        <GridColumn TItem="Employee1" HeaderText="Id" PropertyName="Id" SortKeySelector="item => item.Id">
+            @context.Id
+        </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Employee Name" PropertyName="Name" SortKeySelector="item => item.Name">
+            @context.Name
+        </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Designation" PropertyName="Designation" SortKeySelector="item => item.Designation">
+            @context.Designation
+        </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="DOJ" PropertyName="DOJ" SortKeySelector="item => item.DOJ">
+            @context.DOJ
+        </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Active" PropertyName="IsActive" SortKeySelector="item => item.IsActive">
+            @context.IsActive
+        </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Actions" Filterable="false" Sortable="false" Exportable="false">
+            <Button Size="ButtonSize.Small" Color="ButtonColor.Link">View</Button>
+        </GridColumn>
+    </GridColumns>
+
+</Grid>
+
+@code {
+    private IEnumerable<Employee1> employees = default!;
+
+    private async Task<GridDataProviderResult<Employee1>> EmployeesDataProvider(GridDataProviderRequest<Employee1> request)
+    {
+        if (employees is null) // pull employees only one time for client-side filtering, sorting, and paging
+            employees = GetEmployees(); // call a service or an API to pull the employees
+
+        // Export calls this provider once with PageNumber and PageSize set to 0, which means all matching rows.
+        return await Task.FromResult(request.ApplyTo(employees));
+    }
+
+    private IEnumerable<Employee1> GetEmployees()
+    {
+        return new List<Employee1>
+        {
+            new Employee1 { Id = 107, Name = "Alice", Designation = "AI Engineer", DOJ = new DateOnly(1998, 11, 17), IsActive = true },
+            new Employee1 { Id = 103, Name = "Bob", Designation = "Senior DevOps Engineer", DOJ = new DateOnly(1985, 1, 5), IsActive = true },
+            new Employee1 { Id = 106, Name = "John", Designation = "Data Engineer", DOJ = new DateOnly(1995, 4, 17), IsActive = true },
+            new Employee1 { Id = 104, Name = "Pop", Designation = "Associate Architect", DOJ = new DateOnly(1985, 6, 8), IsActive = false },
+            new Employee1 { Id = 105, Name = "Ronald", Designation = "Senior Data Engineer", DOJ = new DateOnly(1991, 8, 23), IsActive = true },
+            new Employee1 { Id = 102, Name = "Line", Designation = "Architect", DOJ = new DateOnly(1977, 1, 12), IsActive = true },
+            new Employee1 { Id = 101, Name = "Daniel", Designation = "Architect", DOJ = new DateOnly(1977, 1, 12), IsActive = true },
+            new Employee1 { Id = 113, Name = "Merlin", Designation = "Senior Consultant", DOJ = new DateOnly(1989, 10, 2), IsActive = true },
+            new Employee1 { Id = 117, Name = "Sharna", Designation = "Data Analyst", DOJ = new DateOnly(1994, 5, 12), IsActive = true },
+            new Employee1 { Id = 108, Name = "Zayne", Designation = "Data Analyst", DOJ = new DateOnly(1991, 1, 1), IsActive = true },
+            new Employee1 { Id = 109, Name = "Isha", Designation = "App Maker", DOJ = new DateOnly(1996, 7, 1), IsActive = true },
+            new Employee1 { Id = 111, Name = "Glenda", Designation = "Data Engineer", DOJ = new DateOnly(1994, 1, 12), IsActive = true },
+        };
+    }
+}
+```
+
+[See demo here](https://demos.blazorbootstrap.com/demos/grid/other#export-to-csv)
