@@ -71,36 +71,31 @@
     font-variant-numeric: tabular-nums;
 }
 
-.hr-ae-caption {
-    caption-side: top;
-    padding-top: 0;
-    font-size: .8125rem;
-    color: var(--bs-secondary-color);
-}
-
-.hr-ae-table {
+/* The grid renders the table, so its cells are styled through ::deep. */
+.hr-panel ::deep .hr-ae-table {
     font-size: .875rem;
 }
 
-.hr-ae-name {
+.hr-panel ::deep .hr-ae-name {
     min-width: 14rem;
     overflow-wrap: anywhere;
 }
 
-.hr-ae-title,
-.hr-ae-manager {
+.hr-panel ::deep .hr-ae-email,
+.hr-panel ::deep .hr-ae-title,
+.hr-panel ::deep .hr-ae-manager {
     min-width: 10rem;
     overflow-wrap: anywhere;
 }
 
-.hr-ae-dept {
+.hr-panel ::deep .hr-ae-dept {
     min-width: 8rem;
 }
 
-.hr-ae-progress {
+.hr-panel ::deep .hr-ae-progress {
     min-width: 9rem;
 }
 
-.hr-ae-row-left > * {
+.hr-panel ::deep .hr-ae-row-left > * {
     color: var(--bs-secondary-color);
 }

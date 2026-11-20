@@ -7,19 +7,27 @@
     <ShowcaseRoleGuard Roles="@HrSeedData.HrAdminRole" SignInPath="@HrLayout.SignInPath">
         @{
             var policies = State.AllPolicies;
-            var requests = AllRequests();
             var year = State.Clock.Today.Year;
-            var editing = editId == 0 ? null : State.FindPolicy(editId);
             var offerTurnOff = turnOffOfferId == 0 ? null : State.FindPolicy(turnOffOfferId);
         }
 
-        <div class="mb-3">
-            <h1 class="hr-title">Leave policies</h1>
-            <p class="hr-lead mb-0">
-                The types of leave people can request, how many days each gives a year, and how much notice it needs. Balances follow
-                a change at once, for everyone.
-            </p>
+        <div class="hr-alp-head mb-3">
+            <div>
+                <h1 class="hr-title">Leave policies</h1>
+                <p class="hr-lead mb-0">
+                    The types of leave people can request, how many days each gives a year, and how much notice it needs. Balances follow
+                    a change at once, for everyone.
+                </p>
+            </div>
+            <button type="button" class="btn btn-primary" @ref="addButton" @onclick="AddAsync" disabled="@(policies.Count >= HrState.MaxPolicies)">
+                <Icon Name="IconName.PlusLg" class="me-1" aria-hidden="true" />Add leave type
+            </button>
         </div>
+
+        @if (policies.Count >= HrState.MaxPolicies)
+        {
+            <p class="small text-body-secondary">There are @HrState.MaxPolicies leave types, the most the portal keeps. Delete one you don't use to add another.</p>
+        }
 
         @* Always rendered and focusable, so an outcome is announced and focus has somewhere to go once a dialog closes. *@
         <p class="fw-semibold hr-alp-status @(statusIsError ? "text-danger-emphasis" : null)" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
@@ -32,102 +40,122 @@
             </div>
         }
 
-        <section class="hr-panel mb-4" aria-labelledby="hr-alp-table-title">
-            <h2 class="hr-section-title" id="hr-alp-table-title">Leave types (@policies.Count)</h2>
-            @if (policies.Count == 0)
-            {
-                <p class="text-body-secondary mb-0">There are no leave types yet. Add one below.</p>
-            }
-            else
-            {
-                <div class="table-responsive">
-                    <table class="table align-middle mb-0 hr-alp-table">
-                        <caption class="hr-alp-caption">
-                            Every leave type, offered or turned off. Requests and days used count @year so far: requests not cancelled, and approved days across the company.
-                        </caption>
-                        <thead>
-                            <tr>
-                                <th scope="col">Leave type</th>
-                                <th scope="col">Days a year</th>
-                                <th scope="col">Minimum notice</th>
-                                <th scope="col">Offered</th>
-                                <th scope="col" class="text-end">Requests in @year</th>
-                                <th scope="col" class="text-end">Days used in @year</th>
-                                <th scope="col"><span class="visually-hidden">Actions</span></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var policy in policies)
-                            {
-                                var thisYear = requests.Where(request => request.PolicyId == policy.Id && request.From.Year == year).ToList();
-                                var policyId = policy.Id;
-                                var editKey = "edit-" + policyId.ToString(CultureInfo.InvariantCulture);
-                                var deleteKey = "delete-" + policyId.ToString(CultureInfo.InvariantCulture);
-                                <tr @key="policy.Id" class="@(policy.Id == editId ? "hr-alp-row-editing" : null)">
-                                    <th scope="row" class="hr-alp-name">
-                                        @policy.Name@(policy.Id == editId ? " (editing)" : null)
-                                        @if (policy.Description.Length > 0)
-                                        {
-                                            <span class="d-block small fw-normal text-body-secondary">@policy.Description</span>
-                                        }
-                                    </th>
-                                    <td class="text-nowrap">@(policy.IsUnlimited ? "Unlimited" : HrDisplay.Days(policy.AnnualDays))</td>
-                                    <td class="text-nowrap">@(policy.MinNoticeDays == 0 ? "None" : HrDisplay.Days(policy.MinNoticeDays))</td>
-                                    <td class="text-nowrap">
-                                        <Badge Color="@(policy.IsActive ? BadgeColor.Success : BadgeColor.Secondary)">@(policy.IsActive ? "Offered" : "Turned off")</Badge>
-                                    </td>
-                                    <td class="text-end hr-mono">@thisYear.Count(request => request.Status != HrLeaveStatus.Cancelled).ToString(CultureInfo.InvariantCulture)</td>
-                                    <td class="text-end hr-mono">@thisYear.Where(request => request.Status == HrLeaveStatus.Approved).Sum(request => request.Days).ToString(CultureInfo.InvariantCulture)</td>
-                                    <td>
-                                        <div class="d-flex flex-nowrap gap-1 justify-content-end">
-                                            <button type="button" class="btn btn-sm btn-outline-secondary" @ref="rowButtons[editKey]" @onclick="() => StartEdit(policyId)">
-                                                Edit<span class="visually-hidden"> @policy.Name</span>
-                                            </button>
-                                            <button type="button" class="btn btn-sm btn-outline-danger" @ref="rowButtons[deleteKey]" @onclick="() => OpenDeleteAsync(policyId)">
-                                                Delete<span class="visually-hidden"> @policy.Name</span>
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
-                </div>
-            }
+        <section class="hr-panel" aria-labelledby="hr-alp-table-title">
+            <div class="d-flex flex-wrap align-items-baseline justify-content-between column-gap-3 row-gap-1 mb-2">
+                <h2 class="hr-section-title mb-0" id="hr-alp-table-title">Leave types (@policies.Count)</h2>
+                @* Back to the saved view's defaults: the order they were added, every column in its place. *@
+                <Button Color="ButtonColor.Link" Size="ButtonSize.Small" Class="p-0" @onclick="ResetViewAsync">Reset view</Button>
+            </div>
+            <p class="small text-body-secondary">
+                Every leave type, offered or turned off. Requests and days used count @year so far: requests not cancelled, and approved days across the company.
+            </p>
+            <ShowcaseDataState Status="@(viewLoaded ? ShowcaseDataStatus.Ready : ShowcaseDataStatus.Loading)"
+                               IsEmpty="@(policies.Count == 0)"
+                               EmptyIcon="IconName.Sliders"
+                               EmptyTitle="No leave types yet"
+                               EmptyText="Add a leave type, so people can request time off."
+                               LoadingText="Loading leave policies…"
+                               OnRetry="RefreshGridAsync">
+                <EmptyActions>
+                    <Button Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="AddAsync">Add leave type</Button>
+                </EmptyActions>
+                <ChildContent>
+                    <Grid @ref="grid"
+                          @key="gridVersion"
+                          TItem="PolicyRow"
+                          Class="table table-hover sc-grid-row-links hr-alp-table"
+                          GridContainerClass="hr-grid"
+                          DataProvider="ProvidePoliciesAsync"
+                          SettingsProvider="view.GetSettingsAsync"
+                          GridSettingsChanged="view.SaveSettingsAsync"
+                          AllowSorting="true"
+                          AllowColumnChooser="true"
+                          AllowExport="true"
+                          ExportFileName="hr-leave-policies"
+                          Responsive="true"
+                          EmptyText="No leave types yet."
+                          aria-label="Leave types">
+                        <GridColumns>
+                            <GridColumn TItem="PolicyRow" HeaderText="Leave type" PropertyName="Name" SortString="name" SortKeySelector="row => row.Name"
+                                        IsDefaultSortColumn="@view.IsSortColumn("name")" SortDirection="@view.DirectionFor("name")" AlwaysVisible="true" Class="hr-alp-name">
+                                @* A policy has no page of its own: the name opens the editor, and its stretched area makes the whole row do so. *@
+                                <button type="button" class="btn btn-link p-0 hr-grid-link stretched-link" @onclick="() => EditAsync(context.Id)">@context.Name</button>
+                                @if (context.Description.Length > 0)
+                                {
+                                    <span class="d-block small fw-normal text-body-secondary">@context.Description</span>
+                                }
+                            </GridColumn>
+                            <GridColumn TItem="PolicyRow" HeaderText="Days a year" PropertyName="DaysAYear" SortString="days" SortKeySelector="row => row.DaysSort"
+                                        IsDefaultSortColumn="@view.IsSortColumn("days")" SortDirection="@view.DirectionFor("days")" TextNoWrap="true">
+                                @context.DaysAYear
+                            </GridColumn>
+                            <GridColumn TItem="PolicyRow" HeaderText="Minimum notice" PropertyName="Notice" SortString="notice" SortKeySelector="row => row.NoticeDays"
+                                        IsDefaultSortColumn="@view.IsSortColumn("notice")" SortDirection="@view.DirectionFor("notice")" TextNoWrap="true">
+                                @context.Notice
+                            </GridColumn>
+                            <GridColumn TItem="PolicyRow" HeaderText="Offered" PropertyName="Offered" SortString="offered" SortKeySelector="row => row.Offered"
+                                        IsDefaultSortColumn="@view.IsSortColumn("offered")" SortDirection="@view.DirectionFor("offered")" TextNoWrap="true">
+                                <Badge Color="@(context.IsActive ? BadgeColor.Success : BadgeColor.Secondary)">@context.Offered</Badge>
+                            </GridColumn>
+                            <GridColumn TItem="PolicyRow" HeaderText="@($"Requests in {year}")" PropertyName="Requests" SortString="requests" SortKeySelector="row => row.Requests"
+                                        IsDefaultSortColumn="@view.IsSortColumn("requests")" SortDirection="@view.DirectionFor("requests")" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End">
+                                <span class="hr-mono">@context.Requests.ToString(CultureInfo.InvariantCulture)</span>
+                            </GridColumn>
+                            <GridColumn TItem="PolicyRow" HeaderText="@($"Days used in {year}")" PropertyName="DaysUsed" SortString="used" SortKeySelector="row => row.DaysUsed"
+                                        IsDefaultSortColumn="@view.IsSortColumn("used")" SortDirection="@view.DirectionFor("used")" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End">
+                                <span class="hr-mono">@context.DaysUsed.ToString(CultureInfo.InvariantCulture)</span>
+                            </GridColumn>
+                            <GridColumn TItem="PolicyRow" HeaderText="Actions" Sortable="false" Exportable="false">
+                                @{
+                                    var policyId = context.Id;
+                                    var editKey = "edit-" + policyId.ToString(CultureInfo.InvariantCulture);
+                                    var deleteKey = "delete-" + policyId.ToString(CultureInfo.InvariantCulture);
+                                }
+                                <div class="d-flex flex-nowrap gap-1 justify-content-end">
+                                    <button type="button" class="btn btn-sm btn-outline-secondary" @ref="rowButtons[editKey]" @onclick="() => EditAsync(policyId)">
+                                        Edit<span class="visually-hidden">&#32;@context.Name</span>
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-outline-danger" @ref="rowButtons[deleteKey]" @onclick="() => OpenDeleteAsync(policyId)">
+                                        Delete<span class="visually-hidden">&#32;@context.Name</span>
+                                    </button>
+                                </div>
+                            </GridColumn>
+                        </GridColumns>
+                    </Grid>
+                </ChildContent>
+            </ShowcaseDataState>
         </section>
 
-        <section class="hr-panel hr-alp-form-panel" aria-labelledby="hr-alp-form-title">
-            <h2 class="hr-section-title hr-alp-wrap" id="hr-alp-form-title">@(editing is null ? "Add a leave type" : $"Edit “{editing.Name}”")</h2>
-            @if (editing is null && policies.Count >= HrState.MaxPolicies)
-            {
-                <p class="small text-body-secondary mb-0">There are @HrState.MaxPolicies leave types, the most the portal keeps. Delete one you don't use to add another.</p>
-            }
-            else
-            {
-                <form @onsubmit="Save" novalidate aria-labelledby="hr-alp-form-title">
-                    <div class="row g-3 mb-3">
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold" for="hr-alp-name">Name</label>
-                            <input id="hr-alp-name" class="form-control @(nameError is null ? null : "is-invalid")" @bind="name" @bind:event="oninput" @ref="nameInput"
-                                   maxlength="@HrState.MaxNameLength" autocomplete="off" aria-required="true" aria-invalid="@(nameError is null ? null : "true")"
-                                   aria-describedby="hr-alp-name-help hr-alp-name-error" />
-                            <div class="form-text" id="hr-alp-name-help">Like “Vacation”. Unique, up to @HrState.MaxNameLength characters.</div>
-                            <div class="invalid-feedback d-block" id="hr-alp-name-error">@nameError</div>
+        <Modal @ref="editorModal" IsVerticallyCentered="true" IsScrollable="true" ShowCloseButton="false" aria-labelledby="hr-alp-editor-title"
+               OnShown="OnEditorShownAsync" OnHidden="OnEditorHidden">
+            <HeaderTemplate>
+                <h2 class="modal-title h5 hr-alp-wrap" id="hr-alp-editor-title">@(Editing is { } editing ? $"Edit “{editing.Name}”" : "Add a leave type")</h2>
+            </HeaderTemplate>
+            <BodyTemplate>
+                <EditForm id="hr-alp-form" EditContext="editContext" OnSubmit="SaveAsync" FormName="hr-leave-policy" novalidate>
+                    <DataAnnotationsValidator />
+                    <ShowcaseFormErrors ShowSummary="true" />
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold" for="hr-alp-name">Name</label>
+                        <InputText @ref="nameInput" id="hr-alp-name" class="form-control" @bind-Value="form.Name"
+                                   maxlength="@HrState.MaxNameLength" autocomplete="off" aria-describedby="hr-alp-name-help" />
+                        <ShowcaseUniqueCheck @ref="nameCheck" For="() => form.Name" IsTakenAsync="IsNameTakenAsync"
+                                             TakenMessage="@(value => $"Another leave type is already called {value}. Choose another name.")" />
+                        <div class="form-text mt-0" id="hr-alp-name-help">Like “Vacation”. Unique, up to @HrState.MaxNameLength characters.</div>
+                        <ValidationMessage For="() => form.Name" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold" for="hr-alp-description">Description <span class="fw-normal text-body-secondary">(optional)</span></label>
+                        <InputTextArea id="hr-alp-description" class="form-control" rows="2" @bind-Value="form.Description" @oninput="OnDescriptionInput"
+                                       aria-describedby="hr-alp-description-help" />
+                        <div class="form-text" id="hr-alp-description-help">
+                            Shown to people when they request leave. <span class="@(descriptionText.Trim().Length > HrState.MaxDescriptionLength ? "text-danger-emphasis" : null)">@AdminHelpers.Counter(descriptionText, HrState.MaxDescriptionLength)</span>
                         </div>
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold" for="hr-alp-description">Description <span class="fw-normal text-body-secondary">(optional)</span></label>
-                            <textarea id="hr-alp-description" class="form-control @(descriptionError is null ? null : "is-invalid")" rows="2" @bind="description" @bind:event="oninput"
-                                      @ref="descriptionInput" aria-invalid="@(descriptionError is null ? null : "true")" aria-describedby="hr-alp-description-help hr-alp-description-error"></textarea>
-                            <div class="form-text" id="hr-alp-description-help">
-                                Shown to people when they request leave. <span class="@(description.Trim().Length > HrState.MaxDescriptionLength ? "text-danger-emphasis" : null)">@AdminHelpers.Counter(description, HrState.MaxDescriptionLength)</span>
-                            </div>
-                            <div class="invalid-feedback d-block" id="hr-alp-description-error">@descriptionError</div>
-                        </div>
+                        <ValidationMessage For="() => form.Description" />
                     </div>
 
                     <div class="form-check mb-2">
-                        <input class="form-check-input" type="checkbox" id="hr-alp-unlimited" checked="@isUnlimited" @onchange="args => isUnlimited = args.Value is true"
-                               aria-describedby="hr-alp-unlimited-help" />
+                        <InputCheckbox class="form-check-input" id="hr-alp-unlimited" @bind-Value="form.IsUnlimited" aria-describedby="hr-alp-unlimited-help" />
                         <label class="form-check-label fw-semibold" for="hr-alp-unlimited">No yearly limit</label>
                         <div class="form-text mt-0" id="hr-alp-unlimited-help">Like sick leave: use is tracked, but there's no balance to run out of.</div>
                     </div>
@@ -135,51 +163,42 @@
                     <div class="row g-3 mb-3">
                         <div class="col-sm-6">
                             <label class="form-label fw-semibold" for="hr-alp-days">Days a year</label>
-                            <input id="hr-alp-days" type="number" inputmode="numeric" class="form-control @(daysError is null ? null : "is-invalid")" value="@daysText"
-                                   @oninput="args => daysText = args.Value as string ?? string.Empty" @ref="daysInput" min="1" max="@HrState.MaxAnnualDays" step="1"
-                                   disabled="@isUnlimited" aria-required="@(isUnlimited ? null : "true")" aria-invalid="@(daysError is null ? null : "true")"
-                                   aria-describedby="hr-alp-days-help hr-alp-days-error" />
+                            <InputNumber TValue="int?" id="hr-alp-days" class="form-control" @bind-Value="form.AnnualDays" min="1" max="@HrState.MaxAnnualDays" step="1"
+                                         inputmode="numeric" disabled="@form.IsUnlimited" aria-describedby="hr-alp-days-help" />
                             <div class="form-text" id="hr-alp-days-help">
-                                @(isUnlimited ? "Not used: this type has no yearly limit." : $"1 to {HrState.MaxAnnualDays}, per calendar year.")
-                                @(editing is not null && !editing.IsUnlimited && !isUnlimited && AdminHelpers.TryNumber(daysText) is { } newDays && newDays != editing.AnnualDays
-                                    ? $" Saving changes everyone's {editing.Name} balance from {HrDisplay.Days(editing.AnnualDays)} to {HrDisplay.Days(newDays)} at once."
+                                @(form.IsUnlimited ? "Not used: this type has no yearly limit." : $"1 to {HrState.MaxAnnualDays}, per calendar year.")
+                                @(Editing is { IsUnlimited: false } current && !form.IsUnlimited && form.AnnualDays is { } newDays && newDays != current.AnnualDays
+                                    ? $" Saving changes everyone's {current.Name} balance from {HrDisplay.Days(current.AnnualDays)} to {HrDisplay.Days(newDays)} at once."
                                     : null)
                             </div>
-                            <div class="invalid-feedback d-block" id="hr-alp-days-error">@daysError</div>
+                            <ValidationMessage For="() => form.AnnualDays" />
                         </div>
                         <div class="col-sm-6">
                             <label class="form-label fw-semibold" for="hr-alp-notice">Minimum notice, in days</label>
-                            <input id="hr-alp-notice" type="number" inputmode="numeric" class="form-control @(noticeError is null ? null : "is-invalid")" value="@noticeText"
-                                   @oninput="args => noticeText = args.Value as string ?? string.Empty" @ref="noticeInput" min="0" max="@HrState.MaxNoticeDays" step="1"
-                                   aria-required="true" aria-invalid="@(noticeError is null ? null : "true")" aria-describedby="hr-alp-notice-help hr-alp-notice-error" />
+                            <InputNumber TValue="int?" id="hr-alp-notice" class="form-control" @bind-Value="form.MinNoticeDays" min="0" max="@HrState.MaxNoticeDays" step="1"
+                                         inputmode="numeric" aria-describedby="hr-alp-notice-help" />
                             <div class="form-text" id="hr-alp-notice-help">
-                                0 to @HrState.MaxNoticeDays: how many days ahead a request must start; 0 for none.@(isUnlimited ? " Types with no yearly limit can also be recorded up to 30 days back." : null)
+                                0 to @HrState.MaxNoticeDays: how many days ahead a request must start; 0 for none.@(form.IsUnlimited ? " Types with no yearly limit can also be recorded up to 30 days back." : null)
                             </div>
-                            <div class="invalid-feedback d-block" id="hr-alp-notice-error">@noticeError</div>
+                            <ValidationMessage For="() => form.MinNoticeDays" />
                         </div>
                     </div>
 
                     <div class="form-check mb-3">
-                        <input class="form-check-input" type="checkbox" id="hr-alp-active" checked="@isActive" @onchange="args => isActive = args.Value is true"
-                               aria-describedby="hr-alp-active-help" />
+                        <InputCheckbox class="form-check-input" id="hr-alp-active" @bind-Value="form.IsActive" aria-describedby="hr-alp-active-help" />
                         <label class="form-check-label fw-semibold" for="hr-alp-active">Offered for new requests</label>
                         <div class="form-text mt-0" id="hr-alp-active-help">Turned off, nobody can request it; existing requests and this year's balances keep it.</div>
                     </div>
 
-                    <p class="small text-body-secondary">Balances update at once for everyone when you save.</p>
-
-                    <div class="d-flex flex-wrap gap-2">
-                        <Button Type="ButtonType.Submit" Color="ButtonColor.Primary">
-                            <Icon Name="@(editing is null ? IconName.PlusLg : IconName.CheckLg)" class="me-1" aria-hidden="true" />@(editing is null ? "Add leave type" : "Save changes")
-                        </Button>
-                        @if (editing is not null)
-                        {
-                            <Button Color="ButtonColor.Secondary" Outline="true" @onclick="CancelEdit">Cancel</Button>
-                        }
-                    </div>
-                </form>
-            }
-        </section>
+                    <p class="small text-body-secondary mb-0">Balances update at once for everyone when you save.</p>
+                </EditForm>
+                <p class="hr-live-error mt-3 mb-0" role="alert">@formError</p>
+            </BodyTemplate>
+            <FooterTemplate>
+                <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => editorModal.HideAsync()">Cancel</Button>
+                <Button Type="ButtonType.Submit" Color="ButtonColor.Primary" form="hr-alp-form">@(Editing is null ? "Add leave type" : "Save changes")</Button>
+            </FooterTemplate>
+        </Modal>
 
         <Modal @ref="deleteModal" IsVerticallyCentered="true" ShowCloseButton="false" aria-labelledby="hr-alp-dialog-title" OnHidden="OnDeleteHidden">
             <HeaderTemplate>

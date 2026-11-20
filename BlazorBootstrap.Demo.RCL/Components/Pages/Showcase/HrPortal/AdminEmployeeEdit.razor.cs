@@ -1,19 +1,25 @@
+using System.ComponentModel.DataAnnotations;
 using System.Globalization;
+using BlazorBootstrap.Demo.RCL.Components.Pages.Showcase.Shared;
 using BlazorBootstrap.Demo.RCL.Models.Showcase.HrPortal;
+using BlazorBootstrap.Demo.RCL.Services.Showcase.Foundation;
 using BlazorBootstrap.Demo.RCL.Services.Showcase.HrPortal;
+using Microsoft.AspNetCore.Components.Forms;
 
 namespace BlazorBootstrap.Demo.RCL.Components.Pages.Showcase.HrPortal;
 
 /// <summary>
-/// Adds (<c>/new</c>) or edits an employee (HR admin): name, work email (the person registers with it to sign in; a taken
-/// email names who has it), job title, department, location, manager (people who work here or are joining, by name with
-/// title, or "No manager" for the top of the org chart), start date (a native date; a date after today makes them
-/// "Joining"), and phone. Each problem is shown under its field and tied to it, and the first invalid field takes focus
-/// after the render that shows it; every <see cref="HrState.SaveEmployee" /> result is mapped to a field or the status
-/// message (a manager in their own reporting line names the manager). Adding someone moves to their edit route, keeps the
-/// message, and offers "Start onboarding" right there with a template select (<see cref="HrState.StartOnboarding" />), so
-/// a new hire is added and onboarded in one flow; once started, the panel shows the plan's progress. The sign-in panel says
-/// whether an account is linked yet. Someone who left is shown read-only with their last day; an unknown ID shows
+/// Adds (<c>/new</c>) or edits an employee (HR admin) in a validated form (rule WR-002): name (required, up to 80
+/// characters), work email (required, an address like name@example.com, and unique: checked as you type, naming who has
+/// it; the person registers with it to sign in), job title (required), department and location (required), manager
+/// (people who work here or are joining, by name with title, or "No manager" for the top of the org chart; not someone in
+/// their own reporting line), start date (required; a date after today makes them "Joining"), probation end date
+/// (optional; after the start date and at most <see cref="HrState.MaxProbationMonths" /> months later: a cross-field
+/// rule), and phone. A failed submit shows a summary linking to each field, and every <see cref="HrState.SaveEmployee" />
+/// result is mapped to a field or the status message. Adding someone moves to their edit route, keeps the message, and
+/// offers "Start onboarding" right there with a template select (<see cref="HrState.StartOnboarding" />), so a new hire is
+/// added and onboarded in one flow; once started, the panel shows the plan's progress. The sign-in panel says whether an
+/// account is linked yet. Someone who left is shown read-only with their last day; an unknown ID shows
 /// <see cref="HrNotFound" />.
 /// </summary>
 public partial class AdminEmployeeEdit : ComponentBase, IDisposable
@@ -23,22 +29,16 @@ public partial class AdminEmployeeEdit : ComponentBase, IDisposable
     /// <summary>The ID the router moves to after adding someone: the form and its status message stay.</summary>
     private int? createdId;
 
-    private string? departmentError;
+    private EditContext editContext = new(new EmployeeForm());
 
-    private string departmentId = string.Empty;
-
-    private ElementReference? departmentSelect;
-
-    private string email = string.Empty;
-
-    private string? emailError;
-
-    private ElementReference? emailInput;
+    private ShowcaseUniqueCheck? emailCheck;
 
     private bool focusStatus;
 
-    /// <summary>Returns the element to focus after the next render (the first field with an error).</summary>
+    /// <summary>Returns the element to focus after the next render.</summary>
     private Func<ElementReference?>? focusTarget;
+
+    private EmployeeForm form = new();
 
     /// <summary>Whether the person was just added in this page, so the onboarding panel is the next step.</summary>
     private bool justCreated;
@@ -46,35 +46,10 @@ public partial class AdminEmployeeEdit : ComponentBase, IDisposable
     /// <summary>The route ID the form was loaded for (0 for a new employee), or <see langword="null" /> before the first load.</summary>
     private int? loadedId;
 
-    private string location = string.Empty;
+    private InputText? nameInput;
 
-    private string? locationError;
-
-    private ElementReference? locationSelect;
-
-    private string? managerError;
-
-    private ElementReference? managerSelect;
-
-    private string managerValue = string.Empty;
-
-    private string name = string.Empty;
-
-    private string? nameError;
-
-    private ElementReference? nameInput;
-
-    private string phone = string.Empty;
-
-    private string? phoneError;
-
-    private ElementReference? phoneInput;
-
-    private string? startError;
-
-    private ElementReference? startInput;
-
-    private string startText = string.Empty;
+    /// <summary>The answers of the state that belong to a field (a manager in their own reporting line, a taken email), shown like the form's own messages.</summary>
+    private ValidationMessageStore? serverErrors;
 
     private bool statusIsError;
 
@@ -85,12 +60,6 @@ public partial class AdminEmployeeEdit : ComponentBase, IDisposable
     private ElementReference? templateSelect;
 
     private string templateValue = string.Empty;
-
-    private string title = string.Empty;
-
-    private string? titleError;
-
-    private ElementReference? titleInput;
 
     #endregion
 
@@ -177,6 +146,12 @@ public partial class AdminEmployeeEdit : ComponentBase, IDisposable
         statusMessage = message;
     }
 
+    /// <summary>Names who already has a work email, for the uniqueness check's message.</summary>
+    private string EmailTakenMessage(string value) =>
+        State.AllEmployees.FirstOrDefault(item => item.Id != Employee?.Id && item.Email == value.Trim().ToLowerInvariant()) is { } holder
+            ? $"That email is taken by {holder.Name}{(holder.Status == HrEmployeeStatus.Left ? " (who left)" : null)}. Use another."
+            : "That email is taken by someone else. Use another.";
+
     /// <summary>Whether <paramref name="managerId" /> is <paramref name="employeeId" /> or reports to them, directly or not.</summary>
     private bool InOwnLine(int managerId, int employeeId)
     {
@@ -191,65 +166,79 @@ public partial class AdminEmployeeEdit : ComponentBase, IDisposable
         return false;
     }
 
+    /// <summary>Whether another person (including someone who left) already has this work email.</summary>
+    private Task<bool> IsEmailTakenAsync(string value)
+    {
+        var email = value.Trim().ToLowerInvariant();
+
+        return Task.FromResult(State.AllEmployees.Any(item => item.Id != Employee?.Id && item.Email == email));
+    }
+
     /// <summary>Fills the form from someone's record, or with a new hire's starting values (the first Monday a week from now).</summary>
     private void Load(HrEmployee? employee)
     {
-        name = employee?.Name ?? string.Empty;
-        email = employee?.Email ?? string.Empty;
-        title = employee?.Title ?? string.Empty;
-        departmentId = employee?.DepartmentId ?? string.Empty;
-        location = employee?.Location ?? State.Locations.FirstOrDefault() ?? string.Empty;
-        managerValue = employee?.ManagerId?.ToString(CultureInfo.InvariantCulture) ?? string.Empty;
-        startText = AdminHelpers.DateValue(employee?.StartDate ?? NextStart(State.Clock.Today));
-        phone = employee?.Phone ?? string.Empty;
+        form = new EmployeeForm
+        {
+            Name = employee?.Name ?? string.Empty,
+            Email = employee?.Email ?? string.Empty,
+            Title = employee?.Title ?? string.Empty,
+            DepartmentId = employee?.DepartmentId ?? string.Empty,
+            Location = employee?.Location ?? State.Locations.FirstOrDefault() ?? string.Empty,
+            ManagerValue = employee?.ManagerId?.ToString(CultureInfo.InvariantCulture) ?? string.Empty,
+            StartDate = employee?.StartDate ?? NextStart(State.Clock.Today),
+            ProbationEndDate = employee is null ? NextStart(State.Clock.Today).AddMonths(6) : employee.ProbationEndDate,
+            Phone = employee?.Phone ?? string.Empty,
+        };
+        editContext = new EditContext(form);
+        serverErrors = new ValidationMessageStore(editContext);
+        editContext.OnFieldChanged += (_, args) => serverErrors?.Clear(args.FieldIdentifier);
         templateValue = AdminHelpers.DefaultTemplate(State, employee)?.Id.ToString(CultureInfo.InvariantCulture) ?? string.Empty;
-        nameError = emailError = titleError = departmentError = locationError = managerError = startError = phoneError = null;
     }
 
     private void OnStateChanged() => InvokeAsync(StateHasChanged);
 
-    /// <summary>Checks the form, saves the person, and maps the state's answer to a field or the status message.</summary>
-    private void Save()
+    /// <summary>Shows a state answer under its field, like the form's own messages; the summary and focus follow.</summary>
+    private void ServerError(System.Linq.Expressions.Expression<Func<object>> field, string message)
+    {
+        serverErrors?.Clear();
+        serverErrors?.Add(field, message);
+        editContext.NotifyValidationStateChanged();
+    }
+
+    /// <summary>
+    /// Saves the person once the form is valid: the email check finishes first, then every rule runs, and a failed submit
+    /// shows the summary (rule WR-002). The manager's reporting line is checked next, and the state checks again; its answer
+    /// maps to a field or the status message, as before.
+    /// </summary>
+    private async Task SaveAsync()
     {
         var existing = Employee;
 
         if (Id is not null && existing is null)
             return;
 
+        serverErrors?.Clear();
+
+        var emailFree = emailCheck is null || await emailCheck.CheckNowAsync();
+
+        if (!editContext.Validate() || !emailFree)
+            return;
+
         var today = State.Clock.Today;
-        var trimmedEmail = email.Trim().ToLowerInvariant();
-        int? managerId = int.TryParse(managerValue, NumberStyles.Integer, CultureInfo.InvariantCulture, out var parsed) ? parsed : null;
+        var trimmedEmail = form.Email.Trim().ToLowerInvariant();
+        int? managerId = int.TryParse(form.ManagerValue, NumberStyles.Integer, CultureInfo.InvariantCulture, out var parsed) ? parsed : null;
         var manager = managerId is { } id ? State.FindEmployee(id) : null;
 
-        nameError = AdminHelpers.TextProblem(name, HrState.MaxNameLength, "Enter their name.", "name");
-        emailError = trimmedEmail.Length == 0 ? "Enter their work email, like name@example.com."
-            : !AdminHelpers.IsEmail(trimmedEmail) ? "Enter a work email like name@example.com."
-            : State.AllEmployees.FirstOrDefault(item => item.Id != existing?.Id && item.Email == trimmedEmail) is { } taken ? $"That email is taken by {taken.Name}{(taken.Status == HrEmployeeStatus.Left ? " (who left)" : null)}. Use another."
-            : null;
-        titleError = AdminHelpers.TextProblem(title, HrState.MaxNameLength, "Enter their job title.", "job title");
-        departmentError = State.FindDepartment(departmentId) is null ? "Choose a department." : null;
-        locationError = State.Locations.Contains(location) ? null : "Choose where they work.";
-        managerError = managerId is not null && manager is not { Status: not HrEmployeeStatus.Left } ? "That manager has left. Choose someone who works here."
-            : managerId is { } chosen && existing is not null && InOwnLine(chosen, existing.Id) ? $"That would put them in their own reporting line: {manager!.Name} reports to {existing.Name}."
-            : null;
-        startError = AdminHelpers.DateProblem(startText, "start date", out var start);
-        phoneError = phone.Trim().Length > HrState.MaxPhoneLength
-            ? string.Create(CultureInfo.InvariantCulture, $"Shorten the phone number to {HrState.MaxPhoneLength} characters or fewer (now {phone.Trim().Length}).")
-            : null;
-
-        focusTarget = nameError is not null ? () => nameInput
-            : emailError is not null ? () => emailInput
-            : titleError is not null ? () => titleInput
-            : departmentError is not null ? () => departmentSelect
-            : locationError is not null ? () => locationSelect
-            : managerError is not null ? () => managerSelect
-            : startError is not null ? () => startInput
-            : phoneError is not null ? () => phoneInput
-            : null;
-
-        if (focusTarget is not null)
+        if (managerId is not null && manager is not { Status: not HrEmployeeStatus.Left })
         {
-            Announce(false, "Fix the highlighted fields, then save again.");
+            ServerError(() => form.ManagerValue, "That manager has left. Choose someone who works here.");
+
+            return;
+        }
+
+        if (managerId is { } chosen && existing is not null && InOwnLine(chosen, existing.Id))
+        {
+            ServerError(() => form.ManagerValue, $"That would put them in their own reporting line: {manager!.Name} reports to {existing.Name}.");
 
             return;
         }
@@ -262,8 +251,9 @@ public partial class AdminEmployeeEdit : ComponentBase, IDisposable
             return;
         }
 
-        var startChanged = existing is not null && existing.StartDate.Date != start.Date;
-        var input = new HrEmployeeInput(name.Trim(), trimmedEmail, title.Trim(), departmentId, managerId, location, start, phone.Trim());
+        var start = form.StartDate!.Value.Date;
+        var startChanged = existing is not null && existing.StartDate.Date != start;
+        var input = new HrEmployeeInput(form.Name.Trim(), trimmedEmail, form.Title.Trim(), form.DepartmentId, managerId, form.Location, start, form.Phone.Trim(), form.ProbationEndDate?.Date);
         var result = State.SaveEmployee(existing?.Id ?? 0, input, out var saved);
 
         switch (result)
@@ -277,6 +267,7 @@ public partial class AdminEmployeeEdit : ComponentBase, IDisposable
                     Load(saved);
                     justCreated = true;
                     Announce(true, $"Added {saved.Name}{joining}. They're in the directory and the org chart{team}. Next, start their onboarding: they see it when they register with {saved.Email}.");
+                    focusStatus = true;
 
                     // The edit route renders the same page, so the form and the status message stay.
                     createdId = saved.Id;
@@ -288,33 +279,30 @@ public partial class AdminEmployeeEdit : ComponentBase, IDisposable
                 Load(saved);
                 Announce(true, $"Saved {saved.Name}{joining}."
                                + (startChanged && State.OnboardingOf(saved.Id) is not null ? " Their onboarding plan keeps the due dates it was started with." : null));
+                focusStatus = true;
 
                 return;
 
             case HrResult.Duplicate:
-                emailError = State.AllEmployees.FirstOrDefault(item => item.Id != existing?.Id && item.Email == trimmedEmail) is { } holder
-                    ? $"That email is taken by {holder.Name}. Use another."
-                    : "That email is taken by someone else. Use another.";
-                focusTarget = () => emailInput;
+                ServerError(() => form.Email, EmailTakenMessage(trimmedEmail));
                 Announce(false, "That work email is taken. Nothing was saved.");
 
                 return;
 
             case HrResult.NoChange:
                 Announce(true, "Nothing changed: their record is already saved like this.");
+                focusStatus = true;
 
                 return;
 
             case HrResult.Invalid when managerId is { } loopId && existing is not null && InOwnLine(loopId, existing.Id):
-                managerError = $"That would put them in their own reporting line: {manager?.Name ?? "that person"} reports to {existing.Name}.";
-                focusTarget = () => managerSelect;
+                ServerError(() => form.ManagerValue, $"That would put them in their own reporting line: {manager?.Name ?? "that person"} reports to {existing.Name}.");
                 Announce(false, "That manager would create a loop in the org chart. Nothing was saved.");
 
                 return;
 
             case HrResult.Invalid when managerId is not null && State.FindEmployee(managerId.Value) is not { Status: not HrEmployeeStatus.Left }:
-                managerError = "That manager has left. Choose someone who works here.";
-                focusTarget = () => managerSelect;
+                ServerError(() => form.ManagerValue, "That manager has left. Choose someone who works here.");
                 Announce(false, "That manager has left. Nothing was saved.");
 
                 return;
@@ -356,7 +344,7 @@ public partial class AdminEmployeeEdit : ComponentBase, IDisposable
     /// <summary>Says what the start date means: joining (after today) or working here, and what it does to onboarding.</summary>
     private string StartHelp(DateTime today)
     {
-        if (AdminHelpers.TryDate(startText) is not { } start)
+        if (form.StartDate is not { } start)
             return "Their first day. A date after today makes them “Joining” until then.";
 
         var text = start > today
@@ -410,6 +398,67 @@ public partial class AdminEmployeeEdit : ComponentBase, IDisposable
         int.TryParse(templateValue, NumberStyles.Integer, CultureInfo.InvariantCulture, out var id) ? State.FindTemplate(id) : null;
 
     [Inject] private HrState State { get; set; } = default!;
+
+    #endregion
+
+    #region Nested Types
+
+    /// <summary>
+    /// The job details form, with the limits of <see cref="HrState.SaveEmployee" />: name, email, and title required (up to
+    /// 80 characters, the email up to 120 and like name@example.com), a department and a location, a start date the portal
+    /// keeps (2015 to three years ahead), an optional probation end date after the start date and at most 12 months later
+    /// (cross-field), and a phone of up to 30 characters (digits, spaces, and + ( ) - .).
+    /// </summary>
+    private sealed class EmployeeForm : IValidatableObject
+    {
+        [Required(ErrorMessage = "Choose a department.")]
+        public string DepartmentId { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Enter their work email, like name@example.com.")]
+        [StringLength(ShowcaseIdentity.MaxEmailLength, ErrorMessage = "Use 120 characters or fewer for the email.")]
+        [RegularExpression(@"^\s*[^@\s]{1,64}@[^@\s]+\.[^@\s]{2,}\s*$", ErrorMessage = "Enter a work email like name@example.com.")]
+        public string Email { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Choose where they work.")]
+        public string Location { get; set; } = string.Empty;
+
+        /// <summary>Gets or sets the manager's ID as text; empty for no manager.</summary>
+        public string ManagerValue { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Enter their name.")]
+        [StringLength(HrState.MaxNameLength, ErrorMessage = "Use 80 characters or fewer for the name.")]
+        public string Name { get; set; } = string.Empty;
+
+        [StringLength(HrState.MaxPhoneLength, ErrorMessage = "Use 30 characters or fewer for the phone number.")]
+        [RegularExpression(@"^[0-9+()\-.\s]*$", ErrorMessage = "Use digits, spaces, and + ( ) - . only for the phone number.")]
+        public string Phone { get; set; } = string.Empty;
+
+        public DateTime? ProbationEndDate { get; set; }
+
+        [Required(ErrorMessage = "Pick their start date.")]
+        public DateTime? StartDate { get; set; }
+
+        [Required(ErrorMessage = "Enter their job title.")]
+        [StringLength(HrState.MaxNameLength, ErrorMessage = "Use 80 characters or fewer for the job title.")]
+        public string Title { get; set; } = string.Empty;
+
+        /// <summary>Runs once the fields are filled in: the start date is one the portal keeps, and probation ends after it, within a year.</summary>
+        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+        {
+            if (StartDate is not { } start)
+                yield break;
+
+            if (start.Date < AdminHelpers.MinDate || start.Date > AdminHelpers.MaxDate)
+                yield return new ValidationResult($"Pick a start date from {HrDisplay.Date(AdminHelpers.MinDate)} to {HrDisplay.Date(AdminHelpers.MaxDate)}.", new[] { nameof(StartDate) });
+
+            if (ProbationEndDate is { } end && end.Date <= start.Date)
+                yield return new ValidationResult($"The probation must end after the start date, {HrDisplay.Date(start)}.", new[] { nameof(ProbationEndDate) });
+            else if (ProbationEndDate is { } late && late.Date > start.Date.AddMonths(HrState.MaxProbationMonths))
+                yield return new ValidationResult(
+                    string.Create(CultureInfo.InvariantCulture, $"The probation can last up to {HrState.MaxProbationMonths} months: end it by {HrDisplay.Date(start.Date.AddMonths(HrState.MaxProbationMonths))}."),
+                    new[] { nameof(ProbationEndDate) });
+        }
+    }
 
     #endregion
 }

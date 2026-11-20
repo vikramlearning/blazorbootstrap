@@ -28,6 +28,14 @@
                     and onboarding. Open someone's profile for their contact details.
                 </p>
 
+                @if (isMine)
+                {
+                    <HrReviewTodo Class="hr-panel mb-4" HideWhenEmpty="true" />
+                }
+
+                @* Always rendered and focusable, so a reset view is announced and focus has somewhere to go. *@
+                <p class="hr-live-status" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
+
                 @if (State.IsHrAdmin)
                 {
                     <div class="hr-panel mb-4 hr-team-picker">
@@ -50,96 +58,100 @@
                     </div>
                 }
 
-                <section class="mb-4" aria-labelledby="hr-team-people-title">
-                    <h2 class="hr-section-title" id="hr-team-people-title">
-                        @(isMine ? "Your direct reports" : $"{lead.Name}'s direct reports") <span class="text-body-secondary fw-normal">(@reports.Count)</span>
-                    </h2>
-                    @if (reports.Count == 0)
-                    {
-                        <div class="hr-panel"><p class="mb-0 text-body-secondary">@(isMine ? "No one reports to you right now." : $"No one reports to {lead.Name} right now.")</p></div>
-                    }
-                    else
-                    {
-                        <ul class="list-unstyled hr-team-people mb-0">
-                            @foreach (var person in reports)
-                            {
-                                var requests = State.LeaveOf(person.Id);
-                                var awayNext = requests.Where(item => item.Status == HrLeaveStatus.Approved && item.To >= today && item.From <= today.AddDays(SoonDays - 1)).OrderBy(item => item.From).ToList();
-                                var waiting = requests.Count(item => item.Status == HrLeaveStatus.Pending);
-                                var vacation = State.Balances(person.Id).FirstOrDefault(item => !item.Policy.IsUnlimited && item.Policy.IsActive);
-                                var plan = State.OnboardingOf(person.Id);
-                                var nameId = $"hr-team-person-{person.Id}";
-
-                                <li class="hr-card hr-team-person" @key="@($"person-{person.Id}")">
-                                    <div class="hr-team-person-head">
-                                        <span class="hr-avatar" aria-hidden="true">@person.Initials</span>
-                                        <div class="hr-team-person-text">
-                                            <h3 class="hr-team-person-name" id="@nameId"><a href="@HrDisplay.EmployeeUrl(person.Id)">@person.Name</a></h3>
-                                            <p class="small text-body-secondary mb-0">@person.Title</p>
-                                        </div>
-                                    </div>
-                                    <dl class="hr-team-facts mb-0">
-                                        <div>
-                                            <dt>Status</dt>
-                                            <dd>@HrDisplay.StatusLabel(person, today)</dd>
-                                        </div>
-                                        <div>
-                                            <dt>Away in the next @SoonDays days</dt>
-                                            <dd>
-                                                @if (awayNext.Count == 0)
-                                                {
-                                                    <span>Not away</span>
-                                                }
-                                                else
-                                                {
-                                                    @foreach (var request in awayNext)
-                                                    {
-                                                        <span class="d-block" @key="@($"away-{request.Id}")">
-                                                            @if (request.From <= today)
-                                                            {
-                                                                <Icon Name="IconName.Airplane" class="me-1" aria-hidden="true" />
-                                                            }
-                                                            @Capitalize(LeaveText.AwayText(request, today)) (@(State.FindPolicy(request.PolicyId)?.Name ?? "leave"))
-                                                        </span>
-                                                    }
-                                                }
-                                            </dd>
-                                        </div>
-                                        <div>
-                                            <dt>Leave requests waiting</dt>
-                                            <dd>
-                                                @if (waiting == 0)
-                                                {
-                                                    <span>None</span>
-                                                }
-                                                else
-                                                {
-                                                    <a href="@($"{HrLayout.Base}/approvals")">@HrDisplay.Plural(waiting, "request") waiting<span class="visually-hidden"> from @person.Name</span></a>
-                                                }
-                                            </dd>
-                                        </div>
-                                        <div>
-                                            <dt>@(vacation?.Policy.Name ?? "Vacation") left for @today.Year</dt>
-                                            <dd>@(vacation is null ? "No limited leave type" : $"{HrDisplay.Days(vacation.Available)} available of {vacation.Allowance}")</dd>
-                                        </div>
-                                        @if (plan is not null)
+                <section class="hr-panel mb-4" aria-labelledby="hr-team-people-title">
+                    <div class="d-flex flex-wrap align-items-baseline justify-content-between column-gap-3 row-gap-1 mb-2">
+                        <h2 class="hr-section-title mb-0" id="hr-team-people-title">
+                            @(isMine ? "Your direct reports" : $"{lead.Name}'s direct reports") <span class="text-body-secondary fw-normal">(@reports.Count)</span>
+                        </h2>
+                        @* Back to the saved view's defaults: by name, 10 a page, every column in its place. *@
+                        <Button Color="ButtonColor.Link" Size="ButtonSize.Small" Class="p-0" @onclick="ResetViewAsync">Reset view</Button>
+                    </div>
+                    <ShowcaseDataState Status="@(viewLoaded ? ShowcaseDataStatus.Ready : ShowcaseDataStatus.Loading)"
+                                       IsEmpty="@(reports.Count == 0)"
+                                       EmptyIcon="IconName.People"
+                                       EmptyTitle="@(isMine ? "No one reports to you right now" : $"No one reports to {lead.Name} right now")"
+                                       EmptyText="@(State.IsHrAdmin ? "Pick another manager above, or give people a manager in Employees." : "When HR adds someone to your team, they show here.")"
+                                       LoadingText="Loading the team…"
+                                       OnRetry="RefreshGridAsync">
+                        <ChildContent>
+                            <Grid @ref="grid"
+                                  @key="@($"{gridVersion}-{lead.Id}")"
+                                  TItem="TeamRow"
+                                  Class="table table-hover sc-grid-row-links"
+                                  GridContainerClass="hr-grid"
+                                  DataProvider="ProvideTeamAsync"
+                                  SettingsProvider="view.GetSettingsAsync"
+                                  GridSettingsChanged="SaveSettingsAsync"
+                                  AllowPaging="true"
+                                  PageSize="@pageSize"
+                                  PageSizeSelectorVisible="true"
+                                  PageSizeSelectorItems="@(new[] { 10, 25, 50 })"
+                                  PaginationItemsTextFormat="{0}–{1} of {2} people"
+                                  AllowSorting="true"
+                                  AllowColumnChooser="true"
+                                  AllowExport="true"
+                                  ExportFileName="hr-team"
+                                  Responsive="true"
+                                  EmptyText="No one reports to this manager."
+                                  aria-label="@(isMine ? "Your direct reports" : $"{lead.Name}'s direct reports")">
+                                <GridColumns>
+                                    <GridColumn TItem="TeamRow" HeaderText="Name" PropertyName="Name" SortString="name" SortKeySelector="row => row.Name"
+                                                IsDefaultSortColumn="@view.IsSortColumn("name")" SortDirection="@view.DirectionFor("name")" AlwaysVisible="true">
+                                        <span class="d-flex align-items-center gap-2">
+                                            <span class="hr-avatar" aria-hidden="true">@context.Initials</span>
+                                            @* The stretched link makes the whole row open the person's profile; the row's other links stay above it. *@
+                                            <span class="min-w-0 hr-team-wrap"><a class="hr-grid-link stretched-link" href="@HrDisplay.EmployeeUrl(context.Id)">@context.Name</a></span>
+                                        </span>
+                                    </GridColumn>
+                                    <GridColumn TItem="TeamRow" HeaderText="Title" PropertyName="Title" SortString="title" SortKeySelector="row => row.Title"
+                                                IsDefaultSortColumn="@view.IsSortColumn("title")" SortDirection="@view.DirectionFor("title")" Class="hr-team-cell">
+                                        @context.Title
+                                    </GridColumn>
+                                    <GridColumn TItem="TeamRow" HeaderText="Status" PropertyName="Status" SortString="status" SortKeySelector="row => row.Status"
+                                                IsDefaultSortColumn="@view.IsSortColumn("status")" SortDirection="@view.DirectionFor("status")" TextNoWrap="true">
+                                        @context.Status
+                                    </GridColumn>
+                                    <GridColumn TItem="TeamRow" HeaderText="Away in the next 14 days" PropertyName="Away" SortString="away" SortKeySelector="row => row.AwaySort"
+                                                IsDefaultSortColumn="@view.IsSortColumn("away")" SortDirection="@view.DirectionFor("away")" Class="hr-team-cell">
+                                        @if (context.AwayNow)
                                         {
-                                            var progress = HrState.Progress(plan);
-                                            var overdue = plan.Tasks.Count(task => task.DoneAt is null && task.Due.Date < today);
-                                            <div>
-                                                <dt>Onboarding</dt>
-                                                <dd>
-                                                    <a href="@($"{HrLayout.Base}/team/onboarding")">@progress.Done of @progress.Total done<span class="visually-hidden"> for @person.Name</span></a>@(overdue > 0 ? $", {overdue} overdue" : null)
-                                                </dd>
-                                            </div>
+                                            <Icon Name="IconName.Airplane" class="me-1" aria-hidden="true" />
                                         }
-                                    </dl>
-                                </li>
-                            }
-                        </ul>
-                    }
+                                        @context.Away
+                                    </GridColumn>
+                                    <GridColumn TItem="TeamRow" HeaderText="Leave waiting" PropertyName="Waiting" SortString="waiting" SortKeySelector="row => row.Waiting"
+                                                IsDefaultSortColumn="@view.IsSortColumn("waiting")" SortDirection="@view.DirectionFor("waiting")" TextNoWrap="true">
+                                        @if (context.Waiting == 0)
+                                        {
+                                            <span>None</span>
+                                        }
+                                        else
+                                        {
+                                            <a href="@($"{HrLayout.Base}/approvals")">@HrDisplay.Plural(context.Waiting, "request")<span class="visually-hidden">&#32;from @context.Name</span></a>
+                                        }
+                                    </GridColumn>
+                                    <GridColumn TItem="TeamRow" HeaderText="@($"Vacation left for {today.Year}")" PropertyName="Vacation" SortString="vacation" SortKeySelector="row => row.VacationLeft"
+                                                IsDefaultSortColumn="@view.IsSortColumn("vacation")" SortDirection="@view.DirectionFor("vacation")" TextNoWrap="true">
+                                        @context.Vacation
+                                    </GridColumn>
+                                    <GridColumn TItem="TeamRow" HeaderText="Onboarding" PropertyName="Onboarding" SortString="onboarding" SortKeySelector="row => row.Onboarding"
+                                                IsDefaultSortColumn="@view.IsSortColumn("onboarding")" SortDirection="@view.DirectionFor("onboarding")" TextNoWrap="true">
+                                        @if (context.HasPlan)
+                                        {
+                                            <a href="@($"{HrLayout.Base}/team/onboarding")">@context.Onboarding<span class="visually-hidden">&#32;for @context.Name</span></a>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-body-secondary">@context.Onboarding</span>
+                                        }
+                                    </GridColumn>
+                                </GridColumns>
+                            </Grid>
+                        </ChildContent>
+                    </ShowcaseDataState>
                 </section>
 
+                @* A four-week schedule of the team's approved leave, not a record list, so it stays a plain table. *@
                 <section aria-labelledby="hr-team-away-title">
                     <h2 class="hr-section-title" id="hr-team-away-title">Who's away in the next 4 weeks</h2>
                     <p class="text-body-secondary small">

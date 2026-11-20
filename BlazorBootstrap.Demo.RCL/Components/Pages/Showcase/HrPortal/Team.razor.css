@@ -1,4 +1,4 @@
-/* My team: the HR admin's manager picker, one card per direct report with facts in words, and the "Who's away" table. */
+/* My team: the HR admin's manager picker, the direct reports' grid, and the "Who's away" table. */
 .hr-team-picker {
     display: flex;
     flex-wrap: wrap;
@@ -16,53 +16,19 @@
     min-width: 0;
 }
 
-.hr-team-people {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(min(100%, 20rem), 1fr));
-    gap: 1rem;
-}
-
-.hr-team-person {
+.min-w-0 {
     min-width: 0;
-    padding: 1rem 1.25rem;
 }
 
-.hr-team-person-head {
-    display: flex;
-    align-items: center;
-    gap: .75rem;
-    margin-bottom: .75rem;
-}
-
-.hr-team-person-text {
-    min-width: 0;
+.hr-team-wrap {
     overflow-wrap: anywhere;
 }
 
-.hr-team-person-name {
-    margin: 0;
-    font-size: 1.0625rem;
-    font-weight: 700;
+/* The grid renders the cells, so the wrapping columns are styled through ::deep. */
+.hr-panel ::deep .hr-team-cell {
+    min-width: 10rem;
+    overflow-wrap: anywhere;
 }
-
-.hr-team-facts {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(100%, 9rem), 1fr));
-    gap: .5rem 1rem;
-}
-
-    .hr-team-facts dt {
-        font-size: .75rem;
-        font-weight: 700;
-        letter-spacing: .02em;
-        text-transform: uppercase;
-        color: var(--bs-secondary-color);
-    }
-
-    .hr-team-facts dd {
-        margin: 0;
-        overflow-wrap: anywhere;
-    }
 
 .hr-team-table {
     --bs-table-bg: transparent;

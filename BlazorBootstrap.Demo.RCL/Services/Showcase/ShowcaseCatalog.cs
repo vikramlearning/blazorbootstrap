@@ -40,8 +40,8 @@ public static class ShowcaseCatalog
             new[] { "Grid", "Sidebar", "Charts", "RichTextEditor", "Modal", "Tabs", "Badge", "Breadcrumb", "Toasts" }),
         new("monitoring", "IoT & DevOps Monitoring", "A public status page with history and subscriptions; engineers work incidents, publish updates, follow live logs and traces, and share on-call.", "Status page, incidents, and live logs", "Business operations", IconName.Activity, "#16a34a", "Monitoring",
             new[] { "Charts", "Sidebar", "Progress", "Alert", "Callout", "Modal", "Tooltip", "Toasts" }),
-        new("hr-portal", "HR & Employee Portal", "Employees find colleagues, request leave, and work through onboarding; managers approve leave and follow new hires; HR admins manage people, leave policies, onboarding templates, and headcount analytics.", "Directory, leave, and onboarding", "Business operations", IconName.People, "#9333ea", "HrPortal",
-            new[] { "MindMap", "Sidebar", "Charts", "Modal", "Progress", "Form inputs" }),
+        new("hr-portal", "HR & Employee Portal", "Employees find colleagues, request leave, write self reviews, and work through onboarding; managers approve leave, review their team, and follow new hires; HR admins run performance review cycles with calibration and manage people, leave policies, onboarding templates, headcount analytics, and an audit log.", "Directory, leave, onboarding, and reviews", "Business operations", IconName.People, "#9333ea", "HrPortal",
+            new[] { "Grid", "MindMap", "Sidebar", "Charts", "Modal", "Progress", "Badge", "Form inputs" }),
     };
 
     /// <summary>

@@ -1,0 +1,49 @@
+/* One review: the steps in a row (wrapping at phone width), the forms, the rating, and the sign-offs. */
+.hr-rv-wrap {
+    overflow-wrap: anywhere;
+}
+
+.hr-rv-steps {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr));
+    gap: .75rem;
+    padding: 0;
+    list-style: none;
+}
+
+    .hr-rv-steps > li {
+        display: flex;
+        gap: .5rem;
+        align-items: flex-start;
+        padding: .75rem 1rem;
+        border: 1px solid var(--hr-border);
+        border-radius: .75rem;
+        background: var(--hr-surface);
+        color: var(--hr-ink);
+    }
+
+    .hr-rv-steps > li.hr-rv-step-current {
+        border-color: var(--sc-primary);
+        box-shadow: inset 0 0 0 1px var(--sc-primary);
+    }
+
+    .hr-rv-steps > li.hr-rv-step-done {
+        background: var(--hr-soft);
+    }
+
+.hr-rv-big {
+    font-size: 1.375rem;
+    font-weight: 800;
+    color: var(--hr-ink);
+}
+
+.hr-rv-note {
+    padding: .5rem .75rem;
+    border-radius: .5rem;
+    background: var(--hr-soft);
+    color: var(--hr-ink);
+}
+
+.hr-rv-rating {
+    max-width: 22rem;
+}

@@ -9,7 +9,7 @@
             var today = State.Clock.Today;
             var all = State.AllEmployees;
             var narrowed = Narrowed(all);
-            var shown = narrowed.Where(employee => Matches(employee, statusFilter, today)).ToList();
+            var shownCount = narrowed.Count(employee => Matches(employee, statusFilter, today));
             var me = State.CurrentEmployee;
         }
 
@@ -18,11 +18,13 @@
                 <h1 class="hr-title">Employees</h1>
                 <p class="hr-lead mb-0">
                     Everyone at @HrSeedData.CompanyName, including people joining soon and those who left. Add a new hire and start
-                    their onboarding, edit someone's job details, or mark someone as left.
+                    their onboarding, open someone's record to edit their job details, or mark someone as left.
                 </p>
             </div>
             <Button Type="ButtonType.Link" To="@AdminHelpers.NewEmployeeUrl" Color="ButtonColor.Primary"><Icon Name="IconName.PersonPlus" class="me-1" aria-hidden="true" />Add employee</Button>
         </div>
+
+        <HrReviewTodo Class="hr-panel mb-3" HideWhenEmpty="true" MaxShown="3" />
 
         @* Always rendered and focusable, so an outcome is announced and focus has somewhere to go once a dialog closes. *@
         <p class="fw-semibold hr-ae-status @(statusIsError ? "text-danger-emphasis" : null)" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
@@ -69,142 +71,162 @@
             </section>
         }
 
-        <div class="hr-ae-filters mb-3">
-            <div class="hr-ae-filter-status" role="group" aria-label="Filter by status">
-                @foreach (var option in FilterOptions)
-                {
-                    var pressed = statusFilter == option.Filter;
-                    var count = narrowed.Count(employee => Matches(employee, option.Filter, today));
-                    <button type="button" class="btn btn-sm @(pressed ? "btn-primary" : "btn-outline-secondary")" aria-pressed="@(pressed ? "true" : "false")"
-                            @onclick="() => statusFilter = option.Filter" @key="option.Text">
-                        @option.Text <span class="hr-ae-count">(@count)</span>
-                    </button>
-                }
-            </div>
-            <div class="hr-ae-field">
-                <label class="form-label small fw-semibold mb-1" for="hr-ae-department">Department</label>
-                <select id="hr-ae-department" class="form-select form-select-sm" @bind="departmentId">
-                    <option value="">All departments</option>
-                    @foreach (var department in State.Departments)
-                    {
-                        <option value="@department.Id" @key="department.Id">@department.Name</option>
-                    }
-                </select>
-            </div>
-            <div class="hr-ae-field">
-                <label class="form-label small fw-semibold mb-1" for="hr-ae-search">Search by name</label>
-                <input id="hr-ae-search" type="search" class="form-control form-control-sm" @bind="search" @bind:event="oninput" autocomplete="off"
-                       maxlength="@HrState.MaxNameLength" aria-describedby="hr-ae-shown" />
-            </div>
-        </div>
-
-        <p class="small text-body-secondary mb-2" id="hr-ae-shown" role="status">@ShownText(shown.Count, all.Count)</p>
-
         <div class="hr-panel">
-            @if (shown.Count == 0)
-            {
-                <p class="text-body-secondary mb-0">
-                    @(all.Count == 0 ? "There is nobody here yet. Add your first employee." : "Nobody matches these filters. Try another status, department, or name.")
-                </p>
-            }
-            else
-            {
-                <div class="table-responsive">
-                    <table class="table align-middle mb-0 hr-ae-table">
-                        <caption class="hr-ae-caption">@CaptionText(shown.Count), by name.</caption>
-                        <thead>
-                            <tr>
-                                <th scope="col">Name</th>
-                                <th scope="col">Title</th>
-                                <th scope="col">Department</th>
-                                <th scope="col">Manager</th>
-                                <th scope="col">Location</th>
-                                <th scope="col">Start date</th>
-                                <th scope="col">Status</th>
-                                <th scope="col">Onboarding</th>
-                                <th scope="col"><span class="visually-hidden">Actions</span></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var employee in shown)
-                            {
-                                var manager = employee.ManagerId is { } managerId ? State.FindEmployee(managerId) : null;
-                                var plan = State.OnboardingOf(employee.Id);
-                                var progress = plan is null ? default : HrState.Progress(plan);
-                                var status = AdminHelpers.EffectiveStatus(employee, today);
-                                var employeeId = employee.Id;
-                                var onboardingKey = "onb-" + employeeId.ToString(CultureInfo.InvariantCulture);
-                                var leftKey = "left-" + employeeId.ToString(CultureInfo.InvariantCulture);
-                                <tr @key="employee.Id" class="@(status == HrEmployeeStatus.Left ? "hr-ae-row-left" : null)">
-                                    <th scope="row" class="hr-ae-name">
-                                        <span class="d-flex align-items-center gap-2">
-                                            <span class="hr-avatar" aria-hidden="true">@employee.Initials</span>
-                                            <span class="min-w-0">
-                                                <a href="@HrDisplay.EmployeeUrl(employee.Id)">@employee.Name</a>@(me?.Id == employee.Id ? " (you)" : null)
-                                                <span class="d-block small fw-normal text-body-secondary hr-ae-wrap">@employee.Email</span>
-                                            </span>
-                                        </span>
-                                    </th>
-                                    <td class="hr-ae-title">@employee.Title</td>
-                                    <td class="hr-ae-dept">@(State.FindDepartment(employee.DepartmentId)?.Name ?? "No department")</td>
-                                    <td class="hr-ae-manager">
-                                        @if (manager is null)
-                                        {
-                                            <span class="text-body-secondary">None (top of the org chart)</span>
-                                        }
-                                        else
-                                        {
-                                            <a href="@HrDisplay.EmployeeUrl(manager.Id)">@manager.Name</a>
-                                        }
-                                    </td>
-                                    <td>@employee.Location</td>
-                                    <td class="text-nowrap">@HrDisplay.Date(employee.StartDate)</td>
-                                    <td class="text-nowrap"><Badge Color="@StatusBadge(status)">@AdminHelpers.StatusText(employee, today)</Badge></td>
-                                    <td class="hr-ae-progress">
-                                        @if (plan is null)
-                                        {
-                                            <span class="text-body-secondary">None</span>
-                                        }
-                                        else
-                                        {
-                                            var overdue = status == HrEmployeeStatus.Left ? 0 : plan.Tasks.Count(task => task.DoneAt is null && task.Due < today);
-                                            <Progress Height="6" Class="mb-1">
-                                                <ProgressBar Width="@AdminHelpers.Percent(progress.Done, progress.Total)" Color="ProgressColor.Success"
-                                                             aria-label="@($"{employee.Name}, onboarding tasks done")" aria-valuenow="@Math.Round(AdminHelpers.Percent(progress.Done, progress.Total))"
-                                                             aria-valuemin="0" aria-valuemax="100" aria-valuetext="@AdminHelpers.ProgressText(progress.Done, progress.Total)" />
-                                            </Progress>
-                                            <span class="small d-block">@AdminHelpers.ProgressText(progress.Done, progress.Total)</span>
-                                            @if (overdue > 0)
-                                            {
-                                                <span class="small d-block text-danger-emphasis"><Icon Name="IconName.ExclamationTriangle" class="me-1" aria-hidden="true" />@overdue overdue</span>
-                                            }
-                                        }
-                                    </td>
-                                    <td>
-                                        <div class="d-flex flex-nowrap gap-1 justify-content-end">
-                                            <a class="btn btn-sm btn-outline-secondary" href="@AdminHelpers.EditEmployeeUrl(employee.Id)">
-                                                @(status == HrEmployeeStatus.Left ? "View" : "Edit")<span class="visually-hidden"> @employee.Name</span>
-                                            </a>
-                                            @if (status != HrEmployeeStatus.Left)
-                                            {
-                                                @if (plan is null)
-                                                {
-                                                    <button type="button" class="btn btn-sm btn-outline-primary text-nowrap" @ref="actionButtons[onboardingKey]" @onclick="() => OpenOnboardingAsync(employeeId)">
-                                                        Start onboarding<span class="visually-hidden">: @employee.Name</span>
-                                                    </button>
-                                                }
-                                                <button type="button" class="btn btn-sm btn-outline-danger text-nowrap" @ref="actionButtons[leftKey]" @onclick="() => OpenLeftAsync(employeeId)">
-                                                    Mark as left<span class="visually-hidden">: @employee.Name</span>
-                                                </button>
-                                            }
-                                        </div>
-                                    </td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
+            <div class="hr-ae-filters mb-3" role="search" aria-label="Filter employees">
+                <div class="hr-ae-filter-status" role="group" aria-label="Filter by status">
+                    @foreach (var option in FilterOptions)
+                    {
+                        var pressed = statusFilter == option.Filter;
+                        var count = narrowed.Count(employee => Matches(employee, option.Filter, today));
+                        <button type="button" class="btn btn-sm @(pressed ? "btn-primary" : "btn-outline-secondary")" aria-pressed="@(pressed ? "true" : "false")"
+                                @onclick="() => SetStatusFilterAsync(option.Filter)" @key="option.Text">
+                            @option.Text <span class="hr-ae-count">(@count)</span>
+                        </button>
+                    }
                 </div>
-            }
+                <div class="hr-ae-field">
+                    <label class="form-label small fw-semibold mb-1" for="hr-ae-department">Department</label>
+                    <select id="hr-ae-department" class="form-select form-select-sm" value="@departmentId" @onchange="OnDepartmentChangedAsync">
+                        <option value="">All departments</option>
+                        @foreach (var department in State.Departments)
+                        {
+                            <option value="@department.Id" @key="department.Id">@department.Name</option>
+                        }
+                    </select>
+                </div>
+                <div class="hr-ae-field">
+                    <label class="form-label small fw-semibold mb-1" for="hr-ae-search">Search</label>
+                    <input id="hr-ae-search" type="search" class="form-control form-control-sm" value="@search" @oninput="OnSearchInputAsync" autocomplete="off"
+                           maxlength="@HrState.MaxNameLength" placeholder="Name, email, or title" aria-describedby="hr-ae-shown" />
+                </div>
+            </div>
+
+            <div class="d-flex flex-wrap align-items-center column-gap-3 row-gap-1 mb-2">
+                <p class="small text-body-secondary mb-0" id="hr-ae-shown" role="status" tabindex="-1" @ref="countRegion">@ShownText(shownCount, all.Count)</p>
+                @* Back to the saved view's defaults: by name, first page, 25 a page, every column in its place. *@
+                <Button Color="ButtonColor.Link" Size="ButtonSize.Small" Class="p-0" @onclick="ResetViewAsync">Reset view</Button>
+            </div>
+
+            <ShowcaseDataState Status="@(viewLoaded ? ShowcaseDataStatus.Ready : ShowcaseDataStatus.Loading)"
+                               IsEmpty="@(all.Count == 0)"
+                               EmptyIcon="IconName.People"
+                               EmptyTitle="No employees yet"
+                               EmptyText="Add your first employee; they show in the directory and the org chart at once."
+                               LoadingText="Loading employees…"
+                               OnRetry="RefreshGridAsync">
+                <EmptyActions>
+                    <Button Type="ButtonType.Link" To="@AdminHelpers.NewEmployeeUrl" Color="ButtonColor.Primary" Size="ButtonSize.Small">Add employee</Button>
+                </EmptyActions>
+                <ChildContent>
+                    @* With no column sorted, the rows stay by name. *@
+                    <Grid @ref="grid"
+                          @key="gridVersion"
+                          TItem="EmployeeRow"
+                          Class="table table-hover sc-grid-row-links hr-ae-table"
+                          GridContainerClass="hr-grid"
+                          DataProvider="ProvideEmployeesAsync"
+                          SettingsProvider="view.GetSettingsAsync"
+                          GridSettingsChanged="SaveSettingsAsync"
+                          AllowPaging="true"
+                          PageSize="@pageSize"
+                          PageSizeSelectorVisible="true"
+                          PageSizeSelectorItems="@(new[] { 10, 25, 50, 100 })"
+                          PaginationItemsTextFormat="{0}–{1} of {2} people"
+                          AllowSorting="true"
+                          RowClass="RowClass"
+                          AllowColumnChooser="true"
+                          AllowExport="true"
+                          ExportFileName="hr-employees"
+                          Responsive="true"
+                          EmptyText="Nobody matches these filters. Try another status, department, or search."
+                          aria-label="Employees">
+                        <GridColumns>
+                            <GridColumn TItem="EmployeeRow" HeaderText="Name" PropertyName="Name" SortString="name" SortKeySelector="row => row.Name"
+                                        IsDefaultSortColumn="@view.IsSortColumn("name")" SortDirection="@view.DirectionFor("name")" AlwaysVisible="true" Class="hr-ae-name">
+                                <span class="d-flex align-items-center gap-2">
+                                    <span class="hr-avatar" aria-hidden="true">@context.Initials</span>
+                                    @* The stretched link makes the whole row open the person's record; the row's buttons stay above it. *@
+                                    <span class="min-w-0"><a class="hr-grid-link stretched-link" href="@AdminHelpers.EditEmployeeUrl(context.Id)">@context.Name</a>@(context.IsMe ? " (you)" : null)</span>
+                                </span>
+                            </GridColumn>
+                            <GridColumn TItem="EmployeeRow" HeaderText="Work email" PropertyName="Email" SortString="email" SortKeySelector="row => row.Email"
+                                        IsDefaultSortColumn="@view.IsSortColumn("email")" SortDirection="@view.DirectionFor("email")" Class="hr-ae-email">
+                                <span class="small">@context.Email</span>
+                            </GridColumn>
+                            <GridColumn TItem="EmployeeRow" HeaderText="Title" PropertyName="Title" SortString="title" SortKeySelector="row => row.Title"
+                                        IsDefaultSortColumn="@view.IsSortColumn("title")" SortDirection="@view.DirectionFor("title")" Class="hr-ae-title">
+                                @context.Title
+                            </GridColumn>
+                            <GridColumn TItem="EmployeeRow" HeaderText="Department" PropertyName="Department" SortString="department" SortKeySelector="row => row.Department"
+                                        IsDefaultSortColumn="@view.IsSortColumn("department")" SortDirection="@view.DirectionFor("department")" Class="hr-ae-dept">
+                                @context.Department
+                            </GridColumn>
+                            <GridColumn TItem="EmployeeRow" HeaderText="Manager" PropertyName="Manager" SortString="manager" SortKeySelector="row => row.Manager"
+                                        IsDefaultSortColumn="@view.IsSortColumn("manager")" SortDirection="@view.DirectionFor("manager")" Class="hr-ae-manager">
+                                @if (context.ManagerId is null)
+                                {
+                                    <span class="text-body-secondary">None (top of the org chart)</span>
+                                }
+                                else
+                                {
+                                    @context.Manager
+                                }
+                            </GridColumn>
+                            <GridColumn TItem="EmployeeRow" HeaderText="Location" PropertyName="Location" SortString="location" SortKeySelector="row => row.Location"
+                                        IsDefaultSortColumn="@view.IsSortColumn("location")" SortDirection="@view.DirectionFor("location")" TextNoWrap="true">
+                                @context.Location
+                            </GridColumn>
+                            <GridColumn TItem="EmployeeRow" HeaderText="Start date" PropertyName="Start" SortString="start" SortKeySelector="row => row.StartDate"
+                                        IsDefaultSortColumn="@view.IsSortColumn("start")" SortDirection="@view.DirectionFor("start")" TextNoWrap="true">
+                                @context.Start
+                            </GridColumn>
+                            <GridColumn TItem="EmployeeRow" HeaderText="Status" PropertyName="Status" SortString="status" SortKeySelector="row => row.Status"
+                                        IsDefaultSortColumn="@view.IsSortColumn("status")" SortDirection="@view.DirectionFor("status")" TextNoWrap="true">
+                                <Badge Color="@StatusBadge(context.StatusKind)">@context.Status</Badge>
+                            </GridColumn>
+                            <GridColumn TItem="EmployeeRow" HeaderText="Onboarding" PropertyName="Onboarding" SortString="onboarding" SortKeySelector="row => row.OnboardingShare"
+                                        IsDefaultSortColumn="@view.IsSortColumn("onboarding")" SortDirection="@view.DirectionFor("onboarding")" Class="hr-ae-progress">
+                                @if (context.OnboardingTotal == 0)
+                                {
+                                    <span class="text-body-secondary">None</span>
+                                }
+                                else
+                                {
+                                    <Progress Height="6" Class="mb-1">
+                                        <ProgressBar Width="@AdminHelpers.Percent(context.OnboardingDone, context.OnboardingTotal)" Color="ProgressColor.Success"
+                                                     aria-label="@($"{context.Name}, onboarding tasks done")" aria-valuenow="@Math.Round(AdminHelpers.Percent(context.OnboardingDone, context.OnboardingTotal))"
+                                                     aria-valuemin="0" aria-valuemax="100" aria-valuetext="@context.Onboarding" />
+                                    </Progress>
+                                    <span class="small d-block">@context.Onboarding</span>
+                                    @if (context.Overdue > 0)
+                                    {
+                                        <span class="small d-block text-danger-emphasis"><Icon Name="IconName.ExclamationTriangle" class="me-1" aria-hidden="true" />@context.Overdue overdue</span>
+                                    }
+                                }
+                            </GridColumn>
+                            <GridColumn TItem="EmployeeRow" HeaderText="Actions" Sortable="false" Exportable="false">
+                                @if (context.StatusKind != HrEmployeeStatus.Left)
+                                {
+                                    var employeeId = context.Id;
+                                    var onboardingKey = "onb-" + employeeId.ToString(CultureInfo.InvariantCulture);
+                                    var leftKey = "left-" + employeeId.ToString(CultureInfo.InvariantCulture);
+                                    <div class="d-flex flex-nowrap gap-1 justify-content-end">
+                                        @if (context.OnboardingTotal == 0)
+                                        {
+                                            <button type="button" class="btn btn-sm btn-outline-primary text-nowrap" @ref="actionButtons[onboardingKey]" @onclick="() => OpenOnboardingAsync(employeeId)">
+                                                Start onboarding<span class="visually-hidden">: @context.Name</span>
+                                            </button>
+                                        }
+                                        <button type="button" class="btn btn-sm btn-outline-danger text-nowrap" @ref="actionButtons[leftKey]" @onclick="() => OpenLeftAsync(employeeId)">
+                                            Mark as left<span class="visually-hidden">: @context.Name</span>
+                                        </button>
+                                    </div>
+                                }
+                            </GridColumn>
+                        </GridColumns>
+                    </Grid>
+                </ChildContent>
+            </ShowcaseDataState>
         </div>
 
         <Modal @ref="onboardingModal" IsVerticallyCentered="true" ShowCloseButton="false" aria-labelledby="hr-ae-onb-title" OnShown="OnOnboardingShown" OnHidden="OnOnboardingHidden">

@@ -17,7 +17,10 @@
             </NavbarBrand>
             @if (State.Identity.IsSignedIn)
             {
-                <ShowcaseAccountMenu SiteBase="@Base" SignInPath="@SignInPath" Class="ms-auto me-2 order-lg-last" />
+                <span class="d-flex align-items-center gap-2 ms-auto me-2 order-lg-last">
+                    <ShowcaseNotificationsMenu />
+                    <ShowcaseAccountMenu SiteBase="@Base" SignInPath="@SignInPath" />
+                </span>
             }
             else
             {
@@ -32,6 +35,8 @@
                     <NavbarItem Href="@($"{Base}/home")">Open the portal</NavbarItem>
                 }
             </NavbarNav>
+            @* The search shows only while someone is signed in. *@
+            <ShowcaseGlobalSearch Class="hr-global-search mb-3 mb-lg-0" Placeholder="Search people and leave" />
         </ChildContent>
     </Navbar>
     </Header>

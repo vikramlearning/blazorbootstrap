@@ -1,0 +1,172 @@
+@page "/showcase/hr-portal/reviews"
+@layout HrWorkLayout
+@implements IDisposable
+
+<PageTitle>My reviews · @HrSeedData.ProductName</PageTitle>
+
+@* The signed-in person's own performance reviews, the newest cycle first, and what's waiting for them. *@
+<div class="container-fluid px-lg-4">
+    @if (State.CurrentEmployee is not null)
+    {
+        var mine = State.MyReviews();
+
+        <div class="mb-3">
+            <h1 class="hr-title">My reviews</h1>
+            <p class="hr-lead mb-0">
+                Your performance reviews: write your self review while a cycle is open, then read your manager's review and your rating
+                once HR releases it, and sign off.
+            </p>
+        </div>
+
+        <HrReviewTodo Class="hr-panel mb-4" />
+
+        @* Always rendered and focusable, so a reset view is announced. *@
+        <p class="hr-live-status" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
+
+        <section class="hr-panel" aria-labelledby="hr-mr-title">
+            <div class="d-flex flex-wrap align-items-baseline justify-content-between column-gap-3 row-gap-1 mb-2">
+                <h2 class="hr-section-title mb-0" id="hr-mr-title">Your reviews (@mine.Count)</h2>
+                @* Back to the saved view's defaults: the newest cycle first, every column in its place. *@
+                <Button Color="ButtonColor.Link" Size="ButtonSize.Small" Class="p-0" @onclick="ResetViewAsync">Reset view</Button>
+            </div>
+            <ShowcaseDataState Status="@(viewLoaded ? ShowcaseDataStatus.Ready : ShowcaseDataStatus.Loading)"
+                               IsEmpty="@(mine.Count == 0)"
+                               EmptyIcon="IconName.ClipboardCheck"
+                               EmptyTitle="No reviews yet"
+                               EmptyText="When HR opens a review cycle that includes you, your review shows here and you're notified."
+                               LoadingText="Loading your reviews…"
+                               OnRetry="RefreshGridAsync">
+                <ChildContent>
+                    <Grid @ref="grid"
+                          @key="gridVersion"
+                          TItem="MyReviewRow"
+                          Class="table table-hover sc-grid-row-links"
+                          GridContainerClass="hr-grid"
+                          DataProvider="ProvideReviewsAsync"
+                          SettingsProvider="view.GetSettingsAsync"
+                          GridSettingsChanged="view.SaveSettingsAsync"
+                          AllowSorting="true"
+                          AllowColumnChooser="true"
+                          AllowExport="true"
+                          ExportFileName="hr-my-reviews"
+                          Responsive="true"
+                          EmptyText="No reviews yet."
+                          aria-label="Your reviews">
+                        <GridColumns>
+                            <GridColumn TItem="MyReviewRow" HeaderText="Cycle" PropertyName="Cycle" SortString="cycle" SortKeySelector="row => row.Opened"
+                                        IsDefaultSortColumn="@view.IsSortColumn("cycle")" SortDirection="@view.DirectionFor("cycle")" AlwaysVisible="true">
+                                @* The stretched link makes the whole row open the review. *@
+                                <a class="hr-grid-link stretched-link" href="@ReviewDisplay.ReviewUrl(context.Id)">@context.Cycle</a>
+                            </GridColumn>
+                            <GridColumn TItem="MyReviewRow" HeaderText="Stage" PropertyName="Stage" SortString="stage" SortKeySelector="row => row.StageKind"
+                                        IsDefaultSortColumn="@view.IsSortColumn("stage")" SortDirection="@view.DirectionFor("stage")" TextNoWrap="true">
+                                <Badge Color="@ReviewDisplay.StageColor(context.StageKind)">@context.Stage</Badge>
+                            </GridColumn>
+                            <GridColumn TItem="MyReviewRow" HeaderText="Manager" PropertyName="Manager" SortString="manager" SortKeySelector="row => row.Manager"
+                                        IsDefaultSortColumn="@view.IsSortColumn("manager")" SortDirection="@view.DirectionFor("manager")">
+                                @context.Manager
+                            </GridColumn>
+                            <GridColumn TItem="MyReviewRow" HeaderText="Self review" PropertyName="SelfReview" SortString="self" SortKeySelector="row => row.SelfReview"
+                                        IsDefaultSortColumn="@view.IsSortColumn("self")" SortDirection="@view.DirectionFor("self")" TextNoWrap="true">
+                                @context.SelfReview
+                            </GridColumn>
+                            <GridColumn TItem="MyReviewRow" HeaderText="Rating" PropertyName="Rating" SortString="rating" SortKeySelector="row => row.Rating"
+                                        IsDefaultSortColumn="@view.IsSortColumn("rating")" SortDirection="@view.DirectionFor("rating")">
+                                @context.Rating
+                            </GridColumn>
+                            <GridColumn TItem="MyReviewRow" HeaderText="Your sign-off" PropertyName="SignedOff" SortString="signed" SortKeySelector="row => row.SignedOff"
+                                        IsDefaultSortColumn="@view.IsSortColumn("signed")" SortDirection="@view.DirectionFor("signed")" TextNoWrap="true">
+                                @context.SignedOff
+                            </GridColumn>
+                        </GridColumns>
+                    </Grid>
+                </ChildContent>
+            </ShowcaseDataState>
+        </section>
+    }
+</div>
+
+@code {
+    private Grid<MyReviewRow>? grid;
+
+    /// <summary>Changes when the view is reset, so the grid is built again with its defaults.</summary>
+    private int gridVersion;
+
+    private string? statusMessage;
+
+    private ElementReference? statusRegion;
+
+    private ShowcaseGridView view = default!;
+
+    private bool viewLoaded;
+
+    [Inject] private ShowcaseGridViewStore GridViews { get; set; } = default!;
+
+    [Inject] private HrState State { get; set; } = default!;
+
+    /// <summary>Stops listening to state changes.</summary>
+    public void Dispose() => State.Changed -= OnStateChanged;
+
+    /// <summary>Loads the saved view once the page is interactive (it lives in the tab's session storage), then shows the grid.</summary>
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender)
+            return;
+
+        await view.LoadAsync();
+        viewLoaded = true;
+        StateHasChanged();
+    }
+
+    protected override void OnInitialized()
+    {
+        view = GridViews.Get(State.SiteSlug, "my-reviews", 20);
+        State.Changed += OnStateChanged;
+    }
+
+    private void OnStateChanged() => InvokeAsync(async () =>
+    {
+        await RefreshGridAsync();
+        StateHasChanged();
+    });
+
+    /// <summary>The signed-in person's reviews, the newest cycle first unless a column is sorted. The rating shows once HR releases the cycle.</summary>
+    private Task<GridDataProviderResult<MyReviewRow>> ProvideReviewsAsync(GridDataProviderRequest<MyReviewRow> request)
+    {
+        var rows = State.MyReviews().Select(review =>
+        {
+            var cycle = State.FindCycle(review.CycleId)!;
+            var stage = State.StageOf(review);
+            var released = cycle.Status is HrCycleStatus.SignOff or HrCycleStatus.Closed;
+
+            return new MyReviewRow(review.Id, cycle.Name, cycle.CreatedAt, ReviewDisplay.StageLabel(stage), stage, State.FindEmployee(review.ManagerId)?.Name ?? "A former colleague",
+                review.SelfSubmittedAt is { } self ? $"Sent {HrDisplay.Date(self)}" : "Not yet",
+                review.IsLeftOut ? "Left out" : released ? ReviewDisplay.Rating(review.CalibratedRating ?? review.ManagerRating) : "After the release",
+                review.EmployeeSignedAt is { } signed ? HrDisplay.Date(signed) : "Not yet");
+        }).ToList();
+
+        return view.ApplyAsync(request, rows);
+    }
+
+    private async Task RefreshGridAsync()
+    {
+        if (grid is not null)
+            await grid.RefreshDataAsync();
+    }
+
+    /// <summary>Forgets the saved view and builds the grid again with its defaults; focus moves to the status.</summary>
+    private async Task ResetViewAsync()
+    {
+        await view.ResetAsync();
+        gridVersion++;
+        statusMessage = statusMessage == ResetText ? ResetText + " (again)" : ResetText;
+        StateHasChanged();
+        await Task.Yield();
+        await HrDisplay.FocusAsync(statusRegion);
+    }
+
+    private const string ResetText = "The view is reset: the newest cycle first, and every column shown.";
+
+    /// <summary>One of your reviews as a grid row: the words each column shows and exports, and the values it sorts by.</summary>
+    private sealed record MyReviewRow(int Id, string Cycle, DateTime Opened, string Stage, HrReviewStage StageKind, string Manager, string SelfReview, string Rating, string SignedOff);
+}

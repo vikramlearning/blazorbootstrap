@@ -7,7 +7,6 @@
     <ShowcaseRoleGuard Roles="@HrSeedData.HrAdminRole" SignInPath="@HrLayout.SignInPath">
         @{
             var templates = State.Templates;
-            var plans = State.Onboardings;
         }
 
         <div class="mb-3">
@@ -23,67 +22,79 @@
 
         <div class="hr-at-grid">
             <section class="hr-panel" aria-labelledby="hr-at-table-title">
-                <h2 class="hr-section-title" id="hr-at-table-title">Templates (@templates.Count)</h2>
-                @if (templates.Count == 0)
-                {
-                    <p class="text-body-secondary mb-0">There are no templates yet. Create one to start onboarding new hires.</p>
-                }
-                else
-                {
-                    <div class="table-responsive">
-                        <table class="table align-middle mb-0 hr-at-table">
-                            <caption class="hr-at-caption">Every onboarding template, by name, with the plans started from one with the same name.</caption>
-                            <thead>
-                                <tr>
-                                    <th scope="col">Template</th>
-                                    <th scope="col" class="text-end">Tasks</th>
-                                    <th scope="col">Plans started from it</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var template in templates)
-                                {
-                                    var started = plans.Where(plan => string.Equals(plan.TemplateName, template.Name, StringComparison.OrdinalIgnoreCase)).ToList();
-                                    <tr @key="template.Id">
-                                        <th scope="row" class="hr-at-name">
-                                            <a href="@AdminHelpers.TemplateUrl(template.Id)">@template.Name</a>
-                                            @if (template.Description.Length > 0)
+                <div class="d-flex flex-wrap align-items-baseline justify-content-between column-gap-3 row-gap-1 mb-2">
+                    <h2 class="hr-section-title mb-0" id="hr-at-table-title">Templates (@templates.Count)</h2>
+                    @* Back to the saved view's defaults: by name, every column in its place. *@
+                    <Button Color="ButtonColor.Link" Size="ButtonSize.Small" Class="p-0" @onclick="ResetViewAsync">Reset view</Button>
+                </div>
+                <p class="small text-body-secondary">Every onboarding template, by name, with the plans started from one with the same name. A row opens the template.</p>
+                <ShowcaseDataState Status="@(viewLoaded ? ShowcaseDataStatus.Ready : ShowcaseDataStatus.Loading)"
+                                   IsEmpty="@(templates.Count == 0)"
+                                   EmptyIcon="IconName.CardChecklist"
+                                   EmptyTitle="No templates yet"
+                                   EmptyText="Create a template with the form beside this list to start onboarding new hires."
+                                   LoadingText="Loading templates…"
+                                   OnRetry="RefreshGridAsync">
+                    <ChildContent>
+                        <Grid @ref="grid"
+                              @key="gridVersion"
+                              TItem="TemplateRow"
+                              Class="table table-hover sc-grid-row-links hr-at-table"
+                              GridContainerClass="hr-grid"
+                              DataProvider="ProvideTemplatesAsync"
+                              SettingsProvider="view.GetSettingsAsync"
+                              GridSettingsChanged="view.SaveSettingsAsync"
+                              AllowSorting="true"
+                              AllowColumnChooser="true"
+                              AllowExport="true"
+                              ExportFileName="hr-onboarding-templates"
+                              Responsive="true"
+                              EmptyText="No templates yet."
+                              aria-label="Onboarding templates">
+                            <GridColumns>
+                                <GridColumn TItem="TemplateRow" HeaderText="Template" PropertyName="Name" SortString="name" SortKeySelector="row => row.Name"
+                                            IsDefaultSortColumn="@view.IsSortColumn("name")" SortDirection="@view.DirectionFor("name")" AlwaysVisible="true" Class="hr-at-name">
+                                    @* The stretched link makes the whole row open the template; the people links stay above it. *@
+                                    <a class="hr-grid-link stretched-link" href="@AdminHelpers.TemplateUrl(context.Id)">@context.Name</a>
+                                    @if (context.Description.Length > 0)
+                                    {
+                                        <span class="d-block small fw-normal text-body-secondary">@context.Description</span>
+                                    }
+                                </GridColumn>
+                                <GridColumn TItem="TemplateRow" HeaderText="Tasks" PropertyName="Tasks" SortString="tasks" SortKeySelector="row => row.TaskCount"
+                                            IsDefaultSortColumn="@view.IsSortColumn("tasks")" SortDirection="@view.DirectionFor("tasks")" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End">
+                                    <span class="hr-mono">@context.Tasks</span>
+                                </GridColumn>
+                                <GridColumn TItem="TemplateRow" HeaderText="Plans started from it" PropertyName="Plans" SortString="plans" SortKeySelector="row => row.People.Count"
+                                            IsDefaultSortColumn="@view.IsSortColumn("plans")" SortDirection="@view.DirectionFor("plans")" Class="hr-at-plans">
+                                    @if (context.People.Count == 0)
+                                    {
+                                        <span class="text-body-secondary">None</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="d-block">@HrDisplay.Plural(context.People.Count, "plan")</span>
+                                        <span class="d-block small">
+                                            @for (var index = 0; index < context.People.Count; index++)
                                             {
-                                                <span class="d-block small fw-normal text-body-secondary">@template.Description</span>
+                                                var person = context.People[index];
+                                                @(index == 0 ? null : ", ")
+                                                @if (person.Id is { } personId)
+                                                {
+                                                    <a href="@HrDisplay.EmployeeUrl(personId)">@person.Name</a>
+                                                }
+                                                else
+                                                {
+                                                    <span>@person.Name</span>
+                                                }
                                             }
-                                        </th>
-                                        <td class="text-end hr-mono">@(template.Tasks.Count == 0 ? "None yet" : template.Tasks.Count.ToString(CultureInfo.InvariantCulture))</td>
-                                        <td class="hr-at-plans">
-                                            @if (started.Count == 0)
-                                            {
-                                                <span class="text-body-secondary">None</span>
-                                            }
-                                            else
-                                            {
-                                                <span class="d-block">@HrDisplay.Plural(started.Count, "plan")</span>
-                                                <span class="d-block small">
-                                                    @for (var index = 0; index < started.Count; index++)
-                                                    {
-                                                        var person = State.FindEmployee(started[index].EmployeeId);
-                                                        @(index == 0 ? null : ", ")
-                                                        @if (person is null)
-                                                        {
-                                                            <span>Someone who left</span>
-                                                        }
-                                                        else
-                                                        {
-                                                            <a href="@HrDisplay.EmployeeUrl(person.Id)">@person.Name</a>
-                                                        }
-                                                    }
-                                                </span>
-                                            }
-                                        </td>
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
-                    </div>
-                }
+                                        </span>
+                                    }
+                                </GridColumn>
+                            </GridColumns>
+                        </Grid>
+                    </ChildContent>
+                </ShowcaseDataState>
             </section>
 
             <section class="hr-panel" aria-labelledby="hr-at-new-title">
@@ -94,27 +105,30 @@
                 }
                 else
                 {
-                    <form @onsubmit="Create" novalidate aria-labelledby="hr-at-new-title">
+                    <EditForm EditContext="editContext" OnSubmit="CreateAsync" FormName="hr-new-template" novalidate aria-labelledby="hr-at-new-title">
+                        <DataAnnotationsValidator />
+                        <ShowcaseFormErrors ShowSummary="true" />
                         <div class="mb-3">
                             <label class="form-label fw-semibold" for="hr-at-name">Name</label>
-                            <input id="hr-at-name" class="form-control @(nameError is null ? null : "is-invalid")" @bind="name" @bind:event="oninput" @ref="nameInput"
-                                   maxlength="@HrState.MaxNameLength" autocomplete="off" aria-required="true" aria-invalid="@(nameError is null ? null : "true")"
-                                   aria-describedby="hr-at-name-help hr-at-name-error" />
-                            <div class="form-text" id="hr-at-name-help">Like “Sales new hire”. Unique, up to @HrState.MaxNameLength characters.</div>
-                            <div class="invalid-feedback d-block" id="hr-at-name-error">@nameError</div>
+                            <InputText id="hr-at-name" class="form-control" @bind-Value="form.Name" maxlength="@HrState.MaxNameLength" autocomplete="off"
+                                       aria-describedby="hr-at-name-help" />
+                            <ShowcaseUniqueCheck @ref="nameCheck" For="() => form.Name" IsTakenAsync="IsNameTakenAsync"
+                                                 TakenMessage="@(value => $"Another template is already called {value}. Choose another name.")" />
+                            <div class="form-text mt-0" id="hr-at-name-help">Like “Sales new hire”. Unique, up to @HrState.MaxNameLength characters.</div>
+                            <ValidationMessage For="() => form.Name" />
                         </div>
                         <div class="mb-3">
                             <label class="form-label fw-semibold" for="hr-at-description">Description <span class="fw-normal text-body-secondary">(optional)</span></label>
-                            <textarea id="hr-at-description" class="form-control @(descriptionError is null ? null : "is-invalid")" rows="3" @bind="description" @bind:event="oninput"
-                                      @ref="descriptionInput" aria-invalid="@(descriptionError is null ? null : "true")" aria-describedby="hr-at-description-help hr-at-description-error"></textarea>
+                            <InputTextArea id="hr-at-description" class="form-control" rows="3" @bind-Value="form.Description" @oninput="OnDescriptionInput"
+                                           aria-describedby="hr-at-description-help" />
                             <div class="form-text" id="hr-at-description-help">
-                                Who it's for. <span class="@(description.Trim().Length > HrState.MaxDescriptionLength ? "text-danger-emphasis" : null)">@AdminHelpers.Counter(description, HrState.MaxDescriptionLength)</span>
+                                Who it's for. <span class="@(descriptionText.Trim().Length > HrState.MaxDescriptionLength ? "text-danger-emphasis" : null)">@AdminHelpers.Counter(descriptionText, HrState.MaxDescriptionLength)</span>
                             </div>
-                            <div class="invalid-feedback d-block" id="hr-at-description-error">@descriptionError</div>
+                            <ValidationMessage For="() => form.Description" />
                         </div>
                         <p class="small text-body-secondary">You add its tasks on the next page.</p>
                         <Button Type="ButtonType.Submit" Color="ButtonColor.Primary"><Icon Name="IconName.PlusLg" class="me-1" aria-hidden="true" />Create template</Button>
-                    </form>
+                    </EditForm>
                 }
             </section>
         </div>

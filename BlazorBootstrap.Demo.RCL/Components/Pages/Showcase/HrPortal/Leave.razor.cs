@@ -1,18 +1,24 @@
+using System.ComponentModel.DataAnnotations;
 using System.Globalization;
 using BlazorBootstrap.Demo.RCL.Models.Showcase.HrPortal;
 using BlazorBootstrap.Demo.RCL.Services.Showcase.HrPortal;
+using Microsoft.AspNetCore.Components.Forms;
 
 namespace BlazorBootstrap.Demo.RCL.Components.Pages.Showcase.HrPortal;
 
 /// <summary>
 /// My leave: the signed-in employee's balances for this year (<see cref="HrState.Balances" />: allowance, used, waiting, and
-/// available in words with a stacked <see cref="Progress" />; unlimited types show only the days used), a request form
-/// (type with its description and notice rule, native first and last day, a live "That's N working days" naming the holidays
-/// it skips, and an optional note) that also edits a waiting request (<see cref="HrState.RequestLeave" />,
-/// <see cref="HrState.UpdateLeave" />), and their requests, upcoming and past, with the status in words, who decided and
-/// when, and the manager's note. Cancel (waiting, or approved and not started) is confirmed in a <see cref="Modal" /> that
-/// names the days going back to the balance and runs once the dialog is hidden (<see cref="HrState.CancelLeave" />). Company
-/// holidays are listed in a <c>details</c>. Every outcome is announced in an always-rendered status region.
+/// available in words with a stacked <see cref="Progress" />; unlimited types show only the days used), a validated request
+/// form (rule WR-002) that also edits a waiting request (<see cref="HrState.RequestLeave" />,
+/// <see cref="HrState.UpdateLeave" />): the type (required) with its description and notice rule; the first and last day
+/// (required, the last on or after the first, in the same year, at most <see cref="HrState.MaxLeaveSpanDays" /> calendar
+/// days, with the notice the type needs, and with a working day in it: cross-field rules), with a live "That's N working
+/// days" naming the holidays it skips; and an optional note of up to 300 characters. A failed submit shows a summary that
+/// links to each field; an overlap or a short balance from the state is shown under the dates the same way. Then their
+/// requests, upcoming and past, with the status in words, who decided and when, and the manager's note. Cancel (waiting, or
+/// approved and not started) is confirmed in a <see cref="Modal" /> that names the days going back to the balance and runs
+/// once the dialog is hidden (<see cref="HrState.CancelLeave" />). Company holidays are listed in a <c>details</c>. Every
+/// outcome is announced in an always-rendered status region.
 /// </summary>
 public partial class Leave : ComponentBase, IDisposable
 {
@@ -28,6 +34,8 @@ public partial class Leave : ComponentBase, IDisposable
 
     private ElementReference? dialogDismiss;
 
+    private EditContext editContext = new(new LeaveForm());
+
     /// <summary>The request being edited; 0 while requesting new leave.</summary>
     private int editingId;
 
@@ -36,25 +44,12 @@ public partial class Leave : ComponentBase, IDisposable
     /// <summary>Returns the element to focus after the next render.</summary>
     private Func<ElementReference?>? focusTarget;
 
-    private string? formError;
-
-    private string formFrom = string.Empty;
+    private LeaveForm form = new();
 
     private ElementReference? formHeading;
 
-    private string formNote = string.Empty;
-
-    private int formPolicyId;
-
-    private string formTo = string.Empty;
-
-    private string? fromError;
-
-    private ElementReference? fromInput;
-
-    private string? noteError;
-
-    private ElementReference? noteInput;
+    /// <summary>The note as typed, for the live counter (the bound value changes only on change).</summary>
+    private string noteText = string.Empty;
 
     /// <summary>The Edit and Cancel buttons, by key.</summary>
     private readonly Dictionary<string, ElementReference> openers = new();
@@ -62,19 +57,14 @@ public partial class Leave : ComponentBase, IDisposable
     /// <summary>The confirmed cancellation, run once the dialog is hidden.</summary>
     private int? pendingCancelId;
 
-    private string? policyError;
-
-    private ElementReference? policyInput;
+    /// <summary>The state's answers that belong to a field (an overlap, a short balance), shown like the form's own messages.</summary>
+    private ValidationMessageStore? serverErrors;
 
     private bool statusIsError;
 
     private string? statusMessage;
 
     private ElementReference? statusRegion;
-
-    private string? toError;
-
-    private ElementReference? toInput;
 
     #endregion
 
@@ -94,7 +84,7 @@ public partial class Leave : ComponentBase, IDisposable
     protected override void OnInitialized()
     {
         State.Changed += OnStateChanged;
-        formPolicyId = State.Policies.FirstOrDefault()?.Id ?? 0;
+        NewForm(State.Policies.FirstOrDefault()?.Id ?? 0);
     }
 
     #endregion
@@ -108,6 +98,39 @@ public partial class Leave : ComponentBase, IDisposable
 
     #region Private Methods
 
+    /// <summary>"5 days used and 3 days waiting for approval, of 25 days a year."</summary>
+    private static string BalanceSummary(HrBalance balance) =>
+        $"{HrDisplay.Days(balance.Available)} available: {HrDisplay.Days(balance.Used)} used and {HrDisplay.Days(balance.Pending)} waiting for approval, of {HrDisplay.Days(balance.Allowance)} a year.";
+
+    /// <summary>Whether a request can still be cancelled: waiting, or approved and not started.</summary>
+    private static bool CanCancel(HrLeaveRequest request, DateTime today) =>
+        request.Status == HrLeaveStatus.Pending || (request.Status == HrLeaveStatus.Approved && request.From > today);
+
+    private static string Capitalize(string text) => text.Length == 0 ? text : char.ToUpperInvariant(text[0]) + text[1..];
+
+    /// <summary>The first day a type allows: its notice from today, or up to 30 days back for unlimited types.</summary>
+    private static DateTime Earliest(HrLeavePolicy policy, DateTime today) =>
+        policy.IsUnlimited ? today.AddDays(Math.Min(policy.MinNoticeDays, -LeaveText.UnlimitedBackdateDays)) : today.AddDays(policy.MinNoticeDays);
+
+    /// <summary>The form field a rule problem belongs to.</summary>
+    private static string MemberOf(FormField field) => field switch
+    {
+        FormField.Policy => nameof(LeaveForm.PolicyId),
+        FormField.From => nameof(LeaveForm.From),
+        FormField.Note => nameof(LeaveForm.Note),
+        _ => nameof(LeaveForm.To),
+    };
+
+    private static string NoticeWords(int days) => days == 1 ? "1 day" : FormattableString.Invariant($"{days} days");
+
+    private static double Percent(int days, int allowance) => allowance <= 0 ? 0 : Math.Min(100, Math.Round(days * 100.0 / allowance, 1));
+
+    private static string StatusWords(HrLeaveStatus status) => status switch
+    {
+        HrLeaveStatus.Pending => "waiting for approval",
+        _ => status.ToString().ToLowerInvariant(),
+    };
+
     /// <summary>"Rafael Costa" (the manager), or "HR" for someone with no manager.</summary>
     private string ApproverName(HrEmployee me) => me.ManagerId is { } managerId && State.FindEmployee(managerId) is { } manager ? manager.Name : "HR";
 
@@ -120,14 +143,6 @@ public partial class Leave : ComponentBase, IDisposable
 
         await cancelModal.ShowAsync();
     }
-
-    /// <summary>"5 days used and 3 days waiting for approval, of 25 days a year."</summary>
-    private static string BalanceSummary(HrBalance balance) =>
-        $"{HrDisplay.Days(balance.Available)} available: {HrDisplay.Days(balance.Used)} used and {HrDisplay.Days(balance.Pending)} waiting for approval, of {HrDisplay.Days(balance.Allowance)} a year.";
-
-    /// <summary>Whether a request can still be cancelled: waiting, or approved and not started.</summary>
-    private static bool CanCancel(HrLeaveRequest request, DateTime today) =>
-        request.Status == HrLeaveStatus.Pending || (request.Status == HrLeaveStatus.Approved && request.From > today);
 
     /// <summary>Names what cancelling does to the balance.</summary>
     private string CancelConsequence(HrLeaveRequest request)
@@ -191,10 +206,6 @@ public partial class Leave : ComponentBase, IDisposable
         }
     }
 
-    private static string Capitalize(string text) => text.Length == 0 ? text : char.ToUpperInvariant(text[0]) + text[1..];
-
-    private void ClearErrors() => policyError = fromError = toError = noteError = formError = null;
-
     private Task ConfirmCancelAsync()
     {
         if (pendingCancelId is not null || cancelRequest is not { } request)
@@ -214,8 +225,11 @@ public partial class Leave : ComponentBase, IDisposable
     /// </summary>
     private string DaysText(HrEmployee me, HrLeavePolicy? policy)
     {
-        if (LeaveText.ParseDate(formFrom) is not { } from || LeaveText.ParseDate(formTo) is not { } to)
+        if (form.From is not { } from || form.To is not { } to)
             return "Pick the first and last day to see how many working days that is.";
+
+        from = from.Date;
+        to = to.Date;
 
         if (to < from)
             return "The last day is before the first.";
@@ -250,27 +264,21 @@ public partial class Leave : ComponentBase, IDisposable
     /// <summary>Fills the form with a waiting request, to change it.</summary>
     private void Edit(HrLeaveRequest request)
     {
-        ClearErrors();
         editingId = request.Id;
         editingLabel = LeaveText.RequestLabel(request, State.FindPolicy(request.PolicyId));
-        formPolicyId = request.PolicyId;
-        formFrom = LeaveText.DateValue(request.From);
-        formTo = LeaveText.DateValue(request.To);
-        formNote = request.Note;
+        NewForm(request.PolicyId, request.From, request.To, request.Note);
         focusTarget = () => formHeading;
     }
 
-    /// <summary>The first day a type allows: its notice from today, or up to 30 days back for unlimited types.</summary>
-    private static DateTime Earliest(HrLeavePolicy policy, DateTime today) =>
-        policy.IsUnlimited ? today.AddDays(Math.Min(policy.MinNoticeDays, -LeaveText.UnlimitedBackdateDays)) : today.AddDays(policy.MinNoticeDays);
-
-    /// <summary>Focuses the first field with an error.</summary>
-    private void FocusFirstError() =>
-        focusTarget = policyError is not null ? () => policyInput
-            : fromError is not null ? () => fromInput
-            : toError is not null ? () => toInput
-            : noteError is not null ? () => noteInput
-            : () => fromInput;
+    /// <summary>Starts a fresh form (and its validation), wired to the page's rules and the state's field answers.</summary>
+    private void NewForm(int policyId, DateTime? from = null, DateTime? to = null, string note = "")
+    {
+        form = new LeaveForm { PolicyId = policyId, From = from, To = to, Note = note, Rules = RulesFor };
+        editContext = new EditContext(form);
+        serverErrors = new ValidationMessageStore(editContext);
+        editContext.OnFieldChanged += OnFieldChanged;
+        noteText = note;
+    }
 
     private Task OnDialogShownAsync() => HrDisplay.FocusAsync(dialogDismiss);
 
@@ -292,37 +300,35 @@ public partial class Leave : ComponentBase, IDisposable
             focusTarget = () => opener;
     }
 
-    // The date inputs bind by hand: a native date input reports "" while half-typed.
-    private void OnFromChanged(ChangeEventArgs e)
+    /// <summary>
+    /// A changed field clears the state's answers (they were about the old values). A first day without a last day gets the
+    /// same day, which the employee can change.
+    /// </summary>
+    private void OnFieldChanged(object? sender, FieldChangedEventArgs args)
     {
-        formFrom = e.Value?.ToString() ?? string.Empty;
+        serverErrors?.Clear();
 
-        // A first day without a last day gets the same day, which the employee can change.
-        if (formTo.Length == 0 && LeaveText.ParseDate(formFrom) is { } from)
-            formTo = LeaveText.DateValue(from);
+        if (args.FieldIdentifier.FieldName == nameof(LeaveForm.From) && form.To is null && form.From is { } from)
+            form.To = from.Date;
     }
 
-    private void OnPolicyChanged(ChangeEventArgs e) => formPolicyId = int.TryParse(e.Value?.ToString(), NumberStyles.Integer, CultureInfo.InvariantCulture, out var id) ? id : 0;
+    private void OnNoteInput(ChangeEventArgs args) => noteText = args.Value?.ToString() ?? string.Empty;
 
     /// <summary>Re-renders; a new request's type falls back to the first offered one when its type is gone (a restored tab, or HR removed it).</summary>
     private void OnStateChanged() => InvokeAsync(() =>
     {
-        if (editingId == 0 && State.FindPolicy(formPolicyId) is not { IsActive: true })
-            formPolicyId = State.Policies.FirstOrDefault()?.Id ?? 0;
+        if (editingId == 0 && State.FindPolicy(form.PolicyId) is not { IsActive: true })
+            form.PolicyId = State.Policies.FirstOrDefault()?.Id ?? 0;
 
         StateHasChanged();
     });
-
-    private void OnToChanged(ChangeEventArgs e) => formTo = e.Value?.ToString() ?? string.Empty;
-
-    private static double Percent(int days, int allowance) => allowance <= 0 ? 0 : Math.Min(100, Math.Round(days * 100.0 / allowance, 1));
 
     /// <summary>The offered types, plus the edited request's type when it is no longer offered.</summary>
     private IReadOnlyList<HrLeavePolicy> PolicyOptions()
     {
         var options = State.Policies.ToList();
 
-        if (State.FindPolicy(formPolicyId) is { IsActive: false } current)
+        if (State.FindPolicy(form.PolicyId) is { IsActive: false } current)
             options.Add(current);
 
         return options;
@@ -345,17 +351,11 @@ public partial class Leave : ComponentBase, IDisposable
         return policy.IsActive ? description + days + notice : $"{policy.Name} is no longer offered; pick another type to save this request.";
     }
 
-    private static string NoticeWords(int days) => days == 1 ? "1 day" : FormattableString.Invariant($"{days} days");
-
     private void ResetForm()
     {
-        ClearErrors();
         editingId = 0;
         editingLabel = string.Empty;
-        formFrom = formTo = formNote = string.Empty;
-
-        if (State.FindPolicy(formPolicyId) is not { IsActive: true })
-            formPolicyId = State.Policies.FirstOrDefault()?.Id ?? 0;
+        NewForm(State.FindPolicy(form.PolicyId) is { IsActive: true } kept ? kept.Id : State.Policies.FirstOrDefault()?.Id ?? 0);
     }
 
     /// <summary>
@@ -395,16 +395,26 @@ public partial class Leave : ComponentBase, IDisposable
         return null;
     }
 
-    private void SetError(FormField field, string message)
+    /// <summary>The form's cross-field rules (the type, the dates, and the notice), as validation results on their fields.</summary>
+    private IEnumerable<ValidationResult> RulesFor(LeaveForm values)
     {
-        switch (field)
+        if (State.FindPolicy(values.PolicyId) is not { } policy)
         {
-            case FormField.Policy: policyError = message; break;
-            case FormField.From: fromError = message; break;
-            case FormField.To: toError = message; break;
-            case FormField.Note: noteError = message; break;
-            default: formError = message; break;
+            yield return new ValidationResult("That type of leave was removed. Pick another type.", new[] { nameof(LeaveForm.PolicyId) });
+
+            yield break;
         }
+
+        if (values.From is { } from && values.To is { } to && RuleProblem(policy, from.Date, to.Date) is { } problem)
+            yield return new ValidationResult(problem.Message, new[] { MemberOf(problem.Field) });
+    }
+
+    /// <summary>Shows a state answer under its field, like the form's own messages; the summary and focus follow.</summary>
+    private void ServerError(System.Linq.Expressions.Expression<Func<object>> field, string message)
+    {
+        serverErrors?.Clear();
+        serverErrors?.Add(field, message);
+        editContext.NotifyValidationStateChanged();
     }
 
     private void SetStatus(string message, bool isError)
@@ -414,12 +424,6 @@ public partial class Leave : ComponentBase, IDisposable
         focusTarget = () => statusRegion;
     }
 
-    private static string StatusWords(HrLeaveStatus status) => status switch
-    {
-        HrLeaveStatus.Pending => "waiting for approval",
-        _ => status.ToString().ToLowerInvariant(),
-    };
-
     /// <summary>Leaves editing without saving, and returns focus to the Edit button (or the form's heading when it is gone).</summary>
     private void StopEditing()
     {
@@ -428,43 +432,27 @@ public partial class Leave : ComponentBase, IDisposable
         focusTarget = openers.TryGetValue(key, out var opener) ? () => opener : () => formHeading;
     }
 
-    /// <summary>Checks the form and requests the leave (or saves the edited request), saying what happened or what to fix.</summary>
-    private void Submit()
+    /// <summary>
+    /// Requests the leave (or saves the edited request) once the form is valid; a failed submit shows the summary (rule
+    /// WR-002). The state checks again: an overlap or a short balance is shown under the dates, anything else is announced.
+    /// </summary>
+    private Task SubmitAsync()
     {
-        ClearErrors();
+        serverErrors?.Clear();
 
         if (State.CurrentEmployee is not { } me)
         {
             SetStatus("Your sign-in ended. Sign in again to request leave; nothing was saved.", true);
 
-            return;
+            return Task.CompletedTask;
         }
 
-        var policy = State.FindPolicy(formPolicyId);
-        var from = LeaveText.ParseDate(formFrom);
-        var to = LeaveText.ParseDate(formTo);
-        var note = formNote.Trim();
+        if (!editContext.Validate() || State.FindPolicy(form.PolicyId) is not { } policy || form.From is not { } fromValue || form.To is not { } toValue)
+            return Task.CompletedTask;
 
-        policyError = policy is null ? "Choose the type of leave." : null;
-        fromError = from is null ? "Enter the first day of leave as a full date." : null;
-        toError = to is null ? "Enter the last day of leave as a full date." : null;
-        noteError = note.Length > HrState.MaxNoteLength ? FormattableString.Invariant($"Shorten the note to {HrState.MaxNoteLength} characters or fewer (now {note.Length}).") : null;
-
-        if (policy is null || from is not { } first || to is not { } last || noteError is not null)
-        {
-            FocusFirstError();
-
-            return;
-        }
-
-        if (RuleProblem(policy, first, last) is { } problem)
-        {
-            SetError(problem.Field, problem.Message);
-            FocusFirstError();
-
-            return;
-        }
-
+        var first = fromValue.Date;
+        var last = toValue.Date;
+        var note = form.Note.Trim();
         var requestId = editingId;
         var verb = requestId == 0 ? "requested" : "saved";
         var result = requestId == 0 ? State.RequestLeave(policy.Id, first, last, note, out _) : State.UpdateLeave(requestId, policy.Id, first, last, note);
@@ -480,61 +468,67 @@ public partial class Leave : ComponentBase, IDisposable
                     ? $"Requested {HrDisplay.Days(days)} of {policy.Name}, {range}. It's waiting for {approver}'s decision; until then the days show as waiting in your balance."
                     : $"Saved your {policy.Name} request, {range} ({HrDisplay.Days(days)}). It's still waiting for {approver}'s decision.", false);
 
-                return;
+                break;
 
             case HrResult.NoChange:
                 SetStatus($"You didn't change your request for {editingLabel}, so nothing was saved.", false);
 
-                return;
+                break;
 
             case HrResult.Overlap:
                 var other = State.LeaveOf(me.Id).FirstOrDefault(item => item.Id != requestId && item.Status is HrLeaveStatus.Pending or HrLeaveStatus.Approved && LeaveText.Overlaps(item, first, last));
-                formError = other is null
+                ServerError(() => form.From, other is null
                     ? $"Those days overlap another of your requests. Change the dates; nothing was {verb}."
-                    : $"Those days overlap your request for {LeaveText.RequestLabel(other, State.FindPolicy(other.PolicyId))} ({HrDisplay.LeaveLabel(other.Status).ToLowerInvariant()}). Change the dates, or {(other.Status == HrLeaveStatus.Pending ? "edit or cancel" : "cancel")} that request first; nothing was {verb}.";
+                    : $"Those days overlap your request for {LeaveText.RequestLabel(other, State.FindPolicy(other.PolicyId))} ({HrDisplay.LeaveLabel(other.Status).ToLowerInvariant()}). Change the dates, or {(other.Status == HrLeaveStatus.Pending ? "edit or cancel" : "cancel")} that request first; nothing was {verb}.");
+
                 break;
 
             case HrResult.InsufficientBalance:
                 var left = LeaveText.BalanceFor(State.LeaveOf(me.Id), policy, first.Year, requestId == 0 ? null : requestId).Left;
-                formError = $"You have {HrDisplay.Days(left)} of {policy.Name} left for {first.Year}, and this request takes {HrDisplay.Days(days)}. Shorten it, or pick another type; nothing was {verb}.";
+                ServerError(() => form.To, $"You have {HrDisplay.Days(left)} of {policy.Name} left for {first.Year}, and this request takes {HrDisplay.Days(days)}. Shorten it, or pick another type; nothing was {verb}.");
+
                 break;
 
             case HrResult.Invalid when RuleProblem(policy, first, last) is { } rule:
-                SetError(rule.Field, rule.Message);
+                serverErrors?.Add(new FieldIdentifier(form, MemberOf(rule.Field)), rule.Message);
+                editContext.NotifyValidationStateChanged();
+
                 break;
 
             case HrResult.Invalid:
-                formError = $"This demo tab's storage is full, so nothing was {verb}. Cancel an old request, or start a fresh tab.";
+                SetStatus($"This demo tab's storage is full, so nothing was {verb}. Cancel an old request, or start a fresh tab.", true);
+
                 break;
 
             case HrResult.NotFound when requestId != 0 && State.FindLeave(requestId) is null:
                 ResetForm();
                 SetStatus("That request no longer exists, so nothing was saved. Request the leave again if you still need it.", true);
 
-                return;
+                break;
 
             case HrResult.NotFound:
-                policyError = "That type of leave was removed. Pick another type.";
+                ServerError(() => form.PolicyId, "That type of leave was removed. Pick another type.");
+
                 break;
 
             case HrResult.WrongState when State.FindLeave(requestId) is { } current:
                 ResetForm();
                 SetStatus($"Your request for {LeaveText.RequestLabel(current, State.FindPolicy(current.PolicyId))} was {StatusWords(current.Status)} while you were editing it, so it can't be changed any more. Nothing was saved.", true);
 
-                return;
+                break;
 
             case HrResult.NotAllowed:
                 SetStatus($"Your sign-in ended. Sign in again to request leave; nothing was {verb}.", true);
 
-                return;
+                break;
 
             default:
                 SetStatus($"That didn't work, and nothing was {verb}. Try again.", true);
 
-                return;
+                break;
         }
 
-        FocusFirstError();
+        return Task.CompletedTask;
     }
 
     #endregion
@@ -549,14 +543,39 @@ public partial class Leave : ComponentBase, IDisposable
 
     #region Nested Types
 
-    /// <summary>Where a form error belongs.</summary>
+    /// <summary>Where a rule problem belongs.</summary>
     private enum FormField
     {
         Policy,
         From,
         To,
         Note,
-        Form,
+    }
+
+    /// <summary>
+    /// The request form's fields: a type, the first and last day (required), and a note of up to 300 characters. The
+    /// cross-field rules (dates in order, one year, the span, the notice, a working day) come from the page through
+    /// <see cref="Rules" />, since they need the type and today.
+    /// </summary>
+    private sealed class LeaveForm : IValidatableObject
+    {
+        [Required(ErrorMessage = "Enter the first day of leave as a full date.")]
+        public DateTime? From { get; set; }
+
+        [StringLength(HrState.MaxNoteLength, ErrorMessage = "Shorten the note to 300 characters or fewer.")]
+        public string Note { get; set; } = string.Empty;
+
+        [Range(1, int.MaxValue, ErrorMessage = "Choose the type of leave.")]
+        public int PolicyId { get; set; }
+
+        /// <summary>Gets or sets the page's cross-field rules; not a field.</summary>
+        public Func<LeaveForm, IEnumerable<ValidationResult>>? Rules { get; set; }
+
+        [Required(ErrorMessage = "Enter the last day of leave as a full date.")]
+        public DateTime? To { get; set; }
+
+        /// <summary>Runs once every field is filled in: the page's rules for the type and the dates.</summary>
+        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext) => Rules?.Invoke(this) ?? Enumerable.Empty<ValidationResult>();
     }
 
     #endregion

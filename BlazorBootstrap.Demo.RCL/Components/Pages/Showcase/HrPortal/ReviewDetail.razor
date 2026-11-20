@@ -1,0 +1,253 @@
+@page "/showcase/hr-portal/reviews/{Id:int}"
+@layout HrWorkLayout
+
+@{
+    var review = Review;
+    var cycle = review is null ? null : State.FindCycle(review.CycleId);
+}
+
+<PageTitle>@(review is null ? "Review" : IsOwn(review) ? "Your review" : $"{EmployeeName(review)}'s review") · @HrSeedData.ProductName</PageTitle>
+
+<div class="container-fluid px-lg-4">
+    @if (review is null || cycle is null)
+    {
+        <HrNotFound Message="This review isn't yours or your team's, or the link is wrong. Open it from My reviews or Team reviews." />
+    }
+    else
+    {
+        var stage = State.StageOf(review);
+        var own = IsOwn(review);
+        var first = FirstName(EmployeeName(review));
+        var managerActor = State.IsManagerActor(review);
+        var released = cycle.Status is HrCycleStatus.SignOff or HrCycleStatus.Closed;
+        var forManager = managerActor && review.ManagerId != State.CurrentEmployee?.Id;
+
+        <p class="small mb-2">
+            @if (own)
+            {
+                <a href="@ReviewDisplay.MyReviewsUrl"><Icon Name="IconName.ArrowLeft" class="me-1" aria-hidden="true" />My reviews</a>
+            }
+            else if (State.IsHrAdmin)
+            {
+                <a href="@ReviewDisplay.CycleUrl(cycle.Id)"><Icon Name="IconName.ArrowLeft" class="me-1" aria-hidden="true" />@cycle.Name</a>
+            }
+            else
+            {
+                <a href="@ReviewDisplay.TeamReviewsUrl"><Icon Name="IconName.ArrowLeft" class="me-1" aria-hidden="true" />Team reviews</a>
+            }
+        </p>
+
+        <div class="mb-3">
+            <h1 class="hr-title hr-rv-wrap">@(own ? "Your review" : $"{EmployeeName(review)}'s review")</h1>
+            <p class="hr-lead mb-0 hr-rv-wrap">
+                @cycle.Name · <Badge Color="@ReviewDisplay.StageColor(stage)">@ReviewDisplay.StageLabel(stage)</Badge>
+                · Manager: @EmployeeName(review.ManagerId) · Self review due @HrDisplay.Date(cycle.SelfReviewDue), manager review due @HrDisplay.Date(cycle.ManagerReviewDue)
+            </p>
+        </div>
+
+        @* Always rendered and focusable, so every step is announced and focus has somewhere to go when a form closes. *@
+        <p class="hr-live-status mb-3" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
+        <p class="hr-live-error mb-3" role="alert">@errorMessage</p>
+
+        <ol class="hr-rv-steps mb-4" aria-label="Review steps">
+            @foreach (var step in Steps(review, cycle))
+            {
+                <li class="@(step.State switch { StepState.Done => "hr-rv-step-done", StepState.Current => "hr-rv-step-current", _ => null })" @key="step.Name"
+                    aria-current="@(step.State == StepState.Current ? "step" : null)">
+                    <Icon Name="@(step.State == StepState.Done ? IconName.CheckCircleFill : step.State == StepState.Current ? IconName.ArrowRightCircleFill : IconName.Circle)" aria-hidden="true" />
+                    <span><span class="fw-semibold">@step.Name</span> <span class="d-block small text-body-secondary">@step.Text</span></span>
+                </li>
+            }
+        </ol>
+
+        <div class="row g-4">
+            <div class="col-xl-7 d-grid gap-4 align-content-start">
+                <section class="hr-panel" aria-labelledby="hr-rv-self-title">
+                    <h2 class="hr-section-title" id="hr-rv-self-title">@(own ? "Your self review" : $"{first}'s self review")</h2>
+                    @if (State.CanWriteSelfReview(review))
+                    {
+                        <p class="small text-body-secondary">
+                            What you achieved this period, what you learned, and what you want to work on next. @EmployeeName(review.ManagerId) reads it before writing their review.
+                            Once you submit it, it can't be changed.
+                        </p>
+                        <EditForm EditContext="selfContext" OnSubmit="SubmitSelfAsync" FormName="hr-self-review" novalidate aria-labelledby="hr-rv-self-title">
+                            <DataAnnotationsValidator />
+                            <ShowcaseFormErrors ShowSummary="true" />
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold" for="hr-rv-self-text">Self review</label>
+                                <InputTextArea id="hr-rv-self-text" class="form-control" rows="6" @bind-Value="selfForm.Text" @oninput="args => selfText = args.Value?.ToString() ?? string.Empty"
+                                               aria-describedby="hr-rv-self-count" />
+                                <div class="form-text" id="hr-rv-self-count">@LengthText(selfText)</div>
+                                <ValidationMessage For="() => selfForm.Text" />
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold" for="hr-rv-self-rating">Your own rating <span class="fw-normal text-body-secondary">(optional)</span></label>
+                                <InputSelect TValue="int?" id="hr-rv-self-rating" class="form-select hr-rv-rating" @bind-Value="selfForm.Rating" aria-describedby="hr-rv-self-rating-help">
+                                    <option value="">No rating</option>
+                                    @for (var rating = 5; rating >= 1; rating--)
+                                    {
+                                        <option value="@rating" @key="rating">@ReviewDisplay.Rating(rating)</option>
+                                    }
+                                </InputSelect>
+                                <div class="form-text" id="hr-rv-self-rating-help">How you'd rate your period. Your manager sees it; the rating that counts is theirs, after HR calibrates.</div>
+                                <ValidationMessage For="() => selfForm.Rating" />
+                            </div>
+                            <Button Type="ButtonType.Submit" Color="ButtonColor.Primary"><Icon Name="IconName.Send" class="me-1" aria-hidden="true" />Submit self review</Button>
+                        </EditForm>
+                    }
+                    else if (review.SelfSubmittedAt is { } selfAt)
+                    {
+                        <p class="small text-body-secondary mb-2">Submitted @HrDisplay.Date(selfAt)@(review.SelfRating is { } ownRating ? $" · own rating {ReviewDisplay.Rating(ownRating)}" : null)</p>
+                        <p class="hr-plain mb-0">@review.SelfText</p>
+                    }
+                    else
+                    {
+                        <p class="text-body-secondary mb-0">@SelfMissingText(review, cycle, own, first)</p>
+                    }
+                </section>
+
+                @if (!own || released)
+                {
+                    <section class="hr-panel" aria-labelledby="hr-rv-manager-title">
+                        <h2 class="hr-section-title" id="hr-rv-manager-title">@(own ? "Your manager's review" : forManager ? $"{EmployeeName(review.ManagerId)}'s review of {first}" : $"Your review of {first}")</h2>
+                        @if (State.CanWriteManagerReview(review))
+                        {
+                            @if (forManager)
+                            {
+                                <p class="small hr-rv-note">
+                                    <Icon Name="IconName.InfoCircle" class="me-1" aria-hidden="true" />@EmployeeName(review.ManagerId) can't sign in to @HrSeedData.ProductName, so HR records the review for them. The audit log says so.
+                                </p>
+                            }
+                            <p class="small text-body-secondary">@first sees it, with the rating after HR calibrates it, when HR releases the cycle for sign-off. Once you submit it, it can't be changed.</p>
+                            <EditForm EditContext="managerContext" OnSubmit="SubmitManagerAsync" FormName="hr-manager-review" novalidate aria-labelledby="hr-rv-manager-title">
+                                <DataAnnotationsValidator />
+                                <ShowcaseFormErrors ShowSummary="true" />
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold" for="hr-rv-manager-text">Review</label>
+                                    <InputTextArea id="hr-rv-manager-text" class="form-control" rows="6" @bind-Value="managerForm.Text" @oninput="args => managerText = args.Value?.ToString() ?? string.Empty"
+                                                   aria-describedby="hr-rv-manager-count" />
+                                    <div class="form-text" id="hr-rv-manager-count">@LengthText(managerText)</div>
+                                    <ValidationMessage For="() => managerForm.Text" />
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold" for="hr-rv-manager-rating">Rating</label>
+                                    <InputSelect TValue="int?" id="hr-rv-manager-rating" class="form-select hr-rv-rating" @bind-Value="managerForm.Rating" aria-describedby="hr-rv-manager-rating-help">
+                                        <option value="">Choose a rating</option>
+                                        @for (var rating = 5; rating >= 1; rating--)
+                                        {
+                                            <option value="@rating" @key="rating">@ReviewDisplay.Rating(rating)</option>
+                                        }
+                                    </InputSelect>
+                                    <div class="form-text" id="hr-rv-manager-rating-help">
+                                        @(managerForm.Rating is { } chosen ? $"{first} is rated {ReviewDisplay.Rating(chosen)}; HR may calibrate it across the group, with a note." : "From 1, Below expectations, to 5, Exceptional.")
+                                        @(review.SelfRating is { } selfRating ? $" {first} rated themselves {ReviewDisplay.Rating(selfRating)}." : null)
+                                    </div>
+                                    <ValidationMessage For="() => managerForm.Rating" />
+                                </div>
+                                <Button Type="ButtonType.Submit" Color="ButtonColor.Primary"><Icon Name="IconName.Send" class="me-1" aria-hidden="true" />Submit review</Button>
+                            </EditForm>
+                        }
+                        else if (review.ManagerSubmittedAt is { } managerAt)
+                        {
+                            <p class="small text-body-secondary mb-2">
+                                Submitted @HrDisplay.Date(managerAt)@(review.ManagerSubmittedById is { } by && by != review.ManagerId ? $" by {EmployeeName(by)} for {EmployeeName(review.ManagerId)}" : null)
+                                · manager's rating @ReviewDisplay.Rating(review.ManagerRating)
+                            </p>
+                            <p class="hr-plain mb-0">@review.ManagerText</p>
+                        }
+                        else
+                        {
+                            <p class="text-body-secondary mb-0">@ManagerMissingText(review, cycle, managerActor, first)</p>
+                        }
+                    </section>
+                }
+            </div>
+
+            <div class="col-xl-5 d-grid gap-4 align-content-start">
+                <section class="hr-panel" aria-labelledby="hr-rv-rating-title">
+                    <h2 class="hr-section-title" id="hr-rv-rating-title">Rating</h2>
+                    @if (review.IsLeftOut)
+                    {
+                        <p class="mb-0">Left out of this cycle: there was no manager review when HR moved it to calibration.</p>
+                    }
+                    else if (released || (State.IsHrAdmin && !own))
+                    {
+                        <p class="hr-rv-big mb-1">@ReviewDisplay.Rating(review.CalibratedRating ?? review.ManagerRating)</p>
+                        <p class="small text-body-secondary mb-0">
+                            @if (review.CalibratedRating is null)
+                            {
+                                <span>@(review.ManagerRating is null ? "No rating yet." : "The manager's rating; HR hasn't calibrated it yet.")</span>
+                            }
+                            else if (review.CalibratedRating == review.ManagerRating)
+                            {
+                                <span>Calibrated by HR: the manager's rating stands.</span>
+                            }
+                            else
+                            {
+                                <span>Calibrated by HR from the manager's @ReviewDisplay.Rating(review.ManagerRating).</span>
+                            }
+                        </p>
+                        @if (review.CalibrationNote.Length > 0)
+                        {
+                            <p class="mt-2 mb-0"><span class="fw-semibold">HR's note:</span> <span class="hr-plain">@review.CalibrationNote</span></p>
+                        }
+                    }
+                    else
+                    {
+                        <p class="text-body-secondary mb-0">
+                            @(own ? "You see your rating when HR releases the cycle for sign-off, after calibrating ratings across the group." : $"HR calibrates ratings across the group; {first} and you see the outcome when it's released.")
+                        </p>
+                    }
+                </section>
+
+                <section class="hr-panel" aria-labelledby="hr-rv-sign-title">
+                    <h2 class="hr-section-title" id="hr-rv-sign-title">Sign-off</h2>
+                    <ul class="list-unstyled small d-grid gap-1 mb-3">
+                        <li>
+                            <span class="fw-semibold">@(own ? "You" : first):</span>
+                            @(review.EmployeeSignedAt is { } employeeSigned ? $"signed off {HrDisplay.Date(employeeSigned)}" : review.IsLeftOut ? "not needed" : "not yet")
+                        </li>
+                        <li>
+                            <span class="fw-semibold">@(review.ManagerId == State.CurrentEmployee?.Id ? "You (manager)" : $"{EmployeeName(review.ManagerId)} (manager)"):</span>
+                            @(review.ManagerSignedAt is { } managerSigned ? $"signed off {HrDisplay.Date(managerSigned)}" + (review.ManagerSignedById is { } signer && signer != review.ManagerId ? $", recorded by {EmployeeName(signer)}" : null) : review.IsLeftOut ? "not needed" : "not yet")
+                        </li>
+                    </ul>
+                    @if (review.EmployeeComment.Length > 0)
+                    {
+                        <p class="small"><span class="fw-semibold">@(own ? "Your comment" : $"{first}'s comment"):</span> <span class="hr-plain">@review.EmployeeComment</span></p>
+                    }
+                    @if (State.CanSignAsEmployee(review))
+                    {
+                        <EditForm EditContext="signContext" OnSubmit="SignAsEmployeeAsync" FormName="hr-review-sign" novalidate aria-labelledby="hr-rv-sign-title">
+                            <DataAnnotationsValidator />
+                            <ShowcaseFormErrors ShowSummary="true" />
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold" for="hr-rv-comment">Comment <span class="fw-normal text-body-secondary">(optional)</span></label>
+                                <InputTextArea id="hr-rv-comment" class="form-control" rows="3" @bind-Value="signForm.Comment" @oninput="args => commentText = args.Value?.ToString() ?? string.Empty"
+                                               aria-describedby="hr-rv-comment-help" />
+                                <div class="form-text" id="hr-rv-comment-help">
+                                    Signing off says you've read the review and your rating; add a comment if you disagree or want to add something. @AdminHelpers.Counter(commentText, HrState.MaxSignOffCommentLength)
+                                </div>
+                                <ValidationMessage For="() => signForm.Comment" />
+                            </div>
+                            <Button Type="ButtonType.Submit" Color="ButtonColor.Primary"><Icon Name="IconName.PenFill" class="me-1" aria-hidden="true" />Sign off my review</Button>
+                        </EditForm>
+                    }
+                    @if (State.CanSignAsManager(review))
+                    {
+                        <p class="small text-body-secondary">
+                            @(forManager ? $"{EmployeeName(review.ManagerId)} can't sign in, so HR records the manager's sign-off." : $"Signing off says you've discussed the review and the rating with {first}.")
+                        </p>
+                        <Button Color="ButtonColor.Primary" Outline="@(State.CanSignAsEmployee(review))" @onclick="SignAsManager">
+                            <Icon Name="IconName.PenFill" class="me-1" aria-hidden="true" />@(forManager ? $"Record {EmployeeName(review.ManagerId)}'s sign-off" : "Sign off as the manager")
+                        </Button>
+                    }
+                    @if (cycle.Status != HrCycleStatus.SignOff && !review.IsLeftOut && (review.EmployeeSignedAt is null || review.ManagerSignedAt is null))
+                    {
+                        <p class="small text-body-secondary mb-0">@(cycle.Status == HrCycleStatus.Closed ? "The cycle is closed; sign-off is no longer possible." : "Sign-off opens when HR releases the cycle.")</p>
+                    }
+                </section>
+            </div>
+        </div>
+    }
+</div>

@@ -1,30 +1,37 @@
 using System.Globalization;
 using BlazorBootstrap.Demo.RCL.Models.Showcase.HrPortal;
+using BlazorBootstrap.Demo.RCL.Services.Showcase.Foundation;
 using BlazorBootstrap.Demo.RCL.Services.Showcase.HrPortal;
 
 namespace BlazorBootstrap.Demo.RCL.Components.Pages.Showcase.HrPortal;
 
 /// <summary>
-/// Employees (HR admin): a table of everyone, including people joining and those who left (name with email, title,
-/// department, manager, location, start date, status in words like "Joining Dec 1" or "Left Aug 28", and onboarding
-/// progress as "x of y tasks done" with overdue tasks in words), filtered by status (working and joining, joining, left,
-/// or everyone) with counts, by department, and by a name search. "Add employee" opens the editor. Each row has Edit (View
-/// for someone who left), Start onboarding (a <see cref="Modal" /> with a template select showing each template's task
-/// count; <see cref="HrState.StartOnboarding" />), and Mark as left (a <see cref="Modal" /> with the last day as a native
-/// date and what happens, including the pending leave that is cancelled; <see cref="HrState.MarkLeft" />). Someone others
-/// still report to, or yourself, can't be marked as left: a panel lists their reports with a link to change each one's
-/// manager. Actions run after the dialog is hidden, outcomes are announced in an always-rendered status region, and focus
-/// returns to the button that opened the dialog, or to the status message when the button is gone.
+/// Employees (HR admin): a <see cref="Grid{TItem}" /> of everyone, including people joining and those who left (name, work
+/// email, title, department, manager, location, start date, status in words like "Joining Dec 1" or "Left Aug 28", and
+/// onboarding progress as "x of y tasks done" with overdue tasks in words), with paging, sorting, the column chooser, and
+/// CSV export, filtered by status (working and joining, joining, left, or everyone) with counts, by department, and by a
+/// search of names, emails, and titles. The grid's view (page size, sort, columns) is saved for the visit and can be reset;
+/// a row opens the person's record in the editor through its stretched name link. "Add employee" opens the editor. Each row
+/// has Start onboarding (a <see cref="Modal" /> with a template select showing each template's task count;
+/// <see cref="HrState.StartOnboarding" />) and Mark as left (a <see cref="Modal" /> with the last day as a native date and
+/// what happens, including the pending leave that is cancelled; <see cref="HrState.MarkLeft" />). Someone others still
+/// report to, or yourself, can't be marked as left: a panel lists their reports with a link to change each one's manager.
+/// Actions run after the dialog is hidden, outcomes are announced in an always-rendered status region, and focus returns
+/// to the button that opened the dialog, or to the status message when the button is gone.
 /// </summary>
 public partial class AdminEmployees : ComponentBase, IDisposable
 {
     #region Fields and Constants
+
+    private const int DefaultPageSize = 25;
 
     /// <summary>The row buttons that open a dialog, by "onb-{id}" or "left-{id}", for focus after the dialog.</summary>
     private readonly Dictionary<string, ElementReference> actionButtons = new();
 
     /// <summary>The person whose "can't mark as left yet" panel is shown, or <see langword="null" />.</summary>
     private int? blockedId;
+
+    private ElementReference countRegion;
 
     /// <summary>The department filter, or empty for every department.</summary>
     private string departmentId = string.Empty;
@@ -39,6 +46,11 @@ public partial class AdminEmployees : ComponentBase, IDisposable
 
     private bool focusStatus;
 
+    private Grid<EmployeeRow>? grid;
+
+    /// <summary>Changes when the view is reset, so the grid is built again with its defaults.</summary>
+    private int gridVersion;
+
     private string? lastDayError;
 
     private ElementReference? lastDayInput;
@@ -48,6 +60,9 @@ public partial class AdminEmployees : ComponentBase, IDisposable
     private Modal leftModal = default!;
 
     private Modal onboardingModal = default!;
+
+    /// <summary>The grid's page size: the saved one once the view is loaded, then whatever the page size selector chose.</summary>
+    private int pageSize = DefaultPageSize;
 
     /// <summary>Whether Mark as left was confirmed; it runs once the dialog is hidden.</summary>
     private bool pendingLeft;
@@ -69,6 +84,10 @@ public partial class AdminEmployees : ComponentBase, IDisposable
 
     private string templateValue = string.Empty;
 
+    private ShowcaseGridView view = default!;
+
+    private bool viewLoaded;
+
     #endregion
 
     #region Methods
@@ -77,6 +96,15 @@ public partial class AdminEmployees : ComponentBase, IDisposable
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        // The saved view lives in the tab's session storage, so it loads once the page is interactive; then the grid shows.
+        if (firstRender)
+        {
+            await view.LoadAsync();
+            pageSize = (await view.GetSettingsAsync()).PageSize;
+            viewLoaded = true;
+            StateHasChanged();
+        }
+
         if (focusButtonKey is { } key)
         {
             focusButtonKey = null;
@@ -100,7 +128,11 @@ public partial class AdminEmployees : ComponentBase, IDisposable
         }
     }
 
-    protected override void OnInitialized() => State.Changed += OnStateChanged;
+    protected override void OnInitialized()
+    {
+        view = GridViews.Get(State.SiteSlug, "employees", DefaultPageSize);
+        State.Changed += OnStateChanged;
+    }
 
     #endregion
 
@@ -154,23 +186,6 @@ public partial class AdminEmployees : ComponentBase, IDisposable
         return !key.StartsWith("onb-", StringComparison.Ordinal) || State.OnboardingOf(person.Id) is null;
     }
 
-    /// <summary>Describes the table, like "23 people working or joining in Engineering matching “an”".</summary>
-    private string CaptionText(int count)
-    {
-        var what = statusFilter switch
-        {
-            EmployeeFilter.Current => "working here or joining",
-            EmployeeFilter.Joining => "joining",
-            EmployeeFilter.Left => "who left",
-            _ => "in all (working, joining, and left)",
-        };
-        var department = State.FindDepartment(departmentId)?.Name;
-
-        return $"{HrDisplay.Plural(count, "person", "people")} {what}"
-               + (department is null ? null : $" in {department}")
-               + (search.Trim().Length == 0 ? null : $" matching “{search.Trim()}”");
-    }
-
     private async Task ConfirmLeftAsync()
     {
         if (DialogPerson is not { } person)
@@ -206,14 +221,29 @@ public partial class AdminEmployees : ComponentBase, IDisposable
         focusStatus = true;
     }
 
-    /// <summary>Applies the department filter and the name search (not the status).</summary>
+    /// <summary>A filter changed: back to the first page of the filtered list.</summary>
+    private async Task FiltersChangedAsync()
+    {
+        if (grid is not null)
+            await grid.ResetPageNumber();
+    }
+
+    /// <summary>Applies the department filter and the search of names, emails, and titles (not the status).</summary>
     private IReadOnlyList<HrEmployee> Narrowed(IReadOnlyList<HrEmployee> employees)
     {
         var term = search.Trim();
 
         return employees.Where(employee => (departmentId.Length == 0 || employee.DepartmentId == departmentId)
-                                           && (term.Length == 0 || employee.Name.Contains(term, StringComparison.OrdinalIgnoreCase)))
+                                           && (term.Length == 0 || employee.Name.Contains(term, StringComparison.OrdinalIgnoreCase)
+                                               || employee.Email.Contains(term, StringComparison.OrdinalIgnoreCase)
+                                               || employee.Title.Contains(term, StringComparison.OrdinalIgnoreCase)))
             .ToList();
+    }
+
+    private async Task OnDepartmentChangedAsync(ChangeEventArgs args)
+    {
+        departmentId = args.Value?.ToString() ?? string.Empty;
+        await FiltersChangedAsync();
     }
 
     private void OnLeftHidden()
@@ -319,7 +349,23 @@ public partial class AdminEmployees : ComponentBase, IDisposable
 
     private async Task OnOnboardingShown() => await HrDisplay.FocusAsync(templateSelect);
 
-    private void OnStateChanged() => InvokeAsync(StateHasChanged);
+    private async Task OnSearchInputAsync(ChangeEventArgs args)
+    {
+        var value = args.Value?.ToString() ?? string.Empty;
+
+        if (search == value)
+            return;
+
+        search = value;
+        await FiltersChangedAsync();
+    }
+
+    /// <summary>Someone was added, changed, or left (here or elsewhere): the grid reads the list again.</summary>
+    private void OnStateChanged() => InvokeAsync(async () =>
+    {
+        await RefreshGridAsync();
+        StateHasChanged();
+    });
 
     /// <summary>
     /// Opens Mark as left, or, when someone still reports to the person (or it's you), shows who has to move first.
@@ -360,8 +406,72 @@ public partial class AdminEmployees : ComponentBase, IDisposable
         await onboardingModal.ShowAsync();
     }
 
+    /// <summary>The page of people the grid asked for, from the filtered list by name (or the column sort the grid asks for).</summary>
+    private Task<GridDataProviderResult<EmployeeRow>> ProvideEmployeesAsync(GridDataProviderRequest<EmployeeRow> request)
+    {
+        var today = State.Clock.Today;
+        var me = State.CurrentEmployee;
+        var rows = Narrowed(State.AllEmployees).Where(employee => Matches(employee, statusFilter, today)).Select(employee => ToRow(employee, today, me)).ToList();
+
+        return view.ApplyAsync(request, rows);
+    }
+
+    private async Task RefreshGridAsync()
+    {
+        if (grid is not null)
+            await grid.RefreshDataAsync();
+    }
+
+    /// <summary>Forgets the saved view and builds the grid again with its defaults; focus moves to the count.</summary>
+    private async Task ResetViewAsync()
+    {
+        await view.ResetAsync();
+        pageSize = DefaultPageSize;
+        gridVersion++;
+        Announce(true, "The view is reset: people by name, 25 a page, and every column shown.");
+        StateHasChanged();
+
+        await Task.Yield();
+        await HrDisplay.FocusAsync(countRegion);
+    }
+
+    private string RowClass(EmployeeRow row) => row.StatusKind == HrEmployeeStatus.Left ? "hr-ae-row-left" : string.Empty;
+
+    /// <summary>Keeps the grid's settings in the saved view, and follows the page size the selector chose.</summary>
+    private async Task SaveSettingsAsync(GridSettings settings)
+    {
+        if (settings.PageSize > 0)
+            pageSize = settings.PageSize;
+
+        await view.SaveSettingsAsync(settings);
+    }
+
+    private async Task SetStatusFilterAsync(EmployeeFilter filter)
+    {
+        if (statusFilter == filter)
+            return;
+
+        statusFilter = filter;
+        await FiltersChangedAsync();
+    }
+
     private static string ShownText(int shown, int total) =>
         shown == total ? $"Showing all {HrDisplay.Plural(total, "person", "people")}." : $"Showing {shown} of {HrDisplay.Plural(total, "person", "people")}.";
+
+    /// <summary>One person as a grid row, with the words the columns show and export.</summary>
+    private EmployeeRow ToRow(HrEmployee employee, DateTime today, HrEmployee? me)
+    {
+        var manager = employee.ManagerId is { } managerId ? State.FindEmployee(managerId) : null;
+        var plan = State.OnboardingOf(employee.Id);
+        var progress = plan is null ? default : HrState.Progress(plan);
+        var status = AdminHelpers.EffectiveStatus(employee, today);
+        var overdue = plan is null || status == HrEmployeeStatus.Left ? 0 : plan.Tasks.Count(task => task.DoneAt is null && task.Due < today);
+
+        return new EmployeeRow(employee.Id, employee.Name, employee.Initials, employee.Email, employee.Title, State.FindDepartment(employee.DepartmentId)?.Name ?? "No department",
+            employee.ManagerId is null ? "None" : manager?.Name ?? "A former colleague", employee.ManagerId, employee.Location, employee.StartDate, HrDisplay.Date(employee.StartDate),
+            AdminHelpers.StatusText(employee, today), status, plan is null ? "None" : AdminHelpers.ProgressText(progress.Done, progress.Total), progress.Done, progress.Total, overdue,
+            me?.Id == employee.Id);
+    }
 
     #endregion
 
@@ -382,6 +492,8 @@ public partial class AdminEmployees : ComponentBase, IDisposable
         new FilterOption("Everyone", EmployeeFilter.All),
     };
 
+    [Inject] private ShowcaseGridViewStore GridViews { get; set; } = default!;
+
     private HrOnboardingTemplate? SelectedTemplate =>
         int.TryParse(templateValue, NumberStyles.Integer, CultureInfo.InvariantCulture, out var id) ? State.FindTemplate(id) : null;
 
@@ -391,7 +503,7 @@ public partial class AdminEmployees : ComponentBase, IDisposable
 
     #region Nested Types
 
-    /// <summary>The status filter of the table.</summary>
+    /// <summary>The status filter of the list.</summary>
     private enum EmployeeFilter
     {
         /// <summary>Working here or joining.</summary>
@@ -405,6 +517,16 @@ public partial class AdminEmployees : ComponentBase, IDisposable
 
         /// <summary>Everyone.</summary>
         All,
+    }
+
+    /// <summary>
+    /// One person as a grid row: the words each column shows (and CSV export writes), and the values it sorts by.
+    /// </summary>
+    private sealed record EmployeeRow(int Id, string Name, string Initials, string Email, string Title, string Department, string Manager, int? ManagerId, string Location,
+        DateTime StartDate, string Start, string Status, HrEmployeeStatus StatusKind, string Onboarding, int OnboardingDone, int OnboardingTotal, int Overdue, bool IsMe)
+    {
+        /// <summary>Gets the share of onboarding tasks done, for sorting; -1 without a plan, so those come first.</summary>
+        public double OnboardingShare => OnboardingTotal == 0 ? -1 : (double)OnboardingDone / OnboardingTotal;
     }
 
     /// <summary>A status filter button.</summary>

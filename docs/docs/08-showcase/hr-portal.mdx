@@ -1,6 +1,6 @@
 ---
 title: HR & Employee Portal showcase
-description: An HR portal where employees find colleagues, request leave, and work through onboarding, managers approve leave and follow new hires, and HR admins manage people, policies, and headcount analytics, built with Blazor Bootstrap.
+description: An HR portal where employees find colleagues, request leave, write self reviews, and work through onboarding, managers approve leave and review their team, and HR admins run performance review cycles with calibration and manage people, policies, templates, analytics, and an audit log, with Grid lists, validated forms, global search, and notifications, built with Blazor Bootstrap.
 sidebar_label: HR Portal
 sidebar_position: 12
 ---
@@ -9,7 +9,9 @@ import CarbonAd from '/carbon-ad.mdx'
 
 # HR & Employee Portal
 
-Teamhaven is the people portal of Brightfield Robotics, a fictitious company in 7 departments: 23 people work there today, one more joins on December 1, and three left this year. Employees find colleagues in the directory and the org chart, request leave against their balances, and tick off their onboarding checklist. Managers approve or reject their reports' leave and follow new hires, and HR admins manage employees, leave policies, onboarding templates, and headcount analytics.
+Teamhaven is the people portal of Brightfield Robotics, a fictitious company of about 190 people in 7 departments and 3 locations. Employees find colleagues in the directory and the org chart, request leave against their balances, tick off their onboarding checklist, and write their self review. Managers approve or reject their reports' leave, follow new hires, and review their team. HR admins manage employees, leave policies, onboarding templates, and headcount analytics, run performance review cycles, and read the audit log.
+
+The portal's record lists (employees, leave approvals, the team, policies, templates, reviews, and the audit log) are [Grid](/components/grid) lists with a saved view, a column chooser, and CSV export; create and edit forms validate with a linked error summary; and the header has a global search and notifications. Every change lands in an audit log. The signature workflow is the **performance review cycle**: HR opens a cycle for some departments or the whole company, each employee writes a self review, the manager writes a review with a rating, HR calibrates the ratings across the group, and the employee and the manager sign off. Each person sees what is waiting for them and the cycle's progress.
 
 <CarbonAd />
 
@@ -25,18 +27,39 @@ Teamhaven is the people portal of Brightfield Robotics, a fictitious company in 
 
 Theo is a software engineer on Rafael's team who started on November 2 and is still onboarding. You can also register ("New here? Register with your work email" on the start page), but only as someone HR has invited: a new account links to the employee record with the same work email. The seed invites Ana Pereira (`ana.pereira@example.com`), who joins on December 1; anyone HR adds later is invited the same way. Another email gets a panel saying the account isn't linked to an employee record.
 
-Everyone gets the directory, org chart, leave, and onboarding. Managers add their team, leave approvals, and new hires; the HR admin gets those for every team, plus the admin pages.
+Everyone gets the directory, org chart, leave, onboarding, and their own reviews. Managers add their team, leave approvals, new hires, and team reviews; the HR admin gets those for every team, plus the admin pages, performance reviews, and the audit log.
 
-All data is fictitious and there is no backend. Each browser tab keeps its own data in `sessionStorage` (it survives a reload; other tabs start fresh), and "Reset demo data" in the account menu restores the seed: 27 people (one joining soon and three who left this year), 4 leave policies, 11 leave requests (two waiting for Rafael), 8 company holidays, 2 onboarding templates, and 2 onboarding plans. The sign-in page lists the demo accounts with one-click buttons; credentials are checked only against the tab's accounts. The clock starts on Tuesday, November 24, 2026, 9:00 and moves on with real time.
+Only the three demo accounts (and accounts you register) can sign in. Most managers in the seed have no sign-in, so the HR admin decides their reports' leave and records their manager reviews and sign-offs; the audit log says so.
+
+All data is fictitious and there is no backend; no email is sent. Each browser tab keeps its own data in `sessionStorage` (it survives a reload; other tabs start fresh), and "Reset demo data" in the account menu restores the seed: 187 people (165 working, 6 joining soon, and 16 who left), 4 leave policies, 302 leave requests (49 waiting for a decision, two of them for Rafael), 8 company holidays, 2 onboarding templates, 2 onboarding plans, 3 review cycles with 273 reviews, about 240 audit entries, and a few notifications for each demo account. The sign-in page lists the demo accounts with one-click buttons; credentials are checked only against the tab's accounts. The clock starts on Tuesday, November 24, 2026, 9:00 and moves on with real time.
+
+The seeded review cycles are:
+
+- **2026 mid-year reviews**: the whole company, closed in June with 147 reviews; 141 were signed off by both the employee and the manager.
+- **2026 year-end reviews: Engineering and Product**: open since November 2, with 87 people. Theo's self review is waiting; Rafael, Leila Haddad, and Mei Tanaka have written theirs and wait for a manager review; Jonas Berg's manager review is in. Across the group, 56 self reviews and 27 manager reviews are in.
+- **2026 year-end reviews: Sales**: in calibration since November 16, with all 39 manager reviews in and 13 ratings calibrated.
 
 ## What to try
 
-1. Sign in as Theo, open **My leave**, and request vacation for December 14 to 18; the form counts the working days as you pick them. Sign in as Rafael, open **Leave approvals**, check Theo's balance after approval, and approve. As Theo, the request shows who approved it and the days used.
-2. As Rafael, reject Jonas Berg's personal day with a note (a rejection needs one). The decided list shows it with the note.
+1. Sign in as Theo, open **My leave**, and request vacation for December 14 to 18; the form counts the working days as you pick them, and the first and last day are checked against each other and the notice the type needs. Sign in as Rafael: the bell shows Theo's request. Open **Leave approvals**, open Theo's row to see his balance after approval and who else is away, and approve. As Theo, the request shows who approved it, and the bell says so.
+2. As Rafael, select Jonas Berg's and Leila Haddad's waiting requests in **Leave approvals**, type a note in the bulk bar, and choose **Reject**: both are rejected with the note (rejecting needs one), and the **Decided** list shows them.
 3. As Theo, open **My onboarding** and tick the overdue security training. As Rafael, **New hires** shows Theo's progress; tick his two-week check-in there.
-4. Sign in as Ingrid, open **Employees**, and add a new hire who reports to Rafael; then use "Next: start their onboarding". Sign out and register with the new hire's work email: the account links to the record and shows the checklist.
-5. As Ingrid, raise Vacation's yearly days in **Leave policies**. As Theo, the balance on **My leave** follows.
-6. As Ingrid, mark Elliot Grant as left on **Employees**. He leaves the directory, and **Headcount analytics** counts one fewer.
+4. Sign in as Ingrid, open **Employees**, and add a new hire who reports to Rafael: the work email is checked for uniqueness as you type, and the probation end date must come after the start date. Then use "Next: start their onboarding". Sign out and register with the new hire's work email: the account links to the record and shows the checklist.
+5. As Ingrid, open **Employees**: filter by department, search a name, hide a column with **Columns**, sort by start date, and change the page size. Open a person and come back: the view is kept, and **Reset view** restores it. **Export CSV** downloads the filtered people.
+6. As Ingrid, raise Vacation's yearly days in **Leave policies** (the editor opens from a row). As Theo, the balance on **My leave** follows.
+7. Use the search box in the header: type a colleague's name, a leave request number like `#4`, or (as Ingrid) a policy, template, or review cycle name, and open a match.
+8. As Ingrid, open **Audit log**: every request, decision, change, and review step from the steps above is there, with who did it and when.
+
+### Walk through a performance review cycle
+
+1. **Self review (employee).** Sign in as Theo. **Home** shows "Reviews waiting for you", and the bell says his self review is waiting. Open it (or **My reviews**), write at least 50 characters, optionally rate yourself, and submit. The review page shows the steps and that Rafael writes his review next.
+2. **Manager review (manager).** Sign in as Rafael. The bell says Theo's self review is in, and **Team reviews** marks Theo, Leila, and Mei "Waiting for you". Open Theo's review, read his self review, write your review, choose a rating, and submit. Do the same for Leila and Mei.
+3. **Manager reviews for managers who can't sign in (HR).** Sign in as Ingrid and open **Performance reviews**, then the Engineering and Product cycle. The progress shows how many reviews are in; managers without a sign-in are marked "No sign-in: HR records". Open one of their reports' reviews from the **People** grid to record a review for the manager, if you like.
+4. **Calibration (HR).** Open the **Sales** cycle, which is already in calibration. The **Rating distribution** table compares the departments. Choose **Calibrate** on a row: keep the rating, or change it and say why (a note is required when the rating changes). Choose **Release for sign-off**: the dialog says how many ratings aren't calibrated and keep the manager's, and everyone who can sign in is notified.
+5. **Moving a cycle on with reviews missing (HR).** Open the Engineering and Product cycle and choose **Move to calibration**. The dialog counts and names the reviews still without a manager review; confirming leaves them out of calibration and sign-off. Calibrate, then release it for sign-off.
+6. **Sign-off (employee and manager).** As Theo, the bell says your review is ready: open it, read Rafael's review and your calibrated rating with HR's note, add an optional comment, and sign off. As Rafael, sign off Theo's review from **Team reviews** (or the bell). In the Sales cycle, managers can't sign in, so Ingrid records their sign-offs from each review.
+7. **Close (HR).** As Ingrid, choose **Close the cycle**: the dialog names who hasn't signed off yet. The cycle shows as Closed in **Performance reviews**, and **Audit log** lists every step.
+8. **Open a new cycle (HR).** In **Performance reviews**, choose **Open a review cycle**. Choose **Some departments**, tick Design, People, and Finance and operations, and pick the due dates: the preview says how many employees will be included and who isn't (joining, or with no manager). A department whose cycle isn't closed yet can't be chosen: the preview and the form name the cycle that covers it. Open the cycle: everyone in it who can sign in is notified.
 
 ## Pages
 
@@ -44,59 +67,91 @@ All data is fictitious and there is no backend. Each browser tab keeps its own d
 
 | Page | Route | What it does |
 |:--|:--|:--|
-| Start page | `/showcase/hr-portal` | What the portal does for each role, with Sign in and register; a signed-in person gets "Open the portal". |
+| Start page | `/showcase/hr-portal` | What the portal does for each role, with Sign in and register; a signed-in person gets "Open the portal", the search, and the notifications. |
 | Sign in | `/showcase/hr-portal/sign-in` | Demo accounts, the sign-in form, and the register form (`?mode=register`). |
-| Not found | `/showcase/hr-portal/{*path}` | The site's not-found panel, also shown for an unknown person or template. |
+| Not found | `/showcase/hr-portal/{*path}` | The site's not-found panel, also shown for an unknown person, template, review, or cycle. |
 
 ### Everyone signed in (layout: sidebar portal)
 
 | Page | Route | What it does |
 |:--|:--|:--|
-| Home | `/showcase/hr-portal/home` | Your leave balance, next time off, onboarding progress, who's away (whose leave you may see), and the next company holidays; managers and HR also see what's waiting for them, and HR gets links to its tools. |
+| Home | `/showcase/hr-portal/home` | Reviews waiting for you, your leave balance, next time off, onboarding progress, who's away (whose leave you may see), and the next company holidays; managers and HR also see what's waiting for them, and HR gets links to its tools. |
 | Directory | `/showcase/hr-portal/people` | Everyone working here, searchable by name or job title and filtered by department and location (`?department=`, `?location=`). |
 | Person | `/showcase/hr-portal/people/{Id:int}` | Title, pronouns, contact details, bio, and reporting line, with a link to the person in the org chart. |
 | Org chart | `/showcase/hr-portal/org-chart` | Who reports to whom, as a mind map with find, department highlighting, and left-to-right or top-to-bottom layout, then the same chart as a nested list. `?focus=` opens one person. |
-| My leave | `/showcase/hr-portal/leave` | Balances for the year, a request form (also for editing a waiting request), your requests with cancel, and the company holidays. |
+| My leave | `/showcase/hr-portal/leave` | Balances for the year, a validated request form (also for editing a waiting request), your requests with cancel, and the company holidays. |
 | My onboarding | `/showcase/hr-portal/onboarding` | Your checklist by when tasks are due; you tick your own tasks. |
-| Profile | `/showcase/hr-portal/profile` | Name, email, and password; phone, pronouns, and bio for the directory; the details HR keeps. |
+| My reviews | `/showcase/hr-portal/reviews` | What's waiting for you in the review cycles, and your reviews as a Grid: cycle, stage, manager, self review, rating (after the release), and your sign-off. |
+| Review | `/showcase/hr-portal/reviews/{Id:int}` | One review's steps, the self review form (employee), the manager review form with a rating (manager, or HR for a manager without a sign-in), the calibrated rating with HR's note after the release, and both sign-offs. |
+| Profile | `/showcase/hr-portal/profile` | Name, email, and password; phone, pronouns, and bio for the directory (validated); the details HR keeps. |
 
 ### Manager and HR admin (layout: sidebar portal)
 
 | Page | Route | What it does |
 |:--|:--|:--|
-| My team | `/showcase/hr-portal/team` | Your direct reports with who's away, waiting requests, vacation left, and onboarding, and who's away in the next 4 weeks. HR picks any manager's team (`?manager=`). |
-| Leave approvals | `/showcase/hr-portal/approvals` | Requests waiting for a decision, with working days, the balance after approval, and teammates away then; approve with an optional note or reject with a required one; then the decided history. |
+| My team | `/showcase/hr-portal/team` | Reviews waiting for you, your direct reports as a Grid with who's away, waiting requests, vacation left, and onboarding, and who's away in the next 4 weeks. HR picks any manager's team (`?manager=`). |
+| Leave approvals | `/showcase/hr-portal/approvals` | The waiting requests as a Grid queue: select rows to approve or reject them together with one note, or open one to see the balance after approval and teammates away, and decide it alone; then the decided history as a second Grid. |
 | New hires | `/showcase/hr-portal/team/onboarding` | New hires' checklists (your reports, or everyone's for HR) with progress and overdue tasks; tick the manager's tasks. |
+| Team reviews | `/showcase/hr-portal/reviews/team` | The reviews you write, by cycle (current cycles, all, or one), as a Grid with stage, "Waiting for you", self review, your rating, the rating after calibration, and sign-offs. |
 
 ### HR admin (layout: sidebar portal)
 
 | Page | Route | What it does |
 |:--|:--|:--|
-| Employees | `/showcase/hr-portal/admin/employees` | Everyone, including people joining and those who left, filtered by status, department, and name; start onboarding and mark as left in a dialog. |
-| Add employee | `/showcase/hr-portal/admin/employees/new` | Name, work email, job title, department, location, manager, start date, and phone; then "Next: start their onboarding". |
+| Employees | `/showcase/hr-portal/admin/employees` | Everyone, including people joining and those who left, as a Grid filtered by status, department, and a search of name, email, and title; a row opens the record; start onboarding and mark as left in a dialog. |
+| Add employee | `/showcase/hr-portal/admin/employees/new` | Name, work email (unique), job title, department, location, manager, start date, probation end date, and phone; then "Next: start their onboarding". |
 | Edit employee | `/showcase/hr-portal/admin/employees/{Id:int}/edit` | The same form, their onboarding, and whether they have a sign-in. |
-| Leave policies | `/showcase/hr-portal/admin/leave-policies` | Leave types with yearly days (or no limit), minimum notice, and whether they're offered; a policy in use can only be turned off. |
-| Onboarding templates | `/showcase/hr-portal/admin/onboarding-templates` | The templates and a form for a new one. |
+| Leave policies | `/showcase/hr-portal/admin/leave-policies` | Leave types as a Grid with yearly days (or no limit), minimum notice, and whether they're offered; add or edit one in a dialog; a policy in use can only be turned off. |
+| Onboarding templates | `/showcase/hr-portal/admin/onboarding-templates` | The templates as a Grid and a form for a new one. |
 | Onboarding template | `/showcase/hr-portal/admin/onboarding-templates/{Id:int}` | A template's tasks (owner, days from the first day, title), and its name and description. |
+| Performance reviews | `/showcase/hr-portal/admin/reviews` | The review cycles as a Grid with status, people, and progress; open a cycle in a dialog with a preview of who will be included. |
+| Review cycle | `/showcase/hr-portal/admin/reviews/{Id:int}` | Progress by stage, the rating distribution by department, the people as a Grid with stage and ratings, the calibrate dialog, and the button that moves the cycle to calibration, releases it for sign-off, or closes it. |
 | Headcount analytics | `/showcase/hr-portal/admin/analytics` | Headcount today, joining soon, hires, leavers, attrition, and average tenure; charts by department, location, month, tenure, and leave by policy. |
+| Audit log | `/showcase/hr-portal/admin/audit` | Who created, changed, decided, or deleted what, and when, newest first, as a Grid with filters and CSV export. |
+
+## Performance review cycle
+
+A cycle moves through four statuses, and HR moves it from one to the next:
+
+1. **Open.** HR opens a cycle with a unique name, a scope (the whole company, or some departments), and two due dates: self reviews after today, and manager reviews after the self reviews and within 180 days. Everyone in scope who works here, has started, and has a manager takes part; the manager they have that day writes and signs their review. The chief executive, with no manager, isn't reviewed in the portal, and people joining later aren't included. Only one cycle that isn't closed may cover a department. Each employee writes a self review (50 to 2,000 characters, with an optional own rating) while the cycle is open and before the manager's review. The manager writes a review (50 to 2,000 characters) with a rating once the self review is in, or without it when the employee can't sign in or the self-review due date has passed. Ratings run from 1 to 5: Below expectations, Partly meets expectations, Meets expectations, Exceeds expectations, and Exceptional. A review can't be changed once submitted. The employee doesn't see the manager's review until the release.
+2. **Calibration.** HR moves the cycle on once every manager review is in, or after confirming who is still missing one: those reviews are left out of calibration and sign-off. HR calibrates any rating (not their own review); a changed rating needs a note of 10 to 300 characters, which the employee and the manager read after the release. The rating distribution by department shows whether each department rates by the same bar.
+3. **Sign-off.** HR releases the cycle; ratings nobody calibrated keep the manager's. The employee reads the manager's review and the calibrated rating and signs off, with an optional comment of up to 500 characters; the manager signs off too.
+4. **Closed.** HR closes the cycle once everyone has signed off, or after confirming who hasn't. A closed cycle is kept for the record.
+
+For a manager who can't sign in to Teamhaven (most managers in the seed), the HR admin records the manager review and the manager's sign-off for them, and the audit log names both.
+
+Each step notifies whoever must act next: everyone in a new cycle (their self review is waiting), the manager when a report's self review is in (or the HR admins, for a manager who can't sign in), the HR admins when every manager review is in and when everyone has signed off, each employee and manager when their sign-off is waiting, and the HR admins when there are manager sign-offs to record. Every step writes an audit entry: opening a cycle, each self and manager review, the move to calibration (with who was left out), each calibration, the release (with how many ratings kept the manager's), each sign-off, and the close (with who didn't sign).
+
+"Reviews waiting for you" on **Home**, **My reviews**, **Team reviews**, **My team**, **Employees**, and **Performance reviews** lists each person's next steps.
+
+## Enterprise features
+
+- **Grid lists**: employees, leave approvals (waiting and decided), the team, leave policies, onboarding templates, your reviews, team reviews, review cycles, the people in a cycle, and the audit log use the [Grid](/components/grid) with sorting, a column chooser, and CSV export of the filtered rows; long lists page. Each list keeps its view (sort, page size, hidden and reordered columns) in the tab's `sessionStorage` until **Reset view**. A row opens its record through a stretched link, or a stretched button that opens the editor or the decision dialog where a record has no page.
+- **Bulk actions**: the leave approvals queue approves or rejects the selected requests together, with one note for every employee (required to reject).
+- **Validated forms**: required, length, and format rules; uniqueness checks with a "Checking…" state (employee work email, leave policy, template, and review cycle names); cross-field rules (the probation end after the start date, a leave request's dates in order with enough notice, days a year unless there's no yearly limit, a new hire's task not due before day one, review due dates in order, a note when HR changes a rating); and a summary that links each failing field after a failed submit.
+- **Global search** in the header: people by name, email, or title for everyone; your own leave requests and reviews; your reports' requests for managers, and everyone's for HR; leave policies, onboarding templates, and review cycles for HR.
+- **Notifications**: new and changed leave requests for whoever decides them, decisions for the employee, onboarding started, a new report or a report who left, a newly registered account for HR, and each review step, with an unread count and mark as read.
+- **Audit log**: every create, change, decision, delete, and review step, with who did it, when, and what changed.
+- **Loading, empty, and error states** on every list, with a "Demo: simulate a loading error" control to show the error state and its Retry.
 
 ## Components used
 
+- [Grid](/components/grid): every record list, with the column chooser, CSV export, paging, and multi-row selection on the leave approvals queue.
 - [Mind Map](/components/mind-map): the org chart, with department branch colors, search, and `?focus=`.
 - [Sidebar](/components/sidebar): the signed-in portal's navigation, with the role's modules.
 - [Navbar](/components/navbar): the public header.
 - [Bar chart](/data-visualization/bar-chart) and [Doughnut chart](/data-visualization/doughnut-chart) (BlazorExpress.ChartJS): headcount by department, hires and leavers by month, tenure, and leave by policy as bar charts; headcount by location as a doughnut.
-- [Progress](/components/progress): leave balances, onboarding progress, and the employees table.
-- [Modal](/components/modal): cancel a leave request, start onboarding, mark someone as left, and delete a policy or a template task.
-- [Badge](/components/badge): employee and policy status.
+- [Progress](/components/progress): leave balances, onboarding progress, and review cycle progress.
+- [Modal](/components/modal): leave decisions, cancel a leave request, start onboarding, mark someone as left, the leave policy editor, delete a policy or a template task, open a review cycle, calibrate a rating, and move a cycle on.
+- [Badge](/components/badge): employee, policy, review stage, and cycle status.
 - [Buttons](/components/buttons) and [Icons](/content/icons): actions and icons across the site.
-- [Text Input](/forms/text-input), [Avatar](/components/avatar), [Dropdown](/components/dropdown), and [Theme Switcher](/components/theme-switcher): through the shared sign-in, profile, account menu, and site bar.
+- [Text Input](/forms/text-input), [Avatar](/components/avatar), [Dropdown](/components/dropdown), and [Theme Switcher](/components/theme-switcher): through the shared sign-in, profile, account menu, notifications, and site bar.
 
-Form fields on the pages are native inputs, selects, and checkboxes.
+The forms use Blazor's `EditForm` with `DataAnnotationsValidator`, `InputText`, `InputTextArea`, `InputSelect`, `InputDate`, `InputNumber`, `InputCheckbox`, and `InputRadioGroup`; list filters are native `select` and `input` elements.
 
 ## How the theme is built
 
-`HrFrame.razor` is the frame both layouts share: `HrLayout` (the public start page and sign-in, with a Navbar) and `HrWorkLayout` (the signed-in portal, with a top bar and a Sidebar). Its root is `.sc-site.sc-hr`, and `HrFrame.razor.css` styles the pages of both through `::deep`.
+`HrFrame.razor` is the frame both layouts share: `HrLayout` (the public start page and sign-in, with a Navbar) and `HrWorkLayout` (the signed-in portal, with a top bar and a Sidebar). Its root is `.sc-site.sc-hr`, and `HrFrame.razor.css` styles the pages of both through `::deep`, including the Grid lists, the bulk bar, and the status regions.
 
 Color tokens in light mode: `--sc-primary` `#7e22ce` (purple), `--sc-primary-hover` `#6b21a8`, contrast `#fff`, page background `#f8f6fb`. In dark mode (`[data-bs-theme=dark]`): `--sc-primary` `#d8b4fe`, hover `#e9d5ff`, contrast `#2a0f45`, page background `#110c18`. Because the dark primary is light, `.text-bg-primary` and `.progress-bar` text switch to the dark contrast color. The sidebar sets the `--bb-sidebar-*` variables to `#2a0f45` with light text in both modes.
 
@@ -104,12 +159,14 @@ Fonts come from Google Fonts: Nunito Sans (400 to 800) for body and headings, an
 
 The shared stylesheet `wwwroot/css/blazorbootstrap.demo.rcl.css` maps the `--sc-*` tokens to Bootstrap (`--bs-primary`, link and focus colors, body and heading fonts, primary buttons). Charts draw on a canvas, so `HrChartTheme.cs` holds their colors: series `#7e22ce`, `#047857`, `#b45309`, `#0369a1`, `#be185d` in light mode and `#d8b4fe`, `#34d399`, `#fbbf24`, `#60a5fa`, `#f472b6` in dark mode, plus axis, grid, legend, and tooltip colors. When you switch the theme, the site bar tells `HrState`, and the charts redraw.
 
-Following the shared pattern for business roles, there is one signed-in portal with a sidebar instead of role links in the public header. Each role page has its own role guard, and `HrState` checks the role on every action. Leave is counted in working days (weekdays that aren't company holidays), and balances run per calendar year.
+Following the shared pattern for business roles, there is one signed-in portal with a sidebar instead of role links in the public header. Each role page has its own role guard, and `HrState` checks the role (and the relationship, such as being the employee's manager) on every action. Leave is counted in working days (weekdays that aren't company holidays), and balances run per calendar year.
 
 ## Accessibility and responsiveness
 
+- Every request, decision, review step, tick, and refusal is announced in a status region, and errors in alert regions. Focus returns to the button that opened a dialog, or moves to the announcement after a save.
+- Each leave approval checkbox is labelled with its request ("Select Leila Haddad's Vacation, Dec 21–23, 2026"), and the header checkbox reads "Select all shown requests"; sortable headers carry `aria-sort`. Visually hidden button text keeps its leading space, so buttons read "Edit Vacation", not "EditVacation".
+- After a failed submit, the error summary takes focus and links to each field; each message is tied to its field with `aria-describedby`.
 - The org chart mind map works with the keyboard and has a find box; the same chart is repeated as a nested list, and the department highlight is announced with a count.
-- Each chart has a text summary and a data table.
-- Every request, decision, tick, and refusal is announced in a status region, and focus returns to the button that opened a dialog. Note fields and checkboxes name the person and request they belong to.
-- Leave statuses and employee statuses ("Joining Dec 1", "Left Aug 28") are written in words, not shown by color alone.
-- At 375 px the sidebar sits above the page, and wide tables scroll sideways.
+- Each chart has a text summary and a data table; the rating distribution is a table with counts and shares.
+- Leave statuses, employee statuses ("Joining Dec 1", "Left Aug 28"), review stages, cycle statuses, and ratings ("4 · Exceeds expectations") are written in words, not shown by color alone. A review's steps say which is done, current, or waiting.
+- At 375 px the sidebar sits above the page, the review steps and bulk bar wrap, and wide tables scroll sideways.

@@ -23,40 +23,38 @@
                         All three are optional.
                     </p>
 
-                    <EditForm Model="form" OnSubmit="Save" FormName="hr-profile-details" novalidate>
-                        <ShowcaseFormErrors />
+                    <EditForm EditContext="editContext" OnSubmit="Save" FormName="hr-profile-details" novalidate aria-labelledby="hr-profile-dir-title">
+                        <DataAnnotationsValidator />
+                        <ShowcaseFormErrors ShowSummary="true" />
                         <div class="mb-3">
                             <label class="form-label fw-semibold" for="hr-profile-phone">Phone</label>
-                            <input type="tel" id="hr-profile-phone" class="form-control hr-profile-short @(phoneError is null ? null : "is-invalid")" @bind="form.Phone" @ref="phoneInput"
-                                   maxlength="@HrState.MaxPhoneLength" autocomplete="tel"
-                                   aria-describedby="hr-profile-phone-help hr-profile-phone-error" aria-invalid="@(phoneError is null ? null : "true")" />
+                            <InputText type="tel" id="hr-profile-phone" class="form-control hr-profile-short" @bind-Value="form.Phone" maxlength="@HrState.MaxPhoneLength" autocomplete="tel"
+                                       aria-describedby="hr-profile-phone-help" />
                             <div class="form-text" id="hr-profile-phone-help">Shown as a link to call you. Up to @HrState.MaxPhoneLength characters.</div>
-                            <p class="text-danger-emphasis fw-semibold small mt-1 mb-0" id="hr-profile-phone-error">@phoneError</p>
+                            <ValidationMessage For="() => form.Phone" />
                         </div>
 
                         <div class="mb-3">
                             <label class="form-label fw-semibold" for="hr-profile-pronouns">Pronouns</label>
-                            <input type="text" id="hr-profile-pronouns" class="form-control hr-profile-short @(pronounsError is null ? null : "is-invalid")" @bind="form.Pronouns" @ref="pronounsInput"
-                                   maxlength="@HrState.MaxPronounsLength" autocomplete="off" placeholder="For example, she/her"
-                                   aria-describedby="hr-profile-pronouns-help hr-profile-pronouns-error" aria-invalid="@(pronounsError is null ? null : "true")" />
+                            <InputText id="hr-profile-pronouns" class="form-control hr-profile-short" @bind-Value="form.Pronouns" maxlength="@HrState.MaxPronounsLength" autocomplete="off"
+                                       placeholder="For example, she/her" aria-describedby="hr-profile-pronouns-help" />
                             <div class="form-text" id="hr-profile-pronouns-help">Shown next to your name. Up to @HrState.MaxPronounsLength characters.</div>
-                            <p class="text-danger-emphasis fw-semibold small mt-1 mb-0" id="hr-profile-pronouns-error">@pronounsError</p>
+                            <ValidationMessage For="() => form.Pronouns" />
                         </div>
 
                         <div class="mb-3">
                             <label class="form-label fw-semibold" for="hr-profile-bio">Bio</label>
-                            <textarea id="hr-profile-bio" class="form-control @(bioError is null ? null : "is-invalid")" rows="4" @bind="form.Bio" @bind:event="oninput" @ref="bioInput"
-                                      maxlength="@HrState.MaxBioLength"
-                                      aria-describedby="hr-profile-bio-help hr-profile-bio-count hr-profile-bio-error" aria-invalid="@(bioError is null ? null : "true")"></textarea>
+                            <InputTextArea id="hr-profile-bio" class="form-control" rows="4" @bind-Value="form.Bio" @oninput="OnBioInput"
+                                           aria-describedby="hr-profile-bio-help hr-profile-bio-count" />
                             <div class="d-flex flex-wrap justify-content-between gap-2">
                                 <div class="form-text" id="hr-profile-bio-help">A few words about you and your work, as plain text. Line breaks are kept.</div>
-                                <div class="form-text" id="hr-profile-bio-count">@BioCountText</div>
+                                <div class="form-text @(bioText.Trim().Length > HrState.MaxBioLength ? "text-danger-emphasis" : null)" id="hr-profile-bio-count">@BioCountText</div>
                             </div>
-                            <p class="text-danger-emphasis fw-semibold small mt-1 mb-0" id="hr-profile-bio-error">@bioError</p>
+                            <ValidationMessage For="() => form.Bio" />
                         </div>
 
                         <Button Type="ButtonType.Submit" Color="ButtonColor.Primary">Save details</Button>
-                        <p class="small fw-semibold mt-3 mb-0 @(statusIsError ? "text-danger-emphasis" : "text-success-emphasis")" role="status">@statusMessage</p>
+                        <p class="small fw-semibold mt-3 mb-0 @(statusIsError ? "text-danger-emphasis" : "text-success-emphasis")" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
                     </EditForm>
                 </section>
             </div>

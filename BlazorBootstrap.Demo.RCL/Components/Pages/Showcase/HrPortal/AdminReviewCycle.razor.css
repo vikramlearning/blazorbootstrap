@@ -1,0 +1,70 @@
+/* One review cycle: the header with the stage button, progress, the rating distribution, and the people grid. */
+.hr-arc-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.hr-arc-wrap {
+    overflow-wrap: anywhere;
+}
+
+.min-w-0 {
+    min-width: 0;
+}
+
+.hr-arc-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 10rem), 1fr));
+    gap: .5rem 1rem;
+    margin-bottom: 1rem;
+}
+
+    .hr-arc-stats dt {
+        font-size: .75rem;
+        font-weight: 700;
+        letter-spacing: .02em;
+        text-transform: uppercase;
+        color: var(--bs-secondary-color);
+    }
+
+    .hr-arc-stats dd {
+        margin: 0;
+        font-size: 1.25rem;
+        font-weight: 800;
+        font-variant-numeric: tabular-nums;
+    }
+
+.hr-arc-stages {
+    display: grid;
+    gap: .5rem;
+}
+
+    .hr-arc-stages > li {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: .25rem .75rem;
+    }
+
+.hr-arc-stage-label {
+    flex: 0 0 9rem;
+}
+
+.hr-arc-stage-count {
+    flex: 0 0 auto;
+}
+
+.hr-arc-table {
+    --bs-table-bg: transparent;
+    font-size: .875rem;
+}
+
+/* The grid renders the cells, so the note column is styled through ::deep. */
+.hr-panel ::deep .hr-arc-note {
+    min-width: 12rem;
+    max-width: 22rem;
+    overflow-wrap: anywhere;
+}
