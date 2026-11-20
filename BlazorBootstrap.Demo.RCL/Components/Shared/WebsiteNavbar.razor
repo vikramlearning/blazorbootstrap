@@ -1,16 +1,12 @@
 @namespace BlazorBootstrap.Demo.RCL
 @inherits BlazorBootstrapComponentBase
 
-<a class="me-auto align-self-center" href="/" aria-label="Blazor Bootstrap home">
-    <img class="bb-site-brand" src="images/logo/logo.svg" width="32" height="29" alt="" />
-</a>
-
 @if (BlazorBootstrap.Demo.RCL.Services.Showcase.ShowcaseCatalog.IsPublished)
 {
     <div>
-        <a class="nav-link py-2 px-2 d-inline-flex align-items-center gap-1" href="@DemoRouteConstants.Showcase_URL_Prefix">
+        <a class="nav-link py-2 px-2 d-inline-flex align-items-center gap-1" href="@DemoRouteConstants.Showcase_URL_Prefix" aria-label="Showcase">
             <i class="bi bi-grid-1x2-fill" aria-hidden="true"></i>
-            <span>Showcase</span>
+            <span class="bb-site-header-showcase-label">Showcase</span>
         </a>
     </div>
 }
@@ -38,4 +34,4 @@
     <div class="vr mt-2"></div>
 </div>
 
-<ThemeSwitcher Class="ps-3 ps-lg-2" Position="DropdownMenuPosition.End" OnThemeChanged="@(async(string themeName) => await OnThemeChanged(themeName))" />
+<ThemeSwitcher Class="bb-site-header-theme-switcher ps-3 ps-lg-2" Position="DropdownMenuPosition.End" OnThemeChanged="@(async(string themeName) => await OnThemeChanged(themeName))" />
