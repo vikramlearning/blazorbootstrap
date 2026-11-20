@@ -14,7 +14,7 @@
         </Button>
     </div>
 
-    <section aria-label="Summary" class="row row-cols-1 row-cols-sm-3 g-3 mb-4">
+    <section aria-label="Summary" class="row row-cols-1 row-cols-sm-2 row-cols-xl-4 g-3 mb-4">
         <div class="col">
             <Card Class="mw-card h-100"><CardBody Class="p-3">
                 <span class="mw-label">Open</span>
@@ -34,6 +34,13 @@
                 <span class="mw-label">Critical, active</span>
                 <span class="mw-value">@CriticalActiveCount</span>
                 <span class="small text-body-secondary">Customers can't use a core feature</span>
+            </CardBody></Card>
+        </div>
+        <div class="col">
+            <Card Class="mw-card h-100"><CardBody Class="p-3">
+                <span class="mw-label">Waiting for acknowledgement</span>
+                <span class="mw-value">@WaitingCount</span>
+                <span class="small text-body-secondary">An escalation policy is paging</span>
             </CardBody></Card>
         </div>
     </section>
@@ -81,6 +88,10 @@
                     <div class="form-check">
                         <input class="form-check-input" type="checkbox" id="mw-inc-public" @bind="publicOnly" @bind:after="FiltersChangedAsync" />
                         <label class="form-check-label fw-semibold" for="mw-inc-public">Only incidents on the status page (@PublicCount)</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="mw-inc-waiting" @bind="waitingOnly" @bind:after="FiltersChangedAsync" />
+                        <label class="form-check-label fw-semibold" for="mw-inc-waiting">Only incidents waiting for acknowledgement (@WaitingMatchCount)</label>
                     </div>
                 </div>
             </div>
@@ -205,6 +216,27 @@
                     <GridColumn TItem="MonitoringIncident" HeaderText="Status" PropertyName="Status" SortString="status" SortKeySelector="incident => incident.Status"
                                 IsDefaultSortColumn="@view.IsSortColumn("status")" SortDirection="@view.DirectionFor("status")" TextNoWrap="true">
                         <Badge Color="@MonitoringDisplay.IncidentStatusColor(context.Status)">@context.Status</Badge>
+                    </GridColumn>
+                    @* The escalation policy's paging (AC-7c). It has no property, so CSV export leaves it out. *@
+                    <GridColumn TItem="MonitoringIncident" HeaderText="Paging" SortString="paging" SortKeySelector="incident => PagingRank(incident)"
+                                IsDefaultSortColumn="@view.IsSortColumn("paging")" SortDirection="@view.DirectionFor("paging")" TextNoWrap="true">
+                        @if (context.Paging is not { } paging)
+                        {
+                            <span class="small text-body-secondary">Not paged</span>
+                        }
+                        else if (paging.IsActive)
+                        {
+                            <Badge Color="BadgeColor.Warning"><Icon Name="IconName.Megaphone" class="me-1" aria-hidden="true" />Paging step @(paging.Pages.LastOrDefault()?.Step ?? 1)</Badge>
+                            <span class="d-block small text-body-secondary">@(paging.Pages.Count == 1 ? "1 page" : $"{paging.Pages.Count} pages") so far</span>
+                        }
+                        else if (paging.StopReason == MonitoringPagingStop.NobodyAnswered)
+                        {
+                            <Badge Color="BadgeColor.Danger">Nobody answered</Badge>
+                        }
+                        else
+                        {
+                            <span class="small">@(paging.StopReason == MonitoringPagingStop.Acknowledged ? $"Acknowledged by {paging.AcknowledgedBy}" : "Stopped: resolved")</span>
+                        }
                     </GridColumn>
                     <GridColumn TItem="MonitoringIncident" HeaderText="Assignee" PropertyName="Assignee" SortString="assignee" SortKeySelector="incident => incident.Assignee ?? string.Empty"
                                 IsDefaultSortColumn="@view.IsSortColumn("assignee")" SortDirection="@view.DirectionFor("assignee")" TextNoWrap="true">

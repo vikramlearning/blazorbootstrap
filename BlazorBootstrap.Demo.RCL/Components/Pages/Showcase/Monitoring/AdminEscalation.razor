@@ -1,0 +1,307 @@
+@page "/showcase/monitoring/console/admin/escalation"
+@layout ConsoleLayout
+
+<PageTitle>Escalation policies · @MonitoringSeedData.ProductName</PageTitle>
+
+<div class="container-fluid px-lg-4">
+    <ShowcaseRoleGuard Roles="@MonitoringSeedData.AdminRole" SignInPath="@MonitoringLayout.SignInPath">
+        @{
+            var shift = State.Shifts(0, 1).FirstOrDefault();
+        }
+
+        <div class="mw-page-head">
+            <div>
+                <h1 class="mw-title">Escalation policies</h1>
+                <p class="mw-lead">
+                    Who is paged when an alert opens an incident. Step 1 pages the primary on call at once; if nobody acknowledges in time, step 2 pages
+                    the secondary, and an optional step 3 pages a named engineer. Acknowledging the incident stops the paging.
+                </p>
+            </div>
+            <Button @ref="newPolicyButton" Color="ButtonColor.Primary" @onclick="OpenNewAsync">
+                <Icon Name="IconName.PlusCircle" class="me-1" aria-hidden="true" />New policy
+            </Button>
+        </div>
+
+        @if (shift is not null)
+        {
+            <p class="small mb-3">
+                <Icon Name="IconName.CalendarWeek" class="me-1" aria-hidden="true" />On call this week:
+                <strong>@EngineerName(shift.PrimaryId)</strong> (primary) and <strong>@EngineerName(shift.SecondaryId)</strong> (secondary).
+                <a href="@($"{ConsoleLayout.Base}/on-call")">On-call schedule</a>
+            </p>
+        }
+
+        @* Always rendered and focusable, so an outcome is announced and focus has somewhere to go when the pressed button is gone. *@
+        <p class="fw-semibold mw-esc-status @(statusIsError ? "text-danger-emphasis" : null)" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
+
+        <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-2">
+            <p class="small text-body-secondary mb-0" tabindex="-1" @ref="countRegion">
+                @State.Policies.Count of @MonitoringState.MaxPolicies policies. Each service uses the active policy that names it, or else the active default.
+            </p>
+            @* Back to the saved view's defaults: policy number order and every column in its place. *@
+            <Button Color="ButtonColor.Link" Size="ButtonSize.Small" Class="p-0" @onclick="ResetViewAsync">Reset view</Button>
+        </div>
+
+        <Card Class="mw-card mb-4">
+            <CardBody Class="p-3 p-lg-4">
+                <ShowcaseDataState Status="@(viewLoaded ? ShowcaseDataStatus.Ready : ShowcaseDataStatus.Loading)"
+                                   IsEmpty="@(State.Policies.Count == 0)"
+                                   EmptyIcon="IconName.Megaphone"
+                                   EmptyTitle="No escalation policies"
+                                   EmptyText="Without one, an alert notifies the on-call engineers but nobody is paged or escalated. Add a default policy first."
+                                   LoadingText="Loading escalation policies…"
+                                   OnRetry="RefreshGridAsync">
+                    <EmptyActions>
+                        <Button Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="OpenNewAsync">New policy</Button>
+                    </EmptyActions>
+                    <ChildContent>
+                        <Grid @ref="grid"
+                              @key="gridVersion"
+                              TItem="PolicyRow"
+                              Class="table table-hover mw-esc-table sc-grid-row-links"
+                              GridContainerClass="mw-grid"
+                              DataProvider="ProvideRowsAsync"
+                              SettingsProvider="view.GetSettingsAsync"
+                              GridSettingsChanged="view.SaveSettingsAsync"
+                              AllowSorting="true"
+                              AllowColumnChooser="true"
+                              AllowExport="true"
+                              ExportFileName="monitoring-escalation-policies"
+                              Responsive="true"
+                              EmptyText="No escalation policies."
+                              aria-label="Escalation policies">
+                            <GridColumns>
+                                <GridColumn TItem="PolicyRow" HeaderText="Policy" PropertyName="Name" SortString="name" SortKeySelector="row => row.Name"
+                                            IsDefaultSortColumn="@view.IsSortColumn("name")" SortDirection="@view.DirectionFor("name")" AlwaysVisible="true">
+                                    @* A policy has no page of its own: the name opens the editor, and its stretched area makes the whole row do so. *@
+                                    <button type="button" class="btn btn-link p-0 text-start mw-esc-name stretched-link" @onclick="() => OpenEditAsync(context.Policy)">@context.Name</button>
+                                    @if (context.Policy.IsDefault)
+                                    {
+                                        <Badge Color="BadgeColor.Secondary" Class="ms-1">Default</Badge>
+                                    }
+                                </GridColumn>
+                                <GridColumn TItem="PolicyRow" HeaderText="Covers" PropertyName="Covers" SortString="covers" SortKeySelector="row => row.Covers">
+                                    <span class="mw-esc-wrap d-inline-block">@context.Covers</span>
+                                </GridColumn>
+                                <GridColumn TItem="PolicyRow" HeaderText="Steps" PropertyName="Steps" SortString="steps" SortKeySelector="row => row.Policy.SecondaryAfterMinutes">
+                                    <span class="mw-esc-wrap d-inline-block">@context.Steps</span>
+                                </GridColumn>
+                                <GridColumn TItem="PolicyRow" HeaderText="Pages at most" PropertyName="MaxPages" SortString="pages" SortKeySelector="row => row.MaxPages"
+                                            IsDefaultSortColumn="@view.IsSortColumn("pages")" SortDirection="@view.DirectionFor("pages")" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End">
+                                    <span class="mw-mono">@context.MaxPages</span>
+                                </GridColumn>
+                                <GridColumn TItem="PolicyRow" HeaderText="State" PropertyName="State" SortString="state" SortKeySelector="row => row.Policy.IsActive"
+                                            IsDefaultSortColumn="@view.IsSortColumn("state")" SortDirection="@view.DirectionFor("state")" TextNoWrap="true">
+                                    @if (context.Policy.IsActive)
+                                    {
+                                        <span class="d-inline-flex align-items-center gap-1"><Icon Name="IconName.CheckCircleFill" class="text-success" aria-hidden="true" />On</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="d-inline-flex align-items-center gap-1 text-body-secondary"><Icon Name="IconName.PauseCircle" aria-hidden="true" />Off</span>
+                                    }
+                                </GridColumn>
+                                <GridColumn TItem="PolicyRow" HeaderText="Paging now" PropertyName="PagingNow" SortString="paging" SortKeySelector="row => row.PagingNow"
+                                            IsDefaultSortColumn="@view.IsSortColumn("paging")" SortDirection="@view.DirectionFor("paging")" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" TextNoWrap="true">
+                                    @if (context.PagingNow > 0)
+                                    {
+                                        <a href="@($"{ConsoleLayout.Base}/incidents?paging=1")">@(context.PagingNow == 1 ? "1 incident" : $"{context.PagingNow} incidents")</a>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-body-secondary">None</span>
+                                    }
+                                </GridColumn>
+                                <GridColumn TItem="PolicyRow" HeaderText="Actions" Sortable="false" Exportable="false">
+                                    <div class="d-flex flex-nowrap gap-1 justify-content-end">
+                                        <Button @ref="editButtons[context.Policy.Id]" Color="ButtonColor.Secondary" Outline="true" Size="ButtonSize.Small" @onclick="() => OpenEditAsync(context.Policy)">
+                                            Edit<span class="visually-hidden">&#32;@context.Name</span>
+                                        </Button>
+                                        <Button Color="ButtonColor.Secondary" Outline="true" Size="ButtonSize.Small" @onclick="() => ToggleActive(context.Policy)">
+                                            @(context.Policy.IsActive ? "Turn off" : "Turn on")<span class="visually-hidden">&#32;@context.Name</span>
+                                        </Button>
+                                        <Button @ref="deleteButtons[context.Policy.Id]" Color="ButtonColor.Danger" Outline="true" Size="ButtonSize.Small" @onclick="() => OpenDeleteAsync(context.Policy)">
+                                            Delete<span class="visually-hidden">&#32;@context.Name</span>
+                                        </Button>
+                                    </div>
+                                </GridColumn>
+                            </GridColumns>
+                        </Grid>
+                    </ChildContent>
+                </ShowcaseDataState>
+            </CardBody>
+        </Card>
+
+        <Card Class="mw-card">
+            <CardHeader><h2 class="mw-card-title">How paging works</h2></CardHeader>
+            <CardBody>
+                <ul class="mw-esc-how mb-0">
+                    <li>When an alert rule opens an incident, or an engineer declares one, the policy that covers its service is copied onto it. Editing the policy later doesn't change incidents already paging.</li>
+                    <li>Each page is an in-app notification (the bell, and Notifications), plus the engineer's email, push, and, for a critical incident, text message settings. It is written on the incident's timeline and in the audit log.</li>
+                    <li>Who is primary and secondary comes from the <a href="@($"{ConsoleLayout.Base}/on-call")">on-call rotation</a> at the time of each page, overrides included.</li>
+                    <li>Acknowledging the incident (on its page, or in bulk from the incident queue) stops the paging; whoever was paged before is told their page is covered. Resolving it stops paging too.</li>
+                    <li>If every page goes out and nobody acknowledges, paging stops and the admins are notified.</li>
+                </ul>
+            </CardBody>
+        </Card>
+
+        @* The policy form, for a new policy or an edit. Opened from code, so focus is returned by hand; the heading names it and Cancel closes it. *@
+        <Modal @ref="policyModal" Size="ModalSize.Large" IsScrollable="true" ShowCloseButton="false" aria-labelledby="mw-esc-form-title"
+               OnShown="OnFormShownAsync" OnHidden="OnFormHidden">
+            <HeaderTemplate>
+                <h2 class="modal-title h5" id="mw-esc-form-title">@(editingId == 0 ? "New escalation policy" : "Edit escalation policy")</h2>
+            </HeaderTemplate>
+            <BodyTemplate>
+                @{
+                    var servicesInvalid = formContext.GetValidationMessages(() => form.ServiceIds).Any();
+                }
+                <EditForm id="mw-esc-form" EditContext="formContext" OnSubmit="SubmitAsync" FormName="mw-escalation-policy" novalidate>
+                    <DataAnnotationsValidator />
+                    <ShowcaseFormErrors ShowSummary="true" />
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold" for="mw-esc-name">Name</label>
+                        <InputText @ref="nameInput" id="mw-esc-name" class="form-control" maxlength="@MonitoringState.MaxPolicyNameLength" @bind-Value="form.Name"
+                                   autocomplete="off" aria-describedby="mw-esc-name-help" />
+                        <ShowcaseUniqueCheck @ref="nameCheck" For="() => form.Name" IsTakenAsync="IsNameTakenAsync"
+                                             TakenMessage="@(value => $"Another policy is already called \"{value}\". Choose a different name.")" />
+                        <div class="form-text mt-0" id="mw-esc-name-help">Up to @MonitoringState.MaxPolicyNameLength characters, unique, like "Checkout path: page fast".</div>
+                        <ValidationMessage For="() => form.Name" />
+                    </div>
+
+                    <fieldset class="mb-3">
+                        <legend class="form-label fw-semibold fs-6">Covers</legend>
+                        <InputRadioGroup @bind-Value="form.IsDefault" Name="mw-esc-covers">
+                            <div class="form-check">
+                                <InputRadio class="form-check-input" id="mw-esc-covers-chosen" Value="false" />
+                                <label class="form-check-label" for="mw-esc-covers-chosen">Chosen services</label>
+                            </div>
+                            <div class="form-check">
+                                <InputRadio class="form-check-input" id="mw-esc-covers-default" Value="true" aria-describedby="mw-esc-default-help" />
+                                <label class="form-check-label" for="mw-esc-covers-default">Every service without its own policy (the default)</label>
+                                <div class="form-text mt-0" id="mw-esc-default-help">One active default at most.</div>
+                            </div>
+                        </InputRadioGroup>
+                        <ValidationMessage For="() => form.IsDefault" />
+                    </fieldset>
+
+                    @if (!form.IsDefault)
+                    {
+                        <fieldset class="mb-3">
+                            <legend class="form-label fw-semibold fs-6">Services</legend>
+                            <div class="mw-esc-services">
+                                @foreach (var service in State.Services)
+                                {
+                                    var inputId = $"mw-esc-service-{service.Id}";
+                                    var other = OtherPolicyFor(service.Id);
+                                    <div class="form-check" @key="service.Id">
+                                        <input class="form-check-input" type="checkbox" id="@inputId" checked="@form.ServiceIds.Contains(service.Id)"
+                                               aria-invalid="@(servicesInvalid ? "true" : null)" @onchange="e => ToggleService(service.Id, e)" />
+                                        <label class="form-check-label" for="@inputId">
+                                            @service.Name
+                                            @if (other is not null)
+                                            {
+                                                <span class="small text-body-secondary"> (uses “@other.Name”)</span>
+                                            }
+                                        </label>
+                                    </div>
+                                }
+                            </div>
+                            <ValidationMessage For="() => form.ServiceIds" />
+                        </fieldset>
+                    }
+
+                    <fieldset class="mb-3">
+                        <legend class="form-label fw-semibold fs-6">Steps</legend>
+                        <p class="small mb-2"><strong>Step 1:</strong> page the primary on call at once.</p>
+                        <div class="mb-3">
+                            <label class="form-label" for="mw-esc-secondary"><strong>Step 2:</strong> page the secondary on call after (minutes without an acknowledgement)</label>
+                            <InputNumber TValue="int?" id="mw-esc-secondary" class="form-control mw-esc-minutes" @bind-Value="form.SecondaryAfterMinutes" min="1" max="60" step="1"
+                                         ParsingErrorMessage="Enter a whole number of minutes, like 5." aria-describedby="mw-esc-secondary-help" />
+                            <div class="form-text" id="mw-esc-secondary-help">From @MonitoringState.MinEscalationMinutes to @MonitoringState.MaxEscalationMinutes minutes.</div>
+                            <ValidationMessage For="() => form.SecondaryAfterMinutes" />
+                        </div>
+
+                        <div class="form-check mb-2">
+                            <InputCheckbox class="form-check-input" id="mw-esc-third" @bind-Value="form.HasThird" />
+                            <label class="form-check-label" for="mw-esc-third"><strong>Step 3:</strong> then page a named engineer</label>
+                        </div>
+                        @if (form.HasThird)
+                        {
+                            <div class="row g-3 ms-md-3">
+                                <div class="col-sm-6">
+                                    <label class="form-label" for="mw-esc-third-engineer">Engineer</label>
+                                    <InputSelect id="mw-esc-third-engineer" class="form-select" @bind-Value="form.ThirdEngineerId">
+                                        <option value="">Choose an engineer</option>
+                                        @foreach (var engineer in State.Engineers)
+                                        {
+                                            <option value="@engineer.Id">@engineer.Name (@engineer.Team)</option>
+                                        }
+                                    </InputSelect>
+                                    <ValidationMessage For="() => form.ThirdEngineerId" />
+                                </div>
+                                <div class="col-sm-6">
+                                    <label class="form-label" for="mw-esc-third-minutes">Minutes after step 2</label>
+                                    <InputNumber TValue="int?" id="mw-esc-third-minutes" class="form-control mw-esc-minutes" @bind-Value="form.ThirdAfterMinutes" min="1" max="60" step="1"
+                                                 ParsingErrorMessage="Enter a whole number of minutes, like 10." />
+                                    <ValidationMessage For="() => form.ThirdAfterMinutes" />
+                                </div>
+                            </div>
+                        }
+                    </fieldset>
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-sm-6">
+                            <label class="form-label fw-semibold" for="mw-esc-repeats">If nobody acknowledges, run the steps again</label>
+                            <InputSelect id="mw-esc-repeats" class="form-select" @bind-Value="form.Repeats">
+                                @for (var repeats = 0; repeats <= MonitoringState.MaxPolicyRepeats; repeats++)
+                                {
+                                    var value = repeats;
+                                    <option value="@value">@(value switch { 0 => "No", 1 => "Once", 2 => "Twice", _ => $"{value} times" })</option>
+                                }
+                            </InputSelect>
+                        </div>
+                        <div class="col-sm-6 d-flex align-items-end">
+                            <div class="form-check">
+                                <InputCheckbox class="form-check-input" id="mw-esc-active" @bind-Value="form.IsActive" aria-describedby="mw-esc-active-help" />
+                                <label class="form-check-label fw-semibold" for="mw-esc-active">On</label>
+                                <div class="form-text mt-0" id="mw-esc-active-help">New incidents use only policies that are on.</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <section class="mw-esc-preview" aria-labelledby="mw-esc-preview-title">
+                        <h3 class="mw-label mb-1" id="mw-esc-preview-title">What this policy does now</h3>
+                        <p class="small mb-0">@Preview</p>
+                    </section>
+                </EditForm>
+                <p class="text-danger-emphasis fw-semibold mt-3 mb-0" role="alert">@formError</p>
+            </BodyTemplate>
+            <FooterTemplate>
+                <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => policyModal.HideAsync()">Cancel</Button>
+                <Button Type="ButtonType.Submit" Color="ButtonColor.Primary" form="mw-esc-form">@(editingId == 0 ? "Create policy" : "Save changes")</Button>
+            </FooterTemplate>
+        </Modal>
+
+        <Modal @ref="deleteModal" IsVerticallyCentered="true" ShowCloseButton="false" aria-labelledby="mw-esc-delete-title" OnHidden="OnDeleteHidden">
+            <HeaderTemplate>
+                <h2 class="modal-title h5" id="mw-esc-delete-title">Delete “@(deleting?.Name)”?</h2>
+            </HeaderTemplate>
+            <BodyTemplate>
+                @if (deleting is { } doomed)
+                {
+                    var paging = State.PagingCount(doomed.Id);
+                    <p>@DeleteConsequence(doomed)</p>
+                    <p class="small text-body-secondary mb-0">
+                        @(paging == 0 ? "No incident is paging under it now." : paging == 1 ? "The 1 incident paging under it keeps paging with the copy it started with." : $"The {paging} incidents paging under it keep paging with the copy they started with.")
+                        This can't be undone; to stop it for a while, turn it off instead.
+                    </p>
+                }
+            </BodyTemplate>
+            <FooterTemplate>
+                <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => deleteModal.HideAsync()">Keep policy</Button>
+                <Button Color="ButtonColor.Danger" @onclick="ConfirmDeleteAsync">Delete policy</Button>
+            </FooterTemplate>
+        </Modal>
+    </ShowcaseRoleGuard>
+</div>

@@ -101,7 +101,7 @@ public partial class OnCall : ComponentBase, IDisposable
 
     private static string RoleHelp(MonitoringOnCallRole role) => role == MonitoringOnCallRole.Primary
         ? "Paged first for every alert."
-        : "Paged when the primary doesn't acknowledge within 5 minutes.";
+        : "Paged when the primary doesn't acknowledge within the escalation policy's minutes.";
 
     private static string RoleLabel(MonitoringOnCallRole role) => role == MonitoringOnCallRole.Primary ? "Primary" : "Secondary";
 

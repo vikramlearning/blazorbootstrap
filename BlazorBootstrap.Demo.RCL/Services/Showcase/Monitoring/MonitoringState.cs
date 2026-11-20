@@ -11,14 +11,15 @@ namespace BlazorBootstrap.Demo.RCL.Services.Showcase.Monitoring;
 /// demo email outbox, engineers' notifications and preferences, on-call overrides, and the demo sign-in. It is kept in the tab's <c>sessionStorage</c> through the showcase foundation; nothing
 /// is sent. It also keeps the enterprise baseline (rule WR-001): an audit log of every create, change, acknowledge,
 /// resolve, and delete, in-app notifications for the demo engineers (the console's Notifications page and the header's
-/// bell read the same list), and the header's global search (see <c>MonitoringState.Enterprise.cs</c>).
+/// bell read the same list), and the header's global search (see <c>MonitoringState.Enterprise.cs</c>). Its signature
+/// workflow is escalation policies with paging (see <c>MonitoringState.Escalation.cs</c>).
 /// </summary>
 /// <remarks>
 /// Metrics and log lines are not stored: they are generated deterministically for the sample ticks of the site's moving
 /// clock (one every <see cref="MonitoringSeedData.TickSeconds" /> seconds, D-029), bent by the incidents and injected
 /// failures active at each sample's time. <see cref="Tick" /> moves the shown window up to the clock and then evaluates the
 /// alert rules on it; live pages call it from a timer, and pausing stops it. Admins have every engineer action plus the
-/// admin ones (rules, failures, maintenance, services). The public status page reads only what engineers published: an incident appears once it has a public update,
+/// admin ones (rules, failures, escalation policies, maintenance, services). The public status page reads only what engineers published: an incident appears once it has a public update,
 /// and is ongoing there until a public update says it is resolved.
 /// </remarks>
 public sealed partial class MonitoringState : IShowcaseEnterpriseState
@@ -140,6 +141,8 @@ public sealed partial class MonitoringState : IShowcaseEnterpriseState
 
     private readonly List<MonitoringOverride> overrides = new();
 
+    private readonly List<MonitoringEscalationPolicy> policies = MonitoringSeedData.EscalationPolicies();
+
     private readonly Dictionary<string, MonitoringNotificationPreferences> preferences = new();
 
     private readonly List<MonitoringAlertRule> rules = MonitoringSeedData.AlertRules();
@@ -172,6 +175,8 @@ public sealed partial class MonitoringState : IShowcaseEnterpriseState
 
     private int nextOverrideId = 1;
 
+    private int nextPolicyId;
+
     private int nextRuleId = 7;
 
     private int nextSubscriptionId = 1;
@@ -192,7 +197,8 @@ public sealed partial class MonitoringState : IShowcaseEnterpriseState
         nextUpdateId = incidents.SelectMany(incident => incident.Updates).Max(update => update.Id) + 1;
         nextNotificationId = notifications.Max(notification => notification.Id) + 1;
         nextMaintenanceId = maintenance.Max(window => window.Id) + 1;
-        audit.AddRange(MonitoringSeedData.AuditEntries(incidents, rules, maintenance));
+        nextPolicyId = policies.Count == 0 ? 1 : policies.Max(policy => policy.Id) + 1;
+        audit.AddRange(MonitoringSeedData.AuditEntries(incidents, rules, maintenance, policies));
         nextAuditId = audit.Count == 0 ? 1 : audit.Max(entry => entry.Id) + 1;
         Identity = new ShowcaseIdentity(MonitoringSeedData.Roles(), MonitoringSeedData.DemoAccounts());
         Identity.Changed += () => Changed?.Invoke();
@@ -217,12 +223,15 @@ public sealed partial class MonitoringState : IShowcaseEnterpriseState
         if (incident.Status != MonitoringIncidentStatus.Open)
             return incident.Status == MonitoringIncidentStatus.Acknowledged ? MonitoringResult.NoChange : MonitoringResult.WrongState;
 
-        if (!TryAddUpdate(incident, account, "Acknowledged.", MonitoringUpdateKind.Status, null))
+        var paging = incident.Paging is { IsActive: true } running ? running : null;
+
+        if (!TryAddUpdate(incident, account, AcknowledgedText(account, paging), MonitoringUpdateKind.Status, null))
             return MonitoringResult.Invalid;
 
         incident.Status = MonitoringIncidentStatus.Acknowledged;
         incident.Assignee = account.Name;
-        Record("Acknowledged", IncidentTarget(incident.Id), IncidentLink(incident.Id), incident.Title);
+        var pages = StopPaging(incident, MonitoringPagingStop.Acknowledged, account);
+        Record("Acknowledged", IncidentTarget(incident.Id), IncidentLink(incident.Id), pages is { } count ? $"{incident.Title}; paging stopped after {Plural(count, "page")}" : incident.Title);
         Commit();
 
         return MonitoringResult.Ok;
@@ -258,6 +267,7 @@ public sealed partial class MonitoringState : IShowcaseEnterpriseState
     {
         Audit = audit.ToList(),
         Emails = emails.ToList(),
+        Policies = policies.ToList(),
         Faults = faults.ToList(),
         Incidents = incidents.ToList(),
         Maintenance = maintenance.ToList(),
@@ -269,6 +279,7 @@ public sealed partial class MonitoringState : IShowcaseEnterpriseState
         NextRuleId = nextRuleId,
         NextNotificationId = nextNotificationId,
         NextOverrideId = nextOverrideId,
+        NextPolicyId = nextPolicyId,
         NextSubscriptionId = nextSubscriptionId,
         NextUpdateId = nextUpdateId,
         Notifications = notifications.ToList(),
@@ -317,7 +328,11 @@ public sealed partial class MonitoringState : IShowcaseEnterpriseState
 
         incident = created;
         Record("Declared", IncidentTarget(created.Id), IncidentLink(created.Id), $"{SeverityWord(severity)} on {FindService(serviceId)!.Name}: {title}");
-        NotifyOnCall(created, $"{SeverityWord(severity)} incident declared: {title}", $"{account.Name} declared #{created.Id} on {FindService(serviceId)!.Name}.");
+
+        // Under an escalation policy the on-call engineers are paged instead (the page is their notification).
+        var paged = StartPaging(created, Clock.Now);
+        NotifyOnCall(created, $"{SeverityWord(severity)} incident declared: {title}", $"{account.Name} declared #{created.Id} on {FindService(serviceId)!.Name}.", onCall: !paged);
+        AdvancePaging(Clock.Now);
         Commit();
 
         return MonitoringResult.Ok;
@@ -389,6 +404,9 @@ public sealed partial class MonitoringState : IShowcaseEnterpriseState
     {
         version++;
         displayTick = LiveTick;
+
+        // Pages that fell due while the tab was closed go out now, at their due times.
+        AdvancePaging(Clock.Now);
         RebuildHistory();
         Changed?.Invoke();
     }
@@ -432,6 +450,7 @@ public sealed partial class MonitoringState : IShowcaseEnterpriseState
 
             incident.Status = MonitoringIncidentStatus.Resolved;
             incident.ResolvedAt = Clock.Now;
+            StopPaging(incident, MonitoringPagingStop.Resolved, account);
         }
 
         Record("Posted on the status page", IncidentTarget(incident.Id), IncidentLink(incident.Id), $"{StageWord(stage)}: {text}");
@@ -539,6 +558,7 @@ public sealed partial class MonitoringState : IShowcaseEnterpriseState
         incident.Status = MonitoringIncidentStatus.Resolved;
         incident.ResolvedAt = Clock.Now;
         incident.Assignee ??= account.Name;
+        StopPaging(incident, MonitoringPagingStop.Resolved, account);
 
         if (incident.IsPublished)
             EmailSubscribers(incident, MonitoringPublicStage.Resolved, publicText);
@@ -802,16 +822,25 @@ public sealed partial class MonitoringState : IShowcaseEnterpriseState
     {
         var target = LiveTick;
 
+        // Pages follow the clock, so they are sent even between samples.
         if (target == displayTick)
+        {
+            if (AdvancePaging(Clock.Now) > 0)
+                Commit();
+
             return;
+        }
 
         displayTick = target;
         RebuildHistory();
 
-        // Both run every tick: the second must not be skipped when the first changed something.
+        // Each runs every tick: a later one must not be skipped when an earlier one changed something. Paging runs last,
+        // so an incident a rule just opened pages its primary on call in the same tick.
         var announced = AnnounceMaintenanceStarts();
+        var fired = EvaluateRules();
+        var paged = AdvancePaging(Clock.Now) > 0;
 
-        if (EvaluateRules() | announced)
+        if (announced || fired || paged)
             Commit();
 
         Ticked?.Invoke();
@@ -839,6 +868,7 @@ public sealed partial class MonitoringState : IShowcaseEnterpriseState
                 Incidents: { Count: > 0 and <= MaxIncidents } storedIncidents,
                 Maintenance: { Count: <= MaxMaintenanceWindows } storedMaintenance,
                 Notifications: { Count: <= MaxNotifications } storedNotifications,
+                Policies: { Count: <= MaxPolicies } storedPolicies,
                 Overrides: { Count: <= MaxOverrides } storedOverrides,
                 Preferences: { Count: <= 10 } storedPreferences,
                 Rules: { Count: <= MaxRules } storedRules,
@@ -854,13 +884,23 @@ public sealed partial class MonitoringState : IShowcaseEnterpriseState
             || snapshot.NextSubscriptionId is < 1 or > NextIdLimit
             || snapshot.NextRuleId is < 1 or > NextIdLimit
             || snapshot.NextFaultId is < 1 or > NextIdLimit
-            || snapshot.NextMaintenanceId is < 1 or > NextIdLimit)
+            || snapshot.NextMaintenanceId is < 1 or > NextIdLimit
+            || snapshot.NextPolicyId is < 1 or > NextIdLimit)
             return false;
 
         if (storedServices.Any(service => !ValidService(service)) || !Unique(storedServices.Select(service => service.Id)))
             return false;
 
         var serviceIds = storedServices.Select(service => service.Id).ToHashSet();
+
+        // Policies: their own limits, known services, unique names, one active default at most, and no service named by two active policies.
+        if (storedPolicies.Any(policy => policy is null || policy.Id < 1 || policy.Id >= snapshot.NextPolicyId || policy.ServiceIds is null
+                || PolicyProblem(policy.Name, policy.IsDefault, policy.ServiceIds, policy.SecondaryAfterMinutes, policy.ThirdEngineerId, policy.ThirdAfterMinutes, policy.Repeats) is not null
+                || policy.ServiceIds.Any(id => !serviceIds.Contains(id)) || !Unique(policy.ServiceIds))
+            || !Unique(storedPolicies.Select(policy => policy.Id)) || !Unique(storedPolicies.Select(policy => policy.Name.ToUpperInvariant()))
+            || storedPolicies.Count(policy => policy.IsActive && policy.IsDefault) > 1
+            || !Unique(storedPolicies.Where(policy => policy.IsActive && !policy.IsDefault).SelectMany(policy => policy.ServiceIds)))
+            return false;
 
         if (storedIncidents.Any(incident => !ValidIncident(incident, snapshot, serviceIds)) || !Unique(storedIncidents.Select(incident => incident.Id))
             || !Unique(storedIncidents.SelectMany(incident => incident.Updates).Select(update => update.Id)))
@@ -947,6 +987,9 @@ public sealed partial class MonitoringState : IShowcaseEnterpriseState
         notifications.AddRange(storedNotifications);
         overrides.Clear();
         overrides.AddRange(storedOverrides);
+        policies.Clear();
+        policies.AddRange(storedPolicies);
+        nextPolicyId = snapshot.NextPolicyId;
         preferences.Clear();
 
         foreach (var pair in storedPreferences)
@@ -1117,6 +1160,16 @@ public sealed partial class MonitoringState : IShowcaseEnterpriseState
 
         foreach (var window in maintenance)
             window.ServiceIds.Remove(serviceId);
+
+        // A policy that named only this service has nothing left to cover; incidents already paging keep their copy.
+        foreach (var policy in policies)
+            policy.ServiceIds.Remove(serviceId);
+
+        foreach (var emptiedPolicy in policies.Where(policy => !policy.IsDefault && policy.ServiceIds.Count == 0).ToList())
+        {
+            policies.Remove(emptiedPolicy);
+            Record("Deleted escalation policy", PolicyTarget(emptiedPolicy.Name), EscalationLink, $"It covered only {service.Name}, which was deleted");
+        }
 
         var emptied = maintenance.Where(window => window.ServiceIds.Count == 0).Select(window => window.Id).ToHashSet();
         maintenance.RemoveAll(window => emptied.Contains(window.Id));
@@ -1667,14 +1720,14 @@ public sealed partial class MonitoringState : IShowcaseEnterpriseState
     /// who caused it unless the monitoring system raised it (<paramref name="fromSystem" />). The newest
     /// <see cref="MaxNotifications" /> are kept.
     /// </summary>
-    private void Notify(string? accountId, MonitoringNotificationKind kind, string title, string text, int? incidentId, string? url = null, bool fromSystem = false)
+    private void Notify(string? accountId, MonitoringNotificationKind kind, string title, string text, int? incidentId, string? url = null, bool fromSystem = false, DateTime? at = null)
     {
         if (accountId is null || !IsDemoAccount(accountId) || nextNotificationId >= NextIdLimit || (!fromSystem && accountId == Identity.Current?.Id))
             return;
 
         notifications.Add(new MonitoringNotification
         {
-            Id = nextNotificationId++, AccountId = accountId, Kind = kind, Time = Clock.Now, Title = Clip(title, 200), Text = Clip(text, 500), IncidentId = incidentId, Url = url,
+            Id = nextNotificationId++, AccountId = accountId, Kind = kind, Time = at ?? Clock.Now, Title = Clip(title, 200), Text = Clip(text, 500), IncidentId = incidentId, Url = url,
         });
 
         while (notifications.Count > MaxNotifications)
@@ -1682,18 +1735,19 @@ public sealed partial class MonitoringState : IShowcaseEnterpriseState
     }
 
     /// <summary>
-    /// Notifies this week's on-call engineers who have a demo account, and the demo engineers whose team owns the
-    /// incident's service (once each). An alert a rule fires (<paramref name="fromSystem" />) reaches the signed-in person too.
+    /// Notifies this week's on-call engineers who have a demo account (unless <paramref name="onCall" /> is off because an
+    /// escalation policy pages them), and the demo engineers whose team owns the incident's service (once each). An alert a
+    /// rule fires (<paramref name="fromSystem" />) reaches the signed-in person too.
     /// </summary>
-    private void NotifyOnCall(MonitoringIncident incident, string title, string text, bool fromSystem = false)
+    private void NotifyOnCall(MonitoringIncident incident, string title, string text, bool fromSystem = false, bool onCall = true)
     {
         var shift = ShiftForWeek(WeekIndex(Clock.Now));
-        var told = new HashSet<string>(StringComparer.Ordinal);
+        var told = new HashSet<string>(StringComparer.Ordinal) { shift.PrimaryId, shift.SecondaryId };
 
-        foreach (var engineerId in new[] { shift.PrimaryId, shift.SecondaryId }.Distinct())
+        if (onCall)
         {
-            told.Add(engineerId);
-            Notify(engineerId, MonitoringNotificationKind.Alert, title, text, incident.Id, fromSystem: fromSystem);
+            foreach (var engineerId in told)
+                Notify(engineerId, MonitoringNotificationKind.Alert, title, text, incident.Id, fromSystem: fromSystem);
         }
 
         if (FindService(incident.ServiceId) is not { } service)
@@ -1868,7 +1922,10 @@ public sealed partial class MonitoringState : IShowcaseEnterpriseState
 
             Record(samples[^1].Time, MonitoringSeedData.SystemAuthor, "Alert fired", IncidentTarget(incident.Id), IncidentLink(incident.Id),
                 $"{rule.Name}{(publish ? "; posted on the status page" : string.Empty)}");
-            NotifyOnCall(incident, $"{SeverityWord(rule.Severity)} alert: {rule.Name}", $"#{incident.Id} opened on {service.Name}.{(publish ? " It's posted on the status page." : string.Empty)}", fromSystem: true);
+            // Under an escalation policy the on-call engineers are paged instead (the page is their notification).
+            var paged = StartPaging(incident, samples[^1].Time);
+            NotifyOnCall(incident, $"{SeverityWord(rule.Severity)} alert: {rule.Name}", $"#{incident.Id} opened on {service.Name}.{(publish ? " It's posted on the status page." : string.Empty)}",
+                fromSystem: true, onCall: !paged);
             fired = true;
         }
 
@@ -1953,6 +2010,30 @@ public sealed partial class MonitoringState : IShowcaseEnterpriseState
 
     private static bool InRange(double value, double low, double high) => double.IsFinite(value) && value >= low && value <= high;
 
+    /// <summary>
+    /// Checks a stored incident's paging: the policy copy's limits, pages within its schedule (step, round, a known engineer),
+    /// a consistent stop (paging runs only while the incident is open, and an acknowledgement names who).
+    /// </summary>
+    private bool ValidPaging(MonitoringIncident incident, MonitoringPaging paging, MonitoringSnapshot snapshot)
+    {
+        if (paging.PolicyId < 1 || paging.PolicyId >= snapshot.NextPolicyId || paging.Pages is null || !IsPlausible(paging.StartedAt) || paging.StartedAt < incident.StartedAt.AddMinutes(-1)
+            || PolicyProblem(paging.PolicyName, true, null, paging.SecondaryAfterMinutes, paging.ThirdEngineerId, paging.ThirdAfterMinutes, paging.Repeats) is not null)
+            return false;
+
+        var plan = PagingSchedule(paging.SecondaryAfterMinutes, paging.ThirdAfterMinutes, paging.Repeats);
+
+        if (paging.Pages.Count > plan.Count || paging.Pages.Select((page, index) => (page, index)).Any(item => item.page is null || item.page.Step != plan[item.index].Step
+                || item.page.Round != plan[item.index].Round || FindEngineer(item.page.EngineerId) is null || !IsPlausible(item.page.At) || !IsText(item.page.Channels, 80)))
+            return false;
+
+        if ((paging.StopReason is null) != (paging.StoppedAt is null) || (paging.StopReason is { } reason && !Enum.IsDefined(reason))
+            || (paging.StoppedAt is { } stopped && !IsPlausible(stopped)) || (paging.StopReason is null && incident.Status != MonitoringIncidentStatus.Open))
+            return false;
+
+        return (paging.AcknowledgedBy is null) == (paging.AcknowledgedAt is null) && (paging.AcknowledgedBy is null || (IsText(paging.AcknowledgedBy, ShowcaseIdentity.MaxNameLength)
+            && paging.StopReason == MonitoringPagingStop.Acknowledged && IsPlausible(paging.AcknowledgedAt!.Value)));
+    }
+
     /// <summary>Checks one stored incident: references, enums, text limits, times, the timeline, the postmortem, and that a published incident's public stage matches its status.</summary>
     private bool ValidIncident(MonitoringIncident? incident, MonitoringSnapshot snapshot, HashSet<string> serviceIds)
     {
@@ -1972,6 +2053,9 @@ public sealed partial class MonitoringState : IShowcaseEnterpriseState
             return false;
 
         if (incident.IsPublished && (incident.Status == MonitoringIncidentStatus.Resolved) != (incident.PublicStage == MonitoringPublicStage.Resolved))
+            return false;
+
+        if (incident.Paging is { } paging && !ValidPaging(incident, paging, snapshot))
             return false;
 
         return incident.Postmortem is not { } postmortem
@@ -2074,8 +2158,8 @@ public sealed partial class MonitoringState : IShowcaseEnterpriseState
     /// <summary>Gets the site's slug, used in the storage key.</summary>
     public string SiteSlug => "monitoring";
 
-    /// <summary>Gets the snapshot format version (3: the audit log, notification links, maintenance start notices, and about two hundred incidents).</summary>
-    public int SnapshotVersion => 3;
+    /// <summary>Gets the snapshot format version (4: escalation policies and the incidents' paging).</summary>
+    public int SnapshotVersion => 4;
 
     /// <summary>Gets the status page subscriptions made in this tab, oldest first.</summary>
     public IReadOnlyList<MonitoringSubscription> Subscriptions => subscriptions;
@@ -2131,6 +2215,8 @@ public sealed partial class MonitoringState : IShowcaseEnterpriseState
 
         public int NextOverrideId { get; set; }
 
+        public int NextPolicyId { get; set; }
+
         public int NextSubscriptionId { get; set; }
 
         public int NextUpdateId { get; set; }
@@ -2138,6 +2224,8 @@ public sealed partial class MonitoringState : IShowcaseEnterpriseState
         public List<MonitoringNotification>? Notifications { get; set; }
 
         public List<MonitoringOverride>? Overrides { get; set; }
+
+        public List<MonitoringEscalationPolicy>? Policies { get; set; }
 
         public Dictionary<string, MonitoringNotificationPreferences>? Preferences { get; set; }
 

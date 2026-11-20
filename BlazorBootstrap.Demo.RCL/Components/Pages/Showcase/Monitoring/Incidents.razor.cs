@@ -10,8 +10,9 @@ namespace BlazorBootstrap.Demo.RCL.Components.Pages.Showcase.Monitoring;
 /// <summary>
 /// The console's incident queue: a summary (open, acknowledged, critical active), filters by status (active by default),
 /// severity, service, and "on the status page", each option with its count, and a <see cref="Grid{TItem}" /> of the
-/// matching incidents (number, title linking to the incident, service, severity and status in words, assignee, start,
-/// duration, and the public stage) with paging, sorting, the column chooser, and CSV export. The grid's view (page size,
+/// matching incidents (number, title linking to the incident, service, severity and status in words, the escalation
+/// policy's paging, assignee, start, duration, and the public stage) with paging, sorting, the column chooser, and CSV
+/// export. A quick filter shows the incidents waiting for acknowledgement (<c>?paging=1</c> starts with it on). The grid's view (page size,
 /// sort, columns) is saved for the visit and can be reset. Rows can be selected with the grid's checkboxes and changed
 /// together from a bulk bar: assign, severity (with a reason), and acknowledge or resolve (an incident on the status page is
 /// resolved on its own page, with a public message). "Declare incident" opens a validated <see cref="Modal" /> form
@@ -57,7 +58,7 @@ public partial class Incidents : ComponentBase, IDisposable
     /// <summary>Changes when the view is reset, so the grid is built again with its defaults.</summary>
     private int gridVersion;
 
-    private (string? Status, string? Service) loadedQuery = ("\0", "\0");
+    private (string? Status, string? Service, string? Paging) loadedQuery = ("\0", "\0", "\0");
 
     /// <summary>The grid's page size: the saved one once the view is loaded, then whatever the page size selector chose.</summary>
     private int pageSize = DefaultPageSize;
@@ -66,6 +67,9 @@ public partial class Incidents : ComponentBase, IDisposable
     private DeclareRequest? pendingDeclare;
 
     private bool publicOnly;
+
+    /// <summary>Whether only incidents an escalation policy is paging for are shown.</summary>
+    private bool waitingOnly;
 
     /// <summary>The incidents selected in the grid (on its current page).</summary>
     private List<MonitoringIncident> selected = new();
@@ -124,11 +128,12 @@ public partial class Incidents : ComponentBase, IDisposable
 
     protected override async Task OnParametersSetAsync()
     {
-        if (loadedQuery == (StatusQuery, ServiceQuery))
+        if (loadedQuery == (StatusQuery, ServiceQuery, PagingQuery))
             return;
 
-        loadedQuery = (StatusQuery, ServiceQuery);
+        loadedQuery = (StatusQuery, ServiceQuery, PagingQuery);
         statusFilter = statusOptions.Any(option => option.Value == StatusQuery) ? StatusQuery! : "active";
+        waitingOnly = PagingQuery == "1";
         serviceFilter = State.FindService(ServiceQuery) is { } service ? service.Id : AllValue;
         await FiltersChangedAsync();
     }
@@ -261,6 +266,7 @@ public partial class Incidents : ComponentBase, IDisposable
         severityFilter = AllValue;
         serviceFilter = AllValue;
         publicOnly = false;
+        waitingOnly = false;
         await FiltersChangedAsync();
         await MonitoringDisplay.FocusAsync(countRegion);
     }
@@ -285,12 +291,22 @@ public partial class Incidents : ComponentBase, IDisposable
     }
 
     /// <summary>Returns the incidents that pass every filter except the ones switched off, for each option's count.</summary>
-    private IEnumerable<MonitoringIncident> Matching(bool byStatus = true, bool bySeverity = true, bool byService = true, bool byPublic = true) =>
+    private IEnumerable<MonitoringIncident> Matching(bool byStatus = true, bool bySeverity = true, bool byService = true, bool byPublic = true, bool byWaiting = true) =>
         State.Incidents.Where(incident =>
             (!byStatus || MatchesStatus(incident, statusFilter))
             && (!bySeverity || severityFilter == AllValue || incident.Severity.ToString() == severityFilter)
             && (!byService || serviceFilter == AllValue || incident.ServiceId == serviceFilter)
-            && (!byPublic || !publicOnly || incident.IsPublished));
+            && (!byPublic || !publicOnly || incident.IsPublished)
+            && (!byWaiting || !waitingOnly || incident.Paging is { IsActive: true }));
+
+    /// <summary>Sorts paging: still paging first (the later the step, the more urgent), then nobody answered, stopped, and not paged.</summary>
+    private static int PagingRank(MonitoringIncident incident) => incident.Paging switch
+    {
+        { IsActive: true } paging => 10 - (paging.Pages.LastOrDefault()?.Step ?? 1),
+        { StopReason: MonitoringPagingStop.NobodyAnswered } => 20,
+        not null => 30,
+        _ => 40,
+    };
 
     /// <summary>
     /// The dialog opens from code, so Bootstrap does not return focus. A validated form is declared now that the dialog is
@@ -427,19 +443,28 @@ public partial class Incidents : ComponentBase, IDisposable
     private int CriticalActiveCount => State.Incidents.Count(incident => incident.Status != MonitoringIncidentStatus.Resolved && incident.Severity == MonitoringSeverity.Critical);
 
     private string EmptyText =>
-        statusFilter == "active" && !publicOnly && severityFilter == AllValue && serviceFilter == AllValue
-            ? "No active incidents. All services are operating normally."
-            : "No incidents match these filters.";
+        waitingOnly && statusFilter == "active" && !publicOnly && severityFilter == AllValue && serviceFilter == AllValue
+            ? "Nothing is waiting for acknowledgement: no escalation policy is paging anyone."
+            : statusFilter == "active" && !publicOnly && severityFilter == AllValue && serviceFilter == AllValue
+                ? "No active incidents. All services are operating normally."
+                : "No incidents match these filters.";
 
     [Inject] private ShowcaseGridViewStore GridViews { get; set; } = default!;
 
-    private bool IsFiltered => statusFilter != "active" || severityFilter != AllValue || serviceFilter != AllValue || publicOnly;
+    private bool IsFiltered => statusFilter != "active" || severityFilter != AllValue || serviceFilter != AllValue || publicOnly || waitingOnly;
 
     [Inject] private NavigationManager Navigation { get; set; } = default!;
 
     private int OpenCount => State.Incidents.Count(incident => incident.Status == MonitoringIncidentStatus.Open);
 
     private int PublicCount => Matching(byPublic: false).Count(incident => incident.IsPublished);
+
+    /// <summary>Gets or sets <c>1</c> to start with only the incidents waiting for acknowledgement, like <c>?paging=1</c>.</summary>
+    [SupplyParameterFromQuery(Name = "paging")] public string? PagingQuery { get; set; }
+
+    private int WaitingCount => State.Incidents.Count(incident => incident.Paging is { IsActive: true });
+
+    private int WaitingMatchCount => Matching(byWaiting: false).Count(incident => incident.Paging is { IsActive: true });
 
     /// <summary>Gets or sets the service filter from the query string, like <c>?service=payments</c>.</summary>
     [SupplyParameterFromQuery(Name = "service")] public string? ServiceQuery { get; set; }

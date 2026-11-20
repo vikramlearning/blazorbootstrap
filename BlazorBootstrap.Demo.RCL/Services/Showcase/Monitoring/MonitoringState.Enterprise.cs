@@ -134,11 +134,13 @@ public sealed partial class MonitoringState
                 any = true;
             }
 
-            if (status == MonitoringIncidentStatus.Acknowledged && incident.Status == MonitoringIncidentStatus.Open && AddBulkUpdate(incident, account, "Acknowledged.", MonitoringUpdateKind.Status))
+            if (status == MonitoringIncidentStatus.Acknowledged && incident.Status == MonitoringIncidentStatus.Open
+                && AddBulkUpdate(incident, account, AcknowledgedText(account, incident.Paging is { IsActive: true } running ? running : null), MonitoringUpdateKind.Status))
             {
                 incident.Status = MonitoringIncidentStatus.Acknowledged;
                 incident.Assignee ??= account.Name;
-                Record("Acknowledged", target, link, incident.Title);
+                var pages = StopPaging(incident, MonitoringPagingStop.Acknowledged, account);
+                Record("Acknowledged", target, link, pages is { } count ? $"{incident.Title}; paging stopped after {Plural(count, "page")}" : incident.Title);
                 any = true;
             }
 
@@ -154,6 +156,7 @@ public sealed partial class MonitoringState
                     incident.Status = MonitoringIncidentStatus.Resolved;
                     incident.ResolvedAt = Clock.Now;
                     incident.Assignee ??= account.Name;
+                    StopPaging(incident, MonitoringPagingStop.Resolved, account);
                     Record("Resolved", target, link, reason.Length == 0 ? incident.Title : reason);
                     NotifyFollower(incident, account, FormattableString.Invariant($"{account.Name} resolved #{incident.Id}"), reason.Length == 0 ? incident.Title : reason);
                     any = true;
@@ -238,8 +241,8 @@ public sealed partial class MonitoringState
     /// The header's global search, best matches first (an exact number or name, then names that start with the term, then
     /// names that contain it), and among equal matches the active incidents, then services, a trace, alert rules,
     /// maintenance windows, and resolved incidents, newest first. Engineers and admins find incidents (by number or title),
-    /// services (by name or ID), and a trace by its full ID while its log line is shown; admins also find alert rules and
-    /// maintenance windows, whose pages are theirs. Returns nothing for a blank term or when nobody from the console is signed in.
+    /// services (by name or ID), and a trace by its full ID while its log line is shown; admins also find alert rules,
+    /// escalation policies, and maintenance windows, whose pages are theirs. Returns nothing for a blank term or when nobody from the console is signed in.
     /// </summary>
     public IReadOnlyList<ShowcaseSearchResult> Search(string term, int maxResults)
     {
@@ -299,6 +302,12 @@ public sealed partial class MonitoringState
             {
                 if (Rank(rule.Name) is { } found)
                     matches.Add((found, 3, 0, new ShowcaseSearchResult("Alert rule", rule.Name, $"{FindService(rule.ServiceId)?.Name ?? rule.ServiceId} · {(rule.IsEnabled ? "enabled" : "disabled")}", AlertsLink)));
+            }
+
+            foreach (var policy in policies)
+            {
+                if (Rank(policy.Name) is { } found)
+                    matches.Add((found, 3, 0, new ShowcaseSearchResult("Escalation policy", policy.Name, $"{CoverageText(policy)} · {(policy.IsActive ? "on" : "off")}", EscalationLink)));
             }
 
             foreach (var window in maintenance)

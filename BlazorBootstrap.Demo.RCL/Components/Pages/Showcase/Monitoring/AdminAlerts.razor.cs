@@ -332,7 +332,10 @@ public partial class AdminAlerts : ComponentBase, IDisposable
 
             var ruleName = State.Rules.FirstOrDefault(rule => rule.Id == ruleId)?.Name ?? incident.Title;
             var text = $"Alert fired: \"{ruleName}\" opened #{incident.Id} ({incident.Severity}) on {ServiceName(incident.ServiceId)}."
-                + (incident.IsPublished ? $" It's posted on the status page and emailed to {SubscribersText(incident.ServiceId)}." : " It's engineers-only until someone posts on the status page.");
+                + (incident.IsPublished ? $" It's posted on the status page and emailed to {SubscribersText(incident.ServiceId)}." : " It's engineers-only until someone posts on the status page.")
+                + (incident.Paging is { } paging
+                    ? $" \"{paging.PolicyName}\" paged {State.FindEngineer(paging.Pages.FirstOrDefault()?.EngineerId)?.Name ?? "the primary on call"}; the next step follows if nobody acknowledges."
+                    : " No escalation policy covers it, so the on-call engineers were notified.");
             notes.Add(new StatusNote(text, incident.Id, incident.IsPublished));
         }
 

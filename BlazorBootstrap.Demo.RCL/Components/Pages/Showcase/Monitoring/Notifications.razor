@@ -7,7 +7,7 @@
     <div class="mw-page-head">
         <div>
             <h1 class="mw-title">Notifications</h1>
-            <p class="mw-lead">Alerts, assignments, incident updates, maintenance, and on-call changes for you, newest first; the bell in the header shows the same list. @UnreadText</p>
+            <p class="mw-lead">Pages, alerts, assignments, incident updates, maintenance, and on-call changes for you, newest first; the bell in the header shows the same list. @UnreadText</p>
         </div>
         <button type="button" class="btn btn-outline-primary" @onclick="MarkAllRead">
             <Icon Name="IconName.CheckAll" class="me-2" aria-hidden="true" />Mark all read
@@ -106,9 +106,9 @@
                     <EditForm EditContext="prefsContext" OnSubmit="SavePreferences" FormName="mw-prefs" novalidate aria-labelledby="nt-prefs-title">
                         <DataAnnotationsValidator />
                         <ShowcaseFormErrors ShowSummary="true" />
-                        <p class="small text-body-secondary">Everything also appears here in the console. Choose where else it reaches you.</p>
+                        <p class="small text-body-secondary">Everything also appears here in the console. Choose where else it reaches you; an escalation policy's page uses these channels (a text message only for a critical incident).</p>
                         <fieldset class="mb-3" aria-describedby="nt-pref-channels-help">
-                            <legend class="form-label small fw-semibold">Alerts reach you by</legend>
+                            <legend class="form-label small fw-semibold">Pages and alerts reach you by</legend>
                             <div class="form-check">
                                 <InputCheckbox class="form-check-input" id="nt-pref-email" @bind-Value="prefsForm.Email" />
                                 <label class="form-check-label" for="nt-pref-email">Email</label>

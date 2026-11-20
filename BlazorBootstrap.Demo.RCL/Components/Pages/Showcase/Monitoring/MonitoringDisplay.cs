@@ -177,6 +177,7 @@ public static class MonitoringDisplay
         MonitoringUpdateKind.Public => "Status page",
         MonitoringUpdateKind.Status => "Status",
         MonitoringUpdateKind.Severity => "Severity",
+        MonitoringUpdateKind.Page => "Page",
         _ => "Note",
     };
 

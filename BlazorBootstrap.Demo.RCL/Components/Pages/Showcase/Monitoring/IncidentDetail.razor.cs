@@ -13,7 +13,10 @@ namespace BlazorBootstrap.Demo.RCL.Components.Pages.Showcase.Monitoring;
 /// subscribers. Engineers post status page updates (the first one is confirmed, since it makes the incident public) and
 /// engineers-only notes. Every form is an <see cref="EditForm" /> with its messages tied to the fields and, on a failed
 /// submit, a summary that links to them (rule WR-002). The
-/// timeline shows every entry, oldest or newest first, with public ones marked "Published". Resolved incidents have a
+/// timeline shows every entry, oldest or newest first, with public ones marked "Published", and pages marked "Page". An
+/// Escalation panel (AC-7c) shows the policy the incident pages under, the current step, a countdown to the next page (a
+/// one-second timer runs the paging engine while it pages, unless live updates are paused), the pages sent with their
+/// channels, and "Acknowledge and stop paging"; once paging stopped it says who acknowledged, or why. Resolved incidents have a
 /// postmortem to write, save as a draft, publish, or unpublish. A small panel shows the service's latest latency and error
 /// rate as of arrival, with a Refresh button (no timer), and redraws on state changes and ticks. Every outcome is
 /// announced in a status message, which takes focus when the pressed button is gone. An unknown number shows a
@@ -48,6 +51,12 @@ public partial class IncidentDetail : ComponentBase, IDisposable
     private Func<ElementReference?>? focusTarget;
 
     private int? loadedId;
+
+    private bool disposed;
+
+    private Button? pagingAckButton;
+
+    private MonitoringLiveTimer? pagingTimer;
 
     private bool newestFirst;
 
@@ -110,6 +119,9 @@ public partial class IncidentDetail : ComponentBase, IDisposable
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        if (firstRender && !disposed)
+            pagingTimer = new MonitoringLiveTimer(TimeSpan.FromSeconds(1), OnPagingTickAsync);
+
         if (focusTarget is { } target)
         {
             focusTarget = null;
@@ -162,6 +174,8 @@ public partial class IncidentDetail : ComponentBase, IDisposable
     /// <summary>Stops listening to state changes and ticks.</summary>
     public void Dispose()
     {
+        disposed = true;
+        pagingTimer?.Dispose();
         State.Changed -= OnStateChanged;
         State.Ticked -= OnStateChanged;
     }
@@ -184,7 +198,60 @@ public partial class IncidentDetail : ComponentBase, IDisposable
         MonitoringUpdateKind.Public => IconName.Broadcast,
         MonitoringUpdateKind.Status => IconName.ArrowRepeat,
         MonitoringUpdateKind.Severity => IconName.Sliders,
+        MonitoringUpdateKind.Page => IconName.Megaphone,
         _ => IconName.JournalText,
+    };
+
+    /// <summary>Formats the time left, like "1:05", or "0:00" once it is due.</summary>
+    private static string Countdown(TimeSpan left)
+    {
+        var seconds = Math.Max(0, (int)Math.Ceiling(left.TotalSeconds));
+
+        return string.Create(System.Globalization.CultureInfo.InvariantCulture, $"{seconds / 60}:{seconds % 60:00}");
+    }
+
+    private string EngineerName(string engineerId) => State.FindEngineer(engineerId)?.Name ?? engineerId;
+
+    /// <summary>
+    /// While this incident pages, sends the pages that fall due and redraws the countdown, every second; live updates
+    /// paused stop it (WCAG 2.2.2), and the engine catches up when they resume or a console page opens.
+    /// </summary>
+    private async Task OnPagingTickAsync()
+    {
+        if (disposed || State.IsPaused || Incident?.Paging is not { IsActive: true })
+            return;
+
+        try
+        {
+            await InvokeAsync(() =>
+            {
+                if (disposed)
+                    return;
+
+                State.RunPaging();
+                StateHasChanged();
+            });
+        }
+        catch (Exception ex) when (ex is JSDisconnectedException or ObjectDisposedException or TaskCanceledException)
+        {
+            // The page or circuit went away between ticks.
+        }
+    }
+
+    /// <summary>The role a step pages, in words.</summary>
+    private static string StepRole(int step) => step switch
+    {
+        1 => "primary on call",
+        2 => "secondary on call",
+        _ => "named in the policy",
+    };
+
+    /// <summary>Says how an incident's paging stopped.</summary>
+    private string StopText(MonitoringPaging paging) => paging.StopReason switch
+    {
+        MonitoringPagingStop.Acknowledged => $"{paging.AcknowledgedBy ?? "Someone"} acknowledged at {MonitoringDisplay.Stamp(paging.AcknowledgedAt ?? paging.StoppedAt!.Value)}; paging stopped after {(paging.Pages.Count == 1 ? "1 page" : $"{paging.Pages.Count} pages")}.",
+        MonitoringPagingStop.Resolved => $"Resolved at {MonitoringDisplay.Stamp(paging.StoppedAt!.Value)} before anyone acknowledged; paging stopped.",
+        _ => $"Nobody acknowledged: paging stopped at {MonitoringDisplay.Stamp(paging.StoppedAt!.Value)} after {(paging.Pages.Count == 1 ? "1 page" : $"{paging.Pages.Count} pages")}, and the admins were told. Acknowledge the incident to pick it up.",
     };
 
     private static string LogsUrl(string serviceId) => $"{ConsoleLayout.Base}/logs?service={Uri.EscapeDataString(serviceId)}";

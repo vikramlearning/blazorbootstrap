@@ -1,0 +1,51 @@
+/* The admins' escalation policies. Card, Grid, Badge, and Modal render their own elements; the markup inside them is this page's. */
+.mw-esc-status {
+    min-height: 1.5rem;
+    overflow-wrap: anywhere;
+}
+
+    .mw-esc-status:focus {
+        outline: none;
+    }
+
+    .mw-esc-status:focus-visible {
+        outline: 2px solid var(--bs-focus-ring-color, var(--bs-primary));
+        outline-offset: 2px;
+    }
+
+/* The policy name is the row's button (it opens the editor); it keeps a readable width when the grid scrolls sideways. */
+.mw-esc-name {
+    min-width: 12rem;
+    font-weight: 600;
+    overflow-wrap: anywhere;
+}
+
+.mw-esc-wrap {
+    min-width: 12rem;
+    overflow-wrap: anywhere;
+}
+
+.mw-esc-services {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 14rem), 1fr));
+    gap: .25rem 1rem;
+}
+
+.mw-esc-minutes {
+    max-width: 8rem;
+}
+
+.mw-esc-preview {
+    padding: .75rem 1rem;
+    border-left: 3px solid var(--sc-primary);
+    border-radius: 0 .5rem .5rem 0;
+    background: var(--bs-tertiary-bg);
+}
+
+.mw-esc-how {
+    padding-inline-start: 1.25rem;
+}
+
+    .mw-esc-how li + li {
+        margin-top: .5rem;
+    }

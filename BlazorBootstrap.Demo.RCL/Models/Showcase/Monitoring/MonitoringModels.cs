@@ -125,6 +125,9 @@ public enum MonitoringUpdateKind
 
     /// <summary>A severity change.</summary>
     Severity,
+
+    /// <summary>The escalation policy paged someone, or stopped paging because nobody acknowledged.</summary>
+    Page,
 }
 
 /// <summary>Severity of a log line.</summary>
@@ -157,16 +160,32 @@ public enum MonitoringNotificationKind
 
     /// <summary>A maintenance window was scheduled, cancelled, or started on a service the engineer is on call for.</summary>
     Maintenance,
+
+    /// <summary>The escalation policy paged the engineer for an incident, or a page of theirs was covered by someone else.</summary>
+    Page,
 }
 
 /// <summary>Which on-call position a shift fills.</summary>
 public enum MonitoringOnCallRole
 {
-    /// <summary>Paged first.</summary>
+    /// <summary>Paged first by an escalation policy.</summary>
     Primary,
 
-    /// <summary>Paged when the primary doesn't acknowledge within 5 minutes.</summary>
+    /// <summary>Paged when the primary doesn't acknowledge within the policy's minutes.</summary>
     Secondary,
+}
+
+/// <summary>Why an incident's paging stopped.</summary>
+public enum MonitoringPagingStop
+{
+    /// <summary>Someone acknowledged the incident.</summary>
+    Acknowledged,
+
+    /// <summary>The incident was resolved before anyone acknowledged it.</summary>
+    Resolved,
+
+    /// <summary>Every page of the policy went out and nobody acknowledged.</summary>
+    NobodyAnswered,
 }
 
 /// <summary>The metric an alert rule watches.</summary>
@@ -344,6 +363,10 @@ public sealed class MonitoringIncident
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public MonitoringPostmortem? Postmortem { get; set; }
 
+    /// <summary>Gets or sets who the escalation policy paged and when, or <see langword="null" /> when no policy covered the service.</summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public MonitoringPaging? Paging { get; set; }
+
     /// <summary>Gets the stage of the latest public update, or <see langword="null" /> when nothing is published.</summary>
     [JsonIgnore]
     public MonitoringPublicStage? PublicStage => Updates.LastOrDefault(update => update.IsPublic)?.Stage;
@@ -372,6 +395,128 @@ public sealed class MonitoringIncident
 
     /// <summary>Gets the timeline, oldest first.</summary>
     public List<MonitoringIncidentUpdate> Updates { get; init; } = new();
+
+    #endregion
+}
+
+/// <summary>
+/// An escalation policy: who is paged when an alert opens an incident on its services. Step 1 pages the primary on call at
+/// once; step 2 pages the secondary on call after <see cref="SecondaryAfterMinutes" /> without an acknowledgement; an
+/// optional step 3 pages a named engineer after <see cref="ThirdAfterMinutes" /> more. The steps can repeat. A default
+/// policy covers every service that no other active policy names.
+/// </summary>
+public sealed class MonitoringEscalationPolicy
+{
+    #region Properties, Indexers
+
+    /// <summary>Gets the policy number.</summary>
+    public int Id { get; init; }
+
+    /// <summary>Gets or sets whether it covers every service no other active policy names (and names none itself).</summary>
+    public bool IsDefault { get; set; }
+
+    /// <summary>Gets or sets whether new incidents use it.</summary>
+    public bool IsActive { get; set; } = true;
+
+    /// <summary>Gets or sets the policy's name.</summary>
+    public string Name { get; set; } = string.Empty;
+
+    /// <summary>Gets or sets how many more times the steps run when nobody acknowledges (0 to 3).</summary>
+    public int Repeats { get; set; }
+
+    /// <summary>Gets or sets the minutes without an acknowledgement before the secondary on call is paged.</summary>
+    public int SecondaryAfterMinutes { get; set; } = 5;
+
+    /// <summary>Gets or sets the services it covers; empty for the default policy.</summary>
+    public List<string> ServiceIds { get; set; } = new();
+
+    /// <summary>Gets or sets the minutes after the secondary's page before step 3, or <see langword="null" /> for no step 3.</summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public int? ThirdAfterMinutes { get; set; }
+
+    /// <summary>Gets or sets the engineer step 3 pages, or <see langword="null" /> for no step 3.</summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public string? ThirdEngineerId { get; set; }
+
+    #endregion
+}
+
+/// <summary>One page an escalation policy sent for an incident.</summary>
+public sealed class MonitoringPage
+{
+    #region Properties, Indexers
+
+    /// <summary>Gets when it was sent.</summary>
+    public DateTime At { get; init; }
+
+    /// <summary>Gets how it reached the engineer, in words, like "in-app, email, and push".</summary>
+    public string Channels { get; init; } = string.Empty;
+
+    /// <summary>Gets the engineer paged.</summary>
+    public string EngineerId { get; init; } = string.Empty;
+
+    /// <summary>Gets the round, from 0 (the first run of the steps) to the policy's repeats.</summary>
+    public int Round { get; init; }
+
+    /// <summary>Gets the step: 1 primary, 2 secondary, 3 the named engineer.</summary>
+    public int Step { get; init; }
+
+    #endregion
+}
+
+/// <summary>
+/// An incident's paging: a copy of the escalation policy it started with (editing the policy later doesn't change it), the
+/// pages sent, and how it stopped. Paging runs while the incident is open and stops on the first acknowledgement.
+/// </summary>
+public sealed class MonitoringPaging
+{
+    #region Properties, Indexers
+
+    /// <summary>Gets or sets who acknowledged (their name), when that stopped the paging.</summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public string? AcknowledgedBy { get; set; }
+
+    /// <summary>Gets or sets when it was acknowledged.</summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public DateTime? AcknowledgedAt { get; set; }
+
+    /// <summary>Gets whether pages are still due.</summary>
+    [JsonIgnore]
+    public bool IsActive => StopReason is null;
+
+    /// <summary>Gets the pages sent, oldest first.</summary>
+    public List<MonitoringPage> Pages { get; init; } = new();
+
+    /// <summary>Gets the policy it started with.</summary>
+    public int PolicyId { get; init; }
+
+    /// <summary>Gets the policy's name when it started.</summary>
+    public string PolicyName { get; init; } = string.Empty;
+
+    /// <summary>Gets how many more times the steps run.</summary>
+    public int Repeats { get; init; }
+
+    /// <summary>Gets the minutes before the secondary is paged.</summary>
+    public int SecondaryAfterMinutes { get; init; }
+
+    /// <summary>Gets when the first page was due (the alert's time).</summary>
+    public DateTime StartedAt { get; init; }
+
+    /// <summary>Gets or sets when paging stopped.</summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public DateTime? StoppedAt { get; set; }
+
+    /// <summary>Gets or sets why paging stopped, or <see langword="null" /> while it runs.</summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public MonitoringPagingStop? StopReason { get; set; }
+
+    /// <summary>Gets the minutes before step 3, or <see langword="null" /> for none.</summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public int? ThirdAfterMinutes { get; init; }
+
+    /// <summary>Gets the engineer step 3 pages, or <see langword="null" /> for none.</summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public string? ThirdEngineerId { get; init; }
 
     #endregion
 }

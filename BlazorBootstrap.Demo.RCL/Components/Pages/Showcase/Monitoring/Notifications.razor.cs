@@ -77,6 +77,7 @@ public partial class Notifications : ComponentBase, IDisposable
         MonitoringNotificationKind.Assigned => IconName.PersonCheck,
         MonitoringNotificationKind.Update => IconName.ChatLeftText,
         MonitoringNotificationKind.Maintenance => IconName.Tools,
+        MonitoringNotificationKind.Page => IconName.Megaphone,
         _ => IconName.CalendarWeek,
     };
 
@@ -86,6 +87,7 @@ public partial class Notifications : ComponentBase, IDisposable
         MonitoringNotificationKind.Assigned => "Assigned to you",
         MonitoringNotificationKind.Update => "Incident update",
         MonitoringNotificationKind.Maintenance => "Maintenance",
+        MonitoringNotificationKind.Page => "Page",
         _ => "On-call",
     };
 

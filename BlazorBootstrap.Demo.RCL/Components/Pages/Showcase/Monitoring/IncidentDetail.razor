@@ -417,6 +417,82 @@ else
             </div>
 
             <div class="col-xl-4">
+                @if (incident.Paging is { } paging)
+                {
+                    var plan = MonitoringState.PagingSchedule(paging.SecondaryAfterMinutes, paging.ThirdEngineerId is null ? null : paging.ThirdAfterMinutes, paging.Repeats);
+                    var steps = plan.Max(item => item.Step);
+                    var next = State.NextPage(incident);
+
+                    <Card Class="@($"mw-card mb-4{(paging.IsActive ? " mw-incd-paging" : null)}")">
+                        <CardHeader>
+                            <h2 class="mw-card-title" id="mw-incd-esc-title">Escalation</h2>
+                            <span class="small text-body-secondary">@paging.PolicyName</span>
+                        </CardHeader>
+                        <CardBody>
+                            @if (paging.IsActive)
+                            {
+                                var current = paging.Pages.LastOrDefault();
+                                <p class="fw-semibold mb-1">
+                                    <Icon Name="IconName.Megaphone" class="me-1" aria-hidden="true" />
+                                    @(current is null ? "Paging starts now" : $"Paging: step {current.Step} of {steps}{(paging.Repeats > 0 ? $", round {current.Round + 1} of {paging.Repeats + 1}" : null)}")
+                                </p>
+                                @* Not a live region: the countdown changes every second. The outcome of acknowledging is announced in the status message. *@
+                                @if (next is { } upcoming)
+                                {
+                                    <p class="small mb-3">
+                                        Next: page @EngineerName(upcoming.EngineerId) (@StepRole(upcoming.Step)) in
+                                        <span class="mw-mono fw-semibold">@Countdown(upcoming.Due - State.Clock.Now)</span>, at <span class="mw-mono">@MonitoringDisplay.Time(upcoming.Due)</span>, unless someone acknowledges.
+                                    </p>
+                                }
+                                else if (State.PagingEndsAt(incident) is { } ends)
+                                {
+                                    <p class="small mb-3">
+                                        Every page went out. If nobody acknowledges within <span class="mw-mono fw-semibold">@Countdown(ends - State.Clock.Now)</span>, paging stops and the admins are told.
+                                    </p>
+                                }
+                                <Button @ref="pagingAckButton" Color="ButtonColor.Warning" Class="w-100 mb-3" @onclick="Acknowledge">
+                                    <Icon Name="IconName.HandIndexThumb" class="me-1" aria-hidden="true" />Acknowledge and stop paging
+                                </Button>
+                            }
+                            else
+                            {
+                                <p class="mb-3">@StopText(paging)</p>
+                            }
+
+                            <h3 class="h6 fw-bold mb-2">Pages sent (@paging.Pages.Count)</h3>
+                            @if (paging.Pages.Count == 0)
+                            {
+                                <p class="small text-body-secondary mb-0">None yet.</p>
+                            }
+                            else
+                            {
+                                <ol class="list-unstyled small mb-0 d-grid gap-2" aria-labelledby="mw-incd-esc-title">
+                                    @foreach (var sent in paging.Pages)
+                                    {
+                                        <li>
+                                            <span class="fw-semibold">@EngineerName(sent.EngineerId)</span>@(sent.EngineerId == State.Identity.Current?.Id ? " (you)" : null)
+                                            <span class="d-block text-body-secondary">
+                                                Step @sent.Step (@StepRole(sent.Step))@(paging.Repeats > 0 ? $", round {sent.Round + 1}" : null) · <span class="mw-mono">@MonitoringDisplay.Stamp(sent.At)</span> · @sent.Channels
+                                            </span>
+                                        </li>
+                                    }
+                                </ol>
+                            }
+                        </CardBody>
+                    </Card>
+                }
+                else if (!resolved)
+                {
+                    <Card Class="mw-card mb-4">
+                        <CardHeader><h2 class="mw-card-title">Escalation</h2></CardHeader>
+                        <CardBody>
+                            <p class="small text-body-secondary mb-0">
+                                Nobody is paged for this incident: no escalation policy covered @serviceName when it opened. The on-call engineers were notified instead.
+                            </p>
+                        </CardBody>
+                    </Card>
+                }
+
                 <Card Class="mw-card mb-4">
                     <CardHeader><h2 class="mw-card-title">Details</h2></CardHeader>
                     <CardBody Class="pt-2">

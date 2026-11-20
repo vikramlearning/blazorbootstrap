@@ -6,8 +6,8 @@ namespace BlazorBootstrap.Demo.RCL.Services.Showcase.Monitoring;
 
 /// <summary>
 /// Fixed, fictitious content for the "Stackwatch" monitoring site: services, incidents (with their internal and public
-/// timelines, about two hundred over the last year), maintenance windows, engineers and the on-call rotation,
-/// notifications, the audit log, log lines, and traces. Metric values, log lines, and the older incidents come from
+/// timelines, about two hundred over the last year), escalation policies and the pages they sent, maintenance windows,
+/// engineers and the on-call rotation, notifications, the audit log, log lines, and traces. Metric values, log lines, and the older incidents come from
 /// deterministic wave-and-hash generators (no random numbers), so every fresh tab starts the same way.
 /// </summary>
 public static class MonitoringSeedData
@@ -17,7 +17,7 @@ public static class MonitoringSeedData
     /// <summary>The demo admin's name (also on the rotation).</summary>
     public const string AdminName = "Marcus Osei";
 
-    /// <summary>The role of an admin: everything an engineer does, plus alert rules, failure drills, maintenance, and services.</summary>
+    /// <summary>The role of an admin: everything an engineer does, plus alert rules, failure drills, escalation policies, maintenance, and services.</summary>
     public const string AdminRole = "admin";
 
     /// <summary>The roles that use the console: engineers and admins.</summary>
@@ -151,7 +151,8 @@ public static class MonitoringSeedData
     /// posted on the status page, added a note, resolved, wrote and published a postmortem), the alerts the rules fired, and
     /// the admins' setup changes (alert rules, maintenance windows, a service). The newest 150 entries are kept, oldest first.
     /// </summary>
-    public static List<ShowcaseAuditEntry> AuditEntries(IReadOnlyList<MonitoringIncident> incidents, IReadOnlyList<MonitoringAlertRule> rules, IReadOnlyList<MonitoringMaintenance> windows)
+    public static List<ShowcaseAuditEntry> AuditEntries(IReadOnlyList<MonitoringIncident> incidents, IReadOnlyList<MonitoringAlertRule> rules, IReadOnlyList<MonitoringMaintenance> windows,
+        IReadOnlyList<MonitoringEscalationPolicy> policies)
     {
         var lines = new List<(DateTime At, string Actor, string Action, string Target, string? Url, string? Details)>();
 
@@ -166,6 +167,8 @@ public static class MonitoringSeedData
                 {
                     if (update.Kind == MonitoringUpdateKind.Alert && incident.RuleId is not null)
                         lines.Add((update.Time, SystemAuthor, "Alert fired", target, url, incident.Title));
+                    else if (update.Kind == MonitoringUpdateKind.Page)
+                        lines.Add((update.Time, SystemAuthor, "Paged", target, url, Clip(update.Text, 120)));
 
                     continue;
                 }
@@ -198,6 +201,11 @@ public static class MonitoringSeedData
         foreach (var rule in rules)
             lines.Add((Now.AddDays(-40 - (rule.Id * 6)).AddHours(-rule.Id), AdminName, "Created alert rule", $"Alert rule: {rule.Name}", $"{ConsoleBase}/admin/alerts", null));
 
+        foreach (var policy in policies)
+            lines.Add((Now.AddDays(-75 + (policy.Id * 3)).AddHours(-2), AdminName, "Created escalation policy", $"Escalation policy: {policy.Name}", $"{ConsoleBase}/admin/escalation", null));
+
+        lines.Add((Now.AddDays(-20).AddHours(-4), AdminName, "Updated escalation policy", "Escalation policy: Checkout path: page fast", $"{ConsoleBase}/admin/escalation", "Secondary after 2 min (was 5 min)"));
+
         foreach (var window in windows)
         {
             var scheduledAt = window.Start <= Now ? window.Start.AddDays(-4) : Now.AddDays(-1).AddHours(-2);
@@ -227,6 +235,17 @@ public static class MonitoringSeedData
             })
             .ToList();
     }
+
+    /// <summary>
+    /// The escalation policies in a fresh tab: the checkout path pages fast (the secondary after 2 minutes, the payments
+    /// lead after 20 more, twice over), the data stores page their owners' team, and a default covers everything else.
+    /// </summary>
+    public static List<MonitoringEscalationPolicy> EscalationPolicies() => new()
+    {
+        new() { Id = 1, Name = "Checkout path: page fast", ServiceIds = { "payments", "api-gateway", "auth" }, SecondaryAfterMinutes = 2, ThirdEngineerId = "daniel", ThirdAfterMinutes = 20, Repeats = 1 },
+        new() { Id = 2, Name = "Data stores", ServiceIds = { "postgres", "redis" }, SecondaryAfterMinutes = 5, ThirdEngineerId = "aiko", ThirdAfterMinutes = 10 },
+        new() { Id = 3, Name = "Default: everything else", IsDefault = true, SecondaryAfterMinutes = 10, Repeats = 2 },
+    };
 
     /// <summary>The demo accounts: the on-call engineer, and the admin who runs the monitoring setup.</summary>
     public static IReadOnlyList<ShowcaseDemoAccount> DemoAccounts() => new List<ShowcaseDemoAccount>
@@ -449,6 +468,22 @@ public static class MonitoringSeedData
         // About six months more: the alerts of an ordinary year, numbered before the hand-written ones (see History).
         incidents.AddRange(History(Entry));
 
+        // The escalation policies paged the on-call engineers: #301 is still paging (the primary and the secondary were
+        // paged, step 3 is due in a few minutes), #300 was acknowledged right after the secondary's page, and the recent
+        // past incidents show their pages and acknowledgements.
+        var policies = EscalationPolicies();
+
+        foreach (var incident in incidents.Where(incident => incident.Id >= 271))
+        {
+            var policy = policies.FirstOrDefault(item => item.IsActive && !item.IsDefault && item.ServiceIds.Contains(incident.ServiceId)) ?? policies.First(item => item.IsDefault);
+            var acknowledged = incident.Updates.FirstOrDefault(update => update.Kind == MonitoringUpdateKind.Status && update.Text.StartsWith("Acknowledged", StringComparison.Ordinal));
+
+            // The hand-written past incidents have no acknowledgement on their timeline: their assignee took them three minutes in.
+            var ackAt = incident.Id == 301 ? (DateTime?)null : acknowledged?.Time ?? incident.StartedAt.AddMinutes(3);
+            var ackBy = acknowledged?.Author ?? incident.Assignee ?? EngineerName;
+            AddPaging(incident, policy, ackAt, ackBy, acknowledged, Entry);
+        }
+
         incidents.First(incident => incident.Id == 293).Postmortem = new MonitoringPostmortem
         {
             Author = "Daniel Okafor",
@@ -509,21 +544,23 @@ public static class MonitoringSeedData
     {
         new() { Id = 1, AccountId = SeededEngineerId, Kind = MonitoringNotificationKind.Update, Time = Now.AddDays(-5), IsRead = true, IncidentId = 297, Title = "Postmortem drafted: Orders database failover", Text = "Marcus Osei wrote the postmortem. It isn't published on the status page yet." },
         new() { Id = 2, AccountId = SeededEngineerId, Kind = MonitoringNotificationKind.OnCall, Time = RotationStart, IsRead = true, Title = "Your on-call week started", Text = "You're primary on call until Mon, Nov 30 at 09:00. Marcus Osei is secondary." },
+        new() { Id = 11, AccountId = SeededEngineerId, Kind = MonitoringNotificationKind.Page, Time = Now.AddMinutes(-52), IsRead = true, IncidentId = 300, Title = "Paged: incident #300 Search latency above 300 ms", Text = "Step 1 of 2, round 1 of 3: you're primary on call. Acknowledge to stop the escalation." },
         new() { Id = 3, AccountId = SeededEngineerId, Kind = MonitoringNotificationKind.Assigned, Time = Now.AddMinutes(-41), IsRead = true, IncidentId = 300, Title = "You acknowledged #300", Text = "Search latency above 300 ms is assigned to you." },
-        new() { Id = 4, AccountId = SeededEngineerId, Kind = MonitoringNotificationKind.Alert, Time = Now.AddMinutes(-18), IncidentId = 301, Title = "Critical alert: Payments API returning 5xx errors", Text = "Error rate above 2% for 5 minutes. You're primary on call." },
+        new() { Id = 4, AccountId = SeededEngineerId, Kind = MonitoringNotificationKind.Page, Time = Now.AddMinutes(-18), IncidentId = 301, Title = "Paged: incident #301 Payments API returning 5xx errors", Text = "Step 1 of 3, round 1 of 2: you're primary on call. Acknowledge to stop the escalation." },
         new() { Id = 5, AccountId = SeededEngineerId, Kind = MonitoringNotificationKind.Update, Time = Now.AddMinutes(-12), IncidentId = 301, Title = "Marcus Osei posted on the status page", Text = "#301 is now public: Investigating." },
         new() { Id = 6, AccountId = SeededAdminId, Kind = MonitoringNotificationKind.Update, Time = Now.AddDays(-6).AddHours(-1.75), IsRead = true, IncidentId = 297, Title = "Priya Nair resolved #297", Text = "Orders database failover is resolved. It needs a postmortem." },
         new() { Id = 7, AccountId = SeededAdminId, Kind = MonitoringNotificationKind.Update, Time = Now.AddDays(-2).AddHours(-1), IsRead = true, IncidentId = 298, Title = "Priya Nair resolved #298", Text = "Warehouse sensors offline in bay 4 is resolved." },
         new() { Id = 8, AccountId = SeededAdminId, Kind = MonitoringNotificationKind.OnCall, Time = RotationStart, IsRead = true, Title = "You're secondary on call this week", Text = "Until Mon, Nov 30 at 09:00. Priya Nair is primary." },
-        new() { Id = 9, AccountId = SeededAdminId, Kind = MonitoringNotificationKind.Update, Time = Now.AddMinutes(-41), IncidentId = 300, Title = "Priya Nair acknowledged #300", Text = "Search latency above 300 ms. You're secondary on call." },
-        new() { Id = 10, AccountId = SeededAdminId, Kind = MonitoringNotificationKind.Alert, Time = Now.AddMinutes(-18), IncidentId = 301, Title = "Critical alert: Payments API returning 5xx errors", Text = "Error rate above 2% for 5 minutes. You're secondary on call." },
+        new() { Id = 12, AccountId = SeededAdminId, Kind = MonitoringNotificationKind.Page, Time = Now.AddMinutes(-42), IsRead = true, IncidentId = 300, Title = "Paged: incident #300 Search latency above 300 ms", Text = "Step 2 of 2, round 1 of 3: you're secondary on call. Acknowledge to stop the escalation." },
+        new() { Id = 9, AccountId = SeededAdminId, Kind = MonitoringNotificationKind.Page, Time = Now.AddMinutes(-41), IncidentId = 300, Title = "Your page for #300 is covered", Text = "Priya Nair acknowledged Search latency above 300 ms. You don't need to respond." },
+        new() { Id = 10, AccountId = SeededAdminId, Kind = MonitoringNotificationKind.Page, Time = Now.AddMinutes(-16), IncidentId = 301, Title = "Paged: incident #301 Payments API returning 5xx errors", Text = "Step 2 of 3, round 1 of 2: you're secondary on call. Acknowledge to stop the escalation." },
     };
 
     /// <summary>The roles of the site.</summary>
     public static IReadOnlyList<ShowcaseRole> Roles() => new List<ShowcaseRole>
     {
-        new(EngineerRole, "Engineer", "/showcase/monitoring/console", "/showcase/monitoring/console/account", "Works incidents, posts status page updates, reads logs and traces, and goes on call."),
-        new(AdminRole, "Admin", "/showcase/monitoring/console", "/showcase/monitoring/console/account", "Everything an engineer does, plus alert rules and failure drills, maintenance windows, and the monitored services."),
+        new(EngineerRole, "Engineer", "/showcase/monitoring/console", "/showcase/monitoring/console/account", "Works the incident queue, gets paged and acknowledges, posts status page updates, reads logs and traces, and goes on call."),
+        new(AdminRole, "Admin", "/showcase/monitoring/console", "/showcase/monitoring/console/account", "Everything an engineer does, plus alert rules and failure drills, escalation policies, maintenance windows, and the monitored services."),
     };
 
     /// <summary>The monitored services.</summary>
@@ -547,7 +584,68 @@ public static class MonitoringSeedData
 
     #region Private Methods
 
+    /// <summary>
+    /// Gives a seeded incident the paging its policy would have done (the same schedule and wording as the state's engine):
+    /// each page due before the acknowledgement, on the rotation of its time, with a timeline entry; then the
+    /// acknowledgement stops it, or (with none) it is still paging.
+    /// </summary>
+    private static void AddPaging(MonitoringIncident incident, MonitoringEscalationPolicy policy, DateTime? ackAt, string ackBy, MonitoringIncidentUpdate? acknowledged,
+        Func<DateTime, string, string, MonitoringUpdateKind, MonitoringPublicStage?, string?, MonitoringIncidentUpdate> entry)
+    {
+        var start = incident.Updates[0].Time;
+        var paging = new MonitoringPaging
+        {
+            PolicyId = policy.Id, PolicyName = policy.Name, SecondaryAfterMinutes = policy.SecondaryAfterMinutes, ThirdEngineerId = policy.ThirdEngineerId,
+            ThirdAfterMinutes = policy.ThirdAfterMinutes, Repeats = policy.Repeats, StartedAt = start,
+        };
+        var plan = MonitoringState.PagingSchedule(policy.SecondaryAfterMinutes, policy.ThirdAfterMinutes, policy.Repeats);
+        var steps = plan.Max(item => item.Step);
+        var rounds = plan.Max(item => item.Round) + 1;
+        var names = Engineers().ToDictionary(engineer => engineer.Id, engineer => engineer.Name);
+        var until = ackAt ?? Now;
+
+        foreach (var (step, round, offset) in plan)
+        {
+            var at = start + offset;
+
+            if (at > until || (ackAt is not null && at >= ackAt))
+                break;
+
+            var week = (int)Math.Floor((at - RotationStart).TotalDays / 7);
+            var slot = ((week % RotationOrder.Count) + RotationOrder.Count) % RotationOrder.Count;
+            var engineerId = step switch { 1 => RotationOrder[slot], 2 => RotationOrder[(slot + 1) % RotationOrder.Count], _ => policy.ThirdEngineerId! };
+            var channels = incident.Severity == MonitoringSeverity.Critical ? "in-app, email, push, and text message" : "in-app, email, and push";
+            var where = FormattableString.Invariant($"step {step} of {steps}") + (rounds > 1 ? FormattableString.Invariant($", round {round + 1} of {rounds}") : string.Empty);
+            var role = step switch { 1 => "primary on call", 2 => "secondary on call", _ => "named in the policy" };
+
+            paging.Pages.Add(new MonitoringPage { Step = step, Round = round, EngineerId = engineerId, At = at, Channels = channels });
+            Insert(incident, entry(at, SystemAuthor, $"Paged {names[engineerId]} ({role}, {where}) by {channels}.", MonitoringUpdateKind.Page, null, null));
+        }
+
+        if (ackAt is { } acked)
+        {
+            var text = $"Acknowledged by {ackBy}; paging stopped after {(paging.Pages.Count == 1 ? "1 page" : FormattableString.Invariant($"{paging.Pages.Count} pages"))}.";
+            var accountId = DemoAccounts().FirstOrDefault(account => account.Name == ackBy)?.Id;
+
+            if (acknowledged is not null)
+                incident.Updates[incident.Updates.IndexOf(acknowledged)] = acknowledged with { Text = text };
+            else
+                Insert(incident, entry(acked, ackBy, text, MonitoringUpdateKind.Status, null, accountId));
+
+            paging.StopReason = MonitoringPagingStop.Acknowledged;
+            paging.StoppedAt = acked;
+            paging.AcknowledgedBy = ackBy;
+            paging.AcknowledgedAt = acked;
+        }
+
+        incident.Paging = paging;
+    }
+
     private static string Clip(string text, int maxLength) => text.Length <= maxLength ? text : string.Concat(text.AsSpan(0, maxLength - 1), "…");
+
+    /// <summary>Puts a timeline entry in time order (after the entries at the same time).</summary>
+    private static void Insert(MonitoringIncident incident, MonitoringIncidentUpdate update) =>
+        incident.Updates.Insert(incident.Updates.FindLastIndex(item => item.Time <= update.Time) + 1, update);
 
     /// <summary>
     /// The incidents of an ordinary year before the hand-written ones (numbers <see cref="FirstHistoryIncidentId" /> to 290,
