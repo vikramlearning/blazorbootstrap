@@ -6,7 +6,7 @@
     <div class="bd-example-snippet bd-code-snippet">
         <div class="d-flex align-items-center highlight-toolbar px-4 py-2 border">
             <small class="font-monospace text-body-secondary text-uppercase">@LanguageCode.ToLanguageCodeString()</small>
-            <div class="d-flex ms-auto">
+            <div class="d-flex ms-auto position-relative">
                 <Tooltip Title="@clipboardTooltipTitle">
                     <button type="button" class="bd-demo-copy" aria-label="Copy to clipboard" @onclick="CopyToClipboardAsync">
                         <Icon Name="@clipboardTooltipIconName" Color="@clipboardTooltipIconColor" aria-hidden="true" />
@@ -35,7 +35,7 @@ else if (!Tabs)
         </div>
         <div class="d-flex align-items-center highlight-toolbar px-4 py-2 border border-top-0">
             <small class="font-monospace text-body-secondary text-uppercase">@LanguageCode.ToLanguageCodeString()</small>
-            <div class="d-flex ms-auto">
+            <div class="d-flex ms-auto position-relative">
                 <Tooltip Title="@clipboardTooltipTitle">
                     <button type="button" class="bd-demo-copy" aria-label="Copy to clipboard" @onclick="CopyToClipboardAsync">
                         <Icon Name="@clipboardTooltipIconName" Color="@clipboardTooltipIconColor" aria-hidden="true" />
