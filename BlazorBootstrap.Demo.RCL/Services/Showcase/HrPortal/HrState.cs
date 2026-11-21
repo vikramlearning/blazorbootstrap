@@ -213,8 +213,8 @@ public sealed partial class HrState : IShowcaseEnterpriseState
         });
     }
 
-    /// <summary>Returns the snapshot: every collection, the review cycles, the audit log and notifications, and the ID counters.</summary>
-    public object CaptureData() => new HrSnapshot
+    /// <summary>Returns the whole state for the snapshot. <see cref="CaptureData" /> stores only what differs from a fresh tab.</summary>
+    private HrSnapshot CaptureFull() => new HrSnapshot
     {
         Audit = audit.ToList(),
         Cycles = cycles.ToList(),
@@ -970,16 +970,7 @@ public sealed partial class HrState : IShowcaseEnterpriseState
     /// <summary>Validates a stored snapshot against its own data and applies it only when every part is valid.</summary>
     public bool TryRestoreData(JsonElement data)
     {
-        HrSnapshot? snapshot;
-
-        try
-        {
-            snapshot = data.Deserialize<HrSnapshot>(snapshotOptions);
-        }
-        catch (Exception ex) when (ex is JsonException or NotSupportedException or InvalidOperationException or ArgumentException)
-        {
-            return false;
-        }
+        var snapshot = RebuildFromDelta(data);
 
         if (snapshot is not
             {
@@ -1610,7 +1601,7 @@ public sealed partial class HrState : IShowcaseEnterpriseState
     public string SiteSlug => "hr-portal";
 
     /// <summary>Gets the snapshot format version (3: performance review cycles; 2 added the audit log, notifications, probation end dates, and the larger seed).</summary>
-    public int SnapshotVersion => 3;
+    public int SnapshotVersion => 4;
 
     /// <summary>
     /// Gets the leave requests the signed-in person decides: their direct reports' (managers), or everyone's (HR admin);
