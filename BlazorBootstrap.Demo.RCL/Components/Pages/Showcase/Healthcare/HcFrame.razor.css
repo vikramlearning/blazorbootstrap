@@ -187,6 +187,8 @@
     --bb-sidebar-content-border-color: rgba(255, 255, 255, .08);
     --bb-sidebar-nav-item-text-color: #e0f5f9;
     --bb-sidebar-nav-item-text-active-color-rgb: 255, 255, 255;
+    /* The package resolves the active color from its own -rgb value at :root, so set the color itself too. */
+    --bb-sidebar-nav-item-text-active-color: #fff;
     --bb-sidebar-nav-item-text-hover-color: rgba(255, 255, 255, .95);
     --bb-sidebar-nav-item-background-hover-color: rgba(255, 255, 255, .08);
     --bb-sidebar-nav-item-group-background-color: rgba(255, 255, 255, .06);

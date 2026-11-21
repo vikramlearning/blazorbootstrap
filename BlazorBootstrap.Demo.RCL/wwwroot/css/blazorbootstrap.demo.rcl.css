@@ -691,6 +691,60 @@ pre[class*=language-] {
         --bs-btn-disabled-color: #adb5bd;
     }
 
+    /* WCAG 1.4.3 and 1.4.10 for the nine enterprise sites (Online Learning and Travel are left as they are). Bootstrap's
+       outline danger, success, warning, and secondary text is just under 4.5:1 on the tinted site surfaces, white text
+       on the light dark-mode site colors is about 2:1, and the Callout link keeps its light-mode blue in dark mode. */
+    .sc-site:not(.sc-learning):not(.sc-travel) .btn-outline-secondary {
+        --bs-btn-color: #5c636a;
+    }
+
+    .sc-site:not(.sc-learning):not(.sc-travel) .btn-outline-danger {
+        --bs-btn-color: #b02a37;
+    }
+
+    .sc-site:not(.sc-learning):not(.sc-travel) .btn-outline-success {
+        --bs-btn-color: #146c43;
+    }
+
+    .sc-site:not(.sc-learning):not(.sc-travel) .btn-outline-warning {
+        --bs-btn-color: #856404;
+        --bs-btn-border-color: #ffc107;
+    }
+
+    [data-bs-theme=dark] .sc-site:not(.sc-learning):not(.sc-travel) .btn-outline-secondary {
+        --bs-btn-color: #adb5bd;
+    }
+
+    [data-bs-theme=dark] .sc-site:not(.sc-learning):not(.sc-travel) .btn-outline-danger {
+        --bs-btn-color: #ea868f;
+    }
+
+    [data-bs-theme=dark] .sc-site:not(.sc-learning):not(.sc-travel) .btn-outline-success {
+        --bs-btn-color: #75b798;
+    }
+
+    [data-bs-theme=dark] .sc-site:not(.sc-learning):not(.sc-travel) .btn-outline-warning {
+        --bs-btn-color: #ffc107;
+    }
+
+    [data-bs-theme=dark] .sc-site:not(.sc-learning):not(.sc-travel) {
+        --bb-callout-link: var(--sc-primary-rgb);
+    }
+
+    [data-bs-theme=dark] .sc-site:not(.sc-learning):not(.sc-travel) .text-bg-primary {
+        color: var(--sc-primary-contrast, #fff) !important;
+    }
+
+    /* Grid pagination: the current page uses the site color with its contrast text, and the page buttons wrap instead of
+       pushing the page sideways at 320 CSS px. */
+    .sc-site:not(.sc-learning):not(.sc-travel) .pagination {
+        --bs-pagination-active-bg: var(--sc-primary);
+        --bs-pagination-active-border-color: var(--sc-primary);
+        --bs-pagination-active-color: var(--sc-primary-contrast, #fff);
+        flex-wrap: wrap;
+        row-gap: .25rem;
+    }
+
     .sc-site .form-control:focus,
     .sc-site .form-select:focus,
     .sc-site .form-check-input:focus {

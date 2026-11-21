@@ -36,12 +36,12 @@ public static class SaasChartTheme
     }
 
     /// <summary>Returns the brand color of the color mode, optionally with an alpha value.</summary>
-    public static string Primary(bool isDark, double alpha = 1) => isDark ? Rgba(232, 121, 249, alpha) : Rgba(192, 38, 211, alpha);
+    public static string Primary(bool isDark, double alpha = 1) => isDark ? Rgba(232, 121, 249, alpha) : Rgba(162, 28, 175, alpha);
 
     /// <summary>Returns the series colors of the color mode: Lumora magenta first, then the supporting palette.</summary>
     public static IReadOnlyList<string> Series(bool isDark) => isDark
         ? new[] { "#e879f9", "#60a5fa", "#34d399", "#fbbf24", "#a78bfa" }
-        : new[] { "#c026d3", "#2563eb", "#059669", "#b45309", "#7c3aed" };
+        : new[] { "#a21caf", "#2563eb", "#059669", "#b45309", "#7c3aed" };
 
     /// <summary>Returns the neutral color used for a target or comparison series.</summary>
     public static string Muted(bool isDark) => isDark ? "rgba(148, 163, 184, 0.9)" : "rgba(100, 116, 139, 0.9)";
