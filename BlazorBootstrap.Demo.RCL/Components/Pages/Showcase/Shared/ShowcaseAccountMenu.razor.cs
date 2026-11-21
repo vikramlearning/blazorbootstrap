@@ -27,7 +27,7 @@ public partial class ShowcaseAccountMenu : ComponentBase
     {
         var notices = NoticeCount > 0 ? $" {NoticeCountText} new {(NoticeCount == 1 ? "notice" : "notices")}" : null;
 
-        var role = Identity.CurrentRole?.Label is { Length: > 0 } label ? $", {label}" : null;
+        var role = Identity.CurrentRole?.Label is { } label && !string.IsNullOrWhiteSpace(label) ? $", {label}" : null;
 
         return $"{account.Initials} {account.Name}{notices}{role}, account menu";
     }

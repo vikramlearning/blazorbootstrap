@@ -2,7 +2,7 @@
    and nothing while signed out. Results are plain links, so Tab reaches them and Enter opens the first one. *@
 @if (Enterprise is not null && Session.Identity.IsSignedIn)
 {
-    <div class="position-relative sc-global-search @Class" role="search">
+    <div class="position-relative @Class" role="search">
         <label class="visually-hidden" for="@inputId">@Label</label>
         <input id="@inputId"
                type="search"
@@ -18,7 +18,7 @@
         <span id="@statusId" class="visually-hidden" role="status">@StatusText</span>
         @if (IsPanelOpen)
         {
-            <div class="position-absolute z-3 w-100 mt-1 bg-body border rounded-2 shadow sc-global-search-panel">
+            <div class="position-absolute z-3 w-100 mt-1 bg-body border rounded-2 shadow">
                 @if (results.Count == 0)
                 {
                     <p class="small text-body-secondary px-3 py-2 mb-0">@NoMatchText</p>
@@ -29,7 +29,7 @@
                         @foreach (var result in results)
                         {
                             <li>
-                                <a class="d-block px-3 py-1 text-decoration-none sc-global-search-result" href="@result.Url" @onclick="Close">
+                                <a class="d-block px-3 py-1 text-decoration-none" href="@result.Url" @onclick="Close">
                                     <span class="d-block small text-body-secondary">@result.Kind</span>
                                     <span class="d-block text-body">@result.Label</span>
                                     @if (!string.IsNullOrWhiteSpace(result.Detail))

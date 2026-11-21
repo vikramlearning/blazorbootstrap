@@ -1163,7 +1163,7 @@ public sealed partial class HcState : IShowcaseEnterpriseState
 
             return Commit(() => (existing.Mrn, existing.Name, existing.DateOfBirth, existing.Phone, existing.Email, existing.ClinicId, existing.EmergencyContactName, existing.EmergencyContactPhone,
                     existing.InsurancePayerId, existing.InsuranceMemberId) = previous,
-                () => Record("Details changed", PatientTarget(existing), PatientDetailsPath(existing.Id), $"Changed by {(IsFrontDesk ? "the front desk" : "the doctor")}: {string.Join(", ", changed)}"));
+                () => Record("Details changed", PatientTarget(existing), PatientDetailsPath(existing.Id), $"Changed by {(IsFrontDesk ? "the front desk" : IsBilling ? "billing" : "the doctor")}: {string.Join(", ", changed)}"));
         }
 
         if (patients.Count >= MaxPatients || nextPatientId >= NextIdLimit)

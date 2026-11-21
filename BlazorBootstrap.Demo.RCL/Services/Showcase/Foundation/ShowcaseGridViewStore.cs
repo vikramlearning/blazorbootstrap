@@ -17,6 +17,12 @@ public sealed class ShowcaseGridViewStore
 
     private readonly IJSRuntime js;
 
+    /// <summary>The one load of stored views; concurrent callers wait for the same load.</summary>
+    private Task? loadTask;
+
+    /// <summary>Whether stored views were read (or there were none); saving is skipped otherwise, so views that could not be read are never overwritten.</summary>
+    private bool storageRead;
+
     private Dictionary<string, ShowcaseGridViewState>? views;
 
     #endregion
@@ -84,38 +90,44 @@ public sealed class ShowcaseGridViewStore
 
     #region Private Methods
 
-    private async Task EnsureLoadedAsync()
-    {
-        if (views is not null)
-            return;
+    private Task EnsureLoadedAsync() => loadTask ??= LoadAsync();
 
-        views = new Dictionary<string, ShowcaseGridViewState>(StringComparer.Ordinal);
+    private async Task LoadAsync()
+    {
+        var loaded = new Dictionary<string, ShowcaseGridViewState>(StringComparer.Ordinal);
 
         try
         {
             var json = await js.InvokeAsync<string?>("sessionStorage.getItem", StorageKey);
+            storageRead = true;
 
-            if (string.IsNullOrWhiteSpace(json))
-                return;
-
-            var stored = JsonSerializer.Deserialize<Dictionary<string, ShowcaseGridViewState>>(json);
-
-            if (stored is null)
-                return;
-
-            // Keep only well-formed entries; a bad entry is dropped rather than breaking the list.
-            foreach (var (key, state) in stored.Take(MaxViews))
-                if (!string.IsNullOrWhiteSpace(key) && key.Length <= 200 && state is not null && Enum.IsDefined(state.SortDirection))
-                    views[key] = state;
+            if (!string.IsNullOrWhiteSpace(json)
+                && JsonSerializer.Deserialize<Dictionary<string, ShowcaseGridViewState>>(json) is { } stored)
+            {
+                // Keep only well-formed entries; a bad entry is dropped rather than breaking the list.
+                foreach (var (key, state) in stored.Take(MaxViews))
+                    if (!string.IsNullOrWhiteSpace(key) && key.Length <= 200 && state is not null && Enum.IsDefined(state.SortDirection))
+                        loaded[key] = state;
+            }
         }
-        catch (Exception ex) when (ex is JsonException or JSException or JSDisconnectedException or InvalidOperationException or TaskCanceledException)
+        catch (JsonException)
         {
-            // Storage can't be read (prerendering, blocked storage, or bad data): views work in memory for this visit.
+            // Unreadable data: start empty, and the next save replaces it.
         }
+        catch (Exception ex) when (ex is JSException or JSDisconnectedException or InvalidOperationException or TaskCanceledException)
+        {
+            // Storage can't be read (prerendering or blocked storage): views work in memory for this visit, and nothing
+            // is written over the views that could not be read.
+        }
+
+        views = loaded;
     }
 
     private async Task SaveAsync()
     {
+        if (!storageRead)
+            return;
+
         try
         {
             await js.InvokeVoidAsync("sessionStorage.setItem", StorageKey, JsonSerializer.Serialize(views));

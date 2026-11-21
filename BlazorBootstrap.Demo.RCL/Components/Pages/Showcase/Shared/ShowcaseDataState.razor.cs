@@ -33,9 +33,6 @@ public partial class ShowcaseDataState : ComponentBase
 
     #region Properties, Indexers
 
-    /// <summary>Gets or sets whether the demo control that simulates a loading error is shown. Default <see langword="true" />.</summary>
-    [Parameter] public bool AllowSimulatedFailure { get; set; } = true;
-
     /// <summary>Gets or sets the content shown when the data is ready and not empty.</summary>
     [Parameter] public RenderFragment? ChildContent { get; set; }
 
@@ -51,9 +48,6 @@ public partial class ShowcaseDataState : ComponentBase
     /// <summary>Gets or sets the empty state's title, for example "No tickets yet".</summary>
     [Parameter] public string EmptyTitle { get; set; } = "Nothing here yet";
 
-    /// <summary>Gets or sets the error message.</summary>
-    [Parameter] public string ErrorText { get; set; } = "This list couldn't be loaded.";
-
     /// <summary>Gets or sets whether the data is empty. The empty state shows only when the status is ready.</summary>
     [Parameter] public bool IsEmpty { get; set; }
 
@@ -65,9 +59,6 @@ public partial class ShowcaseDataState : ComponentBase
 
     /// <summary>Gets or sets what Retry does, for example reload the data.</summary>
     [Parameter] public EventCallback OnRetry { get; set; }
-
-    /// <summary>Gets or sets the Retry button text.</summary>
-    [Parameter] public string RetryText { get; set; } = "Retry";
 
     /// <summary>Gets or sets the data's status.</summary>
     [Parameter] public ShowcaseDataStatus Status { get; set; } = ShowcaseDataStatus.Ready;

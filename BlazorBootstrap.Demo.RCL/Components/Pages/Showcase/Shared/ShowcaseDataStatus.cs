@@ -9,8 +9,5 @@ public enum ShowcaseDataStatus
     Ready,
 
     /// <summary>The data is loading.</summary>
-    Loading,
-
-    /// <summary>The data could not be loaded.</summary>
-    Failed
+    Loading
 }

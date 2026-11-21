@@ -12,6 +12,8 @@ public partial class ShowcaseGlobalSearch : ComponentBase, IDisposable
 {
     #region Fields and Constants
 
+    private const int MaxResults = 8;
+
     private const int MaxTermLength = 100;
 
     private readonly string inputId = $"sc-search-{Guid.NewGuid():N}";
@@ -100,8 +102,6 @@ public partial class ShowcaseGlobalSearch : ComponentBase, IDisposable
     /// <summary>Gets or sets the search box's accessible name.</summary>
     [Parameter] public string Label { get; set; } = "Search";
 
-    /// <summary>Gets or sets how many matches to list.</summary>
-    [Parameter] public int MaxResults { get; set; } = 8;
 
     [Inject] private NavigationManager Navigation { get; set; } = default!;
 
