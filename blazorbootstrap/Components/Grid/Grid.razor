@@ -16,6 +16,7 @@
     @if (AllowColumnChooser || AllowExport)
     {
         var chooserColumns = GetChooserColumns();
+        var chooserPositions = chooserColumns.Select((column, index) => (column, index)).ToDictionary(entry => entry.column, entry => entry.index);
         var search = columnChooserSearch.Trim();
         var matchingColumns = search.Length == 0
                                 ? chooserColumns
@@ -57,8 +58,8 @@
                                 @foreach (var column in matchingColumns)
                                 {
                                     var label = GetColumnLabel(column);
-                                    var checkboxId = $"{Id}-column-{chooserColumns.IndexOf(column)}";
-                                    var position = chooserColumns.IndexOf(column);
+                                    var position = chooserPositions[column];
+                                    var checkboxId = $"{Id}-column-{position}";
                                     var isLocked = IsColumnLocked(column, displayColumns.Count);
                                     var isLastShown = isLocked && !column.AlwaysVisible;
 

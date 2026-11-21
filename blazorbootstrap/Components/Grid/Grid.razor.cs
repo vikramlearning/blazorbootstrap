@@ -10,14 +10,19 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
 
     private Dictionary<int, string> checkboxIds = new();
 
+    private string columnChooserSearch = string.Empty;
+
+    private string columnChooserStatus = string.Empty;
+
+    /// <summary>
+    /// How many columns of each name (property name, or header text when none) have been added, so every column key is unique.
+    /// </summary>
+    private readonly Dictionary<string, int> columnNameCounts = new(StringComparer.Ordinal);
+
     /// <summary>
     /// Column keys in the user's display order; <see langword="null" /> keeps the declared order.
     /// </summary>
     private List<string>? columnOrder;
-
-    private string columnChooserSearch = string.Empty;
-
-    private string columnChooserStatus = string.Empty;
 
     private List<GridColumn<TItem>> columns = new();
 
@@ -303,7 +308,8 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
 
         if (name is not null)
         {
-            var earlier = columns.Count(c => string.Equals(c.ColumnName, name, StringComparison.Ordinal));
+            columnNameCounts.TryGetValue(name, out var earlier);
+            columnNameCounts[name] = earlier + 1;
             column.ColumnKey = earlier == 0 ? name : $"{name}#{earlier + 1}";
         }
 
@@ -318,99 +324,6 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
             StateHasChanged();
         }
     }
-
-    /// <summary>
-    /// Moves a column one place up or down among the columns the column chooser lists, then saves the grid settings.
-    /// </summary>
-    internal async Task MoveColumnAsync(GridColumn<TItem> column, int offset)
-    {
-        var listed = GetChooserColumns();
-        var index = listed.IndexOf(column);
-        var target = index + offset;
-
-        if (index < 0 || target < 0 || target >= listed.Count)
-            return;
-
-        await MoveColumnBeforeAsync(column, offset < 0 ? listed[target] : (target + 1 < listed.Count ? listed[target + 1] : null));
-    }
-
-    /// <summary>
-    /// Moves a column so it comes just before <paramref name="target" /> (or last when <paramref name="target" /> is <see langword="null" />),
-    /// then saves the grid settings and announces the new position.
-    /// </summary>
-    internal async Task MoveColumnBeforeAsync(GridColumn<TItem> column, GridColumn<TItem>? target)
-    {
-        if (column == target)
-            return;
-
-        var ordered = GetOrderedColumns();
-        ordered.Remove(column);
-        ordered.Insert(target is null ? ordered.Count : ordered.IndexOf(target), column);
-
-        var keys = ordered.Select(c => c.ColumnKey).Where(key => key is not null).Select(key => key!).ToList();
-        var declared = columns.Select(c => c.ColumnKey).Where(key => key is not null).Select(key => key!).ToList();
-
-        // Back at the declared order means no saved order, so default grids keep saving null.
-        columnOrder = keys.SequenceEqual(declared, StringComparer.Ordinal) ? null : keys;
-
-        var listed = GetChooserColumns();
-        columnChooserStatus = string.Format(ColumnChooserMovedText, GetColumnLabel(column), listed.IndexOf(column) + 1, listed.Count);
-
-        await SaveGridSettingsAsync();
-        await InvokeAsync(StateHasChanged);
-    }
-
-    /// <summary>
-    /// Hides or shows a column for the user, then saves the grid settings. A column marked <c>AlwaysVisible</c>,
-    /// a column without a key, and the last shown column cannot be hidden.
-    /// </summary>
-    internal async Task SetColumnHiddenAsync(GridColumn<TItem> column, bool hidden)
-    {
-        if (column.ColumnKey is null || (hidden && IsColumnLocked(column, GetDisplayColumns().Count)))
-            return;
-
-        if (hidden)
-            hiddenColumns.Add(column.ColumnKey);
-        else
-            hiddenColumns.Remove(column.ColumnKey);
-
-        columnChooserStatus = string.Empty;
-
-        await SaveGridSettingsAsync();
-        await InvokeAsync(StateHasChanged);
-    }
-
-    /// <summary>
-    /// Gets every column in display order, including hidden ones. Columns missing from the saved order
-    /// (new columns, or columns without a key) keep their declared position.
-    /// </summary>
-    internal List<GridColumn<TItem>> GetOrderedColumns()
-    {
-        if (columnOrder is null || columnOrder.Count == 0)
-            return columns.ToList();
-
-        var ordered = new List<GridColumn<TItem>>(columns.Count);
-
-        foreach (var key in columnOrder)
-        {
-            var column = columns.FirstOrDefault(c => c.ColumnKey == key && !ordered.Contains(c));
-
-            if (column is not null)
-                ordered.Add(column);
-        }
-
-        for (var index = 0; index < columns.Count; index++)
-            if (!ordered.Contains(columns[index]))
-                ordered.Insert(Math.Min(index, ordered.Count), columns[index]);
-
-        return ordered;
-    }
-
-    /// <summary>
-    /// Determines whether the user has hidden the column. A column marked <c>AlwaysVisible</c>, or one without a key, is never hidden by the user.
-    /// </summary>
-    internal bool IsHiddenByUser(GridColumn<TItem> column) =>
-        !column.AlwaysVisible && column.ColumnKey is not null && hiddenColumns.Contains(column.ColumnKey);
 
     internal async Task FilterChangedAsync()
     {
@@ -582,6 +495,15 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
             builder.CloseElement(); // close: th
         };
 
+    /// <summary>
+    /// Gets the columns the column chooser lists, in display order: those the app shows and that have a key.
+    /// </summary>
+    private List<GridColumn<TItem>> GetChooserColumns() =>
+        GetOrderedColumns().Where(c => c.IsVisible && c.ColumnKey is not null).ToList();
+
+    private static string GetColumnLabel(GridColumn<TItem> column) =>
+        !string.IsNullOrWhiteSpace(column.HeaderText) ? column.HeaderText! : column.PropertyName ?? string.Empty;
+
     private CultureInfo GetCultureInfo()
     {
         if (string.IsNullOrWhiteSpace(Locale))
@@ -606,15 +528,6 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
               .SelectMany(item => item.GetSorting());
 
     /// <summary>
-    /// Gets the columns the column chooser lists, in display order: those the app shows and that have a key.
-    /// </summary>
-    private List<GridColumn<TItem>> GetChooserColumns() =>
-        GetOrderedColumns().Where(c => c.IsVisible && c.ColumnKey is not null).ToList();
-
-    private static string GetColumnLabel(GridColumn<TItem> column) =>
-        !string.IsNullOrWhiteSpace(column.HeaderText) ? column.HeaderText! : column.PropertyName ?? string.Empty;
-
-    /// <summary>
     /// Gets the columns to render, in display order: visible to the app and not hidden by the user.
     /// </summary>
     private List<GridColumn<TItem>> GetDisplayColumns()
@@ -636,6 +549,35 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
         if (FixedHeader) styleAttributes.Add($"height:{Height.ToString(CultureInfo.InvariantCulture)}{Unit.ToCssString()}");
 
         return string.Join(";", styleAttributes);
+    }
+
+    /// <summary>
+    /// Gets every column in display order, including hidden ones. Columns missing from the saved order
+    /// (new columns, or columns without a key) keep their declared position.
+    /// </summary>
+    private List<GridColumn<TItem>> GetOrderedColumns()
+    {
+        if (columnOrder is null || columnOrder.Count == 0)
+            return columns.ToList();
+
+        var byKey = new Dictionary<string, GridColumn<TItem>>(StringComparer.Ordinal);
+
+        foreach (var column in columns)
+            if (column.ColumnKey is not null)
+                byKey.TryAdd(column.ColumnKey, column);
+
+        var ordered = new List<GridColumn<TItem>>(columns.Count);
+        var placed = new HashSet<GridColumn<TItem>>();
+
+        foreach (var key in columnOrder)
+            if (byKey.TryGetValue(key, out var column) && placed.Add(column))
+                ordered.Add(column);
+
+        for (var index = 0; index < columns.Count; index++)
+            if (placed.Add(columns[index]))
+                ordered.Insert(Math.Min(index, ordered.Count), columns[index]);
+
+        return ordered;
     }
 
     private string GetPaginationItemsText()
@@ -683,6 +625,12 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
         column.AlwaysVisible || (!IsHiddenByUser(column) && shownCount <= 1);
 
     /// <summary>
+    /// Determines whether the user has hidden the column. A column marked <c>AlwaysVisible</c>, or one without a key, is never hidden by the user.
+    /// </summary>
+    private bool IsHiddenByUser(GridColumn<TItem> column) =>
+        !column.AlwaysVisible && column.ColumnKey is not null && hiddenColumns.Contains(column.ColumnKey);
+
+    /// <summary>
     /// Determines whether the item is already selected.
     /// </summary>
     /// <param name="item"></param>
@@ -722,6 +670,47 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
             gridCurrentState = new GridState<TItem>(1, null);
             pageSize = 10;
         }
+    }
+
+    /// <summary>
+    /// Moves a column one place up or down among the columns the column chooser lists, then saves the grid settings.
+    /// </summary>
+    private async Task MoveColumnAsync(GridColumn<TItem> column, int offset)
+    {
+        var listed = GetChooserColumns();
+        var index = listed.IndexOf(column);
+        var target = index + offset;
+
+        if (index < 0 || target < 0 || target >= listed.Count)
+            return;
+
+        await MoveColumnBeforeAsync(column, offset < 0 ? listed[target] : (target + 1 < listed.Count ? listed[target + 1] : null));
+    }
+
+    /// <summary>
+    /// Moves a column so it comes just before <paramref name="target" /> (or last when <paramref name="target" /> is <see langword="null" />),
+    /// then saves the grid settings and announces the new position.
+    /// </summary>
+    private async Task MoveColumnBeforeAsync(GridColumn<TItem> column, GridColumn<TItem>? target)
+    {
+        if (column == target)
+            return;
+
+        var ordered = GetOrderedColumns();
+        ordered.Remove(column);
+        ordered.Insert(target is null ? ordered.Count : ordered.IndexOf(target), column);
+
+        var keys = ordered.Select(c => c.ColumnKey).Where(key => key is not null).Select(key => key!).ToList();
+        var declared = columns.Select(c => c.ColumnKey).Where(key => key is not null).Select(key => key!).ToList();
+
+        // Back at the declared order means no saved order, so default grids keep saving null.
+        columnOrder = keys.SequenceEqual(declared, StringComparer.Ordinal) ? null : keys;
+
+        var listed = GetChooserColumns();
+        columnChooserStatus = string.Format(ColumnChooserMovedText, GetColumnLabel(column), listed.IndexOf(column) + 1, listed.Count);
+
+        await SaveGridSettingsAsync();
+        await InvokeAsync(StateHasChanged);
     }
 
     private async Task OnColumnDroppedAsync(GridColumn<TItem> target)
@@ -887,6 +876,26 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     /// Set filters.
     /// </summary>
     /// <param name="filterItems"></param>
+    /// <summary>
+    /// Hides or shows a column for the user, then saves the grid settings. A column marked <c>AlwaysVisible</c>,
+    /// a column without a key, and the last shown column cannot be hidden.
+    /// </summary>
+    private async Task SetColumnHiddenAsync(GridColumn<TItem> column, bool hidden)
+    {
+        if (column.ColumnKey is null || (hidden && IsColumnLocked(column, GetDisplayColumns().Count)))
+            return;
+
+        if (hidden)
+            hiddenColumns.Add(column.ColumnKey);
+        else
+            hiddenColumns.Remove(column.ColumnKey);
+
+        columnChooserStatus = string.Empty;
+
+        await SaveGridSettingsAsync();
+        await InvokeAsync(StateHasChanged);
+    }
+
     private void SetFilters(IEnumerable<FilterItem> filterItems)
     {
         if (filterItems is null || !filterItems.Any())
