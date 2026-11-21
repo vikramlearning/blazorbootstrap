@@ -44,7 +44,7 @@
 
         @* Announces how many entries the filters show. *@
         <p class="small text-body-secondary" role="status">
-            @(entries.Count == 0 ? "No activity matches." : $"Showing {DealDisplay.Plural(entries.Count, "entry", "entries")} over {DealDisplay.Plural(days.Count, "day")}.")
+            @(entries.Count == 0 ? "No activity matches." : $"Showing {PbDisplay.Plural(entries.Count, "entry", "entries")} over {PbDisplay.Plural(days.Count, "day")}.")
         </p>
 
         @if (entries.Count == 0)

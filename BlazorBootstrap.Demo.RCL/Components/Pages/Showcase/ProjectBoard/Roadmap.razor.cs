@@ -146,7 +146,7 @@ public partial class Roadmap : ComponentBase, IDisposable
 
         return new RoadmapNode("root", $"{PbSeedData.AgencyName.Split(' ')[0]} roadmap", RoadmapNodeKind.Root, null, projects)
         {
-            Note = ManageProjects.Plural(projects.Count, "project") + " in progress or planned",
+            Note = PbDisplay.Plural(projects.Count, "project") + " in progress or planned",
         };
     }
 

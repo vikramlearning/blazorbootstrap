@@ -315,16 +315,7 @@ public sealed partial class SaasState
         if (term.Length == 0 || maxResults <= 0 || Identity.Current is null)
             return Array.Empty<ShowcaseSearchResult>();
 
-        // 0: exactly the term, 1: starts with it, 2: contains it; null: no match.
-        int? Rank(params string?[] values) => values
-            .Select(value => value is null ? (int?)null
-                : string.Equals(value, term, StringComparison.OrdinalIgnoreCase) ? 0
-                : value.StartsWith(term, StringComparison.OrdinalIgnoreCase) ? 1
-                : value.Contains(term, StringComparison.OrdinalIgnoreCase) ? 2
-                : null)
-            .Where(rank => rank is not null)
-            .DefaultIfEmpty(null)
-            .Min();
+        int? Rank(params string?[] values) => ShowcaseSearch.Rank(term, values);
 
         var hasDigit = term.Any(char.IsAsciiDigit);
         var matches = new List<(int Rank, int Kind, long Order, ShowcaseSearchResult Result)>();
@@ -442,9 +433,7 @@ public sealed partial class SaasState
     private static string InvoiceTarget(string number) => $"Invoice {number}";
 
     /// <summary>Checks a stored audit or notification link: none, or a path on this site without spaces, quotes, or a second slash.</summary>
-    private static bool IsSiteLink(string? url) =>
-        url is null || (url.Length <= 200 && url.StartsWith(SiteBase + "/", StringComparison.Ordinal) && !url.Contains("//", StringComparison.Ordinal)
-            && url.All(character => !char.IsWhiteSpace(character) && !char.IsControl(character) && character is not ('"' or '\'' or '<' or '>' or '\\')));
+    private static bool IsSiteLink(string? url) => ShowcaseLinks.IsSiteLink(url, SiteBase, allowSiteBase: false);
 
     private static string LeadPath(int leadId) => string.Create(CultureInfo.InvariantCulture, $"{LeadsPath}?lead={leadId}");
 

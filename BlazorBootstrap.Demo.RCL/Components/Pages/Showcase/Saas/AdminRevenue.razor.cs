@@ -97,8 +97,6 @@ public partial class AdminRevenue : ComponentBase, IDisposable
 
     private static string Percent(double value) => value.ToString("0", CultureInfo.InvariantCulture) + "%";
 
-    private static string Plural(int count, string one, string many) => count == 1 ? $"1 {one}" : $"{Count(count)} {many}";
-
     private ChartData CollectionData()
     {
         var colors = SaasChartTheme.Series(State.IsDarkTheme);
@@ -271,14 +269,14 @@ public partial class AdminRevenue : ComponentBase, IDisposable
 
             return new[]
             {
-                new Kpi("MRR", SaasDisplay.Money(mrr), IconName.CurrencyDollar, paying == 0 ? "no paying tenants" : $"from {Plural(paying, "paying tenant", "paying tenants")}"),
+                new Kpi("MRR", SaasDisplay.Money(mrr), IconName.CurrencyDollar, paying == 0 ? "no paying tenants" : $"from {SaasState.Plural(paying, "paying tenant", "paying tenants")}"),
                 new Kpi("ARR", SaasDisplay.Money(mrr * 12), IconName.GraphUpArrow, "MRR × 12"),
                 new Kpi("ARPA", paying == 0 ? "—" : SaasDisplay.Money(mrr / paying), IconName.Calculator, paying == 0 ? "no paying tenants" : "MRR per paying tenant"),
-                new Kpi("Paid seats", Count(State.PaidSeats), IconName.PersonBadge, $"across {Plural(paying, "paying tenant", "paying tenants")}"),
+                new Kpi("Paid seats", Count(State.PaidSeats), IconName.PersonBadge, $"across {SaasState.Plural(paying, "paying tenant", "paying tenants")}"),
                 new Kpi("Collected this month", SaasDisplay.Money(thisMonth.Collected), IconName.CashStack, $"{MonthName(thisMonth.Month)}, before refunds"),
                 new Kpi("Refunded this month", SaasDisplay.Money(thisMonth.Refunded), IconName.ArrowCounterclockwise, $"on invoices issued in {MonthName(thisMonth.Month)}"),
                 new Kpi("Open invoices", Count(open.Count), IconName.Receipt,
-                    open.Count == 0 ? "none waiting for payment" : $"{SaasDisplay.MoneyCents(open.Sum(invoice => invoice.Amount))} due from {Plural(openTenants, "tenant", "tenants")}"),
+                    open.Count == 0 ? "none waiting for payment" : $"{SaasDisplay.MoneyCents(open.Sum(invoice => invoice.Amount))} due from {SaasState.Plural(openTenants, "tenant", "tenants")}"),
             };
         }
     }

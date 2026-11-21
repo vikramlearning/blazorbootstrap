@@ -138,7 +138,7 @@
                                 <dt>Tasks</dt>
                                 <dd>@ManageProjects.ProgressText(progress.Done, progress.Total)</dd>
                                 <dt>Milestones</dt>
-                                <dd>@(project.Milestones.Count == 0 ? "None yet" : ManageProjects.Plural(project.Milestones.Count, "milestone"))</dd>
+                                <dd>@(project.Milestones.Count == 0 ? "None yet" : PbDisplay.Plural(project.Milestones.Count, "milestone"))</dd>
                             </dl>
                         }
                         <div class="d-flex flex-wrap gap-2">
@@ -150,7 +150,7 @@
                     {
                         <p class="small text-body-secondary mb-2">Select a project, milestone, or task in the map to see its details and links here.</p>
                         <p class="small mb-0">
-                            @ManageProjects.Plural(projects.Count, "project") on the roadmap, with @ManageProjects.Plural(projects.Sum(item => item.Milestones.Count), "milestone").
+                            @PbDisplay.Plural(projects.Count, "project") on the roadmap, with @PbDisplay.Plural(projects.Sum(item => item.Milestones.Count), "milestone").
                             @(NextMilestone(projects, today) is { } next ? $"Next up: “{next.Milestone.Title}” ({next.Project.Key}), due {PbDisplay.Date(next.Milestone.Due)}." : null)
                         </p>
                     }

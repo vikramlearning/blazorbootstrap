@@ -77,7 +77,7 @@
                 </div>
                 <div>
                     <dt>Open tasks</dt>
-                    <dd><a href="@($"{PbLayout.Base}/my-tasks")">@TaskCard.Plural(open.Count, "open task")</a></dd>
+                    <dd><a href="@($"{PbLayout.Base}/my-tasks")">@PbDisplay.Plural(open.Count, "open task")</a></dd>
                 </div>
                 <div>
                     <dt>Overdue</dt>
@@ -86,19 +86,19 @@
                         {
                             <Icon Name="IconName.ExclamationTriangleFill" class="me-1" aria-hidden="true" />
                         }
-                        @(overdue == 0 ? "None" : TaskCard.Plural(overdue, "task"))
+                        @(overdue == 0 ? "None" : PbDisplay.Plural(overdue, "task"))
                     </dd>
                 </div>
                 <div>
                     <dt>Due by Sunday</dt>
-                    <dd>@TaskCard.Plural(thisWeek.Count, "task"), @TaskCard.HoursText(hours) estimated of your @person.CapacityHours</dd>
+                    <dd>@PbDisplay.Plural(thisWeek.Count, "task"), @TaskCard.HoursText(hours) estimated of your @person.CapacityHours</dd>
                 </div>
             </dl>
 
             <h3 class="h6 fw-bold mt-4">Projects you're on</h3>
             @if (completed > 0)
             {
-                <p class="small text-body-secondary">The ones still running. You were also on @TaskCard.Plural(completed, "completed project"); find them on <a href="@($"{PbLayout.Base}/projects")">Project boards</a>.</p>
+                <p class="small text-body-secondary">The ones still running. You were also on @PbDisplay.Plural(completed, "completed project"); find them on <a href="@($"{PbLayout.Base}/projects")">Project boards</a>.</p>
             }
             @if (projects.Count == 0)
             {

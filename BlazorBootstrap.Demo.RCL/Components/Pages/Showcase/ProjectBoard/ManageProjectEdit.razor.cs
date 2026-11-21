@@ -320,7 +320,7 @@ public partial class ManageProjectEdit : ComponentBase, IDisposable
                 if (msEditId == id)
                     ResetMilestoneForm();
 
-                AnnounceMilestone(true, $"Deleted the milestone “{milestone.Title}”." + (count == 0 ? null : $" Its {ManageProjects.Plural(count, "task")} stay on the board."));
+                AnnounceMilestone(true, $"Deleted the milestone “{milestone.Title}”." + (count == 0 ? null : $" Its {PbDisplay.Plural(count, "task")} stay on the board."));
 
                 break;
 
@@ -422,7 +422,7 @@ public partial class ManageProjectEdit : ComponentBase, IDisposable
                     return;
                 }
 
-                Announce(true, $"Saved {saved.Key} · {saved.Name}." + (unassigned == 0 ? null : $" {ManageProjects.Plural(unassigned, "task")} became unassigned."));
+                Announce(true, $"Saved {saved.Key} · {saved.Name}." + (unassigned == 0 ? null : $" {PbDisplay.Plural(unassigned, "task")} became unassigned."));
                 focusStatus = true;
 
                 return;
@@ -612,7 +612,7 @@ public partial class ManageProjectEdit : ComponentBase, IDisposable
             var count = tasks.Count(task => task.AssigneeId == personId);
 
             if (count > 0 && State.FindPerson(personId) is { } person)
-                warnings[personId] = $"{person.Name} has {ManageProjects.Plural(count, "task")} here; {(count == 1 ? "it" : "they")}'ll become unassigned when you save.";
+                warnings[personId] = $"{person.Name} has {PbDisplay.Plural(count, "task")} here; {(count == 1 ? "it" : "they")}'ll become unassigned when you save.";
         }
 
         return warnings;

@@ -133,5 +133,9 @@ public static class HcDisplay
 
     #endregion
 
+    /// <summary>Formats a count with its noun, like "1 ticket" or "1,204 tickets"; <paramref name="plural" /> defaults to the noun plus "s".</summary>
+    public static string Plural(int count, string noun, string? plural = null) =>
+        count == 1 ? $"1 {noun}" : $"{count.ToString("#,0", CultureInfo.InvariantCulture)} {plural ?? noun + "s"}";
+
     #endregion
 }

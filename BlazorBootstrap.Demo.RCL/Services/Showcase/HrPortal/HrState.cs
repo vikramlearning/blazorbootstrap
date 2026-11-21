@@ -810,16 +810,7 @@ public sealed partial class HrState : IShowcaseEnterpriseState
 
         var number = term.TrimStart('#');
 
-        // 0: exactly the term, 1: starts with it, 2: contains it; null: no match.
-        int? Rank(params string?[] values) => values
-            .Select(value => value is null ? (int?)null
-                : string.Equals(value, term, StringComparison.OrdinalIgnoreCase) ? 0
-                : value.StartsWith(term, StringComparison.OrdinalIgnoreCase) ? 1
-                : value.Contains(term, StringComparison.OrdinalIgnoreCase) ? 2
-                : null)
-            .Where(rank => rank is not null)
-            .DefaultIfEmpty(null)
-            .Min();
+        int? Rank(params string?[] values) => ShowcaseSearch.Rank(term, values);
 
         int? NumberRank(int id)
         {
@@ -1190,9 +1181,7 @@ public sealed partial class HrState : IShowcaseEnterpriseState
         probationEnd is not { } end || (end.Date > start.Date && end.Date <= start.Date.AddMonths(MaxProbationMonths) && IsPlausible(end));
 
     /// <summary>Checks a stored audit or notification link: none, or a path on this site without spaces, quotes, or a second slash.</summary>
-    private static bool IsSiteLink(string? url) =>
-        url is null || (url.Length <= 200 && url.StartsWith(SiteBase + "/", StringComparison.Ordinal) && !url.Contains("//", StringComparison.Ordinal)
-            && url.All(character => !char.IsWhiteSpace(character) && !char.IsControl(character) && character is not ('"' or '\'' or '<' or '>' or '\\')));
+    private static bool IsSiteLink(string? url) => ShowcaseLinks.IsSiteLink(url, SiteBase, allowSiteBase: false);
 
     /// <summary>A template task's due day in words, like "3 days before day one", "day one", or "day 14".</summary>
     private static string OffsetWords(int offset) => offset switch

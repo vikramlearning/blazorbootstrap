@@ -38,7 +38,7 @@
                         <div><dt>Client since</dt><dd>@PbDisplay.Date(client.CreatedAt)</dd></div>
                         <div><dt>Billing</dt><dd class="pb-cldet-website">@client.BillingCurrency@(string.IsNullOrEmpty(client.BillingEmail) ? null : $" · {client.BillingEmail}")</dd></div>
                         <div><dt>Contract</dt><dd>@(client.ContractStart is { } contractStart ? client.ContractEnd is { } contractEnd ? $"{PbDisplay.Date(contractStart)} to {PbDisplay.Date(contractEnd)}" : $"From {PbDisplay.Date(contractStart)}, no end date" : "None")</dd></div>
-                        <div><dt>Open pipeline</dt><dd>@(open.Count == 0 ? "No open deals" : $"{DealDisplay.Plural(open.Count, "deal")}, {PbDisplay.Money(open.Sum(deal => (long)deal.Value))}")</dd></div>
+                        <div><dt>Open pipeline</dt><dd>@(open.Count == 0 ? "No open deals" : $"{PbDisplay.Plural(open.Count, "deal")}, {PbDisplay.Money(open.Sum(deal => (long)deal.Value))}")</dd></div>
                     </dl>
                 </div>
                 <a class="btn btn-outline-primary" href="@DealDisplay.ClientEditUrl(client.Id)">
@@ -173,7 +173,7 @@
                                             <div class="progress-bar" style="width: @(percent)%"></div>
                                         </div>
                                         <p class="small text-body-secondary mt-1 mb-0" id="@progressId">
-                                            @(total == 0 ? "No tasks yet" : $"{done} of {DealDisplay.Plural(total, "task")} done ({percent}%)") · due @PbDisplay.Date(project.DueDate)
+                                            @(total == 0 ? "No tasks yet" : $"{done} of {PbDisplay.Plural(total, "task")} done ({percent}%)") · due @PbDisplay.Date(project.DueDate)
                                         </p>
                                         <div class="small mt-1"><PbBudget Project="project" /></div>
                                     </li>

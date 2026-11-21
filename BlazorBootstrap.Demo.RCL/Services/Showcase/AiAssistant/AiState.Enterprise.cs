@@ -73,23 +73,13 @@ public sealed partial class AiState
         var matches = new List<(int Rank, int Kind, long Order, ShowcaseSearchResult Result)>();
         var editor = Can(AiPermission.ManageSharedPrompts);
 
-        // 0: exactly the term, 1: starts with it, 2: contains it; null: no match.
-        static int? Rank(string text, params string?[] values) => values
-            .Select(value => value is null ? (int?)null
-                : string.Equals(value, text, StringComparison.OrdinalIgnoreCase) ? 0
-                : value.StartsWith(text, StringComparison.OrdinalIgnoreCase) ? 1
-                : value.Contains(text, StringComparison.OrdinalIgnoreCase) ? 2
-                : null)
-            .Where(rank => rank is not null)
-            .DefaultIfEmpty(null)
-            .Min();
 
         // Kind: 0 a member, 1 a prompt, 2 a conversation.
         if (Can(AiPermission.ManageMembers) && term.Length >= 2)
         {
             foreach (var member in members)
             {
-                if (Rank(term, member.Name, member.Email) is { } rank)
+                if (ShowcaseSearch.Rank(term, member.Name, member.Email) is { } rank)
                 {
                     var status = member.Status switch { AiMemberStatus.Invited => "invited", AiMemberStatus.Deactivated => "access removed", _ => "active" };
                     matches.Add((rank, 0, 0, new ShowcaseSearchResult(member.Status == AiMemberStatus.Invited ? "Invitation" : "Member", member.Name,
@@ -100,7 +90,7 @@ public sealed partial class AiState
 
         foreach (var prompt in prompts.Where(prompt => prompt.IsShared ? prompt.IsPublished || editor : prompt.OwnerId == account.Id))
         {
-            if (Rank(term, prompt.Title) is not { } rank)
+            if (ShowcaseSearch.Rank(term, prompt.Title) is not { } rank)
                 continue;
 
             var kind = !prompt.IsShared ? "Your prompt" : prompt.IsPublished ? "Shared prompt" : "Draft shared prompt";
@@ -111,7 +101,7 @@ public sealed partial class AiState
 
         foreach (var conversation in conversations.Where(conversation => conversation.AccountId == account.Id))
         {
-            if (Rank(term, conversation.Title) is { } rank)
+            if (ShowcaseSearch.Rank(term, conversation.Title) is { } rank)
             {
                 matches.Add((rank, 2, -conversation.UpdatedAt.Ticks, new ShowcaseSearchResult("Conversation", conversation.Title,
                     $"{FindModel(conversation.ModelId)?.Name} · {conversation.Messages.Count(message => message.Role == AiRole.User)} messages · {conversation.UpdatedAt.ToString("MMM d, HH:mm", CultureInfo.InvariantCulture)}",
@@ -134,9 +124,7 @@ public sealed partial class AiState
     #region Private Methods
 
     /// <summary>Checks a stored audit or notification link: none, or a path on this site without spaces, quotes, or a second slash.</summary>
-    private static bool IsSiteLink(string? url) =>
-        url is null || (url.Length <= 200 && (url == AiSeedData.SiteBase || url.StartsWith(AiSeedData.SiteBase + "/", StringComparison.Ordinal)) && !url.Contains("//", StringComparison.Ordinal)
-            && url.All(character => !char.IsWhiteSpace(character) && !char.IsControl(character) && character is not ('"' or '\'' or '<' or '>' or '\\')));
+    private static bool IsSiteLink(string? url) => ShowcaseLinks.IsSiteLink(url, AiSeedData.SiteBase, allowSiteBase: true);
 
     /// <summary>
     /// Raises a notification for an account that can sign in (rule WR-001): nothing for a colleague without a sign-in, and

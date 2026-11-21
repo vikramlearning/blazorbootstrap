@@ -77,8 +77,6 @@ public partial class AgentReportSla : ComponentBase, IDisposable
     /// <summary>A share like "92%", or "—" when there is nothing to divide.</summary>
     private static string PercentText(int part, int whole) => HelpDeskReport.Percent(part, whole) is { } percent ? FormattableString.Invariant($"{percent}%") : "—";
 
-    private static string Plural(int count, string one, string many) => count == 1 ? $"1 {one}" : $"{Count(count)} {many}";
-
     private ChartData ChartData() => new()
     {
         Labels = report.Days.Select(day => DayLabel(day.Date)).ToList(),
@@ -155,13 +153,13 @@ public partial class AgentReportSla : ComponentBase, IDisposable
 
     private string FirstReplyNote => report.FirstReplyDue == 0
         ? "No first reply was due in this range."
-        : $"{Count(report.FirstReplyInSla)} of {Plural(report.FirstReplyDue, "ticket", "tickets")} answered in time";
+        : $"{Count(report.FirstReplyInSla)} of {HelpDeskDisplay.Plural(report.FirstReplyDue, "ticket", "tickets")} answered in time";
 
     private string RangeText => $"{DayLabel(report.From)} to {DayLabel(report.To)}";
 
     private string ResolutionNote => report.Resolved == 0
         ? "No ticket was resolved in this range."
-        : $"{Count(report.ResolvedInSla)} of {Plural(report.Resolved, "resolved ticket", "resolved tickets")}";
+        : $"{Count(report.ResolvedInSla)} of {HelpDeskDisplay.Plural(report.Resolved, "resolved ticket", "resolved tickets")}";
 
     /// <summary>What the figures cover, such as "Oct 18 to Nov 16 · All teams".</summary>
     private string ScopeText => $"{RangeText} · {(teamId.Length == 0 ? "All teams" : State.FindTeam(teamId)?.Name ?? "All teams")}";

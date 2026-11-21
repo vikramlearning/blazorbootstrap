@@ -114,8 +114,6 @@ public partial class MyTasks : ComponentBase, IDisposable
 
     #region Private Methods
 
-    private static string Plural(int count, string one, string many) => count == 1 ? $"1 {one}" : string.Create(CultureInfo.InvariantCulture, $"{count} {many}");
-
     /// <summary>", 2 overdue, 1 due today, and 3 due this week" for the groups that have tasks.</summary>
     private static string SummaryText(IReadOnlyList<TaskGroup> groups)
     {
@@ -134,7 +132,7 @@ public partial class MyTasks : ComponentBase, IDisposable
     {
         var outcome = State.BulkCompleteTasks(selected.Select(row => row.Id).ToList());
 
-        await FinishBulkAsync(outcome, $"Marked {Plural(outcome.Changed, "task", "tasks")} done. They're under Done in the last 2 weeks, where you can reopen them.",
+        await FinishBulkAsync(outcome, $"Marked {PbDisplay.Plural(outcome.Changed, "task", "tasks")} done. They're under Done in the last 2 weeks, where you can reopen them.",
             "No tasks changed: the selected tasks are already done.", "already done, or on a completed project");
     }
 
@@ -159,7 +157,7 @@ public partial class MyTasks : ComponentBase, IDisposable
         bulkDueText = string.Empty;
 
         await FinishBulkAsync(outcome,
-            due is { } date ? $"Moved {Plural(outcome.Changed, "task", "tasks")} to {PbDisplay.Date(date)}." : $"Cleared the due date of {Plural(outcome.Changed, "task", "tasks")}.",
+            due is { } date ? $"Moved {PbDisplay.Plural(outcome.Changed, "task", "tasks")} to {PbDisplay.Date(date)}." : $"Cleared the due date of {PbDisplay.Plural(outcome.Changed, "task", "tasks")}.",
             "No tasks changed: the selected tasks already have that due date, are done, or their project's dates don't include it.",
             "already due then, done, or outside their project's dates");
     }
@@ -180,7 +178,7 @@ public partial class MyTasks : ComponentBase, IDisposable
         bulkAssignee = string.Empty;
 
         await FinishBulkAsync(outcome,
-            name is null ? $"Unassigned {Plural(outcome.Changed, "task", "tasks")}." : $"Reassigned {Plural(outcome.Changed, "task", "tasks")} to {name}.",
+            name is null ? $"Unassigned {PbDisplay.Plural(outcome.Changed, "task", "tasks")}." : $"Reassigned {PbDisplay.Plural(outcome.Changed, "task", "tasks")} to {name}.",
             name is null ? "No tasks changed: the selected tasks are done or read-only." : $"No tasks changed: {name} isn't on those projects, or the tasks are done.",
             name is null ? "done or read-only" : $"on projects {name} isn't on, or done");
     }
@@ -221,7 +219,7 @@ public partial class MyTasks : ComponentBase, IDisposable
 
         var message = outcome.Result switch
         {
-            PbResult.Ok => changedText + (outcome.Unchanged > 0 ? $" {Plural(outcome.Unchanged, "task was", "tasks were")} left as they were: {unchangedReason}." : string.Empty),
+            PbResult.Ok => changedText + (outcome.Unchanged > 0 ? $" {PbDisplay.Plural(outcome.Unchanged, "task was", "tasks were")} left as they were: {unchangedReason}." : string.Empty),
             PbResult.NoChange => noChangeText,
             PbResult.NotAllowed => "Your sign-in ended. Sign in again to update tasks. Nothing changed.",
             PbResult.NotFound => "That person isn't on the team any more. Nothing changed.",

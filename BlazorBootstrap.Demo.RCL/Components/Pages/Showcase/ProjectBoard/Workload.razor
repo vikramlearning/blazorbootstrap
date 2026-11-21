@@ -28,7 +28,7 @@
             <input class="form-check-input" type="checkbox" id="tb-wl-hide" @bind="hideIdle" aria-describedby="tb-wl-hide-help" />
             <label class="form-check-label fw-semibold" for="tb-wl-hide">Hide people with no open work</label>
             <span class="d-block small text-body-secondary" id="tb-wl-hide-help">
-                Showing @ManageProjects.Plural(rows.Count, "person", "people") of @all.Count@(hideIdle && rows.Count < all.Count ? $"; {ManageProjects.Plural(all.Count - rows.Count, "person has", "people have")} no open tasks" : null).
+                Showing @PbDisplay.Plural(rows.Count, "person", "people") of @all.Count@(hideIdle && rows.Count < all.Count ? $"; {PbDisplay.Plural(all.Count - rows.Count, "person has", "people have")} no open tasks" : null).
             </span>
         </div>
 
@@ -102,7 +102,7 @@
                                                  aria-valuetext="@LoadText(row)" />
                                 </Progress>
                                 <p class="small text-body-secondary mb-2">
-                                    Later: @Hours(row.HoursLater) · @ManageProjects.Plural(row.Open.Count, "open task")
+                                    Later: @Hours(row.HoursLater) · @PbDisplay.Plural(row.Open.Count, "open task")
                                 </p>
                                 @if (row.Open.Count == 0)
                                 {
@@ -112,7 +112,7 @@
                                 {
                                     <button type="button" class="btn btn-sm btn-outline-secondary" aria-expanded="@(open ? "true" : "false")" aria-controls="@panelId"
                                             @ref="toggleButtons[personId]" @onclick="() => Toggle(personId)">
-                                        <Icon Name="@(open ? IconName.ChevronUp : IconName.ChevronDown)" class="me-1" aria-hidden="true" />@(open ? "Hide" : "Show") @ManageProjects.Plural(row.Open.Count, "open task")<span class="visually-hidden"> of @person.Name</span>
+                                        <Icon Name="@(open ? IconName.ChevronUp : IconName.ChevronDown)" class="me-1" aria-hidden="true" />@(open ? "Hide" : "Show") @PbDisplay.Plural(row.Open.Count, "open task")<span class="visually-hidden"> of @person.Name</span>
                                     </button>
                                 }
                             </div>

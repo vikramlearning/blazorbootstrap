@@ -576,7 +576,7 @@ public sealed partial class FintechState
         FintechAmlCaseStatus.Open => "open",
         FintechAmlCaseStatus.Investigating => "investigating",
         FintechAmlCaseStatus.Escalated => "escalated",
-        _ => $"closed, {LowerFirst(FintechSeedData.DispositionName(amlCase.Disposition ?? FintechAmlDisposition.ClearedNoSuspicion))}",
+        _ => $"closed, {FintechSeedData.LowerFirst(FintechSeedData.DispositionName(amlCase.Disposition ?? FintechAmlDisposition.ClearedNoSuspicion))}",
     };
 
     /// <summary>

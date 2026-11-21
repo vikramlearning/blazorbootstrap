@@ -325,12 +325,12 @@
                                 {
                                     <p class="small mb-0">
                                         <span class="sd-mono">@SaasDisplay.Money(mrr.Before)</span> → <span class="sd-mono">@SaasDisplay.Money(mrr.After)</span>
-                                        (@SignedMoney(mrr.After - mrr.Before)) across @Plural(mrr.Paying, "paying workspace", "paying workspaces"), from their next invoice.
+                                        (@SignedMoney(mrr.After - mrr.Before)) across @SaasState.Plural(mrr.Paying, "paying workspace", "paying workspaces"), from their next invoice.
                                     </p>
                                 }
                                 @if (summary.Trials > 0)
                                 {
-                                    <p class="small mt-1 mb-0">@Plural(summary.Trials, "workspace on trial pays", "workspaces on trial pay") the new price when the trial ends.</p>
+                                    <p class="small mt-1 mb-0">@SaasState.Plural(summary.Trials, "workspace on trial pays", "workspaces on trial pay") the new price when the trial ends.</p>
                                 }
                             }
 

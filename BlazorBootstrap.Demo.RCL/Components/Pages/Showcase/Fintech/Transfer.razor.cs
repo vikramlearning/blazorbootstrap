@@ -136,9 +136,6 @@ public partial class Transfer : ComponentBase, IDisposable
 
     private static string IsoDate(DateOnly date) => date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
 
-    /// <summary>Lower-cases the first letter of a sentence fragment used mid-sentence.</summary>
-    private static string LowerFirst(string text) => text.Length == 0 ? text : char.ToLowerInvariant(text[0]) + text[1..];
-
     /// <summary>Says how a payee's name check went, so the customer knows why a payment may be held.</summary>
     private static string MatchHint(FintechPayee payee) => payee.Match switch
     {
@@ -243,7 +240,7 @@ public partial class Transfer : ComponentBase, IDisposable
 
     /// <summary>Gets the hint that the transfer will be held for a check, or <see langword="null" />.</summary>
     private string? HoldHint => form.Amount is > 0 && ExpectedHoldReason(State, form.ToId, form.Amount.Value) is { } reason
-        ? $"This payment will be held for a routine check before it's sent ({LowerFirst(reason)}). We usually check within one business day; the money is set aside meanwhile."
+        ? $"This payment will be held for a routine check before it's sent ({FintechSeedData.LowerFirst(reason)}). We usually check within one business day; the money is set aside meanwhile."
         : null;
 
     private DateOnly LastDate => State.Today.AddDays(FintechState.MaxScheduleDays);

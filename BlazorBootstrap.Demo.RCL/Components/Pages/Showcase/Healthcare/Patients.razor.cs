@@ -83,8 +83,6 @@ public partial class Patients : ComponentBase, IDisposable
 
     #region Private Methods
 
-    private static string Plural(int count) => count == 1 ? "1 patient" : string.Create(CultureInfo.InvariantCulture, $"{count:#,0} patients");
-
     /// <summary>The link disappears with the filters it clears, so focus moves to the count, which also announces the new total.</summary>
     private async Task ClearFiltersAsync()
     {
@@ -97,7 +95,7 @@ public partial class Patients : ComponentBase, IDisposable
     {
         var shown = Shown.Count;
 
-        return shown == total ? $"{Plural(total)}." : $"Showing {shown.ToString("#,0", CultureInfo.InvariantCulture)} of {Plural(total)}.";
+        return shown == total ? $"{HcDisplay.Plural(total, "patient")}." : $"Showing {shown.ToString("#,0", CultureInfo.InvariantCulture)} of {HcDisplay.Plural(total, "patient")}.";
     }
 
     /// <summary>A filter changed: back to the first page of the filtered patients.</summary>

@@ -765,7 +765,7 @@ public static partial class FintechSeedData
         }).ToList();
     }
 
-    private static string LowerFirst(string text) => text.Length == 0 ? text : char.ToLowerInvariant(text[0]) + text[1..];
+    internal static string LowerFirst(string text) => text.Length == 0 ? text : char.ToLowerInvariant(text[0]) + text[1..];
 
     /// <summary>Thirteen months of the demo customer's transactions, newest first; the last two days are pending.</summary>
     private static List<FintechTransaction> Transactions()

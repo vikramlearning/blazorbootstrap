@@ -113,14 +113,14 @@ public partial class AdminServices : ComponentBase, IDisposable
         if (incidents.Count > 0)
         {
             var active = incidents.Count(incident => incident.Status != MonitoringIncidentStatus.Resolved);
-            reasons.Add($"It has {Plural(incidents.Count, "incident")} ({string.Join(", ", incidents.Take(4).Select(incident => $"#{incident.Id}"))}{(incidents.Count > 4 ? ", …" : null)})"
+            reasons.Add($"It has {MonitoringState.Plural(incidents.Count, "incident")} ({string.Join(", ", incidents.Take(4).Select(incident => $"#{incident.Id}"))}{(incidents.Count > 4 ? ", …" : null)})"
                 + (active > 0 ? $", {active} still active" : null) + ". Incident history stays with the service it happened to.");
         }
 
         var followers = FollowerCount(state, service.Id);
 
         if (followers > 0)
-            reasons.Add($"{Plural(followers, "subscriber")} {(followers == 1 ? "follows" : "follow")} it by name on the status page.");
+            reasons.Add($"{MonitoringState.Plural(followers, "subscriber")} {(followers == 1 ? "follows" : "follow")} it by name on the status page.");
 
         foreach (var window in state.MaintenanceWindows.Where(window => window.ServiceIds.Contains(service.Id)
                      && window.StatusAt(state.Clock.Now) is MonitoringMaintenanceStatus.Scheduled or MonitoringMaintenanceStatus.InProgress))
@@ -141,10 +141,10 @@ public partial class AdminServices : ComponentBase, IDisposable
         var parts = new List<string>();
 
         if (rules.Count > 0)
-            parts.Add($"{Plural(rules.Count, "alert rule")} ({string.Join(", ", rules.Select(rule => $"\"{rule.Name}\""))})");
+            parts.Add($"{MonitoringState.Plural(rules.Count, "alert rule")} ({string.Join(", ", rules.Select(rule => $"\"{rule.Name}\""))})");
 
         if (drills > 0)
-            parts.Add(Plural(drills, "failure drill"));
+            parts.Add(MonitoringState.Plural(drills, "failure drill"));
 
         return parts.Count == 0
             ? "It has no alert rules or failure drills, so nothing else is deleted."
@@ -166,9 +166,6 @@ public partial class AdminServices : ComponentBase, IDisposable
 
     /// <summary>Counts the subscriptions that follow a service by name (an empty list follows every service and doesn't count).</summary>
     internal static int FollowerCount(MonitoringState state, string serviceId) => state.Subscriptions.Count(subscription => subscription.ServiceIds.Contains(serviceId));
-
-    /// <summary>Formats a count with its noun, like "1 alert rule" or "3 alert rules".</summary>
-    internal static string Plural(int count, string noun) => count == 1 ? $"1 {noun}" : $"{count} {noun}s";
 
     /// <summary>Says what changes for customers when a service is shown on or hidden from the status page.</summary>
     internal static string PublicChangeText(string name, bool isPublic) => isPublic
@@ -244,7 +241,7 @@ public partial class AdminServices : ComponentBase, IDisposable
         var total = State.Services.Count;
         var shown = State.StatusPageServices.Count;
 
-        return $"{Plural(total, "service")}, {shown} on the status page.";
+        return $"{MonitoringState.Plural(total, "service")}, {shown} on the status page.";
     }
 
     /// <summary>Runs a confirmed action now that the dialog is hidden; focus goes back to the Delete button, or to the status message when it is gone.</summary>

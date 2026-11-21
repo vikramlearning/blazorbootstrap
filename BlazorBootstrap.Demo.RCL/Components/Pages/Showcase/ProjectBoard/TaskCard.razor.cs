@@ -52,11 +52,7 @@ public partial class TaskCard : ComponentBase
     #region Internal Methods
 
     /// <summary>Formats hours like "1 hour" or "16 hours".</summary>
-    internal static string HoursText(int hours) => Plural(hours, "hour");
-
-    /// <summary>Formats a count with its noun, like "1 task" or "3 tasks" (or the given plural).</summary>
-    internal static string Plural(int count, string noun, string? plural = null) =>
-        count == 1 ? $"1 {noun}" : string.Create(CultureInfo.InvariantCulture, $"{count} {plural ?? noun + "s"}");
+    internal static string HoursText(int hours) => PbDisplay.Plural(hours, "hour");
 
     #endregion
 

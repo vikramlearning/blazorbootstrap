@@ -136,8 +136,6 @@ public partial class AdminPlans : ComponentBase, IDisposable
     private static string JoinNames(IReadOnlyList<string> names) =>
         names.Count <= 2 ? string.Join(" and ", names) : $"{string.Join(", ", names.Take(names.Count - 1))}, and {names[^1]}";
 
-    private static string Plural(int count, string one, string many) => count == 1 ? $"1 {one}" : $"{Count(count)} {many}";
-
     /// <summary>The help of the "Most popular" switch: only one plan has the badge.</summary>
     private static string PopularHelp(SaasPlan? otherPopular) => otherPopular is null
         ? "Shows the \"Most popular\" badge on the pricing page. Only one plan has it."
@@ -157,7 +155,7 @@ public partial class AdminPlans : ComponentBase, IDisposable
 
     private static string SeatsHelp(SaasPlan plan, PlanSummary summary) => summary.Workspaces == 0
         ? $"1 to {Count(SaasSeedData.MaxSeats)}. No workspace is on {plan.Name} yet."
-        : $"1 to {Count(SaasSeedData.MaxSeats)}, and at least {Count(summary.LargestSeats)}: the largest of the {Plural(summary.Workspaces, "workspace", "workspaces")} on {plan.Name}.";
+        : $"1 to {Count(SaasSeedData.MaxSeats)}, and at least {Count(summary.LargestSeats)}: the largest of the {SaasState.Plural(summary.Workspaces, "workspace", "workspaces")} on {plan.Name}.";
 
     private static string SeatsText(int limit) => limit == 0 ? "Unlimited" : Count(limit);
 
@@ -274,7 +272,7 @@ public partial class AdminPlans : ComponentBase, IDisposable
         {
             var onPlan = Summary(after).Workspaces;
             message += $" The price went from {SeatPrice(before.MonthlyPricePerSeat)} to {SeatPrice(after.MonthlyPricePerSeat)} per seat a month";
-            message += onPlan == 0 ? "." : $"; the {Plural(onPlan, "workspace", "workspaces")} on it pay the new price from their next invoice.";
+            message += onPlan == 0 ? "." : $"; the {SaasState.Plural(onPlan, "workspace", "workspaces")} on it pay the new price from their next invoice.";
         }
 
         if (after.IsPopular && popularBefore is { } other)

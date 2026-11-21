@@ -112,8 +112,6 @@ public partial class Approvals : ComponentBase, IDisposable
 
     #region Private Methods
 
-    private static string Plural(int count, string one, string many) => count == 1 ? $"1 {one}" : string.Create(CultureInfo.InvariantCulture, $"{count} {many}");
-
     private static string RowStatus(PbApprovalRow row) => row.Timesheet.Status == PbTimesheetStatus.Returned ? ReturnedFilter : row.IsApproved ? ApprovedFilter : WaitingFilter;
 
     /// <summary>Approves the selected rows' hours in one call; the bar closes, so focus moves to the announcement.</summary>
@@ -123,7 +121,7 @@ public partial class Approvals : ComponentBase, IDisposable
 
         await FinishAsync(outcome.Result switch
         {
-            PbResult.Ok => $"Approved {Plural(outcome.Changed, "project week", "project weeks")}." + (outcome.Unchanged > 0 ? $" {Plural(outcome.Unchanged, "was", "were")} already approved or returned." : string.Empty),
+            PbResult.Ok => $"Approved {PbDisplay.Plural(outcome.Changed, "project week", "project weeks")}." + (outcome.Unchanged > 0 ? $" {PbDisplay.Plural(outcome.Unchanged, "was", "were")} already approved or returned." : string.Empty),
             PbResult.NoChange => "Nothing changed: the selected hours are already approved, or their weeks were returned.",
             PbResult.NotAllowed => "Only project managers can approve hours. Nothing changed.",
             _ => "Those hours couldn't be approved. Nothing changed.",
@@ -149,7 +147,7 @@ public partial class Approvals : ComponentBase, IDisposable
 
         await FinishAsync(outcome.Result switch
         {
-            PbResult.Ok => $"Returned {Plural(outcome.Changed, "week", "weeks")} with your reason; the people are told." + (outcome.Unchanged > 0 ? $" {Plural(outcome.Unchanged, "week was", "weeks were")} already approved or returned." : string.Empty),
+            PbResult.Ok => $"Returned {PbDisplay.Plural(outcome.Changed, "week", "weeks")} with your reason; the people are told." + (outcome.Unchanged > 0 ? $" {PbDisplay.Plural(outcome.Unchanged, "week was", "weeks were")} already approved or returned." : string.Empty),
             PbResult.NoChange => "Nothing changed: the selected weeks are already approved or returned.",
             PbResult.NotAllowed => "Only project managers can return weeks. Nothing changed.",
             _ => "Those weeks couldn't be returned. Nothing changed.",

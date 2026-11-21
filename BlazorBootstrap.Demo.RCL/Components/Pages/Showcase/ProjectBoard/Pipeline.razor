@@ -88,7 +88,7 @@
                                 <span class="pb-pipe-chance">@DealDisplay.Percent(PbState.Probability(stage))</span>
                             </h2>
                             <p class="pb-pipe-column-sum mb-0">
-                                @DealDisplay.Plural(column.Count, "deal") · @PbDisplay.Money(column.Sum(deal => (long)deal.Value))
+                                @PbDisplay.Plural(column.Count, "deal") · @PbDisplay.Money(column.Sum(deal => (long)deal.Value))
                                 <span class="d-block">Weighted @PbDisplay.Money(column.Sum(deal => (long)PbState.Weighted(deal)))</span>
                             </p>
                         </header>

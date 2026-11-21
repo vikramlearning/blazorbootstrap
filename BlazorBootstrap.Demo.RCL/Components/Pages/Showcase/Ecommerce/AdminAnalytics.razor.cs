@@ -104,8 +104,6 @@ public partial class AdminAnalytics : ComponentBase, IDisposable
 
     private static decimal NetOf(EcommerceOrder order) => order.Totals.Total - order.RefundedAmount;
 
-    private static string Plural(int count, string one, string many) => count == 1 ? $"1 {one}" : $"{Count(count)} {many}";
-
     private static string StatusName(EcommerceOrderStatus status) => status.ToString();
 
     private static PeriodTotals Totals(IReadOnlyList<EcommerceOrder> orders)
@@ -424,13 +422,13 @@ public partial class AdminAnalytics : ComponentBase, IDisposable
                 new Kpi("net", "Net revenue", EcommerceDisplay.Money(current.Net), "Order totals minus refunds",
                     Compare(current.Net, Previous(previous.Net))),
                 new Kpi("orders", "Orders", Count(current.Orders),
-                    current.Cancelled == 0 ? "No cancelled orders" : $"Not counting {Plural(current.Cancelled, "cancelled order", "cancelled orders")}",
+                    current.Cancelled == 0 ? "No cancelled orders" : $"Not counting {EcommerceDisplay.Plural(current.Cancelled, "cancelled order", "cancelled orders")}",
                     Compare(current.Orders, Previous(previous.Orders))),
                 new Kpi("aov", "Average order value", current.Orders == 0 ? "—" : EcommerceDisplay.Money(current.AverageOrderValue), "Before refunds, with shipping and tax",
                     Compare(current.Orders == 0 ? null : current.AverageOrderValue, Previous(previous.AverageOrderValue))),
                 new Kpi("items", "Items sold", Count(current.Items), "Units across all orders",
                     Compare(current.Items, Previous(previous.Items))),
-                new Kpi("refunds", "Refunds", EcommerceDisplay.Money(current.Refunded), $"On {Plural(current.RefundCount, "order", "orders")} placed in this period",
+                new Kpi("refunds", "Refunds", EcommerceDisplay.Money(current.Refunded), $"On {EcommerceDisplay.Plural(current.RefundCount, "order", "orders")} placed in this period",
                     Compare(current.Refunded, Previous(previous.Refunded))),
             };
         }
@@ -453,7 +451,7 @@ public partial class AdminAnalytics : ComponentBase, IDisposable
             var quiet = report.Daily.Count(day => day.Net == 0);
 
             return $"{EcommerceDisplay.Money(total)} net over the {RangeDescription}. Best day: {DayLabel(best.Day)}, {EcommerceDisplay.Money(best.Net)}. "
-                + (quiet == 0 ? "Every day had sales." : $"{Plural(quiet, "day", "days")} without sales.");
+                + (quiet == 0 ? "Every day had sales." : $"{EcommerceDisplay.Plural(quiet, "day", "days")} without sales.");
         }
     }
 
@@ -468,7 +466,7 @@ public partial class AdminAnalytics : ComponentBase, IDisposable
             if (total == 0)
                 return $"No orders in the {RangeDescription}.";
 
-            return $"{Plural(total, "order", "orders")} placed: " + string.Join(", ", report.Statuses.Select(row => $"{Count(row.Orders)} {StatusName(row.Status).ToLowerInvariant()}")) + ".";
+            return $"{EcommerceDisplay.Plural(total, "order", "orders")} placed: " + string.Join(", ", report.Statuses.Select(row => $"{Count(row.Orders)} {StatusName(row.Status).ToLowerInvariant()}")) + ".";
         }
     }
 
