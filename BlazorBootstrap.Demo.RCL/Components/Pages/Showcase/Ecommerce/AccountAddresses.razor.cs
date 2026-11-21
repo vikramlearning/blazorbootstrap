@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using BlazorBootstrap.Demo.RCL.Components.Pages.Showcase.Shared;
 using BlazorBootstrap.Demo.RCL.Models.Showcase.Ecommerce;
 using BlazorBootstrap.Demo.RCL.Services.Showcase.Ecommerce;
 using Microsoft.AspNetCore.Components.Forms;
@@ -49,6 +50,8 @@ public partial class AccountAddresses : ComponentBase, IDisposable
     private string? formError;
 
     private int formErrors;
+
+    private ShowcaseUniqueCheck? labelCheck;
 
     private InputText? labelInput;
 
@@ -236,10 +239,17 @@ public partial class AccountAddresses : ComponentBase, IDisposable
         messageStore = new ValidationMessageStore(editContext);
     }
 
+    private Task<bool> IsLabelTakenAsync(string label) => Task.FromResult(State.IsAddressLabelTaken(label, editingId));
+
+    private static string LabelTakenMessage(string label) => $"You already have an address called “{label.Trim()}”. Give this one another label.";
+
     private async Task SaveAsync()
     {
-        // A rule the attributes can't express: the country must be one checkout ships to.
+        // Rules the attributes can't express: the country must be one checkout ships to, and the label is unique in the book.
         messageStore.Clear();
+
+        if (labelCheck is not null && !await labelCheck.CheckNowAsync())
+            return;
 
         if (!countries.Contains(form.Country))
         {
@@ -251,6 +261,14 @@ public partial class AccountAddresses : ComponentBase, IDisposable
 
         if (State.Identity.Current is not { } account)
             return;
+
+        if (State.IsAddressLabelTaken(form.Label, editingId))
+        {
+            messageStore.Add(() => form.Label, LabelTakenMessage(form.Label));
+            editContext.NotifyValidationStateChanged();
+
+            return;
+        }
 
         var address = new EcommerceSavedAddress(
             editingId,

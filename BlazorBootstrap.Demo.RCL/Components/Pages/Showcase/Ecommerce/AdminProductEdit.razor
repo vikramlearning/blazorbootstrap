@@ -30,7 +30,7 @@
                 else
                 {
                     <p class="ea-lead">
-                        Product #@Product.Id · @CategoryName · added @Product.AddedOn.ToString("MMM d, yyyy", CultureInfo.InvariantCulture) ·
+                        Product #@Product.Id · SKU <span class="ea-mono">@Product.Sku</span> · @CategoryName · added @Product.AddedOn.ToString("MMM d, yyyy", CultureInfo.InvariantCulture) ·
                         @if (Product.IsArchived)
                         {
                             <Badge Color="BadgeColor.Secondary">Archived</Badge>
@@ -58,16 +58,10 @@
                 <section class="ea-panel" aria-labelledby="ea-product-form-title">
                     <h2 class="ea-section-title" id="ea-product-form-title">Details</h2>
 
-                    <EditForm EditContext="editContext" OnValidSubmit="Save" OnInvalidSubmit="OnInvalidSubmit" FormName="ea-product">
-                        <ShowcaseFormErrors />
+                    <EditForm EditContext="editContext" OnSubmit="SaveAsync" FormName="ea-product" novalidate>
                         <DataAnnotationsValidator />
-
-                        <div role="alert" class="ea-form-error">
-                            @if (formError is not null)
-                            {
-                                <p class="alert alert-danger mb-3">@formError</p>
-                            }
-                        </div>
+                        @* On a failed submit, a summary here names and links every field to fix (rule WR-002). *@
+                        <ShowcaseFormErrors ShowSummary="true" />
 
                         <div class="row g-3">
                             <div class="col-md-7">
@@ -86,6 +80,25 @@
                                 </InputSelect>
                                 <ValidationMessage For="() => form.CategoryId" />
                             </div>
+                            <div class="col-md-7">
+                                <label class="form-label" for="ea-sku">SKU</label>
+                                <InputText id="ea-sku" class="form-control ea-mono" @bind-Value="form.Sku" maxlength="@EcommerceState.MaxSkuLength" autocomplete="off"
+                                           autocapitalize="characters" spellcheck="false" aria-describedby="ea-sku-help" />
+                                <ShowcaseUniqueCheck @ref="skuCheck" For="() => form.Sku" IsTakenAsync="IsSkuTakenAsync" TakenMessage="SkuTakenMessage" />
+                                <div class="form-text mt-0" id="ea-sku-help">
+                                    The stock-keeping unit, unique in the store: 4 to 20 letters, digits, and single dashes, starting with a letter, like @SkuExample. Saved in capitals.
+                                </div>
+                                <ValidationMessage For="() => form.Sku" />
+                            </div>
+                            @if (form.HasPhoto)
+                            {
+                                <div class="col-md-5">
+                                    <label class="form-label" for="ea-image-alt">Photo description</label>
+                                    <InputText id="ea-image-alt" class="form-control" @bind-Value="form.ImageAlt" maxlength="@EcommerceState.MaxImageAltLength" aria-describedby="ea-image-alt-help" />
+                                    <div class="form-text" id="ea-image-alt-help">Required for the product's photo: what it shows, read by screen readers. Up to 160 characters.</div>
+                                    <ValidationMessage For="() => form.ImageAlt" />
+                                </div>
+                            }
                             <div class="col-12">
                                 <label class="form-label" for="ea-description">Description</label>
                                 <TextAreaInput Id="ea-description" @bind-Value="form.Description" Rows="5" MaxLength="1000" aria-describedby="ea-description-help" />
@@ -144,12 +157,14 @@
             <div class="col-xl-4 d-grid gap-4 align-content-start">
                 <section class="ea-panel" aria-labelledby="ea-product-image-title">
                     <h2 class="ea-section-title" id="ea-product-image-title">Image</h2>
-                    <ShowcaseImage Src="@Product?.ImagePath" Alt="@(Product is null ? string.Empty : $"Photo of {Product.Name}")" Width="600" Height="600"
+                    <ShowcaseImage Src="@Product?.ImagePath" Alt="@(Product is { HasPhoto: true } ? Product.ImageAlt ?? Product.Name : string.Empty)" Width="600" Height="600"
                                    Class="ea-edit-image" Accent="@CategoryAccent" PlaceholderIcon="@CategoryIcon"
-                                   Caption="@(Product is null ? "Photo to come" : null)" />
+                                   Caption="@(Product is { HasPhoto: true } ? null : "Photo to come")" />
                     <p class="small text-body-secondary mt-3 mb-0">
                         In this demo, product photos come from the store's licensed photo library, so they can't be uploaded here.
-                        @(Product is null ? "A new product shows a placeholder until its photo is added to the library." : string.Empty)
+                        @(Product is { HasPhoto: true }
+                            ? "Its description is set with the details."
+                            : "This product shows a placeholder until its photo is added to the library; its description is asked for then.")
                     </p>
                 </section>
 
@@ -169,7 +184,7 @@
                                     {
                                         <Badge Color="BadgeColor.Danger">Out of stock</Badge>
                                     }
-                                    else if (Product.Stock <= LowStockLimit)
+                                    else if (State.IsLowStock(Product))
                                     {
                                         <Badge Color="BadgeColor.Warning">@Product.Stock left</Badge>
                                     }

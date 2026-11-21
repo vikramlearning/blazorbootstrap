@@ -1,0 +1,22 @@
+/* The request's facts: a label above each value. */
+.ea-facts {
+    display: grid;
+    gap: .75rem;
+    margin: 0;
+}
+
+    .ea-facts dt {
+        font-size: .8125rem;
+        font-weight: 600;
+        color: var(--bs-secondary-color);
+    }
+
+    .ea-facts dd {
+        margin: .125rem 0 0;
+        overflow-wrap: anywhere;
+    }
+
+/* The legend reads like the other field labels. */
+legend.form-label {
+    font-weight: 500;
+}

@@ -26,6 +26,13 @@
             <header class="ea-topbar">
                 <span class="ea-topbar-title">Store admin</span>
                 <div class="ea-topbar-actions">
+                    @* The search and the bell show only to the signed-in retailer; anyone else here sees the guard's screen. *@
+                    @if (State.IsStaff)
+                    {
+                        <ShowcaseGlobalSearch Class="ea-global-search" Placeholder="Search orders, products, customers"
+                                              Label="Search orders by number or customer, returns by number, products by name or SKU, customers by name or email, and coupons by code" />
+                        <ShowcaseNotificationsMenu />
+                    }
                     <a class="btn btn-sm ea-view-store" href="@EcommerceLayout.Base">
                         <Icon Name="IconName.ShopWindow" class="me-1" aria-hidden="true" />View store
                     </a>

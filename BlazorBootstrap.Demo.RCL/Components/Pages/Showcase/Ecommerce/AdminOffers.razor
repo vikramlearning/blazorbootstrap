@@ -14,66 +14,135 @@
 </div>
 
 @* Always rendered and focusable, so a change is announced and focus has somewhere to go when its button is gone. *@
-<p class="ea-status fw-semibold" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
+<p class="ea-list-status mb-3" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
 
 <section class="ea-panel" aria-labelledby="ea-coupons-title">
     <h2 class="ea-section-title" id="ea-coupons-title">Coupons</h2>
-    @if (State.Coupons.Count == 0)
-    {
-        <p class="ea-empty mb-0">No coupons yet. Choose "New coupon" to offer shoppers a code at checkout.</p>
-    }
-    else
-    {
-        <div class="table-responsive">
-            <table class="table ea-table ea-coupon-table align-middle">
-                <caption class="visually-hidden">Coupons with their discount, rules, and status</caption>
-                <thead>
-                    <tr>
-                        <th scope="col">Code</th>
-                        <th scope="col">Discount</th>
-                        <th scope="col">Rules</th>
-                        <th scope="col">Status</th>
-                        <th scope="col" class="text-end">Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var coupon in SortedCoupons)
-                    {
-                        var status = StatusOf(coupon);
-                        <tr @key="coupon.Code">
-                            <th scope="row">
-                                <span class="ea-coupon-code">@coupon.Code</span>
-                                <span class="d-block small fw-normal text-body-secondary">@coupon.Description</span>
-                            </th>
-                            <td class="text-nowrap">@DiscountText(coupon)</td>
-                            <td>
-                                <ul class="ea-coupon-rules list-unstyled mb-0 small">
-                                    @foreach (var rule in Rules(coupon))
-                                    {
-                                        <li>@rule</li>
-                                    }
-                                </ul>
-                            </td>
-                            <td><Badge Color="@StatusColor(status)">@StatusLabel(status)</Badge></td>
-                            <td class="text-end">
-                                <div class="ea-row-actions">
-                                    <Button @ref="editButtons[coupon.Code]" Color="ButtonColor.Secondary" Outline="true" Size="ButtonSize.Small" @onclick="() => EditAsync(coupon)">
-                                        Edit<span class="visually-hidden"> coupon @coupon.Code</span>
-                                    </Button>
-                                    <Button Color="ButtonColor.Secondary" Outline="true" Size="ButtonSize.Small" @onclick="() => ToggleActive(coupon)">
-                                        @(coupon.IsActive ? "Pause" : "Resume")<span class="visually-hidden"> coupon @coupon.Code</span>
-                                    </Button>
-                                    <Button @ref="deleteButtons[coupon.Code]" Color="ButtonColor.Danger" Outline="true" Size="ButtonSize.Small" @onclick="() => AskDeleteAsync(coupon)">
-                                        Delete<span class="visually-hidden"> coupon @coupon.Code</span>
-                                    </Button>
-                                </div>
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
+
+    <div class="ea-list-filters" role="search" aria-label="Filter coupons">
+        <div class="ea-list-search">
+            <label class="form-label small fw-semibold" for="ea-coupon-search">Search</label>
+            <InputGroup>
+                <InputGroupText><Icon Name="IconName.Search" aria-hidden="true" /></InputGroupText>
+                @* TextInput raises ValueChanged on change only; @oninput keeps the filter live while typing. *@
+                <TextInput Id="ea-coupon-search" Value="@searchBoxValue" ValueExpression="() => searchBoxValue" ValueChanged="OnSearchChanged"
+                           @oninput="OnSearchInput" Placeholder="Code or description" MaxLength="60" />
+            </InputGroup>
         </div>
-    }
+        <div>
+            <label class="form-label small fw-semibold" for="ea-coupon-status">Status</label>
+            <select id="ea-coupon-status" class="form-select" value="@statusFilter" @onchange="OnStatusFilterChanged">
+                <option value="">All (@State.Coupons.Count)</option>
+                @foreach (var status in Enum.GetValues<CouponStatus>())
+                {
+                    <option value="@status" @key="status">@StatusLabel(status) (@State.Coupons.Count(coupon => StatusOf(coupon) == status))</option>
+                }
+            </select>
+        </div>
+    </div>
+    <div class="ea-list-meta mb-3">
+        <p class="small text-body-secondary mb-0" aria-live="polite" tabindex="-1" @ref="countRegion">@MatchText</p>
+        @if (IsFiltered)
+        {
+            <Button Color="ButtonColor.Link" Size="ButtonSize.Small" Class="p-0" @onclick="ClearFiltersAsync">Show every coupon</Button>
+        }
+        @* Back to the saved view's defaults: newest start date first, 25 a page, every column in its place. *@
+        <Button Color="ButtonColor.Link" Size="ButtonSize.Small" Class="p-0" @onclick="ResetViewAsync">Reset view</Button>
+    </div>
+
+    <ShowcaseDataState Status="@(viewLoaded ? ShowcaseDataStatus.Ready : ShowcaseDataStatus.Loading)"
+                       IsEmpty="@(State.Coupons.Count == 0)"
+                       EmptyIcon="IconName.Tags"
+                       EmptyTitle="No coupons yet"
+                       EmptyText="Create a coupon to offer shoppers a code at checkout."
+                       LoadingText="Loading coupons…"
+                       OnRetry="RefreshGridAsync">
+        <EmptyActions>
+            <Button Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="NewAsync">New coupon</Button>
+        </EmptyActions>
+        <ChildContent>
+            <Grid @ref="grid"
+                  @key="gridVersion"
+                  TItem="CouponRow"
+                  Class="table table-hover align-middle ea-table-wide sc-grid-row-links"
+                  GridContainerClass="ea-grid border rounded-3"
+                  DataProvider="ProvideCouponsAsync"
+                  SettingsProvider="view.GetSettingsAsync"
+                  GridSettingsChanged="SaveSettingsAsync"
+                  AllowPaging="true"
+                  PageSize="@pageSize"
+                  PageSizeSelectorVisible="true"
+                  PageSizeSelectorItems="@(new[] { 10, 25, 50 })"
+                  PaginationItemsTextFormat="{0}–{1} of {2} coupons"
+                  AllowSorting="true"
+                  AllowColumnChooser="true"
+                  AllowExport="true"
+                  ExportFileName="commerce-offers"
+                  Responsive="true"
+                  EmptyText="No coupons match these filters. Clear a filter, or search for part of a code."
+                  aria-label="Coupons">
+                <GridColumns>
+                    <GridColumn TItem="CouponRow" HeaderText="Code" PropertyName="Code" SortString="code" SortKeySelector="row => row.Code"
+                                IsDefaultSortColumn="@view.IsSortColumn("code")" SortDirection="@view.DirectionFor("code")" TextNoWrap="true" AlwaysVisible="true">
+                        @* No page of its own: the stretched button opens the coupon's editor; the row's other buttons stay above it. *@
+                        @{
+                            var couponCode = context.Code;
+                        }
+                        <button type="button" class="ea-row-button ea-coupon-code stretched-link" @ref="editButtons[couponCode]" @onclick="() => EditAsync(couponCode)">
+                            @couponCode<span class="visually-hidden">: edit coupon</span>
+                        </button>
+                    </GridColumn>
+                    <GridColumn TItem="CouponRow" HeaderText="Description" PropertyName="Description" SortString="description" SortKeySelector="row => row.Description"
+                                IsDefaultSortColumn="@view.IsSortColumn("description")" SortDirection="@view.DirectionFor("description")">
+                        <span class="small">@context.Description</span>
+                    </GridColumn>
+                    <GridColumn TItem="CouponRow" HeaderText="Discount" PropertyName="Discount" SortString="discount" SortKeySelector="row => row.DiscountOrder"
+                                IsDefaultSortColumn="@view.IsSortColumn("discount")" SortDirection="@view.DirectionFor("discount")" TextNoWrap="true">
+                        @context.Discount
+                    </GridColumn>
+                    <GridColumn TItem="CouponRow" HeaderText="Minimum" PropertyName="Minimum" SortString="minimum" SortKeySelector="row => row.Minimum"
+                                IsDefaultSortColumn="@view.IsSortColumn("minimum")" SortDirection="@view.DirectionFor("minimum")" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" TextNoWrap="true">
+                        @(context.Minimum == 0 ? "Any order" : EcommerceDisplay.Money(context.Minimum))
+                    </GridColumn>
+                    <GridColumn TItem="CouponRow" HeaderText="Starts" PropertyName="StartsText" SortString="starts" SortKeySelector="row => row.StartsOn ?? DateTime.MinValue"
+                                IsDefaultSortColumn="@view.IsSortColumn("starts")" SortDirection="@view.DirectionFor("starts")" TextNoWrap="true">
+                        @(context.StartsOn is { } starts ? EcommerceDisplay.Date(starts) : "Any time")
+                    </GridColumn>
+                    <GridColumn TItem="CouponRow" HeaderText="Ends" PropertyName="EndsText" SortString="ends" SortKeySelector="row => row.ExpiresOn ?? DateTime.MaxValue"
+                                IsDefaultSortColumn="@view.IsSortColumn("ends")" SortDirection="@view.DirectionFor("ends")" TextNoWrap="true">
+                        @(context.ExpiresOn is { } ends ? EcommerceDisplay.Date(ends) : "No end date")
+                    </GridColumn>
+                    <GridColumn TItem="CouponRow" HeaderText="Uses" PropertyName="UsesText" SortString="uses" SortKeySelector="row => row.Uses"
+                                IsDefaultSortColumn="@view.IsSortColumn("uses")" SortDirection="@view.DirectionFor("uses")" TextNoWrap="true">
+                        @context.UsesText
+                    </GridColumn>
+                    <GridColumn TItem="CouponRow" HeaderText="Rules" PropertyName="Rules" Sortable="false">
+                        <span class="small">@context.Rules</span>
+                    </GridColumn>
+                    <GridColumn TItem="CouponRow" HeaderText="Status" PropertyName="Status" SortString="status" SortKeySelector="row => row.StatusValue"
+                                IsDefaultSortColumn="@view.IsSortColumn("status")" SortDirection="@view.DirectionFor("status")" TextNoWrap="true">
+                        <Badge Color="@StatusColor(context.StatusValue)">@context.Status</Badge>
+                    </GridColumn>
+                    <GridColumn TItem="CouponRow" HeaderText="Actions" Sortable="false" Exportable="false" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End">
+                        <HeaderContent><span class="visually-hidden">Actions</span></HeaderContent>
+                        <ChildContent>
+                            @{
+                                var couponCode = context.Code;
+                            }
+                            <div class="ea-row-actions">
+                                <Button Color="ButtonColor.Secondary" Outline="true" Size="ButtonSize.Small" @onclick="() => ToggleActive(couponCode)">
+                                    @(context.IsActive ? "Pause" : "Resume")<span class="visually-hidden">&#32;coupon @couponCode</span>
+                                </Button>
+                                <Button @ref="deleteButtons[couponCode]" Color="ButtonColor.Danger" Outline="true" Size="ButtonSize.Small" @onclick="() => AskDeleteAsync(couponCode)">
+                                    Delete<span class="visually-hidden">&#32;coupon @couponCode</span>
+                                </Button>
+                            </div>
+                        </ChildContent>
+                    </GridColumn>
+                </GridColumns>
+            </Grid>
+        </ChildContent>
+    </ShowcaseDataState>
 </section>
 
 <Modal @ref="editorModal"
@@ -82,25 +151,30 @@
        Size="ModalSize.Large"
        ShowCloseButton="false"
        aria-labelledby="ea-coupon-editor-title"
+       OnShown="OnEditorShownAsync"
        OnHidden="OnEditorHiddenAsync">
     <HeaderTemplate>
         <h2 class="modal-title h5" id="ea-coupon-editor-title">@(editingCode is null ? "New coupon" : $"Edit coupon {editingCode}")</h2>
     </HeaderTemplate>
     <BodyTemplate>
         <ShowcaseDemoNotice Class="mb-3" Text="Demo only: coupons stay in this browser tab and are gone when it closes." />
-        <EditForm id="ea-coupon-form" EditContext="editContext" OnValidSubmit="SaveAsync" FormName="ea-coupon">
-            <ShowcaseFormErrors />
+        <EditForm id="ea-coupon-form" EditContext="editContext" OnSubmit="SaveAsync" FormName="ea-coupon" novalidate>
             <DataAnnotationsValidator />
+            @* On a failed submit, a summary here names and links every field to fix (rule WR-002). *@
+            <ShowcaseFormErrors ShowSummary="true" />
             <div class="row g-3">
                 <div class="col-md-5">
                     <label class="form-label" for="ea-coupon-code">Code</label>
-                    <TextInput @ref="codeInput" Id="ea-coupon-code" @bind-Value="form.Code" MaxLength="20" Class="ea-code-input" aria-describedby="ea-coupon-code-help" />
-                    <div class="form-text" id="ea-coupon-code-help">3 to 20 letters and digits. Saved in capitals.</div>
+                    <InputText @ref="codeInput" id="ea-coupon-code" class="form-control ea-code-input" @bind-Value="form.Code" maxlength="20" autocomplete="off"
+                               autocapitalize="characters" spellcheck="false" aria-describedby="ea-coupon-code-help" />
+                    <ShowcaseUniqueCheck @ref="codeCheck" For="() => form.Code" IsTakenAsync="IsCodeTakenAsync" TakenMessage="CodeTakenMessage" />
+                    <div class="form-text mt-0" id="ea-coupon-code-help">3 to 20 letters and digits, unique among the store's coupons. Saved in capitals.</div>
                     <ValidationMessage For="() => form.Code" />
                 </div>
                 <div class="col-md-7">
                     <label class="form-label" for="ea-coupon-description">Description</label>
-                    <TextInput Id="ea-coupon-description" @bind-Value="form.Description" MaxLength="120" />
+                    <InputText id="ea-coupon-description" class="form-control" @bind-Value="form.Description" maxlength="120" aria-describedby="ea-coupon-description-help" />
+                    <div class="form-text" id="ea-coupon-description-help">What shoppers get, like “15% off the autumn edit”. Up to 120 characters.</div>
                     <ValidationMessage For="() => form.Description" />
                 </div>
                 <div class="col-md-5">
@@ -117,39 +191,47 @@
                         {
                             <InputGroupText>$</InputGroupText>
                         }
-                        <NumberInput TValue="decimal" Id="ea-coupon-value" @bind-Value="form.Value" Step="@(form.Kind == EcommerceCouponKind.Percent ? 1 : 0.01)" aria-describedby="ea-coupon-value-help" />
+                        <NumberInput TValue="decimal?" Id="ea-coupon-value" @bind-Value="form.Value" Step="@(form.Kind == EcommerceCouponKind.Percent ? 1 : 0.01)" aria-describedby="ea-coupon-value-help" />
                         @if (form.Kind == EcommerceCouponKind.Percent)
                         {
                             <InputGroupText>%</InputGroupText>
                         }
                     </InputGroup>
-                    <div class="form-text" id="ea-coupon-value-help">@(form.Kind == EcommerceCouponKind.Percent ? "1 to 100 percent of the subtotal." : "$0.01 to $10,000.00, never more than the subtotal.")</div>
+                    <div class="form-text" id="ea-coupon-value-help">@(form.Kind == EcommerceCouponKind.Percent ? "1 to 90 percent of the subtotal." : "$0.01 to $10,000.00, never more than the subtotal.")</div>
                     <ValidationMessage For="() => form.Value" />
                 </div>
                 <div class="col-md-5">
-                    <label class="form-label" for="ea-coupon-minimum">Minimum subtotal</label>
+                    <label class="form-label" for="ea-coupon-minimum">Minimum order</label>
                     <InputGroup>
                         <InputGroupText>$</InputGroupText>
-                        <NumberInput TValue="decimal" Id="ea-coupon-minimum" @bind-Value="form.MinSubtotal" Step="0.01" aria-describedby="ea-coupon-minimum-help" />
+                        <NumberInput TValue="decimal?" Id="ea-coupon-minimum" @bind-Value="form.MinSubtotal" Step="0.01" aria-describedby="ea-coupon-minimum-help" />
                     </InputGroup>
-                    <div class="form-text" id="ea-coupon-minimum-help">0 for any order.</div>
+                    <div class="form-text" id="ea-coupon-minimum-help">The subtotal the cart needs. 0 for any order.</div>
                     <ValidationMessage For="() => form.MinSubtotal" />
                 </div>
                 <div class="col-md-7">
                     <label class="form-label" for="ea-coupon-limit">Usage limit</label>
                     <NumberInput TValue="int?" Id="ea-coupon-limit" @bind-Value="form.UsageLimit" aria-describedby="ea-coupon-limit-help" />
-                    <div class="form-text" id="ea-coupon-limit-help">Leave empty for unlimited uses.</div>
+                    <div class="form-text" id="ea-coupon-limit-help">
+                        How many orders can use it. Leave empty for unlimited uses.@(form.UsesSoFar > 0 ? $" Used {form.UsesSoFar} times so far." : null)
+                    </div>
                     <ValidationMessage For="() => form.UsageLimit" />
                 </div>
                 <div class="col-md-5">
-                    <label class="form-label" for="ea-coupon-expires">Expiry date</label>
+                    <label class="form-label" for="ea-coupon-starts">Start date</label>
+                    <DateInput TValue="DateTime?" Id="ea-coupon-starts" @bind-Value="form.StartsOn" aria-describedby="ea-coupon-starts-help" />
+                    <div class="form-text" id="ea-coupon-starts-help">Optional. The code works from the start of this day.</div>
+                    <ValidationMessage For="() => form.StartsOn" />
+                </div>
+                <div class="col-md-7">
+                    <label class="form-label" for="ea-coupon-expires">End date</label>
                     <DateInput TValue="DateTime?" Id="ea-coupon-expires" @bind-Value="form.ExpiresOn" aria-describedby="ea-coupon-expires-help" />
-                    <div class="form-text" id="ea-coupon-expires-help">Optional. The code works through the end of this day.</div>
+                    <div class="form-text" id="ea-coupon-expires-help">Optional. On or after the start date; the code works through the end of this day.</div>
                     <ValidationMessage For="() => form.ExpiresOn" />
                 </div>
-                <div class="col-md-7 d-grid gap-2 align-content-start pt-md-4">
+                <div class="col-12 d-grid gap-2">
                     <Switch Id="ea-coupon-first" @bind-Value="form.FirstOrderOnly" Label="First order only" />
-                    <Switch Id="ea-coupon-active" @bind-Value="form.IsActive" Label="Active (shoppers can use it)" />
+                    <Switch Id="ea-coupon-active" @bind-Value="form.IsActive" Label="Active (shoppers can use it between its dates)" />
                 </div>
             </div>
         </EditForm>

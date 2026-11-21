@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Text.Json;
 using BlazorBootstrap.Demo.RCL.Models.Showcase.Ecommerce;
 using BlazorBootstrap.Demo.RCL.Services.Showcase.Foundation;
@@ -5,33 +6,64 @@ using BlazorBootstrap.Demo.RCL.Services.Showcase.Foundation;
 namespace BlazorBootstrap.Demo.RCL.Services.Showcase.Ecommerce;
 
 /// <summary>
-/// State of the Kindred Goods store for the current browser tab, shared by the storefront (customers) and the back
-/// office (the retailer): the catalog and stock, the cart, orders and their fulfilment, coupons, reviews and their
-/// moderation, returns, and the demo sign-in. It is kept in the tab's <c>sessionStorage</c> through the showcase
-/// foundation, so it survives a reload in the tab; nothing is sent or charged.
+/// State of the Kindred Goods store for the current browser tab, shared by the back office (the retailer) and the
+/// storefront (customers): the catalog and stock, the cart, orders and their fulfilment, coupons, reviews and their
+/// moderation, returns, the audit log, notifications, and the demo sign-in. It is kept in the tab's <c>sessionStorage</c>
+/// through the showcase foundation, so it survives a reload in the tab; nothing is sent or charged.
 /// </summary>
-public sealed class EcommerceState : IShowcaseSiteState
+public sealed partial class EcommerceState : IShowcaseEnterpriseState
 {
     #region Fields and Constants
 
     /// <summary>The ID of the first order placed in a tab; the seeded history uses the IDs below it.</summary>
-    public const int FirstNewOrderId = 10481;
+    public const int FirstNewOrderId = EcommerceSeedData.FirstHistoryOrderId + EcommerceSeedData.HistoryOrderCount;
 
-    private const int FirstHistoryOrderId = 10445;
+    /// <summary>The longest refund or rejection note, kept with a return.</summary>
+    public const int MaxDecisionNoteLength = 200;
 
-    private const int MaxListLength = 500;
+    /// <summary>The longest reason for a price change, kept in the audit log.</summary>
+    public const int MaxPriceReasonLength = 200;
+
+    /// <summary>The longest SKU.</summary>
+    public const int MaxSkuLength = 20;
+
+    /// <summary>The shortest reason for a price change or a rejected return.</summary>
+    public const int MinReasonLength = 5;
+
+    private const int MaxAudit = 3000;
+
+    private const int MaxCoupons = 200;
+
+    private const int MaxNotices = 5000;
+
+    private const int MaxNoticesPerAccount = 50;
+
+    private const int MaxOrders = 5000;
+
+    private const int MaxProducts = 1000;
+
+    private const int MaxReturns = 2000;
+
+    private const int MaxReviews = 5000;
+
+    /// <summary>IDs stay below this, so a restored counter can't overflow.</summary>
+    private const int NextIdLimit = 1_000_000;
 
     private static readonly string[] cardBrands = ShowcaseCards.TestCards.Select(card => card.Brand).Distinct().ToArray();
+
+    private static readonly Lazy<EcommerceSeedSet> seed = new(EcommerceSeedData.Build);
 
     private static readonly JsonSerializerOptions snapshotOptions = new(JsonSerializerDefaults.Web) { MaxDepth = 32 };
 
     private readonly List<EcommerceSavedAddress> addresses;
 
+    private readonly List<ShowcaseAuditEntry> audit;
+
     private readonly List<EcommerceCartLine> cart = new();
 
     private readonly List<EcommerceCoupon> coupons;
 
-    private readonly List<EcommerceNotice> notices = new();
+    private readonly List<EcommerceNotice> notices;
 
     private readonly List<EcommerceOrder> orders;
 
@@ -43,9 +75,16 @@ public sealed class EcommerceState : IShowcaseSiteState
 
     private readonly List<EcommerceWishItem> wishlist;
 
+    /// <summary>How many bulk actions are running; while above 0, <see cref="RaiseChanged" /> waits until the last one ends.</summary>
+    private int batchDepth;
+
+    private bool changedInBatch;
+
     private int nextAddressId;
 
-    private int nextNoticeId = 1;
+    private int nextAuditId;
+
+    private int nextNoticeId;
 
     private int nextOrderId = FirstNewOrderId;
 
@@ -62,21 +101,23 @@ public sealed class EcommerceState : IShowcaseSiteState
     /// <summary>Seeds a fresh tab, signed out.</summary>
     public EcommerceState()
     {
-        products = EcommerceSeedData.Products().ToList();
-        reviews = EcommerceSeedData.Reviews(products);
-        coupons = EcommerceSeedData.Coupons();
-        orders = EcommerceSeedData.HistoryOrders(products);
-        returns = EcommerceSeedData.Returns(orders);
+        var data = seed.Value;
+
+        products = data.Products.ToList();
+        reviews = data.Reviews.ToList();
+        coupons = data.Coupons.ToList();
+        orders = data.Orders.ToList();
+        returns = data.Returns.ToList();
+        notices = data.Notices.ToList();
+        audit = data.Audit.ToList();
         addresses = EcommerceSeedData.Addresses();
         wishlist = EcommerceSeedData.Wishlist();
         nextAddressId = addresses.Max(address => address.Id) + 1;
         nextProductId = products.Max(product => product.Id) + 1;
         nextReviewId = reviews.Max(review => review.Id) + 1;
-        nextReturnId = returns.Max(item => item.Id) + 1;
-
-        // The approved seeded return was refunded on its order.
-        foreach (var approved in returns.Where(item => item.Status == EcommerceReturnStatus.Approved))
-            ReplaceOrder(FindOrder(approved.OrderId)! with { RefundedAmount = approved.Amount }, notify: false);
+        nextReturnId = returns.Count == 0 ? 1 : returns.Max(item => item.Id) + 1;
+        nextNoticeId = notices.Count == 0 ? 1 : notices.Max(notice => notice.Id) + 1;
+        nextAuditId = audit.Count == 0 ? 1 : audit.Max(entry => entry.Id) + 1;
 
         Identity = new ShowcaseIdentity(EcommerceSeedData.Roles(), EcommerceSeedData.DemoAccounts());
         Identity.Changed += () => Changed?.Invoke();
@@ -107,7 +148,7 @@ public sealed class EcommerceState : IShowcaseSiteState
         if (address.IsDefault && addresses.FirstOrDefault(other => other.AccountId == address.AccountId) is { } next)
             addresses[addresses.IndexOf(next)] = next with { IsDefault = true };
 
-        Changed?.Invoke();
+        RaiseChanged();
 
         return true;
     }
@@ -119,7 +160,8 @@ public sealed class EcommerceState : IShowcaseSiteState
             return false;
 
         reviews.Remove(review);
-        Changed?.Invoke();
+        Record("Review deleted", ReviewTarget(review), ReviewsPath, $"{review.Rating} of 5, by its author.");
+        RaiseChanged();
 
         return true;
     }
@@ -147,7 +189,7 @@ public sealed class EcommerceState : IShowcaseSiteState
         }
 
         if (changed)
-            Changed?.Invoke();
+            RaiseChanged();
     }
 
     /// <summary>Returns an account's notices, newest first.</summary>
@@ -179,6 +221,7 @@ public sealed class EcommerceState : IShowcaseSiteState
     /// <summary>
     /// Saves an address for the signed-in customer: <paramref name="address" /> with ID 0 adds one (up to <see cref="EcommerceSeedData.MaxSavedAddresses" />), otherwise it
     /// updates that address. A default address replaces the previous default; an account's first address is the default.
+    /// Returns <see langword="null" /> when another of the customer's addresses already has the label.
     /// </summary>
     public EcommerceSavedAddress? SaveAddress(EcommerceSavedAddress address)
     {
@@ -188,7 +231,7 @@ public sealed class EcommerceState : IShowcaseSiteState
         var own = AddressesFor(account.Id);
         var isNew = address.Id == 0;
 
-        if ((isNew && own.Count >= EcommerceSeedData.MaxSavedAddresses) || (!isNew && own.All(existing => existing.Id != address.Id)))
+        if ((isNew && own.Count >= EcommerceSeedData.MaxSavedAddresses) || (!isNew && own.All(existing => existing.Id != address.Id)) || IsAddressLabelTaken(address.Label, address.Id))
             return null;
 
         var saved = address with
@@ -224,7 +267,7 @@ public sealed class EcommerceState : IShowcaseSiteState
         else
             addresses[addresses.FindIndex(existing => existing.Id == saved.Id)] = saved;
 
-        Changed?.Invoke();
+        RaiseChanged();
 
         return saved;
     }
@@ -239,7 +282,7 @@ public sealed class EcommerceState : IShowcaseSiteState
             return false;
 
         wishlist[index] = wishlist[index] with { NotifyWhenInStock = notify };
-        Changed?.Invoke();
+        RaiseChanged();
 
         return true;
     }
@@ -258,7 +301,7 @@ public sealed class EcommerceState : IShowcaseSiteState
         if (!removed && wishlist.Count(item => item.AccountId == account.Id) < 100)
             wishlist.Add(new EcommerceWishItem(account.Id, productId, Clock.Today, NotifyWhenInStock: product.Stock == 0));
 
-        Changed?.Invoke();
+        RaiseChanged();
 
         return IsWished(productId);
     }
@@ -272,7 +315,9 @@ public sealed class EcommerceState : IShowcaseSiteState
         if (OwnReview(reviewId) is not { } review)
             return false;
 
-        ReplaceReview(review with { Rating = Math.Clamp(rating, 1, 5), Title = title.Trim(), Body = body.Trim(), PostedOn = Clock.Today });
+        var updated = review with { Rating = Math.Clamp(rating, 1, 5), Title = title.Trim(), Body = body.Trim(), PostedOn = Clock.Today };
+        ReplaceReview(updated);
+        Record("Review edited", ReviewTarget(updated), ReviewsPath, review.Rating == updated.Rating ? null : $"Rating {review.Rating} → {updated.Rating} of 5.");
 
         return true;
     }
@@ -301,7 +346,7 @@ public sealed class EcommerceState : IShowcaseSiteState
         else
             cart[index] = cart[index] with { Quantity = updated };
 
-        Changed?.Invoke();
+        RaiseChanged();
 
         return updated - current;
     }
@@ -324,17 +369,28 @@ public sealed class EcommerceState : IShowcaseSiteState
         }
 
         ReplaceOrder(order with { Status = next, TrackingNumber = tracking, History = Append(order, next, null) });
+        Record(next switch { EcommerceOrderStatus.Packed => "Order packed", EcommerceOrderStatus.Shipped => "Order shipped", _ => "Order delivered" }, OrderTarget(order),
+            EcommerceSeedData.AdminOrderPath(order.Id), next == EcommerceOrderStatus.Shipped ? $"Tracking number {tracking}." : null);
 
         return true;
     }
 
-    /// <summary>Adds a review from the signed-in customer (or a guest name) and returns it.</summary>
+    /// <summary>
+    /// Adds a review from the signed-in customer (or a guest name) and returns it. The retailer is told, so it can be
+    /// moderated and answered.
+    /// </summary>
     public EcommerceReview AddReview(int productId, string author, int rating, string title, string body)
     {
         var review = new EcommerceReview(nextReviewId++, productId, author.Trim(), Math.Clamp(rating, 1, 5), title.Trim(), body.Trim(), Clock.Today,
             IsFromThisSession: true, AuthorAccountId: Identity.Current?.Id);
         reviews.Add(review);
-        Changed?.Invoke();
+
+        while (reviews.Count > MaxReviews)
+            reviews.RemoveAt(0);
+
+        Record("Review posted", ReviewTarget(review), ReviewsPath, $"{review.Rating} of 5, “{Clip(review.Title, 60)}”.", actor: review.Author);
+        NotifyRetailers("New review to moderate", $"{review.Rating} of 5, “{Clip(review.Title, 60)}” on {FindAnyProduct(productId)?.Name ?? "a product"}", ReviewsPath);
+        RaiseChanged();
 
         return review;
     }
@@ -347,27 +403,40 @@ public sealed class EcommerceState : IShowcaseSiteState
         if (check == EcommerceCouponCheck.Applied)
         {
             AppliedPromoCode = FindCoupon(code)!.Code;
-            Changed?.Invoke();
+            RaiseChanged();
         }
 
         return check;
     }
 
     /// <summary>
-    /// Approves a return on a delivered order: the items go back into stock and their amount is refunded on the order. An
-    /// order refunded in full in the meantime can't take a return; reject it instead.
+    /// Approves a return on a delivered order: the items go back into stock and <paramref name="refundAmount" /> (the lines'
+    /// total when <see langword="null" />) is refunded on the order, never more than the lines' total or what's left of the
+    /// order's total. A refund below the lines' total needs a note saying why. An order refunded in full in the meantime
+    /// can't take a return; reject it instead. The customer is told.
     /// </summary>
-    public bool ApproveReturn(int returnId, string? note)
+    public bool ApproveReturn(int returnId, string? note, decimal? refundAmount = null)
     {
         if (returns.FirstOrDefault(item => item.Id == returnId) is not { Status: EcommerceReturnStatus.Requested } request
             || FindOrder(request.OrderId) is not { Status: EcommerceOrderStatus.Delivered } order)
             return false;
 
+        var refund = Math.Round(refundAmount ?? MaxRefundFor(request, order), 2, MidpointRounding.AwayFromZero);
+        var cleanNote = Clean(note, MaxDecisionNoteLength);
+
+        // Refunding less than the lines' total by choice needs a reason; less because the order was mostly refunded already doesn't.
+        if (refund <= 0 || refund > request.Amount || refund > MaxRefundFor(request, order) || (refundAmount is not null && refund < request.Amount && cleanNote is null))
+            return false;
+
         foreach (var line in request.Lines)
             ChangeStock(line.ProductId, line.Quantity);
 
-        ReplaceReturn(request with { Status = EcommerceReturnStatus.Approved, DecidedOn = Clock.Now, DecisionNote = Clean(note, 200) });
-        ReplaceOrder(order with { RefundedAmount = Math.Min(order.Totals.Total, order.RefundedAmount + request.Amount) });
+        var approved = request with { Status = EcommerceReturnStatus.Approved, DecidedOn = Clock.Now, DecisionNote = cleanNote, RefundAmount = refund };
+        ReplaceReturn(approved);
+        ReplaceOrder(order with { RefundedAmount = Math.Min(order.Totals.Total, order.RefundedAmount + refund) });
+        Record("Return approved", ReturnTarget(request), EcommerceSeedData.AdminReturnPath(request.Id),
+            $"{EcommerceSeedData.Money(refund)} refunded{(refund < request.Amount ? $" of {EcommerceSeedData.Money(request.Amount)}" : null)}.{(cleanNote is null ? null : " " + cleanNote)}");
+        Notify(order.CustomerId, $"Return {EcommerceSeedData.ReturnNumber(request.Id)} approved", $"{EcommerceSeedData.Money(refund)} is refunded to your card.", EcommerceSeedData.OrderPath(order.Id));
 
         return true;
     }
@@ -401,36 +470,67 @@ public sealed class EcommerceState : IShowcaseSiteState
         if (FindCoupon(order.PromoCode) is { Uses: > 0 } coupon)
             ReplaceCoupon(coupon with { Uses = coupon.Uses - 1 });
 
+        var reason = Clean(note, 200);
+
         ReplaceOrder(order with
         {
             Status = EcommerceOrderStatus.Cancelled,
             RefundedAmount = order.Totals.Total,
-            History = Append(order, EcommerceOrderStatus.Cancelled, Clean(note, 200)),
+            History = Append(order, EcommerceOrderStatus.Cancelled, reason),
         });
+        Record("Order cancelled", OrderTarget(order), EcommerceSeedData.AdminOrderPath(order.Id),
+            $"{EcommerceSeedData.Money(order.Totals.Total)} refunded; items back in stock.{(reason is null ? null : " " + reason)}");
 
         return true;
     }
 
-    /// <summary>Returns the snapshot of the store: catalog, cart, orders, coupons, reviews, returns, and the ID counters.</summary>
-    public object CaptureData() => new EcommerceSnapshot
+    /// <summary>
+    /// Returns the snapshot of the store: the cart, the address books, wishlists, and counters, and of the long lists
+    /// (products, orders, coupons, reviews, returns, notices, and the audit log) only what differs from the fresh tab's
+    /// seed: records changed or added, and the keys of seeded records removed. The seed is the same in every tab, so the
+    /// restore rebuilds the rest from it; a fresh tab's snapshot is about a kilobyte although it holds hundreds of orders
+    /// (devspec finding F-4).
+    /// </summary>
+    public object CaptureData()
     {
-        Products = products.ToList(),
-        Cart = cart.ToList(),
-        PromoCode = AppliedPromoCode,
-        Orders = orders.ToList(),
-        Coupons = coupons.ToList(),
-        Reviews = reviews.ToList(),
-        Returns = returns.ToList(),
-        NextOrderId = nextOrderId,
-        NextProductId = nextProductId,
-        NextReviewId = nextReviewId,
-        NextReturnId = nextReturnId,
-        Addresses = addresses.ToList(),
-        Wishlist = wishlist.ToList(),
-        Notices = notices.ToList(),
-        NextAddressId = nextAddressId,
-        NextNoticeId = nextNoticeId,
-    };
+        var data = seed.Value;
+        var (changedProducts, removedProducts) = Diff(products, data.Products, product => product.Id);
+        var (changedOrders, removedOrders) = Diff(orders, data.Orders, order => order.Id);
+        var (changedCoupons, removedCoupons) = Diff(coupons, data.Coupons, coupon => coupon.Code);
+        var (changedReviews, removedReviews) = Diff(reviews, data.Reviews, review => review.Id);
+        var (changedReturns, removedReturns) = Diff(returns, data.Returns, item => item.Id);
+        var (changedNotices, removedNotices) = Diff(notices, data.Notices, notice => notice.Id);
+        var (changedAudit, removedAudit) = Diff(audit, data.Audit, entry => entry.Id, SameAudit);
+
+        return new EcommerceSnapshot
+        {
+            Addresses = addresses.ToList(),
+            Audit = changedAudit,
+            Cart = cart.Count == 0 ? null : cart.ToList(),
+            Coupons = changedCoupons,
+            NextAddressId = nextAddressId,
+            NextAuditId = nextAuditId,
+            NextNoticeId = nextNoticeId,
+            NextOrderId = nextOrderId,
+            NextProductId = nextProductId,
+            NextReturnId = nextReturnId,
+            NextReviewId = nextReviewId,
+            Notices = changedNotices,
+            Orders = changedOrders,
+            Products = changedProducts,
+            PromoCode = AppliedPromoCode,
+            RemovedAuditIds = removedAudit,
+            RemovedCouponCodes = removedCoupons,
+            RemovedNoticeIds = removedNotices,
+            RemovedOrderIds = removedOrders,
+            RemovedProductIds = removedProducts,
+            RemovedReturnIds = removedReturns,
+            RemovedReviewIds = removedReviews,
+            Returns = changedReturns,
+            Reviews = changedReviews,
+            Wishlist = wishlist.ToList(),
+        };
+    }
 
     /// <summary>Returns the totals of the current cart for a delivery speed; a coupon that no longer applies gives no discount.</summary>
     public EcommerceTotals CartTotals(EcommerceDelivery delivery = EcommerceDelivery.Standard)
@@ -450,6 +550,9 @@ public sealed class EcommerceState : IShowcaseSiteState
         if (!coupon.IsActive)
             return EcommerceCouponCheck.Inactive;
 
+        if (coupon.StartsOn is { } starts && Clock.Today < starts.Date)
+            return EcommerceCouponCheck.NotStarted;
+
         if (coupon.ExpiresOn is { } expires && Clock.Today > expires.Date)
             return EcommerceCouponCheck.Expired;
 
@@ -467,12 +570,20 @@ public sealed class EcommerceState : IShowcaseSiteState
         return EcommerceCouponCheck.Applied;
     }
 
-    /// <summary>Adds a product from the editor's draft and returns it; it starts with a placeholder image.</summary>
-    public EcommerceProduct CreateProduct(EcommerceProductDraft draft)
+    /// <summary>
+    /// Adds a product from the editor's draft and returns it; it starts with a placeholder image. Returns
+    /// <see langword="null" /> when the SKU is missing, malformed, or already used, or the catalog is full.
+    /// </summary>
+    public EcommerceProduct? CreateProduct(EcommerceProductDraft draft)
     {
-        var product = FromDraft(nextProductId++, draft, addedOn: Clock.Today, isArchived: false);
+        if (!IsSku(draft.Sku) || IsSkuTaken(draft.Sku) || products.Count >= MaxProducts || nextProductId >= NextIdLimit)
+            return null;
+
+        var product = FromDraft(nextProductId++, draft, addedOn: Clock.Today, isArchived: false, imageId: null);
         products.Add(product);
-        Changed?.Invoke();
+        Record("Product created", ProductTarget(product), EcommerceSeedData.AdminProductPath(product.Id),
+            $"{EcommerceSeedData.Money(product.Price)} · {product.Stock.ToString(CultureInfo.InvariantCulture)} in stock");
+        RaiseChanged();
 
         return product;
     }
@@ -489,7 +600,7 @@ public sealed class EcommerceState : IShowcaseSiteState
                 var counted = group.Where(order => order.Status != EcommerceOrderStatus.Cancelled).ToList();
 
                 return new EcommerceCustomerSummary(latest.ShipTo.Email, latest.ShipTo.FullName, accountId, counted.Count,
-                    counted.Sum(order => order.Totals.Total - order.RefundedAmount), latest.PlacedOn);
+                    counted.Sum(order => order.Totals.Total - order.RefundedAmount), latest.PlacedOn, latest.ShipTo.Country, group.Min(order => order.PlacedOn));
             })
             .ToList();
 
@@ -504,37 +615,38 @@ public sealed class EcommerceState : IShowcaseSiteState
     /// <summary>Deletes a coupon; past orders keep the code they used as text.</summary>
     public bool DeleteCoupon(string code)
     {
-        var removed = coupons.RemoveAll(coupon => string.Equals(coupon.Code, code, StringComparison.OrdinalIgnoreCase)) > 0;
+        if (FindCoupon(code) is not { } coupon)
+            return false;
 
-        if (removed)
-        {
-            if (string.Equals(AppliedPromoCode, code, StringComparison.OrdinalIgnoreCase))
-                AppliedPromoCode = null;
+        coupons.Remove(coupon);
 
-            Changed?.Invoke();
-        }
+        if (string.Equals(AppliedPromoCode, coupon.Code, StringComparison.OrdinalIgnoreCase))
+            AppliedPromoCode = null;
 
-        return removed;
+        Record("Coupon deleted", $"Coupon {coupon.Code}", OffersPath, coupon.Description);
+        RaiseChanged();
+
+        return true;
     }
 
     /// <summary>Deletes a product nothing refers to (<see cref="CanDeleteProduct" />).</summary>
     public bool DeleteProduct(int productId)
     {
-        if (!CanDeleteProduct(productId) || products.RemoveAll(product => product.Id == productId) == 0)
+        if (!CanDeleteProduct(productId) || FindAnyProduct(productId) is not { } product)
             return false;
 
+        products.Remove(product);
         reviews.RemoveAll(review => review.ProductId == productId);
         // A wish item for a missing product would make the next restore discard the whole snapshot.
         wishlist.RemoveAll(item => item.ProductId == productId);
-        Changed?.Invoke();
+        Record("Product deleted", ProductTarget(product), null, "Removed with its reviews.");
+        RaiseChanged();
 
         return true;
     }
 
     /// <summary>Returns the discount a coupon gives on a subtotal.</summary>
-    public static decimal Discount(EcommerceCoupon coupon, decimal subtotal) => coupon.Kind == EcommerceCouponKind.Percent
-        ? Math.Round(subtotal * coupon.Value / 100m, 2, MidpointRounding.AwayFromZero)
-        : Math.Min(coupon.Value, subtotal);
+    public static decimal Discount(EcommerceCoupon coupon, decimal subtotal) => EcommerceSeedData.CouponDiscount(coupon, subtotal);
 
     /// <summary>Returns the active (not archived) products that match the catalog filters, sorted.</summary>
     public IReadOnlyList<EcommerceProduct> FilteredProducts()
@@ -585,6 +697,12 @@ public sealed class EcommerceState : IShowcaseSiteState
     public EcommerceReview? FindReview(int reviewId) => reviews.FirstOrDefault(review => review.Id == reviewId);
 
     /// <summary>
+    /// Returns the most an approval of a return can refund on its order: the return's lines' total, or what's left of the
+    /// order's total when less.
+    /// </summary>
+    public decimal MaxRefundFor(EcommerceReturn request, EcommerceOrder order) => Math.Max(0m, Math.Min(request.Amount, order.Totals.Total - order.RefundedAmount));
+
+    /// <summary>
     /// Returns the highest quantity one cart line (a product in one color) may hold: the stock left after the product's
     /// other color lines, capped at <see cref="EcommerceSeedData.MaxQuantity" />. Stock is per product, not per color.
     /// </summary>
@@ -605,7 +723,7 @@ public sealed class EcommerceState : IShowcaseSiteState
     };
 
     /// <summary>Raises <see cref="Changed" /> after the catalog filter was edited in place.</summary>
-    public void NotifyFilterChanged() => Changed?.Invoke();
+    public void NotifyFilterChanged() => RaiseChanged();
 
     /// <summary>Raises <see cref="Changed" /> after a stored snapshot was applied.</summary>
     public void NotifyRestored() => Changed?.Invoke();
@@ -616,7 +734,8 @@ public sealed class EcommerceState : IShowcaseSiteState
 
     /// <summary>
     /// Turns the cart into an order paid with an approved test card: takes the items out of stock, counts the coupon's
-    /// use, links the order to the signed-in customer, empties the cart, and returns the order.
+    /// use, links the order to the signed-in customer, empties the cart, and returns the order. The retailer is told that
+    /// a new order waits to be fulfilled.
     /// </summary>
     public EcommerceOrder PlaceOrder(EcommerceAddress shipTo, EcommerceDelivery delivery, ShowcaseCardCharge payment)
     {
@@ -645,9 +764,18 @@ public sealed class EcommerceState : IShowcaseSiteState
             CustomerId: Identity.Current is { RoleId: EcommerceSeedData.CustomerRole } account ? account.Id : null);
 
         orders.Add(order);
+
+        while (orders.Count > MaxOrders)
+            orders.RemoveAt(0);
+
         cart.Clear();
         AppliedPromoCode = null;
-        Changed?.Invoke();
+        Record("Order placed", OrderTarget(order), EcommerceSeedData.AdminOrderPath(order.Id),
+            $"{ItemsText(totals.ItemCount)} · {EcommerceSeedData.Money(totals.Total)}{(coupon is null ? null : $" with {coupon.Code}")} · {payment.Brand} ending {payment.Last4}",
+            actor: shipTo.FullName);
+        NotifyRetailers($"New order #{order.Id} to fulfil", $"{shipTo.FullName} · {ItemsText(totals.ItemCount)} · {EcommerceSeedData.Money(totals.Total)}",
+            EcommerceSeedData.AdminOrderPath(order.Id));
+        RaiseChanged();
 
         return order;
     }
@@ -658,23 +786,30 @@ public sealed class EcommerceState : IShowcaseSiteState
         if (FindOrder(orderId) is not { Status: EcommerceOrderStatus.Shipped or EcommerceOrderStatus.Delivered } order)
             return false;
 
+        var reason = Clean(note, 200);
+
         ReplaceOrder(order with
         {
             Status = EcommerceOrderStatus.Refunded,
             RefundedAmount = order.Totals.Total,
-            History = Append(order, EcommerceOrderStatus.Refunded, Clean(note, 200)),
+            History = Append(order, EcommerceOrderStatus.Refunded, reason),
         });
+        Record("Order refunded", OrderTarget(order), EcommerceSeedData.AdminOrderPath(order.Id),
+            $"{EcommerceSeedData.Money(order.Totals.Total - order.RefundedAmount)} refunded.{(reason is null ? null : " " + reason)}");
 
         return true;
     }
 
-    /// <summary>Rejects a return request with a note.</summary>
+    /// <summary>Rejects a return request with a note the customer reads; the customer is told.</summary>
     public bool RejectReturn(int returnId, string? note)
     {
-        if (returns.FirstOrDefault(item => item.Id == returnId) is not { Status: EcommerceReturnStatus.Requested } request)
+        if (returns.FirstOrDefault(item => item.Id == returnId) is not { Status: EcommerceReturnStatus.Requested } request
+            || Clean(note, MaxDecisionNoteLength) is not { Length: >= MinReasonLength } reason)
             return false;
 
-        ReplaceReturn(request with { Status = EcommerceReturnStatus.Rejected, DecidedOn = Clock.Now, DecisionNote = Clean(note, 200) });
+        ReplaceReturn(request with { Status = EcommerceReturnStatus.Rejected, DecidedOn = Clock.Now, DecisionNote = reason });
+        Record("Return rejected", ReturnTarget(request), EcommerceSeedData.AdminReturnPath(request.Id), reason);
+        Notify(FindOrder(request.OrderId)?.CustomerId, $"Return {EcommerceSeedData.ReturnNumber(request.Id)} rejected", reason, EcommerceSeedData.OrderPath(request.OrderId));
 
         return true;
     }
@@ -690,7 +825,7 @@ public sealed class EcommerceState : IShowcaseSiteState
             return;
 
         AppliedPromoCode = null;
-        Changed?.Invoke();
+        RaiseChanged();
     }
 
     /// <summary>Records the applied color mode ("light" or "dark") from the site bar, so charts can redraw in matching colors.</summary>
@@ -711,18 +846,20 @@ public sealed class EcommerceState : IShowcaseSiteState
         if (FindReview(reviewId) is not { } review)
             return false;
 
-        ReplaceReview(review with { Reply = Clean(reply, 600) });
+        var text = Clean(reply, 600);
+        ReplaceReview(review with { Reply = text });
+        Record(text is null ? "Review reply removed" : review.Reply is null ? "Review reply posted" : "Review reply edited", ReviewTarget(review), ReviewsPath, null);
 
         return true;
     }
 
     /// <summary>
     /// Requests a return of some items from a delivered order. Each quantity is at most what was bought minus what is
-    /// already in other open or approved returns.
+    /// already in other open or approved returns. The retailer is told that a return waits for a decision.
     /// </summary>
     public EcommerceReturn? RequestReturn(int orderId, IReadOnlyList<(int ProductId, string Color, int Quantity)> items, string reason, string? comment)
     {
-        if (FindOrder(orderId) is not { Status: EcommerceOrderStatus.Delivered } order || items.Count == 0 || string.IsNullOrWhiteSpace(reason))
+        if (FindOrder(orderId) is not { Status: EcommerceOrderStatus.Delivered } order || items.Count == 0 || string.IsNullOrWhiteSpace(reason) || returns.Count >= MaxReturns)
             return null;
 
         var lines = new List<EcommerceReturnLine>();
@@ -737,7 +874,11 @@ public sealed class EcommerceState : IShowcaseSiteState
 
         var request = new EcommerceReturn(nextReturnId++, orderId, lines, reason.Trim(), Clean(comment, 500), EcommerceReturnStatus.Requested, Clock.Now);
         returns.Add(request);
-        Changed?.Invoke();
+        Record("Return requested", ReturnTarget(request), EcommerceSeedData.AdminReturnPath(request.Id), $"{ItemsText(lines.Sum(line => line.Quantity))} · {request.Reason}",
+            actor: order.ShipTo.FullName);
+        NotifyRetailers($"Return {EcommerceSeedData.ReturnNumber(request.Id)} requested", $"{order.ShipTo.FullName} · order #{order.Id} · {request.Reason}",
+            EcommerceSeedData.AdminReturnPath(request.Id));
+        RaiseChanged();
 
         return request;
     }
@@ -757,37 +898,47 @@ public sealed class EcommerceState : IShowcaseSiteState
 
     /// <summary>
     /// Creates or updates a coupon. <paramref name="originalCode" /> is the code being edited, or <see langword="null" /> for
-    /// a new one. Returns <see langword="false" /> when another coupon already has the code.
+    /// a new one. Returns <see langword="false" /> when another coupon already has the code, the dates are out of order, a
+    /// percentage is above 90, or the usage limit is below the uses so far.
     /// </summary>
     public bool SaveCoupon(EcommerceCoupon coupon, string? originalCode)
     {
         var code = coupon.Code.Trim().ToUpperInvariant();
+        var existing = originalCode is null ? null : FindCoupon(originalCode);
 
-        if (coupons.Any(existing => string.Equals(existing.Code, code, StringComparison.OrdinalIgnoreCase) && !string.Equals(existing.Code, originalCode, StringComparison.OrdinalIgnoreCase)))
+        if (IsCouponCodeTaken(code, originalCode) || (originalCode is not null && existing is null) || (originalCode is null && coupons.Count >= MaxCoupons)
+            || (coupon.StartsOn is { } starts && coupon.ExpiresOn is { } ends && starts.Date > ends.Date)
+            || (coupon.Kind == EcommerceCouponKind.Percent && coupon.Value > 90m)
+            || (existing is not null && coupon.UsageLimit is { } limit && limit < existing.Uses))
             return false;
 
         var saved = coupon with
         {
             Code = code,
             Description = coupon.Description.Trim(),
-            Value = Math.Max(0m, coupon.Kind == EcommerceCouponKind.Percent ? Math.Min(coupon.Value, 100m) : coupon.Value),
+            Value = Math.Max(0m, coupon.Kind == EcommerceCouponKind.Percent ? Math.Min(coupon.Value, 90m) : coupon.Value),
             MinSubtotal = Math.Max(0m, coupon.MinSubtotal),
+            StartsOn = coupon.StartsOn?.Date,
+            ExpiresOn = coupon.ExpiresOn?.Date,
         };
-        var index = originalCode is null ? -1 : coupons.FindIndex(existing => string.Equals(existing.Code, originalCode, StringComparison.OrdinalIgnoreCase));
 
-        if (index < 0)
+        if (existing is null)
         {
             coupons.Add(saved with { Uses = 0 });
+            Record("Coupon created", $"Coupon {code}", OffersPath, $"{CouponValue(saved)} · {saved.Description}");
         }
         else
         {
-            coupons[index] = saved with { Uses = coupons[index].Uses };
+            coupons[coupons.IndexOf(existing)] = saved with { Uses = existing.Uses };
 
             if (string.Equals(AppliedPromoCode, originalCode, StringComparison.OrdinalIgnoreCase))
                 AppliedPromoCode = code;
+
+            Record("Coupon updated", $"Coupon {code}", OffersPath,
+                (existing.Code == code ? string.Empty : $"Code {existing.Code} → {code}. ") + $"{CouponValue(saved)} · {saved.Description}");
         }
 
-        Changed?.Invoke();
+        RaiseChanged();
 
         return true;
     }
@@ -802,6 +953,8 @@ public sealed class EcommerceState : IShowcaseSiteState
             cart.RemoveAll(line => line.ProductId == productId);
 
         ReplaceProduct(product with { IsArchived = archived });
+        Record(archived ? "Product archived" : "Product restored", ProductTarget(product), EcommerceSeedData.AdminProductPath(product.Id),
+            archived ? "Hidden from the store and removed from carts." : "Back in the store.");
 
         return true;
     }
@@ -813,6 +966,7 @@ public sealed class EcommerceState : IShowcaseSiteState
             return false;
 
         ReplaceCoupon(coupon with { IsActive = active });
+        Record(active ? "Coupon resumed" : "Coupon paused", $"Coupon {coupon.Code}", OffersPath, null);
 
         return true;
     }
@@ -830,7 +984,7 @@ public sealed class EcommerceState : IShowcaseSiteState
         else
             cart[index] = cart[index] with { Quantity = Math.Min(quantity, MaxQuantityFor(product, cart[index].Color)) };
 
-        Changed?.Invoke();
+        RaiseChanged();
     }
 
     /// <summary>Publishes or hides a review; hidden reviews leave the product page and its rating.</summary>
@@ -840,6 +994,7 @@ public sealed class EcommerceState : IShowcaseSiteState
             return false;
 
         ReplaceReview(review with { Status = status });
+        Record(status == EcommerceReviewStatus.Hidden ? "Review hidden" : "Review published", ReviewTarget(review), ReviewsPath, null);
 
         return true;
     }
@@ -850,12 +1005,23 @@ public sealed class EcommerceState : IShowcaseSiteState
         if (FindAnyProduct(productId) is not { } product)
             return false;
 
-        ReplaceProduct(product with { Stock = Math.Clamp(stock, 0, 9999) });
+        var value = Math.Clamp(stock, 0, 9999);
+
+        if (value == product.Stock)
+            return true;
+
+        ReplaceProduct(product with { Stock = value });
+        Record("Stock adjusted", ProductTarget(product), EcommerceSeedData.AdminProductPath(product.Id),
+            string.Create(CultureInfo.InvariantCulture, $"{product.Stock} → {value} in stock"));
 
         return true;
     }
 
-    /// <summary>Validates a stored snapshot and applies it only when every part is valid.</summary>
+    /// <summary>
+    /// Rebuilds the store from the seed and a stored snapshot's changes, validates every part, and applies it only when
+    /// everything is valid: known IDs and codes, defined enum values, amounts and quantities in range, bounded text, SKUs
+    /// in their form and unique, and links that stay on this site.
+    /// </summary>
     public bool TryRestoreData(JsonElement data)
     {
         EcommerceSnapshot? snapshot;
@@ -864,25 +1030,35 @@ public sealed class EcommerceState : IShowcaseSiteState
         {
             snapshot = data.Deserialize<EcommerceSnapshot>(snapshotOptions);
         }
-        catch (Exception ex) when (ex is JsonException or NotSupportedException or InvalidOperationException)
+        catch (Exception ex) when (ex is JsonException or NotSupportedException or InvalidOperationException or ArgumentException)
         {
             return false;
         }
 
-        if (snapshot is not
-            {
-                Products: { Count: > 0 and <= MaxListLength } storedProducts,
-                Cart: { Count: <= 50 } storedCart,
-                Orders: { Count: <= MaxListLength } storedOrders,
-                Coupons: { Count: <= 100 } storedCoupons,
-                Reviews: { Count: <= 2000 } storedReviews,
-                Returns: { Count: <= MaxListLength } storedReturns,
-            }
-            || snapshot.NextOrderId is < FirstNewOrderId or > FirstNewOrderId + 100_000
-            || snapshot.NextProductId is < 1 or > 100_000
-            || snapshot.NextReviewId is < 1 or > 1_000_000
-            || snapshot.NextReturnId is < 1 or > 100_000)
+        if (snapshot is null
+            || snapshot.Cart is { Count: > 50 }
+            || snapshot.NextOrderId is < FirstNewOrderId or > NextIdLimit
+            || snapshot.NextProductId is < 1 or > NextIdLimit
+            || snapshot.NextReviewId is < 1 or > NextIdLimit
+            || snapshot.NextReturnId is < 1 or > NextIdLimit
+            || snapshot.NextAddressId is < 1 or > NextIdLimit
+            || snapshot.NextNoticeId is < 1 or > NextIdLimit
+            || snapshot.NextAuditId is < 1 or > NextIdLimit)
             return false;
+
+        var fresh = seed.Value;
+
+        // Rebuild every long list from the seed and the stored changes; an inconsistent change list discards the snapshot.
+        if (Overlay(fresh.Products, snapshot.Products, snapshot.RemovedProductIds, product => product.Id) is not { Count: > 0 and <= MaxProducts } storedProducts
+            || Overlay(fresh.Orders, snapshot.Orders, snapshot.RemovedOrderIds, order => order.Id) is not { Count: <= MaxOrders } storedOrders
+            || Overlay(fresh.Coupons, snapshot.Coupons, snapshot.RemovedCouponCodes, coupon => coupon.Code) is not { Count: <= MaxCoupons } storedCoupons
+            || Overlay(fresh.Reviews, snapshot.Reviews, snapshot.RemovedReviewIds, review => review.Id) is not { Count: <= MaxReviews } storedReviews
+            || Overlay(fresh.Returns, snapshot.Returns, snapshot.RemovedReturnIds, item => item.Id) is not { Count: <= MaxReturns } storedReturns
+            || Overlay(fresh.Notices, snapshot.Notices, snapshot.RemovedNoticeIds, notice => notice.Id) is not { Count: <= MaxNotices } storedNotices
+            || Overlay(fresh.Audit, snapshot.Audit, snapshot.RemovedAuditIds, entry => entry.Id) is not { Count: <= MaxAudit } storedAudit)
+            return false;
+
+        var storedCart = snapshot.Cart ?? new List<EcommerceCartLine>();
 
         if (!ValidProducts(storedProducts, snapshot.NextProductId)
             || !ValidCoupons(storedCoupons)
@@ -904,26 +1080,30 @@ public sealed class EcommerceState : IShowcaseSiteState
 
         if (storedReviews.Any(review => review is null || !byId.ContainsKey(review.ProductId) || review.Id < 1 || review.Id >= snapshot.NextReviewId
                 || review.Rating is < 1 or > 5 || !Enum.IsDefined(review.Status) || !IsText(review.Author, 60) || !IsText(review.Title, 120) || !IsText(review.Body, 2000)
-                || (review.Reply is not null && review.Reply.Length > 600) || !IsPlausibleDate(review.PostedOn))
+                || (review.Reply is not null && review.Reply.Length > 600) || !IsPlausibleDate(review.PostedOn)
+                || (review.AuthorAccountId is not null && !IsAccountId(review.AuthorAccountId)))
             || storedReviews.Select(review => review.Id).Distinct().Count() != storedReviews.Count)
             return false;
 
         if (storedReturns.Any(item => item is null || item.Id < 1 || item.Id >= snapshot.NextReturnId || !orderIds.ContainsKey(item.OrderId) || !Enum.IsDefined(item.Status)
-                || !IsText(item.Reason, 120) || (item.Comment is not null && item.Comment.Length > 500) || (item.DecisionNote is not null && item.DecisionNote.Length > 200)
-                || !IsPlausibleDate(item.RequestedOn) || item.Lines is not { Count: >= 1 and <= 50 }
-                || item.Lines.Any(line => line is null || !byId.ContainsKey(line.ProductId) || !IsText(line.Name, 120) || !IsText(line.Color, 40) || line.Quantity is < 1 or > EcommerceSeedData.MaxQuantity || !IsMoney(line.UnitPrice)))
+                || !IsText(item.Reason, 120) || (item.Comment is not null && item.Comment.Length > 500) || (item.DecisionNote is not null && item.DecisionNote.Length > MaxDecisionNoteLength)
+                || !IsPlausibleDate(item.RequestedOn) || (item.DecidedOn is { } decided && (!IsPlausibleDate(decided) || decided < item.RequestedOn))
+                || (item.Status == EcommerceReturnStatus.Requested) != (item.DecidedOn is null)
+                || item.Lines is not { Count: >= 1 and <= 50 }
+                || item.Lines.Any(line => line is null || !byId.ContainsKey(line.ProductId) || !IsText(line.Name, 120) || !IsText(line.Color, 40) || line.Quantity is < 1 or > EcommerceSeedData.MaxQuantity || !IsMoney(line.UnitPrice))
+                || (item.RefundAmount is { } refund && (item.Status != EcommerceReturnStatus.Approved || refund <= 0 || refund > item.Amount)))
             || storedReturns.Select(item => item.Id).Distinct().Count() != storedReturns.Count)
             return false;
 
-        if (snapshot is not { Addresses: { Count: <= 2000 } storedAddresses, Wishlist: { Count: <= 5000 } storedWishlist, Notices: { Count: <= 5000 } storedNotices }
-            || snapshot.NextAddressId is < 1 or > 1_000_000 || snapshot.NextNoticeId is < 1 or > 1_000_000)
+        if (snapshot.Addresses is not { Count: <= 2000 } storedAddresses || (snapshot.Wishlist ?? new List<EcommerceWishItem>()) is not { Count: <= 5000 } storedWishlist)
             return false;
 
         if (storedAddresses.Any(address => address is null || address.Id < 1 || address.Id >= snapshot.NextAddressId || !IsAccountId(address.AccountId)
                 || !IsText(address.Label, 30) || !IsText(address.FullName, 60) || !IsText(address.Street, 100) || !IsText(address.City, 60)
                 || !IsText(address.PostalCode, 10) || !IsText(address.Country, 60) || (address.Phone is not null && address.Phone.Length > 20))
             || storedAddresses.Select(address => address.Id).Distinct().Count() != storedAddresses.Count
-            || storedAddresses.GroupBy(address => address.AccountId).Any(group => group.Count() > 10 || group.Count(address => address.IsDefault) != 1))
+            || storedAddresses.GroupBy(address => address.AccountId).Any(group => group.Count() > 10 || group.Count(address => address.IsDefault) != 1
+                || group.Select(address => address.Label.Trim().ToUpperInvariant()).Distinct().Count() != group.Count()))
             return false;
 
         if (storedWishlist.Any(item => item is null || !IsAccountId(item.AccountId) || !byId.ContainsKey(item.ProductId) || !IsPlausibleDate(item.AddedOn))
@@ -931,43 +1111,45 @@ public sealed class EcommerceState : IShowcaseSiteState
             return false;
 
         if (storedNotices.Any(notice => notice is null || notice.Id < 1 || notice.Id >= snapshot.NextNoticeId || !IsAccountId(notice.AccountId)
-                || !IsText(notice.Title, 120) || !IsText(notice.Text, 300) || !IsPlausibleDate(notice.CreatedOn)
-                || (notice.Link is not null && (notice.Link.Length > 200 || !notice.Link.StartsWith(DemoRouteConstants.Showcase_URL_Ecommerce + "/", StringComparison.Ordinal))))
+                || !IsText(notice.Title, 120) || !IsText(notice.Text, 300) || !IsPlausibleDate(notice.CreatedOn) || (notice.Link is not null && !IsSiteLink(notice.Link)))
             || storedNotices.Select(notice => notice.Id).Distinct().Count() != storedNotices.Count)
             return false;
-        products.Clear();
-        products.AddRange(storedProducts);
-        cart.Clear();
-        cart.AddRange(storedCart);
+
+        if (storedAudit.Any(entry => entry is null || entry.Id < 1 || entry.Id >= snapshot.NextAuditId || !IsPlausibleDate(entry.At) || !IsText(entry.Actor, ShowcaseIdentity.MaxNameLength)
+                || !IsText(entry.Action, 80) || !IsText(entry.Target, 120) || (entry.Details is not null && !IsText(entry.Details, 420)) || !IsSiteLink(entry.TargetUrl))
+            || storedAudit.Select(entry => entry.Id).Distinct().Count() != storedAudit.Count)
+            return false;
+
+        Reload(products, storedProducts);
+        Reload(cart, storedCart);
         AppliedPromoCode = snapshot.PromoCode;
-        orders.Clear();
-        orders.AddRange(storedOrders);
-        coupons.Clear();
-        coupons.AddRange(storedCoupons);
-        reviews.Clear();
-        reviews.AddRange(storedReviews);
-        returns.Clear();
-        returns.AddRange(storedReturns);
+        Reload(orders, storedOrders);
+        Reload(coupons, storedCoupons);
+        Reload(reviews, storedReviews);
+        Reload(returns, storedReturns);
+        Reload(addresses, storedAddresses);
+        Reload(wishlist, storedWishlist);
+        Reload(notices, storedNotices);
+        Reload(audit, storedAudit);
         nextOrderId = snapshot.NextOrderId;
         nextProductId = snapshot.NextProductId;
         nextReviewId = snapshot.NextReviewId;
         nextReturnId = snapshot.NextReturnId;
-        addresses.Clear();
-        addresses.AddRange(storedAddresses);
-        wishlist.Clear();
-        wishlist.AddRange(storedWishlist);
-        notices.Clear();
-        notices.AddRange(storedNotices);
         nextAddressId = snapshot.NextAddressId;
         nextNoticeId = snapshot.NextNoticeId;
+        nextAuditId = snapshot.NextAuditId;
 
         return true;
     }
 
-    /// <summary>Updates prices in one go: each entry sets a product's price and compare-at ("was") price. Returns how many changed.</summary>
-    public int UpdatePrices(IEnumerable<(int ProductId, decimal Price, decimal? CompareAtPrice)> changes)
+    /// <summary>
+    /// Updates prices in one go: each entry sets a product's price and compare-at ("was") price. Every change is audited with
+    /// the old and new prices and <paramref name="reason" /> when given. Returns how many changed.
+    /// </summary>
+    public int UpdatePrices(IEnumerable<(int ProductId, decimal Price, decimal? CompareAtPrice)> changes, string? reason = null)
     {
         var changed = 0;
+        var why = Clean(reason, MaxPriceReasonLength);
 
         foreach (var (productId, price, compareAt) in changes)
         {
@@ -980,26 +1162,32 @@ public sealed class EcommerceState : IShowcaseSiteState
                 continue;
 
             ReplaceProduct(product with { Price = price, CompareAtPrice = was }, notify: false);
+            Record("Price changed", ProductTarget(product), EcommerceSeedData.AdminProductPath(product.Id),
+                $"{PriceText(product.Price, product.CompareAtPrice)} → {PriceText(price, was)}{(why is null ? null : $". {why}")}");
             changed++;
         }
 
         if (changed > 0)
-            Changed?.Invoke();
+            RaiseChanged();
 
         return changed;
     }
 
-    /// <summary>Updates a product from the editor's draft.</summary>
+    /// <summary>
+    /// Updates a product from the editor's draft; the audit log names what changed. Returns <see langword="false" /> for an
+    /// unknown product or a SKU that is malformed or used by another product.
+    /// </summary>
     public bool UpdateProduct(int productId, EcommerceProductDraft draft)
     {
-        if (FindAnyProduct(productId) is not { } product)
+        if (FindAnyProduct(productId) is not { } product || !IsSku(draft.Sku) || IsSkuTaken(draft.Sku, productId))
             return false;
 
-        var updated = FromDraft(productId, draft, product.AddedOn, product.IsArchived);
+        var updated = FromDraft(productId, draft, product.AddedOn, product.IsArchived, product.ImageId);
 
         // Cart lines in a color the product no longer has are removed.
         cart.RemoveAll(line => line.ProductId == productId && !updated.Colors.Contains(line.Color));
         ReplaceProduct(updated);
+        Record("Product updated", ProductTarget(updated), EcommerceSeedData.AdminProductPath(productId), ProductChanges(product, updated));
 
         return true;
     }
@@ -1008,28 +1196,8 @@ public sealed class EcommerceState : IShowcaseSiteState
 
     #region Private Methods
 
-    private void AddNotice(string accountId, string title, string text, string? link)
-    {
-        notices.Add(new EcommerceNotice(nextNoticeId++, accountId, title, text, link, Clock.Now, IsRead: false));
-
-        // Keep each account's newest 50 notices.
-        var old = notices.Where(notice => notice.AccountId == accountId).OrderByDescending(notice => notice.Id).Skip(50).ToList();
-        notices.RemoveAll(old.Contains);
-    }
-
-    private EcommerceSavedAddress? OwnAddress(int addressId) =>
-        Identity.Current is { } account ? addresses.FirstOrDefault(address => address.Id == addressId && address.AccountId == account.Id) : null;
-
-    private EcommerceReview? OwnReview(int reviewId) =>
-        Identity.Current is { } account ? reviews.FirstOrDefault(review => review.Id == reviewId && review.AuthorAccountId == account.Id) : null;
     private static IReadOnlyList<EcommerceStatusChange> Append(EcommerceOrder order, EcommerceOrderStatus status, string? note) =>
         order.History.Append(new EcommerceStatusChange(status, DateTime.MinValue, note)).ToList();
-
-    private void ChangeStock(int productId, int delta)
-    {
-        if (FindAnyProduct(productId) is { } product)
-            ReplaceProduct(product with { Stock = Math.Clamp(product.Stock + delta, 0, 9999) }, notify: false);
-    }
 
     private static string? Clean(string? text, int maxLength)
     {
@@ -1038,7 +1206,41 @@ public sealed class EcommerceState : IShowcaseSiteState
         return string.IsNullOrEmpty(trimmed) ? null : trimmed.Length <= maxLength ? trimmed : trimmed[..maxLength];
     }
 
-    private static EcommerceProduct FromDraft(int id, EcommerceProductDraft draft, DateTime addedOn, bool isArchived)
+    /// <summary>Shortens a text to a length, with an ellipsis when cut.</summary>
+    private static string Clip(string text, int maxLength) => text.Length <= maxLength ? text : string.Concat(text.AsSpan(0, maxLength - 1), "…");
+
+    /// <summary>A coupon's discount in words, like "15% off" or "$20.00 off".</summary>
+    private static string CouponValue(EcommerceCoupon coupon) => coupon.Kind == EcommerceCouponKind.Percent
+        ? $"{coupon.Value.ToString("0.##", CultureInfo.InvariantCulture)}% off"
+        : $"{EcommerceSeedData.Money(coupon.Value)} off";
+
+    /// <summary>
+    /// Returns the records that differ from the seed (changed or added, in list order) and the keys of seeded records that
+    /// were removed; <see langword="null" /> for an empty list, so it is left out of the snapshot.
+    /// </summary>
+    private static (List<T>? Changed, List<TKey>? Removed) Diff<T, TKey>(IReadOnlyList<T> current, IReadOnlyList<T> seeded, Func<T, TKey> key, Func<T, T, bool>? equals = null)
+        where TKey : notnull
+    {
+        var seededByKey = seeded.ToDictionary(key);
+        var currentKeys = new HashSet<TKey>();
+        var changed = new List<T>();
+        equals ??= EqualityComparer<T>.Default.Equals;
+
+        foreach (var item in current)
+        {
+            var itemKey = key(item);
+            currentKeys.Add(itemKey);
+
+            if (!seededByKey.TryGetValue(itemKey, out var original) || !equals(original, item))
+                changed.Add(item);
+        }
+
+        var removed = seeded.Where(item => !currentKeys.Contains(key(item))).Select(key).ToList();
+
+        return (changed.Count == 0 ? null : changed, removed.Count == 0 ? null : removed);
+    }
+
+    private static EcommerceProduct FromDraft(int id, EcommerceProductDraft draft, DateTime addedOn, bool isArchived, int? imageId)
     {
         var colors = draft.Colors.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
             .Select(color => color.Length > 20 ? color[..20] : color).Distinct(StringComparer.OrdinalIgnoreCase).Take(6).ToList();
@@ -1046,27 +1248,160 @@ public sealed class EcommerceState : IShowcaseSiteState
             .Select(line => line.Length > 80 ? line[..80] : line).Take(6).ToList();
         var price = Math.Clamp(Math.Round(draft.Price, 2), 0.01m, 100_000m);
         var compareAt = draft.CompareAtPrice is { } was && Math.Round(was, 2) > price ? Math.Round(was, 2) : (decimal?)null;
+        var hasPhoto = (imageId ?? id) is >= EcommerceProduct.FirstLibraryPhotoId and <= EcommerceProduct.LastLibraryPhotoId;
 
         return new EcommerceProduct(id, draft.Name.Trim(), draft.CategoryId, price, compareAt, draft.Description.Trim(), highlights,
-            colors.Count == 0 ? new List<string> { "Natural" } : colors, draft.IsFeatured, Math.Clamp(draft.Stock, 0, 9999), addedOn, isArchived);
+            colors.Count == 0 ? new List<string> { "Natural" } : colors, draft.IsFeatured, Math.Clamp(draft.Stock, 0, 9999), addedOn, isArchived,
+            draft.Sku.Trim().ToUpperInvariant(), imageId, hasPhoto ? Clean(draft.ImageAlt, MaxImageAltLength) : null);
     }
-
-    /// <summary>Checks an account ID's shape: a seeded demo account or one registered in the tab (identity validates the accounts themselves).</summary>
-    private bool IsAccountId(string? accountId) => accountId is not null && (Identity.DemoAccounts.Any(demo => demo.Id == accountId) || (accountId.StartsWith("u-", StringComparison.Ordinal) && accountId.Length <= 12));
 
     /// <summary>Checks a money amount; the cap is above anything checkout can produce (50 lines × 10 × $100,000, plus tax).</summary>
     private static bool IsMoney(decimal value) => value is >= 0 and <= 100_000_000;
 
-    /// <summary>Checks a date; the window is wider than anything the site clock or the editors can produce.</summary>
-    private static bool IsPlausibleDate(DateTime value) => value >= EcommerceSeedData.Today.AddYears(-1) && value <= EcommerceSeedData.Today.AddYears(5);
+    /// <summary>Checks a date; the window is wider than anything the seed, the site clock, or the editors can produce.</summary>
+    private static bool IsPlausibleDate(DateTime value) => value >= EcommerceSeedData.Today.AddYears(-2) && value <= EcommerceSeedData.Today.AddYears(5);
 
     private static bool IsText(string? value, int maxLength) => !string.IsNullOrWhiteSpace(value) && value.Length <= maxLength;
+
+    private static string ItemsText(int count) => count == 1 ? "1 item" : string.Create(CultureInfo.InvariantCulture, $"{count} items");
+
+    /// <summary>
+    /// Rebuilds a list from the seed and a snapshot's changes: seeded records in their order (replaced by a stored record
+    /// with the same key, left out when removed), then the added records in their stored order. Returns
+    /// <see langword="null" /> for an inconsistent change list (a missing record, a repeated key, or a removed key that isn't
+    /// seeded), which discards the snapshot. Seeded records are immutable, so the tab keeps them as they are.
+    /// </summary>
+    private static List<T>? Overlay<T, TKey>(IReadOnlyList<T> seeded, List<T>? changed, List<TKey>? removed, Func<T, TKey> key)
+        where TKey : notnull
+    {
+        changed ??= new List<T>();
+        removed ??= new List<TKey>();
+
+        if (changed.Count > 10_000 || removed.Count > 10_000 || changed.Any(item => item is null) || removed.Any(item => item is null))
+            return null;
+
+        var replacements = new Dictionary<TKey, T>();
+
+        foreach (var item in changed)
+        {
+            if (key(item) is not { } itemKey || !replacements.TryAdd(itemKey, item))
+                return null;
+        }
+
+        var seededKeys = seeded.Select(key).ToHashSet();
+        var removedKeys = removed.ToHashSet();
+
+        if (removedKeys.Count != removed.Count || removedKeys.Any(item => !seededKeys.Contains(item) || replacements.ContainsKey(item)))
+            return null;
+
+        var result = new List<T>(seeded.Count + changed.Count);
+
+        foreach (var item in seeded)
+        {
+            var itemKey = key(item);
+
+            if (replacements.TryGetValue(itemKey, out var replacement))
+                result.Add(replacement);
+            else if (!removedKeys.Contains(itemKey))
+                result.Add(item);
+        }
+
+        result.AddRange(changed.Where(item => !seededKeys.Contains(key(item))));
+
+        return result;
+    }
+
+    /// <summary>A price and its compare-at price in words, like "$48.00 (was $60.00)".</summary>
+    private static string PriceText(decimal price, decimal? compareAt) =>
+        compareAt is { } was ? $"{EcommerceSeedData.Money(price)} (was {EcommerceSeedData.Money(was)})" : EcommerceSeedData.Money(price);
+
+    /// <summary>Names what an edit changed, for the audit log.</summary>
+    private static string? ProductChanges(EcommerceProduct before, EcommerceProduct after)
+    {
+        var changes = new List<string>();
+
+        if (before.Name != after.Name)
+            changes.Add($"name “{Clip(before.Name, 40)}” → “{Clip(after.Name, 40)}”");
+
+        if (before.Sku != after.Sku)
+            changes.Add($"SKU {before.Sku} → {after.Sku}");
+
+        if (before.CategoryId != after.CategoryId)
+            changes.Add($"category {before.CategoryId} → {after.CategoryId}");
+
+        if (before.Price != after.Price || before.CompareAtPrice != after.CompareAtPrice)
+            changes.Add($"price {PriceText(before.Price, before.CompareAtPrice)} → {PriceText(after.Price, after.CompareAtPrice)}");
+
+        if (before.Stock != after.Stock)
+            changes.Add(string.Create(CultureInfo.InvariantCulture, $"stock {before.Stock} → {after.Stock}"));
+
+        if (before.IsFeatured != after.IsFeatured)
+            changes.Add(after.IsFeatured ? "now featured" : "no longer featured");
+
+        if (before.Description != after.Description || !before.Highlights.SequenceEqual(after.Highlights) || !before.Colors.SequenceEqual(after.Colors) || before.ImageAlt != after.ImageAlt)
+            changes.Add("details");
+
+        if (changes.Count == 0)
+            return "Saved with no changes.";
+
+        var text = string.Join(", ", changes);
+
+        return char.ToUpperInvariant(text[0]) + text[1..] + ".";
+    }
+
+    private static void Reload<T>(List<T> target, IEnumerable<T> source)
+    {
+        target.Clear();
+        target.AddRange(source);
+    }
+
+    private static bool SameAudit(ShowcaseAuditEntry left, ShowcaseAuditEntry right) =>
+        left.Id == right.Id && left.At == right.At && left.Actor == right.Actor && left.Action == right.Action && left.Target == right.Target
+        && left.TargetUrl == right.TargetUrl && left.Details == right.Details;
+
+    private static bool ValidCoupons(List<EcommerceCoupon> list) =>
+        list.All(coupon => coupon is not null && IsText(coupon.Code, 20) && coupon.Code.Length >= 3 && coupon.Code.All(char.IsAsciiLetterOrDigit) && coupon.Code == coupon.Code.ToUpperInvariant()
+            && IsText(coupon.Description, 120) && Enum.IsDefined(coupon.Kind) && coupon.Value is > 0 and <= 10_000 && (coupon.Kind != EcommerceCouponKind.Percent || coupon.Value <= 100)
+            && IsMoney(coupon.MinSubtotal) && coupon.Uses is >= 0 and <= 1_000_000 && coupon.UsageLimit is null or (>= 1 and <= 1_000_000)
+            && (coupon.ExpiresOn is null || IsPlausibleDate(coupon.ExpiresOn.Value)) && (coupon.StartsOn is null || IsPlausibleDate(coupon.StartsOn.Value))
+            && (coupon.StartsOn is not { } starts || coupon.ExpiresOn is not { } ends || starts.Date <= ends.Date))
+        && list.Select(coupon => coupon.Code).Distinct().Count() == list.Count;
+
+    /// <summary>Checks an account ID's shape: a demo account, a seeded customer (without a sign-in), or one registered in the tab (identity validates the accounts themselves).</summary>
+    private bool IsAccountId(string? accountId) =>
+        accountId is not null
+        && (Identity.DemoAccounts.Any(demo => demo.Id == accountId) || EcommerceSeedData.IsSeededCustomerId(accountId) || (accountId.StartsWith("u-", StringComparison.Ordinal) && accountId.Length <= 12));
+
+    private void ChangeStock(int productId, int delta)
+    {
+        if (FindAnyProduct(productId) is { } product)
+            ReplaceProduct(product with { Stock = Math.Clamp(product.Stock + delta, 0, 9999) }, notify: false);
+    }
+
+    private EcommerceSavedAddress? OwnAddress(int addressId) =>
+        Identity.Current is { } account ? addresses.FirstOrDefault(address => address.Id == addressId && address.AccountId == account.Id) : null;
+
+    private EcommerceReview? OwnReview(int reviewId) =>
+        Identity.Current is { } account ? reviews.FirstOrDefault(review => review.Id == reviewId && review.AuthorAccountId == account.Id) : null;
+
+    /// <summary>Raises <see cref="Changed" />, or, during a bulk action, once when the last bulk action ends.</summary>
+    private void RaiseChanged()
+    {
+        if (batchDepth > 0)
+        {
+            changedInBatch = true;
+
+            return;
+        }
+
+        Changed?.Invoke();
+    }
 
     private void ReplaceCoupon(EcommerceCoupon coupon)
     {
         var index = coupons.FindIndex(existing => existing.Code == coupon.Code);
         coupons[index] = coupon;
-        Changed?.Invoke();
+        RaiseChanged();
     }
 
     /// <summary>Replaces an order; a history entry added with <see cref="DateTime.MinValue" /> is stamped with the site clock.</summary>
@@ -1081,30 +1416,42 @@ public sealed class EcommerceState : IShowcaseSiteState
         orders[index] = stamped;
 
         // The customer hears about every step the store takes on their order (CR-001-AC-07), but not about their own cancel.
-        if (stamped.CustomerId is { } customer && previous.Status != stamped.Status && Identity.Current?.Id != customer)
-            AddNotice(customer, $"Order #{stamped.Id} {StatusVerb(stamped.Status)}", NoticeText(stamped), $"{DemoRouteConstants.Showcase_URL_Ecommerce}/orders/{stamped.Id}");
+        if (stamped.CustomerId is { } customer && previous.Status != stamped.Status)
+            Notify(customer, $"Order #{stamped.Id} {EcommerceSeedData.StatusVerb(stamped.Status)}", EcommerceSeedData.OrderNoticeText(stamped), EcommerceSeedData.OrderPath(stamped.Id));
 
         if (notify)
-            Changed?.Invoke();
+            RaiseChanged();
     }
 
+    /// <summary>
+    /// Replaces a product. A product back in stock tells everyone who asked to hear about it (once); a product that falls to
+    /// the low-stock threshold or sells out tells the retailer, unless they changed it themselves.
+    /// </summary>
     private void ReplaceProduct(EcommerceProduct product, bool notify = true)
     {
         var productIndex = products.FindIndex(existing => existing.Id == product.Id);
         var before = products[productIndex];
         products[productIndex] = product;
 
-        // Back in stock: everyone who asked to hear about it gets a notice, once.
         if (before.Stock == 0 && product.Stock > 0 && !product.IsArchived)
         {
             for (var wishIndex = 0; wishIndex < wishlist.Count; wishIndex++)
             {
                 if (wishlist[wishIndex].ProductId == product.Id && wishlist[wishIndex].NotifyWhenInStock)
                 {
-                    AddNotice(wishlist[wishIndex].AccountId, $"{product.Name} is back in stock", $"{product.Stock} available now.", $"{DemoRouteConstants.Showcase_URL_Ecommerce}/products/{product.Id}");
+                    Notify(wishlist[wishIndex].AccountId, $"{product.Name} is back in stock", $"{product.Stock} available now.", $"{EcommerceSeedData.SiteBase}/products/{product.Id}", fromSystem: true);
                     wishlist[wishIndex] = wishlist[wishIndex] with { NotifyWhenInStock = false };
                 }
             }
+        }
+
+        if (!product.IsArchived && product.Stock < before.Stock && ((IsLowStock(product) && !IsLowStock(before)) || product.Stock == 0))
+        {
+            NotifyRetailers(product.Stock == 0 ? $"Out of stock: {product.Name}" : $"Low stock: {product.Name}",
+                product.Stock == 0
+                    ? $"{product.Sku} sold out. Restock it or archive it."
+                    : string.Create(CultureInfo.InvariantCulture, $"{product.Stock} left of {product.Sku}. Restock it soon."),
+                EcommerceSeedData.AdminProductPath(product.Id));
         }
 
         // Stock or archive changes can leave cart lines over what's left.
@@ -1120,57 +1467,31 @@ public sealed class EcommerceState : IShowcaseSiteState
         }
 
         if (notify)
-            Changed?.Invoke();
+            RaiseChanged();
     }
 
     private void ReplaceReturn(EcommerceReturn item)
     {
         returns[returns.FindIndex(existing => existing.Id == item.Id)] = item;
-        Changed?.Invoke();
+        RaiseChanged();
     }
 
     private void ReplaceReview(EcommerceReview review)
     {
         reviews[reviews.FindIndex(existing => existing.Id == review.Id)] = review;
-        Changed?.Invoke();
+        RaiseChanged();
     }
-
-    private static string NoticeText(EcommerceOrder order) => order.Status switch
-    {
-        EcommerceOrderStatus.Packed => "It's packed and waiting for the carrier.",
-        EcommerceOrderStatus.Shipped => $"It's on its way. Tracking number {order.TrackingNumber}.",
-        EcommerceOrderStatus.Delivered => "It was delivered. Enjoy, and tell us what you think in a review.",
-        EcommerceOrderStatus.Cancelled => "It was cancelled before it shipped, and the payment was refunded.",
-        EcommerceOrderStatus.Refunded => "It was refunded in full to your card.",
-        _ => "We've received it.",
-    };
-
-    private static string StatusVerb(EcommerceOrderStatus status) => status switch
-    {
-        EcommerceOrderStatus.Packed => "is packed",
-        EcommerceOrderStatus.Shipped => "has shipped",
-        EcommerceOrderStatus.Delivered => "was delivered",
-        EcommerceOrderStatus.Cancelled => "was cancelled",
-        EcommerceOrderStatus.Refunded => "was refunded",
-        _ => "was placed",
-    };
-    private static bool ValidCoupons(List<EcommerceCoupon> list) =>
-        list.All(coupon => coupon is not null && IsText(coupon.Code, 20) && coupon.Code.All(ch => char.IsAsciiLetterOrDigit(ch)) && coupon.Code == coupon.Code.ToUpperInvariant()
-            && IsText(coupon.Description, 120) && Enum.IsDefined(coupon.Kind) && coupon.Value is > 0 and <= 10_000 && (coupon.Kind != EcommerceCouponKind.Percent || coupon.Value <= 100)
-            && IsMoney(coupon.MinSubtotal) && coupon.Uses is >= 0 and <= 1_000_000 && coupon.UsageLimit is null or (>= 1 and <= 1_000_000)
-            && (coupon.ExpiresOn is null || IsPlausibleDate(coupon.ExpiresOn.Value)))
-        && list.Select(coupon => coupon.Code).Distinct().Count() == list.Count;
 
     private bool ValidOrder(EcommerceOrder? order, IReadOnlyDictionary<int, EcommerceProduct> byId, int nextId) =>
         order is not null
-        && order.Id >= FirstHistoryOrderId && order.Id < nextId
+        && order.Id >= EcommerceSeedData.FirstHistoryOrderId && order.Id < nextId
         && IsPlausibleDate(order.PlacedOn)
         && Enum.IsDefined(order.Delivery) && Enum.IsDefined(order.Status)
         && (order.PromoCode is null || IsText(order.PromoCode, 20))
         && order.CardBrand is not null && cardBrands.Contains(order.CardBrand)
         && order.CardLast4 is { Length: 4 } last4 && last4.All(char.IsAsciiDigit)
         && (order.TrackingNumber is null || IsText(order.TrackingNumber, 40))
-        && (order.CustomerId is null || Identity.DemoAccounts.Any(demo => demo.Id == order.CustomerId) || order.CustomerId.StartsWith("u-", StringComparison.Ordinal))
+        && (order.CustomerId is null || IsAccountId(order.CustomerId))
         && IsMoney(order.RefundedAmount) && order.Totals is { } totals && order.RefundedAmount <= totals.Total
         && totals.ItemCount is >= 1 and <= 500 && IsMoney(totals.Subtotal) && IsMoney(totals.Discount) && IsMoney(totals.Shipping) && IsMoney(totals.Tax) && IsMoney(totals.Total)
         && order.Lines is { Count: >= 1 and <= 50 }
@@ -1187,8 +1508,12 @@ public sealed class EcommerceState : IShowcaseSiteState
             && product.Price is > 0 and <= 100_000 && (product.CompareAtPrice is null || product.CompareAtPrice is > 0 and <= 100_000)
             && IsText(product.Description, 1000) && product.Highlights is { Count: <= 6 } && product.Highlights.All(line => IsText(line, 80))
             && product.Colors is { Count: >= 1 and <= 6 } && product.Colors.All(color => IsText(color, 20))
-            && product.Stock is >= 0 and <= 9999 && IsPlausibleDate(product.AddedOn.AddYears(1)))
-        && list.Select(product => product.Id).Distinct().Count() == list.Count;
+            && product.Stock is >= 0 and <= 9999 && IsPlausibleDate(product.AddedOn)
+            && IsSku(product.Sku) && product.Sku == product.Sku.ToUpperInvariant()
+            && (product.ImageId is null || product.ImageId is >= EcommerceProduct.FirstLibraryPhotoId and <= EcommerceProduct.LastLibraryPhotoId)
+            && (product.ImageAlt is null || IsText(product.ImageAlt, MaxImageAltLength)))
+        && list.Select(product => product.Id).Distinct().Count() == list.Count
+        && list.Select(product => product.Sku).Distinct(StringComparer.OrdinalIgnoreCase).Count() == list.Count;
 
     #endregion
 
@@ -1226,14 +1551,14 @@ public sealed class EcommerceState : IShowcaseSiteState
     /// <summary>Gets the catalog filters.</summary>
     public EcommerceCatalogFilter Filter { get; } = new();
 
-    /// <summary>Gets the demo sign-in: a customer and a retailer account.</summary>
+    /// <summary>Gets the demo sign-in: a retailer and a customer account.</summary>
     public ShowcaseIdentity Identity { get; }
 
     /// <summary>Gets whether the site shows the dark color mode (not part of the snapshot; the theme switcher keeps its own choice).</summary>
     public bool IsDarkTheme { get; private set; }
 
     /// <summary>Gets whether the signed-in account is store staff (the retailer), who see the shop but don't buy.</summary>
-    public bool IsStaff => Identity.IsInRole(new[] { EcommerceSeedData.RetailerRole });
+    public bool IsStaff => Identity.IsInRole(EcommerceSeedData.StaffRoles());
 
     /// <summary>Gets all orders, oldest first: the seeded history, then orders placed in this tab.</summary>
     public IReadOnlyList<EcommerceOrder> Orders => orders;
@@ -1247,8 +1572,11 @@ public sealed class EcommerceState : IShowcaseSiteState
     /// <summary>Gets the site slug used in the storage key.</summary>
     public string SiteSlug => "ecommerce";
 
-    /// <summary>Gets the snapshot format version (3: adds address books, wishlists, and account notices).</summary>
-    public int SnapshotVersion => 3;
+    /// <summary>
+    /// Gets the snapshot format version (4: the enterprise baseline; a year of seeded history, SKUs, coupon start dates,
+    /// partial refunds, the audit log, retailer notifications, and only what differs from the seed).
+    /// </summary>
+    public int SnapshotVersion => 4;
 
     #endregion
 
@@ -1264,12 +1592,17 @@ public sealed class EcommerceState : IShowcaseSiteState
 
     #region Nested Types
 
-    /// <summary>The store's part of the tab snapshot.</summary>
+    /// <summary>
+    /// The store's part of the tab snapshot: the small lists whole, and of the seeded lists only the records changed or added
+    /// and the keys of the ones removed (<see langword="null" /> when there are none).
+    /// </summary>
     private sealed class EcommerceSnapshot
     {
         #region Properties, Indexers
 
         public List<EcommerceSavedAddress>? Addresses { get; set; }
+
+        public List<ShowcaseAuditEntry>? Audit { get; set; }
 
         public List<EcommerceCartLine>? Cart { get; set; }
 
@@ -1277,11 +1610,11 @@ public sealed class EcommerceState : IShowcaseSiteState
 
         public int NextAddressId { get; set; }
 
+        public int NextAuditId { get; set; }
+
         public int NextNoticeId { get; set; }
 
         public int NextOrderId { get; set; }
-
-        public List<EcommerceNotice>? Notices { get; set; }
 
         public int NextProductId { get; set; }
 
@@ -1289,11 +1622,27 @@ public sealed class EcommerceState : IShowcaseSiteState
 
         public int NextReviewId { get; set; }
 
+        public List<EcommerceNotice>? Notices { get; set; }
+
         public List<EcommerceOrder>? Orders { get; set; }
 
         public List<EcommerceProduct>? Products { get; set; }
 
         public string? PromoCode { get; set; }
+
+        public List<int>? RemovedAuditIds { get; set; }
+
+        public List<string>? RemovedCouponCodes { get; set; }
+
+        public List<int>? RemovedNoticeIds { get; set; }
+
+        public List<int>? RemovedOrderIds { get; set; }
+
+        public List<int>? RemovedProductIds { get; set; }
+
+        public List<int>? RemovedReturnIds { get; set; }
+
+        public List<int>? RemovedReviewIds { get; set; }
 
         public List<EcommerceReturn>? Returns { get; set; }
 

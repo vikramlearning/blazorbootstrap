@@ -6,27 +6,10 @@
     gap: 1rem;
 }
 
-.ea-status:empty {
-    margin: 0;
-}
-
-.ea-status:focus {
-    outline: none;
-}
-
-.ea-status:focus-visible {
-    outline: 2px solid var(--sc-primary);
-    outline-offset: 2px;
-}
-
 .ea-coupon-code {
     font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
     font-weight: 700;
     letter-spacing: .04em;
-}
-
-.ea-coupon-rules li + li {
-    margin-top: .125rem;
 }
 
 .ea-row-actions {
@@ -38,10 +21,4 @@
 
 ::deep .ea-code-input {
     text-transform: uppercase;
-}
-
-/* Row headers hold the code and description, so they read as body text rather than as small column headings. */
-.ea-coupon-table.ea-table th[scope=row] {
-    font-size: inherit;
-    color: var(--ec-ink);
 }

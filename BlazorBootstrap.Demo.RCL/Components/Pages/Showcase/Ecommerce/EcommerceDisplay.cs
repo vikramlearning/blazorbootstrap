@@ -1,5 +1,6 @@
 using System.Globalization;
 using BlazorBootstrap.Demo.RCL.Models.Showcase.Ecommerce;
+using BlazorBootstrap.Demo.RCL.Services.Showcase.Ecommerce;
 
 namespace BlazorBootstrap.Demo.RCL.Components.Pages.Showcase.Ecommerce;
 
@@ -18,6 +19,7 @@ public static class EcommerceDisplay
     {
         EcommerceCouponCheck.Inactive => "This code isn't active right now.",
         EcommerceCouponCheck.Expired => "This code has expired.",
+        EcommerceCouponCheck.NotStarted => coupon?.StartsOn is { } starts ? $"This code starts on {starts.ToString("MMM d", CultureInfo.InvariantCulture)}." : "This code hasn't started yet.",
         EcommerceCouponCheck.UsedUp => "This code has been used as many times as allowed.",
         EcommerceCouponCheck.BelowMinimum => $"This code needs a subtotal of {Money(coupon?.MinSubtotal ?? 0m)} or more.",
         EcommerceCouponCheck.NotFirstOrder => "This code is for a first order only.",
@@ -25,8 +27,20 @@ public static class EcommerceDisplay
         _ => "That code isn't valid.",
     };
 
+    /// <summary>Formats a count with thousands separators, like "1,204".</summary>
+    public static string Count(int value) => value.ToString("#,0", CultureInfo.InvariantCulture);
+
+    /// <summary>Formats a date like "Nov 9, 2026".</summary>
+    public static string Date(DateTime value) => value.ToString("MMM d, yyyy", CultureInfo.InvariantCulture);
+
     /// <summary>Formats a date and time like "Nov 9, 2:15 PM".</summary>
     public static string DateTimeShort(DateTime value) => value.ToString("MMM d, h:mm tt", CultureInfo.InvariantCulture);
+
+    /// <summary>Returns a count with its noun, like "1 order" or "3 orders".</summary>
+    public static string Plural(int count, string noun, string? plural = null) => $"{Count(count)} {(count == 1 ? noun : plural ?? noun + "s")}";
+
+    /// <summary>Returns a return's number, like "R-0012".</summary>
+    public static string ReturnNumber(int returnId) => EcommerceSeedData.ReturnNumber(returnId);
 
     /// <summary>Returns the delivery window text for a delivery speed.</summary>
     public static string DeliveryWindow(EcommerceDelivery delivery) => delivery switch

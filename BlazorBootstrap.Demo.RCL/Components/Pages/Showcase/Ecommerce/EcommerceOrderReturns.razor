@@ -46,7 +46,7 @@
     {
         <ShowcaseDemoNotice Class="mb-3" Text="Demo only: the store's admin decides on the request in this browser tab; nothing is shipped or refunded." />
         <EditForm Model="form" OnValidSubmit="Submit" FormName="ec-return-request">
-            <ShowcaseFormErrors />
+            <ShowcaseFormErrors ShowSummary="true" />
             <DataAnnotationsValidator />
             <fieldset class="mb-3">
                 <legend class="form-label fw-semibold fs-6">What are you returning?</legend>

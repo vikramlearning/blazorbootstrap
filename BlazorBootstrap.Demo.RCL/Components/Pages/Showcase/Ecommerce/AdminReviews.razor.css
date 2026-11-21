@@ -27,6 +27,12 @@
     overflow-wrap: anywhere;
 }
 
+/* The list's excerpt under each title wraps within its column. */
+.ea-review-excerpt {
+    max-width: 28rem;
+    overflow-wrap: anywhere;
+}
+
 .ea-reply {
     padding: .75rem 1rem;
     border-left: 3px solid var(--sc-primary);

@@ -68,7 +68,7 @@
                                 }
                                 <div class="ec-address-actions">
                                     <Button @ref="editButtons[address.Id]" Color="ButtonColor.Secondary" Outline="true" Size="ButtonSize.Small" @onclick="() => EditAsync(address)">
-                                        <Icon Name="IconName.PencilSquare" class="me-1" aria-hidden="true" />Edit<span class="visually-hidden"> @address.Label</span>
+                                        <Icon Name="IconName.PencilSquare" class="me-1" aria-hidden="true" />Edit<span class="visually-hidden">&#32;@address.Label</span>
                                     </Button>
                                     @if (!address.IsDefault)
                                     {
@@ -77,7 +77,7 @@
                                         </Button>
                                     }
                                     <Button @ref="deleteButtons[address.Id]" Color="ButtonColor.Danger" Outline="true" Size="ButtonSize.Small" @onclick="() => AskDeleteAsync(address)">
-                                        <Icon Name="IconName.Trash3" class="me-1" aria-hidden="true" />Delete<span class="visually-hidden"> @address.Label</span>
+                                        <Icon Name="IconName.Trash3" class="me-1" aria-hidden="true" />Delete<span class="visually-hidden">&#32;@address.Label</span>
                                     </Button>
                                 </div>
                             </article>
@@ -103,14 +103,16 @@
     <BodyTemplate>
         <div data-clarity-mask="true">
             <ShowcaseDemoNotice Class="mb-3" Text="Demo only: addresses stay in this browser tab and are gone when it closes. Nothing is sent." />
-            <EditForm id="ec-address-form" EditContext="editContext" OnValidSubmit="SaveAsync" FormName="ec-address">
-                <ShowcaseFormErrors />
+            <EditForm id="ec-address-form" EditContext="editContext" OnValidSubmit="SaveAsync" FormName="ec-address" novalidate>
+                @* On a failed submit, a summary here names and links every field to fix (rule WR-002). *@
+                <ShowcaseFormErrors ShowSummary="true" />
                 <DataAnnotationsValidator />
                 <div class="row g-3">
                     <div class="col-md-4">
                         <label class="form-label" for="ec-address-label">Label</label>
                         <InputText @ref="labelInput" id="ec-address-label" class="form-control" @bind-Value="form.Label" maxlength="30" autocomplete="off" aria-describedby="ec-address-label-help" />
-                        <div class="form-text" id="ec-address-label-help">For example Home, Studio, or Work.</div>
+                        <ShowcaseUniqueCheck @ref="labelCheck" For="() => form.Label" IsTakenAsync="IsLabelTakenAsync" TakenMessage="LabelTakenMessage" />
+                        <div class="form-text mt-0" id="ec-address-label-help">For example Home, Studio, or Work; each address has its own.</div>
                         <ValidationMessage For="() => form.Label" />
                     </div>
                     <div class="col-md-8">

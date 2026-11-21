@@ -37,8 +37,15 @@
                 <span class="ec-brand-mark" aria-hidden="true"><Icon Name="IconName.Flower2" /></span>
                 <span>@EcommerceSeedData.StoreName</span>
             </NavbarBrand>
-            <ShowcaseAccountMenu SiteBase="@Base" SignInPath="@SignInPath" Class="ms-auto me-2 order-lg-last"
-                                 NoticeCount="@(State.IsStaff ? 0 : State.UnreadNoticeCount(State.Identity.Current?.Id))" NoticesPath="@(State.IsStaff ? null : $"{Base}/account")" />
+            @* For a customer, the bell reads the same notices as the account overview, so the unread count lives on the bell and the
+               account menu only links to the page. The store team uses the bell in the back office. *@
+            <div class="ec-header-tools ms-auto me-2 order-lg-last">
+                @if (!State.IsStaff && !IsSignInPage)
+                {
+                    <ShowcaseNotificationsMenu />
+                }
+                <ShowcaseAccountMenu SiteBase="@Base" SignInPath="@SignInPath" NoticesPath="@(State.IsStaff ? null : $"{Base}/account")" />
+            </div>
             @if (!State.IsStaff)
             {
                 <Button @ref="cartButton" Class="ec-cart-btn me-2 me-lg-0 order-lg-last" @onclick="OpenCartAsync" aria-label="@CartLabel">
@@ -67,6 +74,12 @@
                     <NavbarItem Href="@($"{Base}/cart")">Cart</NavbarItem>
                 }
             </NavbarNav>
+            @* A signed-in customer's search: their orders by number and the store's products. Signed out it renders nothing, and
+               the catalog page keeps its own product search and filters. *@
+            @if (!State.IsStaff && !IsSignInPage)
+            {
+                <ShowcaseGlobalSearch Class="ec-global-search mb-3 mb-lg-0" Placeholder="Search products and your orders" Label="Search the store's products by name and your orders by number" />
+            }
         </ChildContent>
     </Navbar>
 

@@ -6,186 +6,285 @@
 <div class="ea-pricing">
     <div class="mb-4">
         <h1 class="ea-title">Pricing</h1>
-        <p class="ea-lead">Change prices in bulk, start or end a sale, or set one product's price.</p>
+        <p class="ea-lead">
+            Every product's price and compare-at ("was") price. Open a product to set its prices, or select several to raise or lower them by a percentage or an
+            amount, start a sale, or end one. Each change needs a reason, and the audit log keeps the old and new prices.
+        </p>
     </div>
 
     @* Always rendered and focusable: bulk and single-product updates are announced here. *@
-    <p class="fw-semibold ea-pricing-message" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
+    <p class="ea-list-status mb-3" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
 
-    <section class="ea-panel mb-4" aria-labelledby="ea-bulk-title">
-        <h2 class="ea-section-title" id="ea-bulk-title">Bulk price change</h2>
-        <p class="small text-body-secondary">Archived products are left out. Placed orders keep the prices customers paid; carts use the new prices.</p>
+    <section class="ea-panel" aria-labelledby="ea-prices-title">
+        <h2 class="ea-section-title" id="ea-prices-title">Product prices</h2>
 
-        <div class="row g-3 align-items-end">
-            <div class="col-sm-6 col-lg-3">
-                <label class="form-label small fw-semibold" for="ea-bulk-category">Products</label>
-                <select id="ea-bulk-category" class="form-select" value="@bulkCategory" @onchange="OnBulkCategoryChanged">
-                    <option value="">All categories</option>
-                    @foreach (var category in State.Categories)
-                    {
-                        <option value="@category.Id">@category.Name</option>
-                    }
-                </select>
-            </div>
-            <div class="col-sm-6 col-lg-2">
-                <CheckboxInput Id="ea-bulk-sale-only" @bind-Value="onSaleOnly" Label="On sale only" />
-            </div>
-            <div class="col-sm-8 col-lg-5">
-                <label class="form-label small fw-semibold" for="ea-bulk-action">Adjustment</label>
-                <select id="ea-bulk-action" class="form-select" value="@bulkAction" @onchange="OnBulkActionChanged">
-                    <option value="@BulkAction.Increase">Increase by %</option>
-                    <option value="@BulkAction.Decrease">Decrease by %</option>
-                    <option value="@BulkAction.StartSale">Set sale: compare-at = current price, new price = current minus %</option>
-                    <option value="@BulkAction.EndSale">End sale (remove compare-at)</option>
-                </select>
-            </div>
-            <div class="col-sm-4 col-lg-2">
-                <label class="form-label small fw-semibold" for="ea-bulk-percent">Percent (1 to 90)</label>
-                <InputGroup>
-                    <NumberInput TValue="int" Id="ea-bulk-percent" Value="@percent" ValueExpression="() => percent" ValueChanged="OnPercentChanged"
-                                 Min="1" Max="90" EnableMinMax="true" Step="1" Disabled="@(!UsesPercent)" aria-describedby="ea-bulk-percent-error" />
-                    <InputGroupText>%</InputGroupText>
-                </InputGroup>
-            </div>
-        </div>
-
-        <div role="alert" id="ea-bulk-percent-error">
-            @if (PercentError is not null)
-            {
-                <p class="text-danger small mt-2 mb-0">@PercentError</p>
-            }
-        </div>
-
-        <h3 class="h6 fw-bold mt-4 mb-2" id="ea-preview-title">Preview</h3>
-        @if (Preview.Count == 0)
-        {
-            <p class="ea-empty mb-0">@EmptyPreviewText</p>
-        }
-        else
-        {
-            <div class="table-responsive ea-preview">
-                <table class="table ea-table align-middle" aria-labelledby="ea-preview-title">
-                    <caption class="visually-hidden">Prices before and after the change, one row per affected product</caption>
-                    <thead>
-                        <tr>
-                            <th scope="col">Product</th>
-                            <th scope="col" class="text-end">Current price</th>
-                            <th scope="col" class="text-end">New price</th>
-                            <th scope="col" class="text-end">Current compare-at</th>
-                            <th scope="col" class="text-end">New compare-at</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var row in Preview)
-                        {
-                            <tr @key="row.Product.Id">
-                                <th scope="row" class="fw-semibold">@row.Product.Name</th>
-                                <td class="text-end">@EcommerceDisplay.Money(row.Product.Price)</td>
-                                <td class="text-end fw-semibold">@EcommerceDisplay.Money(row.NewPrice)</td>
-                                <td class="text-end">@MoneyOrNone(row.Product.CompareAtPrice)</td>
-                                <td class="text-end fw-semibold">@MoneyOrNone(row.NewCompareAt)</td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            </div>
-        }
-
-        <div class="mt-3">
-            <Button @ref="applyButton" Color="ButtonColor.Primary" Disabled="@(Preview.Count == 0 || PercentError is not null)" @onclick="AskApplyAsync">
-                @ApplyText
-            </Button>
-        </div>
-    </section>
-
-    <section class="ea-panel" aria-labelledby="ea-single-title">
-        <h2 class="ea-section-title" id="ea-single-title">Product prices</h2>
-        <p class="small text-body-secondary">Set a product's price and compare-at ("was") price. Leave compare-at empty when it isn't on sale.</p>
-
-        <div class="row g-2 mb-3">
-            <div class="col-md-6 col-xl-4">
-                <label class="form-label small fw-semibold" for="ea-price-search">Search by name</label>
+        <div class="ea-list-filters" role="search" aria-label="Filter prices">
+            <div class="ea-list-search">
+                <label class="form-label small fw-semibold" for="ea-price-search">Search</label>
                 <InputGroup>
                     <InputGroupText><Icon Name="IconName.Search" aria-hidden="true" /></InputGroupText>
                     @* TextInput raises ValueChanged on change only; @oninput keeps the filter live while typing. *@
                     <TextInput Id="ea-price-search" Value="@searchBoxValue" ValueExpression="() => searchBoxValue" ValueChanged="OnSearchChanged"
-                               @oninput="OnSearchInput" Placeholder="Product name" />
+                               @oninput="OnSearchInput" Placeholder="Product name or SKU" MaxLength="80" />
                 </InputGroup>
             </div>
+            <div>
+                <label class="form-label small fw-semibold" for="ea-price-category">Category</label>
+                <select id="ea-price-category" class="form-select" value="@categoryFilter" @onchange="OnCategoryChanged">
+                    <option value="">All categories</option>
+                    @foreach (var category in State.Categories)
+                    {
+                        <option value="@category.Id" @key="category.Id">@category.Name</option>
+                    }
+                </select>
+            </div>
+            <div>
+                <label class="form-label small fw-semibold" for="ea-price-sale">Sale</label>
+                <select id="ea-price-sale" class="form-select" value="@saleFilter" @onchange="OnSaleChanged">
+                    <option value="">All products</option>
+                    <option value="@SaleOn">On sale</option>
+                    <option value="@SaleOff">Not on sale</option>
+                </select>
+            </div>
+        </div>
+        <div class="ea-list-meta mb-3">
+            <p class="small text-body-secondary mb-0" aria-live="polite" tabindex="-1" @ref="countRegion">@MatchText</p>
+            @if (IsFiltered)
+            {
+                <Button Color="ButtonColor.Link" Size="ButtonSize.Small" Class="p-0" @onclick="ClearFiltersAsync">Show every product</Button>
+            }
+            @* Back to the saved view's defaults: by name, 25 a page, every column in its place. *@
+            <Button Color="ButtonColor.Link" Size="ButtonSize.Small" Class="p-0" @onclick="ResetViewAsync">Reset view</Button>
         </div>
 
-        <p class="small text-body-secondary" role="status">@ListSummary</p>
+        @if (selected.Count > 0)
+        {
+            <section class="ea-bulk" aria-labelledby="ea-pricing-bulk-count">
+                <h2 class="ea-bulk-count" id="ea-pricing-bulk-count">@(selected.Count == 1 ? "1 product selected" : $"{EcommerceDisplay.Count(selected.Count)} products selected")</h2>
+                <EditForm EditContext="bulkContext" OnSubmit="ReviewBulkAsync" FormName="ea-pricing-bulk" class="ea-bulk-form" novalidate>
+                    <DataAnnotationsValidator />
+                    <ShowcaseFormErrors ShowSummary="true" />
+                    <div class="ea-bulk-field">
+                        <label class="form-label small fw-semibold" for="ea-bulk-action">Change</label>
+                        <InputSelect id="ea-bulk-action" class="form-select form-select-sm" @bind-Value="bulkForm.Action">
+                            <option value="@PriceAction.IncreasePercent">Raise by a percentage</option>
+                            <option value="@PriceAction.DecreasePercent">Lower by a percentage</option>
+                            <option value="@PriceAction.IncreaseAmount">Raise by an amount</option>
+                            <option value="@PriceAction.DecreaseAmount">Lower by an amount</option>
+                            <option value="@PriceAction.StartSale">Start a sale: a percentage off the regular price</option>
+                            <option value="@PriceAction.EndSale">End the sale (remove compare-at prices)</option>
+                        </InputSelect>
+                    </div>
+                    @if (bulkForm.Action != PriceAction.EndSale)
+                    {
+                        <div class="ea-bulk-field">
+                            <label class="form-label small fw-semibold" for="ea-bulk-value">@(bulkForm.UsesPercent ? "Percent (1 to 90)" : "Amount ($0.01 to $1,000)")</label>
+                            <InputGroup Size="InputGroupSize.Small">
+                                @if (!bulkForm.UsesPercent)
+                                {
+                                    <InputGroupText>$</InputGroupText>
+                                }
+                                <NumberInput TValue="decimal?" Id="ea-bulk-value" @bind-Value="bulkForm.Value" Step="@(bulkForm.UsesPercent ? 1 : 0.01)" />
+                                @if (bulkForm.UsesPercent)
+                                {
+                                    <InputGroupText>%</InputGroupText>
+                                }
+                            </InputGroup>
+                            <ValidationMessage For="() => bulkForm.Value" />
+                        </div>
+                    }
+                    <div class="ea-bulk-field ea-bulk-wide">
+                        <label class="form-label small fw-semibold" for="ea-bulk-reason">Reason</label>
+                        <InputText id="ea-bulk-reason" class="form-control form-control-sm" @bind-Value="bulkForm.Reason" maxlength="@EcommerceState.MaxPriceReasonLength"
+                                   aria-describedby="ea-bulk-reason-help" />
+                        <span class="form-text d-block" id="ea-bulk-reason-help">Required, 5 to 200 characters, like “Supplier cost increase”. Kept in the audit log.</span>
+                        <ValidationMessage For="() => bulkForm.Reason" />
+                    </div>
+                    <div class="ea-bulk-actions">
+                        <Button Type="ButtonType.Submit" Color="ButtonColor.Primary" Size="ButtonSize.Small">Review changes<span class="visually-hidden">&#32;to the selected products</span></Button>
+                        <Button Color="ButtonColor.Secondary" Outline="true" Size="ButtonSize.Small" @onclick="ClearSelectionAsync">Clear selection</Button>
+                    </div>
+                </EditForm>
+                <p class="form-text w-100 mb-0">New prices are rounded to the cent and stay at $0.01 or more. A sale is always off the regular price, so a product already on sale keeps its "was" price.</p>
+            </section>
+        }
 
-        @if (Listed.Count == 0)
-        {
-            <p class="ea-empty mb-0">No products match "@search.Trim()".</p>
-        }
-        else
-        {
-            <ul class="list-unstyled mb-0 ea-price-list">
-                @foreach (var product in Listed)
-                {
-                    var row = RowFor(product);
-                    var errorId = $"ea-row-error-{product.Id}";
-                    <li class="ea-price-row" @key="product.Id">
-                        <div class="ea-price-row-name">
-                            <span class="fw-semibold">@product.Name</span>
-                            <span class="small text-body-secondary d-block">
-                                @(State.FindCategory(product.CategoryId)?.Name ?? product.CategoryId)
-                                @if (product.IsArchived)
-                                {
-                                    <Badge Color="BadgeColor.Secondary" Class="ms-1">Archived</Badge>
-                                }
-                                @if (product.IsOnSale)
-                                {
-                                    <Badge Color="BadgeColor.Danger" Class="ms-1">On sale · @product.DiscountPercent% off</Badge>
-                                }
-                            </span>
-                        </div>
-                        <div class="ea-price-row-field">
-                            <label class="form-label small mb-1" for="@($"ea-row-price-{product.Id}")">Price</label>
-                            <InputGroup Size="InputGroupSize.Small">
-                                <InputGroupText>$</InputGroupText>
-                                <NumberInput TValue="decimal?" Id="@($"ea-row-price-{product.Id}")" Value="@row.Price" ValueExpression="() => row.Price"
-                                             ValueChanged="value => OnRowPriceChanged(row, value)" Step="0.01" aria-describedby="@errorId" />
-                            </InputGroup>
-                        </div>
-                        <div class="ea-price-row-field">
-                            <label class="form-label small mb-1" for="@($"ea-row-compare-{product.Id}")">Compare-at</label>
-                            <InputGroup Size="InputGroupSize.Small">
-                                <InputGroupText>$</InputGroupText>
-                                <NumberInput TValue="decimal?" Id="@($"ea-row-compare-{product.Id}")" Value="@row.CompareAt" ValueExpression="() => row.CompareAt"
-                                             ValueChanged="value => OnRowCompareAtChanged(row, value)" Step="0.01" Placeholder="None" aria-describedby="@errorId" />
-                            </InputGroup>
-                        </div>
-                        <div class="ea-price-row-action">
-                            <Button Color="ButtonColor.Primary" Outline="true" Size="ButtonSize.Small" @onclick="() => SaveRow(product.Id)">
-                                Save<span class="visually-hidden">@($" prices for {product.Name}")</span>
-                            </Button>
-                        </div>
-                        <div class="ea-price-row-error" role="alert" id="@errorId">
-                            @if (row.Error is not null)
-                            {
-                                <span class="text-danger small">@row.Error</span>
+        <ShowcaseDataState Status="@(viewLoaded ? ShowcaseDataStatus.Ready : ShowcaseDataStatus.Loading)"
+                           IsEmpty="@(State.AllProducts.Count == 0)"
+                           EmptyIcon="IconName.CurrencyDollar"
+                           EmptyTitle="No products to price"
+                           EmptyText="Add a product first; its price shows up here."
+                           LoadingText="Loading prices…"
+                           OnRetry="RefreshGridAsync">
+            <EmptyActions>
+                <a class="btn btn-sm btn-primary" href="@($"{EcommerceAdminLayout.Base}/products/new")">Add product</a>
+            </EmptyActions>
+            <ChildContent>
+                <Grid @ref="grid"
+                      @key="gridVersion"
+                      TItem="PriceRow"
+                      Class="table table-hover align-middle ea-table-wide sc-grid-row-links"
+                      GridContainerClass="ea-grid border rounded-3"
+                      DataProvider="ProvidePricesAsync"
+                      SettingsProvider="view.GetSettingsAsync"
+                      GridSettingsChanged="SaveSettingsAsync"
+                      AllowPaging="true"
+                      PageSize="@pageSize"
+                      PageSizeSelectorVisible="true"
+                      PageSizeSelectorItems="@(new[] { 10, 25, 50, 100 })"
+                      PaginationItemsTextFormat="{0}–{1} of {2} products"
+                      AllowSorting="true"
+                      AllowSelection="true"
+                      SelectionMode="GridSelectionMode.Multiple"
+                      RowSelectionLabel="@(row => $"Select {row.Name}, {row.Sku}")"
+                      SelectAllRowsText="Select all shown products"
+                      SelectedItemsChanged="OnSelectionChanged"
+                      RowClass="RowClass"
+                      AllowColumnChooser="true"
+                      AllowExport="true"
+                      ExportFileName="commerce-pricing"
+                      Responsive="true"
+                      EmptyText="No products match these filters. Clear a filter, or search for part of a name or SKU."
+                      aria-label="Product prices">
+                    <GridColumns>
+                        <GridColumn TItem="PriceRow" HeaderText="Product" PropertyName="Name" SortString="name" SortKeySelector="row => row.Name"
+                                    IsDefaultSortColumn="@view.IsSortColumn("name")" SortDirection="@view.DirectionFor("name")" AlwaysVisible="true">
+                            @* No page of its own here: the stretched button opens the product's price dialog; the checkbox stays above it. *@
+                            @{
+                                var productId = context.Id;
                             }
-                        </div>
-                    </li>
-                }
-            </ul>
-        }
+                            <button type="button" class="ea-row-button stretched-link" @ref="priceButtons[productId]" @onclick="() => OpenPriceAsync(productId)">
+                                @context.Name<span class="visually-hidden">: set prices</span>
+                            </button>
+                        </GridColumn>
+                        <GridColumn TItem="PriceRow" HeaderText="SKU" PropertyName="Sku" SortString="sku" SortKeySelector="row => row.Sku"
+                                    IsDefaultSortColumn="@view.IsSortColumn("sku")" SortDirection="@view.DirectionFor("sku")" TextNoWrap="true">
+                            <span class="ea-mono">@context.Sku</span>
+                        </GridColumn>
+                        <GridColumn TItem="PriceRow" HeaderText="Category" PropertyName="Category" SortString="category" SortKeySelector="row => row.Category"
+                                    IsDefaultSortColumn="@view.IsSortColumn("category")" SortDirection="@view.DirectionFor("category")">
+                            @context.Category
+                        </GridColumn>
+                        <GridColumn TItem="PriceRow" HeaderText="Price" PropertyName="Price" SortString="price" SortKeySelector="row => row.Price"
+                                    IsDefaultSortColumn="@view.IsSortColumn("price")" SortDirection="@view.DirectionFor("price")" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" TextNoWrap="true">
+                            <span class="fw-semibold">@EcommerceDisplay.Money(context.Price)</span>
+                        </GridColumn>
+                        <GridColumn TItem="PriceRow" HeaderText="Compare-at" PropertyName="CompareAt" SortString="compare" SortKeySelector="row => row.CompareAt ?? 0m"
+                                    IsDefaultSortColumn="@view.IsSortColumn("compare")" SortDirection="@view.DirectionFor("compare")" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" TextNoWrap="true">
+                            @if (context.CompareAt is { } was)
+                            {
+                                <s><span class="visually-hidden">Was </span>@EcommerceDisplay.Money(was)</s>
+                            }
+                            else
+                            {
+                                <span class="text-body-secondary" aria-hidden="true">—</span><span class="visually-hidden">None</span>
+                            }
+                        </GridColumn>
+                        <GridColumn TItem="PriceRow" HeaderText="Discount" PropertyName="DiscountText" SortString="discount" SortKeySelector="row => row.Discount"
+                                    IsDefaultSortColumn="@view.IsSortColumn("discount")" SortDirection="@view.DirectionFor("discount")" TextNoWrap="true">
+                            @if (context.Discount > 0)
+                            {
+                                <Badge Color="BadgeColor.Danger">On sale · @context.Discount% off</Badge>
+                            }
+                            else
+                            {
+                                <span class="text-body-secondary">Regular price</span>
+                            }
+                        </GridColumn>
+                        <GridColumn TItem="PriceRow" HeaderText="Status" PropertyName="Status" SortString="status" SortKeySelector="row => row.IsArchived"
+                                    IsDefaultSortColumn="@view.IsSortColumn("status")" SortDirection="@view.DirectionFor("status")">
+                            <Badge Color="@(context.IsArchived ? BadgeColor.Secondary : BadgeColor.Success)">@context.Status</Badge>
+                        </GridColumn>
+                    </GridColumns>
+                </Grid>
+            </ChildContent>
+        </ShowcaseDataState>
     </section>
 </div>
 
-<Modal @ref="applyModal" IsVerticallyCentered="true" ShowCloseButton="false" aria-labelledby="ea-apply-title" OnHidden="OnApplyHiddenAsync">
+<Modal @ref="applyModal" IsVerticallyCentered="true" IsScrollable="true" Size="ModalSize.Large" ShowCloseButton="false" aria-labelledby="ea-apply-title" OnHidden="OnApplyHiddenAsync">
     <HeaderTemplate>
-        <h2 class="modal-title h5" id="ea-apply-title">Update prices for @(ProductCountText(pendingChanges.Count))?</h2>
+        <h2 class="modal-title h5" id="ea-apply-title">Update prices for @EcommerceDisplay.Plural(pendingChanges.Count, "product")?</h2>
     </HeaderTemplate>
     <BodyTemplate>
         <p class="mb-2">@ActionDescription</p>
-        <p class="small text-body-secondary mb-0">Shoppers see the new prices right away. Placed orders keep the prices customers paid.</p>
+        @if (unchangedCount > 0)
+        {
+            <p class="small mb-2">@EcommerceDisplay.Plural(unchangedCount, "selected product") would keep @(unchangedCount == 1 ? "its prices" : "their prices"), so @(unchangedCount == 1 ? "it's" : "they're") left out.</p>
+        }
+        <p class="small text-body-secondary">Reason: @bulkForm.Reason.Trim(). Shoppers see the new prices right away; placed orders keep the prices customers paid.</p>
+        @* A preview of the changes: line items, so a plain table. *@
+        <div class="table-responsive ea-preview">
+            <table class="table ea-table align-middle mb-0">
+                <caption class="visually-hidden">Prices before and after the change, one row per product that changes</caption>
+                <thead>
+                    <tr>
+                        <th scope="col">Product</th>
+                        <th scope="col" class="text-end">Current price</th>
+                        <th scope="col" class="text-end">New price</th>
+                        <th scope="col" class="text-end">Current compare-at</th>
+                        <th scope="col" class="text-end">New compare-at</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var change in pendingChanges)
+                    {
+                        <tr @key="change.Id">
+                            <th scope="row" class="fw-semibold">@change.Name</th>
+                            <td class="text-end">@EcommerceDisplay.Money(change.OldPrice)</td>
+                            <td class="text-end fw-semibold">@EcommerceDisplay.Money(change.NewPrice)</td>
+                            <td class="text-end">@MoneyOrNone(change.OldCompareAt)</td>
+                            <td class="text-end fw-semibold">@MoneyOrNone(change.NewCompareAt)</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
     </BodyTemplate>
     <FooterTemplate>
         <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => applyModal.HideAsync()">Cancel</Button>
-        <Button Color="ButtonColor.Primary" @onclick="ConfirmApplyAsync">Update @(ProductCountText(pendingChanges.Count))</Button>
+        <Button Color="ButtonColor.Primary" @onclick="ConfirmApplyAsync">Update @EcommerceDisplay.Plural(pendingChanges.Count, "product")</Button>
+    </FooterTemplate>
+</Modal>
+
+<Modal @ref="priceModal" IsVerticallyCentered="true" ShowCloseButton="false" aria-labelledby="ea-price-title" OnShown="OnPriceShownAsync" OnHidden="OnPriceHiddenAsync">
+    <HeaderTemplate>
+        <h2 class="modal-title h5" id="ea-price-title">Set prices: @(State.FindAnyProduct(pricingId)?.Name)</h2>
+    </HeaderTemplate>
+    <BodyTemplate>
+        <EditForm id="ea-price-form" EditContext="priceContext" OnValidSubmit="SavePriceAsync" FormName="ea-price" novalidate>
+            <DataAnnotationsValidator />
+            <ShowcaseFormErrors ShowSummary="true" />
+            <div class="row g-3">
+                <div class="col-sm-6">
+                    <label class="form-label" for="ea-price-new">Price</label>
+                    <InputGroup>
+                        <InputGroupText>$</InputGroupText>
+                        <NumberInput @ref="priceInput" TValue="decimal?" Id="ea-price-new" @bind-Value="priceForm.Price" Step="0.01" aria-describedby="ea-price-new-help" />
+                    </InputGroup>
+                    <div class="form-text" id="ea-price-new-help">What shoppers pay: $0.01 to $100,000.</div>
+                    <ValidationMessage For="() => priceForm.Price" />
+                </div>
+                <div class="col-sm-6">
+                    <label class="form-label" for="ea-price-compare">Compare-at price</label>
+                    <InputGroup>
+                        <InputGroupText>$</InputGroupText>
+                        <NumberInput TValue="decimal?" Id="ea-price-compare" @bind-Value="priceForm.CompareAt" Step="0.01" Placeholder="None" aria-describedby="ea-price-compare-help" />
+                    </InputGroup>
+                    <div class="form-text" id="ea-price-compare-help">The regular ("was") price while it's on sale, above the price. Leave it empty when it isn't.</div>
+                    <ValidationMessage For="() => priceForm.CompareAt" />
+                </div>
+                <div class="col-12">
+                    <label class="form-label" for="ea-price-reason">Reason</label>
+                    <InputText id="ea-price-reason" class="form-control" @bind-Value="priceForm.Reason" maxlength="@EcommerceState.MaxPriceReasonLength" aria-describedby="ea-price-reason-help" />
+                    <div class="form-text" id="ea-price-reason-help">Required, 5 to 200 characters, like “Match the new supplier price”. Kept in the audit log.</div>
+                    <ValidationMessage For="() => priceForm.Reason" />
+                </div>
+            </div>
+        </EditForm>
+    </BodyTemplate>
+    <FooterTemplate>
+        <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => priceModal.HideAsync()">Cancel</Button>
+        <Button Type="ButtonType.Submit" Color="ButtonColor.Primary" form="ea-price-form">Save prices</Button>
     </FooterTemplate>
 </Modal>

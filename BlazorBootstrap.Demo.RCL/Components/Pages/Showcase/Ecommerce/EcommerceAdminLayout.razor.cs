@@ -53,6 +53,7 @@ public partial class EcommerceAdminLayout : LayoutComponentBase, IDisposable
             new() { Id = "returns", Href = $"{Base}/returns", IconName = IconName.ArrowCounterclockwise, Text = "Returns" },
             new() { Id = "reviews", Href = $"{Base}/reviews", IconName = IconName.ChatSquareText, Text = "Reviews" },
             new() { Id = "analytics", Href = $"{Base}/analytics", IconName = IconName.GraphUp, Text = "Analytics" },
+            new() { Id = "audit", Href = $"{Base}/audit", IconName = IconName.ClockHistory, Text = "Audit log" },
             new() { Id = "account", Href = $"{Base}/account", IconName = IconName.PersonGear, Text = "Account" },
         };
 

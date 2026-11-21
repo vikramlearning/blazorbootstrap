@@ -8,179 +8,182 @@
     <p class="ea-lead">@LeadText</p>
 </div>
 
-<div class="ea-returns-filter mb-3">
-    <span class="form-label small fw-semibold d-block" id="ea-returns-filter-label">Show</span>
-    <RadioButtonGroup TValue="ReturnFilter" Value="filter" ValueChanged="OnFilterChanged" ValueExpression="() => filter"
-                      AriaLabel="Show returns" aria-labelledby="ea-returns-filter-label" Size="ButtonGroupSize.Small" Class="flex-wrap">
-        @foreach (var option in filters)
+@* Always rendered and focusable, so a decision is announced and focus has somewhere to go when the bulk bar closes. *@
+<p class="ea-list-status mb-3" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
+<p class="ea-list-error mb-3" role="alert">@errorMessage</p>
+
+<section class="ea-panel" aria-labelledby="ea-returns-title">
+    <h2 class="ea-section-title" id="ea-returns-title">Return requests</h2>
+
+    <div class="ea-list-filters" role="search" aria-label="Filter returns">
+        <div class="ea-list-search">
+            <label class="form-label small fw-semibold" for="ea-return-search">Search</label>
+            <InputGroup>
+                <InputGroupText><Icon Name="IconName.Search" aria-hidden="true" /></InputGroupText>
+                @* TextInput raises ValueChanged on change only; @oninput keeps the filter live while typing. *@
+                <TextInput Id="ea-return-search" Value="@searchBoxValue" ValueExpression="() => searchBoxValue" ValueChanged="OnSearchChanged"
+                           @oninput="OnSearchInput" Placeholder="Return or order number, name, or email" MaxLength="80" />
+            </InputGroup>
+        </div>
+        <div>
+            <label class="form-label small fw-semibold" for="ea-return-status">Status</label>
+            <select id="ea-return-status" class="form-select" value="@statusFilter" @onchange="OnStatusFilterChanged">
+                <option value="">All (@State.Returns.Count)</option>
+                @foreach (var status in Enum.GetValues<EcommerceReturnStatus>())
+                {
+                    <option value="@status" @key="status">@StatusLabel(status) (@State.Returns.Count(item => item.Status == status))</option>
+                }
+            </select>
+        </div>
+    </div>
+    <div class="ea-list-meta mb-3">
+        <p class="small text-body-secondary mb-0" aria-live="polite" tabindex="-1" @ref="countRegion">@MatchText</p>
+        @if (IsFiltered)
         {
-            <ButtonGroupItem TValue="ReturnFilter" Value="option" Id="@($"ea-returns-filter-{option}")">@FilterLabel(option) <span class="ea-count">(@CountFor(option))</span></ButtonGroupItem>
+            <Button Color="ButtonColor.Link" Size="ButtonSize.Small" Class="p-0" @onclick="ShowWaitingAsync">Show the waiting returns</Button>
         }
-    </RadioButtonGroup>
-</div>
+        @* Back to the saved view's defaults: oldest request first, 25 a page, every column in its place. *@
+        <Button Color="ButtonColor.Link" Size="ButtonSize.Small" Class="p-0" @onclick="ResetViewAsync">Reset view</Button>
+    </div>
 
-@* Always rendered and focusable, so a decision is announced and focus has somewhere to go when its buttons are gone. *@
-<p class="ea-status fw-semibold" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
+    @if (selected.Count > 0)
+    {
+        var waiting = selected.Count(row => row.StatusValue == EcommerceReturnStatus.Requested);
 
-<section aria-labelledby="ea-returns-title">
-    <h2 class="visually-hidden" id="ea-returns-title">@FilterLabel(filter) returns</h2>
-    @if (Shown.Count == 0)
-    {
-        <p class="ea-empty">@EmptyText</p>
-    }
-    else
-    {
-        <ul class="list-unstyled d-grid gap-3 mb-0">
-            @foreach (var item in Shown)
+        <section class="ea-bulk" aria-labelledby="ea-returns-bulk-count">
+            <h2 class="ea-bulk-count" id="ea-returns-bulk-count">
+                @(selected.Count == 1 ? "1 return selected" : $"{EcommerceDisplay.Count(selected.Count)} returns selected"), @(waiting == selected.Count ? "all waiting" : $"{waiting} waiting for a decision")
+            </h2>
+            @if (waiting == 0)
             {
-                var order = State.FindOrder(item.OrderId);
-                <li @key="item.Id">
-                    <article class="ea-panel ea-return" aria-labelledby="@($"ea-return-{item.Id}")">
-                        <div class="d-flex flex-wrap justify-content-between align-items-start gap-2 mb-2">
-                            <div>
-                                <h3 class="h6 fw-bold mb-1" id="@($"ea-return-{item.Id}")">Return @ReturnNumber(item)</h3>
-                                <p class="small text-body-secondary mb-0">
-                                    Order <a href="@($"{EcommerceAdminLayout.Base}/orders/{item.OrderId}")">#@item.OrderId</a>
-                                    · requested @EcommerceDisplay.DateTimeShort(item.RequestedOn)
-                                </p>
-                            </div>
-                            <Badge Color="@StatusColor(item.Status)">@StatusLabel(item.Status)</Badge>
-                        </div>
-
-                        <dl class="ea-return-facts small mb-3">
-                            <div>
-                                <dt>Customer</dt>
-                                <dd data-clarity-mask="true">
-                                    @if (order is not null)
-                                    {
-                                        <span>@order.ShipTo.FullName</span>
-                                        <span class="text-body-secondary text-break"> · @order.ShipTo.Email</span>
-                                    }
-                                    else
-                                    {
-                                        <span>Unknown (the order is no longer on file)</span>
-                                    }
-                                </dd>
-                            </div>
-                            <div>
-                                <dt>Reason</dt>
-                                <dd>@item.Reason</dd>
-                            </div>
-                            @if (!string.IsNullOrWhiteSpace(item.Comment))
-                            {
-                                <div>
-                                    <dt>Customer's comment</dt>
-                                    <dd data-clarity-mask="true">@item.Comment</dd>
-                                </div>
-                            }
-                            @if (item.DecidedOn is { } decided)
-                            {
-                                <div>
-                                    <dt>@(item.Status == EcommerceReturnStatus.Approved ? "Approved" : "Rejected")</dt>
-                                    <dd>
-                                        @EcommerceDisplay.DateTimeShort(decided)
-                                        @if (!string.IsNullOrWhiteSpace(item.DecisionNote))
-                                        {
-                                            <span> · @item.DecisionNote</span>
-                                        }
-                                    </dd>
-                                </div>
-                            }
-                        </dl>
-
-                        <div class="table-responsive">
-                            <table class="table ea-table align-middle">
-                                <caption class="visually-hidden">Items in return @ReturnNumber(item)</caption>
-                                <thead>
-                                    <tr>
-                                        <th scope="col">Item</th>
-                                        <th scope="col">Color</th>
-                                        <th scope="col" class="text-end">Qty</th>
-                                        <th scope="col" class="text-end">Amount</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach (var line in item.Lines)
-                                    {
-                                        <tr @key="(line.ProductId, line.Color)">
-                                            <td>@line.Name</td>
-                                            <td>@line.Color</td>
-                                            <td class="text-end">@line.Quantity</td>
-                                            <td class="text-end">@EcommerceDisplay.Money(line.UnitPrice * line.Quantity)</td>
-                                        </tr>
-                                    }
-                                </tbody>
-                                <tfoot>
-                                    <tr>
-                                        <th scope="row" colspan="3" class="text-end">Total</th>
-                                        <td class="text-end fw-semibold">@EcommerceDisplay.Money(item.Amount)</td>
-                                    </tr>
-                                </tfoot>
-                            </table>
-                        </div>
-
-                        @if (item.Status == EcommerceReturnStatus.Requested)
-                        {
-                            <div class="d-flex flex-wrap gap-2 mt-3">
-                                <Button @ref="approveButtons[item.Id]" Color="ButtonColor.Success" Size="ButtonSize.Small" Disabled="@(order is null)" @onclick="() => AskApproveAsync(item)">
-                                    Approve &amp; refund<span class="visually-hidden"> return @ReturnNumber(item)</span>
-                                </Button>
-                                <Button @ref="rejectButtons[item.Id]" Color="ButtonColor.Danger" Outline="true" Size="ButtonSize.Small" @onclick="() => AskRejectAsync(item)">
-                                    Reject<span class="visually-hidden"> return @ReturnNumber(item)</span>
-                                </Button>
-                            </div>
-                        }
-                    </article>
-                </li>
+                <p class="small mb-0 w-100">These returns are decided already. Select waiting returns to approve or reject them together.</p>
+                <div class="ea-bulk-actions">
+                    <Button Color="ButtonColor.Secondary" Outline="true" Size="ButtonSize.Small" @onclick="ClearSelectionAsync">Clear selection</Button>
+                </div>
             }
-        </ul>
+            else
+            {
+                <EditForm EditContext="bulkContext" OnSubmit="ApplyBulkAsync" FormName="ea-returns-bulk" class="ea-bulk-form" novalidate>
+                    <DataAnnotationsValidator />
+                    <ShowcaseFormErrors ShowSummary="true" />
+                    <div class="ea-bulk-field">
+                        <label class="form-label small fw-semibold" for="ea-returns-bulk-decision">Decision</label>
+                        <InputSelect id="ea-returns-bulk-decision" class="form-select form-select-sm" @bind-Value="bulkForm.Decision" aria-describedby="ea-returns-bulk-decision-help">
+                            <option value="">Choose a decision</option>
+                            <option value="@ApproveValue">Approve and refund in full</option>
+                            <option value="@RejectValue">Reject</option>
+                        </InputSelect>
+                        <span class="form-text d-block" id="ea-returns-bulk-decision-help">
+                            @(bulkForm.Decision == RejectValue
+                                ? "Nothing is refunded; the items stay with the customers."
+                                : $"Items go back into stock; {EcommerceDisplay.Money(selected.Where(row => row.StatusValue == EcommerceReturnStatus.Requested).Sum(row => row.Amount))} is refunded to the original cards, at most what's left of each order.")
+                        </span>
+                        <ValidationMessage For="() => bulkForm.Decision" />
+                    </div>
+                    <div class="ea-bulk-field ea-bulk-wide">
+                        <label class="form-label small fw-semibold" for="ea-returns-bulk-note">@(bulkForm.Decision == RejectValue ? "Reason for the customers" : "Note (optional)")</label>
+                        <InputTextArea id="ea-returns-bulk-note" class="form-control form-control-sm" rows="2" maxlength="@EcommerceState.MaxDecisionNoteLength" @bind-Value="bulkForm.Note"
+                                       aria-describedby="ea-returns-bulk-note-help" />
+                        <span class="form-text d-block" id="ea-returns-bulk-note-help">
+                            @(bulkForm.Decision == RejectValue ? "Required, 5 to 200 characters. The customers read it." : "Up to 200 characters, kept with each return.")
+                        </span>
+                        <ValidationMessage For="() => bulkForm.Note" />
+                    </div>
+                    <div class="ea-bulk-actions">
+                        <Button Type="ButtonType.Submit" Color="ButtonColor.Primary" Size="ButtonSize.Small">Apply<span class="visually-hidden">&#32;to the selected returns</span></Button>
+                        <Button Color="ButtonColor.Secondary" Outline="true" Size="ButtonSize.Small" @onclick="ClearSelectionAsync">Clear selection</Button>
+                    </div>
+                </EditForm>
+                <p class="form-text w-100 mb-0">Only the waiting returns change; decided ones stay as they are. Each customer hears about their return. To refund less, open a return and decide it on its own.</p>
+            }
+        </section>
     }
+
+    <ShowcaseDataState Status="@(viewLoaded ? ShowcaseDataStatus.Ready : ShowcaseDataStatus.Loading)"
+                       IsEmpty="@(State.Returns.Count == 0)"
+                       EmptyIcon="IconName.ArrowCounterclockwise"
+                       EmptyTitle="No return requests yet"
+                       EmptyText="Customers can ask to return items from a delivered order; their requests appear here."
+                       LoadingText="Loading returns…"
+                       OnRetry="RefreshGridAsync">
+        <ChildContent>
+            <Grid @ref="grid"
+                  @key="gridVersion"
+                  TItem="ReturnRow"
+                  Class="table table-hover align-middle ea-table-wide sc-grid-row-links"
+                  GridContainerClass="ea-grid border rounded-3"
+                  DataProvider="ProvideReturnsAsync"
+                  SettingsProvider="view.GetSettingsAsync"
+                  GridSettingsChanged="SaveSettingsAsync"
+                  AllowPaging="true"
+                  PageSize="@pageSize"
+                  PageSizeSelectorVisible="true"
+                  PageSizeSelectorItems="@(new[] { 10, 25, 50 })"
+                  PaginationItemsTextFormat="{0}–{1} of {2} returns"
+                  AllowSorting="true"
+                  AllowSelection="true"
+                  SelectionMode="GridSelectionMode.Multiple"
+                  RowSelectionLabel="@(row => $"Select return {row.Number}, {row.Customer}")"
+                  SelectAllRowsText="Select all shown returns"
+                  SelectedItemsChanged="OnSelectionChanged"
+                  RowClass="RowClass"
+                  AllowColumnChooser="true"
+                  AllowExport="true"
+                  ExportFileName="commerce-returns"
+                  Responsive="true"
+                  EmptyText="@EmptyText"
+                  aria-label="Return requests">
+                <GridColumns>
+                    <GridColumn TItem="ReturnRow" HeaderText="Return" PropertyName="Number" SortString="number" SortKeySelector="row => row.Id"
+                                IsDefaultSortColumn="@view.IsSortColumn("number")" SortDirection="@view.DirectionFor("number")" TextNoWrap="true" AlwaysVisible="true">
+                        @* The stretched link makes the whole row open the return; the checkbox and the order link stay above it. *@
+                        <a class="ea-row-link stretched-link" href="@EcommerceSeedData.AdminReturnPath(context.Id)">@context.Number</a>
+                    </GridColumn>
+                    <GridColumn TItem="ReturnRow" HeaderText="Order" PropertyName="Order" SortString="order" SortKeySelector="row => row.OrderId"
+                                IsDefaultSortColumn="@view.IsSortColumn("order")" SortDirection="@view.DirectionFor("order")" TextNoWrap="true">
+                        <a href="@EcommerceSeedData.AdminOrderPath(context.OrderId)">@context.Order</a>
+                    </GridColumn>
+                    <GridColumn TItem="ReturnRow" HeaderText="Customer" PropertyName="Customer" SortString="customer" SortKeySelector="row => row.Customer"
+                                IsDefaultSortColumn="@view.IsSortColumn("customer")" SortDirection="@view.DirectionFor("customer")">
+                        <span data-clarity-mask="true">@context.Customer</span>
+                    </GridColumn>
+                    <GridColumn TItem="ReturnRow" HeaderText="Items" PropertyName="Items" SortString="items" SortKeySelector="row => row.Items"
+                                IsDefaultSortColumn="@view.IsSortColumn("items")" SortDirection="@view.DirectionFor("items")" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End">
+                        @context.Items
+                    </GridColumn>
+                    <GridColumn TItem="ReturnRow" HeaderText="Amount" PropertyName="Amount" SortString="amount" SortKeySelector="row => row.Amount"
+                                IsDefaultSortColumn="@view.IsSortColumn("amount")" SortDirection="@view.DirectionFor("amount")" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" TextNoWrap="true">
+                        @EcommerceDisplay.Money(context.Amount)
+                    </GridColumn>
+                    <GridColumn TItem="ReturnRow" HeaderText="Reason" PropertyName="Reason" SortString="reason" SortKeySelector="row => row.Reason"
+                                IsDefaultSortColumn="@view.IsSortColumn("reason")" SortDirection="@view.DirectionFor("reason")">
+                        <span class="small">@context.Reason</span>
+                    </GridColumn>
+                    <GridColumn TItem="ReturnRow" HeaderText="Requested" PropertyName="RequestedText" SortString="requested" SortKeySelector="row => row.RequestedOn"
+                                IsDefaultSortColumn="@view.IsSortColumn("requested")" SortDirection="@view.DirectionFor("requested")" TextNoWrap="true">
+                        @EcommerceDisplay.DateTimeShort(context.RequestedOn)
+                    </GridColumn>
+                    <GridColumn TItem="ReturnRow" HeaderText="Status" PropertyName="Status" SortString="status" SortKeySelector="row => row.StatusValue"
+                                IsDefaultSortColumn="@view.IsSortColumn("status")" SortDirection="@view.DirectionFor("status")" TextNoWrap="true">
+                        <Badge Color="@StatusColor(context.StatusValue)">@context.Status</Badge>
+                    </GridColumn>
+                    <GridColumn TItem="ReturnRow" HeaderText="Refunded" PropertyName="Refunded" SortString="refunded" SortKeySelector="row => row.Refunded"
+                                IsDefaultSortColumn="@view.IsSortColumn("refunded")" SortDirection="@view.DirectionFor("refunded")" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" TextNoWrap="true">
+                        @if (context.StatusValue == EcommerceReturnStatus.Approved)
+                        {
+                            @EcommerceDisplay.Money(context.Refunded)
+                        }
+                        else
+                        {
+                            <span class="text-body-secondary" aria-hidden="true">—</span><span class="visually-hidden">None</span>
+                        }
+                    </GridColumn>
+                    <GridColumn TItem="ReturnRow" HeaderText="Decided" PropertyName="DecidedText" SortString="decided" SortKeySelector="row => row.DecidedOn ?? DateTime.MaxValue"
+                                IsDefaultSortColumn="@view.IsSortColumn("decided")" SortDirection="@view.DirectionFor("decided")" TextNoWrap="true">
+                        @(context.DecidedOn is { } decided ? EcommerceDisplay.DateTimeShort(decided) : "Waiting")
+                    </GridColumn>
+                </GridColumns>
+            </Grid>
+        </ChildContent>
+    </ShowcaseDataState>
 </section>
-
-<Modal @ref="approveModal" IsVerticallyCentered="true" ShowCloseButton="false" aria-labelledby="ea-approve-title" OnHidden="OnDecisionHiddenAsync">
-    <HeaderTemplate>
-        <h2 class="modal-title h5" id="ea-approve-title">Approve return @(deciding is null ? null : ReturnNumber(deciding)) and refund?</h2>
-    </HeaderTemplate>
-    <BodyTemplate>
-        @if (deciding is not null)
-        {
-            <p>@ApproveConsequence(deciding)</p>
-            <EditForm id="ea-approve-form" EditContext="approveContext" OnValidSubmit="ConfirmApproveAsync" FormName="ea-approve">
-                <ShowcaseFormErrors />
-                <DataAnnotationsValidator />
-                <label class="form-label" for="ea-approve-note">Note (optional)</label>
-                <TextAreaInput Id="ea-approve-note" @bind-Value="approveForm.Note" Rows="3" MaxLength="200" aria-describedby="ea-approve-note-help" />
-                <div class="form-text" id="ea-approve-note-help">Up to 200 characters, kept with the return.</div>
-                <ValidationMessage For="() => approveForm.Note" />
-            </EditForm>
-        }
-    </BodyTemplate>
-    <FooterTemplate>
-        <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => approveModal.HideAsync()">Not now</Button>
-        <Button Type="ButtonType.Submit" Color="ButtonColor.Success" form="ea-approve-form">Approve &amp; refund</Button>
-    </FooterTemplate>
-</Modal>
-
-<Modal @ref="rejectModal" IsVerticallyCentered="true" ShowCloseButton="false" aria-labelledby="ea-reject-title" OnHidden="OnDecisionHiddenAsync">
-    <HeaderTemplate>
-        <h2 class="modal-title h5" id="ea-reject-title">Reject return @(deciding is null ? null : ReturnNumber(deciding))?</h2>
-    </HeaderTemplate>
-    <BodyTemplate>
-        @if (deciding is not null)
-        {
-            <p>Nothing is refunded and the items stay with the customer. The return can't be reopened afterwards.</p>
-            <EditForm id="ea-reject-form" EditContext="rejectContext" OnValidSubmit="ConfirmRejectAsync" FormName="ea-reject">
-                <ShowcaseFormErrors />
-                <DataAnnotationsValidator />
-                <label class="form-label" for="ea-reject-note">Reason for the customer</label>
-                <TextAreaInput Id="ea-reject-note" @bind-Value="rejectForm.Note" Rows="3" MaxLength="200" aria-describedby="ea-reject-note-help" />
-                <div class="form-text" id="ea-reject-note-help">Required, 5 to 200 characters, kept with the return.</div>
-                <ValidationMessage For="() => rejectForm.Note" />
-            </EditForm>
-        }
-    </BodyTemplate>
-    <FooterTemplate>
-        <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => rejectModal.HideAsync()">Not now</Button>
-        <Button Type="ButtonType.Submit" Color="ButtonColor.Danger" form="ea-reject-form">Reject return</Button>
-    </FooterTemplate>
-</Modal>

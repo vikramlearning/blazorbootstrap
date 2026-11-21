@@ -1,0 +1,23 @@
+@page "/showcase/ecommerce/admin/audit"
+@layout EcommerceAdminLayout
+
+<PageTitle>Audit log · @EcommerceSeedData.StoreName admin</PageTitle>
+
+@* The retailer sees it: the back office's guard keeps everyone else out, and the state shows the log to the retailer only. *@
+<div class="mb-4">
+    <h1 class="ea-title">Audit log</h1>
+    <p class="ea-lead">
+        Who did what, and when, newest first: the store team (fulfilment, refunds, return decisions, prices, products, stock, coupons, and review moderation),
+        customers (orders, returns, and reviews), and the store's system (deliveries the carrier confirms). Each record links to its page in the back office.
+    </p>
+</div>
+
+<section class="ea-panel" aria-labelledby="ea-audit-title">
+    <h2 class="visually-hidden" id="ea-audit-title">Entries</h2>
+    <p class="small text-body-secondary mb-3">
+        <Icon Name="IconName.Lock" class="me-1" aria-hidden="true" />Kept for this browser tab. Entries can't be changed or deleted.
+    </p>
+    <div class="ea-grid">
+        <ShowcaseAuditLog ExportFileName="commerce-audit-log" AriaLabel="Audit log of the store" />
+    </div>
+</section>
