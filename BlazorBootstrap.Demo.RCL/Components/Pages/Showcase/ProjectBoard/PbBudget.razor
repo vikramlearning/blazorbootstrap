@@ -1,0 +1,45 @@
+@* A project's budget use: hours logged against its budget hours, and the amount billed (issued and paid invoices) against its
+   budget amount, with a warning in words at 80% and at 100%. Shown on the project board and the client page. *@
+@{
+    var hours = State.HoursLogged(Project.Id);
+    var billed = State.BilledAmount(Project.Id);
+    var currency = State.FindClient(Project.ClientId)?.BillingCurrency ?? "USD";
+    var hoursShare = Project.BudgetHours == 0 ? (decimal?)null : hours * 100m / Project.BudgetHours;
+    var billedShare = Project.BudgetAmount == 0 ? (decimal?)null : billed * 100m / Project.BudgetAmount;
+}
+<span class="d-block @Warn(hoursShare)">
+    @if (hoursShare >= 80)
+    {
+        <Icon Name="IconName.ExclamationTriangleFill" class="me-1" aria-hidden="true" />
+    }
+    @(Project.BudgetHours == 0
+        ? $"{Number(hours)} h logged, no hour budget"
+        : $"{Number(hours)} of {Number(Project.BudgetHours)} h logged ({Number(Math.Round(hoursShare!.Value))}%){Words(hoursShare)}")
+</span>
+@if (Project.ClientId is not null)
+{
+    <span class="d-block small @Warn(billedShare)">
+        @if (billedShare >= 80)
+        {
+            <Icon Name="IconName.ExclamationTriangleFill" class="me-1" aria-hidden="true" />
+        }
+        @(Project.BudgetAmount == 0
+            ? $"{currency} {Money(billed)} billed, no budget amount"
+            : $"{currency} {Money(billed)} of {Money(Project.BudgetAmount)} billed ({Number(Math.Round(billedShare!.Value))}%){Words(billedShare)}")
+    </span>
+}
+
+@code {
+    /// <summary>Gets or sets the project.</summary>
+    [Parameter, EditorRequired] public PbProject Project { get; set; } = default!;
+
+    [Inject] private PbState State { get; set; } = default!;
+
+    private static string Money(decimal amount) => amount.ToString("#,0", CultureInfo.InvariantCulture);
+
+    private static string Number(decimal value) => value.ToString("#,0.##", CultureInfo.InvariantCulture);
+
+    private static string? Warn(decimal? share) => share >= 100 ? "text-danger-emphasis fw-semibold" : share >= 80 ? "text-warning-emphasis fw-semibold" : null;
+
+    private static string Words(decimal? share) => share >= 100 ? ": over budget" : share >= 80 ? ": near the budget" : string.Empty;
+}

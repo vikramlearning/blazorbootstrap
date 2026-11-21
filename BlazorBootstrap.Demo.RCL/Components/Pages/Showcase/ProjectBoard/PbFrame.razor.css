@@ -423,3 +423,54 @@
     .sc-board ::deep .tb-form-error:empty {
         margin: 0 !important;
     }
+
+/* A bulk bar's wide field (a reason to type). */
+.sc-board ::deep .tb-bulk-wide {
+    flex: 3 1 18rem;
+}
+
+/* Timesheet, approval, and invoice pages: the returned note, table captions, and an invoice's facts. */
+.sc-board ::deep .tb-ap-returned {
+    padding: .625rem .875rem;
+    border-left: 4px solid var(--bs-warning);
+    border-radius: .5rem;
+    background: var(--bs-warning-bg-subtle);
+    color: var(--bs-warning-text-emphasis);
+    overflow-wrap: anywhere;
+}
+
+.sc-board ::deep .tb-ap-caption,
+.sc-board ::deep .tb-inv-caption,
+.sc-board ::deep .tb-invd-caption {
+    caption-side: top;
+    padding-top: 0;
+    font-size: .8125rem;
+    color: var(--bs-secondary-color);
+}
+
+.sc-board ::deep .tb-invd-facts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .5rem 1.75rem;
+}
+
+    .sc-board ::deep .tb-invd-facts dt {
+        font-size: .75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: .04em;
+        color: var(--bs-secondary-color);
+    }
+
+    .sc-board ::deep .tb-invd-facts dd {
+        margin: 0;
+        overflow-wrap: anywhere;
+    }
+
+.sc-board ::deep .tb-invd-table {
+    min-width: 36rem;
+}
+
+.sc-board ::deep .min-w-0 {
+    min-width: 0;
+}

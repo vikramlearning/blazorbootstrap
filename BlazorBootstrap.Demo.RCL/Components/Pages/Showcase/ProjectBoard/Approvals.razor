@@ -1,0 +1,146 @@
+@page "/showcase/project-board/approvals"
+@layout PbWorkLayout
+
+<PageTitle>Approvals · @PbSeedData.ProductName</PageTitle>
+
+<div class="container-fluid px-lg-4">
+    <PbRoleGuard Role="@PbSeedData.ProjectManagerRole">
+        @{
+            var all = State.ApprovalRows();
+            var waiting = all.Count(row => RowStatus(row) == WaitingFilter);
+        }
+
+        <div class="mb-3">
+            <h1 class="tb-title">Approvals</h1>
+            <p class="tb-lead mb-0">
+                Submitted weeks with hours on the projects you approve: yours, and those of project managers who can't sign in. Approve each project's hours, or
+                return the week with a reason. Approved billable hours become ready to invoice once every project in the week is approved.
+            </p>
+        </div>
+
+        <section class="tb-panel mb-3" aria-labelledby="tb-ap-filters-title">
+            <h2 class="tb-section-title" id="tb-ap-filters-title">Filter weeks</h2>
+            <div class="tb-list-filters" role="search" aria-labelledby="tb-ap-filters-title">
+                <div class="tb-list-search">
+                    <label class="form-label small fw-semibold" for="tb-ap-search">Search</label>
+                    @* Filters on every keystroke; the bound value changes only on change, so a render during typing never writes an older value back. *@
+                    <input id="tb-ap-search" type="search" class="form-control" value="@searchBoxValue" placeholder="Person or project" autocomplete="off" maxlength="120"
+                           @oninput="OnSearchInputAsync" @onchange="OnSearchChanged" />
+                </div>
+                <div>
+                    <label class="form-label small fw-semibold" for="tb-ap-status">Status</label>
+                    <select id="tb-ap-status" class="form-select" @bind="statusFilter" @bind:after="FiltersChangedAsync">
+                        <option value="@WaitingFilter">Waiting for you (@waiting)</option>
+                        <option value="@ApprovedFilter">Approved (@all.Count(row => RowStatus(row) == ApprovedFilter))</option>
+                        <option value="@ReturnedFilter">Returned (@all.Count(row => RowStatus(row) == ReturnedFilter))</option>
+                        <option value="">All (@all.Count)</option>
+                    </select>
+                </div>
+            </div>
+            <div class="tb-list-meta">
+                <p class="small text-body-secondary mb-0" aria-live="polite" tabindex="-1" @ref="countRegion">Showing @Shown.Count of @all.Count project weeks.</p>
+                @if (IsFiltered)
+                {
+                    <Button Color="ButtonColor.Link" Size="ButtonSize.Small" Class="p-0" @onclick="ClearFiltersAsync">Show what's waiting</Button>
+                }
+                <Button Color="ButtonColor.Link" Size="ButtonSize.Small" Class="p-0" @onclick="ResetViewAsync">Reset view</Button>
+            </div>
+        </section>
+
+        @* Always rendered and focusable, so a bulk change is announced and focus has somewhere to go when the bulk bar closes. *@
+        <p class="tb-list-status mb-2 @(statusIsError ? "text-danger-emphasis" : null)" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
+        <p class="tb-list-error mb-2" role="alert">@bulkError</p>
+
+        @if (selected.Count > 0)
+        {
+            <section class="tb-bulk" aria-labelledby="tb-ap-bulk-count">
+                <h2 class="tb-bulk-count" id="tb-ap-bulk-count">@(selected.Count == 1 ? "1 project week selected" : $"{selected.Count} project weeks selected")</h2>
+                <div class="tb-bulk-actions">
+                    <Button Color="ButtonColor.Success" Size="ButtonSize.Small" @onclick="BulkApproveAsync">
+                        <Icon Name="IconName.CheckLg" class="me-1" aria-hidden="true" />Approve hours<span class="visually-hidden">&#32;of the selected project weeks</span>
+                    </Button>
+                </div>
+                <div class="tb-bulk-field tb-bulk-wide">
+                    <label class="form-label small fw-semibold" for="tb-ap-bulk-reason">Reason to return the weeks</label>
+                    <input id="tb-ap-bulk-reason" class="form-control form-control-sm" @bind="bulkReason" maxlength="@PbState.MaxReturnReasonLength" autocomplete="off" aria-describedby="tb-ap-bulk-reason-help" />
+                    <span class="form-text d-block" id="tb-ap-bulk-reason-help">@PbState.MinReturnReasonLength to @PbState.MaxReturnReasonLength characters. The people read it; their whole week becomes editable again.</span>
+                    <Button Color="ButtonColor.Warning" Outline="true" Size="ButtonSize.Small" Class="mt-1" @onclick="BulkReturnAsync">Return weeks<span class="visually-hidden">&#32;of the selected rows</span></Button>
+                </div>
+                <div class="tb-bulk-actions">
+                    <Button Color="ButtonColor.Secondary" Outline="true" Size="ButtonSize.Small" @onclick="ClearSelectionAsync">Clear selection</Button>
+                </div>
+            </section>
+        }
+
+        <section class="tb-panel" aria-label="Project weeks">
+            <ShowcaseDataState Status="@(viewLoaded ? ShowcaseDataStatus.Ready : ShowcaseDataStatus.Loading)"
+                               IsEmpty="@(all.Count == 0)"
+                               EmptyIcon="IconName.ClipboardCheck"
+                               EmptyTitle="Nothing to approve"
+                               EmptyText="Weeks show here once someone submits hours on a project you approve."
+                               LoadingText="Loading weeks…"
+                               OnRetry="RefreshGridAsync">
+                <ChildContent>
+                    <Grid @ref="grid"
+                          @key="gridVersion"
+                          TItem="ApprovalRowView"
+                          Class="table table-hover align-middle tb-table-wide sc-grid-row-links"
+                          GridContainerClass="tb-grid border rounded-3"
+                          DataProvider="ProvideRowsAsync"
+                          SettingsProvider="view.GetSettingsAsync"
+                          GridSettingsChanged="SaveSettingsAsync"
+                          AllowPaging="true"
+                          PageSize="@pageSize"
+                          PageSizeSelectorVisible="true"
+                          PageSizeSelectorItems="@(new[] { 10, 25, 50 })"
+                          PaginationItemsTextFormat="{0}–{1} of {2} project weeks"
+                          AllowSorting="true"
+                          AllowSelection="true"
+                          SelectionMode="GridSelectionMode.Multiple"
+                          RowSelectionLabel="@(row => $"Select {row.Person}, {row.Project}, week of {row.WeekText}")"
+                          SelectAllRowsText="Select all shown project weeks"
+                          SelectedItemsChanged="OnSelectionChanged"
+                          RowClass="RowClass"
+                          AllowColumnChooser="true"
+                          AllowExport="true"
+                          ExportFileName="project-board-approvals"
+                          Responsive="true"
+                          EmptyText="No weeks match. Choose another status, or clear the search."
+                          aria-label="Project weeks to approve">
+                        <GridColumns>
+                            <GridColumn TItem="ApprovalRowView" HeaderText="Week" PropertyName="WeekText" SortString="week" SortKeySelector="row => row.WeekStart"
+                                        IsDefaultSortColumn="@view.IsSortColumn("week")" SortDirection="@view.DirectionFor("week")" AlwaysVisible="true" TextNoWrap="true">
+                                @* The stretched link opens the week's review from anywhere on the row; the checkbox stays above it. *@
+                                <a class="tb-row-link stretched-link" href="@DetailUrl(context.TimesheetId)">@context.WeekText<span class="visually-hidden">, @context.Person, @context.Project</span></a>
+                            </GridColumn>
+                            <GridColumn TItem="ApprovalRowView" HeaderText="Person" PropertyName="Person" SortString="person" SortKeySelector="row => row.Person"
+                                        IsDefaultSortColumn="@view.IsSortColumn("person")" SortDirection="@view.DirectionFor("person")" TextNoWrap="true">
+                                @context.Person
+                            </GridColumn>
+                            <GridColumn TItem="ApprovalRowView" HeaderText="Project" PropertyName="Project" SortString="project" SortKeySelector="row => row.Project"
+                                        IsDefaultSortColumn="@view.IsSortColumn("project")" SortDirection="@view.DirectionFor("project")">
+                                @context.Project
+                            </GridColumn>
+                            <GridColumn TItem="ApprovalRowView" HeaderText="Hours" PropertyName="Hours" SortString="hours" SortKeySelector="row => row.Hours"
+                                        IsDefaultSortColumn="@view.IsSortColumn("hours")" SortDirection="@view.DirectionFor("hours")" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End">
+                                <span class="tb-mono">@context.Hours.ToString("0.##", CultureInfo.InvariantCulture)</span>
+                            </GridColumn>
+                            <GridColumn TItem="ApprovalRowView" HeaderText="Billable" PropertyName="Billable" SortString="billable" SortKeySelector="row => row.Billable"
+                                        IsDefaultSortColumn="@view.IsSortColumn("billable")" SortDirection="@view.DirectionFor("billable")" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End">
+                                <span class="tb-mono">@context.Billable.ToString("0.##", CultureInfo.InvariantCulture)</span>
+                            </GridColumn>
+                            <GridColumn TItem="ApprovalRowView" HeaderText="Submitted" PropertyName="SubmittedText" SortString="submitted" SortKeySelector="row => row.Submitted"
+                                        IsDefaultSortColumn="@view.IsSortColumn("submitted")" SortDirection="@view.DirectionFor("submitted")" TextNoWrap="true">
+                                @context.SubmittedText
+                            </GridColumn>
+                            <GridColumn TItem="ApprovalRowView" HeaderText="Status" PropertyName="Status" SortString="status" SortKeySelector="row => row.Status"
+                                        IsDefaultSortColumn="@view.IsSortColumn("status")" SortDirection="@view.DirectionFor("status")" TextNoWrap="true">
+                                <span class="@($"badge text-bg-{(context.Status == "Waiting" ? "info" : context.Status == "Returned" ? "warning" : "success")}")">@context.Status</span>
+                            </GridColumn>
+                        </GridColumns>
+                    </Grid>
+                </ChildContent>
+            </ShowcaseDataState>
+        </section>
+    </PbRoleGuard>
+</div>

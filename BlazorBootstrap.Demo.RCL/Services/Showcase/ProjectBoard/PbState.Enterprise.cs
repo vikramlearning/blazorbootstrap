@@ -214,8 +214,8 @@ public sealed partial class PbState
     /// The header's global search, best matches first (exactly the term, then starting with it, then containing it), and
     /// among equal matches by kind. Everyone finds projects (by key, name, or client), each opening its board, and tasks (by
     /// key like "WEB-12", or title), each opening the task, open ones first; account managers also find clients (by name or
-    /// industry) and client contacts (by name or email), each opening the client's page. Returns nothing for a blank term or
-    /// when nobody is signed in.
+    /// industry) and client contacts (by name or email), each opening the client's page, and invoices by number (like
+    /// "INV-2026-0067"), each opening the invoice. Returns nothing for a blank term or when nobody is signed in.
     /// </summary>
     public IReadOnlyList<ShowcaseSearchResult> Search(string term, int maxResults)
     {
@@ -284,6 +284,20 @@ public sealed partial class PbState
                 {
                     matches.Add((found, 3, contact.IsPrimary ? 0 : 1, new ShowcaseSearchResult("Contact", contact.Name,
                         $"{RoleWord(contact.Role)} at {clientNames.GetValueOrDefault(contact.ClientId)} · {contact.Email}", ClientPath(contact.ClientId))));
+                }
+            }
+
+            // Kind 4: an invoice, by number (when the term has a digit).
+            if (term.Any(char.IsAsciiDigit))
+            {
+                foreach (var invoice in invoices.Where(invoice => invoice.Number is not null))
+                {
+                    if (Rank(invoice.Number) is { } found)
+                    {
+                        matches.Add((found, 4, -(invoice.IssuedOn ?? invoice.CreatedAt).Ticks, new ShowcaseSearchResult("Invoice", invoice.Number!,
+                            Invariant($"{clientNames.GetValueOrDefault(invoice.ClientId)} · {invoice.Currency} {TotalOf(invoice):#,0.00} · {(IsOverdue(invoice) ? "overdue" : invoice.Status.ToString().ToLowerInvariant())}"),
+                            InvoicePath(invoice.Id))));
+                    }
                 }
             }
         }

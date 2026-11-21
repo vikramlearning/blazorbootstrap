@@ -378,6 +378,12 @@ public partial class ManageProjects : ComponentBase, IDisposable
 
                 break;
 
+            case PbResult.WrongState:
+                Announce(false, $"{label} has logged hours or invoices, so it keeps its history and can't be deleted. Set it to Completed instead.");
+                focusDeleteId = id;
+
+                break;
+
             default:
                 Announce(false, $"{label} couldn't be deleted. Try again.");
                 focusDeleteId = id;

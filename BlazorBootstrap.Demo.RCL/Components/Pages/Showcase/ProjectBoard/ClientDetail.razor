@@ -175,6 +175,7 @@
                                         <p class="small text-body-secondary mt-1 mb-0" id="@progressId">
                                             @(total == 0 ? "No tasks yet" : $"{done} of {DealDisplay.Plural(total, "task")} done ({percent}%)") · due @PbDisplay.Date(project.DueDate)
                                         </p>
+                                        <div class="small mt-1"><PbBudget Project="project" /></div>
                                     </li>
                                 }
                             </ul>

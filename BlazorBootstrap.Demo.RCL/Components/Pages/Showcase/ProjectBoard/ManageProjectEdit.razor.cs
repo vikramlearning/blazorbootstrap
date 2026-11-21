@@ -437,6 +437,11 @@ public partial class ManageProjectEdit : ComponentBase, IDisposable
 
                 return;
 
+            case PbResult.WrongState:
+                ServerError(() => form.ClientValue, $"{existing?.Key} has logged hours, which belong to its client, so its client can't change. Keep {ManageProjects.ClientName(State, existing?.ClientId)}.");
+
+                return;
+
             case PbResult.NoChange:
                 Announce(true, "Nothing changed: the project is already saved like this.");
                 focusStatus = true;

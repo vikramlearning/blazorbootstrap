@@ -1,0 +1,300 @@
+@page "/showcase/project-board/invoices"
+@layout PbWorkLayout
+
+<PageTitle>Invoices · @PbSeedData.ProductName</PageTitle>
+
+<div class="container-fluid px-lg-4">
+    <PbRoleGuard Role="@PbSeedData.AccountManagerRole">
+        @{
+            var all = State.Invoices;
+            var ready = State.ReadyToInvoice();
+            var clients = State.Clients;
+        }
+
+        <div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-3">
+            <div>
+                <h1 class="tb-title">Invoices</h1>
+                <p class="tb-lead mb-0">
+                    Approved billable hours become client invoices: make a draft from a client's hours, check the lines, issue it with payment terms, and mark it paid.
+                    @Count(all.Count(State.IsOverdue)) overdue, @Count(all.Count(invoice => invoice.Status == PbInvoiceStatus.Draft)) drafts.
+                </p>
+            </div>
+            <div class="d-flex flex-wrap gap-2">
+                <a class="btn btn-outline-secondary" href="@($"{PbLayout.Base}/rates")"><Icon Name="IconName.CashCoin" class="me-1" aria-hidden="true" />Billing rates</a>
+                <button type="button" class="btn btn-primary" @ref="createButton" @onclick="() => OpenCreateAsync(null)">
+                    <Icon Name="IconName.FileEarmarkText" class="me-1" aria-hidden="true" />Create draft invoice
+                </button>
+            </div>
+        </div>
+
+        @* Always rendered and focusable, so a reset or a refusal is announced. *@
+        <p class="tb-list-status mb-2 @(statusIsError ? "text-danger-emphasis" : null)" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
+
+        <section class="tb-panel mb-4" aria-labelledby="tb-inv-ready-title">
+            <h2 class="tb-section-title mb-1" id="tb-inv-ready-title">Ready to invoice</h2>
+            <p class="small text-body-secondary">Approved billable hours not on an invoice yet, per client, at today's rates. A client's hours are ready once the whole week is approved.</p>
+            <ShowcaseDataState Status="@(viewLoaded ? ShowcaseDataStatus.Ready : ShowcaseDataStatus.Loading)"
+                               IsEmpty="@(ready.Count == 0)"
+                               EmptyIcon="IconName.CheckCircle"
+                               EmptyTitle="Nothing to invoice"
+                               EmptyText="Every approved billable hour is on an invoice. Hours show here once project managers approve a week."
+                               LoadingText="Loading hours…"
+                               LoadingRows="3"
+                               OnRetry="RefreshGridsAsync">
+                <ChildContent>
+                    <Grid @ref="readyGrid"
+                          @key="@($"ready-{gridVersion}")"
+                          TItem="ReadyRow"
+                          Class="table table-hover align-middle tb-table-mid sc-grid-row-links"
+                          GridContainerClass="tb-grid border rounded-3"
+                          DataProvider="ProvideReadyAsync"
+                          SettingsProvider="readyView.GetSettingsAsync"
+                          GridSettingsChanged="SaveReadySettingsAsync"
+                          AllowPaging="true"
+                          PageSize="@readyPageSize"
+                          PageSizeSelectorVisible="true"
+                          PageSizeSelectorItems="@(new[] { 5, 10, 25 })"
+                          PaginationItemsTextFormat="{0}–{1} of {2} clients"
+                          AllowSorting="true"
+                          AllowColumnChooser="true"
+                          AllowExport="true"
+                          ExportFileName="project-board-ready-to-invoice"
+                          Responsive="true"
+                          EmptyText="Nothing to invoice."
+                          aria-label="Hours ready to invoice, per client">
+                        <GridColumns>
+                            <GridColumn TItem="ReadyRow" HeaderText="Client" PropertyName="Client" SortString="client" SortKeySelector="row => row.Client"
+                                        IsDefaultSortColumn="@readyView.IsSortColumn("client")" SortDirection="@readyView.DirectionFor("client")" AlwaysVisible="true">
+                                @{
+                                    var clientId = context.ClientId;
+                                }
+                                @* The row opens the draft dialog for this client. *@
+                                <button type="button" class="tb-row-button stretched-link" @onclick="() => OpenCreateAsync(clientId)">@context.Client<span class="visually-hidden">: create a draft invoice</span></button>
+                            </GridColumn>
+                            <GridColumn TItem="ReadyRow" HeaderText="Owner" PropertyName="Owner" SortString="owner" SortKeySelector="row => row.Owner"
+                                        IsDefaultSortColumn="@readyView.IsSortColumn("owner")" SortDirection="@readyView.DirectionFor("owner")" TextNoWrap="true">
+                                @context.Owner
+                            </GridColumn>
+                            <GridColumn TItem="ReadyRow" HeaderText="Hours" PropertyName="Hours" SortString="hours" SortKeySelector="row => row.Hours"
+                                        IsDefaultSortColumn="@readyView.IsSortColumn("hours")" SortDirection="@readyView.DirectionFor("hours")" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End">
+                                <span class="tb-mono">@context.Hours.ToString("0.##", CultureInfo.InvariantCulture)</span>
+                            </GridColumn>
+                            <GridColumn TItem="ReadyRow" HeaderText="Amount" PropertyName="AmountText" SortString="amount" SortKeySelector="row => row.Amount"
+                                        IsDefaultSortColumn="@readyView.IsSortColumn("amount")" SortDirection="@readyView.DirectionFor("amount")" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" TextNoWrap="true">
+                                <span class="tb-mono">@context.AmountText</span>
+                            </GridColumn>
+                            <GridColumn TItem="ReadyRow" HeaderText="Hours from" PropertyName="Span" SortString="from" SortKeySelector="row => row.From"
+                                        IsDefaultSortColumn="@readyView.IsSortColumn("from")" SortDirection="@readyView.DirectionFor("from")" TextNoWrap="true">
+                                @context.Span
+                            </GridColumn>
+                        </GridColumns>
+                    </Grid>
+                </ChildContent>
+            </ShowcaseDataState>
+        </section>
+
+        <section class="tb-panel mb-3" aria-labelledby="tb-inv-filters-title">
+            <h2 class="tb-section-title" id="tb-inv-filters-title">Filter invoices</h2>
+            <div class="tb-list-filters" role="search" aria-labelledby="tb-inv-filters-title">
+                <div class="tb-list-search">
+                    <label class="form-label small fw-semibold" for="tb-inv-search">Search</label>
+                    <input id="tb-inv-search" type="search" class="form-control" value="@searchBoxValue" placeholder="Number or client" autocomplete="off" maxlength="120"
+                           @oninput="OnSearchInputAsync" @onchange="OnSearchChanged" />
+                </div>
+                <div>
+                    <label class="form-label small fw-semibold" for="tb-inv-status">Status</label>
+                    <select id="tb-inv-status" class="form-select" @bind="statusFilter" @bind:after="FiltersChangedAsync">
+                        <option value="">All statuses (@Count(all.Count))</option>
+                        <option value="@DraftFilter">Draft (@Count(all.Count(invoice => invoice.Status == PbInvoiceStatus.Draft)))</option>
+                        <option value="@OpenFilter">Issued, not overdue (@Count(all.Count(invoice => invoice.Status == PbInvoiceStatus.Issued && !State.IsOverdue(invoice))))</option>
+                        <option value="@OverdueFilter">Overdue (@Count(all.Count(State.IsOverdue)))</option>
+                        <option value="@PaidFilter">Paid (@Count(all.Count(invoice => invoice.Status == PbInvoiceStatus.Paid)))</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="form-label small fw-semibold" for="tb-inv-client">Client</label>
+                    <select id="tb-inv-client" class="form-select" @bind="clientFilter" @bind:after="FiltersChangedAsync">
+                        <option value="0">Every client</option>
+                        @foreach (var client in clients.Where(client => all.Any(invoice => invoice.ClientId == client.Id)))
+                        {
+                            <option value="@client.Id" @key="client.Id">@client.Name</option>
+                        }
+                    </select>
+                </div>
+                <div class="align-self-center pt-sm-4">
+                    <div class="form-check mb-0">
+                        <input class="form-check-input" type="checkbox" id="tb-inv-mine" @bind="mineOnly" @bind:after="FiltersChangedAsync" />
+                        <label class="form-check-label fw-semibold" for="tb-inv-mine">Only clients I own</label>
+                    </div>
+                </div>
+            </div>
+            <div class="tb-list-meta">
+                <p class="small text-body-secondary mb-0" aria-live="polite" tabindex="-1" @ref="countRegion">Showing @Count(Shown.Count) of @Count(all.Count) invoices.</p>
+                @if (IsFiltered)
+                {
+                    <Button Color="ButtonColor.Link" Size="ButtonSize.Small" Class="p-0" @onclick="ClearFiltersAsync">Show every invoice</Button>
+                }
+                <Button Color="ButtonColor.Link" Size="ButtonSize.Small" Class="p-0" @onclick="ResetViewsAsync">Reset views</Button>
+            </div>
+        </section>
+
+        <section class="tb-panel" aria-label="Invoice list">
+            <ShowcaseDataState Status="@(viewLoaded ? ShowcaseDataStatus.Ready : ShowcaseDataStatus.Loading)"
+                               IsEmpty="@(all.Count == 0)"
+                               EmptyIcon="IconName.Receipt"
+                               EmptyTitle="No invoices yet"
+                               EmptyText="Create a draft invoice from a client's approved hours."
+                               LoadingText="Loading invoices…"
+                               OnRetry="RefreshGridsAsync">
+                <ChildContent>
+                    <Grid @ref="grid"
+                          @key="@($"invoices-{gridVersion}")"
+                          TItem="InvoiceRow"
+                          Class="table table-hover align-middle tb-table-wide sc-grid-row-links"
+                          GridContainerClass="tb-grid border rounded-3"
+                          DataProvider="ProvideInvoicesAsync"
+                          SettingsProvider="view.GetSettingsAsync"
+                          GridSettingsChanged="SaveSettingsAsync"
+                          AllowPaging="true"
+                          PageSize="@pageSize"
+                          PageSizeSelectorVisible="true"
+                          PageSizeSelectorItems="@(new[] { 10, 25, 50, 100 })"
+                          PaginationItemsTextFormat="{0}–{1} of {2} invoices"
+                          AllowSorting="true"
+                          AllowColumnChooser="true"
+                          AllowExport="true"
+                          ExportFileName="project-board-invoices"
+                          Responsive="true"
+                          EmptyText="No invoices match these filters. Clear a filter, or search for part of a number."
+                          aria-label="Invoices">
+                        <GridColumns>
+                            <GridColumn TItem="InvoiceRow" HeaderText="Invoice" PropertyName="Number" SortString="number" SortKeySelector="row => row.Number"
+                                        IsDefaultSortColumn="@view.IsSortColumn("number")" SortDirection="@view.DirectionFor("number")" AlwaysVisible="true" TextNoWrap="true">
+                                <a class="tb-row-link stretched-link tb-mono" href="@InvoiceUrl(context.Id)">@context.Number</a>
+                            </GridColumn>
+                            <GridColumn TItem="InvoiceRow" HeaderText="Client" PropertyName="Client" SortString="client" SortKeySelector="row => row.Client"
+                                        IsDefaultSortColumn="@view.IsSortColumn("client")" SortDirection="@view.DirectionFor("client")">
+                                @context.Client
+                            </GridColumn>
+                            <GridColumn TItem="InvoiceRow" HeaderText="Status" PropertyName="Status" SortString="status" SortKeySelector="row => row.StatusOrder"
+                                        IsDefaultSortColumn="@view.IsSortColumn("status")" SortDirection="@view.DirectionFor("status")" TextNoWrap="true">
+                                <span class="@($"badge text-bg-{StatusColor(context.Status)}")">@context.Status</span>
+                            </GridColumn>
+                            <GridColumn TItem="InvoiceRow" HeaderText="Issued" PropertyName="IssuedText" SortString="issued" SortKeySelector="row => row.Issued ?? DateTime.MaxValue"
+                                        IsDefaultSortColumn="@view.IsSortColumn("issued")" SortDirection="@view.DirectionFor("issued")" TextNoWrap="true">
+                                @context.IssuedText
+                            </GridColumn>
+                            <GridColumn TItem="InvoiceRow" HeaderText="Due" PropertyName="DueText" SortString="due" SortKeySelector="row => row.Due ?? DateTime.MaxValue"
+                                        IsDefaultSortColumn="@view.IsSortColumn("due")" SortDirection="@view.DirectionFor("due")" TextNoWrap="true">
+                                <span class="@(context.Status == "Overdue" ? "text-danger-emphasis fw-semibold" : null)">@context.DueText</span>
+                            </GridColumn>
+                            <GridColumn TItem="InvoiceRow" HeaderText="Total" PropertyName="TotalText" SortString="total" SortKeySelector="row => row.Total"
+                                        IsDefaultSortColumn="@view.IsSortColumn("total")" SortDirection="@view.DirectionFor("total")" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" TextNoWrap="true">
+                                <span class="tb-mono">@context.TotalText</span>
+                            </GridColumn>
+                            <GridColumn TItem="InvoiceRow" HeaderText="Hours up to" PropertyName="UpToText" SortString="upto" SortKeySelector="row => row.UpTo"
+                                        IsDefaultSortColumn="@view.IsSortColumn("upto")" SortDirection="@view.DirectionFor("upto")" TextNoWrap="true">
+                                @context.UpToText
+                            </GridColumn>
+                            <GridColumn TItem="InvoiceRow" HeaderText="Paid" PropertyName="PaidText" SortString="paid" SortKeySelector="row => row.Paid ?? DateTime.MaxValue"
+                                        IsDefaultSortColumn="@view.IsSortColumn("paid")" SortDirection="@view.DirectionFor("paid")" TextNoWrap="true">
+                                @context.PaidText
+                            </GridColumn>
+                        </GridColumns>
+                    </Grid>
+                </ChildContent>
+            </ShowcaseDataState>
+        </section>
+
+        <Modal @ref="createModal" IsVerticallyCentered="true" IsScrollable="true" Size="ModalSize.Large" ShowCloseButton="false" aria-labelledby="tb-inv-create-title" OnHidden="OnCreateHidden">
+            <HeaderTemplate>
+                <h2 class="modal-title h5" id="tb-inv-create-title">Create a draft invoice</h2>
+            </HeaderTemplate>
+            <BodyTemplate>
+                @{
+                    var client = State.FindClient(form.ClientId);
+                    var preview = client is null || form.UpTo is not { } upTo ? Array.Empty<PbInvoicePreviewLine>() : State.PreviewInvoice(client.Id, upTo);
+                }
+                <EditForm id="tb-inv-create-form" EditContext="editContext" OnSubmit="CreateAsync" FormName="pb-invoice-draft" novalidate>
+                    <DataAnnotationsValidator />
+                    <ShowcaseFormErrors ShowSummary="true" />
+                    <div class="row g-3 mb-3">
+                        <div class="col-sm-7">
+                            <label class="form-label fw-semibold" for="tb-inv-create-client">Client</label>
+                            <InputSelect TValue="int" id="tb-inv-create-client" class="form-select" @bind-Value="form.ClientId" aria-describedby="tb-inv-create-client-help">
+                                <option value="0">Choose a client</option>
+                                @foreach (var item in ready)
+                                {
+                                    <option value="@item.Client.Id" @key="item.Client.Id">@item.Client.Name (@item.Hours.ToString("0.##", CultureInfo.InvariantCulture) h ready)</option>
+                                }
+                            </InputSelect>
+                            <div class="form-text" id="tb-inv-create-client-help">Clients with approved billable hours that aren't invoiced.</div>
+                            <ValidationMessage For="() => form.ClientId" />
+                        </div>
+                        <div class="col-sm-5">
+                            <label class="form-label fw-semibold" for="tb-inv-create-upto">Hours up to</label>
+                            <InputDate TValue="DateTime?" id="tb-inv-create-upto" class="form-control" @bind-Value="form.UpTo" max="@DealDisplay.ToDateInput(State.Clock.Today)"
+                                       ParsingErrorMessage="Enter the last day of hours as a full date." aria-describedby="tb-inv-create-upto-help" />
+                            <div class="form-text" id="tb-inv-create-upto-help">The last day of hours to bill, today or earlier.</div>
+                            <ValidationMessage For="() => form.UpTo" />
+                        </div>
+                    </div>
+                </EditForm>
+
+                <h3 class="h6 fw-bold">Preview</h3>
+                @if (client is null)
+                {
+                    <p class="small text-body-secondary mb-0">Choose a client to see the lines.</p>
+                }
+                else if (preview.Count == 0)
+                {
+                    <p class="small text-body-secondary mb-0">No approved billable hours for @client.Name up to that day.</p>
+                }
+                else
+                {
+                    <div class="table-responsive">
+                        <table class="table table-sm align-middle mb-0">
+                            <caption class="tb-inv-caption">Lines by project and person at today's rates, in @client.BillingCurrency.</caption>
+                            <thead>
+                                <tr>
+                                    <th scope="col">Project</th>
+                                    <th scope="col">Person</th>
+                                    <th scope="col">Role</th>
+                                    <th scope="col" class="text-end">Hours</th>
+                                    <th scope="col" class="text-end">Rate</th>
+                                    <th scope="col" class="text-end">Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var line in preview)
+                                {
+                                    <tr @key="@($"{line.ProjectId}-{line.PersonId}")">
+                                        <th scope="row" class="fw-normal"><span class="tb-key">@State.FindProject(line.ProjectId)?.Key</span></th>
+                                        <td>@State.FindPerson(line.PersonId)?.Name</td>
+                                        <td>@PbState.RoleName(line.Role)</td>
+                                        <td class="text-end tb-mono">@line.Hours.ToString("0.##", CultureInfo.InvariantCulture)</td>
+                                        <td class="text-end tb-mono">@line.Rate.ToString(CultureInfo.InvariantCulture)</td>
+                                        <td class="text-end tb-mono">@line.Amount.ToString("#,0.00", CultureInfo.InvariantCulture)</td>
+                                    </tr>
+                                }
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <th scope="row" colspan="3">Total</th>
+                                    <td class="text-end tb-mono fw-semibold">@preview.Sum(line => line.Hours).ToString("0.##", CultureInfo.InvariantCulture)</td>
+                                    <td></td>
+                                    <td class="text-end tb-mono fw-bold">@client.BillingCurrency @preview.Sum(line => line.Amount).ToString("#,0.00", CultureInfo.InvariantCulture)</td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                }
+                <p class="tb-form-error small mt-3 mb-0" role="alert">@formMessage</p>
+            </BodyTemplate>
+            <FooterTemplate>
+                <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => createModal.HideAsync()">Cancel</Button>
+                <button type="submit" form="tb-inv-create-form" class="btn btn-primary"><Icon Name="IconName.FileEarmarkText" class="me-1" aria-hidden="true" />Create draft</button>
+            </FooterTemplate>
+        </Modal>
+    </PbRoleGuard>
+</div>

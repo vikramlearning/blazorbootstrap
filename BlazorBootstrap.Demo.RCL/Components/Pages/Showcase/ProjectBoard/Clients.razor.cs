@@ -97,7 +97,7 @@ public partial class Clients : ComponentBase, IDisposable
 
     protected override void OnParametersSet()
     {
-        if (Deleted == true)
+        if (Deleted == 1)
             SetStatus("The client was deleted, with its contacts and activity.", false);
     }
 
@@ -318,7 +318,7 @@ public partial class Clients : ComponentBase, IDisposable
     #region Properties, Indexers
 
     /// <summary>Gets or sets whether a client was just deleted on its edit page.</summary>
-    [SupplyParameterFromQuery(Name = "deleted")] public bool? Deleted { get; set; }
+    [SupplyParameterFromQuery(Name = "deleted")] public int? Deleted { get; set; }
 
     [Inject] private ShowcaseGridViewStore GridViews { get; set; } = default!;
 

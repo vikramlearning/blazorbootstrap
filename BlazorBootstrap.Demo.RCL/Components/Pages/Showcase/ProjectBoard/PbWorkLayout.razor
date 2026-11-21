@@ -12,7 +12,7 @@
                 <div class="tb-app-bar-actions">
                     @* The search and the notifications show once someone is signed in. *@
                     <ShowcaseGlobalSearch Class="tb-global-search" Placeholder="Search projects, tasks, clients"
-                                          Label="@(State.IsAccountManager ? "Search projects by key or name, tasks by key or title, clients, and contacts" : "Search projects by key or name, and tasks by key or title")" />
+                                          Label="@(State.IsAccountManager ? "Search projects by key or name, tasks by key or title, clients, contacts, and invoices by number" : "Search projects by key or name, and tasks by key or title")" />
                     <ShowcaseNotificationsMenu />
                     <ShowcaseAccountMenu SiteBase="@PbLayout.Base" SignInPath="@PbLayout.SignInPath" />
                 </div>
@@ -58,6 +58,7 @@
         {
             new() { Id = "my-tasks", Href = $"{b}/my-tasks", IconName = IconName.CheckSquare, Text = "My tasks" },
             new() { Id = "projects", Href = $"{b}/projects", IconName = IconName.Kanban, Text = "Project boards" },
+            new() { Id = "timesheet", Href = $"{b}/timesheet", IconName = IconName.Stopwatch, Text = "Timesheet" },
         };
 
         if (State.IsProjectManager)
@@ -66,6 +67,7 @@
             items.Add(new() { Id = "workload", Href = $"{b}/workload", IconName = IconName.People, Text = "Workload" });
             items.Add(new() { Id = "roadmap", Href = $"{b}/roadmap", IconName = IconName.Diagram3, Text = "Roadmap" });
             items.Add(new() { Id = "reports", Href = $"{b}/reports", IconName = IconName.BarChart, Text = "Reports" });
+            items.Add(new() { Id = "approvals", Href = $"{b}/approvals", IconName = IconName.ClipboardCheck, Text = "Approvals" });
         }
 
         if (State.IsAccountManager)
@@ -74,6 +76,8 @@
             items.Add(new() { Id = "pipeline", Href = $"{b}/pipeline", IconName = IconName.Funnel, Text = "Deal pipeline" });
             items.Add(new() { Id = "activity", Href = $"{b}/activity", IconName = IconName.ClockHistory, Text = "Activity" });
             items.Add(new() { Id = "forecast", Href = $"{b}/forecast", IconName = IconName.GraphUpArrow, Text = "Forecast" });
+            items.Add(new() { Id = "invoices", Href = $"{b}/invoices", IconName = IconName.Receipt, Text = "Invoices" });
+            items.Add(new() { Id = "rates", Href = $"{b}/rates", IconName = IconName.CashCoin, Text = "Billing rates" });
         }
 
         if (State.IsProjectManager || State.IsAccountManager)

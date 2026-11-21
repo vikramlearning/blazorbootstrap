@@ -1,0 +1,206 @@
+@page "/showcase/project-board/invoices/{Id:int}"
+@layout PbWorkLayout
+
+@{
+    var invoice = State.FindInvoice(Id);
+    var client = invoice is null ? null : State.FindClient(invoice.ClientId);
+    var title = invoice is null ? "Invoice not found" : invoice.Number is { } number ? $"Invoice {number}" : $"Draft invoice for {client?.Name}";
+}
+
+<PageTitle>@title · @PbSeedData.ProductName</PageTitle>
+
+<div class="container-fluid px-lg-4">
+    <PbRoleGuard Role="@PbSeedData.AccountManagerRole">
+        @if (leaving)
+        {
+            <p class="visually-hidden" role="status">The draft is deleted. Going back to the invoices.</p>
+        }
+        else if (invoice is null)
+        {
+            <PbNotFound Message="This invoice was deleted, or the link is wrong. Open it from Invoices." />
+        }
+        else
+        {
+            var status = Invoices.StatusWord(State, invoice);
+            var total = PbState.TotalOf(invoice);
+
+            <nav aria-label="Breadcrumb" class="mb-2">
+                <ol class="breadcrumb mb-0 small">
+                    <li class="breadcrumb-item"><a href="@Invoices.ListUrl">Invoices</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">@(invoice.Number ?? "Draft")</li>
+                </ol>
+            </nav>
+
+            <div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-3">
+                <div class="min-w-0">
+                    <h1 class="tb-title mb-1">@title</h1>
+                    <dl class="tb-invd-facts mt-2 mb-0">
+                        <div><dt>Status</dt><dd><span class="@($"badge text-bg-{Invoices.StatusColor(status)}")">@status</span></dd></div>
+                        <div><dt>Client</dt><dd>@if (client is not null) { <a href="@PbDisplay.ClientUrl(client.Id)">@client.Name</a> } else { @("Deleted client") }</dd></div>
+                        <div><dt>Total</dt><dd class="tb-mono">@Money(invoice.Currency, total)</dd></div>
+                        <div><dt>Hours up to</dt><dd>@PbDisplay.Date(invoice.HoursUpTo)</dd></div>
+                        <div><dt>Issued</dt><dd>@(invoice.IssuedOn is { } issued ? PbDisplay.Date(issued) : "Not yet")</dd></div>
+                        <div><dt>Due</dt><dd class="@(status == "Overdue" ? "text-danger-emphasis fw-semibold" : null)">@(invoice.DueOn is { } due ? $"{PbDisplay.Date(due)} (Net {invoice.TermsDays})" : "When issued")</dd></div>
+                        <div><dt>Paid</dt><dd>@(invoice.PaidOn is { } paid ? PbDisplay.Date(paid) : "Not yet")</dd></div>
+                        <div><dt>Made by</dt><dd>@(State.FindPerson(invoice.CreatedById)?.Name) on @PbDisplay.Date(invoice.CreatedAt)</dd></div>
+                    </dl>
+                </div>
+            </div>
+
+            @* Always rendered and focusable, so every action is announced and focus has somewhere to go when the buttons change. *@
+            <p class="tb-list-status mb-2 @(statusIsError ? "text-danger-emphasis" : null)" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
+
+            <div class="row g-4">
+                <div class="col-xl-8">
+                    <section class="tb-panel" aria-labelledby="tb-invd-lines-title">
+                        <h2 class="tb-section-title" id="tb-invd-lines-title">Lines (@invoice.Lines.Count)</h2>
+                        @if (invoice.Lines.Count == 0)
+                        {
+                            <p class="text-body-secondary mb-0">This draft has no lines left. Delete it, or make a new draft from the client's ready hours.</p>
+                        }
+                        else
+                        {
+                            <div class="table-responsive">
+                                <table class="table table-sm align-middle mb-0 tb-invd-table">
+                                    <caption class="tb-invd-caption">
+                                        @(invoice.IsImported ? "Billed from before time tracking: the project's hours at its agreed rate." : "One line per project and person: approved billable hours at the person's role's rate when the draft was made.")
+                                        Amounts in @invoice.Currency.
+                                    </caption>
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">Project</th>
+                                            <th scope="col">Person</th>
+                                            <th scope="col">Role</th>
+                                            <th scope="col" class="text-end">Hours</th>
+                                            <th scope="col" class="text-end">Rate</th>
+                                            <th scope="col" class="text-end">Amount</th>
+                                            @if (invoice.Status == PbInvoiceStatus.Draft)
+                                            {
+                                                <th scope="col"><span class="visually-hidden">Actions</span></th>
+                                            }
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var line in invoice.Lines)
+                                        {
+                                            var project = State.FindProject(line.ProjectId);
+                                            var person = State.FindPerson(line.PersonId);
+                                            var lineId = line.Id;
+                                            <tr @key="line.Id">
+                                                <th scope="row" class="fw-normal">
+                                                    @if (project is not null)
+                                                    {
+                                                        <a href="@PbDisplay.ProjectUrl(project.Id)"><span class="tb-key me-1">@project.Key</span>@project.Name</a>
+                                                    }
+                                                </th>
+                                                <td>@(line.PersonId is null ? "Project total" : person?.Name ?? "A former teammate")</td>
+                                                <td>@PbState.RoleName(line.Role)</td>
+                                                <td class="text-end tb-mono">@line.Hours.ToString("0.##", CultureInfo.InvariantCulture)</td>
+                                                <td class="text-end tb-mono">@line.Rate.ToString(CultureInfo.InvariantCulture)</td>
+                                                <td class="text-end tb-mono">@line.Amount.ToString("#,0.00", CultureInfo.InvariantCulture)</td>
+                                                @if (invoice.Status == PbInvoiceStatus.Draft)
+                                                {
+                                                    <td class="text-end">
+                                                        <button type="button" class="btn btn-sm btn-outline-danger text-nowrap" @onclick="() => RemoveLine(lineId)">
+                                                            Remove<span class="visually-hidden">&#32;the line of @(person?.Name) on @(project?.Key)</span>
+                                                        </button>
+                                                    </td>
+                                                }
+                                            </tr>
+                                        }
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <th scope="row" colspan="3">Total</th>
+                                            <td class="text-end tb-mono fw-semibold">@invoice.Lines.Sum(line => line.Hours).ToString("0.##", CultureInfo.InvariantCulture)</td>
+                                            <td></td>
+                                            <td class="text-end tb-mono fw-bold">@total.ToString("#,0.00", CultureInfo.InvariantCulture)</td>
+                                            @if (invoice.Status == PbInvoiceStatus.Draft)
+                                            {
+                                                <td></td>
+                                            }
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                        }
+                    </section>
+                </div>
+
+                <div class="col-xl-4 d-grid gap-4 align-content-start">
+                    @if (invoice.Status == PbInvoiceStatus.Draft)
+                    {
+                        <section class="tb-panel" aria-labelledby="tb-invd-issue-title">
+                            <h2 class="tb-section-title" id="tb-invd-issue-title">Issue the invoice</h2>
+                            <p class="small">Issuing gives it the next number, today's date, and a due date by the payment terms, and locks its lines. The project managers are told.</p>
+                            <EditForm EditContext="issueContext" OnSubmit="Issue" FormName="pb-invoice-issue" novalidate aria-labelledby="tb-invd-issue-title">
+                                <DataAnnotationsValidator />
+                                <ShowcaseFormErrors ShowSummary="true" />
+                                <label class="form-label fw-semibold" for="tb-invd-terms">Payment terms</label>
+                                <InputSelect TValue="int" id="tb-invd-terms" class="form-select" @bind-Value="issueForm.TermsDays" aria-describedby="tb-invd-terms-help">
+                                    <option value="0">Choose payment terms</option>
+                                    @foreach (var terms in PbSeedData.PaymentTerms)
+                                    {
+                                        <option value="@terms" @key="terms">Net @terms (due @PbDisplay.Date(State.Clock.Today.AddDays(terms)))</option>
+                                    }
+                                </InputSelect>
+                                <div class="form-text" id="tb-invd-terms-help">How many days the client has to pay.</div>
+                                <ValidationMessage For="() => issueForm.TermsDays" />
+                                <Button Type="ButtonType.Submit" Color="ButtonColor.Primary" Class="mt-3" Disabled="@(invoice.Lines.Count == 0)">
+                                    <Icon Name="IconName.Send" class="me-1" aria-hidden="true" />Issue invoice
+                                </Button>
+                            </EditForm>
+                        </section>
+
+                        <section class="tb-panel" aria-labelledby="tb-invd-delete-title">
+                            <h2 class="tb-section-title" id="tb-invd-delete-title">Delete the draft</h2>
+                            <p class="small">Its hours go back to ready to invoice.</p>
+                            <Button @ref="deleteButton" Color="ButtonColor.Danger" Outline="true" @onclick="() => deleteModal.ShowAsync()">
+                                <Icon Name="IconName.Trash3" class="me-1" aria-hidden="true" />Delete draft
+                            </Button>
+                        </section>
+                    }
+                    else if (invoice.Status == PbInvoiceStatus.Issued)
+                    {
+                        <section class="tb-panel" aria-labelledby="tb-invd-paid-title">
+                            <h2 class="tb-section-title" id="tb-invd-paid-title">Mark paid</h2>
+                            <p class="small">When the client's payment of @Money(invoice.Currency, total) arrived.</p>
+                            <EditForm EditContext="paidContext" OnSubmit="MarkPaid" FormName="pb-invoice-paid" novalidate aria-labelledby="tb-invd-paid-title">
+                                <DataAnnotationsValidator />
+                                <ShowcaseFormErrors ShowSummary="true" />
+                                <label class="form-label fw-semibold" for="tb-invd-paid-on">Paid on</label>
+                                <InputDate TValue="DateTime?" id="tb-invd-paid-on" class="form-control" @bind-Value="paidForm.PaidOn" min="@DealDisplay.ToDateInput(invoice.IssuedOn!.Value)"
+                                           max="@DealDisplay.ToDateInput(State.Clock.Today)" ParsingErrorMessage="Enter the payment date as a full date." aria-describedby="tb-invd-paid-help" />
+                                <div class="form-text" id="tb-invd-paid-help">From the issue date, @PbDisplay.Date(invoice.IssuedOn.Value), to today.</div>
+                                <ValidationMessage For="() => paidForm.PaidOn" />
+                                <Button Type="ButtonType.Submit" Color="ButtonColor.Success" Class="mt-3">
+                                    <Icon Name="IconName.CheckLg" class="me-1" aria-hidden="true" />Mark paid
+                                </Button>
+                            </EditForm>
+                        </section>
+                    }
+                    else
+                    {
+                        <section class="tb-panel" aria-labelledby="tb-invd-done-title">
+                            <h2 class="tb-section-title" id="tb-invd-done-title">Paid</h2>
+                            <p class="small mb-0">@client?.Name paid @Money(invoice.Currency, total) on @PbDisplay.Date(invoice.PaidOn!.Value). Nothing more to do.</p>
+                        </section>
+                    }
+                </div>
+            </div>
+
+            <Modal @ref="deleteModal" IsVerticallyCentered="true" ShowCloseButton="false" aria-labelledby="tb-invd-dialog-title" OnHidden="OnDeleteHidden">
+                <HeaderTemplate>
+                    <h2 class="modal-title h5" id="tb-invd-dialog-title">Delete this draft?</h2>
+                </HeaderTemplate>
+                <BodyTemplate>
+                    <p class="mb-0">The draft for @client?.Name (@Money(invoice.Currency, total)) is deleted, and its @invoice.Lines.Sum(line => line.Hours).ToString("0.##", CultureInfo.InvariantCulture) hours go back to ready to invoice.</p>
+                </BodyTemplate>
+                <FooterTemplate>
+                    <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => deleteModal.HideAsync()">Cancel</Button>
+                    <Button Color="ButtonColor.Danger" @onclick="ConfirmDeleteAsync"><Icon Name="IconName.Trash3" class="me-1" aria-hidden="true" />Delete draft</Button>
+                </FooterTemplate>
+            </Modal>
+        }
+    </PbRoleGuard>
+</div>

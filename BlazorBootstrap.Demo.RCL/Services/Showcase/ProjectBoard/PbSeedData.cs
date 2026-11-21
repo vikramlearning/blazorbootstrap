@@ -7,11 +7,12 @@ namespace BlazorBootstrap.Demo.RCL.Services.Showcase.ProjectBoard;
 /// <summary>
 /// Fixed, fictitious content for "Tandem", the project and client board of the made-up agency Brightline Studio: the team,
 /// clients and their contacts, projects with milestones and tasks, the deal pipeline, client activity, the audit log, and
-/// the demo accounts' notifications. The hand-written demo projects (WEB, APP, BRD, OPS) and their clients come first; a
+/// the demo accounts' notifications, and (in <c>PbSeedData.Timesheets.cs</c>) hours, timesheets, invoices, and the rate card.
+/// The hand-written demo projects (WEB, APP, BRD, OPS) and their clients come first; a
 /// deterministic generator adds the agency's other clients, their contacts, and two years of projects and tasks, so the
 /// lists have realistic volume. Every fresh tab starts the same way, which lets the tab snapshot keep only what differs.
 /// </summary>
-public static class PbSeedData
+public static partial class PbSeedData
 {
     #region Fields and Constants
 
@@ -139,8 +140,11 @@ public static class PbSeedData
 
         Generate(people, clients, contacts, projects, tasks, activities);
 
-        return new PbSeedSet(activities, Audit(people, clients, projects, tasks, deals, activities), clients, contacts, deals, Notifications(people, clients, contacts, projects, tasks, deals),
-            people, projects, tasks);
+        var rates = Rates();
+        var (entries, timesheets, invoices) = Timesheets(people, clients, projects, tasks, rates);
+
+        return new PbSeedSet(activities, Audit(people, clients, projects, tasks, deals, activities, entries, timesheets, invoices), clients, contacts, deals,
+            Notifications(people, clients, contacts, projects, tasks, deals, entries, timesheets, invoices), people, projects, tasks, entries, timesheets, invoices, rates);
     }
 
     /// <summary>The demo accounts: a team member, a project manager, and an account manager.</summary>
@@ -195,7 +199,7 @@ public static class PbSeedData
     /// completed, comments, deals won and lost, and activity logged, each by the person who did it.
     /// </summary>
     private static List<ShowcaseAuditEntry> Audit(IReadOnlyList<PbPerson> people, IReadOnlyList<PbClient> clients, IReadOnlyList<PbProject> projects, IReadOnlyList<PbTask> tasks,
-        IReadOnlyList<PbDeal> deals, IReadOnlyList<PbActivity> activities)
+        IReadOnlyList<PbDeal> deals, IReadOnlyList<PbActivity> activities, IReadOnlyList<PbTimeEntry> timeEntries, IReadOnlyList<PbTimesheet> timesheets, IReadOnlyList<PbInvoice> invoices)
     {
         var since = Now.AddDays(-90);
         var names = people.ToDictionary(person => person.Id, person => person.Name);
@@ -240,6 +244,8 @@ public static class PbSeedData
             entries.Add((activity.At, Name(activity.AuthorId), "Activity logged", $"Client {clientsById[activity.ClientId].Name}", ClientPath(activity.ClientId),
                 $"{activity.Kind}: {Clip(activity.Text, 120)}"));
         }
+
+        TimesheetAudit(entries, people, clients, projects, timeEntries, timesheets, invoices);
 
         return entries
             .Where(entry => entry.At <= Now)
@@ -532,7 +538,8 @@ public static class PbSeedData
     /// contacts of theirs and a deal about to close.
     /// </summary>
     private static List<ShowcaseNotification> Notifications(IReadOnlyList<PbPerson> people, IReadOnlyList<PbClient> clients, IReadOnlyList<PbContact> contacts,
-        IReadOnlyList<PbProject> projects, IReadOnlyList<PbTask> tasks, IReadOnlyList<PbDeal> deals)
+        IReadOnlyList<PbProject> projects, IReadOnlyList<PbTask> tasks, IReadOnlyList<PbDeal> deals, IReadOnlyList<PbTimeEntry> timeEntries, IReadOnlyList<PbTimesheet> timesheets,
+        IReadOnlyList<PbInvoice> invoices)
     {
         var today = Now.Date;
         var names = people.ToDictionary(person => person.Id, person => person.Name);
@@ -598,13 +605,18 @@ public static class PbSeedData
                 Invariant($"${deal.Value:#,0}, in {deal.Stage}. Update the deal or move it on the pipeline."), SiteBase + "/pipeline"));
         }
 
-        var all = items.Where(item => item.At <= Now).OrderByDescending(item => item.At).ToList();
+        // Timesheet steps that wait for someone (a week to approve, hours to invoice, an overdue invoice) stay unread too.
+        var actions = new List<(string AccountId, DateTime At, string Title, string Text, string Url, bool Action)>();
+        TimesheetNotifications(actions, people, clients, projects, timeEntries, timesheets, invoices);
+
+        var all = items.Select(item => (item.AccountId, item.At, item.Title, item.Text, item.Url, Action: false)).Concat(actions)
+            .Where(item => item.At <= Now).OrderByDescending(item => item.At).ToList();
         var unread = new Dictionary<string, int>(StringComparer.Ordinal);
 
         return all.Select((item, index) => new ShowcaseNotification
         {
             Id = all.Count - index, AccountId = item.AccountId, At = item.At, Title = Clip(item.Title, 80), Text = Clip(item.Text, 200), Url = item.Url,
-            IsRead = (unread[item.AccountId] = unread.GetValueOrDefault(item.AccountId) + 1) > 2,
+            IsRead = (unread[item.AccountId] = unread.GetValueOrDefault(item.AccountId) + 1) > 2 && !item.Action,
         }).ToList();
     }
 
@@ -801,4 +813,8 @@ public sealed record PbSeedSet(
     List<ShowcaseNotification> Notifications,
     List<PbPerson> People,
     List<PbProject> Projects,
-    List<PbTask> Tasks);
+    List<PbTask> Tasks,
+    List<PbTimeEntry> TimeEntries,
+    List<PbTimesheet> Timesheets,
+    List<PbInvoice> Invoices,
+    List<PbRate> Rates);

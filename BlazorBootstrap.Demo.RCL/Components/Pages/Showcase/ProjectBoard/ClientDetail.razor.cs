@@ -97,8 +97,8 @@ public partial class ClientDetail : ComponentBase, IDisposable
         editDealButtons.Clear();
         var name = State.FindClient(Id)?.Name;
         pageMessage = name is null ? null
-            : Created == true ? $"Added {name}. Add its contacts, deals, and activity below."
-            : Saved == true ? $"Saved the changes to {name}."
+            : Created == 1 ? $"Added {name}. Add its contacts, deals, and activity below."
+            : Saved == 1 ? $"Saved the changes to {name}."
             : null;
     }
 
@@ -213,7 +213,7 @@ public partial class ClientDetail : ComponentBase, IDisposable
     #region Properties, Indexers
 
     /// <summary>Gets or sets whether the client was just added.</summary>
-    [SupplyParameterFromQuery(Name = "created")] public bool? Created { get; set; }
+    [SupplyParameterFromQuery(Name = "created")] public int? Created { get; set; }
 
     /// <summary>Gets or sets the client.</summary>
     [Parameter] public int Id { get; set; }
@@ -221,7 +221,7 @@ public partial class ClientDetail : ComponentBase, IDisposable
     [Inject] private ShowcaseGridViewStore GridViews { get; set; } = default!;
 
     /// <summary>Gets or sets whether the client was just saved.</summary>
-    [SupplyParameterFromQuery(Name = "saved")] public bool? Saved { get; set; }
+    [SupplyParameterFromQuery(Name = "saved")] public int? Saved { get; set; }
 
     [Inject] private PbState State { get; set; } = default!;
 

@@ -472,8 +472,218 @@ public sealed record PbClientInput(
 /// <summary>The fields of a client contact the account manager saves at once.</summary>
 public sealed record PbContactInput(string Name, string Title, string Email, string Phone, PbContactRole Role, bool IsPrimary);
 
-/// <summary>The fields of a deal the account manager saves at once.</summary>
-public sealed record PbDealInput(int ClientId, string Title, int Value, DateTime CloseDate);
+/// <summary>The fields of a deal the account manager saves at once; the stage applies to a new deal only (an open one's moves on the pipeline).</summary>
+public sealed record PbDealInput(int ClientId, string Title, int Value, DateTime CloseDate, PbDealStage Stage = PbDealStage.Lead);
 
 /// <summary>The outcome of a bulk change from a list: the result, and how many records changed and how many were left as they were.</summary>
 public sealed record PbBulkOutcome(PbResult Result, int Changed, int Unchanged);
+
+/// <summary>Where an invoice is: a draft the account manager prepares, issued to the client, or paid. An issued invoice past its due date is overdue.</summary>
+public enum PbInvoiceStatus
+{
+    /// <summary>Prepared, not sent: lines can still be removed, and it can be deleted.</summary>
+    Draft,
+
+    /// <summary>Sent to the client with a number and a due date; its lines are locked.</summary>
+    Issued,
+
+    /// <summary>Paid by the client.</summary>
+    Paid,
+}
+
+/// <summary>The rate card's roles: each person bills at the rate of the role their job title falls under.</summary>
+public enum PbRateRole
+{
+    /// <summary>Designers and researchers.</summary>
+    Design,
+
+    /// <summary>Developers and engineers (and anyone not in another role).</summary>
+    Engineering,
+
+    /// <summary>QA engineers.</summary>
+    Quality,
+
+    /// <summary>Content strategists and copywriters.</summary>
+    Content,
+
+    /// <summary>Project and account managers.</summary>
+    Management,
+}
+
+/// <summary>Where a person's week of hours is: being filled in, waiting for the project managers, returned for changes, or approved.</summary>
+public enum PbTimesheetStatus
+{
+    /// <summary>Being filled in; not submitted yet.</summary>
+    Draft,
+
+    /// <summary>Submitted: waiting for each project's manager to approve their project's hours.</summary>
+    Submitted,
+
+    /// <summary>Returned by a project manager with a reason: the person changes it and submits again.</summary>
+    Returned,
+
+    /// <summary>Every project's hours are approved; billable hours can be invoiced.</summary>
+    Approved,
+}
+
+/// <summary>One line of an invoice: a person's approved billable hours on a project at their role's rate.</summary>
+public sealed class PbInvoiceLine
+{
+    /// <summary>Gets or sets the amount: hours times rate, rounded to cents.</summary>
+    public decimal Amount { get; set; }
+
+    /// <summary>Gets or sets the hours.</summary>
+    public decimal Hours { get; set; }
+
+    /// <summary>Gets or sets the ID (unique on the board).</summary>
+    public int Id { get; init; }
+
+    /// <summary>Gets or sets the person whose hours these are, or <see langword="null" /> for an invoice from before time tracking.</summary>
+    public string? PersonId { get; init; }
+
+    /// <summary>Gets or sets the project.</summary>
+    public int ProjectId { get; init; }
+
+    /// <summary>Gets or sets the hourly rate when the draft was made, in the invoice's currency.</summary>
+    public int Rate { get; set; }
+
+    /// <summary>Gets or sets the rate card role the rate came from.</summary>
+    public PbRateRole Role { get; set; }
+}
+
+/// <summary>An invoice to a client for approved billable hours.</summary>
+public sealed class PbInvoice
+{
+    /// <summary>Gets or sets the client.</summary>
+    public int ClientId { get; init; }
+
+    /// <summary>Gets or sets when the draft was made.</summary>
+    public DateTime CreatedAt { get; init; }
+
+    /// <summary>Gets or sets who made the draft (a person ID).</summary>
+    public string CreatedById { get; init; } = string.Empty;
+
+    /// <summary>Gets or sets the currency, the client's billing currency when the draft was made.</summary>
+    public string Currency { get; init; } = "USD";
+
+    /// <summary>Gets or sets when payment is due (issue date plus the payment terms), once issued.</summary>
+    public DateTime? DueOn { get; set; }
+
+    /// <summary>Gets or sets the last day of the hours it covers.</summary>
+    public DateTime HoursUpTo { get; init; }
+
+    /// <summary>Gets or sets the ID.</summary>
+    public int Id { get; init; }
+
+    /// <summary>Gets or sets whether it comes from before time tracking: its lines carry hours and amounts without time entries.</summary>
+    public bool IsImported { get; init; }
+
+    /// <summary>Gets or sets when it was issued.</summary>
+    public DateTime? IssuedOn { get; set; }
+
+    /// <summary>Gets or sets the lines, by project and person.</summary>
+    public List<PbInvoiceLine> Lines { get; set; } = new();
+
+    /// <summary>Gets or sets the invoice number given when it is issued, like "INV-2026-0042"; <see langword="null" /> for a draft.</summary>
+    public string? Number { get; set; }
+
+    /// <summary>Gets or sets when it was paid.</summary>
+    public DateTime? PaidOn { get; set; }
+
+    /// <summary>Gets or sets the status.</summary>
+    public PbInvoiceStatus Status { get; set; }
+
+    /// <summary>Gets or sets the payment terms in days (Net 14, 30, 45, or 60), once issued.</summary>
+    public int TermsDays { get; set; }
+}
+
+/// <summary>A project manager's approval of one project's hours in a submitted week.</summary>
+public sealed class PbProjectApproval
+{
+    /// <summary>Gets or sets when it was approved.</summary>
+    public DateTime? ApprovedAt { get; set; }
+
+    /// <summary>Gets or sets who approved it (a person ID), or <see langword="null" /> while it waits.</summary>
+    public string? ApprovedById { get; set; }
+
+    /// <summary>Gets or sets the project.</summary>
+    public int ProjectId { get; init; }
+}
+
+/// <summary>One rate card entry: a role's hourly rate, the same number in every billing currency.</summary>
+public sealed class PbRate
+{
+    /// <summary>Gets or sets the hourly rate, in whole units of the client's currency.</summary>
+    public int HourlyRate { get; set; }
+
+    /// <summary>Gets or sets the role.</summary>
+    public PbRateRole Role { get; init; }
+}
+
+/// <summary>Hours a person spent on a project on one day, logged on their timesheet.</summary>
+public sealed class PbTimeEntry
+{
+    /// <summary>Gets or sets when it was logged.</summary>
+    public DateTime CreatedAt { get; init; }
+
+    /// <summary>Gets or sets the day.</summary>
+    public DateTime Date { get; set; }
+
+    /// <summary>Gets or sets the hours, in quarter hours.</summary>
+    public decimal Hours { get; set; }
+
+    /// <summary>Gets or sets the ID.</summary>
+    public int Id { get; init; }
+
+    /// <summary>Gets or sets the draft or issued invoice it is on, or <see langword="null" /> while it isn't invoiced.</summary>
+    public int? InvoiceId { get; set; }
+
+    /// <summary>Gets or sets whether the client is billed for it (never for an internal project).</summary>
+    public bool IsBillable { get; set; }
+
+    /// <summary>Gets or sets a short note (plain), or empty.</summary>
+    public string Note { get; set; } = string.Empty;
+
+    /// <summary>Gets or sets whose hours they are (a person ID).</summary>
+    public string PersonId { get; init; } = string.Empty;
+
+    /// <summary>Gets or sets the project.</summary>
+    public int ProjectId { get; set; }
+
+    /// <summary>Gets or sets the task worked on, if any (one of the project's).</summary>
+    public int? TaskId { get; set; }
+}
+
+/// <summary>A person's week of hours (Monday to Sunday) and where it is in the approval.</summary>
+public sealed class PbTimesheet
+{
+    /// <summary>Gets or sets each project's approval while the week is submitted or approved.</summary>
+    public List<PbProjectApproval> Approvals { get; set; } = new();
+
+    /// <summary>Gets or sets when it was approved or returned.</summary>
+    public DateTime? DecidedAt { get; set; }
+
+    /// <summary>Gets or sets the ID.</summary>
+    public int Id { get; init; }
+
+    /// <summary>Gets or sets whose week it is (a person ID).</summary>
+    public string PersonId { get; init; } = string.Empty;
+
+    /// <summary>Gets or sets who returned it (a person ID).</summary>
+    public string? ReturnedById { get; set; }
+
+    /// <summary>Gets or sets why it was returned (plain), while it is returned.</summary>
+    public string? ReturnReason { get; set; }
+
+    /// <summary>Gets or sets the status.</summary>
+    public PbTimesheetStatus Status { get; set; }
+
+    /// <summary>Gets or sets when it was last submitted.</summary>
+    public DateTime? SubmittedAt { get; set; }
+
+    /// <summary>Gets or sets the Monday the week starts on.</summary>
+    public DateTime WeekStart { get; init; }
+}
+
+/// <summary>The fields of a time entry a person saves at once.</summary>
+public sealed record PbTimeEntryInput(int ProjectId, int? TaskId, DateTime Date, decimal Hours, bool IsBillable, string Note);
