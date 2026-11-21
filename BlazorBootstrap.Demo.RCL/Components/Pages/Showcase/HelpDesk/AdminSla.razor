@@ -19,98 +19,209 @@
         @* Always rendered and focusable, so a save is announced. *@
         <p class="hd-admin-status" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
 
-        @* One form per row: a form can't wrap a table row, so the row's inputs and Save button join it with the form attribute, and Enter in an input saves that row. *@
-        @foreach (var priority in priorities)
-        {
-            <form id="@FormId(priority)" @key="priority" @onsubmit="() => SaveAsync(priority)" novalidate></form>
-        }
+        <div class="d-flex justify-content-end mb-2">
+            @* Back to the saved view's defaults: Urgent first, every column in its place. *@
+            <Button Color="ButtonColor.Link" Size="ButtonSize.Small" Class="p-0" @onclick="ResetViewAsync">Reset view</Button>
+        </div>
 
         <Card Class="hd-card">
             <CardBody Class="p-3 p-lg-4">
-                <div class="table-responsive hd-grid">
-                    <table class="table">
-                        <caption class="visually-hidden">SLA targets by priority, most urgent first, with the open tickets of each priority now</caption>
-                        <thead>
-                            <tr>
-                                <th scope="col">Priority</th>
-                                <th scope="col">First reply (hours)</th>
-                                <th scope="col">Resolution (hours)</th>
-                                <th scope="col" class="text-end">Open tickets</th>
-                                <th scope="col" class="text-end">Breached</th>
-                                <th scope="col" class="text-end">At risk</th>
-                                <th scope="col" class="text-end">First reply overdue</th>
-                                <th scope="col"><span class="visually-hidden">Save</span></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var priority in priorities)
-                            {
-                                var key = Key(priority);
-                                var counts = Counts(priority);
-                                var firstError = firstErrors.GetValueOrDefault(priority);
-                                var resolveError = resolveErrors.GetValueOrDefault(priority);
-
-                                <tr @key="priority">
-                                    <th scope="row" class="fw-normal">
-                                        <Badge Color="@HelpDeskDisplay.PriorityColor(priority)">@priority</Badge>
-                                        @if (IsDirty(priority))
-                                        {
-                                            <span class="d-block small text-body-secondary mt-1">Not saved yet</span>
-                                        }
-                                    </th>
-                                    <td>
-                                        <label class="visually-hidden" for="@($"hd-sla-{key}-first")">@priority: first reply target, in hours</label>
-                                        <input @ref="firstInputs[priority]" id="@($"hd-sla-{key}-first")" form="@FormId(priority)" type="number" inputmode="numeric"
-                                               class="form-control form-control-sm hd-sla-input @(firstError is null ? null : "is-invalid")"
-                                               min="1" max="@HelpDeskState.MaxFirstReplyHours" step="1" value="@FirstValue(priority)" @oninput="args => OnFirstInput(priority, args)"
-                                               aria-describedby="@($"hd-sla-{key}-first-error hd-sla-ranges")" aria-invalid="@(firstError is null ? null : "true")" />
-                                        <p class="hd-field-error" id="@($"hd-sla-{key}-first-error")" role="alert">@firstError</p>
-                                    </td>
-                                    <td>
-                                        <label class="visually-hidden" for="@($"hd-sla-{key}-resolve")">@priority: resolution target, in hours</label>
-                                        <input @ref="resolveInputs[priority]" id="@($"hd-sla-{key}-resolve")" form="@FormId(priority)" type="number" inputmode="numeric"
-                                               class="form-control form-control-sm hd-sla-input @(resolveError is null ? null : "is-invalid")"
-                                               min="1" max="@HelpDeskState.MaxResolveHours" step="1" value="@ResolveValue(priority)" @oninput="args => OnResolveInput(priority, args)"
-                                               aria-describedby="@($"hd-sla-{key}-resolve-error hd-sla-ranges")" aria-invalid="@(resolveError is null ? null : "true")" />
-                                        <p class="hd-field-error" id="@($"hd-sla-{key}-resolve-error")" role="alert">@resolveError</p>
-                                    </td>
-                                    <td class="text-end">@counts.Open</td>
-                                    <td class="text-end">
-                                        @if (counts.Breached > 0)
-                                        {
-                                            <Badge Color="BadgeColor.Danger">@counts.Breached</Badge>
-                                        }
-                                        else
-                                        {
-                                            @counts.Breached
-                                        }
-                                    </td>
-                                    <td class="text-end">
-                                        @if (counts.AtRisk > 0)
-                                        {
-                                            <Badge Color="BadgeColor.Warning">@counts.AtRisk</Badge>
-                                        }
-                                        else
-                                        {
-                                            @counts.AtRisk
-                                        }
-                                    </td>
-                                    <td class="text-end">@counts.FirstReplyOverdue</td>
-                                    <td>
-                                        <Button Type="ButtonType.Submit" Color="ButtonColor.Primary" Size="ButtonSize.Small" form="@FormId(priority)">
-                                            Save<span class="visually-hidden"> @priority targets</span>
-                                        </Button>
-                                    </td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
-                </div>
-                <p class="form-text mb-0 mt-2" id="hd-sla-ranges">
-                    First reply: 1 to @HelpDeskState.MaxFirstReplyHours hours (one week). Resolution: 1 to @HelpDeskState.MaxResolveHours hours (30 days), and not shorter than the first reply.
+                <ShowcaseDataState Status="@(viewLoaded ? ShowcaseDataStatus.Ready : ShowcaseDataStatus.Loading)"
+                                   IsEmpty="@(State.SlaPolicies.Count == 0)"
+                                   EmptyIcon="IconName.Hourglass"
+                                   EmptyTitle="No SLA policies"
+                                   EmptyText="Every priority needs a policy. Reset the demo data to bring them back."
+                                   LoadingText="Loading SLA policies…"
+                                   LoadingRows="4"
+                                   OnRetry="RefreshGridAsync">
+                    @* Four rows, one per priority, so the list doesn't page. *@
+                    <Grid @ref="grid"
+                          @key="gridVersion"
+                          TItem="HelpDeskSlaPolicy"
+                          Class="table table-hover sc-grid-row-links"
+                          GridContainerClass="hd-grid"
+                          DataProvider="ProvidePoliciesAsync"
+                          SettingsProvider="view.GetSettingsAsync"
+                          GridSettingsChanged="view.SaveSettingsAsync"
+                          AllowSorting="true"
+                          AllowColumnChooser="true"
+                          AllowExport="true"
+                          ExportFileName="help-desk-sla-policies"
+                          Responsive="true"
+                          EmptyText="No SLA policies."
+                          aria-label="SLA policies by priority, with the open tickets of each priority now">
+                        <GridColumns>
+                            <GridColumn TItem="HelpDeskSlaPolicy" HeaderText="Priority" PropertyName="Priority" SortString="priority" SortKeySelector="policy => policy.Priority"
+                                        IsDefaultSortColumn="@view.IsSortColumn("priority")" SortDirection="@view.DirectionFor("priority")" AlwaysVisible="true" TextNoWrap="true">
+                                @* A policy has no page of its own: the priority opens the editor, and its stretched area makes the whole row do so. *@
+                                <button type="button" class="btn btn-link p-0 stretched-link" @onclick="() => EditAsync(context.Priority)">
+                                    <Badge Color="@HelpDeskDisplay.PriorityColor(context.Priority)">@context.Priority</Badge><span class="visually-hidden"> targets</span>
+                                </button>
+                            </GridColumn>
+                            <GridColumn TItem="HelpDeskSlaPolicy" HeaderText="First reply (hours)" PropertyName="FirstReplyHours" SortString="first" SortKeySelector="policy => policy.FirstReplyHours"
+                                        IsDefaultSortColumn="@view.IsSortColumn("first")" SortDirection="@view.DirectionFor("first")" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End">
+                                @context.FirstReplyHours
+                            </GridColumn>
+                            <GridColumn TItem="HelpDeskSlaPolicy" HeaderText="Resolution (hours)" PropertyName="ResolveHours" SortString="resolve" SortKeySelector="policy => policy.ResolveHours"
+                                        IsDefaultSortColumn="@view.IsSortColumn("resolve")" SortDirection="@view.DirectionFor("resolve")" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End">
+                                @context.ResolveHours
+                            </GridColumn>
+                            @* The counts come from the open tickets now, not the policy, so CSV export leaves them out. *@
+                            <GridColumn TItem="HelpDeskSlaPolicy" HeaderText="Open tickets" SortString="open" SortKeySelector="policy => Counts(policy.Priority).Open"
+                                        IsDefaultSortColumn="@view.IsSortColumn("open")" SortDirection="@view.DirectionFor("open")" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End">
+                                @Counts(context.Priority).Open
+                            </GridColumn>
+                            <GridColumn TItem="HelpDeskSlaPolicy" HeaderText="Breached" SortString="breached" SortKeySelector="policy => Counts(policy.Priority).Breached"
+                                        IsDefaultSortColumn="@view.IsSortColumn("breached")" SortDirection="@view.DirectionFor("breached")" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End">
+                                @{
+                                    var breached = Counts(context.Priority).Breached;
+                                }
+                                @if (breached > 0)
+                                {
+                                    <Badge Color="BadgeColor.Danger">@breached</Badge>
+                                }
+                                else
+                                {
+                                    @breached
+                                }
+                            </GridColumn>
+                            <GridColumn TItem="HelpDeskSlaPolicy" HeaderText="At risk" SortString="risk" SortKeySelector="policy => Counts(policy.Priority).AtRisk"
+                                        IsDefaultSortColumn="@view.IsSortColumn("risk")" SortDirection="@view.DirectionFor("risk")" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End">
+                                @{
+                                    var atRisk = Counts(context.Priority).AtRisk;
+                                }
+                                @if (atRisk > 0)
+                                {
+                                    <Badge Color="BadgeColor.Warning">@atRisk</Badge>
+                                }
+                                else
+                                {
+                                    @atRisk
+                                }
+                            </GridColumn>
+                            <GridColumn TItem="HelpDeskSlaPolicy" HeaderText="First reply overdue" SortString="overdue" SortKeySelector="policy => Counts(policy.Priority).FirstReplyOverdue"
+                                        IsDefaultSortColumn="@view.IsSortColumn("overdue")" SortDirection="@view.DirectionFor("overdue")" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End">
+                                @Counts(context.Priority).FirstReplyOverdue
+                            </GridColumn>
+                            <GridColumn TItem="HelpDeskSlaPolicy" HeaderText="Actions" Sortable="false" Exportable="false">
+                                <Button @ref="editButtons[context.Priority]" Color="ButtonColor.Secondary" Outline="true" Size="ButtonSize.Small" @onclick="() => EditAsync(context.Priority)">
+                                    <Icon Name="IconName.PencilSquare" class="me-1" aria-hidden="true" />Edit<span class="visually-hidden">&#32;@context.Priority targets</span>
+                                </Button>
+                            </GridColumn>
+                        </GridColumns>
+                    </Grid>
+                </ShowcaseDataState>
+                <p class="form-text mb-0 mt-2">
+                    First reply: 1 to @HelpDeskState.MaxFirstReplyHours hours (one week). Resolution: 1 to @HelpDeskState.MaxResolveHours hours (30 days), and longer than the first reply.
                 </p>
             </CardBody>
         </Card>
+
+        <section class="mt-4" aria-labelledby="hd-rules-title">
+            <div class="hd-page-head mb-2">
+                <div>
+                    <h2 class="hd-section-title mb-1" id="hd-rules-title">Escalation rules</h2>
+                    <p class="small text-body-secondary mb-0">
+                        An unresolved ticket that meets a rule moves up one support tier (Tier 3 at most), is flagged in the queue, and its team lead and assignee are notified.
+                        Each rule escalates a ticket once, and the rules run whenever the desk is in use.
+                    </p>
+                </div>
+                <Button @ref="addRuleButton" Color="ButtonColor.Primary" @onclick="AddRuleAsync">
+                    <Icon Name="IconName.Plus" class="me-1" aria-hidden="true" />Add rule
+                </Button>
+            </div>
+
+            <p class="hd-admin-error" role="alert">@ruleError.Text</p>
+            <p class="hd-admin-status" role="status" tabindex="-1" @ref="ruleStatusRegion">@ruleStatus.Text</p>
+
+            <div class="d-flex justify-content-end mb-2">
+                @* Back to the saved view's defaults: the rules in the order they were added, every column in its place. *@
+                <Button Color="ButtonColor.Link" Size="ButtonSize.Small" Class="p-0" @onclick="ResetRulesViewAsync">Reset view<span class="visually-hidden"> of the escalation rules</span></Button>
+            </div>
+
+            <Card Class="hd-card">
+                <CardBody Class="p-3 p-lg-4">
+                    <ShowcaseDataState Status="@(viewLoaded ? ShowcaseDataStatus.Ready : ShowcaseDataStatus.Loading)"
+                                       IsEmpty="@(State.EscalationRules.Count == 0)"
+                                       EmptyIcon="IconName.ArrowUpCircle"
+                                       EmptyTitle="No escalation rules"
+                                       EmptyText="Add a rule to move tickets that wait too long to the next tier and tell the team lead."
+                                       LoadingText="Loading escalation rules…"
+                                       LoadingRows="3"
+                                       OnRetry="RefreshRulesGridAsync">
+                        <EmptyActions>
+                            <Button Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="AddRuleAsync">Add rule</Button>
+                        </EmptyActions>
+                        <ChildContent>
+                            <Grid @ref="rulesGrid"
+                                  @key="rulesGridVersion"
+                                  TItem="HelpDeskEscalationRule"
+                                  Class="table table-hover sc-grid-row-links"
+                                  GridContainerClass="hd-grid"
+                                  DataProvider="ProvideRulesAsync"
+                                  SettingsProvider="rulesView.GetSettingsAsync"
+                                  GridSettingsChanged="rulesView.SaveSettingsAsync"
+                                  AllowSorting="true"
+                                  AllowColumnChooser="true"
+                                  AllowExport="true"
+                                  ExportFileName="help-desk-escalation-rules"
+                                  Responsive="true"
+                                  EmptyText="No escalation rules."
+                                  aria-label="Escalation rules, with the tickets each has escalated">
+                                <GridColumns>
+                                    <GridColumn TItem="HelpDeskEscalationRule" HeaderText="Rule" PropertyName="Name" SortString="name" SortKeySelector="rule => rule.Name"
+                                                IsDefaultSortColumn="@rulesView.IsSortColumn("name")" SortDirection="@rulesView.DirectionFor("name")" AlwaysVisible="true">
+                                        @* A rule has no page of its own: the name opens the editor, and its stretched area makes the whole row do so. *@
+                                        <button type="button" class="btn btn-link p-0 text-start stretched-link" @onclick="() => EditRuleAsync(context.Id)">@context.Name</button>
+                                    </GridColumn>
+                                    <GridColumn TItem="HelpDeskEscalationRule" HeaderText="Applies to" PropertyName="Priority" SortString="priority" SortKeySelector="rule => rule.Priority.HasValue ? (int)rule.Priority.Value : -1"
+                                                IsDefaultSortColumn="@rulesView.IsSortColumn("priority")" SortDirection="@rulesView.DirectionFor("priority")" TextNoWrap="true">
+                                        @if (context.Priority is { } priority)
+                                        {
+                                            <Badge Color="@HelpDeskDisplay.PriorityColor(priority)">@priority</Badge>
+                                        }
+                                        else
+                                        {
+                                            @("Any priority")
+                                        }
+                                    </GridColumn>
+                                    <GridColumn TItem="HelpDeskEscalationRule" HeaderText="Condition" PropertyName="Trigger" SortString="condition" SortKeySelector="rule => rule.Trigger"
+                                                IsDefaultSortColumn="@rulesView.IsSortColumn("condition")" SortDirection="@rulesView.DirectionFor("condition")">
+                                        @ConditionText(context)
+                                    </GridColumn>
+                                    <GridColumn TItem="HelpDeskEscalationRule" HeaderText="Hours" PropertyName="Hours" SortString="hours" SortKeySelector="rule => rule.Hours"
+                                                IsDefaultSortColumn="@rulesView.IsSortColumn("hours")" SortDirection="@rulesView.DirectionFor("hours")" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End">
+                                        @context.Hours
+                                    </GridColumn>
+                                    <GridColumn TItem="HelpDeskEscalationRule" HeaderText="Status" PropertyName="IsActive" SortString="status" SortKeySelector="rule => rule.IsActive"
+                                                IsDefaultSortColumn="@rulesView.IsSortColumn("status")" SortDirection="@rulesView.DirectionFor("status")" TextNoWrap="true">
+                                        <Badge Color="@(context.IsActive ? BadgeColor.Success : BadgeColor.Secondary)">@(context.IsActive ? "On" : "Off")</Badge>
+                                    </GridColumn>
+                                    @* Worked out from the tickets now, so CSV export leaves it out. *@
+                                    <GridColumn TItem="HelpDeskEscalationRule" HeaderText="Tickets escalated" SortString="escalated" SortKeySelector="rule => State.EscalatedCount(rule.Id)"
+                                                IsDefaultSortColumn="@rulesView.IsSortColumn("escalated")" SortDirection="@rulesView.DirectionFor("escalated")" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End">
+                                        @State.EscalatedCount(context.Id)
+                                    </GridColumn>
+                                    <GridColumn TItem="HelpDeskEscalationRule" HeaderText="Actions" Sortable="false" Exportable="false" TextNoWrap="true">
+                                        <div class="hd-admin-actions">
+                                            <Button @ref="ruleEditButtons[context.Id]" Color="ButtonColor.Secondary" Outline="true" Size="ButtonSize.Small" @onclick="() => EditRuleAsync(context.Id)">
+                                                <Icon Name="IconName.PencilSquare" class="me-1" aria-hidden="true" />Edit<span class="visually-hidden">&#32;@context.Name</span>
+                                            </Button>
+                                            <Button Color="ButtonColor.Danger" Outline="true" Size="ButtonSize.Small" @onclick="() => AskDeleteRuleAsync(context.Id)">
+                                                <Icon Name="IconName.Trash3" class="me-1" aria-hidden="true" />Delete<span class="visually-hidden">&#32;@context.Name</span>
+                                            </Button>
+                                        </div>
+                                    </GridColumn>
+                                </GridColumns>
+                            </Grid>
+                        </ChildContent>
+                    </ShowcaseDataState>
+                    <p class="form-text mb-0 mt-2">
+                        No first reply: 1 to @HelpDeskState.MaxFirstReplyHours hours after the ticket is created. Not resolved: 1 to @HelpDeskState.MaxResolveHours hours on the SLA clock, which pauses while a ticket is Pending.
+                    </p>
+                </CardBody>
+            </Card>
+        </section>
 
         <section class="hd-panel mt-4" aria-labelledby="hd-sla-how-title">
             <h2 class="hd-section-title" id="hd-sla-how-title">How the clocks run</h2>
@@ -119,8 +230,134 @@
                 <li><strong>Resolution</strong> counts from creation to resolved, and pauses while the ticket is Pending (waiting on the customer).</li>
                 <li><strong>At risk</strong> means 2 hours or less, or under a quarter of the resolution target, is left.</li>
                 <li>Breached, at-risk, and overdue counts are for open tickets now, on the demo's clock, and follow a saved change straight away.</li>
+                <li><strong>Escalation</strong> moves a ticket from Tier 1 to Tier 2, then Tier 3. Each rule escalates a ticket once; the escalation shows on the ticket's history and in the audit log.</li>
             </ul>
             <a href="@($"{HelpDeskAgentLayout.Base}/reports/sla")">See first reply and resolution performance in the SLA report</a>
         </section>
+
+        <Modal @ref="editorModal"
+               IsVerticallyCentered="true"
+               ShowCloseButton="false"
+               aria-labelledby="hd-sla-editor-title"
+               OnShown="OnEditorShownAsync"
+               OnHidden="OnEditorHiddenAsync">
+            <HeaderTemplate>
+                <h2 class="modal-title h5" id="hd-sla-editor-title">@(editing is { } priority ? $"Edit the {priority} targets" : "Edit the targets")</h2>
+            </HeaderTemplate>
+            <BodyTemplate>
+                <EditForm id="hd-sla-form" EditContext="editContext" OnSubmit="SaveAsync" FormName="hd-sla" novalidate>
+                    <DataAnnotationsValidator />
+                    <ShowcaseFormErrors ShowSummary="true" />
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold" for="hd-sla-first">First reply target, in hours</label>
+                        <InputNumber @ref="firstInput" TValue="int?" id="hd-sla-first" class="form-control hd-sla-input" @bind-Value="form.FirstReplyHours"
+                                     min="1" max="@HelpDeskState.MaxFirstReplyHours" step="1" inputmode="numeric" aria-describedby="hd-sla-first-help"
+                                     ParsingErrorMessage="Use whole hours, like 4." />
+                        <div class="form-text" id="hd-sla-first-help">From when the ticket is created to the first public reply: 1 to @HelpDeskState.MaxFirstReplyHours hours (one week).</div>
+                        <ValidationMessage For="() => form.FirstReplyHours" />
+                    </div>
+                    <div>
+                        <label class="form-label fw-semibold" for="hd-sla-resolve">Resolution target, in hours</label>
+                        <InputNumber TValue="int?" id="hd-sla-resolve" class="form-control hd-sla-input" @bind-Value="form.ResolveHours"
+                                     min="1" max="@HelpDeskState.MaxResolveHours" step="1" inputmode="numeric" aria-describedby="hd-sla-resolve-help"
+                                     ParsingErrorMessage="Use whole hours, like 24." />
+                        <div class="form-text" id="hd-sla-resolve-help">
+                            From creation to resolved, paused while the ticket is Pending: 1 to @HelpDeskState.MaxResolveHours hours (30 days), and longer than the first reply.
+                        </div>
+                        <ValidationMessage For="() => form.ResolveHours" />
+                    </div>
+                </EditForm>
+                <p class="hd-field-error mt-3 mb-0" role="alert">@formError</p>
+            </BodyTemplate>
+            <FooterTemplate>
+                <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => editorModal.HideAsync()">Cancel</Button>
+                <Button Type="ButtonType.Submit" Color="ButtonColor.Primary" form="hd-sla-form">Save targets</Button>
+            </FooterTemplate>
+        </Modal>
+
+        <Modal @ref="ruleModal"
+               IsVerticallyCentered="true"
+               ShowCloseButton="false"
+               aria-labelledby="hd-rule-editor-title"
+               OnShown="OnRuleShownAsync"
+               OnHidden="OnRuleHiddenAsync">
+            <HeaderTemplate>
+                <h2 class="modal-title h5 text-break" id="hd-rule-editor-title">@(editingRuleId is null ? "Add an escalation rule" : $"Edit {editingRuleName}")</h2>
+            </HeaderTemplate>
+            <BodyTemplate>
+                <EditForm id="hd-rule-form" EditContext="ruleContext" OnSubmit="SaveRuleAsync" FormName="hd-rule" novalidate>
+                    <DataAnnotationsValidator />
+                    <ShowcaseFormErrors ShowSummary="true" />
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold" for="hd-rule-name">Name</label>
+                        <InputText @ref="ruleNameInput" id="hd-rule-name" class="form-control" @bind-Value="ruleForm.Name"
+                                   maxlength="@HelpDeskState.MaxRuleNameLength" autocomplete="off" aria-describedby="hd-rule-name-help" />
+                        <ShowcaseUniqueCheck @ref="ruleNameCheck" For="() => ruleForm.Name" IsTakenAsync="IsRuleNameTakenAsync"
+                                             TakenMessage="@(value => $"Another rule is already called {value}.")" />
+                        <div class="form-text mt-0" id="hd-rule-name-help">Up to @HelpDeskState.MaxRuleNameLength characters, shown on the ticket history and in notifications.</div>
+                        <ValidationMessage For="() => ruleForm.Name" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold" for="hd-rule-priority">Applies to</label>
+                        <InputSelect id="hd-rule-priority" class="form-select" @bind-Value="ruleForm.Priority">
+                            <option value="">Any priority</option>
+                            @foreach (var priority in Enum.GetValues<HelpDeskPriority>().Reverse())
+                            {
+                                <option value="@priority">@priority tickets</option>
+                            }
+                        </InputSelect>
+                    </div>
+                    <fieldset class="mb-3">
+                        <legend class="form-label fw-semibold fs-6">Escalate when</legend>
+                        <InputRadioGroup @bind-Value="ruleForm.Trigger">
+                            <div class="form-check">
+                                <InputRadio class="form-check-input" id="hd-rule-trigger-reply" Value="HelpDeskEscalationTrigger.NoFirstReply" />
+                                <label class="form-check-label" for="hd-rule-trigger-reply">No first reply yet</label>
+                            </div>
+                            <div class="form-check">
+                                <InputRadio class="form-check-input" id="hd-rule-trigger-resolve" Value="HelpDeskEscalationTrigger.NotResolved" />
+                                <label class="form-check-label" for="hd-rule-trigger-resolve">Not resolved yet</label>
+                            </div>
+                        </InputRadioGroup>
+                    </fieldset>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold" for="hd-rule-hours">After, in hours</label>
+                        <InputNumber TValue="int?" id="hd-rule-hours" class="form-control hd-sla-input" @bind-Value="ruleForm.Hours"
+                                     min="1" max="@RuleMaxHours" step="1" inputmode="numeric" aria-describedby="hd-rule-hours-help"
+                                     ParsingErrorMessage="Use whole hours, like 4." />
+                        <div class="form-text" id="hd-rule-hours-help">
+                            @(ruleForm.Trigger == HelpDeskEscalationTrigger.NoFirstReply
+                                ? $"From when the ticket is created: 1 to {HelpDeskState.MaxFirstReplyHours} hours (one week)."
+                                : $"On the SLA clock, which pauses while the ticket is Pending: 1 to {HelpDeskState.MaxResolveHours} hours (30 days).")
+                        </div>
+                        <ValidationMessage For="() => ruleForm.Hours" />
+                    </div>
+                    <div class="form-check form-switch">
+                        <InputCheckbox class="form-check-input" id="hd-rule-active" role="switch" @bind-Value="ruleForm.IsActive" />
+                        <label class="form-check-label" for="hd-rule-active">Rule is on</label>
+                    </div>
+                </EditForm>
+                @* Worked out from the form as it is, so the admin sees what saving does before they save. *@
+                <p class="hd-rule-preview small mt-3 mb-0" role="status">@RulePreview</p>
+                <p class="hd-field-error mt-2 mb-0" role="alert">@ruleFormError.Text</p>
+            </BodyTemplate>
+            <FooterTemplate>
+                <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => ruleModal.HideAsync()">Cancel</Button>
+                <Button Type="ButtonType.Submit" Color="ButtonColor.Primary" form="hd-rule-form">@(editingRuleId is null ? "Add rule" : "Save rule")</Button>
+            </FooterTemplate>
+        </Modal>
+
+        <Modal @ref="deleteRuleModal" IsVerticallyCentered="true" ShowCloseButton="false" aria-labelledby="hd-rule-delete-title" OnHidden="OnDeleteRuleHiddenAsync">
+            <HeaderTemplate>
+                <h2 class="modal-title h5 text-break" id="hd-rule-delete-title">Delete the rule "@deletingRule?.Name"?</h2>
+            </HeaderTemplate>
+            <BodyTemplate>
+                <p class="mb-0">It stops escalating tickets. The tickets it escalated stay at their tier, and their history keeps the escalation.</p>
+            </BodyTemplate>
+            <FooterTemplate>
+                <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => deleteRuleModal.HideAsync()">Keep rule</Button>
+                <Button Color="ButtonColor.Danger" @onclick="ConfirmDeleteRuleAsync">Delete rule</Button>
+            </FooterTemplate>
+        </Modal>
     </ShowcaseRoleGuard>
 </div>

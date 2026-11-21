@@ -1,5 +1,6 @@
 using System.Globalization;
 using BlazorBootstrap.Demo.RCL.Models.Showcase.Saas;
+using BlazorBootstrap.Demo.RCL.Services.Showcase.Foundation;
 using BlazorBootstrap.Demo.RCL.Services.Showcase.Saas;
 
 namespace BlazorBootstrap.Demo.RCL.Components.Pages.Showcase.Saas;
@@ -108,6 +109,7 @@ public partial class AdminInvoiceDetail : ComponentBase, IDisposable
             ShowError(result switch
             {
                 SaasResult.CardRequired => "No card on file; the customer must add one in Billing.",
+                SaasResult.CardDeclined => "The card on file was declined again. The invoice stays open and the tenant stays in dunning until the customer replaces the card.",
                 SaasResult.NotFound => "This invoice is no longer open, so there's nothing to collect.",
                 SaasResult.NotAllowed => "Only a signed-in Lumora operator can retry a payment.",
                 _ => "The payment couldn't be collected. Try again.",
@@ -124,6 +126,8 @@ public partial class AdminInvoiceDetail : ComponentBase, IDisposable
             message += $" {after.Name} is active again.";
         else if (after is { Status: SaasWorkspaceStatus.PastDue })
             message += $" {after.Name} still has open invoices, so it stays past due.";
+        else if (after is { Status: SaasWorkspaceStatus.Active } && before is { Status: SaasWorkspaceStatus.Suspended })
+            message += $" {after.Name} was suspended for this invoice and is active again.";
         else if (after is { Status: SaasWorkspaceStatus.Suspended })
             message += $" {after.Name} stays suspended; change its status on the tenant page.";
 
@@ -135,11 +139,11 @@ public partial class AdminInvoiceDetail : ComponentBase, IDisposable
         await SaasDisplay.FocusAsync(statusRegion);
     }
 
-    private IReadOnlyList<SaasAuditEntry> History(SaasInvoice invoice)
+    private IReadOnlyList<ShowcaseAuditEntry> History(SaasInvoice invoice)
     {
         var path = $"{SaasAdminLayout.Base}/invoices/{invoice.Number}";
 
-        return State.AuditLog().Where(entry => entry.Link == path).ToList();
+        return State.AuditEntries.Where(entry => entry.TargetUrl == path).ToList();
     }
 
     private Task HideRefundAsync() => refundModal.HideAsync();

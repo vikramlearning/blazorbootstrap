@@ -1,17 +1,22 @@
 using System.Globalization;
 using BlazorBootstrap.Demo.RCL.Models.Showcase.HelpDesk;
+using BlazorBootstrap.Demo.RCL.Services.Showcase.Foundation;
 using BlazorBootstrap.Demo.RCL.Services.Showcase.HelpDesk;
 
 namespace BlazorBootstrap.Demo.RCL.Components.Pages.Showcase.HelpDesk;
 
 /// <summary>
 /// The agents' knowledge base list: every article, drafts included, with its category, status, last update, views, and
-/// helpful votes. Filters by text, category, and status; each row can be edited, published or unpublished, viewed in the
-/// help center when published, or deleted after a confirmation that names the article and what is lost.
+/// helpful votes, in a <see cref="Grid{TItem}" /> with paging, sorting, the column chooser, and CSV export, and a saved view
+/// that can be reset. Filters by text, category, and status; each row opens the editor, and can be edited, published or
+/// unpublished, viewed in the help center when published, or deleted after a confirmation that names the article and what
+/// is lost.
 /// </summary>
 public partial class AgentArticles : ComponentBase, IDisposable
 {
     #region Fields and Constants
+
+    private const int DefaultPageSize = 10;
 
     private const string StatusAll = "all";
 
@@ -31,7 +36,15 @@ public partial class AgentArticles : ComponentBase, IDisposable
 
     private Modal deleteModal = default!;
 
+    private Grid<HelpDeskArticle>? grid;
+
+    /// <summary>Changes when the view is reset, so the grid is built again with its defaults.</summary>
+    private int gridVersion;
+
     private string? pageError;
+
+    /// <summary>The grid's page size: the saved one once the view is loaded, then whatever the page size selector chose.</summary>
+    private int pageSize = DefaultPageSize;
 
     private string search = string.Empty;
 
@@ -45,13 +58,33 @@ public partial class AgentArticles : ComponentBase, IDisposable
 
     private string? statusText;
 
+    private ShowcaseGridView view = default!;
+
+    private bool viewLoaded;
+
     #endregion
 
     #region Methods
 
     #region Protected Override Methods
 
-    protected override void OnInitialized() => State.Changed += OnStateChanged;
+    /// <summary>Loads the saved view once the page is interactive (it lives in the tab's session storage), then shows the grid.</summary>
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender)
+            return;
+
+        await view.LoadAsync();
+        pageSize = (await view.GetSettingsAsync()).PageSize;
+        viewLoaded = true;
+        StateHasChanged();
+    }
+
+    protected override void OnInitialized()
+    {
+        view = GridViews.Get(State.SiteSlug, "kb-articles", DefaultPageSize, "updated", SortDirection.Descending);
+        State.Changed += OnStateChanged;
+    }
 
     #endregion
 
@@ -84,6 +117,7 @@ public partial class AgentArticles : ComponentBase, IDisposable
         categoryId = string.Empty;
         statusFilter = StatusAll;
 
+        await FiltersChangedAsync();
         await HelpDeskDisplay.FocusAsync(countRegion);
     }
 
@@ -147,7 +181,18 @@ public partial class AgentArticles : ComponentBase, IDisposable
             .ToList();
     }
 
-    private void OnCategoryChanged(ChangeEventArgs args) => categoryId = args.Value?.ToString() ?? string.Empty;
+    /// <summary>A filter changed: back to the first page of the filtered list.</summary>
+    private async Task FiltersChangedAsync()
+    {
+        if (grid is not null)
+            await grid.ResetPageNumber();
+    }
+
+    private async Task OnCategoryChanged(ChangeEventArgs args)
+    {
+        categoryId = args.Value?.ToString() ?? string.Empty;
+        await FiltersChangedAsync();
+    }
 
     /// <summary>The dialog opens from code, so Bootstrap does not return focus: after a delete the row is gone, so focus goes to the status.</summary>
     private async Task OnDeleteHiddenAsync()
@@ -166,12 +211,56 @@ public partial class AgentArticles : ComponentBase, IDisposable
         }
     }
 
-    private void OnSearchInput(ChangeEventArgs args) => search = args.Value?.ToString() ?? string.Empty;
+    private async Task OnSearchInput(ChangeEventArgs args)
+    {
+        search = args.Value?.ToString() ?? string.Empty;
+        await FiltersChangedAsync();
+    }
 
-    private void OnStateChanged() => InvokeAsync(StateHasChanged);
+    /// <summary>An article changed (here or elsewhere): the grid reads the list again.</summary>
+    private void OnStateChanged() => InvokeAsync(async () =>
+    {
+        await RefreshGridAsync();
+        StateHasChanged();
+    });
 
-    private void OnStatusFilterChanged(ChangeEventArgs args) =>
+    private async Task OnStatusFilterChanged(ChangeEventArgs args)
+    {
         statusFilter = args.Value?.ToString() is StatusPublished or StatusDrafts ? args.Value.ToString()! : StatusAll;
+        await FiltersChangedAsync();
+    }
+
+    /// <summary>The page of articles the grid asked for, from the filtered list (most recently updated first unless a column is sorted).</summary>
+    private Task<GridDataProviderResult<HelpDeskArticle>> ProvideArticlesAsync(GridDataProviderRequest<HelpDeskArticle> request) =>
+        view.ApplyAsync(request, Filtered(State.AllArticles));
+
+    private async Task RefreshGridAsync()
+    {
+        if (grid is not null)
+            await grid.RefreshDataAsync();
+    }
+
+    /// <summary>Forgets the saved view and builds the grid again with its defaults; focus moves to the article count.</summary>
+    private async Task ResetViewAsync()
+    {
+        await view.ResetAsync();
+        pageSize = DefaultPageSize;
+        gridVersion++;
+        SetStatus("The view is reset: most recently updated first, 10 articles a page, and every column shown.");
+        StateHasChanged();
+
+        await Task.Yield();
+        await HelpDeskDisplay.FocusAsync(countRegion);
+    }
+
+    /// <summary>Keeps the grid's settings in the saved view, and follows the page size the selector chose.</summary>
+    private async Task SaveSettingsAsync(GridSettings settings)
+    {
+        if (settings.PageSize > 0)
+            pageSize = settings.PageSize;
+
+        await view.SaveSettingsAsync(settings);
+    }
 
     /// <summary>Shows a status message; the same message again gets a counter, so a screen reader announces it again.</summary>
     private void SetStatus(string message)
@@ -222,6 +311,8 @@ public partial class AgentArticles : ComponentBase, IDisposable
     private bool FiltersActive => search.Trim().Length > 0 || categoryId.Length > 0 || statusFilter != StatusAll;
 
     private static string NewArticleUrl => $"{HelpDeskAgentLayout.Base}/kb/new";
+
+    [Inject] private ShowcaseGridViewStore GridViews { get; set; } = default!;
 
     [Inject] private HelpDeskState State { get; set; } = default!;
 

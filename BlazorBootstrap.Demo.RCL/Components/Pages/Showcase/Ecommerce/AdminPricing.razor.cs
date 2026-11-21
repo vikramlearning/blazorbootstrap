@@ -1,46 +1,85 @@
+using System.ComponentModel.DataAnnotations;
+using System.Globalization;
 using BlazorBootstrap.Demo.RCL.Models.Showcase.Ecommerce;
 using BlazorBootstrap.Demo.RCL.Services.Showcase.Ecommerce;
+using BlazorBootstrap.Demo.RCL.Services.Showcase.Foundation;
+using Microsoft.AspNetCore.Components.Forms;
 
 namespace BlazorBootstrap.Demo.RCL.Components.Pages.Showcase.Ecommerce;
 
 /// <summary>
-/// The retailer's pricing tools: a bulk change (raise or lower by a percentage, start a sale, or end one) for the active
-/// products of a category, previewed row by row and applied after a confirmation dialog; and a searchable list where each
-/// product's price and compare-at price can be set on its own. Every change goes through
-/// <see cref="EcommerceState.UpdatePrices" />, so the store shows the new prices right away.
+/// The retailer's pricing: every product's price, compare-at price, and discount in a <see cref="Grid{TItem}" /> with
+/// paging, sorting, the column chooser, and CSV export, searched by name or SKU and filtered by category and sale; its
+/// view is saved for the visit and can be reset. A product's row opens a dialog to set its price and compare-at price
+/// (above the price: the sale price stays below the regular one) with a reason. Selected products change together from a
+/// bulk bar: raise or lower by a percentage or an amount, start a sale, or end one, with a required reason, previewed row
+/// by row in a confirmation dialog. Every change goes through <see cref="EcommerceState.UpdatePrices" />, which audits the
+/// old and new prices with the reason, so the store shows the new prices right away.
 /// </summary>
 public partial class AdminPricing : ComponentBase, IDisposable
 {
     #region Fields and Constants
 
+    private const int DefaultPageSize = 25;
+
     private const decimal MaxPrice = 100_000m;
 
     private const decimal MinPrice = .01m;
 
-    private readonly Dictionary<int, PriceRow> rows = new();
+    private const string SaleOff = "off";
 
-    private Button applyButton = default!;
+    private const string SaleOn = "on";
+
+    private readonly Dictionary<int, ElementReference> priceButtons = new();
 
     private bool applied;
 
     private Modal applyModal = default!;
 
-    private BulkAction bulkAction = BulkAction.Increase;
+    private EditContext bulkContext = default!;
 
-    private string bulkCategory = string.Empty;
+    private BulkForm bulkForm = new();
+
+    private string categoryFilter = string.Empty;
+
+    private ElementReference? countRegion;
+
+    private bool focusStatus;
+
+    private Grid<PriceRow>? grid;
+
+    /// <summary>Changes when the view is reset, so the grid is built again with its defaults.</summary>
+    private int gridVersion;
 
     private string? lastStatus;
 
-    private bool onSaleOnly;
+    /// <summary>The grid's page size: the saved one once the view is loaded, then whatever the page size selector chose.</summary>
+    private int pageSize = DefaultPageSize;
 
-    private List<(int ProductId, decimal Price, decimal? CompareAtPrice)> pendingChanges = new();
+    private List<PendingChange> pendingChanges = new();
 
-    private int percent = 10;
+    private EditContext priceContext = default!;
+
+    private PriceForm priceForm = new();
+
+    private NumberInput<decimal?>? priceInput;
+
+    private Modal priceModal = default!;
+
+    private bool priceSaved;
+
+    /// <summary>The product the price dialog is about.</summary>
+    private int pricingId;
+
+    private string saleFilter = string.Empty;
 
     private string search = string.Empty;
 
     /// <summary>The value bound to the search box; it trails <see cref="search" /> while the user types (see <see cref="OnSearchInput" />).</summary>
     private string searchBoxValue = string.Empty;
+
+    /// <summary>The products selected in the grid (on its current page).</summary>
+    private List<PriceRow> selected = new();
 
     private string? statusMessage;
 
@@ -48,13 +87,44 @@ public partial class AdminPricing : ComponentBase, IDisposable
 
     private int statusRepeats;
 
+    /// <summary>How many selected products the reviewed bulk change would leave as they are.</summary>
+    private int unchangedCount;
+
+    private ShowcaseGridView view = default!;
+
+    private bool viewLoaded;
+
     #endregion
 
     #region Methods
 
     #region Protected Override Methods
 
-    protected override void OnInitialized() => State.Changed += OnStateChanged;
+    /// <summary>Loads the saved view once the page is interactive (it lives in the tab's session storage), then shows the grid.</summary>
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await view.LoadAsync();
+            pageSize = (await view.GetSettingsAsync()).PageSize;
+            viewLoaded = true;
+            StateHasChanged();
+        }
+
+        if (focusStatus)
+        {
+            focusStatus = false;
+            await EcommerceDisplay.FocusAsync(statusRegion);
+        }
+    }
+
+    protected override void OnInitialized()
+    {
+        view = GridViews.Get(State.SiteSlug, "pricing", DefaultPageSize, "name", SortDirection.Ascending);
+        bulkContext = new EditContext(bulkForm);
+        priceContext = new EditContext(priceForm);
+        State.Changed += OnStateChanged;
+    }
 
     #endregion
 
@@ -71,165 +141,289 @@ public partial class AdminPricing : ComponentBase, IDisposable
 
     private static string MoneyOrNone(decimal? value) => value is { } amount ? EcommerceDisplay.Money(amount) : "—";
 
-    private static string ProductCountText(int count) => count == 1 ? "1 product" : $"{count} products";
-
     private static decimal RoundToCent(decimal value) => Math.Round(value, 2, MidpointRounding.AwayFromZero);
 
-    private async Task AskApplyAsync()
+    private void Announce(string message)
     {
-        if (PercentError is not null)
-            return;
-
-        pendingChanges = Preview.Select(row => (row.Product.Id, row.NewPrice, row.NewCompareAt)).ToList();
-
-        if (pendingChanges.Count == 0)
-            return;
-
-        applied = false;
-        await applyModal.ShowAsync();
+        statusRepeats = message == lastStatus ? statusRepeats + 1 : 1;
+        lastStatus = message;
+        statusMessage = statusRepeats == 1 ? message : string.Create(CultureInfo.InvariantCulture, $"{message} ({statusRepeats})");
     }
 
-    /// <summary>Works out the new price and compare-at price; a compare-at at or below the price is dropped, as the state does.</summary>
+    /// <summary>Works out a product's new price and compare-at price; a compare-at at or below the price is dropped, as the state does.</summary>
     private (decimal Price, decimal? CompareAt) Calculate(EcommerceProduct product)
     {
-        var (price, compareAt) = bulkAction switch
+        var value = bulkForm.Value ?? 0m;
+        var (price, compareAt) = bulkForm.Action switch
         {
-            BulkAction.Increase => (ClampPrice(product.Price * (100 + percent) / 100m), product.CompareAtPrice),
-            BulkAction.Decrease => (ClampPrice(product.Price * (100 - percent) / 100m), product.CompareAtPrice),
+            PriceAction.IncreasePercent => (ClampPrice(product.Price * (100 + value) / 100m), product.CompareAtPrice),
+            PriceAction.DecreasePercent => (ClampPrice(product.Price * (100 - value) / 100m), product.CompareAtPrice),
+            PriceAction.IncreaseAmount => (ClampPrice(product.Price + value), product.CompareAtPrice),
+            PriceAction.DecreaseAmount => (ClampPrice(product.Price - value), product.CompareAtPrice),
             // A sale is always off the regular price: a product already on sale keeps its "was" price, so it never inflates.
-            BulkAction.StartSale => (ClampPrice((product.CompareAtPrice ?? product.Price) * (100 - percent) / 100m), product.CompareAtPrice ?? product.Price),
+            PriceAction.StartSale => (ClampPrice((product.CompareAtPrice ?? product.Price) * (100 - value) / 100m), product.CompareAtPrice ?? product.Price),
             _ => (product.Price, (decimal?)null),
         };
 
         return (price, compareAt is { } was && was > price ? was : null);
     }
 
+    /// <summary>The link disappears with the filters it clears, so focus moves to the count, which also announces the new total.</summary>
+    private async Task ClearFiltersAsync()
+    {
+        search = searchBoxValue = categoryFilter = saleFilter = string.Empty;
+        await RefreshAsync();
+        await EcommerceDisplay.FocusAsync(countRegion);
+    }
+
+    /// <summary>The bar closes, so focus moves to the announcement.</summary>
+    private async Task ClearSelectionAsync()
+    {
+        if (grid is not null)
+            await grid.UnSelectAllItemsAsync();
+
+        selected = new List<PriceRow>();
+        Announce("Selection cleared.");
+        focusStatus = true;
+    }
+
     private async Task ConfirmApplyAsync()
     {
-        var changed = State.UpdatePrices(pendingChanges);
+        var reason = bulkForm.Reason.Trim();
+        var changed = State.UpdatePrices(pendingChanges.Select(change => (change.Id, change.NewPrice, change.NewCompareAt)), reason);
 
-        // Rows for these products reload from the store, so the list below shows the new prices.
-        foreach (var change in pendingChanges)
-            rows.Remove(change.ProductId);
-
-        SetStatus($"Updated prices for {ProductCountText(changed)}.");
+        Announce(changed == 0
+            ? "No prices changed: they were already set to these amounts."
+            : $"Updated prices for {EcommerceDisplay.Plural(changed, "product")}. The audit log keeps the old prices and your reason.");
         applied = true;
 
         await applyModal.HideAsync();
     }
 
-    private void OnBulkActionChanged(ChangeEventArgs args)
+    private IEnumerable<EcommerceProduct> Matching()
     {
-        if (Enum.TryParse<BulkAction>(args.Value?.ToString(), out var action))
-            bulkAction = action;
+        IEnumerable<EcommerceProduct> products = State.AllProducts;
+        var term = search.Trim();
+
+        if (term.Length > 0)
+            products = products.Where(product => product.Name.Contains(term, StringComparison.OrdinalIgnoreCase) || product.Sku.Contains(term, StringComparison.OrdinalIgnoreCase));
+
+        if (categoryFilter.Length > 0)
+            products = products.Where(product => product.CategoryId == categoryFilter);
+
+        if (saleFilter == SaleOn)
+            products = products.Where(product => product.IsOnSale);
+        else if (saleFilter == SaleOff)
+            products = products.Where(product => !product.IsOnSale);
+
+        return products;
     }
 
-    private void OnBulkCategoryChanged(ChangeEventArgs args) => bulkCategory = args.Value?.ToString() ?? string.Empty;
-
     /// <summary>
-    /// The dialog opens from code, so Bootstrap doesn't return focus. After an update focus goes to the status message
-    /// (the Apply button may now be disabled); otherwise back to the Apply button.
+    /// The dialog opens from code, so Bootstrap doesn't return focus. After an update the selection and its bar are gone,
+    /// so focus goes to the status message; otherwise back to the bar.
     /// </summary>
     private async Task OnApplyHiddenAsync()
     {
         var wasApplied = applied;
 
         applied = false;
-        pendingChanges = new();
+        pendingChanges = new List<PendingChange>();
 
-        if (wasApplied)
+        if (!wasApplied)
+            return;
+
+        bulkForm = new BulkForm();
+        bulkContext = new EditContext(bulkForm);
+
+        if (grid is not null)
+        {
+            await grid.RefreshDataAsync();
+            await grid.UnSelectAllItemsAsync();
+        }
+
+        selected = new List<PriceRow>();
+        focusStatus = true;
+        StateHasChanged();
+    }
+
+    private async Task OnCategoryChanged(ChangeEventArgs args)
+    {
+        categoryFilter = args.Value?.ToString() ?? string.Empty;
+        await RefreshAsync();
+    }
+
+    /// <summary>The dialog opens from code, so Bootstrap doesn't return focus: it goes back to the product's row, or to the status when the row left the list.</summary>
+    private async Task OnPriceHiddenAsync()
+    {
+        var id = pricingId;
+        var saved = priceSaved;
+
+        pricingId = 0;
+        priceSaved = false;
+
+        if (Matching().Any(product => product.Id == id) && priceButtons.TryGetValue(id, out var button))
+            await EcommerceDisplay.FocusAsync(button);
+        else if (saved)
             await EcommerceDisplay.FocusAsync(statusRegion);
-        else
-            await EcommerceDisplay.FocusAsync(applyButton.Element);
     }
 
-    /// <summary>The input raises a change once after its first render with the value it was given; only real changes count.</summary>
-    private void OnPercentChanged(int value)
+    private Task OnPriceShownAsync() => EcommerceDisplay.FocusAsync(priceInput?.Element);
+
+    private async Task OnSaleChanged(ChangeEventArgs args)
     {
-        if (value != percent)
-            percent = value;
+        saleFilter = args.Value?.ToString() is SaleOn or SaleOff ? args.Value?.ToString() ?? string.Empty : string.Empty;
+        await RefreshAsync();
     }
 
-    private void OnRowCompareAtChanged(PriceRow row, decimal? value)
-    {
-        if (value == row.CompareAt)
-            return;
-
-        row.CompareAt = value;
-        row.Error = null;
-    }
-
-    private void OnRowPriceChanged(PriceRow row, decimal? value)
-    {
-        if (value == row.Price)
-            return;
-
-        row.Price = value;
-        row.Error = null;
-    }
-
-    private void OnSearchChanged(string value)
+    private async Task OnSearchChanged(string value)
     {
         searchBoxValue = value;
+
+        if (search == value)
+            return;
+
         search = value;
+        await RefreshAsync();
     }
 
     /// <summary>Filters on every keystroke without changing the box's bound value, so older text is never written back into it.</summary>
-    private void OnSearchInput(ChangeEventArgs args) => search = args.Value?.ToString() ?? string.Empty;
+    private async Task OnSearchInput(ChangeEventArgs args)
+    {
+        var value = args.Value?.ToString() ?? string.Empty;
 
-    private void OnStateChanged() => InvokeAsync(StateHasChanged);
+        if (search == value)
+            return;
+
+        search = value;
+        await RefreshAsync();
+    }
+
+    private void OnSelectionChanged(HashSet<PriceRow> items) => selected = items.ToList();
+
+    private void OnStateChanged() => InvokeAsync(async () =>
+    {
+        await RefreshGridAsync();
+        StateHasChanged();
+    });
+
+    private async Task OpenPriceAsync(int productId)
+    {
+        if (State.FindAnyProduct(productId) is not { } product)
+            return;
+
+        pricingId = productId;
+        priceSaved = false;
+        priceForm = new PriceForm { Price = product.Price, CompareAt = product.CompareAtPrice };
+        priceContext = new EditContext(priceForm);
+
+        await priceModal.ShowAsync();
+    }
+
+    /// <summary>The page of products the grid asked for: by name unless a column is sorted.</summary>
+    private Task<GridDataProviderResult<PriceRow>> ProvidePricesAsync(GridDataProviderRequest<PriceRow> request) =>
+        view.ApplyAsync(request, Matching().Select(product => new PriceRow(
+            product.Id,
+            product.Name,
+            product.Sku,
+            State.FindCategory(product.CategoryId)?.Name ?? product.CategoryId,
+            product.Price,
+            product.IsOnSale ? product.CompareAtPrice : null,
+            product.DiscountPercent,
+            product.IsArchived ? "Archived" : "Active",
+            product.IsArchived)).ToList());
+
+    /// <summary>A filter changed: back to the first page of the filtered products.</summary>
+    private async Task RefreshAsync()
+    {
+        if (grid is not null)
+            await grid.ResetPageNumber();
+
+        StateHasChanged();
+    }
+
+    private async Task RefreshGridAsync()
+    {
+        if (grid is not null)
+            await grid.RefreshDataAsync();
+    }
+
+    /// <summary>Forgets the saved view and builds the grid again with its defaults; focus moves to the count.</summary>
+    private async Task ResetViewAsync()
+    {
+        await view.ResetAsync();
+        pageSize = DefaultPageSize;
+        selected = new List<PriceRow>();
+        gridVersion++;
+        Announce("The view is reset: products by name, 25 a page, and every column shown.");
+        StateHasChanged();
+
+        await Task.Yield();
+        await EcommerceDisplay.FocusAsync(countRegion);
+    }
 
     /// <summary>
-    /// Returns the editable row of a product. A row nobody has edited follows the store, so a bulk change or a change
-    /// elsewhere shows up; a row with unsaved edits keeps them.
+    /// Checks the bulk bar (rule WR-002: a failed submit shows the summary), then works out the selected products' new prices
+    /// and opens the confirmation dialog with the ones that change.
     /// </summary>
-    private PriceRow RowFor(EcommerceProduct product)
+    private async Task ReviewBulkAsync()
     {
-        if (!rows.TryGetValue(product.Id, out var row))
-        {
-            row = new PriceRow(product);
-            rows[product.Id] = row;
-        }
-        else if (!row.IsEdited && (row.SavedPrice != product.Price || row.SavedCompareAt != product.CompareAtPrice))
-        {
-            row.Reset(product);
-        }
-
-        return row;
-    }
-
-    private void SaveRow(int productId)
-    {
-        if (State.FindAnyProduct(productId) is not { } product || !rows.TryGetValue(productId, out var row))
+        if (!bulkContext.Validate())
             return;
 
-        var price = row.Price is { } typed ? RoundToCent(typed) : (decimal?)null;
-        var compareAt = row.CompareAt is { } was ? RoundToCent(was) : (decimal?)null;
+        var changes = new List<PendingChange>();
 
-        row.Error = price switch
+        foreach (var row in selected)
         {
-            null => "Enter a price.",
-            < MinPrice or > MaxPrice => "Enter a price from $0.01 to $100,000.",
-            _ when compareAt is > MaxPrice => "Enter a compare-at price up to $100,000, or leave it empty.",
-            _ when compareAt is { } value && value <= price => "The compare-at price must be more than the price. Leave it empty when the product isn't on sale.",
-            _ => null,
-        };
+            if (State.FindAnyProduct(row.Id) is not { } product)
+                continue;
 
-        if (row.Error is not null)
+            var (price, compareAt) = Calculate(product);
+
+            if (price != product.Price || compareAt != product.CompareAtPrice)
+                changes.Add(new PendingChange(product.Id, product.Name, product.Price, price, product.CompareAtPrice, compareAt));
+        }
+
+        if (changes.Count == 0)
+        {
+            Announce(bulkForm.Action == PriceAction.EndSale
+                ? "None of the selected products is on sale, so there's no sale to end. Nothing changed."
+                : "None of the selected prices would change. Nothing changed.");
+            focusStatus = true;
+
             return;
+        }
 
-        var changed = State.UpdatePrices(new[] { (productId, price!.Value, compareAt) });
-
-        rows.Remove(productId);
-        SetStatus(changed > 0 ? $"Saved prices for {product.Name}." : $"Prices for {product.Name} were already set to these amounts.");
+        pendingChanges = changes.OrderBy(change => change.Name, StringComparer.OrdinalIgnoreCase).ToList();
+        unchangedCount = selected.Count - changes.Count;
+        applied = false;
+        await applyModal.ShowAsync();
     }
 
-    /// <summary>Shows a status message; a repeat carries a count, so it is announced again.</summary>
-    private void SetStatus(string message)
+    private string RowClass(PriceRow row) => selected.Any(item => item.Id == row.Id) ? "ea-row-selected" : string.Empty;
+
+    private async Task SavePriceAsync()
     {
-        statusRepeats = message == lastStatus ? statusRepeats + 1 : 1;
-        lastStatus = message;
-        statusMessage = statusRepeats == 1 ? message : $"{message} ({statusRepeats} times)";
+        if (State.FindAnyProduct(pricingId) is { } product && priceForm.Price is { } typed)
+        {
+            var price = RoundToCent(typed);
+            var compareAt = priceForm.CompareAt is { } was ? RoundToCent(was) : (decimal?)null;
+            var changed = State.UpdatePrices(new[] { (product.Id, price, compareAt) }, priceForm.Reason.Trim());
+
+            priceSaved = true;
+            Announce(changed > 0 ? $"Saved prices for {product.Name}." : $"Prices for {product.Name} were already set to these amounts.");
+        }
+
+        await priceModal.HideAsync();
+    }
+
+    /// <summary>Keeps the grid's settings in the saved view, and follows the page size the selector chose.</summary>
+    private async Task SaveSettingsAsync(GridSettings settings)
+    {
+        if (settings.PageSize > 0)
+            pageSize = settings.PageSize;
+
+        await view.SaveSettingsAsync(settings);
     }
 
     #endregion
@@ -242,131 +436,130 @@ public partial class AdminPricing : ComponentBase, IDisposable
     {
         get
         {
-            var products = ProductCountText(pendingChanges.Count);
-            var scope = State.FindCategory(bulkCategory) is { } category ? $" in {category.Name}" : string.Empty;
-            var change = bulkAction switch
+            var products = EcommerceDisplay.Plural(pendingChanges.Count, "product");
+            var value = bulkForm.Value ?? 0m;
+            var percent = value.ToString("0.##", CultureInfo.InvariantCulture);
+
+            return bulkForm.Action switch
             {
-                BulkAction.Increase => $"Raise the price of {products}{scope} by {percent}%.",
-                BulkAction.Decrease => $"Lower the price of {products}{scope} by {percent}%.",
-                BulkAction.StartSale => $"Put {products}{scope} on sale at {percent}% off: each current price becomes the compare-at price.",
-                _ => $"End the sale on {products}{scope}: compare-at prices are removed and the current prices stay.",
+                PriceAction.IncreasePercent => $"Raise the price of {products} by {percent}%.",
+                PriceAction.DecreasePercent => $"Lower the price of {products} by {percent}%.",
+                PriceAction.IncreaseAmount => $"Raise the price of {products} by {EcommerceDisplay.Money(value)}.",
+                PriceAction.DecreaseAmount => $"Lower the price of {products} by {EcommerceDisplay.Money(value)}.",
+                PriceAction.StartSale => $"Put {products} on sale at {percent}% off: each regular price becomes the compare-at price.",
+                _ => $"End the sale on {products}: compare-at prices are removed and the current prices stay.",
             };
-
-            return bulkAction == BulkAction.EndSale ? change : $"{change} New prices are rounded to the cent and stay at $0.01 or more.";
         }
     }
 
-    private string ApplyText => $"Apply to {ProductCountText(Preview.Count)}";
+    [Inject] private ShowcaseGridViewStore GridViews { get; set; } = default!;
 
-    /// <summary>Gets the active products the bulk change is aimed at: the chosen category, and only those on sale when asked.</summary>
-    private IEnumerable<EcommerceProduct> Candidates => State.Products
-        .Where(product => bulkCategory.Length == 0 || product.CategoryId == bulkCategory)
-        .Where(product => !onSaleOnly || product.IsOnSale);
+    private bool IsFiltered => search.Trim().Length > 0 || categoryFilter.Length > 0 || saleFilter.Length > 0;
 
-    private string EmptyPreviewText
+    private string MatchText
     {
         get
         {
-            if (PercentError is not null)
-                return "Enter a percentage from 1 to 90 to see which prices change.";
+            var count = Matching().Count();
+            var total = State.AllProducts.Count;
+            var onSale = State.AllProducts.Count(product => product.IsOnSale);
 
-            if (!Candidates.Any())
-                return onSaleOnly ? "No active products in this selection are on sale." : "No active products in this category.";
-
-            return bulkAction == BulkAction.EndSale
-                ? "None of these products is on sale, so there's no sale to end."
-                : "None of these prices would change.";
-        }
-    }
-
-    private IReadOnlyList<EcommerceProduct> Listed
-    {
-        get
-        {
-            var term = search.Trim();
-
-            return State.AllProducts
-                .Where(product => term.Length == 0 || product.Name.Contains(term, StringComparison.OrdinalIgnoreCase))
-                .OrderBy(product => product.Name, StringComparer.OrdinalIgnoreCase)
-                .ToList();
-        }
-    }
-
-    private string ListSummary => Listed.Count == State.AllProducts.Count
-        ? $"Showing all {ProductCountText(Listed.Count)}"
-        : $"{Listed.Count} of {ProductCountText(State.AllProducts.Count)} match";
-
-    private string? PercentError => UsesPercent && percent is < 1 or > 90 ? "Enter a percentage from 1 to 90." : null;
-
-    /// <summary>Gets the products the bulk change affects, with their new prices; products it wouldn't change are left out.</summary>
-    private IReadOnlyList<PreviewRow> Preview
-    {
-        get
-        {
-            if (PercentError is not null)
-                return Array.Empty<PreviewRow>();
-
-            return Candidates
-                .Select(product => (Product: product, Change: Calculate(product)))
-                .Where(entry => entry.Change.Price != entry.Product.Price || entry.Change.CompareAt != entry.Product.CompareAtPrice)
-                .OrderBy(entry => entry.Product.Name, StringComparer.OrdinalIgnoreCase)
-                .Select(entry => new PreviewRow(entry.Product, entry.Change.Price, entry.Change.CompareAt))
-                .ToList();
+            return (count == total ? $"Showing all {EcommerceDisplay.Plural(total, "product")}" : $"{EcommerceDisplay.Count(count)} of {EcommerceDisplay.Plural(total, "product")} match")
+                + $" · {onSale} on sale.";
         }
     }
 
     [Inject] private EcommerceState State { get; set; } = default!;
 
-    private bool UsesPercent => bulkAction != BulkAction.EndSale;
-
     #endregion
 
     #region Nested Types
 
-    /// <summary>The bulk adjustments.</summary>
-    private enum BulkAction
+    /// <summary>The bulk price changes.</summary>
+    private enum PriceAction
     {
         /// <summary>Raise prices by a percentage; compare-at prices stay.</summary>
-        Increase,
+        IncreasePercent,
 
         /// <summary>Lower prices by a percentage; compare-at prices stay.</summary>
-        Decrease,
+        DecreasePercent,
 
-        /// <summary>The current price becomes the compare-at price, and the price drops by a percentage.</summary>
+        /// <summary>Raise prices by an amount; compare-at prices stay.</summary>
+        IncreaseAmount,
+
+        /// <summary>Lower prices by an amount; compare-at prices stay.</summary>
+        DecreaseAmount,
+
+        /// <summary>The regular price becomes the compare-at price, and the price drops by a percentage.</summary>
         StartSale,
 
         /// <summary>Remove compare-at prices; prices stay.</summary>
         EndSale,
     }
 
-    /// <summary>One product in the bulk preview.</summary>
-    private sealed record PreviewRow(EcommerceProduct Product, decimal NewPrice, decimal? NewCompareAt);
-
-    /// <summary>The editable prices of one product in the list, with the stored prices they started from.</summary>
-    private sealed class PriceRow
+    /// <summary>The bulk bar's fields: the change, its percentage or amount (the range follows the change), and a reason.</summary>
+    private sealed class BulkForm : IValidatableObject
     {
-        public PriceRow(EcommerceProduct product) => Reset(product);
+        public PriceAction Action { get; set; } = PriceAction.IncreasePercent;
 
+        [Required(ErrorMessage = "Give a reason for the price change, like “Supplier cost increase”.")]
+        [StringLength(EcommerceState.MaxPriceReasonLength, MinimumLength = EcommerceState.MinReasonLength, ErrorMessage = "Use 5 to 200 characters for the reason.")]
+        public string Reason { get; set; } = string.Empty;
+
+        /// <summary>Whether the change takes a percentage (otherwise an amount, or nothing to end a sale).</summary>
+        public bool UsesPercent => Action is PriceAction.IncreasePercent or PriceAction.DecreasePercent or PriceAction.StartSale;
+
+        public decimal? Value { get; set; } = 10m;
+
+        /// <summary>Runs once the fields are filled in: the value's range depends on the change.</summary>
+        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+        {
+            if (Action == PriceAction.EndSale)
+                yield break;
+
+            if (Value is not { } value)
+                yield return new ValidationResult(UsesPercent ? "Enter a percentage from 1 to 90." : "Enter an amount from $0.01 to $1,000.", new[] { nameof(Value) });
+            else if (UsesPercent && (value < 1 || value > 90 || value != Math.Round(value, 2)))
+                yield return new ValidationResult("Enter a percentage from 1 to 90.", new[] { nameof(Value) });
+            else if (!UsesPercent && (value < .01m || value > 1000m || value != Math.Round(value, 2)))
+                yield return new ValidationResult("Enter an amount from $0.01 to $1,000, in dollars and cents.", new[] { nameof(Value) });
+        }
+    }
+
+    /// <summary>One product in the bulk change's preview.</summary>
+    private sealed record PendingChange(int Id, string Name, decimal OldPrice, decimal NewPrice, decimal? OldCompareAt, decimal? NewCompareAt);
+
+    /// <summary>
+    /// The price dialog's fields: a price, an optional compare-at price above it (a cross-field rule: the sale price stays
+    /// below the regular price), and a reason.
+    /// </summary>
+    private sealed class PriceForm : IValidatableObject
+    {
+        [Range(0.01, 100_000, ErrorMessage = "Enter a compare-at price from $0.01 to $100,000, or leave it empty.")]
         public decimal? CompareAt { get; set; }
 
-        public string? Error { get; set; }
-
-        public bool IsEdited => Price != SavedPrice || CompareAt != SavedCompareAt;
-
+        [Required(ErrorMessage = "Enter a price from $0.01 to $100,000.")]
+        [Range(0.01, 100_000, ErrorMessage = "Enter a price from $0.01 to $100,000.")]
         public decimal? Price { get; set; }
 
-        public decimal? SavedCompareAt { get; private set; }
+        [Required(ErrorMessage = "Give a reason for the price change, like “Match the new supplier price”.")]
+        [StringLength(EcommerceState.MaxPriceReasonLength, MinimumLength = EcommerceState.MinReasonLength, ErrorMessage = "Use 5 to 200 characters for the reason.")]
+        public string Reason { get; set; } = string.Empty;
 
-        public decimal SavedPrice { get; private set; }
-
-        public void Reset(EcommerceProduct product)
+        /// <summary>Runs once the fields are filled in: a compare-at price must be above the price.</summary>
+        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
-            SavedPrice = product.Price;
-            SavedCompareAt = product.CompareAtPrice;
-            Price = product.Price;
-            CompareAt = product.CompareAtPrice;
-            Error = null;
+            if (Price is { } price && CompareAt is { } compareAt && Math.Round(compareAt, 2) <= Math.Round(price, 2))
+                yield return new ValidationResult("The compare-at price must be above the price, so the sale price stays below the regular one. Leave it empty when the product isn't on sale.",
+                    new[] { nameof(CompareAt) });
         }
+    }
+
+    /// <summary>One product as the grid shows and exports it: every exported column is a property.</summary>
+    private sealed record PriceRow(int Id, string Name, string Sku, string Category, decimal Price, decimal? CompareAt, int Discount, string Status, bool IsArchived)
+    {
+        /// <summary>Gets the discount as it is exported, like "20% off", or empty.</summary>
+        public string DiscountText => Discount > 0 ? string.Create(CultureInfo.InvariantCulture, $"{Discount}% off") : string.Empty;
     }
 
     #endregion

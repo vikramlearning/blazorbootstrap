@@ -34,12 +34,15 @@
                         <div><dt>Industry</dt><dd>@client.Industry</dd></div>
                         <div><dt>Website</dt><dd class="pb-cldet-website">@(string.IsNullOrEmpty(client.Website) ? "None" : client.Website)</dd></div>
                         <div><dt>Owner</dt><dd>@(owner?.Name ?? "Nobody")@(owner is not null && owner.Id == State.CurrentPerson?.Id ? " (you)" : null)</dd></div>
+                        <div><dt>Phone</dt><dd>@(string.IsNullOrEmpty(client.Phone) ? "None" : client.Phone)</dd></div>
                         <div><dt>Client since</dt><dd>@PbDisplay.Date(client.CreatedAt)</dd></div>
+                        <div><dt>Billing</dt><dd class="pb-cldet-website">@client.BillingCurrency@(string.IsNullOrEmpty(client.BillingEmail) ? null : $" · {client.BillingEmail}")</dd></div>
+                        <div><dt>Contract</dt><dd>@(client.ContractStart is { } contractStart ? client.ContractEnd is { } contractEnd ? $"{PbDisplay.Date(contractStart)} to {PbDisplay.Date(contractEnd)}" : $"From {PbDisplay.Date(contractStart)}, no end date" : "None")</dd></div>
                         <div><dt>Open pipeline</dt><dd>@(open.Count == 0 ? "No open deals" : $"{DealDisplay.Plural(open.Count, "deal")}, {PbDisplay.Money(open.Sum(deal => (long)deal.Value))}")</dd></div>
                     </dl>
                 </div>
                 <a class="btn btn-outline-primary" href="@DealDisplay.ClientEditUrl(client.Id)">
-                    <Icon Name="IconName.Pencil" class="me-1" aria-hidden="true" />Edit client<span class="visually-hidden"> @client.Name</span>
+                    <Icon Name="IconName.Pencil" class="me-1" aria-hidden="true" />Edit client<span class="visually-hidden">&#32;@client.Name</span>
                 </a>
             </div>
 
@@ -52,72 +55,98 @@
 
                     <section class="tb-panel" aria-labelledby="pb-cldet-deals-title">
                         <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2">
-                            <h2 class="tb-section-title mb-0" id="pb-cldet-deals-title">Deals</h2>
-                            <button type="button" class="btn btn-sm btn-outline-primary" @ref="newDealButton" @onclick="OpenNewDealAsync">
-                                <Icon Name="IconName.PlusLg" class="me-1" aria-hidden="true" />New deal
-                            </button>
+                            <h2 class="tb-section-title mb-0" id="pb-cldet-deals-title">Deals <span class="text-body-secondary fw-normal">(@deals.Count)</span></h2>
+                            <div class="d-flex flex-wrap align-items-center gap-3">
+                                @* Back to the saved view's defaults: open deals first by close date, 5 a page, every column in its place. *@
+                                <Button Color="ButtonColor.Link" Size="ButtonSize.Small" Class="p-0" @onclick="ResetDealViewAsync">Reset view<span class="visually-hidden">&#32;of the deals</span></Button>
+                                <button type="button" class="btn btn-sm btn-outline-primary" @ref="newDealButton" @onclick="OpenNewDealAsync">
+                                    <Icon Name="IconName.PlusLg" class="me-1" aria-hidden="true" />New deal
+                                </button>
+                            </div>
                         </div>
 
                         <p class="fw-semibold pb-cldet-status @(dealStatusIsError ? "text-danger-emphasis" : null)" role="status" tabindex="-1" @ref="dealStatusRegion">@dealMessage</p>
 
-                        @if (deals.Count == 0)
-                        {
-                            <p class="text-body-secondary mb-0">No deals with @client.Name yet. Add one with New deal.</p>
-                        }
-                        else
-                        {
-                            <div class="table-responsive">
-                                <table class="table align-middle mb-0">
-                                    <caption class="pb-cldet-caption">@DealDisplay.Plural(deals.Count, "deal") with @client.Name, open ones first. Weighted value is the value times the stage's chance of closing.</caption>
-                                    <thead>
-                                        <tr>
-                                            <th scope="col">Deal</th>
-                                            <th scope="col">Stage</th>
-                                            <th scope="col" class="text-end">Value</th>
-                                            <th scope="col">Close date</th>
-                                            <th scope="col" class="text-end">Weighted</th>
-                                            <th scope="col">Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach (var deal in deals)
-                                        {
-                                            var dealId = deal.Id;
-                                            var overdue = DealDisplay.IsCloseOverdue(deal, State.Clock.Today);
-                                            <tr @key="deal.Id">
-                                                <th scope="row" class="pb-cldet-wrap"><a href="@($"{DealDisplay.PipelineUrl}#pb-deal-{deal.Id}")">@deal.Title</a></th>
-                                                <td class="text-nowrap">@PbDisplay.StageLabel(deal.Stage) <span class="small text-body-secondary">(@DealDisplay.Percent(PbState.Probability(deal.Stage)))</span></td>
-                                                <td class="text-end text-nowrap">@PbDisplay.Money(deal.Value)</td>
-                                                <td class="pb-cldet-close @(overdue ? "text-danger-emphasis fw-semibold" : null)">
-                                                    @if (overdue)
-                                                    {
-                                                        <Icon Name="IconName.ExclamationTriangle" class="me-1" aria-hidden="true" />
-                                                    }
-                                                    @DealDisplay.CloseText(deal, State.Clock.Today)
-                                                </td>
-                                                <td class="text-end text-nowrap">@PbDisplay.Money(PbState.Weighted(deal))</td>
-                                                <td>
-                                                    @if (deal.ClosedAt is null)
-                                                    {
-                                                        <button type="button" class="btn btn-sm btn-outline-secondary text-nowrap" @ref="editDealButtons[dealId]" @onclick="() => OpenEditDealAsync(dealId)">
-                                                            <Icon Name="IconName.Pencil" class="me-1" aria-hidden="true" />Edit<span class="visually-hidden"> @deal.Title</span>
-                                                        </button>
-                                                    }
-                                                    else if (deal.ProjectId is { } projectId && State.FindProject(projectId) is { } fromDeal)
-                                                    {
-                                                        <a class="small text-nowrap" href="@PbDisplay.ProjectUrl(fromDeal.Id)">Project @fromDeal.Key</a>
-                                                    }
-                                                    else
-                                                    {
-                                                        <span class="small text-body-secondary text-nowrap">Closed</span>
-                                                    }
-                                                </td>
-                                            </tr>
-                                        }
-                                    </tbody>
-                                </table>
-                            </div>
-                        }
+                        <ShowcaseDataState Status="@(viewLoaded ? ShowcaseDataStatus.Ready : ShowcaseDataStatus.Loading)"
+                                           IsEmpty="@(deals.Count == 0)"
+                                           EmptyIcon="IconName.Funnel"
+                                           EmptyTitle="No deals yet"
+                                           EmptyText="@($"No deals with {client.Name} yet. Add one with New deal; it starts as a lead on the pipeline.")"
+                                           LoadingText="Loading deals…"
+                                           LoadingRows="3"
+                                           OnRetry="RefreshDealsAsync">
+                            <ChildContent>
+                                <Grid @ref="dealGrid"
+                                      @key="@($"{client.Id}-{dealGridVersion}")"
+                                      TItem="DealRow"
+                                      Class="table table-hover align-middle tb-table-mid sc-grid-row-links"
+                                      GridContainerClass="tb-grid border rounded-3"
+                                      DataProvider="ProvideDealsAsync"
+                                      SettingsProvider="dealView.GetSettingsAsync"
+                                      GridSettingsChanged="SaveDealSettingsAsync"
+                                      AllowPaging="true"
+                                      PageSize="@dealPageSize"
+                                      PageSizeSelectorVisible="true"
+                                      PageSizeSelectorItems="@(new[] { 5, 10, 25 })"
+                                      PaginationItemsTextFormat="{0}–{1} of {2} deals"
+                                      AllowSorting="true"
+                                      AllowColumnChooser="true"
+                                      AllowExport="true"
+                                      ExportFileName="project-board-client-deals"
+                                      Responsive="true"
+                                      EmptyText="No deals."
+                                      aria-label="@($"Deals with {client.Name}")">
+                                    <GridColumns>
+                                        <GridColumn TItem="DealRow" HeaderText="Deal" PropertyName="Title" SortString="title" SortKeySelector="row => row.Title"
+                                                    IsDefaultSortColumn="@dealView.IsSortColumn("title")" SortDirection="@dealView.DirectionFor("title")" AlwaysVisible="true">
+                                            @* The stretched link opens the deal's card on the pipeline from anywhere on the row; Edit stays above it. *@
+                                            <a class="tb-row-link stretched-link" href="@($"{DealDisplay.PipelineUrl}#pb-deal-{context.Id}")">@context.Title</a>
+                                        </GridColumn>
+                                        <GridColumn TItem="DealRow" HeaderText="Stage" PropertyName="Stage" SortString="stage" SortKeySelector="row => row.StageValue"
+                                                    IsDefaultSortColumn="@dealView.IsSortColumn("stage")" SortDirection="@dealView.DirectionFor("stage")" TextNoWrap="true">
+                                            @context.Stage <span class="small text-body-secondary">(@context.Chance)</span>
+                                        </GridColumn>
+                                        <GridColumn TItem="DealRow" HeaderText="Value" PropertyName="Value" SortString="value" SortKeySelector="row => row.Value"
+                                                    IsDefaultSortColumn="@dealView.IsSortColumn("value")" SortDirection="@dealView.DirectionFor("value")" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" TextNoWrap="true">
+                                            @PbDisplay.Money(context.Value)
+                                        </GridColumn>
+                                        <GridColumn TItem="DealRow" HeaderText="Close date" PropertyName="CloseText" SortString="close" SortKeySelector="row => row.CloseDate"
+                                                    IsDefaultSortColumn="@dealView.IsSortColumn("close")" SortDirection="@dealView.DirectionFor("close")">
+                                            <span class="@(context.IsOverdue ? "text-danger-emphasis fw-semibold" : null)">
+                                                @if (context.IsOverdue)
+                                                {
+                                                    <Icon Name="IconName.ExclamationTriangle" class="me-1" aria-hidden="true" />
+                                                }
+                                                @context.CloseText
+                                            </span>
+                                        </GridColumn>
+                                        <GridColumn TItem="DealRow" HeaderText="Weighted" PropertyName="Weighted" SortString="weighted" SortKeySelector="row => row.Weighted"
+                                                    IsDefaultSortColumn="@dealView.IsSortColumn("weighted")" SortDirection="@dealView.DirectionFor("weighted")" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" TextNoWrap="true">
+                                            @PbDisplay.Money(context.Weighted)
+                                        </GridColumn>
+                                        <GridColumn TItem="DealRow" HeaderText="Actions" Sortable="false" Exportable="false" TextNoWrap="true">
+                                            @{
+                                                var dealId = context.Id;
+                                            }
+                                            @if (context.IsOpen)
+                                            {
+                                                <button type="button" class="btn btn-sm btn-outline-secondary text-nowrap" @ref="editDealButtons[dealId]" @onclick="() => OpenEditDealAsync(dealId)">
+                                                    <Icon Name="IconName.Pencil" class="me-1" aria-hidden="true" />Edit<span class="visually-hidden">&#32;@context.Title</span>
+                                                </button>
+                                            }
+                                            else if (context.ProjectId is { } projectId)
+                                            {
+                                                <a class="small text-nowrap" href="@PbDisplay.ProjectUrl(projectId)">Project @context.ProjectKey</a>
+                                            }
+                                            else
+                                            {
+                                                <span class="small text-body-secondary text-nowrap">Closed</span>
+                                            }
+                                        </GridColumn>
+                                    </GridColumns>
+                                </Grid>
+                            </ChildContent>
+                        </ShowcaseDataState>
                         <p class="small mt-3 mb-0"><a href="@DealDisplay.PipelineUrl">Move deals between stages on the deal pipeline</a></p>
                     </section>
 
@@ -146,6 +175,7 @@
                                         <p class="small text-body-secondary mt-1 mb-0" id="@progressId">
                                             @(total == 0 ? "No tasks yet" : $"{done} of {DealDisplay.Plural(total, "task")} done ({percent}%)") · due @PbDisplay.Date(project.DueDate)
                                         </p>
+                                        <div class="small mt-1"><PbBudget Project="project" /></div>
                                     </li>
                                 }
                             </ul>

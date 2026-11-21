@@ -3,15 +3,15 @@
 
 <PageTitle>Leave approvals · @HrSeedData.ProductName</PageTitle>
 
-@* Leave waiting for the manager (or HR): approve with an optional note or reject with a required one; then the decided history. *@
+@* The leave queue of the manager (or HR): select requests to approve or reject them together, or open one to see its facts
+   and decide it alone; then the decided history. *@
 <div class="container-fluid px-lg-4">
     <ShowcaseRoleGuard Roles="@($"{HrSeedData.ManagerRole},{HrSeedData.HrAdminRole}")" SignInPath="@HrLayout.SignInPath">
-        @if (State.CurrentEmployee is { } me)
+        @if (State.CurrentEmployee is not null)
         {
-            var today = State.Clock.Today;
             var all = State.TeamLeave;
-            var waiting = all.Where(item => item.Status == HrLeaveStatus.Pending).ToList();
-            var decided = all.Where(item => item.Status != HrLeaveStatus.Pending).ToList();
+            var waitingCount = all.Count(item => item.Status == HrLeaveStatus.Pending);
+            var decidedCount = all.Count - waitingCount;
 
             <h1 class="hr-title mb-1">Leave approvals</h1>
             <p class="hr-lead mb-3">
@@ -19,161 +19,290 @@
                 Approving can come with a note; rejecting needs one, so the employee knows why. They see your decision under My leave.
             </p>
 
-            @* Always rendered and focusable, so every decision is announced and focus has somewhere to go when the last request leaves the list. *@
-            <p class="fw-semibold hr-appr-status @(statusIsError ? "text-danger-emphasis" : null)" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
+            @* Always rendered and focusable, so every decision is announced and focus has somewhere to go when the bar closes or a row leaves the list. *@
+            <p class="hr-live-status hr-appr-status" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
 
-            <section class="mb-5" aria-labelledby="hr-appr-waiting-title">
-                <h2 class="hr-section-title" id="hr-appr-waiting-title">Waiting for a decision <span class="text-body-secondary fw-normal">(@waiting.Count)</span></h2>
-                @if (waiting.Count == 0)
+            <section class="hr-panel mb-4" aria-labelledby="hr-appr-waiting-title">
+                <div class="d-flex flex-wrap align-items-baseline justify-content-between column-gap-3 row-gap-1 mb-2">
+                    <h2 class="hr-section-title mb-0" id="hr-appr-waiting-title">Waiting for a decision <span class="text-body-secondary fw-normal">(@waitingCount)</span></h2>
+                    @* Back to the saved view's defaults: oldest first, 10 a page, every column in its place. *@
+                    <Button Color="ButtonColor.Link" Size="ButtonSize.Small" Class="p-0" @onclick="ResetWaitingViewAsync">Reset view</Button>
+                </div>
+                <p class="small text-body-secondary">Oldest first. Select requests to approve or reject them together, or open one to see the balance and who else is away.</p>
+
+                @if (selected.Count > 0)
                 {
-                    <div class="hr-panel hr-appr-empty">
-                        <span class="hr-icon" aria-hidden="true"><Icon Name="IconName.CheckCircle" /></span>
-                        <p class="mb-0 align-self-center">Nothing is waiting. New requests show here, oldest first.</p>
-                    </div>
-                }
-                else
-                {
-                    <p class="text-body-secondary">Oldest first.</p>
-                    <ol class="list-unstyled hr-appr-list mb-0" aria-labelledby="hr-appr-waiting-title">
-                        @foreach (var request in waiting)
-                        {
-                            var employee = State.FindEmployee(request.EmployeeId);
-                            var name = employee?.Name ?? "A former employee";
-                            var policy = State.FindPolicy(request.PolicyId);
-                            var label = LeaveText.RequestLabel(request, policy);
-                            var noteId = $"hr-appr-note-{request.Id}";
-                            var error = noteErrors.GetValueOrDefault(request.Id);
-                            var note = notes.GetValueOrDefault(request.Id) ?? string.Empty;
-                            var balance = BalanceAfter(request, employee, policy);
-
-                            <li class="hr-card hr-appr-card" @key="@($"waiting-{request.Id}")">
-                                <h3 class="hr-appr-title" tabindex="-1" @ref="headings[request.Id]">
-                                    @name<span class="fw-normal">: @label</span>
-                                </h3>
-                                <dl class="hr-appr-facts">
-                                    <div>
-                                        <dt>Working days</dt>
-                                        <dd>@HrDisplay.Days(request.Days)</dd>
-                                    </div>
-                                    <div>
-                                        <dt>Requested</dt>
-                                        <dd>@HrDisplay.Ago(request.CreatedAt, State.Clock.Now) (@HrDisplay.Date(request.CreatedAt))</dd>
-                                    </div>
-                                    <div class="hr-appr-wide">
-                                        <dt>Balance after approval</dt>
-                                        <dd class="@(balance.Short ? "hr-appr-warn" : null)">
-                                            @if (balance.Short)
-                                            {
-                                                <Icon Name="IconName.ExclamationTriangleFill" class="me-1" aria-hidden="true" />
-                                            }
-                                            @balance.Text
-                                        </dd>
-                                    </div>
-                                    <div class="hr-appr-wide">
-                                        <dt>Teammates away then</dt>
-                                        <dd>@OverlapText(request, employee)</dd>
-                                    </div>
-                                    @if (request.Note.Length > 0)
-                                    {
-                                        <div class="hr-appr-wide">
-                                            <dt>Note from @LeaveText.FirstName(employee)</dt>
-                                            <dd class="hr-plain">@request.Note</dd>
-                                        </div>
-                                    }
-                                </dl>
-                                @if (employee is not null)
-                                {
-                                    <p class="small mb-3"><a href="@HrDisplay.EmployeeUrl(employee.Id)">@(employee.Name)'s profile</a></p>
-                                }
-
-                                <label class="form-label fw-semibold" for="@noteId">Note for @LeaveText.FirstName(employee)<span class="visually-hidden">, about @(State.FindPolicy(request.PolicyId)?.Name) @HrDisplay.Range(request.From, request.To)</span></label>
-                                <textarea id="@noteId" class="@(error is null ? "form-control" : "form-control is-invalid")" rows="2" maxlength="@HrState.MaxNoteLength"
-                                          value="@note" @oninput="args => notes[request.Id] = args.Value?.ToString() ?? string.Empty" @ref="noteInputs[request.Id]"
-                                          aria-invalid="@(error is null ? null : "true")" aria-describedby="@($"{noteId}-help {noteId}-error")"></textarea>
-                                <div class="form-text" id="@($"{noteId}-help")">
-                                    Optional when you approve; needed when you reject. @LeaveText.FirstName(employee) sees it. @note.Length of @HrState.MaxNoteLength characters.
-                                </div>
-                                <div class="hr-appr-error" id="@($"{noteId}-error")">@error</div>
-
-                                <div class="d-flex flex-wrap gap-2 mt-2">
-                                    <button type="button" class="btn btn-success" @onclick="() => Decide(request.Id, true)">
-                                        <Icon Name="IconName.CheckLg" class="me-1" aria-hidden="true" />Approve<span class="visually-hidden"> @(name)'s @label</span>
-                                    </button>
-                                    <button type="button" class="btn btn-outline-danger" @onclick="() => Decide(request.Id, false)">
-                                        <Icon Name="IconName.XLg" class="me-1" aria-hidden="true" />Reject<span class="visually-hidden"> @(name)'s @label</span>
-                                    </button>
-                                </div>
-                            </li>
-                        }
-                    </ol>
-                }
-            </section>
-
-            <section aria-labelledby="hr-appr-decided-title">
-                <h2 class="hr-section-title" id="hr-appr-decided-title">Decided <span class="text-body-secondary fw-normal">(@decided.Count)</span></h2>
-                @if (decided.Count == 0)
-                {
-                    <div class="hr-panel"><p class="mb-0 text-body-secondary">No decided requests yet.</p></div>
-                }
-                else
-                {
-                    <p class="text-body-secondary small">Most recent first. Cancelled requests were withdrawn by the employee.</p>
-                    <div class="hr-panel p-0">
-                        <div class="table-responsive">
-                            <table class="table table-sm align-middle mb-0 hr-appr-table">
-                                <caption class="visually-hidden">Decided leave requests, most recent first</caption>
-                                <thead>
-                                    <tr>
-                                        <th scope="col">Employee</th>
-                                        <th scope="col">Leave</th>
-                                        <th scope="col">Status</th>
-                                        <th scope="col">Decided by</th>
-                                        <th scope="col">Note</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach (var request in decided)
-                                    {
-                                        var employee = State.FindEmployee(request.EmployeeId);
-                                        <tr @key="@($"decided-{request.Id}")">
-                                            <th scope="row">@(employee?.Name ?? "A former employee")</th>
-                                            <td>
-                                                <span class="d-block">@LeaveText.RequestLabel(request, State.FindPolicy(request.PolicyId))</span>
-                                                <span class="small text-body-secondary">@HrDisplay.Days(request.Days)</span>
-                                            </td>
-                                            <td><span class="@($"badge text-bg-{HrDisplay.LeaveColor(request.Status)}")">@HrDisplay.LeaveLabel(request.Status)</span></td>
-                                            <td>
-                                                @if (request.Status == HrLeaveStatus.Cancelled)
-                                                {
-                                                    <span>@(employee?.Name ?? "The employee") (withdrawn)</span>
-                                                }
-                                                else
-                                                {
-                                                    <span class="d-block">@DeciderName(request.DecidedById, me)</span>
-                                                    @if (request.DecidedAt is { } at)
-                                                    {
-                                                        <span class="small text-body-secondary text-nowrap">@HrDisplay.Date(at)</span>
-                                                    }
-                                                }
-                                            </td>
-                                            <td class="hr-appr-note-cell">
-                                                @if (request.DecisionNote.Length > 0)
-                                                {
-                                                    <span class="hr-plain">@request.DecisionNote</span>
-                                                }
-                                                else
-                                                {
-                                                    <span class="text-body-secondary">No note</span>
-                                                }
-                                            </td>
-                                        </tr>
-                                    }
-                                </tbody>
-                            </table>
+                    <section class="hr-bulk" aria-labelledby="hr-appr-bulk-count">
+                        <h3 class="hr-bulk-count" id="hr-appr-bulk-count">@(selected.Count == 1 ? "1 request selected" : $"{selected.Count} requests selected")</h3>
+                        <div class="hr-bulk-field">
+                            <label class="form-label small fw-semibold mb-1" for="hr-appr-bulk-note">Note for the employees</label>
+                            <textarea id="hr-appr-bulk-note" class="@(bulkNoteError is null ? "form-control form-control-sm" : "form-control form-control-sm is-invalid")" rows="2"
+                                      maxlength="@HrState.MaxNoteLength" value="@bulkNote" @oninput="args => bulkNote = args.Value?.ToString() ?? string.Empty" @ref="bulkNoteInput"
+                                      aria-invalid="@(bulkNoteError is null ? null : "true")" aria-describedby="hr-appr-bulk-note-help hr-appr-bulk-note-error"></textarea>
+                            <div class="form-text" id="hr-appr-bulk-note-help">
+                                Optional when you approve; needed when you reject. Each employee sees it. @bulkNote.Length of @HrState.MaxNoteLength characters.
+                            </div>
+                            <div class="hr-appr-error" id="hr-appr-bulk-note-error" role="alert">@bulkNoteError</div>
                         </div>
-                    </div>
+                        <div class="hr-bulk-actions">
+                            <Button Color="ButtonColor.Success" Size="ButtonSize.Small" @onclick="() => DecideSelectedAsync(true)">
+                                <Icon Name="IconName.CheckLg" class="me-1" aria-hidden="true" />Approve<span class="visually-hidden">&#32;the selected requests</span>
+                            </Button>
+                            <Button Color="ButtonColor.Danger" Outline="true" Size="ButtonSize.Small" @onclick="() => DecideSelectedAsync(false)">
+                                <Icon Name="IconName.XLg" class="me-1" aria-hidden="true" />Reject<span class="visually-hidden">&#32;the selected requests</span>
+                            </Button>
+                            <Button Color="ButtonColor.Secondary" Outline="true" Size="ButtonSize.Small" @onclick="ClearSelectionAsync">Clear selection</Button>
+                        </div>
+                    </section>
                 }
+
+                <ShowcaseDataState Status="@(viewsLoaded ? ShowcaseDataStatus.Ready : ShowcaseDataStatus.Loading)"
+                                   IsEmpty="@(waitingCount == 0)"
+                                   EmptyIcon="IconName.CheckCircle"
+                                   EmptyTitle="Nothing is waiting"
+                                   EmptyText="New leave requests show here, oldest first. You're notified when one comes in."
+                                   LoadingText="Loading leave requests…"
+                                   OnRetry="RefreshGridsAsync">
+                    <ChildContent>
+                        <Grid @ref="waitingGrid"
+                              @key="waitingVersion"
+                              TItem="WaitingRow"
+                              Class="table table-hover sc-grid-row-links"
+                              GridContainerClass="hr-grid"
+                              DataProvider="ProvideWaitingAsync"
+                              SettingsProvider="waitingView.GetSettingsAsync"
+                              GridSettingsChanged="SaveWaitingSettingsAsync"
+                              AllowPaging="true"
+                              PageSize="@waitingPageSize"
+                              PageSizeSelectorVisible="true"
+                              PageSizeSelectorItems="@(new[] { 10, 25, 50 })"
+                              PaginationItemsTextFormat="{0}–{1} of {2} requests"
+                              AllowSorting="true"
+                              AllowSelection="true"
+                              SelectionMode="GridSelectionMode.Multiple"
+                              RowSelectionLabel="@(row => $"Select {row.Employee}'s {row.Leave}, {row.Dates}")"
+                              SelectAllRowsText="Select all shown requests"
+                              SelectedItemsChanged="OnSelectionChanged"
+                              RowClass="WaitingRowClass"
+                              AllowColumnChooser="true"
+                              AllowExport="true"
+                              ExportFileName="hr-leave-waiting"
+                              Responsive="true"
+                              EmptyText="Nothing is waiting."
+                              aria-label="Leave requests waiting for a decision">
+                            <GridColumns>
+                                <GridColumn TItem="WaitingRow" HeaderText="Employee" PropertyName="Employee" SortString="employee" SortKeySelector="row => row.Employee"
+                                            IsDefaultSortColumn="@waitingView.IsSortColumn("employee")" SortDirection="@waitingView.DirectionFor("employee")" AlwaysVisible="true">
+                                    @* A request has no page of its own: the name opens the decision dialog, and its stretched area makes the whole row do so. *@
+                                    <button type="button" class="btn btn-link p-0 hr-grid-link stretched-link" @ref="openers[context.Id]" @onclick="() => OpenDecisionAsync(context.Id)">
+                                        @context.Employee<span class="visually-hidden">: @context.Leave, @context.Dates</span>
+                                    </button>
+                                </GridColumn>
+                                <GridColumn TItem="WaitingRow" HeaderText="Type" PropertyName="Leave" SortString="type" SortKeySelector="row => row.Leave"
+                                            IsDefaultSortColumn="@waitingView.IsSortColumn("type")" SortDirection="@waitingView.DirectionFor("type")" TextNoWrap="true">
+                                    @context.Leave
+                                </GridColumn>
+                                <GridColumn TItem="WaitingRow" HeaderText="Dates" PropertyName="Dates" SortString="dates" SortKeySelector="row => row.From"
+                                            IsDefaultSortColumn="@waitingView.IsSortColumn("dates")" SortDirection="@waitingView.DirectionFor("dates")" TextNoWrap="true">
+                                    @context.Dates
+                                </GridColumn>
+                                <GridColumn TItem="WaitingRow" HeaderText="Working days" PropertyName="Days" SortString="days" SortKeySelector="row => row.Days"
+                                            IsDefaultSortColumn="@waitingView.IsSortColumn("days")" SortDirection="@waitingView.DirectionFor("days")" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End">
+                                    @context.Days
+                                </GridColumn>
+                                <GridColumn TItem="WaitingRow" HeaderText="Requested" PropertyName="Requested" SortString="requested" SortKeySelector="row => row.CreatedAt"
+                                            IsDefaultSortColumn="@waitingView.IsSortColumn("requested")" SortDirection="@waitingView.DirectionFor("requested")" TextNoWrap="true">
+                                    <span class="small" title="@context.Requested">@HrDisplay.Ago(context.CreatedAt, State.Clock.Now)</span>
+                                </GridColumn>
+                                <GridColumn TItem="WaitingRow" HeaderText="Balance after approval" PropertyName="Balance" SortString="balance" SortKeySelector="row => row.Short"
+                                            IsDefaultSortColumn="@waitingView.IsSortColumn("balance")" SortDirection="@waitingView.DirectionFor("balance")">
+                                    <span class="small @(context.Short ? "hr-appr-warn" : null)">
+                                        @if (context.Short)
+                                        {
+                                            <Icon Name="IconName.ExclamationTriangleFill" class="me-1" aria-hidden="true" />
+                                        }
+                                        @context.Balance
+                                    </span>
+                                </GridColumn>
+                                <GridColumn TItem="WaitingRow" HeaderText="Note" PropertyName="Note" Sortable="false" Class="hr-appr-note-cell">
+                                    @if (context.Note.Length > 0)
+                                    {
+                                        <span class="small hr-plain">@context.Note</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="small text-body-secondary">No note</span>
+                                    }
+                                </GridColumn>
+                            </GridColumns>
+                        </Grid>
+                    </ChildContent>
+                </ShowcaseDataState>
             </section>
+
+            <section class="hr-panel" aria-labelledby="hr-appr-decided-title">
+                <div class="d-flex flex-wrap align-items-baseline justify-content-between column-gap-3 row-gap-1 mb-2">
+                    <h2 class="hr-section-title mb-0" id="hr-appr-decided-title">Decided <span class="text-body-secondary fw-normal">(@decidedCount)</span></h2>
+                    @* Back to the saved view's defaults: most recent first, 10 a page, every column in its place. *@
+                    <Button Color="ButtonColor.Link" Size="ButtonSize.Small" Class="p-0" @onclick="ResetDecidedViewAsync">Reset view</Button>
+                </div>
+                <p class="text-body-secondary small">Most recent first. Cancelled requests were withdrawn by the employee. A row opens the employee's profile.</p>
+                <ShowcaseDataState Status="@(viewsLoaded ? ShowcaseDataStatus.Ready : ShowcaseDataStatus.Loading)"
+                                   IsEmpty="@(decidedCount == 0)"
+                                   EmptyIcon="IconName.ClockHistory"
+                                   EmptyTitle="No decided requests yet"
+                                   EmptyText="Requests you approve or reject, and the ones employees cancel, are listed here."
+                                   LoadingText="Loading decided requests…"
+                                   OnRetry="RefreshGridsAsync">
+                    <ChildContent>
+                        <Grid @ref="decidedGrid"
+                              @key="decidedVersion"
+                              TItem="DecidedRow"
+                              Class="table table-hover sc-grid-row-links"
+                              GridContainerClass="hr-grid"
+                              DataProvider="ProvideDecidedAsync"
+                              SettingsProvider="decidedView.GetSettingsAsync"
+                              GridSettingsChanged="SaveDecidedSettingsAsync"
+                              AllowPaging="true"
+                              PageSize="@decidedPageSize"
+                              PageSizeSelectorVisible="true"
+                              PageSizeSelectorItems="@(new[] { 10, 25, 50, 100 })"
+                              PaginationItemsTextFormat="{0}–{1} of {2} requests"
+                              AllowSorting="true"
+                              AllowColumnChooser="true"
+                              AllowExport="true"
+                              ExportFileName="hr-leave-decided"
+                              Responsive="true"
+                              EmptyText="No decided requests yet."
+                              aria-label="Decided leave requests">
+                            <GridColumns>
+                                <GridColumn TItem="DecidedRow" HeaderText="Employee" PropertyName="Employee" SortString="employee" SortKeySelector="row => row.Employee"
+                                            IsDefaultSortColumn="@decidedView.IsSortColumn("employee")" SortDirection="@decidedView.DirectionFor("employee")" AlwaysVisible="true">
+                                    @if (context.ProfileId is { } profileId)
+                                    {
+                                        <a class="hr-grid-link stretched-link" href="@HrDisplay.EmployeeUrl(profileId)">@context.Employee</a>
+                                    }
+                                    else
+                                    {
+                                        <span class="fw-semibold">@context.Employee</span>
+                                    }
+                                </GridColumn>
+                                <GridColumn TItem="DecidedRow" HeaderText="Type" PropertyName="Leave" SortString="type" SortKeySelector="row => row.Leave"
+                                            IsDefaultSortColumn="@decidedView.IsSortColumn("type")" SortDirection="@decidedView.DirectionFor("type")" TextNoWrap="true">
+                                    @context.Leave
+                                </GridColumn>
+                                <GridColumn TItem="DecidedRow" HeaderText="Dates" PropertyName="Dates" SortString="dates" SortKeySelector="row => row.From"
+                                            IsDefaultSortColumn="@decidedView.IsSortColumn("dates")" SortDirection="@decidedView.DirectionFor("dates")" TextNoWrap="true">
+                                    @context.Dates
+                                </GridColumn>
+                                <GridColumn TItem="DecidedRow" HeaderText="Working days" PropertyName="Days" SortString="days" SortKeySelector="row => row.Days"
+                                            IsDefaultSortColumn="@decidedView.IsSortColumn("days")" SortDirection="@decidedView.DirectionFor("days")" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End">
+                                    @context.Days
+                                </GridColumn>
+                                <GridColumn TItem="DecidedRow" HeaderText="Status" PropertyName="Status" SortString="status" SortKeySelector="row => row.Status"
+                                            IsDefaultSortColumn="@decidedView.IsSortColumn("status")" SortDirection="@decidedView.DirectionFor("status")" TextNoWrap="true">
+                                    <span class="@($"badge text-bg-{HrDisplay.LeaveColor(context.StatusKind)}")">@context.Status</span>
+                                </GridColumn>
+                                <GridColumn TItem="DecidedRow" HeaderText="Decided by" PropertyName="DecidedBy" SortString="decider" SortKeySelector="row => row.DecidedBy"
+                                            IsDefaultSortColumn="@decidedView.IsSortColumn("decider")" SortDirection="@decidedView.DirectionFor("decider")">
+                                    @context.DecidedBy
+                                </GridColumn>
+                                <GridColumn TItem="DecidedRow" HeaderText="Decided on" PropertyName="DecidedOn" SortString="decided" SortKeySelector="row => row.DecidedAt"
+                                            IsDefaultSortColumn="@decidedView.IsSortColumn("decided")" SortDirection="@decidedView.DirectionFor("decided")" TextNoWrap="true">
+                                    @context.DecidedOn
+                                </GridColumn>
+                                <GridColumn TItem="DecidedRow" HeaderText="Note" PropertyName="Note" Sortable="false" Class="hr-appr-note-cell">
+                                    @if (context.Note.Length > 0)
+                                    {
+                                        <span class="small hr-plain">@context.Note</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="small text-body-secondary">No note</span>
+                                    }
+                                </GridColumn>
+                            </GridColumns>
+                        </Grid>
+                    </ChildContent>
+                </ShowcaseDataState>
+            </section>
+
+            <Modal @ref="decisionModal" IsVerticallyCentered="true" IsScrollable="true" ShowCloseButton="false" aria-labelledby="hr-appr-dialog-title"
+                   OnShown="OnDecisionShownAsync" OnHidden="OnDecisionHidden">
+                <HeaderTemplate>
+                    <h2 class="modal-title h5 text-break" id="hr-appr-dialog-title">
+                        @(DecisionRequest is { } shown ? $"{EmployeeName(shown)}: {LeaveText.RequestLabel(shown, State.FindPolicy(shown.PolicyId))}" : "Leave request")
+                    </h2>
+                </HeaderTemplate>
+                <BodyTemplate>
+                    @if (DecisionRequest is not { } request)
+                    {
+                        <p class="mb-0">That request no longer exists.</p>
+                    }
+                    else if (request.Status != HrLeaveStatus.Pending)
+                    {
+                        <p class="mb-0">This request was already @StatusWords(request.Status), so there's nothing left to decide.</p>
+                    }
+                    else
+                    {
+                        var employee = State.FindEmployee(request.EmployeeId);
+                        var balance = BalanceAfter(request, employee, State.FindPolicy(request.PolicyId));
+
+                        <dl class="hr-appr-facts">
+                            <div>
+                                <dt>Working days</dt>
+                                <dd>@HrDisplay.Days(request.Days)</dd>
+                            </div>
+                            <div>
+                                <dt>Requested</dt>
+                                <dd>@HrDisplay.Ago(request.CreatedAt, State.Clock.Now) (@HrDisplay.Date(request.CreatedAt))</dd>
+                            </div>
+                            <div class="hr-appr-wide">
+                                <dt>Balance after approval</dt>
+                                <dd class="@(balance.Short ? "hr-appr-warn" : null)">
+                                    @if (balance.Short)
+                                    {
+                                        <Icon Name="IconName.ExclamationTriangleFill" class="me-1" aria-hidden="true" />
+                                    }
+                                    @balance.Text
+                                </dd>
+                            </div>
+                            <div class="hr-appr-wide">
+                                <dt>Teammates away then</dt>
+                                <dd>@OverlapText(request, employee)</dd>
+                            </div>
+                            @if (request.Note.Length > 0)
+                            {
+                                <div class="hr-appr-wide">
+                                    <dt>Note from @LeaveText.FirstName(employee)</dt>
+                                    <dd class="hr-plain">@request.Note</dd>
+                                </div>
+                            }
+                        </dl>
+                        @if (employee is not null)
+                        {
+                            <p class="small mb-3"><a href="@HrDisplay.EmployeeUrl(employee.Id)">@(employee.Name)'s profile</a></p>
+                        }
+
+                        <label class="form-label fw-semibold" for="hr-appr-note">Note for @LeaveText.FirstName(employee)</label>
+                        <textarea id="hr-appr-note" class="@(dialogNoteError is null ? "form-control" : "form-control is-invalid")" rows="2" maxlength="@HrState.MaxNoteLength"
+                                  value="@dialogNote" @oninput="args => dialogNote = args.Value?.ToString() ?? string.Empty" @ref="dialogNoteInput"
+                                  aria-invalid="@(dialogNoteError is null ? null : "true")" aria-describedby="hr-appr-note-help hr-appr-note-error"></textarea>
+                        <div class="form-text" id="hr-appr-note-help">
+                            Optional when you approve; needed when you reject. @LeaveText.FirstName(employee) sees it. @dialogNote.Length of @HrState.MaxNoteLength characters.
+                        </div>
+                        <div class="hr-appr-error" id="hr-appr-note-error" role="alert">@dialogNoteError</div>
+                    }
+                </BodyTemplate>
+                <FooterTemplate>
+                    <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => decisionModal.HideAsync()">Close</Button>
+                    @if (DecisionRequest is { Status: HrLeaveStatus.Pending })
+                    {
+                        <Button Color="ButtonColor.Danger" Outline="true" @onclick="() => DecideInDialogAsync(false)"><Icon Name="IconName.XLg" class="me-1" aria-hidden="true" />Reject</Button>
+                        <Button Color="ButtonColor.Success" @onclick="() => DecideInDialogAsync(true)"><Icon Name="IconName.CheckLg" class="me-1" aria-hidden="true" />Approve</Button>
+                    }
+                </FooterTemplate>
+            </Modal>
         }
     </ShowcaseRoleGuard>
 </div>

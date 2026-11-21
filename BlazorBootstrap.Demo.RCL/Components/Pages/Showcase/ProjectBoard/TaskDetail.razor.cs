@@ -1,5 +1,8 @@
+using System.ComponentModel.DataAnnotations;
+using System.Globalization;
 using BlazorBootstrap.Demo.RCL.Models.Showcase.ProjectBoard;
 using BlazorBootstrap.Demo.RCL.Services.Showcase.ProjectBoard;
+using Microsoft.AspNetCore.Components.Forms;
 
 namespace BlazorBootstrap.Demo.RCL.Components.Pages.Showcase.ProjectBoard;
 
@@ -7,9 +10,12 @@ namespace BlazorBootstrap.Demo.RCL.Components.Pages.Showcase.ProjectBoard;
 /// A task's page: a breadcrumb (Project boards, the project, the key), the title, and its details. The Status select moves
 /// it to the end of that column (<see cref="PbState.MoveTask" />), the Assignee select reassigns it to one of the project's
 /// people (<see cref="PbState.Reassign" />), and "Edit details" opens the shared <see cref="TaskEditor" />. The checklist
-/// has native checkboxes (<see cref="PbState.SetChecklistItem" />), a labelled add field, Remove buttons that name their
-/// item, and "2 of 5 done" with a <see cref="Progress" />. Comments run oldest first with the author and how long ago; a
-/// person can post (with a character count) and delete their own after a confirmation. A project manager can delete the
+/// has native checkboxes (<see cref="PbState.SetChecklistItem" />), an add form (an <see cref="EditForm" />, rule WR-002:
+/// 1 to <see cref="PbState.MaxChecklistTextLength" /> characters, different from the task's other items), Remove buttons
+/// that name their item, and "2 of 5 done" with a <see cref="Progress" />. Comments run oldest first with the author and
+/// how long ago; a person can post one (an <see cref="EditForm" />: 1 to <see cref="PbState.MaxCommentLength" />
+/// characters) and delete their own after a confirmation. Both forms show a linked summary on a failed submit and put the
+/// state's refusals on their field. A project manager can delete the
 /// task after a confirmation naming its key and title; the delete runs once the dialog is hidden and then the board opens
 /// with <c>?deleted=KEY</c>. Every result is mapped to a message in an always-rendered status region, and focus moves to
 /// the control that stays, or the status message. A completed project's task is read-only except for comments.
@@ -46,17 +52,21 @@ public partial class TaskDetail : ComponentBase, IDisposable
     /// <summary>Returns the element to focus after the next render.</summary>
     private Func<ElementReference?>? focusTarget;
 
-    private string newComment = string.Empty;
+    private EditContext commentContext = default!;
 
-    private string? newCommentError;
+    private CommentForm commentForm = new();
 
-    private ElementReference? newCommentInput;
+    private ValidationMessageStore? commentErrors;
 
-    private string newItem = string.Empty;
+    private EditContext itemContext = default!;
 
-    private string? newItemError;
+    private ValidationMessageStore? itemErrors;
 
-    private ElementReference? newItemInput;
+    private ChecklistItemForm itemForm = new();
+
+    private InputTextArea? newCommentInput;
+
+    private InputText? newItemInput;
 
     /// <summary>Whether the confirmation was accepted, so the delete runs once the dialog is hidden.</summary>
     private bool pendingConfirm;
@@ -84,7 +94,12 @@ public partial class TaskDetail : ComponentBase, IDisposable
         }
     }
 
-    protected override void OnInitialized() => State.Changed += OnStateChanged;
+    protected override void OnInitialized()
+    {
+        ResetItemForm();
+        ResetCommentForm();
+        State.Changed += OnStateChanged;
+    }
 
     protected override void OnParametersSet()
     {
@@ -92,8 +107,9 @@ public partial class TaskDetail : ComponentBase, IDisposable
             return;
 
         builtFor = Id;
-        statusMessage = newItemError = newCommentError = null;
-        newItem = newComment = string.Empty;
+        statusMessage = null;
+        ResetItemForm();
+        ResetCommentForm();
     }
 
     #endregion
@@ -109,43 +125,42 @@ public partial class TaskDetail : ComponentBase, IDisposable
 
     private static string Excerpt(string text) => text.Length <= 160 ? text : text[..160].TrimEnd() + "…";
 
+    /// <summary>
+    /// Adds the checklist item once the form is valid (rule WR-002: a failed submit shows the summary); the state checks
+    /// again, and its refusal goes on the field.
+    /// </summary>
     private void AddChecklistItem()
     {
         if (State.FindTask(Id) is not { } task)
             return;
 
-        var text = newItem.Trim();
+        itemForm.OtherTexts = task.Checklist.Select(item => item.Text).ToList();
+        itemErrors?.Clear();
 
-        newItemError = text.Length == 0 ? "Enter what needs doing."
-            : text.Length > PbState.MaxChecklistTextLength ? $"Shorten the item to {PbState.MaxChecklistTextLength} characters or fewer (now {text.Length})."
-            : task.Checklist.Count >= PbState.MaxChecklistItems ? $"The checklist is full ({PbState.MaxChecklistItems} items). Remove one first."
-            : null;
-
-        if (newItemError is not null)
-        {
-            Announce(false, "The item wasn't added. Fix the field, then add it again.");
-            focusTarget = () => newItemInput;
-
+        if (!itemContext.Validate())
             return;
-        }
 
+        var text = itemForm.Text.Trim();
         var result = State.AddChecklistItem(task.Id, text);
 
         switch (result)
         {
             case PbResult.Ok:
-                newItem = string.Empty;
+                ResetItemForm();
                 Announce(true, $"Added “{text}” to the checklist. {task.Checklist.Count(item => item.Done)} of {task.Checklist.Count} done.");
-                focusTarget = () => newItemInput;
+                focusTarget = () => newItemInput?.Element;
+
+                return;
+
+            case PbResult.Duplicate:
+                ItemError("The checklist already has that item. Write a different one.");
 
                 return;
 
             case PbResult.Invalid:
-                newItemError = task.Checklist.Count >= PbState.MaxChecklistItems
+                ItemError(task.Checklist.Count >= PbState.MaxChecklistItems
                     ? $"The checklist is full ({PbState.MaxChecklistItems} items). Remove one first."
-                    : "The storage for this demo tab is full, so the item wasn't added. Remove some comments or items, then try again.";
-                Announce(false, "The item wasn't added.");
-                focusTarget = () => newItemInput;
+                    : "The storage for this demo tab is full, so the item wasn't added. Remove some comments or items, then try again.");
 
                 return;
 
@@ -157,43 +172,33 @@ public partial class TaskDetail : ComponentBase, IDisposable
         }
     }
 
+    /// <summary>Posts the comment once the form is valid; the state checks again, and its refusal goes on the field.</summary>
     private void AddComment()
     {
         if (State.FindTask(Id) is not { } task)
             return;
 
-        var text = newComment.Trim();
+        commentErrors?.Clear();
 
-        newCommentError = text.Length == 0 ? "Write your comment first."
-            : text.Length > PbState.MaxCommentLength ? $"Shorten the comment to {PbState.MaxCommentLength} characters or fewer (now {text.Length})."
-            : task.Comments.Count >= PbState.MaxComments ? $"This task has the most comments it can hold ({PbState.MaxComments})."
-            : null;
-
-        if (newCommentError is not null)
-        {
-            Announce(false, "The comment wasn't posted. Fix it, then post it again.");
-            focusTarget = () => newCommentInput;
-
+        if (!commentContext.Validate())
             return;
-        }
 
-        var result = State.AddComment(task.Id, text);
+        var result = State.AddComment(task.Id, commentForm.Text.Trim());
 
         switch (result)
         {
             case PbResult.Ok:
-                newComment = string.Empty;
+                ResetCommentForm();
                 Announce(true, "Your comment is posted, at the end of the comments.");
-                focusTarget = () => newCommentInput;
+                focusTarget = () => newCommentInput?.Element;
 
                 return;
 
             case PbResult.Invalid:
-                newCommentError = task.Comments.Count >= PbState.MaxComments
+                commentErrors?.Add(FieldIdentifier.Create(() => commentForm.Text), task.Comments.Count >= PbState.MaxComments
                     ? $"This task has the most comments it can hold ({PbState.MaxComments})."
-                    : "The storage for this demo tab is full, so the comment wasn't posted. Remove some comments or tasks, then try again.";
-                Announce(false, "The comment wasn't posted.");
-                focusTarget = () => newCommentInput;
+                    : "The storage for this demo tab is full, so the comment wasn't posted. Remove some comments or tasks, then try again.");
+                commentContext.NotifyValidationStateChanged();
 
                 return;
 
@@ -203,6 +208,29 @@ public partial class TaskDetail : ComponentBase, IDisposable
 
                 return;
         }
+    }
+
+    /// <summary>Shows a state answer under the checklist field, like the form's own messages.</summary>
+    private void ItemError(string message)
+    {
+        itemErrors?.Add(FieldIdentifier.Create(() => itemForm.Text), message);
+        itemContext.NotifyValidationStateChanged();
+    }
+
+    private void ResetCommentForm()
+    {
+        commentForm = new CommentForm();
+        commentContext = new EditContext(commentForm);
+        commentErrors = new ValidationMessageStore(commentContext);
+        commentContext.OnFieldChanged += (_, args) => commentErrors?.Clear(args.FieldIdentifier);
+    }
+
+    private void ResetItemForm()
+    {
+        itemForm = new ChecklistItemForm();
+        itemContext = new EditContext(itemForm);
+        itemErrors = new ValidationMessageStore(itemContext);
+        itemContext.OnFieldChanged += (_, args) => itemErrors?.Clear(args.FieldIdentifier);
     }
 
     private void Announce(bool ok, string message)
@@ -401,7 +429,7 @@ public partial class TaskDetail : ComponentBase, IDisposable
 
         checkInputs.Remove(item.Id);
         var next = task.Checklist.Count == 0 ? null : task.Checklist[Math.Clamp(index, 0, task.Checklist.Count - 1)];
-        focusTarget = next is not null && checkInputs.TryGetValue(next.Id, out var input) ? () => input : () => newItemInput;
+        focusTarget = next is not null && checkInputs.TryGetValue(next.Id, out var input) ? () => input : () => newItemInput?.Element;
     }
 
     /// <summary>Ticks or unticks a checklist item.</summary>
@@ -451,6 +479,32 @@ public partial class TaskDetail : ComponentBase, IDisposable
     {
         DeleteComment,
         DeleteTask,
+    }
+
+    /// <summary>A new checklist item: 1 to <see cref="PbState.MaxChecklistTextLength" /> characters, not the same as another item of the task.</summary>
+    private sealed class ChecklistItemForm : IValidatableObject
+    {
+        /// <summary>The task's other items, set by the page before it validates.</summary>
+        public IReadOnlyList<string> OtherTexts { get; set; } = Array.Empty<string>();
+
+        [Required(ErrorMessage = "Enter what needs doing.")]
+        [StringLength(PbState.MaxChecklistTextLength, ErrorMessage = "Use 120 characters or fewer for a checklist item.")]
+        public string Text { get; set; } = string.Empty;
+
+        /// <summary>Runs once the field is filled in: the item isn't on the checklist yet.</summary>
+        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+        {
+            if (OtherTexts.Any(other => string.Equals(other.Trim(), Text.Trim(), StringComparison.OrdinalIgnoreCase)))
+                yield return new ValidationResult("The checklist already has that item. Write a different one.", new[] { nameof(Text) });
+        }
+    }
+
+    /// <summary>A new comment: 1 to <see cref="PbState.MaxCommentLength" /> characters of plain text.</summary>
+    private sealed class CommentForm
+    {
+        [Required(ErrorMessage = "Write your comment first.")]
+        [StringLength(PbState.MaxCommentLength, ErrorMessage = "Use 2,000 characters or fewer for a comment.")]
+        public string Text { get; set; } = string.Empty;
     }
 
     #endregion

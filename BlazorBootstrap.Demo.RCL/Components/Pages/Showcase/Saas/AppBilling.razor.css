@@ -124,5 +124,27 @@
 }
 
 .lu-invoice-description {
+    display: inline-block;
     min-width: 14rem;
 }
+
+/* The failed payment's facts, in one line that wraps on a phone. */
+.lu-failed-facts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .25rem 1.25rem;
+    margin: 0;
+}
+
+    .lu-failed-facts > div {
+        display: flex;
+        gap: .375rem;
+    }
+
+    .lu-failed-facts dt {
+        font-weight: 600;
+    }
+
+    .lu-failed-facts dd {
+        margin: 0;
+    }

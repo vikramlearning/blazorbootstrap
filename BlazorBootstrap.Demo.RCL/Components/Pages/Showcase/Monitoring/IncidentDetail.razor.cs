@@ -1,15 +1,22 @@
+using System.ComponentModel.DataAnnotations;
 using BlazorBootstrap.Demo.RCL.Models.Showcase.Monitoring;
 using BlazorBootstrap.Demo.RCL.Services.Showcase.Monitoring;
+using Microsoft.AspNetCore.Components.Forms;
 
 namespace BlazorBootstrap.Demo.RCL.Components.Pages.Showcase.Monitoring;
 
 /// <summary>
 /// One incident in the console: title, service, severity, status, assignee, times, and whether it is on the status page
-/// (with a link to its public page). Actions follow the status: Acknowledge (open), Change severity and Resolve (active),
-/// Reopen (resolved), each confirmed in a <see cref="Modal" /> that names what changes; a published incident needs a
-/// public message to resolve or reopen, prefilled with a draft and emailed to the service's subscribers. Engineers post
-/// status page updates (the first one is confirmed, since it makes the incident public) and engineers-only notes. The
-/// timeline shows every entry, oldest or newest first, with public ones marked "Published". Resolved incidents have a
+/// (with a link to its public page). Actions follow the status: Acknowledge (open), Assign to an engineer and Change
+/// severity and Resolve (active), Reopen (resolved), each confirmed in a <see cref="Modal" /> that names what changes; a
+/// published incident needs a public message to resolve or reopen, prefilled with a draft and emailed to the service's
+/// subscribers. Engineers post status page updates (the first one is confirmed, since it makes the incident public) and
+/// engineers-only notes. Every form is an <see cref="EditForm" /> with its messages tied to the fields and, on a failed
+/// submit, a summary that links to them (rule WR-002). The
+/// timeline shows every entry, oldest or newest first, with public ones marked "Published", and pages marked "Page". An
+/// Escalation panel (AC-7c) shows the policy the incident pages under, the current step, a countdown to the next page (a
+/// one-second timer runs the paging engine while it pages, unless live updates are paused), the pages sent with their
+/// channels, and "Acknowledge and stop paging"; once paging stopped it says who acknowledged, or why. Resolved incidents have a
 /// postmortem to write, save as a draft, publish, or unpublish. A small panel shows the service's latest latency and error
 /// rate as of arrival, with a Refresh button (no timer), and redraws on state changes and ticks. Every outcome is
 /// announced in a status message, which takes focus when the pressed button is gone. An unknown number shows a
@@ -21,8 +28,15 @@ public partial class IncidentDetail : ComponentBase, IDisposable
 
     private Button? addItemButton;
 
+    /// <summary>The engineer the Assign control would assign the incident to.</summary>
+    private string assignEngineerId = string.Empty;
+
     /// <summary>What the dialog is confirming.</summary>
     private DialogKind dialog;
+
+    private EditContext dialogContext = new(new DialogForm());
+
+    private DialogForm dialogForm = new();
 
     private Modal dialogModal = default!;
 
@@ -38,13 +52,17 @@ public partial class IncidentDetail : ComponentBase, IDisposable
 
     private int? loadedId;
 
+    private bool disposed;
+
+    private Button? pagingAckButton;
+
+    private MonitoringLiveTimer? pagingTimer;
+
     private bool newestFirst;
 
-    private string? noteError;
+    private EditContext noteContext = new(new NoteForm());
 
-    private ElementReference? noteInput;
-
-    private string noteText = string.Empty;
+    private NoteForm noteForm = new();
 
     /// <summary>
     /// The confirmed action, run once the dialog is hidden (it changes the page under the dialog). It returns whether the
@@ -63,41 +81,21 @@ public partial class IncidentDetail : ComponentBase, IDisposable
     /// <summary>The postmortem waiting for the publish confirmation.</summary>
     private PostmortemRequest? pmRequest;
 
-    private string pmRootCause = string.Empty;
+    private EditContext pmContext = new(new PostmortemForm());
 
-    private string? pmRootCauseError;
+    private PostmortemForm pmForm = new();
 
-    private ElementReference? pmRootCauseInput;
-
-    private string pmSummary = string.Empty;
-
-    private string? pmSummaryError;
-
-    private ElementReference? pmSummaryInput;
+    private InputTextArea? pmSummaryInput;
 
     private Button? pmUnpublishButton;
 
     private Button? postButton;
 
-    private string? postError;
+    private EditContext postContext = new(new PostForm());
 
-    private ElementReference? postInput;
+    private PostForm postForm = new();
 
-    private MonitoringPublicStage postStage = MonitoringPublicStage.Investigating;
-
-    private string postText = string.Empty;
-
-    private string? publicError;
-
-    private ElementReference? publicInput;
-
-    private string publicText = string.Empty;
-
-    private string? reasonError;
-
-    private ElementReference? reasonInput;
-
-    private string reasonText = string.Empty;
+    private InputTextArea? reasonInput;
 
     private Button? reopenButton;
 
@@ -105,11 +103,7 @@ public partial class IncidentDetail : ComponentBase, IDisposable
 
     private Button? severityButton;
 
-    private MonitoringSeverity severityChoice;
-
-    private string? severityError;
-
-    private ElementReference? severityInput;
+    private InputSelect<MonitoringSeverity>? severityInput;
 
     private bool statusIsError;
 
@@ -125,6 +119,9 @@ public partial class IncidentDetail : ComponentBase, IDisposable
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        if (firstRender && !disposed)
+            pagingTimer = new MonitoringLiveTimer(TimeSpan.FromSeconds(1), OnPagingTickAsync);
+
         if (focusTarget is { } target)
         {
             focusTarget = null;
@@ -159,9 +156,9 @@ public partial class IncidentDetail : ComponentBase, IDisposable
         editingPostmortem = false;
         pendingAction = null;
         pmRequest = null;
-        postText = noteText = string.Empty;
-        postError = noteError = null;
-        postStage = Incident?.PublicStage is { } stage && stage != MonitoringPublicStage.Resolved ? stage : MonitoringPublicStage.Investigating;
+        NewPostForm(Incident?.PublicStage is { } stage && stage != MonitoringPublicStage.Resolved ? stage : MonitoringPublicStage.Investigating);
+        NewNoteForm();
+        assignEngineerId = State.Identity.Current?.Id is { } me && State.FindEngineer(me) is not null ? me : State.Engineers.FirstOrDefault()?.Id ?? string.Empty;
 
         if (Declared == "1" && Incident is { } incident)
         {
@@ -177,6 +174,8 @@ public partial class IncidentDetail : ComponentBase, IDisposable
     /// <summary>Stops listening to state changes and ticks.</summary>
     public void Dispose()
     {
+        disposed = true;
+        pagingTimer?.Dispose();
         State.Changed -= OnStateChanged;
         State.Ticked -= OnStateChanged;
     }
@@ -199,7 +198,60 @@ public partial class IncidentDetail : ComponentBase, IDisposable
         MonitoringUpdateKind.Public => IconName.Broadcast,
         MonitoringUpdateKind.Status => IconName.ArrowRepeat,
         MonitoringUpdateKind.Severity => IconName.Sliders,
+        MonitoringUpdateKind.Page => IconName.Megaphone,
         _ => IconName.JournalText,
+    };
+
+    /// <summary>Formats the time left, like "1:05", or "0:00" once it is due.</summary>
+    private static string Countdown(TimeSpan left)
+    {
+        var seconds = Math.Max(0, (int)Math.Ceiling(left.TotalSeconds));
+
+        return string.Create(System.Globalization.CultureInfo.InvariantCulture, $"{seconds / 60}:{seconds % 60:00}");
+    }
+
+    private string EngineerName(string engineerId) => State.FindEngineer(engineerId)?.Name ?? engineerId;
+
+    /// <summary>
+    /// While this incident pages, sends the pages that fall due and redraws the countdown, every second; live updates
+    /// paused stop it (WCAG 2.2.2), and the engine catches up when they resume or a console page opens.
+    /// </summary>
+    private async Task OnPagingTickAsync()
+    {
+        if (disposed || State.IsPaused || Incident?.Paging is not { IsActive: true })
+            return;
+
+        try
+        {
+            await InvokeAsync(() =>
+            {
+                if (disposed)
+                    return;
+
+                State.RunPaging();
+                StateHasChanged();
+            });
+        }
+        catch (Exception ex) when (ex is JSDisconnectedException or ObjectDisposedException or TaskCanceledException)
+        {
+            // The page or circuit went away between ticks.
+        }
+    }
+
+    /// <summary>The role a step pages, in words.</summary>
+    private static string StepRole(int step) => step switch
+    {
+        1 => "primary on call",
+        2 => "secondary on call",
+        _ => "named in the policy",
+    };
+
+    /// <summary>Says how an incident's paging stopped.</summary>
+    private string StopText(MonitoringPaging paging) => paging.StopReason switch
+    {
+        MonitoringPagingStop.Acknowledged => $"{paging.AcknowledgedBy ?? "Someone"} acknowledged at {MonitoringDisplay.Stamp(paging.AcknowledgedAt ?? paging.StoppedAt!.Value)}; paging stopped after {(paging.Pages.Count == 1 ? "1 page" : $"{paging.Pages.Count} pages")}.",
+        MonitoringPagingStop.Resolved => $"Resolved at {MonitoringDisplay.Stamp(paging.StoppedAt!.Value)} before anyone acknowledged; paging stopped.",
+        _ => $"Nobody acknowledged: paging stopped at {MonitoringDisplay.Stamp(paging.StoppedAt!.Value)} after {(paging.Pages.Count == 1 ? "1 page" : $"{paging.Pages.Count} pages")}, and the admins were told. Acknowledge the incident to pick it up.",
     };
 
     private static string LogsUrl(string serviceId) => $"{ConsoleLayout.Base}/logs?service={Uri.EscapeDataString(serviceId)}";
@@ -255,6 +307,27 @@ public partial class IncidentDetail : ComponentBase, IDisposable
         focusStatus = true;
     }
 
+    /// <summary>Assigns the incident to the chosen engineer; the control stays, so focus stays on the button.</summary>
+    private void Assign()
+    {
+        if (Incident is not { } incident)
+            return;
+
+        var engineer = State.FindEngineer(assignEngineerId);
+        var result = engineer is null ? MonitoringResult.NotFound : State.Assign(incident.Id, engineer.Id);
+
+        Announce(result is MonitoringResult.Ok or MonitoringResult.NoChange, result switch
+        {
+            MonitoringResult.Ok when engineer!.Id == State.Identity.Current?.Id => $"#{incident.Id} is assigned to you. It stays {incident.Status.ToString().ToLowerInvariant()} until someone acknowledges it.",
+            MonitoringResult.Ok => $"#{incident.Id} is assigned to {engineer!.Name}" + (MonitoringSeedData.DemoAccounts().Any(account => account.Id == engineer.Id) ? ", who was notified." : "."),
+            MonitoringResult.NoChange => $"#{incident.Id} is already assigned to {engineer!.Name}, so nothing changed.",
+            MonitoringResult.NotFound => "That engineer isn't on the rotation any more. Nothing changed.",
+            MonitoringResult.WrongState => $"#{incident.Id} is resolved, so it can't be assigned. Reopen it first.",
+            MonitoringResult.Invalid => $"#{incident.Id} couldn't be assigned: its timeline or this tab's storage is full. Nothing changed.",
+            _ => SharedRefusal(result, incident.Id) ?? "That didn't work, and nothing changed. Try again.",
+        });
+    }
+
     private void AddActionItem()
     {
         if (pmItems.Count >= MonitoringState.MaxActionItems)
@@ -291,11 +364,7 @@ public partial class IncidentDetail : ComponentBase, IDisposable
         if (result != MonitoringResult.Ok)
             return true;
 
-        postText = string.Empty;
-        postError = null;
-
-        if (stage == MonitoringPublicStage.Resolved)
-            postStage = MonitoringPublicStage.Investigating;
+        NewPostForm(stage == MonitoringPublicStage.Resolved ? MonitoringPublicStage.Investigating : stage);
 
         // "Resolved" removes the form, and its button with it.
         return stage != MonitoringPublicStage.Resolved;
@@ -345,7 +414,7 @@ public partial class IncidentDetail : ComponentBase, IDisposable
         });
 
         if (result == MonitoringResult.Ok)
-            postStage = MonitoringPublicStage.Investigating;
+            NewPostForm(MonitoringPublicStage.Investigating);
 
         return result != MonitoringResult.Ok;
     }
@@ -391,7 +460,6 @@ public partial class IncidentDetail : ComponentBase, IDisposable
     private void CancelPostmortemEdit()
     {
         editingPostmortem = false;
-        pmSummaryError = pmRootCauseError = null;
         focusTarget = () => pmEditButton?.Element;
     }
 
@@ -436,10 +504,24 @@ public partial class IncidentDetail : ComponentBase, IDisposable
 
     private void OnDialogShown() => focusTarget = dialog switch
     {
-        DialogKind.Severity => () => severityInput,
-        DialogKind.Resolve or DialogKind.Reopen => () => reasonInput,
+        DialogKind.Severity => () => severityInput?.Element,
+        DialogKind.Resolve or DialogKind.Reopen => () => reasonInput?.Element,
         _ => null,
     };
+
+    /// <summary>A fresh internal note form in a new edit context, so no old message stays.</summary>
+    private void NewNoteForm()
+    {
+        noteForm = new NoteForm();
+        noteContext = new EditContext(noteForm);
+    }
+
+    /// <summary>A fresh status page update form at a stage, in a new edit context.</summary>
+    private void NewPostForm(MonitoringPublicStage stage)
+    {
+        postForm = new PostForm { Stage = stage };
+        postContext = new EditContext(postForm);
+    }
 
     private void OnStateChanged() => InvokeAsync(StateHasChanged);
 
@@ -451,19 +533,25 @@ public partial class IncidentDetail : ComponentBase, IDisposable
         dialog = kind;
         dialogOpener = opener;
         pendingAction = null;
-        reasonText = string.Empty;
-        reasonError = publicError = severityError = null;
-        severityChoice = incident.Severity;
         var serviceName = ServiceName(incident);
 
-        publicText = kind switch
+        dialogForm = new DialogForm
         {
-            DialogKind.Resolve when incident.IsPublished =>
-                $"This incident has been resolved and {serviceName} is working normally again. Thank you for your patience, and we're sorry for the disruption.",
-            DialogKind.Reopen when incident.IsPublished =>
-                $"The problem affecting {serviceName} has come back, and we are investigating again. We'll post an update as soon as we know more.",
-            _ => string.Empty,
+            Kind = kind,
+            CurrentSeverity = incident.Severity,
+            Severity = incident.Severity,
+            IsPublished = incident.IsPublished,
+            IncidentId = incident.Id,
+            PublicText = kind switch
+            {
+                DialogKind.Resolve when incident.IsPublished =>
+                    $"This incident has been resolved and {serviceName} is working normally again. Thank you for your patience, and we're sorry for the disruption.",
+                DialogKind.Reopen when incident.IsPublished =>
+                    $"The problem affecting {serviceName} has come back, and we are investigating again. We'll post an update as soon as we know more.",
+                _ => string.Empty,
+            },
         };
+        dialogContext = new EditContext(dialogForm);
 
         await dialogModal.ShowAsync();
     }
@@ -530,64 +618,50 @@ public partial class IncidentDetail : ComponentBase, IDisposable
     {
         var postmortem = Incident?.Postmortem;
 
-        pmSummary = postmortem?.Summary ?? string.Empty;
-        pmRootCause = postmortem?.RootCause ?? string.Empty;
+        pmForm = new PostmortemForm { Summary = postmortem?.Summary ?? string.Empty, RootCause = postmortem?.RootCause ?? string.Empty };
+        pmContext = new EditContext(pmForm);
         pmItems = (postmortem?.ActionItems ?? new List<string>()).Select(text => new ActionItemDraft(pmNextKey++, text)).ToList();
-        pmSummaryError = pmRootCauseError = null;
         editingPostmortem = true;
-        focusTarget = () => pmSummaryInput;
+        focusTarget = () => pmSummaryInput?.Element;
     }
 
-    /// <summary>Checks the dialog's fields, then closes it; the action runs once it is hidden.</summary>
+    /// <summary>
+    /// Checks the dialog's fields (a failed submit shows the summary and moves focus to it, rule WR-002), then closes it;
+    /// the action runs once it is hidden.
+    /// </summary>
     private async Task SubmitDialogAsync()
     {
         if (pendingAction is not null || Incident is not { } incident)
             return;
 
-        var reason = reasonText.Trim();
-        var message = publicText.Trim();
-        reasonError = publicError = severityError = null;
+        // The incident may have changed since the dialog opened (another tab, a rule).
+        dialogForm.CurrentSeverity = incident.Severity;
+        dialogForm.IsPublished = incident.IsPublished;
+
+        if ((dialog is DialogKind.Severity or DialogKind.Resolve or DialogKind.Reopen) && !dialogContext.Validate())
+            return;
+
+        var reason = dialogForm.Reason.Trim();
+        var message = dialogForm.PublicText.Trim();
 
         switch (dialog)
         {
             case DialogKind.Severity:
-                severityError = severityChoice == incident.Severity ? $"Choose a different severity: #{incident.Id} is already {incident.Severity}." : null;
-                reasonError = reason.Length == 0 ? "Say why the severity changes." : null;
-                focusTarget = severityError is not null ? () => severityInput : reasonError is not null ? () => reasonInput : null;
-
-                if (focusTarget is not null)
-                    return;
-
-                var severity = severityChoice;
+                var severity = dialogForm.Severity;
                 pendingAction = () => ApplySeverity(incident, severity, reason);
                 break;
 
             case DialogKind.Resolve:
-                publicError = incident.IsPublished && message.Length == 0 ? "Write the \"Resolved\" message customers will read." : null;
-
-                if (publicError is not null)
-                {
-                    focusTarget = () => publicInput;
-                    return;
-                }
-
                 pendingAction = () => ApplyResolve(incident, reason, message);
                 break;
 
             case DialogKind.Reopen:
-                reasonError = reason.Length == 0 ? "Say what came back." : null;
-                publicError = incident.IsPublished && message.Length == 0 ? "Write the \"Investigating\" message customers will read." : null;
-                focusTarget = reasonError is not null ? () => reasonInput : publicError is not null ? () => publicInput : null;
-
-                if (focusTarget is not null)
-                    return;
-
                 pendingAction = () => ApplyReopen(incident, reason, message);
                 break;
 
             case DialogKind.FirstPublic:
-                var stage = postStage;
-                var text = postText.Trim();
+                var stage = postForm.Stage;
+                var text = postForm.Text.Trim();
                 pendingAction = () => ApplyPost(incident, stage, text);
                 break;
 
@@ -604,21 +678,13 @@ public partial class IncidentDetail : ComponentBase, IDisposable
         await dialogModal.HideAsync();
     }
 
+    /// <summary>Adds the note once the form is valid (a failed submit shows the summary, rule WR-002); the state checks again.</summary>
     private void SubmitNote()
     {
-        if (Incident is not { } incident)
+        if (Incident is not { } incident || !noteContext.Validate())
             return;
 
-        var text = noteText.Trim();
-
-        if (text.Length == 0)
-        {
-            noteError = "Write the note first.";
-            focusTarget = () => noteInput;
-            return;
-        }
-
-        noteError = null;
+        var text = noteForm.Text.Trim();
         var result = State.AddNote(incident.Id, text);
 
         Announce(result == MonitoringResult.Ok, result switch
@@ -630,23 +696,17 @@ public partial class IncidentDetail : ComponentBase, IDisposable
         });
 
         if (result == MonitoringResult.Ok)
-            noteText = string.Empty;
+            NewNoteForm();
     }
 
-    /// <summary>Posts an update; the first one of an engineers-only incident is confirmed first, since it makes the incident public.</summary>
+    /// <summary>
+    /// Posts an update once the form is valid (a failed submit shows the summary, rule WR-002); the first one of an
+    /// engineers-only incident is confirmed first, since it makes the incident public.
+    /// </summary>
     private async Task SubmitPostAsync()
     {
-        if (Incident is not { } incident)
+        if (Incident is not { } incident || !postContext.Validate())
             return;
-
-        if (postText.Trim().Length == 0)
-        {
-            postError = "Write the update customers will read.";
-            focusTarget = () => postInput;
-            return;
-        }
-
-        postError = null;
 
         if (!incident.IsPublished)
         {
@@ -654,27 +714,18 @@ public partial class IncidentDetail : ComponentBase, IDisposable
             return;
         }
 
-        if (!ApplyPost(incident, postStage, postText.Trim()))
+        if (!ApplyPost(incident, postForm.Stage, postForm.Text.Trim()))
             focusStatus = true;
     }
 
     private int SubscriberCount(MonitoringIncident incident) =>
         State.Subscriptions.Count(subscription => subscription.ServiceIds.Count == 0 || subscription.ServiceIds.Contains(incident.ServiceId));
 
-    /// <summary>Checks the postmortem form; the first invalid field gets focus after the render that shows its error.</summary>
-    private PostmortemRequest? ValidPostmortem(bool publish)
-    {
-        var summary = pmSummary.Trim();
-        var rootCause = pmRootCause.Trim();
-
-        pmSummaryError = summary.Length == 0 ? "Say what happened and how customers were affected." : null;
-        pmRootCauseError = rootCause.Length == 0 ? "Say why it happened." : null;
-        focusTarget = pmSummaryError is not null ? () => pmSummaryInput : pmRootCauseError is not null ? () => pmRootCauseInput : null;
-
-        return focusTarget is null
-            ? new PostmortemRequest(summary, rootCause, pmItems.Select(item => item.Text.Trim()).Where(text => text.Length > 0).ToList(), publish)
+    /// <summary>Checks the postmortem form; a failed check shows the summary and moves focus to it (rule WR-002).</summary>
+    private PostmortemRequest? ValidPostmortem(bool publish) =>
+        pmContext.Validate()
+            ? new PostmortemRequest(pmForm.Summary.Trim(), pmForm.RootCause.Trim(), pmItems.Select(item => item.Text.Trim()).Where(text => text.Length > 0).ToList(), publish)
             : null;
-    }
 
     #endregion
 
@@ -730,6 +781,77 @@ public partial class IncidentDetail : ComponentBase, IDisposable
         public int Key { get; }
 
         public string Text { get; set; }
+    }
+
+    /// <summary>
+    /// The confirmation dialog's fields, checked for the dialog that is open: a new severity needs a different value and a
+    /// reason; reopening needs a reason; resolving or reopening a published incident needs its public message.
+    /// </summary>
+    private sealed class DialogForm : IValidatableObject
+    {
+        public MonitoringSeverity CurrentSeverity { get; set; }
+
+        public int IncidentId { get; set; }
+
+        public bool IsPublished { get; set; }
+
+        public DialogKind Kind { get; set; }
+
+        [StringLength(MonitoringState.MaxUpdateLength, ErrorMessage = "Use 1,000 characters or fewer for the message.")]
+        public string PublicText { get; set; } = string.Empty;
+
+        [StringLength(MonitoringState.MaxUpdateLength, ErrorMessage = "Use 1,000 characters or fewer.")]
+        public string Reason { get; set; } = string.Empty;
+
+        public MonitoringSeverity Severity { get; set; }
+
+        /// <summary>Runs once the lengths are fine: the rules of the open dialog.</summary>
+        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+        {
+            if (Kind == DialogKind.Severity && Severity == CurrentSeverity)
+                yield return new ValidationResult($"Choose a different severity: #{IncidentId} is already {CurrentSeverity}.", new[] { nameof(Severity) });
+
+            if (Kind == DialogKind.Severity && string.IsNullOrWhiteSpace(Reason))
+                yield return new ValidationResult("Say why the severity changes.", new[] { nameof(Reason) });
+
+            if (Kind == DialogKind.Reopen && string.IsNullOrWhiteSpace(Reason))
+                yield return new ValidationResult("Say what came back.", new[] { nameof(Reason) });
+
+            if ((Kind is DialogKind.Resolve or DialogKind.Reopen) && IsPublished && string.IsNullOrWhiteSpace(PublicText))
+                yield return new ValidationResult(
+                    Kind == DialogKind.Resolve ? "Write the \"Resolved\" message customers will read." : "Write the \"Investigating\" message customers will read.",
+                    new[] { nameof(PublicText) });
+        }
+    }
+
+    /// <summary>The internal note form, with the limit of <see cref="MonitoringState.AddNote" />.</summary>
+    private sealed class NoteForm
+    {
+        [Required(ErrorMessage = "Write the note first.")]
+        [StringLength(MonitoringState.MaxUpdateLength, ErrorMessage = "Use 1,000 characters or fewer for the note.")]
+        public string Text { get; set; } = string.Empty;
+    }
+
+    /// <summary>The postmortem form's texts, with the limits of <see cref="MonitoringState.SavePostmortem" />.</summary>
+    private sealed class PostmortemForm
+    {
+        [Required(ErrorMessage = "Say why it happened.")]
+        [StringLength(MonitoringState.MaxPostmortemLength, ErrorMessage = "Use 2,000 characters or fewer for the root cause.")]
+        public string RootCause { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Say what happened and how customers were affected.")]
+        [StringLength(MonitoringState.MaxPostmortemLength, ErrorMessage = "Use 2,000 characters or fewer for what happened.")]
+        public string Summary { get; set; } = string.Empty;
+    }
+
+    /// <summary>The status page update form, with the limit of <see cref="MonitoringState.PostPublicUpdate" />.</summary>
+    private sealed class PostForm
+    {
+        public MonitoringPublicStage Stage { get; set; } = MonitoringPublicStage.Investigating;
+
+        [Required(ErrorMessage = "Write the update customers will read.")]
+        [StringLength(MonitoringState.MaxUpdateLength, ErrorMessage = "Use 1,000 characters or fewer for the update.")]
+        public string Text { get; set; } = string.Empty;
     }
 
     /// <summary>A validated postmortem to save.</summary>

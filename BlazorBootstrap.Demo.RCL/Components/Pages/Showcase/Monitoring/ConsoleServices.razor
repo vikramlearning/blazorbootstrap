@@ -3,10 +3,6 @@
 
 <PageTitle>Services · @MonitoringSeedData.ProductName</PageTitle>
 
-@{
-    var rows = Rows;
-}
-
 <div class="container-fluid px-lg-4">
     <div class="mw-page-head">
         <div>
@@ -19,17 +15,17 @@
     <div class="mw-filters mb-3">
         <div>
             <label class="form-label mw-label mb-1" for="mw-services-kind">Kind</label>
-            <select class="form-select" id="mw-services-kind" value="@(kindFilter?.ToString() ?? string.Empty)" @onchange="OnKindChanged">
+            <select class="form-select" id="mw-services-kind" value="@(kindFilter?.ToString() ?? string.Empty)" @onchange="OnKindChangedAsync">
                 <option value="">All kinds</option>
                 @foreach (var kind in Enum.GetValues<MonitoringServiceKind>())
                 {
-                    <option value="@kind">@KindLabel(kind)</option>
+                    <option value="@kind">@MonitoringDisplay.KindLabel(kind)</option>
                 }
             </select>
         </div>
         <div>
             <label class="form-label mw-label mb-1" for="mw-services-status">Live status</label>
-            <select class="form-select" id="mw-services-status" value="@(statusFilter?.ToString() ?? string.Empty)" @onchange="OnStatusChanged">
+            <select class="form-select" id="mw-services-status" value="@(statusFilter?.ToString() ?? string.Empty)" @onchange="OnStatusChangedAsync">
                 <option value="">All statuses</option>
                 @foreach (var status in Enum.GetValues<MonitoringStatus>())
                 {
@@ -37,82 +33,105 @@
                 }
             </select>
         </div>
-        @if (kindFilter is not null || statusFilter is not null)
-        {
-            <div class="align-self-end">
-                <button type="button" class="btn btn-outline-secondary" @onclick="ClearFilters">Clear filters</button>
-            </div>
-        }
+        <div class="align-self-end d-flex flex-wrap align-items-center gap-3">
+            @if (kindFilter is not null || statusFilter is not null)
+            {
+                <button type="button" class="btn btn-outline-secondary" @onclick="ClearFiltersAsync">Clear filters</button>
+            }
+            @* Back to the saved view's defaults: the site's order and every column in its place. *@
+            <button type="button" class="btn btn-link btn-sm p-0" @onclick="ResetViewAsync">Reset view</button>
+        </div>
     </div>
 
-    @* Announces filter changes only, never the live ticks. *@
-    <p class="visually-hidden" role="status">@filterMessage</p>
+    @* Announces filter changes and a reset only, never the live ticks. *@
+    <p class="small text-body-secondary mb-2" role="status" tabindex="-1" @ref="statusRegion">@filterMessage</p>
 
     <Card Class="mw-card">
-        <CardBody Class="p-0">
-            <div class="table-responsive mw-grid">
-                <table class="table mw-services-table">
-                    <caption class="mw-services-caption">@CaptionText(rows.Count). Metrics are from the last sample.</caption>
-                    <thead>
-                        <tr>
-                            <th scope="col">Service</th>
-                            <th scope="col">Kind</th>
-                            <th scope="col">Region</th>
-                            <th scope="col">Team</th>
-                            <th scope="col">Live status</th>
-                            <th scope="col" class="text-end">p95 latency</th>
-                            <th scope="col" class="text-end">Error rate</th>
-                            <th scope="col" class="text-end">Throughput</th>
-                            <th scope="col">Active incident</th>
-                            <th scope="col">Status page</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @if (rows.Count == 0)
-                        {
-                            <tr>
-                                <td colspan="10" class="text-center text-body-secondary py-4">No services match these filters.</td>
-                            </tr>
-                        }
-                        @foreach (var (service, status) in rows)
-                        {
-                            var latest = State.Latest(service.Id);
-                            var incident = State.ActiveIncident(service.Id);
-                            var publicStatus = State.PublicStatus(service.Id);
-                            <tr @key="service.Id">
-                                <th scope="row">
-                                    <a class="mw-row-link text-nowrap" href="@MonitoringDisplay.ServiceUrl(service.Id)">@service.Name</a>
-                                </th>
-                                <td class="text-nowrap"><Icon Name="@MonitoringDisplay.KindIcon(service.Kind)" class="me-1 text-body-secondary" aria-hidden="true" />@KindLabel(service.Kind)</td>
-                                <td class="mw-mono text-nowrap">@service.Region</td>
-                                <td class="text-nowrap">@service.Team</td>
-                                <td>
-                                    <Badge Color="@MonitoringDisplay.StatusColor(status)"><Icon Name="@MonitoringDisplay.StatusIcon(status)" class="me-1" aria-hidden="true" />@status</Badge>
-                                </td>
-                                <td class="mw-mono text-end text-nowrap">@MonitoringDisplay.Latency(latest.LatencyMs)</td>
-                                <td class="mw-mono text-end text-nowrap">@MonitoringDisplay.ErrorRate(latest.ErrorRate)</td>
-                                <td class="mw-mono text-end text-nowrap">@MonitoringDisplay.Number(latest.Requests) <span class="text-body-secondary small">@MonitoringDisplay.RequestUnit(service.Kind)</span></td>
-                                <td class="mw-incident-cell">
-                                    @if (incident is null)
-                                    {
-                                        <span class="text-body-secondary">None</span>
-                                    }
-                                    else
-                                    {
+        <CardBody Class="p-3 p-lg-4">
+            <ShowcaseDataState Status="@(viewLoaded ? ShowcaseDataStatus.Ready : ShowcaseDataStatus.Loading)"
+                               IsEmpty="@(State.Services.Count == 0)"
+                               EmptyIcon="IconName.HddStack"
+                               EmptyTitle="No services yet"
+                               EmptyText="An admin adds the services Stackwatch monitors on Manage services."
+                               LoadingText="Loading services…"
+                               OnRetry="RefreshGridAsync">
+                <ChildContent>
+                    <Grid @ref="grid"
+                          @key="gridVersion"
+                          TItem="ServiceRow"
+                          Class="table table-hover mw-services-table sc-grid-row-links"
+                          GridContainerClass="mw-grid"
+                          DataProvider="ProvideRowsAsync"
+                          SettingsProvider="view.GetSettingsAsync"
+                          GridSettingsChanged="view.SaveSettingsAsync"
+                          AllowSorting="true"
+                          AllowColumnChooser="true"
+                          AllowExport="true"
+                          ExportFileName="monitoring-services"
+                          Responsive="true"
+                          EmptyText="No services match these filters."
+                          aria-label="Services, with metrics from the last sample">
+                        <GridColumns>
+                            <GridColumn TItem="ServiceRow" HeaderText="Service" PropertyName="Name" SortString="name" SortKeySelector="row => row.Name"
+                                        IsDefaultSortColumn="@view.IsSortColumn("name")" SortDirection="@view.DirectionFor("name")" AlwaysVisible="true" TextNoWrap="true">
+                                @* The stretched link makes the whole row open the service; the incident link stays above it. *@
+                                <a class="mw-row-link stretched-link" href="@MonitoringDisplay.ServiceUrl(context.Id)">@context.Name</a>
+                            </GridColumn>
+                            <GridColumn TItem="ServiceRow" HeaderText="Kind" PropertyName="Kind" SortString="kind" SortKeySelector="row => row.Kind"
+                                        IsDefaultSortColumn="@view.IsSortColumn("kind")" SortDirection="@view.DirectionFor("kind")" TextNoWrap="true">
+                                <Icon Name="@MonitoringDisplay.KindIcon(context.ServiceKind)" class="me-1 text-body-secondary" aria-hidden="true" />@context.Kind
+                            </GridColumn>
+                            <GridColumn TItem="ServiceRow" HeaderText="Region" PropertyName="Region" SortString="region" SortKeySelector="row => row.Region"
+                                        IsDefaultSortColumn="@view.IsSortColumn("region")" SortDirection="@view.DirectionFor("region")" TextNoWrap="true">
+                                <span class="mw-mono">@context.Region</span>
+                            </GridColumn>
+                            <GridColumn TItem="ServiceRow" HeaderText="Team" PropertyName="Team" SortString="team" SortKeySelector="row => row.Team"
+                                        IsDefaultSortColumn="@view.IsSortColumn("team")" SortDirection="@view.DirectionFor("team")" TextNoWrap="true">
+                                @context.Team
+                            </GridColumn>
+                            <GridColumn TItem="ServiceRow" HeaderText="Live status" PropertyName="LiveStatus" SortString="status" SortKeySelector="row => row.LiveStatus"
+                                        IsDefaultSortColumn="@view.IsSortColumn("status")" SortDirection="@view.DirectionFor("status")" TextNoWrap="true">
+                                <Badge Color="@MonitoringDisplay.StatusColor(context.LiveStatus)"><Icon Name="@MonitoringDisplay.StatusIcon(context.LiveStatus)" class="me-1" aria-hidden="true" />@context.LiveStatus</Badge>
+                            </GridColumn>
+                            <GridColumn TItem="ServiceRow" HeaderText="p95 latency (ms)" PropertyName="LatencyMs" SortString="latency" SortKeySelector="row => row.LatencyMs"
+                                        IsDefaultSortColumn="@view.IsSortColumn("latency")" SortDirection="@view.DirectionFor("latency")" TextNoWrap="true"
+                                        TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End">
+                                <span class="mw-mono">@MonitoringDisplay.Latency(context.LatencyMs)</span>
+                            </GridColumn>
+                            <GridColumn TItem="ServiceRow" HeaderText="Error rate (%)" PropertyName="ErrorRate" SortString="errors" SortKeySelector="row => row.ErrorRate"
+                                        IsDefaultSortColumn="@view.IsSortColumn("errors")" SortDirection="@view.DirectionFor("errors")" TextNoWrap="true"
+                                        TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End">
+                                <span class="mw-mono">@MonitoringDisplay.ErrorRate(context.ErrorRate)</span>
+                            </GridColumn>
+                            <GridColumn TItem="ServiceRow" HeaderText="Throughput" PropertyName="Requests" SortString="throughput" SortKeySelector="row => row.Requests"
+                                        IsDefaultSortColumn="@view.IsSortColumn("throughput")" SortDirection="@view.DirectionFor("throughput")" TextNoWrap="true"
+                                        TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End">
+                                <span class="mw-mono">@MonitoringDisplay.Number(context.Requests)</span> <span class="text-body-secondary small">@MonitoringDisplay.RequestUnit(context.ServiceKind)</span>
+                            </GridColumn>
+                            <GridColumn TItem="ServiceRow" HeaderText="Active incident" PropertyName="ActiveIncident" SortString="incident" SortKeySelector="row => row.Incident == null ? int.MaxValue : (int)row.Incident.Severity"
+                                        IsDefaultSortColumn="@view.IsSortColumn("incident")" SortDirection="@view.DirectionFor("incident")">
+                                @if (context.Incident is not { } incident)
+                                {
+                                    <span class="text-body-secondary">None</span>
+                                }
+                                else
+                                {
+                                    <span class="mw-incident-cell d-inline-block">
                                         <a href="@MonitoringDisplay.IncidentUrl(incident.Id)">#@incident.Id @incident.Title</a>
                                         <span class="d-block small text-body-secondary">
                                             @incident.Severity · @incident.Status.ToString().ToLowerInvariant()@(incident.IsPublished ? null : " · not on the status page")
                                         </span>
-                                    }
-                                </td>
-                                <td>
-                                    <Badge Color="@MonitoringDisplay.PublicStatusColor(publicStatus)"><Icon Name="@MonitoringDisplay.PublicStatusIcon(publicStatus)" class="me-1" aria-hidden="true" />@MonitoringDisplay.PublicStatusLabel(publicStatus)</Badge>
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            </div>
+                                    </span>
+                                }
+                            </GridColumn>
+                            <GridColumn TItem="ServiceRow" HeaderText="Status page" PropertyName="StatusPage" SortString="public" SortKeySelector="row => row.PublicStatus"
+                                        IsDefaultSortColumn="@view.IsSortColumn("public")" SortDirection="@view.DirectionFor("public")" TextNoWrap="true">
+                                <Badge Color="@MonitoringDisplay.PublicStatusColor(context.PublicStatus)"><Icon Name="@MonitoringDisplay.PublicStatusIcon(context.PublicStatus)" class="me-1" aria-hidden="true" />@context.StatusPage</Badge>
+                            </GridColumn>
+                        </GridColumns>
+                    </Grid>
+                </ChildContent>
+            </ShowcaseDataState>
         </CardBody>
     </Card>
 

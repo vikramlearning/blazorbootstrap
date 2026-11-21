@@ -13,7 +13,7 @@
                 <div class="col-md-8 col-lg-6">
                     <FintechCodeStep Purpose="FintechCodePurpose.SignIn"
                                      Title="Enter your one-time code"
-                                     Lead="@(Role == FintechSeedData.OpsRole ? "Operations sign-in takes your password and a code we text to your work phone." : "For your security, signing in takes your password and a code we text to your phone.")"
+                                     Lead="@(Role != FintechSeedData.CustomerRole ? "Operations sign-in takes your password and a code we text to your work phone." : "For your security, signing in takes your password and a code we text to your phone.")"
                                      SubmitText="Verify and continue"
                                      Submit="State.VerifySignIn" />
                     <p class="small text-body-secondary text-center mt-3 mb-0">Not you? Sign out from the account menu.</p>
@@ -27,7 +27,7 @@
     /// <summary>Gets or sets the page shown once the code is entered.</summary>
     [Parameter] public RenderFragment? ChildContent { get; set; }
 
-    /// <summary>Gets or sets the role the pages are for.</summary>
+    /// <summary>Gets or sets the roles the pages are for, comma-separated.</summary>
     [Parameter, EditorRequired] public string Role { get; set; } = default!;
 
     [Inject] private FintechState State { get; set; } = default!;

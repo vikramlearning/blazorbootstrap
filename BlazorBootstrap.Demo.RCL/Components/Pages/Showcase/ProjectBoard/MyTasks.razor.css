@@ -1,28 +1,10 @@
-/* My tasks: the summary, the status message, and the groups (their rows are MyTasksList). */
+/* My tasks: the summary and the overdue mark; the Grid list's styles are in PbFrame.razor.css. */
 .tb-mytasks-summary {
     font-size: 1.0625rem;
     color: var(--tb-ink);
 }
 
-.tb-mytasks-status {
-    min-height: 1.5rem;
-    margin-bottom: 1rem;
-    overflow-wrap: anywhere;
-}
-
-    .tb-mytasks-status:focus {
-        outline: none;
-    }
-
-    .tb-mytasks-status:focus-visible {
-        outline: 2px solid var(--bs-focus-ring-color, var(--sc-primary));
-        outline-offset: 2px;
-    }
-
-.tb-mytasks-empty {
-    max-width: 40rem;
-}
-
-.tb-mytasks-done summary {
-    cursor: pointer;
+.tb-mytask-overdue {
+    color: var(--bs-danger-text-emphasis);
+    font-weight: 600;
 }

@@ -50,6 +50,7 @@
                         }
                         else
                         {
+                            @* Line items of the template, edited in the form below, so they stay a plain table (AC-1). *@
                             <div class="table-responsive">
                                 <table class="table align-middle mb-0 hr-ate-table">
                                     <caption class="hr-ate-caption">
@@ -82,10 +83,10 @@
                                                 <td>
                                                     <div class="d-flex flex-nowrap gap-1 justify-content-end">
                                                         <button type="button" class="btn btn-sm btn-outline-secondary" @ref="rowButtons[editKey]" @onclick="() => StartEditTask(taskId)">
-                                                            Edit<span class="visually-hidden"> @task.Title</span>
+                                                            Edit<span class="visually-hidden">&#32;@task.Title</span>
                                                         </button>
                                                         <button type="button" class="btn btn-sm btn-outline-danger" @ref="rowButtons[deleteKey]" @onclick="() => OpenDeleteTaskAsync(taskId)">
-                                                            Delete<span class="visually-hidden"> @task.Title</span>
+                                                            Delete<span class="visually-hidden">&#32;@task.Title</span>
                                                         </button>
                                                     </div>
                                                 </td>
@@ -105,34 +106,34 @@
                         }
                         else
                         {
-                            <form @onsubmit="SaveTask" novalidate aria-labelledby="hr-ate-task-form-title">
+                            <EditForm EditContext="taskContext" OnSubmit="SaveTaskAsync" FormName="hr-template-task" novalidate aria-labelledby="hr-ate-task-form-title">
+                                <DataAnnotationsValidator />
+                                <ShowcaseFormErrors ShowSummary="true" />
                                 <div class="mb-3">
                                     <label class="form-label fw-semibold" for="hr-ate-task-title">What to do</label>
-                                    <input id="hr-ate-task-title" class="form-control @(taskTitleError is null ? null : "is-invalid")" @bind="taskTitle" @bind:event="oninput" @ref="taskTitleInput"
-                                           maxlength="@HrState.MaxNameLength" autocomplete="off" aria-required="true" aria-invalid="@(taskTitleError is null ? null : "true")"
-                                           aria-describedby="hr-ate-task-title-help hr-ate-task-title-error" />
+                                    <InputText @ref="taskTitleInput" id="hr-ate-task-title" class="form-control" @bind-Value="taskForm.Title" maxlength="@HrState.MaxNameLength"
+                                               autocomplete="off" aria-describedby="hr-ate-task-title-help" />
                                     <div class="form-text" id="hr-ate-task-title-help">Like “Pick an onboarding buddy”. Up to @HrState.MaxNameLength characters.</div>
-                                    <div class="invalid-feedback d-block" id="hr-ate-task-title-error">@taskTitleError</div>
+                                    <ValidationMessage For="() => taskForm.Title" />
                                 </div>
                                 <div class="row g-3 mb-3">
                                     <div class="col-sm-6">
                                         <label class="form-label fw-semibold" for="hr-ate-task-owner">Who does it</label>
-                                        <select id="hr-ate-task-owner" class="form-select" @bind="taskOwner" aria-describedby="hr-ate-task-owner-help">
+                                        <InputSelect id="hr-ate-task-owner" class="form-select" @bind-Value="taskForm.Owner" aria-describedby="hr-ate-task-owner-help">
                                             @foreach (var owner in Enum.GetValues<HrTaskOwner>())
                                             {
                                                 <option value="@owner" @key="owner">@HrDisplay.OwnerLabel(owner)</option>
                                             }
-                                        </select>
-                                        <div class="form-text" id="hr-ate-task-owner-help">@OwnerHelp(taskOwner)</div>
+                                        </InputSelect>
+                                        <div class="form-text" id="hr-ate-task-owner-help">@OwnerHelp(taskForm.Owner)</div>
+                                        <ValidationMessage For="() => taskForm.Owner" />
                                     </div>
                                     <div class="col-sm-6">
                                         <label class="form-label fw-semibold" for="hr-ate-task-due">Due day, from day one</label>
-                                        <input id="hr-ate-task-due" type="number" inputmode="numeric" class="form-control @(taskDueError is null ? null : "is-invalid")" value="@taskDueText"
-                                               @oninput="args => taskDueText = args.Value as string ?? string.Empty" @ref="taskDueInput"
-                                               min="@(-HrState.MaxTaskOffsetDays)" max="@HrState.MaxTaskOffsetDays" step="1" aria-required="true"
-                                               aria-invalid="@(taskDueError is null ? null : "true")" aria-describedby="hr-ate-task-due-hint hr-ate-task-due-error" />
-                                        <div class="form-text" id="hr-ate-task-due-hint">@DueHint(taskDueText)</div>
-                                        <div class="invalid-feedback d-block" id="hr-ate-task-due-error">@taskDueError</div>
+                                        <InputNumber TValue="int?" id="hr-ate-task-due" class="form-control" @bind-Value="taskForm.DueOffsetDays" @oninput="OnDueInput"
+                                                     min="@(-HrState.MaxTaskOffsetDays)" max="@HrState.MaxTaskOffsetDays" step="1" inputmode="numeric" aria-describedby="hr-ate-task-due-hint" />
+                                        <div class="form-text" id="hr-ate-task-due-hint">@DueHint(dueText)</div>
+                                        <ValidationMessage For="() => taskForm.DueOffsetDays" />
                                     </div>
                                 </div>
                                 <div class="d-flex flex-wrap gap-2">
@@ -144,7 +145,7 @@
                                         <Button Color="ButtonColor.Secondary" Outline="true" @onclick="CancelEditTask">Cancel</Button>
                                     }
                                 </div>
-                            </form>
+                            </EditForm>
                         }
                     </section>
                 </div>
@@ -152,28 +153,31 @@
                 <div class="col-xxl-4">
                     <section class="hr-panel" aria-labelledby="hr-ate-details-title">
                         <h2 class="hr-section-title" id="hr-ate-details-title">Name and description</h2>
-                        <form @onsubmit="SaveDetails" novalidate aria-labelledby="hr-ate-details-title">
+                        <EditForm EditContext="detailsContext" OnSubmit="SaveDetailsAsync" FormName="hr-template-details" novalidate aria-labelledby="hr-ate-details-title">
+                            <DataAnnotationsValidator />
+                            <ShowcaseFormErrors ShowSummary="true" />
                             <div class="mb-3">
                                 <label class="form-label fw-semibold" for="hr-ate-name">Name</label>
-                                <input id="hr-ate-name" class="form-control @(nameError is null ? null : "is-invalid")" @bind="name" @bind:event="oninput" @ref="nameInput"
-                                       maxlength="@HrState.MaxNameLength" autocomplete="off" aria-required="true" aria-invalid="@(nameError is null ? null : "true")"
-                                       aria-describedby="hr-ate-name-help hr-ate-name-error" />
-                                <div class="form-text" id="hr-ate-name-help">
+                                <InputText id="hr-ate-name" class="form-control" @bind-Value="detailsForm.Name" maxlength="@HrState.MaxNameLength" autocomplete="off"
+                                           aria-describedby="hr-ate-name-help" />
+                                <ShowcaseUniqueCheck @ref="nameCheck" For="() => detailsForm.Name" IsTakenAsync="IsNameTakenAsync"
+                                                     TakenMessage="@(value => $"Another template is already called {value}. Choose another name.")" />
+                                <div class="form-text mt-0" id="hr-ate-name-help">
                                     Unique, up to @HrState.MaxNameLength characters.@(started > 0 ? " Plans already started keep the name they were started with." : null)
                                 </div>
-                                <div class="invalid-feedback d-block" id="hr-ate-name-error">@nameError</div>
+                                <ValidationMessage For="() => detailsForm.Name" />
                             </div>
                             <div class="mb-3">
                                 <label class="form-label fw-semibold" for="hr-ate-description">Description <span class="fw-normal text-body-secondary">(optional)</span></label>
-                                <textarea id="hr-ate-description" class="form-control @(descriptionError is null ? null : "is-invalid")" rows="3" @bind="description" @bind:event="oninput"
-                                          @ref="descriptionInput" aria-invalid="@(descriptionError is null ? null : "true")" aria-describedby="hr-ate-description-help hr-ate-description-error"></textarea>
+                                <InputTextArea id="hr-ate-description" class="form-control" rows="3" @bind-Value="detailsForm.Description" @oninput="OnDescriptionInput"
+                                               aria-describedby="hr-ate-description-help" />
                                 <div class="form-text" id="hr-ate-description-help">
-                                    <span class="@(description.Trim().Length > HrState.MaxDescriptionLength ? "text-danger-emphasis" : null)">@AdminHelpers.Counter(description, HrState.MaxDescriptionLength)</span>
+                                    <span class="@(descriptionText.Trim().Length > HrState.MaxDescriptionLength ? "text-danger-emphasis" : null)">@AdminHelpers.Counter(descriptionText, HrState.MaxDescriptionLength)</span>
                                 </div>
-                                <div class="invalid-feedback d-block" id="hr-ate-description-error">@descriptionError</div>
+                                <ValidationMessage For="() => detailsForm.Description" />
                             </div>
                             <Button Type="ButtonType.Submit" Color="ButtonColor.Primary" Outline="true"><Icon Name="IconName.CheckLg" class="me-1" aria-hidden="true" />Save name and description</Button>
-                        </form>
+                        </EditForm>
                     </section>
                 </div>
             </div>

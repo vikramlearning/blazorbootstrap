@@ -43,39 +43,45 @@ else
                     <h2 class="hd-section-title" id="hd-article-form-heading">Article</h2>
                     <ShowcaseDemoNotice Class="mb-3" Text="Demo only: articles stay in this browser tab. Nothing is sent." />
 
-                    @* Only the text fields are in the form, so Enter there saves (keeping the status); the editor's toolbar stays out of it. *@
-                    <form id="hd-article-form" @onsubmit="SaveKeepingStatusAsync" novalidate>
+                    @* Only the text fields are in the form, so Enter there saves (keeping the status); the editor's toolbar stays out of it.
+                       The fields validate on change and on save (rule WR-002); the counters and the preview follow every keystroke. *@
+                    <EditForm id="hd-article-form" EditContext="editContext" OnSubmit="SaveKeepingStatusAsync" FormName="hd-article" novalidate>
+                        <DataAnnotationsValidator />
+                        <ShowcaseFormErrors ShowSummary="true" />
                         <div class="mb-3">
                             <label class="form-label fw-semibold" for="hd-article-title">Title</label>
-                            <input @ref="titleInput" id="hd-article-title" class="form-control @(titleError is null ? null : "is-invalid")" value="@title" @oninput="OnTitleInput"
-                                   autocomplete="off" aria-describedby="hd-article-title-count hd-article-title-error" aria-invalid="@(titleError is null ? null : "true")" />
+                            <InputText @ref="titleInput" id="hd-article-title" class="form-control" @bind-Value="form.Title" @oninput="OnTitleInput"
+                                       autocomplete="off" aria-describedby="hd-article-title-count" />
                             <div class="form-text @(TitleOver ? "hd-over" : null)" id="hd-article-title-count">@CounterText(title, HelpDeskState.MaxArticleTitleLength)</div>
-                            <p class="hd-field-error" id="hd-article-title-error" role="alert">@titleError</p>
+                            <ValidationMessage For="() => form.Title" />
                         </div>
 
                         <div class="mb-3">
                             <label class="form-label fw-semibold" for="hd-article-category">Category</label>
-                            <select @ref="categorySelect" id="hd-article-category" class="form-select @(categoryError is null ? null : "is-invalid")" value="@categoryId" @onchange="OnCategoryChanged"
-                                    aria-describedby="hd-article-category-help hd-article-category-error" aria-invalid="@(categoryError is null ? null : "true")">
+                            <InputSelect id="hd-article-category" class="form-select" @bind-Value="form.CategoryId" aria-describedby="hd-article-category-help">
+                                @if (State.Categories.All(category => category.Id != form.CategoryId))
+                                {
+                                    <option value="">Choose a category</option>
+                                }
                                 @foreach (var category in State.Categories)
                                 {
                                     <option value="@category.Id">@category.Name</option>
                                 }
-                            </select>
+                            </InputSelect>
                             <div class="form-text" id="hd-article-category-help">Customers browse the help center by category.</div>
-                            <p class="hd-field-error" id="hd-article-category-error" role="alert">@categoryError</p>
+                            <ValidationMessage For="() => form.CategoryId" />
                         </div>
 
                         <div class="mb-3">
                             <label class="form-label fw-semibold" for="hd-article-summary">Summary</label>
-                            <textarea @ref="summaryInput" id="hd-article-summary" class="form-control @(summaryError is null ? null : "is-invalid")" rows="2" value="@summary" @oninput="OnSummaryInput"
-                                      aria-describedby="hd-article-summary-count hd-article-summary-error" aria-invalid="@(summaryError is null ? null : "true")"></textarea>
+                            <InputTextArea id="hd-article-summary" class="form-control" rows="2" @bind-Value="form.Summary" @oninput="OnSummaryInput"
+                                           aria-describedby="hd-article-summary-count" />
                             <div class="form-text @(SummaryOver ? "hd-over" : null)" id="hd-article-summary-count">
                                 @CounterText(summary, HelpDeskState.MaxArticleSummaryLength). Shown under the title in search results and lists.
                             </div>
-                            <p class="hd-field-error" id="hd-article-summary-error" role="alert">@summaryError</p>
+                            <ValidationMessage For="() => form.Summary" />
                         </div>
-                    </form>
+                    </EditForm>
 
                     <span class="form-label fw-semibold d-block" id="hd-article-body-label">Body</span>
                     @* The editor reads Value only when it is built, so a new key per load starts it with this article's body. It renders
@@ -130,7 +136,7 @@ else
                     <h2 class="hd-section-title" id="hd-article-preview-heading">Preview</h2>
                     <p class="small text-body-secondary">How the help center shows the article, with only its allowed formatting.</p>
                     <div class="hd-article-preview" data-clarity-mask="true">
-                        <span class="small text-body-secondary">@State.FindCategory(categoryId).Name</span>
+                        <span class="small text-body-secondary">@State.FindCategory(form.CategoryId).Name</span>
                         <p class="hd-title hd-preview-title mt-1 mb-2">@(string.IsNullOrWhiteSpace(title) ? "Untitled article" : title.Trim())</p>
                         @if (!string.IsNullOrWhiteSpace(summary))
                         {

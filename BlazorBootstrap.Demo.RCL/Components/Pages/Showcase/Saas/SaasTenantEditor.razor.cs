@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using System.Globalization;
 using BlazorBootstrap.Demo.RCL.Models.Showcase.Saas;
 using BlazorBootstrap.Demo.RCL.Services.Showcase.Saas;
@@ -6,10 +7,11 @@ using Microsoft.AspNetCore.Components.Forms;
 namespace BlazorBootstrap.Demo.RCL.Components.Pages.Showcase.Saas;
 
 /// <summary>
-/// The operator's dialog for one tenant's plan, seats, and status. Saving calls
-/// <see cref="SaasState.UpdateWorkspaceAsOperator" /> and turns each <see cref="SaasResult" /> into a message; a suspension
-/// (or making the tenant active again) notifies the workspace's owners who can sign in, which the dialog says beforehand.
-/// Creating tenants isn't part of this dialog.
+/// The operator's dialog for one tenant's plan, seats, status, and account manager, in an <see cref="EditForm" /> (rule
+/// WR-002): seats must cover the members and invitations and fit the plan's limit (a cross-field rule), and a failed save
+/// shows a summary that links to each field. Saving calls <see cref="SaasState.UpdateWorkspaceAsOperator" /> and turns each
+/// <see cref="SaasResult" /> into a message, the seats refusal on its field; a suspension (or making the tenant active again)
+/// notifies the workspace's owners who can sign in, which the dialog says beforehand. Creating tenants isn't part of this dialog.
 /// </summary>
 public partial class SaasTenantEditor : ComponentBase, IDisposable
 {
@@ -36,6 +38,9 @@ public partial class SaasTenantEditor : ComponentBase, IDisposable
     private InputSelect<string>? planSelect;
 
     private Func<ElementReference?>? returnFocusTo;
+
+    /// <summary>The state's answers that belong to a field (seats out of range), shown like the form's own messages.</summary>
+    private ValidationMessageStore? serverErrors;
 
     private int workspaceId;
 
@@ -66,7 +71,7 @@ public partial class SaasTenantEditor : ComponentBase, IDisposable
         workspaceId = workspace.Id;
         this.returnFocusTo = returnFocusTo;
         ClearMessages();
-        ResetForm(new TenantForm { PlanId = workspace.PlanId, Seats = workspace.Seats, Status = workspace.Status });
+        ResetForm(new TenantForm { PlanId = workspace.PlanId, Seats = workspace.Seats, Status = workspace.Status, ManagerId = workspace.ManagerId ?? string.Empty });
 
         await modal.ShowAsync();
     }
@@ -140,7 +145,11 @@ public partial class SaasTenantEditor : ComponentBase, IDisposable
             : $"The owner would get a notification, but {owner} has no sign-in in this demo, so no one sees it.";
     }
 
-    private void OnFieldChanged(object? sender, FieldChangedEventArgs args) => ClearMessages();
+    private void OnFieldChanged(object? sender, FieldChangedEventArgs args)
+    {
+        serverErrors?.Clear(args.FieldIdentifier);
+        ClearMessages();
+    }
 
     /// <summary>The modal opens from code, so Bootstrap doesn't move focus back to what opened it; this does (WCAG 2.4.3).</summary>
     private async Task OnHiddenAsync()
@@ -155,16 +164,6 @@ public partial class SaasTenantEditor : ComponentBase, IDisposable
         await SaasDisplay.FocusAsync(target?.Invoke());
     }
 
-    /// <summary><see cref="NumberInput{TValue}" /> raises ValueChanged on its first render; an unchanged value is ignored.</summary>
-    private void OnSeatsChanged(int value)
-    {
-        if (value == form.Seats)
-            return;
-
-        form.Seats = value;
-        ClearMessages();
-    }
-
     private Task OnShownAsync() => SaasDisplay.FocusAsync(planSelect?.Element);
 
     private void ResetForm(TenantForm next)
@@ -174,13 +173,16 @@ public partial class SaasTenantEditor : ComponentBase, IDisposable
 
         form = next;
         editContext = new EditContext(form);
+        serverErrors = new ValidationMessageStore(editContext);
         editContext.OnFieldChanged += OnFieldChanged;
     }
 
     private string SavedMessage(SaasWorkspace before)
     {
         var after = State.FindWorkspace(before.Id) ?? before;
-        var message = $"Saved {after.Name}: {State.PlanOf(after).Name}, {SeatsText(after.Seats)}, {SaasDisplay.StatusName(after.Status)}.";
+        var manager = SaasSeedData.ManagerName(after.ManagerId);
+        var message = $"Saved {after.Name}: {State.PlanOf(after).Name}, {SeatsText(after.Seats)}, {SaasDisplay.StatusName(after.Status)}, "
+            + (manager is null ? "no account manager." : $"looked after by {manager}.");
 
         if (SaasState.NotifiesOwner(before.Status, after.Status))
             message += " " + NotifySentence(after, done: true);
@@ -197,7 +199,16 @@ public partial class SaasTenantEditor : ComponentBase, IDisposable
             return;
         }
 
-        var result = State.UpdateWorkspaceAsOperator(before.Id, form.PlanId, form.Seats, form.Status);
+        serverErrors?.Clear();
+        form.SeatsUsed = State.SeatsUsed(before.Id);
+        form.SeatCap = SeatCap(SelectedPlan);
+        form.PlanName = SelectedPlan.Name;
+        editContext.NotifyValidationStateChanged();
+
+        if (!editContext.Validate())
+            return;
+
+        var result = State.UpdateWorkspaceAsOperator(before.Id, form.PlanId, form.Seats!.Value, form.Status, string.IsNullOrEmpty(form.ManagerId) ? null : form.ManagerId);
 
         switch (result)
         {
@@ -211,7 +222,12 @@ public partial class SaasTenantEditor : ComponentBase, IDisposable
                 break;
 
             case SaasResult.NoChange:
-                ShowNote($"Nothing to save: {before.Name} already has this plan, these seats, and this status.");
+                ShowNote($"Nothing to save: {before.Name} already has this plan, these seats, this status, and this account manager.");
+                break;
+
+            case SaasResult.SeatsOutOfRange:
+                serverErrors?.Add(FieldIdentifier.Create(() => form.Seats), SeatsError(before));
+                editContext.NotifyValidationStateChanged();
                 break;
 
             default:
@@ -299,13 +315,50 @@ public partial class SaasTenantEditor : ComponentBase, IDisposable
 
     #region Nested Types
 
-    private sealed class TenantForm
+    /// <summary>
+    /// The dialog's fields, with the rules of <see cref="SaasState.UpdateWorkspaceAsOperator" />: a plan, and seats that cover
+    /// the members and invitations and fit the plan (a cross-field rule).
+    /// </summary>
+    private sealed class TenantForm : IValidatableObject
     {
+        /// <summary>The account manager's ID, or empty for nobody.</summary>
+        public string ManagerId { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Choose a plan.")]
         public string PlanId { get; set; } = string.Empty;
 
-        public int Seats { get; set; } = 1;
+        /// <summary>The chosen plan's name, for the seats message; set by the dialog.</summary>
+        public string PlanName { get; set; } = string.Empty;
+
+        /// <summary>The chosen plan's seat limit (the most Lumora allows when it has none); set by the dialog.</summary>
+        public int SeatCap { get; set; } = SaasSeedData.MaxSeats;
+
+        [Required(ErrorMessage = "Enter the number of seats.")]
+        [Range(1, SaasSeedData.MaxSeats, ErrorMessage = "Use from 1 to 500 seats.")]
+        public int? Seats { get; set; } = 1;
+
+        /// <summary>The tenant's members and open invitations, the fewest seats allowed; set by the dialog.</summary>
+        public int SeatsUsed { get; set; }
 
         public SaasWorkspaceStatus Status { get; set; } = SaasWorkspaceStatus.Active;
+
+        /// <summary>Runs once the fields are filled in: the seats cover the people in the workspace and fit the chosen plan.</summary>
+        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+        {
+            if (Seats is not { } seats)
+                yield break;
+
+            if (seats < SeatsUsed)
+            {
+                yield return new ValidationResult(
+                    string.Create(CultureInfo.InvariantCulture, $"The tenant has {SeatsUsed} members and invitations, so it needs at least {SeatsUsed} seats."), new[] { nameof(Seats) });
+            }
+            else if (seats > SeatCap)
+            {
+                yield return new ValidationResult(
+                    string.Create(CultureInfo.InvariantCulture, $"{PlanName} allows up to {SeatCap} seats. Choose fewer seats, or a plan with more."), new[] { nameof(Seats) });
+            }
+        }
     }
 
     #endregion

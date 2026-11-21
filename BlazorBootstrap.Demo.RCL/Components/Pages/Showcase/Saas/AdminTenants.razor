@@ -3,174 +3,218 @@
 
 <PageTitle>Tenants · @SaasSeedData.ProductName</PageTitle>
 
-@{
-    var rows = FilteredRows();
-    var totalPages = TotalPages(rows.Count);
-    var page = Math.Clamp(pageNumber, 1, totalPages);
-    var pageRows = rows.Skip((page - 1) * pageSize).Take(pageSize).ToList();
-}
-
 <div class="sd-page-head">
     <div>
         <span class="sc-eyebrow">Tenants</span>
         <h1 class="sd-page-title">Customer workspaces</h1>
-        <p class="sd-page-lead">@Count(State.Workspaces.Count) tenants · @Count(State.ActiveCount) active · @Count(State.TrialCount) on trial · @Count(State.SuspendedCount) suspended</p>
+        <p class="sd-page-lead">
+            @Count(State.Workspaces.Count) tenants · @Count(State.ActiveCount) active · @Count(State.TrialCount) on trial · @Count(PastDueCount) past due ·
+            @Count(State.SuspendedCount) suspended. Open a tenant to see its team and invoices, or select several to change them together.
+        </p>
     </div>
-    <Button Type="ButtonType.Link" To="@($"{SaasAdminLayout.Base}/tenants/new")" Color="ButtonColor.Primary">
+    <Button Type="ButtonType.Link" To="@NewTenantPath" Color="ButtonColor.Primary">
         <Icon Name="IconName.BuildingAdd" class="me-1" aria-hidden="true" />New tenant
     </Button>
 </div>
 
-<Card Class="sd-card">
+<Card Class="sd-card mb-3">
     <CardBody Class="p-3 p-lg-4">
-        <div class="row g-2 align-items-end mb-3" role="search" aria-label="Filter tenants">
-            <div class="col-md-6 col-xl-5">
+        <h2 class="sd-card-title mb-3" id="sd-tenant-filters-title">Filter tenants</h2>
+        <div class="sd-list-filters" role="group" aria-labelledby="sd-tenant-filters-title">
+            <div class="sd-list-search">
                 <label class="form-label small fw-semibold" for="sd-tenant-search">Search</label>
-                <InputGroup>
-                    <InputGroupText><Icon Name="IconName.Search" aria-hidden="true" /></InputGroupText>
-                    @* TextInput raises ValueChanged on change (blur or Enter); @oninput keeps filtering live while typing.
-                       The bound value changes only on change, so renders during typing never write an older value back into the box. *@
-                    <TextInput @ref="searchInput" Id="sd-tenant-search" Value="@searchBoxValue" ValueExpression="() => searchBoxValue" ValueChanged="OnSearchChanged"
-                               @oninput="OnSearchInput" Placeholder="Tenant, owner name, or email" />
-                </InputGroup>
+                @* Filters on every keystroke; the bound value changes only on change, so a render during typing never writes an older value back. *@
+                <input @ref="searchInput" id="sd-tenant-search" type="search" class="form-control" value="@searchBoxValue" placeholder="Tenant, subdomain, owner, or email"
+                       autocomplete="off" maxlength="120" @oninput="OnSearchInputAsync" @onchange="OnSearchChanged" />
             </div>
-            <div class="col-6 col-md-3 col-xl-2">
+            <div>
                 <label class="form-label small fw-semibold" for="sd-tenant-status">Status</label>
-                <select id="sd-tenant-status" class="form-select" value="@statusFilter" @onchange="OnStatusChanged">
-                    <option value="">All</option>
+                <select id="sd-tenant-status" class="form-select" @bind="statusFilter" @bind:after="FiltersChangedAsync">
+                    <option value="">All statuses (@Count(StatusCount(null)))</option>
                     @foreach (var status in Enum.GetValues<SaasWorkspaceStatus>())
                     {
-                        <option value="@status">@SaasDisplay.StatusName(status)</option>
+                        <option value="@status">@StatusOption(status) (@Count(StatusCount(status)))</option>
                     }
                 </select>
             </div>
-            <div class="col-6 col-md-3 col-xl-2">
+            <div>
                 <label class="form-label small fw-semibold" for="sd-tenant-plan">Plan</label>
-                <select id="sd-tenant-plan" class="form-select" value="@planFilter" @onchange="OnPlanChanged">
-                    <option value="">All</option>
+                <select id="sd-tenant-plan" class="form-select" @bind="planFilter" @bind:after="FiltersChangedAsync">
+                    <option value="">All plans</option>
                     @foreach (var plan in State.Plans)
                     {
                         <option value="@plan.Id">@plan.Name</option>
                     }
                 </select>
             </div>
-            @* Column headers sort on wider screens; on a phone most columns are folded into the tenant cell, so this picks the order. *@
-            <div class="col-12 d-lg-none">
-                <label class="form-label small fw-semibold" for="sd-tenant-sort">Sort by</label>
-                <select id="sd-tenant-sort" class="form-select" value="@SortValue(sortKey, sortDescending)" @onchange="OnSortChanged">
-                    @foreach (var key in Enum.GetValues<SortKey>())
+            <div>
+                <label class="form-label small fw-semibold" for="sd-tenant-manager">Account manager</label>
+                <select id="sd-tenant-manager" class="form-select" @bind="managerFilter" @bind:after="FiltersChangedAsync">
+                    <option value="">Anyone</option>
+                    @foreach (var manager in SaasSeedData.AccountManagers)
                     {
-                        <option value="@SortValue(key, DefaultDescending(key))">@SortLabel(key, DefaultDescending(key))</option>
-                        <option value="@SortValue(key, !DefaultDescending(key))">@SortLabel(key, !DefaultDescending(key))</option>
+                        <option value="@manager.Id">@manager.Name@(manager.Id == State.Identity.Current?.Id ? " (you)" : null)</option>
                     }
+                    <option value="@NoManagerValue">Nobody</option>
                 </select>
             </div>
-            @if (HasFilters)
+        </div>
+        <div class="sd-list-meta mb-0">
+            <p class="small text-body-secondary mb-0" aria-live="polite" tabindex="-1" @ref="countRegion">Showing @Count(Shown.Count) of @Count(State.Workspaces.Count) tenants.</p>
+            @if (IsFiltered)
             {
-                <div class="col-12 col-xl-auto">
-                    <Button Color="ButtonColor.Secondary" Outline="true" @onclick="ClearFiltersAsync">Clear filters</Button>
-                </div>
+                <Button Color="ButtonColor.Link" Size="ButtonSize.Small" Class="p-0" @onclick="ClearFiltersAsync">Show every tenant</Button>
             }
+            @* Back to the saved view's defaults: newest first, 25 a page, every column in its place. *@
+            <Button Color="ButtonColor.Link" Size="ButtonSize.Small" Class="p-0" @onclick="ResetViewAsync">Reset view</Button>
         </div>
+    </CardBody>
+</Card>
 
-        <p class="small text-body-secondary mb-3" role="status">@SummaryText(rows.Count, page, pageRows.Count)</p>
+@* Always rendered and focusable, so an outcome is announced and focus has somewhere to go when the bulk bar closes. *@
+<p class="sd-list-status @(statusIsError ? "text-danger-emphasis" : null)" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
+<p class="sd-list-error" role="alert">@bulkError</p>
 
-        <div class="table-responsive sd-grid">
-            <table class="table table-hover align-middle">
-                <caption class="visually-hidden">Tenants, @SortLabel(sortKey, sortDescending)</caption>
-                <thead>
-                    <tr>
-                        @foreach (var column in columns)
-                        {
-                            <th scope="col" class="@column.Class" aria-sort="@AriaSort(column.Key)" @key="column.Key">
-                                <button type="button" class="sd-sort" @onclick="() => SortBy(column.Key)">
-                                    @(column.Text)<Icon Name="@SortIcon(column.Key)" aria-hidden="true" />
-                                </button>
-                            </th>
-                        }
-                    </tr>
-                </thead>
-                <tbody>
-                    @if (pageRows.Count == 0)
-                    {
-                        <tr>
-                            <td colspan="@columns.Length" class="text-center text-body-secondary py-5">No tenants match these filters.</td>
-                        </tr>
-                    }
-                    @foreach (var row in pageRows)
-                    {
-                        var workspace = row.Workspace;
-
-                        <tr @key="workspace.Id">
-                            <th scope="row" class="fw-normal">
-                                <div class="sd-person">
-                                    <Avatar Name="@workspace.Name" Color="SaasDisplay.AvatarColorFor(workspace.Id)" Size="AvatarSize.Small" />
-                                    <span class="sd-person-text">
-                                        <a class="sd-person-name" href="@($"{SaasAdminLayout.Base}/tenants/{workspace.Id}")">@workspace.Name</a>
-                                        <span class="sd-person-email">@workspace.Country</span>
-                                        @* On a phone the hidden columns are summed up here. *@
-                                        <span class="sd-tenant-compact d-lg-none">
-                                            <span class="sd-person-email">Owner: @(row.Owner?.Name ?? "none")</span>
-                                            <span class="d-flex flex-wrap align-items-center gap-1 mt-1">
-                                                <Badge Color="SaasDisplay.PlanColor(workspace.PlanId)" Class="rounded-pill">@row.Plan.Name</Badge>
-                                                <Badge Color="SaasDisplay.StatusColor(workspace.Status)" Class="rounded-pill">@SaasDisplay.StatusName(workspace.Status)</Badge>
-                                                <span class="small text-body-secondary">@row.SeatsUsed/@workspace.Seats seats</span>
-                                            </span>
-                                            <span class="sd-person-email">Created @SaasDisplay.Date(workspace.CreatedOn) · @RenewalText(workspace)</span>
-                                        </span>
-                                    </span>
-                                </div>
-                            </th>
-                            <td class="d-none d-lg-table-cell">
-                                @if (row.Owner is { } owner)
-                                {
-                                    <span class="sd-person-text">
-                                        <span class="fw-semibold">@owner.Name</span>
-                                        <span class="sd-person-email">@owner.Email</span>
-                                    </span>
-                                }
-                                else
-                                {
-                                    <span class="text-body-secondary">None</span>
-                                }
-                            </td>
-                            <td class="d-none d-lg-table-cell"><Badge Color="SaasDisplay.PlanColor(workspace.PlanId)" Class="rounded-pill">@row.Plan.Name</Badge></td>
-                            <td class="d-none d-lg-table-cell text-end text-nowrap"><span class="sd-mono">@row.SeatsUsed/@workspace.Seats</span></td>
-                            <td class="d-none d-lg-table-cell"><Badge Color="SaasDisplay.StatusColor(workspace.Status)" Class="rounded-pill">@SaasDisplay.StatusName(workspace.Status)</Badge></td>
-                            <td class="text-end text-nowrap"><span class="sd-mono">@SaasDisplay.Money(row.Mrr)</span></td>
-                            <td class="d-none d-lg-table-cell text-nowrap">@SaasDisplay.Date(workspace.CreatedOn)</td>
-                            <td class="d-none d-lg-table-cell text-nowrap">
-                                @SaasDisplay.Date(RenewalDate(workspace))
-                                @if (workspace.Status == SaasWorkspaceStatus.Trial)
-                                {
-                                    <span class="d-block small text-body-secondary">Trial ends</span>
-                                }
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
+@if (selected.Count > 0)
+{
+    <section class="sd-bulk" aria-labelledby="sd-bulk-count">
+        <h2 class="sd-bulk-count" id="sd-bulk-count">@(selected.Count == 1 ? "1 tenant selected" : $"{Count(selected.Count)} tenants selected")</h2>
+        <div class="sd-bulk-field">
+            <label class="form-label small fw-semibold" for="sd-bulk-plan">Move to plan</label>
+            <select id="sd-bulk-plan" class="form-select form-select-sm" @bind="bulkPlan" aria-describedby="sd-bulk-plan-help">
+                <option value="">No change</option>
+                @foreach (var plan in State.Plans)
+                {
+                    <option value="@plan.Id">@plan.Name</option>
+                }
+            </select>
+            <span class="form-text d-block" id="sd-bulk-plan-help">A tenant with more members and invitations than the plan allows keeps its plan.</span>
         </div>
-
-        <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mt-3">
-            <div class="d-flex align-items-center gap-2">
-                <label class="small fw-semibold text-nowrap" for="sd-tenant-page-size">Rows per page</label>
-                <select id="sd-tenant-page-size" class="form-select form-select-sm w-auto" value="@pageSize" @onchange="OnPageSizeChanged">
-                    @foreach (var size in pageSizes)
-                    {
-                        <option value="@size">@size</option>
-                    }
-                </select>
-            </div>
-            <nav class="d-flex align-items-center gap-2" aria-label="Tenant pages">
-                <Button @ref="previousButton" Color="ButtonColor.Secondary" Outline="true" Size="ButtonSize.Small" Disabled="@(page <= 1)" @onclick="() => GoToPageAsync(page - 1, totalPages)">
-                    <Icon Name="IconName.ChevronLeft" class="me-1" aria-hidden="true" />Previous
-                </Button>
-                <span class="small text-body-secondary text-nowrap">Page @(page) of @totalPages</span>
-                <Button @ref="nextButton" Color="ButtonColor.Secondary" Outline="true" Size="ButtonSize.Small" Disabled="@(page >= totalPages)" @onclick="() => GoToPageAsync(page + 1, totalPages)">
-                    Next<Icon Name="IconName.ChevronRight" class="ms-1" aria-hidden="true" />
-                </Button>
-            </nav>
+        <div class="sd-bulk-field">
+            <label class="form-label small fw-semibold" for="sd-bulk-status">Status</label>
+            <select id="sd-bulk-status" class="form-select form-select-sm" @bind="bulkStatus" aria-describedby="sd-bulk-status-help">
+                <option value="">No change</option>
+                <option value="@SaasWorkspaceStatus.Suspended.ToString()">Suspend</option>
+                <option value="@SaasWorkspaceStatus.Active.ToString()">Reactivate (suspended tenants)</option>
+            </select>
+            <span class="form-text d-block" id="sd-bulk-status-help">Owners who can sign in are told. Cancelled tenants are left as they are.</span>
         </div>
+        <div class="sd-bulk-field">
+            <label class="form-label small fw-semibold" for="sd-bulk-manager">Account manager</label>
+            <select id="sd-bulk-manager" class="form-select form-select-sm" @bind="bulkManager">
+                <option value="@NoChangeValue">No change</option>
+                @foreach (var manager in SaasSeedData.AccountManagers)
+                {
+                    <option value="@manager.Id">@manager.Name@(manager.Id == State.Identity.Current?.Id ? " (you)" : null)</option>
+                }
+                <option value="">Nobody</option>
+            </select>
+        </div>
+        <div class="sd-bulk-actions">
+            <Button Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="ApplyBulkAsync">Apply<span class="visually-hidden">&#32;to the selected tenants</span></Button>
+            <Button Color="ButtonColor.Secondary" Outline="true" Size="ButtonSize.Small" @onclick="ClearSelectionAsync">Clear selection</Button>
+        </div>
+    </section>
+}
+
+<Card Class="sd-card">
+    <CardBody Class="p-3 p-lg-4">
+        <ShowcaseDataState Status="@(viewLoaded ? ShowcaseDataStatus.Ready : ShowcaseDataStatus.Loading)"
+                           IsEmpty="@(State.Workspaces.Count == 0)"
+                           EmptyIcon="IconName.Buildings"
+                           EmptyTitle="No tenants yet"
+                           EmptyText="Customer workspaces appear here when someone signs up, or when you set one up for a deal closed by sales."
+                           LoadingText="Loading tenants…"
+                           OnRetry="RefreshGridAsync">
+            <EmptyActions>
+                <Button Type="ButtonType.Link" To="@NewTenantPath" Color="ButtonColor.Primary" Size="ButtonSize.Small">New tenant</Button>
+            </EmptyActions>
+            <ChildContent>
+                <Grid @ref="grid"
+                      @key="gridVersion"
+                      TItem="TenantRow"
+                      Class="table table-hover align-middle sd-table-xwide sc-grid-row-links"
+                      GridContainerClass="sd-grid border rounded-3"
+                      DataProvider="ProvideTenantsAsync"
+                      SettingsProvider="view.GetSettingsAsync"
+                      GridSettingsChanged="SaveSettingsAsync"
+                      AllowPaging="true"
+                      PageSize="@pageSize"
+                      PageSizeSelectorVisible="true"
+                      PageSizeSelectorItems="@(new[] { 10, 25, 50, 100 })"
+                      PaginationItemsTextFormat="{0}–{1} of {2} tenants"
+                      AllowSorting="true"
+                      AllowSelection="true"
+                      SelectionMode="GridSelectionMode.Multiple"
+                      RowSelectionLabel="@(row => $"Select {row.Name}")"
+                      SelectAllRowsText="Select all shown tenants"
+                      SelectedItemsChanged="OnSelectionChanged"
+                      RowClass="RowClass"
+                      AllowColumnChooser="true"
+                      AllowExport="true"
+                      ExportFileName="saas-tenants"
+                      Responsive="true"
+                      EmptyText="No tenants match these filters. Clear a filter, or search for part of a name."
+                      aria-label="Tenants">
+                    <GridColumns>
+                        <GridColumn TItem="TenantRow" HeaderText="Tenant" PropertyName="Name" SortString="name" SortKeySelector="row => row.Name"
+                                    IsDefaultSortColumn="@view.IsSortColumn("name")" SortDirection="@view.DirectionFor("name")" AlwaysVisible="true">
+                            @* The stretched link makes the whole row open the tenant; the row's checkbox stays above it. *@
+                            <a class="sd-row-link stretched-link" href="@TenantPath(context.Id)">@context.Name</a>
+                            <span class="d-block small text-body-secondary sd-mono">@context.Subdomain</span>
+                        </GridColumn>
+                        <GridColumn TItem="TenantRow" HeaderText="Owner" PropertyName="OwnerText" SortString="owner" SortKeySelector="row => row.Owner"
+                                    IsDefaultSortColumn="@view.IsSortColumn("owner")" SortDirection="@view.DirectionFor("owner")">
+                            <span class="d-block">@context.Owner</span>
+                            <span class="d-block small text-body-secondary">@context.OwnerEmail</span>
+                        </GridColumn>
+                        <GridColumn TItem="TenantRow" HeaderText="Plan" PropertyName="Plan" SortString="plan" SortKeySelector="row => row.PlanOrder"
+                                    IsDefaultSortColumn="@view.IsSortColumn("plan")" SortDirection="@view.DirectionFor("plan")" TextNoWrap="true">
+                            <Badge Color="SaasDisplay.PlanColor(context.PlanId)" Class="rounded-pill">@context.Plan</Badge>
+                            <span class="d-block small text-body-secondary">@context.Billing</span>
+                        </GridColumn>
+                        <GridColumn TItem="TenantRow" HeaderText="Seats used" PropertyName="SeatsText" SortString="seats" SortKeySelector="row => row.Seats"
+                                    IsDefaultSortColumn="@view.IsSortColumn("seats")" SortDirection="@view.DirectionFor("seats")" TextNoWrap="true">
+                            <span class="sd-mono">@context.SeatsText</span>
+                        </GridColumn>
+                        <GridColumn TItem="TenantRow" HeaderText="Status" PropertyName="Status" SortString="status" SortKeySelector="row => row.StatusValue"
+                                    IsDefaultSortColumn="@view.IsSortColumn("status")" SortDirection="@view.DirectionFor("status")" TextNoWrap="true">
+                            <Badge Color="SaasDisplay.StatusColor(context.StatusValue)" Class="rounded-pill">@context.Status</Badge>
+                        </GridColumn>
+                        <GridColumn TItem="TenantRow" HeaderText="MRR" PropertyName="Mrr" SortString="mrr" SortKeySelector="row => row.Mrr"
+                                    IsDefaultSortColumn="@view.IsSortColumn("mrr")" SortDirection="@view.DirectionFor("mrr")" TextNoWrap="true">
+                            <span class="sd-mono">@SaasDisplay.Money(context.Mrr)</span>
+                        </GridColumn>
+                        <GridColumn TItem="TenantRow" HeaderText="Account manager" PropertyName="Manager" SortString="manager" SortKeySelector="row => row.Manager"
+                                    IsDefaultSortColumn="@view.IsSortColumn("manager")" SortDirection="@view.DirectionFor("manager")" TextNoWrap="true">
+                            @if (context.Manager.Length == 0)
+                            {
+                                <span class="text-body-secondary">Nobody</span>
+                            }
+                            else
+                            {
+                                @context.Manager
+                            }
+                        </GridColumn>
+                        <GridColumn TItem="TenantRow" HeaderText="Country" PropertyName="Country" SortString="country" SortKeySelector="row => row.Country"
+                                    IsDefaultSortColumn="@view.IsSortColumn("country")" SortDirection="@view.DirectionFor("country")" TextNoWrap="true">
+                            @context.Country
+                        </GridColumn>
+                        <GridColumn TItem="TenantRow" HeaderText="Created" PropertyName="Created" SortString="created" SortKeySelector="row => row.Created"
+                                    IsDefaultSortColumn="@view.IsSortColumn("created")" SortDirection="@view.DirectionFor("created")" TextNoWrap="true">
+                            @SaasDisplay.Date(context.Created)
+                        </GridColumn>
+                        <GridColumn TItem="TenantRow" HeaderText="Renews" PropertyName="Renews" SortString="renews" SortKeySelector="row => row.Renews"
+                                    IsDefaultSortColumn="@view.IsSortColumn("renews")" SortDirection="@view.DirectionFor("renews")" TextNoWrap="true">
+                            @SaasDisplay.Date(context.Renews)
+                            @if (context.StatusValue == SaasWorkspaceStatus.Trial)
+                            {
+                                <span class="d-block small text-body-secondary">Trial ends</span>
+                            }
+                        </GridColumn>
+                    </GridColumns>
+                </Grid>
+            </ChildContent>
+        </ShowcaseDataState>
     </CardBody>
 </Card>

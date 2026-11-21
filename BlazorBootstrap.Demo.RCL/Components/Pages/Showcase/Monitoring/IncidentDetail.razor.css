@@ -4,6 +4,12 @@
     margin: 0;
 }
 
+/* A card that is paging someone stands out until it is acknowledged. */
+::deep .mw-incd-paging {
+    border-color: var(--bs-warning-border-subtle);
+    box-shadow: inset 4px 0 0 var(--bs-warning);
+}
+
 .mw-incd-head {
     min-width: 0;
     max-width: 60rem;

@@ -59,6 +59,11 @@
                         <dd class="col-sm-8">@employee.Location</dd>
                         <dt class="col-sm-4">Worked here</dt>
                         <dd class="col-sm-8">@HrDisplay.Date(employee.StartDate) to @(employee.EndDate is { } last ? HrDisplay.Date(last) : "unknown")</dd>
+                        @if (employee.ProbationEndDate is { } probation)
+                        {
+                            <dt class="col-sm-4">Probation ended</dt>
+                            <dd class="col-sm-8">@HrDisplay.Date(probation)</dd>
+                        }
                         <dt class="col-sm-4">Phone</dt>
                         <dd class="col-sm-8 mb-0">@(employee.Phone.Length == 0 ? "None" : employee.Phone)</dd>
                     </dl>
@@ -70,87 +75,92 @@
                     <div class="col-xl-7">
                         <section class="hr-panel" aria-labelledby="hr-aee-form-title">
                             <h2 class="hr-section-title" id="hr-aee-form-title">Job details</h2>
-                            <form @onsubmit="Save" novalidate aria-labelledby="hr-aee-form-title">
+                            <EditForm EditContext="editContext" OnSubmit="SaveAsync" FormName="hr-employee" novalidate aria-labelledby="hr-aee-form-title">
+                                <DataAnnotationsValidator />
+                                <ShowcaseFormErrors ShowSummary="true" />
                                 <div class="row g-3 mb-3">
                                     <div class="col-md-6">
                                         <label class="form-label fw-semibold" for="hr-aee-name">Name</label>
-                                        <input id="hr-aee-name" class="form-control @(nameError is null ? null : "is-invalid")" @bind="name" @bind:event="oninput" @ref="nameInput"
-                                               maxlength="@HrState.MaxNameLength" autocomplete="off" aria-required="true" aria-invalid="@(nameError is null ? null : "true")"
-                                               aria-describedby="hr-aee-name-help hr-aee-name-error" />
+                                        <InputText @ref="nameInput" id="hr-aee-name" class="form-control" @bind-Value="form.Name" maxlength="@HrState.MaxNameLength" autocomplete="off"
+                                                   aria-describedby="hr-aee-name-help" />
                                         <div class="form-text" id="hr-aee-name-help">Up to @HrState.MaxNameLength characters.@(employee?.AccountId is not null ? " Once they sign in, their account's name is used." : null)</div>
-                                        <div class="invalid-feedback d-block" id="hr-aee-name-error">@nameError</div>
+                                        <ValidationMessage For="() => form.Name" />
                                     </div>
                                     <div class="col-md-6">
                                         <label class="form-label fw-semibold" for="hr-aee-email">Work email</label>
-                                        <input id="hr-aee-email" type="email" class="form-control @(emailError is null ? null : "is-invalid")" @bind="email" @bind:event="oninput" @ref="emailInput"
-                                               maxlength="@AdminHelpers.MaxEmailLength" autocomplete="off" spellcheck="false" aria-required="true"
-                                               aria-invalid="@(emailError is null ? null : "true")" aria-describedby="hr-aee-email-help hr-aee-email-error" />
-                                        <div class="form-text" id="hr-aee-email-help">
+                                        <InputText id="hr-aee-email" type="email" inputmode="email" autocapitalize="none" class="form-control" @bind-Value="form.Email"
+                                                   maxlength="@AdminHelpers.MaxEmailLength" autocomplete="off" spellcheck="false" aria-describedby="hr-aee-email-help" />
+                                        <ShowcaseUniqueCheck @ref="emailCheck" For="() => form.Email" IsTakenAsync="IsEmailTakenAsync" TakenMessage="EmailTakenMessage" />
+                                        <div class="form-text mt-0" id="hr-aee-email-help">
                                             @(employee?.AccountId is not null
                                                 ? "Their account is linked to this record already. Each person has their own email."
                                                 : "The person registers with this email to sign in, and their account links to this record. Each person has their own email.")
                                         </div>
-                                        <div class="invalid-feedback d-block" id="hr-aee-email-error">@emailError</div>
+                                        <ValidationMessage For="() => form.Email" />
                                     </div>
                                     <div class="col-12">
                                         <label class="form-label fw-semibold" for="hr-aee-title">Job title</label>
-                                        <input id="hr-aee-title" class="form-control @(titleError is null ? null : "is-invalid")" @bind="title" @bind:event="oninput" @ref="titleInput"
-                                               maxlength="@HrState.MaxNameLength" autocomplete="off" aria-required="true" aria-invalid="@(titleError is null ? null : "true")"
-                                               aria-describedby="hr-aee-title-error" />
-                                        <div class="invalid-feedback d-block" id="hr-aee-title-error">@titleError</div>
+                                        <InputText id="hr-aee-title" class="form-control" @bind-Value="form.Title" maxlength="@HrState.MaxNameLength" autocomplete="off" />
+                                        <ValidationMessage For="() => form.Title" />
                                     </div>
                                     <div class="col-md-6">
                                         <label class="form-label fw-semibold" for="hr-aee-department">Department</label>
-                                        <select id="hr-aee-department" class="form-select @(departmentError is null ? null : "is-invalid")" @bind="departmentId" @ref="departmentSelect"
-                                                aria-required="true" aria-invalid="@(departmentError is null ? null : "true")" aria-describedby="hr-aee-department-error">
+                                        <InputSelect id="hr-aee-department" class="form-select" @bind-Value="form.DepartmentId">
                                             <option value="">Choose a department</option>
                                             @foreach (var department in State.Departments)
                                             {
                                                 <option value="@department.Id" @key="department.Id">@department.Name</option>
                                             }
-                                        </select>
-                                        <div class="invalid-feedback d-block" id="hr-aee-department-error">@departmentError</div>
+                                        </InputSelect>
+                                        <ValidationMessage For="() => form.DepartmentId" />
                                     </div>
                                     <div class="col-md-6">
                                         <label class="form-label fw-semibold" for="hr-aee-location">Location</label>
-                                        <select id="hr-aee-location" class="form-select @(locationError is null ? null : "is-invalid")" @bind="location" @ref="locationSelect"
-                                                aria-required="true" aria-invalid="@(locationError is null ? null : "true")" aria-describedby="hr-aee-location-error">
+                                        <InputSelect id="hr-aee-location" class="form-select" @bind-Value="form.Location">
+                                            @if (!State.Locations.Contains(form.Location))
+                                            {
+                                                <option value="">Choose where they work</option>
+                                            }
                                             @foreach (var place in State.Locations)
                                             {
                                                 <option value="@place" @key="place">@place</option>
                                             }
-                                        </select>
-                                        <div class="invalid-feedback d-block" id="hr-aee-location-error">@locationError</div>
+                                        </InputSelect>
+                                        <ValidationMessage For="() => form.Location" />
                                     </div>
                                     <div class="col-12">
                                         <label class="form-label fw-semibold" for="hr-aee-manager">Manager</label>
-                                        <select id="hr-aee-manager" class="form-select @(managerError is null ? null : "is-invalid")" @bind="managerValue" @ref="managerSelect"
-                                                aria-invalid="@(managerError is null ? null : "true")" aria-describedby="hr-aee-manager-help hr-aee-manager-error">
+                                        <InputSelect id="hr-aee-manager" class="form-select" @bind-Value="form.ManagerValue" aria-describedby="hr-aee-manager-help">
                                             <option value="">No manager (top of the org chart)</option>
                                             @foreach (var person in State.Directory.Where(person => person.Id != employee?.Id))
                                             {
                                                 <option value="@person.Id.ToString(CultureInfo.InvariantCulture)" @key="person.Id">@person.Name, @person.Title</option>
                                             }
-                                        </select>
+                                        </InputSelect>
                                         <div class="form-text" id="hr-aee-manager-help">People who work here or are joining. They see this person in their team and approve their leave.</div>
-                                        <div class="invalid-feedback d-block" id="hr-aee-manager-error">@managerError</div>
+                                        <ValidationMessage For="() => form.ManagerValue" />
                                     </div>
                                     <div class="col-md-6">
                                         <label class="form-label fw-semibold" for="hr-aee-start">Start date</label>
-                                        <input id="hr-aee-start" type="date" class="form-control @(startError is null ? null : "is-invalid")" value="@startText"
-                                               @onchange="args => startText = args.Value as string ?? string.Empty" @ref="startInput"
-                                               min="@AdminHelpers.DateValue(AdminHelpers.MinDate)" max="@AdminHelpers.DateValue(AdminHelpers.MaxDate)" aria-required="true"
-                                               aria-invalid="@(startError is null ? null : "true")" aria-describedby="hr-aee-start-help hr-aee-start-error" />
+                                        <InputDate TValue="DateTime?" id="hr-aee-start" class="form-control" @bind-Value="form.StartDate"
+                                                   min="@AdminHelpers.DateValue(AdminHelpers.MinDate)" max="@AdminHelpers.DateValue(AdminHelpers.MaxDate)" aria-describedby="hr-aee-start-help" />
                                         <div class="form-text" id="hr-aee-start-help">@StartHelp(today)</div>
-                                        <div class="invalid-feedback d-block" id="hr-aee-start-error">@startError</div>
+                                        <ValidationMessage For="() => form.StartDate" />
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold" for="hr-aee-probation">Probation ends <span class="fw-normal text-body-secondary">(optional)</span></label>
+                                        <InputDate TValue="DateTime?" id="hr-aee-probation" class="form-control" @bind-Value="form.ProbationEndDate"
+                                                   min="@(form.StartDate is { } first ? AdminHelpers.DateValue(first.AddDays(1)) : null)"
+                                                   max="@(form.StartDate is { } last ? AdminHelpers.DateValue(last.AddMonths(HrState.MaxProbationMonths)) : null)" aria-describedby="hr-aee-probation-help" />
+                                        <div class="form-text" id="hr-aee-probation-help">After the start date, and at most @HrState.MaxProbationMonths months later. Leave it empty for no probation.</div>
+                                        <ValidationMessage For="() => form.ProbationEndDate" />
                                     </div>
                                     <div class="col-md-6">
                                         <label class="form-label fw-semibold" for="hr-aee-phone">Phone <span class="fw-normal text-body-secondary">(optional)</span></label>
-                                        <input id="hr-aee-phone" type="tel" class="form-control @(phoneError is null ? null : "is-invalid")" @bind="phone" @bind:event="oninput" @ref="phoneInput"
-                                               maxlength="@HrState.MaxPhoneLength" autocomplete="off" aria-invalid="@(phoneError is null ? null : "true")"
-                                               aria-describedby="hr-aee-phone-help hr-aee-phone-error" />
+                                        <InputText id="hr-aee-phone" type="tel" class="form-control" @bind-Value="form.Phone" maxlength="@HrState.MaxPhoneLength" autocomplete="off"
+                                                   aria-describedby="hr-aee-phone-help" />
                                         <div class="form-text" id="hr-aee-phone-help">Up to @HrState.MaxPhoneLength characters. They can change it on their profile.</div>
-                                        <div class="invalid-feedback d-block" id="hr-aee-phone-error">@phoneError</div>
+                                        <ValidationMessage For="() => form.Phone" />
                                     </div>
                                 </div>
 
@@ -164,7 +174,7 @@
                                     }
                                     <a class="btn btn-link" href="@AdminHelpers.EmployeesUrl">@(employee is null ? "Cancel" : "Back to employees")</a>
                                 </div>
-                            </form>
+                            </EditForm>
                         </section>
                     </div>
 

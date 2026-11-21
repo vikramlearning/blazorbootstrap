@@ -13,7 +13,7 @@
         var upcoming = requests.Where(item => item.To >= today).OrderBy(item => item.From).ToList();
         var past = requests.Where(item => item.To < today).ToList();
         var approver = ApproverName(me);
-        var policy = State.FindPolicy(formPolicyId);
+        var policy = State.FindPolicy(form.PolicyId);
 
         <h1 class="hr-title mb-1">My leave</h1>
         <p class="hr-lead mb-3">
@@ -79,45 +79,47 @@
             <section class="col-xl-5" aria-labelledby="hr-leave-form-title">
                 <div class="hr-panel">
                     <h2 class="hr-section-title" id="hr-leave-form-title" tabindex="-1" @ref="formHeading">@(editingId == 0 ? "Request leave" : $"Edit your request: {editingLabel}")</h2>
-                    <form @onsubmit="Submit" novalidate>
+                    <EditForm EditContext="editContext" OnSubmit="SubmitAsync" FormName="hr-leave-request" novalidate aria-labelledby="hr-leave-form-title">
+                        <DataAnnotationsValidator />
+                        <ShowcaseFormErrors ShowSummary="true" />
                         <div class="mb-3">
                             <label class="form-label fw-semibold" for="hr-leave-policy">Type of leave</label>
-                            <select id="hr-leave-policy" class="form-select @(policyError is null ? null : "is-invalid")" value="@formPolicyId" @onchange="OnPolicyChanged" @ref="policyInput"
-                                    aria-invalid="@(policyError is null ? null : "true")" aria-describedby="hr-leave-policy-help hr-leave-policy-error">
+                            <InputSelect TValue="int" id="hr-leave-policy" class="form-select" @bind-Value="form.PolicyId" aria-describedby="hr-leave-policy-help">
+                                @if (State.FindPolicy(form.PolicyId) is null)
+                                {
+                                    <option value="0">Choose the type of leave</option>
+                                }
                                 @foreach (var option in PolicyOptions())
                                 {
                                     <option value="@option.Id">@(option.Name)@(option.IsActive ? null : " (no longer offered)")</option>
                                 }
-                            </select>
+                            </InputSelect>
                             <div class="form-text" id="hr-leave-policy-help">@PolicyHelp(policy)</div>
-                            <div class="hr-leave-error" id="hr-leave-policy-error">@policyError</div>
+                            <ValidationMessage For="() => form.PolicyId" />
                         </div>
                         <div class="row g-3">
                             <div class="col-sm-6">
                                 <label class="form-label fw-semibold" for="hr-leave-from">First day</label>
-                                <input id="hr-leave-from" type="date" class="form-control @(fromError is null && formError is null ? null : "is-invalid")" value="@formFrom" @onchange="OnFromChanged"
-                                       min="@(policy is null ? null : LeaveText.DateValue(Earliest(policy, today)))" @ref="fromInput"
-                                       aria-invalid="@(fromError is null && formError is null ? null : "true")" aria-describedby="hr-leave-from-error hr-leave-form-error" />
-                                <div class="hr-leave-error" id="hr-leave-from-error">@fromError</div>
+                                <InputDate TValue="DateTime?" id="hr-leave-from" class="form-control" @bind-Value="form.From"
+                                           min="@(policy is null ? null : LeaveText.DateValue(Earliest(policy, today)))" aria-describedby="hr-leave-days" />
+                                <ValidationMessage For="() => form.From" />
                             </div>
                             <div class="col-sm-6">
                                 <label class="form-label fw-semibold" for="hr-leave-to">Last day</label>
-                                <input id="hr-leave-to" type="date" class="form-control @(toError is null && formError is null ? null : "is-invalid")" value="@formTo" @onchange="OnToChanged"
-                                       min="@(LeaveText.ParseDate(formFrom) is { } first ? LeaveText.DateValue(first) : null)" @ref="toInput"
-                                       aria-invalid="@(toError is null && formError is null ? null : "true")" aria-describedby="hr-leave-days hr-leave-to-error hr-leave-form-error" />
-                                <div class="hr-leave-error" id="hr-leave-to-error">@toError</div>
+                                <InputDate TValue="DateTime?" id="hr-leave-to" class="form-control" @bind-Value="form.To"
+                                           min="@(form.From is { } first ? LeaveText.DateValue(first) : null)" aria-describedby="hr-leave-days" />
+                                <ValidationMessage For="() => form.To" />
                             </div>
                         </div>
                         <p class="hr-leave-days mt-2" id="hr-leave-days" aria-live="polite">@DaysText(me, policy)</p>
                         <div class="mb-2">
                             <label class="form-label fw-semibold" for="hr-leave-note">Note for @approver (optional)</label>
-                            <textarea id="hr-leave-note" class="form-control @(noteError is null ? null : "is-invalid")" rows="2" maxlength="@HrState.MaxNoteLength"
-                                      value="@formNote" @oninput="args => formNote = args.Value?.ToString() ?? string.Empty" @ref="noteInput"
-                                      aria-invalid="@(noteError is null ? null : "true")" aria-describedby="hr-leave-note-help hr-leave-note-error"></textarea>
-                            <div class="form-text" id="hr-leave-note-help">Plain text. @formNote.Length of @HrState.MaxNoteLength characters.</div>
-                            <div class="hr-leave-error" id="hr-leave-note-error">@noteError</div>
+                            <InputTextArea id="hr-leave-note" class="form-control" rows="2" @bind-Value="form.Note" @oninput="OnNoteInput" aria-describedby="hr-leave-note-help" />
+                            <div class="form-text" id="hr-leave-note-help">
+                                Plain text. <span class="@(noteText.Trim().Length > HrState.MaxNoteLength ? "text-danger-emphasis" : null)">@AdminHelpers.Counter(noteText, HrState.MaxNoteLength)</span>
+                            </div>
+                            <ValidationMessage For="() => form.Note" />
                         </div>
-                        <div class="hr-leave-error" id="hr-leave-form-error">@formError</div>
                         <div class="d-flex flex-wrap gap-2 mt-3">
                             <button type="submit" class="btn btn-primary">@(editingId == 0 ? "Request leave" : "Save changes")</button>
                             @if (editingId != 0)
@@ -125,7 +127,7 @@
                                 <button type="button" class="btn btn-outline-secondary" @onclick="StopEditing">Stop editing</button>
                             }
                         </div>
-                    </form>
+                    </EditForm>
                 </div>
             </section>
 
@@ -186,13 +188,13 @@
                                                 @if (request.Status == HrLeaveStatus.Pending)
                                                 {
                                                     <button type="button" class="btn btn-sm btn-outline-primary" @ref="openers[editKey]" @onclick="() => Edit(request)">
-                                                        Edit<span class="visually-hidden"> @label</span>
+                                                        Edit<span class="visually-hidden">&#32;@label</span>
                                                     </button>
                                                 }
                                                 @if (canCancel)
                                                 {
                                                     <button type="button" class="btn btn-sm btn-outline-danger" @ref="openers[cancelKey]" @onclick="() => AskCancelAsync(request, cancelKey)">
-                                                        Cancel<span class="visually-hidden"> @label</span>
+                                                        Cancel<span class="visually-hidden">&#32;@label</span>
                                                     </button>
                                                 }
                                             </div>

@@ -1,0 +1,215 @@
+@page "/showcase/ecommerce/admin/returns/{Id:int}"
+@layout EcommerceAdminLayout
+
+<div class="ea-return-detail">
+    <a class="small" href="@ReturnsUrl"><Icon Name="IconName.ArrowLeft" class="me-1" aria-hidden="true" />All returns</a>
+
+    @if (Return is not { } item)
+    {
+        <PageTitle>Return not found · @EcommerceSeedData.StoreName admin</PageTitle>
+
+        <section class="ea-panel text-center py-5 mt-3" aria-labelledby="ea-return-missing-title">
+            <h1 class="ea-title" id="ea-return-missing-title">Return not found</h1>
+            <p class="ea-lead mb-4">No return has the number @EcommerceDisplay.ReturnNumber(Id). The link may be old.</p>
+            <a class="btn btn-primary" href="@ReturnsUrl">Back to returns</a>
+        </section>
+    }
+    else
+    {
+        var order = State.FindOrder(item.OrderId);
+
+        <PageTitle>Return @EcommerceDisplay.ReturnNumber(item.Id) · @EcommerceSeedData.StoreName admin</PageTitle>
+
+        <div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mt-2 mb-3">
+            <div>
+                <h1 class="ea-title">Return @EcommerceDisplay.ReturnNumber(item.Id)</h1>
+                <p class="ea-lead">
+                    Order <a href="@EcommerceSeedData.AdminOrderPath(item.OrderId)">#@item.OrderId</a> · requested @EcommerceDisplay.DateTimeShort(item.RequestedOn)
+                </p>
+            </div>
+            <Badge Color="@AdminReturns.StatusColor(item.Status)" Class="fs-6">@AdminReturns.StatusLabel(item.Status)</Badge>
+        </div>
+
+        @* Always rendered and focusable: a decision is announced here, and focus moves here once the form is gone. *@
+        <p class="ea-list-status mb-3" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
+        <p class="ea-list-error mb-3" role="alert">@errorMessage</p>
+
+        <div class="row g-4">
+            <div class="col-xl-7">
+                <section class="ea-panel mb-4" aria-labelledby="ea-return-facts-title">
+                    <h2 class="ea-section-title" id="ea-return-facts-title">Request</h2>
+                    <dl class="ea-facts mb-0">
+                        <div>
+                            <dt>Customer</dt>
+                            <dd data-clarity-mask="true">
+                                @if (order is not null)
+                                {
+                                    <span>@order.ShipTo.FullName</span>
+                                    <span class="text-body-secondary text-break"> · @order.ShipTo.Email</span>
+                                }
+                                else
+                                {
+                                    <span>Unknown (the order is no longer on file)</span>
+                                }
+                            </dd>
+                        </div>
+                        <div>
+                            <dt>Reason</dt>
+                            <dd>@item.Reason</dd>
+                        </div>
+                        @if (!string.IsNullOrWhiteSpace(item.Comment))
+                        {
+                            <div>
+                                <dt>Customer's comment</dt>
+                                <dd data-clarity-mask="true">@item.Comment</dd>
+                            </div>
+                        }
+                        @if (order is not null)
+                        {
+                            <div>
+                                <dt>Order total</dt>
+                                <dd>
+                                    @EcommerceDisplay.Money(order.Totals.Total)
+                                    @if (order.RefundedAmount > 0)
+                                    {
+                                        <span class="text-body-secondary"> · @EcommerceDisplay.Money(order.RefundedAmount) refunded so far</span>
+                                    }
+                                </dd>
+                            </div>
+                        }
+                        @if (item.DecidedOn is { } decided)
+                        {
+                            <div>
+                                <dt>@(item.Status == EcommerceReturnStatus.Approved ? "Approved" : "Rejected")</dt>
+                                <dd>
+                                    @EcommerceDisplay.DateTimeShort(decided)
+                                    @if (item.Status == EcommerceReturnStatus.Approved)
+                                    {
+                                        <span> · @EcommerceDisplay.Money(item.Refunded) refunded</span>
+                                    }
+                                    @if (!string.IsNullOrWhiteSpace(item.DecisionNote))
+                                    {
+                                        <span> · @item.DecisionNote</span>
+                                    }
+                                </dd>
+                            </div>
+                        }
+                    </dl>
+                </section>
+
+                <section class="ea-panel" aria-labelledby="ea-return-items-title">
+                    <h2 class="ea-section-title" id="ea-return-items-title">Items</h2>
+                    @* The return's lines: a line-item table, so a plain table. *@
+                    <div class="table-responsive">
+                        <table class="table ea-table align-middle">
+                            <caption class="visually-hidden">Items in return @EcommerceDisplay.ReturnNumber(item.Id)</caption>
+                            <thead>
+                                <tr>
+                                    <th scope="col">Item</th>
+                                    <th scope="col">Color</th>
+                                    <th scope="col" class="text-end">Qty</th>
+                                    <th scope="col" class="text-end">Unit price</th>
+                                    <th scope="col" class="text-end">Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var line in item.Lines)
+                                {
+                                    <tr @key="(line.ProductId, line.Color)">
+                                        <td><a href="@EcommerceSeedData.AdminProductPath(line.ProductId)">@line.Name</a></td>
+                                        <td>@line.Color</td>
+                                        <td class="text-end">@line.Quantity</td>
+                                        <td class="text-end">@EcommerceDisplay.Money(line.UnitPrice)</td>
+                                        <td class="text-end">@EcommerceDisplay.Money(line.UnitPrice * line.Quantity)</td>
+                                    </tr>
+                                }
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <th scope="row" colspan="4" class="text-end">Total</th>
+                                    <td class="text-end fw-semibold">@EcommerceDisplay.Money(item.Amount)</td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </section>
+            </div>
+
+            <div class="col-xl-5">
+                <section class="ea-panel" aria-labelledby="ea-return-decision-title">
+                    <h2 class="ea-section-title" id="ea-return-decision-title">Decision</h2>
+                    @if (item.Status != EcommerceReturnStatus.Requested)
+                    {
+                        <p class="mb-0">This return is decided. A decision can't be changed; the customer was told.</p>
+                    }
+                    else if (order is null || order.Status != EcommerceOrderStatus.Delivered || State.MaxRefundFor(item, order) <= 0)
+                    {
+                        <p class="mb-3">This order @(order is null ? "is no longer on file" : order.Status == EcommerceOrderStatus.Refunded ? "was refunded in full meanwhile" : "isn't delivered"), so nothing can be refunded. Reject the return with a reason.</p>
+                        <EditForm EditContext="editContext" OnSubmit="Save" FormName="ea-return-reject" novalidate>
+                            <DataAnnotationsValidator />
+                            <ShowcaseFormErrors ShowSummary="true" />
+                            <label class="form-label" for="ea-return-note">Reason for the customer</label>
+                            <InputTextArea id="ea-return-note" class="form-control" rows="3" maxlength="@EcommerceState.MaxDecisionNoteLength" @bind-Value="form.Note" aria-describedby="ea-return-note-help" />
+                            <div class="form-text" id="ea-return-note-help">Required, 5 to 200 characters. The customer reads it.</div>
+                            <ValidationMessage For="() => form.Note" />
+                            <Button Type="ButtonType.Submit" Color="ButtonColor.Danger" Class="mt-3">Reject return</Button>
+                        </EditForm>
+                    }
+                    else
+                    {
+                        var maxRefund = State.MaxRefundFor(item, order);
+
+                        <EditForm EditContext="editContext" OnSubmit="Save" FormName="ea-return-decision" novalidate>
+                            <DataAnnotationsValidator />
+                            @* On a failed submit, a summary here names and links every field to fix (rule WR-002). *@
+                            <ShowcaseFormErrors ShowSummary="true" />
+                            <fieldset class="mb-3">
+                                <legend class="form-label fs-6">Decision</legend>
+                                <InputRadioGroup @bind-Value="form.Decision">
+                                    <div class="form-check">
+                                        <InputRadio class="form-check-input" id="ea-return-approve" Value="@ApproveValue" />
+                                        <label class="form-check-label" for="ea-return-approve">Approve: items back into stock, refund to the original card</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <InputRadio class="form-check-input" id="ea-return-reject" Value="@RejectValue" />
+                                        <label class="form-check-label" for="ea-return-reject">Reject: nothing is refunded</label>
+                                    </div>
+                                </InputRadioGroup>
+                                <ValidationMessage For="() => form.Decision" />
+                            </fieldset>
+                            @if (form.Decision == ApproveValue)
+                            {
+                                <div class="mb-3">
+                                    <label class="form-label" for="ea-return-refund">Refund amount</label>
+                                    <InputGroup>
+                                        <InputGroupText>$</InputGroupText>
+                                        <NumberInput TValue="decimal?" Id="ea-return-refund" @bind-Value="form.Refund" Step="0.01" aria-describedby="ea-return-refund-help" />
+                                    </InputGroup>
+                                    <div class="form-text" id="ea-return-refund-help">
+                                        Above $0 and up to @EcommerceDisplay.Money(maxRefund)@(maxRefund < item.Amount ? ", what's left of the order" : ", the returned items' total").
+                                        Refund less (a restocking fee, for example) with a note saying why. @(order is null ? null : $"Paid with {order.CardBrand} ending {order.CardLast4}; this is a demo, nothing is refunded.")
+                                    </div>
+                                    <ValidationMessage For="() => form.Refund" />
+                                </div>
+                            }
+                            <label class="form-label" for="ea-return-note">@(form.Decision == RejectValue ? "Reason for the customer" : "Note")</label>
+                            <InputTextArea id="ea-return-note" class="form-control" rows="3" maxlength="@EcommerceState.MaxDecisionNoteLength" @bind-Value="form.Note" aria-describedby="ea-return-note-help" />
+                            <div class="form-text" id="ea-return-note-help">
+                                @(form.Decision == RejectValue
+                                    ? "Required, 5 to 200 characters. The customer reads it."
+                                    : "Up to 200 characters, kept with the return. Required when the refund is less than the items' total.")
+                            </div>
+                            <ValidationMessage For="() => form.Note" />
+                            <div class="d-flex flex-wrap gap-2 mt-3">
+                                <Button Type="ButtonType.Submit" Color="@(form.Decision == RejectValue ? ButtonColor.Danger : ButtonColor.Success)">
+                                    @(form.Decision == RejectValue ? "Reject return" : form.Decision == ApproveValue ? "Approve and refund" : "Save decision")
+                                </Button>
+                                <a class="btn btn-outline-secondary" href="@ReturnsUrl">Back to returns</a>
+                            </div>
+                        </EditForm>
+                    }
+                </section>
+            </div>
+        </div>
+    }
+</div>

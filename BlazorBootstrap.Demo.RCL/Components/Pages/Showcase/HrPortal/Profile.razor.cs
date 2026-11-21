@@ -1,42 +1,39 @@
+using System.ComponentModel.DataAnnotations;
 using System.Globalization;
 using BlazorBootstrap.Demo.RCL.Models.Showcase.HrPortal;
 using BlazorBootstrap.Demo.RCL.Services.Showcase.HrPortal;
+using Microsoft.AspNetCore.Components.Forms;
 
 namespace BlazorBootstrap.Demo.RCL.Components.Pages.Showcase.HrPortal;
 
 /// <summary>
 /// The signed-in person's profile: the shared account form (<see cref="ShowcaseAccountProfile" />: name, email, password),
-/// then "Your details in the directory": phone, pronouns, and bio (with a character count), saved with
-/// <see cref="HrState.SaveMyProfile" />; and the facts HR keeps (title, department, manager, location, start date, work
-/// email), read-only with "Ask HR to change these". Field errors are tied to their inputs and the first takes focus after
-/// the render that shows it; every result is announced in an always-rendered status line.
+/// then "Your details in the directory" in a validated form (rule WR-002): phone (up to 30 characters), pronouns (up to 20),
+/// and bio (up to 300, with a live count), saved with <see cref="HrState.SaveMyProfile" />; and the facts HR keeps (title,
+/// department, manager, location, start date, work email), read-only with "Ask HR to change these". A failed submit shows a
+/// summary that links to each field; every result is announced in an always-rendered status line, which takes focus.
 /// </summary>
 public partial class Profile : ComponentBase, IDisposable
 {
     #region Fields and Constants
 
-    private string? bioError;
+    /// <summary>The bio as typed, for the live count (the bound value changes only on change).</summary>
+    private string bioText = string.Empty;
 
-    private ElementReference bioInput;
+    private EditContext editContext = new(new DetailsForm());
 
-    private ElementReference? focusTarget;
+    private bool focusStatus;
 
     private DetailsForm form = new();
 
     /// <summary>The person whose details fill the form (it fills once the tab's session is restored).</summary>
     private int? loadedEmployeeId;
 
-    private string? phoneError;
-
-    private ElementReference phoneInput;
-
-    private string? pronounsError;
-
-    private ElementReference pronounsInput;
-
     private bool statusIsError;
 
     private string? statusMessage;
+
+    private ElementReference? statusRegion;
 
     #endregion
 
@@ -44,14 +41,14 @@ public partial class Profile : ComponentBase, IDisposable
 
     #region Protected Override Methods
 
-    /// <summary>Moves focus to the first invalid field, after the render that shows its error.</summary>
+    /// <summary>Moves focus to the outcome, after the render that shows it.</summary>
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (focusTarget is not { } target)
+        if (!focusStatus)
             return;
 
-        focusTarget = null;
-        await HrDisplay.FocusAsync(target);
+        focusStatus = false;
+        await HrDisplay.FocusAsync(statusRegion);
     }
 
     protected override void OnInitialized() => State.Changed += OnStateChanged;
@@ -84,7 +81,11 @@ public partial class Profile : ComponentBase, IDisposable
 
         loadedEmployeeId = me.Id;
         form = new DetailsForm { Phone = me.Phone, Pronouns = me.Pronouns, Bio = me.Bio };
+        editContext = new EditContext(form);
+        bioText = me.Bio;
     }
+
+    private void OnBioInput(ChangeEventArgs args) => bioText = args.Value?.ToString() ?? string.Empty;
 
     private void OnStateChanged() => InvokeAsync(() =>
     {
@@ -92,35 +93,15 @@ public partial class Profile : ComponentBase, IDisposable
         StateHasChanged();
     });
 
-    /// <summary>Checks the three fields, saves them, and maps every result.</summary>
+    /// <summary>Saves the three fields once the form is valid (a failed submit shows the summary), and maps every result.</summary>
     private void Save()
     {
         statusMessage = null;
-        phoneError = pronounsError = bioError = null;
 
-        var phone = form.Phone?.Trim() ?? string.Empty;
-        var pronouns = form.Pronouns?.Trim() ?? string.Empty;
-        var bio = form.Bio?.Trim() ?? string.Empty;
-
-        if (phone.Length > HrState.MaxPhoneLength)
-            phoneError = $"Use {HrState.MaxPhoneLength} characters or fewer for the phone number.";
-
-        if (pronouns.Length > HrState.MaxPronounsLength)
-            pronounsError = $"Use {HrState.MaxPronounsLength} characters or fewer for your pronouns.";
-
-        if (bio.Length > HrState.MaxBioLength)
-            bioError = string.Create(CultureInfo.InvariantCulture, $"Shorten your bio to {HrState.MaxBioLength} characters or fewer; it has {bio.Length}.");
-
-        if (phoneError is not null || pronounsError is not null || bioError is not null)
-        {
-            focusTarget = phoneError is not null ? phoneInput : pronounsError is not null ? pronounsInput : bioInput;
-            statusIsError = true;
-            statusMessage = "Nothing was saved. Fix the highlighted details.";
-
+        if (!editContext.Validate())
             return;
-        }
 
-        switch (State.SaveMyProfile(phone, pronouns, bio))
+        switch (State.SaveMyProfile(form.Phone ?? string.Empty, form.Pronouns ?? string.Empty, form.Bio ?? string.Empty))
         {
             case HrResult.Ok:
                 LoadForm(true);
@@ -135,7 +116,7 @@ public partial class Profile : ComponentBase, IDisposable
 
             case HrResult.Invalid:
                 statusIsError = true;
-                statusMessage = "Your details couldn't be saved: this tab's demo storage is full. Nothing changed.";
+                statusMessage = "Your details couldn't be saved: this tab's demo storage is full, or a value is too long. Nothing changed.";
                 break;
 
             case HrResult.NotAllowed:
@@ -153,6 +134,8 @@ public partial class Profile : ComponentBase, IDisposable
                 statusMessage = "Your details couldn't be saved. Try again.";
                 break;
         }
+
+        focusStatus = true;
     }
 
     #endregion
@@ -162,7 +145,7 @@ public partial class Profile : ComponentBase, IDisposable
     #region Properties, Indexers
 
     /// <summary>Gets the bio's length against its limit, like "120 of 300 characters".</summary>
-    private string BioCountText => string.Create(CultureInfo.InvariantCulture, $"{form.Bio?.Length ?? 0} of {HrState.MaxBioLength} characters");
+    private string BioCountText => string.Create(CultureInfo.InvariantCulture, $"{bioText.Length} of {HrState.MaxBioLength} characters");
 
     [Inject] private HrState State { get; set; } = default!;
 
@@ -170,13 +153,17 @@ public partial class Profile : ComponentBase, IDisposable
 
     #region Nested Types
 
-    /// <summary>The directory details as typed.</summary>
+    /// <summary>The directory details as typed, with the limits of <see cref="HrState.SaveMyProfile" />; all three are optional.</summary>
     private sealed class DetailsForm
     {
+        [StringLength(HrState.MaxBioLength, ErrorMessage = "Shorten your bio to 300 characters or fewer.")]
         public string? Bio { get; set; }
 
+        [StringLength(HrState.MaxPhoneLength, ErrorMessage = "Use 30 characters or fewer for the phone number.")]
+        [RegularExpression(@"^[0-9+()\-.\s]*$", ErrorMessage = "Use digits, spaces, and + ( ) - . only for the phone number.")]
         public string? Phone { get; set; }
 
+        [StringLength(HrState.MaxPronounsLength, ErrorMessage = "Use 20 characters or fewer for your pronouns.")]
         public string? Pronouns { get; set; }
     }
 

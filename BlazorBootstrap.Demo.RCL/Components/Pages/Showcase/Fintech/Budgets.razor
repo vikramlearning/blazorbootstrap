@@ -106,22 +106,23 @@
         <h2 class="modal-title h5" id="tm-budget-form-title">@(adding ? "Add a budget" : $"Edit the {editingName} limit")</h2>
     </HeaderTemplate>
     <BodyTemplate>
-        <EditForm id="tm-budget-form" EditContext="editContext" OnValidSubmit="SaveAsync" FormName="tm-budget">
-            <ShowcaseFormErrors />
+        <EditForm id="tm-budget-form" EditContext="editContext" OnSubmit="SaveAsync" FormName="tm-budget" novalidate>
             <DataAnnotationsValidator />
+            <ShowcaseFormErrors ShowSummary="@adding" />
             @if (adding)
             {
                 <div class="mb-3">
                     <label class="form-label" for="tm-budget-category">Category</label>
-                    <InputSelect id="tm-budget-category" class="form-select" @bind-Value="form.CategoryId">
+                    <InputSelect id="tm-budget-category" class="form-select" @bind-Value="form.CategoryId" aria-describedby="tm-budget-category-help">
                         <option value="">Choose a category</option>
-                        @foreach (var category in FreeCategories)
+                        @foreach (var category in State.Categories.Where(category => category.IsSpending))
                         {
-                            <option value="@category.Id">@category.Name</option>
+                            <option value="@category.Id">@category.Name@(State.HasBudget(category.Id) ? " (has a budget)" : null)</option>
                         }
                     </InputSelect>
+                    <ShowcaseUniqueCheck @ref="categoryCheck" For="() => form.CategoryId" IsTakenAsync="IsCategoryTakenAsync" TakenMessage="CategoryTakenMessage" />
+                    <div class="form-text mt-0" id="tm-budget-category-help">One budget per spending category each month. A category that already has one says so; change its limit instead.</div>
                     <ValidationMessage For="() => form.CategoryId" />
-                    <div class="form-text">Only spending categories without a budget are listed.</div>
                 </div>
             }
             <label class="form-label" for="tm-budget-limit">Monthly limit</label>

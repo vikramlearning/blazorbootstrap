@@ -121,7 +121,7 @@ public sealed class SaasPlanDraft
     /// property name) and the message to show; an empty list means the plan can be saved.
     /// </summary>
     /// <param name="current">The plan as it is now: a free plan stays free and a paid plan stays paid.</param>
-    /// <param name="plans">All plans: at least one must stay self-serve.</param>
+    /// <param name="plans">All plans: at least one must stay self-serve. (Another plan with the same name is checked by the form as you type.)</param>
     /// <param name="workspaceCount">How many workspaces are on the plan.</param>
     /// <param name="largestSeats">The largest seat count of those workspaces, the lowest seat limit allowed.</param>
     public IReadOnlyList<(string Field, string Message)> Validate(SaasPlan current, IReadOnlyList<SaasPlan> plans, int workspaceCount, int largestSeats)
@@ -180,6 +180,10 @@ public sealed class SaasPlanDraft
 
         if (!IsSelfServe && !plans.Any(plan => plan.Id != current.Id && plan.IsSelfServe))
             errors.Add((nameof(IsSelfServe), "At least one plan must stay self-serve, so visitors can still sign up. Make another plan self-serve first."));
+
+        // Cross-field: the "Most popular" badge sits on a plan visitors can start themselves.
+        if (IsPopular && !IsSelfServe)
+            errors.Add((nameof(IsPopular), "Only a self-serve plan can be Most popular: the badge points visitors to a plan they can start themselves. Turn on Self-serve, or turn this off."));
 
         return errors;
     }

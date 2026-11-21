@@ -24,6 +24,9 @@ public enum FintechPeriod
 
     /// <summary>The last 90 days.</summary>
     Last90Days = 90,
+
+    /// <summary>The last 12 months (365 days).</summary>
+    Last12Months = 365,
 }
 
 /// <summary>Where a transfer is.</summary>
@@ -163,6 +166,12 @@ public enum FintechResult
 
     /// <summary>A scheduled or held transfer still goes to it, so its details can't change.</summary>
     InUse,
+
+    /// <summary>The four-eyes rule needs a senior reviewer's approval (for example to report a case).</summary>
+    ApprovalRequired,
+
+    /// <summary>The four-eyes rule doesn't let the same person escalate a case and decide it.</summary>
+    SelfApproval,
 }
 
 /// <summary>A bank account of the customer. <see cref="CardLast4" /> is set when a card is linked (debit or credit).</summary>
@@ -325,6 +334,12 @@ public sealed class FintechDispute
     /// <summary>Gets the customer's explanation.</summary>
     public string Details { get; init; } = string.Empty;
 
+    /// <summary>
+    /// Gets or sets when the dispute passed the answer target (<c>FintechState.DisputeTargetDays</c>) while still open and was
+    /// escalated to operations, or <see langword="null" /> when it hasn't been.
+    /// </summary>
+    public DateTime? EscalatedAt { get; set; }
+
     /// <summary>Gets the dispute number.</summary>
     public int Id { get; init; }
 
@@ -426,5 +441,261 @@ public sealed record FintechCustomer(string Id, string Name, string Email, strin
 /// <summary>An internal note operations wrote about a customer (customers never see it).</summary>
 public sealed record FintechCustomerNote(int Id, string CustomerId, DateTime At, string Author, string Text);
 
-/// <summary>One entry in the audit log: who did what, when, to what.</summary>
-public sealed record FintechAuditEntry(int Id, DateTime At, string Actor, string Role, string Action, string Subject, string Details);
+/// <summary>The outcome of an operations action on several transfers at once: the overall result, how many changed, and how many were left as they were.</summary>
+public sealed record FintechBulkOutcome(FintechResult Result, int Changed, int Unchanged);
+
+/// <summary>The monitoring rule that raised an anti-money-laundering (AML) alert.</summary>
+public enum FintechAmlRule
+{
+    /// <summary>Several payments just under the $2,000 check threshold within a few days (structuring).</summary>
+    Structuring,
+
+    /// <summary>A large amount in, then most of it out again within 24 hours (rapid movement of funds).</summary>
+    RapidMovement,
+
+    /// <summary>A large first payment to a payee added in the last 7 days.</summary>
+    NewPayeeLargePayment,
+
+    /// <summary>Payments to or from a high-risk country or merchant category.</summary>
+    HighRiskJurisdiction,
+
+    /// <summary>Spending or transfers far above the customer's 90-day baseline (a velocity spike).</summary>
+    VelocitySpike,
+}
+
+/// <summary>How risky an AML alert or case is; it also sets a case's priority.</summary>
+public enum FintechAmlRisk
+{
+    /// <summary>Low risk.</summary>
+    Low,
+
+    /// <summary>Medium risk.</summary>
+    Medium,
+
+    /// <summary>High risk.</summary>
+    High,
+}
+
+/// <summary>Where an AML alert is.</summary>
+public enum FintechAmlAlertStatus
+{
+    /// <summary>Raised by a rule; nobody has looked at it yet.</summary>
+    New,
+
+    /// <summary>An analyst is looking at it.</summary>
+    InTriage,
+
+    /// <summary>Closed as a false positive, with a reason.</summary>
+    Dismissed,
+
+    /// <summary>Part of a case.</summary>
+    LinkedToCase,
+}
+
+/// <summary>Where an AML case is. An escalated case waits for a senior reviewer (four-eyes rule).</summary>
+public enum FintechAmlCaseStatus
+{
+    /// <summary>Opened from one or more alerts; not started yet.</summary>
+    Open,
+
+    /// <summary>The analyst is investigating.</summary>
+    Investigating,
+
+    /// <summary>Waiting for a senior reviewer's decision.</summary>
+    Escalated,
+
+    /// <summary>Closed with a disposition.</summary>
+    Closed,
+}
+
+/// <summary>How an AML case was closed.</summary>
+public enum FintechAmlDisposition
+{
+    /// <summary>Cleared: nothing suspicious was found.</summary>
+    ClearedNoSuspicion,
+
+    /// <summary>Cleared: the activity is unusual but explained (for example a house sale).</summary>
+    ClearedExplained,
+
+    /// <summary>Reported to the authorities: a suspicious activity report (SAR) was filed. Always needs a senior reviewer.</summary>
+    Reported,
+
+    /// <summary>The bank ended the relationship with the customer.</summary>
+    CustomerExited,
+}
+
+/// <summary>What happened on an AML case's timeline.</summary>
+public enum FintechAmlEventKind
+{
+    /// <summary>The case was opened.</summary>
+    Opened,
+
+    /// <summary>The analyst started investigating.</summary>
+    Investigating,
+
+    /// <summary>An investigation note.</summary>
+    Note,
+
+    /// <summary>A named piece of evidence (no file is kept in the demo).</summary>
+    Evidence,
+
+    /// <summary>The case was assigned to someone else.</summary>
+    Assigned,
+
+    /// <summary>The case was escalated to a senior reviewer.</summary>
+    Escalated,
+
+    /// <summary>The senior reviewer returned the case to the analyst.</summary>
+    Returned,
+
+    /// <summary>The case was closed with a disposition.</summary>
+    Closed,
+}
+
+/// <summary>A member of bank operations who works AML alerts and cases. Only some can sign in to the demo.</summary>
+public sealed record FintechStaffMember(string Id, string Name, bool IsSeniorReviewer);
+
+/// <summary>
+/// An AML alert: a monitoring rule found activity on a customer that someone must look at. It points to the transfers that
+/// triggered it (by reference) and says what the rule saw. Customers never see alerts (no tipping-off).
+/// </summary>
+public sealed class FintechAmlAlert
+{
+    #region Properties, Indexers
+
+    /// <summary>Gets or sets the staff member looking at it, or <see langword="null" /> when unassigned.</summary>
+    public string? AssigneeId { get; set; }
+
+    /// <summary>Gets or sets the case it is part of.</summary>
+    public int? CaseId { get; set; }
+
+    /// <summary>Gets when the rule raised it.</summary>
+    public DateTime CreatedAt { get; init; }
+
+    /// <summary>Gets the customer it is about.</summary>
+    public string CustomerId { get; init; } = string.Empty;
+
+    /// <summary>Gets or sets why it was dismissed as a false positive.</summary>
+    public string? DismissReason { get; set; }
+
+    /// <summary>Gets or sets when it was dismissed or linked to a case.</summary>
+    public DateTime? HandledAt { get; set; }
+
+    /// <summary>Gets the alert number.</summary>
+    public int Id { get; init; }
+
+    /// <summary>Gets the risk.</summary>
+    public FintechAmlRisk Risk { get; init; }
+
+    /// <summary>Gets the rule that raised it.</summary>
+    public FintechAmlRule Rule { get; init; }
+
+    /// <summary>Gets the rule's score, 0 to 100.</summary>
+    public int Score { get; init; }
+
+    /// <summary>Gets or sets where it is.</summary>
+    public FintechAmlAlertStatus Status { get; set; }
+
+    /// <summary>Gets what the rule saw, in a sentence.</summary>
+    public string Summary { get; init; } = string.Empty;
+
+    /// <summary>Gets the references of the transfers that triggered it.</summary>
+    public List<string> TransferReferences { get; init; } = new();
+
+    #endregion
+}
+
+/// <summary>One entry on an AML case's timeline: an event, a note, or a named piece of evidence.</summary>
+public sealed class FintechAmlEvent
+{
+    #region Properties, Indexers
+
+    /// <summary>Gets the staff member's name, or "System".</summary>
+    public string Actor { get; init; } = string.Empty;
+
+    /// <summary>Gets when it happened.</summary>
+    public DateTime At { get; init; }
+
+    /// <summary>Gets the evidence's name, for an evidence entry.</summary>
+    public string? EvidenceName { get; init; }
+
+    /// <summary>Gets the entry number, unique within the site.</summary>
+    public int Id { get; init; }
+
+    /// <summary>Gets what happened.</summary>
+    public FintechAmlEventKind Kind { get; init; }
+
+    /// <summary>Gets the note, the reason, or the description.</summary>
+    public string Text { get; init; } = string.Empty;
+
+    #endregion
+}
+
+/// <summary>
+/// An AML case: one customer's alerts under investigation by an analyst, with a due date (the investigation target), a
+/// timeline, and, once closed, a disposition and closing summary. Escalation hands it to a senior reviewer, who closes it or
+/// returns it (four-eyes rule).
+/// </summary>
+public sealed class FintechAmlCase
+{
+    #region Properties, Indexers
+
+    /// <summary>Gets the alerts it was opened from.</summary>
+    public List<int> AlertIds { get; init; } = new();
+
+    /// <summary>Gets or sets the analyst working it.</summary>
+    public string AssigneeId { get; set; } = string.Empty;
+
+    /// <summary>Gets or sets who closed it.</summary>
+    public string? ClosedById { get; set; }
+
+    /// <summary>Gets or sets when it was closed.</summary>
+    public DateTime? ClosedAt { get; set; }
+
+    /// <summary>Gets or sets the closing summary.</summary>
+    public string? ClosingSummary { get; set; }
+
+    /// <summary>Gets the customer it is about.</summary>
+    public string CustomerId { get; init; } = string.Empty;
+
+    /// <summary>Gets or sets the disposition once closed.</summary>
+    public FintechAmlDisposition? Disposition { get; set; }
+
+    /// <summary>Gets or sets the investigation's due date.</summary>
+    public DateOnly DueOn { get; set; }
+
+    /// <summary>Gets or sets who escalated it, while escalated.</summary>
+    public string? EscalatedById { get; set; }
+
+    /// <summary>Gets or sets why it was escalated, while escalated.</summary>
+    public string? EscalationReason { get; set; }
+
+    /// <summary>Gets the timeline, oldest first.</summary>
+    public List<FintechAmlEvent> Events { get; init; } = new();
+
+    /// <summary>Gets or sets the SAR filing reference, like "SAR-2026-00412", for a reported case (or a proposal to report).</summary>
+    public string? FilingReference { get; set; }
+
+    /// <summary>Gets the case number.</summary>
+    public int Id { get; init; }
+
+    /// <summary>Gets when it was opened.</summary>
+    public DateTime OpenedAt { get; init; }
+
+    /// <summary>Gets or sets the priority.</summary>
+    public FintechAmlRisk Priority { get; set; }
+
+    /// <summary>Gets or sets the disposition the analyst proposed when escalating (always for Reported), for the reviewer to approve.</summary>
+    public FintechAmlDisposition? ProposedDisposition { get; set; }
+
+    /// <summary>Gets or sets the closing summary the analyst proposed.</summary>
+    public string? ProposedSummary { get; set; }
+
+    /// <summary>Gets or sets the senior reviewer it waits for, while escalated.</summary>
+    public string? ReviewerId { get; set; }
+
+    /// <summary>Gets or sets where it is.</summary>
+    public FintechAmlCaseStatus Status { get; set; }
+
+    #endregion
+}

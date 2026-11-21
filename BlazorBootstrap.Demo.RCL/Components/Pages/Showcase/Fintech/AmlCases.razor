@@ -1,0 +1,155 @@
+@page "/showcase/fintech/ops/aml/cases"
+@layout FintechOpsLayout
+
+<PageTitle>AML cases · Operations · @FintechSeedData.ProductName</PageTitle>
+
+<div class="container-fluid px-lg-4">
+    <div class="tm-page-head">
+        <div>
+            <span class="sc-eyebrow">Anti-money laundering</span>
+            <h1 class="tm-title">AML cases <span class="tm-count-pill">@Count(OpenCount) open</span></h1>
+            <p class="tm-lead">
+                Investigations opened from alerts. Each is due @FintechSeedData.AmlCaseDays days after it opens. An escalated case waits for a senior reviewer, who
+                closes it or returns it; the person who escalated a case can't decide it, and reporting one always needs a senior reviewer.
+            </p>
+        </div>
+        <a class="btn btn-outline-secondary" href="@AmlDisplay.AlertsPath"><Icon Name="IconName.Radar" class="me-2" aria-hidden="true" />AML alerts</a>
+    </div>
+
+    <Card Class="tm-card mb-3">
+        <CardBody Class="p-3 p-lg-4">
+            <h2 class="tm-section-title mb-3" id="tm-ac-filters-title">Filter cases</h2>
+            <div class="tm-list-filters" role="group" aria-labelledby="tm-ac-filters-title">
+                <div class="tm-list-search">
+                    <label class="form-label small fw-semibold" for="tm-ac-search">Search</label>
+                    <input id="tm-ac-search" type="search" class="form-control" value="@searchBoxValue" placeholder="Case number or customer"
+                           autocomplete="off" maxlength="80" @oninput="OnSearchInputAsync" @onchange="OnSearchChanged" />
+                </div>
+                <div>
+                    <label class="form-label small fw-semibold" for="tm-ac-status">Status</label>
+                    <select id="tm-ac-status" class="form-select" @bind="statusFilter" @bind:after="FiltersChangedAsync">
+                        <option value="@OpenValue">Not closed (@Count(OpenCount))</option>
+                        <option value="@ReviewValue">Waiting for my review (@Count(State.AmlCases.Count(IsMyReview)))</option>
+                        <option value="@OverdueValue">Overdue (@Count(State.AmlCases.Count(amlCase => AmlDisplay.IsOverdue(amlCase, State.Today))))</option>
+                        @foreach (var status in Enum.GetValues<FintechAmlCaseStatus>())
+                        {
+                            <option value="@status">@AmlDisplay.CaseStatusText(status) (@Count(State.AmlCases.Count(amlCase => amlCase.Status == status)))</option>
+                        }
+                        <option value="">All (@Count(State.AmlCases.Count))</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="form-label small fw-semibold" for="tm-ac-assignee">Analyst</label>
+                    <select id="tm-ac-assignee" class="form-select" @bind="assigneeFilter" @bind:after="FiltersChangedAsync">
+                        <option value="">Anyone</option>
+                        @foreach (var member in FintechSeedData.Staff())
+                        {
+                            <option value="@member.Id">@member.Name@(member.Id == State.CurrentStaffId ? " (you)" : null)</option>
+                        }
+                    </select>
+                </div>
+                <div>
+                    <label class="form-label small fw-semibold" for="tm-ac-priority">Priority</label>
+                    <select id="tm-ac-priority" class="form-select" @bind="priorityFilter" @bind:after="FiltersChangedAsync">
+                        <option value="">Any priority</option>
+                        @foreach (var risk in Enum.GetValues<FintechAmlRisk>().Reverse())
+                        {
+                            <option value="@risk">@risk</option>
+                        }
+                    </select>
+                </div>
+            </div>
+            <div class="tm-list-meta mb-0">
+                <p class="small text-body-secondary mb-0" aria-live="polite" tabindex="-1" @ref="countRegion">Showing @Count(Rows.Count) of @Count(State.AmlCases.Count) cases.</p>
+                @if (IsFiltered)
+                {
+                    <Button Color="ButtonColor.Link" Size="ButtonSize.Small" Class="p-0" @onclick="ClearFiltersAsync">Show cases not closed</Button>
+                }
+                <Button Color="ButtonColor.Link" Size="ButtonSize.Small" Class="p-0" @onclick="ResetViewAsync">Reset view</Button>
+            </div>
+            <p class="tm-list-status mt-2" role="status">@statusMessage</p>
+        </CardBody>
+    </Card>
+
+    <Card Class="tm-card">
+        <CardBody Class="p-3 p-lg-4">
+            <ShowcaseDataState Status="@(viewLoaded ? ShowcaseDataStatus.Ready : ShowcaseDataStatus.Loading)"
+                               IsEmpty="@(State.AmlCases.Count == 0)"
+                               EmptyIcon="IconName.Folder2Open"
+                               EmptyTitle="No AML cases yet"
+                               EmptyText="Open a case from one or more alerts on a customer in the alert queue."
+                               LoadingText="Loading AML cases…"
+                               OnRetry="RefreshGridAsync">
+                <EmptyActions>
+                    <a class="btn btn-sm btn-primary" href="@AmlDisplay.AlertsPath">Go to AML alerts</a>
+                </EmptyActions>
+                <ChildContent>
+                    <Grid @ref="grid"
+                          @key="gridVersion"
+                          TItem="CaseRow"
+                          Class="table table-hover align-middle tm-table-wide sc-grid-row-links"
+                          GridContainerClass="tm-grid border rounded-3"
+                          DataProvider="ProvideRowsAsync"
+                          SettingsProvider="view.GetSettingsAsync"
+                          GridSettingsChanged="SaveSettingsAsync"
+                          AllowPaging="true"
+                          PageSize="@pageSize"
+                          PageSizeSelectorVisible="true"
+                          PageSizeSelectorItems="@(new[] { 10, 25, 50 })"
+                          PaginationItemsTextFormat="{0}–{1} of {2} cases"
+                          AllowSorting="true"
+                          AllowColumnChooser="true"
+                          AllowExport="true"
+                          ExportFileName="banking-aml-cases"
+                          Responsive="true"
+                          EmptyText="No cases match these filters. Show cases not closed, or clear a filter."
+                          aria-label="AML cases">
+                        <GridColumns>
+                            <GridColumn TItem="CaseRow" HeaderText="Case" PropertyName="Id" SortString="id" SortKeySelector="row => row.Id"
+                                        IsDefaultSortColumn="@view.IsSortColumn("id")" SortDirection="@view.DirectionFor("id")" AlwaysVisible="true" TextNoWrap="true">
+                                @* The stretched link makes the whole row open the case. *@
+                                <a class="tm-row-link tm-mono stretched-link" href="@AmlDisplay.CasePath(context.Id)">@context.Id</a>
+                            </GridColumn>
+                            <GridColumn TItem="CaseRow" HeaderText="Customer" PropertyName="Customer" SortString="customer" SortKeySelector="row => row.Customer"
+                                        IsDefaultSortColumn="@view.IsSortColumn("customer")" SortDirection="@view.DirectionFor("customer")" TextNoWrap="true">
+                                @context.Customer
+                            </GridColumn>
+                            <GridColumn TItem="CaseRow" HeaderText="Priority" PropertyName="Priority" SortString="priority" SortKeySelector="row => row.PriorityValue"
+                                        IsDefaultSortColumn="@view.IsSortColumn("priority")" SortDirection="@view.DirectionFor("priority")" TextNoWrap="true">
+                                <Badge Color="AmlDisplay.RiskColor(context.PriorityValue)" Class="rounded-pill">@context.Priority</Badge>
+                            </GridColumn>
+                            <GridColumn TItem="CaseRow" HeaderText="Status" PropertyName="Status" SortString="status" SortKeySelector="row => row.StatusValue"
+                                        IsDefaultSortColumn="@view.IsSortColumn("status")" SortDirection="@view.DirectionFor("status")" TextNoWrap="true">
+                                <Badge Color="AmlDisplay.CaseStatusColor(context.StatusValue)" Class="rounded-pill">@context.Status</Badge>
+                                @if (context.Overdue)
+                                {
+                                    <Badge Color="BadgeColor.Danger" Class="rounded-pill ms-1">Overdue</Badge>
+                                }
+                                @if (context.Detail.Length > 0)
+                                {
+                                    <span class="d-block small text-body-secondary">@context.Detail</span>
+                                }
+                            </GridColumn>
+                            <GridColumn TItem="CaseRow" HeaderText="Analyst" PropertyName="Analyst" SortString="analyst" SortKeySelector="row => row.Analyst"
+                                        IsDefaultSortColumn="@view.IsSortColumn("analyst")" SortDirection="@view.DirectionFor("analyst")" TextNoWrap="true">
+                                <span class="small">@context.Analyst</span>
+                            </GridColumn>
+                            <GridColumn TItem="CaseRow" HeaderText="Alerts" PropertyName="Alerts" SortString="alerts" SortKeySelector="row => row.Alerts"
+                                        IsDefaultSortColumn="@view.IsSortColumn("alerts")" SortDirection="@view.DirectionFor("alerts")" TextAlignment="Alignment.End">
+                                <span class="tm-mono">@context.Alerts</span>
+                            </GridColumn>
+                            <GridColumn TItem="CaseRow" HeaderText="Opened" PropertyName="Opened" SortString="opened" SortKeySelector="row => row.Opened"
+                                        IsDefaultSortColumn="@view.IsSortColumn("opened")" SortDirection="@view.DirectionFor("opened")" TextNoWrap="true">
+                                <span class="small">@Disputes.DayText(context.Opened)</span>
+                            </GridColumn>
+                            <GridColumn TItem="CaseRow" HeaderText="Due" PropertyName="Due" SortString="due" SortKeySelector="row => row.DueOn"
+                                        IsDefaultSortColumn="@view.IsSortColumn("due")" SortDirection="@view.DirectionFor("due")" TextNoWrap="true">
+                                <span class="small @(context.Overdue ? "text-danger-emphasis fw-semibold" : null)">@context.Due</span>
+                            </GridColumn>
+                        </GridColumns>
+                    </Grid>
+                </ChildContent>
+            </ShowcaseDataState>
+        </CardBody>
+    </Card>
+</div>

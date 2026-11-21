@@ -65,77 +65,132 @@
             <h2 class="sd-card-title" id="lu-team-title">Members</h2>
             <p class="sd-card-sub">@MemberCountText(team)</p>
         </div>
-        <ul class="lu-members list-unstyled mb-0">
-            @foreach (var member in team)
-            {
-                var isMe = member.Id == me.Id;
-                var canAct = CanActOn(me, member);
-                var invited = member.Status == SaasMemberStatus.Invited;
-
-                <li class="lu-member" @key="member.Id">
-                    <div class="sd-person lu-member-person">
-                        <Avatar Name="@member.Name" Color="SaasDisplay.AvatarColorFor(member.Id)" Size="AvatarSize.Small" aria-hidden="true" />
-                        <span class="sd-person-text">
-                            <span class="lu-member-name">
-                                @member.Name
-                                @if (isMe)
-                                {
-                                    <Badge Color="BadgeColor.Primary" Class="rounded-pill ms-1">You</Badge>
-                                }
-                            </span>
-                            <span class="sd-person-email">@member.Email</span>
-                        </span>
-                    </div>
-                    <dl class="lu-member-facts">
-                        <div>
-                            <dt>Role</dt>
-                            <dd><Badge Color="@RoleColor(member.Role)" Class="rounded-pill">@SaasDisplay.RoleName(member.Role)</Badge></dd>
-                        </div>
-                        <div>
-                            <dt>Status</dt>
-                            <dd>
-                                @if (invited)
-                                {
-                                    <span>Invited on @SaasDisplay.Date(member.AddedOn)</span>
-                                }
-                                else
-                                {
-                                    <span>Active</span>
-                                }
-                            </dd>
-                        </div>
-                        <div>
-                            <dt>Last active</dt>
-                            <dd>@SaasDisplay.LastSeen(member.LastActiveOn, State.Clock.Now)</dd>
-                        </div>
-                    </dl>
-                    @if (canAct)
-                    {
-                        <div class="lu-member-actions">
-                            @if (invited)
+        <div class="card-body pt-2">
+            <div class="d-flex flex-wrap align-items-center gap-3 mb-2">
+                <p class="small text-body-secondary mb-0" tabindex="-1" @ref="countRegion">
+                    @(canManage ? "Select a name to change the person's role." : "Owners and admins change roles and remove people.")
+                </p>
+                @* Back to the saved view's defaults: owners first, 10 a page, every column in its place. *@
+                <Button Color="ButtonColor.Link" Size="ButtonSize.Small" Class="p-0" @onclick="ResetViewAsync">Reset view</Button>
+            </div>
+            <ShowcaseDataState Status="@(viewLoaded ? ShowcaseDataStatus.Ready : ShowcaseDataStatus.Loading)"
+                               IsEmpty="@(team.Count == 0)"
+                               EmptyIcon="IconName.People"
+                               EmptyTitle="No one in the team yet"
+                               EmptyText="Invite your teammates: each member or invitation holds a seat."
+                               LoadingText="Loading the team…"
+                               OnRetry="RefreshGridAsync">
+                <Grid @ref="grid"
+                      @key="gridVersion"
+                      TItem="SaasMember"
+                      Class="table table-hover align-middle sd-table-wide sc-grid-row-links"
+                      GridContainerClass="sd-grid border rounded-3"
+                      DataProvider="ProvideMembersAsync"
+                      SettingsProvider="view.GetSettingsAsync"
+                      GridSettingsChanged="SaveSettingsAsync"
+                      AllowPaging="true"
+                      PageSize="@pageSize"
+                      PageSizeSelectorVisible="true"
+                      PageSizeSelectorItems="@(new[] { 10, 25, 50 })"
+                      PaginationItemsTextFormat="{0}–{1} of {2} people"
+                      AllowSorting="true"
+                      AllowColumnChooser="true"
+                      AllowExport="true"
+                      ExportFileName="saas-team"
+                      Responsive="true"
+                      EmptyText="No one in the team."
+                      aria-labelledby="lu-team-title">
+                    <GridColumns>
+                        <GridColumn TItem="SaasMember" HeaderText="Name" PropertyName="Name" SortString="name" SortKeySelector="member => member.Name"
+                                    IsDefaultSortColumn="@view.IsSortColumn("name")" SortDirection="@view.DirectionFor("name")" AlwaysVisible="true">
+                            <div class="sd-person">
+                                <Avatar Name="@context.Name" Color="SaasDisplay.AvatarColorFor(context.Id)" Size="AvatarSize.Small" aria-hidden="true" />
+                                <span class="sd-person-text">
+                                    <span class="lu-member-name">
+                                        @if (CanActOn(me, context))
+                                        {
+                                            @* A member has no page of their own: the name opens the role dialog, and its stretched area makes the whole row do so. *@
+                                            <button type="button" class="btn btn-link p-0 sd-row-link stretched-link" @ref="nameButtons[context.Id]" @onclick="() => OpenRoleAsync(context)">
+                                                @context.Name<span class="visually-hidden">: change the role</span>
+                                            </button>
+                                        }
+                                        else
+                                        {
+                                            @context.Name
+                                        }
+                                        @if (context.Id == me.Id)
+                                        {
+                                            <Badge Color="BadgeColor.Primary" Class="rounded-pill ms-1">You</Badge>
+                                        }
+                                    </span>
+                                    <span class="sd-person-email">@context.Email</span>
+                                </span>
+                            </div>
+                        </GridColumn>
+                        <GridColumn TItem="SaasMember" HeaderText="Role" PropertyName="Role" SortString="role" SortKeySelector="member => member.Role"
+                                    IsDefaultSortColumn="@view.IsSortColumn("role")" SortDirection="@view.DirectionFor("role")" TextNoWrap="true">
+                            <Badge Color="@RoleColor(context.Role)" Class="rounded-pill">@SaasDisplay.RoleName(context.Role)</Badge>
+                        </GridColumn>
+                        <GridColumn TItem="SaasMember" HeaderText="Status" PropertyName="Status" SortString="status" SortKeySelector="member => member.Status"
+                                    IsDefaultSortColumn="@view.IsSortColumn("status")" SortDirection="@view.DirectionFor("status")" TextNoWrap="true">
+                            @if (context.Status == SaasMemberStatus.Invited)
                             {
-                                <Button Color="ButtonColor.Secondary" Outline="true" Size="ButtonSize.Small" @onclick="() => Resend(member)">
-                                    <Icon Name="IconName.Envelope" class="me-1" aria-hidden="true" />Resend<span class="visually-hidden"> the invitation to @member.Name</span>
-                                </Button>
+                                <span>Invited on @SaasDisplay.Date(context.AddedOn)</span>
                             }
-                            <Button @ref="roleButtons[member.Id]" Color="ButtonColor.Secondary" Outline="true" Size="ButtonSize.Small" @onclick="() => OpenRoleAsync(member)">
-                                <Icon Name="IconName.PersonGear" class="me-1" aria-hidden="true" />Change role<span class="visually-hidden"> of @member.Name</span>
-                            </Button>
-                            <Button @ref="removeButtons[member.Id]" Color="ButtonColor.Danger" Outline="true" Size="ButtonSize.Small" @onclick="() => AskRemoveAsync(member)">
-                                @if (invited)
-                                {
-                                    <Icon Name="IconName.XCircle" class="me-1" aria-hidden="true" />@("Cancel invitation")<span class="visually-hidden"> for @member.Name</span>
-                                }
-                                else
-                                {
-                                    <Icon Name="IconName.PersonDash" class="me-1" aria-hidden="true" />@("Remove")<span class="visually-hidden"> @member.Name</span>
-                                }
-                            </Button>
-                        </div>
-                    }
-                </li>
-            }
-        </ul>
+                            else
+                            {
+                                <span>Active</span>
+                            }
+                        </GridColumn>
+                        <GridColumn TItem="SaasMember" HeaderText="Added" PropertyName="AddedOn" SortString="added" SortKeySelector="member => member.AddedOn"
+                                    IsDefaultSortColumn="@view.IsSortColumn("added")" SortDirection="@view.DirectionFor("added")" TextNoWrap="true">
+                            @SaasDisplay.Date(context.AddedOn)
+                        </GridColumn>
+                        <GridColumn TItem="SaasMember" HeaderText="Last active" PropertyName="LastActiveOn" SortString="active" SortKeySelector="member => member.LastActiveOn ?? DateTime.MinValue"
+                                    IsDefaultSortColumn="@view.IsSortColumn("active")" SortDirection="@view.DirectionFor("active")" TextNoWrap="true">
+                            @SaasDisplay.LastSeen(context.LastActiveOn, State.Clock.Now)
+                        </GridColumn>
+                        @* Buttons only; no property, so CSV export leaves it out. *@
+                        <GridColumn TItem="SaasMember" HeaderText="Actions" Sortable="false" TextNoWrap="true">
+                            @if (CanActOn(me, context))
+                            {
+                                var invited = context.Status == SaasMemberStatus.Invited;
+
+                                <div class="lu-member-actions">
+                                    @if (invited)
+                                    {
+                                        <Button Color="ButtonColor.Secondary" Outline="true" Size="ButtonSize.Small" @onclick="() => Resend(context)">
+                                            <Icon Name="IconName.Envelope" class="me-1" aria-hidden="true" />Resend<span class="visually-hidden">&#32;the invitation to @context.Name</span>
+                                        </Button>
+                                        @* Invitees have no sign-in in this demo, so this stands in for them accepting. *@
+                                        <Button Color="ButtonColor.Secondary" Outline="true" Size="ButtonSize.Small" @onclick="() => AcceptForDemo(context)">
+                                            <Icon Name="IconName.PersonCheck" class="me-1" aria-hidden="true" />Accept (demo)<span class="visually-hidden">&#32;the invitation as @context.Name</span>
+                                        </Button>
+                                    }
+                                    <Button @ref="roleButtons[context.Id]" Color="ButtonColor.Secondary" Outline="true" Size="ButtonSize.Small" @onclick="() => OpenRoleAsync(context)">
+                                        <Icon Name="IconName.PersonGear" class="me-1" aria-hidden="true" />Change role<span class="visually-hidden">&#32;of @context.Name</span>
+                                    </Button>
+                                    <Button @ref="removeButtons[context.Id]" Color="ButtonColor.Danger" Outline="true" Size="ButtonSize.Small" @onclick="() => AskRemoveAsync(context)">
+                                        @if (invited)
+                                        {
+                                            <Icon Name="IconName.XCircle" class="me-1" aria-hidden="true" />@("Cancel invitation")<span class="visually-hidden">&#32;for @context.Name</span>
+                                        }
+                                        else
+                                        {
+                                            <Icon Name="IconName.PersonDash" class="me-1" aria-hidden="true" />@("Remove")<span class="visually-hidden">&#32;@context.Name</span>
+                                        }
+                                    </Button>
+                                </div>
+                            }
+                            else
+                            {
+                                <span class="small text-body-secondary">@(context.Id == me.Id ? "That's you" : "No actions")</span>
+                            }
+                        </GridColumn>
+                    </GridColumns>
+                </Grid>
+            </ShowcaseDataState>
+        </div>
     </section>
 }
 
@@ -156,23 +211,26 @@
             var free = inviteWorkspace.Seats - State.SeatsUsed(inviteWorkspace.Id);
 
             <ShowcaseDemoNotice Class="mb-3" Text="Demo only: no email is sent. The invitation appears in your team list and holds a seat until it's cancelled." />
-            <EditForm id="lu-invite-form" EditContext="inviteContext" OnValidSubmit="InviteAsync" FormName="lu-invite">
-                <ShowcaseFormErrors />
+            <EditForm id="lu-invite-form" EditContext="inviteContext" OnSubmit="InviteAsync" FormName="lu-invite" novalidate>
                 <DataAnnotationsValidator />
+                <ShowcaseFormErrors ShowSummary="true" />
                 <div class="mb-3">
-                    <label class="form-label" for="lu-invite-email">Email</label>
-                    <InputText @ref="emailInput" id="lu-invite-email" inputmode="email" autocapitalize="none" spellcheck="false" class="form-control" @bind-Value="inviteForm.Email" maxlength="120" autocomplete="off" />
+                    <label class="form-label fw-semibold" for="lu-invite-email">Email</label>
+                    <InputText @ref="emailInput" id="lu-invite-email" inputmode="email" autocapitalize="none" spellcheck="false" class="form-control" @bind-Value="inviteForm.Email" maxlength="120"
+                               autocomplete="off" aria-describedby="lu-invite-email-help" />
+                    <ShowcaseUniqueCheck @ref="emailCheck" For="() => inviteForm.Email" IsTakenAsync="IsInTeamAsync" TakenMessage="InTeamMessage" />
+                    <div class="form-text mt-0" id="lu-invite-email-help">Their work email. Someone already in the team, or already invited, can't be invited again.</div>
                     <ValidationMessage For="() => inviteForm.Email" />
                 </div>
                 <div class="mb-3">
-                    <label class="form-label" for="lu-invite-name">Name <span class="text-body-secondary">(optional)</span></label>
+                    <label class="form-label fw-semibold" for="lu-invite-name">Name <span class="fw-normal text-body-secondary">(optional)</span></label>
                     <InputText id="lu-invite-name" class="form-control" @bind-Value="inviteForm.Name" maxlength="60" autocomplete="off" aria-describedby="lu-invite-name-help" />
                     <div class="form-text" id="lu-invite-name-help">Left empty, the name is taken from the email address.</div>
                     <ValidationMessage For="() => inviteForm.Name" />
                 </div>
                 <fieldset>
-                    <legend class="form-label fs-6">Role</legend>
-                    <InputRadioGroup @bind-Value="inviteForm.Role">
+                    <legend class="form-label fw-semibold fs-6">Role</legend>
+                    <InputRadioGroup @bind-Value="inviteForm.Role" Name="lu-invite-role">
                         @foreach (var role in RolesFor(State.CurrentMember))
                         {
                             <div class="form-check mb-2" @key="role">
@@ -182,6 +240,7 @@
                             </div>
                         }
                     </InputRadioGroup>
+                    <ValidationMessage For="() => inviteForm.Role" />
                 </fieldset>
                 <p class="small text-body-secondary mb-0">
                     @(free > 0 ? $"{FreeSeatsText(free)} The invitation uses one." : "All seats are in use: add seats in Billing, or cancel an invitation, before you invite someone.")

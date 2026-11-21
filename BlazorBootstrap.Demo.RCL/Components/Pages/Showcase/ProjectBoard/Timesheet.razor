@@ -1,0 +1,417 @@
+@page "/showcase/project-board/timesheet"
+@layout PbWorkLayout
+
+<PageTitle>Timesheet · @PbSeedData.ProductName</PageTitle>
+
+@* The signed-in person's week: where it is in the approval, hours by project and day, the entries with Log time and Submit
+   week, and every week they've logged. *@
+<div class="container-fluid px-lg-4">
+    @{
+        var person = State.CurrentPerson;
+        var sheet = person is null ? null : State.TimesheetOf(person.Id, weekStart);
+        var entries = person is null ? Array.Empty<PbTimeEntry>() : State.EntriesOf(person.Id, weekStart);
+        var editable = person is not null && State.CanEditWeek(person.Id, weekStart);
+        var thisWeek = PbState.WeekStart(State.Clock.Today);
+        var projectsInWeek = entries.Select(entry => entry.ProjectId).Distinct().Select(id => State.FindProject(id)).OfType<PbProject>().OrderBy(project => project.Key, StringComparer.Ordinal).ToList();
+    }
+
+    <h1 class="tb-title mb-1">Timesheet</h1>
+    <p class="tb-lead mb-3">
+        Log the hours you spend on each project, then submit the week. Each project's manager approves its hours; approved billable hours go on the client's invoice.
+    </p>
+
+    <nav class="tb-ts-nav mb-3" aria-label="Weeks">
+        <a class="btn btn-sm btn-outline-secondary" href="@WeekUrl(weekStart.AddDays(-7))"><Icon Name="IconName.ChevronLeft" class="me-1" aria-hidden="true" />Previous week</a>
+        @if (weekStart != thisWeek)
+        {
+            <a class="btn btn-sm btn-outline-secondary" href="@WeekUrl(thisWeek)">This week</a>
+        }
+        @if (weekStart < thisWeek)
+        {
+            <a class="btn btn-sm btn-outline-secondary" href="@WeekUrl(weekStart.AddDays(7))">Next week<Icon Name="IconName.ChevronRight" class="ms-1" aria-hidden="true" /></a>
+        }
+    </nav>
+
+    <section class="tb-panel mb-3" aria-labelledby="tb-ts-week-title">
+        <div class="d-flex flex-wrap justify-content-between align-items-start gap-3">
+            <div class="min-w-0">
+                <h2 class="tb-section-title mb-1" id="tb-ts-week-title">Week of @PbDisplay.Date(weekStart) to @PbDisplay.Date(weekStart.AddDays(6))</h2>
+                <p class="mb-0">
+                    <span class="@($"badge text-bg-{StatusColor(sheet?.Status)}")">@StatusText(sheet?.Status)</span>
+                    <span class="ms-1">@StatusHelp(sheet, entries.Count)</span>
+                </p>
+            </div>
+            <div class="d-flex flex-wrap gap-2">
+                @if (editable && weekStart <= thisWeek)
+                {
+                    <button type="button" class="btn btn-outline-primary" @ref="logButton" @onclick="() => OpenEditorAsync(0)">
+                        <Icon Name="IconName.PlusLg" class="me-1" aria-hidden="true" />Log time
+                    </button>
+                    @if (entries.Count > 0)
+                    {
+                        <button type="button" class="btn btn-primary" @onclick="Submit">
+                            <Icon Name="IconName.Send" class="me-1" aria-hidden="true" />@(sheet?.Status == PbTimesheetStatus.Returned ? "Submit again" : "Submit week")
+                        </button>
+                    }
+                }
+            </div>
+        </div>
+
+        @if (sheet?.Status == PbTimesheetStatus.Returned)
+        {
+            <div class="tb-ts-returned mt-3" role="note">
+                <Icon Name="IconName.ArrowReturnLeft" class="me-1" aria-hidden="true" />
+                <strong>Returned by @(State.FindPerson(sheet.ReturnedById)?.Name ?? "a project manager")</strong>
+                @(sheet.DecidedAt is { } returnedAt ? $" on {PbDisplay.Date(returnedAt)}" : null):
+                <span class="tb-plain">@sheet.ReturnReason</span>
+            </div>
+        }
+
+        @if (sheet is { Status: PbTimesheetStatus.Submitted or PbTimesheetStatus.Approved } && sheet.Approvals.Count > 0)
+        {
+            <h3 class="h6 fw-bold mt-3 mb-1">Approvals</h3>
+            <ul class="list-unstyled mb-0 small">
+                @foreach (var approval in sheet.Approvals)
+                {
+                    var project = State.FindProject(approval.ProjectId);
+                    <li @key="approval.ProjectId">
+                        <span class="tb-key me-1">@project?.Key</span>
+                        @if (approval.ApprovedById is not null)
+                        {
+                            <Icon Name="IconName.CheckCircle" class="text-success me-1" aria-hidden="true" />@($"Approved by {State.FindPerson(approval.ApprovedById)?.Name} on {PbDisplay.Date(approval.ApprovedAt!.Value)}")
+                        }
+                        else
+                        {
+                            <Icon Name="IconName.HourglassSplit" class="me-1" aria-hidden="true" />@($"Waiting for {ApproverText(project)}")
+                        }
+                    </li>
+                }
+            </ul>
+        }
+    </section>
+
+    @* Always rendered and focusable, so saving, deleting, and submitting are announced and focus has somewhere to go. *@
+    <p class="tb-list-status mb-2 @(statusIsError ? "text-danger-emphasis" : null)" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
+
+    <section class="tb-panel mb-3" aria-labelledby="tb-ts-summary-title">
+        <h2 class="tb-section-title" id="tb-ts-summary-title">Hours by project and day</h2>
+        @if (entries.Count == 0)
+        {
+            <p class="text-body-secondary mb-0">
+                @(weekStart > thisWeek ? "This week hasn't started yet." : editable ? "No hours yet this week. Log time to add the first entry." : "No hours were logged this week.")
+            </p>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table table-sm align-middle mb-0 tb-ts-summary">
+                    <caption class="tb-ts-caption">Hours per project and day, Monday to Sunday, with totals. @Hours(entries.Where(entry => entry.IsBillable).Sum(entry => entry.Hours)) of @Hours(entries.Sum(entry => entry.Hours)) are billable.</caption>
+                    <thead>
+                        <tr>
+                            <th scope="col">Project</th>
+                            @for (var day = 0; day < 7; day++)
+                            {
+                                var date = weekStart.AddDays(day);
+                                <th scope="col" class="text-end" @key="day"><abbr title="@date.ToString("dddd, MMM d", CultureInfo.InvariantCulture)">@date.ToString("ddd d", CultureInfo.InvariantCulture)</abbr></th>
+                            }
+                            <th scope="col" class="text-end">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var project in projectsInWeek)
+                        {
+                            <tr @key="project.Id">
+                                <th scope="row"><span class="tb-key me-1">@project.Key</span><span class="tb-ts-wrap">@project.Name</span></th>
+                                @for (var day = 0; day < 7; day++)
+                                {
+                                    var date = weekStart.AddDays(day);
+                                    var value = entries.Where(entry => entry.ProjectId == project.Id && entry.Date == date).Sum(entry => entry.Hours);
+                                    <td class="text-end tb-mono" @key="day">@(value == 0 ? "–" : Hours(value, false))</td>
+                                }
+                                <td class="text-end tb-mono fw-semibold">@Hours(entries.Where(entry => entry.ProjectId == project.Id).Sum(entry => entry.Hours), false)</td>
+                            </tr>
+                        }
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <th scope="row">Total</th>
+                            @for (var day = 0; day < 7; day++)
+                            {
+                                var date = weekStart.AddDays(day);
+                                var value = entries.Where(entry => entry.Date == date).Sum(entry => entry.Hours);
+                                <td class="text-end tb-mono fw-semibold" @key="day">@(value == 0 ? "–" : Hours(value, false))</td>
+                            }
+                            <td class="text-end tb-mono fw-bold">@Hours(entries.Sum(entry => entry.Hours), false)</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        }
+    </section>
+
+    <section class="tb-panel mb-4" aria-labelledby="tb-ts-entries-title">
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2">
+            <h2 class="tb-section-title mb-0" id="tb-ts-entries-title">Entries <span class="text-body-secondary fw-normal">(@entries.Count)</span></h2>
+            @* Back to the saved views' defaults. *@
+            <Button Color="ButtonColor.Link" Size="ButtonSize.Small" Class="p-0" @onclick="ResetViewsAsync">Reset views</Button>
+        </div>
+        <ShowcaseDataState Status="@(viewLoaded ? ShowcaseDataStatus.Ready : ShowcaseDataStatus.Loading)"
+                           IsEmpty="@(entries.Count == 0)"
+                           EmptyIcon="IconName.Stopwatch"
+                           EmptyTitle="No entries this week"
+                           EmptyText="@(editable ? "Log time for each project you worked on: the day, the hours, and whether the client is billed." : "Nothing was logged in this week.")"
+                           LoadingText="Loading entries…"
+                           LoadingRows="3"
+                           OnRetry="RefreshGridsAsync">
+            <EmptyActions>
+                @if (editable && weekStart <= thisWeek)
+                {
+                    <Button Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="() => OpenEditorAsync(0)">Log time</Button>
+                }
+            </EmptyActions>
+            <ChildContent>
+                <Grid @ref="entryGrid"
+                      @key="@($"entries-{weekStart:yyyyMMdd}-{gridVersion}")"
+                      TItem="EntryRow"
+                      Class="table table-hover align-middle tb-table-mid sc-grid-row-links"
+                      GridContainerClass="tb-grid border rounded-3"
+                      DataProvider="ProvideEntriesAsync"
+                      SettingsProvider="entryView.GetSettingsAsync"
+                      GridSettingsChanged="SaveEntrySettingsAsync"
+                      AllowPaging="true"
+                      PageSize="@entryPageSize"
+                      PageSizeSelectorVisible="true"
+                      PageSizeSelectorItems="@(new[] { 10, 25, 50 })"
+                      PaginationItemsTextFormat="{0}–{1} of {2} entries"
+                      AllowSorting="true"
+                      AllowColumnChooser="true"
+                      AllowExport="true"
+                      ExportFileName="project-board-time-entries"
+                      Responsive="true"
+                      EmptyText="No entries."
+                      aria-label="Time entries of the week">
+                    <GridColumns>
+                        <GridColumn TItem="EntryRow" HeaderText="Day" PropertyName="DayText" SortString="day" SortKeySelector="row => row.Date"
+                                    IsDefaultSortColumn="@entryView.IsSortColumn("day")" SortDirection="@entryView.DirectionFor("day")" AlwaysVisible="true" TextNoWrap="true">
+                            @{
+                                var entryId = context.Id;
+                            }
+                            @if (editable && context.InvoiceText.Length == 0)
+                            {
+                                @* An entry has no page of its own: the day opens the editor, and its stretched area makes the whole row do so. *@
+                                <button type="button" class="tb-row-button stretched-link" @ref="editButtons[entryId]" @onclick="() => OpenEditorAsync(entryId)">
+                                    @context.DayText<span class="visually-hidden">, @context.Project, @Hours(context.Hours): edit</span>
+                                </button>
+                            }
+                            else
+                            {
+                                @context.DayText
+                            }
+                        </GridColumn>
+                        <GridColumn TItem="EntryRow" HeaderText="Project" PropertyName="Project" SortString="project" SortKeySelector="row => row.Project"
+                                    IsDefaultSortColumn="@entryView.IsSortColumn("project")" SortDirection="@entryView.DirectionFor("project")">
+                            @context.Project
+                        </GridColumn>
+                        <GridColumn TItem="EntryRow" HeaderText="Task" PropertyName="Task" SortString="task" SortKeySelector="row => row.Task"
+                                    IsDefaultSortColumn="@entryView.IsSortColumn("task")" SortDirection="@entryView.DirectionFor("task")">
+                            @(context.Task.Length == 0 ? "None" : context.Task)
+                        </GridColumn>
+                        <GridColumn TItem="EntryRow" HeaderText="Hours" PropertyName="Hours" SortString="hours" SortKeySelector="row => row.Hours"
+                                    IsDefaultSortColumn="@entryView.IsSortColumn("hours")" SortDirection="@entryView.DirectionFor("hours")" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End">
+                            <span class="tb-mono">@Hours(context.Hours, false)</span>
+                        </GridColumn>
+                        <GridColumn TItem="EntryRow" HeaderText="Billable" PropertyName="BillableText" SortString="billable" SortKeySelector="row => row.BillableText"
+                                    IsDefaultSortColumn="@entryView.IsSortColumn("billable")" SortDirection="@entryView.DirectionFor("billable")" TextNoWrap="true">
+                            @context.BillableText
+                        </GridColumn>
+                        <GridColumn TItem="EntryRow" HeaderText="Note" PropertyName="Note" SortString="note" SortKeySelector="row => row.Note"
+                                    IsDefaultSortColumn="@entryView.IsSortColumn("note")" SortDirection="@entryView.DirectionFor("note")">
+                            <span class="tb-plain">@(context.Note.Length == 0 ? "None" : context.Note)</span>
+                        </GridColumn>
+                        <GridColumn TItem="EntryRow" HeaderText="Invoice" PropertyName="InvoiceText" SortString="invoice" SortKeySelector="row => row.InvoiceText"
+                                    IsDefaultSortColumn="@entryView.IsSortColumn("invoice")" SortDirection="@entryView.DirectionFor("invoice")" TextNoWrap="true">
+                            @(context.InvoiceText.Length == 0 ? "Not invoiced" : context.InvoiceText)
+                        </GridColumn>
+                        <GridColumn TItem="EntryRow" HeaderText="Actions" Sortable="false" Exportable="false" TextNoWrap="true">
+                            @if (editable && context.InvoiceText.Length == 0)
+                            {
+                                var entryId = context.Id;
+                                <button type="button" class="btn btn-sm btn-outline-danger" @onclick="() => OpenDeleteAsync(entryId)">
+                                    <Icon Name="IconName.Trash3" class="me-1" aria-hidden="true" />Delete<span class="visually-hidden">&#32;@context.DayText, @context.Project</span>
+                                </button>
+                            }
+                            else
+                            {
+                                <span class="small text-body-secondary">Locked</span>
+                            }
+                        </GridColumn>
+                    </GridColumns>
+                </Grid>
+            </ChildContent>
+        </ShowcaseDataState>
+    </section>
+
+    <section class="tb-panel" aria-labelledby="tb-ts-weeks-title">
+        <h2 class="tb-section-title" id="tb-ts-weeks-title">Your weeks</h2>
+        <ShowcaseDataState Status="@(viewLoaded ? ShowcaseDataStatus.Ready : ShowcaseDataStatus.Loading)"
+                           IsEmpty="@(State.MyTimesheets.Count == 0)"
+                           EmptyIcon="IconName.CalendarWeek"
+                           EmptyTitle="No weeks yet"
+                           EmptyText="A week shows here once you log time in it."
+                           LoadingText="Loading your weeks…"
+                           LoadingRows="3"
+                           OnRetry="RefreshGridsAsync">
+            <ChildContent>
+                <Grid @ref="weekGrid"
+                      @key="@($"weeks-{gridVersion}")"
+                      TItem="WeekRow"
+                      Class="table table-hover align-middle tb-table-mid sc-grid-row-links"
+                      GridContainerClass="tb-grid border rounded-3"
+                      DataProvider="ProvideWeeksAsync"
+                      SettingsProvider="weekView.GetSettingsAsync"
+                      GridSettingsChanged="SaveWeekSettingsAsync"
+                      AllowPaging="true"
+                      PageSize="@weekPageSize"
+                      PageSizeSelectorVisible="true"
+                      PageSizeSelectorItems="@(new[] { 5, 10, 25 })"
+                      PaginationItemsTextFormat="{0}–{1} of {2} weeks"
+                      AllowSorting="true"
+                      AllowColumnChooser="true"
+                      AllowExport="true"
+                      ExportFileName="project-board-timesheets"
+                      Responsive="true"
+                      EmptyText="No weeks."
+                      aria-label="Your weeks">
+                    <GridColumns>
+                        <GridColumn TItem="WeekRow" HeaderText="Week" PropertyName="WeekText" SortString="week" SortKeySelector="row => row.WeekStart"
+                                    IsDefaultSortColumn="@weekView.IsSortColumn("week")" SortDirection="@weekView.DirectionFor("week")" AlwaysVisible="true" TextNoWrap="true">
+                            <a class="tb-row-link stretched-link" href="@WeekUrl(context.WeekStart)">@context.WeekText</a>
+                        </GridColumn>
+                        <GridColumn TItem="WeekRow" HeaderText="Status" PropertyName="Status" SortString="status" SortKeySelector="row => row.StatusValue"
+                                    IsDefaultSortColumn="@weekView.IsSortColumn("status")" SortDirection="@weekView.DirectionFor("status")" TextNoWrap="true">
+                            <span class="@($"badge text-bg-{StatusColor(context.StatusValue)}")">@context.Status</span>
+                        </GridColumn>
+                        <GridColumn TItem="WeekRow" HeaderText="Hours" PropertyName="Hours" SortString="hours" SortKeySelector="row => row.Hours"
+                                    IsDefaultSortColumn="@weekView.IsSortColumn("hours")" SortDirection="@weekView.DirectionFor("hours")" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End">
+                            <span class="tb-mono">@Hours(context.Hours, false)</span>
+                        </GridColumn>
+                        <GridColumn TItem="WeekRow" HeaderText="Billable" PropertyName="Billable" SortString="billable" SortKeySelector="row => row.Billable"
+                                    IsDefaultSortColumn="@weekView.IsSortColumn("billable")" SortDirection="@weekView.DirectionFor("billable")" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End">
+                            <span class="tb-mono">@Hours(context.Billable, false)</span>
+                        </GridColumn>
+                        <GridColumn TItem="WeekRow" HeaderText="Projects" PropertyName="Projects" SortString="projects" SortKeySelector="row => row.Projects"
+                                    IsDefaultSortColumn="@weekView.IsSortColumn("projects")" SortDirection="@weekView.DirectionFor("projects")">
+                            @context.Projects
+                        </GridColumn>
+                    </GridColumns>
+                </Grid>
+            </ChildContent>
+        </ShowcaseDataState>
+    </section>
+</div>
+
+<Modal @ref="editorModal" IsVerticallyCentered="true" IsScrollable="true" ShowCloseButton="false" aria-labelledby="tb-ts-editor-title" OnShown="OnEditorShownAsync" OnHidden="OnEditorHidden">
+    <HeaderTemplate>
+        <h2 class="modal-title h5" id="tb-ts-editor-title">@(editId == 0 ? "Log time" : "Edit time entry")</h2>
+    </HeaderTemplate>
+    <BodyTemplate>
+        @{
+            var me = State.CurrentPerson;
+            var choices = me is null ? Array.Empty<PbProject>() : State.EntryProjects(me.Id);
+            var chosen = State.FindProject(form.ProjectId);
+            var projectTasks = chosen is null ? Array.Empty<PbTask>() : State.TasksOf(chosen.Id);
+            var maxDay = weekStart.AddDays(6) < State.Clock.Today ? weekStart.AddDays(6) : State.Clock.Today;
+        }
+        <EditForm id="tb-ts-form" EditContext="editContext" OnSubmit="SaveAsync" FormName="pb-time-entry" novalidate>
+            <DataAnnotationsValidator />
+            <ShowcaseFormErrors ShowSummary="true" />
+            <div class="mb-3">
+                <label class="form-label fw-semibold" for="tb-ts-project">Project</label>
+                <InputSelect @ref="projectInput" TValue="int" id="tb-ts-project" class="form-select" @bind-Value="form.ProjectId" aria-describedby="tb-ts-project-help">
+                    <option value="0">Choose a project</option>
+                    @if (chosen is not null && choices.All(project => project.Id != chosen.Id))
+                    {
+                        <option value="@chosen.Id">@chosen.Key · @chosen.Name (you can't log new hours on it)</option>
+                    }
+                    @foreach (var project in choices)
+                    {
+                        <option value="@project.Id" @key="project.Id">@project.Key · @project.Name</option>
+                    }
+                </InputSelect>
+                <div class="form-text" id="tb-ts-project-help">Projects you're on that have started.</div>
+                <ValidationMessage For="() => form.ProjectId" />
+            </div>
+            <div class="mb-3">
+                <label class="form-label fw-semibold" for="tb-ts-task">Task <span class="fw-normal text-body-secondary">(optional)</span></label>
+                <InputSelect TValue="int?" id="tb-ts-task" class="form-select" @bind-Value="form.TaskId" disabled="@(chosen is null)">
+                    <option value="">No task</option>
+                    @foreach (var task in projectTasks)
+                    {
+                        <option value="@task.Id" @key="task.Id">@State.TaskKey(task) @task.Title</option>
+                    }
+                </InputSelect>
+                <ValidationMessage For="() => form.TaskId" />
+            </div>
+            <div class="row g-3 mb-3">
+                <div class="col-sm-6">
+                    <label class="form-label fw-semibold" for="tb-ts-date">Day</label>
+                    <InputDate TValue="DateTime?" id="tb-ts-date" class="form-control" @bind-Value="form.Date" min="@DealDisplay.ToDateInput(weekStart)" max="@DealDisplay.ToDateInput(maxDay)"
+                               ParsingErrorMessage="Enter the day as a full date." aria-describedby="tb-ts-date-help" />
+                    <div class="form-text" id="tb-ts-date-help">In this week, up to today.</div>
+                    <ValidationMessage For="() => form.Date" />
+                </div>
+                <div class="col-sm-6">
+                    <label class="form-label fw-semibold" for="tb-ts-hours">Hours</label>
+                    <InputNumber TValue="decimal?" id="tb-ts-hours" class="form-control" @bind-Value="form.Hours" step="0.25" min="0.25" max="12" inputmode="decimal"
+                                 ParsingErrorMessage="Enter the hours as a number, like 1.5." aria-describedby="tb-ts-hours-help" />
+                    <div class="form-text" id="tb-ts-hours-help">0.25 to 12, in quarter hours (like 1.75). At most 24 in a day.</div>
+                    <ValidationMessage For="() => form.Hours" />
+                </div>
+            </div>
+            <div class="form-check mb-1">
+                <InputCheckbox class="form-check-input" id="tb-ts-billable" @bind-Value="form.IsBillable" disabled="@(chosen?.ClientId is null)" aria-describedby="tb-ts-billable-help" />
+                <label class="form-check-label fw-semibold" for="tb-ts-billable">Billable</label>
+            </div>
+            <div class="form-text mt-0 mb-1" id="tb-ts-billable-help">
+                @(chosen is null ? "Billable hours go on the client's invoice once approved." : chosen.ClientId is null ? "An internal project is never billed." : $"Billed to {State.FindClient(chosen.ClientId)?.Name} once approved.")
+            </div>
+            <ValidationMessage For="() => form.IsBillable" />
+            <div class="mt-3">
+                <label class="form-label fw-semibold" for="tb-ts-note">Note <span class="fw-normal text-body-secondary">(optional)</span></label>
+                <InputText id="tb-ts-note" class="form-control" @bind-Value="form.Note" maxlength="@PbState.MaxEntryNoteLength" autocomplete="off" aria-describedby="tb-ts-note-help" />
+                <div class="form-text" id="tb-ts-note-help">What you worked on, up to @PbState.MaxEntryNoteLength characters. The project manager sees it.</div>
+                <ValidationMessage For="() => form.Note" />
+            </div>
+        </EditForm>
+        <p class="tb-form-error small mt-3 mb-0" role="alert">@formMessage</p>
+    </BodyTemplate>
+    <FooterTemplate>
+        <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => editorModal.HideAsync()">Cancel</Button>
+        <button type="submit" form="tb-ts-form" class="btn btn-primary">
+            <Icon Name="@(editId == 0 ? IconName.PlusLg : IconName.CheckLg)" class="me-1" aria-hidden="true" />@(editId == 0 ? "Log time" : "Save entry")
+        </button>
+    </FooterTemplate>
+</Modal>
+
+<Modal @ref="deleteModal" IsVerticallyCentered="true" ShowCloseButton="false" aria-labelledby="tb-ts-delete-title" OnHidden="OnDeleteHidden">
+    <HeaderTemplate>
+        <h2 class="modal-title h5" id="tb-ts-delete-title">Delete this entry?</h2>
+    </HeaderTemplate>
+    <BodyTemplate>
+        @if (State.FindTimeEntry(deleteId) is { } doomed)
+        {
+            <p class="mb-0">@Hours(doomed.Hours) on @State.FindProject(doomed.ProjectId)?.Key, @PbDisplay.Date(doomed.Date), leave your timesheet. This can't be undone.</p>
+        }
+        else
+        {
+            <p class="mb-0">That entry was already deleted.</p>
+        }
+    </BodyTemplate>
+    <FooterTemplate>
+        <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => deleteModal.HideAsync()">Cancel</Button>
+        @if (State.FindTimeEntry(deleteId) is not null)
+        {
+            <Button Color="ButtonColor.Danger" @onclick="ConfirmDeleteAsync"><Icon Name="IconName.Trash3" class="me-1" aria-hidden="true" />Delete entry</Button>
+        }
+    </FooterTemplate>
+</Modal>

@@ -1,4 +1,4 @@
-/* A client's page: the header facts, deals, and projects. */
+/* A client's page: the header facts and projects; the deals and contacts Grids are styled in PbFrame.razor.css. */
 .pb-cldet-head {
     min-width: 0;
     flex: 1 1 20rem;
@@ -52,20 +52,9 @@
         outline-offset: 2px;
     }
 
-.pb-cldet-caption {
-    caption-side: top;
-    padding-top: 0;
-    font-size: .8125rem;
-    color: var(--bs-secondary-color);
-}
-
 .pb-cldet-wrap {
     min-width: 10rem;
     overflow-wrap: anywhere;
-}
-
-.pb-cldet-close {
-    min-width: 9rem;
 }
 
 .pb-cldet-project {

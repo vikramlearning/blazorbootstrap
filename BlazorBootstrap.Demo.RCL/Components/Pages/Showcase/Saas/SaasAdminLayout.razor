@@ -8,9 +8,12 @@
             <span class="sd-workspace-name">Operator console</span>
         </TopbarStart>
         <TopbarEnd>
+            @* The search and the notifications show only while someone is signed in; nothing on the public marketing pages. *@
+            <ShowcaseGlobalSearch Class="sd-global-search" Placeholder="Search tenants, invoices, leads" Label="Search tenants, invoices, leads, and plans" />
             <a class="btn btn-sm btn-outline-secondary" href="@SaasLayout.Base">
                 <Icon Name="IconName.BoxArrowUpRight" class="me-1" aria-hidden="true" />View site
             </a>
+            <ShowcaseNotificationsMenu />
             <ShowcaseAccountMenu SiteBase="@SaasLayout.Base" SignInPath="@SaasLayout.SignInPath" />
         </TopbarEnd>
         <ChildContent>

@@ -57,8 +57,28 @@ public enum HelpDeskSlaState
 /// <summary>A ticket and knowledge base category. New requests in it go to <see cref="TeamId" />'s queue until someone is assigned.</summary>
 public sealed record HelpDeskCategory(string Id, string Name, IconName IconName, string TeamId);
 
-/// <summary>A team of agents (a group, in help desk terms).</summary>
-public sealed record HelpDeskTeam(string Id, string Name, string Description);
+/// <summary>
+/// A team of agents (a group, in help desk terms). <see cref="LeadAgentId" /> is the team lead, an active agent on the team,
+/// who is notified when one of the team's tickets is escalated; <see langword="null" /> when the team has no lead.
+/// </summary>
+public sealed record HelpDeskTeam(string Id, string Name, string Description, string? LeadAgentId = null);
+
+/// <summary>What an escalation rule watches on an unresolved ticket.</summary>
+public enum HelpDeskEscalationTrigger
+{
+    /// <summary>No public agent reply yet, the set number of hours after the ticket was created.</summary>
+    NoFirstReply,
+
+    /// <summary>Still not resolved after the set number of hours on the SLA clock (time waiting on the customer doesn't count).</summary>
+    NotResolved,
+}
+
+/// <summary>
+/// An SLA escalation rule (AC-7a): an unresolved ticket of <see cref="Priority" /> (any priority when <see langword="null" />)
+/// that meets <see cref="Trigger" /> after <see cref="Hours" /> moves up one support tier, is flagged in the queue, and its
+/// team lead is notified. Each rule escalates a ticket once.
+/// </summary>
+public sealed record HelpDeskEscalationRule(int Id, string Name, HelpDeskPriority? Priority, HelpDeskEscalationTrigger Trigger, int Hours, bool IsActive);
 
 /// <summary>
 /// An agent on the support roster. Tickets are assigned by <see cref="Name" />. <see cref="AccountId" /> links the roster
@@ -108,9 +128,11 @@ public sealed record HelpDeskRatingComment(DateTime At, int? TicketId, string Cu
 
 /// <summary>
 /// A message in a ticket's thread. Customer messages and ticket descriptions are plain text; agent replies are rich
-/// text from the editor and are always rendered through <c>ShowcaseHtml.FromEditorHtml</c>.
+/// text from the editor and are always rendered through <c>ShowcaseHtml.FromEditorHtml</c>. Flags that are off are left out of
+/// the tab's snapshot, to keep it small.
 /// </summary>
-public sealed record HelpDeskMessage(string Author, bool IsAgent, bool IsInternalNote, bool IsRichText, string Body, DateTime PostedAt);
+public sealed record HelpDeskMessage(string Author, [property: System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingDefault)] bool IsAgent,
+    [property: System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingDefault)] bool IsInternalNote, [property: System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingDefault)] bool IsRichText, string Body, DateTime PostedAt);
 
 /// <summary>One entry in a ticket's activity log.</summary>
 public sealed record HelpDeskActivity(DateTime At, string Actor, string Text);
@@ -131,27 +153,31 @@ public sealed record HelpDeskSavedReply(int Id, string Title, string Html);
 /// <summary>Helpful and not-helpful votes on one article.</summary>
 public sealed record HelpDeskArticleVotes(int ArticleId, int Helpful, int NotHelpful);
 
-/// <summary>A support ticket.</summary>
+/// <summary>A support ticket. Empty and default values are left out of the tab's snapshot, to keep it small.</summary>
 public sealed class HelpDeskTicket
 {
     #region Properties, Indexers
 
     /// <summary>Gets or sets the agent the ticket is assigned to, or <see langword="null" /> when unassigned.</summary>
+    [System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingDefault)]
     public string? Assignee { get; set; }
 
     /// <summary>Gets or sets the category ID.</summary>
     public string CategoryId { get; set; } = string.Empty;
 
     /// <summary>Gets the customer's company, if any.</summary>
+    [System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingDefault)]
     public string? Company { get; init; }
 
     /// <summary>Gets when the ticket was created.</summary>
     public DateTime CreatedAt { get; init; }
 
     /// <summary>Gets the customer's demo account, or <see langword="null" /> for a customer who wrote in by email.</summary>
+    [System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingDefault)]
     public string? CustomerAccountId { get; init; }
 
     /// <summary>Gets or sets whether the customer has an agent reply they haven't opened yet.</summary>
+    [System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingDefault)]
     public bool CustomerUnread { get; set; }
 
     /// <summary>Gets the customer's email address.</summary>
@@ -163,28 +189,49 @@ public sealed class HelpDeskTicket
     /// <summary>Gets the ticket number.</summary>
     public int Id { get; init; }
 
-    /// <summary>Gets the activity log, oldest first: status, priority, category, and assignee changes and who made them.</summary>
+    /// <summary>Gets or sets the escalation rules that have escalated the ticket, or <see langword="null" /> when none has.</summary>
+    [System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
+    public List<int>? EscalatedByRuleIds { get; set; }
+
+    /// <summary>Gets or sets how many tiers the ticket has been escalated: 0 (Tier 1, not escalated) to 2 (Tier 3).</summary>
+    [System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingDefault)]
+    public int EscalationLevel { get; set; }
+
+    /// <summary>Gets whether the ticket has been escalated above Tier 1.</summary>
+    [System.Text.Json.Serialization.JsonIgnore]
+    public bool IsEscalated => EscalationLevel > 0;
+
+    /// <summary>Gets the support tier the ticket is at: 1 to 3.</summary>
+    [System.Text.Json.Serialization.JsonIgnore]
+    public int Tier => EscalationLevel + 1;
+
+    /// <summary>Gets the activity log, oldest first: status, priority, category, assignee, and escalation changes and who made them.</summary>
     public List<HelpDeskActivity> Activity { get; init; } = new();
 
     /// <summary>Gets the thread, oldest first.</summary>
     public List<HelpDeskMessage> Messages { get; init; } = new();
 
     /// <summary>Gets or sets the minutes the ticket has spent waiting on the customer (Pending) so far; the SLA pauses for them.</summary>
+    [System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingDefault)]
     public double PausedMinutes { get; set; }
 
     /// <summary>Gets or sets when the ticket went Pending, while it is Pending.</summary>
+    [System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingDefault)]
     public DateTime? PendingSince { get; set; }
 
     /// <summary>Gets or sets the priority.</summary>
     public HelpDeskPriority Priority { get; set; }
 
     /// <summary>Gets or sets when the ticket was resolved.</summary>
+    [System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingDefault)]
     public DateTime? ResolvedAt { get; set; }
 
     /// <summary>Gets or sets the customer's rating of a resolved ticket.</summary>
+    [System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingDefault)]
     public HelpDeskSatisfaction? Satisfaction { get; set; }
 
     /// <summary>Gets or sets the customer's comment with the rating.</summary>
+    [System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingDefault)]
     public string? SatisfactionComment { get; set; }
 
     /// <summary>Gets or sets the status.</summary>
@@ -202,6 +249,7 @@ public sealed class HelpDeskTicket
     public DateTime? FirstReplyAt => Messages.FirstOrDefault(message => message.IsAgent && !message.IsInternalNote)?.PostedAt;
 
     /// <summary>Gets when the last message was posted, or the creation time.</summary>
+    [System.Text.Json.Serialization.JsonIgnore]
     public DateTime UpdatedAt => Messages.Count == 0 ? CreatedAt : Messages[^1].PostedAt;
 
     #endregion
@@ -244,8 +292,11 @@ public sealed class HelpDeskFilter
     /// <summary>Gets or sets whether only the signed-in agent's tickets are shown.</summary>
     public bool AssignedToMe { get; set; }
 
+    /// <summary>Gets or sets whether only escalated tickets (Tier 2 or 3) are shown.</summary>
+    public bool EscalatedOnly { get; set; }
+
     /// <summary>Gets whether any filter narrows the queue beyond the default (every ticket that is not resolved).</summary>
-    public bool IsActive => AssignedToMe || Priority.Length > 0 || TeamId.Length > 0 || Status != StatusAllOpen || !string.IsNullOrWhiteSpace(Search);
+    public bool IsActive => AssignedToMe || EscalatedOnly || Priority.Length > 0 || TeamId.Length > 0 || Status != StatusAllOpen || !string.IsNullOrWhiteSpace(Search);
 
     /// <summary>Gets or sets the priority name; empty means every priority.</summary>
     public string Priority { get; set; } = string.Empty;
@@ -269,6 +320,7 @@ public sealed class HelpDeskFilter
     public void Clear()
     {
         AssignedToMe = false;
+        EscalatedOnly = false;
         Priority = string.Empty;
         Search = string.Empty;
         Status = StatusAllOpen;

@@ -1,58 +1,35 @@
+using System.ComponentModel.DataAnnotations;
 using System.Globalization;
+using System.Linq.Expressions;
 using BlazorBootstrap.Demo.RCL.Models.Showcase.ProjectBoard;
 using BlazorBootstrap.Demo.RCL.Services.Showcase.ProjectBoard;
+using Microsoft.AspNetCore.Components.Forms;
 
 namespace BlazorBootstrap.Demo.RCL.Components.Pages.Showcase.ProjectBoard;
 
 /// <summary>
-/// The task form in a <see cref="Modal" />: title, description, column (new tasks), assignee (the project's people only, or
-/// Unassigned), priority, due date (native <c>date</c> input), estimate (native <c>number</c> input), and milestone. Limits
-/// come from <see cref="PbState" /> (<c>maxlength</c>, <c>min</c>, <c>max</c>, and help text). It checks the fields itself,
-/// ties each error to its field (<c>aria-describedby</c>, <c>aria-invalid</c>), and focuses the first invalid field after
-/// the render that shows it. It saves with <see cref="PbState.CreateTask" /> or <see cref="PbState.UpdateTask" />, maps
-/// every result to a message, and reports the outcome in <see cref="OnClosed" /> once the dialog is hidden, so the page
-/// announces it and moves focus back (the Modal doesn't).
+/// The task form in a <see cref="Modal" />, an <see cref="EditForm" /> (rule WR-002): title (required, up to
+/// <see cref="PbState.MaxTaskTitleLength" /> characters), description, column (new tasks), assignee (the project's people
+/// only, or Unassigned; someone no longer on the project is refused), priority, due date (optional, within the project's
+/// start and due dates, a cross-field rule), estimate (whole hours in range), and milestone (one of the project's).
+/// Messages show after a field is touched or on submit, and a failed submit shows a summary that links to each field. It
+/// saves with <see cref="PbState.CreateTask" /> or <see cref="PbState.UpdateTask" />, maps each refusal to its field or the
+/// dialog's alert, and reports the outcome in <see cref="OnClosed" /> once the dialog is hidden, so the page announces it
+/// and moves focus back (the Modal doesn't).
 /// </summary>
 public partial class TaskEditor : ComponentBase, IDisposable
 {
     #region Fields and Constants
 
-    private string assigneeId = string.Empty;
+    private EditContext editContext = default!;
 
-    private string? assigneeError;
-
-    private ElementReference? assigneeInput;
-
-    private string description = string.Empty;
-
-    private string? descriptionError;
-
-    private ElementReference? descriptionInput;
-
-    private string? dueError;
-
-    private ElementReference? dueInput;
-
-    private string dueText = string.Empty;
-
-    private string? estimateError;
-
-    private ElementReference? estimateInput;
-
-    private string estimateText = string.Empty;
+    private int formErrorCount;
 
     private string? formError;
 
-    private ElementReference? formStatus;
+    private string? formErrorText;
 
-    /// <summary>Returns the field to focus after the next render (the first invalid one).</summary>
-    private Func<ElementReference?>? focusTarget;
-
-    private string? milestoneError;
-
-    private ElementReference? milestoneInput;
-
-    private string milestoneText = string.Empty;
+    private TaskForm form = new();
 
     private Modal modal = default!;
 
@@ -62,22 +39,17 @@ public partial class TaskEditor : ComponentBase, IDisposable
     /// <summary>The outcome to report once the dialog is hidden; <see langword="null" /> means it was cancelled.</summary>
     private TaskEditorResult? pendingResult;
 
-    private PbTaskPriority priority = PbTaskPriority.Medium;
-
     private int projectId;
 
     private bool saving;
 
-    private PbTaskStatus status = PbTaskStatus.Todo;
+    /// <summary>The state's answers that belong to a field (an assignee no longer on the project, a deleted milestone), shown like the form's own messages.</summary>
+    private ValidationMessageStore? serverErrors;
 
     /// <summary>The task being edited, or 0 for a new one.</summary>
     private int taskId;
 
-    private string title = string.Empty;
-
-    private string? titleError;
-
-    private ElementReference? titleInput;
+    private InputText? titleInput;
 
     #endregion
 
@@ -85,30 +57,29 @@ public partial class TaskEditor : ComponentBase, IDisposable
 
     #region Protected Override Methods
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+    protected override void OnInitialized()
     {
-        if (focusTarget is { } target)
-        {
-            focusTarget = null;
-            await PbDisplay.FocusAsync(target());
-        }
+        ResetForm(new TaskForm());
+        State.Changed += OnStateChanged;
     }
-
-    protected override void OnInitialized() => State.Changed += OnStateChanged;
 
     #endregion
 
     #region Public Methods
 
-    /// <summary>Stops listening to state changes.</summary>
-    public void Dispose() => State.Changed -= OnStateChanged;
+    /// <summary>Stops listening to state and form changes.</summary>
+    public void Dispose()
+    {
+        State.Changed -= OnStateChanged;
+        editContext.OnFieldChanged -= OnFieldChanged;
+    }
 
     /// <summary>Opens the form for a new task in a project, in a column (the Column select can change it).</summary>
     public async Task OpenCreateAsync(int forProjectId, PbTaskStatus inStatus)
     {
         Reset();
         projectId = forProjectId;
-        status = inStatus;
+        ResetForm(new TaskForm { Status = inStatus });
         open = true;
 
         // Called by the page, not by an event of this component: render the form before the dialog opens.
@@ -125,14 +96,11 @@ public partial class TaskEditor : ComponentBase, IDisposable
         {
             taskId = task.Id;
             projectId = task.ProjectId;
-            status = task.Status;
-            title = task.Title;
-            description = task.Description;
-            assigneeId = task.AssigneeId ?? string.Empty;
-            priority = task.Priority;
-            dueText = task.DueDate?.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture) ?? string.Empty;
-            estimateText = task.EstimateHours == 0 ? string.Empty : task.EstimateHours.ToString(CultureInfo.InvariantCulture);
-            milestoneText = task.MilestoneId?.ToString(CultureInfo.InvariantCulture) ?? string.Empty;
+            ResetForm(new TaskForm
+            {
+                Status = task.Status, Title = task.Title, Description = task.Description, AssigneeId = task.AssigneeId ?? string.Empty, Priority = task.Priority, DueDate = task.DueDate,
+                EstimateHours = task.EstimateHours == 0 ? null : task.EstimateHours, MilestoneId = task.MilestoneId,
+            });
         }
         else
         {
@@ -150,8 +118,6 @@ public partial class TaskEditor : ComponentBase, IDisposable
 
     #region Private Methods
 
-    private static string InputClass(string baseClass, string? error) => error is null ? baseClass : baseClass + " is-invalid";
-
     private static IReadOnlyList<PbPerson> MembersOf(PbState state, PbProject? project) =>
         project is null ? Array.Empty<PbPerson>() : state.People.Where(person => project.MemberIds.Contains(person.Id)).ToList();
 
@@ -162,22 +128,15 @@ public partial class TaskEditor : ComponentBase, IDisposable
         await modal.HideAsync();
     }
 
-    /// <summary>Why the state refused the fields when the form's own checks passed.</summary>
-    private string InvalidText(PbProject project, PbTaskInput input)
-    {
-        if (input.AssigneeId is { } id && !project.MemberIds.Contains(id))
-            return $"{State.FindPerson(id)?.Name ?? "That person"} isn't on {project.Key} any more. Choose someone on the project, or Unassigned. Nothing was saved.";
-
-        if (input.MilestoneId is { } milestoneId && project.Milestones.All(milestone => milestone.Id != milestoneId))
-            return "That milestone was deleted. Choose another one, or None. Nothing was saved.";
-
-        if (taskId == 0 && State.AllTasks.Count >= PbState.MaxTasks)
-            return $"This demo holds up to {PbState.MaxTasks} tasks, and it's full. A project manager can delete tasks first. Nothing was created.";
-
-        return "The storage for this demo tab is full, so nothing was saved. Remove some comments or tasks, then try again.";
-    }
-
     private IReadOnlyList<PbPerson> Members(PbProject? project) => MembersOf(State, project);
+
+    /// <summary>Any change clears the dialog's alert and the state's message on that field.</summary>
+    private void OnFieldChanged(object? sender, FieldChangedEventArgs args)
+    {
+        serverErrors?.Clear(args.FieldIdentifier);
+        formError = formErrorText = null;
+        formErrorCount = 0;
+    }
 
     /// <summary>Reports the outcome (or a cancel) now that the dialog is hidden.</summary>
     private async Task OnHiddenAsync()
@@ -193,7 +152,7 @@ public partial class TaskEditor : ComponentBase, IDisposable
     private async Task OnShownAsync()
     {
         if (open)
-            await PbDisplay.FocusAsync(titleInput);
+            await PbDisplay.FocusAsync(titleInput?.Element);
     }
 
     private void OnStateChanged() => InvokeAsync(StateHasChanged);
@@ -201,97 +160,60 @@ public partial class TaskEditor : ComponentBase, IDisposable
     private void Reset()
     {
         taskId = 0;
-        title = description = assigneeId = dueText = estimateText = milestoneText = string.Empty;
-        priority = PbTaskPriority.Medium;
-        status = PbTaskStatus.Todo;
-        titleError = descriptionError = assigneeError = dueError = estimateError = milestoneError = formError = null;
+        formError = formErrorText = null;
+        formErrorCount = 0;
         pendingResult = null;
         saving = false;
     }
 
-    /// <summary>Checks the fields, saves, and closes the dialog on success; errors stay in the form.</summary>
+    private void ResetForm(TaskForm next)
+    {
+        if (editContext is not null)
+            editContext.OnFieldChanged -= OnFieldChanged;
+
+        form = next;
+        editContext = new EditContext(form);
+        serverErrors = new ValidationMessageStore(editContext);
+        editContext.OnFieldChanged += OnFieldChanged;
+    }
+
+    /// <summary>
+    /// Saves once the form is valid (every rule runs, and a failed submit shows the summary) and closes the dialog on
+    /// success. The state checks again; its refusal maps to a field or the alert, and the dialog stays open.
+    /// </summary>
     private async Task SaveAsync()
     {
         if (saving)
             return;
 
-        formError = null;
+        formError = formErrorText = null;
 
         if (State.FindProject(projectId) is not { } project)
         {
-            formError = taskId == 0 ? "This project was deleted, so the task can't be created." : "This task's project was deleted, so the changes can't be saved.";
-            focusTarget = () => formStatus;
+            ShowError(taskId == 0 ? "This project was deleted, so the task can't be created." : "This task's project was deleted, so the changes can't be saved.");
 
             return;
         }
 
-        var trimmedTitle = title.Trim();
-        var trimmedDescription = description.Trim();
-        string? assignee = assigneeId.Length == 0 ? null : assigneeId;
-        DateTime? due = null;
-        var estimate = 0;
-        int? milestoneId = null;
+        // The cross-field rules need the project as it is now.
+        form.MemberIds = project.MemberIds.ToList();
+        form.MilestoneIds = project.Milestones.Select(milestone => milestone.Id).ToList();
+        form.ProjectKey = project.Key;
+        form.ProjectStart = project.StartDate;
+        form.ProjectDue = project.DueDate;
+        form.AssigneeName = State.FindPerson(string.IsNullOrEmpty(form.AssigneeId) ? null : form.AssigneeId)?.Name;
+        serverErrors?.Clear();
 
-        titleError = trimmedTitle.Length == 0 ? "Enter a title for the task."
-            : trimmedTitle.Length > PbState.MaxTaskTitleLength ? $"Shorten the title to {PbState.MaxTaskTitleLength} characters or fewer (now {trimmedTitle.Length})."
-            : null;
-        descriptionError = trimmedDescription.Length > PbState.MaxDescriptionLength
-            ? $"Shorten the description to {PbState.MaxDescriptionLength} characters or fewer (now {trimmedDescription.Length})."
-            : null;
-        assigneeError = assignee is not null && !project.MemberIds.Contains(assignee)
-            ? $"{State.FindPerson(assignee)?.Name ?? "That person"} isn't on {project.Key}. Choose someone on the project, or Unassigned."
-            : null;
-
-        if (dueText.Trim().Length == 0)
-            dueError = null;
-        else if (!DateTime.TryParseExact(dueText.Trim(), "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out var parsed))
-            dueError = "Enter the due date as a full date, like 2026-12-03, or leave it empty.";
-        else if (parsed < MinDate || parsed > MaxDate)
-            dueError = $"Choose a due date from {PbDisplay.Date(MinDate)} to {PbDisplay.Date(MaxDate)}.";
-        else
-        {
-            dueError = null;
-            due = parsed;
-        }
-
-        if (estimateText.Trim().Length == 0)
-            estimateError = null;
-        else if (!int.TryParse(estimateText.Trim(), NumberStyles.None, CultureInfo.InvariantCulture, out estimate) || estimate > PbState.MaxEstimateHours)
-            estimateError = $"Enter whole hours from 0 to {PbState.MaxEstimateHours}, or leave it empty.";
-        else
-            estimateError = null;
-
-        if (milestoneText.Length == 0)
-            milestoneError = null;
-        else if (int.TryParse(milestoneText, NumberStyles.None, CultureInfo.InvariantCulture, out var id) && project.Milestones.Any(milestone => milestone.Id == id))
-        {
-            milestoneError = null;
-            milestoneId = id;
-        }
-        else
-            milestoneError = "That milestone was deleted. Choose another one, or None.";
-
-        focusTarget = titleError is not null ? () => titleInput
-            : descriptionError is not null ? () => descriptionInput
-            : assigneeError is not null ? () => assigneeInput
-            : dueError is not null ? () => dueInput
-            : estimateError is not null ? () => estimateInput
-            : milestoneError is not null ? () => milestoneInput
-            : null;
-
-        if (focusTarget is not null)
-        {
-            formError = "Fix the highlighted fields, then save again.";
-
+        if (!editContext.Validate())
             return;
-        }
 
-        var input = new PbTaskInput(trimmedTitle, trimmedDescription, assignee, priority, due, estimateError is null ? estimate : 0, milestoneId);
+        var input = new PbTaskInput(form.Title.Trim(), (form.Description ?? string.Empty).Trim(), string.IsNullOrEmpty(form.AssigneeId) ? null : form.AssigneeId, form.Priority, form.DueDate?.Date,
+            form.EstimateHours ?? 0, form.MilestoneId);
         saving = true;
 
         if (taskId == 0)
         {
-            var result = State.CreateTask(project.Id, status, input, out var created);
+            var result = State.CreateTask(project.Id, form.Status, input, out var created);
 
             switch (result)
             {
@@ -304,23 +226,23 @@ public partial class TaskEditor : ComponentBase, IDisposable
                     return;
 
                 case PbResult.WrongState:
-                    formError = $"{project.Name} is completed, so it takes no new tasks. Nothing was created.";
+                    ShowError($"{project.Name} is completed, so it takes no new tasks. Nothing was created.");
                     break;
 
                 case PbResult.NotFound:
-                    formError = "This project was deleted, so the task can't be created.";
+                    ShowError("This project was deleted, so the task can't be created.");
                     break;
 
                 case PbResult.NotAllowed:
-                    formError = "Your sign-in ended. Sign in again to add tasks. Nothing was created.";
+                    ShowError("Your sign-in ended. Sign in again to add tasks. Nothing was created.");
                     break;
 
                 case PbResult.Invalid:
-                    formError = InvalidText(project, input);
+                    Refused(project, input);
                     break;
 
                 default:
-                    formError = "That didn't work, and nothing was created. Try again.";
+                    ShowError("That didn't work, and nothing was created. Try again.");
                     break;
             }
         }
@@ -344,25 +266,59 @@ public partial class TaskEditor : ComponentBase, IDisposable
                     return;
 
                 case PbResult.NotFound:
-                    formError = "This task was deleted, so the changes can't be saved.";
+                    ShowError("This task was deleted, so the changes can't be saved.");
+                    break;
+
+                case PbResult.WrongState:
+                    ShowError($"{project.Name} is completed, so its tasks are read-only. Nothing was saved.");
                     break;
 
                 case PbResult.NotAllowed:
-                    formError = "Your sign-in ended. Sign in again to edit tasks. Nothing was saved.";
+                    ShowError("Your sign-in ended. Sign in again to edit tasks. Nothing was saved.");
                     break;
 
                 case PbResult.Invalid:
-                    formError = InvalidText(project, input);
+                    Refused(project, input);
                     break;
 
                 default:
-                    formError = "That didn't work, and nothing was saved. Try again.";
+                    ShowError("That didn't work, and nothing was saved. Try again.");
                     break;
             }
         }
 
         saving = false;
-        focusTarget = () => formStatus;
+    }
+
+    /// <summary>Why the state refused the fields when the form's own checks passed (the project changed meanwhile): on the field, or in the alert.</summary>
+    private void Refused(PbProject project, PbTaskInput input)
+    {
+        if (input.AssigneeId is { } id && !project.MemberIds.Contains(id))
+            ServerError(() => form.AssigneeId, $"{State.FindPerson(id)?.Name ?? "That person"} isn't on {project.Key} any more. Choose someone on the project, or Unassigned.");
+        else if (input.MilestoneId is { } milestoneId && project.Milestones.All(milestone => milestone.Id != milestoneId))
+            ServerError(() => form.MilestoneId, "That milestone was deleted. Choose another one, or None.");
+        else if (input.DueDate is { } due && !PbState.IsDueInProject(project, due))
+            ServerError(() => form.DueDate, $"{project.Key}'s dates changed: choose a due date from {PbDisplay.Date(project.StartDate)} to {PbDisplay.Date(project.DueDate)}.");
+        else if (taskId == 0 && State.AllTasks.Count >= PbState.MaxTasks)
+            ShowError($"This demo holds up to {PbState.MaxTasks.ToString("#,0", CultureInfo.InvariantCulture)} tasks, and it's full. A project manager can delete tasks first. Nothing was created.");
+        else
+            ShowError("The storage for this demo tab is full, so nothing was saved. Remove some comments or tasks, then try again.");
+    }
+
+    /// <summary>Shows a state answer under its field, like the form's own messages; the summary and focus follow.</summary>
+    private void ServerError(Expression<Func<object?>> field, string message)
+    {
+        serverErrors?.Clear();
+        serverErrors?.Add(FieldIdentifier.Create(field), message);
+        editContext.NotifyValidationStateChanged();
+    }
+
+    /// <summary>Shows the dialog's alert; the same message again gets a counter, so a screen reader announces it again.</summary>
+    private void ShowError(string message)
+    {
+        formErrorCount = message == formErrorText ? formErrorCount + 1 : 1;
+        formErrorText = message;
+        formError = formErrorCount == 1 ? message : string.Create(CultureInfo.InvariantCulture, $"{message} ({formErrorCount})");
     }
 
     #endregion
@@ -385,13 +341,73 @@ public partial class TaskEditor : ComponentBase, IDisposable
         }
     }
 
-    /// <summary>The latest due date the state accepts (three years after the seed time).</summary>
-    private static DateTime MaxDate => PbSeedData.Now.AddYears(3).Date;
-
-    /// <summary>The earliest due date the state accepts (three years before the seed time, rounded up to a whole day).</summary>
-    private static DateTime MinDate => PbSeedData.Now.AddYears(-3).Date.AddDays(1);
-
     [Inject] private PbState State { get; set; } = default!;
+
+    #endregion
+
+    #region Nested Types
+
+    /// <summary>
+    /// A task's fields, with the limits of <see cref="PbState.CreateTask" /> and <see cref="PbState.UpdateTask" />: a required
+    /// title, bounded text, an estimate in range, and cross-field rules against the project (set by the page before it
+    /// validates): the assignee is on it, the milestone is one of its own, and the due date falls within its dates.
+    /// </summary>
+    private sealed class TaskForm : IValidatableObject
+    {
+        /// <summary>The chosen person's ID, or empty for Unassigned.</summary>
+        public string AssigneeId { get; set; } = string.Empty;
+
+        /// <summary>The chosen person's name, for the message; set by the page.</summary>
+        public string? AssigneeName { get; set; }
+
+        [StringLength(PbState.MaxDescriptionLength, ErrorMessage = "Use 2,000 characters or fewer for the description.")]
+        public string? Description { get; set; } = string.Empty;
+
+        public DateTime? DueDate { get; set; }
+
+        [Range(0, PbState.MaxEstimateHours, ErrorMessage = "Enter whole hours from 0 to 80, or leave the estimate empty.")]
+        public int? EstimateHours { get; set; }
+
+        /// <summary>The project's people, set by the page.</summary>
+        public IReadOnlyList<string> MemberIds { get; set; } = Array.Empty<string>();
+
+        public int? MilestoneId { get; set; }
+
+        /// <summary>The project's milestones, set by the page.</summary>
+        public IReadOnlyList<int> MilestoneIds { get; set; } = Array.Empty<int>();
+
+        public PbTaskPriority Priority { get; set; } = PbTaskPriority.Medium;
+
+        /// <summary>The project's due date, set by the page.</summary>
+        public DateTime ProjectDue { get; set; } = DateTime.MaxValue;
+
+        /// <summary>The project's key, for the messages; set by the page.</summary>
+        public string ProjectKey { get; set; } = string.Empty;
+
+        /// <summary>The project's start date, set by the page.</summary>
+        public DateTime ProjectStart { get; set; } = DateTime.MinValue;
+
+        public PbTaskStatus Status { get; set; } = PbTaskStatus.Todo;
+
+        [Required(ErrorMessage = "Enter a title for the task.")]
+        [StringLength(PbState.MaxTaskTitleLength, ErrorMessage = "Use 120 characters or fewer for the title.")]
+        public string Title { get; set; } = string.Empty;
+
+        /// <summary>Runs once the fields are filled in: the assignee, the milestone, and the due date against the project.</summary>
+        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+        {
+            if (!string.IsNullOrEmpty(AssigneeId) && !MemberIds.Contains(AssigneeId))
+                yield return new ValidationResult($"{AssigneeName ?? "That person"} isn't on {ProjectKey}. Choose someone on the project, or Unassigned.", new[] { nameof(AssigneeId) });
+
+            if (MilestoneId is { } milestoneId && !MilestoneIds.Contains(milestoneId))
+                yield return new ValidationResult("That milestone was deleted. Choose another one, or None.", new[] { nameof(MilestoneId) });
+
+            if (DueDate is { } due && due.Date < ProjectStart.Date)
+                yield return new ValidationResult($"Choose a due date on or after {ProjectKey}'s start, {PbDisplay.Date(ProjectStart)}.", new[] { nameof(DueDate) });
+            else if (DueDate is { } late && late.Date > ProjectDue.Date)
+                yield return new ValidationResult($"Choose a due date on or before {ProjectKey}'s due date, {PbDisplay.Date(ProjectDue)}.", new[] { nameof(DueDate) });
+        }
+    }
 
     #endregion
 }

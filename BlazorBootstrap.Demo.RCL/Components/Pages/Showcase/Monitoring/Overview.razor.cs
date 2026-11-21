@@ -5,8 +5,9 @@ using BlazorExpress.ChartJS;
 namespace BlazorBootstrap.Demo.RCL.Components.Pages.Showcase.Monitoring;
 
 /// <summary>
-/// Overview: active incident alerts, totals, live traffic and latency charts, and every service's health. A timer adds a
-/// sample every two seconds while the page is open (unless paused) and is disposed with the page.
+/// Overview: the pages waiting for the signed-in engineer (with Acknowledge, which stops the escalation), active incident
+/// alerts, totals, live traffic and latency charts, and every service's health. A timer adds a sample every two seconds
+/// while the page is open (unless paused), which also runs the paging engine, and is disposed with the page.
 /// </summary>
 public partial class Overview : ComponentBase, IDisposable
 {
@@ -20,6 +21,12 @@ public partial class Overview : ComponentBase, IDisposable
     private bool disposed;
 
     private LineChart latencyChart = default!;
+
+    private string? pageStatus;
+
+    private bool pageStatusIsError;
+
+    private ElementReference? pageStatusRegion;
 
     private MonitoringLiveTimer? timer;
 
@@ -85,6 +92,27 @@ public partial class Overview : ComponentBase, IDisposable
         return new ChartData { Labels = Labels(), Datasets = datasets };
     }
 
+    /// <summary>Acknowledges a page from the card; the row leaves the card, so focus moves to the announcement.</summary>
+    private async Task AcknowledgePage(MonitoringIncident incident)
+    {
+        var pages = incident.Paging?.Pages.Count ?? 0;
+        var result = State.Acknowledge(incident.Id);
+
+        pageStatusIsError = result != MonitoringResult.Ok;
+        pageStatus = result switch
+        {
+            MonitoringResult.Ok => $"You acknowledged #{incident.Id}: it's assigned to you, and paging stopped after {(pages == 1 ? "1 page" : $"{pages} pages")}.",
+            MonitoringResult.NoChange => $"#{incident.Id} was already acknowledged by {incident.Assignee ?? "someone"}, so nothing changed.",
+            MonitoringResult.WrongState => $"#{incident.Id} is resolved, so there's nothing to acknowledge.",
+            MonitoringResult.Invalid => $"#{incident.Id} couldn't be acknowledged: its timeline or this tab's storage is full. Nothing changed.",
+            _ => "Sign in as an engineer to acknowledge incidents. Nothing changed.",
+        };
+
+        StateHasChanged();
+        await Task.Yield();
+        await MonitoringDisplay.FocusAsync(pageStatusRegion);
+    }
+
     private List<string> Labels() => State.History(TrafficService.Id).Select(sample => MonitoringDisplay.Time(sample.Time)).ToList();
 
     /// <summary>Incident changes rebuild the metrics, so the charts redraw too (also while live updates are paused).</summary>
@@ -144,6 +172,9 @@ public partial class Overview : ComponentBase, IDisposable
     #endregion
 
     #region Properties, Indexers
+
+    /// <summary>The incidents still paging that paged the signed-in engineer, newest first.</summary>
+    private IReadOnlyList<MonitoringIncident> WaitingForMe => State.PagesWaitingFor(State.Identity.Current?.Id);
 
     private IReadOnlyList<MonitoringIncident> ActiveIncidents => State.Incidents.Where(incident => incident.Status != MonitoringIncidentStatus.Resolved).ToList();
 

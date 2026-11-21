@@ -1,69 +1,99 @@
-@* The contacts section of the client page: a table of the client's people (the primary contact first), and a dialog to
-   add or edit one. Emails and phone numbers are shown as text, never as links. *@
+@* The contacts section of the client page: a Grid of the client's people (the primary contact first), and a dialog to add or
+   edit one. Emails and phone numbers are shown as text, never as links. *@
 @{
     var contacts = State.ContactsOf(ClientId);
     var clientName = State.FindClient(ClientId)?.Name ?? "this client";
 }
 <section class="tb-panel" aria-labelledby="pb-clcon-title">
     <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2">
-        <h2 class="tb-section-title mb-0" id="pb-clcon-title">Contacts</h2>
-        <button type="button" class="btn btn-sm btn-outline-primary" @ref="addButton" @onclick="() => OpenEditorAsync(0)">
-            <Icon Name="IconName.PersonPlus" class="me-1" aria-hidden="true" />Add contact
-        </button>
+        <h2 class="tb-section-title mb-0" id="pb-clcon-title">Contacts <span class="text-body-secondary fw-normal">(@contacts.Count)</span></h2>
+        <div class="d-flex flex-wrap align-items-center gap-3">
+            @* Back to the saved view's defaults: primary first, then by name, 10 a page, every column in its place. *@
+            <Button Color="ButtonColor.Link" Size="ButtonSize.Small" Class="p-0" @onclick="ResetViewAsync">Reset view<span class="visually-hidden">&#32;of the contacts</span></Button>
+            <button type="button" class="btn btn-sm btn-outline-primary" @ref="addButton" @onclick="() => OpenEditorAsync(0)">
+                <Icon Name="IconName.PersonPlus" class="me-1" aria-hidden="true" />Add contact
+            </button>
+        </div>
     </div>
 
     @* Always rendered and focusable, so saving and deleting are announced and focus has somewhere to go. *@
     <p class="fw-semibold pb-clcon-status @(statusIsError ? "text-danger-emphasis" : null)" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
 
-    @if (contacts.Count == 0)
-    {
-        <p class="text-body-secondary mb-0">No contacts yet. Add the people you talk to at @clientName.</p>
-    }
-    else
-    {
-        <div class="table-responsive">
-            <table class="table align-middle mb-0">
-                <caption class="pb-clcon-caption">@DealDisplay.Plural(contacts.Count, "contact") at @clientName, the primary contact first.</caption>
-                <thead>
-                    <tr>
-                        <th scope="col">Name</th>
-                        <th scope="col">Title</th>
-                        <th scope="col">Email</th>
-                        <th scope="col">Phone</th>
-                        <th scope="col">Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var contact in contacts)
-                    {
-                        var contactId = contact.Id;
-                        <tr @key="contact.Id">
-                            <th scope="row" class="pb-clcon-wrap">
-                                @contact.Name
-                                @if (contact.IsPrimary)
-                                {
-                                    <Badge Color="BadgeColor.Primary" Class="ms-1 rounded-pill">Primary</Badge>
-                                }
-                            </th>
-                            <td class="pb-clcon-wrap">@(string.IsNullOrEmpty(contact.Title) ? "None" : contact.Title)</td>
-                            <td class="pb-clcon-email">@contact.Email</td>
-                            <td class="text-nowrap">@(string.IsNullOrEmpty(contact.Phone) ? "None" : contact.Phone)</td>
-                            <td>
-                                <div class="d-flex flex-nowrap gap-2">
-                                    <button type="button" class="btn btn-sm btn-outline-secondary text-nowrap" @ref="editButtons[contactId]" @onclick="() => OpenEditorAsync(contactId)">
-                                        <Icon Name="IconName.Pencil" class="me-1" aria-hidden="true" />Edit<span class="visually-hidden"> @contact.Name</span>
-                                    </button>
-                                    <button type="button" class="btn btn-sm btn-outline-danger text-nowrap" @onclick="() => OpenDeleteAsync(contactId)">
-                                        <Icon Name="IconName.Trash3" class="me-1" aria-hidden="true" />Delete<span class="visually-hidden"> @contact.Name</span>
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        </div>
-    }
+    <ShowcaseDataState Status="@(viewLoaded ? ShowcaseDataStatus.Ready : ShowcaseDataStatus.Loading)"
+                       IsEmpty="@(contacts.Count == 0)"
+                       EmptyIcon="IconName.PersonBadge"
+                       EmptyTitle="No contacts yet"
+                       EmptyText="@($"Add the people you talk to at {clientName}: who decides, who you work with day to day, and who pays the invoices.")"
+                       LoadingText="Loading contacts…"
+                       LoadingRows="3"
+                       OnRetry="RefreshGridAsync">
+        <EmptyActions>
+            <Button Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="() => OpenEditorAsync(0)">Add contact</Button>
+        </EmptyActions>
+        <ChildContent>
+            <Grid @ref="grid"
+                  @key="@($"{ClientId}-{gridVersion}")"
+                  TItem="ContactRow"
+                  Class="table table-hover align-middle tb-table-mid sc-grid-row-links"
+                  GridContainerClass="tb-grid border rounded-3"
+                  DataProvider="ProvideContactsAsync"
+                  SettingsProvider="view.GetSettingsAsync"
+                  GridSettingsChanged="SaveSettingsAsync"
+                  AllowPaging="true"
+                  PageSize="@pageSize"
+                  PageSizeSelectorVisible="true"
+                  PageSizeSelectorItems="@(new[] { 5, 10, 25 })"
+                  PaginationItemsTextFormat="{0}–{1} of {2} contacts"
+                  AllowSorting="true"
+                  AllowColumnChooser="true"
+                  AllowExport="true"
+                  ExportFileName="project-board-client-contacts"
+                  Responsive="true"
+                  EmptyText="No contacts."
+                  aria-label="@($"Contacts at {clientName}")">
+                <GridColumns>
+                    <GridColumn TItem="ContactRow" HeaderText="Name" PropertyName="Name" SortString="name" SortKeySelector="row => row.Name"
+                                IsDefaultSortColumn="@view.IsSortColumn("name")" SortDirection="@view.DirectionFor("name")" AlwaysVisible="true">
+                        @{
+                            var contactId = context.Id;
+                        }
+                        @* A contact has no page of its own: the name opens the editor, and its stretched area makes the whole row do so. *@
+                        <button type="button" class="tb-row-button stretched-link" @ref="editButtons[contactId]" @onclick="() => OpenEditorAsync(contactId)">
+                            @context.Name<span class="visually-hidden">, edit</span>
+                        </button>
+                        @if (context.IsPrimary)
+                        {
+                            <Badge Color="BadgeColor.Primary" Class="ms-1 rounded-pill">Primary</Badge>
+                        }
+                    </GridColumn>
+                    <GridColumn TItem="ContactRow" HeaderText="Role" PropertyName="Role" SortString="role" SortKeySelector="row => row.RoleOrder"
+                                IsDefaultSortColumn="@view.IsSortColumn("role")" SortDirection="@view.DirectionFor("role")" TextNoWrap="true">
+                        @context.Role
+                    </GridColumn>
+                    <GridColumn TItem="ContactRow" HeaderText="Job title" PropertyName="JobTitle" SortString="title" SortKeySelector="row => row.JobTitle"
+                                IsDefaultSortColumn="@view.IsSortColumn("title")" SortDirection="@view.DirectionFor("title")">
+                        @(context.JobTitle.Length == 0 ? "None" : context.JobTitle)
+                    </GridColumn>
+                    <GridColumn TItem="ContactRow" HeaderText="Email" PropertyName="Email" SortString="email" SortKeySelector="row => row.Email"
+                                IsDefaultSortColumn="@view.IsSortColumn("email")" SortDirection="@view.DirectionFor("email")">
+                        <span class="text-break">@context.Email</span>
+                    </GridColumn>
+                    <GridColumn TItem="ContactRow" HeaderText="Phone" PropertyName="Phone" SortString="phone" SortKeySelector="row => row.Phone"
+                                IsDefaultSortColumn="@view.IsSortColumn("phone")" SortDirection="@view.DirectionFor("phone")" TextNoWrap="true">
+                        @(context.Phone.Length == 0 ? "None" : context.Phone)
+                    </GridColumn>
+                    <GridColumn TItem="ContactRow" HeaderText="Actions" Sortable="false" Exportable="false" TextNoWrap="true">
+                        @{
+                            var contactId = context.Id;
+                        }
+                        <button type="button" class="btn btn-sm btn-outline-danger text-nowrap" @onclick="() => OpenDeleteAsync(contactId)">
+                            <Icon Name="IconName.Trash3" class="me-1" aria-hidden="true" />Delete<span class="visually-hidden">&#32;@context.Name</span>
+                        </button>
+                    </GridColumn>
+                </GridColumns>
+            </Grid>
+        </ChildContent>
+    </ShowcaseDataState>
 </section>
 
 <Modal @ref="editorModal" IsVerticallyCentered="true" IsScrollable="true" ShowCloseButton="false" aria-labelledby="pb-clcon-editor-title" OnShown="OnEditorShownAsync" OnHidden="OnEditorHidden">
@@ -71,51 +101,65 @@
         <h2 class="modal-title h5 pb-clcon-dialog-title" id="pb-clcon-editor-title">@(editId == 0 ? $"Add a contact at {clientName}" : $"Edit {State.FindContact(editId)?.Name ?? "contact"}")</h2>
     </HeaderTemplate>
     <BodyTemplate>
-        <form id="pb-clcon-form" @onsubmit="SaveAsync" novalidate aria-labelledby="pb-clcon-editor-title">
+        <EditForm id="pb-clcon-form" EditContext="editContext" OnSubmit="SaveAsync" FormName="pb-contact" novalidate>
+            <DataAnnotationsValidator />
+            <ShowcaseFormErrors ShowSummary="true" />
             <div class="mb-3">
                 <label class="form-label fw-semibold" for="pb-clcon-name">Name</label>
-                <input id="pb-clcon-name" class="form-control @(nameError is null ? null : "is-invalid")" @bind="name" @bind:event="oninput" @ref="nameInput"
-                       maxlength="@PbState.MaxContactFieldLength" autocomplete="off" aria-required="true" aria-invalid="@(nameError is null ? null : "true")"
-                       aria-describedby="pb-clcon-name-help pb-clcon-name-error" />
+                <InputText @ref="nameInput" id="pb-clcon-name" class="form-control" @bind-Value="form.Name" maxlength="@PbState.MaxContactFieldLength" autocomplete="off"
+                           aria-describedby="pb-clcon-name-help" />
                 <div class="form-text" id="pb-clcon-name-help">Up to @PbState.MaxContactFieldLength characters.</div>
-                <div class="invalid-feedback d-block" id="pb-clcon-name-error">@nameError</div>
+                <ValidationMessage For="() => form.Name" />
             </div>
-            <div class="mb-3">
-                <label class="form-label fw-semibold" for="pb-clcon-jobtitle">Job title <span class="fw-normal text-body-secondary">(optional)</span></label>
-                <input id="pb-clcon-jobtitle" class="form-control @(titleError is null ? null : "is-invalid")" @bind="jobTitle" @bind:event="oninput" @ref="titleInput"
-                       maxlength="@PbState.MaxContactFieldLength" autocomplete="off" aria-invalid="@(titleError is null ? null : "true")" aria-describedby="pb-clcon-jobtitle-error" />
-                <div class="invalid-feedback d-block" id="pb-clcon-jobtitle-error">@titleError</div>
+            <div class="row g-3 mb-3">
+                <div class="col-sm-6">
+                    <label class="form-label fw-semibold" for="pb-clcon-role">Role</label>
+                    <InputSelect TValue="PbContactRole?" id="pb-clcon-role" class="form-select" @bind-Value="form.Role" aria-describedby="pb-clcon-role-help">
+                        <option value="">Choose a role</option>
+                        @foreach (var role in Enum.GetValues<PbContactRole>())
+                        {
+                            <option value="@role" @key="role">@PbState.RoleWord(role)</option>
+                        }
+                    </InputSelect>
+                    <div class="form-text" id="pb-clcon-role-help">What they do for the work with @PbSeedData.AgencyName.</div>
+                    <ValidationMessage For="() => form.Role" />
+                </div>
+                <div class="col-sm-6">
+                    <label class="form-label fw-semibold" for="pb-clcon-jobtitle">Job title <span class="fw-normal text-body-secondary">(optional)</span></label>
+                    <InputText id="pb-clcon-jobtitle" class="form-control" @bind-Value="form.Title" maxlength="@PbState.MaxContactFieldLength" autocomplete="off" />
+                    <ValidationMessage For="() => form.Title" />
+                </div>
             </div>
             <div class="row g-3 mb-3">
                 <div class="col-sm-7">
                     <label class="form-label fw-semibold" for="pb-clcon-email">Email</label>
-                    <input id="pb-clcon-email" type="email" class="form-control @(emailError is null ? null : "is-invalid")" @bind="email" @bind:event="oninput" @ref="emailInput"
-                           maxlength="@ShowcaseIdentity.MaxEmailLength" autocomplete="off" spellcheck="false" aria-required="true" aria-invalid="@(emailError is null ? null : "true")"
-                           aria-describedby="pb-clcon-email-help pb-clcon-email-error" />
-                    <div class="form-text" id="pb-clcon-email-help">Each contact at a client has a different email. Demo only: nothing is sent.</div>
-                    <div class="invalid-feedback d-block" id="pb-clcon-email-error">@emailError</div>
+                    <InputText id="pb-clcon-email" inputmode="email" autocapitalize="none" spellcheck="false" class="form-control" @bind-Value="form.Email"
+                               maxlength="@ShowcaseIdentity.MaxEmailLength" autocomplete="off" aria-describedby="pb-clcon-email-help" />
+                    <ShowcaseUniqueCheck @ref="emailCheck" For="() => form.Email" IsTakenAsync="IsEmailTakenAsync" TakenMessage="EmailTakenMessage" />
+                    <div class="form-text mt-0" id="pb-clcon-email-help">Each contact at a client has a different email. Demo only: nothing is sent.</div>
+                    <ValidationMessage For="() => form.Email" />
                 </div>
                 <div class="col-sm-5">
                     <label class="form-label fw-semibold" for="pb-clcon-phone">Phone <span class="fw-normal text-body-secondary">(optional)</span></label>
-                    <input id="pb-clcon-phone" type="tel" class="form-control @(phoneError is null ? null : "is-invalid")" @bind="phone" @bind:event="oninput" @ref="phoneInput"
-                           maxlength="@PbState.MaxPhoneLength" autocomplete="off" aria-invalid="@(phoneError is null ? null : "true")" aria-describedby="pb-clcon-phone-help pb-clcon-phone-error" />
-                    <div class="form-text" id="pb-clcon-phone-help">Any format, up to @PbState.MaxPhoneLength characters.</div>
-                    <div class="invalid-feedback d-block" id="pb-clcon-phone-error">@phoneError</div>
+                    <InputText id="pb-clcon-phone" type="tel" class="form-control" @bind-Value="form.Phone" maxlength="@PbState.MaxPhoneLength" autocomplete="off"
+                               aria-describedby="pb-clcon-phone-help" />
+                    <div class="form-text" id="pb-clcon-phone-help">Digits, spaces, and + - ( ) .</div>
+                    <ValidationMessage For="() => form.Phone" />
                 </div>
             </div>
             <div class="form-check mb-1">
-                <input class="form-check-input" type="checkbox" id="pb-clcon-primary" @bind="isPrimary" aria-describedby="pb-clcon-primary-help" />
+                <InputCheckbox class="form-check-input" id="pb-clcon-primary" @bind-Value="form.IsPrimary" aria-describedby="pb-clcon-primary-help" />
                 <label class="form-check-label fw-semibold" for="pb-clcon-primary">Primary contact</label>
             </div>
             <div class="form-text mt-0" id="pb-clcon-primary-help">
                 @(PrimaryHelp(clientName))
             </div>
-            <p class="fw-semibold text-danger-emphasis small mt-3 mb-0 pb-clcon-form-status" role="status" tabindex="-1" @ref="formStatusRegion">@formMessage</p>
-        </form>
+        </EditForm>
+        <p class="tb-form-error small mt-3 mb-0" role="alert">@formMessage</p>
     </BodyTemplate>
     <FooterTemplate>
         <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => editorModal.HideAsync()">Cancel</Button>
-        <button type="submit" form="pb-clcon-form" class="btn btn-primary">
+        <button type="submit" form="pb-clcon-form" class="btn btn-primary" disabled="@saving">
             <Icon Name="@(editId == 0 ? IconName.PlusLg : IconName.CheckLg)" class="me-1" aria-hidden="true" />@(editId == 0 ? "Add contact" : "Save contact")
         </button>
     </FooterTemplate>

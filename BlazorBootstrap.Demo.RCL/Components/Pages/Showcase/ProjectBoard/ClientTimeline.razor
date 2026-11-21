@@ -8,46 +8,56 @@
 <section class="tb-panel" aria-labelledby="pb-cltl-title">
     <h2 class="tb-section-title" id="pb-cltl-title">Activity timeline</h2>
 
-    <form class="pb-cltl-form mb-4" @onsubmit="Log" novalidate aria-labelledby="pb-cltl-form-title">
+    <div class="pb-cltl-form mb-4">
         <h3 class="h6 fw-bold" id="pb-cltl-form-title">Log activity</h3>
-        <div class="row g-3">
-            <div class="col-sm-6">
-                <label class="form-label fw-semibold" for="pb-cltl-kind">Kind</label>
-                <select id="pb-cltl-kind" class="form-select" @bind="kind">
-                    @foreach (var option in DealDisplay.LoggableKinds)
-                    {
-                        <option value="@option" @key="option">@DealDisplay.KindLabel(option)</option>
-                    }
-                </select>
-            </div>
-            <div class="col-sm-6">
-                <label class="form-label fw-semibold" for="pb-cltl-deal">About a deal <span class="fw-normal text-body-secondary">(optional)</span></label>
-                <select id="pb-cltl-deal" class="form-select @(dealError is null ? null : "is-invalid")" @bind="dealId" @ref="dealInput"
-                        aria-invalid="@(dealError is null ? null : "true")" aria-describedby="pb-cltl-deal-error">
-                    <option value="0">No deal</option>
-                    @foreach (var deal in deals)
-                    {
-                        <option value="@deal.Id" @key="deal.Id">@deal.Title (@PbDisplay.StageLabel(deal.Stage).ToLowerInvariant())</option>
-                    }
-                </select>
-                <div class="invalid-feedback d-block" id="pb-cltl-deal-error">@dealError</div>
-            </div>
-            <div class="col-12">
-                <label class="form-label fw-semibold" for="pb-cltl-text">What happened</label>
-                <textarea id="pb-cltl-text" class="form-control @(textError is null ? null : "is-invalid")" rows="3" @bind="text" @bind:event="oninput" @ref="textInput"
-                          maxlength="@PbState.MaxActivityLength" aria-required="true" aria-invalid="@(textError is null ? null : "true")"
-                          aria-describedby="pb-cltl-text-help pb-cltl-text-error"></textarea>
-                <div class="form-text d-flex flex-wrap justify-content-between gap-2" id="pb-cltl-text-help">
-                    <span>Plain text; line breaks are kept. Your team sees it on this page and in Activity.</span>
-                    <span class="text-nowrap">@DealDisplay.CounterText(text, PbState.MaxActivityLength)</span>
+        <EditForm EditContext="editContext" OnSubmit="Log" FormName="pb-activity" novalidate aria-labelledby="pb-cltl-form-title">
+            <DataAnnotationsValidator />
+            <ShowcaseFormErrors ShowSummary="true" />
+            <div class="row g-3">
+                <div class="col-sm-4">
+                    <label class="form-label fw-semibold" for="pb-cltl-kind">Type</label>
+                    <InputSelect TValue="PbActivityKind?" id="pb-cltl-kind" class="form-select" @bind-Value="form.Kind">
+                        <option value="">Choose a type</option>
+                        @foreach (var option in DealDisplay.LoggableKinds)
+                        {
+                            <option value="@option" @key="option">@DealDisplay.KindLabel(option)</option>
+                        }
+                    </InputSelect>
+                    <ValidationMessage For="() => form.Kind" />
                 </div>
-                <div class="invalid-feedback d-block" id="pb-cltl-text-error">@textError</div>
+                <div class="col-sm-4">
+                    <label class="form-label fw-semibold" for="pb-cltl-date">When</label>
+                    <InputDate TValue="DateTime?" id="pb-cltl-date" class="form-control" @bind-Value="form.Date" max="@DealDisplay.ToDateInput(State.Clock.Today)"
+                               ParsingErrorMessage="Enter the day it happened as a full date." aria-describedby="pb-cltl-date-help" />
+                    <div class="form-text" id="pb-cltl-date-help">Today or an earlier day, not in the future.</div>
+                    <ValidationMessage For="() => form.Date" />
+                </div>
+                <div class="col-sm-4">
+                    <label class="form-label fw-semibold" for="pb-cltl-deal">About a deal <span class="fw-normal text-body-secondary">(optional)</span></label>
+                    <InputSelect TValue="int" id="pb-cltl-deal" class="form-select" @bind-Value="form.DealId">
+                        <option value="0">No deal</option>
+                        @foreach (var deal in deals)
+                        {
+                            <option value="@deal.Id" @key="deal.Id">@deal.Title (@PbDisplay.StageLabel(deal.Stage).ToLowerInvariant())</option>
+                        }
+                    </InputSelect>
+                    <ValidationMessage For="() => form.DealId" />
+                </div>
+                <div class="col-12">
+                    <label class="form-label fw-semibold" for="pb-cltl-text">What happened</label>
+                    <InputTextArea @ref="textInput" id="pb-cltl-text" class="form-control" rows="3" @bind-Value="form.Text" maxlength="@PbState.MaxActivityLength" aria-describedby="pb-cltl-text-help" />
+                    <div class="form-text d-flex flex-wrap justify-content-between gap-2" id="pb-cltl-text-help">
+                        <span>1 to @PbState.MaxActivityLength characters of plain text; line breaks are kept. Your team sees it on this page and in Activity.</span>
+                        <span class="text-nowrap">@DealDisplay.CounterText(form.Text ?? string.Empty, PbState.MaxActivityLength)</span>
+                    </div>
+                    <ValidationMessage For="() => form.Text" />
+                </div>
             </div>
-        </div>
-        <Button Type="ButtonType.Submit" Color="ButtonColor.Primary" Class="mt-3">
-            <Icon Name="IconName.PlusLg" class="me-1" aria-hidden="true" />Log activity
-        </Button>
-    </form>
+            <Button Type="ButtonType.Submit" Color="ButtonColor.Primary" Class="mt-3">
+                <Icon Name="IconName.PlusLg" class="me-1" aria-hidden="true" />Log activity
+            </Button>
+        </EditForm>
+    </div>
 
     @* Always rendered and focusable, so logging and deleting are announced and focus has somewhere to go. *@
     <p class="fw-semibold pb-cltl-status @(statusIsError ? "text-danger-emphasis" : null)" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>

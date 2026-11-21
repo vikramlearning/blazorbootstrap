@@ -4,8 +4,10 @@ using BlazorBootstrap.Demo.RCL.Services.Showcase.Saas;
 namespace BlazorBootstrap.Demo.RCL.Components.Pages.Showcase.Saas;
 
 /// <summary>
-/// Layout of the customer workspace: the shell with the workspace's modules, the workspace name and plan in the top bar,
-/// and the page behind a customer-only guard, with a trial or suspension banner above it.
+/// Layout of the customer workspace: the shell with the workspace's modules, the workspace name and plan, the global search
+/// (the team and the workspace's invoices), and the notifications bell (the same list as the Notifications page) in the top
+/// bar, and the page behind a customer-only guard, with a banner above it: a failed payment (with the amount, the next
+/// retry or the end of grace, and "Update card"), a suspension, a past-due invoice, or the trial's days left.
 /// </summary>
 public partial class SaasAppLayout : LayoutComponentBase, IDisposable
 {
@@ -35,6 +37,26 @@ public partial class SaasAppLayout : LayoutComponentBase, IDisposable
     #endregion
 
     #region Private Methods
+
+    private static string DunningTitle(SaasDunningCase failing) => failing.Stage switch
+    {
+        SaasDunningStage.Retrying => "Payment failed",
+        SaasDunningStage.Grace => "Payment overdue: last days to pay",
+        _ => "Workspace suspended for an unpaid invoice",
+    };
+
+    private static string DunningText(SaasWorkspace workspace, SaasDunningCase failing)
+    {
+        var amount = SaasDisplay.MoneyCents(failing.Amount);
+
+        return failing.Stage switch
+        {
+            SaasDunningStage.Retrying => $"{amount} for invoice {failing.InvoiceNumber} couldn't be charged ({SaasSeedData.FailureText(failing.Reason)}). "
+                + $"We'll try again on {SaasDisplay.Date(failing.NextRetryAt ?? failing.FailedAt)}; update your card to keep {workspace.Name} running.",
+            SaasDunningStage.Grace => $"Every retry of {amount} failed. {workspace.Name} is suspended on {SaasDisplay.Date(failing.GraceEndsAt ?? failing.FailedAt)} unless invoice {failing.InvoiceNumber} is paid.",
+            _ => $"{workspace.Name} is read-only until {amount} (invoice {failing.InvoiceNumber}) is paid. Update the card and pay in Billing to restore it at once.",
+        };
+    }
 
     private static string TrialText(int daysLeft) => daysLeft switch
     {

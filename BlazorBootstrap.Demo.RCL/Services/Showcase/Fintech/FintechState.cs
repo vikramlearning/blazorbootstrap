@@ -1,6 +1,7 @@
 using System.Globalization;
 using System.Security.Cryptography;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 using BlazorBootstrap.Demo.RCL.Models.Showcase.Fintech;
 using BlazorBootstrap.Demo.RCL.Services.Showcase.Foundation;
@@ -11,13 +12,15 @@ namespace BlazorBootstrap.Demo.RCL.Services.Showcase.Fintech;
 public sealed record FintechCodeChallenge(FintechCodePurpose Purpose, string Code, DateTime ExpiresAt, int AttemptsLeft);
 
 /// <summary>
-/// State of the "Tallymint" bank for the current browser tab, shared by the customer bank and the operations back office:
-/// the customer's accounts and cards, transactions, transfers, payees, budgets, disputes, alerts, other customers' summaries
-/// and their transfers and disputes, internal notes, the audit log, and the demo sign-in with its one-time-code step. It is kept in the tab's
-/// <c>sessionStorage</c> through the showcase foundation, and its clock moves on from the seed time (D-029), so scheduled
-/// transfers post on their date. No money moves and nothing is sent.
+/// State of the "Tallymint" bank for the current browser tab, shared by the banking operations back office and the customer
+/// bank: the customer's accounts and cards, transactions, transfers, payees, budgets, disputes, alerts, every other
+/// customer's summary with their transfers and disputes, internal notes, the audit log, staff notifications, and the demo
+/// sign-in with its one-time-code step. It is kept in the tab's <c>sessionStorage</c> through the showcase foundation (as
+/// the differences from the deterministic seed), and its clock moves on from the seed time (D-029), so scheduled transfers
+/// post on their date and overdue disputes are escalated. No money moves and nothing is sent. The enterprise baseline
+/// (search, notifications, bulk actions, uniqueness checks) is in <c>FintechState.Enterprise.cs</c>.
 /// </summary>
-public sealed partial class FintechState : IShowcaseSiteState
+public sealed partial class FintechState : IShowcaseEnterpriseState
 {
     #region Fields and Constants
 
@@ -27,8 +30,14 @@ public sealed partial class FintechState : IShowcaseSiteState
     /// <summary>How long a one-time code is valid, in minutes.</summary>
     public const int CodeMinutes = 5;
 
+    /// <summary>The most that can go to payees on one day, across every transfer dated that day (own accounts don't count).</summary>
+    public const decimal DailyPayeeLimit = 10_000m;
+
     /// <summary>How far back a transaction can be disputed, in days.</summary>
     public const int DisputeDays = 120;
+
+    /// <summary>How many days a dispute can stay open before it is escalated to operations (the 10-business-day answer target).</summary>
+    public const int DisputeTargetDays = 14;
 
     /// <summary>The amount from which a transfer to any payee is held for a check.</summary>
     public const decimal HoldLargeAmount = 2000m;
@@ -36,51 +45,99 @@ public sealed partial class FintechState : IShowcaseSiteState
     /// <summary>The amount from which a transfer to a new or unconfirmed payee is held for a check.</summary>
     public const decimal HoldNewPayeeAmount = 500m;
 
+    /// <summary>The longest internal note on an approval.</summary>
+    public const int MaxApproveNote = 300;
+
     /// <summary>The longest dispute explanation.</summary>
     public const int MaxDisputeDetails = 1000;
+
+    /// <summary>The longest reason for holding a scheduled transfer.</summary>
+    public const int MaxHoldReason = 100;
+
+    /// <summary>The longest payee nickname.</summary>
+    public const int MaxNicknameLength = 30;
 
     /// <summary>The longest transaction note.</summary>
     public const int MaxNoteLength = 200;
 
+    /// <summary>The longest payee name.</summary>
+    public const int MaxPayeeNameLength = 60;
+
     /// <summary>The most saved payees.</summary>
     public const int MaxPayees = 30;
+
+    /// <summary>The longest reason for rejecting a held transfer.</summary>
+    public const int MaxRejectReason = 300;
+
+    /// <summary>How many days ahead a transfer can be scheduled.</summary>
+    public const int MaxScheduleDays = 60;
+
+    /// <summary>The largest single transfer.</summary>
+    public const decimal MaxTransferAmount = 50_000m;
+
+    /// <summary>The longest transfer note.</summary>
+    public const int MaxTransferNote = 60;
+
+    /// <summary>The shortest dispute explanation, hold reason, reject reason, and dispute resolution.</summary>
+    public const int MinReason = 10;
 
     /// <summary>A payee added within this many days is new: its larger transfers are held for a check.</summary>
     public const int NewPayeeDays = 7;
 
     private const decimal MaxMoney = 10_000_000m;
 
-    private const int MaxAudit = 500;
+    private const int MaxAudit = 2000;
 
     private const int MaxCustomerNotes = 300;
 
+    private const int MaxDisputes = 500;
+
     private const int MaxNotices = 100;
 
-    private const int MaxTransactions = 2000;
+    private const int MaxStaffNotices = 300;
 
-    private const int MaxTransfers = 500;
+    private const int MaxTransactions = 3000;
+
+    private const int MaxTransfers = 1000;
+
+    /// <summary>The fresh tab's data, built once: a snapshot keeps only what differs from it.</summary>
+    private static readonly Lazy<FintechSeedSet> seed = new(FintechSeedData.Build);
+
+    private static readonly Lazy<Dictionary<string, FintechCustomer>> customersById =
+        new(() => FintechSeedData.Customers().ToDictionary(customer => customer.Id, StringComparer.Ordinal));
 
     private static readonly JsonSerializerOptions snapshotOptions = new(JsonSerializerDefaults.Web) { MaxDepth = 32 };
 
-    private readonly List<FintechAccount> accounts = FintechSeedData.Accounts();
+    private readonly List<FintechAccount> accounts;
 
-    private readonly List<FintechAuditEntry> audit = FintechSeedData.Audit();
+    private readonly List<FintechAmlAlert> amlAlerts;
 
-    private readonly List<FintechCustomerNote> customerNotes = FintechSeedData.CustomerNotes();
+    private readonly List<FintechAmlCase> amlCases;
 
-    private readonly List<FintechBudget> budgets = FintechSeedData.Budgets();
+    private readonly List<ShowcaseAuditEntry> audit;
+
+    private readonly List<FintechBudget> budgets;
+
+    private readonly List<FintechCustomerNote> customerNotes;
 
     private readonly List<FintechDispute> disputes;
 
-    private readonly List<FintechNotice> notices = FintechSeedData.Notices();
+    private readonly List<FintechNotice> notices;
 
-    private readonly List<FintechPayee> payees = FintechSeedData.Payees();
+    private readonly List<FintechPayee> payees;
 
     private readonly decimal seedNetWorth;
 
-    private readonly List<FintechTransaction> transactions = FintechSeedData.Transactions();
+    private readonly List<ShowcaseNotification> staffNotices;
 
-    private readonly List<FintechTransfer> transfers = FintechSeedData.Transfers();
+    private readonly List<FintechTransaction> transactions;
+
+    private readonly List<FintechTransfer> transfers;
+
+    /// <summary>While above zero, changes are collected and <see cref="Changed" /> is raised once at the end (bulk actions).</summary>
+    private int batchDepth;
+
+    private bool changedInBatch;
 
     private FintechCodeChallenge? challenge;
 
@@ -88,17 +145,25 @@ public sealed partial class FintechState : IShowcaseSiteState
 
     private bool isDarkTheme;
 
-    private int nextAuditId = 9;
+    private int nextAmlAlertId;
+
+    private int nextAmlCaseId;
+
+    private int nextAmlEventId;
+
+    private int nextAuditId;
 
     private int nextDisputeId = 3102;
 
-    private int nextNoteId = 2;
+    private int nextNoteId;
 
-    private int nextNoticeId = 4;
+    private int nextNoticeId;
 
     private int nextPayeeId = 1;
 
     private int nextReference = 260417;
+
+    private int nextStaffNoticeId;
 
     private int nextTransactionId = 9000;
 
@@ -111,11 +176,27 @@ public sealed partial class FintechState : IShowcaseSiteState
     /// <summary>Seeds a fresh tab, signed out.</summary>
     public FintechState()
     {
+        var fresh = FintechSeedData.Build();
+        accounts = fresh.Accounts;
+        audit = fresh.Audit;
+        budgets = fresh.Budgets;
+        customerNotes = fresh.CustomerNotes;
+        disputes = fresh.Disputes;
+        notices = fresh.Notices;
+        payees = fresh.Payees;
+        staffNotices = fresh.StaffNotifications;
+        transactions = fresh.Transactions;
+        transfers = fresh.Transfers;
+        amlAlerts = fresh.AmlAlerts;
+        amlCases = fresh.AmlCases;
+        nextAmlAlertId = NextId(amlAlerts.Select(alert => alert.Id));
+        nextAmlCaseId = NextId(amlCases.Select(amlCase => amlCase.Id));
+        nextAmlEventId = NextId(amlCases.SelectMany(amlCase => amlCase.Events).Select(entry => entry.Id));
         seedNetWorth = NetWorth;
-        disputes = FintechSeedData.Disputes(transactions);
-
-        foreach (var dispute in disputes.Where(dispute => dispute.CustomerId == FintechSeedData.SeededCustomerId))
-            SetTransaction(dispute.TransactionId, item => item with { DisputeId = dispute.Id });
+        nextAuditId = NextId(audit.Select(entry => entry.Id));
+        nextNoteId = NextId(customerNotes.Select(note => note.Id));
+        nextNoticeId = NextId(notices.Select(notice => notice.Id));
+        nextStaffNoticeId = NextId(staffNotices.Select(notice => notice.Id));
 
         Identity = new ShowcaseIdentity(FintechSeedData.Roles(), FintechSeedData.DemoAccounts());
         Identity.Changed += OnIdentityChanged;
@@ -133,14 +214,15 @@ public sealed partial class FintechState : IShowcaseSiteState
         if (!IsVerified)
             return FintechResult.NotAllowed;
 
-        if (Categories.FirstOrDefault(category => category.Id == categoryId) is not { IsSpending: true } || !ValidLimit(limit))
+        if (Categories.FirstOrDefault(category => category.Id == categoryId) is not { IsSpending: true } category || !ValidLimit(limit))
             return FintechResult.Invalid;
 
         if (budgets.Any(budget => budget.CategoryId == categoryId))
             return FintechResult.Duplicate;
 
         budgets.Add(new FintechBudget(categoryId, limit));
-        Changed?.Invoke();
+        Record("Budget added", $"{category.Name} budget · {Identity.Current!.Name}", CustomerOpsPath(verifiedAccountId!), $"{Money(limit)} a month.");
+        RaiseChanged();
 
         return FintechResult.Ok;
     }
@@ -166,9 +248,9 @@ public sealed partial class FintechState : IShowcaseSiteState
         transfer.Status = FintechTransferStatus.Cancelled;
         transfer.ClosedAt = Clock.Now;
         transfer.HoldReason = null;
-        Audit("Transfer cancelled", $"{transfer.Reference} · {transfer.CustomerName}", $"{Money(transfer.Amount)} to {transfer.ToName}.");
+        Record("Transfer cancelled", TransferTarget(transfer), TransferOpsPath(transfer.Reference), $"{Money(transfer.Amount)} to {transfer.ToName}.");
         Notify(FintechAlertKind.Transfer, "Transfer cancelled", $"Your {Money(transfer.Amount)} transfer to {transfer.ToName} is cancelled. The money stays in {AccountName(transfer.FromAccountId)}.", TransferPath(transfer));
-        Changed?.Invoke();
+        RaiseChanged();
 
         return FintechResult.Ok;
     }
@@ -195,8 +277,9 @@ public sealed partial class FintechState : IShowcaseSiteState
     }
 
     /// <summary>
-    /// Posts scheduled transfers whose date has come: the money moves, or, when the account no longer has enough, the
-    /// transfer is rejected. Called after a restore and as pages load, so the moving clock (D-029) is applied.
+    /// Applies the moving clock (D-029): posts scheduled transfers whose date has come (the money moves, or, when the account
+    /// no longer has enough, the transfer is rejected), and escalates open disputes past <see cref="DisputeTargetDays" /> to
+    /// operations. Called after a restore and as pages load.
     /// </summary>
     public void CatchUp()
     {
@@ -206,13 +289,14 @@ public sealed partial class FintechState : IShowcaseSiteState
                      .OrderBy(transfer => transfer.Date).ToList())
         {
             changed = true;
+            var postedAt = transfer.Date.ToDateTime(new TimeOnly(6, 0));
 
             // Other customers have no ledger in the tab: their transfers are recorded as sent.
             if (!IsLedger(transfer))
             {
                 transfer.Status = FintechTransferStatus.Completed;
-                transfer.ClosedAt = transfer.Date.ToDateTime(new TimeOnly(6, 0));
-                AuditAs("System", "System", "Scheduled transfer posted", $"{transfer.Reference} · {transfer.CustomerName}", $"{Money(transfer.Amount)} to {transfer.ToName}.");
+                transfer.ClosedAt = postedAt;
+                RecordAs(FintechSeedData.SystemActor, "Scheduled transfer posted", TransferTarget(transfer), TransferOpsPath(transfer.Reference), $"{Money(transfer.Amount)} to {transfer.ToName}.");
 
                 continue;
             }
@@ -223,20 +307,29 @@ public sealed partial class FintechState : IShowcaseSiteState
             {
                 transfer.Status = FintechTransferStatus.Rejected;
                 transfer.RejectReason = "There wasn't enough money in the account on the transfer date.";
-                transfer.ClosedAt = transfer.Date.ToDateTime(new TimeOnly(6, 0));
+                transfer.ClosedAt = postedAt;
                 Notify(FintechAlertKind.Transfer, "Scheduled transfer not sent", $"Your {Money(transfer.Amount)} transfer to {transfer.ToName} wasn't sent: there wasn't enough money on {Day(transfer.Date)}.", TransferPath(transfer));
-                AuditAs("System", "System", "Scheduled transfer rejected", $"{transfer.Reference} · {transfer.CustomerName}", "Not enough money on the transfer date.");
+                RecordAs(FintechSeedData.SystemActor, "Scheduled transfer rejected", TransferTarget(transfer), TransferOpsPath(transfer.Reference), "Not enough money on the transfer date.");
             }
             else
             {
-                Post(transfer, transfer.Date.ToDateTime(new TimeOnly(6, 0)));
+                Post(transfer, postedAt);
                 Notify(FintechAlertKind.Transfer, "Scheduled transfer sent", $"{Money(transfer.Amount)} went to {transfer.ToName} on {Day(transfer.Date)}.", TransferPath(transfer));
-                AuditAs("System", "System", "Scheduled transfer posted", $"{transfer.Reference} · {transfer.CustomerName}", $"{Money(transfer.Amount)} to {transfer.ToName}.");
+                RecordAs(FintechSeedData.SystemActor, "Scheduled transfer posted", TransferTarget(transfer), TransferOpsPath(transfer.Reference), $"{Money(transfer.Amount)} to {transfer.ToName}.");
             }
         }
 
+        foreach (var dispute in disputes.Where(dispute => IsOpen(dispute) && dispute.EscalatedAt is null && dispute.CreatedAt.AddDays(DisputeTargetDays) <= Clock.Now).ToList())
+        {
+            changed = true;
+            dispute.EscalatedAt = dispute.CreatedAt.AddDays(DisputeTargetDays);
+            RecordAs(FintechSeedData.SystemActor, "Dispute escalated", DisputeTarget(dispute), DisputeOpsPath(dispute.Id), $"Open more than {DisputeTargetDays} days.");
+            NotifyOps($"Dispute {Number(dispute.Id)} is overdue", $"Open more than {DisputeTargetDays} days: {Money(dispute.Amount)} at {dispute.Merchant} for {CustomerName(dispute.CustomerId)}.",
+                DisputeOpsPath(dispute.Id), fromSystem: true);
+        }
+
         if (changed)
-            Changed?.Invoke();
+            RaiseChanged();
     }
 
     /// <summary>
@@ -277,7 +370,8 @@ public sealed partial class FintechState : IShowcaseSiteState
 
     /// <summary>
     /// Confirms the transfer waiting on the review screen. A later date schedules it; a large transfer to a payee, or a
-    /// smaller one to a new or unconfirmed payee, is held for a check by bank operations; anything else moves at once.
+    /// smaller one to a new or unconfirmed payee, is held for a check by bank operations (who are notified); anything else
+    /// moves at once.
     /// </summary>
     public FintechResult ConfirmPendingTransfer(out FintechTransfer? transfer)
     {
@@ -328,7 +422,7 @@ public sealed partial class FintechState : IShowcaseSiteState
                 break;
 
             case FintechTransferStatus.Held:
-                Notify(FintechAlertKind.Transfer, "Transfer held for a check", $"Your {Money(transfer.Amount)} transfer to {transfer.ToName} is held for a routine check ({holdReason!.ToLowerInvariant()}). We'll update you within one business day.", TransferPath(transfer));
+                Notify(FintechAlertKind.Transfer, "Transfer held for a check", $"Your {Money(transfer.Amount)} transfer to {transfer.ToName} is held for a routine check ({LowerFirst(holdReason!)}). We'll update you within one business day.", TransferPath(transfer));
                 break;
 
             default:
@@ -338,42 +432,83 @@ public sealed partial class FintechState : IShowcaseSiteState
 
         if (transfer.Status == FintechTransferStatus.Held)
         {
-            Audit("Transfer confirmed", $"{transfer.Reference} · {transfer.CustomerName}", $"{Money(transfer.Amount)} to {transfer.ToName} on {Day(transfer.Date)}.");
-            AuditAs("System", "System", "Transfer held", $"{transfer.Reference} · {transfer.CustomerName}", $"{transfer.HoldReason}.");
+            Record("Transfer confirmed", TransferTarget(transfer), TransferOpsPath(transfer.Reference), $"{Money(transfer.Amount)} to {transfer.ToName} on {Day(transfer.Date)}.");
+            RecordAs(FintechSeedData.SystemActor, "Transfer held", TransferTarget(transfer), TransferOpsPath(transfer.Reference), $"{transfer.HoldReason}.");
+            NotifyOps($"{transfer.Reference} is held for review", $"{Money(transfer.Amount)} from {transfer.CustomerName} to {transfer.ToName}: {LowerFirst(holdReason!)}.",
+                TransferOpsPath(transfer.Reference), fromSystem: true);
         }
         else
         {
-            Audit(transfer.Status == FintechTransferStatus.Completed ? "Transfer sent" : "Transfer scheduled", $"{transfer.Reference} · {transfer.CustomerName}",
+            Record(transfer.Status == FintechTransferStatus.Completed ? "Transfer sent" : "Transfer scheduled", TransferTarget(transfer), TransferOpsPath(transfer.Reference),
                 $"{Money(transfer.Amount)} to {transfer.ToName} on {Day(transfer.Date)}.");
         }
+
+        // The monitoring rules look at every payment to a payee as it is confirmed (staff are told; the customer never is).
+        CheckAmlRules(transfer);
         LastTransferReference = transfer.Reference;
-        Changed?.Invoke();
+        RaiseChanged();
 
         return FintechResult.Ok;
     }
 
-    /// <summary>Returns the snapshot of the bank: accounts, transactions, transfers, payees, budgets, disputes, alerts, the code check, and the ID counters.</summary>
-    public object CaptureData() => new FintechSnapshot
+    /// <summary>
+    /// Returns the snapshot of the bank: the accounts, budgets, payees, alert settings, and counters, and of the long lists
+    /// (transactions, transfers, disputes, alerts, staff notifications, notes, and the audit log) only what differs from the
+    /// fresh tab's seed: records changed or added, and the keys of seeded records removed. The seed is the same in every
+    /// tab, so the restore rebuilds the rest from it; a fresh tab's snapshot is a few kilobytes although it holds hundreds of
+    /// records (devspec finding F-4).
+    /// </summary>
+    public object CaptureData()
     {
-        Accounts = accounts.ToList(),
-        AlertSettings = AlertSettings,
-        Audit = audit.ToList(),
-        CustomerNotes = customerNotes.ToList(),
-        NextAuditId = nextAuditId,
-        NextNoteId = nextNoteId,
-        Budgets = budgets.ToList(),
-        Disputes = disputes.ToList(),
-        NextDisputeId = nextDisputeId,
-        NextNoticeId = nextNoticeId,
-        NextPayeeId = nextPayeeId,
-        NextReference = nextReference,
-        NextTransactionId = nextTransactionId,
-        Notices = notices.ToList(),
-        Payees = payees.ToList(),
-        Transactions = transactions.ToList(),
-        Transfers = transfers.ToList(),
-        VerifiedAccountId = verifiedAccountId,
-    };
+        var data = seed.Value;
+        var (changedTransactions, removedTransactions) = Diff(transactions, data.Transactions, item => item.Id);
+        var (changedTransfers, removedTransfers) = Diff(transfers, data.Transfers, transfer => transfer.Reference, SameTransfer);
+        var (changedDisputes, removedDisputes) = Diff(disputes, data.Disputes, dispute => dispute.Id, SameDispute);
+        var (changedNotices, removedNotices) = Diff(notices, data.Notices, notice => notice.Id, SameNotice);
+        var (changedStaff, removedStaff) = Diff(staffNotices, data.StaffNotifications, notice => notice.Id, SameStaffNotice);
+        var (changedNotes, removedNotes) = Diff(customerNotes, data.CustomerNotes, note => note.Id);
+        var (changedAudit, removedAudit) = Diff(audit, data.Audit, entry => entry.Id, SameAudit);
+        var (changedAlerts, removedAlerts) = Diff(amlAlerts, data.AmlAlerts, alert => alert.Id, SameJson);
+        var (changedCases, removedCases) = Diff(amlCases, data.AmlCases, amlCase => amlCase.Id, SameJson);
+
+        return new FintechSnapshot
+        {
+            Accounts = accounts.ToList(),
+            AlertSettings = AlertSettings,
+            Audit = changedAudit,
+            RemovedAuditIds = removedAudit,
+            Budgets = budgets.ToList(),
+            CustomerNotes = changedNotes,
+            RemovedNoteIds = removedNotes,
+            Disputes = changedDisputes,
+            RemovedDisputeIds = removedDisputes,
+            NextAuditId = nextAuditId,
+            NextDisputeId = nextDisputeId,
+            NextNoteId = nextNoteId,
+            NextNoticeId = nextNoticeId,
+            NextPayeeId = nextPayeeId,
+            NextReference = nextReference,
+            NextStaffNoticeId = nextStaffNoticeId,
+            NextTransactionId = nextTransactionId,
+            Notices = changedNotices,
+            RemovedNoticeIds = removedNotices,
+            Payees = payees.ToList(),
+            StaffNotices = changedStaff,
+            RemovedStaffNoticeIds = removedStaff,
+            Transactions = changedTransactions,
+            RemovedTransactionIds = removedTransactions,
+            Transfers = changedTransfers,
+            RemovedTransferReferences = removedTransfers,
+            VerifiedAccountId = verifiedAccountId,
+            AmlAlerts = changedAlerts,
+            RemovedAmlAlertIds = removedAlerts,
+            AmlCases = changedCases,
+            RemovedAmlCaseIds = removedCases,
+            NextAmlAlertId = nextAmlAlertId,
+            NextAmlCaseId = nextAmlCaseId,
+            NextAmlEventId = nextAmlEventId,
+        };
+    }
 
     /// <summary>Returns the credit still available on a credit card: its limit less what is owed.</summary>
     public static decimal CreditAvailable(FintechAccount card) => card.CreditLimit is { } limit ? Math.Max(0, limit + card.Balance) : 0;
@@ -384,10 +519,12 @@ public sealed partial class FintechState : IShowcaseSiteState
         if (!IsVerified)
             return FintechResult.NotAllowed;
 
-        if (budgets.RemoveAll(budget => budget.CategoryId == categoryId) == 0)
+        if (budgets.FirstOrDefault(budget => budget.CategoryId == categoryId) is not { } removed)
             return FintechResult.NotFound;
 
-        Changed?.Invoke();
+        budgets.Remove(removed);
+        Record("Budget deleted", $"{FindCategory(categoryId).Name} budget · {Identity.Current!.Name}", CustomerOpsPath(verifiedAccountId!), $"Was {Money(removed.Limit)} a month.");
+        RaiseChanged();
 
         return FintechResult.Ok;
     }
@@ -405,8 +542,8 @@ public sealed partial class FintechState : IShowcaseSiteState
             return FintechResult.WrongState;
 
         payees.Remove(payee);
-        Audit("Payee deleted", $"{payee.Name} · {Identity.Current!.Name}", $"{payee.BankName} {payee.MaskedAccount}.");
-        Changed?.Invoke();
+        Record("Payee deleted", $"{payee.Name} · {Identity.Current!.Name}", CustomerOpsPath(verifiedAccountId!), $"{payee.BankName} {payee.MaskedAccount}.");
+        RaiseChanged();
 
         return FintechResult.Ok;
     }
@@ -442,7 +579,7 @@ public sealed partial class FintechState : IShowcaseSiteState
             return;
 
         notices.ForEach(notice => notice.IsRead = true);
-        Changed?.Invoke();
+        RaiseChanged();
     }
 
     /// <summary>Marks one notice as read.</summary>
@@ -451,7 +588,7 @@ public sealed partial class FintechState : IShowcaseSiteState
         if (IsVerified && notices.FirstOrDefault(notice => notice.Id == noticeId) is { IsRead: false } notice)
         {
             notice.IsRead = true;
-            Changed?.Invoke();
+            RaiseChanged();
         }
     }
 
@@ -471,14 +608,15 @@ public sealed partial class FintechState : IShowcaseSiteState
             verifiedAccountId = null;
 
         CatchUp();
-        Changed?.Invoke();
+        RaiseChanged();
     }
 
     /// <summary>
-    /// Opens a dispute of a card or account payment (see <see cref="CannotDispute" />). The explanation is 10 to
-    /// <see cref="MaxDisputeDetails" /> characters.
+    /// Opens a dispute of a card or account payment (see <see cref="CannotDispute" />) for some or all of its amount
+    /// (more than $0, at most the payment). The explanation is <see cref="MinReason" /> to <see cref="MaxDisputeDetails" />
+    /// characters. Bank operations are notified.
     /// </summary>
-    public FintechResult OpenDispute(int transactionId, FintechDisputeReason reason, string details, out FintechDispute? dispute)
+    public FintechResult OpenDispute(int transactionId, FintechDisputeReason reason, decimal amount, string details, out FintechDispute? dispute)
     {
         dispute = null;
 
@@ -493,8 +631,11 @@ public sealed partial class FintechState : IShowcaseSiteState
 
         details = details?.Trim() ?? string.Empty;
 
-        if (!Enum.IsDefined(reason) || details.Length is < 10 or > MaxDisputeDetails)
+        if (!Enum.IsDefined(reason) || details.Length is < MinReason or > MaxDisputeDetails || amount <= 0 || amount > -transaction.Amount || !IsMoney(amount))
             return FintechResult.Invalid;
+
+        if (disputes.Count >= MaxDisputes)
+            return FintechResult.LimitReached;
 
         dispute = new FintechDispute
         {
@@ -502,19 +643,20 @@ public sealed partial class FintechState : IShowcaseSiteState
             CustomerId = verifiedAccountId!,
             TransactionId = transaction.Id,
             Merchant = transaction.Description,
-            Amount = -transaction.Amount,
+            Amount = amount,
             Reason = reason,
             Details = details,
             CreatedAt = Clock.Now,
             Status = FintechDisputeStatus.Submitted,
         };
         disputes.Add(dispute);
-        Audit("Dispute opened", $"Dispute {dispute.Id} · {Identity.Current!.Name}", $"{Money(dispute.Amount)} at {dispute.Merchant}: {dispute.Reason}.");
+        Record("Dispute opened", DisputeTarget(dispute), DisputeOpsPath(dispute.Id), $"{Money(dispute.Amount)} at {dispute.Merchant}: {dispute.Reason}.");
         var disputeId = dispute.Id;
         SetTransaction(transaction.Id, item => item with { DisputeId = disputeId });
-        Notify(FintechAlertKind.Dispute, $"Dispute {dispute.Id} received", $"We've received your dispute of {Money(dispute.Amount)} at {dispute.Merchant}. We'll update you within 10 business days.",
-            $"/showcase/fintech/disputes/{dispute.Id.ToString(CultureInfo.InvariantCulture)}");
-        Changed?.Invoke();
+        Notify(FintechAlertKind.Dispute, $"Dispute {Number(dispute.Id)} received", $"We've received your dispute of {Money(dispute.Amount)} at {dispute.Merchant}. We'll update you within 10 business days.",
+            DisputePath(dispute.Id));
+        NotifyOps($"New dispute {Number(dispute.Id)}", $"{dispute.Merchant}: {Money(dispute.Amount)} from {Identity.Current!.Name}.", DisputeOpsPath(dispute.Id));
+        RaiseChanged();
 
         return FintechResult.Ok;
     }
@@ -536,8 +678,10 @@ public sealed partial class FintechState : IShowcaseSiteState
 
         var before = BudgetShare(categoryId);
         SetTransaction(transactionId, item => item with { CategoryId = categoryId });
+        Record("Transaction recategorized", $"{transaction.Description} · {Identity.Current!.Name}", CustomerOpsPath(verifiedAccountId!),
+            $"{FindCategory(transaction.CategoryId).Name} → {FindCategory(categoryId).Name}.");
         CheckBudget(categoryId, before);
-        Changed?.Invoke();
+        RaiseChanged();
 
         return FintechResult.Ok;
     }
@@ -548,13 +692,13 @@ public sealed partial class FintechState : IShowcaseSiteState
     /// </summary>
     public FintechResult RequestCode(FintechCodePurpose purpose)
     {
-        if (Identity.Current is not { RoleId: FintechSeedData.CustomerRole or FintechSeedData.OpsRole } || !Enum.IsDefined(purpose)
+        if (Identity.Current is not { RoleId: FintechSeedData.CustomerRole or FintechSeedData.OpsRole or FintechSeedData.SeniorRole } || !Enum.IsDefined(purpose)
             || (purpose != FintechCodePurpose.SignIn && !IsVerified))
             return FintechResult.NotAllowed;
 
         challenge = new FintechCodeChallenge(purpose, RandomNumberGenerator.GetInt32(0, 1_000_000).ToString("D6", CultureInfo.InvariantCulture), Clock.Now.AddMinutes(CodeMinutes), CodeAttempts);
         challengeAttempts = 0;
-        Changed?.Invoke();
+        RaiseChanged();
 
         return FintechResult.Ok;
     }
@@ -566,8 +710,9 @@ public sealed partial class FintechState : IShowcaseSiteState
 
     /// <summary>
     /// Adds a payee (<paramref name="payeeId" /> <see langword="null" />) or changes one, after the one-time code for payees
-    /// is entered. The name is checked against the account first; a payee whose name doesn't match is only saved when
-    /// <paramref name="acceptMismatch" /> confirms the customer still wants to (WrongState otherwise).
+    /// is entered. The routing number must pass its checksum; the name and the nickname must be unique among the payees
+    /// (Duplicate otherwise). The name is checked against the account first; a payee whose name doesn't match is only saved
+    /// when <paramref name="acceptMismatch" /> confirms the customer still wants to (WrongState otherwise).
     /// </summary>
     public FintechResult SavePayee(string? payeeId, FintechPayeeDraft draft, string code, bool acceptMismatch, out FintechPayee? payee)
     {
@@ -586,11 +731,11 @@ public sealed partial class FintechState : IShowcaseSiteState
         var routing = Digits(draft.RoutingNumber);
         var account = Digits(draft.AccountNumber);
 
-        if (!IsText(name, 60) || (nickname is { Length: > 30 }) || routing.Length != 9 || account.Length is < 4 or > 17
-            || draft.RoutingNumber.Any(c => !char.IsAsciiDigit(c) && c != ' ' && c != '-') || draft.AccountNumber.Any(c => !char.IsAsciiDigit(c) && c != ' ' && c != '-'))
+        if (!IsText(name, MaxPayeeNameLength) || (nickname is { Length: > MaxNicknameLength }) || !IsRoutingNumber(draft.RoutingNumber) || account.Length is < 4 or > 17
+            || draft.AccountNumber.Any(c => !char.IsAsciiDigit(c) && c != ' ' && c != '-'))
             return FintechResult.Invalid;
 
-        if (payees.Any(other => other.Id != payeeId && string.Equals(other.Name, name, StringComparison.OrdinalIgnoreCase)))
+        if (IsPayeeNameTaken(name, payeeId) || IsNicknameTaken(nickname, payeeId))
             return FintechResult.Duplicate;
 
         if (existing is null && payees.Count >= MaxPayees)
@@ -620,10 +765,12 @@ public sealed partial class FintechState : IShowcaseSiteState
         else
             payees[payees.IndexOf(existing)] = payee;
 
-        Audit(existing is null ? "Payee added" : "Payee changed", $"{payee.Name} · {Identity.Current!.Name}", $"{payee.BankName} {payee.MaskedAccount}; name check: {payee.Match}.");
+        // Only the last four digits are ever kept or logged.
+        Record(existing is null ? "Payee added" : "Payee changed", $"{payee.Name} · {Identity.Current!.Name}", CustomerOpsPath(verifiedAccountId!),
+            $"{payee.BankName} {payee.MaskedAccount}; name check: {payee.Match}.");
         Notify(FintechAlertKind.Security, existing is null ? "New payee added" : "Payee changed",
-            $"{payee.Name} ({payee.MaskedAccount}) was {(existing is null ? "added to" : "changed in")} your payees. If this wasn't you, contact us straight away.", "/showcase/fintech/payees");
-        Changed?.Invoke();
+            $"{payee.Name} ({payee.MaskedAccount}) was {(existing is null ? "added to" : "changed in")} your payees. If this wasn't you, contact us straight away.", PayeesPath);
+        RaiseChanged();
 
         return FintechResult.Ok;
     }
@@ -641,10 +788,10 @@ public sealed partial class FintechState : IShowcaseSiteState
             return FintechResult.NoChange;
 
         Replace(account with { CardFrozen = frozen });
-        Audit(frozen ? "Card frozen" : "Card unfrozen", $"Card ending {last4} · {Identity.Current!.Name}", account.Name);
+        Record(frozen ? "Card frozen" : "Card unfrozen", $"Card ending {last4} · {Identity.Current!.Name}", CustomerOpsPath(verifiedAccountId!), account.Name);
         Notify(FintechAlertKind.Security, frozen ? "Card frozen" : "Card unfrozen",
-            frozen ? $"Your card ending {last4} is frozen. New payments are declined until you unfreeze it." : $"Your card ending {last4} works again.", $"/showcase/fintech/accounts/{accountId}");
-        Changed?.Invoke();
+            frozen ? $"Your card ending {last4} is frozen. New payments are declined until you unfreeze it." : $"Your card ending {last4} works again.", $"{SiteBase}/accounts/{accountId}");
+        RaiseChanged();
 
         return FintechResult.Ok;
     }
@@ -667,12 +814,13 @@ public sealed partial class FintechState : IShowcaseSiteState
             return FintechResult.NoChange;
 
         SetTransaction(transactionId, item => item with { Note = note });
-        Changed?.Invoke();
+        Record(note is null ? "Transaction note removed" : "Transaction note changed", $"{transaction.Description} · {Identity.Current!.Name}", CustomerOpsPath(verifiedAccountId!), null);
+        RaiseChanged();
 
         return FintechResult.Ok;
     }
 
-    /// <summary>Changes a payee's nickname (no code needed: it doesn't change where money goes).</summary>
+    /// <summary>Changes a payee's nickname (no code needed: it doesn't change where money goes). Another payee can't have the same nickname (Duplicate).</summary>
     public FintechResult SetPayeeNickname(string payeeId, string? nickname)
     {
         if (!IsVerified)
@@ -683,14 +831,19 @@ public sealed partial class FintechState : IShowcaseSiteState
 
         nickname = string.IsNullOrWhiteSpace(nickname) ? null : nickname.Trim();
 
-        if (nickname is { Length: > 30 })
+        if (nickname is { Length: > MaxNicknameLength })
             return FintechResult.Invalid;
 
         if (payee.Nickname == nickname)
             return FintechResult.NoChange;
 
+        if (IsNicknameTaken(nickname, payeeId))
+            return FintechResult.Duplicate;
+
         payees[payees.IndexOf(payee)] = payee with { Nickname = nickname };
-        Changed?.Invoke();
+        Record(nickname is null ? "Payee nickname removed" : "Payee nickname changed", $"{payee.Name} · {Identity.Current!.Name}", CustomerOpsPath(verifiedAccountId!),
+            nickname is null ? null : $"Now \"{nickname}\".");
+        RaiseChanged();
 
         return FintechResult.Ok;
     }
@@ -729,7 +882,7 @@ public sealed partial class FintechState : IShowcaseSiteState
             return error;
 
         PendingTransfer = draft;
-        Changed?.Invoke();
+        RaiseChanged();
 
         return null;
     }
@@ -743,7 +896,11 @@ public sealed partial class FintechState : IShowcaseSiteState
         return reference;
     }
 
-    /// <summary>Validates a stored snapshot and applies it only when every part is valid.</summary>
+    /// <summary>
+    /// Rebuilds the bank from the seed and a stored snapshot's changes, validates every part, and applies it only when
+    /// everything is valid: known IDs and references, defined enum values, amounts in range, bounded text, and links that
+    /// stay on this site.
+    /// </summary>
     public bool TryRestoreData(JsonElement data)
     {
         FintechSnapshot? snapshot;
@@ -761,18 +918,29 @@ public sealed partial class FintechState : IShowcaseSiteState
             {
                 Accounts: { Count: 3 } storedAccounts,
                 Budgets: { } storedBudgets,
-                Disputes: { Count: <= 500 } storedDisputes,
-                Notices: { Count: <= MaxNotices } storedNotices,
                 Payees: { Count: <= MaxPayees } storedPayees,
-                Transactions: { Count: >= 1 and <= MaxTransactions } storedTransactions,
-                Transfers: { Count: <= MaxTransfers } storedTransfers,
                 AlertSettings: { } storedAlerts,
             }
-            || snapshot.NextDisputeId is < 3102 or > 1_000_000 - 500
+            || snapshot.NextDisputeId is < 3102 or > 1_000_000 - MaxDisputes
             || snapshot.NextNoticeId is < 1 or > 1_000_000 - MaxNotices
+            || snapshot.NextStaffNoticeId is < 1 or > 1_000_000 - MaxStaffNotices
             || snapshot.NextPayeeId is < 1 or > 100_000
             || snapshot.NextReference is < 260417 or > 9_000_000
-            || snapshot.NextTransactionId is < 9000 or > 1_000_000 - MaxTransactions)
+            || snapshot.NextTransactionId is < 9000 or > 1_000_000 - MaxTransactions
+            || snapshot.NextAuditId is < 1 or > 1_000_000 - MaxAudit
+            || snapshot.NextNoteId is < 1 or > 1_000_000 - MaxCustomerNotes)
+            return false;
+
+        var fresh = seed.Value;
+
+        // Rebuild every long list from the seed and the stored changes; an inconsistent change list discards the snapshot.
+        if (Overlay(fresh.Transactions, snapshot.Transactions, snapshot.RemovedTransactionIds, item => item.Id) is not { Count: >= 1 and <= MaxTransactions } storedTransactions
+            || Overlay(fresh.Transfers, snapshot.Transfers, snapshot.RemovedTransferReferences, transfer => transfer.Reference) is not { Count: <= MaxTransfers } storedTransfers
+            || Overlay(fresh.Disputes, snapshot.Disputes, snapshot.RemovedDisputeIds, dispute => dispute.Id) is not { Count: <= MaxDisputes } storedDisputes
+            || Overlay(fresh.Notices, snapshot.Notices, snapshot.RemovedNoticeIds, notice => notice.Id) is not { Count: <= MaxNotices } storedNotices
+            || Overlay(fresh.StaffNotifications, snapshot.StaffNotices, snapshot.RemovedStaffNoticeIds, notice => notice.Id) is not { Count: <= MaxStaffNotices } storedStaff
+            || Overlay(fresh.CustomerNotes, snapshot.CustomerNotes, snapshot.RemovedNoteIds, note => note.Id) is not { Count: <= MaxCustomerNotes } storedNotes
+            || Overlay(fresh.Audit, snapshot.Audit, snapshot.RemovedAuditIds, entry => entry.Id) is not { Count: <= MaxAudit } storedAudit)
             return false;
 
         // The accounts are the customer's three seeded accounts, with their kinds and cards; only balances and freezes change.
@@ -796,9 +964,10 @@ public sealed partial class FintechState : IShowcaseSiteState
             || !Unique(storedTransactions.Select(item => item.Id)))
             return false;
 
-        if (storedPayees.Any(payee => payee is null || !IsText(payee.Id, 30) || !IsText(payee.Name, 60) || !Regex.IsMatch(payee.MaskedAccount ?? string.Empty, @"^•••• \d{4}$")
-                || !IsText(payee.BankName, 80) || !Enum.IsDefined(payee.Match) || !IsPlausible(payee.AddedAt) || (payee.Nickname is not null && !IsText(payee.Nickname, 30)))
-            || !Unique(storedPayees.Select(payee => payee.Id)) || !Unique(storedPayees.Select(payee => payee.Name.ToUpperInvariant())))
+        if (storedPayees.Any(payee => payee is null || !IsText(payee.Id, 30) || !IsText(payee.Name, MaxPayeeNameLength) || !Regex.IsMatch(payee.MaskedAccount ?? string.Empty, @"^•••• \d{4}$")
+                || !IsText(payee.BankName, 80) || !Enum.IsDefined(payee.Match) || !IsPlausible(payee.AddedAt) || (payee.Nickname is not null && !IsText(payee.Nickname, MaxNicknameLength)))
+            || !Unique(storedPayees.Select(payee => payee.Id)) || !Unique(storedPayees.Select(payee => payee.Name.ToUpperInvariant()))
+            || !Unique(storedPayees.Where(payee => payee.Nickname is not null).Select(payee => payee.Nickname!.ToUpperInvariant())))
             return false;
 
         var payeeIds = storedPayees.Select(payee => payee.Id).ToHashSet(StringComparer.Ordinal);
@@ -810,18 +979,27 @@ public sealed partial class FintechState : IShowcaseSiteState
 
         if (storedDisputes.Any(dispute => dispute is null || dispute.Id < 3000 || dispute.Id >= snapshot.NextDisputeId || !IsCustomerId(dispute.CustomerId)
                 || (dispute.CustomerId == FintechSeedData.SeededCustomerId
-                    ? !transactionsById.TryGetValue(dispute.TransactionId, out var disputed) || disputed.DisputeId != dispute.Id || dispute.Amount != -disputed.Amount
-                    : dispute.TransactionId != 0 || dispute.Amount is <= 0 or > 50_000m || !IsMoney(dispute.Amount))
-                || !IsText(dispute.Merchant, 120) || !Enum.IsDefined(dispute.Reason) || !Enum.IsDefined(dispute.Status) || dispute.Details is not { Length: >= 10 and <= MaxDisputeDetails }
+                    ? !transactionsById.TryGetValue(dispute.TransactionId, out var disputed) || disputed.DisputeId != dispute.Id || dispute.Amount <= 0 || dispute.Amount > -disputed.Amount
+                    : dispute.TransactionId != 0 || dispute.Amount is <= 0 or > 50_000m)
+                || !IsMoney(dispute.Amount) || !IsText(dispute.Merchant, 120) || !Enum.IsDefined(dispute.Reason) || !Enum.IsDefined(dispute.Status)
+                || dispute.Details is not { Length: >= MinReason and <= MaxDisputeDetails }
                 || !IsPlausible(dispute.CreatedAt) || (dispute.Status is FintechDisputeStatus.Refunded or FintechDisputeStatus.Declined) != dispute.ClosedAt is not null
+                || (dispute.EscalatedAt is { } escalated && (escalated < dispute.CreatedAt || !IsPlausible(escalated)))
                 || (dispute.Resolution is not null && !IsText(dispute.Resolution, MaxDisputeDetails)))
             || !Unique(storedDisputes.Select(dispute => dispute.Id))
             || storedTransactions.Any(item => item.DisputeId is { } id && storedDisputes.All(dispute => dispute.Id != id)))
             return false;
 
         if (storedNotices.Any(notice => notice is null || notice.Id < 1 || notice.Id >= snapshot.NextNoticeId || !IsPlausible(notice.At) || !Enum.IsDefined(notice.Kind)
-                || !IsText(notice.Title, 80) || !IsText(notice.Body, 400) || (notice.Link is not null && !notice.Link.StartsWith("/showcase/fintech", StringComparison.Ordinal)))
+                || !IsText(notice.Title, 80) || !IsText(notice.Body, 400) || !IsSiteLink(notice.Link))
             || !Unique(storedNotices.Select(notice => notice.Id)))
+            return false;
+
+        var opsAccountIds = FintechSeedData.DemoAccounts().Where(account => IsStaffRole(account.RoleId)).Select(account => account.Id).ToHashSet(StringComparer.Ordinal);
+
+        if (storedStaff.Any(notice => notice is null || notice.Id < 1 || notice.Id >= snapshot.NextStaffNoticeId || !opsAccountIds.Contains(notice.AccountId) || !IsPlausible(notice.At)
+                || !IsText(notice.Title, 80) || (notice.Text is not null && !IsText(notice.Text, 200)) || !IsSiteLink(notice.Url))
+            || !Unique(storedStaff.Select(notice => notice.Id)))
             return false;
 
         if (storedAlerts.LowBalanceAmount is < 0 or > 1_000_000 || storedAlerts.LargeTransactionAmount is < 1 or > 1_000_000 || !IsMoney(storedAlerts.LowBalanceAmount)
@@ -831,12 +1009,8 @@ public sealed partial class FintechState : IShowcaseSiteState
         if (snapshot.VerifiedAccountId is not null && !IsAccountId(snapshot.VerifiedAccountId))
             return false;
 
-        if (snapshot is not { Audit: { Count: <= MaxAudit } storedAudit, CustomerNotes: { Count: <= MaxCustomerNotes } storedNotes }
-            || snapshot.NextAuditId is < 1 or > 1_000_000 - MaxAudit || snapshot.NextNoteId is < 1 or > 1_000_000 - MaxCustomerNotes)
-            return false;
-
         if (storedAudit.Any(entry => entry is null || entry.Id < 1 || entry.Id >= snapshot.NextAuditId || !IsPlausible(entry.At) || !IsText(entry.Actor, ShowcaseIdentity.MaxNameLength)
-                || !IsText(entry.Role, 20) || !IsText(entry.Action, 60) || !IsText(entry.Subject, 120) || !IsText(entry.Details, 420))
+                || !IsText(entry.Action, 80) || !IsText(entry.Target, 120) || (entry.Details is not null && !IsText(entry.Details, 420)) || !IsSiteLink(entry.TargetUrl))
             || !Unique(storedAudit.Select(entry => entry.Id)))
             return false;
 
@@ -845,32 +1019,34 @@ public sealed partial class FintechState : IShowcaseSiteState
             || !Unique(storedNotes.Select(note => note.Id)))
             return false;
 
+        if (!TryRebuildAml(snapshot, fresh, storedTransfers, out var storedAmlAlerts, out var storedAmlCases))
+            return false;
+
         accounts.Clear();
         accounts.AddRange(storedAccounts.OrderBy(account => seeded.FindIndex(seed => seed.Id == account.Id)));
-        budgets.Clear();
-        budgets.AddRange(storedBudgets);
-        transactions.Clear();
-        transactions.AddRange(storedTransactions.OrderByDescending(item => item.Date).ThenByDescending(item => item.Id));
-        payees.Clear();
-        payees.AddRange(storedPayees);
-        transfers.Clear();
-        transfers.AddRange(storedTransfers);
-        disputes.Clear();
-        disputes.AddRange(storedDisputes);
-        notices.Clear();
-        notices.AddRange(storedNotices.OrderByDescending(notice => notice.At));
+        Reload(amlAlerts, storedAmlAlerts);
+        Reload(amlCases, storedAmlCases);
+        nextAmlAlertId = snapshot.NextAmlAlertId;
+        nextAmlCaseId = snapshot.NextAmlCaseId;
+        nextAmlEventId = snapshot.NextAmlEventId;
+        Reload(budgets, storedBudgets);
+        Reload(transactions, storedTransactions.OrderByDescending(item => item.Date).ThenByDescending(item => item.Id).ToList());
+        Reload(payees, storedPayees);
+        Reload(transfers, storedTransfers);
+        Reload(disputes, storedDisputes);
+        Reload(notices, storedNotices.OrderByDescending(notice => notice.At).ToList());
+        Reload(staffNotices, storedStaff.OrderByDescending(notice => notice.At).ThenByDescending(notice => notice.Id).ToList());
+        Reload(audit, storedAudit.OrderBy(entry => entry.Id).ToList());
+        Reload(customerNotes, storedNotes);
         AlertSettings = storedAlerts;
-        audit.Clear();
-        audit.AddRange(storedAudit.OrderBy(entry => entry.Id));
-        customerNotes.Clear();
-        customerNotes.AddRange(storedNotes);
-        nextAuditId = snapshot.NextAuditId;
-        nextNoteId = snapshot.NextNoteId;
 
+        nextAuditId = snapshot.NextAuditId;
         nextDisputeId = snapshot.NextDisputeId;
+        nextNoteId = snapshot.NextNoteId;
         nextNoticeId = snapshot.NextNoticeId;
         nextPayeeId = snapshot.NextPayeeId;
         nextReference = snapshot.NextReference;
+        nextStaffNoticeId = snapshot.NextStaffNoticeId;
         nextTransactionId = snapshot.NextTransactionId;
 
         // The identity is applied after the data; the verified account only counts for the account signed in then.
@@ -902,7 +1078,9 @@ public sealed partial class FintechState : IShowcaseSiteState
             Security = true,
             Transfer = settings.Transfer,
         };
-        Changed?.Invoke();
+        Record("Alert settings changed", $"Alerts · {Identity.Current!.Name}", CustomerOpsPath(verifiedAccountId!),
+            $"Low balance {(settings.LowBalance ? $"under {Money(settings.LowBalanceAmount)}" : "off")}; large transactions {(settings.LargeTransaction ? $"over {Money(settings.LargeTransactionAmount)}" : "off")}.");
+        RaiseChanged();
 
         return FintechResult.Ok;
     }
@@ -925,15 +1103,15 @@ public sealed partial class FintechState : IShowcaseSiteState
             return FintechResult.LimitReached;
 
         customerNotes.Add(new FintechCustomerNote(nextNoteId++, customer.Id, Clock.Now, Identity.Current!.Name, text));
-        Audit("Customer note added", customer.Name, text.Length > 80 ? string.Concat(text.AsSpan(0, 79), "…") : text);
-        Changed?.Invoke();
+        Record("Customer note added", customer.Name, CustomerOpsPath(customer.Id), text.Length > 80 ? string.Concat(text.AsSpan(0, 79), "…") : text);
+        RaiseChanged();
 
         return FintechResult.Ok;
     }
 
     /// <summary>
-    /// Approves a held transfer (operations). It is sent now, or scheduled when its date is still ahead. The demo customer's
-    /// account must still hold the money (InsufficientFunds otherwise); the customer gets an alert.
+    /// Approves (releases) a held transfer (operations). It is sent now, or scheduled when its date is still ahead. The demo
+    /// customer's account must still hold the money (InsufficientFunds otherwise); the customer gets an alert.
     /// </summary>
     public FintechResult ApproveTransfer(string reference, string? note)
     {
@@ -950,7 +1128,7 @@ public sealed partial class FintechState : IShowcaseSiteState
 
         note = string.IsNullOrWhiteSpace(note) ? null : note.Trim();
 
-        if (note is { Length: > 300 })
+        if (note is { Length: > MaxApproveNote })
             return FintechResult.Invalid;
 
         if (IsLedger(transfer) && (FindAccount(transfer.FromAccountId) is not { } source || source.Balance - Reserved(source.Id, transfer.Reference) < transfer.Amount))
@@ -969,7 +1147,7 @@ public sealed partial class FintechState : IShowcaseSiteState
             transfer.ClosedAt = Clock.Now;
         }
 
-        Audit("Transfer approved", $"{transfer.Reference} · {transfer.CustomerName}",
+        Record("Transfer approved", TransferTarget(transfer), TransferOpsPath(transfer.Reference),
             $"{Money(transfer.Amount)} to {transfer.ToName}{(later ? $", scheduled for {Day(transfer.Date)}" : ", sent")}.{(note is null ? string.Empty : $" Note: {note}")}");
 
         if (IsLedger(transfer))
@@ -979,7 +1157,7 @@ public sealed partial class FintechState : IShowcaseSiteState
                 TransferPath(transfer));
         }
 
-        Changed?.Invoke();
+        RaiseChanged();
 
         return FintechResult.Ok;
     }
@@ -990,7 +1168,7 @@ public sealed partial class FintechState : IShowcaseSiteState
 
     /// <summary>Returns a customer by ID (operations), or <see langword="null" />.</summary>
     public FintechCustomer? FindCustomer(string? customerId) =>
-        IsOps && Customers.FirstOrDefault(customer => customer.Id == customerId) is { } customer ? CustomerSummary(customer) : null;
+        IsOps && customerId is not null && customersById.Value.TryGetValue(customerId, out var customer) ? CustomerSummary(customer) : null;
 
     /// <summary>Returns any dispute (operations), or <see langword="null" />.</summary>
     public FintechDispute? FindAnyDispute(int disputeId) => IsOps ? disputes.FirstOrDefault(dispute => dispute.Id == disputeId) : null;
@@ -999,8 +1177,9 @@ public sealed partial class FintechState : IShowcaseSiteState
     public FintechTransfer? FindAnyTransfer(string? reference) => IsOps ? transfers.FirstOrDefault(transfer => transfer.Reference == reference) : null;
 
     /// <summary>
-    /// Puts a scheduled transfer on hold for a check (operations), with a reason (10–100 characters). It then waits in the
-    /// review queue; the customer gets an alert.
+    /// Puts a scheduled transfer on hold for a check (operations), with a reason (<see cref="MinReason" /> to
+    /// <see cref="MaxHoldReason" /> characters). It then waits in the review queue; the customer gets an alert, and the other
+    /// operations users who can sign in are told.
     /// </summary>
     public FintechResult HoldTransfer(string reference, string reason)
     {
@@ -1017,24 +1196,25 @@ public sealed partial class FintechState : IShowcaseSiteState
 
         reason = reason?.Trim() ?? string.Empty;
 
-        if (reason.Length is < 10 or > 100)
+        if (reason.Length is < MinReason or > MaxHoldReason)
             return FintechResult.Invalid;
 
         transfer.Status = FintechTransferStatus.Held;
         transfer.HoldReason = $"Held by operations: {reason}";
-        Audit("Transfer held", $"{transfer.Reference} · {transfer.CustomerName}", reason);
+        Record("Transfer held", TransferTarget(transfer), TransferOpsPath(transfer.Reference), reason);
 
         if (IsLedger(transfer))
             Notify(FintechAlertKind.Transfer, "Transfer held for a check", $"Your {Money(transfer.Amount)} transfer to {transfer.ToName} is held for a check before it's sent. We'll update you within one business day.", TransferPath(transfer));
 
-        Changed?.Invoke();
+        NotifyOps($"{transfer.Reference} is held for review", $"{Identity.Current!.Name} held {Money(transfer.Amount)} from {transfer.CustomerName}: {reason}", TransferOpsPath(transfer.Reference));
+        RaiseChanged();
 
         return FintechResult.Ok;
     }
 
     /// <summary>
-    /// Rejects a held transfer (operations) with a reason the customer sees (10–300 characters). Nothing is sent and the
-    /// money set aside is free again.
+    /// Rejects a held transfer (operations) with a reason the customer sees (<see cref="MinReason" /> to
+    /// <see cref="MaxRejectReason" /> characters). Nothing is sent and the money set aside is free again.
     /// </summary>
     public FintechResult RejectTransfer(string reference, string reason)
     {
@@ -1051,7 +1231,7 @@ public sealed partial class FintechState : IShowcaseSiteState
 
         reason = reason?.Trim() ?? string.Empty;
 
-        if (reason.Length is < 10 or > 300)
+        if (reason.Length is < MinReason or > MaxRejectReason)
             return FintechResult.Invalid;
 
         if (!".!?".Contains(reason[^1], StringComparison.Ordinal))
@@ -1061,19 +1241,20 @@ public sealed partial class FintechState : IShowcaseSiteState
         transfer.RejectReason = reason;
         transfer.HoldReason = null;
         transfer.ClosedAt = Clock.Now;
-        Audit("Transfer rejected", $"{transfer.Reference} · {transfer.CustomerName}", reason);
+        Record("Transfer rejected", TransferTarget(transfer), TransferOpsPath(transfer.Reference), reason);
 
         if (IsLedger(transfer))
             Notify(FintechAlertKind.Transfer, "Transfer not sent", $"We didn't send your {Money(transfer.Amount)} transfer to {transfer.ToName}. Open the transfer to read why.", TransferPath(transfer));
 
-        Changed?.Invoke();
+        RaiseChanged();
 
         return FintechResult.Ok;
     }
 
     /// <summary>
     /// Closes a dispute (operations): refund credits the amount back to the demo customer's account (a ledger entry), or
-    /// decline leaves the charge. The resolution (10–1000 characters) is what the customer reads.
+    /// decline leaves the charge. The resolution (<see cref="MinReason" /> to <see cref="MaxDisputeDetails" /> characters) is
+    /// what the customer reads.
     /// </summary>
     public FintechResult ResolveDispute(int disputeId, bool refund, string resolution)
     {
@@ -1083,12 +1264,12 @@ public sealed partial class FintechState : IShowcaseSiteState
         if (disputes.FirstOrDefault(dispute => dispute.Id == disputeId) is not { } dispute)
             return FintechResult.NotFound;
 
-        if (dispute.Status is FintechDisputeStatus.Refunded or FintechDisputeStatus.Declined)
+        if (!IsOpen(dispute))
             return FintechResult.WrongState;
 
         resolution = resolution?.Trim() ?? string.Empty;
 
-        if (resolution.Length is < 10 or > MaxDisputeDetails)
+        if (resolution.Length is < MinReason or > MaxDisputeDetails)
             return FintechResult.Invalid;
 
         dispute.Status = refund ? FintechDisputeStatus.Refunded : FintechDisputeStatus.Declined;
@@ -1097,20 +1278,20 @@ public sealed partial class FintechState : IShowcaseSiteState
 
         if (refund && dispute.CustomerId == FintechSeedData.SeededCustomerId && FindTransaction(dispute.TransactionId) is { } charge && FindAccount(charge.AccountId) is { } account)
         {
-            InsertInOrder(new FintechTransaction(nextTransactionId++, Clock.Now, account.Id, Clip($"Refund · dispute {dispute.Id} · {dispute.Merchant}"), charge.CategoryId, dispute.Amount, false));
+            InsertInOrder(new FintechTransaction(nextTransactionId++, Clock.Now, account.Id, Clip($"Refund · dispute {Number(dispute.Id)} · {dispute.Merchant}"), charge.CategoryId, dispute.Amount, false));
             Replace(account with { Balance = account.Balance + dispute.Amount });
         }
 
-        Audit(refund ? "Dispute refunded" : "Dispute declined", $"Dispute {dispute.Id} · {CustomerName(dispute.CustomerId)}", resolution);
+        Record(refund ? "Dispute refunded" : "Dispute declined", DisputeTarget(dispute), DisputeOpsPath(dispute.Id), resolution);
 
         if (dispute.CustomerId == FintechSeedData.SeededCustomerId)
         {
-            Notify(FintechAlertKind.Dispute, refund ? $"Dispute {dispute.Id}: refunded" : $"Dispute {dispute.Id}: declined",
+            Notify(FintechAlertKind.Dispute, refund ? $"Dispute {Number(dispute.Id)}: refunded" : $"Dispute {Number(dispute.Id)}: declined",
                 refund ? $"We credited {Money(dispute.Amount)} back for {dispute.Merchant}. Open the dispute to read our decision." : $"The {dispute.Merchant} charge stands. Open the dispute to read why.",
-                $"/showcase/fintech/disputes/{dispute.Id.ToString(CultureInfo.InvariantCulture)}");
+                DisputePath(dispute.Id));
         }
 
-        Changed?.Invoke();
+        RaiseChanged();
 
         return FintechResult.Ok;
     }
@@ -1122,9 +1303,9 @@ public sealed partial class FintechState : IShowcaseSiteState
             return 0;
 
         var due = transfers.Count(transfer => transfer.Status == FintechTransferStatus.Scheduled && transfer.Date.ToDateTime(new TimeOnly(6, 0)) <= Clock.Now);
-        Audit("Postings run", "Scheduled transfers", due == 0 ? "Nothing was due." : $"{due} due transfer{(due == 1 ? string.Empty : "s")} processed.");
+        Record("Postings run", "Scheduled transfers", OpsBase + "/scheduled", due == 0 ? "Nothing was due." : $"{due} due transfer{(due == 1 ? string.Empty : "s")} processed.");
         CatchUp();
-        Changed?.Invoke();
+        RaiseChanged();
 
         return due;
     }
@@ -1142,13 +1323,12 @@ public sealed partial class FintechState : IShowcaseSiteState
             return FintechResult.WrongState;
 
         dispute.Status = FintechDisputeStatus.UnderReview;
-        Audit("Dispute under review", $"Dispute {dispute.Id} · {CustomerName(dispute.CustomerId)}", $"{Money(dispute.Amount)} at {dispute.Merchant}.");
+        Record("Dispute under review", DisputeTarget(dispute), DisputeOpsPath(dispute.Id), $"{Money(dispute.Amount)} at {dispute.Merchant}.");
 
         if (dispute.CustomerId == FintechSeedData.SeededCustomerId)
-            Notify(FintechAlertKind.Dispute, $"Dispute {dispute.Id} is under review", $"We're looking into the {Money(dispute.Amount)} charge at {dispute.Merchant} with the merchant.",
-                $"/showcase/fintech/disputes/{dispute.Id.ToString(CultureInfo.InvariantCulture)}");
+            Notify(FintechAlertKind.Dispute, $"Dispute {Number(dispute.Id)} is under review", $"We're looking into the {Money(dispute.Amount)} charge at {dispute.Merchant} with the merchant.", DisputePath(dispute.Id));
 
-        Changed?.Invoke();
+        RaiseChanged();
 
         return FintechResult.Ok;
     }
@@ -1170,8 +1350,10 @@ public sealed partial class FintechState : IShowcaseSiteState
         if (budgets[index].Limit == limit)
             return FintechResult.NoChange;
 
+        var before = budgets[index].Limit;
         budgets[index] = budgets[index] with { Limit = limit };
-        Changed?.Invoke();
+        Record("Budget changed", $"{FindCategory(categoryId).Name} budget · {Identity.Current!.Name}", CustomerOpsPath(verifiedAccountId!), $"{Money(before)} → {Money(limit)} a month.");
+        RaiseChanged();
 
         return FintechResult.Ok;
     }
@@ -1194,12 +1376,12 @@ public sealed partial class FintechState : IShowcaseSiteState
         if (draft.Amount != Math.Round(draft.Amount, 2))
             return "Use at most two decimal places.";
 
-        if (draft.Amount > 50_000m)
+        if (draft.Amount > MaxTransferAmount)
             return "Transfers are limited to $50,000.00 each.";
 
         if (FindAccount(draft.ToId) is { Kind: FintechAccountKind.CreditCard } card)
         {
-            var owed = Math.Max(0, -card.Balance - transfers.Where(transfer => transfer.ToId == card.Id && transfer.Status is FintechTransferStatus.Scheduled or FintechTransferStatus.Held).Sum(transfer => transfer.Amount));
+            var owed = CardOwed(card);
 
             if (owed == 0)
                 return $"Nothing more is owed on the {card.Name}.";
@@ -1211,11 +1393,14 @@ public sealed partial class FintechState : IShowcaseSiteState
         if (draft.Amount > Available(source))
             return $"{source.Name} has {Money(Available(source))} available{(Reserved(source.Id) > 0 ? " after scheduled and held transfers" : string.Empty)}.";
 
-        if (draft.Date < Today || draft.Date > Today.AddDays(60))
-            return "Choose a date from today up to 60 days ahead.";
+        if (draft.Date < Today || draft.Date > Today.AddDays(MaxScheduleDays))
+            return $"Choose a date from today up to {MaxScheduleDays} days ahead.";
 
-        if (draft.Note is { Length: > 60 })
-            return "Keep the note to 60 characters.";
+        if (FindPayee(draft.ToId) is not null && draft.Amount > PayeeLimitLeft(draft.Date))
+            return $"Payments to payees are limited to {Money(DailyPayeeLimit)} a day; {Money(PayeeLimitLeft(draft.Date))} is left for {Day(draft.Date)}.";
+
+        if (draft.Note is { Length: > MaxTransferNote })
+            return $"Keep the note to {MaxTransferNote} characters.";
 
         return null;
     }
@@ -1223,24 +1408,24 @@ public sealed partial class FintechState : IShowcaseSiteState
     /// <summary>Confirms the second sign-in step with the code from the (demo) text message.</summary>
     public FintechResult VerifySignIn(string code)
     {
-        if (Identity.Current is not { RoleId: FintechSeedData.CustomerRole or FintechSeedData.OpsRole } account)
+        if (Identity.Current is not { RoleId: FintechSeedData.CustomerRole or FintechSeedData.OpsRole or FintechSeedData.SeniorRole } account)
             return FintechResult.NotAllowed;
 
         if (!TryCode(FintechCodePurpose.SignIn, code))
             return FintechResult.WrongCode;
 
         verifiedAccountId = account.Id;
-        Audit("Signed in", $"{account.Name}", "Password and one-time code.");
+        Record("Signed in", account.Name, account.RoleId == FintechSeedData.CustomerRole ? CustomerOpsPath(account.Id) : null, "Password and one-time code.");
 
-        if (account.RoleId == FintechSeedData.OpsRole)
+        if (IsStaffRole(account.RoleId))
         {
-            Changed?.Invoke();
+            RaiseChanged();
 
             return FintechResult.Ok;
         }
 
         Notify(FintechAlertKind.Security, "New sign-in", $"You signed in on {Clock.Now.ToString("MMM d 'at' HH:mm", CultureInfo.InvariantCulture)} with a one-time code. If this wasn't you, contact us straight away.", null);
-        Changed?.Invoke();
+        RaiseChanged();
 
         return FintechResult.Ok;
     }
@@ -1251,23 +1436,15 @@ public sealed partial class FintechState : IShowcaseSiteState
 
     private static string Day(DateOnly date) => date.ToString("MMM d", CultureInfo.InvariantCulture);
 
-    private static bool IsCustomerId(string? customerId) => customerId is not null && FintechSeedData.Customers().Any(customer => customer.Id == customerId);
+    private static bool IsCustomerId(string? customerId) => customerId is not null && customersById.Value.ContainsKey(customerId);
 
     /// <summary>Returns whether a transfer moves money in the tab's ledger (the demo customer's); other customers' only change status.</summary>
     private static bool IsLedger(FintechTransfer transfer) => transfer.CustomerId == FintechSeedData.SeededCustomerId;
 
-    private void Audit(string action, string subject, string details) =>
-        AuditAs(Identity.Current?.Name ?? "System", Identity.Current?.RoleId == FintechSeedData.OpsRole ? "Operations" : Identity.Current is null ? "System" : "Customer", action, subject, details);
+    /// <summary>Returns whether a dispute is still open: submitted or under review.</summary>
+    private static bool IsOpen(FintechDispute dispute) => dispute.Status is FintechDisputeStatus.Submitted or FintechDisputeStatus.UnderReview;
 
-    private void AuditAs(string actor, string role, string action, string subject, string details)
-    {
-        audit.Add(new FintechAuditEntry(nextAuditId++, Clock.Now, actor, role, action, Clip(subject), details.Length <= 420 ? details : string.Concat(details.AsSpan(0, 419), "…")));
-
-        if (audit.Count > MaxAudit)
-            audit.RemoveAt(0);
-    }
-
-    private string CustomerName(string customerId) => FintechSeedData.Customers().FirstOrDefault(customer => customer.Id == customerId)?.Name ?? customerId;
+    private static string CustomerName(string customerId) => customersById.Value.TryGetValue(customerId, out var customer) ? customer.Name : customerId;
 
     /// <summary>Returns the Levenshtein distance between two short words.</summary>
     private static int EditDistance(string a, string b)
@@ -1298,13 +1475,27 @@ public sealed partial class FintechState : IShowcaseSiteState
 
     private static bool IsText(string? value, int maxLength) => !string.IsNullOrWhiteSpace(value) && value.Length <= maxLength;
 
+    /// <summary>Lower-cases the first letter only, for a sentence fragment used mid-sentence (names and dates in it keep their case).</summary>
+    private static string LowerFirst(string text) => text.Length == 0 ? text : char.ToLowerInvariant(text[0]) + text[1..];
+
     private static string Money(decimal value) => value.ToString("$#,0.00", CultureInfo.InvariantCulture);
+
+    /// <summary>Returns the next free ID after the seeded ones.</summary>
+    private static int NextId(IEnumerable<int> ids) => ids.DefaultIfEmpty(0).Max() + 1;
 
     private static string NormalizeName(string? name) =>
         string.Join(' ', Regex.Replace((name ?? string.Empty).ToLowerInvariant(), @"[^a-z0-9 ]", " ").Split(' ', StringSplitOptions.RemoveEmptyEntries)
             .Where(part => part is not ("llc" or "inc" or "ltd" or "co" or "the")));
 
-    private static string TransferPath(FintechTransfer transfer) => $"/showcase/fintech/transfers/{transfer.Reference}";
+    private static string Number(int value) => value.ToString(CultureInfo.InvariantCulture);
+
+    private static void Reload<T>(List<T> target, List<T> source)
+    {
+        target.Clear();
+        target.AddRange(source);
+    }
+
+    private static string TransferPath(FintechTransfer transfer) => $"{SiteBase}/transfers/{transfer.Reference}";
 
     private static bool Unique<T>(IEnumerable<T> values)
     {
@@ -1321,6 +1512,10 @@ public sealed partial class FintechState : IShowcaseSiteState
     private decimal? BudgetShare(string categoryId) =>
         budgets.FirstOrDefault(budget => budget.CategoryId == categoryId) is { } budget ? SpentThisMonth(categoryId) / budget.Limit : null;
 
+    /// <summary>Returns what is still owed on a card after payments to it already scheduled or held.</summary>
+    private decimal CardOwed(FintechAccount card) =>
+        Math.Max(0, -card.Balance - transfers.Where(transfer => transfer.ToId == card.Id && transfer.Status is FintechTransferStatus.Scheduled or FintechTransferStatus.Held).Sum(transfer => transfer.Amount));
+
     /// <summary>Raises a budget notice when a change takes a category past 80% or past its limit.</summary>
     private void CheckBudget(string categoryId, decimal? before)
     {
@@ -1330,9 +1525,9 @@ public sealed partial class FintechState : IShowcaseSiteState
         var name = FindCategory(categoryId).Name;
 
         if (was <= 1 && after > 1)
-            Notify(FintechAlertKind.Budget, $"{name} is over budget", $"You've spent more than this month's {name.ToLowerInvariant()} budget.", "/showcase/fintech/budgets");
+            Notify(FintechAlertKind.Budget, $"{name} is over budget", $"You've spent more than this month's {LowerFirst(name)} budget.", BudgetsPath);
         else if (was < 0.8m && after >= 0.8m)
-            Notify(FintechAlertKind.Budget, $"{name} is at 80% of its budget", $"You've used most of this month's {name.ToLowerInvariant()} budget.", "/showcase/fintech/budgets");
+            Notify(FintechAlertKind.Budget, $"{name} is at 80% of its budget", $"You've used most of this month's {LowerFirst(name)} budget.", BudgetsPath);
     }
 
     /// <summary>Returns why a transfer to a payee would be held for a check, or <see langword="null" /> when it wouldn't.</summary>
@@ -1350,6 +1545,11 @@ public sealed partial class FintechState : IShowcaseSiteState
         return null;
     }
 
+    /// <summary>
+    /// Adds a notice to the customer's alerts feed, when that kind of alert is on (security notices always are, as banks do).
+    /// It is the feed the Alerts page and the header's bell both read. Only the demo customer has a feed: other customers
+    /// have no sign-in in the demo, so nothing is kept for them.
+    /// </summary>
     private void Notify(FintechAlertKind kind, string title, string body, string? link)
     {
         var enabled = kind switch
@@ -1359,8 +1559,6 @@ public sealed partial class FintechState : IShowcaseSiteState
             FintechAlertKind.Budget => AlertSettings.Budget,
             FintechAlertKind.Transfer => AlertSettings.Transfer,
             FintechAlertKind.Dispute => AlertSettings.Dispute,
-
-            // Security notices (sign-ins, payees, card freezes) are always sent, as banks do.
             _ => true,
         };
 
@@ -1373,7 +1571,7 @@ public sealed partial class FintechState : IShowcaseSiteState
             Id = nextNoticeId++, At = Clock.Now, Kind = kind,
             Title = title.Length <= 80 ? title : string.Concat(title.AsSpan(0, 79), "…"),
             Body = body.Length <= 400 ? body : string.Concat(body.AsSpan(0, 399), "…"),
-            Link = link,
+            Link = IsSiteLink(link) ? link : null,
         });
 
         if (notices.Count > MaxNotices)
@@ -1388,8 +1586,13 @@ public sealed partial class FintechState : IShowcaseSiteState
 
         challenge = null;
         PendingTransfer = null;
-        Changed?.Invoke();
+        RaiseChanged();
     }
+
+    /// <summary>Returns what is left of <see cref="DailyPayeeLimit" /> for a date: transfers to payees dated that day that are sent, scheduled, or held count.</summary>
+    public decimal PayeeLimitLeft(DateOnly date) =>
+        Math.Max(0, DailyPayeeLimit - transfers.Where(transfer => transfer.CustomerId == verifiedAccountId && !transfer.ToOwnAccount && transfer.Date == date
+            && transfer.Status is FintechTransferStatus.Completed or FintechTransferStatus.Scheduled or FintechTransferStatus.Held).Sum(transfer => transfer.Amount));
 
     /// <summary>Moves a transfer's money: the debit, the credit to an own account, the balances, and the alerts.</summary>
     private void Post(FintechTransfer transfer, DateTime at)
@@ -1424,7 +1627,20 @@ public sealed partial class FintechState : IShowcaseSiteState
             Notify(FintechAlertKind.LargeTransaction, "Large transfer sent", $"{Money(transfer.Amount)} went from {source.Name} to {transfer.ToName}.", TransferPath(transfer));
 
         if (FindAccount(source.Id) is { } after && after.Balance < AlertSettings.LowBalanceAmount && after.Balance + transfer.Amount >= AlertSettings.LowBalanceAmount)
-            Notify(FintechAlertKind.LowBalance, $"{after.Name} is below {Money(AlertSettings.LowBalanceAmount)}", $"The balance is now {Money(after.Balance)}.", $"/showcase/fintech/accounts/{after.Id}");
+            Notify(FintechAlertKind.LowBalance, $"{after.Name} is below {Money(AlertSettings.LowBalanceAmount)}", $"The balance is now {Money(after.Balance)}.", $"{SiteBase}/accounts/{after.Id}");
+    }
+
+    /// <summary>Raises <see cref="Changed" />, or, during a bulk action, once when it ends.</summary>
+    private void RaiseChanged()
+    {
+        if (batchDepth > 0)
+        {
+            changedInBatch = true;
+
+            return;
+        }
+
+        Changed?.Invoke();
     }
 
     private void Replace(FintechAccount account) => accounts[accounts.FindIndex(item => item.Id == account.Id)] = account;
@@ -1463,7 +1679,7 @@ public sealed partial class FintechState : IShowcaseSiteState
         if (++challengeAttempts >= CodeAttempts)
             challenge = null;
 
-        Changed?.Invoke();
+        RaiseChanged();
 
         return false;
     }
@@ -1476,12 +1692,12 @@ public sealed partial class FintechState : IShowcaseSiteState
             ? accountIds.Contains(transfer.FromAccountId)
                 && (transfer.ToOwnAccount ? accountIds.Contains(transfer.ToId) : payeeIds.Contains(transfer.ToId) || transfer.Status is FintechTransferStatus.Completed or FintechTransferStatus.Rejected or FintechTransferStatus.Cancelled)
             : !transfer.ToOwnAccount && IsText(transfer.FromAccountId, 40) && IsText(transfer.ToId, 40))
-        && IsText(transfer.ToName, 60) && transfer.Amount is > 0 and <= 50_000m && IsMoney(transfer.Amount)
+        && IsText(transfer.ToName, 60) && transfer.Amount is > 0 and <= MaxTransferAmount && IsMoney(transfer.Amount)
         && transfer.Date >= DateOnly.FromDateTime(FintechSeedData.Now.AddYears(-3)) && transfer.Date <= DateOnly.FromDateTime(FintechSeedData.Now.AddYears(2))
         && IsPlausible(transfer.CreatedAt) && Enum.IsDefined(transfer.Status)
         && (transfer.Status is FintechTransferStatus.Scheduled or FintechTransferStatus.Held) == transfer.ClosedAt is null
         && (transfer.Status == FintechTransferStatus.Held) == transfer.HoldReason is not null && (transfer.HoldReason is null || IsText(transfer.HoldReason, 120))
-        && (transfer.RejectReason is null || IsText(transfer.RejectReason, 300)) && (transfer.Note is null || IsText(transfer.Note, 60));
+        && (transfer.RejectReason is null || IsText(transfer.RejectReason, MaxRejectReason + 1)) && (transfer.Note is null || IsText(transfer.Note, MaxTransferNote));
 
     #endregion
 
@@ -1507,9 +1723,6 @@ public sealed partial class FintechState : IShowcaseSiteState
     /// <summary>Gets the site's demo sign-in.</summary>
     public ShowcaseIdentity Identity { get; }
 
-    /// <summary>Gets the audit log, newest first (operations only).</summary>
-    public IReadOnlyList<FintechAuditEntry> AuditLog => IsOps ? audit.AsEnumerable().Reverse().ToList() : Array.Empty<FintechAuditEntry>();
-
     /// <summary>Gets the bank's customers (operations only), with live figures for the demo customer.</summary>
     public IReadOnlyList<FintechCustomer> Customers => IsOps ? FintechSeedData.Customers().Select(CustomerSummary).ToList() : Array.Empty<FintechCustomer>();
 
@@ -1525,8 +1738,14 @@ public sealed partial class FintechState : IShowcaseSiteState
     /// <summary>Gets whether the signed-in account (customer or operations) has entered the sign-in code.</summary>
     public bool IsCodeVerified => Identity.Current is { } account && verifiedAccountId == account.Id;
 
-    /// <summary>Gets whether an operations user is signed in and has entered the code: every operations action needs it.</summary>
-    public bool IsOps => Identity.Current is { RoleId: FintechSeedData.OpsRole } account && verifiedAccountId == account.Id;
+    /// <summary>
+    /// Gets whether bank operations staff (an analyst or a senior reviewer) are signed in and have entered the code: every
+    /// operations action needs it.
+    /// </summary>
+    public bool IsOps => Identity.Current is { } account && IsStaffRole(account.RoleId) && verifiedAccountId == account.Id;
+
+    /// <summary>Gets whether a senior reviewer is signed in and has entered the code: deciding escalated AML cases needs it.</summary>
+    public bool IsSenior => Identity.Current is { RoleId: FintechSeedData.SeniorRole } account && verifiedAccountId == account.Id;
 
     /// <summary>Gets whether a customer is signed in and has entered the one-time code: every banking action needs it.</summary>
     public bool IsVerified => Identity.Current is { RoleId: FintechSeedData.CustomerRole } account && verifiedAccountId == account.Id;
@@ -1556,8 +1775,8 @@ public sealed partial class FintechState : IShowcaseSiteState
     /// <summary>Gets the site's slug, used in the storage key.</summary>
     public string SiteSlug => "fintech";
 
-    /// <summary>Gets the snapshot format version.</summary>
-    public int SnapshotVersion => 1;
+    /// <summary>Gets the snapshot format version: 3 adds the AML alerts and cases (as differences from the seed) and the senior reviewer.</summary>
+    public int SnapshotVersion => 3;
 
     /// <summary>Gets the site's today, on its clock.</summary>
     public DateOnly Today => DateOnly.FromDateTime(Clock.Now);
@@ -1582,28 +1801,53 @@ public sealed partial class FintechState : IShowcaseSiteState
 
     #region Nested Types
 
-    /// <summary>The bank's part of the tab snapshot.</summary>
+    /// <summary>
+    /// The bank's part of the tab snapshot. The short lists are stored whole; each long list stores only the records that
+    /// differ from the seed (changed or added) and the keys of seeded records that were removed, and is rebuilt over the
+    /// seed on restore. Empty change lists are left out of the JSON.
+    /// </summary>
     private sealed class FintechSnapshot
     {
         #region Properties, Indexers
 
         public List<FintechAccount>? Accounts { get; set; }
 
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public List<FintechAmlAlert>? AmlAlerts { get; set; }
+
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public List<FintechAmlCase>? AmlCases { get; set; }
+
+        public int NextAmlAlertId { get; set; }
+
+        public int NextAmlCaseId { get; set; }
+
+        public int NextAmlEventId { get; set; }
+
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public List<int>? RemovedAmlAlertIds { get; set; }
+
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public List<int>? RemovedAmlCaseIds { get; set; }
+
         public FintechAlertSettings? AlertSettings { get; set; }
 
-        public List<FintechAuditEntry>? Audit { get; set; }
-
-        public List<FintechCustomerNote>? CustomerNotes { get; set; }
-
-        public int NextAuditId { get; set; }
-
-        public int NextNoteId { get; set; }
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public List<ShowcaseAuditEntry>? Audit { get; set; }
 
         public List<FintechBudget>? Budgets { get; set; }
 
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public List<FintechCustomerNote>? CustomerNotes { get; set; }
+
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public List<FintechDispute>? Disputes { get; set; }
 
+        public int NextAuditId { get; set; }
+
         public int NextDisputeId { get; set; }
+
+        public int NextNoteId { get; set; }
 
         public int NextNoticeId { get; set; }
 
@@ -1611,14 +1855,43 @@ public sealed partial class FintechState : IShowcaseSiteState
 
         public int NextReference { get; set; }
 
+        public int NextStaffNoticeId { get; set; }
+
         public int NextTransactionId { get; set; }
 
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public List<FintechNotice>? Notices { get; set; }
 
         public List<FintechPayee>? Payees { get; set; }
 
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public List<int>? RemovedAuditIds { get; set; }
+
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public List<int>? RemovedDisputeIds { get; set; }
+
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public List<int>? RemovedNoteIds { get; set; }
+
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public List<int>? RemovedNoticeIds { get; set; }
+
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public List<int>? RemovedStaffNoticeIds { get; set; }
+
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public List<int>? RemovedTransactionIds { get; set; }
+
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public List<string>? RemovedTransferReferences { get; set; }
+
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public List<ShowcaseNotification>? StaffNotices { get; set; }
+
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public List<FintechTransaction>? Transactions { get; set; }
 
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public List<FintechTransfer>? Transfers { get; set; }
 
         public string? VerifiedAccountId { get; set; }

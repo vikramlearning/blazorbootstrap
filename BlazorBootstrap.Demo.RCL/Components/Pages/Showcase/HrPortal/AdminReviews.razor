@@ -1,0 +1,203 @@
+@page "/showcase/hr-portal/admin/reviews"
+@layout HrWorkLayout
+
+<PageTitle>Performance reviews · @HrSeedData.ProductName</PageTitle>
+
+<div class="container-fluid px-lg-4">
+    <ShowcaseRoleGuard Roles="@HrSeedData.HrAdminRole" SignInPath="@HrLayout.SignInPath">
+        @{
+            var cycles = State.ReviewCycles();
+        }
+
+        <div class="hr-arv-head mb-3">
+            <div>
+                <h1 class="hr-title">Performance reviews</h1>
+                <p class="hr-lead mb-0">
+                    Review cycles for the whole company or some departments: employees write a self review, managers a review with a rating,
+                    you calibrate ratings across the group, and both sign off. A row opens the cycle.
+                </p>
+            </div>
+            <button type="button" class="btn btn-primary" @ref="openButton" @onclick="OpenEditorAsync" disabled="@(cycles.Count >= HrState.MaxCycles)">
+                <Icon Name="IconName.PlusLg" class="me-1" aria-hidden="true" />Open a review cycle
+            </button>
+        </div>
+
+        <HrReviewTodo Class="hr-panel mb-4" HideWhenEmpty="true" />
+
+        @* Always rendered and focusable, so an outcome is announced and focus has somewhere to go once the dialog closes. *@
+        <p class="hr-live-status" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
+
+        <section class="hr-panel" aria-labelledby="hr-arv-title">
+            <div class="d-flex flex-wrap align-items-baseline justify-content-between column-gap-3 row-gap-1 mb-2">
+                <h2 class="hr-section-title mb-0" id="hr-arv-title">Review cycles (@cycles.Count)</h2>
+                @* Back to the saved view's defaults: the newest first, every column in its place. *@
+                <Button Color="ButtonColor.Link" Size="ButtonSize.Small" Class="p-0" @onclick="ResetViewAsync">Reset view</Button>
+            </div>
+            <ShowcaseDataState Status="@(viewLoaded ? ShowcaseDataStatus.Ready : ShowcaseDataStatus.Loading)"
+                               IsEmpty="@(cycles.Count == 0)"
+                               EmptyIcon="IconName.Award"
+                               EmptyTitle="No review cycles yet"
+                               EmptyText="Open a review cycle for the whole company or some departments; everyone in it is told their self review is waiting."
+                               LoadingText="Loading review cycles…"
+                               OnRetry="RefreshGridAsync">
+                <EmptyActions>
+                    <Button Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="OpenEditorAsync">Open a review cycle</Button>
+                </EmptyActions>
+                <ChildContent>
+                    <Grid @ref="grid"
+                          @key="gridVersion"
+                          TItem="CycleRow"
+                          Class="table table-hover sc-grid-row-links"
+                          GridContainerClass="hr-grid"
+                          DataProvider="ProvideCyclesAsync"
+                          SettingsProvider="view.GetSettingsAsync"
+                          GridSettingsChanged="view.SaveSettingsAsync"
+                          AllowSorting="true"
+                          AllowColumnChooser="true"
+                          AllowExport="true"
+                          ExportFileName="hr-review-cycles"
+                          Responsive="true"
+                          EmptyText="No review cycles yet."
+                          aria-label="Review cycles">
+                        <GridColumns>
+                            <GridColumn TItem="CycleRow" HeaderText="Cycle" PropertyName="Name" SortString="name" SortKeySelector="row => row.Name"
+                                        IsDefaultSortColumn="@view.IsSortColumn("name")" SortDirection="@view.DirectionFor("name")" AlwaysVisible="true" Class="hr-arv-name">
+                                @* The stretched link makes the whole row open the cycle. *@
+                                <a class="hr-grid-link stretched-link" href="@ReviewDisplay.CycleUrl(context.Id)">@context.Name</a>
+                                <span class="d-block small text-body-secondary">@context.Scope</span>
+                            </GridColumn>
+                            <GridColumn TItem="CycleRow" HeaderText="Status" PropertyName="Status" SortString="status" SortKeySelector="row => row.StatusKind"
+                                        IsDefaultSortColumn="@view.IsSortColumn("status")" SortDirection="@view.DirectionFor("status")" TextNoWrap="true">
+                                <Badge Color="@ReviewDisplay.StatusColor(context.StatusKind)">@context.Status</Badge>
+                            </GridColumn>
+                            <GridColumn TItem="CycleRow" HeaderText="People" PropertyName="People" SortString="people" SortKeySelector="row => row.People"
+                                        IsDefaultSortColumn="@view.IsSortColumn("people")" SortDirection="@view.DirectionFor("people")" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End">
+                                <span class="hr-mono">@context.People.ToString(CultureInfo.InvariantCulture)</span>
+                            </GridColumn>
+                            <GridColumn TItem="CycleRow" HeaderText="Progress" PropertyName="Progress" SortString="progress" SortKeySelector="row => row.Share"
+                                        IsDefaultSortColumn="@view.IsSortColumn("progress")" SortDirection="@view.DirectionFor("progress")" Class="hr-arv-progress">
+                                <Progress Height="6" Class="mb-1">
+                                    <ProgressBar Width="@(context.Share * 100)" Color="ProgressColor.Primary" aria-label="@($"{context.Name}, progress")"
+                                                 aria-valuenow="@Math.Round(context.Share * 100)" aria-valuemin="0" aria-valuemax="100" aria-valuetext="@context.Progress" />
+                                </Progress>
+                                <span class="small">@context.Progress</span>
+                            </GridColumn>
+                            <GridColumn TItem="CycleRow" HeaderText="Self reviews due" PropertyName="SelfDue" SortString="selfdue" SortKeySelector="row => row.SelfDueDate"
+                                        IsDefaultSortColumn="@view.IsSortColumn("selfdue")" SortDirection="@view.DirectionFor("selfdue")" TextNoWrap="true">
+                                @context.SelfDue
+                            </GridColumn>
+                            <GridColumn TItem="CycleRow" HeaderText="Manager reviews due" PropertyName="ManagerDue" SortString="managerdue" SortKeySelector="row => row.ManagerDueDate"
+                                        IsDefaultSortColumn="@view.IsSortColumn("managerdue")" SortDirection="@view.DirectionFor("managerdue")" TextNoWrap="true">
+                                @context.ManagerDue
+                            </GridColumn>
+                            <GridColumn TItem="CycleRow" HeaderText="Opened" PropertyName="Opened" SortString="opened" SortKeySelector="row => row.OpenedAt"
+                                        IsDefaultSortColumn="@view.IsSortColumn("opened")" SortDirection="@view.DirectionFor("opened")" TextNoWrap="true">
+                                @context.Opened
+                            </GridColumn>
+                        </GridColumns>
+                    </Grid>
+                </ChildContent>
+            </ShowcaseDataState>
+        </section>
+
+        <Modal @ref="editorModal" IsVerticallyCentered="true" IsScrollable="true" ShowCloseButton="false" aria-labelledby="hr-arv-editor-title"
+               OnShown="OnEditorShownAsync" OnHidden="OnEditorHiddenAsync">
+            <HeaderTemplate>
+                <h2 class="modal-title h5" id="hr-arv-editor-title">Open a review cycle</h2>
+            </HeaderTemplate>
+            <BodyTemplate>
+                <EditForm id="hr-arv-form" EditContext="editContext" OnSubmit="SaveAsync" FormName="hr-review-cycle" novalidate>
+                    <DataAnnotationsValidator />
+                    <ShowcaseFormErrors ShowSummary="true" />
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold" for="hr-arv-name">Name</label>
+                        <InputText @ref="nameInput" id="hr-arv-name" class="form-control" @bind-Value="form.Name" maxlength="@HrState.MaxCycleNameLength" autocomplete="off"
+                                   aria-describedby="hr-arv-name-help" />
+                        <ShowcaseUniqueCheck @ref="nameCheck" For="() => form.Name" IsTakenAsync="IsNameTakenAsync"
+                                             TakenMessage="@(value => $"Another cycle is already called {value}. Choose another name.")" />
+                        <div class="form-text mt-0" id="hr-arv-name-help">Like “2027 mid-year reviews”. Unique, up to @HrState.MaxCycleNameLength characters.</div>
+                        <ValidationMessage For="() => form.Name" />
+                    </div>
+                    <fieldset class="mb-3">
+                        <legend class="form-label fw-semibold fs-6 mb-1">Who takes part</legend>
+                        <InputRadioGroup TValue="bool" @bind-Value="form.WholeCompany" Name="hr-arv-scope">
+                            <div class="form-check">
+                                <InputRadio TValue="bool" Value="true" class="form-check-input" id="hr-arv-scope-all" />
+                                <label class="form-check-label" for="hr-arv-scope-all">The whole company</label>
+                            </div>
+                            <div class="form-check">
+                                <InputRadio TValue="bool" Value="false" class="form-check-input" id="hr-arv-scope-some" />
+                                <label class="form-check-label" for="hr-arv-scope-some">Some departments</label>
+                            </div>
+                        </InputRadioGroup>
+                        @if (!form.WholeCompany)
+                        {
+                            <div class="hr-arv-departments mt-2" role="group" aria-label="Departments">
+                                @foreach (var department in State.Departments)
+                                {
+                                    var checkboxId = $"hr-arv-dept-{department.Id}";
+                                    <div class="form-check" @key="department.Id">
+                                        <input type="checkbox" class="form-check-input" id="@checkboxId" checked="@form.DepartmentIds.Contains(department.Id)"
+                                               @onchange="args => ToggleDepartment(department.Id, args.Value is true)" />
+                                        <label class="form-check-label" for="@checkboxId">@department.Name</label>
+                                    </div>
+                                }
+                            </div>
+                        }
+                        <ValidationMessage For="() => form.DepartmentIds" />
+                    </fieldset>
+                    <div class="row g-3 mb-3">
+                        <div class="col-sm-6">
+                            <label class="form-label fw-semibold" for="hr-arv-self-due">Self reviews due</label>
+                            <InputDate TValue="DateTime?" id="hr-arv-self-due" class="form-control" @bind-Value="form.SelfReviewDue"
+                                       min="@AdminHelpers.DateValue(State.Clock.Today.AddDays(1))" aria-describedby="hr-arv-self-due-help" />
+                            <div class="form-text" id="hr-arv-self-due-help">After today.</div>
+                            <ValidationMessage For="() => form.SelfReviewDue" />
+                        </div>
+                        <div class="col-sm-6">
+                            <label class="form-label fw-semibold" for="hr-arv-manager-due">Manager reviews due</label>
+                            <InputDate TValue="DateTime?" id="hr-arv-manager-due" class="form-control" @bind-Value="form.ManagerReviewDue"
+                                       min="@(form.SelfReviewDue is { } self ? AdminHelpers.DateValue(self.AddDays(1)) : null)" max="@AdminHelpers.DateValue(State.Clock.Today.AddDays(HrState.MaxReviewDueDays))"
+                                       aria-describedby="hr-arv-manager-due-help" />
+                            <div class="form-text" id="hr-arv-manager-due-help">After the self reviews, and within @HrState.MaxReviewDueDays days.</div>
+                            <ValidationMessage For="() => form.ManagerReviewDue" />
+                        </div>
+                    </div>
+                    @* The preview follows every change of the scope, so HR sees who is in before opening the cycle. *@
+                    <div class="hr-arv-preview" aria-live="polite">
+                        @{
+                            var scope = form.WholeCompany ? Array.Empty<string>() : form.DepartmentIds.ToArray();
+                            var people = State.CycleParticipants(scope);
+                            var outside = State.CycleExclusions(scope);
+                            var overlap = State.CycleOverlap(scope);
+                        }
+                        @if (!form.WholeCompany && form.DepartmentIds.Count == 0)
+                        {
+                            <p class="mb-0">Choose at least one department to see who will be included.</p>
+                        }
+                        else
+                        {
+                            <p class="fw-semibold mb-1">@HrDisplay.Plural(people.Count, "employee") will be included, in @State.ScopeText(scope).</p>
+                            <p class="small mb-0">
+                                Each can write a self review, and their manager today writes their review.
+                                @if (outside.Count > 0)
+                                {
+                                    @($" Not included: {string.Join(", ", outside.Take(4).Select(person => person.Name))}{(outside.Count > 4 ? $", and {outside.Count - 4} more" : null)} (joining, or with no manager).")
+                                }
+                            </p>
+                            @if (overlap is not null)
+                            {
+                                <p class="small fw-semibold text-danger-emphasis mt-2 mb-0">“@overlap.Name” isn't closed yet and covers some of these people. Close it first, or choose other departments.</p>
+                            }
+                        }
+                    </div>
+                </EditForm>
+                <p class="hr-live-error mt-3 mb-0" role="alert">@formError</p>
+            </BodyTemplate>
+            <FooterTemplate>
+                <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => editorModal.HideAsync()">Cancel</Button>
+                <Button Type="ButtonType.Submit" Color="ButtonColor.Primary" form="hr-arv-form">Open the cycle</Button>
+            </FooterTemplate>
+        </Modal>
+    </ShowcaseRoleGuard>
+</div>

@@ -1,16 +1,3 @@
-.ea-pricing-message:empty {
-    margin: 0;
-}
-
-.ea-pricing-message:focus {
-    outline: none;
-}
-
-.ea-pricing-message:focus-visible {
-    outline: 2px solid var(--sc-primary);
-    outline-offset: 2px;
-}
-
 .ea-preview {
     max-height: 28rem;
     overflow-y: auto;
@@ -22,47 +9,3 @@
         z-index: 1;
         background: var(--ec-surface);
     }
-
-/* One product per row: name, price, compare-at, Save; the row's error below. Stacks on phones. */
-.ea-price-list {
-    display: grid;
-    gap: 0;
-}
-
-.ea-price-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: .5rem .75rem;
-    align-items: end;
-    padding: .75rem 0;
-    border-top: 1px solid var(--ec-border);
-}
-
-    .ea-price-row:first-child {
-        border-top: 0;
-    }
-
-.ea-price-row-name,
-.ea-price-row-error {
-    grid-column: 1 / -1;
-    min-width: 0;
-}
-
-.ea-price-row-action {
-    grid-column: 1 / -1;
-}
-
-@media (min-width: 768px) {
-    .ea-price-row {
-        grid-template-columns: minmax(0, 2fr) minmax(8rem, 1fr) minmax(8rem, 1fr) auto;
-    }
-
-    .ea-price-row-name {
-        grid-column: auto;
-        align-self: center;
-    }
-
-    .ea-price-row-action {
-        grid-column: auto;
-    }
-}

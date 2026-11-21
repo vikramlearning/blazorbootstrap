@@ -1,4 +1,4 @@
-/* Onboarding templates: the templates table beside the new-template form. */
+/* Onboarding templates: the templates grid beside the new-template form. */
 .hr-at-status:empty {
     margin: 0;
 }
@@ -25,23 +25,17 @@
     }
 }
 
-.hr-at-caption {
-    caption-side: top;
-    padding-top: 0;
-    font-size: .8125rem;
-    color: var(--bs-secondary-color);
-}
-
-.hr-at-table {
+/* The grid renders the table, so its cells are styled through ::deep. */
+.hr-panel ::deep .hr-at-table {
     font-size: .875rem;
 }
 
-.hr-at-name {
+.hr-panel ::deep .hr-at-name {
     min-width: 14rem;
     overflow-wrap: anywhere;
 }
 
-.hr-at-plans {
+.hr-panel ::deep .hr-at-plans {
     min-width: 10rem;
     overflow-wrap: anywhere;
 }

@@ -1,0 +1,63 @@
+@implements IDisposable
+
+@* What's waiting for the signed-in person in the performance review cycles, with a link to each step. *@
+@{
+    var todos = State.ReviewTodos();
+}
+@if (todos.Count > 0 || !HideWhenEmpty)
+{
+    <section class="@Class" aria-labelledby="hr-review-todo-title">
+        <h2 class="hr-section-title" id="hr-review-todo-title"><Icon Name="IconName.ClipboardCheck" class="me-2" aria-hidden="true" />Reviews waiting for you</h2>
+        @if (todos.Count == 0)
+        {
+            <p class="small text-body-secondary mb-3">Nothing is waiting for you in the performance review cycles.</p>
+        }
+        else
+        {
+            <ul class="list-unstyled small d-grid gap-2 mb-3">
+                @foreach (var todo in todos.Take(MaxShown))
+                {
+                    <li @key="@($"{todo.Url}|{todo.Text}")">
+                        <a class="fw-semibold" href="@todo.Url">@todo.Text</a>
+                        <span class="d-block text-body-secondary">@todo.CycleName</span>
+                    </li>
+                }
+            </ul>
+            @if (todos.Count > MaxShown)
+            {
+                <p class="small text-body-secondary mb-3">And @HrDisplay.Plural(todos.Count - MaxShown, "more step").</p>
+            }
+        }
+        <div class="d-flex flex-wrap column-gap-3 row-gap-1 mt-auto">
+            <a class="small fw-semibold" href="@ReviewDisplay.MyReviewsUrl">My reviews</a>
+            @if (State.IsManager || State.IsHrAdmin)
+            {
+                <a class="small fw-semibold" href="@ReviewDisplay.TeamReviewsUrl">Team reviews</a>
+            }
+            @if (State.IsHrAdmin)
+            {
+                <a class="small fw-semibold" href="@ReviewDisplay.CyclesUrl">Performance reviews</a>
+            }
+        </div>
+    </section>
+}
+
+@code {
+    /// <summary>Gets or sets the section's classes, like <c>hr-card hr-home-card</c>.</summary>
+    [Parameter] public string? Class { get; set; }
+
+    /// <summary>Gets or sets whether nothing renders while nothing is waiting (default <see langword="false" />: says so).</summary>
+    [Parameter] public bool HideWhenEmpty { get; set; }
+
+    /// <summary>Gets or sets how many steps are listed before "And N more".</summary>
+    [Parameter] public int MaxShown { get; set; } = 5;
+
+    [Inject] private HrState State { get; set; } = default!;
+
+    /// <summary>Stops listening to state changes.</summary>
+    public void Dispose() => State.Changed -= OnStateChanged;
+
+    protected override void OnInitialized() => State.Changed += OnStateChanged;
+
+    private void OnStateChanged() => InvokeAsync(StateHasChanged);
+}

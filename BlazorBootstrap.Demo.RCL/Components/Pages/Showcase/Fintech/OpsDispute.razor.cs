@@ -1,6 +1,9 @@
+using System.ComponentModel.DataAnnotations;
 using System.Globalization;
 using BlazorBootstrap.Demo.RCL.Models.Showcase.Fintech;
 using BlazorBootstrap.Demo.RCL.Services.Showcase.Fintech;
+using BlazorBootstrap.Demo.RCL.Services.Showcase.Foundation;
+using Microsoft.AspNetCore.Components.Forms;
 
 namespace BlazorBootstrap.Demo.RCL.Components.Pages.Showcase.Fintech;
 
@@ -9,8 +12,10 @@ namespace BlazorBootstrap.Demo.RCL.Components.Pages.Showcase.Fintech;
 /// told us, the status with a short timeline (the current step said in text), the disputed transaction for the demo
 /// customer (date, account, amount, description), the resolution once closed, and the audit entries about the dispute.
 /// A submitted dispute can be put under review; an open one can be refunded or declined, each confirmed in a
-/// <see cref="Modal" /> that names the consequence and asks for the resolution the customer reads (10–1000 characters, with
-/// a counter). Every outcome is announced in a status message that takes focus. An unknown number shows a not-found screen.
+/// <see cref="Modal" /> that names the consequence and asks for the resolution the customer reads, in an <see cref="EditForm" />
+/// (rule WR-002: required, 10–1000 characters, with a counter; the message shows on submit and is tied to the field). An open
+/// dispute past <see cref="FintechState.DisputeTargetDays" /> is marked overdue. Every outcome is announced in a status
+/// message that takes focus. An unknown number shows a not-found screen.
 /// </summary>
 public partial class OpsDispute : ComponentBase, IDisposable
 {
@@ -20,7 +25,7 @@ public partial class OpsDispute : ComponentBase, IDisposable
 
     private const int MaxResolution = FintechState.MaxDisputeDetails;
 
-    private const int MinResolution = 10;
+    private const int MinResolution = FintechState.MinReason;
 
     private Button? declineButton;
 
@@ -38,11 +43,17 @@ public partial class OpsDispute : ComponentBase, IDisposable
     /// <summary>Whether the dialog refunds (true) or declines (false) the dispute.</summary>
     private bool resolveRefund;
 
+    private EditContext resolveContext = default!;
+
+    private ResolutionForm resolveForm = new();
+
+    private int resolutionErrorCount;
+
     private string? resolutionError;
 
-    private ElementReference? resolutionInput;
+    private InputTextArea? resolutionInput;
 
-    private string? resolutionText;
+    private int resolutionLength;
 
     private bool statusIsError;
 
@@ -65,7 +76,11 @@ public partial class OpsDispute : ComponentBase, IDisposable
         }
     }
 
-    protected override void OnInitialized() => State.Changed += OnStateChanged;
+    protected override void OnInitialized()
+    {
+        resolveContext = new EditContext(resolveForm);
+        State.Changed += OnStateChanged;
+    }
 
     protected override void OnParametersSet()
     {
@@ -76,7 +91,7 @@ public partial class OpsDispute : ComponentBase, IDisposable
         statusMessage = null;
         statusIsError = false;
         resolutionError = null;
-        resolutionText = null;
+        ResetResolveForm();
     }
 
     #endregion
@@ -118,8 +133,8 @@ public partial class OpsDispute : ComponentBase, IDisposable
     {
         resolveRefund = refund;
         resolveDone = false;
-        resolutionText = null;
         resolutionError = null;
+        ResetResolveForm();
 
         await resolveModal.ShowAsync();
     }
@@ -134,24 +149,22 @@ public partial class OpsDispute : ComponentBase, IDisposable
         if (Dispute is not { } dispute || resolving)
             return;
 
-        var text = resolutionText?.Trim() ?? string.Empty;
+        resolutionError = null;
 
-        if (text.Length < MinResolution)
-        {
-            resolutionError = text.Length == 0
-                ? "Write the resolution the customer will read."
-                : $"Write at least {MinResolution} characters: the customer reads this.";
-            await FintechDisplay.FocusAsync(resolutionInput);
+        // A failed check shows the message under the field, and ShowcaseFormErrors moves focus to it.
+        if (!resolveContext.Validate())
             return;
-        }
+
+        var text = resolveForm.Resolution.Trim();
 
         var customerName = State.FindCustomer(dispute.CustomerId)?.Name ?? "The customer";
         var result = State.ResolveDispute(dispute.Id, resolveRefund, text);
 
         if (result == FintechResult.Invalid)
         {
-            resolutionError = RefusedText(result, dispute.Id, false);
-            await FintechDisplay.FocusAsync(resolutionInput);
+            resolutionErrorCount++;
+            resolutionError = resolutionErrorCount == 1 ? RefusedText(result, dispute.Id, false) : $"{RefusedText(result, dispute.Id, false)} ({resolutionErrorCount.ToString(CultureInfo.InvariantCulture)})";
+            await FintechDisplay.FocusAsync(resolutionInput?.Element);
             return;
         }
 
@@ -204,7 +217,18 @@ public partial class OpsDispute : ComponentBase, IDisposable
         }
     }
 
-    private Task OnResolveShownAsync() => FintechDisplay.FocusAsync(resolutionInput);
+    private void OnResolutionInput(ChangeEventArgs args) => resolutionLength = args.Value?.ToString()?.Length ?? 0;
+
+    private Task OnResolveShownAsync() => FintechDisplay.FocusAsync(resolutionInput?.Element);
+
+    /// <summary>Starts the dialog's form empty, with no messages from a previous decision.</summary>
+    private void ResetResolveForm()
+    {
+        resolveForm = new ResolutionForm();
+        resolveContext = new EditContext(resolveForm);
+        resolutionLength = 0;
+        resolutionErrorCount = 0;
+    }
 
     private void OnStateChanged() => InvokeAsync(StateHasChanged);
 
@@ -235,14 +259,14 @@ public partial class OpsDispute : ComponentBase, IDisposable
     #region Properties, Indexers
 
     /// <summary>Gets the audit entries about this dispute, newest first (their subject starts with "Dispute {id}").</summary>
-    private IReadOnlyList<FintechAuditEntry> AuditEntries
+    private IReadOnlyList<ShowcaseAuditEntry> AuditEntries
     {
         get
         {
             var subject = $"Dispute {Id.ToString(CultureInfo.InvariantCulture)}";
 
-            return State.AuditLog
-                .Where(entry => entry.Subject == subject || entry.Subject.StartsWith(subject + " ", StringComparison.Ordinal))
+            return State.AuditEntries
+                .Where(entry => entry.Target == subject || entry.Target.StartsWith(subject + " ", StringComparison.Ordinal))
                 .ToList();
         }
     }
@@ -259,6 +283,14 @@ public partial class OpsDispute : ComponentBase, IDisposable
     #endregion
 
     #region Nested Types
+
+    /// <summary>The decision dialog's field: the resolution the customer reads.</summary>
+    private sealed class ResolutionForm
+    {
+        [Required(ErrorMessage = "Write the resolution the customer will read.")]
+        [StringLength(MaxResolution, MinimumLength = MinResolution, ErrorMessage = "Write a resolution of 10 to 1,000 characters: the customer reads this.")]
+        public string Resolution { get; set; } = string.Empty;
+    }
 
     /// <summary>One step of the dispute timeline: done steps show a check; the current one is named in text.</summary>
     private sealed record Step(string Title, string Note, bool Done, bool IsCurrent);

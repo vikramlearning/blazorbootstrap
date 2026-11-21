@@ -90,7 +90,8 @@
                 </CardHeader>
                 <CardBody Class="pt-0">
                     <EditForm EditContext="editContext" OnSubmit="SaveAsync" FormName="tm-alerts" novalidate>
-                        <ShowcaseFormErrors />
+                        <DataAnnotationsValidator />
+                        <ShowcaseFormErrors ShowSummary="true" FocusFirstInvalid="true" />
                         <fieldset class="mb-4">
                             <legend class="tm-alerts-legend">Balances and spending</legend>
 
@@ -103,7 +104,7 @@
                                 <label class="form-label small" for="tm-alert-low-amount">Low-balance amount</label>
                                 <CurrencyInput @ref="lowAmountInput" TValue="decimal" Id="tm-alert-low-amount" @bind-Value="settings.LowBalanceAmount" Locale="en-US"
                                                Class="@InvalidClass(LowAmountField)" aria-invalid="@AriaInvalid(LowAmountField)" aria-describedby="tm-alert-low-amount-help tm-alert-low-amount-error" />
-                                <div class="form-text" id="tm-alert-low-amount-help">From $0 to $1,000,000.</div>
+                                <div class="form-text" id="tm-alert-low-amount-help">From $0 to $1,000,000, and below your Everyday Checking balance (@FintechDisplay.Money(CheckingBalance)) while the alert is on, or it would fire straight away.</div>
                                 <div id="tm-alert-low-amount-error"><ValidationMessage For="() => settings.LowBalanceAmount" /></div>
                             </div>
 

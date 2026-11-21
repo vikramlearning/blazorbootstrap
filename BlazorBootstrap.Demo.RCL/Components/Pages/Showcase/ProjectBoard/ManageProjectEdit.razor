@@ -21,6 +21,7 @@
         {
             var deal = project is null ? null : State.FindDeal(project.FromDealId);
             var warnings = TeamWarnings(project);
+            var currency = State.FindClient(SelectedClientId)?.BillingCurrency ?? "USD";
 
             <p class="small mb-2">
                 <a href="@ManageProjects.ListUrl"><Icon Name="IconName.ArrowLeft" class="me-1" aria-hidden="true" />Manage projects</a>
@@ -30,7 +31,7 @@
                 <h1 class="tb-title">@(project is null ? "New project" : $"Edit {project.Key} · {project.Name}")</h1>
                 <p class="tb-lead mb-0">
                     @(project is null
-                        ? "Set the client, dates, and team. You can add milestones once it's created."
+                        ? "Set the client, dates, project manager, budget, and team. You can add milestones once it's created."
                         : "Changes show on the board, the roadmap, and the reports when you save.")
                 </p>
                 @if (project is not null && project.FromDealId is not null)
@@ -51,74 +52,113 @@
                 <div class="col-xl-7">
                     <section class="tb-panel" aria-labelledby="tb-pe-form-title">
                         <h2 class="tb-section-title" id="tb-pe-form-title">Project details</h2>
-                        <form @onsubmit="Save" novalidate aria-labelledby="tb-pe-form-title">
+                        <EditForm EditContext="editContext" OnSubmit="SaveAsync" FormName="pb-project" novalidate>
+                            <DataAnnotationsValidator />
+                            <ShowcaseFormErrors ShowSummary="true" />
+
                             <div class="mb-3">
                                 <label class="form-label fw-semibold" for="tb-pe-name">Name</label>
-                                <input id="tb-pe-name" class="form-control @(nameError is null ? null : "is-invalid")" @bind="name" @bind:event="oninput" @ref="nameInput"
-                                       autocomplete="off" aria-required="true" aria-invalid="@(nameError is null ? null : "true")" aria-describedby="tb-pe-name-help tb-pe-name-error" />
-                                <div class="form-text" id="tb-pe-name-help">@Counter(name, PbState.MaxProjectNameLength)</div>
-                                <div class="invalid-feedback d-block" id="tb-pe-name-error">@nameError</div>
+                                <InputText id="tb-pe-name" class="form-control" @bind-Value="form.Name" maxlength="@PbState.MaxProjectNameLength" autocomplete="off" aria-describedby="tb-pe-name-help" />
+                                <ShowcaseUniqueCheck @ref="nameCheck" For="() => form.Name" IsTakenAsync="IsNameTakenAsync" TakenMessage="NameTakenMessage" />
+                                <div class="form-text d-flex flex-wrap justify-content-between gap-2 mt-0" id="tb-pe-name-help">
+                                    <span>Unique among the client's projects.</span>
+                                    <span class="text-nowrap">@Counter(form.Name, PbState.MaxProjectNameLength)</span>
+                                </div>
+                                <ValidationMessage For="() => form.Name" />
                             </div>
 
                             <div class="row g-3 mb-3">
                                 <div class="col-sm-5">
                                     <label class="form-label fw-semibold" for="tb-pe-key">Key</label>
-                                    <input id="tb-pe-key" class="form-control tb-mono @(keyError is null ? null : "is-invalid")" @bind:get="key" @bind:set="SetKey" @bind:event="oninput"
-                                           @ref="keyInput" maxlength="5" autocomplete="off" autocapitalize="characters" spellcheck="false"
-                                           aria-required="true" aria-invalid="@(keyError is null ? null : "true")" aria-describedby="tb-pe-key-help tb-pe-key-error" />
-                                    <div class="form-text" id="tb-pe-key-help">
-                                        2 to 5 capital letters, used in task keys like @(KeyPreview)-12.@(project is not null && key != project.Key ? $" Saving renames every task key, like {project.Key}-1 to {KeyPreview}-1." : null)
+                                    <InputText id="tb-pe-key" class="form-control tb-mono" @bind-Value="form.Key" maxlength="5" autocomplete="off" autocapitalize="characters" spellcheck="false"
+                                               aria-describedby="tb-pe-key-help" />
+                                    <ShowcaseUniqueCheck @ref="keyCheck" For="() => form.Key" IsTakenAsync="IsKeyTakenAsync" TakenMessage="KeyTakenMessage" />
+                                    <div class="form-text mt-0" id="tb-pe-key-help">
+                                        2 to 5 capital letters, used in task keys like @(KeyPreview)-12.@(project is not null && form.Key != project.Key ? $" Saving renames every task key, like {project.Key}-1 to {KeyPreview}-1." : null)
                                     </div>
-                                    <div class="invalid-feedback d-block" id="tb-pe-key-error">@keyError</div>
+                                    <ValidationMessage For="() => form.Key" />
                                 </div>
                                 <div class="col-sm-7">
                                     <label class="form-label fw-semibold" for="tb-pe-client">Client</label>
-                                    <select id="tb-pe-client" class="form-select" @bind="clientValue">
-                                        <option value="">Internal (no client)</option>
+                                    <InputSelect id="tb-pe-client" class="form-select" @bind-Value="form.ClientValue" aria-describedby="tb-pe-client-help">
+                                        <option value="">Choose a client</option>
+                                        <option value="@InternalValue">Internal (no client)</option>
                                         @foreach (var client in State.Clients)
                                         {
                                             <option value="@client.Id.ToString(CultureInfo.InvariantCulture)" @key="client.Id">@client.Name</option>
                                         }
-                                    </select>
+                                    </InputSelect>
+                                    <div class="form-text" id="tb-pe-client-help">Who the work is for, or Internal for the agency's own work.</div>
+                                    <ValidationMessage For="() => form.ClientValue" />
                                 </div>
                             </div>
 
                             <div class="mb-3">
-                                <label class="form-label fw-semibold" for="tb-pe-description">Description</label>
-                                <textarea id="tb-pe-description" class="form-control @(descriptionError is null ? null : "is-invalid")" rows="4" @bind="description" @bind:event="oninput"
-                                          @ref="descriptionInput" aria-invalid="@(descriptionError is null ? null : "true")" aria-describedby="tb-pe-description-help tb-pe-description-error"></textarea>
+                                <label class="form-label fw-semibold" for="tb-pe-description">Description <span class="fw-normal text-body-secondary">(optional)</span></label>
+                                <InputTextArea id="tb-pe-description" class="form-control" rows="4" @bind-Value="form.Description" aria-describedby="tb-pe-description-help" />
                                 <div class="form-text d-flex flex-wrap justify-content-between gap-2" id="tb-pe-description-help">
-                                    <span>Optional: the scope, in plain text. The team sees it on the board.</span>
-                                    <span class="text-nowrap @(description.Trim().Length > PbState.MaxDescriptionLength ? "text-danger-emphasis" : null)">@Counter(description, PbState.MaxDescriptionLength)</span>
+                                    <span>The scope, in plain text. The team sees it on the board.</span>
+                                    <span class="text-nowrap @((form.Description ?? string.Empty).Trim().Length > PbState.MaxDescriptionLength ? "text-danger-emphasis" : null)">@Counter(form.Description ?? string.Empty, PbState.MaxDescriptionLength)</span>
                                 </div>
-                                <div class="invalid-feedback d-block" id="tb-pe-description-error">@descriptionError</div>
+                                <ValidationMessage For="() => form.Description" />
                             </div>
 
                             <div class="row g-3 mb-3">
                                 <div class="col-md-4">
                                     <label class="form-label fw-semibold" for="tb-pe-status">Status</label>
-                                    <select id="tb-pe-status" class="form-select" @bind="status" aria-describedby="tb-pe-status-help">
+                                    <InputSelect id="tb-pe-status" class="form-select" @bind-Value="form.Status" aria-describedby="tb-pe-status-help">
                                         @foreach (var option in Enum.GetValues<PbProjectStatus>())
                                         {
                                             <option value="@option" @key="option">@PbDisplay.ProjectStatusLabel(option)</option>
                                         }
-                                    </select>
+                                    </InputSelect>
                                 </div>
                                 <div class="col-sm-6 col-md-4">
                                     <label class="form-label fw-semibold" for="tb-pe-start">Start date</label>
-                                    <input id="tb-pe-start" type="date" class="form-control @(startError is null ? null : "is-invalid")" value="@startText" @onchange="args => startText = args.Value as string ?? string.Empty" @ref="startInput"
-                                           min="@DateValue(MinDate)" max="@DateValue(MaxDate)" aria-required="true" aria-invalid="@(startError is null ? null : "true")" aria-describedby="tb-pe-start-error" />
-                                    <div class="invalid-feedback d-block" id="tb-pe-start-error">@startError</div>
+                                    <InputDate TValue="DateTime?" id="tb-pe-start" class="form-control" @bind-Value="form.StartDate" min="@DateValue(MinDate)" max="@DateValue(MaxDate)"
+                                               ParsingErrorMessage="Enter the start date as a full date, like 2026-12-01." />
+                                    <ValidationMessage For="() => form.StartDate" />
                                 </div>
                                 <div class="col-sm-6 col-md-4">
                                     <label class="form-label fw-semibold" for="tb-pe-due">Due date</label>
-                                    <input id="tb-pe-due" type="date" class="form-control @(dueError is null ? null : "is-invalid")" value="@dueText" @onchange="args => dueText = args.Value as string ?? string.Empty" @ref="dueInput"
-                                           min="@(TryDate(startText) is { } start ? DateValue(start) : DateValue(MinDate))" max="@DateValue(MaxDate)"
-                                           aria-required="true" aria-invalid="@(dueError is null ? null : "true")" aria-describedby="tb-pe-due-help tb-pe-due-error" />
+                                    <InputDate TValue="DateTime?" id="tb-pe-due" class="form-control" @bind-Value="form.DueDate" min="@DateValue(form.StartDate ?? MinDate)" max="@DateValue(MaxDate)"
+                                               ParsingErrorMessage="Enter the due date as a full date, like 2027-01-29." aria-describedby="tb-pe-due-help" />
                                     <div class="form-text" id="tb-pe-due-help">On or after the start date.</div>
-                                    <div class="invalid-feedback d-block" id="tb-pe-due-error">@dueError</div>
+                                    <ValidationMessage For="() => form.DueDate" />
                                 </div>
-                                <div class="col-12 form-text mt-1" id="tb-pe-status-help">@StatusHelp(status)</div>
+                                <div class="col-12 form-text mt-1" id="tb-pe-status-help">@StatusHelp(form.Status)</div>
+                            </div>
+
+                            <div class="row g-3 mb-3">
+                                <div class="col-md-4">
+                                    <label class="form-label fw-semibold" for="tb-pe-manager">Project manager</label>
+                                    <InputSelect id="tb-pe-manager" class="form-select" @bind-Value="form.OwnerId" aria-describedby="tb-pe-manager-help">
+                                        @if (State.ProjectManagers.All(person => person.Id != form.OwnerId))
+                                        {
+                                            <option value="">Choose a project manager</option>
+                                        }
+                                        @foreach (var manager in State.ProjectManagers)
+                                        {
+                                            <option value="@manager.Id" @key="manager.Id">@manager.Name@(manager.Id == State.CurrentPerson?.Id ? " (you)" : null)</option>
+                                        }
+                                    </InputSelect>
+                                    <div class="form-text" id="tb-pe-manager-help">Runs the project. Someone else who can sign in is told.</div>
+                                    <ValidationMessage For="() => form.OwnerId" />
+                                </div>
+                                <div class="col-sm-6 col-md-4">
+                                    <label class="form-label fw-semibold" for="tb-pe-hours">Budget in hours</label>
+                                    <InputNumber TValue="int?" id="tb-pe-hours" class="form-control" @bind-Value="form.BudgetHours" inputmode="numeric" step="1" min="0" max="@PbState.MaxBudgetHours"
+                                                 ParsingErrorMessage="Enter the budget in hours as a whole number, like 400." aria-describedby="tb-pe-hours-help" />
+                                    <div class="form-text" id="tb-pe-hours-help">0 to @PbState.MaxBudgetHours.ToString("#,0", CultureInfo.InvariantCulture); 0 for no hour budget.</div>
+                                    <ValidationMessage For="() => form.BudgetHours" />
+                                </div>
+                                <div class="col-sm-6 col-md-4">
+                                    <label class="form-label fw-semibold" for="tb-pe-amount">Budget in @currency</label>
+                                    <InputNumber TValue="int?" id="tb-pe-amount" class="form-control" @bind-Value="form.BudgetAmount" inputmode="numeric" step="1" min="0" max="@PbState.MaxBudgetAmount"
+                                                 ParsingErrorMessage="Enter the budget as a whole amount, like 48000." aria-describedby="tb-pe-amount-help" />
+                                    <div class="form-text" id="tb-pe-amount-help">In the client's billing currency, 0 to @PbState.MaxBudgetAmount.ToString("#,0", CultureInfo.InvariantCulture).</div>
+                                    <ValidationMessage For="() => form.BudgetAmount" />
+                                </div>
                             </div>
 
                             <fieldset class="mb-3">
@@ -148,6 +188,9 @@
                                 <div class="visually-hidden" role="status">@string.Join(" ", warnings.Values)</div>
                             </fieldset>
 
+                            @* Always rendered, so a new error is announced; a counter makes a repeat announce again. *@
+                            <p class="tb-form-error mb-3" role="alert">@errorMessage</p>
+
                             <div class="d-flex flex-wrap align-items-center gap-2">
                                 <Button Type="ButtonType.Submit" Color="ButtonColor.Primary">
                                     <Icon Name="@(project is null ? IconName.PlusLg : IconName.CheckLg)" class="me-1" aria-hidden="true" />@(project is null ? "Create project" : "Save changes")
@@ -158,7 +201,7 @@
                                 }
                                 <a class="btn btn-link" href="@ManageProjects.ListUrl">@(project is null ? "Cancel" : "Back to projects")</a>
                             </div>
-                        </form>
+                        </EditForm>
                     </section>
                 </div>
 
@@ -176,7 +219,7 @@
 
                         <section class="tb-panel" aria-labelledby="tb-pe-ms-title">
                             <h2 class="tb-section-title mb-1" id="tb-pe-ms-title">Milestones (@project.Milestones.Count)</h2>
-                            <p class="small text-body-secondary">Dated goals, shown on the roadmap. A task counts toward one when it's set in the task's editor.</p>
+                            <p class="small text-body-secondary">Dated goals within the project's dates, shown on the roadmap. A task counts toward one when it's set in the task's editor.</p>
 
                             <p class="small fw-semibold tb-pe-status @(msStatusIsError ? "text-danger-emphasis" : null)" role="status" tabindex="-1" @ref="msStatusRegion">@msStatusMessage</p>
 
@@ -205,10 +248,10 @@
                                             </div>
                                             <div class="d-flex gap-1 flex-shrink-0">
                                                 <button type="button" class="btn btn-sm btn-outline-secondary" @ref="msEditButtons[milestoneId]" @onclick="() => StartEditMilestone(milestoneId)">
-                                                    Edit<span class="visually-hidden"> @milestone.Title</span>
+                                                    Edit<span class="visually-hidden">&#32;@milestone.Title</span>
                                                 </button>
                                                 <button type="button" class="btn btn-sm btn-outline-danger" @ref="msDeleteButtons[milestoneId]" @onclick="() => OpenDeleteMilestoneAsync(milestoneId)">
-                                                    Delete<span class="visually-hidden"> @milestone.Title</span>
+                                                    Delete<span class="visually-hidden">&#32;@milestone.Title</span>
                                                 </button>
                                             </div>
                                         </li>
@@ -216,7 +259,7 @@
                                 </ul>
                             }
 
-                            <form class="tb-pe-ms-form" @onsubmit="SaveMilestone" novalidate aria-labelledby="tb-pe-ms-form-title">
+                            <div class="tb-pe-ms-form">
                                 <h3 class="h6 fw-bold tb-pe-wrap" id="tb-pe-ms-form-title">@(editing is null ? "Add a milestone" : $"Edit “{editing.Title}”")</h3>
                                 @if (editing is null && project.Milestones.Count >= PbState.MaxMilestones)
                                 {
@@ -224,33 +267,37 @@
                                 }
                                 else
                                 {
-                                    <div class="row g-2 mb-2">
-                                        <div class="col-sm-7">
-                                            <label class="form-label small fw-semibold" for="tb-pe-ms-name">Title</label>
-                                            <input id="tb-pe-ms-name" class="form-control @(msTitleError is null ? null : "is-invalid")" @bind="msTitle" @bind:event="oninput" @ref="msTitleInput"
-                                                   maxlength="@PbState.MaxMilestoneTitleLength" autocomplete="off" aria-required="true" aria-invalid="@(msTitleError is null ? null : "true")"
-                                                   aria-describedby="tb-pe-ms-name-help tb-pe-ms-name-error" />
-                                            <div class="form-text" id="tb-pe-ms-name-help">Unique in this project, up to @PbState.MaxMilestoneTitleLength characters.</div>
-                                            <div class="invalid-feedback d-block" id="tb-pe-ms-name-error">@msTitleError</div>
+                                    <EditForm EditContext="msContext" OnSubmit="SaveMilestone" FormName="pb-milestone" novalidate aria-labelledby="tb-pe-ms-form-title">
+                                        <DataAnnotationsValidator />
+                                        <ShowcaseFormErrors ShowSummary="true" />
+                                        <div class="row g-2 mb-2">
+                                            <div class="col-sm-7">
+                                                <label class="form-label small fw-semibold" for="tb-pe-ms-name">Title</label>
+                                                <InputText @ref="msTitleInput" id="tb-pe-ms-name" class="form-control" @bind-Value="msForm.Title" maxlength="@PbState.MaxMilestoneTitleLength" autocomplete="off"
+                                                           aria-describedby="tb-pe-ms-name-help" />
+                                                <div class="form-text" id="tb-pe-ms-name-help">Unique in this project, up to @PbState.MaxMilestoneTitleLength characters.</div>
+                                                <ValidationMessage For="() => msForm.Title" />
+                                            </div>
+                                            <div class="col-sm-5">
+                                                <label class="form-label small fw-semibold" for="tb-pe-ms-due">Due date</label>
+                                                <InputDate TValue="DateTime?" id="tb-pe-ms-due" class="form-control" @bind-Value="msForm.Due" min="@DateValue(project.StartDate)" max="@DateValue(project.DueDate)"
+                                                           ParsingErrorMessage="Enter the milestone's due date as a full date." aria-describedby="tb-pe-ms-due-help" />
+                                                <div class="form-text" id="tb-pe-ms-due-help">@PbDisplay.Date(project.StartDate) to @PbDisplay.Date(project.DueDate).</div>
+                                                <ValidationMessage For="() => msForm.Due" />
+                                            </div>
                                         </div>
-                                        <div class="col-sm-5">
-                                            <label class="form-label small fw-semibold" for="tb-pe-ms-due">Due date</label>
-                                            <input id="tb-pe-ms-due" type="date" class="form-control @(msDueError is null ? null : "is-invalid")" value="@msDueText" @onchange="args => msDueText = args.Value as string ?? string.Empty" @ref="msDueInput"
-                                                   min="@DateValue(MinDate)" max="@DateValue(MaxDate)" aria-required="true" aria-invalid="@(msDueError is null ? null : "true")" aria-describedby="tb-pe-ms-due-error" />
-                                            <div class="invalid-feedback d-block" id="tb-pe-ms-due-error">@msDueError</div>
+                                        <div class="d-flex flex-wrap gap-2">
+                                            <Button Type="ButtonType.Submit" Color="ButtonColor.Primary" Outline="@(editing is null)" Size="ButtonSize.Small">
+                                                <Icon Name="@(editing is null ? IconName.PlusLg : IconName.CheckLg)" class="me-1" aria-hidden="true" />@(editing is null ? "Add milestone" : "Save milestone")
+                                            </Button>
+                                            @if (editing is not null)
+                                            {
+                                                <Button Color="ButtonColor.Secondary" Outline="true" Size="ButtonSize.Small" @onclick="CancelEditMilestone">Cancel</Button>
+                                            }
                                         </div>
-                                    </div>
-                                    <div class="d-flex flex-wrap gap-2">
-                                        <Button Type="ButtonType.Submit" Color="ButtonColor.Primary" Outline="@(editing is null)" Size="ButtonSize.Small">
-                                            <Icon Name="@(editing is null ? IconName.PlusLg : IconName.CheckLg)" class="me-1" aria-hidden="true" />@(editing is null ? "Add milestone" : "Save milestone")
-                                        </Button>
-                                        @if (editing is not null)
-                                        {
-                                            <Button Color="ButtonColor.Secondary" Outline="true" Size="ButtonSize.Small" @onclick="CancelEditMilestone">Cancel</Button>
-                                        }
-                                    </div>
+                                    </EditForm>
                                 }
-                            </form>
+                            </div>
                         </section>
 
                         <Modal @ref="msDialogModal" IsVerticallyCentered="true" ShowCloseButton="false" aria-labelledby="tb-pe-ms-dialog-title" OnHidden="OnMilestoneDialogHidden">

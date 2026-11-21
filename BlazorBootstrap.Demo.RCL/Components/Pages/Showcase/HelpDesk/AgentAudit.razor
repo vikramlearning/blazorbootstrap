@@ -1,0 +1,19 @@
+@page "/showcase/help-desk/agent/audit"
+@layout HelpDeskAgentLayout
+
+<PageTitle>Audit log · @HelpDeskSeedData.ProductName</PageTitle>
+
+@* Agents and admins see it: the layout's guard keeps everyone else out, and the state shows the log to staff only. *@
+<div class="container-fluid px-lg-4">
+    <div class="hd-page-head">
+        <div>
+            <h1 class="hd-title">Audit log</h1>
+            <p class="hd-lead">Who created, changed, or deleted what, and when: tickets, articles, saved replies, and the admin settings. Newest first.</p>
+        </div>
+    </div>
+    <Card Class="hd-card">
+        <CardBody Class="p-3 p-lg-4">
+            <ShowcaseAuditLog ExportFileName="help-desk-audit-log" />
+        </CardBody>
+    </Card>
+</div>

@@ -3,8 +3,9 @@ using BlazorBootstrap.Demo.RCL.Services.Showcase.Fintech;
 namespace BlazorBootstrap.Demo.RCL.Components.Pages.Showcase.Fintech;
 
 /// <summary>
-/// Layout of the Tallymint operations back office (D-031): a top bar with the account menu, a sidebar with the operations
-/// modules, and the page behind the operations guard (password, then a one-time code). Scheduled transfers that have come
+/// Layout of the Tallymint operations back office (D-031): a top bar with the search, the notifications, and the account
+/// menu, a sidebar with the operations modules (AML alerts and cases among them), and the page behind the staff guard (bank
+/// operations or senior reviewer; password, then a one-time code). Scheduled transfers that have come
 /// due are posted as pages load.
 /// </summary>
 public partial class FintechOpsLayout : LayoutComponentBase, IDisposable
@@ -46,6 +47,8 @@ public partial class FintechOpsLayout : LayoutComponentBase, IDisposable
             new() { Id = "queue", Href = $"{Base}/queue", IconName = IconName.ShieldCheck, Text = "Review queue" },
             new() { Id = "disputes", Href = $"{Base}/disputes", IconName = IconName.ExclamationOctagon, Text = "Disputes" },
             new() { Id = "customers", Href = $"{Base}/customers", IconName = IconName.People, Text = "Customers" },
+            new() { Id = "aml-alerts", Href = $"{Base}/aml/alerts", IconName = IconName.Radar, Text = "AML alerts" },
+            new() { Id = "aml-cases", Href = $"{Base}/aml/cases", IconName = IconName.Folder2Open, Text = "AML cases" },
             new() { Id = "scheduled", Href = $"{Base}/scheduled", IconName = IconName.CalendarEvent, Text = "Scheduled postings" },
             new() { Id = "audit", Href = $"{Base}/audit", IconName = IconName.JournalText, Text = "Audit log" },
             new() { Id = "account", Href = $"{Base}/account", IconName = IconName.PersonGear, Text = "Account" },
@@ -59,6 +62,9 @@ public partial class FintechOpsLayout : LayoutComponentBase, IDisposable
     #endregion
 
     #region Properties, Indexers
+
+    /// <summary>Gets the roles that work in the console: bank operations and senior reviewers.</summary>
+    private static string StaffRoles => $"{FintechSeedData.OpsRole},{FintechSeedData.SeniorRole}";
 
     [Inject] private FintechState State { get; set; } = default!;
 

@@ -3,9 +3,10 @@ using BlazorBootstrap.Demo.RCL.Services.Showcase.Monitoring;
 namespace BlazorBootstrap.Demo.RCL.Components.Pages.Showcase.Monitoring;
 
 /// <summary>
-/// Layout of the Stackwatch engineers' console (D-031): a top bar with "View status page" and the account menu (its
-/// notice count is the engineer's unread notifications), a sidebar with the engineer's modules (and, for an admin, the
-/// admin pages), and the page behind a guard for engineers and admins. The sidebar shows only to them.
+/// Layout of the Stackwatch engineers' console (D-031): a top bar with the global search, "View status page", the
+/// notifications (the same list as the Notifications page), and the account menu, a sidebar with the engineer's modules
+/// (and, for an admin, the admin pages), and the page behind a guard for engineers and admins. The sidebar shows only to
+/// them. Each console page that opens runs the paging engine first.
 /// </summary>
 public partial class ConsoleLayout : LayoutComponentBase, IDisposable
 {
@@ -24,6 +25,12 @@ public partial class ConsoleLayout : LayoutComponentBase, IDisposable
     #region Protected Override Methods
 
     protected override void OnInitialized() => State.Changed += OnStateChanged;
+
+    /// <summary>
+    /// Runs the paging engine each time a console page opens (the layout gets a new body), so pages that fell due while the
+    /// engineer was elsewhere go out, at their due times, before the page shows them (AC-7c).
+    /// </summary>
+    protected override void OnParametersSet() => State.RunPaging();
 
     #endregion
 
@@ -49,6 +56,7 @@ public partial class ConsoleLayout : LayoutComponentBase, IDisposable
             new() { Id = "logs", Href = $"{Base}/logs", IconName = IconName.Terminal, Text = "Logs and traces" },
             new() { Id = "on-call", Href = $"{Base}/on-call", IconName = IconName.CalendarWeek, Text = "On-call" },
             new() { Id = "notifications", Href = $"{Base}/notifications", IconName = IconName.Bell, Text = "Notifications" },
+            new() { Id = "audit", Href = $"{Base}/audit", IconName = IconName.ClockHistory, Text = "Audit log" },
             new() { Id = "account", Href = $"{Base}/account", IconName = IconName.PersonGear, Text = "Account" },
         };
 
@@ -56,6 +64,7 @@ public partial class ConsoleLayout : LayoutComponentBase, IDisposable
         if (State.IsAdmin)
         {
             items.Insert(items.Count - 1, new() { Id = "alerts", Href = $"{AdminBase}/alerts", IconName = IconName.BellFill, Text = "Alert rules and drills" });
+            items.Insert(items.Count - 1, new() { Id = "escalation", Href = $"{AdminBase}/escalation", IconName = IconName.Megaphone, Text = "Escalation policies" });
             items.Insert(items.Count - 1, new() { Id = "maintenance", Href = $"{AdminBase}/maintenance", IconName = IconName.Tools, Text = "Maintenance" });
             items.Insert(items.Count - 1, new() { Id = "manage-services", Href = $"{AdminBase}/services", IconName = IconName.Sliders, Text = "Manage services" });
         }
@@ -68,6 +77,9 @@ public partial class ConsoleLayout : LayoutComponentBase, IDisposable
     #endregion
 
     #region Properties, Indexers
+
+    /// <summary>What the header's search finds for the signed-in role.</summary>
+    private string SearchPlaceholder => State.IsAdmin ? "Search incidents, services, rules, maintenance" : "Search incidents, services, trace IDs";
 
     [Inject] private MonitoringState State { get; set; } = default!;
 

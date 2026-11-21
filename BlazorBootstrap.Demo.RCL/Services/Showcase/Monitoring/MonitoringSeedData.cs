@@ -6,8 +6,9 @@ namespace BlazorBootstrap.Demo.RCL.Services.Showcase.Monitoring;
 
 /// <summary>
 /// Fixed, fictitious content for the "Stackwatch" monitoring site: services, incidents (with their internal and public
-/// timelines), engineers and the on-call rotation, notifications, log lines, and traces. Metric values and log lines come
-/// from deterministic wave-and-hash generators (no random numbers), so every fresh tab starts the same way.
+/// timelines, about two hundred over the last year), escalation policies and the pages they sent, maintenance windows,
+/// engineers and the on-call rotation, notifications, the audit log, log lines, and traces. Metric values, log lines, and the older incidents come from
+/// deterministic wave-and-hash generators (no random numbers), so every fresh tab starts the same way.
 /// </summary>
 public static class MonitoringSeedData
 {
@@ -16,7 +17,7 @@ public static class MonitoringSeedData
     /// <summary>The demo admin's name (also on the rotation).</summary>
     public const string AdminName = "Marcus Osei";
 
-    /// <summary>The role of an admin: everything an engineer does, plus alert rules, failure drills, maintenance, and services.</summary>
+    /// <summary>The role of an admin: everything an engineer does, plus alert rules, failure drills, escalation policies, maintenance, and services.</summary>
     public const string AdminRole = "admin";
 
     /// <summary>The roles that use the console: engineers and admins.</summary>
@@ -48,6 +49,18 @@ public static class MonitoringSeedData
 
     /// <summary>Seconds between live samples (finalize OI-09).</summary>
     public const int TickSeconds = 2;
+
+    /// <summary>How many log lines before the seed time the tab starts with (about six hours of them).</summary>
+    public const int SeedLogLines = 360;
+
+    /// <summary>The number of the oldest generated incident; the generated history runs up to the hand-written incidents.</summary>
+    public const int FirstHistoryIncidentId = 101;
+
+    /// <summary>The site's base route (the same as <c>MonitoringLayout.Base</c>); audit and notification links stay under it.</summary>
+    private const string SiteBase = DemoRouteConstants.Showcase_URL_Monitoring;
+
+    /// <summary>The console's base route (the same as <c>ConsoleLayout.Base</c>).</summary>
+    private const string ConsoleBase = SiteBase + "/console";
 
     /// <summary>When a fresh tab's clock starts (tick 0); the clock moves on from there (D-029).</summary>
     public static readonly DateTime Now = new(2026, 11, 24, 10, 30, 0);
@@ -133,6 +146,107 @@ public static class MonitoringSeedData
         new() { Id = 6, Name = "Warehouse sensors not reporting", ServiceId = "sensors", Metric = MonitoringAlertMetric.ErrorRate, Threshold = 20, ForSeconds = 20, Severity = MonitoringSeverity.Major, AutoPublish = true, PublicMessage = "Readings from some warehouse sensors aren't arriving. We're investigating." },
     };
 
+    /// <summary>
+    /// The audit log a fresh tab starts with: what people did on the seeded incidents (declared, acknowledged, assigned,
+    /// posted on the status page, added a note, resolved, wrote and published a postmortem), the alerts the rules fired, and
+    /// the admins' setup changes (alert rules, maintenance windows, a service). The newest 150 entries are kept, oldest first.
+    /// </summary>
+    public static List<ShowcaseAuditEntry> AuditEntries(IReadOnlyList<MonitoringIncident> incidents, IReadOnlyList<MonitoringAlertRule> rules, IReadOnlyList<MonitoringMaintenance> windows,
+        IReadOnlyList<MonitoringEscalationPolicy> policies)
+    {
+        var lines = new List<(DateTime At, string Actor, string Action, string Target, string? Url, string? Details)>();
+
+        foreach (var incident in incidents)
+        {
+            var target = FormattableString.Invariant($"Incident #{incident.Id}");
+            var url = FormattableString.Invariant($"{ConsoleBase}/incidents/{incident.Id}");
+
+            foreach (var update in incident.Updates.Where(update => update.Time <= Now))
+            {
+                if (update.Author == SystemAuthor)
+                {
+                    if (update.Kind == MonitoringUpdateKind.Alert && incident.RuleId is not null)
+                        lines.Add((update.Time, SystemAuthor, "Alert fired", target, url, incident.Title));
+                    else if (update.Kind == MonitoringUpdateKind.Page)
+                        lines.Add((update.Time, SystemAuthor, "Paged", target, url, Clip(update.Text, 120)));
+
+                    continue;
+                }
+
+                var entry = update.Kind switch
+                {
+                    MonitoringUpdateKind.Alert => ("Declared", incident.Title),
+                    MonitoringUpdateKind.Public => ("Posted on the status page", update.Stage is { } stage ? $"{stage}: {Clip(update.Text, 120)}" : null),
+                    MonitoringUpdateKind.Note => ("Added a note", Clip(update.Text, 120)),
+                    MonitoringUpdateKind.Severity => ("Changed severity", Clip(update.Text, 120)),
+                    _ when update.Text.StartsWith("Acknowledged", StringComparison.Ordinal) => ("Acknowledged", incident.Title),
+                    _ when update.Text.StartsWith("Assigned to ", StringComparison.Ordinal) => ("Assigned", update.Text.TrimEnd('.')),
+                    _ when update.Text.StartsWith("Resolved", StringComparison.Ordinal) => ("Resolved", incident.Title),
+                    _ => ((string?)null, (string?)null),
+                };
+
+                if (entry.Item1 is { } action)
+                    lines.Add((update.Time, update.Author, action, target, url, entry.Item2));
+            }
+
+            if (incident.Postmortem is { } postmortem)
+            {
+                lines.Add((postmortem.WrittenAt, postmortem.Author, "Wrote the postmortem", target, url, null));
+
+                if (postmortem.PublishedAt is { } published)
+                    lines.Add((published, postmortem.Author, "Published the postmortem", target, url, null));
+            }
+        }
+
+        foreach (var rule in rules)
+            lines.Add((Now.AddDays(-40 - (rule.Id * 6)).AddHours(-rule.Id), AdminName, "Created alert rule", $"Alert rule: {rule.Name}", $"{ConsoleBase}/admin/alerts", null));
+
+        foreach (var policy in policies)
+            lines.Add((Now.AddDays(-75 + (policy.Id * 3)).AddHours(-2), AdminName, "Created escalation policy", $"Escalation policy: {policy.Name}", $"{ConsoleBase}/admin/escalation", null));
+
+        lines.Add((Now.AddDays(-20).AddHours(-4), AdminName, "Updated escalation policy", "Escalation policy: Checkout path: page fast", $"{ConsoleBase}/admin/escalation", "Secondary after 2 min (was 5 min)"));
+
+        foreach (var window in windows)
+        {
+            var scheduledAt = window.Start <= Now ? window.Start.AddDays(-4) : Now.AddDays(-1).AddHours(-2);
+            lines.Add((scheduledAt, window.CreatedBy, "Scheduled maintenance", $"Maintenance: {window.Title}", $"{ConsoleBase}/admin/maintenance", null));
+
+            if (window.CancelledAt is { } cancelled)
+                lines.Add((cancelled, window.CreatedBy, "Cancelled maintenance", $"Maintenance: {window.Title}", $"{ConsoleBase}/admin/maintenance", null));
+        }
+
+        lines.Add((Now.AddDays(-12).AddHours(-3), AdminName, "Updated service", "Service: Search", $"{ConsoleBase}/admin/services/search", "Normal p95 latency 140 ms"));
+        lines.Add((Now.AddDays(-9).AddHours(-6), AdminName, "Updated alert rule", "Alert rule: Search p95 latency above 300 ms", $"{ConsoleBase}/admin/alerts", "Threshold 300 ms for 30 s"));
+
+        return lines
+            .Where(line => line.At <= Now)
+            .OrderByDescending(line => line.At)
+            .Take(150)
+            .OrderBy(line => line.At)
+            .Select((line, index) => new ShowcaseAuditEntry
+            {
+                Id = index + 1,
+                At = line.At,
+                Actor = line.Actor,
+                Action = line.Action,
+                Target = line.Target,
+                TargetUrl = line.Url,
+                Details = line.Details,
+            })
+            .ToList();
+    }
+
+    /// <summary>
+    /// The escalation policies in a fresh tab: the checkout path pages fast (the secondary after 2 minutes, the payments
+    /// lead after 20 more, twice over), the data stores page their owners' team, and a default covers everything else.
+    /// </summary>
+    public static List<MonitoringEscalationPolicy> EscalationPolicies() => new()
+    {
+        new() { Id = 1, Name = "Checkout path: page fast", ServiceIds = { "payments", "api-gateway", "auth" }, SecondaryAfterMinutes = 2, ThirdEngineerId = "daniel", ThirdAfterMinutes = 20, Repeats = 1 },
+        new() { Id = 2, Name = "Data stores", ServiceIds = { "postgres", "redis" }, SecondaryAfterMinutes = 5, ThirdEngineerId = "aiko", ThirdAfterMinutes = 10 },
+        new() { Id = 3, Name = "Default: everything else", IsDefault = true, SecondaryAfterMinutes = 10, Repeats = 2 },
+    };
+
     /// <summary>The demo accounts: the on-call engineer, and the admin who runs the monitoring setup.</summary>
     public static IReadOnlyList<ShowcaseDemoAccount> DemoAccounts() => new List<ShowcaseDemoAccount>
     {
@@ -140,22 +254,60 @@ public static class MonitoringSeedData
         new(SeededAdminId, AdminRole, AdminName, "marcus.osei@example.com", "watch-admin-26", "MO"),
     };
 
-    /// <summary>Maintenance windows in a fresh tab: a database upgrade in two days, and a finished cache resize.</summary>
-    public static List<MonitoringMaintenance> Maintenance() => new()
+    /// <summary>
+    /// Maintenance windows in a fresh tab: a database upgrade in two days, a finished cache resize, and the year's earlier
+    /// windows (one cancelled). The on-call engineers were told about the ones that already started.
+    /// </summary>
+    public static List<MonitoringMaintenance> Maintenance()
     {
-        new()
+        var windows = new List<MonitoringMaintenance>
         {
-            Id = 1, Title = "Orders database upgrade", CreatedBy = AdminName, ServiceIds = { "postgres" },
-            Start = Now.Date.AddDays(2).AddHours(2), End = Now.Date.AddDays(2).AddHours(3),
-            Description = "We're upgrading the orders database. Placing orders may be unavailable for a few minutes during the window.",
-        },
-        new()
+            new()
+            {
+                Id = 1, Title = "Orders database upgrade", CreatedBy = AdminName, ServiceIds = { "postgres" },
+                Start = Now.Date.AddDays(2).AddHours(2), End = Now.Date.AddDays(2).AddHours(3),
+                Description = "We're upgrading the orders database. Placing orders may be unavailable for a few minutes during the window.",
+            },
+            new()
+            {
+                Id = 2, Title = "Session cache resize", CreatedBy = AdminName, ServiceIds = { "redis" }, StartNotified = true,
+                Start = Now.Date.AddDays(-5).AddHours(1), End = Now.Date.AddDays(-5).AddHours(1.5),
+                Description = "We added memory to the session cache. Some customers may have had to sign in again.",
+            },
+        };
+
+        // Earlier windows, oldest first: (days ago, start hour, hours, title, services, description, cancelled).
+        var past = new (int DaysAgo, int Hour, double Hours, string Title, string[] ServiceIds, string Description, bool Cancelled)[]
         {
-            Id = 2, Title = "Session cache resize", CreatedBy = AdminName, ServiceIds = { "redis" },
-            Start = Now.Date.AddDays(-5).AddHours(1), End = Now.Date.AddDays(-5).AddHours(1.5),
-            Description = "We added memory to the session cache. Some customers may have had to sign in again.",
-        },
-    };
+            (330, 2, 2, "API gateway TLS certificate rotation", new[] { "api-gateway" }, "We're rotating certificates. A few requests may need a retry.", false),
+            (301, 3, 1, "Search index rebuild", new[] { "search" }, "Search results may be incomplete for up to an hour.", false),
+            (274, 2, 3, "Orders database storage upgrade", new[] { "postgres" }, "Placing orders may pause for a few minutes.", false),
+            (240, 1, 1, "Auth service key rotation", new[] { "auth" }, "You may need to sign in again.", false),
+            (211, 2, 2, "Warehouse gateway firmware update", new[] { "sensors" }, "Sensor readings arrive late during the update; none are lost.", false),
+            (183, 2, 1.5, "Notification worker queue migration", new[] { "notifications" }, "Emails and push notifications may arrive a few minutes late.", true),
+            (176, 2, 1.5, "Notification worker queue migration", new[] { "notifications" }, "Emails and push notifications may arrive a few minutes late.", false),
+            (149, 3, 2, "Payments processor failover test", new[] { "payments" }, "Card payments may take longer than usual.", false),
+            (118, 2, 4, "Data center network maintenance", new[] { "api-gateway", "auth", "postgres" }, "Short interruptions are possible while we move traffic.", false),
+            (86, 1, 1, "Session cache version upgrade", new[] { "redis" }, "Some customers may have to sign in again.", false),
+            (51, 2, 2, "Search cluster resize", new[] { "search" }, "Search may be slower than usual.", false),
+            (23, 2, 1, "Orders database minor version upgrade", new[] { "postgres" }, "Placing orders may pause for a minute.", false),
+        };
+
+        var id = 3;
+
+        foreach (var (daysAgo, hour, hours, title, serviceIds, description, cancelled) in past)
+        {
+            var start = Now.Date.AddDays(-daysAgo).AddHours(hour);
+
+            windows.Add(new MonitoringMaintenance
+            {
+                Id = id++, Title = title, CreatedBy = AdminName, ServiceIds = serviceIds.ToList(), Start = start, End = start.AddHours(hours), Description = description,
+                CancelledAt = cancelled ? start.AddDays(-2) : null, StartNotified = true,
+            });
+        }
+
+        return windows;
+    }
 
     /// <summary>The engineers on the on-call rotation.</summary>
     public static IReadOnlyList<MonitoringEngineer> Engineers() => new List<MonitoringEngineer>
@@ -313,6 +465,25 @@ public static class MonitoringSeedData
         Past(291, "sensors", MonitoringSeverity.Major, MonitoringImpact.Outage, 78.8, 300, "Warehouse sensors offline", "Sensors in bays 1 and 2 stopped reporting during a network change.",
             "Sensor readings from two warehouse bays aren't arriving.", "All sensors are reporting again; buffered readings were stored.", "Marcus Osei");
 
+        // About six months more: the alerts of an ordinary year, numbered before the hand-written ones (see History).
+        incidents.AddRange(History(Entry));
+
+        // The escalation policies paged the on-call engineers: #301 is still paging (the primary and the secondary were
+        // paged, step 3 is due in a few minutes), #300 was acknowledged right after the secondary's page, and the recent
+        // past incidents show their pages and acknowledgements.
+        var policies = EscalationPolicies();
+
+        foreach (var incident in incidents.Where(incident => incident.Id >= 271))
+        {
+            var policy = policies.FirstOrDefault(item => item.IsActive && !item.IsDefault && item.ServiceIds.Contains(incident.ServiceId)) ?? policies.First(item => item.IsDefault);
+            var acknowledged = incident.Updates.FirstOrDefault(update => update.Kind == MonitoringUpdateKind.Status && update.Text.StartsWith("Acknowledged", StringComparison.Ordinal));
+
+            // The hand-written past incidents have no acknowledgement on their timeline: their assignee took them three minutes in.
+            var ackAt = incident.Id == 301 ? (DateTime?)null : acknowledged?.Time ?? incident.StartedAt.AddMinutes(3);
+            var ackBy = acknowledged?.Author ?? incident.Assignee ?? EngineerName;
+            AddPaging(incident, policy, ackAt, ackBy, acknowledged, Entry);
+        }
+
         incidents.First(incident => incident.Id == 293).Postmortem = new MonitoringPostmortem
         {
             Author = "Daniel Okafor",
@@ -326,12 +497,12 @@ public static class MonitoringSeedData
         return incidents;
     }
 
-    /// <summary>About two hours of log lines before the seed time, newest first. Payments errors and search warnings match the active incidents.</summary>
+    /// <summary>About six hours of log lines before the seed time, newest first. Payments errors and search warnings match the active incidents.</summary>
     public static List<MonitoringLogEntry> Logs(IReadOnlyList<MonitoringService> services)
     {
-        var entries = new List<MonitoringLogEntry>(120);
+        var entries = new List<MonitoringLogEntry>(SeedLogLines);
 
-        for (var k = 0; k < 120; k++)
+        for (var k = 0; k < SeedLogLines; k++)
         {
             var time = Now.AddSeconds(-(k * 61) - (k * 7 % 23));
             var service = services[(int)(Hash(k, 11, 3) * 1000) % services.Count];
@@ -368,21 +539,28 @@ public static class MonitoringSeedData
         _ => $"{Endpoint(service, seed)} 200 in {(int)(service.BaseLatencyMs * (0.7 + Hash(seed, 3, 9) * 0.6))} ms",
     };
 
-    /// <summary>The demo engineer's notifications in a fresh tab.</summary>
+    /// <summary>The demo engineer's and admin's notifications in a fresh tab; the two newest of each are unread.</summary>
     public static List<MonitoringNotification> Notifications() => new()
     {
         new() { Id = 1, AccountId = SeededEngineerId, Kind = MonitoringNotificationKind.Update, Time = Now.AddDays(-5), IsRead = true, IncidentId = 297, Title = "Postmortem drafted: Orders database failover", Text = "Marcus Osei wrote the postmortem. It isn't published on the status page yet." },
         new() { Id = 2, AccountId = SeededEngineerId, Kind = MonitoringNotificationKind.OnCall, Time = RotationStart, IsRead = true, Title = "Your on-call week started", Text = "You're primary on call until Mon, Nov 30 at 09:00. Marcus Osei is secondary." },
+        new() { Id = 11, AccountId = SeededEngineerId, Kind = MonitoringNotificationKind.Page, Time = Now.AddMinutes(-52), IsRead = true, IncidentId = 300, Title = "Paged: incident #300 Search latency above 300 ms", Text = "Step 1 of 2, round 1 of 3: you're primary on call. Acknowledge to stop the escalation." },
         new() { Id = 3, AccountId = SeededEngineerId, Kind = MonitoringNotificationKind.Assigned, Time = Now.AddMinutes(-41), IsRead = true, IncidentId = 300, Title = "You acknowledged #300", Text = "Search latency above 300 ms is assigned to you." },
-        new() { Id = 4, AccountId = SeededEngineerId, Kind = MonitoringNotificationKind.Alert, Time = Now.AddMinutes(-18), IncidentId = 301, Title = "Critical alert: Payments API returning 5xx errors", Text = "Error rate above 2% for 5 minutes. You're primary on call." },
+        new() { Id = 4, AccountId = SeededEngineerId, Kind = MonitoringNotificationKind.Page, Time = Now.AddMinutes(-18), IncidentId = 301, Title = "Paged: incident #301 Payments API returning 5xx errors", Text = "Step 1 of 3, round 1 of 2: you're primary on call. Acknowledge to stop the escalation." },
         new() { Id = 5, AccountId = SeededEngineerId, Kind = MonitoringNotificationKind.Update, Time = Now.AddMinutes(-12), IncidentId = 301, Title = "Marcus Osei posted on the status page", Text = "#301 is now public: Investigating." },
+        new() { Id = 6, AccountId = SeededAdminId, Kind = MonitoringNotificationKind.Update, Time = Now.AddDays(-6).AddHours(-1.75), IsRead = true, IncidentId = 297, Title = "Priya Nair resolved #297", Text = "Orders database failover is resolved. It needs a postmortem." },
+        new() { Id = 7, AccountId = SeededAdminId, Kind = MonitoringNotificationKind.Update, Time = Now.AddDays(-2).AddHours(-1), IsRead = true, IncidentId = 298, Title = "Priya Nair resolved #298", Text = "Warehouse sensors offline in bay 4 is resolved." },
+        new() { Id = 8, AccountId = SeededAdminId, Kind = MonitoringNotificationKind.OnCall, Time = RotationStart, IsRead = true, Title = "You're secondary on call this week", Text = "Until Mon, Nov 30 at 09:00. Priya Nair is primary." },
+        new() { Id = 12, AccountId = SeededAdminId, Kind = MonitoringNotificationKind.Page, Time = Now.AddMinutes(-42), IsRead = true, IncidentId = 300, Title = "Paged: incident #300 Search latency above 300 ms", Text = "Step 2 of 2, round 1 of 3: you're secondary on call. Acknowledge to stop the escalation." },
+        new() { Id = 9, AccountId = SeededAdminId, Kind = MonitoringNotificationKind.Page, Time = Now.AddMinutes(-41), IncidentId = 300, Title = "Your page for #300 is covered", Text = "Priya Nair acknowledged Search latency above 300 ms. You don't need to respond." },
+        new() { Id = 10, AccountId = SeededAdminId, Kind = MonitoringNotificationKind.Page, Time = Now.AddMinutes(-16), IncidentId = 301, Title = "Paged: incident #301 Payments API returning 5xx errors", Text = "Step 2 of 3, round 1 of 2: you're secondary on call. Acknowledge to stop the escalation." },
     };
 
     /// <summary>The roles of the site.</summary>
     public static IReadOnlyList<ShowcaseRole> Roles() => new List<ShowcaseRole>
     {
-        new(EngineerRole, "Engineer", "/showcase/monitoring/console", "/showcase/monitoring/console/account", "Works incidents, posts status page updates, reads logs and traces, and goes on call."),
-        new(AdminRole, "Admin", "/showcase/monitoring/console", "/showcase/monitoring/console/account", "Everything an engineer does, plus alert rules and failure drills, maintenance windows, and the monitored services."),
+        new(EngineerRole, "Engineer", "/showcase/monitoring/console", "/showcase/monitoring/console/account", "Works the incident queue, gets paged and acknowledges, posts status page updates, reads logs and traces, and goes on call."),
+        new(AdminRole, "Admin", "/showcase/monitoring/console", "/showcase/monitoring/console/account", "Everything an engineer does, plus alert rules and failure drills, escalation policies, maintenance windows, and the monitored services."),
     };
 
     /// <summary>The monitored services.</summary>
@@ -405,6 +583,148 @@ public static class MonitoringSeedData
     #endregion
 
     #region Private Methods
+
+    /// <summary>
+    /// Gives a seeded incident the paging its policy would have done (the same schedule and wording as the state's engine):
+    /// each page due before the acknowledgement, on the rotation of its time, with a timeline entry; then the
+    /// acknowledgement stops it, or (with none) it is still paging.
+    /// </summary>
+    private static void AddPaging(MonitoringIncident incident, MonitoringEscalationPolicy policy, DateTime? ackAt, string ackBy, MonitoringIncidentUpdate? acknowledged,
+        Func<DateTime, string, string, MonitoringUpdateKind, MonitoringPublicStage?, string?, MonitoringIncidentUpdate> entry)
+    {
+        var start = incident.Updates[0].Time;
+        var paging = new MonitoringPaging
+        {
+            PolicyId = policy.Id, PolicyName = policy.Name, SecondaryAfterMinutes = policy.SecondaryAfterMinutes, ThirdEngineerId = policy.ThirdEngineerId,
+            ThirdAfterMinutes = policy.ThirdAfterMinutes, Repeats = policy.Repeats, StartedAt = start,
+        };
+        var plan = MonitoringState.PagingSchedule(policy.SecondaryAfterMinutes, policy.ThirdAfterMinutes, policy.Repeats);
+        var steps = plan.Max(item => item.Step);
+        var rounds = plan.Max(item => item.Round) + 1;
+        var names = Engineers().ToDictionary(engineer => engineer.Id, engineer => engineer.Name);
+        var until = ackAt ?? Now;
+
+        foreach (var (step, round, offset) in plan)
+        {
+            var at = start + offset;
+
+            if (at > until || (ackAt is not null && at >= ackAt))
+                break;
+
+            var week = (int)Math.Floor((at - RotationStart).TotalDays / 7);
+            var slot = ((week % RotationOrder.Count) + RotationOrder.Count) % RotationOrder.Count;
+            var engineerId = step switch { 1 => RotationOrder[slot], 2 => RotationOrder[(slot + 1) % RotationOrder.Count], _ => policy.ThirdEngineerId! };
+            var channels = incident.Severity == MonitoringSeverity.Critical ? "in-app, email, push, and text message" : "in-app, email, and push";
+            var where = FormattableString.Invariant($"step {step} of {steps}") + (rounds > 1 ? FormattableString.Invariant($", round {round + 1} of {rounds}") : string.Empty);
+            var role = step switch { 1 => "primary on call", 2 => "secondary on call", _ => "named in the policy" };
+
+            paging.Pages.Add(new MonitoringPage { Step = step, Round = round, EngineerId = engineerId, At = at, Channels = channels });
+            Insert(incident, entry(at, SystemAuthor, $"Paged {names[engineerId]} ({role}, {where}) by {channels}.", MonitoringUpdateKind.Page, null, null));
+        }
+
+        if (ackAt is { } acked)
+        {
+            var text = $"Acknowledged by {ackBy}; paging stopped after {(paging.Pages.Count == 1 ? "1 page" : FormattableString.Invariant($"{paging.Pages.Count} pages"))}.";
+            var accountId = DemoAccounts().FirstOrDefault(account => account.Name == ackBy)?.Id;
+
+            if (acknowledged is not null)
+                incident.Updates[incident.Updates.IndexOf(acknowledged)] = acknowledged with { Text = text };
+            else
+                Insert(incident, entry(acked, ackBy, text, MonitoringUpdateKind.Status, null, accountId));
+
+            paging.StopReason = MonitoringPagingStop.Acknowledged;
+            paging.StoppedAt = acked;
+            paging.AcknowledgedBy = ackBy;
+            paging.AcknowledgedAt = acked;
+        }
+
+        incident.Paging = paging;
+    }
+
+    private static string Clip(string text, int maxLength) => text.Length <= maxLength ? text : string.Concat(text.AsSpan(0, maxLength - 1), "…");
+
+    /// <summary>Puts a timeline entry in time order (after the entries at the same time).</summary>
+    private static void Insert(MonitoringIncident incident, MonitoringIncidentUpdate update) =>
+        incident.Updates.Insert(incident.Updates.FindLastIndex(item => item.Time <= update.Time) + 1, update);
+
+    /// <summary>
+    /// The incidents of an ordinary year before the hand-written ones (numbers <see cref="FirstHistoryIncidentId" /> to 290,
+    /// from a year ago to about 80 days ago, in number order): each fired an alert, was acknowledged by that week's primary
+    /// on call, and resolved. Most stayed engineers-only; the critical ones and some major ones were posted on the status page.
+    /// Times are whole minutes, from <see cref="Hash" />.
+    /// </summary>
+    private static IEnumerable<MonitoringIncident> History(Func<DateTime, string, string, MonitoringUpdateKind, MonitoringPublicStage?, string?, MonitoringIncidentUpdate> entry)
+    {
+        var templates = new (string ServiceId, MonitoringImpact Impact, string Title, string Summary, string Investigating)[]
+        {
+            ("api-gateway", MonitoringImpact.Errors, "Elevated API errors", "Some API requests failed with 503 responses.", "Some requests to our API are failing. We're looking into it."),
+            ("api-gateway", MonitoringImpact.Latency, "Slow API responses", "p95 latency behind the gateway doubled.", "Our API is responding slower than usual."),
+            ("auth", MonitoringImpact.Latency, "Slow sign-ins", "Sign-ins took several seconds.", "Signing in is slower than usual."),
+            ("auth", MonitoringImpact.Errors, "Sign-in errors", "Some sign-ins failed with a server error.", "Some customers can't sign in. We're investigating."),
+            ("payments", MonitoringImpact.Errors, "Card payments failing for some customers", "The card processor returned errors for part of the traffic.", "Some card payments are failing at checkout."),
+            ("payments", MonitoringImpact.Latency, "Slow checkout", "Charges took over a second.", "Checkout is slower than usual."),
+            ("search", MonitoringImpact.Latency, "Slow search results", "Search queries took two to three times longer.", "Search is slower than usual."),
+            ("search", MonitoringImpact.Errors, "Search errors", "Some searches returned an error.", "Some searches show an error. Please try again."),
+            ("notifications", MonitoringImpact.Outage, "Delayed emails", "The email queue stopped draining for a while.", "Emails are arriving late. Your orders are not affected."),
+            ("notifications", MonitoringImpact.Errors, "Push notifications failing", "The push provider rejected some notifications.", "Some push notifications aren't arriving."),
+            ("postgres", MonitoringImpact.Latency, "Orders database slow writes", "Lock contention slowed writes to orders.", "Placing orders is slower than usual."),
+            ("postgres", MonitoringImpact.Outage, "Orders database unreachable", "The primary stopped accepting connections.", "Customers can't place orders right now."),
+            ("redis", MonitoringImpact.Latency, "Session cache evictions", "Memory pressure evicted sessions early.", "Some customers are being signed out."),
+            ("redis", MonitoringImpact.Errors, "Session cache timeouts", "Cache calls timed out under load.", "Some pages are slow to load."),
+            ("sensors", MonitoringImpact.Outage, "Warehouse sensors offline", "Sensors in one bay stopped reporting.", "Readings from some warehouse sensors aren't arriving."),
+            ("sensors", MonitoringImpact.Errors, "Sensor readings rejected", "The gateway rejected malformed readings.", "Some sensor readings arrive late."),
+        };
+        var names = Engineers().ToDictionary(engineer => engineer.Id, engineer => engineer.Name);
+        var count = 291 - FirstHistoryIncidentId;
+
+        for (var index = 0; index < count; index++)
+        {
+            var id = FirstHistoryIncidentId + index;
+
+            // A year ago up to about 80 days ago, every day and a half, give or take five hours: still in number order.
+            var start = Minute(Now.AddDays(-365 + (index * 1.5)).AddMinutes((Hash(id, 2, 9) * 600) - 300));
+            var (serviceId, impact, title, summary, investigating) = templates[(int)(Hash(id, 4, 1) * templates.Length) % templates.Length];
+            var roll = Hash(id, 6, 3);
+            var severity = roll < 0.12 ? MonitoringSeverity.Critical : roll < 0.45 ? MonitoringSeverity.Major : MonitoringSeverity.Minor;
+            var minutes = severity switch
+            {
+                MonitoringSeverity.Critical => 10 + (int)(Hash(id, 7, 2) * 80),
+                MonitoringSeverity.Major => 20 + (int)(Hash(id, 7, 2) * 130),
+                _ => 8 + (int)(Hash(id, 7, 2) * 52),
+            };
+            var published = severity == MonitoringSeverity.Critical || (severity == MonitoringSeverity.Major && Hash(id, 8, 5) < 0.5);
+
+            // The primary on call that week picked it up.
+            var week = (int)Math.Floor((start - RotationStart).TotalDays / 7);
+            var assigneeId = RotationOrder[((week % RotationOrder.Count) + RotationOrder.Count) % RotationOrder.Count];
+            var assignee = names[assigneeId];
+            var accountId = assigneeId is SeededEngineerId or SeededAdminId ? assigneeId : null;
+            var acknowledged = start.AddMinutes(2 + (int)(Hash(id, 9, 4) * 7));
+            var end = start.AddMinutes(Math.Max(minutes, (int)(acknowledged - start).TotalMinutes + 3));
+
+            var incident = new MonitoringIncident
+            {
+                Id = id, ServiceId = serviceId, Severity = severity, Impact = impact, Status = MonitoringIncidentStatus.Resolved, StartedAt = start, ResolvedAt = end, Assignee = assignee,
+                Title = title, Summary = summary,
+            };
+
+            incident.Updates.Add(entry(start, SystemAuthor, "Alert fired.", MonitoringUpdateKind.Alert, null, null));
+            incident.Updates.Add(entry(acknowledged, assignee, "Acknowledged.", MonitoringUpdateKind.Status, null, accountId));
+
+            if (published)
+            {
+                incident.Updates.Add(entry(acknowledged.AddMinutes(2), assignee, investigating, MonitoringUpdateKind.Public, MonitoringPublicStage.Investigating, accountId));
+                incident.Updates.Add(entry(end, assignee, "This is resolved, and everything works normally again.", MonitoringUpdateKind.Public, MonitoringPublicStage.Resolved, accountId));
+            }
+
+            incident.Updates.Add(entry(end, assignee, "Resolved.", MonitoringUpdateKind.Status, null, accountId));
+
+            yield return incident;
+        }
+    }
+
+    /// <summary>Drops the seconds and below, so a generated time is a whole minute.</summary>
+    private static DateTime Minute(DateTime time) => new(time.Year, time.Month, time.Day, time.Hour, time.Minute, 0, time.Kind);
 
     private static string Endpoint(MonitoringService service, int seed) => service.Kind switch
     {

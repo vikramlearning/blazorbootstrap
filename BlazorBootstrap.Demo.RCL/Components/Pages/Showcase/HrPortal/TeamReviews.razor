@@ -1,0 +1,246 @@
+@page "/showcase/hr-portal/reviews/team"
+@layout HrWorkLayout
+@implements IDisposable
+
+<PageTitle>Team reviews · @HrSeedData.ProductName</PageTitle>
+
+@* The reviews a manager writes and signs: their reports' in each cycle (the reports they had when it opened). *@
+<div class="container-fluid px-lg-4">
+    <ShowcaseRoleGuard Roles="@($"{HrSeedData.ManagerRole},{HrSeedData.HrAdminRole}")" SignInPath="@HrLayout.SignInPath">
+        @{
+            var all = State.TeamReviews();
+            var cyclesShown = all.Select(review => review.CycleId).Distinct().Select(id => State.FindCycle(id)).OfType<HrReviewCycle>().ToList();
+            var shown = Filtered(all);
+        }
+
+        <div class="mb-3">
+            <h1 class="hr-title">Team reviews</h1>
+            <p class="hr-lead mb-0">
+                Your direct reports' performance reviews: read their self review, write your review with a rating, and sign off once HR
+                releases the cycle. A row opens the review.
+            </p>
+        </div>
+
+        <HrReviewTodo Class="hr-panel mb-4" HideWhenEmpty="true" />
+
+        @* Always rendered and focusable, so a filter change or a reset view is announced. *@
+        <p class="hr-live-status" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
+
+        <section class="hr-panel" aria-labelledby="hr-tr-title">
+            <div class="d-flex flex-wrap align-items-end justify-content-between column-gap-3 row-gap-2 mb-3">
+                <div>
+                    <h2 class="hr-section-title mb-1" id="hr-tr-title">Reviews you write (@shown.Count)</h2>
+                    <label class="form-label small fw-semibold mb-1" for="hr-tr-cycle">Cycle</label>
+                    <select id="hr-tr-cycle" class="form-select form-select-sm" value="@cycleFilter" @onchange="OnCycleChangedAsync" aria-describedby="hr-tr-count">
+                        <option value="@CurrentCycles">Current cycles</option>
+                        <option value="@AllCycles">All cycles</option>
+                        @foreach (var cycle in cyclesShown)
+                        {
+                            <option value="@cycle.Id.ToString(CultureInfo.InvariantCulture)" @key="cycle.Id">@cycle.Name</option>
+                        }
+                    </select>
+                </div>
+                @* Back to the saved view's defaults: the newest cycle first, 10 a page, every column in its place. *@
+                <Button Color="ButtonColor.Link" Size="ButtonSize.Small" Class="p-0" @onclick="ResetViewAsync">Reset view</Button>
+            </div>
+            <p class="small text-body-secondary" id="hr-tr-count">@HrDisplay.Plural(shown.Count, "review") @(cycleFilter == AllCycles ? "in all cycles" : cycleFilter == CurrentCycles ? "in cycles that aren't closed" : "in this cycle").</p>
+            <ShowcaseDataState Status="@(viewLoaded ? ShowcaseDataStatus.Ready : ShowcaseDataStatus.Loading)"
+                               IsEmpty="@(all.Count == 0)"
+                               EmptyIcon="IconName.ChatSquareText"
+                               EmptyTitle="No team reviews yet"
+                               EmptyText="When HR opens a review cycle that includes your direct reports, their reviews show here and you're notified as self reviews come in."
+                               LoadingText="Loading team reviews…"
+                               OnRetry="RefreshGridAsync">
+                <ChildContent>
+                    <Grid @ref="grid"
+                          @key="gridVersion"
+                          TItem="TeamReviewRow"
+                          Class="table table-hover sc-grid-row-links"
+                          GridContainerClass="hr-grid"
+                          DataProvider="ProvideReviewsAsync"
+                          SettingsProvider="view.GetSettingsAsync"
+                          GridSettingsChanged="SaveSettingsAsync"
+                          AllowPaging="true"
+                          PageSize="@pageSize"
+                          PageSizeSelectorVisible="true"
+                          PageSizeSelectorItems="@(new[] { 10, 25, 50 })"
+                          PaginationItemsTextFormat="{0}–{1} of {2} reviews"
+                          AllowSorting="true"
+                          AllowColumnChooser="true"
+                          AllowExport="true"
+                          ExportFileName="hr-team-reviews"
+                          Responsive="true"
+                          EmptyText="No reviews in these cycles. Pick another cycle."
+                          aria-label="Reviews you write">
+                        <GridColumns>
+                            <GridColumn TItem="TeamReviewRow" HeaderText="Employee" PropertyName="Employee" SortString="employee" SortKeySelector="row => row.Employee"
+                                        IsDefaultSortColumn="@view.IsSortColumn("employee")" SortDirection="@view.DirectionFor("employee")" AlwaysVisible="true">
+                                @* The stretched link makes the whole row open the review. *@
+                                <a class="hr-grid-link stretched-link" href="@ReviewDisplay.ReviewUrl(context.Id)">@context.Employee</a>
+                            </GridColumn>
+                            <GridColumn TItem="TeamReviewRow" HeaderText="Cycle" PropertyName="Cycle" SortString="cycle" SortKeySelector="row => row.Opened"
+                                        IsDefaultSortColumn="@view.IsSortColumn("cycle")" SortDirection="@view.DirectionFor("cycle")">
+                                @context.Cycle
+                            </GridColumn>
+                            <GridColumn TItem="TeamReviewRow" HeaderText="Stage" PropertyName="Stage" SortString="stage" SortKeySelector="row => row.StageKind"
+                                        IsDefaultSortColumn="@view.IsSortColumn("stage")" SortDirection="@view.DirectionFor("stage")" TextNoWrap="true">
+                                <Badge Color="@ReviewDisplay.StageColor(context.StageKind)">@context.Stage</Badge>
+                                @if (context.WaitingForYou)
+                                {
+                                    <span class="d-block small fw-semibold mt-1">Waiting for you</span>
+                                }
+                            </GridColumn>
+                            <GridColumn TItem="TeamReviewRow" HeaderText="Self review" PropertyName="SelfReview" SortString="self" SortKeySelector="row => row.SelfReview"
+                                        IsDefaultSortColumn="@view.IsSortColumn("self")" SortDirection="@view.DirectionFor("self")" TextNoWrap="true">
+                                @context.SelfReview
+                            </GridColumn>
+                            <GridColumn TItem="TeamReviewRow" HeaderText="Your rating" PropertyName="YourRating" SortString="rating" SortKeySelector="row => row.YourRating"
+                                        IsDefaultSortColumn="@view.IsSortColumn("rating")" SortDirection="@view.DirectionFor("rating")">
+                                @context.YourRating
+                            </GridColumn>
+                            <GridColumn TItem="TeamReviewRow" HeaderText="After calibration" PropertyName="Calibrated" SortString="calibrated" SortKeySelector="row => row.Calibrated"
+                                        IsDefaultSortColumn="@view.IsSortColumn("calibrated")" SortDirection="@view.DirectionFor("calibrated")">
+                                @context.Calibrated
+                            </GridColumn>
+                            <GridColumn TItem="TeamReviewRow" HeaderText="Sign-off" PropertyName="SignOff" SortString="signoff" SortKeySelector="row => row.SignOff"
+                                        IsDefaultSortColumn="@view.IsSortColumn("signoff")" SortDirection="@view.DirectionFor("signoff")">
+                                @context.SignOff
+                            </GridColumn>
+                        </GridColumns>
+                    </Grid>
+                </ChildContent>
+            </ShowcaseDataState>
+        </section>
+    </ShowcaseRoleGuard>
+</div>
+
+@code {
+    private const string AllCycles = "all";
+
+    private const string CurrentCycles = "current";
+
+    private const int DefaultPageSize = 10;
+
+    private string cycleFilter = CurrentCycles;
+
+    private Grid<TeamReviewRow>? grid;
+
+    /// <summary>Changes when the view is reset, so the grid is built again with its defaults.</summary>
+    private int gridVersion;
+
+    /// <summary>The grid's page size: the saved one once the view is loaded, then whatever the page size selector chose.</summary>
+    private int pageSize = DefaultPageSize;
+
+    private string? statusMessage;
+
+    private ElementReference? statusRegion;
+
+    private ShowcaseGridView view = default!;
+
+    private bool viewLoaded;
+
+    [Inject] private ShowcaseGridViewStore GridViews { get; set; } = default!;
+
+    [Inject] private HrState State { get; set; } = default!;
+
+    /// <summary>Stops listening to state changes.</summary>
+    public void Dispose() => State.Changed -= OnStateChanged;
+
+    /// <summary>Loads the saved view once the page is interactive (it lives in the tab's session storage), then shows the grid.</summary>
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender)
+            return;
+
+        await view.LoadAsync();
+        pageSize = (await view.GetSettingsAsync()).PageSize;
+        viewLoaded = true;
+        StateHasChanged();
+    }
+
+    protected override void OnInitialized()
+    {
+        view = GridViews.Get(State.SiteSlug, "team-reviews", DefaultPageSize);
+        State.Changed += OnStateChanged;
+    }
+
+    /// <summary>The reviews in the chosen cycle, or in every cycle that isn't closed, or in all.</summary>
+    private IReadOnlyList<HrReview> Filtered(IReadOnlyList<HrReview> all) => cycleFilter switch
+    {
+        AllCycles => all,
+        CurrentCycles => all.Where(review => State.FindCycle(review.CycleId)?.Status != HrCycleStatus.Closed).ToList(),
+        var id => all.Where(review => review.CycleId.ToString(CultureInfo.InvariantCulture) == id).ToList(),
+    };
+
+    private async Task OnCycleChangedAsync(ChangeEventArgs args)
+    {
+        cycleFilter = args.Value?.ToString() ?? CurrentCycles;
+
+        if (grid is not null)
+            await grid.ResetPageNumber();
+    }
+
+    private void OnStateChanged() => InvokeAsync(async () =>
+    {
+        await RefreshGridAsync();
+        StateHasChanged();
+    });
+
+    /// <summary>The page of reviews the grid asked for, the newest cycle first unless a column is sorted.</summary>
+    private Task<GridDataProviderResult<TeamReviewRow>> ProvideReviewsAsync(GridDataProviderRequest<TeamReviewRow> request)
+    {
+        var rows = Filtered(State.TeamReviews()).Select(review =>
+        {
+            var cycle = State.FindCycle(review.CycleId)!;
+            var stage = State.StageOf(review);
+            var signed = (review.EmployeeSignedAt is not null, review.ManagerSignedAt is not null) switch
+            {
+                (true, true) => "Both signed",
+                (true, false) => "Employee signed; you haven't",
+                (false, true) => "You signed; employee hasn't",
+                _ => review.IsLeftOut ? "Not needed" : "Not yet",
+            };
+            var waiting = State.CanWriteManagerReview(review) || State.CanSignAsManager(review);
+
+            return new TeamReviewRow(review.Id, State.FindEmployee(review.EmployeeId)?.Name ?? "A former employee", cycle.Name, cycle.CreatedAt, ReviewDisplay.StageLabel(stage), stage,
+                review.SelfSubmittedAt is { } self ? $"Sent {HrDisplay.Date(self)}" : "Not yet", ReviewDisplay.Rating(review.ManagerRating),
+                review.IsLeftOut ? "Left out" : review.CalibratedRating is { } calibrated && cycle.Status is HrCycleStatus.SignOff or HrCycleStatus.Closed ? ReviewDisplay.Rating(calibrated) : "After the release",
+                signed, waiting);
+        }).ToList();
+
+        return view.ApplyAsync(request, rows);
+    }
+
+    private async Task RefreshGridAsync()
+    {
+        if (grid is not null)
+            await grid.RefreshDataAsync();
+    }
+
+    /// <summary>Forgets the saved view and builds the grid again with its defaults; focus moves to the status.</summary>
+    private async Task ResetViewAsync()
+    {
+        await view.ResetAsync();
+        pageSize = DefaultPageSize;
+        gridVersion++;
+        statusMessage = statusMessage == ResetText ? ResetText + " (again)" : ResetText;
+        StateHasChanged();
+        await Task.Yield();
+        await HrDisplay.FocusAsync(statusRegion);
+    }
+
+    private const string ResetText = "The view is reset: the newest cycle first, 10 a page, and every column shown.";
+
+    /// <summary>Keeps the grid's settings in the saved view, and follows the page size the selector chose.</summary>
+    private async Task SaveSettingsAsync(GridSettings settings)
+    {
+        if (settings.PageSize > 0)
+            pageSize = settings.PageSize;
+
+        await view.SaveSettingsAsync(settings);
+    }
+
+    /// <summary>One report's review as a grid row: the words each column shows and exports, and the values it sorts by.</summary>
+    private sealed record TeamReviewRow(int Id, string Employee, string Cycle, DateTime Opened, string Stage, HrReviewStage StageKind, string SelfReview, string YourRating,
+        string Calibrated, string SignOff, bool WaitingForYou);
+}

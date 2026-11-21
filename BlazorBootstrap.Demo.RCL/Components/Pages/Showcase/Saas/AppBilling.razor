@@ -8,6 +8,8 @@
     var plan = State.PlanOf(workspace);
     var used = State.SeatsUsed(workspace.Id);
     var canManage = State.CanManageBilling;
+    var canFix = State.CanFixPayment;
+    var failing = State.OpenDunningCase(workspace.Id);
     var isTrial = workspace.Status == SaasWorkspaceStatus.Trial;
     var isFree = plan.MonthlyPricePerSeat == 0;
     var invoices = State.InvoicesOf(workspace.Id);
@@ -22,7 +24,7 @@
         </div>
     </div>
 
-    @if (!canManage)
+    @if (!canManage && !canFix)
     {
         <div class="lu-note mb-3" role="note">
             <Icon Name="IconName.InfoCircle" class="flex-shrink-0 mt-1" aria-hidden="true" />
@@ -37,9 +39,56 @@
     @* Always rendered and focusable, so each change is announced and focus has somewhere to go. *@
     <p class="lu-status" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
 
-    @* Payment due: open invoices (a renewal without a card, or a workspace set up by Lumora) wait for payment here. *@
-    @if (openInvoices.Count > 0)
+    @* A failed payment in dunning: what failed, what happens next, and the way to fix it. *@
+    @if (failing is not null)
     {
+        <section class="lu-due lu-failed mb-4" aria-labelledby="lu-failed-title">
+            <Icon Name="@(failing.Stage == SaasDunningStage.Suspended ? IconName.SlashCircle : IconName.ExclamationTriangleFill)" class="lu-due-icon flex-shrink-0" aria-hidden="true" />
+            <div class="flex-grow-1">
+                <h2 class="h5 fw-bold mb-1" id="lu-failed-title">@(failing.Stage == SaasDunningStage.Suspended ? "Suspended for an unpaid invoice" : "Payment failed")</h2>
+                <p class="mb-2">
+                    <strong class="sd-mono">@SaasDisplay.MoneyCents(failing.Amount)</strong> for invoice
+                    <a href="@($"{SaasState.BillingPath}/invoices/{Uri.EscapeDataString(failing.InvoiceNumber)}")">@failing.InvoiceNumber</a>
+                    couldn't be charged: @SaasSeedData.FailureText(failing.Reason). @FailingNextText(workspace, failing)
+                </p>
+                <dl class="lu-failed-facts small mb-2">
+                    <div><dt>Attempts</dt><dd>@failing.Attempts</dd></div>
+                    <div><dt>Card on file</dt><dd>@(cardText ?? "None")@(workspace.CardFails is { } fails ? $" ({SaasDisplay.FailureName(fails).ToLowerInvariant()})" : null)</dd></div>
+                    @if (failing.NextRetryAt is { } nextRetry)
+                    {
+                        <div><dt>Next retry</dt><dd>@SaasDisplay.Date(nextRetry)</dd></div>
+                    }
+                    @if (failing.Stage == SaasDunningStage.Grace && failing.GraceEndsAt is { } graceEnds)
+                    {
+                        <div><dt>Grace ends</dt><dd>@SaasDisplay.Date(graceEnds)</dd></div>
+                    }
+                </dl>
+                @if (canFix)
+                {
+                    <div class="d-flex flex-wrap gap-2">
+                        @if (!cardFormOpen)
+                        {
+                            <Button Color="ButtonColor.Primary" @onclick="OpenCardFromFailureAsync">
+                                <Icon Name="IconName.CreditCard" class="me-1" aria-hidden="true" />Update card
+                            </Button>
+                        }
+                        <Button @ref="payButton" Color="ButtonColor.Danger" Outline="true" @onclick="PayNowAsync">
+                            Pay now<span class="visually-hidden">, @SaasDisplay.MoneyCents(failing.Amount)</span>
+                        </Button>
+                        <Button Color="ButtonColor.Link" Size="ButtonSize.Small" Class="px-0" @onclick="AdvanceDayAsync">Demo: move the clock forward one day</Button>
+                    </div>
+                }
+                else
+                {
+                    <p class="small mb-0">An owner or billing member can update the card and pay.</p>
+                }
+                <p class="lu-error mt-2 mb-0" role="alert">@payError</p>
+            </div>
+        </section>
+    }
+    else if (openInvoices.Count > 0)
+    {
+        @* Payment due: open invoices (a workspace set up by Lumora) wait for payment here. *@
         var openTotal = openInvoices.Sum(invoice => invoice.Amount);
 
         <section class="lu-due mb-4" aria-labelledby="lu-due-title">
@@ -48,13 +97,13 @@
                 <h2 class="h5 fw-bold mb-1" id="lu-due-title">Payment due</h2>
                 <p class="mb-2">
                     @(openInvoices.Count == 1 ? "1 invoice is" : $"{openInvoices.Count.ToString(CultureInfo.InvariantCulture)} invoices are") open, <strong class="sd-mono">@SaasDisplay.MoneyCents(openTotal)</strong> in total.
-                    @(canManage
+                    @(canFix
                         ? (cardText is null ? "There's no card on file: Pay now opens the card form first." : $"Pay now charges the {cardText}.")
                         : (me.Role is SaasMemberRole.Owner or SaasMemberRole.Billing
                             ? "Payments are turned off while the workspace is suspended or archived."
                             : "An owner or billing member can pay them."))
                 </p>
-                @if (canManage)
+                @if (canFix)
                 {
                     <Button @ref="payButton" Color="ButtonColor.Danger" @onclick="PayNowAsync">
                         <Icon Name="IconName.CreditCard" class="me-1" aria-hidden="true" />Pay now<span class="visually-hidden">, @SaasDisplay.MoneyCents(openTotal)</span>
@@ -170,7 +219,7 @@
                         <p class="text-body-secondary mb-0">No card on file.@(isFree ? " The free plan doesn't need one." : string.Empty)</p>
                     }
 
-                    @if (canManage)
+                    @if (canFix)
                     {
                         @if (!cardFormOpen)
                         {
@@ -183,9 +232,16 @@
                             <div class="lu-card-form mt-3">
                                 <h3 class="h6 fw-bold" id="lu-card-form-title" tabindex="-1" @ref="cardFormHeading">@(cardText is null ? "Add a card" : "Replace the card")</h3>
                                 <ShowcaseDemoNotice Class="mb-3" Text="Demo only: use one of the listed test cards; real cards are never accepted. The card is checked with a zero-amount test charge, and only its brand, last four digits, and expiry are kept." />
-                                <EditForm Model="card" OnValidSubmit="SaveCardAsync" FormName="lu-card" aria-labelledby="lu-card-form-title">
-                                    <ShowcaseFormErrors />
+                                <EditForm EditContext="cardContext" OnSubmit="SaveCardAsync" FormName="lu-card" novalidate aria-labelledby="lu-card-form-title">
+                                    <DataAnnotationsValidator />
+                                    <ShowcaseFormErrors ShowSummary="true" />
                                     <ShowcaseCardForm Card="card" Today="State.Clock.Today" IdPrefix="lu" />
+                                    <div class="mt-3">
+                                        <label class="form-label" for="lu-card-postal">Billing postal code</label>
+                                        <InputText id="lu-card-postal" class="form-control" @bind-Value="cardForm.PostalCode" maxlength="10" autocomplete="off" aria-describedby="lu-card-postal-help" />
+                                        <div class="form-text" id="lu-card-postal-help">The postal code of the card's billing address, like 94107 or SW1A 1AA. It isn't kept.</div>
+                                        <ValidationMessage For="() => cardForm.PostalCode" />
+                                    </div>
                                     <div class="lu-error mt-3" role="alert">
                                         @if (cardError is not null)
                                         {
@@ -390,54 +446,75 @@
     <section class="sd-card card mt-4" aria-labelledby="lu-invoices-title">
         <div class="card-header">
             <h2 class="sd-card-title" id="lu-invoices-title">Invoices</h2>
+            <p class="sd-card-sub">Newest first. Open one to see its lines, or print it.</p>
         </div>
-        @if (invoices.Count == 0)
-        {
-            <div class="card-body pt-2">
-                <p class="text-body-secondary mb-0">No invoices yet. An invoice appears here each time a paid plan is charged.</p>
+        <div class="card-body pt-2">
+            <div class="d-flex flex-wrap align-items-center gap-3 mb-2">
+                <p class="small text-body-secondary mb-0" tabindex="-1" @ref="invoiceCountRegion">@InvoiceCountText(invoices)</p>
+                @* Back to the saved view's defaults: newest first, 10 a page, every column in its place. *@
+                <Button Color="ButtonColor.Link" Size="ButtonSize.Small" Class="p-0" @onclick="ResetInvoiceViewAsync">Reset view</Button>
             </div>
-        }
-        else
-        {
-            <div class="table-responsive sd-grid">
-                <table class="table align-middle">
-                    <caption class="visually-hidden">Invoices of @workspace.Name, newest first</caption>
-                    <thead>
-                        <tr>
-                            <th scope="col">Number</th>
-                            <th scope="col">Date</th>
-                            <th scope="col">Description</th>
-                            <th scope="col" class="text-end">Amount</th>
-                            <th scope="col">Status</th>
-                            <th scope="col">Card</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var invoice in invoices)
-                        {
-                            <tr @key="invoice.Number">
-                                <th scope="row" class="sd-mono fw-medium text-nowrap">
-                                    <a href="@($"{SaasState.BillingPath}/invoices/{Uri.EscapeDataString(invoice.Number)}")">@invoice.Number</a>
-                                </th>
-                                <td class="text-nowrap">@SaasDisplay.Date(invoice.IssuedOn)</td>
-                                <td class="lu-invoice-description">@invoice.Description</td>
-                                <td class="text-end sd-mono text-nowrap">@SaasDisplay.MoneyCents(invoice.Amount)</td>
-                                <td class="text-nowrap"><Badge Color="InvoiceColor(invoice.Status)" Class="rounded-pill">@InvoiceStatusText(invoice)</Badge></td>
-                                <td class="text-nowrap">
-                                    @if (CardText(invoice.CardBrand, invoice.CardLast4) is { } invoiceCard)
-                                    {
-                                        @invoiceCard
-                                    }
-                                    else
-                                    {
-                                        <span aria-hidden="true">—</span><span class="visually-hidden">None</span>
-                                    }
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            </div>
-        }
+            <ShowcaseDataState Status="@(invoiceViewLoaded ? ShowcaseDataStatus.Ready : ShowcaseDataStatus.Loading)"
+                               IsEmpty="@(invoices.Count == 0)"
+                               EmptyIcon="IconName.Receipt"
+                               EmptyTitle="No invoices yet"
+                               EmptyText="An invoice appears here each time a paid plan is charged."
+                               LoadingText="Loading invoices…"
+                               OnRetry="RefreshInvoicesAsync">
+                <Grid @ref="invoiceGrid"
+                      @key="invoiceGridVersion"
+                      TItem="SaasInvoice"
+                      Class="table table-hover align-middle sc-grid-row-links"
+                      GridContainerClass="sd-grid border rounded-3"
+                      DataProvider="ProvideInvoicesAsync"
+                      SettingsProvider="invoiceView.GetSettingsAsync"
+                      GridSettingsChanged="SaveInvoiceSettingsAsync"
+                      AllowPaging="true"
+                      PageSize="@invoicePageSize"
+                      PageSizeSelectorVisible="true"
+                      PageSizeSelectorItems="@(new[] { 10, 25, 50 })"
+                      PaginationItemsTextFormat="{0}–{1} of {2} invoices"
+                      AllowSorting="true"
+                      AllowColumnChooser="true"
+                      AllowExport="true"
+                      ExportFileName="saas-billing-history"
+                      Responsive="true"
+                      EmptyText="No invoices."
+                      aria-labelledby="lu-invoices-title">
+                    <GridColumns>
+                        <GridColumn TItem="SaasInvoice" HeaderText="Number" PropertyName="Number" SortString="number" SortKeySelector="invoice => invoice.Number"
+                                    IsDefaultSortColumn="@invoiceView.IsSortColumn("number")" SortDirection="@invoiceView.DirectionFor("number")" TextNoWrap="true" AlwaysVisible="true">
+                            @* The stretched link makes the whole row open the invoice. *@
+                            <a class="sd-mono fw-semibold stretched-link" href="@($"{SaasState.BillingPath}/invoices/{Uri.EscapeDataString(context.Number)}")">@context.Number</a>
+                        </GridColumn>
+                        <GridColumn TItem="SaasInvoice" HeaderText="Date" PropertyName="IssuedOn" SortString="date" SortKeySelector="invoice => invoice.IssuedOn"
+                                    IsDefaultSortColumn="@invoiceView.IsSortColumn("date")" SortDirection="@invoiceView.DirectionFor("date")" TextNoWrap="true">
+                            @SaasDisplay.Date(context.IssuedOn)
+                        </GridColumn>
+                        <GridColumn TItem="SaasInvoice" HeaderText="Description" PropertyName="Description" Sortable="false">
+                            <span class="lu-invoice-description">@context.Description</span>
+                        </GridColumn>
+                        <GridColumn TItem="SaasInvoice" HeaderText="Amount" PropertyName="Amount" SortString="amount" SortKeySelector="invoice => invoice.Amount"
+                                    IsDefaultSortColumn="@invoiceView.IsSortColumn("amount")" SortDirection="@invoiceView.DirectionFor("amount")" TextNoWrap="true">
+                            <span class="sd-mono">@SaasDisplay.MoneyCents(context.Amount)</span>
+                        </GridColumn>
+                        <GridColumn TItem="SaasInvoice" HeaderText="Status" PropertyName="Status" SortString="status" SortKeySelector="invoice => invoice.Status"
+                                    IsDefaultSortColumn="@invoiceView.IsSortColumn("status")" SortDirection="@invoiceView.DirectionFor("status")" TextNoWrap="true">
+                            <Badge Color="InvoiceColor(context.Status)" Class="rounded-pill">@InvoiceStatusText(context)</Badge>
+                        </GridColumn>
+                        <GridColumn TItem="SaasInvoice" HeaderText="Card" PropertyName="CardLast4" Sortable="false" TextNoWrap="true">
+                            @if (CardText(context.CardBrand, context.CardLast4) is { } invoiceCard)
+                            {
+                                @invoiceCard
+                            }
+                            else
+                            {
+                                <span aria-hidden="true">—</span><span class="visually-hidden">None</span>
+                            }
+                        </GridColumn>
+                    </GridColumns>
+                </Grid>
+            </ShowcaseDataState>
+        </div>
     </section>
 }

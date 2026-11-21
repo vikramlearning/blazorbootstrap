@@ -7,9 +7,11 @@
             <div class="hd-agent-bar">
                 <span class="hd-agent-bar-title">@(State.IsAdmin ? "Agent desk · Admin" : "Agent desk")</span>
                 <div class="hd-agent-bar-actions">
+                    <ShowcaseGlobalSearch Class="hd-global-search" Placeholder="Search tickets, articles, agents" />
                     <a class="btn btn-sm btn-outline-secondary" href="@HelpDeskLayout.Base">
                         <Icon Name="IconName.BoxArrowUpRight" class="me-1" aria-hidden="true" />View help center
                     </a>
+                    <ShowcaseNotificationsMenu />
                     <ShowcaseAccountMenu SiteBase="@HelpDeskLayout.Base" SignInPath="@HelpDeskLayout.SignInPath" />
                 </div>
             </div>

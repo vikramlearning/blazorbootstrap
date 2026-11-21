@@ -1,6 +1,6 @@
 ---
 title: Project & Client Board showcase
-description: A project and client board where team members work tasks on drag-and-drop boards, project managers plan projects and workload, and account managers run clients, deals, and the forecast, built with Blazor Bootstrap.
+description: An agency's project and client board with drag-and-drop task boards, timesheets that project managers approve and account managers turn into client invoices, clients, contacts, deals, Grid lists with saved views and CSV export, and an audit log, built with Blazor Bootstrap.
 sidebar_label: Project & Client Board
 sidebar_position: 5
 ---
@@ -9,7 +9,9 @@ import CarbonAd from '/carbon-ad.mdx'
 
 # Project & Client Board
 
-Tandem is the project and client board of Brightline Studio, a fictitious agency. Team members work their tasks on Kanban boards, project managers run projects, milestones, workload, the roadmap, and reports, and account managers keep clients, the deal pipeline, activity, and the revenue forecast. Winning a deal creates a planned project, so the sales side and the delivery side meet in one place.
+Tandem is the project and client board of Brightline Studio, a fictitious agency. Team members work their tasks on Kanban boards and log their hours; project managers run projects, milestones, workload, the roadmap, and reports, and approve the hours on their projects; account managers keep clients and contacts, the deal pipeline, activity, and the forecast, and invoice the approved hours. Winning a deal creates a planned project, so the sales side and the delivery side meet in one place.
+
+Every record list is a [Grid](/components/grid) with a saved view, a column chooser, and CSV export; forms validate with a linked error summary; the app's header has a global search and a notifications bell; and every change lands in an audit log. The signature workflow is **timesheets to client invoice**: team members log hours against projects and submit the week; each project's manager approves its hours or returns the week with a reason; approved billable hours become a draft invoice that the client's account manager checks, issues with payment terms, and marks paid.
 
 <CarbonAd />
 
@@ -25,18 +27,25 @@ Tandem is the project and client board of Brightline Studio, a fictitious agency
 
 You can also create an account ("Join the team" on the start page). A new account joins the team as a team member.
 
-Everyone gets My tasks and Project boards. The project manager's pages and the account manager's pages are separate: an account manager doesn't see Workload or Reports, and a project manager doesn't see the pipeline. Five teammates (Kai, Amara, Ben, Lucia, and Hannah, a second account manager) appear on boards and deals but can't sign in.
+Everyone gets My tasks, Project boards, and Timesheet. The project manager also gets Manage projects, Workload, Roadmap, Reports, and Approvals; the account manager gets Clients, Deal pipeline, Activity, Forecast, Invoices, and Billing rates; both get the Audit log. The rest of the agency (33 teammates, among them four more project managers and four more account managers) appears on boards, projects, and clients but can't sign in. Hours on a project whose manager can't sign in can be approved by any project manager who can, so no week waits forever in the demo.
 
-All data is fictitious and there is no backend. Each browser tab keeps its own data in `sessionStorage` (it survives a reload; other tabs start fresh), and "Reset demo data" in the account menu restores the seed: 4 projects with milestones and 28 tasks, 6 clients with 9 contacts, 12 deals, and 14 activity entries. The sign-in page lists the demo accounts with one-click buttons; credentials are checked only against the tab's accounts. The clock starts on Tuesday, November 24, 2026, 9:00 and moves on with real time.
+The seed holds the four hand-written demo projects (WEB, APP, BRD, and OPS) and their six clients, and the agency's other work of the last two years: 90 clients, 199 contacts, 218 projects (18 active, 32 planned, 10 on hold, 158 completed), 1,607 tasks (322 open, 13 overdue), 12 deals, and 101 activity entries. For the timesheets there are seven weeks of hours by Jordan, Kai, Amara, Ben, and Lucia on WEB, APP, and BRD (244 entries, 1,079 hours): five weeks approved, last week submitted and waiting for Nadia (Ben's was returned to him), and Jordan's current week in draft with Monday's hours. Three invoices come from those hours (INV-2026-0063 paid, INV-2026-0067 overdue, INV-2026-0068 issued), and 155 more, one per completed project of the other clients, come from before time tracking (148 paid in all, 10 issued). The audit log starts with 615 entries from the last 90 days. Jordan has 13 notifications, Nadia 16, and Elena 11; the newest two of each are unread, and so are the steps waiting for someone (Nadia's four weeks to approve, Elena's hours to invoice and the overdue invoice).
+
+All data is fictitious and there is no backend. Each browser tab keeps its own data in `sessionStorage` (it survives a reload; other tabs start fresh), and "Reset demo data" in the account menu restores the seed. The tab stores only what changed since the seed, which is built the same way in every tab, so a fresh tab's data is about 250 bytes although it holds thousands of records. The sign-in page lists the demo accounts with one-click buttons; credentials are checked only against the tab's accounts. The clock starts on Tuesday, November 24, 2026, 9:00 and moves on with real time. Nothing is emailed, sent, or charged.
 
 ## What to try
 
-1. Sign in as Nadia, open the WEB board, and create a task for Jordan with **New task**. Sign in as Jordan: the task is in **My tasks**, and **Mark done** moves it to Done. Back as Nadia, **Reports** counts it under "Done this week".
-2. As Jordan, open the WEB board and drag a card from To do to In progress. Then do the same with the keyboard: use the card's **Move to** select, or the up and down buttons to change its place in the column.
-3. Open a task, tick checklist items, post a comment, and change the assignee or status. Switch the board to **List** and sort the table by a column.
-4. Sign in as Elena, open **Deal pipeline**, and move "Harbor & Pine holiday campaign" to Won with **Move to stage**. After you confirm, a planned project is created and the client's timeline logs it. Sign in as Nadia: **Manage projects** shows it under "New from a won deal", and the **Roadmap** includes it.
-5. As Nadia, open **Workload**, expand a person, and reassign one of their tasks to someone with more room this week.
-6. As Elena, open a client, log a call on its timeline, add a contact, and check **Forecast** for the won revenue against the $120,000 monthly target.
+1. Sign in as Jordan. **My tasks** is a Grid: choose **Due: Overdue** or **Today**, sort by priority, hide a column with **Columns**, and set 10 a page; the view is kept when you leave and come back, and **Reset view** restores it. Select two tasks and use the bulk bar to mark them done, give them a new due date, or reassign them (a task moves only to someone on its project). **Export CSV** downloads the filtered tasks.
+2. Use the header search: type `WEB-5` to open the task, or `Harbor` for the project. As Elena, a contact's name (`Grace`) opens the client, and an invoice number (`0067`) opens the invoice.
+3. As Nadia, open the WEB board and create a task with **New task**: submit it empty (the summary links to Title), then give it a due date after the project's end. Assign it to Jordan: Jordan's bell says it's his. Open a task and post a comment that mentions `@Jordan`: he is told. Add a checklist item twice: the second is refused as a duplicate.
+4. As Nadia, open **Manage projects**, filter by status, select some projects, and use the bulk bar to set a status or hand them to another project manager. Open **New project**: type the key `WEB` or, for Harbor & Pine, the name "Harbor & Pine storefront redesign": "Checking…", then a taken message. A due date before the start, or a budget in money without hours, is refused.
+5. As Elena, open **New client**: the name `Atlas Freight Co.` is taken, `not a site` isn't a website, `12` isn't a phone number, and a contract end needs a start on or before it. On a client's page, add a contact with the email `tom.ashby@harborpine.example` (taken at Harbor & Pine) and no role (required). Log a call dated tomorrow: the day can't be in the future. Open **New deal** with a close date in the past: an open deal can't close in the past.
+6. As Elena or Nadia, open **Audit log**: every change of this tab is on top, with links to the records.
+7. Run the timesheet-to-invoice loop (a few minutes, all three roles):
+   1. As Jordan, open **Timesheet**. This week is a draft with Monday's hours on WEB and APP; the table shows hours by project and day. Choose **Log time**: submit it without hours (the summary links to Hours), then try 0.3 hours (quarter hours only), 13 hours (12 at most), or a day of next week. Log 2.5 hours on WEB today with a note, then choose **Submit week**. Nadia is told. **Previous week** shows last week submitted and waiting for Nadia; **Your weeks** lists them all.
+   2. Choose **Switch account** and sign in as Nadia. The bell has the submitted weeks. Open **Approvals**: the Grid shows each project's hours in each week, waiting for you. Open Jordan's newest week: each project is a section with its entries; choose **Approve WEB hours** and the week still waits for APP. Return Kai's week of Nov 16 with a reason under 10 characters (refused), then with a proper one: Kai's week is editable again. Back on **Approvals**, select the remaining waiting rows and choose **Approve hours**. Once every project in a week is approved, the week is approved, its person is told, and the client's account manager is told the hours are ready to invoice.
+   3. Sign in as Elena. **Invoices** has **Ready to invoice** per client (approved billable hours at today's rates) and every invoice; filter by **Overdue** to find INV-2026-0067. Choose **Create draft invoice**, pick Harbor & Pine Outfitters and a day for "Hours up to": the preview lists the lines by project and person with the total. Create it, then remove a line on the draft (its hours go back to ready to invoice). Choose **Issue invoice** with Net 30: it gets the next number (INV-2026-0074 in a fresh tab), today's date, and a due date, and Nadia is told her project's hours were invoiced. Choose **Mark paid** with a date before the issue date (refused), then today.
+   4. On **Billing rates**, set Design to 450 (refused: 50 to 400) and then to 145: new drafts use it. The WEB board's header shows the hours logged and the amount billed against the project's budget (BRD is already near its hour budget), and the **Audit log** lists the submission, each approval and return, the draft, the removed line, the issue, the payment, and the rate change.
 
 ## Pages
 
@@ -46,72 +55,110 @@ All data is fictitious and there is no backend. Each browser tab keeps its own d
 |:--|:--|:--|
 | Start page | `/showcase/project-board` | What Tandem does for each role, with Sign in and "Join the team"; a signed-in person gets "Open Tandem". |
 | Sign in | `/showcase/project-board/sign-in` | Demo accounts, the sign-in form, and the register form (`?mode=register`). |
-| Not found | `/showcase/project-board/{*path}` | The site's not-found panel, also shown for an unknown project, task, client, or deal. |
+| Not found | `/showcase/project-board/{*path}` | The site's not-found panel, also shown for an unknown project, task, client, week, or invoice. |
+
+The public pages have no search or notifications bell: those are in the signed-in app.
 
 ### Everyone signed in (layout: sidebar app)
 
 | Page | Route | What it does |
 |:--|:--|:--|
-| My tasks | `/showcase/project-board/my-tasks` | Your tasks grouped Overdue, Today, This week, Later, and No due date, plus the ones done in the last 2 weeks; Mark done and Reopen. |
-| Project boards | `/showcase/project-board/projects` | Every project as a card with status, due date, progress, next milestone, and team; filter by status. |
-| Project board | `/showcase/project-board/projects/{Id:int}` | Board view: four columns (To do, In progress, Review, Done) with drag and drop, "Move to", and Move up/down. List view: a sortable table with a status select per row. Filters by assignee, priority, and text, "Only my tasks", and New task in a dialog. A completed project's board is read-only. |
-| Task | `/showcase/project-board/tasks/{Id:int}` | Status and assignee, details (priority, due date, estimate, milestone), description, checklist, and comments. Edit details in a dialog; the project manager can delete the task. |
-| Profile | `/showcase/project-board/profile` | Name, email, and password; your title, weekly capacity, projects, and task counts. |
+| My tasks | `/showcase/project-board/my-tasks` | A Grid of your tasks with a Due filter (all open, overdue, today, this week, later, no due date, done in the last 2 weeks), search, Mark done or Reopen per row, and bulk mark done, new due date, and reassign. |
+| Project boards | `/showcase/project-board/projects` | A Grid of every project (key, client, status, project manager, due date, progress, your open tasks, next milestone, team), with status and "Only projects I'm on" filters; a row opens the board. |
+| Project board | `/showcase/project-board/projects/{Id:int}` | Board view: four columns (To do, In progress, Review, Done) with drag and drop, "Move to", and Move up/down. List view: a sortable table with a status select per row. The header shows hours logged and billed against the budget. Filters, and New task in a validated dialog. A completed project's board is read-only. |
+| Task | `/showcase/project-board/tasks/{Id:int}` | Status and assignee, details, description, a checklist with a validated add form, and comments with a validated post form. Edit details in the validated task dialog; the project manager can delete the task. |
+| Timesheet | `/showcase/project-board/timesheet` | One week at a time (`?week=2026-11-16`): its status and each project's approval, hours by project and day, the entries in a Grid with Log time (a validated dialog), edit and delete while the week is a draft or returned, Submit week, and every week you've logged. |
+| Profile | `/showcase/project-board/profile` | Name, email, and password; your work details (job title and weekly capacity, validated); your task counts and running projects. |
+| Audit log | `/showcase/project-board/audit` | Project and account managers only: who changed what and when, newest first, in a Grid with column filters, paging, and CSV export. |
 
 ### Project manager (layout: sidebar app)
 
 | Page | Route | What it does |
 |:--|:--|:--|
-| Manage projects | `/showcase/project-board/manage/projects` | Every project with client, dates, team, and progress; a "New from a won deal" panel for projects that need a team; delete with a confirmation. |
-| New project | `/showcase/project-board/manage/projects/new` | Name, key (2 to 5 capital letters), client, description, status, dates, and team. |
-| Edit project | `/showcase/project-board/manage/projects/{Id:int}/edit` | The same form, a warning when removing someone unassigns their tasks, and the milestones (add, edit, delete). |
+| Manage projects | `/showcase/project-board/manage/projects` | A Grid of every project with search, status and project manager filters, Open board and Delete per row, and bulk status and project manager changes; a "New from a won deal" panel for projects that need a team. |
+| New project | `/showcase/project-board/manage/projects/new` | A validated form: name (unique per client), key (unique), client, description, status, dates, project manager, budget in hours and money, and team. |
+| Edit project | `/showcase/project-board/manage/projects/{Id:int}/edit` | The same form, a warning when removing someone unassigns their tasks, and the milestones with a validated add and edit form. |
 | Workload | `/showcase/project-board/workload` | Hours due this week against each person's capacity as a chart, then each person's open tasks with Reassign. |
-| Roadmap | `/showcase/project-board/roadmap` | Projects that aren't completed and their milestones (optionally their open tasks) in a mind map with search and a details panel, then the same plan as a timeline list. |
+| Roadmap | `/showcase/project-board/roadmap` | Your projects that aren't completed (or another project manager's, or everyone's) and their milestones in a mind map with search and a details panel, then the same plan as a timeline list. |
 | Reports | `/showcase/project-board/reports` | Open, overdue, and done counts; tasks done per week; open tasks by status; progress by project; and the overdue tasks. |
+| Approvals | `/showcase/project-board/approvals` | A Grid of each project's hours in each submitted, approved, or returned week on the projects you approve, filtered by status (waiting for you by default), with bulk approve and bulk return with a reason. |
+| Week review | `/showcase/project-board/approvals/{Id:int}` | A week's entries per project, "Approve KEY hours" for your projects, and a validated "Return the week" form. |
 
 ### Account manager (layout: sidebar app)
 
 | Page | Route | What it does |
 |:--|:--|:--|
-| Clients | `/showcase/project-board/clients` | Every client with industry, owner, primary contact, open deals, projects, and last activity. |
-| New client | `/showcase/project-board/clients/new` | Name, industry, website, and owner. |
-| Edit client | `/showcase/project-board/clients/{Id:int}/edit` | The same form, and Delete, which is refused while the client has projects or deals. |
-| Client | `/showcase/project-board/clients/{Id:int}` | The client's deals (new and edit in a dialog), projects, contacts (one primary), and timeline, where you log notes, calls, emails, and meetings. |
+| Clients | `/showcase/project-board/clients` | A Grid of every client (industry, owner, primary contact, contacts, open deals, projects, currency, contract end, last activity) with search, owner and industry filters, and bulk "hand to account manager". |
+| New client | `/showcase/project-board/clients/new` | A validated form: name (unique), industry, website, owner, phone, billing currency, billing email, and contract dates. |
+| Edit client | `/showcase/project-board/clients/{Id:int}/edit` | The same form, and Delete, which is refused while the client has projects, deals, or invoices. |
+| Client | `/showcase/project-board/clients/{Id:int}` | The client's facts, contacts and deals as Grids (a contact opens its validated dialog; New deal and Edit open the validated deal dialog), projects with progress and budget use, and the timeline with a validated log form. |
 | Deal pipeline | `/showcase/project-board/pipeline` | Six stages (Lead, Qualified, Proposal, Negotiation, Won, Lost) with drag and drop by a handle, "Move to stage", and Move up/down. Won and Lost ask first. Filter by text, owner, and "Closing this month". |
-| Activity | `/showcase/project-board/activity` | Every client's activity by day, including the wins and losses Tandem records; filter by client and kind. |
+| Activity | `/showcase/project-board/activity` | Every client's calls, emails, meetings, and notes by day, including the wins and losses Tandem records; filter by client and kind. |
 | Forecast | `/showcase/project-board/forecast` | Open and weighted pipeline, won this month against the target, a chart by month with a data table, deals closing in the next 90 days, and totals by stage. |
+| Invoices | `/showcase/project-board/invoices` | "Ready to invoice" per client and every invoice, both Grids; filter invoices by status (draft, issued, overdue, paid), client, and "Only clients I own"; Create draft invoice in a validated dialog with a preview. |
+| Invoice | `/showcase/project-board/invoices/{Id:int}` | Status, client, total, dates, and the lines by project and person; remove a draft line, issue with payment terms, delete a draft, or mark an issued invoice paid. |
+| Billing rates | `/showcase/project-board/rates` | The rate card: each role's hourly rate, validated from 50 to 400. |
+
+## Timesheets and invoicing
+
+**Logging hours.** A person logs hours on the projects they're on (or run) that have started and aren't planned; a completed project takes hours up to its due date. An entry is a day of the week, not in the future and not before the project's start; 0.25 to 12 hours in quarter hours, with at most 24 hours in a day; optionally one of the project's tasks; billable or not (billable by default on a client project, never on an internal one); and a note of up to 200 characters. A week runs Monday to Sunday and starts as a draft with its first entry.
+
+**Submitting and approving.** A draft or returned week with at least one entry can be submitted (not a future week). Each project with hours in it then waits for its approver: the project's manager, or any project manager who can sign in when the project's manager can't. A week with hours on two projects needs both approvals; the week page and the timesheet show each project's state. Any approver can return the whole week with a reason of 10 to 300 characters: the person can change it again, and every approval is cleared, because any line may change before the week comes back. A submitted or approved week can't change.
+
+**Rates.** Each person bills at the rate of the role their job title falls under: Design (designers and researchers), Engineering (developers, engineers, and anyone else), Quality assurance (QA), Content (content strategists and copywriters), or Management (project and account managers). The seed's rates are 140, 150, 120, 110, and 160 an hour, the same number in every billing currency. Account managers change them on Billing rates (50 to 400); new drafts use the new rates, and existing invoices keep theirs.
+
+**Invoices.** Once every project in a week is approved, its billable hours are ready to invoice. The client's account manager makes a draft from the client's approved, uninvoiced billable hours up to a day (not in the future): one line per project and person, at the rate of the person's role, rounded to cents, in the client's billing currency. Removing a draft line, or deleting the draft, puts its hours back. Issuing a draft with at least one line gives it the next number of the year (like INV-2026-0074), today's date, and a due date by the payment terms (Net 14, 30, 45, or 60), and locks it. An issued invoice past its due date is overdue (a badge in words) until it is marked paid with a payment date from the issue date to today. A project with logged hours keeps its client and can't be deleted, and a client with invoices can't be deleted.
+
+**Budget.** A project's board header and its client's page show the hours logged against the project's budget hours and the amount billed (issued and paid invoices) against its budget amount, with a warning in words at 80% and at 100%.
+
+**Notifications.** A project's approver is told when a week with hours on it is submitted (or resubmitted); the person is told when a project's hours are approved, when the whole week is approved, and when it is returned (with the reason); the client's account manager is told when a week with billable hours on their client is approved ("ready to invoice"), and, when they sign in, about their clients' invoices that are overdue; a project's manager is told when its hours are invoiced.
+
+**Audit.** "Week submitted" and "Week resubmitted", "Hours approved", "Week approved", "Week returned" (with the reason), entry changes in a returned week ("Hours logged", "Hours changed", "Hours deleted"), "Draft invoice created", "Invoice line removed", "Draft invoice deleted", "Invoice issued", "Invoice paid", and "Rate changed". A draft week's entries are the person's own work in progress and aren't audited until the week has been submitted.
+
+## Enterprise features
+
+- **Grid lists**: clients, projects (Project boards and Manage projects), My tasks, a client's contacts and deals, the timesheet's entries and weeks, approvals, ready to invoice, invoices, and the audit log use the [Grid](/components/grid) with sorting, paging, a column chooser, and CSV export of the filtered rows. Each list keeps its view (sort, page size, hidden and reordered columns) in the tab's `sessionStorage` until **Reset view**. A whole row opens its record (or, without a page of its own, its dialog). Clients, Manage projects, My tasks, and Approvals have multi-row selection with a bulk bar.
+- **Validated forms**: the create and edit forms use `EditForm`: client, contact, project, milestone, task, comment, checklist item, deal, activity, time entry, return reason, draft invoice, issue, payment, rates, and work details. Required, length, and format rules (websites, emails, phone numbers, keys, quarter hours), uniqueness checks with a "Checking…" state (client name, project key, project name per client, contact email per client), cross-field rules (contract end after start, project due after start, money budget needs hours, task due within the project's dates, assignee on the project, close date not in the past, activity not in the future, hours within the week and 24 a day, nothing billable on an internal project, a payment not before the issue date), and a summary that links each failing field after a failed submit.
+- **Global search** in the header: everyone finds projects (key, name, client) and tasks (key, title); account managers also find clients, contacts, and invoices by number.
+- **Notifications** with an unread count and mark as read: tasks assigned to you, comments and @mentions on your tasks, tasks due today, tomorrow, or overdue, tasks ready for review, projects you now manage and their status changes, clients you now own and contacts added to them, projects from won deals, and every timesheet and invoice step above.
+- **Audit log** of every create, change, move, assignment, completion, and delete (clients, contacts, projects, milestones, tasks, checklists, comments, deals, activity) and every timesheet and invoice step. The Activity page stays the account managers' client timeline.
+- **Loading, empty, and error states** on every list, with a "Demo: simulate a loading error" control to show the error state and its Retry.
 
 ## Components used
 
+- [Grid](/components/grid): every record list, with the column chooser, CSV export, paging, and multi-row selection with bulk bars on Clients, Manage projects, My tasks, and Approvals.
 - [Sortable List](/components/sortable-list): the four task columns of a project board and the six stages of the deal pipeline.
 - [Mind Map](/components/mind-map): the roadmap of projects, milestones, and tasks.
 - [Sidebar](/components/sidebar): the signed-in app's navigation, with the role's modules.
 - [Navbar](/components/navbar): the public header.
-- [Modal](/components/modal): the task editor, the deal editor, the contact form, and the confirmations (delete a task, comment, project, milestone, client, contact, deal, or activity entry; mark a deal won or lost).
+- [Modal](/components/modal): the task, deal, contact, time entry, and draft invoice forms, and the confirmations (delete a task, comment, project, milestone, client, contact, deal, activity entry, time entry, or draft; mark a deal won or lost).
 - [Progress](/components/progress): project, milestone, and checklist progress, workload against capacity, and the monthly target.
 - [Bar chart](/data-visualization/bar-chart) and [Doughnut chart](/data-visualization/doughnut-chart) (BlazorExpress.ChartJS): tasks done per week and open tasks by status on Reports, hours against capacity on Workload, and won and weighted revenue by month on Forecast.
-- [Badge](/components/badge): project status in tables and on the roadmap.
+- [Badge](/components/badge): project, timesheet, and invoice statuses, always with their words.
+- [Placeholders](/components/placeholders): the lists' loading state.
 - [Buttons](/components/buttons) and [Icons](/content/icons): actions and icons across the site.
-- [Text Input](/forms/text-input), [Avatar](/components/avatar), [Dropdown](/components/dropdown), and [Theme Switcher](/components/theme-switcher): through the shared sign-in, profile, account menu, and site bar.
+- [Text Input](/forms/text-input), [Avatar](/components/avatar), [Dropdown](/components/dropdown), and [Theme Switcher](/components/theme-switcher): through the shared sign-in, profile, account menu, notifications, and site bar.
 
-Filters and most form fields on the pages are native inputs and selects.
+Forms use Blazor's `EditForm` with `DataAnnotationsValidator`, `InputText`, `InputTextArea`, `InputNumber`, `InputDate`, `InputSelect`, and `InputCheckbox`. Plain Bootstrap tables remain where the content is not a record list: the board's list view (with its per-row status selects and reorder buttons), reports, workload, forecast, the timesheet's hours by project and day, a week's entries under review, and an invoice's lines.
 
 ## How the theme is built
 
-`PbFrame.razor` is the frame both layouts share: `PbLayout` (the public start page and sign-in, with a Navbar) and `PbWorkLayout` (the signed-in app, with a top bar and a Sidebar). Its root is `.sc-site.sc-board`, and `PbFrame.razor.css` styles the pages of both through `::deep`.
+`PbFrame.razor` is the frame both layouts share: `PbLayout` (the public start page and sign-in, with a Navbar) and `PbWorkLayout` (the signed-in app, with a top bar and a Sidebar). Its root is `.sc-site.sc-board`, and `PbFrame.razor.css` styles the pages of both through `::deep`, including the Grid lists, bulk bars, and the header's search.
 
 Color tokens in light mode: `--sc-primary` `#4338ca` (indigo), `--sc-primary-hover` `#3730a3`, contrast `#fff`, page background `#f6f7fb`. In dark mode (`[data-bs-theme=dark]`): `--sc-primary` `#a5b4fc`, hover `#c7d2fe`, contrast `#141a3a`, page background `#0d1020`. Because the dark primary is light, `.text-bg-primary` and `.progress-bar` text switch to the dark contrast color. The sidebar sets the `--bb-sidebar-*` variables to `#141a3a` with light text in both modes.
 
-Fonts come from Google Fonts: Manrope (400 to 800) for body and headings, and JetBrains Mono for task keys such as `WEB-5`.
+Fonts come from Google Fonts: Manrope (400 to 800) for body and headings, and JetBrains Mono for task keys such as `WEB-5`, hours, and amounts.
 
 The shared stylesheet `wwwroot/css/blazorbootstrap.demo.rcl.css` maps the `--sc-*` tokens to Bootstrap (`--bs-primary`, link and focus colors, body and heading fonts, primary buttons). Charts draw on a canvas, so `PbChartTheme.cs` holds their colors: series `#4338ca`, `#047857`, `#b45309`, `#be185d`, `#0369a1` in light mode and `#a5b4fc`, `#34d399`, `#fbbf24`, `#f472b6`, `#60a5fa` in dark mode, a muted gray for targets, and axis, grid, legend, and tooltip colors. When you switch the theme, the site bar tells `PbState`, and the charts redraw.
 
-Following the shared pattern for business roles, there is one signed-in app with a sidebar instead of role links in the public header. Pages for one role sit behind `PbRoleGuard`, which shows a short panel to other roles, and `PbState` checks the role on every action.
+Following the shared pattern for business roles, there is one signed-in app with a sidebar instead of role links in the public header. Pages for some roles sit behind `PbRoleGuard`, which shows a short panel to other roles, and `PbState` checks the role on every action.
 
 ## Accessibility and responsiveness
 
 - Drag and drop always has a keyboard and single-pointer alternative: every task card has a labelled "Move to" select and Move up/down buttons, every deal card has "Move to stage" and Move up/down, and focus follows the moved card. Dragging turns off while board filters are on, and the board says why.
-- Every move, save, and refusal is announced in a status region, and focus returns to the button that opened a dialog.
+- Every move, save, and refusal is announced in a status region (a repeated message is announced again), and focus returns to the button that opened a dialog, or to the status message when that button is gone.
+- After a failed submit, the error summary takes focus and links to each field; each message is tied to its field with `aria-describedby`.
+- Each list row's checkbox is labelled with its record, and a row opens its record through a stretched link or button, so the row has no extra interactive role. Visually hidden button text keeps its leading space, so names read "Delete Grace Whitfield" rather than "DeleteGrace Whitfield".
 - Each chart has a text summary and a data table. The roadmap mind map is keyboard operable (arrow keys, Enter, and Space) and is repeated as a timeline list.
-- Statuses, priorities, and overdue dates are written in words, not shown by color alone.
-- At 375 px the sidebar sits above the page, the board columns scroll sideways in a labelled region, and wide tables scroll.
+- Statuses, priorities, budget warnings, and overdue dates are written in words, not shown by color alone.
+- At 375 px the sidebar sits above the page, the header search wraps onto its own line, filters and bulk bars stack, the board columns scroll sideways in a labelled region, and wide grids and tables scroll inside their own box.

@@ -3,8 +3,9 @@ using BlazorBootstrap.Demo.RCL.Services.Showcase.HelpDesk;
 namespace BlazorBootstrap.Demo.RCL.Components.Pages.Showcase.HelpDesk;
 
 /// <summary>
-/// Layout of the "Beacon Desk" help center: the header with the knowledge base, requests, and the account menu, the page,
-/// and the footer. It hosts the tab's demo session for the help center.
+/// Layout of the "Beacon Desk" help center: the header with the knowledge base, requests, and (while signed in) the global
+/// search, the notifications, and the account menu; the page; and the footer. It hosts the tab's demo session for the help
+/// center.
 /// </summary>
 public partial class HelpDeskLayout : LayoutComponentBase, IDisposable
 {

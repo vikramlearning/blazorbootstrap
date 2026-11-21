@@ -1,0 +1,65 @@
+@page "/showcase/project-board/rates"
+@layout PbWorkLayout
+
+<PageTitle>Billing rates · @PbSeedData.ProductName</PageTitle>
+
+<div class="container-fluid px-lg-4">
+    <PbRoleGuard Role="@PbSeedData.AccountManagerRole">
+        <p class="small mb-2"><a href="@Invoices.ListUrl"><Icon Name="IconName.ArrowLeft" class="me-1" aria-hidden="true" />Invoices</a></p>
+        <h1 class="tb-title mb-1">Billing rates</h1>
+        <p class="tb-lead">
+            The hourly rate of each role, in the client's billing currency (the same number in every currency). A person bills at the rate of the role their job
+            title falls under. New draft invoices use these rates; drafts and invoices already made keep theirs.
+        </p>
+
+        <section class="tb-panel tb-rates" aria-labelledby="tb-rates-title">
+            <h2 class="tb-section-title" id="tb-rates-title">Rate card</h2>
+            <EditForm EditContext="editContext" OnSubmit="Save" FormName="pb-rates" novalidate aria-labelledby="tb-rates-title">
+                <DataAnnotationsValidator />
+                <ShowcaseFormErrors ShowSummary="true" />
+                <div class="row g-3 mb-3">
+                    <div class="col-sm-6 col-lg-4">
+                        <label class="form-label fw-semibold" for="tb-rates-design">Design</label>
+                        <InputNumber TValue="int?" id="tb-rates-design" class="form-control" @bind-Value="form.Design" step="1" min="@PbState.MinRate" max="@PbState.MaxRate" inputmode="numeric"
+                                     ParsingErrorMessage="Enter the design rate as a whole number." aria-describedby="tb-rates-design-help" />
+                        <div class="form-text" id="tb-rates-design-help">Designers and researchers. @People(PbRateRole.Design)</div>
+                        <ValidationMessage For="() => form.Design" />
+                    </div>
+                    <div class="col-sm-6 col-lg-4">
+                        <label class="form-label fw-semibold" for="tb-rates-engineering">Engineering</label>
+                        <InputNumber TValue="int?" id="tb-rates-engineering" class="form-control" @bind-Value="form.Engineering" step="1" min="@PbState.MinRate" max="@PbState.MaxRate" inputmode="numeric"
+                                     ParsingErrorMessage="Enter the engineering rate as a whole number." aria-describedby="tb-rates-engineering-help" />
+                        <div class="form-text" id="tb-rates-engineering-help">Developers, engineers, and anyone in no other role. @People(PbRateRole.Engineering)</div>
+                        <ValidationMessage For="() => form.Engineering" />
+                    </div>
+                    <div class="col-sm-6 col-lg-4">
+                        <label class="form-label fw-semibold" for="tb-rates-quality">Quality assurance</label>
+                        <InputNumber TValue="int?" id="tb-rates-quality" class="form-control" @bind-Value="form.Quality" step="1" min="@PbState.MinRate" max="@PbState.MaxRate" inputmode="numeric"
+                                     ParsingErrorMessage="Enter the quality assurance rate as a whole number." aria-describedby="tb-rates-quality-help" />
+                        <div class="form-text" id="tb-rates-quality-help">QA engineers. @People(PbRateRole.Quality)</div>
+                        <ValidationMessage For="() => form.Quality" />
+                    </div>
+                    <div class="col-sm-6 col-lg-4">
+                        <label class="form-label fw-semibold" for="tb-rates-content">Content</label>
+                        <InputNumber TValue="int?" id="tb-rates-content" class="form-control" @bind-Value="form.Content" step="1" min="@PbState.MinRate" max="@PbState.MaxRate" inputmode="numeric"
+                                     ParsingErrorMessage="Enter the content rate as a whole number." aria-describedby="tb-rates-content-help" />
+                        <div class="form-text" id="tb-rates-content-help">Content strategists and copywriters. @People(PbRateRole.Content)</div>
+                        <ValidationMessage For="() => form.Content" />
+                    </div>
+                    <div class="col-sm-6 col-lg-4">
+                        <label class="form-label fw-semibold" for="tb-rates-management">Management</label>
+                        <InputNumber TValue="int?" id="tb-rates-management" class="form-control" @bind-Value="form.Management" step="1" min="@PbState.MinRate" max="@PbState.MaxRate" inputmode="numeric"
+                                     ParsingErrorMessage="Enter the management rate as a whole number." aria-describedby="tb-rates-management-help" />
+                        <div class="form-text" id="tb-rates-management-help">Project and account managers. @People(PbRateRole.Management)</div>
+                        <ValidationMessage For="() => form.Management" />
+                    </div>
+                </div>
+                <div class="d-flex flex-wrap align-items-center gap-3">
+                    <Button Type="ButtonType.Submit" Color="ButtonColor.Primary">Save rates</Button>
+                    @* Always rendered, so the outcome is announced; a counter makes a repeat announce again. *@
+                    <span class="small fw-semibold @(statusIsError ? "text-danger-emphasis" : null)" role="status">@statusMessage</span>
+                </div>
+            </EditForm>
+        </section>
+    </PbRoleGuard>
+</div>

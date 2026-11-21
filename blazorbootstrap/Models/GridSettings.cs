@@ -5,12 +5,29 @@ public class GridSettings
     #region Properties, Indexers
 
     /// <summary>
+    /// Gets or sets the column keys (each column's <c>PropertyName</c>, or its <c>HeaderText</c> when it has none) in display order.
+    /// <see langword="null" /> keeps the order in which the columns are declared.
+    /// </summary>
+    [AddedVersion("4.1.0")]
+    [DefaultValue(null)]
+    [Description("Gets or sets the column keys in display order. <b>null</b> keeps the declared order.")]
+    public IEnumerable<string>? ColumnOrder { get; set; }
+
+    /// <summary>
     /// Gets or sets the filters.
     /// </summary>
     [AddedVersion("1.0.0")]
     [DefaultValue(null)]
     [Description("Gets or sets the filters.")]
     public IEnumerable<FilterItem>? Filters { get; set; }
+
+    /// <summary>
+    /// Gets or sets the keys of the columns the user has hidden. <see langword="null" /> hides none.
+    /// </summary>
+    [AddedVersion("4.1.0")]
+    [DefaultValue(null)]
+    [Description("Gets or sets the keys of the columns the user has hidden. <b>null</b> hides none.")]
+    public IEnumerable<string>? HiddenColumns { get; set; }
 
     /// <summary>
     /// Gets or sets the page number.

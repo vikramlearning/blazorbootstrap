@@ -1,0 +1,45 @@
+@* Loading, empty, and error states for a Showcase data screen (rule WR-001). The content shows when the data is ready and not empty. *@
+@if (simulatedFailure || Status == ShowcaseDataStatus.Failed)
+{
+    <div class="alert alert-danger d-flex flex-wrap align-items-center gap-2" role="alert">
+        <Icon Name="IconName.ExclamationTriangle" aria-hidden="true" />
+        <span class="me-auto">@ErrorText</span>
+        <button type="button" class="btn btn-sm btn-outline-danger" @onclick="RetryAsync">@RetryText</button>
+    </div>
+}
+else if (Status == ShowcaseDataStatus.Loading)
+{
+    <div aria-busy="true">
+        <span class="visually-hidden" role="status">@LoadingText</span>
+        <PlaceholderContainer Animation="PlaceholderAnimation.Glow" aria-hidden="true">
+            @for (var row = 0; row < LoadingRows; row++)
+            {
+                <Placeholder Width="PlaceholderWidth.Col12" Class="mb-2" />
+            }
+        </PlaceholderContainer>
+    </div>
+}
+else if (IsEmpty)
+{
+    <div class="text-center border rounded-3 px-3 py-5">
+        <Icon Name="@EmptyIcon" class="fs-2 text-body-secondary" aria-hidden="true" />
+        <p class="fw-semibold mt-2 mb-1">@EmptyTitle</p>
+        @if (!string.IsNullOrWhiteSpace(EmptyText))
+        {
+            <p class="text-body-secondary mb-3">@EmptyText</p>
+        }
+        @EmptyActions
+    </div>
+}
+else
+{
+    @ChildContent
+}
+@if (AllowSimulatedFailure && !simulatedFailure && Status == ShowcaseDataStatus.Ready)
+{
+    <div class="text-end mt-2">
+        <button type="button" class="btn btn-link btn-sm p-0 text-body-secondary" @onclick="SimulateFailure">
+            <Icon Name="IconName.Bug" class="me-1" aria-hidden="true" />Demo: simulate a loading error
+        </button>
+    </div>
+}

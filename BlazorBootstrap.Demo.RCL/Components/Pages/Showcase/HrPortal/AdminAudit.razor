@@ -1,0 +1,20 @@
+@page "/showcase/hr-portal/admin/audit"
+@layout HrWorkLayout
+
+<PageTitle>Audit log · @HrSeedData.ProductName</PageTitle>
+
+@* The HR admin sees it: the role guard keeps everyone else out, and the state shows the log to the HR admin only. *@
+<div class="container-fluid px-lg-4">
+    <ShowcaseRoleGuard Roles="@HrSeedData.HrAdminRole" SignInPath="@HrLayout.SignInPath">
+        <div class="mb-3">
+            <h1 class="hr-title">Audit log</h1>
+            <p class="hr-lead mb-0">
+                Who created, changed, decided, or deleted what, and when: leave requests and approvals, employees, leave policies,
+                onboarding templates and plans, and profiles. Newest first.
+            </p>
+        </div>
+        <div class="hr-panel">
+            <ShowcaseAuditLog ExportFileName="hr-audit-log" />
+        </div>
+    </ShowcaseRoleGuard>
+</div>

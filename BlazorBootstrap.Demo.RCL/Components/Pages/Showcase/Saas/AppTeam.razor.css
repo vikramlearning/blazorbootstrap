@@ -32,26 +32,6 @@
     outline-offset: 2px;
 }
 
-.lu-members {
-    border-top: 1px solid var(--bs-border-color);
-}
-
-.lu-member {
-    display: grid;
-    gap: .75rem;
-    padding: 1rem 1.25rem;
-    border-bottom: 1px solid var(--bs-border-color);
-    min-width: 0;
-}
-
-    .lu-member:last-child {
-        border-bottom: 0;
-    }
-
-.lu-member-person {
-    min-width: 0;
-}
-
 .lu-member-name {
     display: inline-flex;
     flex-wrap: wrap;
@@ -60,37 +40,9 @@
     overflow-wrap: anywhere;
 }
 
-.lu-member-facts {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(7.5rem, 1fr));
-    gap: .5rem 1rem;
-    margin: 0;
-    font-size: .875rem;
-}
-
-    .lu-member-facts dt {
-        font-size: .75rem;
-        font-weight: 600;
-        color: var(--bs-secondary-color);
-    }
-
-    .lu-member-facts dd {
-        margin: 0;
-    }
-
+/* A row's actions stay on one line on wide screens and wrap at phone width (the grid scrolls sideways). */
 .lu-member-actions {
     display: flex;
     flex-wrap: wrap;
     gap: .5rem;
-}
-
-@media (min-width: 992px) {
-    .lu-member {
-        grid-template-columns: minmax(0, 1.4fr) minmax(0, 2fr) auto;
-        align-items: center;
-    }
-
-    .lu-member-actions {
-        justify-content: flex-end;
-    }
 }

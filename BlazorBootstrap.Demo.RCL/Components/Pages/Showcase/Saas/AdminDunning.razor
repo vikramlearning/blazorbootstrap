@@ -1,0 +1,259 @@
+@page "/showcase/saas/admin/dunning"
+@layout SaasAdminLayout
+
+<PageTitle>Dunning · @SaasSeedData.ProductName</PageTitle>
+
+@{
+    var cases = State.DunningCases;
+    var policy = State.DunningPolicy;
+}
+
+<div class="sd-page-head">
+    <div>
+        <span class="sc-eyebrow">Dunning</span>
+        <h1 class="sd-page-title">Failed payments</h1>
+        <p class="sd-page-lead">
+            Tenants whose charge failed: @SaasDisplay.Money(State.DunningAtRisk) at risk. Each one retries on the policy's schedule, then gets a grace period, then is suspended,
+            and a successful payment recovers it. Open a tenant to see its timeline, or select several to retry or extend them together.
+        </p>
+    </div>
+    <Button @ref="policyButton" Color="ButtonColor.Primary" Outline="true" @onclick="OpenPolicyAsync">
+        <Icon Name="IconName.Sliders" class="me-1" aria-hidden="true" />Edit policy
+    </Button>
+</div>
+
+<section aria-label="Dunning summary" class="row row-cols-1 row-cols-sm-2 row-cols-xl-4 g-3 mb-3">
+    @foreach (var (label, value, note, icon) in Summary(cases))
+    {
+        <div class="col" @key="label">
+            <Card Class="sd-card h-100">
+                <CardBody Class="p-3">
+                    <div class="sd-kpi-label">
+                        <span>@label</span>
+                        <span class="sd-kpi-icon" aria-hidden="true"><Icon Name="@icon" /></span>
+                    </div>
+                    <span class="sd-kpi-value">@value</span>
+                    <span class="small text-body-secondary">@note</span>
+                </CardBody>
+            </Card>
+        </div>
+    }
+</section>
+
+<div class="row g-3 mb-3">
+    <div class="col-lg-7">
+        <Card Class="sd-card h-100">
+            <CardHeader><h2 class="sd-card-title">Policy</h2></CardHeader>
+            <CardBody Class="pt-0">
+                <p class="mb-2">@SaasState.DescribePolicy(policy.RetryDays, policy.GraceDays)</p>
+                <p class="small text-body-secondary mb-0">
+                    A charge goes through once the customer has a working card on file: they replace it in Billing, and the next retry or their "Pay now" recovers the tenant.
+                    Customer emails are @(policy.EmailCustomer ? "on" : "off") (a label in this demo: notifications appear in the workspace, nothing is emailed).
+                    A policy change applies to charges that fail from then on.
+                </p>
+            </CardBody>
+        </Card>
+    </div>
+    <div class="col-lg-5">
+        <Card Class="sd-card h-100">
+            <CardHeader><h2 class="sd-card-title">Demo clock</h2></CardHeader>
+            <CardBody Class="pt-0">
+                <p class="mb-2">It's <strong>@State.Clock.Now.ToString("dddd, MMM d, HH:mm", CultureInfo.InvariantCulture)</strong> on @SaasSeedData.ProductName's clock.</p>
+                <p class="small text-body-secondary">
+                    Dunning counts days, so the demo can move the site's clock forward. Each day runs the retries, grace ends, renewals, and trial ends that come due.
+                    Up to @SaasState.MaxDemoDays days from the start of the demo.
+                </p>
+                <Button Color="ButtonColor.Secondary" Outline="true" Size="ButtonSize.Small" @onclick="AdvanceDayAsync">
+                    <Icon Name="IconName.SkipForward" class="me-1" aria-hidden="true" />Demo: move the clock forward one day
+                </Button>
+            </CardBody>
+        </Card>
+    </div>
+</div>
+
+<Card Class="sd-card mb-3">
+    <CardBody Class="p-3 p-lg-4">
+        <h2 class="sd-card-title mb-3" id="sd-dunning-filters-title">Filter cases</h2>
+        <div class="sd-list-filters" role="group" aria-labelledby="sd-dunning-filters-title">
+            <div class="sd-list-search">
+                <label class="form-label small fw-semibold" for="sd-dunning-search">Search</label>
+                <input id="sd-dunning-search" type="search" class="form-control" value="@searchBoxValue" placeholder="Tenant or invoice number" autocomplete="off" maxlength="120"
+                       @oninput="OnSearchInputAsync" @onchange="OnSearchChanged" />
+            </div>
+            <fieldset class="m-0 p-0 border-0">
+                <legend class="form-label small fw-semibold mb-1">Stage</legend>
+                <div class="d-flex flex-wrap gap-1">
+                    @foreach (var option in stageOptions)
+                    {
+                        var inputId = $"sd-dunning-stage-{option.Value}";
+                        <input type="radio" class="btn-check" name="sd-dunning-stage" id="@inputId" checked="@(stageFilter == option.Value)" @onchange="() => SelectStageAsync(option.Value)" />
+                        <label class="btn btn-sm btn-outline-secondary" for="@inputId">@option.Label (@Count(StageCount(option.Value)))</label>
+                    }
+                </div>
+            </fieldset>
+        </div>
+        <div class="sd-list-meta mb-0">
+            <p class="small text-body-secondary mb-0" aria-live="polite" tabindex="-1" @ref="countRegion">Showing @Count(Shown.Count) of @Count(cases.Count) cases.</p>
+            @if (IsFiltered)
+            {
+                <Button Color="ButtonColor.Link" Size="ButtonSize.Small" Class="p-0" @onclick="ClearFiltersAsync">Show open cases</Button>
+            }
+            @* Back to the saved view's defaults: next step first, 25 a page, every column in its place. *@
+            <Button Color="ButtonColor.Link" Size="ButtonSize.Small" Class="p-0" @onclick="ResetViewAsync">Reset view</Button>
+        </div>
+    </CardBody>
+</Card>
+
+@* Always rendered and focusable, so an outcome is announced and focus has somewhere to go when the bulk bar or a dialog closes. *@
+<p class="sd-list-status @(statusIsError ? "text-danger-emphasis" : null)" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
+<p class="sd-list-error" role="alert">@bulkError</p>
+
+@if (selected.Count > 0)
+{
+    <section class="sd-bulk" aria-labelledby="sd-bulk-count">
+        <h2 class="sd-bulk-count" id="sd-bulk-count">@(selected.Count == 1 ? "1 case selected" : $"{Count(selected.Count)} cases selected")</h2>
+        <div class="sd-bulk-actions">
+            <Button Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="RetrySelectedAsync">
+                <Icon Name="IconName.ArrowRepeat" class="me-1" aria-hidden="true" />Retry now<span class="visually-hidden">&#32;for the selected cases</span>
+            </Button>
+        </div>
+        <div class="sd-bulk-field">
+            <label class="form-label small fw-semibold" for="sd-bulk-days">Extend grace by (days)</label>
+            <input id="sd-bulk-days" type="number" class="form-control form-control-sm" min="1" max="@SaasState.MaxExtensionDays" step="1" inputmode="numeric"
+                   @bind="bulkDays" @bind:event="oninput" aria-describedby="sd-bulk-days-help" />
+            <span class="form-text d-block" id="sd-bulk-days-help">1 to @SaasState.MaxExtensionDays days, for cases in grace or suspended.</span>
+        </div>
+        <div class="sd-bulk-field">
+            <label class="form-label small fw-semibold" for="sd-bulk-reason">Reason</label>
+            <input id="sd-bulk-reason" class="form-control form-control-sm" maxlength="@SaasState.MaxDunningReasonLength" @bind="bulkReason" @bind:event="oninput" autocomplete="off"
+                   aria-describedby="sd-bulk-reason-help" />
+            <span class="form-text d-block" id="sd-bulk-reason-help">Required: it goes on each case's timeline and the audit log.</span>
+        </div>
+        <div class="sd-bulk-actions">
+            <Button Color="ButtonColor.Primary" Outline="true" Size="ButtonSize.Small" @onclick="ExtendSelectedAsync">Extend grace<span class="visually-hidden">&#32;of the selected cases</span></Button>
+            <Button Color="ButtonColor.Secondary" Outline="true" Size="ButtonSize.Small" @onclick="ClearSelectionAsync">Clear selection</Button>
+        </div>
+    </section>
+}
+
+<Card Class="sd-card">
+    <CardBody Class="p-3 p-lg-4">
+        <ShowcaseDataState Status="@(viewLoaded ? ShowcaseDataStatus.Ready : ShowcaseDataStatus.Loading)"
+                           IsEmpty="@(cases.Count == 0)"
+                           EmptyIcon="IconName.CheckCircle"
+                           EmptyTitle="No failed payments"
+                           EmptyText="When a renewal or a trial's end can't be charged, the tenant shows up here with its retry schedule."
+                           LoadingText="Loading dunning cases…"
+                           OnRetry="RefreshGridAsync">
+            <Grid @ref="grid"
+                  @key="gridVersion"
+                  TItem="DunningRow"
+                  Class="table table-hover align-middle sd-table-xwide sc-grid-row-links"
+                  GridContainerClass="sd-grid border rounded-3"
+                  DataProvider="ProvideCasesAsync"
+                  SettingsProvider="view.GetSettingsAsync"
+                  GridSettingsChanged="SaveSettingsAsync"
+                  AllowPaging="true"
+                  PageSize="@pageSize"
+                  PageSizeSelectorVisible="true"
+                  PageSizeSelectorItems="@(new[] { 10, 25, 50 })"
+                  PaginationItemsTextFormat="{0}–{1} of {2} cases"
+                  AllowSorting="true"
+                  AllowSelection="true"
+                  SelectionMode="GridSelectionMode.Multiple"
+                  RowSelectionLabel="@(row => $"Select {row.Tenant}, invoice {row.Invoice}")"
+                  SelectAllRowsText="Select all shown cases"
+                  SelectedItemsChanged="OnSelectionChanged"
+                  RowClass="RowClass"
+                  AllowColumnChooser="true"
+                  AllowExport="true"
+                  ExportFileName="saas-dunning"
+                  Responsive="true"
+                  EmptyText="No cases match these filters."
+                  aria-label="Dunning cases">
+                <GridColumns>
+                    <GridColumn TItem="DunningRow" HeaderText="Tenant" PropertyName="Tenant" SortString="tenant" SortKeySelector="row => row.Tenant"
+                                IsDefaultSortColumn="@view.IsSortColumn("tenant")" SortDirection="@view.DirectionFor("tenant")" AlwaysVisible="true">
+                        @* The stretched link makes the whole row open the tenant and its dunning timeline; the invoice link stays above it. *@
+                        <a class="sd-row-link stretched-link" href="@TenantPath(context.WorkspaceId)">@context.Tenant</a>
+                        <span class="d-block small text-body-secondary">@context.Status</span>
+                    </GridColumn>
+                    <GridColumn TItem="DunningRow" HeaderText="Invoice" PropertyName="Invoice" SortString="invoice" SortKeySelector="row => row.Invoice"
+                                IsDefaultSortColumn="@view.IsSortColumn("invoice")" SortDirection="@view.DirectionFor("invoice")" TextNoWrap="true">
+                        <a class="sd-mono" href="@AdminInvoices.DetailPath(context.Invoice)">@context.Invoice</a>
+                    </GridColumn>
+                    <GridColumn TItem="DunningRow" HeaderText="Amount" PropertyName="Amount" SortString="amount" SortKeySelector="row => row.Amount"
+                                IsDefaultSortColumn="@view.IsSortColumn("amount")" SortDirection="@view.DirectionFor("amount")" TextNoWrap="true">
+                        <span class="sd-mono">@SaasDisplay.MoneyCents(context.Amount)</span>
+                    </GridColumn>
+                    <GridColumn TItem="DunningRow" HeaderText="Stage" PropertyName="Stage" SortString="stage" SortKeySelector="row => row.StageValue"
+                                IsDefaultSortColumn="@view.IsSortColumn("stage")" SortDirection="@view.DirectionFor("stage")" TextNoWrap="true">
+                        <Badge Color="SaasDisplay.DunningColor(context.StageValue)" Class="rounded-pill">@context.Stage</Badge>
+                    </GridColumn>
+                    <GridColumn TItem="DunningRow" HeaderText="Reason" PropertyName="Reason" SortString="reason" SortKeySelector="row => row.Reason"
+                                IsDefaultSortColumn="@view.IsSortColumn("reason")" SortDirection="@view.DirectionFor("reason")">
+                        @context.Reason
+                    </GridColumn>
+                    <GridColumn TItem="DunningRow" HeaderText="Attempts" PropertyName="Attempts" SortString="attempts" SortKeySelector="row => row.Attempts"
+                                IsDefaultSortColumn="@view.IsSortColumn("attempts")" SortDirection="@view.DirectionFor("attempts")" TextNoWrap="true">
+                        @context.Attempts
+                    </GridColumn>
+                    <GridColumn TItem="DunningRow" HeaderText="Next step" PropertyName="NextStep" SortString="next" SortKeySelector="row => row.NextAt ?? DateTime.MaxValue"
+                                IsDefaultSortColumn="@view.IsSortColumn("next")" SortDirection="@view.DirectionFor("next")" TextNoWrap="true">
+                        @context.NextStep
+                    </GridColumn>
+                    <GridColumn TItem="DunningRow" HeaderText="Failed" PropertyName="FailedAt" SortString="failed" SortKeySelector="row => row.FailedAt"
+                                IsDefaultSortColumn="@view.IsSortColumn("failed")" SortDirection="@view.DirectionFor("failed")" TextNoWrap="true">
+                        @SaasDisplay.Date(context.FailedAt)
+                    </GridColumn>
+                    <GridColumn TItem="DunningRow" HeaderText="Account manager" PropertyName="Manager" SortString="manager" SortKeySelector="row => row.Manager"
+                                IsDefaultSortColumn="@view.IsSortColumn("manager")" SortDirection="@view.DirectionFor("manager")" TextNoWrap="true">
+                        @(context.Manager.Length == 0 ? "Nobody" : context.Manager)
+                    </GridColumn>
+                </GridColumns>
+            </Grid>
+        </ShowcaseDataState>
+    </CardBody>
+</Card>
+
+@* The policy editor (rule WR-002): a schedule, grace days, and a preview in words. *@
+<Modal @ref="policyModal" IsVerticallyCentered="true" IsScrollable="true" ShowCloseButton="false" aria-labelledby="sd-policy-title" OnShown="OnPolicyShownAsync" OnHidden="OnPolicyHiddenAsync">
+    <HeaderTemplate>
+        <h2 class="modal-title h5" id="sd-policy-title">Dunning policy</h2>
+    </HeaderTemplate>
+    <BodyTemplate>
+        <EditForm id="sd-policy-form" EditContext="policyContext" OnSubmit="SavePolicyAsync" FormName="sd-policy" novalidate>
+            <DataAnnotationsValidator />
+            <ShowcaseFormErrors ShowSummary="true" />
+            <div class="mb-3">
+                <label class="form-label fw-semibold" for="sd-policy-days">Retry on these days after a failed charge</label>
+                <InputText @ref="daysInput" id="sd-policy-days" class="form-control sd-mono" @bind-Value="policyForm.RetryDays" @oninput="OnDaysInput" autocomplete="off" inputmode="numeric"
+                           aria-describedby="sd-policy-days-help" />
+                <div class="form-text" id="sd-policy-days-help">1 to @SaasState.MaxRetries days separated by commas, each from 1 to @SaasState.MaxRetryDay and later than the one before, like 1, 3, 7.</div>
+                <ValidationMessage For="() => policyForm.RetryDays" />
+            </div>
+            <div class="mb-3">
+                <label class="form-label fw-semibold" for="sd-policy-grace">Grace period after the last retry (days)</label>
+                <InputNumber TValue="int?" id="sd-policy-grace" class="form-control" @bind-Value="policyForm.GraceDays" min="0" max="@SaasState.MaxGraceDays" step="1" inputmode="numeric"
+                             ParsingErrorMessage="Enter the grace period as a whole number of days, like 7." aria-describedby="sd-policy-grace-help" />
+                <div class="form-text" id="sd-policy-grace-help">0 to @SaasState.MaxGraceDays. The workspace stays usable (past due) until it ends; 0 suspends it right after the last retry.</div>
+                <ValidationMessage For="() => policyForm.GraceDays" />
+            </div>
+            <div class="form-check mb-3">
+                <InputCheckbox class="form-check-input" id="sd-policy-email" @bind-Value="policyForm.EmailCustomer" aria-describedby="sd-policy-email-help" />
+                <label class="form-check-label fw-semibold" for="sd-policy-email">Email the customer at each step</label>
+                <div class="form-text mt-0" id="sd-policy-email-help">A label in this demo: the workspace's billing contacts get in-app notifications either way, and nothing is emailed.</div>
+            </div>
+            @* Read as the policy changes, without taking focus. *@
+            <div class="sd-policy-preview" aria-live="polite">
+                <span class="fw-semibold">Preview: </span>@PolicyPreview
+            </div>
+            <p class="small text-body-secondary mt-2 mb-0">Applies to charges that fail from now on. @OpenCasesNote(cases)</p>
+            <p class="sd-list-error mt-2 mb-0" role="alert">@policyError</p>
+        </EditForm>
+    </BodyTemplate>
+    <FooterTemplate>
+        <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => policyModal.HideAsync()">Cancel</Button>
+        <Button Type="ButtonType.Submit" Color="ButtonColor.Primary" form="sd-policy-form">Save policy</Button>
+    </FooterTemplate>
+</Modal>

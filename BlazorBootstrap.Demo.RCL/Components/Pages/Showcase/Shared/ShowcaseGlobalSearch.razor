@@ -1,0 +1,47 @@
+@* The header's global search (rule WR-001). Renders nothing for sites that don't implement IShowcaseEnterpriseState,
+   and nothing while signed out. Results are plain links, so Tab reaches them and Enter opens the first one. *@
+@if (Enterprise is not null && Session.Identity.IsSignedIn)
+{
+    <div class="position-relative sc-global-search @Class" role="search">
+        <label class="visually-hidden" for="@inputId">@Label</label>
+        <input id="@inputId"
+               type="search"
+               class="form-control form-control-sm"
+               placeholder="@Placeholder"
+               autocomplete="off"
+               spellcheck="false"
+               maxlength="@MaxTermLength"
+               aria-describedby="@statusId"
+               value="@term"
+               @oninput="OnInput"
+               @onkeydown="OnKeyDownAsync" />
+        <span id="@statusId" class="visually-hidden" role="status">@StatusText</span>
+        @if (IsPanelOpen)
+        {
+            <div class="position-absolute z-3 w-100 mt-1 bg-body border rounded-2 shadow sc-global-search-panel">
+                @if (results.Count == 0)
+                {
+                    <p class="small text-body-secondary px-3 py-2 mb-0">@NoMatchText</p>
+                }
+                else
+                {
+                    <ul class="list-unstyled mb-0 py-1" aria-label="@ResultsLabel">
+                        @foreach (var result in results)
+                        {
+                            <li>
+                                <a class="d-block px-3 py-1 text-decoration-none sc-global-search-result" href="@result.Url" @onclick="Close">
+                                    <span class="d-block small text-body-secondary">@result.Kind</span>
+                                    <span class="d-block text-body">@result.Label</span>
+                                    @if (!string.IsNullOrWhiteSpace(result.Detail))
+                                    {
+                                        <span class="d-block small text-body-secondary">@result.Detail</span>
+                                    }
+                                </a>
+                            </li>
+                        }
+                    </ul>
+                }
+            </div>
+        }
+    </div>
+}

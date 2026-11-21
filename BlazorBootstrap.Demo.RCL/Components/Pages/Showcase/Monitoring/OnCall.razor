@@ -58,6 +58,14 @@
                                                 <span class="d-block small text-body-secondary">Covering for @Name(taken.OriginalId)</span>
                                             }
                                             <span class="d-block small text-body-secondary">@RoleHelp(role)</span>
+                                            @foreach (var paged in State.PagesWaitingFor(holderId))
+                                            {
+                                                var last = paged.Paging!.Pages.Last(page => page.EngineerId == holderId);
+                                                <span class="d-block small fw-semibold" @key="paged.Id">
+                                                    <Icon Name="IconName.Megaphone" class="me-1" aria-hidden="true" />Paged for <a href="@MonitoringDisplay.IncidentUrl(paged.Id)">#@paged.Id @paged.Title</a>
+                                                    (step @last.Step, @MonitoringDisplay.Ago(last.At, State.Clock.Now)), waiting for acknowledgement
+                                                </span>
+                                            }
                                         </span>
                                     </li>
                                 }
@@ -70,14 +78,35 @@
         <div class="col-lg-5">
             <section class="h-100" aria-labelledby="oc-policy-title">
                 <Card Class="mw-card h-100">
-                    <CardHeader><h2 class="mw-card-title" id="oc-policy-title">Escalation policy</h2></CardHeader>
+                    <CardHeader><h2 class="mw-card-title" id="oc-policy-title">Escalation policies</h2></CardHeader>
                     <CardBody>
-                        <ol class="oc-policy mb-0">
-                            <li><strong>Primary on call</strong> is paged first, for every alert.</li>
-                            <li><strong>Secondary on call</strong> is paged if the primary doesn't acknowledge within 5 minutes.</li>
-                            <li><strong>The team lead</strong> is paged if the secondary doesn't acknowledge either.</li>
-                        </ol>
-                        <p class="small text-body-secondary mt-3 mb-0">How each page reaches you is set in <a href="@($"{ConsoleLayout.Base}/notifications")">Notifications</a>.</p>
+                        @{
+                            var active = State.Policies.Where(policy => policy.IsActive).OrderBy(policy => policy.IsDefault).ToList();
+                        }
+                        @if (active.Count == 0)
+                        {
+                            <p class="mb-0">No escalation policy is on: an alert notifies the on-call engineers, but nobody is paged or escalated.</p>
+                        }
+                        else
+                        {
+                            <p class="small mb-2">An alert pages the <strong>primary on call</strong> first; if nobody acknowledges in time, the <strong>secondary</strong> is paged, then whoever the policy names.</p>
+                            <ul class="oc-policy mb-0">
+                                @foreach (var policy in active)
+                                {
+                                    <li @key="policy.Id">
+                                        <strong>@policy.Name</strong>
+                                        <span class="d-block small text-body-secondary">@State.CoverageText(policy) · @State.StepsText(policy)</span>
+                                    </li>
+                                }
+                            </ul>
+                        }
+                        <p class="small text-body-secondary mt-3 mb-0">
+                            How each page reaches you is set in <a href="@($"{ConsoleLayout.Base}/notifications")">Notifications</a>.
+                            @if (State.IsAdmin)
+                            {
+                                <a href="@($"{ConsoleLayout.AdminBase}/escalation")">Manage escalation policies</a>
+                            }
+                        </p>
                     </CardBody>
                 </Card>
             </section>
@@ -168,7 +197,7 @@
     </HeaderTemplate>
     <BodyTemplate>
         <p class="mb-2">
-            From @WeekDay(pendingStart) to @WeekDay(pendingStart.AddDays(7)), you're @(pendingRole == MonitoringOnCallRole.Primary ? "paged first for every alert" : "paged when the primary doesn't acknowledge within 5 minutes")
+            From @WeekDay(pendingStart) to @WeekDay(pendingStart.AddDays(7)), you're @(pendingRole == MonitoringOnCallRole.Primary ? "paged first for every alert" : "paged when the primary doesn't acknowledge in time")
             instead of @pendingHolderName.
         </p>
         <p class="small text-body-secondary mb-3">You can remove your override later, until the week ends.</p>

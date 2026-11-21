@@ -18,6 +18,11 @@
         </div>
 
         <div class="hr-home-grid">
+            @* The performance review steps waiting for you: your self review or sign-off, your reports' reviews, HR's next step. *@
+            <div class="hr-card hr-home-card">
+                <HrReviewTodo />
+            </div>
+
             @* Leave balances: the main limited type (vacation) with a meter, then the other types in words. *@
             <section class="hr-card hr-home-card" aria-labelledby="hr-home-balance-title">
                 <h2 class="hr-section-title" id="hr-home-balance-title">Your leave this year</h2>
@@ -224,7 +229,9 @@
                         <li><a class="hr-home-tool" href="@($"{b}/admin/employees")"><Icon Name="IconName.PersonBadge" aria-hidden="true" /><span>Employees</span></a></li>
                         <li><a class="hr-home-tool" href="@($"{b}/admin/leave-policies")"><Icon Name="IconName.Sliders" aria-hidden="true" /><span>Leave policies</span></a></li>
                         <li><a class="hr-home-tool" href="@($"{b}/admin/onboarding-templates")"><Icon Name="IconName.CardChecklist" aria-hidden="true" /><span>Onboarding templates</span></a></li>
+                        <li><a class="hr-home-tool" href="@($"{b}/admin/reviews")"><Icon Name="IconName.ClipboardCheck" aria-hidden="true" /><span>Performance reviews</span></a></li>
                         <li><a class="hr-home-tool" href="@($"{b}/admin/analytics")"><Icon Name="IconName.BarChart" aria-hidden="true" /><span>Headcount analytics</span></a></li>
+                        <li><a class="hr-home-tool" href="@($"{b}/admin/audit")"><Icon Name="IconName.ClockHistory" aria-hidden="true" /><span>Audit log</span></a></li>
                     </ul>
                 </section>
             }

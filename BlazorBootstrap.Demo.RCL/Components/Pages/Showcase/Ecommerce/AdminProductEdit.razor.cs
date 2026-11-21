@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.Globalization;
+using BlazorBootstrap.Demo.RCL.Components.Pages.Showcase.Shared;
 using BlazorBootstrap.Demo.RCL.Models.Showcase.Ecommerce;
 using BlazorBootstrap.Demo.RCL.Services.Showcase.Ecommerce;
 using Microsoft.AspNetCore.Components.Forms;
@@ -7,11 +8,13 @@ using Microsoft.AspNetCore.Components.Forms;
 namespace BlazorBootstrap.Demo.RCL.Components.Pages.Showcase.Ecommerce;
 
 /// <summary>
-/// The product editor at <c>admin/products/new</c> and <c>admin/products/{id}</c>: name, category, description, highlights,
-/// colors, price and compare-at price, stock, and the featured flag, validated with DataAnnotations and saved through
-/// <see cref="EcommerceState" />. An existing product also shows its sales and rating, a "View in store" link, Archive or
-/// Restore, and Delete when nothing refers to it (each destructive step behind a confirmation dialog). An unknown ID shows
-/// a not-found panel.
+/// The product editor at <c>admin/products/new</c> and <c>admin/products/{id}</c>: name, category, SKU (its form, and unique
+/// in the store, checked while typing), the photo's description (required when the product has a library photo),
+/// description, highlights, colors, price and compare-at price (above the price), stock, and the featured flag, validated
+/// with DataAnnotations (rule WR-002: messages after a field is touched or on submit, a linked summary on a failed submit)
+/// and saved through <see cref="EcommerceState" />, whose refusals map back to their field. An existing product also shows
+/// its sales and rating, a "View in store" link, Archive or Restore, and Delete when nothing refers to it (each destructive
+/// step behind a confirmation dialog). An unknown ID shows a not-found panel.
 /// </summary>
 public partial class AdminProductEdit : ComponentBase, IDisposable
 {
@@ -20,9 +23,6 @@ public partial class AdminProductEdit : ComponentBase, IDisposable
     private const int ColorsMaxLength = 200;
 
     private const int HighlightsMaxLength = 1000;
-
-    /// <summary>Products with this many or fewer in stock count as low (the dashboard uses the same limit).</summary>
-    private const int LowStockLimit = 5;
 
     private const int MaxColorLength = 20;
 
@@ -50,16 +50,17 @@ public partial class AdminProductEdit : ComponentBase, IDisposable
 
     private ProductForm form = new();
 
-    private string? formError;
-
-    private int invalidSubmits;
-
     private string? loadedKey;
 
     /// <summary>A message for the page a just-added product opens on (the same component instance, with a new route).</summary>
     private string? pendingStatus;
 
     private int saves;
+
+    /// <summary>The state's refusals, shown on their field until it changes.</summary>
+    private ValidationMessageStore? serverErrors;
+
+    private ShowcaseUniqueCheck? skuCheck;
 
     private string? statusMessage;
 
@@ -92,21 +93,24 @@ public partial class AdminProductEdit : ComponentBase, IDisposable
 
         loadedKey = key;
         saves = 0;
-        invalidSubmits = 0;
-        formError = null;
         statusMessage = pendingStatus;
         focusStatus = pendingStatus is not null;
         pendingStatus = null;
-        form = Product is { } product ? FromProduct(product) : new ProductForm();
-        editContext = new EditContext(form);
+        SetForm(Product is { } product ? FromProduct(product) : new ProductForm { Sku = State.SuggestSku(null) });
     }
 
     #endregion
 
     #region Public Methods
 
-    /// <summary>Stops listening to state changes.</summary>
-    public void Dispose() => State.Changed -= OnStateChanged;
+    /// <summary>Stops listening to state and form changes.</summary>
+    public void Dispose()
+    {
+        State.Changed -= OnStateChanged;
+
+        if (editContext is not null)
+            editContext.OnFieldChanged -= OnFieldChanged;
+    }
 
     #endregion
 
@@ -119,6 +123,9 @@ public partial class AdminProductEdit : ComponentBase, IDisposable
     {
         Name = product.Name,
         CategoryId = product.CategoryId,
+        Sku = product.Sku,
+        HasPhoto = product.HasPhoto,
+        ImageAlt = product.ImageAlt,
         Description = product.Description,
         Highlights = string.Join("\n", product.Highlights),
         Colors = string.Join(", ", product.Colors),
@@ -196,22 +203,36 @@ public partial class AdminProductEdit : ComponentBase, IDisposable
         await EcommerceDisplay.FocusAsync(deleteButton?.Element);
     }
 
-    private void OnInvalidSubmit()
+    /// <summary>A refusal from the state clears once its field changes; a new SKU is shown in capitals as it is saved.</summary>
+    private void OnFieldChanged(object? sender, FieldChangedEventArgs args)
     {
-        invalidSubmits++;
-        var count = editContext.GetValidationMessages().Count();
-        var problems = count == 1 ? "1 problem" : $"{count} problems";
+        serverErrors?.Clear(args.FieldIdentifier);
 
-        formError = invalidSubmits == 1
-            ? $"Not saved: fix the {problems} below."
-            : $"Not saved: fix the {problems} below (attempt {invalidSubmits}).";
+        if (args.FieldIdentifier.FieldName == nameof(ProductForm.Sku) && form.Sku is { } sku && sku != sku.ToUpperInvariant())
+            form.Sku = sku.ToUpperInvariant();
+
+        // A new product's suggested SKU follows the category until someone types their own.
+        if (args.FieldIdentifier.FieldName == nameof(ProductForm.CategoryId) && Id is null
+            && (form.Sku == State.SuggestSku(null) || State.Categories.Any(category => form.Sku == State.SuggestSku(category.Id))))
+            form.Sku = State.SuggestSku(form.CategoryId);
     }
 
     private void OnStateChanged() => InvokeAsync(StateHasChanged);
 
-    private void Save()
+    /// <summary>
+    /// Saves once the form is valid: the SKU check finishes first, then every rule runs, and a failed submit shows the
+    /// summary (rule WR-002). The state checks the SKU again; a refusal shows on the SKU field.
+    /// </summary>
+    private async Task SaveAsync()
     {
-        formError = null;
+        serverErrors?.Clear();
+        editContext.NotifyValidationStateChanged();
+
+        var skuFree = skuCheck is null || await skuCheck.CheckNowAsync();
+
+        if (!editContext.Validate() || !skuFree)
+            return;
+
         var draft = ToDraft();
 
         if (Product is not { } existing)
@@ -219,15 +240,25 @@ public partial class AdminProductEdit : ComponentBase, IDisposable
             if (Id is not null)
                 return;
 
-            var created = State.CreateProduct(draft);
-            pendingStatus = "Product added.";
+            if (State.CreateProduct(draft) is not { } created)
+            {
+                ServerError(() => form.Sku, State.IsSkuTaken(draft.Sku) ? SkuTakenMessage(draft.Sku) : "This SKU can't be used. Use 4 to 20 letters, digits, and single dashes, starting with a letter.");
+
+                return;
+            }
+
+            pendingStatus = $"{created.Name} is added with SKU {created.Sku}.";
             Navigation.NavigateTo($"{ProductsUrl}/{created.Id}");
 
             return;
         }
 
         if (!State.UpdateProduct(existing.Id, draft))
+        {
+            ServerError(() => form.Sku, State.IsSkuTaken(draft.Sku, existing.Id) ? SkuTakenMessage(draft.Sku) : "This SKU can't be used. Use 4 to 20 letters, digits, and single dashes, starting with a letter.");
+
             return;
+        }
 
         // Show what was stored (trimmed, de-duplicated colors, rounded prices) without replacing the form's EditContext,
         // so focus stays on the Save button.
@@ -236,6 +267,8 @@ public partial class AdminProductEdit : ComponentBase, IDisposable
             var stored = FromProduct(saved);
             form.Name = stored.Name;
             form.CategoryId = stored.CategoryId;
+            form.Sku = stored.Sku;
+            form.ImageAlt = stored.ImageAlt;
             form.Description = stored.Description;
             form.Highlights = stored.Highlights;
             form.Colors = stored.Colors;
@@ -250,6 +283,28 @@ public partial class AdminProductEdit : ComponentBase, IDisposable
         statusMessage = saves == 1 ? "Changes saved." : $"Changes saved ({saves} times this visit).";
     }
 
+    private void ServerError(System.Linq.Expressions.Expression<Func<object?>> field, string message)
+    {
+        serverErrors?.Clear();
+        serverErrors?.Add(FieldIdentifier.Create(field), message);
+        editContext.NotifyValidationStateChanged();
+    }
+
+    private void SetForm(ProductForm next)
+    {
+        if (editContext is not null)
+            editContext.OnFieldChanged -= OnFieldChanged;
+
+        form = next;
+        editContext = new EditContext(form);
+        serverErrors = new ValidationMessageStore(editContext);
+        editContext.OnFieldChanged += OnFieldChanged;
+    }
+
+    private Task<bool> IsSkuTakenAsync(string sku) => Task.FromResult(State.IsSkuTaken(sku, Id ?? 0));
+
+    private static string SkuTakenMessage(string sku) => $"{sku.Trim().ToUpperInvariant()} is already another product's SKU. Use a SKU no other product has.";
+
     private EcommerceProductDraft ToDraft()
     {
         var price = Math.Round(form.Price ?? 0m, 2, MidpointRounding.AwayFromZero);
@@ -259,6 +314,8 @@ public partial class AdminProductEdit : ComponentBase, IDisposable
         {
             Name = form.Name.Trim(),
             CategoryId = form.CategoryId,
+            Sku = form.Sku.Trim().ToUpperInvariant(),
+            ImageAlt = form.HasPhoto ? form.ImageAlt?.Trim() : null,
             Description = form.Description.Trim(),
             Highlights = string.Join("\n", HighlightsOf(form.Highlights)),
             Colors = string.Join(", ", ColorsOf(form.Colors)),
@@ -330,6 +387,9 @@ public partial class AdminProductEdit : ComponentBase, IDisposable
 
     private int ReviewCount => Product is { } product ? State.ReviewsFor(product.Id).Count : 0;
 
+    /// <summary>An example SKU for the help text: the product's own, or the one suggested for the chosen category.</summary>
+    private string SkuExample => Product?.Sku ?? State.SuggestSku(form.CategoryId);
+
     /// <summary>Orders that include the product, cancelled ones left out (their items went back into stock).</summary>
     private IEnumerable<EcommerceOrder> SalesOrders => Product is { } product
         ? State.Orders.Where(order => order.Status != EcommerceOrderStatus.Cancelled && order.Lines.Any(line => line.ProductId == product.Id))
@@ -345,11 +405,32 @@ public partial class AdminProductEdit : ComponentBase, IDisposable
 
     #region Nested Types
 
-    /// <summary>The editor's form; mapped to an <see cref="EcommerceProductDraft" /> on save.</summary>
-    private sealed class ProductForm
+    /// <summary>
+    /// The editor's form; mapped to an <see cref="EcommerceProductDraft" /> on save. The cross-field rules: a compare-at price
+    /// above the price, and a photo description when the product has a library photo.
+    /// </summary>
+    private sealed class ProductForm : IValidatableObject
     {
         [Required(ErrorMessage = "Choose a category.")]
         public string CategoryId { get; set; } = string.Empty;
+
+        /// <summary>Whether the product has a library photo, so its description is required (set by the page, not by the user).</summary>
+        public bool HasPhoto { get; set; }
+
+        [StringLength(EcommerceState.MaxImageAltLength, ErrorMessage = "Use 160 characters or fewer for the photo description.")]
+        public string? ImageAlt { get; set; }
+
+        [Required(ErrorMessage = "Enter the SKU, like KG-KIT-0101.")]
+        [StringLength(EcommerceState.MaxSkuLength, MinimumLength = 4, ErrorMessage = "Use 4 to 20 characters for the SKU.")]
+        [RegularExpression("^[A-Za-z][A-Za-z0-9]*(-[A-Za-z0-9]+)*$", ErrorMessage = "Start the SKU with a letter and use letters, digits, and single dashes between them, like KG-KIT-0101.")]
+        public string Sku { get; set; } = string.Empty;
+
+        /// <summary>Runs once the fields are filled in: a product with a photo needs its description.</summary>
+        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+        {
+            if (HasPhoto && string.IsNullOrWhiteSpace(ImageAlt))
+                yield return new ValidationResult("Describe the product's photo for people who can't see it, like “Oak cutting board with a juice groove”.", new[] { nameof(ImageAlt) });
+        }
 
         [Required(ErrorMessage = "Enter at least one color.")]
         [StringLength(ColorsMaxLength, ErrorMessage = "Use 200 characters or fewer.")]

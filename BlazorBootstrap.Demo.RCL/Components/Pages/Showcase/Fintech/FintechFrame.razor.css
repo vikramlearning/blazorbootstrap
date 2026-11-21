@@ -397,3 +397,200 @@
 .sc-fintech ::deep .tm-ops-bar-title {
     font-weight: 700;
 }
+
+.sc-fintech ::deep .tm-ops-bar-actions {
+    display: flex;
+    flex: 1 1 auto;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-end;
+    gap: .5rem;
+}
+
+/* The header's global search takes the room the bar has, and wraps onto its own line when there is too little. In the
+   customer Navbar it sits after the modules on wide screens and inside the collapsed menu on narrow ones. */
+.sc-fintech ::deep .tm-global-search {
+    flex: 1 1 12rem;
+    min-width: 10rem;
+    max-width: 22rem;
+}
+
+@media (min-width: 992px) {
+    .sc-fintech ::deep .tm-header .tm-global-search {
+        flex: 0 1 18rem;
+    }
+}
+
+.sc-fintech ::deep .tm-header-tools {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+}
+
+/* Grid lists: a selected row is tinted, status lines under a list collapse while empty, and a queue's bulk bar wraps onto
+   several lines at phone width. */
+.sc-fintech ::deep .tm-row-selected > * {
+    --bs-table-bg-state: rgba(var(--sc-primary-rgb), .06);
+}
+
+.sc-fintech ::deep .tm-list-status,
+.sc-fintech ::deep .tm-list-error {
+    font-size: .875rem;
+    font-weight: 600;
+}
+
+    .sc-fintech ::deep .tm-list-status:empty,
+    .sc-fintech ::deep .tm-list-error:empty {
+        margin: 0;
+    }
+
+    .sc-fintech ::deep .tm-list-status:focus {
+        outline: none;
+    }
+
+.sc-fintech ::deep .tm-list-error {
+    color: var(--bs-danger-text-emphasis);
+}
+
+.sc-fintech ::deep .tm-bulk {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: .75rem 1rem;
+    margin-bottom: 1rem;
+    padding: .75rem 1rem;
+    border: 1px solid rgba(var(--sc-primary-rgb), .35);
+    border-radius: .75rem;
+    background: rgba(var(--sc-primary-rgb), .06);
+}
+
+.sc-fintech ::deep .tm-bulk-count {
+    flex: 1 0 100%;
+    margin: 0;
+    font-size: .9375rem;
+    font-weight: 700;
+}
+
+.sc-fintech ::deep .tm-bulk-field {
+    flex: 1 1 12rem;
+    min-width: 0;
+}
+
+    .sc-fintech ::deep .tm-bulk-field .form-label {
+        margin-bottom: .25rem;
+    }
+
+.sc-fintech ::deep .tm-bulk-wide {
+    flex: 3 1 18rem;
+}
+
+.sc-fintech ::deep .tm-bulk-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .5rem;
+}
+
+/* A list's filters side by side on wide screens, stacked at phone width; the count and "Reset view" under them. */
+.sc-fintech ::deep .tm-list-filters {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: .75rem 1rem;
+}
+
+    .sc-fintech ::deep .tm-list-filters > * {
+        flex: 1 1 11rem;
+        min-width: 0;
+    }
+
+    .sc-fintech ::deep .tm-list-filters > .tm-list-search {
+        flex: 2 1 16rem;
+    }
+
+.sc-fintech ::deep .tm-list-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: .25rem 1rem;
+    margin: .75rem 0 1rem;
+}
+
+/* A Grid with many columns scrolls sideways inside its box on narrow screens instead of squeezing names (Grid renders the
+   table, so the class is styled here). The row's link names the record; it underlines on hover and focus. */
+.sc-fintech ::deep .tm-table-wide {
+    min-width: 56rem;
+}
+
+.sc-fintech ::deep .tm-table-mid {
+    min-width: 40rem;
+}
+
+.sc-fintech ::deep .tm-row-link {
+    font-weight: 600;
+    text-decoration: none;
+}
+
+    .sc-fintech ::deep .tm-row-link:hover,
+    .sc-fintech ::deep .tm-row-link:focus-visible {
+        text-decoration: underline;
+    }
+
+/* A stretched button (a record without its own page opens its dialog) looks like the row's link. */
+.sc-fintech ::deep .tm-row-button {
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--bs-link-color);
+    font-weight: 600;
+    text-align: start;
+}
+
+    .sc-fintech ::deep .tm-row-button:hover,
+    .sc-fintech ::deep .tm-row-button:focus-visible {
+        text-decoration: underline;
+    }
+
+/* A bulk bar's form lays its fields out like the bar itself. */
+.sc-fintech ::deep .tm-bulk-form {
+    display: flex;
+    flex: 1 0 100%;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: .75rem 1rem;
+    min-width: 0;
+}
+
+/* A count beside a page title, like "12 open". */
+.sc-fintech ::deep .tm-count-pill {
+    display: inline-block;
+    margin-left: .5rem;
+    padding: .125rem .625rem;
+    border-radius: 999px;
+    vertical-align: middle;
+    font-size: .875rem;
+    font-weight: 700;
+    letter-spacing: 0;
+    color: var(--tm-ink);
+    background: rgba(var(--sc-primary-rgb), .12);
+}
+
+/* An AML case's timeline: each entry with its kind, who, and when; notes keep their line breaks. */
+.sc-fintech ::deep .tm-aml-timeline {
+    display: grid;
+    gap: .75rem;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+}
+
+    .sc-fintech ::deep .tm-aml-timeline > li {
+        padding: .75rem 1rem;
+        border: 1px solid var(--tm-border);
+        border-radius: .75rem;
+        background: var(--tm-surface);
+    }
+
+.sc-fintech ::deep .tm-aml-text {
+    white-space: pre-line;
+    overflow-wrap: anywhere;
+}

@@ -7,7 +7,7 @@
     <div class="mw-page-head">
         <div>
             <h1 class="mw-title">Logs and traces</h1>
-            <p class="mw-lead">A live tail of every service, newest first. Open a trace ID to see the request's path through the services.</p>
+            <p class="mw-lead">A live tail of every service, newest first. Open a line to see its request's path through the services.</p>
         </div>
         <LivePauseButton />
     </div>
@@ -21,12 +21,12 @@
                 <div class="col-md-5">
                     <label class="form-label small fw-semibold" for="mw-log-search">Search</label>
                     <input id="mw-log-search" type="search" class="form-control" placeholder="Message or trace ID" autocomplete="off"
-                           value="@search" @oninput="OnSearchInput" @ref="searchInput" aria-describedby="mw-log-search-help" />
+                           value="@search" @oninput="OnSearchInputAsync" @ref="searchInput" aria-describedby="mw-log-search-help" />
                     <span class="form-text" id="mw-log-search-help">Matches part of a message or a trace ID.</span>
                 </div>
                 <div class="col-sm-6 col-md-4">
                     <label class="form-label small fw-semibold" for="mw-log-service">Service</label>
-                    <select id="mw-log-service" class="form-select" value="@serviceFilter" @onchange="OnServiceChanged">
+                    <select id="mw-log-service" class="form-select" value="@serviceFilter" @onchange="OnServiceChangedAsync">
                         <option value="">All services</option>
                         @foreach (var service in State.Services)
                         {
@@ -36,7 +36,7 @@
                 </div>
                 <div class="col-sm-6 col-md-3">
                     <label class="form-label small fw-semibold" for="mw-log-level">Level</label>
-                    <select id="mw-log-level" class="form-select" value="@levelFilter" @onchange="OnLevelChanged">
+                    <select id="mw-log-level" class="form-select" value="@levelFilter" @onchange="OnLevelChangedAsync">
                         <option value="">All levels</option>
                         @foreach (var level in Enum.GetValues<MonitoringLogLevel>())
                         {
@@ -48,11 +48,15 @@
 
             <div class="lg-toolbar">
                 @* Not a live region: the count changes with every tick. *@
-                <p class="small text-body-secondary mb-0">@CountText</p>
-                @if (HasFilters)
-                {
-                    <button type="button" class="btn btn-link btn-sm p-0" @onclick="ClearFilters">Clear filters</button>
-                }
+                <p class="small text-body-secondary mb-0" tabindex="-1" @ref="countRegion">@CountText</p>
+                <div class="d-flex flex-wrap align-items-center gap-3">
+                    @if (HasFilters)
+                    {
+                        <button type="button" class="btn btn-link btn-sm p-0" @onclick="ClearFiltersAsync">Clear filters</button>
+                    }
+                    @* Back to the saved view's defaults: newest first, 50 lines a page, every column in its place. *@
+                    <button type="button" class="btn btn-link btn-sm p-0" @onclick="ResetViewAsync">Reset view</button>
+                </div>
             </div>
 
             @if (State.IsPaused)
@@ -60,54 +64,64 @@
                 <div class="lg-paused" id="mw-log-paused">
                     <Icon Name="IconName.PauseCircle" class="flex-shrink-0" aria-hidden="true" />
                     <span class="flex-grow-1">Live updates are paused. The log stops at <span class="mw-mono">@MonitoringDisplay.Time(State.CurrentTime)</span>; new lines wait until you resume.</span>
-                    <button type="button" class="btn btn-sm btn-outline-primary" @onclick="LoadNewLines">Load new lines now</button>
+                    <button type="button" class="btn btn-sm btn-outline-primary" @onclick="LoadNewLinesAsync">Load new lines now</button>
                 </div>
             }
 
-            @if (Filtered.Count == 0)
-            {
-                <p class="lg-empty">No log lines match these filters. Try another service or level, or clear the search.</p>
-            }
-            else
-            {
-                <div class="table-responsive mw-grid">
-                    <table class="table table-hover lg-table">
-                        <caption class="visually-hidden">Log lines, newest first</caption>
-                        <thead>
-                            <tr>
-                                <th scope="col">Time</th>
-                                <th scope="col">Level</th>
-                                <th scope="col">Service</th>
-                                <th scope="col">Message</th>
-                                <th scope="col">Trace</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var entry in Filtered.Take(shownCount))
-                            {
-                                <tr @key="entry.Id">
-                                    <td class="text-nowrap"><span class="mw-mono">@MonitoringDisplay.Time(entry.Time)</span></td>
-                                    <td class="text-nowrap">
-                                        <Badge Color="@MonitoringDisplay.LevelColor(entry.Level)"><Icon Name="@LevelIcon(entry.Level)" class="me-1" aria-hidden="true" />@LevelLabel(entry.Level)</Badge>
-                                    </td>
-                                    <td class="text-nowrap">@(State.FindService(entry.ServiceId)?.Name ?? entry.ServiceId)</td>
-                                    <td class="lg-message"><span class="mw-mono">@entry.Message</span></td>
-                                    <td class="text-nowrap"><a class="mw-mono small" href="@MonitoringDisplay.TraceUrl(entry.TraceId)">@entry.TraceId</a></td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
-                </div>
-
-                @if (Filtered.Count > shownCount)
-                {
-                    <div class="text-center mt-3">
-                        <button type="button" class="btn btn-outline-primary btn-sm" @onclick="ShowMore">
-                            Show @Math.Min(PageSize, Filtered.Count - shownCount) more lines
-                        </button>
-                    </div>
-                }
-            }
+            <ShowcaseDataState Status="@(viewLoaded ? ShowcaseDataStatus.Ready : ShowcaseDataStatus.Loading)"
+                               IsEmpty="@(State.Logs.Count == 0)"
+                               EmptyIcon="IconName.Terminal"
+                               EmptyTitle="No log lines yet"
+                               EmptyText="Lines arrive here as the services log them, every few seconds while live updates run."
+                               LoadingText="Loading log lines…"
+                               OnRetry="RefreshGridAsync">
+                <ChildContent>
+                    <Grid @ref="grid"
+                          @key="gridVersion"
+                          TItem="MonitoringLogEntry"
+                          Class="table table-hover lg-table sc-grid-row-links"
+                          GridContainerClass="mw-grid"
+                          DataProvider="ProvideLinesAsync"
+                          SettingsProvider="view.GetSettingsAsync"
+                          GridSettingsChanged="SaveSettingsAsync"
+                          AllowPaging="true"
+                          PageSize="@pageSize"
+                          PageSizeSelectorVisible="true"
+                          PageSizeSelectorItems="@(new[] { 25, 50, 100 })"
+                          PaginationItemsTextFormat="{0}–{1} of {2} lines"
+                          AllowSorting="true"
+                          AllowColumnChooser="true"
+                          AllowExport="true"
+                          ExportFileName="monitoring-logs"
+                          Responsive="true"
+                          EmptyText="No log lines match these filters. Try another service or level, or clear the search."
+                          aria-label="Log lines">
+                        <GridColumns>
+                            <GridColumn TItem="MonitoringLogEntry" HeaderText="Time" PropertyName="Time" SortString="time" SortKeySelector="entry => entry.Time"
+                                        IsDefaultSortColumn="@view.IsSortColumn("time")" SortDirection="@view.DirectionFor("time")" TextNoWrap="true">
+                                <span class="mw-mono" title="@MonitoringDisplay.Stamp(context.Time)">@MonitoringDisplay.Time(context.Time)</span>
+                            </GridColumn>
+                            <GridColumn TItem="MonitoringLogEntry" HeaderText="Level" PropertyName="Level" SortString="level" SortKeySelector="entry => entry.Level"
+                                        IsDefaultSortColumn="@view.IsSortColumn("level")" SortDirection="@view.DirectionFor("level")" TextNoWrap="true">
+                                <Badge Color="@MonitoringDisplay.LevelColor(context.Level)"><Icon Name="@LevelIcon(context.Level)" class="me-1" aria-hidden="true" />@LevelLabel(context.Level)</Badge>
+                            </GridColumn>
+                            <GridColumn TItem="MonitoringLogEntry" HeaderText="Service" PropertyName="ServiceId" SortString="service" SortKeySelector="entry => ServiceName(entry.ServiceId)"
+                                        IsDefaultSortColumn="@view.IsSortColumn("service")" SortDirection="@view.DirectionFor("service")" TextNoWrap="true">
+                                <a href="@MonitoringDisplay.ServiceUrl(context.ServiceId)">@ServiceName(context.ServiceId)</a>
+                            </GridColumn>
+                            <GridColumn TItem="MonitoringLogEntry" HeaderText="Message" PropertyName="Message" SortString="message" SortKeySelector="entry => entry.Message"
+                                        IsDefaultSortColumn="@view.IsSortColumn("message")" SortDirection="@view.DirectionFor("message")" AlwaysVisible="true">
+                                <span class="mw-mono lg-message">@context.Message</span>
+                            </GridColumn>
+                            <GridColumn TItem="MonitoringLogEntry" HeaderText="Trace" PropertyName="TraceId" SortString="trace" SortKeySelector="entry => entry.TraceId"
+                                        IsDefaultSortColumn="@view.IsSortColumn("trace")" SortDirection="@view.DirectionFor("trace")" TextNoWrap="true">
+                                @* The stretched link makes the whole line open its trace; the service link stays above it. *@
+                                <a class="mw-mono small stretched-link" href="@MonitoringDisplay.TraceUrl(context.TraceId)"><span class="visually-hidden">Trace&#32;</span>@context.TraceId</a>
+                            </GridColumn>
+                        </GridColumns>
+                    </Grid>
+                </ChildContent>
+            </ShowcaseDataState>
         </CardBody>
     </Card>
 </div>

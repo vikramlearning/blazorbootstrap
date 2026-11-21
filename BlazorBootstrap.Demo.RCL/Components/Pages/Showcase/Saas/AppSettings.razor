@@ -22,9 +22,9 @@
         </p>
     }
 
-    <EditForm EditContext="editContext" OnValidSubmit="Save" FormName="app-settings">
-        <ShowcaseFormErrors />
+    <EditForm EditContext="editContext" OnSubmit="SaveAsync" FormName="app-settings" novalidate>
         <DataAnnotationsValidator />
+        <ShowcaseFormErrors ShowSummary="true" />
         @* A disabled fieldset turns every field inside it off at once for members who can only read the settings. *@
         <fieldset class="app-settings-fieldset" disabled="@readOnly" aria-describedby="@(readOnly ? "app-settings-readonly" : null)">
             <legend class="visually-hidden">Workspace settings</legend>
@@ -36,12 +36,18 @@
                 <CardBody Class="p-3 p-lg-4 pt-lg-2">
                     <div class="row g-3">
                         <div class="col-md-6">
-                            <label class="form-label" for="app-ws-name">Workspace name</label>
-                            <TextInput Id="app-ws-name" @bind-Value="form.Name" MaxLength="SaasState.MaxWorkspaceNameLength" Disabled="readOnly" />
+                            <label class="form-label fw-semibold" for="app-ws-name">Workspace name</label>
+                            <InputText id="app-ws-name" class="form-control" @bind-Value="form.Name" maxlength="@SaasState.MaxWorkspaceNameLength" disabled="@readOnly" autocomplete="organization"
+                                       aria-describedby="app-ws-name-help" />
+                            <ShowcaseUniqueCheck @ref="nameCheck" For="() => form.Name" IsTakenAsync="IsNameTakenAsync" TakenMessage="NameTakenMessage" />
+                            <div class="form-text mt-0" id="app-ws-name-help">
+                                Unique on @SaasSeedData.ProductName, up to @SaasState.MaxWorkspaceNameLength characters. Your address stays
+                                <span class="sd-mono">@workspace.Subdomain</span>.lumora.example.
+                            </div>
                             <ValidationMessage For="() => form.Name" />
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label" for="app-ws-tz">Time zone</label>
+                            <label class="form-label fw-semibold" for="app-ws-tz">Time zone</label>
                             <InputSelect id="app-ws-tz" class="form-select" @bind-Value="form.TimeZone" disabled="@readOnly" aria-describedby="app-ws-tz-help">
                                 @foreach (var zone in SaasSeedData.TimeZones)
                                 {
@@ -51,21 +57,25 @@
                             <div class="form-text" id="app-ws-tz-help">Days and reports start at midnight in this time zone.</div>
                         </div>
                         <div class="col-md-6">
-                            <span class="form-label d-block" id="app-ws-week">Week starts on</span>
+                            <span class="form-label fw-semibold d-block" id="app-ws-week">Week starts on</span>
                             <RadioButtonGroup TValue="string" @bind-Value="form.WeekStartsOn" AriaLabel="Week starts on" aria-labelledby="app-ws-week" Disabled="readOnly" Size="ButtonGroupSize.Small">
                                 <ButtonGroupItem Value="@("Monday")" Id="app-week-monday">Monday</ButtonGroupItem>
                                 <ButtonGroupItem Value="@("Sunday")" Id="app-week-sunday">Sunday</ButtonGroupItem>
                             </RadioButtonGroup>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label" for="app-ws-region">Data region</label>
+                            <label class="form-label fw-semibold" for="app-ws-region">Data region</label>
                             <InputSelect id="app-ws-region" class="form-select" @bind-Value="form.DataRegion" disabled="@readOnly" aria-describedby="app-ws-region-help">
                                 @foreach (var region in SaasSeedData.DataRegions)
                                 {
                                     <option value="@region">@region</option>
                                 }
                             </InputSelect>
-                            <div class="form-text" id="app-ws-region-help">Where the workspace's events are kept. In this demo, everything stays in this browser tab.</div>
+                            <div class="form-text" id="app-ws-region-help">
+                                Where the workspace's events are kept@(IsEuCountry(workspace.Country) ? $"; a workspace in {workspace.Country} keeps them in the European Union" : null).
+                                In this demo, everything stays in this browser tab.
+                            </div>
+                            <ValidationMessage For="() => form.DataRegion" />
                         </div>
                     </div>
                 </CardBody>

@@ -1,34 +1,25 @@
 using System.Globalization;
 using BlazorBootstrap.Demo.RCL.Models.Showcase.HelpDesk;
+using BlazorBootstrap.Demo.RCL.Services.Showcase.Foundation;
 using BlazorBootstrap.Demo.RCL.Services.Showcase.HelpDesk;
 
 namespace BlazorBootstrap.Demo.RCL.Components.Pages.Showcase.HelpDesk;
 
 /// <summary>
-/// The agent queue: totals, search and filters (kept in the site state), and a sortable, paged table of tickets with
-/// priority, status, SLA, and "Customer replied" badges. The default order is the most urgent SLA first. Rows can be
-/// selected (with a "select all shown" checkbox that shows a mixed state) and changed together from a bulk bar: assignee,
-/// status, and priority. The selection only ever holds tickets on the current page.
+/// The agent queue: totals, search and filters (kept in the site state), and a <see cref="Grid{TItem}" /> of tickets with
+/// priority, status, tier (escalated tickets flagged), SLA, and "Customer replied" badges, paging, sorting, the column chooser, and CSV export. With no column
+/// sorted, the rows keep the state's urgency order (the most urgent SLA first). The grid's view (page size, sort, columns)
+/// is saved for the visit and can be reset. Rows can be selected with the grid's checkboxes and changed together from a bulk
+/// bar: assignee, status, and priority. The grid keeps the selection to the current page.
 /// </summary>
 public partial class AgentQueue : ComponentBase, IDisposable
 {
     #region Fields and Constants
 
-    private const int PageSize = 10;
+    private const int DefaultPageSize = 10;
 
     /// <summary>The bulk "Assign to" value that unassigns; no agent can have this name.</summary>
     private const string UnassignValue = "__unassign";
-
-    private static readonly Column[] columns =
-    {
-        new(SortKey.Ticket, "Ticket"),
-        new(SortKey.Subject, "Subject"),
-        new(SortKey.Priority, "Priority"),
-        new(SortKey.Status, "Status"),
-        new(SortKey.Sla, "SLA"),
-        new(SortKey.Assignee, "Assignee"),
-        new(SortKey.Updated, "Updated"),
-    };
 
     private string bulkAssignee = string.Empty;
 
@@ -42,23 +33,19 @@ public partial class AgentQueue : ComponentBase, IDisposable
 
     private ElementReference countRegion;
 
-    private Button? nextButton;
+    private Grid<HelpDeskTicket>? grid;
 
-    private int pageNumber = 1;
+    /// <summary>Changes when the view is reset, so the grid is built again with its defaults.</summary>
+    private int gridVersion;
 
-    private Button? previousButton;
+    /// <summary>The grid's page size: the saved one once the view is loaded, then whatever the page size selector chose.</summary>
+    private int pageSize = DefaultPageSize;
 
     /// <summary>The value bound to the search box; it trails the filter while the user types.</summary>
     private string searchBoxValue = string.Empty;
 
-    private ElementReference selectAllButton;
-
-    private readonly HashSet<int> selectedIds = new();
-
-    private bool sortDescending;
-
-    /// <summary>The column the table is sorted by, or <see langword="null" /> for the state's urgency order.</summary>
-    private SortKey? sortKey;
+    /// <summary>The tickets selected in the grid (on its current page).</summary>
+    private List<HelpDeskTicket> selected = new();
 
     private int statusCount;
 
@@ -68,15 +55,32 @@ public partial class AgentQueue : ComponentBase, IDisposable
 
     private string? statusText;
 
+    private ShowcaseGridView view = default!;
+
+    private bool viewLoaded;
+
     #endregion
 
     #region Methods
 
     #region Protected Override Methods
 
+    /// <summary>Loads the saved view once the page is interactive (it lives in the tab's session storage), then shows the grid.</summary>
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender)
+            return;
+
+        await view.LoadAsync();
+        pageSize = (await view.GetSettingsAsync()).PageSize;
+        viewLoaded = true;
+        StateHasChanged();
+    }
+
     protected override void OnInitialized()
     {
         searchBoxValue = State.Filter.Search;
+        view = GridViews.Get(State.SiteSlug, "ticket-queue", DefaultPageSize);
         State.Changed += OnStateChanged;
     }
 
@@ -90,6 +94,9 @@ public partial class AgentQueue : ComponentBase, IDisposable
     #endregion
 
     #region Private Methods
+
+    private static string CountText(int matches) =>
+        matches == 1 ? "1 ticket" : string.Create(CultureInfo.InvariantCulture, $"{matches} tickets");
 
     /// <summary>
     /// Whether the customer wrote last, after an agent's public reply: a reply or a reopen waiting for the agent. Internal
@@ -105,14 +112,11 @@ public partial class AgentQueue : ComponentBase, IDisposable
         return visible.Count > 1 && !visible[^1].IsAgent && visible.Take(visible.Count - 1).Any(message => message.IsAgent);
     }
 
-    private static int TotalPages(int count) => Math.Max(1, (int)Math.Ceiling(count / (double)PageSize));
-
     /// <summary>
-    /// Applies the bulk bar's choices to the selected tickets in one <see cref="HelpDeskState.BulkUpdate" /> call. Focus
-    /// stays on Apply while the bar is open; when the changed tickets leave the queue (for example resolved under "All
-    /// unresolved") the bar closes, so focus moves to the announcement.
+    /// Applies the bulk bar's choices to the selected tickets in one <see cref="HelpDeskState.BulkUpdate" /> call, then
+    /// refreshes the grid and clears the selection; the bar closes, so focus moves to the announcement.
     /// </summary>
-    private async Task ApplyBulkAsync(IReadOnlyList<HelpDeskTicket> selected)
+    private async Task ApplyBulkAsync()
     {
         var unassign = bulkAssignee == UnassignValue;
         var assignee = unassign || bulkAssignee.Length == 0 ? null : bulkAssignee;
@@ -144,83 +148,69 @@ public partial class AgentQueue : ComponentBase, IDisposable
         bulkAssignee = string.Empty;
         bulkStatus = string.Empty;
         bulkPriority = string.Empty;
-        PruneSelection();
+
+        if (grid is not null)
+        {
+            await grid.RefreshDataAsync();
+            await grid.UnSelectAllItemsAsync();
+        }
+
+        selected = new List<HelpDeskTicket>();
         StateHasChanged();
 
-        if (selectedIds.Count == 0)
-        {
-            await Task.Yield();
-            await HelpDeskDisplay.FocusAsync(statusRegion);
-        }
+        await Task.Yield();
+        await HelpDeskDisplay.FocusAsync(statusRegion);
     }
-
-    private string? AriaSort(SortKey key) => key != sortKey ? null : sortDescending ? "descending" : "ascending";
 
     /// <summary>The button disables itself, so focus moves to the ticket count, which also announces the new total.</summary>
     private async Task ClearFiltersAsync()
     {
         State.Filter.Clear();
         searchBoxValue = string.Empty;
-        Refresh();
+        await FiltersChangedAsync();
         await HelpDeskDisplay.FocusAsync(countRegion);
     }
 
-    /// <summary>The bar closes, so focus moves to the "select all shown" checkbox.</summary>
+    /// <summary>The bar closes, so focus moves to the announcement.</summary>
     private async Task ClearSelectionAsync()
     {
-        selectedIds.Clear();
+        if (grid is not null)
+            await grid.UnSelectAllItemsAsync();
+
+        selected = new List<HelpDeskTicket>();
         bulkError = null;
         SetStatus("Selection cleared.");
         StateHasChanged();
 
         await Task.Yield();
-        await HelpDeskDisplay.FocusAsync(selectAllButton);
+        await HelpDeskDisplay.FocusAsync(statusRegion);
     }
 
-    private string CountText(int matches, int page, int shown)
+    /// <summary>A filter changed: back to the first page of the filtered queue.</summary>
+    private async Task FiltersChangedAsync()
     {
-        if (matches == 0)
-            return "0 tickets";
-
-        if (matches <= PageSize)
-            return matches == 1 ? "1 ticket" : string.Create(CultureInfo.InvariantCulture, $"{matches} tickets");
-
-        var from = ((page - 1) * PageSize) + 1;
-
-        return string.Create(CultureInfo.InvariantCulture, $"{matches} tickets · showing {from}–{from + shown - 1}");
+        if (grid is not null)
+            await grid.ResetPageNumber();
     }
 
-    /// <summary>
-    /// Moves to a page; the selection is dropped, since it only holds tickets that are shown. The button just pressed is
-    /// disabled on the first and last page, so focus moves to the other one instead of being lost.
-    /// </summary>
-    private async Task GoToPageAsync(int target, int totalPages)
-    {
-        target = Math.Clamp(target, 1, totalPages);
-
-        if (target == Math.Clamp(pageNumber, 1, totalPages))
-            return;
-
-        pageNumber = target;
-        PruneSelection();
-        StateHasChanged();
-
-        await Task.Yield();
-
-        if (target == totalPages)
-            await HelpDeskDisplay.FocusAsync(previousButton?.Element);
-        else if (target == 1)
-            await HelpDeskDisplay.FocusAsync(nextButton?.Element);
-    }
-
-    private void OnAssignedToMeChanged(bool value)
+    private async Task OnAssignedToMeChanged(bool value)
     {
         // The Switch raises ValueChanged on its first render too.
         if (State.Filter.AssignedToMe == value)
             return;
 
         State.Filter.AssignedToMe = value;
-        Refresh();
+        await FiltersChangedAsync();
+    }
+
+    private async Task OnEscalatedOnlyChanged(bool value)
+    {
+        // The Switch raises ValueChanged on its first render too.
+        if (State.Filter.EscalatedOnly == value)
+            return;
+
+        State.Filter.EscalatedOnly = value;
+        await FiltersChangedAsync();
     }
 
     private void OnBulkAssigneeChanged(ChangeEventArgs args) => bulkAssignee = args.Value?.ToString() ?? string.Empty;
@@ -229,62 +219,88 @@ public partial class AgentQueue : ComponentBase, IDisposable
 
     private void OnBulkStatusChanged(ChangeEventArgs args) => bulkStatus = args.Value?.ToString() ?? string.Empty;
 
-    private void OnPriorityChanged(ChangeEventArgs args)
+    private async Task OnPriorityChanged(ChangeEventArgs args)
     {
         State.Filter.Priority = args.Value?.ToString() ?? string.Empty;
-        Refresh();
+        await FiltersChangedAsync();
     }
 
-    private void OnTeamChanged(ChangeEventArgs args)
-    {
-        State.Filter.TeamId = args.Value?.ToString() ?? string.Empty;
-        Refresh();
-    }
-
-    private void OnSearchChanged(string value)
+    private async Task OnSearchChanged(string value)
     {
         searchBoxValue = value;
-        OnSearchValue(value);
+        await OnSearchValueAsync(value);
     }
 
-    private void OnSearchInput(ChangeEventArgs args) => OnSearchValue(args.Value?.ToString() ?? string.Empty);
+    private Task OnSearchInput(ChangeEventArgs args) => OnSearchValueAsync(args.Value?.ToString() ?? string.Empty);
 
-    private void OnSearchValue(string value)
+    private async Task OnSearchValueAsync(string value)
     {
         if (State.Filter.Search == value)
             return;
 
         State.Filter.Search = value;
-        Refresh();
+        await FiltersChangedAsync();
     }
 
-    private void OnStateChanged() => InvokeAsync(() =>
+    private void OnSelectionChanged(HashSet<HelpDeskTicket> items)
     {
-        PruneSelection();
+        selected = items.ToList();
+
+        if (selected.Count > 0)
+            bulkError = null;
+    }
+
+    /// <summary>Another screen or tab action changed the state: the grid reads the queue again (the selection keeps the tickets still shown).</summary>
+    private void OnStateChanged() => InvokeAsync(async () =>
+    {
+        await RefreshGridAsync();
         StateHasChanged();
     });
 
-    private void OnStatusChanged(ChangeEventArgs args)
+    private async Task OnStatusChanged(ChangeEventArgs args)
     {
         State.Filter.Status = args.Value?.ToString() ?? HelpDeskFilter.StatusAllOpen;
-        Refresh();
+        await FiltersChangedAsync();
     }
 
-    /// <summary>Keeps only the selected tickets that are still on the current page.</summary>
-    private void PruneSelection()
+    private async Task OnTeamChanged(ChangeEventArgs args)
     {
-        if (selectedIds.Count == 0)
-            return;
-
-        var shown = ShownTickets().Select(ticket => ticket.Id).ToHashSet();
-        selectedIds.RemoveWhere(id => !shown.Contains(id));
+        State.Filter.TeamId = args.Value?.ToString() ?? string.Empty;
+        await FiltersChangedAsync();
     }
 
-    /// <summary>A filter changed: back to the first page, keeping only selected tickets that are still shown.</summary>
-    private void Refresh()
+    /// <summary>The page of tickets the grid asked for, from the filtered queue in urgency order (or the column sort the grid asks for).</summary>
+    private Task<GridDataProviderResult<HelpDeskTicket>> ProvideTicketsAsync(GridDataProviderRequest<HelpDeskTicket> request) => view.ApplyAsync(request, State.Queue());
+
+    private async Task RefreshGridAsync()
     {
-        pageNumber = 1;
-        PruneSelection();
+        if (grid is not null)
+            await grid.RefreshDataAsync();
+    }
+
+    /// <summary>Forgets the saved view and builds the grid again with its defaults; focus moves to the ticket count.</summary>
+    private async Task ResetViewAsync()
+    {
+        await view.ResetAsync();
+        pageSize = DefaultPageSize;
+        selected = new List<HelpDeskTicket>();
+        gridVersion++;
+        SetStatus("The view is reset: most urgent first, 10 tickets a page, and every column shown.");
+        StateHasChanged();
+
+        await Task.Yield();
+        await HelpDeskDisplay.FocusAsync(countRegion);
+    }
+
+    private string RowClass(HelpDeskTicket ticket) => selected.Contains(ticket) ? "hd-row-selected" : string.Empty;
+
+    /// <summary>Keeps the grid's settings in the saved view, and follows the page size the selector chose.</summary>
+    private async Task SaveSettingsAsync(GridSettings settings)
+    {
+        if (settings.PageSize > 0)
+            pageSize = settings.PageSize;
+
+        await view.SaveSettingsAsync(settings);
     }
 
     /// <summary>Shows a status message; the same message again gets a counter, so a screen reader announces it again.</summary>
@@ -295,109 +311,13 @@ public partial class AgentQueue : ComponentBase, IDisposable
         statusMessage = statusCount == 1 ? message : string.Create(CultureInfo.InvariantCulture, $"{message} ({statusCount})");
     }
 
-    /// <summary>The tickets on the current page, in the order the table shows them.</summary>
-    private List<HelpDeskTicket> ShownTickets()
-    {
-        var rows = SortedTickets();
-        var page = Math.Clamp(pageNumber, 1, TotalPages(rows.Count));
-
-        return rows.Skip((page - 1) * PageSize).Take(PageSize).ToList();
-    }
-
-    /// <summary>Sorts by a column: ascending, then descending, then back to the urgency order.</summary>
-    private void SortBy(SortKey key)
-    {
-        if (key != sortKey)
-        {
-            sortKey = key;
-            sortDescending = false;
-        }
-        else if (!sortDescending)
-        {
-            sortDescending = true;
-        }
-        else
-        {
-            sortKey = null;
-            sortDescending = false;
-        }
-
-        pageNumber = 1;
-        PruneSelection();
-    }
-
-    /// <summary>The button goes away, so focus moves to the ticket count.</summary>
-    private async Task SortByUrgencyAsync()
-    {
-        sortKey = null;
-        sortDescending = false;
-        pageNumber = 1;
-        PruneSelection();
-        StateHasChanged();
-
-        await Task.Yield();
-        await HelpDeskDisplay.FocusAsync(countRegion);
-    }
-
-    /// <summary>The queue for the current filter, in the state's urgency order or by the chosen column (ticket number breaks ties).</summary>
-    private List<HelpDeskTicket> SortedTickets()
-    {
-        var queue = State.Queue();
-
-        if (sortKey is not { } key)
-            return queue.ToList();
-
-        IOrderedEnumerable<HelpDeskTicket> ordered = key switch
-        {
-            SortKey.Ticket => Sort(queue, ticket => ticket.Id),
-            SortKey.Subject => Sort(queue, ticket => ticket.Subject, StringComparer.OrdinalIgnoreCase),
-            SortKey.Priority => Sort(queue, ticket => ticket.Priority),
-            SortKey.Status => Sort(queue, ticket => ticket.Status),
-            SortKey.Sla => Sort(queue, ticket => State.DueAt(ticket)),
-            SortKey.Assignee => Sort(queue, ticket => ticket.Assignee ?? string.Empty, StringComparer.OrdinalIgnoreCase),
-            _ => Sort(queue, ticket => ticket.UpdatedAt),
-        };
-
-        return ordered.ThenBy(ticket => ticket.Id).ToList();
-    }
-
-    private IOrderedEnumerable<HelpDeskTicket> Sort<TKey>(IEnumerable<HelpDeskTicket> tickets, Func<HelpDeskTicket, TKey> key, IComparer<TKey>? comparer = null) =>
-        sortDescending ? tickets.OrderByDescending(key, comparer) : tickets.OrderBy(key, comparer);
-
-    private IconName SortIcon(SortKey key) => key != sortKey ? IconName.ArrowDownUp : sortDescending ? IconName.ArrowDown : IconName.ArrowUp;
-
-    /// <summary>Selects every ticket on the page, or clears them when all are selected already.</summary>
-    private void ToggleAllShown(IReadOnlyList<HelpDeskTicket> shown, string state)
-    {
-        if (state == "true")
-            selectedIds.Clear();
-        else
-            selectedIds.UnionWith(shown.Select(ticket => ticket.Id));
-
-        bulkError = null;
-    }
-
-    private void ToggleTicket(int ticketId, ChangeEventArgs args)
-    {
-        if (args.Value is true)
-            selectedIds.Add(ticketId);
-        else
-            selectedIds.Remove(ticketId);
-
-        bulkError = null;
-    }
-
     #endregion
 
     #endregion
 
     #region Properties, Indexers
 
-    private string SortLabel => sortKey switch
-    {
-        null => "most urgent first",
-        { } key => $"sorted by {columns.First(column => column.Key == key).Text}, {(sortDescending ? "descending" : "ascending")}",
-    };
+    [Inject] private ShowcaseGridViewStore GridViews { get; set; } = default!;
 
     [Inject] private HelpDeskState State { get; set; } = default!;
 
@@ -411,25 +331,9 @@ public partial class AgentQueue : ComponentBase, IDisposable
             yield return ("Overdue", unresolved.Count(ticket => State.Sla(ticket) == HelpDeskSlaState.Breached), IconName.ExclamationTriangle);
             yield return ("At risk", unresolved.Count(ticket => State.Sla(ticket) == HelpDeskSlaState.AtRisk), IconName.HourglassSplit);
             yield return ("Unassigned", unresolved.Count(ticket => ticket.Assignee is null), IconName.PersonCheck);
+            yield return ("Escalated", unresolved.Count(ticket => ticket.IsEscalated), IconName.ArrowUpCircle);
         }
     }
-
-    #endregion
-
-    #region Nested Types
-
-    private enum SortKey
-    {
-        Ticket,
-        Subject,
-        Priority,
-        Status,
-        Sla,
-        Assignee,
-        Updated,
-    }
-
-    private sealed record Column(SortKey Key, string Text);
 
     #endregion
 }

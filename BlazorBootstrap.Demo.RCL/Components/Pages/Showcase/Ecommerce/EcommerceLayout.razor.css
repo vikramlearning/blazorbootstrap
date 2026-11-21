@@ -571,3 +571,23 @@
     border-radius: 0 .5rem .5rem 0;
     background-color: var(--ec-soft);
 }
+
+/* The header's bell sits beside the account menu. */
+.ec-header-tools {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+}
+
+/* A signed-in customer's search: after the links on wide screens, inside the collapsed menu on narrow ones. */
+.sc-ecommerce ::deep .ec-global-search {
+    flex: 1 1 12rem;
+    min-width: 10rem;
+    max-width: 22rem;
+}
+
+@media (min-width: 992px) {
+    .sc-ecommerce ::deep .ec-global-search {
+        flex: 0 1 18rem;
+    }
+}

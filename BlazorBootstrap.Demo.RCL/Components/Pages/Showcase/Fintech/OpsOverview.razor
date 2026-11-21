@@ -84,6 +84,26 @@
         </div>
     </section>
 
+    <section class="tm-panel mb-4" aria-labelledby="tm-ops-aml-title">
+        <div class="d-flex flex-wrap justify-content-between align-items-baseline gap-2 mb-2">
+            <h2 class="tm-section-title mb-0" id="tm-ops-aml-title">Anti-money laundering</h2>
+            <a class="small fw-semibold" href="@AmlDisplay.CasesPath">All AML cases</a>
+        </div>
+        <ul class="tm-ops-aml list-unstyled mb-0">
+            <li><a href="@AmlDisplay.AlertsPath"><span class="tm-amount">@AmlNewAlerts</span> new @(AmlNewAlerts == 1 ? "alert" : "alerts") to triage</a></li>
+            <li><a href="@AmlDisplay.CasesPath"><span class="tm-amount">@AmlOpenCases</span> open @(AmlOpenCases == 1 ? "case" : "cases")</a></li>
+            <li><a href="@($"{AmlDisplay.CasesPath}?show=overdue")"><span class="tm-amount">@AmlOverdueCases</span> overdue @(AmlOverdueCases == 1 ? "case" : "cases")</a></li>
+            @if (State.IsSenior)
+            {
+                <li><a href="@($"{AmlDisplay.CasesPath}?show=review")"><span class="tm-amount">@AmlWaitingForMe</span> waiting for your review</a></li>
+            }
+            else
+            {
+                <li><a href="@AmlDisplay.CasesPath"><span class="tm-amount">@AmlMine</span> of the open cases are yours</a></li>
+            }
+        </ul>
+    </section>
+
     <div class="row g-3 mb-4">
         <div class="col-xl-6">
             <Card Class="tm-card h-100">
@@ -141,7 +161,7 @@
                         else
                         {
                             <ul class="list-unstyled mb-0">
-                                @foreach (var dispute in SubmittedDisputes)
+                                @foreach (var dispute in SubmittedDisputes.Take(AttentionCount))
                                 {
                                     <li class="tm-row" @key="dispute.Id">
                                         <span class="tm-icon" aria-hidden="true"><Icon Name="IconName.Flag" /></span>
@@ -181,8 +201,15 @@
                                     <time class="tm-mono small text-body-secondary tm-ops-time" datetime="@entry.At.ToString("yyyy-MM-ddTHH:mm", CultureInfo.InvariantCulture)">@TimeText(entry.At)</time>
                                     <span class="tm-row-text">
                                         <span class="fw-semibold text-body">@entry.Action</span>
-                                        <span class="tm-row-sub tm-ops-wrap">@entry.Subject</span>
-                                        <span class="tm-row-sub">By @entry.Actor (@OpsAudit.RoleText(entry.Role))</span>
+                                        @if (entry.TargetUrl is not null)
+                                        {
+                                            <a class="tm-row-sub tm-ops-wrap" href="@entry.TargetUrl">@entry.Target</a>
+                                        }
+                                        else
+                                        {
+                                            <span class="tm-row-sub tm-ops-wrap">@entry.Target</span>
+                                        }
+                                        <span class="tm-row-sub">By @entry.Actor</span>
                                     </span>
                                 </li>
                             }

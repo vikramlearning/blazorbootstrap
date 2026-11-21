@@ -53,6 +53,10 @@ else
                     <dd>@PbDisplay.Date(project.StartDate) to @PbDisplay.Date(project.DueDate)</dd>
                 </div>
                 <div>
+                    <dt>Budget</dt>
+                    <dd><PbBudget Project="project" /></dd>
+                </div>
+                <div>
                     <dt>Next milestone</dt>
                     <dd>
                         @if (nextMilestone is not null)

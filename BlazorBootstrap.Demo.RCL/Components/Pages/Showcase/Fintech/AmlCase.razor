@@ -1,0 +1,298 @@
+@page "/showcase/fintech/ops/aml/cases/{Id:int}"
+@layout FintechOpsLayout
+
+<div class="container-fluid px-lg-4">
+    @if (Case is not { } amlCase)
+    {
+        <PageTitle>Case not found · Operations · @FintechSeedData.ProductName</PageTitle>
+        <section class="tm-not-found" aria-labelledby="tm-ca-missing-title">
+            <span class="tm-icon fs-4" aria-hidden="true"><Icon Name="IconName.Folder2Open" /></span>
+            <h1 class="tm-title fs-3 mt-3 mb-2" id="tm-ca-missing-title">We couldn't find that case</h1>
+            <p class="tm-lead mb-4">There's no AML case @Id. Find it in the case list.</p>
+            <a class="btn btn-primary" href="@AmlDisplay.CasesPath">AML cases</a>
+        </section>
+    }
+    else
+    {
+        var customer = State.FindCustomer(amlCase.CustomerId);
+        var working = amlCase.Status is FintechAmlCaseStatus.Open or FintechAmlCaseStatus.Investigating;
+        var overdue = AmlDisplay.IsOverdue(amlCase, State.Today);
+        var me = State.CurrentStaffId;
+
+        <PageTitle>Case @amlCase.Id · AML · @FintechSeedData.ProductName</PageTitle>
+
+        <p class="mb-3"><a class="small" href="@AmlDisplay.CasesPath"><Icon Name="IconName.ArrowLeft" class="me-1" aria-hidden="true" />AML cases</a></p>
+
+        <div class="tm-page-head">
+            <div>
+                <span class="sc-eyebrow">AML case <span class="tm-mono">@amlCase.Id</span> · opened @Transfers.StampText(amlCase.OpenedAt)</span>
+                <h1 class="tm-title">@(customer?.Name ?? amlCase.CustomerId)</h1>
+                <p class="tm-lead">
+                    <Badge Color="AmlDisplay.RiskColor(amlCase.Priority)" Class="rounded-pill me-1">@amlCase.Priority priority</Badge>
+                    <Badge Color="AmlDisplay.CaseStatusColor(amlCase.Status)" Class="rounded-pill me-1">@AmlDisplay.CaseStatusText(amlCase.Status)</Badge>
+                    @if (overdue)
+                    {
+                        <Badge Color="BadgeColor.Danger" Class="rounded-pill me-1">Overdue</Badge>
+                    }
+                    <span class="@(overdue ? "text-danger-emphasis fw-semibold" : null)">@AmlDisplay.DueText(amlCase, State.Today)</span> ·
+                    Analyst @AmlDisplay.StaffText(amlCase.AssigneeId)@(amlCase.AssigneeId == me ? " (you)" : null)
+                </p>
+            </div>
+        </div>
+
+        <p class="small text-body-secondary"><Icon Name="IconName.EyeSlash" class="me-1" aria-hidden="true" />Confidential: never tell the customer about an alert, a case, or a report (no tipping-off). Nothing here reaches the customer.</p>
+
+        @* Always rendered and focusable, so an action's outcome is announced and focus has somewhere to go. *@
+        <p class="tm-list-status @(statusIsError ? "text-danger-emphasis" : null)" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
+
+        <div class="row g-4">
+            <div class="col-xl-7">
+                @if (amlCase.Status == FintechAmlCaseStatus.Escalated)
+                {
+                    <section class="tm-panel mb-4" aria-labelledby="tm-ca-review-title">
+                        <h2 class="tm-section-title" id="tm-ca-review-title">Waiting for @AmlDisplay.StaffText(amlCase.ReviewerId)@(amlCase.ReviewerId == me ? " (you)" : null)</h2>
+                        <p class="mb-1"><strong>Escalated by @AmlDisplay.StaffText(amlCase.EscalatedById):</strong> @amlCase.EscalationReason</p>
+                        @if (amlCase.ProposedDisposition is { } proposed)
+                        {
+                            <p class="mb-1"><strong>Proposed:</strong> @FintechSeedData.DispositionName(proposed)@(amlCase.FilingReference is { } proposedFiling ? $" ({proposedFiling})" : null)</p>
+                            <p class="small tm-aml-text mb-0">@amlCase.ProposedSummary</p>
+                        }
+
+                        @if (!State.IsSenior)
+                        {
+                            <p class="small text-body-secondary mt-3 mb-0">Only a senior reviewer can close or return an escalated case.</p>
+                        }
+                        else if (amlCase.EscalatedById == me)
+                        {
+                            <p class="small text-body-secondary mt-3 mb-0">Four-eyes rule: you escalated this case, so another senior reviewer must decide it.</p>
+                        }
+                        else
+                        {
+                            <EditForm EditContext="closeContext" OnSubmit="CloseAsync" FormName="tm-ca-approve" novalidate class="mt-3">
+                                <DataAnnotationsValidator />
+                                <ShowcaseFormErrors />
+                                <h3 class="h6 fw-bold">Decide and close</h3>
+                                @CloseFields
+                                <Button Type="ButtonType.Submit" Color="ButtonColor.Primary" Class="mt-2">Approve and close</Button>
+                            </EditForm>
+
+                            <EditForm EditContext="returnContext" OnSubmit="ReturnCase" FormName="tm-ca-return" novalidate class="mt-4">
+                                <DataAnnotationsValidator />
+                                <ShowcaseFormErrors />
+                                <h3 class="h6 fw-bold">Return to the analyst</h3>
+                                <label class="form-label small fw-semibold" for="tm-ca-return-reason">What the analyst should do next</label>
+                                <InputTextArea id="tm-ca-return-reason" class="form-control" rows="2" maxlength="@FintechState.MaxAmlReason" @bind-Value="returnForm.Reason" aria-describedby="tm-ca-return-help" />
+                                <div class="form-text" id="tm-ca-return-help">@FintechState.MinAmlNote to @FintechState.MaxAmlReason characters. The case goes back to investigating.</div>
+                                <ValidationMessage For="() => returnForm.Reason" />
+                                <Button Type="ButtonType.Submit" Color="ButtonColor.Secondary" Outline="true" Class="mt-2">Return to @AmlDisplay.StaffText(amlCase.AssigneeId)</Button>
+                            </EditForm>
+                        }
+                    </section>
+                }
+                else if (amlCase.Status == FintechAmlCaseStatus.Closed)
+                {
+                    <section class="tm-panel mb-4" aria-labelledby="tm-ca-closed-title">
+                        <h2 class="tm-section-title" id="tm-ca-closed-title">Closed: @FintechSeedData.DispositionName(amlCase.Disposition ?? FintechAmlDisposition.ClearedNoSuspicion)</h2>
+                        @if (amlCase.FilingReference is { } filing)
+                        {
+                            <p class="mb-1">Suspicious activity report <span class="tm-mono fw-semibold">@filing</span>.</p>
+                        }
+                        <p class="tm-aml-text mb-1">@amlCase.ClosingSummary</p>
+                        <p class="small text-body-secondary mb-0">By @AmlDisplay.StaffText(amlCase.ClosedById)@(amlCase.ClosedAt is { } closedAt ? $" on {Transfers.StampText(closedAt)}" : null).</p>
+                    </section>
+                }
+
+                <section class="tm-panel mb-4" aria-labelledby="tm-ca-timeline-title">
+                    <h2 class="tm-section-title" id="tm-ca-timeline-title" tabindex="-1" @ref="timelineTitle">Timeline</h2>
+                    <ol class="tm-aml-timeline" aria-label="Case timeline, oldest first">
+                        @foreach (var entry in amlCase.Events.OrderBy(entry => entry.At).ThenBy(entry => entry.Id))
+                        {
+                            <li @key="entry.Id">
+                                <p class="small text-body-secondary mb-1">
+                                    <span class="fw-semibold text-body">@KindText(entry.Kind)</span> · @entry.Actor ·
+                                    <time datetime="@entry.At.ToString("yyyy-MM-ddTHH:mm", CultureInfo.InvariantCulture)">@Transfers.StampText(entry.At)</time>
+                                </p>
+                                @if (entry.EvidenceName is { } evidence)
+                                {
+                                    <p class="fw-semibold mb-1"><Icon Name="IconName.Paperclip" class="me-1" aria-hidden="true" />@evidence</p>
+                                }
+                                <p class="tm-aml-text mb-0">@entry.Text</p>
+                            </li>
+                        }
+                    </ol>
+                </section>
+
+                @* The alerts are line items of the case, so they stay a plain table. *@
+                <section class="tm-panel" aria-labelledby="tm-ca-alerts-title">
+                    <h2 class="tm-section-title" id="tm-ca-alerts-title">Linked alerts</h2>
+                    <div class="table-responsive">
+                        <table class="table align-middle mb-0">
+                            <caption class="caption-top small">The alerts this case was opened from, with the transfers that triggered them.</caption>
+                            <thead>
+                                <tr>
+                                    <th scope="col">Alert</th>
+                                    <th scope="col">Rule</th>
+                                    <th scope="col">Risk</th>
+                                    <th scope="col">Raised</th>
+                                    <th scope="col">Transfers</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var alert in LinkedAlerts)
+                                {
+                                    <tr @key="alert.Id">
+                                        <th scope="row" class="fw-normal"><a class="tm-mono" href="@AmlDisplay.AlertPath(alert.Id)">@alert.Id</a></th>
+                                        <td>@FintechSeedData.RuleName(alert.Rule)<span class="d-block small text-body-secondary">@alert.Summary</span></td>
+                                        <td class="text-nowrap"><Badge Color="AmlDisplay.RiskColor(alert.Risk)">@AmlDisplay.RiskText(alert.Risk)</Badge></td>
+                                        <td class="small text-nowrap">@Disputes.DayText(alert.CreatedAt)</td>
+                                        <td class="small">
+                                            @if (alert.TransferReferences.Count == 0)
+                                            {
+                                                <span class="text-body-secondary">None kept</span>
+                                            }
+                                            @foreach (var reference in alert.TransferReferences)
+                                            {
+                                                <a class="d-block tm-mono" href="@OpsQueue.TransferUrl(reference)">@reference</a>
+                                            }
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+            </div>
+
+            <div class="col-xl-5">
+                <section class="tm-panel mb-4" aria-labelledby="tm-ca-customer-title">
+                    <h2 class="tm-section-title" id="tm-ca-customer-title">Customer</h2>
+                    @if (customer is not null)
+                    {
+                        <p class="mb-1"><a class="fw-semibold" href="@OpsCustomers.CustomerPath(customer.Id)">@customer.Name</a> <span class="tm-mono small">@customer.Id</span></p>
+                        <p class="small mb-1">@customer.Segment · @customer.City · customer since @OpsCustomers.SinceText(customer.Since)</p>
+                        <p class="small mb-0">
+                            <Badge Color="OpsCustomers.StatusColor(customer.Status)" Class="me-1">@OpsCustomers.StatusText(customer.Status)</Badge>
+                            @customer.AccountCount accounts · @(customer.TotalBalance < 0 ? "−" : null)@FintechDisplay.Money(customer.TotalBalance) in total
+                        </p>
+                    }
+                </section>
+
+                @if (working)
+                {
+                    <section class="tm-panel" aria-labelledby="tm-ca-work-title">
+                        <h2 class="tm-section-title" id="tm-ca-work-title">Work the case</h2>
+
+                        @if (amlCase.Status == FintechAmlCaseStatus.Open)
+                        {
+                            <p class="small text-body-secondary mb-2">Start the investigation when you begin looking into it.</p>
+                            <Button Color="ButtonColor.Primary" Class="mb-4" @onclick="StartInvestigation">Start investigating</Button>
+                        }
+
+                        <EditForm EditContext="noteContext" OnSubmit="AddNote" FormName="tm-ca-note" novalidate class="mb-4">
+                            <DataAnnotationsValidator />
+                            <ShowcaseFormErrors />
+                            <h3 class="h6 fw-bold">Add a note</h3>
+                            <label class="form-label small fw-semibold" for="tm-ca-note">Investigation note</label>
+                            <InputTextArea id="tm-ca-note" class="form-control" rows="4" maxlength="@FintechState.MaxAmlNote" @bind-Value="noteForm.Text"
+                                           @oninput="args => noteLength = args.Value?.ToString()?.Length ?? 0" aria-describedby="tm-ca-note-count" />
+                            <div class="form-text text-end" id="tm-ca-note-count">@noteLength of @FintechState.MaxAmlNote.ToString("#,0", CultureInfo.InvariantCulture) characters (at least @FintechState.MinAmlNote)</div>
+                            <ValidationMessage For="() => noteForm.Text" />
+                            <Button Type="ButtonType.Submit" Color="ButtonColor.Primary" Outline="true" Class="mt-1">Add note</Button>
+                        </EditForm>
+
+                        <EditForm EditContext="evidenceContext" OnSubmit="AddEvidenceAsync" FormName="tm-ca-evidence" novalidate class="mb-4">
+                            <DataAnnotationsValidator />
+                            <ShowcaseFormErrors />
+                            <h3 class="h6 fw-bold">Add evidence</h3>
+                            <p class="small text-body-secondary mb-2">The demo keeps a named entry, not a file.</p>
+                            <label class="form-label small fw-semibold" for="tm-ca-evidence-name">Name</label>
+                            <InputText id="tm-ca-evidence-name" class="form-control" maxlength="@FintechState.MaxEvidenceName" autocomplete="off" @bind-Value="evidenceForm.Name" />
+                            <ShowcaseUniqueCheck @ref="evidenceCheck" For="() => evidenceForm.Name" IsTakenAsync="IsEvidenceTakenAsync" TakenMessage="EvidenceTakenMessage" />
+                            <ValidationMessage For="() => evidenceForm.Name" />
+                            <label class="form-label small fw-semibold mt-2" for="tm-ca-evidence-text">What it shows</label>
+                            <InputTextArea id="tm-ca-evidence-text" class="form-control" rows="2" maxlength="@FintechState.MaxAmlReason" @bind-Value="evidenceForm.Description" />
+                            <ValidationMessage For="() => evidenceForm.Description" />
+                            <Button Type="ButtonType.Submit" Color="ButtonColor.Primary" Outline="true" Class="mt-2">Add evidence</Button>
+                        </EditForm>
+
+                        <EditForm EditContext="escalateContext" OnSubmit="Escalate" FormName="tm-ca-escalate" novalidate class="mb-4">
+                            <DataAnnotationsValidator />
+                            <ShowcaseFormErrors />
+                            <h3 class="h6 fw-bold">Escalate to a senior reviewer</h3>
+                            <label class="form-label small fw-semibold" for="tm-ca-reviewer">Senior reviewer</label>
+                            <InputSelect id="tm-ca-reviewer" class="form-select" @bind-Value="escalateForm.ReviewerId" aria-describedby="tm-ca-reviewer-help">
+                                <option value="">Choose a senior reviewer</option>
+                                @foreach (var member in FintechSeedData.Staff().Where(member => member.IsSeniorReviewer && member.Id != me))
+                                {
+                                    <option value="@member.Id">@member.Name</option>
+                                }
+                            </InputSelect>
+                            <div class="form-text" id="tm-ca-reviewer-help">Four-eyes rule: someone other than you decides the case.</div>
+                            <ValidationMessage For="() => escalateForm.ReviewerId" />
+                            <label class="form-label small fw-semibold mt-2" for="tm-ca-escalate-reason">Why</label>
+                            <InputTextArea id="tm-ca-escalate-reason" class="form-control" rows="2" maxlength="@FintechState.MaxAmlReason" @bind-Value="escalateForm.Reason" />
+                            <ValidationMessage For="() => escalateForm.Reason" />
+                            <label class="form-label small fw-semibold mt-2" for="tm-ca-proposal">Propose closing it as <span class="fw-normal text-body-secondary">(optional; required to report)</span></label>
+                            <InputSelect id="tm-ca-proposal" class="form-select" @bind-Value="escalateForm.Proposal">
+                                <option value="">No proposal: ask for a decision</option>
+                                @foreach (var disposition in Enum.GetValues<FintechAmlDisposition>())
+                                {
+                                    <option value="@disposition">@FintechSeedData.DispositionName(disposition)</option>
+                                }
+                            </InputSelect>
+                            @if (escalateForm.Proposal is not null)
+                            {
+                                @if (escalateForm.Proposal == FintechAmlDisposition.Reported)
+                                {
+                                    <label class="form-label small fw-semibold mt-2" for="tm-ca-escalate-filing">SAR filing reference</label>
+                                    <InputText id="tm-ca-escalate-filing" class="form-control tm-mono" maxlength="14" autocomplete="off" placeholder="SAR-2026-00500" @bind-Value="escalateForm.Filing" />
+                                    <ValidationMessage For="() => escalateForm.Filing" />
+                                }
+                                <label class="form-label small fw-semibold mt-2" for="tm-ca-escalate-summary">Proposed closing summary</label>
+                                <InputTextArea id="tm-ca-escalate-summary" class="form-control" rows="3" maxlength="@FintechState.MaxAmlSummary" @bind-Value="escalateForm.Summary" />
+                                <ValidationMessage For="() => escalateForm.Summary" />
+                            }
+                            <Button Type="ButtonType.Submit" Color="ButtonColor.Warning" Class="mt-2">Escalate</Button>
+                        </EditForm>
+
+                        <EditForm EditContext="closeContext" OnSubmit="CloseAsync" FormName="tm-ca-close" novalidate>
+                            <DataAnnotationsValidator />
+                            <ShowcaseFormErrors />
+                            <h3 class="h6 fw-bold">Close the case</h3>
+                            @CloseFields
+                            <Button Type="ButtonType.Submit" Color="ButtonColor.Primary" Class="mt-2">Close case</Button>
+                        </EditForm>
+                    </section>
+                }
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    /// <summary>The close form's fields, shared by the analyst's close and the reviewer's approval.</summary>
+    private RenderFragment CloseFields => __builder =>
+    {
+        <label class="form-label small fw-semibold" for="tm-ca-disposition">Disposition</label>
+        <InputSelect id="tm-ca-disposition" class="form-select" @bind-Value="closeForm.Disposition" aria-describedby="tm-ca-disposition-help">
+            <option value="">Choose a disposition</option>
+            @foreach (var disposition in Enum.GetValues<FintechAmlDisposition>())
+            {
+                <option value="@disposition">@FintechSeedData.DispositionName(disposition)</option>
+            }
+        </InputSelect>
+        <div class="form-text" id="tm-ca-disposition-help">Reported (a SAR filed) always needs a senior reviewer: an analyst escalates, proposing it.</div>
+        <ValidationMessage For="() => closeForm.Disposition" />
+        @if (closeForm.Disposition == FintechAmlDisposition.Reported)
+        {
+            <label class="form-label small fw-semibold mt-2" for="tm-ca-filing">SAR filing reference</label>
+            <InputText id="tm-ca-filing" class="form-control tm-mono" maxlength="14" autocomplete="off" placeholder="SAR-2026-00500" @bind-Value="closeForm.Filing" aria-describedby="tm-ca-filing-help" />
+            <div class="form-text" id="tm-ca-filing-help">Like SAR-2026-00500: the year and five digits.</div>
+            <ValidationMessage For="() => closeForm.Filing" />
+        }
+        <label class="form-label small fw-semibold mt-2" for="tm-ca-summary">Closing summary</label>
+        <InputTextArea id="tm-ca-summary" class="form-control" rows="3" maxlength="@FintechState.MaxAmlSummary" @bind-Value="closeForm.Summary" aria-describedby="tm-ca-summary-help" />
+        <div class="form-text" id="tm-ca-summary-help">@FintechState.MinAmlSummary to @FintechState.MaxAmlSummary.ToString("#,0", CultureInfo.InvariantCulture) characters: what you found and why this disposition.</div>
+        <ValidationMessage For="() => closeForm.Summary" />
+    };
+}

@@ -12,8 +12,11 @@ public partial class Admin : ComponentBase, IDisposable
 {
     #region Fields and Constants
 
-    /// <summary>Products with this many or fewer in stock are flagged.</summary>
-    private const int LowStockLimit = 5;
+    /// <summary>Products with this many or fewer in stock are flagged (the store-wide threshold the product list and notifications use).</summary>
+    private const int LowStockLimit = EcommerceSeedData.LowStockThreshold;
+
+    /// <summary>The most stock alerts the dashboard lists; the product list's stock filter shows the rest.</summary>
+    private const int MaxStockAlerts = 8;
 
     #endregion
 

@@ -64,3 +64,21 @@ li.tm-row.tm-ops-activity {
         flex-basis: 4.5rem;
     }
 }
+
+/* The AML figures: a row of links that wraps on narrow screens. */
+.tm-ops-aml {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .75rem 2rem;
+}
+
+    .tm-ops-aml a {
+        display: inline-flex;
+        align-items: baseline;
+        gap: .5rem;
+        font-weight: 600;
+    }
+
+    .tm-ops-aml .tm-amount {
+        display: inline;
+    }

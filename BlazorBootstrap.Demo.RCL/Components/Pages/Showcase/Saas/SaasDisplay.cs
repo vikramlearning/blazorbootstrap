@@ -12,6 +12,9 @@ public static class SaasDisplay
 
     #region Public Methods
 
+    /// <summary>Lower-cases the first letter of a sentence fragment, so it reads inside a sentence while dates and names keep their capitals.</summary>
+    public static string LowerFirst(string text) => text.Length == 0 ? text : string.Concat(char.ToLowerInvariant(text[0]).ToString(), text.AsSpan(1));
+
     /// <summary>Returns a stable avatar color for an ID.</summary>
     public static AvatarColor AvatarColorFor(int id) => (id % 5) switch
     {
@@ -72,6 +75,27 @@ public static class SaasDisplay
             _ => Date(seen),
         };
     }
+
+    /// <summary>Returns the badge color of a dunning stage: warning while retrying or in grace, danger once suspended.</summary>
+    public static BadgeColor DunningColor(SaasDunningStage stage) => stage switch
+    {
+        SaasDunningStage.Retrying => BadgeColor.Warning,
+        SaasDunningStage.Grace => BadgeColor.Warning,
+        SaasDunningStage.Suspended => BadgeColor.Danger,
+        _ => BadgeColor.Success,
+    };
+
+    /// <summary>Returns a dunning stage in words: "Retrying", "In grace", "Suspended", or "Recovered".</summary>
+    public static string DunningStageName(SaasDunningStage stage) => stage == SaasDunningStage.Grace ? "In grace" : stage.ToString();
+
+    /// <summary>Returns a failure reason as a label, such as "Card declined".</summary>
+    public static string FailureName(SaasFailureReason reason) => reason switch
+    {
+        SaasFailureReason.ExpiredCard => "Expired card",
+        SaasFailureReason.InsufficientFunds => "Insufficient funds",
+        SaasFailureReason.NoCard => "No card on file",
+        _ => "Card declined",
+    };
 
     /// <summary>Returns the badge color of a sales lead's status.</summary>
     public static BadgeColor LeadColor(SaasLeadStatus status) => status switch

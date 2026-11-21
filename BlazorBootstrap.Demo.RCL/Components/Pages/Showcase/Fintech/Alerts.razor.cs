@@ -10,8 +10,11 @@ namespace BlazorBootstrap.Demo.RCL.Components.Pages.Showcase.Fintech;
 /// and "Unread" as a badge), with "Mark as read" per alert and "Mark all as read"; opening an alert's link also marks it
 /// read. Beside it, the alert settings: native switches for each kind and the low-balance and large-transaction amounts,
 /// edited on a copy of the saved settings and saved with field errors for amounts out of range. Alerts only appear here
-/// and in the account menu's count: the demo sends no emails or texts. After marking an alert read, focus moves to its
-/// title, since the button that had focus goes away.
+/// and in the header's bell, which reads this same feed, so its unread count always agrees with the page: the demo sends no
+/// emails or texts. The settings form follows rule WR-002: each amount's range and cents, and one cross-field rule (with the
+/// low-balance alert on, its amount must be below the Everyday Checking balance, or it would fire straight away); a failed
+/// save shows a summary that links to each field. After marking an alert read, focus moves to its title, since the button
+/// that had focus goes away.
 /// </summary>
 public partial class Alerts : ComponentBase, IDisposable
 {
@@ -164,7 +167,11 @@ public partial class Alerts : ComponentBase, IDisposable
 
     private void OnStateChanged() => InvokeAsync(StateHasChanged);
 
-    private async Task SaveAsync()
+    /// <summary>
+    /// Checks the amounts and the cross-field rule into the form's messages, then asks the form to validate, so a failed save
+    /// shows the summary and moves focus to it (rule WR-002). The bank checks the amounts again.
+    /// </summary>
+    private Task SaveAsync()
     {
         messages.Clear();
         settingsError = false;
@@ -179,26 +186,25 @@ public partial class Alerts : ComponentBase, IDisposable
         else if (!IsCents(settings.LargeTransactionAmount))
             messages.Add(LargeAmountField, "Enter the large-transaction amount in dollars and cents.");
 
-        editContext.NotifyValidationStateChanged();
+        if (settings.LowBalance && !editContext.GetValidationMessages(LowAmountField).Any() && settings.LowBalanceAmount >= CheckingBalance)
+        {
+            messages.Add(LowAmountField,
+                $"Choose a low-balance amount below your Everyday Checking balance of {FintechDisplay.Money(CheckingBalance)}, or the alert would fire straight away. Or switch the alert off.");
+        }
 
-        var lowInvalid = editContext.GetValidationMessages(LowAmountField).Any();
-
-        if (lowInvalid || editContext.GetValidationMessages(LargeAmountField).Any())
+        if (!editContext.Validate())
         {
             settingsError = true;
             settingsMessage = "Check the highlighted amounts, then save again.";
-            StateHasChanged();
-            await Task.Yield();
-            await FintechDisplay.FocusAsync(lowInvalid ? lowAmountInput?.Element : largeAmountInput?.Element);
 
-            return;
+            return Task.CompletedTask;
         }
 
         if (Same(settings, State.AlertSettings))
         {
             settingsMessage = "Nothing changed: these are already your settings.";
 
-            return;
+            return Task.CompletedTask;
         }
 
         var result = State.UpdateAlerts(settings);
@@ -210,6 +216,8 @@ public partial class Alerts : ComponentBase, IDisposable
             FintechResult.Invalid => "One of the amounts isn't allowed. Use $0 to $1,000,000 for low balance and $1 to $1,000,000 for large transactions.",
             _ => "Your settings weren't saved. Try again.",
         };
+
+        return Task.CompletedTask;
     }
 
     private static bool Same(FintechAlertSettings left, FintechAlertSettings right) =>
@@ -230,6 +238,9 @@ public partial class Alerts : ComponentBase, IDisposable
     #endregion
 
     #region Properties, Indexers
+
+    /// <summary>Gets the Everyday Checking balance, which the low-balance amount must stay below while that alert is on.</summary>
+    private decimal CheckingBalance => State.FindAccount("checking")?.Balance ?? 0;
 
     private FieldIdentifier LargeAmountField => new(settings, nameof(FintechAlertSettings.LargeTransactionAmount));
 

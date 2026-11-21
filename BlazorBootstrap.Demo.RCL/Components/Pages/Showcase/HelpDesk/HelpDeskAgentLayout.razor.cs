@@ -3,9 +3,9 @@ using BlazorBootstrap.Demo.RCL.Services.Showcase.HelpDesk;
 namespace BlazorBootstrap.Demo.RCL.Components.Pages.Showcase.HelpDesk;
 
 /// <summary>
-/// Layout of the "Beacon Desk" agent desk (D-031): a top bar with "View help center" and the account menu, a sidebar with
-/// the agent's modules (and, for an admin, the admin modules), and the page behind a staff-only guard. The sidebar shows only to
-/// signed-in staff.
+/// Layout of the "Beacon Desk" agent desk (D-031): a top bar with the global search, "View help center", the notifications,
+/// and the account menu, a sidebar with the agent's modules (and, for an admin, the admin modules), and the page behind a
+/// staff-only guard. The sidebar shows only to signed-in staff.
 /// </summary>
 public partial class HelpDeskAgentLayout : LayoutComponentBase, IDisposable
 {
@@ -27,6 +27,12 @@ public partial class HelpDeskAgentLayout : LayoutComponentBase, IDisposable
     #region Protected Override Methods
 
     protected override void OnInitialized() => State.Changed += OnStateChanged;
+
+    /// <summary>
+    /// Runs the escalation rules each time a desk page opens (the layout gets a new body), so tickets that reached a rule
+    /// while the agent was elsewhere are escalated before the page shows them (AC-7a).
+    /// </summary>
+    protected override void OnParametersSet() => State.RunEscalations();
 
     #endregion
 
@@ -53,6 +59,7 @@ public partial class HelpDeskAgentLayout : LayoutComponentBase, IDisposable
             new() { Id = "reports", IconName = IconName.BarChartLine, Text = "Reports" },
             new() { Id = "report-sla", ParentId = "reports", Href = $"{Base}/reports/sla", IconName = IconName.Stopwatch, Text = "SLA" },
             new() { Id = "report-csat", ParentId = "reports", Href = $"{Base}/reports/satisfaction", IconName = IconName.EmojiSmile, Text = "Satisfaction" },
+            new() { Id = "audit", Href = $"{Base}/audit", IconName = IconName.ClockHistory, Text = "Audit log" },
         };
 
         if (State.IsAdmin)

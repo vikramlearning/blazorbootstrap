@@ -3,8 +3,9 @@ using BlazorBootstrap.Demo.RCL.Services.Showcase.Saas;
 namespace BlazorBootstrap.Demo.RCL.Components.Pages.Showcase.Saas;
 
 /// <summary>
-/// Layout of Lumora's operator console: the shell with the operator's modules and the page behind an operator-only guard.
-/// Each module appears in the sidebar once its screen exists, so the sidebar never links to a missing page.
+/// Layout of Lumora's operator console: the shell with the operator's modules, a top bar with the global search (tenants,
+/// invoices, leads, and plans) and the notifications bell, and the page behind an operator-only guard. Each module appears
+/// in the sidebar once its screen exists, so the sidebar never links to a missing page; the Audit log is one of them.
 /// </summary>
 public partial class SaasAdminLayout : LayoutComponentBase, IDisposable
 {
@@ -45,6 +46,7 @@ public partial class SaasAdminLayout : LayoutComponentBase, IDisposable
             new() { Id = "tenants", Href = $"{Base}/tenants", IconName = IconName.Buildings, Text = "Tenants" },
             new() { Id = "leads", Href = $"{Base}/leads", IconName = IconName.Inbox, Text = "Leads" },
             new() { Id = "invoices", Href = $"{Base}/invoices", IconName = IconName.Receipt, Text = "Invoices" },
+            new() { Id = "dunning", Href = $"{Base}/dunning", IconName = IconName.ExclamationOctagon, Text = "Dunning" },
             new() { Id = "plans", Href = $"{Base}/plans", IconName = IconName.Tags, Text = "Plans & prices" },
             new() { Id = "revenue", Href = $"{Base}/revenue", IconName = IconName.GraphUp, Text = "Revenue" },
             new() { Id = "analytics", Href = $"{Base}/analytics", IconName = IconName.BarChartLine, Text = "Site analytics" },

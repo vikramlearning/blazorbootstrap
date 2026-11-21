@@ -1,0 +1,140 @@
+@page "/showcase/project-board/approvals/{Id:int}"
+@layout PbWorkLayout
+
+@{
+    var sheet = State.FindTimesheet(Id);
+    var person = sheet is null ? null : State.FindPerson(sheet.PersonId);
+}
+
+<PageTitle>@(sheet is null ? "Week not found" : $"{person?.Name}, week of {PbState.WeekLabel(sheet.WeekStart)}") · @PbSeedData.ProductName</PageTitle>
+
+<div class="container-fluid px-lg-4">
+    <PbRoleGuard Role="@PbSeedData.ProjectManagerRole">
+        @if (sheet is null || sheet.Status == PbTimesheetStatus.Draft)
+        {
+            <PbNotFound Message="This week isn't submitted, or the link is wrong. Open it from Approvals." />
+        }
+        else
+        {
+            var entries = State.EntriesOf(sheet.PersonId, sheet.WeekStart);
+            var groups = entries.GroupBy(entry => entry.ProjectId).Select(group => (Project: State.FindProject(group.Key), Entries: group.ToList())).Where(group => group.Project is not null).ToList();
+            var canReturn = sheet.Status == PbTimesheetStatus.Submitted && groups.Any(group => State.CanApprove(group.Project!));
+
+            <nav aria-label="Breadcrumb" class="mb-2">
+                <ol class="breadcrumb mb-0 small">
+                    <li class="breadcrumb-item"><a href="@Approvals.ListUrl">Approvals</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">@person?.Name, week of @PbState.WeekLabel(sheet.WeekStart)</li>
+                </ol>
+            </nav>
+
+            <h1 class="tb-title mb-1">@(person?.Name ?? "A former teammate"): week of @PbDisplay.Date(sheet.WeekStart)</h1>
+            <p class="tb-lead">
+                @(person?.Title) · @(entries.Sum(entry => entry.Hours).ToString("0.##", CultureInfo.InvariantCulture)) h,
+                @(entries.Where(entry => entry.IsBillable).Sum(entry => entry.Hours).ToString("0.##", CultureInfo.InvariantCulture)) billable ·
+                @(sheet.Status switch { PbTimesheetStatus.Submitted => $"submitted {PbDisplay.Date(sheet.SubmittedAt!.Value)}", PbTimesheetStatus.Approved => $"approved {PbDisplay.Date(sheet.DecidedAt!.Value)}", _ => $"returned {PbDisplay.Date(sheet.DecidedAt!.Value)}" })
+            </p>
+
+            @if (sheet.Status == PbTimesheetStatus.Returned)
+            {
+                <p class="tb-ap-returned">
+                    <Icon Name="IconName.ArrowReturnLeft" class="me-1" aria-hidden="true" />Returned by @(State.FindPerson(sheet.ReturnedById)?.Name): <span class="tb-plain">@sheet.ReturnReason</span>
+                    The person changes the week and submits it again.
+                </p>
+            }
+
+            @* Always rendered and focusable, so an approval or a return is announced and focus has somewhere to go when the buttons change. *@
+            <p class="tb-list-status mb-2 @(statusIsError ? "text-danger-emphasis" : null)" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
+
+            <div class="row g-4">
+                <div class="col-xl-8 d-grid gap-4 align-content-start">
+                    @foreach (var group in groups)
+                    {
+                        var project = group.Project!;
+                        var approval = sheet.Approvals.FirstOrDefault(item => item.ProjectId == project.Id);
+                        var mine = State.CanApprove(project);
+                        var titleId = $"tb-ap-project-{project.Id}";
+                        <section class="tb-panel" aria-labelledby="@titleId" @key="project.Id">
+                            <div class="d-flex flex-wrap justify-content-between align-items-start gap-2 mb-2">
+                                <div class="min-w-0">
+                                    <h2 class="tb-section-title mb-1" id="@titleId"><span class="tb-key me-1">@project.Key</span>@project.Name</h2>
+                                    <p class="small text-body-secondary mb-0">
+                                        @(State.FindClient(project.ClientId)?.Name ?? "Internal") · managed by @(State.FindPerson(project.OwnerId)?.Name)
+                                        @if (approval?.ApprovedById is { } approverId)
+                                        {
+                                            <span> · <Icon Name="IconName.CheckCircle" class="text-success" aria-hidden="true" /> approved by @State.FindPerson(approverId)?.Name on @PbDisplay.Date(approval.ApprovedAt!.Value)</span>
+                                        }
+                                        else if (sheet.Status == PbTimesheetStatus.Submitted)
+                                        {
+                                            <span> · waiting for @(mine ? "you" : State.FindPerson(project.OwnerId)?.Name)</span>
+                                        }
+                                    </p>
+                                </div>
+                                @if (mine && sheet.Status == PbTimesheetStatus.Submitted && approval is { ApprovedById: null })
+                                {
+                                    var projectId = project.Id;
+                                    <button type="button" class="btn btn-success" @onclick="() => Approve(projectId)">
+                                        <Icon Name="IconName.CheckLg" class="me-1" aria-hidden="true" />Approve @project.Key hours
+                                    </button>
+                                }
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table table-sm align-middle mb-0">
+                                    <caption class="tb-ap-caption">@project.Key entries: @group.Entries.Sum(entry => entry.Hours).ToString("0.##", CultureInfo.InvariantCulture) h, by day.</caption>
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">Day</th>
+                                            <th scope="col">Task</th>
+                                            <th scope="col" class="text-end">Hours</th>
+                                            <th scope="col">Billable</th>
+                                            <th scope="col">Note</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var entry in group.Entries)
+                                        {
+                                            var task = entry.TaskId is { } taskId ? State.FindTask(taskId) : null;
+                                            <tr @key="entry.Id">
+                                                <th scope="row" class="text-nowrap fw-normal">@entry.Date.ToString("ddd, MMM d", CultureInfo.InvariantCulture)</th>
+                                                <td>@(task is null ? "None" : $"{State.TaskKey(task)} {task.Title}")</td>
+                                                <td class="text-end tb-mono">@entry.Hours.ToString("0.##", CultureInfo.InvariantCulture)</td>
+                                                <td class="text-nowrap">@(entry.IsBillable ? "Billable" : "Not billable")</td>
+                                                <td class="tb-plain">@(entry.Note.Length == 0 ? "None" : entry.Note)</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </section>
+                    }
+                </div>
+
+                <div class="col-xl-4">
+                    <section class="tb-panel" aria-labelledby="tb-ap-return-title">
+                        <h2 class="tb-section-title" id="tb-ap-return-title">Return the week</h2>
+                        @if (!canReturn)
+                        {
+                            <p class="small text-body-secondary mb-0">
+                                @(sheet.Status == PbTimesheetStatus.Submitted ? "None of this week's projects are yours to approve." : "Only a submitted week can be returned.")
+                            </p>
+                        }
+                        else
+                        {
+                            <p class="small">Something to fix? The whole week goes back to @(person?.Name ?? "them") with your reason, every approval is cleared, and they submit it again.</p>
+                            <EditForm EditContext="editContext" OnSubmit="ReturnWeek" FormName="pb-return-week" novalidate aria-labelledby="tb-ap-return-title">
+                                <DataAnnotationsValidator />
+                                <ShowcaseFormErrors ShowSummary="true" />
+                                <label class="form-label fw-semibold" for="tb-ap-reason">Reason</label>
+                                <InputTextArea id="tb-ap-reason" class="form-control" rows="3" @bind-Value="form.Reason" maxlength="@PbState.MaxReturnReasonLength" aria-describedby="tb-ap-reason-help" />
+                                <div class="form-text" id="tb-ap-reason-help">@PbState.MinReturnReasonLength to @PbState.MaxReturnReasonLength characters. @(person?.Name ?? "They") read it on their timesheet.</div>
+                                <ValidationMessage For="() => form.Reason" />
+                                <Button Type="ButtonType.Submit" Color="ButtonColor.Warning" Outline="true" Class="mt-3">
+                                    <Icon Name="IconName.ArrowReturnLeft" class="me-1" aria-hidden="true" />Return week
+                                </Button>
+                            </EditForm>
+                        }
+                    </section>
+                </div>
+            </div>
+        }
+    </PbRoleGuard>
+</div>

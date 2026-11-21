@@ -1,22 +1,25 @@
+using System.Globalization;
 using BlazorBootstrap.Demo.RCL.Models.Showcase.Monitoring;
+using BlazorBootstrap.Demo.RCL.Services.Showcase.Foundation;
 using BlazorBootstrap.Demo.RCL.Services.Showcase.Monitoring;
 
 namespace BlazorBootstrap.Demo.RCL.Components.Pages.Showcase.Monitoring;
 
 /// <summary>
 /// Logs and traces: a live tail of every service's log lines, newest first, filtered by service, level, and a search in
-/// the message or trace ID. A <see cref="MonitoringLiveTimer" /> moves the shown window every tick unless live updates are
-/// paused (the shared <see cref="MonitoringState.IsPaused" />), so new lines arrive at the top. The status region stays
-/// quiet on ticks: it speaks when the filters change, and once after a pause with how many lines arrived meanwhile.
-/// While paused, "Load new lines now" fetches the newest lines once. Each line links its trace.
-/// <c>?service=</c> preselects a service and <c>?search=</c> a search (the trace page links its lines this way).
+/// the message or trace ID, in a <see cref="Grid{TItem}" /> with paging, sorting, the column chooser, and CSV export of the
+/// filtered lines. The grid's view is saved for the visit and can be reset. Each line opens its trace. A
+/// <see cref="MonitoringLiveTimer" /> moves the shown window every tick unless live updates are paused (the shared
+/// <see cref="MonitoringState.IsPaused" />), and the grid reads the lines again, so new lines arrive at the top. The status
+/// region stays quiet on ticks: it speaks when the filters change, and once after a pause with how many lines arrived
+/// meanwhile. While paused, "Load new lines now" fetches the newest lines once. <c>?service=</c> preselects a service and
+/// <c>?search=</c> a search (the trace page links its lines this way).
 /// </summary>
 public partial class Logs : ComponentBase, IDisposable
 {
     #region Fields and Constants
 
-    /// <summary>How many more lines "Show more" adds, and how many show at first.</summary>
-    private const int PageSize = 50;
+    private const int DefaultPageSize = 50;
 
     private string? appliedSearchQuery;
 
@@ -24,15 +27,22 @@ public partial class Logs : ComponentBase, IDisposable
 
     private (IReadOnlyList<MonitoringLogEntry> Source, string Service, string Level, string Search, List<MonitoringLogEntry> Lines)? cache;
 
+    private ElementReference? countRegion;
+
     private bool disposed;
 
-    /// <summary>Set when "Clear filters" (which then disappears) ran, so focus moves to the search box after that render.</summary>
-    private bool focusSearchAfterRender;
+    private Grid<MonitoringLogEntry>? grid;
+
+    /// <summary>Changes when the view is reset, so the grid is built again with its defaults.</summary>
+    private int gridVersion;
 
     private string levelFilter = string.Empty;
 
     /// <summary>The newest line shown when live updates were paused, so resuming can say how many lines arrived since.</summary>
     private MonitoringLogEntry? newestAtPause;
+
+    /// <summary>The grid's page size: the saved one once the view is loaded, then whatever the page size selector chose.</summary>
+    private int pageSize = DefaultPageSize;
 
     private string search = string.Empty;
 
@@ -40,11 +50,13 @@ public partial class Logs : ComponentBase, IDisposable
 
     private string serviceFilter = string.Empty;
 
-    private int shownCount = PageSize;
-
     private string? statusMessage;
 
     private MonitoringLiveTimer? timer;
+
+    private ShowcaseGridView view = default!;
+
+    private bool viewLoaded;
 
     /// <summary>Whether the page last saw live updates paused.</summary>
     private bool wasPaused;
@@ -55,22 +67,22 @@ public partial class Logs : ComponentBase, IDisposable
 
     #region Protected Override Methods
 
+    /// <summary>Loads the saved view once the page is interactive, shows the grid, and starts the live timer.</summary>
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (firstRender && !disposed)
-            timer = new MonitoringLiveTimer(TimeSpan.FromSeconds(MonitoringSeedData.TickSeconds), OnTickAsync);
+        if (!firstRender || disposed)
+            return;
 
-        if (focusSearchAfterRender)
-        {
-            focusSearchAfterRender = false;
-            await MonitoringDisplay.FocusAsync(searchInput);
-        }
-
-        await base.OnAfterRenderAsync(firstRender);
+        await view.LoadAsync();
+        pageSize = (await view.GetSettingsAsync()).PageSize;
+        viewLoaded = true;
+        StateHasChanged();
+        timer = new MonitoringLiveTimer(TimeSpan.FromSeconds(MonitoringSeedData.TickSeconds), OnTickAsync);
     }
 
     protected override void OnInitialized()
     {
+        view = GridViews.Get(State.SiteSlug, "logs", DefaultPageSize, "time", SortDirection.Descending);
         State.Changed += OnStateChanged;
         wasPaused = State.IsPaused;
 
@@ -79,21 +91,26 @@ public partial class Logs : ComponentBase, IDisposable
     }
 
     /// <summary>A new <c>?service=</c> or <c>?search=</c> value (also on a link from this page to itself) applies once.</summary>
-    protected override void OnParametersSet()
+    protected override async Task OnParametersSetAsync()
     {
+        var changed = false;
+
         if (ServiceQuery != appliedServiceQuery)
         {
             appliedServiceQuery = ServiceQuery;
             serviceFilter = State.FindService(ServiceQuery)?.Id ?? string.Empty;
-            shownCount = PageSize;
+            changed = true;
         }
 
         if (SearchQuery != appliedSearchQuery)
         {
             appliedSearchQuery = SearchQuery;
             search = (SearchQuery ?? string.Empty).Trim();
-            shownCount = PageSize;
+            changed = true;
         }
+
+        if (changed && grid is not null)
+            await grid.ResetPageNumber();
     }
 
     #endregion
@@ -126,15 +143,16 @@ public partial class Logs : ComponentBase, IDisposable
         _ => "Info",
     };
 
-    private static string Lines(int count) => count == 1 ? "1 line" : $"{count} lines";
+    private static string Lines(int count) => count == 1 ? "1 line" : string.Create(CultureInfo.InvariantCulture, $"{count} lines");
 
-    private void ClearFilters()
+    /// <summary>The link disappears with the filters, so focus moves to the search box.</summary>
+    private async Task ClearFiltersAsync()
     {
         search = string.Empty;
         serviceFilter = string.Empty;
         levelFilter = string.Empty;
-        focusSearchAfterRender = true;
-        FiltersChanged();
+        await FiltersChangedAsync();
+        await MonitoringDisplay.FocusAsync(searchInput);
     }
 
     /// <summary>Counts the lines newer than <paramref name="newest" />, in all and among those matching the filters.</summary>
@@ -148,49 +166,57 @@ public partial class Logs : ComponentBase, IDisposable
         return (State.Logs.TakeWhile(IsNewer).Count(), Filtered.TakeWhile(IsNewer).Count());
     }
 
-    /// <summary>Starts again from the newest lines and announces the new count (filter changes are the only announced counts).</summary>
-    private void FiltersChanged()
+    /// <summary>Starts again from the first page and announces the new count (filter changes are the only announced counts).</summary>
+    private async Task FiltersChangedAsync()
     {
-        shownCount = PageSize;
         statusMessage = $"{Lines(Filtered.Count)} match.";
+
+        if (grid is not null)
+            await grid.ResetPageNumber();
     }
 
     /// <summary>Fetches the newest lines once while paused (the person asked for it, so it is not an automatic update).</summary>
-    private void LoadNewLines()
+    private async Task LoadNewLinesAsync()
     {
         var before = State.Logs.FirstOrDefault();
         State.Tick();
         var (all, matching) = CountNewerThan(before);
         newestAtPause = State.Logs.FirstOrDefault();
         statusMessage = all == 0 ? "No new lines yet." : $"Loaded {NewText(all, matching)}. Live updates are still paused.";
+        await RefreshGridAsync();
     }
 
     private string NewText(int all, int matching) =>
-        (all == 1 ? "1 new line" : $"{all} new lines") + (HasFilters ? $", {matching} matching your filters" : string.Empty);
+        (all == 1 ? "1 new line" : string.Create(CultureInfo.InvariantCulture, $"{all} new lines")) + (HasFilters ? $", {matching} matching your filters" : string.Empty);
 
-    private void OnLevelChanged(ChangeEventArgs args)
+    private async Task OnLevelChangedAsync(ChangeEventArgs args)
     {
         levelFilter = args.Value?.ToString() ?? string.Empty;
-        FiltersChanged();
+        await FiltersChangedAsync();
     }
 
-    private void OnSearchInput(ChangeEventArgs args)
+    private async Task OnSearchInputAsync(ChangeEventArgs args)
     {
         search = args.Value?.ToString() ?? string.Empty;
-        FiltersChanged();
+        await FiltersChangedAsync();
     }
 
-    private void OnServiceChanged(ChangeEventArgs args)
+    private async Task OnServiceChangedAsync(ChangeEventArgs args)
     {
         serviceFilter = args.Value?.ToString() ?? string.Empty;
-        FiltersChanged();
+        await FiltersChangedAsync();
     }
 
-    private void OnStateChanged() => InvokeAsync(StateHasChanged);
+    /// <summary>Another screen changed the state (an incident, a service): the grid reads the lines again.</summary>
+    private void OnStateChanged() => InvokeAsync(async () =>
+    {
+        await RefreshGridAsync();
+        StateHasChanged();
+    });
 
     /// <summary>
-    /// Moves the window on while live. Pausing (from the shared button) is noticed here: the newest line is remembered, and
-    /// the first tick after resuming announces how many lines arrived in between.
+    /// Moves the window on while live, and the grid reads the newest lines. Pausing (from the shared button) is noticed
+    /// here: the newest line is remembered, and the first tick after resuming announces how many lines arrived in between.
     /// </summary>
     private async Task OnTickAsync()
     {
@@ -199,7 +225,7 @@ public partial class Logs : ComponentBase, IDisposable
 
         try
         {
-            await InvokeAsync(() =>
+            await InvokeAsync(async () =>
             {
                 if (disposed)
                     return;
@@ -226,6 +252,7 @@ public partial class Logs : ComponentBase, IDisposable
                     newestAtPause = null;
                 }
 
+                await RefreshGridAsync();
                 StateHasChanged();
             });
         }
@@ -235,7 +262,38 @@ public partial class Logs : ComponentBase, IDisposable
         }
     }
 
-    private void ShowMore() => shownCount += PageSize;
+    /// <summary>The page of lines the grid asked for, from the filtered lines, newest first unless a column is sorted.</summary>
+    private Task<GridDataProviderResult<MonitoringLogEntry>> ProvideLinesAsync(GridDataProviderRequest<MonitoringLogEntry> request) => view.ApplyAsync(request, Filtered);
+
+    private async Task RefreshGridAsync()
+    {
+        if (grid is not null)
+            await grid.RefreshDataAsync();
+    }
+
+    /// <summary>Forgets the saved view and builds the grid again with its defaults; focus moves to the count.</summary>
+    private async Task ResetViewAsync()
+    {
+        await view.ResetAsync();
+        pageSize = DefaultPageSize;
+        gridVersion++;
+        statusMessage = "The view is reset: newest first, 50 lines a page, and every column shown.";
+        StateHasChanged();
+
+        await Task.Yield();
+        await MonitoringDisplay.FocusAsync(countRegion);
+    }
+
+    /// <summary>Keeps the grid's settings in the saved view, and follows the page size the selector chose.</summary>
+    private async Task SaveSettingsAsync(GridSettings settings)
+    {
+        if (settings.PageSize > 0)
+            pageSize = settings.PageSize;
+
+        await view.SaveSettingsAsync(settings);
+    }
+
+    private string ServiceName(string serviceId) => State.FindService(serviceId)?.Name ?? serviceId;
 
     #endregion
 
@@ -243,15 +301,7 @@ public partial class Logs : ComponentBase, IDisposable
 
     #region Properties, Indexers
 
-    private string CountText
-    {
-        get
-        {
-            var count = Filtered.Count;
-
-            return count <= shownCount ? Lines(count) : $"Showing the newest {shownCount} of {Lines(count)}";
-        }
-    }
+    private string CountText => HasFilters ? $"{Lines(Filtered.Count)} of {Lines(State.Logs.Count)} match" : Lines(Filtered.Count);
 
     /// <summary>Gets the lines matching the filters, newest first; recomputed only when the window or a filter changes.</summary>
     private List<MonitoringLogEntry> Filtered
@@ -274,6 +324,8 @@ public partial class Logs : ComponentBase, IDisposable
             return lines;
         }
     }
+
+    [Inject] private ShowcaseGridViewStore GridViews { get; set; } = default!;
 
     private bool HasFilters => search.Trim().Length > 0 || serviceFilter.Length > 0 || levelFilter.Length > 0;
 

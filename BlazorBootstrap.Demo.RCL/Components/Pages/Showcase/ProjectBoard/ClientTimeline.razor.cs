@@ -1,11 +1,15 @@
+using System.ComponentModel.DataAnnotations;
 using BlazorBootstrap.Demo.RCL.Models.Showcase.ProjectBoard;
 using BlazorBootstrap.Demo.RCL.Services.Showcase.ProjectBoard;
+using Microsoft.AspNetCore.Components.Forms;
 
 namespace BlazorBootstrap.Demo.RCL.Components.Pages.Showcase.ProjectBoard;
 
 /// <summary>
-/// The activity section of the client page (account managers): a "Log activity" form (kind Note, Call, Email, or Meeting;
-/// optionally one of the client's deals; plain text with a counter; <see cref="PbState.LogActivity" />) and the client's
+/// The activity section of the client page (account managers): a "Log activity" form, an <see cref="EditForm" /> (rule
+/// WR-002: type Note, Call, Email, or Meeting, required; the day it happened, required, not in the future and not before
+/// the client was added; optionally one of the client's deals; 1 to <see cref="PbState.MaxActivityLength" /> characters of
+/// plain text with a counter; a linked summary on a failed submit; <see cref="PbState.LogActivity" />) and the client's
 /// timeline newest first as an ordered list of <see cref="ActivityEntry" />. People delete their own entries after a
 /// confirmation that names the entry (<see cref="PbState.DeleteActivity" />); entries Tandem recorded (deal and project
 /// changes) stay and say so. Outcomes go to the section's always-rendered status region.
@@ -21,16 +25,12 @@ public partial class ClientTimeline : ComponentBase, IDisposable
 
     private Modal deleteModal = default!;
 
-    private string? dealError;
+    private EditContext editContext = default!;
 
-    private int dealId;
-
-    private ElementReference? dealInput;
+    private ActivityForm form = new();
 
     /// <summary>Returns the element to focus after the next render.</summary>
     private Func<ElementReference?>? focusTarget;
-
-    private PbActivityKind kind = PbActivityKind.Note;
 
     /// <summary>Whether Delete was confirmed in the dialog: it runs once the dialog is hidden.</summary>
     private bool pendingDelete;
@@ -41,11 +41,10 @@ public partial class ClientTimeline : ComponentBase, IDisposable
 
     private ElementReference? statusRegion;
 
-    private string text = string.Empty;
+    /// <summary>The state's answers that belong to a field, shown like the form's own messages.</summary>
+    private ValidationMessageStore? serverErrors;
 
-    private string? textError;
-
-    private ElementReference? textInput;
+    private InputTextArea? textInput;
 
     #endregion
 
@@ -62,7 +61,11 @@ public partial class ClientTimeline : ComponentBase, IDisposable
         }
     }
 
-    protected override void OnInitialized() => State.Changed += OnStateChanged;
+    protected override void OnInitialized()
+    {
+        ResetForm();
+        State.Changed += OnStateChanged;
+    }
 
     #endregion
 
@@ -87,40 +90,39 @@ public partial class ClientTimeline : ComponentBase, IDisposable
         await deleteModal.HideAsync();
     }
 
-    /// <summary>Checks the form, logs the entry, and maps the state's answer to a field or the status message.</summary>
+    /// <summary>Logs the entry once the form is valid (a failed submit shows the summary); the state's answer maps to a field or the status message.</summary>
     private void Log()
     {
-        var trimmed = text.Trim();
-        int? about = dealId == 0 ? null : dealId;
+        form.Today = State.Clock.Today;
+        form.ClientSince = State.FindClient(ClientId)?.CreatedAt.Date ?? DateTime.MinValue;
+        form.DealOk = form.DealId == 0 || State.FindDeal(form.DealId)?.ClientId == ClientId;
+        serverErrors?.Clear();
 
-        dealError = about is { } id && State.FindDeal(id)?.ClientId != ClientId ? "That deal was deleted or moved to another client. Choose another, or No deal." : null;
-        textError = trimmed.Length == 0 ? "Write what happened."
-            : trimmed.Length > PbState.MaxActivityLength ? $"Shorten the text to {PbState.MaxActivityLength} characters or fewer (now {trimmed.Length})."
-            : null;
-
-        if (dealError is not null || textError is not null)
-        {
-            focusTarget = dealError is not null ? () => dealInput : () => textInput;
-            Announce(false, "Fix the highlighted fields, then log it again.");
-
+        if (!editContext.Validate())
             return;
-        }
 
-        var result = State.LogActivity(ClientId, kind, trimmed, about, out var logged);
+        var trimmed = form.Text.Trim();
+        int? about = form.DealId == 0 ? null : form.DealId;
+        var result = State.LogActivity(ClientId, form.Kind!.Value, trimmed, about, form.Date!.Value, out var logged);
 
         switch (result)
         {
             case PbResult.Ok when logged is not null:
-                Announce(true, $"Logged the {DealDisplay.KindLabel(logged.Kind).ToLowerInvariant()}. It's at the top of the timeline.");
-                text = string.Empty;
-                dealId = 0;
-                focusTarget = () => textInput;
+                Announce(true, $"Logged the {DealDisplay.KindLabel(logged.Kind).ToLowerInvariant()} from {PbDisplay.Date(logged.At)}. It's on the timeline, newest first.");
+                ResetForm();
+                focusTarget = () => textInput?.Element;
 
                 return;
 
             case PbResult.NotFound:
                 Announce(false, "This client was deleted meanwhile, so nothing was logged.");
                 focusTarget = () => statusRegion;
+
+                return;
+
+            case PbResult.Invalid when about is { } id && State.FindDeal(id)?.ClientId != ClientId:
+                serverErrors?.Add(FieldIdentifier.Create(() => form.DealId), "That deal was deleted or moved to another client. Choose another, or No deal.");
+                editContext.NotifyValidationStateChanged();
 
                 return;
 
@@ -180,6 +182,15 @@ public partial class ClientTimeline : ComponentBase, IDisposable
 
     private void OnStateChanged() => InvokeAsync(StateHasChanged);
 
+    /// <summary>An empty form: a note, today, about no deal.</summary>
+    private void ResetForm()
+    {
+        form = new ActivityForm { Kind = PbActivityKind.Note, Date = State.Clock.Today };
+        editContext = new EditContext(form);
+        serverErrors = new ValidationMessageStore(editContext);
+        editContext.OnFieldChanged += (_, args) => serverErrors?.Clear(args.FieldIdentifier);
+    }
+
     private async Task OpenDeleteAsync(int activityId)
     {
         deleteId = activityId;
@@ -197,6 +208,50 @@ public partial class ClientTimeline : ComponentBase, IDisposable
     [Parameter, EditorRequired] public int ClientId { get; set; }
 
     [Inject] private PbState State { get; set; } = default!;
+
+    #endregion
+    #region Nested Types
+
+    /// <summary>
+    /// A logged activity's fields, with the limits of <see cref="PbState.LogActivity" />: a type, a day not in the future
+    /// and not before the client was added (cross-field rules against values the page sets), a deal of this client, and the
+    /// text.
+    /// </summary>
+    private sealed class ActivityForm : IValidatableObject
+    {
+        /// <summary>The day the client was added, set by the page.</summary>
+        public DateTime ClientSince { get; set; } = DateTime.MinValue;
+
+        [Required(ErrorMessage = "Pick the day it happened.")]
+        public DateTime? Date { get; set; }
+
+        public int DealId { get; set; }
+
+        /// <summary>Whether the chosen deal is still this client's, set by the page.</summary>
+        public bool DealOk { get; set; } = true;
+
+        [Required(ErrorMessage = "Choose the type: note, call, email, or meeting.")]
+        public PbActivityKind? Kind { get; set; }
+
+        [Required(ErrorMessage = "Write what happened.")]
+        [StringLength(PbState.MaxActivityLength, ErrorMessage = "Use 1,000 characters or fewer.")]
+        public string Text { get; set; } = string.Empty;
+
+        /// <summary>The board's today, set by the page.</summary>
+        public DateTime Today { get; set; } = DateTime.MaxValue;
+
+        /// <summary>Runs once the fields are filled in: the day is neither in the future nor before the client was added, and the deal is still the client's.</summary>
+        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+        {
+            if (Date is { } day && day.Date > Today.Date)
+                yield return new ValidationResult($"Pick today or an earlier day; {PbDisplay.Date(day)} hasn't happened yet.", new[] { nameof(Date) });
+            else if (Date is { } early && early.Date < ClientSince.Date)
+                yield return new ValidationResult($"Pick {PbDisplay.Date(ClientSince)} or later: the client was added then.", new[] { nameof(Date) });
+
+            if (!DealOk)
+                yield return new ValidationResult("That deal was deleted or moved to another client. Choose another, or No deal.", new[] { nameof(DealId) });
+        }
+    }
 
     #endregion
 }

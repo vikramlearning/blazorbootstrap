@@ -163,7 +163,7 @@
                                                     }
                                                 </select>
                                                 <button type="button" class="btn btn-outline-primary" @onclick="() => MoveWithSelectAsync(dealId)">
-                                                    Move<span class="visually-hidden"> @deal.Title</span>
+                                                    Move<span class="visually-hidden">&#32;@deal.Title</span>
                                                 </button>
                                             </div>
                                         </div>
@@ -179,11 +179,11 @@
                                         @if (deal.ClosedAt is null)
                                         {
                                             <button type="button" class="btn btn-sm btn-outline-secondary" @ref="editButtons[dealId]" @onclick="() => OpenEditDealAsync(dealId)">
-                                                <Icon Name="IconName.Pencil" class="me-1" aria-hidden="true" />Edit<span class="visually-hidden"> @deal.Title</span>
+                                                <Icon Name="IconName.Pencil" class="me-1" aria-hidden="true" />Edit<span class="visually-hidden">&#32;@deal.Title</span>
                                             </button>
                                         }
                                         <button type="button" class="btn btn-sm btn-outline-danger" @ref="deleteButtons[dealId]" @onclick="() => OpenDeleteAsync(dealId)">
-                                            <Icon Name="IconName.Trash3" class="me-1" aria-hidden="true" />Delete<span class="visually-hidden"> @deal.Title</span>
+                                            <Icon Name="IconName.Trash3" class="me-1" aria-hidden="true" />Delete<span class="visually-hidden">&#32;@deal.Title</span>
                                         </button>
                                     </div>
                                 </article>

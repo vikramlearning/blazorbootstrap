@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using BlazorBootstrap.Demo.RCL.Components.Pages.Showcase.Shared;
 using BlazorBootstrap.Demo.RCL.Models.Showcase.Saas;
 using BlazorBootstrap.Demo.RCL.Services.Showcase.Saas;
 using Microsoft.AspNetCore.Components.Forms;
@@ -6,9 +7,12 @@ using Microsoft.AspNetCore.Components.Forms;
 namespace BlazorBootstrap.Demo.RCL.Components.Pages.Showcase.Saas;
 
 /// <summary>
-/// The workspace's settings: its name, time zone, first day of the week, data region, and the four email switches. Owners
-/// and admins save them with <see cref="SaasState.UpdateWorkspace" />, and the result shows in a status message; everyone
-/// else (and everyone while the workspace is suspended or archived) sees the values read-only, with a note saying why.
+/// The workspace's settings in an <see cref="EditForm" /> (rule WR-002): its name (unique on Lumora, checked as you type),
+/// time zone, first day of the week, data region (a workspace in an EU country keeps its data in the European Union, a
+/// cross-field rule), and the four email switches. A failed save shows a summary that links to each field. Owners and
+/// admins save them with <see cref="SaasState.UpdateWorkspace" />, and the result shows in a status message (a taken name on
+/// its field); everyone else (and everyone while the workspace is suspended or archived) sees the values read-only, with a
+/// note saying why.
 /// </summary>
 public partial class AppSettings : ComponentBase, IDisposable
 {
@@ -36,6 +40,11 @@ public partial class AppSettings : ComponentBase, IDisposable
     private int? formWorkspaceId;
 
     private int messageCount;
+
+    private ShowcaseUniqueCheck? nameCheck;
+
+    /// <summary>The state's answers that belong to a field (a taken name), shown like the form's own messages.</summary>
+    private ValidationMessageStore? serverErrors;
 
     private string? messageText;
 
@@ -93,6 +102,14 @@ public partial class AppSettings : ComponentBase, IDisposable
         StateHasChanged();
     });
 
+    private static bool IsEuCountry(string country) => SaasSeedData.EuCountries.Contains(country);
+
+    /// <summary>Whether another workspace has this name; this workspace doesn't count.</summary>
+    private Task<bool> IsNameTakenAsync(string name) => Task.FromResult(State.IsWorkspaceNameTaken(name, State.CurrentWorkspace?.Id ?? 0));
+
+    private string NameTakenMessage(string name) =>
+        $"Another workspace on {SaasSeedData.ProductName} is already called \"{name.Trim()}\". Choose a different name, for example with your team or city.";
+
     /// <summary>Returns why the settings are read-only for the signed-in member.</summary>
     private static string ReadOnlyText(SaasWorkspace workspace, SaasMember member) =>
         member.Role is SaasMemberRole.Owner or SaasMemberRole.Admin
@@ -115,13 +132,28 @@ public partial class AppSettings : ComponentBase, IDisposable
             SecurityAlerts = settings.SecurityAlerts,
             BillingEmails = settings.BillingEmails,
             ProductUpdates = settings.ProductUpdates,
+            Country = workspace.Country,
         };
         editContext = new EditContext(form);
+        serverErrors = new ValidationMessageStore(editContext);
+        editContext.OnFieldChanged += (_, args) => serverErrors?.Clear(args.FieldIdentifier);
         formWorkspaceId = workspace.Id;
     }
 
-    private void Save()
+    /// <summary>
+    /// Saves once the form is valid: the name check finishes first, then every rule runs, and a failed submit shows the
+    /// summary (rule WR-002). The state checks again; a taken name goes on its field.
+    /// </summary>
+    private async Task SaveAsync()
     {
+        serverErrors?.Clear();
+        editContext.NotifyValidationStateChanged();
+
+        var nameFree = nameCheck is null || await nameCheck.CheckNowAsync();
+
+        if (!editContext.Validate() || !nameFree)
+            return;
+
         var settings = new SaasWorkspaceSettings(form.TimeZone, form.WeekStartsOn, form.DataRegion, form.WeeklyDigest, form.SecurityAlerts, form.BillingEmails, form.ProductUpdates);
         var result = State.UpdateWorkspace(form.Name, settings);
 
@@ -133,6 +165,11 @@ public partial class AppSettings : ComponentBase, IDisposable
                 break;
             case SaasResult.NoChange:
                 ShowStatus("Nothing to save: these are already the workspace's settings.");
+                break;
+
+            case SaasResult.Duplicate:
+                serverErrors?.Add(FieldIdentifier.Create(() => form.Name), NameTakenMessage(form.Name));
+                editContext.NotifyValidationStateChanged();
                 break;
             case SaasResult.Invalid:
                 ShowError($"These settings can't be saved. Use a workspace name of 1 to {SaasState.MaxWorkspaceNameLength} characters, and pick the time zone and data region from the lists.");
@@ -183,15 +220,22 @@ public partial class AppSettings : ComponentBase, IDisposable
     /// <summary>One email switch: how to read and set it on the form.</summary>
     private sealed record EmailOption(string Key, string Title, string Description, Func<SettingsForm, bool> Get, Action<SettingsForm, bool> Set);
 
-    /// <summary>The values being edited, before they are saved.</summary>
-    private sealed class SettingsForm
+    /// <summary>
+    /// The values being edited, before they are saved, with the rules of <see cref="SaasState.UpdateWorkspace" /> and one
+    /// cross-field rule: a workspace in an EU country keeps its data in the European Union.
+    /// </summary>
+    private sealed class SettingsForm : IValidatableObject
     {
         public bool BillingEmails { get; set; }
 
+        /// <summary>The workspace's country, for the data region rule; set by the page, not by a field.</summary>
+        public string Country { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Choose a data region.")]
         public string DataRegion { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Enter a workspace name.")]
-        [StringLength(SaasState.MaxWorkspaceNameLength, ErrorMessage = "Use at most {1} characters.")]
+        [StringLength(SaasState.MaxWorkspaceNameLength, ErrorMessage = "Use 60 characters or fewer for the workspace name.")]
         public string Name { get; set; } = string.Empty;
 
         public bool ProductUpdates { get; set; }
@@ -203,6 +247,16 @@ public partial class AppSettings : ComponentBase, IDisposable
         public string WeekStartsOn { get; set; } = "Monday";
 
         public bool WeeklyDigest { get; set; }
+
+        /// <summary>Runs once the fields are filled in: an EU workspace's data stays in the EU.</summary>
+        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+        {
+            if (SaasSeedData.EuCountries.Contains(Country) && DataRegion != "European Union")
+            {
+                yield return new ValidationResult($"A workspace in {Country} keeps its data in the European Union. Choose European Union as the data region.",
+                    new[] { nameof(DataRegion) });
+            }
+        }
     }
 
     #endregion

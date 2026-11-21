@@ -8,96 +8,125 @@
     <p class="ea-lead">@LeadText</p>
 </div>
 
+@* Always rendered and focusable: a view reset is announced here. *@
+<p class="ea-list-status mb-3" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
+
 <div class="row g-4">
     <div class="@(selectedEmail is null ? "col-12" : "col-xxl-7")">
         <section class="ea-panel" aria-labelledby="ea-customers-title">
             <h2 class="ea-section-title" id="ea-customers-title" tabindex="-1" @ref="listHeading">All customers</h2>
 
-            <div class="row g-2 align-items-end mb-3" role="search" aria-label="Filter customers">
-                <div class="col-md-7">
+            <div class="ea-list-filters" role="search" aria-label="Filter customers">
+                <div class="ea-list-search">
                     <label class="form-label small fw-semibold" for="ea-customer-search">Search</label>
                     <InputGroup>
                         <InputGroupText><Icon Name="IconName.Search" aria-hidden="true" /></InputGroupText>
                         @* TextInput raises ValueChanged on change (blur or Enter); @oninput keeps the list filtering while typing. *@
                         <TextInput Id="ea-customer-search" Value="@searchBoxValue" ValueExpression="() => searchBoxValue" ValueChanged="OnSearchChanged"
-                                   @oninput="OnSearchInput" Placeholder="Name or email" />
+                                   @oninput="OnSearchInput" Placeholder="Name or email" MaxLength="120" />
                     </InputGroup>
                 </div>
-                <div class="col-md-5">
-                    <label class="form-label small fw-semibold" for="ea-customer-sort">Sort by</label>
-                    <select id="ea-customer-sort" class="form-select" value="@sort" @onchange="OnSortChanged">
-                        <option value="@CustomerSort.LastOrderNewest">Last order, newest first</option>
-                        <option value="@CustomerSort.LastOrderOldest">Last order, oldest first</option>
-                        <option value="@CustomerSort.SpentHighest">Total spent, highest first</option>
-                        <option value="@CustomerSort.SpentLowest">Total spent, lowest first</option>
+                <div>
+                    <label class="form-label small fw-semibold" for="ea-customer-account">Account</label>
+                    <select id="ea-customer-account" class="form-select" value="@accountFilter" @onchange="OnAccountChanged">
+                        <option value="">Everyone</option>
+                        <option value="@Registered">Registered</option>
+                        <option value="@Guest">Guest checkout</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="form-label small fw-semibold" for="ea-customer-country">Country</label>
+                    <select id="ea-customer-country" class="form-select" value="@countryFilter" @onchange="OnCountryChanged">
+                        <option value="">All countries</option>
+                        @foreach (var country in EcommerceSeedData.Countries)
+                        {
+                            <option value="@country" @key="country">@country</option>
+                        }
                     </select>
                 </div>
             </div>
-
-            <p class="small text-body-secondary" role="status">@MatchText</p>
-
-            @if (Matches.Count == 0)
-            {
-                <p class="ea-empty mb-0">
-                    @(State.Customers().Count == 0 ? "No customers yet. Shoppers appear here once they register or place an order." : "No customers match this search. Try part of a name or an email address.")
-                </p>
-            }
-            else
-            {
-                <div class="table-responsive" data-clarity-mask="true">
-                    <table class="table ea-table ea-customer-table align-middle">
-                        <caption class="visually-hidden">Customers, @SortText</caption>
-                        <thead>
-                            <tr>
-                                <th scope="col">Customer</th>
-                                <th scope="col">Account</th>
-                                <th scope="col" class="text-end">Orders</th>
-                                <th scope="col" class="text-end">Total spent</th>
-                                <th scope="col">Last order</th>
-                                <th scope="col"><span class="visually-hidden">Actions</span></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var customer in PageItems)
-                            {
-                                var isSelected = IsSelected(customer);
-                                <tr @key="customer.Email" class="@(isSelected ? "table-active" : null)" aria-current="@(isSelected ? "true" : null)">
-                                    <th scope="row">
-                                        <span class="d-block">@customer.Name</span>
-                                        <span class="d-block small fw-normal text-body-secondary text-break">@customer.Email</span>
-                                    </th>
-                                    <td>
-                                        @if (customer.AccountId is not null)
-                                        {
-                                            <Badge Color="BadgeColor.Primary">Registered</Badge>
-                                        }
-                                        else
-                                        {
-                                            <Badge Color="BadgeColor.Secondary">Guest</Badge>
-                                        }
-                                    </td>
-                                    <td class="text-end">@customer.OrderCount</td>
-                                    <td class="text-end">@EcommerceDisplay.Money(customer.Spent)</td>
-                                    <td class="text-nowrap">@(customer.LastOrderOn is { } last ? EcommerceDisplay.DateTimeShort(last) : "No orders")</td>
-                                    <td class="text-end">
-                                        <Button @ref="viewButtons[customer.Email]" Color="ButtonColor.Secondary" Outline="true" Size="ButtonSize.Small" @onclick="() => Select(customer)">
-                                            View orders<span class="visually-hidden"> of @customer.Name</span>
-                                        </Button>
-                                    </td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
-                </div>
-
-                @if (TotalPages > 1)
+            <div class="ea-list-meta mb-3">
+                <p class="small text-body-secondary mb-0" aria-live="polite" tabindex="-1" @ref="countRegion">@MatchText</p>
+                @if (IsFiltered)
                 {
-                    <nav class="mt-3" aria-label="Customer pages">
-                        <Pagination ActivePageNumber="CurrentPage" TotalPages="TotalPages" PageChanged="OnPageChanged" Alignment="Alignment.Center"
-                                    PreviousLinkIcon="IconName.ChevronLeft" NextLinkIcon="IconName.ChevronRight" />
-                    </nav>
+                    <Button Color="ButtonColor.Link" Size="ButtonSize.Small" Class="p-0" @onclick="ClearFiltersAsync">Show every customer</Button>
                 }
-            }
+                @* Back to the saved view's defaults: last order first, 25 a page, every column in its place. *@
+                <Button Color="ButtonColor.Link" Size="ButtonSize.Small" Class="p-0" @onclick="ResetViewAsync">Reset view</Button>
+            </div>
+
+            <div data-clarity-mask="true">
+                <ShowcaseDataState Status="@(viewLoaded ? ShowcaseDataStatus.Ready : ShowcaseDataStatus.Loading)"
+                                   IsEmpty="@(State.Customers().Count == 0)"
+                                   EmptyIcon="IconName.People"
+                                   EmptyTitle="No customers yet"
+                                   EmptyText="Shoppers appear here once they register or place an order."
+                                   LoadingText="Loading customers…"
+                                   OnRetry="RefreshGridAsync">
+                    <ChildContent>
+                        <Grid @ref="grid"
+                              @key="gridVersion"
+                              TItem="CustomerRow"
+                              Class="table table-hover align-middle ea-table-mid sc-grid-row-links"
+                              GridContainerClass="ea-grid border rounded-3"
+                              DataProvider="ProvideCustomersAsync"
+                              SettingsProvider="view.GetSettingsAsync"
+                              GridSettingsChanged="SaveSettingsAsync"
+                              AllowPaging="true"
+                              PageSize="@pageSize"
+                              PageSizeSelectorVisible="true"
+                              PageSizeSelectorItems="@(new[] { 10, 25, 50, 100 })"
+                              PaginationItemsTextFormat="{0}–{1} of {2} customers"
+                              AllowSorting="true"
+                              RowClass="RowClass"
+                              AllowColumnChooser="true"
+                              AllowExport="true"
+                              ExportFileName="commerce-customers"
+                              Responsive="true"
+                              EmptyText="No customers match these filters. Clear a filter, or search for part of a name or an email address."
+                              aria-label="Customers">
+                            <GridColumns>
+                                <GridColumn TItem="CustomerRow" HeaderText="Customer" PropertyName="Name" SortString="name" SortKeySelector="row => row.Name"
+                                            IsDefaultSortColumn="@view.IsSortColumn("name")" SortDirection="@view.DirectionFor("name")" AlwaysVisible="true">
+                                    @* No page of its own: the stretched button opens the customer's orders beside the list. *@
+                                    <button type="button" class="ea-row-button stretched-link" aria-pressed="@(IsSelected(context.Email) ? "true" : "false")"
+                                            @ref="viewButtons[context.Email]" @onclick="() => Select(context.Email)">
+                                        @context.Name<span class="visually-hidden">: view orders</span>
+                                    </button>
+                                </GridColumn>
+                                <GridColumn TItem="CustomerRow" HeaderText="Email" PropertyName="Email" SortString="email" SortKeySelector="row => row.Email"
+                                            IsDefaultSortColumn="@view.IsSortColumn("email")" SortDirection="@view.DirectionFor("email")">
+                                    <span class="small text-break">@context.Email</span>
+                                </GridColumn>
+                                <GridColumn TItem="CustomerRow" HeaderText="Account" PropertyName="Account" SortString="account" SortKeySelector="row => row.Account"
+                                            IsDefaultSortColumn="@view.IsSortColumn("account")" SortDirection="@view.DirectionFor("account")">
+                                    <Badge Color="@(context.IsRegistered ? BadgeColor.Primary : BadgeColor.Secondary)">@context.Account</Badge>
+                                </GridColumn>
+                                <GridColumn TItem="CustomerRow" HeaderText="Country" PropertyName="Country" SortString="country" SortKeySelector="row => row.Country"
+                                            IsDefaultSortColumn="@view.IsSortColumn("country")" SortDirection="@view.DirectionFor("country")">
+                                    @context.Country
+                                </GridColumn>
+                                <GridColumn TItem="CustomerRow" HeaderText="Orders" PropertyName="Orders" SortString="orders" SortKeySelector="row => row.Orders"
+                                            IsDefaultSortColumn="@view.IsSortColumn("orders")" SortDirection="@view.DirectionFor("orders")" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End">
+                                    @context.Orders
+                                </GridColumn>
+                                <GridColumn TItem="CustomerRow" HeaderText="Total spent" PropertyName="Spent" SortString="spent" SortKeySelector="row => row.Spent"
+                                            IsDefaultSortColumn="@view.IsSortColumn("spent")" SortDirection="@view.DirectionFor("spent")" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" TextNoWrap="true">
+                                    @EcommerceDisplay.Money(context.Spent)
+                                </GridColumn>
+                                <GridColumn TItem="CustomerRow" HeaderText="First order" PropertyName="FirstOrderText" SortString="first" SortKeySelector="row => row.FirstOrderOn ?? DateTime.MaxValue"
+                                            IsDefaultSortColumn="@view.IsSortColumn("first")" SortDirection="@view.DirectionFor("first")" TextNoWrap="true">
+                                    @(context.FirstOrderOn is { } first ? EcommerceDisplay.Date(first) : "No orders")
+                                </GridColumn>
+                                <GridColumn TItem="CustomerRow" HeaderText="Last order" PropertyName="LastOrderText" SortString="last" SortKeySelector="row => row.LastOrderOn ?? DateTime.MinValue"
+                                            IsDefaultSortColumn="@view.IsSortColumn("last")" SortDirection="@view.DirectionFor("last")" TextNoWrap="true">
+                                    @(context.LastOrderOn is { } last ? EcommerceDisplay.DateTimeShort(last) : "No orders")
+                                </GridColumn>
+                            </GridColumns>
+                        </Grid>
+                    </ChildContent>
+                </ShowcaseDataState>
+            </div>
         </section>
     </div>
 
@@ -118,15 +147,12 @@
                 {
                     <p class="small text-body-secondary text-break mb-1">@customer.Email</p>
                     <p class="small mb-3">
-                        @if (customer.AccountId is not null)
+                        <Badge Color="@(customer.AccountId is null ? BadgeColor.Secondary : BadgeColor.Primary)" Class="me-1">@(customer.AccountId is null ? "Guest" : "Registered")</Badge>
+                        @EcommerceDisplay.Plural(customer.OrderCount, "order") · @EcommerceDisplay.Money(customer.Spent) spent
+                        @if (customer.FirstOrderOn is { } first)
                         {
-                            <Badge Color="BadgeColor.Primary" Class="me-1">Registered</Badge>
+                            <span> · customer since @EcommerceDisplay.Date(first)</span>
                         }
-                        else
-                        {
-                            <Badge Color="BadgeColor.Secondary" Class="me-1">Guest</Badge>
-                        }
-                        @OrderCountText(customer.OrderCount) · @EcommerceDisplay.Money(customer.Spent) spent
                     </p>
 
                     <h3 class="h6 fw-bold">Orders</h3>
@@ -136,6 +162,7 @@
                     }
                     else
                     {
+                        @* A record's detail: its orders stay a plain table, each linking to the order. *@
                         <div class="table-responsive">
                             <table class="table ea-table align-middle">
                                 <caption class="visually-hidden">Orders placed by @customer.Name, newest first</caption>
@@ -151,7 +178,7 @@
                                     @foreach (var order in SelectedOrders)
                                     {
                                         <tr @key="order.Id">
-                                            <th scope="row"><a href="@($"{EcommerceAdminLayout.Base}/orders/{order.Id}")">#@order.Id</a></th>
+                                            <th scope="row"><a href="@EcommerceSeedData.AdminOrderPath(order.Id)">#@order.Id</a></th>
                                             <td class="text-nowrap">@EcommerceDisplay.DateTimeShort(order.PlacedOn)</td>
                                             <td><Badge Color="@EcommerceDisplay.StatusColor(order.Status)">@order.Status</Badge></td>
                                             <td class="text-end">@EcommerceDisplay.Money(order.Totals.Total)</td>

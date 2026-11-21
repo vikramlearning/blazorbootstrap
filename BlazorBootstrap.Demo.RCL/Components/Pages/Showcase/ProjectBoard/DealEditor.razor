@@ -1,6 +1,6 @@
-@* The deal form of the pipeline and the client page, in a dialog: client, title, value, and expected close date. The page
-   opens it with OpenNewAsync or OpenEditAsync and hears back in OnClosed once the dialog is hidden, so it can announce
-   the outcome and move focus back. *@
+@* The deal form of the pipeline and the client page, in a dialog: client, title, value, expected close date, and (for a new
+   deal) its stage. The page opens it with OpenNewAsync or OpenEditAsync and hears back in OnClosed once the dialog is
+   hidden, so it can announce the outcome and move focus back. *@
 <Modal @ref="modal" IsVerticallyCentered="true" IsScrollable="true" ShowCloseButton="false" aria-labelledby="pb-deal-editor-title" OnShown="OnShownAsync" OnHidden="OnHiddenAsync">
     <HeaderTemplate>
         <h2 class="modal-title h5 pb-deal-editor-title" id="pb-deal-editor-title">@DialogTitle</h2>
@@ -8,61 +8,75 @@
     <BodyTemplate>
         @{
             var clients = State.Clients;
+            var existing = dealId == 0 ? null : State.FindDeal(dealId);
         }
-        <form id="pb-deal-editor-form" @onsubmit="SaveAsync" novalidate aria-labelledby="pb-deal-editor-title">
+        <EditForm id="pb-deal-editor-form" EditContext="editContext" OnSubmit="SaveAsync" FormName="pb-deal" novalidate>
+            <DataAnnotationsValidator />
+            <ShowcaseFormErrors ShowSummary="true" />
             <p class="small text-body-secondary" id="pb-deal-editor-help">
                 @(dealId == 0
-                    ? $"A new deal starts as a lead ({DealDisplay.Percent(PbState.Probability(PbDealStage.Lead))} chance) owned by you. Move it along the pipeline as it progresses."
-                    : "Only open deals can be edited. Its stage changes on the pipeline board.")
+                    ? "A new deal is owned by you. Move it along the pipeline as it progresses."
+                    : $"Only open deals can be edited. It's in {PbDisplay.StageLabel(existing?.Stage ?? PbDealStage.Lead)}; its stage changes on the pipeline board.")
             </p>
 
             <div class="mb-3">
                 <label class="form-label fw-semibold" for="pb-deal-editor-client">Client</label>
-                <select id="pb-deal-editor-client" class="form-select @(clientError is null ? null : "is-invalid")" @bind="clientId" @ref="clientInput"
-                        aria-required="true" aria-invalid="@(clientError is null ? null : "true")" aria-describedby="pb-deal-editor-client-error">
+                <InputSelect @ref="clientInput" TValue="int" id="pb-deal-editor-client" class="form-select" @bind-Value="form.ClientId">
                     <option value="0">Choose a client</option>
                     @foreach (var client in clients)
                     {
                         <option value="@client.Id" @key="client.Id">@client.Name</option>
                     }
-                </select>
-                <div class="invalid-feedback d-block" id="pb-deal-editor-client-error">@clientError</div>
+                </InputSelect>
+                <ValidationMessage For="() => form.ClientId" />
             </div>
 
             <div class="mb-3">
                 <label class="form-label fw-semibold" for="pb-deal-editor-title-input">Title</label>
-                <input id="pb-deal-editor-title-input" class="form-control @(titleError is null ? null : "is-invalid")" @bind="title" @bind:event="oninput" @ref="titleInput"
-                       maxlength="@PbState.MaxDealTitleLength" autocomplete="off" aria-required="true" aria-invalid="@(titleError is null ? null : "true")"
-                       aria-describedby="pb-deal-editor-title-help pb-deal-editor-title-error" />
+                <InputText @ref="titleInput" id="pb-deal-editor-title-input" class="form-control" @bind-Value="form.Title" maxlength="@PbState.MaxDealTitleLength" autocomplete="off"
+                           aria-describedby="pb-deal-editor-title-help" />
                 <div class="form-text d-flex flex-wrap justify-content-between gap-2" id="pb-deal-editor-title-help">
                     <span>What the client is buying, like "Spring campaign site".</span>
-                    <span class="text-nowrap">@DealDisplay.CounterText(title, PbState.MaxDealTitleLength)</span>
+                    <span class="text-nowrap">@DealDisplay.CounterText(form.Title ?? string.Empty, PbState.MaxDealTitleLength)</span>
                 </div>
-                <div class="invalid-feedback d-block" id="pb-deal-editor-title-error">@titleError</div>
+                <ValidationMessage For="() => form.Title" />
             </div>
 
             <div class="row g-3">
                 <div class="col-sm-6">
                     <label class="form-label fw-semibold" for="pb-deal-editor-value">Value (dollars)</label>
-                    <input id="pb-deal-editor-value" type="number" inputmode="numeric" step="1" min="1" max="@PbState.MaxDealValue"
-                           class="form-control @(valueError is null ? null : "is-invalid")" @bind="valueText" @ref="valueInput"
-                           aria-required="true" aria-invalid="@(valueError is null ? null : "true")" aria-describedby="pb-deal-editor-value-help pb-deal-editor-value-error" />
+                    <InputNumber TValue="int?" id="pb-deal-editor-value" class="form-control" @bind-Value="form.Value" inputmode="numeric" step="1" min="1" max="@PbState.MaxDealValue"
+                                 ParsingErrorMessage="Enter the value as a whole number of dollars, without a dollar sign or decimals." aria-describedby="pb-deal-editor-value-help" />
                     <div class="form-text" id="pb-deal-editor-value-help">Whole dollars, from 1 to @PbDisplay.Money(PbState.MaxDealValue).</div>
-                    <div class="invalid-feedback d-block" id="pb-deal-editor-value-error">@valueError</div>
+                    <ValidationMessage For="() => form.Value" />
                 </div>
                 <div class="col-sm-6">
                     <label class="form-label fw-semibold" for="pb-deal-editor-close">Expected close date</label>
-                    <input id="pb-deal-editor-close" type="date" class="form-control @(closeError is null ? null : "is-invalid")" value="@closeText" @onchange="e => closeText = e.Value?.ToString() ?? string.Empty" @ref="closeInput"
-                           min="@DealDisplay.ToDateInput(MinDate)" max="@DealDisplay.ToDateInput(MaxDate)"
-                           aria-required="true" aria-invalid="@(closeError is null ? null : "true")" aria-describedby="pb-deal-editor-close-help pb-deal-editor-close-error" />
-                    <div class="form-text" id="pb-deal-editor-close-help">When you expect it to be won or lost. The forecast counts it in that month.</div>
-                    <div class="invalid-feedback d-block" id="pb-deal-editor-close-error">@closeError</div>
+                    <InputDate TValue="DateTime?" id="pb-deal-editor-close" class="form-control" @bind-Value="form.CloseDate" min="@DealDisplay.ToDateInput(State.Clock.Today)"
+                               max="@DealDisplay.ToDateInput(MaxDate)" ParsingErrorMessage="Enter the expected close date as a full date." aria-describedby="pb-deal-editor-close-help" />
+                    <div class="form-text" id="pb-deal-editor-close-help">Today or later: when you expect it to be won or lost. The forecast counts it in that month.</div>
+                    <ValidationMessage For="() => form.CloseDate" />
                 </div>
+                @if (dealId == 0)
+                {
+                    <div class="col-sm-6">
+                        <label class="form-label fw-semibold" for="pb-deal-editor-stage">Stage</label>
+                        <InputSelect TValue="PbDealStage?" id="pb-deal-editor-stage" class="form-select" @bind-Value="form.Stage" aria-describedby="pb-deal-editor-stage-help">
+                            <option value="">Choose a stage</option>
+                            @foreach (var stage in DealDisplay.OpenStages)
+                            {
+                                <option value="@stage" @key="stage">@PbDisplay.StageLabel(stage) (@DealDisplay.Percent(PbState.Probability(stage)) chance)</option>
+                            }
+                        </InputSelect>
+                        <div class="form-text" id="pb-deal-editor-stage-help">An open stage. Won and Lost are set on the pipeline, where Won creates the project.</div>
+                        <ValidationMessage For="() => form.Stage" />
+                    </div>
+                }
             </div>
+        </EditForm>
 
-            @* Always rendered, so a refusal from the board is announced inside the dialog. *@
-            <p class="fw-semibold text-danger-emphasis small mt-3 mb-0 pb-deal-editor-status" role="status" tabindex="-1" @ref="statusRegion">@formMessage</p>
-        </form>
+        @* Always rendered, so a refusal from the board is announced inside the dialog; a counter makes a repeat announce again. *@
+        <p class="tb-form-error small mt-3 mb-0" role="alert">@formMessage</p>
     </BodyTemplate>
     <FooterTemplate>
         <Button Color="ButtonColor.Secondary" Outline="true" @onclick="CancelAsync">Cancel</Button>

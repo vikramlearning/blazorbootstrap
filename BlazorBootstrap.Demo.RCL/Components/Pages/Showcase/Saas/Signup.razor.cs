@@ -1,15 +1,20 @@
 using System.ComponentModel.DataAnnotations;
+using BlazorBootstrap.Demo.RCL.Components.Pages.Showcase.Shared;
 using BlazorBootstrap.Demo.RCL.Models.Showcase.Saas;
 using BlazorBootstrap.Demo.RCL.Services.Showcase.Foundation;
 using BlazorBootstrap.Demo.RCL.Services.Showcase.Saas;
+using Microsoft.AspNetCore.Components.Forms;
 
 namespace BlazorBootstrap.Demo.RCL.Components.Pages.Showcase.Saas;
 
 /// <summary>
 /// Lumora's trial sign-up: a self-serve plan (preselected from <c>?plan=</c>), monthly or annual billing, and the new
-/// owner's name, email, password, company, and country. It creates the customer account (signed in) and the workspace, then
-/// opens the workspace. Growth starts a 14-day trial without a card; Starter is free. A signed-in visitor sees who they are
-/// signed in as instead of the form.
+/// owner's name, email (no account may have it yet, checked as you type), password (at least 8 characters with a letter and
+/// a digit, and not the email: a cross-field rule), company (the workspace's name, unique on Lumora, checked as you type),
+/// country, and the terms. The form follows rule WR-002: messages show after a field is touched or on submit, and a failed
+/// submit shows a summary that links to each field. It creates the customer account (signed in) and the workspace, then
+/// opens the workspace; Lumora's operators are notified. Growth starts a 14-day trial without a card; Starter is free. A
+/// signed-in visitor sees who they are signed in as instead of the form.
 /// </summary>
 public partial class Signup : ComponentBase, IDisposable
 {
@@ -23,6 +28,15 @@ public partial class Signup : ComponentBase, IDisposable
     private static readonly string signInHref = $"{SaasLayout.SignInPath}?returnUrl={Uri.EscapeDataString(SaasAppLayout.Base)}";
 
     private int attempts;
+
+    private ShowcaseUniqueCheck? companyCheck;
+
+    private EditContext editContext = default!;
+
+    private ShowcaseUniqueCheck? emailCheck;
+
+    /// <summary>The state's answers that belong to a field (an email that has an account, a company name in use).</summary>
+    private ValidationMessageStore? serverErrors;
 
     /// <summary>Whether a sign-up is being created or has just succeeded, so the "already signed in" view doesn't flash before the workspace opens.</summary>
     private bool busy;
@@ -51,6 +65,9 @@ public partial class Signup : ComponentBase, IDisposable
     protected override void OnInitialized()
     {
         form.PlanId = DefaultPlanId;
+        editContext = new EditContext(form);
+        serverErrors = new ValidationMessageStore(editContext);
+        editContext.OnFieldChanged += (_, args) => serverErrors?.Clear(args.FieldIdentifier);
         State.Changed += OnStateChanged;
     }
 
@@ -82,6 +99,15 @@ public partial class Signup : ComponentBase, IDisposable
 
     #region Private Methods
 
+    private string CompanyTakenMessage(string company) =>
+        $"A workspace called \"{company.Trim()}\" already exists on {SaasSeedData.ProductName}. If it's your company's, ask its owner to invite you; otherwise add your team or city to the name.";
+
+    private string EmailTakenMessage(string email) => $"{email.Trim()} already has a {SaasSeedData.ProductName} account. Sign in with it, or use another email.";
+
+    private Task<bool> IsCompanyTakenAsync(string company) => Task.FromResult(State.IsWorkspaceNameTaken(company));
+
+    private Task<bool> IsEmailTakenAsync(string email) => Task.FromResult(State.IsAccountEmailTaken(email));
+
     private void OnBillingChanged(bool annual) => State.AnnualBilling = annual;
 
     private void OnStateChanged() => InvokeAsync(StateHasChanged);
@@ -101,10 +127,22 @@ public partial class Signup : ComponentBase, IDisposable
         await SaasDisplay.FocusAsync(formHeading);
     }
 
-    private void Submit()
+    /// <summary>
+    /// Creates the workspace once the form is valid: the email and company checks finish first, then every rule runs, and a
+    /// failed submit shows the summary (rule WR-002). The state checks again; an email in use keeps the sign-in link.
+    /// </summary>
+    private async Task SubmitAsync()
     {
         emailInUse = null;
         error = null;
+        serverErrors?.Clear();
+        editContext.NotifyValidationStateChanged();
+
+        var emailFree = emailCheck is null || await emailCheck.CheckNowAsync();
+        var companyFree = companyCheck is null || await companyCheck.CheckNowAsync();
+
+        if (!editContext.Validate() || !emailFree || !companyFree)
+            return;
 
         if (State.FindPlan(form.PlanId) is not { IsSelfServe: true } plan)
         {
@@ -129,6 +167,15 @@ public partial class Signup : ComponentBase, IDisposable
         {
             attempts++;
             emailInUse = email;
+            serverErrors?.Add(FieldIdentifier.Create(() => form.Email), EmailTakenMessage(email));
+            editContext.NotifyValidationStateChanged();
+            return;
+        }
+
+        if (State.IsWorkspaceNameTaken(form.Company))
+        {
+            serverErrors?.Add(FieldIdentifier.Create(() => form.Company), CompanyTakenMessage(form.Company));
+            editContext.NotifyValidationStateChanged();
             return;
         }
 
@@ -206,8 +253,15 @@ public partial class Signup : ComponentBase, IDisposable
 
     #region Nested Types
 
-    private sealed class SignupForm
+    /// <summary>
+    /// The sign-up fields, with the limits of <see cref="SaasState.StartTrial" />, password rules, and the terms; the
+    /// password must not contain the email's name part (a cross-field rule).
+    /// </summary>
+    private sealed class SignupForm : IValidatableObject
     {
+        [Range(typeof(bool), "true", "true", ErrorMessage = "Accept the terms to create your workspace.")]
+        public bool AcceptTerms { get; set; }
+
         [Required(ErrorMessage = "Choose a country.")]
         public string Country { get; set; } = string.Empty;
 
@@ -216,7 +270,7 @@ public partial class Signup : ComponentBase, IDisposable
         public string Company { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Enter your work email.")]
-        [EmailAddress(ErrorMessage = "Enter an email address like name@example.com.")]
+        [RegularExpression(@"^\s*[^@\s]+@[^@\s]+\.[^@\s]+\s*$", ErrorMessage = "Enter an email address like name@example.com.")]
         [StringLength(ShowcaseIdentity.MaxEmailLength, ErrorMessage = "Use {1} characters or fewer.")]
         public string Email { get; set; } = string.Empty;
 
@@ -227,10 +281,20 @@ public partial class Signup : ComponentBase, IDisposable
 
         [Required(ErrorMessage = "Make up a password.")]
         [StringLength(128, MinimumLength = ShowcaseIdentity.MinPasswordLength, ErrorMessage = "Use at least {2} characters.")]
+        [RegularExpression(@"^(?=.*[A-Za-z])(?=.*\d).*$", ErrorMessage = "Use at least one letter and one digit.")]
         public string? Password { get; set; }
 
         [Required(ErrorMessage = "Choose a plan.")]
         public string PlanId { get; set; } = string.Empty;
+
+        /// <summary>Runs once the fields are filled in: the password doesn't give away the email.</summary>
+        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+        {
+            var local = Email.Trim().Split('@')[0];
+
+            if (Password is { Length: > 0 } password && local.Length >= 3 && password.Contains(local, StringComparison.OrdinalIgnoreCase))
+                yield return new ValidationResult("Don't use your email's name in the password: it's the first thing someone would try.", new[] { nameof(Password) });
+        }
     }
 
     #endregion

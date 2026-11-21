@@ -10,6 +10,9 @@
             <div class="hr-app-bar">
                 <span class="hr-app-bar-title">@HrSeedData.CompanyName</span>
                 <div class="hr-app-bar-actions">
+                    @* The search and the notifications show only while someone is signed in. *@
+                    <ShowcaseGlobalSearch Class="hr-global-search" Placeholder="@SearchPlaceholder" />
+                    <ShowcaseNotificationsMenu />
                     <ShowcaseAccountMenu SiteBase="@HrLayout.Base" SignInPath="@HrLayout.SignInPath" />
                 </div>
             </div>
@@ -63,6 +66,9 @@
 
     private string BadgeText => State.IsHrAdmin ? "HR" : State.IsManager ? "Manager" : "Employee";
 
+    /// <summary>What the header's search finds for the signed-in role.</summary>
+    private string SearchPlaceholder => State.IsHrAdmin ? "Search people, leave, reviews, policies" : State.IsManager ? "Search people, leave, and reviews" : "Search people, your leave, and reviews";
+
     /// <summary>Stops listening to state changes.</summary>
     public void Dispose() => State.Changed -= OnStateChanged;
 
@@ -81,6 +87,7 @@
             new() { Id = "org-chart", Href = $"{b}/org-chart", IconName = IconName.Diagram3, Text = "Org chart" },
             new() { Id = "leave", Href = $"{b}/leave", IconName = IconName.Calendar3, Text = "My leave" },
             new() { Id = "onboarding", Href = $"{b}/onboarding", IconName = IconName.ListCheck, Text = "My onboarding" },
+            new() { Id = "my-reviews", Href = $"{b}/reviews", IconName = IconName.ClipboardCheck, Text = "My reviews", Match = NavLinkMatch.All },
         };
 
         if (State.IsManager || State.IsHrAdmin)
@@ -88,6 +95,7 @@
             items.Add(new() { Id = "team", Href = $"{b}/team", IconName = IconName.People, Text = State.IsHrAdmin && !State.IsManager ? "Teams" : "My team" });
             items.Add(new() { Id = "approvals", Href = $"{b}/approvals", IconName = IconName.CheckCircle, Text = "Leave approvals" });
             items.Add(new() { Id = "team-onboarding", Href = $"{b}/team/onboarding", IconName = IconName.PersonPlus, Text = "New hires" });
+            items.Add(new() { Id = "team-reviews", Href = $"{b}/reviews/team", IconName = IconName.ChatSquareText, Text = "Team reviews" });
         }
 
         if (State.IsHrAdmin)
@@ -95,7 +103,9 @@
             items.Add(new() { Id = "employees", Href = $"{b}/admin/employees", IconName = IconName.PersonBadge, Text = "Employees" });
             items.Add(new() { Id = "policies", Href = $"{b}/admin/leave-policies", IconName = IconName.Sliders, Text = "Leave policies" });
             items.Add(new() { Id = "templates", Href = $"{b}/admin/onboarding-templates", IconName = IconName.CardChecklist, Text = "Onboarding templates" });
+            items.Add(new() { Id = "reviews", Href = $"{b}/admin/reviews", IconName = IconName.Award, Text = "Performance reviews" });
             items.Add(new() { Id = "analytics", Href = $"{b}/admin/analytics", IconName = IconName.BarChart, Text = "Headcount analytics" });
+            items.Add(new() { Id = "audit", Href = $"{b}/admin/audit", IconName = IconName.ClockHistory, Text = "Audit log" });
         }
 
         items.Add(new() { Id = "profile", Href = $"{b}/profile", IconName = IconName.PersonGear, Text = "Profile" });

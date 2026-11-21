@@ -20,15 +20,9 @@
     font-size: .875rem;
 }
 
-.lg-empty {
-    margin: 0;
-    padding: 2rem 0;
-    text-align: center;
-    color: var(--bs-secondary-color);
-}
-
-/* Messages wrap instead of widening the table past the screen; the table scrolls inside its box when it must. */
-.lg-message {
+/* Messages wrap instead of widening the grid past the screen; the grid scrolls inside its box when it must. Grid renders the cells, so ::deep. */
+::deep .lg-message {
+    display: inline-block;
     min-width: 16rem;
     font-size: .8125rem;
     overflow-wrap: anywhere;

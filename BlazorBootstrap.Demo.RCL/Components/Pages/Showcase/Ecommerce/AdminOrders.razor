@@ -17,16 +17,16 @@
     </div>
 </div>
 
-@* Always rendered and focusable: a board action is announced here, and focus lands here when the card's button is gone. *@
-<p class="ao-status fw-semibold" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
-<p class="ao-error text-danger fw-semibold" role="alert">@errorMessage</p>
+@* Always rendered and focusable: a board or bulk action is announced here, and focus lands here when its button is gone. *@
+<p class="ea-list-status mb-3" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
+<p class="ea-list-error mb-3" role="alert">@errorMessage</p>
 
 @* Both views stay rendered (one hidden), so the grid keeps its sort and page while the board is open. *@
-<section class="ea-panel" aria-labelledby="ao-list-title" hidden="@showBoard">
+<section class="ea-panel mb-4" aria-labelledby="ao-list-title" hidden="@showBoard">
     <h2 class="ea-section-title" id="ao-list-title">All orders</h2>
 
-    <div class="row g-2 align-items-end mb-3" role="search" aria-label="Filter orders">
-        <div class="col-md-6 col-lg-5">
+    <div class="ea-list-filters" role="search" aria-label="Filter orders">
+        <div class="ea-list-search">
             <label class="form-label small fw-semibold" for="ao-search">Search</label>
             <InputGroup>
                 <InputGroupText><Icon Name="IconName.Search" aria-hidden="true" /></InputGroupText>
@@ -35,57 +35,164 @@
                            @oninput="OnSearchInput" Placeholder="Order number, name, or email" MaxLength="80" />
             </InputGroup>
         </div>
-        <div class="col-sm-6 col-md-3 col-lg-3">
+        <div>
             <label class="form-label small fw-semibold" for="ao-status-filter">Status</label>
             <select id="ao-status-filter" class="form-select" value="@statusFilter" @onchange="OnStatusChanged">
-                <option value="">All (@State.Orders.Count)</option>
+                <option value="">All (@EcommerceDisplay.Count(State.Orders.Count))</option>
                 @foreach (var status in Enum.GetValues<EcommerceOrderStatus>())
                 {
-                    <option value="@status">@status (@CountOf(status))</option>
+                    <option value="@status" @key="status">@status (@EcommerceDisplay.Count(CountOf(status)))</option>
                 }
             </select>
         </div>
-        <div class="col-sm-6 col-md-3 col-lg-4 text-md-end">
-            <span class="small text-body-secondary" role="status">@MatchText</span>
-        </div>
+    </div>
+    <div class="ea-list-meta mb-3">
+        <p class="small text-body-secondary mb-0" aria-live="polite" tabindex="-1" @ref="countRegion">@MatchText</p>
+        @if (IsFiltered)
+        {
+            <Button Color="ButtonColor.Link" Size="ButtonSize.Small" Class="p-0" @onclick="ClearFiltersAsync">Show every order</Button>
+        }
+        @* Back to the saved view's defaults: newest first, 25 a page, every column in its place. *@
+        <Button Color="ButtonColor.Link" Size="ButtonSize.Small" Class="p-0" @onclick="ResetViewAsync">Reset view</Button>
     </div>
 
-    <Grid @ref="grid"
-          TItem="EcommerceOrder"
-          Class="table table-hover align-middle ea-table"
-          DataProvider="OrdersDataProvider"
-          RowKeySelector="order => order.Id"
-          AllowSorting="true"
-          AllowPaging="true"
-          PageSize="10"
-          PaginationItemsTextFormat="{0}–{1} of {2} orders"
-          Responsive="true"
-          EmptyText="No orders match these filters."
-          aria-label="Orders">
-        <GridColumns>
-            <GridColumn TItem="EcommerceOrder" HeaderText="Order" Sortable="false" TextNoWrap="true">
-                <a class="fw-semibold" href="@OrderUrl(context.Id)">#@context.Id</a>
-            </GridColumn>
-            <GridColumn TItem="EcommerceOrder" HeaderText="Placed" PropertyName="PlacedOn" SortKeySelector="item => item.PlacedOn"
-                        SortDirection="SortDirection.Descending" IsDefaultSortColumn="true" TextNoWrap="true">
-                @EcommerceDisplay.DateTimeShort(context.PlacedOn)
-            </GridColumn>
-            <GridColumn TItem="EcommerceOrder" HeaderText="Customer" Sortable="false">
-                <span class="d-block">@context.ShipTo.FullName</span>
-                <span class="d-block small text-body-secondary text-break">@context.ShipTo.Email</span>
-            </GridColumn>
-            <GridColumn TItem="EcommerceOrder" HeaderText="Items" Sortable="false" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End">
-                @context.Totals.ItemCount
-            </GridColumn>
-            <GridColumn TItem="EcommerceOrder" HeaderText="Total" SortKeySelector="item => item.Totals.Total"
-                        TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" TextNoWrap="true">
-                @EcommerceDisplay.Money(context.Totals.Total)
-            </GridColumn>
-            <GridColumn TItem="EcommerceOrder" HeaderText="Status" Sortable="false">
-                <Badge Color="@EcommerceDisplay.StatusColor(context.Status)">@context.Status</Badge>
-            </GridColumn>
-        </GridColumns>
-    </Grid>
+    @if (selected.Count > 0)
+    {
+        var toPack = selected.Count(row => row.StatusValue == EcommerceOrderStatus.Placed);
+        var toShip = selected.Count(row => row.StatusValue == EcommerceOrderStatus.Packed);
+        var inTransit = selected.Count(row => row.StatusValue == EcommerceOrderStatus.Shipped);
+
+        <section class="ea-bulk" aria-labelledby="ao-bulk-count">
+            <h2 class="ea-bulk-count" id="ao-bulk-count">@(selected.Count == 1 ? "1 order selected" : $"{EcommerceDisplay.Count(selected.Count)} orders selected"), @EcommerceDisplay.Money(selected.Sum(row => row.Total))</h2>
+            @if (toPack + toShip + inTransit == 0)
+            {
+                <p class="small mb-0 w-100">None of these is waiting to be packed, shipped, or delivered, so there's nothing to move on.</p>
+            }
+            <div class="ea-bulk-actions">
+                @if (toPack > 0)
+                {
+                    <Button Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="() => ApplyBulkAsync(EcommerceOrderStatus.Placed)">
+                        <Icon Name="IconName.BoxSeam" class="me-1" aria-hidden="true" />Mark @EcommerceDisplay.Plural(toPack, "order") packed
+                    </Button>
+                }
+                @if (toShip > 0)
+                {
+                    <Button Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="() => ApplyBulkAsync(EcommerceOrderStatus.Packed)">
+                        <Icon Name="IconName.Printer" class="me-1" aria-hidden="true" />Print labels and ship @EcommerceDisplay.Plural(toShip, "order")
+                    </Button>
+                }
+                @if (inTransit > 0)
+                {
+                    <Button Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="() => ApplyBulkAsync(EcommerceOrderStatus.Shipped)">
+                        <Icon Name="IconName.HouseCheck" class="me-1" aria-hidden="true" />Mark @EcommerceDisplay.Plural(inTransit, "order") delivered
+                    </Button>
+                }
+                <Button Color="ButtonColor.Secondary" Outline="true" Size="ButtonSize.Small" @onclick="ClearSelectionAsync">Clear selection</Button>
+            </div>
+            <p class="form-text w-100 mb-0">
+                Each action moves only the selected orders in that status; the others stay as they are. Shipping prints the carrier's label, which gives each order
+                its tracking number, and every customer hears about their order.
+            </p>
+        </section>
+    }
+
+    <ShowcaseDataState Status="@(viewLoaded ? ShowcaseDataStatus.Ready : ShowcaseDataStatus.Loading)"
+                       IsEmpty="@(State.Orders.Count == 0)"
+                       EmptyIcon="IconName.Receipt"
+                       EmptyTitle="No orders yet"
+                       EmptyText="Orders customers place in the storefront appear here, newest first."
+                       LoadingText="Loading orders…"
+                       OnRetry="RefreshGridAsync">
+        <EmptyActions>
+            <a class="btn btn-sm btn-outline-primary" href="@EcommerceLayout.Base">Open the storefront</a>
+        </EmptyActions>
+        <ChildContent>
+            <Grid @ref="grid"
+                  @key="gridVersion"
+                  TItem="OrderRow"
+                  Class="table table-hover align-middle ea-table-wide sc-grid-row-links"
+                  GridContainerClass="ea-grid border rounded-3"
+                  DataProvider="ProvideOrdersAsync"
+                  SettingsProvider="view.GetSettingsAsync"
+                  GridSettingsChanged="SaveSettingsAsync"
+                  AllowPaging="true"
+                  PageSize="@pageSize"
+                  PageSizeSelectorVisible="true"
+                  PageSizeSelectorItems="@(new[] { 10, 25, 50, 100 })"
+                  PaginationItemsTextFormat="{0}–{1} of {2} orders"
+                  AllowSorting="true"
+                  AllowSelection="true"
+                  SelectionMode="GridSelectionMode.Multiple"
+                  RowSelectionLabel="@(row => $"Select order {row.Number}, {row.Customer}")"
+                  SelectAllRowsText="Select all shown orders"
+                  SelectedItemsChanged="OnSelectionChanged"
+                  RowClass="RowClass"
+                  AllowColumnChooser="true"
+                  AllowExport="true"
+                  ExportFileName="commerce-orders"
+                  Responsive="true"
+                  EmptyText="No orders match these filters. Clear a filter, or search for part of a number, name, or email."
+                  aria-label="Orders">
+                <GridColumns>
+                    <GridColumn TItem="OrderRow" HeaderText="Order" PropertyName="Number" SortString="number" SortKeySelector="row => row.Id"
+                                IsDefaultSortColumn="@view.IsSortColumn("number")" SortDirection="@view.DirectionFor("number")" TextNoWrap="true" AlwaysVisible="true">
+                        @* The stretched link makes the whole row open the order; the checkbox stays above it. *@
+                        <a class="ea-row-link stretched-link" href="@EcommerceSeedData.AdminOrderPath(context.Id)">@context.Number</a>
+                    </GridColumn>
+                    <GridColumn TItem="OrderRow" HeaderText="Placed" PropertyName="PlacedStamp" SortString="placed" SortKeySelector="row => row.PlacedOn"
+                                IsDefaultSortColumn="@view.IsSortColumn("placed")" SortDirection="@view.DirectionFor("placed")" TextNoWrap="true">
+                        @EcommerceDisplay.DateTimeShort(context.PlacedOn)
+                    </GridColumn>
+                    <GridColumn TItem="OrderRow" HeaderText="Customer" PropertyName="Customer" SortString="customer" SortKeySelector="row => row.Customer"
+                                IsDefaultSortColumn="@view.IsSortColumn("customer")" SortDirection="@view.DirectionFor("customer")">
+                        @context.Customer
+                    </GridColumn>
+                    <GridColumn TItem="OrderRow" HeaderText="Email" PropertyName="Email" SortString="email" SortKeySelector="row => row.Email"
+                                IsDefaultSortColumn="@view.IsSortColumn("email")" SortDirection="@view.DirectionFor("email")">
+                        <span class="small text-break">@context.Email</span>
+                    </GridColumn>
+                    <GridColumn TItem="OrderRow" HeaderText="Items" PropertyName="Items" SortString="items" SortKeySelector="row => row.Items"
+                                IsDefaultSortColumn="@view.IsSortColumn("items")" SortDirection="@view.DirectionFor("items")" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End">
+                        @context.Items
+                    </GridColumn>
+                    <GridColumn TItem="OrderRow" HeaderText="Total" PropertyName="Total" SortString="total" SortKeySelector="row => row.Total"
+                                IsDefaultSortColumn="@view.IsSortColumn("total")" SortDirection="@view.DirectionFor("total")" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" TextNoWrap="true">
+                        @EcommerceDisplay.Money(context.Total)
+                    </GridColumn>
+                    <GridColumn TItem="OrderRow" HeaderText="Status" PropertyName="Status" SortString="status" SortKeySelector="row => row.StatusValue"
+                                IsDefaultSortColumn="@view.IsSortColumn("status")" SortDirection="@view.DirectionFor("status")" TextNoWrap="true">
+                        <Badge Color="@EcommerceDisplay.StatusColor(context.StatusValue)">@context.Status</Badge>
+                    </GridColumn>
+                    <GridColumn TItem="OrderRow" HeaderText="Delivery" PropertyName="Delivery" SortString="delivery" SortKeySelector="row => row.Delivery"
+                                IsDefaultSortColumn="@view.IsSortColumn("delivery")" SortDirection="@view.DirectionFor("delivery")" TextNoWrap="true">
+                        @context.Delivery
+                    </GridColumn>
+                    <GridColumn TItem="OrderRow" HeaderText="Coupon" PropertyName="Coupon" SortString="coupon" SortKeySelector="row => row.Coupon"
+                                IsDefaultSortColumn="@view.IsSortColumn("coupon")" SortDirection="@view.DirectionFor("coupon")" TextNoWrap="true">
+                        @if (context.Coupon.Length == 0)
+                        {
+                            <span class="text-body-secondary" aria-hidden="true">—</span><span class="visually-hidden">None</span>
+                        }
+                        else
+                        {
+                            <span class="ea-mono">@context.Coupon</span>
+                        }
+                    </GridColumn>
+                    <GridColumn TItem="OrderRow" HeaderText="Refunded" PropertyName="Refunded" SortString="refunded" SortKeySelector="row => row.Refunded"
+                                IsDefaultSortColumn="@view.IsSortColumn("refunded")" SortDirection="@view.DirectionFor("refunded")" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" TextNoWrap="true">
+                        @if (context.Refunded == 0)
+                        {
+                            <span class="text-body-secondary" aria-hidden="true">—</span><span class="visually-hidden">None</span>
+                        }
+                        else
+                        {
+                            @EcommerceDisplay.Money(context.Refunded)
+                        }
+                    </GridColumn>
+                </GridColumns>
+            </Grid>
+        </ChildContent>
+    </ShowcaseDataState>
 </section>
 
 <div hidden="@(!showBoard)">
@@ -98,7 +205,7 @@
             <div class="col-lg-4" @key="column.Status">
                 <section class="ea-panel" aria-labelledby="@titleId">
                     <h2 class="ea-section-title d-flex align-items-center gap-2" id="@titleId">
-                        @column.Title <Badge Color="BadgeColor.Secondary" Class="rounded-pill">@orders.Count<span class="visually-hidden"> @(orders.Count == 1 ? "order" : "orders")</span></Badge>
+                        @column.Title <Badge Color="BadgeColor.Secondary" Class="rounded-pill">@orders.Count<span class="visually-hidden">&#32;@(orders.Count == 1 ? "order" : "orders")</span></Badge>
                     </h2>
                     @if (orders.Count == 0)
                     {
@@ -111,7 +218,7 @@
                             {
                                 <li class="ao-card" @key="order.Id">
                                     <div class="d-flex justify-content-between align-items-baseline gap-2">
-                                        <h3 class="ao-card-title"><a href="@OrderUrl(order.Id)">Order #@order.Id</a></h3>
+                                        <h3 class="ao-card-title"><a href="@EcommerceSeedData.AdminOrderPath(order.Id)">Order #@order.Id</a></h3>
                                         <span class="fw-semibold text-nowrap">@EcommerceDisplay.Money(order.Totals.Total)</span>
                                     </div>
                                     <p class="mb-1">@order.ShipTo.FullName</p>
@@ -154,13 +261,13 @@
         @if (shipping is not null)
         {
             <p class="mb-3">@shipping.ShipTo.FullName · @shipping.ShipTo.City, @shipping.ShipTo.Country · @shipping.Delivery delivery</p>
-            <EditForm id="ao-ship-form" EditContext="shipContext" OnValidSubmit="ConfirmShipAsync" FormName="ao-ship">
-                <ShowcaseFormErrors />
+            <EditForm id="ao-ship-form" EditContext="shipContext" OnValidSubmit="ConfirmShipAsync" FormName="ao-ship" novalidate>
                 <DataAnnotationsValidator />
+                <ShowcaseFormErrors ShowSummary="true" />
                 <label class="form-label" for="ao-tracking">Tracking number</label>
                 <TextInput @ref="trackingInput" Id="ao-tracking" @bind-Value="shipForm.TrackingNumber" MaxLength="40" aria-describedby="ao-tracking-help" />
                 <div class="form-text" id="ao-tracking-help">4 to 40 letters, digits, spaces, or dashes. The customer sees it on their order.</div>
-                <div role="alert"><ValidationMessage For="() => shipForm.TrackingNumber" /></div>
+                <ValidationMessage For="() => shipForm.TrackingNumber" />
             </EditForm>
         }
     </BodyTemplate>

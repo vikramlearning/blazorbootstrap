@@ -26,10 +26,13 @@
                         }
                     </NavbarNav>
                     <div class="d-flex flex-wrap align-items-center gap-2 mb-3 mb-lg-0">
+                        @* The search and the notifications show only while someone is signed in. *@
+                        <ShowcaseGlobalSearch Class="hd-global-search" Placeholder="@(State.IsAgent ? "Search tickets, articles, agents" : "Search your requests and articles")" />
                         @if (State.IsAgent)
                         {
                             <a class="btn btn-sm btn-outline-secondary" href="@HelpDeskAgentLayout.Base">Open agent desk</a>
                         }
+                        <ShowcaseNotificationsMenu />
                         @if (State.Identity.IsSignedIn)
                         {
                             <ShowcaseAccountMenu SiteBase="@Base" SignInPath="@SignInPath"

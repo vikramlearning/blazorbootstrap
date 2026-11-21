@@ -15,7 +15,7 @@ public partial class Index : ComponentBase
     private const int VisibleComponentCount = 3;
 
     private readonly IReadOnlyList<string> categories =
-        new[] { AllCategories }.Concat(ShowcaseCatalog.Sites.Select(site => site.Category).Distinct()).ToList();
+        new[] { AllCategories }.Concat(ShowcaseCatalog.Categories).ToList();
 
     private string selectedCategory = AllCategories;
 

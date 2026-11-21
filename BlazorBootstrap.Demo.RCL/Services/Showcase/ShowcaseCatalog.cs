@@ -11,34 +11,37 @@ public static class ShowcaseCatalog
 
     private const string AssetPrefix = "_content/BlazorBootstrap.Demo.RCL/showcase";
 
+    // Gallery filter order (work item 26112002, D-012): what the buyer runs, from internal tools to industry back offices.
+    private static readonly string[] categoryOrder = { "Business operations", "SaaS and AI", "Industry" };
+
     // The home page's four Showcase cards, highest enterprise value first
     // (ranking in blazorbootstrap.sdd devspec/research/showcase-enterprise-review.md).
     private static readonly string[] featuredSlugs = { "help-desk", "hr-portal", "monitoring", "saas" };
 
     private static readonly IReadOnlyList<ShowcaseSite> sites = new List<ShowcaseSite>
     {
-        new("ai-assistant", "AI Assistant Workspace", "Members chat with streaming answers, attachments, and a prompt library; workspace admins manage members, shared prompts, usage, and model policy.", "Chat, prompt library, and workspace admin", "SaaS", IconName.Stars, "#7c3aed", "AiAssistant",
+        new("ai-assistant", "AI Assistant Workspace", "Members chat with streaming answers, attachments, and a prompt library; workspace admins manage members, shared prompts, usage, and model policy.", "Chat, prompt library, and workspace admin", "SaaS and AI", IconName.Stars, "#7c3aed", "AiAssistant",
             new[] { "Markdown", "Offcanvas", "Sidebar", "Modal", "Charts", "Placeholders", "Progress", "Avatar", "Form inputs" }),
-        new("saas", "SaaS Product", "Public site, trial sign-up, a customer workspace with team and billing, and an operator console.", "Trials, team billing, and operator console", "SaaS", IconName.Lightning, "#db2777", "Saas",
-            new[] { "Sidebar", "Charts", "Card", "Switch", "Accordion", "Modal", "Progress", "Dropdown", "Form inputs" }),
-        new("ecommerce", "E-commerce Storefront", "Shoppers filter the catalog, review products, check out with a test card, and track orders and returns; the retailer fulfils orders and manages products, prices, coupons, returns, reviews, and analytics.", "Shop, checkout, and retailer back office", "Commerce", IconName.Bag, "#ea580c", "Ecommerce",
+        new("saas", "SaaS Product", "Public site and trial sign-up; customers run their team and billing and fix failed payments; operators manage tenants, invoices, dunning with retries and grace periods, plans, leads, and an audit log.", "Tenants, billing with dunning, and an audit log", "SaaS and AI", IconName.Lightning, "#db2777", "Saas",
+            new[] { "Grid", "Sidebar", "Charts", "Card", "Modal", "Timeline", "Switch", "Accordion", "Progress", "Form inputs" }),
+        new("ecommerce", "Commerce Back Office", "A retailer's back office fulfils orders with bulk packing and shipping, decides returns and refunds, sets prices and offers in bulk, manages products, customers, and reviews, reads sales analytics, and keeps an audit log; shoppers browse the storefront, check out with a test card, and track orders, returns, and reviews.", "Orders, returns, pricing, and analytics", "Industry", IconName.Bag, "#ea580c", "Ecommerce",
             new[] { "Carousel", "Card", "RatingInput", "RangeInput", "Offcanvas", "Sidebar", "Grid", "Tabs", "Timeline", "Charts", "Form inputs", "Pagination", "Toasts" }),
-        new("project-board", "Project & Client Board", "Team members work tasks on boards; project managers run projects, workload, the roadmap, and reports; account managers handle clients, the deal pipeline, and the forecast.", "Task boards, roadmap, and deal pipeline", "SaaS", IconName.Kanban, "#4f46e5", "ProjectBoard",
-            new[] { "SortableList", "MindMap", "Sidebar", "Charts", "Modal", "Progress", "Form inputs" }),
-        new("fintech", "Personal Finance", "Customers bank with a one-time-code sign-in, transfers, payees, and disputes; operations review held transfers and disputes.", "Banking, transfers, and dispute review", "Industry", IconName.Wallet2, "#059669", "Fintech",
-            new[] { "Sidebar", "Charts", "CurrencyInput", "Progress", "Modal", "Alert", "Form inputs" }),
+        new("project-board", "Project & Client Board", "Team members work tasks on boards and log their hours; project managers run projects, workload, the roadmap, and reports and approve the timesheets; account managers handle clients, the deal pipeline, and the forecast and turn approved hours into client invoices; managers read the audit log.", "Task boards, timesheets, and client invoices", "Business operations", IconName.Kanban, "#4f46e5", "ProjectBoard",
+            new[] { "Grid", "SortableList", "MindMap", "Sidebar", "Charts", "Modal", "Progress", "Badge", "Form inputs" }),
+        new("fintech", "Banking Operations", "A bank's back office works the held-transfer review queue with bulk release, triages AML alerts into cases that a senior reviewer approves (four-eyes), decides disputes, follows customers and scheduled postings, and reads the audit log; customers bank with a one-time-code sign-in, transfers, payees, budgets, and disputes.", "Transfer review, AML cases, and disputes", "Industry", IconName.Wallet2, "#059669", "Fintech",
+            new[] { "Grid", "Sidebar", "Navbar", "Card", "Charts", "Modal", "CurrencyInput", "Badge", "Progress", "Alert", "Breadcrumb", "Form inputs" }),
         new("healthcare", "Healthcare Clinic Portal", "Patients book visits, read records and lab reports, and pay bills; doctors run visits, charts, and lab results; the front desk checks patients in and keeps doctors' hours.", "Appointments, records, and front desk", "Industry", IconName.HeartPulse, "#0891b2", "Healthcare",
             new[] { "PdfViewer", "GoogleMap", "Sidebar", "Tabs", "Modal", "Form inputs" }),
         new("learning", "Online Learning", "Learners enroll, take scored quizzes, ask questions, and earn verifiable certificates; instructors build and publish courses and quizzes, answer questions, and reply to reviews.", "Courses, quizzes, and certificates", "Industry", IconName.Mortarboard, "#ca8a04", "Learning",
             new[] { "Card", "Accordion", "Progress", "Markdown", "RichTextEditor", "PdfViewer", "Sidebar", "Charts", "Modal" }),
         new("travel", "Travel & Stay Booking", "Guests search, book, and manage trips; hosts answer requests and run calendars, listings, inbox, reviews, and earnings.", "Stay search, booking, and hosting", "Industry", IconName.Airplane, "#0284c7", "Travel",
             new[] { "GoogleMap", "Carousel", "Sidebar", "Charts", "DateInput", "RatingInput", "Modal", "Form inputs" }),
-        new("help-desk", "Help Desk & Ticketing", "Help center for customers, an agent desk with SLAs and saved replies, knowledge base authoring, reports, and admin.", "Help center, agent desk, and reports", "Industry", IconName.Headset, "#dc2626", "HelpDesk",
-            new[] { "Sidebar", "Charts", "RichTextEditor", "Modal", "Tabs", "Badge", "Breadcrumb", "Toasts" }),
-        new("monitoring", "IoT & DevOps Monitoring", "A public status page with history and subscriptions; engineers work incidents, publish updates, follow live logs and traces, and share on-call.", "Status page, incidents, and live logs", "Industry", IconName.Activity, "#16a34a", "Monitoring",
-            new[] { "Charts", "Sidebar", "Progress", "Alert", "Callout", "Modal", "Tooltip", "Toasts" }),
-        new("hr-portal", "HR & Employee Portal", "Employees find colleagues, request leave, and work through onboarding; managers approve leave and follow new hires; HR admins manage people, leave policies, onboarding templates, and headcount analytics.", "Directory, leave, and onboarding", "Extras", IconName.People, "#9333ea", "HrPortal",
-            new[] { "MindMap", "Sidebar", "Charts", "Modal", "Progress", "Form inputs" }),
+        new("help-desk", "Help Desk & Ticketing", "Help center for customers, an agent desk with SLAs and escalation rules, knowledge base authoring, reports, an audit log, and admin.", "Help center, agent desk, and reports", "Business operations", IconName.Headset, "#dc2626", "HelpDesk",
+            new[] { "Grid", "Sidebar", "Charts", "RichTextEditor", "Modal", "Tabs", "Badge", "Breadcrumb", "Toasts" }),
+        new("monitoring", "IoT & DevOps Monitoring", "A public status page with history and subscriptions; engineers work the incident queue, get paged by escalation policies and acknowledge, publish updates, and follow live logs and traces; admins run alert rules and drills, escalation policies, maintenance, services, and an audit log.", "Status page, incidents, and paging", "Business operations", IconName.Activity, "#16a34a", "Monitoring",
+            new[] { "Grid", "Charts", "Sidebar", "Modal", "Badge", "Breadcrumb", "Progress", "Alert", "Callout", "Tooltip", "Toasts" }),
+        new("hr-portal", "HR & Employee Portal", "Employees find colleagues, request leave, write self reviews, and work through onboarding; managers approve leave, review their team, and follow new hires; HR admins run performance review cycles with calibration and manage people, leave policies, onboarding templates, headcount analytics, and an audit log.", "Directory, leave, onboarding, and reviews", "Business operations", IconName.People, "#9333ea", "HrPortal",
+            new[] { "Grid", "MindMap", "Sidebar", "Charts", "Modal", "Progress", "Badge", "Form inputs" }),
     };
 
     /// <summary>
@@ -79,6 +82,12 @@ public static class ShowcaseCatalog
     #endregion
 
     #region Properties, Indexers
+
+    /// <summary>
+    /// Gets the gallery categories in filter order; a category no site uses is left out.
+    /// </summary>
+    public static IReadOnlyList<string> Categories { get; } = categoryOrder.Where(category => sites.Any(site => site.Category == category))
+        .Concat(sites.Select(site => site.Category).Distinct().Except(categoryOrder)).ToList();
 
     /// <summary>
     /// Gets the sites the home page features, in display order. Declared after <c>sites</c> so it is initialized after it.

@@ -1,16 +1,21 @@
+using System.ComponentModel.DataAnnotations;
 using System.Globalization;
 using BlazorBootstrap.Demo.RCL.Models.Showcase.Fintech;
 using BlazorBootstrap.Demo.RCL.Services.Showcase.Fintech;
+using BlazorBootstrap.Demo.RCL.Services.Showcase.Foundation;
+using Microsoft.AspNetCore.Components.Forms;
 
 namespace BlazorBootstrap.Demo.RCL.Components.Pages.Showcase.Fintech;
 
 /// <summary>
 /// One customer, as operations see them: the profile (email, city, segment, customer since, status in text, accounts, and
-/// total balance). For the demo customer, whose ledger is in the tab, also each account's balance and available amount,
-/// the card's status (frozen or active), and the last 10 transactions. For everyone, their transfers (held and scheduled
-/// first, then the most recent, each linking to its operations page) and disputes (linking to the dispute), and the
-/// internal notes, newest first with author and time, with a form to add one (1–500 characters, with a counter; customers
-/// never see notes). The outcome of adding a note is announced in a status message. An unknown ID shows a not-found screen.
+/// total balance); for the demo customer, whose ledger is in the tab, also each account's balance and available amount and
+/// the card's status, and every transaction in a <see cref="Grid{TItem}" /> (13 months, with column filters; a disputed
+/// payment's row opens its dispute). For everyone, their disputes, their transfers in a <see cref="Grid{TItem}" /> (held and
+/// scheduled first, then the most recent; the whole row opens the transfer's operations page), and the internal notes,
+/// newest first with author and time, a Risk panel with the customer's AML cases and alerts not in a case, with an <see cref="EditForm" /> to add one (rule WR-002: required, 1–500 characters,
+/// with a counter; customers never see notes). Both grids keep a saved view for the visit, with the column chooser and CSV
+/// export. An unknown ID shows a not-found screen.
 /// </summary>
 public partial class OpsCustomer : ComponentBase, IDisposable
 {
@@ -18,27 +23,47 @@ public partial class OpsCustomer : ComponentBase, IDisposable
 
     private const int MaxNote = 500;
 
-    /// <summary>How many closed transfers (sent, rejected, cancelled) the page lists after the waiting ones.</summary>
-    private const int RecentClosedTransfers = 10;
+    private const string TransactionsResetText = "The transactions view is reset: newest first, 25 a page, and every column shown.";
 
-    /// <summary>How many of the demo customer's transactions the page lists.</summary>
-    private const int RecentTransactionCount = 10;
+    private const string TransfersResetText = "The transfers view is reset: waiting transfers first, 10 a page, and every column shown.";
 
     private bool focusNoteStatus;
 
     private string? loadedId;
 
-    private string? noteError;
+    private EditContext noteContext = default!;
 
-    private ElementReference? noteInput;
+    private NoteForm noteForm = new();
+
+    private InputTextArea? noteInput;
 
     private bool noteIsError;
+
+    private int noteLength;
 
     private string? noteMessage;
 
     private ElementReference? noteStatus;
 
-    private string? noteText;
+    private Grid<TransactionRow>? transactionsGrid;
+
+    private int transactionsPageSize = 25;
+
+    private int transactionsVersion;
+
+    private ShowcaseGridView transactionsView = default!;
+
+    private Grid<TransferRow>? transfersGrid;
+
+    private int transfersPageSize = 10;
+
+    private int transfersVersion;
+
+    private ShowcaseGridView transfersView = default!;
+
+    private string? viewMessage;
+
+    private bool viewsLoaded;
 
     #endregion
 
@@ -48,25 +73,47 @@ public partial class OpsCustomer : ComponentBase, IDisposable
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        if (firstRender)
+        {
+            await transfersView.LoadAsync();
+            await transactionsView.LoadAsync();
+            transfersPageSize = (await transfersView.GetSettingsAsync()).PageSize;
+            transactionsPageSize = (await transactionsView.GetSettingsAsync()).PageSize;
+            viewsLoaded = true;
+            StateHasChanged();
+        }
+
         if (focusNoteStatus)
         {
             focusNoteStatus = false;
-            await FintechDisplay.FocusAsync(noteIsError ? noteInput : noteStatus);
+            await FintechDisplay.FocusAsync(noteIsError ? noteInput?.Element : noteStatus);
         }
     }
 
-    protected override void OnInitialized() => State.Changed += OnStateChanged;
+    protected override void OnInitialized()
+    {
+        transfersView = GridViews.Get(State.SiteSlug, "ops-customer-transfers", 10, "status", SortDirection.Ascending);
+        transactionsView = GridViews.Get(State.SiteSlug, "ops-customer-transactions", 25, "date", SortDirection.Descending);
+        ResetNoteForm();
+        State.Changed += OnStateChanged;
+    }
 
+    /// <summary>Another customer reuses the page: the note form and the grids start over for them.</summary>
     protected override void OnParametersSet()
     {
         if (loadedId == Id)
             return;
 
+        if (loadedId is not null)
+        {
+            transfersVersion++;
+            transactionsVersion++;
+        }
+
         loadedId = Id;
-        noteText = null;
-        noteError = null;
         noteMessage = null;
         noteIsError = false;
+        ResetNoteForm();
     }
 
     #endregion
@@ -90,37 +137,79 @@ public partial class OpsCustomer : ComponentBase, IDisposable
         _ => "That didn't work, and the note wasn't added. Try again.",
     };
 
-    private static string TransferPath(string reference) => $"{FintechOpsLayout.Base}/transfers/{Uri.EscapeDataString(reference)}";
-
     private void AddNote()
     {
-        if (Customer is not { } customer)
+        if (Customer is not { } customer || !noteContext.Validate())
             return;
 
-        var text = noteText?.Trim() ?? string.Empty;
-
-        if (text.Length == 0)
-        {
-            noteError = "Write the note first.";
-            noteIsError = true;
-            noteMessage = "Write the note first: it can't be empty.";
-            focusNoteStatus = true;
-            return;
-        }
-
-        var result = State.AddCustomerNote(customer.Id, text);
+        var result = State.AddCustomerNote(customer.Id, noteForm.Text.Trim());
 
         noteIsError = result != FintechResult.Ok;
-        noteError = noteIsError ? NoteResultText(result, customer.Name) : null;
         noteMessage = NoteResultText(result, customer.Name);
 
         if (result == FintechResult.Ok)
-            noteText = null;
+            ResetNoteForm();
 
         focusNoteStatus = true;
     }
 
-    private void OnStateChanged() => InvokeAsync(StateHasChanged);
+    private void OnStateChanged() => InvokeAsync(async () =>
+    {
+        await RefreshGridsAsync();
+        StateHasChanged();
+    });
+
+    private Task<GridDataProviderResult<TransactionRow>> ProvideTransactionsAsync(GridDataProviderRequest<TransactionRow> request) => transactionsView.ApplyAsync(request, TransactionRows);
+
+    private Task<GridDataProviderResult<TransferRow>> ProvideTransfersAsync(GridDataProviderRequest<TransferRow> request) => transfersView.ApplyAsync(request, TransferRows);
+
+    private async Task RefreshGridsAsync()
+    {
+        if (transfersGrid is not null)
+            await transfersGrid.RefreshDataAsync();
+
+        if (transactionsGrid is not null)
+            await transactionsGrid.RefreshDataAsync();
+    }
+
+    private void ResetNoteForm()
+    {
+        noteForm = new NoteForm();
+        noteContext = new EditContext(noteForm);
+        noteLength = 0;
+    }
+
+    private async Task ResetTransactionsViewAsync()
+    {
+        await transactionsView.ResetAsync();
+        transactionsPageSize = 25;
+        transactionsVersion++;
+        viewMessage = viewMessage == TransactionsResetText ? TransactionsResetText + " (2)" : TransactionsResetText;
+    }
+
+    private async Task ResetTransfersViewAsync()
+    {
+        await transfersView.ResetAsync();
+        transfersPageSize = 10;
+        transfersVersion++;
+        viewMessage = viewMessage == TransfersResetText ? TransfersResetText + " (2)" : TransfersResetText;
+    }
+
+    private async Task SaveTransactionsSettingsAsync(GridSettings settings)
+    {
+        if (settings.PageSize > 0)
+            transactionsPageSize = settings.PageSize;
+
+        await transactionsView.SaveSettingsAsync(settings);
+    }
+
+    private async Task SaveTransfersSettingsAsync(GridSettings settings)
+    {
+        if (settings.PageSize > 0)
+            transfersPageSize = settings.PageSize;
+
+        await transfersView.SaveSettingsAsync(settings);
+    }
 
     /// <summary>Says when a transfer goes or went, and where from.</summary>
     private string TransferWhen(FintechTransfer transfer)
@@ -144,44 +233,63 @@ public partial class OpsCustomer : ComponentBase, IDisposable
 
     private FintechCustomer? Customer => State.FindCustomer(Id);
 
+    /// <summary>Gets the AML alerts on the customer, newest first.</summary>
+    private IReadOnlyList<FintechAmlAlert> CustomerAlerts => State.AmlAlerts.Where(alert => alert.CustomerId == Id).ToList();
+
+    /// <summary>Gets the AML cases on the customer, newest first.</summary>
+    private IReadOnlyList<FintechAmlCase> CustomerCases => State.AmlCases.Where(amlCase => amlCase.CustomerId == Id).ToList();
+
     /// <summary>Gets the customer's disputes, newest first.</summary>
     private IReadOnlyList<FintechDispute> CustomerDisputes => State.AllDisputes.Where(dispute => dispute.CustomerId == Id).ToList();
 
     private static string CustomersPath => $"{FintechOpsLayout.Base}/customers";
 
-    /// <summary>Gets the customer's transfers: held ones, then scheduled ones by date, then the most recent closed ones.</summary>
-    private IReadOnlyList<FintechTransfer> CustomerTransfers
-    {
-        get
-        {
-            var mine = State.AllTransfers.Where(transfer => transfer.CustomerId == Id).ToList();
-            var waiting = mine
-                .Where(transfer => transfer.Status is FintechTransferStatus.Held or FintechTransferStatus.Scheduled)
-                .OrderBy(transfer => transfer.Status == FintechTransferStatus.Held ? 0 : 1)
-                .ThenBy(transfer => transfer.Date);
-            var closed = mine
-                .Where(transfer => transfer.Status is not (FintechTransferStatus.Held or FintechTransferStatus.Scheduled))
-                .OrderByDescending(transfer => transfer.ClosedAt ?? transfer.CreatedAt)
-                .Take(RecentClosedTransfers);
-
-            return waiting.Concat(closed).ToList();
-        }
-    }
+    [Inject] private ShowcaseGridViewStore GridViews { get; set; } = default!;
 
     /// <summary>Gets or sets the customer ID from the route.</summary>
     [Parameter] public string Id { get; set; } = string.Empty;
 
     private IReadOnlyList<FintechCustomerNote> Notes => State.NotesFor(Id);
 
-    /// <summary>Gets the demo customer's 10 most recent transactions, newest first.</summary>
-    private IReadOnlyList<FintechTransaction> RecentTransactions => State.Transactions
-        .Where(item => DateOnly.FromDateTime(item.Date) <= State.Today)
-        .OrderByDescending(item => item.Date)
-        .ThenByDescending(item => item.Id)
-        .Take(RecentTransactionCount)
+    [Inject] private FintechState State { get; set; } = default!;
+
+    /// <summary>Gets the demo customer's transactions up to today, newest first, as grid rows; nobody else's ledger is in the demo.</summary>
+    private IReadOnlyList<TransactionRow> TransactionRows => Id != FintechSeedData.SeededCustomerId
+        ? Array.Empty<TransactionRow>()
+        : State.Transactions
+            .Where(item => DateOnly.FromDateTime(item.Date) <= State.Today)
+            .Select(item => new TransactionRow(item.Id, item.Date, item.Description, State.FindAccount(item.AccountId)?.Name ?? item.AccountId, State.FindCategory(item.CategoryId).Name,
+                item.Amount, item.IsPending, item.DisputeId))
+            .ToList();
+
+    /// <summary>Gets the customer's transfers as grid rows: held ones, then scheduled ones by date, then the closed ones, newest first.</summary>
+    private IReadOnlyList<TransferRow> TransferRows => State.AllTransfers
+        .Where(transfer => transfer.CustomerId == Id)
+        .Select(transfer => (Transfer: transfer, Order: transfer.Status switch { FintechTransferStatus.Held => 0, FintechTransferStatus.Scheduled => 1, _ => 2 }))
+        .OrderBy(item => item.Order)
+        .ThenBy(item => item.Order < 2 ? item.Transfer.Date.DayNumber : -(item.Transfer.ClosedAt ?? item.Transfer.CreatedAt).Ticks / TimeSpan.TicksPerDay)
+        .Select((item, index) => new TransferRow(item.Transfer.Reference, item.Transfer.ToName, item.Transfer.Amount, Transfers.StatusText(item.Transfer.Status), item.Transfer.Status,
+            index, TransferWhen(item.Transfer), item.Transfer.ClosedAt ?? item.Transfer.Date.ToDateTime(TimeOnly.MinValue),
+            item.Transfer.HoldReason ?? item.Transfer.RejectReason ?? string.Empty))
         .ToList();
 
-    [Inject] private FintechState State { get; set; } = default!;
+    #endregion
+
+    #region Nested Types
+
+    /// <summary>The note form's field: 1 to 500 characters.</summary>
+    private sealed class NoteForm
+    {
+        [Required(ErrorMessage = "Write the note first: it can't be empty.")]
+        [StringLength(MaxNote, ErrorMessage = "Keep the note to 500 characters.")]
+        public string Text { get; set; } = string.Empty;
+    }
+
+    /// <summary>One transaction as the grid shows and exports it.</summary>
+    private sealed record TransactionRow(int Id, DateTime Date, string Description, string Account, string Category, decimal Amount, bool Pending, int? DisputeId);
+
+    /// <summary>One transfer as the grid shows and exports it; <see cref="Order" /> keeps waiting transfers first.</summary>
+    private sealed record TransferRow(string Reference, string To, decimal Amount, string Status, FintechTransferStatus StatusValue, int Order, string When, DateTime WhenAt, string Reason);
 
     #endregion
 }

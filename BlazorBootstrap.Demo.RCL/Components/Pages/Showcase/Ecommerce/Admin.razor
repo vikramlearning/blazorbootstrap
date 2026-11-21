@@ -95,7 +95,7 @@
             else
             {
                 <ul class="list-unstyled d-grid gap-2 mb-0">
-                    @foreach (var product in StockAlerts)
+                    @foreach (var product in StockAlerts.Take(MaxStockAlerts))
                     {
                         <li class="d-flex justify-content-between gap-2" @key="product.Id">
                             <a href="@($"{EcommerceAdminLayout.Base}/products/{product.Id}")">@product.Name</a>
@@ -103,6 +103,12 @@
                         </li>
                     }
                 </ul>
+                @if (StockAlerts.Count > MaxStockAlerts)
+                {
+                    <p class="small mt-3 mb-0">
+                        <a href="@($"{EcommerceAdminLayout.Base}/products")">@(StockAlerts.Count - MaxStockAlerts) more running low or out of stock</a>: filter the product list by stock.
+                    </p>
+                }
             }
         </section>
 

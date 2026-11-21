@@ -32,7 +32,7 @@ else
             }
             else
             {
-                var unit = MonitoringDisplay.RequestUnit(kind);
+                var unit = MonitoringDisplay.RequestUnit(form.Kind);
                 var idPreview = IdPreview;
 
                 <Breadcrumb Items="BreadcrumbItems" Class="mb-3" />
@@ -57,13 +57,15 @@ else
                         <Card Class="mw-card">
                             <CardHeader><h2 class="mw-card-title" id="mw-svced-form-title">Service details</h2></CardHeader>
                             <CardBody>
-                                <form @onsubmit="Save" novalidate aria-labelledby="mw-svced-form-title">
+                                <EditForm EditContext="editContext" OnSubmit="SaveAsync" FormName="mw-service" novalidate aria-labelledby="mw-svced-form-title">
+                                    <DataAnnotationsValidator />
+                                    <ShowcaseFormErrors ShowSummary="true" />
                                     <div class="mb-3">
                                         <label class="form-label fw-semibold" for="mw-svced-name">Name</label>
-                                        <input id="mw-svced-name" class="form-control @(nameError is null ? null : "is-invalid")" @bind="name" @bind:event="oninput" @ref="nameInput"
-                                               autocomplete="off" aria-required="true" aria-invalid="@(nameError is null ? null : "true")"
-                                               aria-describedby="mw-svced-name-help mw-svced-name-error" />
-                                        <div class="form-text d-flex flex-wrap justify-content-between gap-2" id="mw-svced-name-help">
+                                        <InputText @ref="nameInput" id="mw-svced-name" class="form-control" @bind-Value="form.Name" @oninput="OnNameInput"
+                                                   maxlength="@MonitoringState.MaxServiceNameLength" autocomplete="off" aria-describedby="mw-svced-name-help" />
+                                        <ShowcaseUniqueCheck @ref="nameCheck" For="() => form.Name" IsTakenAsync="IsNameTakenAsync" TakenMessage="NameTakenMessage" />
+                                        <div class="form-text d-flex flex-wrap justify-content-between gap-2 mt-0" id="mw-svced-name-help">
                                             @if (service is null)
                                             {
                                                 <span>
@@ -75,19 +77,19 @@ else
                                             {
                                                 <span>ID: <span class="mw-mono">@service.Id</span> (it can't change).</span>
                                             }
-                                            <span class="text-nowrap @(name.Trim().Length > MonitoringState.MaxServiceNameLength ? "text-danger-emphasis" : null)">@CounterText(name, MonitoringState.MaxServiceNameLength)</span>
+                                            <span class="text-nowrap">Up to @MonitoringState.MaxServiceNameLength characters, unique</span>
                                         </div>
-                                        <div class="invalid-feedback d-block" id="mw-svced-name-error">@nameError</div>
+                                        <ValidationMessage For="() => form.Name" />
                                     </div>
 
                                     <div class="mb-3">
                                         <label class="form-label fw-semibold" for="mw-svced-kind">Kind</label>
-                                        <select id="mw-svced-kind" class="form-select" @bind="kind" aria-describedby="mw-svced-kind-help">
+                                        <InputSelect id="mw-svced-kind" class="form-select" @bind-Value="form.Kind" aria-describedby="mw-svced-kind-help">
                                             @foreach (var option in Enum.GetValues<MonitoringServiceKind>())
                                             {
                                                 <option value="@option">@MonitoringDisplay.KindLabel(option)</option>
                                             }
-                                        </select>
+                                        </InputSelect>
                                         <div class="form-text" id="mw-svced-kind-help">
                                             @(service is null
                                                 ? "The kind sets its normal error rate, CPU, memory, and disk use, and the unit of its traffic."
@@ -98,32 +100,29 @@ else
                                     <div class="row g-3 mb-3">
                                         <div class="col-sm-6">
                                             <label class="form-label fw-semibold" for="mw-svced-region">Region</label>
-                                            <input id="mw-svced-region" class="form-control @(regionError is null ? null : "is-invalid")" @bind="region" @bind:event="oninput" @ref="regionInput"
-                                                   autocomplete="off" maxlength="@MonitoringState.MaxServiceTagLength" aria-required="true" aria-invalid="@(regionError is null ? null : "true")"
-                                                   aria-describedby="mw-svced-region-help mw-svced-region-error" />
-                                            <div class="form-text" id="mw-svced-region-help">Where it runs, like us-east-1. Up to @MonitoringState.MaxServiceTagLength characters.</div>
-                                            <div class="invalid-feedback d-block" id="mw-svced-region-error">@regionError</div>
+                                            <InputText id="mw-svced-region" class="form-control" @bind-Value="form.Region" autocomplete="off" spellcheck="false" autocapitalize="none"
+                                                       maxlength="@MonitoringState.MaxServiceTagLength" aria-describedby="mw-svced-region-help" />
+                                            <div class="form-text" id="mw-svced-region-help">A region code, like us-east-1: lower-case letters and digits joined by hyphens.</div>
+                                            <ValidationMessage For="() => form.Region" />
                                         </div>
                                         <div class="col-sm-6">
                                             <label class="form-label fw-semibold" for="mw-svced-team">Team</label>
-                                            <input id="mw-svced-team" class="form-control @(teamError is null ? null : "is-invalid")" @bind="team" @bind:event="oninput" @ref="teamInput"
-                                                   autocomplete="off" maxlength="@MonitoringState.MaxServiceTagLength" aria-required="true" aria-invalid="@(teamError is null ? null : "true")"
-                                                   aria-describedby="mw-svced-team-help mw-svced-team-error" />
-                                            <div class="form-text" id="mw-svced-team-help">The team that owns it, like Payments. Up to @MonitoringState.MaxServiceTagLength characters.</div>
-                                            <div class="invalid-feedback d-block" id="mw-svced-team-error">@teamError</div>
+                                            <InputText id="mw-svced-team" class="form-control" @bind-Value="form.Team" autocomplete="off"
+                                                       maxlength="@MonitoringState.MaxServiceTagLength" aria-describedby="mw-svced-team-help" />
+                                            <div class="form-text" id="mw-svced-team-help">The team that owns it, like Payments. Its engineers are told about new incidents on it.</div>
+                                            <ValidationMessage For="() => form.Team" />
                                         </div>
                                     </div>
 
                                     <div class="mb-3">
                                         <label class="form-label fw-semibold" for="mw-svced-description">Description</label>
-                                        <textarea id="mw-svced-description" class="form-control @(descriptionError is null ? null : "is-invalid")" rows="3" @bind="description" @bind:event="oninput"
-                                                  @ref="descriptionInput" aria-required="true" aria-invalid="@(descriptionError is null ? null : "true")"
-                                                  aria-describedby="mw-svced-description-help mw-svced-description-error"></textarea>
+                                        <InputTextArea id="mw-svced-description" class="form-control" rows="3" @bind-Value="form.Description"
+                                                       maxlength="@MonitoringState.MaxServiceDescriptionLength" aria-describedby="mw-svced-description-help" />
                                         <div class="form-text d-flex flex-wrap justify-content-between gap-2" id="mw-svced-description-help">
                                             <span>What it does, in a sentence. Engineers see it on the service page.</span>
-                                            <span class="text-nowrap @(description.Trim().Length > MonitoringState.MaxServiceDescriptionLength ? "text-danger-emphasis" : null)">@CounterText(description, MonitoringState.MaxServiceDescriptionLength)</span>
+                                            <span class="text-nowrap">Up to @MonitoringState.MaxServiceDescriptionLength characters</span>
                                         </div>
-                                        <div class="invalid-feedback d-block" id="mw-svced-description-error">@descriptionError</div>
+                                        <ValidationMessage For="() => form.Description" />
                                     </div>
 
                                     <fieldset class="mb-3">
@@ -132,47 +131,47 @@ else
                                         <div class="row g-3">
                                             <div class="col-sm-4">
                                                 <label class="form-label" for="mw-svced-latency">p95 latency (ms)</label>
-                                                <input id="mw-svced-latency" type="number" inputmode="decimal" step="any" min="0.1" max="10000"
-                                                       class="form-control @(latencyError is null ? null : "is-invalid")" @bind="latencyText" @ref="latencyInput"
-                                                       aria-required="true" aria-invalid="@(latencyError is null ? null : "true")" aria-describedby="mw-svced-latency-help mw-svced-latency-error" />
+                                                <InputNumber TValue="double?" id="mw-svced-latency" class="form-control" @bind-Value="form.LatencyMs" inputmode="decimal" step="any" min="0.1" max="10000"
+                                                             ParsingErrorMessage="Enter the normal p95 latency in milliseconds, like 120." aria-describedby="mw-svced-latency-help" />
                                                 <div class="form-text" id="mw-svced-latency-help">From 0.1 to 10,000 ms.</div>
-                                                <div class="invalid-feedback d-block" id="mw-svced-latency-error">@latencyError</div>
+                                                <ValidationMessage For="() => form.LatencyMs" />
                                             </div>
                                             <div class="col-sm-4">
                                                 <label class="form-label" for="mw-svced-traffic">Traffic (@unit)</label>
-                                                <input id="mw-svced-traffic" type="number" inputmode="decimal" step="any" min="1" max="100000"
-                                                       class="form-control @(trafficError is null ? null : "is-invalid")" @bind="trafficText" @ref="trafficInput"
-                                                       aria-required="true" aria-invalid="@(trafficError is null ? null : "true")" aria-describedby="mw-svced-traffic-help mw-svced-traffic-error" />
+                                                <InputNumber TValue="double?" id="mw-svced-traffic" class="form-control" @bind-Value="form.Traffic" inputmode="decimal" step="any" min="1" max="100000"
+                                                             ParsingErrorMessage="Enter the normal traffic as a number, like 250." aria-describedby="mw-svced-traffic-help" />
                                                 <div class="form-text" id="mw-svced-traffic-help">Per second, from 1 to 100,000.</div>
-                                                <div class="invalid-feedback d-block" id="mw-svced-traffic-error">@trafficError</div>
+                                                <ValidationMessage For="() => form.Traffic" />
                                             </div>
                                             <div class="col-sm-4">
                                                 <label class="form-label" for="mw-svced-instances">@InstancesLabel</label>
-                                                <input id="mw-svced-instances" type="number" inputmode="numeric" step="1" min="1" max="10000"
-                                                       class="form-control @(instancesError is null ? null : "is-invalid")" @bind="instancesText" @ref="instancesInput"
-                                                       aria-required="true" aria-invalid="@(instancesError is null ? null : "true")" aria-describedby="mw-svced-instances-help mw-svced-instances-error" />
+                                                <InputNumber TValue="int?" id="mw-svced-instances" class="form-control" @bind-Value="form.Instances" inputmode="numeric" step="1" min="1"
+                                                             max="@(form.Kind == MonitoringServiceKind.Devices ? 10000 : MonitoringState.MaxServiceInstances)"
+                                                             ParsingErrorMessage="Enter a whole number, like 3." aria-describedby="mw-svced-instances-help" />
                                                 <div class="form-text" id="mw-svced-instances-help">
-                                                    @(kind == MonitoringServiceKind.Devices ? "Devices reporting through the gateway" : "Copies running"), from 1 to 10,000.
+                                                    @(form.Kind == MonitoringServiceKind.Devices
+                                                        ? "Devices reporting through the gateway, from 1 to 10,000."
+                                                        : $"Copies running, from 1 to {MonitoringState.MaxServiceInstances}.")
                                                 </div>
-                                                <div class="invalid-feedback d-block" id="mw-svced-instances-error">@instancesError</div>
+                                                <ValidationMessage For="() => form.Instances" />
                                             </div>
                                         </div>
                                     </fieldset>
 
                                     <div class="form-check mb-1">
-                                        <input class="form-check-input" type="checkbox" id="mw-svced-public" @bind="isPublic" aria-describedby="mw-svced-public-help" />
+                                        <InputCheckbox class="form-check-input" id="mw-svced-public" @bind-Value="form.IsPublic" aria-describedby="mw-svced-public-help" />
                                         <label class="form-check-label fw-semibold" for="mw-svced-public">Show on the public status page</label>
                                     </div>
                                     <div class="form-text mt-0 mb-3" id="mw-svced-public-help">
-                                        @if (service is not null && service.IsPublic && !isPublic)
+                                        @if (service is not null && service.IsPublic && !form.IsPublic)
                                         {
                                             @("When you save, customers stop seeing its status and uptime, and can't subscribe to it. Its published incidents leave the status page too (they come back if you show it again).")
                                         }
-                                        else if (isPublic && service is not { IsPublic: true })
+                                        else if (form.IsPublic && service is not { IsPublic: true })
                                         {
                                             @("When you save, customers see it as a component on the status page, with its status and uptime, and can subscribe to its updates.")
                                         }
-                                        else if (isPublic)
+                                        else if (form.IsPublic)
                                         {
                                             @("Customers see its status and uptime on the status page and can subscribe to it.")
                                         }
@@ -188,7 +187,7 @@ else
                                         </Button>
                                         <a class="btn btn-link" href="@AdminServices.ListUrl">@(service is null ? "Cancel" : "Back to services")</a>
                                     </div>
-                                </form>
+                                </EditForm>
                             </CardBody>
                         </Card>
                     </div>
@@ -315,7 +314,7 @@ else
                                             : AdminServices.DeleteConsequence(State, service) + " This can't be undone.")
                                     </p>
                                     <Button @ref="deleteButton" Color="ButtonColor.Danger" Outline="true" @onclick="OpenDeleteAsync">
-                                        <Icon Name="IconName.Trash3" class="me-1" aria-hidden="true" />Delete<span class="visually-hidden"> @service.Name</span>
+                                        <Icon Name="IconName.Trash3" class="me-1" aria-hidden="true" />Delete<span class="visually-hidden">&#32;@service.Name</span>
                                     </Button>
                                 </CardBody>
                             </Card>

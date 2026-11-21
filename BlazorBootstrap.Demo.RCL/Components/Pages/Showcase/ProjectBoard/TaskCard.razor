@@ -58,7 +58,7 @@
     @if (CanMove)
     {
         <div class="tb-taskcard-move">
-            <label class="tb-taskcard-move-label" for="@($"{idBase}-move")">Move<span class="visually-hidden"> @key</span> to</label>
+            <label class="tb-taskcard-move-label" for="@($"{idBase}-move")">Move<span class="visually-hidden">&#32;@key</span> to</label>
             <select id="@($"{idBase}-move")" class="form-select form-select-sm" value="@Item.Status" @onchange="OnMoveToChanged" @ref="moveSelect">
                 @foreach (var status in Enum.GetValues<PbTaskStatus>())
                 {

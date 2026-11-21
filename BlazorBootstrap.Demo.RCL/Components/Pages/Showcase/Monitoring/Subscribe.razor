@@ -16,65 +16,54 @@
             <Card Class="mw-card">
                 <CardHeader><h2 class="mw-card-title">New subscription</h2></CardHeader>
                 <CardBody>
-                    <form @onsubmit="Submit" @onsubmit:preventDefault novalidate aria-label="New subscription">
+                    <EditForm EditContext="formContext" OnSubmit="SubmitAsync" FormName="mw-subscribe" novalidate aria-label="New subscription">
+                        <DataAnnotationsValidator />
+                        <ShowcaseFormErrors ShowSummary="true" />
                         <div class="mb-3">
                             <label class="form-label fw-semibold" for="mw-sub-email">Email address</label>
-                            <input type="email" id="mw-sub-email" class="form-control @(emailError is null ? null : "is-invalid")" autocomplete="email" spellcheck="false"
-                                   maxlength="@MonitoringState.MaxEmailLength" @bind="email" @bind:event="oninput" @ref="emailInput"
-                                   aria-invalid="@(emailError is null ? null : "true")"
-                                   aria-describedby="@(emailError is null ? "mw-sub-email-help" : "mw-sub-email-error mw-sub-email-help")" />
-                            <div class="invalid-feedback" id="mw-sub-email-error">@emailError</div>
-                            <div class="form-text" id="mw-sub-email-help">This is a demo: no email is sent. The address stays in this browser tab, and its emails appear below.</div>
+                            <InputText type="email" id="mw-sub-email" class="form-control" autocomplete="email" spellcheck="false" inputmode="email" autocapitalize="none"
+                                       maxlength="@MonitoringState.MaxEmailLength" @bind-Value="form.Email" aria-describedby="mw-sub-email-help" />
+                            <ShowcaseUniqueCheck @ref="emailCheck" For="() => form.Email" IsTakenAsync="IsSubscribedAsync"
+                                                 TakenMessage="@(value => $"{value.ToLowerInvariant()} is already subscribed in this tab. Change its components under \"Your subscriptions in this tab\".")" />
+                            <div class="form-text mt-0" id="mw-sub-email-help">This is a demo: no email is sent. The address stays in this browser tab, and its emails appear below.</div>
+                            <ValidationMessage For="() => form.Email" />
                         </div>
 
                         <fieldset class="mb-3">
                             <legend class="mw-legend-title">Components</legend>
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="mw-sub-scope" id="mw-sub-all" checked="@allComponents" @onchange="() => SetAllComponents(true)" />
-                                <label class="form-check-label" for="mw-sub-all">All components</label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="mw-sub-scope" id="mw-sub-specific" checked="@(!allComponents)" @onchange="() => SetAllComponents(false)" />
-                                <label class="form-check-label" for="mw-sub-specific">Specific components</label>
-                            </div>
+                            <InputRadioGroup @bind-Value="form.AllComponents" Name="mw-sub-scope">
+                                <div class="form-check">
+                                    <InputRadio class="form-check-input" id="mw-sub-all" Value="true" />
+                                    <label class="form-check-label" for="mw-sub-all">All components</label>
+                                </div>
+                                <div class="form-check">
+                                    <InputRadio class="form-check-input" id="mw-sub-specific" Value="false" />
+                                    <label class="form-check-label" for="mw-sub-specific">Specific components</label>
+                                </div>
+                            </InputRadioGroup>
 
-                            @if (!allComponents)
+                            @if (!form.AllComponents)
                             {
-                                <fieldset class="mw-sub-choices" aria-describedby="@(componentsError is null ? null : "mw-sub-components-error")">
+                                var componentsInvalid = formContext.GetValidationMessages(() => form.ServiceIds).Any();
+                                <fieldset class="mw-sub-choices">
                                     <legend class="mw-legend-title small">Choose the components</legend>
-                                    @if (componentsError is not null)
-                                    {
-                                        <p class="mw-field-error" id="mw-sub-components-error">@componentsError</p>
-                                    }
                                     @for (var index = 0; index < State.StatusPageServices.Count; index++)
                                     {
                                         var service = State.StatusPageServices[index];
-                                        var isFirst = index == 0;
                                         <div class="form-check" @key="service.Id">
-                                            @if (isFirst)
-                                            {
-                                                <input class="form-check-input" type="checkbox" id="@($"mw-sub-c-{service.Id}")" checked="@chosen.Contains(service.Id)"
-                                                       @onchange="e => Toggle(chosen, service.Id, e)" @ref="firstComponentInput" />
-                                            }
-                                            else
-                                            {
-                                                <input class="form-check-input" type="checkbox" id="@($"mw-sub-c-{service.Id}")" checked="@chosen.Contains(service.Id)"
-                                                       @onchange="e => Toggle(chosen, service.Id, e)" />
-                                            }
+                                            <input class="form-check-input" type="checkbox" id="@($"mw-sub-c-{service.Id}")" checked="@form.ServiceIds.Contains(service.Id)"
+                                                   aria-invalid="@(componentsInvalid ? "true" : null)" @onchange="e => ToggleComponent(service.Id, e)" />
                                             <label class="form-check-label" for="@($"mw-sub-c-{service.Id}")">@service.Name</label>
                                         </div>
                                     }
+                                    <ValidationMessage For="() => form.ServiceIds" />
                                 </fieldset>
                             }
                         </fieldset>
 
-                        @if (formError is not null)
-                        {
-                            <p class="mw-field-error" id="mw-sub-form-error">@formError</p>
-                        }
-                        <button type="submit" class="btn btn-primary" aria-describedby="@(formError is null ? null : "mw-sub-form-error")">Subscribe</button>
+                        <button type="submit" class="btn btn-primary">Subscribe</button>
                         <p class="mw-status small fw-semibold mt-3 mb-0 @(formStatusIsError ? "text-danger-emphasis" : null)" role="status">@formStatus</p>
-                    </form>
+                    </EditForm>
                 </CardBody>
             </Card>
         </div>

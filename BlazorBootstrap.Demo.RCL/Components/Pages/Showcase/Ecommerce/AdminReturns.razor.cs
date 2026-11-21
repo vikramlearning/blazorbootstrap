@@ -2,49 +2,59 @@ using System.ComponentModel.DataAnnotations;
 using System.Globalization;
 using BlazorBootstrap.Demo.RCL.Models.Showcase.Ecommerce;
 using BlazorBootstrap.Demo.RCL.Services.Showcase.Ecommerce;
+using BlazorBootstrap.Demo.RCL.Services.Showcase.Foundation;
 using Microsoft.AspNetCore.Components.Forms;
 
 namespace BlazorBootstrap.Demo.RCL.Components.Pages.Showcase.Ecommerce;
 
 /// <summary>
-/// The retailer's returns: requests filtered by status (waiting ones first by default), each with its order, customer,
-/// items, reason, and the decision once made. A waiting return is approved (its items go back into stock and the amount is
-/// refunded) or rejected with a note, each after a confirmation dialog; focus then moves to the status message, or back to
-/// the button that opened the dialog when it is dismissed.
+/// The retailer's returns queue: return requests in a <see cref="Grid{TItem}" /> (number linking to the return, order,
+/// customer, items, amount, reason, requested, status, refunded, and decided) with paging, sorting, the column chooser,
+/// and CSV export, searched by return or order number, name, or email and filtered by status (waiting ones by default,
+/// oldest first); its view is saved for the visit and can be reset. Selected waiting returns are decided together from a
+/// bulk bar: approve with a full refund and an optional note (<see cref="EcommerceState.BulkApproveReturns" />), or reject
+/// with a reason the customers read (<see cref="EcommerceState.BulkRejectReturns" />). A return's own page decides it with
+/// a partial refund.
 /// </summary>
 public partial class AdminReturns : ComponentBase, IDisposable
 {
     #region Fields and Constants
 
-    private static readonly ReturnFilter[] filters = { ReturnFilter.Requested, ReturnFilter.Approved, ReturnFilter.Rejected, ReturnFilter.All };
+    private const string ApproveValue = "approve";
 
-    private readonly Dictionary<int, Button> approveButtons = new();
+    private const int DefaultPageSize = 25;
 
-    private readonly Dictionary<int, Button> rejectButtons = new();
+    private const string RejectValue = "reject";
 
-    private EditContext approveContext = default!;
+    private EditContext bulkContext = default!;
 
-    private NoteForm approveForm = new();
+    private BulkForm bulkForm = new();
 
-    private Modal approveModal = default!;
+    private ElementReference? countRegion;
 
-    /// <summary>Whether the open dialog recorded a decision, so focus goes to the status rather than back to the (now gone) button.</summary>
-    private bool decided;
+    private string? errorMessage;
 
-    private EcommerceReturn? deciding;
+    private bool focusStatus;
 
-    /// <summary>Which dialog is open, so a dismissed dialog returns focus to the button that opened it.</summary>
-    private bool decidingApprove;
+    private Grid<ReturnRow>? grid;
 
-    private ReturnFilter filter = ReturnFilter.Requested;
+    /// <summary>Changes when the view is reset, so the grid is built again with its defaults.</summary>
+    private int gridVersion;
 
-    private EditContext rejectContext = default!;
+    /// <summary>The grid's page size: the saved one once the view is loaded, then whatever the page size selector chose.</summary>
+    private int pageSize = DefaultPageSize;
 
-    private RejectForm rejectForm = new();
+    private string search = string.Empty;
 
-    private Modal rejectModal = default!;
+    /// <summary>The value bound to the search box; it trails <see cref="search" /> while the user types (see <see cref="OnSearchInput" />).</summary>
+    private string searchBoxValue = string.Empty;
+
+    /// <summary>The returns selected in the grid (on its current page).</summary>
+    private List<ReturnRow> selected = new();
 
     private int statusCount;
+
+    private string statusFilter = nameof(EcommerceReturnStatus.Requested);
 
     private string? statusMessage;
 
@@ -52,15 +62,38 @@ public partial class AdminReturns : ComponentBase, IDisposable
 
     private string? statusText;
 
+    private ShowcaseGridView view = default!;
+
+    private bool viewLoaded;
+
     #endregion
 
     #region Methods
 
     #region Protected Override Methods
 
+    /// <summary>Loads the saved view once the page is interactive (it lives in the tab's session storage), then shows the grid.</summary>
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await view.LoadAsync();
+            pageSize = (await view.GetSettingsAsync()).PageSize;
+            viewLoaded = true;
+            StateHasChanged();
+        }
+
+        if (focusStatus)
+        {
+            focusStatus = false;
+            await EcommerceDisplay.FocusAsync(statusRegion);
+        }
+    }
+
     protected override void OnInitialized()
     {
-        ResetForms();
+        view = GridViews.Get(State.SiteSlug, "returns", DefaultPageSize, "requested", SortDirection.Ascending);
+        bulkContext = new EditContext(bulkForm);
         State.Changed += OnStateChanged;
     }
 
@@ -75,131 +108,195 @@ public partial class AdminReturns : ComponentBase, IDisposable
 
     #region Private Methods
 
-    private static string FilterLabel(ReturnFilter value) => value switch
-    {
-        ReturnFilter.Requested => "Requested",
-        ReturnFilter.Approved => "Approved",
-        ReturnFilter.Rejected => "Rejected",
-        _ => "All",
-    };
-
-    private static string Items(int count) => count == 1 ? "1 item" : $"{count} items";
-
-    private static string ReturnNumber(EcommerceReturn item) => string.Create(CultureInfo.InvariantCulture, $"R-{item.Id:0000}");
-
-    private static BadgeColor StatusColor(EcommerceReturnStatus status) => status switch
+    internal static BadgeColor StatusColor(EcommerceReturnStatus status) => status switch
     {
         EcommerceReturnStatus.Requested => BadgeColor.Warning,
         EcommerceReturnStatus.Approved => BadgeColor.Success,
         _ => BadgeColor.Danger,
     };
 
-    private static string StatusLabel(EcommerceReturnStatus status) => status switch
+    internal static string StatusLabel(EcommerceReturnStatus status) => status switch
     {
-        EcommerceReturnStatus.Requested => "Requested",
+        EcommerceReturnStatus.Requested => "Waiting",
         EcommerceReturnStatus.Approved => "Approved and refunded",
         _ => "Rejected",
     };
 
-    /// <summary>What approving does, with the amount actually refunded: never more than what's left of the order's total.</summary>
-    private string ApproveConsequence(EcommerceReturn item)
-    {
-        var units = item.Lines.Sum(line => line.Quantity);
-        var itemsText = units == 1 ? "1 item goes" : $"{units} items go";
-
-        if (State.FindOrder(item.OrderId) is not { } order)
-            return $"{itemsText} back into stock.";
-
-        var refund = RefundFor(item, order);
-
-        return $"{itemsText} back into stock and {EcommerceDisplay.Money(refund)} is refunded to the original card ({order.CardBrand} ending {order.CardLast4}). "
-            + "This is a demo: nothing is charged or refunded.";
-    }
-
-    private async Task AskApproveAsync(EcommerceReturn item)
-    {
-        deciding = item;
-        decidingApprove = true;
-        decided = false;
-        ResetForms();
-
-        await approveModal.ShowAsync();
-    }
-
-    private async Task AskRejectAsync(EcommerceReturn item)
-    {
-        deciding = item;
-        decidingApprove = false;
-        decided = false;
-        ResetForms();
-
-        await rejectModal.ShowAsync();
-    }
-
-    private async Task ConfirmApproveAsync()
-    {
-        if (deciding is { } item && State.FindOrder(item.OrderId) is { } order)
-        {
-            var refund = RefundFor(item, order);
-
-            if (State.ApproveReturn(item.Id, approveForm.Note))
-            {
-                decided = true;
-                SetStatus($"Return {ReturnNumber(item)} is approved: {Items(item.Lines.Sum(line => line.Quantity))} back in stock and {EcommerceDisplay.Money(refund)} refunded on order #{item.OrderId}.");
-            }
-        }
-
-        await approveModal.HideAsync();
-    }
-
-    private async Task ConfirmRejectAsync()
-    {
-        if (deciding is { } item && State.RejectReturn(item.Id, rejectForm.Note))
-        {
-            decided = true;
-            SetStatus($"Return {ReturnNumber(item)} is rejected. Nothing was refunded.");
-        }
-
-        await rejectModal.HideAsync();
-    }
-
-    private int CountFor(ReturnFilter value) => value == ReturnFilter.All
-        ? State.Returns.Count
-        : State.Returns.Count(item => item.Status == ToStatus(value));
-
     /// <summary>
-    /// The dialogs open from code, so Bootstrap does not return focus. After a decision the return's buttons are gone, so
-    /// focus goes to the status message; otherwise back to the button that opened the dialog.
+    /// Decides the selected waiting returns together once the bar is valid (rule WR-002), then refreshes the grid and clears
+    /// the selection; the bar closes, so focus moves to the announcement.
     /// </summary>
-    private async Task OnDecisionHiddenAsync()
+    private async Task ApplyBulkAsync()
     {
-        var id = deciding?.Id;
-        var wasApprove = decidingApprove;
-        var wasDecided = decided;
+        if (!bulkContext.Validate())
+            return;
 
-        deciding = null;
-        decided = false;
-        ResetForms();
+        errorMessage = null;
 
-        if (wasDecided)
-            await EcommerceDisplay.FocusAsync(statusRegion);
-        else if (id is int returnId && (wasApprove ? approveButtons : rejectButtons).TryGetValue(returnId, out var button))
-            await EcommerceDisplay.FocusAsync(button.Element);
+        var ids = selected.Where(row => row.StatusValue == EcommerceReturnStatus.Requested).Select(row => row.Id).ToList();
+        var approve = bulkForm.Decision == ApproveValue;
+        var refunded = State.Returns.Where(item => ids.Contains(item.Id)).ToDictionary(item => item.Id, item => item.Status);
+        var outcome = approve ? State.BulkApproveReturns(ids, bulkForm.Note) : State.BulkRejectReturns(ids, bulkForm.Note ?? string.Empty);
+
+        switch (outcome.Result)
+        {
+            case EcommerceBulkResult.Ok:
+                var refund = approve ? State.Returns.Where(item => refunded.ContainsKey(item.Id) && item.Status == EcommerceReturnStatus.Approved).Sum(item => item.Refunded) : 0m;
+                SetStatus((approve
+                        ? $"Approved {EcommerceDisplay.Plural(outcome.Changed, "return")}: items back in stock and {EcommerceDisplay.Money(refund)} refunded."
+                        : $"Rejected {EcommerceDisplay.Plural(outcome.Changed, "return")}. Nothing was refunded.")
+                    + (outcome.Unchanged > 0 ? $" {EcommerceDisplay.Plural(outcome.Unchanged, "return was", "returns were")} no longer waiting, or {(outcome.Unchanged == 1 ? "its order was" : "their orders were")} refunded already." : string.Empty));
+                break;
+            case EcommerceBulkResult.NoChange:
+                SetStatus("No returns changed: they were decided meanwhile, or their orders were refunded already.");
+                break;
+            case EcommerceBulkResult.NotAllowed:
+                errorMessage = "Only the store team can decide returns. Nothing changed.";
+                break;
+            default:
+                errorMessage = "Those decisions couldn't be saved. Nothing changed.";
+                break;
+        }
+
+        bulkForm = new BulkForm();
+        bulkContext = new EditContext(bulkForm);
+
+        if (grid is not null)
+        {
+            await grid.RefreshDataAsync();
+            await grid.UnSelectAllItemsAsync();
+        }
+
+        selected = new List<ReturnRow>();
+        focusStatus = true;
+        StateHasChanged();
     }
 
-    private void OnFilterChanged(ReturnFilter value) => filter = value;
-
-    private void OnStateChanged() => InvokeAsync(StateHasChanged);
-
-    private decimal RefundFor(EcommerceReturn item, EcommerceOrder order) =>
-        Math.Max(0m, Math.Min(item.Amount, order.Totals.Total - order.RefundedAmount));
-
-    private void ResetForms()
+    /// <summary>The bar closes, so focus moves to the announcement.</summary>
+    private async Task ClearSelectionAsync()
     {
-        approveForm = new NoteForm();
-        approveContext = new EditContext(approveForm);
-        rejectForm = new RejectForm();
-        rejectContext = new EditContext(rejectForm);
+        if (grid is not null)
+            await grid.UnSelectAllItemsAsync();
+
+        selected = new List<ReturnRow>();
+        SetStatus("Selection cleared.");
+        focusStatus = true;
+    }
+
+    private IEnumerable<EcommerceReturn> Matching()
+    {
+        IEnumerable<EcommerceReturn> items = State.Returns;
+        var term = search.Trim().TrimStart('#');
+
+        if (term.Length > 0)
+        {
+            items = items.Where(item =>
+            {
+                var order = State.FindOrder(item.OrderId);
+
+                return EcommerceDisplay.ReturnNumber(item.Id).Contains(term, StringComparison.OrdinalIgnoreCase)
+                    || item.OrderId.ToString(CultureInfo.InvariantCulture).Contains(term, StringComparison.Ordinal)
+                    || (order is not null && (order.ShipTo.FullName.Contains(term, StringComparison.OrdinalIgnoreCase) || order.ShipTo.Email.Contains(term, StringComparison.OrdinalIgnoreCase)));
+            });
+        }
+
+        if (Enum.TryParse<EcommerceReturnStatus>(statusFilter, out var status) && Enum.IsDefined(status))
+            items = items.Where(item => item.Status == status);
+
+        return items;
+    }
+
+    private async Task OnSearchChanged(string value)
+    {
+        searchBoxValue = value;
+
+        if (search == value)
+            return;
+
+        search = value;
+        await RefreshAsync();
+    }
+
+    /// <summary>Filters on every keystroke without changing the box's bound value, so older text is never written back into it.</summary>
+    private async Task OnSearchInput(ChangeEventArgs args)
+    {
+        var value = args.Value?.ToString() ?? string.Empty;
+
+        if (search == value)
+            return;
+
+        search = value;
+        await RefreshAsync();
+    }
+
+    private void OnSelectionChanged(HashSet<ReturnRow> items) => selected = items.ToList();
+
+    private void OnStateChanged() => InvokeAsync(async () =>
+    {
+        await RefreshGridAsync();
+        StateHasChanged();
+    });
+
+    private async Task OnStatusFilterChanged(ChangeEventArgs args)
+    {
+        statusFilter = Enum.TryParse<EcommerceReturnStatus>(args.Value?.ToString(), out var status) && Enum.IsDefined(status) ? status.ToString() : string.Empty;
+        await RefreshAsync();
+    }
+
+    /// <summary>The page of returns the grid asked for: the oldest request first, unless a column is sorted.</summary>
+    private Task<GridDataProviderResult<ReturnRow>> ProvideReturnsAsync(GridDataProviderRequest<ReturnRow> request) =>
+        view.ApplyAsync(request, Matching().Select(item => new ReturnRow(
+            item.Id,
+            EcommerceDisplay.ReturnNumber(item.Id),
+            item.OrderId,
+            State.FindOrder(item.OrderId)?.ShipTo.FullName ?? "Unknown customer",
+            item.Lines.Sum(line => line.Quantity),
+            item.Amount,
+            item.Reason,
+            item.RequestedOn,
+            StatusLabel(item.Status),
+            item.Status,
+            item.Refunded,
+            item.DecidedOn)).ToList());
+
+    /// <summary>A filter changed: back to the first page of the filtered returns.</summary>
+    private async Task RefreshAsync()
+    {
+        if (grid is not null)
+            await grid.ResetPageNumber();
+
+        StateHasChanged();
+    }
+
+    private async Task RefreshGridAsync()
+    {
+        if (grid is not null)
+            await grid.RefreshDataAsync();
+    }
+
+    /// <summary>Forgets the saved view and builds the grid again with its defaults; focus moves to the count.</summary>
+    private async Task ResetViewAsync()
+    {
+        await view.ResetAsync();
+        pageSize = DefaultPageSize;
+        selected = new List<ReturnRow>();
+        gridVersion++;
+        SetStatus("The view is reset: the oldest requests first, 25 a page, and every column shown.");
+        StateHasChanged();
+
+        await Task.Yield();
+        await EcommerceDisplay.FocusAsync(countRegion);
+    }
+
+    private string RowClass(ReturnRow row) => selected.Any(item => item.Id == row.Id) ? "ea-row-selected" : string.Empty;
+
+    /// <summary>Keeps the grid's settings in the saved view, and follows the page size the selector chose.</summary>
+    private async Task SaveSettingsAsync(GridSettings settings)
+    {
+        if (settings.PageSize > 0)
+            pageSize = settings.PageSize;
+
+        await view.SaveSettingsAsync(settings);
     }
 
     /// <summary>Shows a status message; the same message again gets a counter, so a screen reader announces it again.</summary>
@@ -210,12 +307,14 @@ public partial class AdminReturns : ComponentBase, IDisposable
         statusMessage = statusCount == 1 ? message : $"{message} ({statusCount})";
     }
 
-    private static EcommerceReturnStatus ToStatus(ReturnFilter value) => value switch
+    /// <summary>The link disappears with the filters it clears, so focus moves to the count, which also announces the new total.</summary>
+    private async Task ShowWaitingAsync()
     {
-        ReturnFilter.Approved => EcommerceReturnStatus.Approved,
-        ReturnFilter.Rejected => EcommerceReturnStatus.Rejected,
-        _ => EcommerceReturnStatus.Requested,
-    };
+        search = searchBoxValue = string.Empty;
+        statusFilter = nameof(EcommerceReturnStatus.Requested);
+        await RefreshAsync();
+        await EcommerceDisplay.FocusAsync(countRegion);
+    }
 
     #endregion
 
@@ -223,37 +322,33 @@ public partial class AdminReturns : ComponentBase, IDisposable
 
     #region Properties, Indexers
 
-    private string EmptyText => filter switch
-    {
-        ReturnFilter.Requested => State.Returns.Count == 0
-            ? "No return requests yet. Customers can ask to return items from a delivered order."
-            : "No returns are waiting for a decision. New requests from customers appear here.",
-        ReturnFilter.Approved => "No approved returns yet.",
-        ReturnFilter.Rejected => "No rejected returns.",
-        _ => "No return requests yet. Customers can ask to return items from a delivered order.",
-    };
+    private string EmptyText => statusFilter == nameof(EcommerceReturnStatus.Requested) && search.Trim().Length == 0
+        ? "No returns are waiting for a decision. New requests from customers appear here."
+        : "No returns match these filters. Clear the search, or show every status.";
+
+    [Inject] private ShowcaseGridViewStore GridViews { get; set; } = default!;
+
+    private bool IsFiltered => search.Trim().Length > 0 || statusFilter != nameof(EcommerceReturnStatus.Requested);
 
     private string LeadText
     {
         get
         {
-            var waiting = CountFor(ReturnFilter.Requested);
-            var refunded = State.Returns.Where(item => item.Status == EcommerceReturnStatus.Approved).Sum(item => item.Amount);
+            var waiting = State.Returns.Count(item => item.Status == EcommerceReturnStatus.Requested);
+            var refunded = State.Returns.Sum(item => item.Refunded);
 
-            return $"{(waiting == 1 ? "1 return waits" : $"{waiting} returns wait")} for a decision · {EcommerceDisplay.Money(refunded)} refunded on approved returns";
+            return $"{(waiting == 1 ? "1 return waits" : $"{waiting} returns wait")} for a decision · {EcommerceDisplay.Plural(State.Returns.Count, "return")} this year · "
+                + $"{EcommerceDisplay.Money(refunded)} refunded on approved returns";
         }
     }
 
-    /// <summary>The returns in the chosen filter: waiting ones oldest first (the queue), decided ones most recent first.</summary>
-    private IReadOnlyList<EcommerceReturn> Shown
+    private string MatchText
     {
         get
         {
-            var items = filter == ReturnFilter.All ? State.Returns : State.Returns.Where(item => item.Status == ToStatus(filter));
+            var count = Matching().Count();
 
-            return filter == ReturnFilter.Requested
-                ? items.OrderBy(item => item.RequestedOn).ThenBy(item => item.Id).ToList()
-                : items.OrderByDescending(item => item.DecidedOn ?? item.RequestedOn).ThenByDescending(item => item.Id).ToList();
+            return count == State.Returns.Count ? $"Showing all {EcommerceDisplay.Plural(count, "return")}." : $"{EcommerceDisplay.Count(count)} of {EcommerceDisplay.Plural(State.Returns.Count, "return")} match.";
         }
     }
 
@@ -263,29 +358,46 @@ public partial class AdminReturns : ComponentBase, IDisposable
 
     #region Nested Types
 
-    private enum ReturnFilter
+    /// <summary>The bulk bar's fields: a decision and its note (required, as a reason the customers read, to reject).</summary>
+    private sealed class BulkForm : IValidatableObject
     {
-        Requested,
-        Approved,
-        Rejected,
-        All,
+        [Required(ErrorMessage = "Choose whether to approve or reject the selected returns.")]
+        public string Decision { get; set; } = string.Empty;
+
+        [StringLength(EcommerceState.MaxDecisionNoteLength, ErrorMessage = "Use 200 characters or fewer for the note.")]
+        public string? Note { get; set; }
+
+        /// <summary>Runs once the fields are filled in: a rejection needs a reason.</summary>
+        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+        {
+            if (Decision == RejectValue && (Note?.Trim().Length ?? 0) < EcommerceState.MinReasonLength)
+                yield return new ValidationResult("Tell the customers why the returns are rejected, in 5 to 200 characters.", new[] { nameof(Note) });
+        }
     }
 
-    private sealed class NoteForm
+    /// <summary>One return as the grid shows and exports it: every exported column is a property.</summary>
+    private sealed record ReturnRow(
+        int Id,
+        string Number,
+        int OrderId,
+        string Customer,
+        int Items,
+        decimal Amount,
+        string Reason,
+        DateTime RequestedOn,
+        string Status,
+        EcommerceReturnStatus StatusValue,
+        decimal Refunded,
+        DateTime? DecidedOn)
     {
-        private string note = string.Empty;
+        /// <summary>Gets the decided time as it is exported, or empty while waiting.</summary>
+        public string DecidedText => DecidedOn?.ToString("yyyy-MM-dd HH:mm", CultureInfo.InvariantCulture) ?? string.Empty;
 
-        [StringLength(200, ErrorMessage = "Use 200 characters or fewer.")]
-        public string Note { get => note; set => note = value?.Trim() ?? string.Empty; }
-    }
+        /// <summary>Gets the order number as the grid shows and exports it, like "#10233".</summary>
+        public string Order => string.Create(CultureInfo.InvariantCulture, $"#{OrderId}");
 
-    private sealed class RejectForm
-    {
-        private string note = string.Empty;
-
-        [Required(ErrorMessage = "Tell the customer why the return is rejected.")]
-        [StringLength(200, MinimumLength = 5, ErrorMessage = "Use 5 to 200 characters.")]
-        public string Note { get => note; set => note = value?.Trim() ?? string.Empty; }
+        /// <summary>Gets the requested time as it is exported, like "2026-11-09 08:12".</summary>
+        public string RequestedText => RequestedOn.ToString("yyyy-MM-dd HH:mm", CultureInfo.InvariantCulture);
     }
 
     #endregion

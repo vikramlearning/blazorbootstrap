@@ -20,34 +20,68 @@
                     <p class="tm-card-sub mb-0">@CountText</p>
                 </CardHeader>
                 <CardBody Class="pt-0">
-                    @if (MyDisputes.Count == 0)
-                    {
-                        <div class="tm-disputes-empty">
-                            <span class="tm-icon fs-4" aria-hidden="true"><Icon Name="IconName.ShieldCheck" /></span>
-                            <h3 class="h6 fw-bold mt-3 mb-1">No disputes</h3>
-                            <p class="small text-body-secondary mb-3">You haven't disputed any charges. If a payment looks wrong, open it from your transactions.</p>
+                    <div class="tm-list-meta mt-0">
+                        <Button Color="ButtonColor.Link" Size="ButtonSize.Small" Class="p-0" @onclick="ResetViewAsync">Reset view</Button>
+                        <span class="tm-list-status" role="status">@statusMessage</span>
+                    </div>
+                    <ShowcaseDataState Status="@(viewLoaded ? ShowcaseDataStatus.Ready : ShowcaseDataStatus.Loading)"
+                                       IsEmpty="@(MyDisputes.Count == 0)"
+                                       EmptyIcon="IconName.ShieldCheck"
+                                       EmptyTitle="No disputes"
+                                       EmptyText="You haven't disputed any charges. If a payment looks wrong, open it from your transactions."
+                                       LoadingText="Loading your disputes…"
+                                       LoadingRows="3"
+                                       OnRetry="RefreshGridAsync">
+                        <EmptyActions>
                             <a class="btn btn-sm btn-primary" href="@TransactionsPath">Go to transactions</a>
-                        </div>
-                    }
-                    else
-                    {
-                        <ul class="list-unstyled mb-0">
-                            @foreach (var dispute in MyDisputes)
-                            {
-                                <li class="tm-row tm-dispute-row" @key="dispute.Id">
-                                    <span class="tm-icon" aria-hidden="true"><Icon Name="IconName.Flag" /></span>
-                                    <span class="tm-row-text">
-                                        <a class="tm-row-title tm-dispute-link" href="@DetailPath(dispute.Id)">Dispute @dispute.Id: @dispute.Merchant</a>
-                                        <span class="tm-row-sub">@ReasonText(dispute.Reason) · Opened @DayText(dispute.CreatedAt)</span>
-                                    </span>
-                                    <span class="tm-dispute-side">
-                                        <span class="tm-mono fw-semibold">@FintechDisplay.Money(dispute.Amount)</span>
-                                        <Badge Color="StatusColor(dispute.Status)" Class="rounded-pill">@StatusText(dispute.Status)</Badge>
-                                    </span>
-                                </li>
-                            }
-                        </ul>
-                    }
+                        </EmptyActions>
+                        <ChildContent>
+                            <Grid @ref="grid"
+                                  @key="gridVersion"
+                                  TItem="DisputeRow"
+                                  Class="table table-hover align-middle tm-table-mid sc-grid-row-links"
+                                  GridContainerClass="tm-grid border rounded-3"
+                                  DataProvider="ProvideRowsAsync"
+                                  SettingsProvider="view.GetSettingsAsync"
+                                  GridSettingsChanged="SaveSettingsAsync"
+                                  AllowPaging="true"
+                                  PageSize="@pageSize"
+                                  PageSizeSelectorVisible="true"
+                                  PageSizeSelectorItems="@(new[] { 10, 25, 50 })"
+                                  PaginationItemsTextFormat="{0}–{1} of {2} disputes"
+                                  AllowSorting="true"
+                                  AllowColumnChooser="true"
+                                  AllowExport="true"
+                                  ExportFileName="banking-my-disputes"
+                                  Responsive="true"
+                                  EmptyText="No disputes."
+                                  aria-label="Your disputes">
+                                <GridColumns>
+                                    <GridColumn TItem="DisputeRow" HeaderText="Dispute" PropertyName="Id" SortString="id" SortKeySelector="row => row.Id"
+                                                IsDefaultSortColumn="@view.IsSortColumn("id")" SortDirection="@view.DirectionFor("id")" AlwaysVisible="true">
+                                        @* The stretched link makes the whole row open the dispute. *@
+                                        <a class="tm-row-link stretched-link" href="@DetailPath(context.Id)">Dispute @context.Id: @context.Merchant</a>
+                                    </GridColumn>
+                                    <GridColumn TItem="DisputeRow" HeaderText="Reason" PropertyName="Reason" SortString="reason" SortKeySelector="row => row.Reason"
+                                                IsDefaultSortColumn="@view.IsSortColumn("reason")" SortDirection="@view.DirectionFor("reason")">
+                                        <span class="small">@context.Reason</span>
+                                    </GridColumn>
+                                    <GridColumn TItem="DisputeRow" HeaderText="Opened" PropertyName="Opened" SortString="opened" SortKeySelector="row => row.Opened"
+                                                IsDefaultSortColumn="@view.IsSortColumn("opened")" SortDirection="@view.DirectionFor("opened")" TextNoWrap="true">
+                                        <span class="small">@DayText(context.Opened)</span>
+                                    </GridColumn>
+                                    <GridColumn TItem="DisputeRow" HeaderText="Amount" PropertyName="Amount" SortString="amount" SortKeySelector="row => row.Amount"
+                                                IsDefaultSortColumn="@view.IsSortColumn("amount")" SortDirection="@view.DirectionFor("amount")" TextAlignment="Alignment.End" TextNoWrap="true">
+                                        <span class="tm-mono fw-semibold">@FintechDisplay.Money(context.Amount)</span>
+                                    </GridColumn>
+                                    <GridColumn TItem="DisputeRow" HeaderText="Status" PropertyName="Status" SortString="status" SortKeySelector="row => row.StatusValue"
+                                                IsDefaultSortColumn="@view.IsSortColumn("status")" SortDirection="@view.DirectionFor("status")" TextNoWrap="true">
+                                        <Badge Color="StatusColor(context.StatusValue)" Class="rounded-pill">@context.Status</Badge>
+                                    </GridColumn>
+                                </GridColumns>
+                            </Grid>
+                        </ChildContent>
+                    </ShowcaseDataState>
                 </CardBody>
             </Card>
         </div>

@@ -4,142 +4,170 @@
 <PageTitle>Invoices · @SaasSeedData.ProductName</PageTitle>
 
 @{
-    var all = State.AllInvoices;
-    var rows = FilteredRows(all);
-    var totalPages = TotalPages(rows.Count);
-    var page = Math.Clamp(pageNumber, 1, totalPages);
-    var pageRows = rows.Skip((page - 1) * PageSize).Take(PageSize).ToList();
-    var billed = rows.Sum(invoice => invoice.Amount);
-    var refunded = rows.Sum(invoice => invoice.RefundedAmount);
-    var open = rows.Where(invoice => invoice.Status == SaasInvoiceStatus.Open).Sum(invoice => invoice.Amount);
+    var shown = Shown;
+    var billed = shown.Sum(row => row.Amount);
+    var refunded = shown.Sum(row => row.Refunded);
+    var open = shown.Where(row => row.Invoice.Status == SaasInvoiceStatus.Open).Sum(row => row.Amount);
 }
 
 <div class="sd-page-head">
     <div>
         <span class="sc-eyebrow">Invoices</span>
         <h1 class="sd-page-title">All invoices</h1>
-        <p class="sd-page-lead">Every invoice of every tenant, newest first. Open one to refund it or retry the payment.</p>
+        <p class="sd-page-lead">Every invoice of every tenant, newest first. Open one to refund it or retry the payment, or select open invoices to retry them together.</p>
     </div>
 </div>
 
-<Card Class="sd-card">
+<Card Class="sd-card mb-3">
     <CardBody Class="p-3 p-lg-4">
-        <div class="row g-2 align-items-end mb-3" role="search" aria-label="Filter invoices">
-            <div class="col-md-7 col-xl-5">
+        <h2 class="sd-card-title mb-3" id="sd-invoice-filters-title">Filter invoices</h2>
+        <div class="sd-list-filters" role="group" aria-labelledby="sd-invoice-filters-title">
+            <div class="sd-list-search">
                 <label class="form-label small fw-semibold" for="sd-invoice-search">Search</label>
-                <InputGroup>
-                    <InputGroupText><Icon Name="IconName.Search" aria-hidden="true" /></InputGroupText>
-                    @* As on the tenant list: @oninput filters while typing, and the bound value changes only on change. *@
-                    <TextInput @ref="searchInput" Id="sd-invoice-search" Value="@searchBoxValue" ValueExpression="() => searchBoxValue" ValueChanged="OnSearchChanged"
-                               @oninput="OnSearchInput" Placeholder="Invoice number or tenant name" />
-                </InputGroup>
+                @* Filters on every keystroke; the bound value changes only on change, so a render during typing never writes an older value back. *@
+                <input @ref="searchInput" id="sd-invoice-search" type="search" class="form-control" value="@searchBoxValue" placeholder="Invoice number or tenant name"
+                       autocomplete="off" maxlength="120" @oninput="OnSearchInputAsync" @onchange="OnSearchChanged" />
             </div>
-            @if (HasFilters)
-            {
-                <div class="col-12 col-md-auto">
-                    <Button Color="ButtonColor.Secondary" Outline="true" @onclick="ClearFiltersAsync">Clear filters</Button>
-                </div>
-            }
-            <div class="col-12">
-                <div class="sd-invoice-filter" role="group" aria-label="Show invoices">
+            <fieldset class="m-0 p-0 border-0">
+                <legend class="form-label small fw-semibold mb-1">Status</legend>
+                <div class="d-flex flex-wrap gap-1">
                     @foreach (var option in Enum.GetValues<StatusFilter>())
                     {
-                        var isSelected = option == statusFilter;
-
-                        <Button @key="option" Color="ButtonColor.Primary" Outline="!isSelected" Size="ButtonSize.Small" Class="rounded-pill"
-                                aria-pressed="@(isSelected ? "true" : "false")" @onclick="() => SelectStatus(option)">@FilterName(option)</Button>
+                        var inputId = $"sd-invoice-status-{option}";
+                        <input type="radio" class="btn-check" name="sd-invoice-status" id="@inputId" value="@option" checked="@(statusFilter == option)" @onchange="() => SelectStatusAsync(option)" />
+                        <label class="btn btn-sm btn-outline-secondary" for="@inputId">@FilterName(option) (@Count(StatusCount(option)))</label>
                     }
                 </div>
-            </div>
+            </fieldset>
         </div>
-
-        <p class="small text-body-secondary mb-2" role="status">@SummaryText(rows.Count, all.Count, page, pageRows.Count)</p>
-
-        <dl class="sd-dl sd-invoice-totals small mb-3">
-            <div><dt>Invoices shown</dt><dd>@Count(rows.Count)</dd></div>
+        <div class="sd-list-meta mb-2">
+            <p class="small text-body-secondary mb-0" aria-live="polite" tabindex="-1" @ref="countRegion">Showing @Count(shown.Count) of @Count(State.AllInvoices.Count) invoices.</p>
+            @if (IsFiltered)
+            {
+                <Button Color="ButtonColor.Link" Size="ButtonSize.Small" Class="p-0" @onclick="ClearFiltersAsync">Show every invoice</Button>
+            }
+            @* Back to the saved view's defaults: newest first, 25 a page, every column in its place. *@
+            <Button Color="ButtonColor.Link" Size="ButtonSize.Small" Class="p-0" @onclick="ResetViewAsync">Reset view</Button>
+        </div>
+        <dl class="sd-dl sd-invoice-totals small mb-0">
             <div><dt>Billed</dt><dd class="sd-mono">@SaasDisplay.MoneyCents(billed)</dd></div>
             <div><dt>Refunded</dt><dd class="sd-mono">@SaasDisplay.MoneyCents(refunded)</dd></div>
             <div><dt>Still open</dt><dd class="sd-mono">@SaasDisplay.MoneyCents(open)</dd></div>
         </dl>
+    </CardBody>
+</Card>
 
-        <div class="table-responsive sd-grid">
-            <table class="table table-hover align-middle">
-                <caption class="visually-hidden">@(statusFilter == StatusFilter.All ? "All invoices" : $"{FilterName(statusFilter)} invoices"), newest first</caption>
-                <thead>
-                    <tr>
-                        <th scope="col">Invoice</th>
-                        <th scope="col">Tenant</th>
-                        <th scope="col">Issued</th>
-                        <th scope="col">Description</th>
-                        <th scope="col" class="text-end">Amount</th>
-                        <th scope="col" class="text-end">Refunded</th>
-                        <th scope="col">Status</th>
-                        <th scope="col">Card</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @if (pageRows.Count == 0)
-                    {
-                        <tr>
-                            <td colspan="8" class="text-center text-body-secondary py-5">No invoices match these filters.</td>
-                        </tr>
-                    }
-                    @foreach (var invoice in pageRows)
-                    {
-                        var tenant = State.FindWorkspace(invoice.WorkspaceId);
+@* Always rendered and focusable, so an outcome is announced and focus has somewhere to go when the bulk bar closes. *@
+<p class="sd-list-status @(statusIsError ? "text-danger-emphasis" : null)" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
 
-                        <tr @key="invoice.Number">
-                            <th scope="row" class="sd-mono small text-nowrap">
-                                <a href="@DetailPath(invoice.Number)">@invoice.Number</a>
-                            </th>
-                            <td class="text-nowrap">
-                                @if (tenant is null)
-                                {
-                                    <span class="text-body-secondary">Unknown tenant</span>
-                                }
-                                else
-                                {
-                                    <a href="@($"{SaasAdminLayout.Base}/tenants/{tenant.Id}")">@tenant.Name</a>
-                                }
-                            </td>
-                            <td class="text-nowrap">@SaasDisplay.Date(invoice.IssuedOn)</td>
-                            <td class="sd-invoice-description">@invoice.Description</td>
-                            <td class="text-end text-nowrap"><span class="sd-mono">@SaasDisplay.MoneyCents(invoice.Amount)</span></td>
-                            <td class="text-end text-nowrap">
-                                @if (invoice.RefundedAmount > 0)
-                                {
-                                    <span class="sd-mono">@SaasDisplay.MoneyCents(invoice.RefundedAmount)</span>
-                                }
-                                else
-                                {
-                                    <span aria-hidden="true">—</span><span class="visually-hidden">None</span>
-                                }
-                            </td>
-                            <td class="text-nowrap"><Badge Color="StatusColor(invoice)" Class="rounded-pill">@StatusName(invoice)</Badge></td>
-                            <td class="text-nowrap">
-                                @if (invoice.CardLast4 is null)
-                                {
-                                    <span aria-hidden="true">—</span><span class="visually-hidden">None</span>
-                                }
-                                else
-                                {
-                                    @AppBilling.CardText(invoice.CardBrand, invoice.CardLast4)
-                                }
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
+@if (selected.Count > 0)
+{
+    var openSelected = selected.Count(row => row.Invoice.Status == SaasInvoiceStatus.Open);
+
+    <section class="sd-bulk" aria-labelledby="sd-bulk-count">
+        <h2 class="sd-bulk-count" id="sd-bulk-count">@(selected.Count == 1 ? "1 invoice selected" : $"{Count(selected.Count)} invoices selected"), @Count(openSelected) open</h2>
+        <p class="small mb-0 flex-grow-1">Retrying charges the card on file of each open invoice's tenant. Paid and refunded invoices are left as they are; refunds are made one at a time on the invoice's page.</p>
+        <div class="sd-bulk-actions">
+            <Button Color="ButtonColor.Primary" Size="ButtonSize.Small" Disabled="@(openSelected == 0)" @onclick="RetrySelectedAsync">
+                <Icon Name="IconName.ArrowRepeat" class="me-1" aria-hidden="true" />Retry payment<span class="visually-hidden">&#32;on the selected open invoices</span>
+            </Button>
+            <Button Color="ButtonColor.Secondary" Outline="true" Size="ButtonSize.Small" @onclick="ClearSelectionAsync">Clear selection</Button>
         </div>
+    </section>
+}
 
-        <nav class="d-flex flex-wrap align-items-center justify-content-end gap-2 mt-3" aria-label="Invoice pages">
-            <Button @ref="previousButton" Color="ButtonColor.Secondary" Outline="true" Size="ButtonSize.Small" Disabled="@(page <= 1)" @onclick="() => GoToPageAsync(page - 1, totalPages)">
-                <Icon Name="IconName.ChevronLeft" class="me-1" aria-hidden="true" />Previous
-            </Button>
-            <span class="small text-body-secondary text-nowrap">Page @(page) of @totalPages</span>
-            <Button @ref="nextButton" Color="ButtonColor.Secondary" Outline="true" Size="ButtonSize.Small" Disabled="@(page >= totalPages)" @onclick="() => GoToPageAsync(page + 1, totalPages)">
-                Next<Icon Name="IconName.ChevronRight" class="ms-1" aria-hidden="true" />
-            </Button>
-        </nav>
+<Card Class="sd-card">
+    <CardBody Class="p-3 p-lg-4">
+        <ShowcaseDataState Status="@(viewLoaded ? ShowcaseDataStatus.Ready : ShowcaseDataStatus.Loading)"
+                           IsEmpty="@(State.AllInvoices.Count == 0)"
+                           EmptyIcon="IconName.Receipt"
+                           EmptyTitle="No invoices yet"
+                           EmptyText="Invoices appear here when a paid plan renews or a tenant changes plan."
+                           LoadingText="Loading invoices…"
+                           OnRetry="RefreshGridAsync">
+            <Grid @ref="grid"
+                  @key="gridVersion"
+                  TItem="InvoiceRow"
+                  Class="table table-hover align-middle sd-table-wide sc-grid-row-links"
+                  GridContainerClass="sd-grid border rounded-3"
+                  DataProvider="ProvideInvoicesAsync"
+                  SettingsProvider="view.GetSettingsAsync"
+                  GridSettingsChanged="SaveSettingsAsync"
+                  AllowPaging="true"
+                  PageSize="@pageSize"
+                  PageSizeSelectorVisible="true"
+                  PageSizeSelectorItems="@(new[] { 10, 25, 50, 100 })"
+                  PaginationItemsTextFormat="{0}–{1} of {2} invoices"
+                  AllowSorting="true"
+                  AllowSelection="true"
+                  SelectionMode="GridSelectionMode.Multiple"
+                  RowSelectionLabel="@(row => $"Select invoice {row.Number}, {row.Tenant}")"
+                  SelectAllRowsText="Select all shown invoices"
+                  SelectedItemsChanged="OnSelectionChanged"
+                  RowClass="RowClass"
+                  AllowColumnChooser="true"
+                  AllowExport="true"
+                  ExportFileName="saas-invoices"
+                  Responsive="true"
+                  EmptyText="No invoices match these filters. Clear a filter, or search for part of a number or tenant name."
+                  aria-label="Invoices">
+                <GridColumns>
+                    <GridColumn TItem="InvoiceRow" HeaderText="Invoice" PropertyName="Number" SortString="number" SortKeySelector="row => row.Number"
+                                IsDefaultSortColumn="@view.IsSortColumn("number")" SortDirection="@view.DirectionFor("number")" TextNoWrap="true" AlwaysVisible="true">
+                        @* The stretched link makes the whole row open the invoice; the row's checkbox and tenant link stay above it. *@
+                        <a class="sd-mono fw-semibold stretched-link" href="@DetailPath(context.Number)">@context.Number</a>
+                    </GridColumn>
+                    <GridColumn TItem="InvoiceRow" HeaderText="Tenant" PropertyName="Tenant" SortString="tenant" SortKeySelector="row => row.Tenant"
+                                IsDefaultSortColumn="@view.IsSortColumn("tenant")" SortDirection="@view.DirectionFor("tenant")" TextNoWrap="true">
+                        @if (context.Invoice.WorkspaceId > 0 && State.FindWorkspace(context.Invoice.WorkspaceId) is not null)
+                        {
+                            <a href="@($"{SaasAdminLayout.Base}/tenants/{context.Invoice.WorkspaceId}")">@context.Tenant</a>
+                        }
+                        else
+                        {
+                            <span class="text-body-secondary">@context.Tenant</span>
+                        }
+                    </GridColumn>
+                    <GridColumn TItem="InvoiceRow" HeaderText="Issued" PropertyName="Issued" SortString="issued" SortKeySelector="row => row.Issued"
+                                IsDefaultSortColumn="@view.IsSortColumn("issued")" SortDirection="@view.DirectionFor("issued")" TextNoWrap="true">
+                        @SaasDisplay.Date(context.Issued)
+                    </GridColumn>
+                    <GridColumn TItem="InvoiceRow" HeaderText="Description" PropertyName="Description" SortString="description" SortKeySelector="row => row.Description"
+                                IsDefaultSortColumn="@view.IsSortColumn("description")" SortDirection="@view.DirectionFor("description")">
+                        <span class="sd-invoice-description">@context.Description</span>
+                    </GridColumn>
+                    <GridColumn TItem="InvoiceRow" HeaderText="Amount" PropertyName="Amount" SortString="amount" SortKeySelector="row => row.Amount"
+                                IsDefaultSortColumn="@view.IsSortColumn("amount")" SortDirection="@view.DirectionFor("amount")" TextNoWrap="true">
+                        <span class="sd-mono">@SaasDisplay.MoneyCents(context.Amount)</span>
+                    </GridColumn>
+                    <GridColumn TItem="InvoiceRow" HeaderText="Refunded" PropertyName="Refunded" SortString="refunded" SortKeySelector="row => row.Refunded"
+                                IsDefaultSortColumn="@view.IsSortColumn("refunded")" SortDirection="@view.DirectionFor("refunded")" TextNoWrap="true">
+                        @if (context.Refunded > 0)
+                        {
+                            <span class="sd-mono">@SaasDisplay.MoneyCents(context.Refunded)</span>
+                        }
+                        else
+                        {
+                            <span aria-hidden="true">—</span><span class="visually-hidden">None</span>
+                        }
+                    </GridColumn>
+                    <GridColumn TItem="InvoiceRow" HeaderText="Status" PropertyName="Status" SortString="status" SortKeySelector="row => row.Status"
+                                IsDefaultSortColumn="@view.IsSortColumn("status")" SortDirection="@view.DirectionFor("status")" TextNoWrap="true">
+                        <Badge Color="StatusColor(context.Invoice)" Class="rounded-pill">@context.Status</Badge>
+                    </GridColumn>
+                    <GridColumn TItem="InvoiceRow" HeaderText="Card" PropertyName="Card" SortString="card" SortKeySelector="row => row.Card"
+                                IsDefaultSortColumn="@view.IsSortColumn("card")" SortDirection="@view.DirectionFor("card")" TextNoWrap="true">
+                        @if (context.Card.Length == 0)
+                        {
+                            <span aria-hidden="true">—</span><span class="visually-hidden">None</span>
+                        }
+                        else
+                        {
+                            @context.Card
+                        }
+                    </GridColumn>
+                </GridColumns>
+            </Grid>
+        </ShowcaseDataState>
     </CardBody>
 </Card>

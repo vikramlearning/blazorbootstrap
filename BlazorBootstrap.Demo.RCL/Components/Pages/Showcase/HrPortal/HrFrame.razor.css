@@ -218,9 +218,18 @@
 
 .sc-hr ::deep .hr-app-bar-actions {
     display: flex;
+    flex: 1 1 auto;
     flex-wrap: wrap;
     align-items: center;
+    justify-content: flex-end;
     gap: .5rem;
+}
+
+/* The global search takes the room the header has, and wraps onto its own line when there is too little. */
+.sc-hr ::deep .hr-global-search {
+    flex: 1 1 12rem;
+    min-width: 10rem;
+    max-width: 22rem;
 }
 
 /* A table that scrolls sideways can round to one pixel taller than its box; never show a vertical scrollbar for it.
@@ -274,4 +283,103 @@
 .sc-hr ::deep .hr-chart {
     position: relative;
     min-height: 16rem;
+}
+
+/* Grid lists: the Grid renders the table, so its pieces are styled through ::deep. */
+.sc-hr ::deep .hr-grid {
+    position: relative;
+}
+
+    .sc-hr ::deep .hr-grid.table-responsive {
+        overflow-y: hidden;
+    }
+
+    .sc-hr ::deep .hr-grid .table {
+        --bs-table-bg: var(--hr-surface);
+        margin-bottom: 0;
+        vertical-align: middle;
+    }
+
+        .sc-hr ::deep .hr-grid .table > thead th {
+            font-size: .75rem;
+            font-weight: 700;
+            letter-spacing: .04em;
+            text-transform: uppercase;
+            color: var(--bs-secondary-color);
+            white-space: nowrap;
+        }
+
+/* A row's primary link (or, for a record without a page, its button that opens the editor). */
+.sc-hr ::deep .hr-grid-link {
+    font-weight: 600;
+    color: var(--hr-ink);
+    text-align: start;
+    text-decoration: none;
+}
+
+    .sc-hr ::deep .hr-grid-link:hover,
+    .sc-hr ::deep .hr-grid-link:focus-visible {
+        color: var(--sc-primary);
+        text-decoration: underline;
+    }
+
+.sc-hr ::deep .hr-row-selected > * {
+    --bs-table-bg-state: rgba(var(--sc-primary-rgb), .07);
+}
+
+/* Live regions for outcomes and errors: always rendered, and take no room while empty. */
+.sc-hr ::deep .hr-live-status,
+.sc-hr ::deep .hr-live-error {
+    font-size: .875rem;
+    font-weight: 600;
+}
+
+    .sc-hr ::deep .hr-live-status:empty,
+    .sc-hr ::deep .hr-live-error:empty {
+        margin: 0;
+    }
+
+    .sc-hr ::deep .hr-live-status:focus {
+        outline: none;
+    }
+
+    .sc-hr ::deep .hr-live-status:focus-visible {
+        outline: 2px solid var(--bs-focus-ring-color, var(--sc-primary));
+        outline-offset: 2px;
+    }
+
+.sc-hr ::deep .hr-live-error {
+    color: var(--bs-danger-text-emphasis);
+}
+
+/* The bulk bar of a queue: wraps onto several lines at phone width. */
+.sc-hr ::deep .hr-bulk {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: .75rem 1rem;
+    margin-bottom: 1rem;
+    padding: .75rem 1rem;
+    border: 1px solid rgba(var(--sc-primary-rgb), .35);
+    border-radius: .75rem;
+    background: rgba(var(--sc-primary-rgb), .06);
+}
+
+.sc-hr ::deep .hr-bulk-count {
+    flex: 1 0 100%;
+    margin: 0;
+    font-size: .9375rem;
+    font-weight: 700;
+    color: var(--hr-ink);
+}
+
+.sc-hr ::deep .hr-bulk-field {
+    flex: 1 1 16rem;
+    min-width: 0;
+}
+
+.sc-hr ::deep .hr-bulk-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .5rem;
 }

@@ -12,6 +12,40 @@
         <LivePauseButton />
     </div>
 
+    @* Pages waiting for the signed-in engineer (AC-7c): acknowledging here stops the escalation, like on the incident page. *@
+    <p class="mw-list-status @(pageStatusIsError ? "text-danger-emphasis" : null)" role="status" tabindex="-1" @ref="pageStatusRegion">@pageStatus</p>
+    @if (WaitingForMe is { Count: > 0 } waiting)
+    {
+        <section class="mb-4" aria-labelledby="mw-ov-pages-title">
+            <Card Class="mw-card">
+                <CardHeader>
+                    <h2 class="mw-card-title" id="mw-ov-pages-title"><Icon Name="IconName.Megaphone" class="me-1" aria-hidden="true" />Pages waiting for you (@waiting.Count)</h2>
+                    <span class="small text-body-secondary">Acknowledge to stop the escalation</span>
+                </CardHeader>
+                <CardBody Class="pt-2">
+                    <ul class="list-unstyled mb-0">
+                        @foreach (var paged in waiting)
+                        {
+                            var mine = paged.Paging!.Pages.Last(page => page.EngineerId == State.Identity.Current!.Id);
+                            var next = State.NextPage(paged);
+                            <li class="mw-row flex-wrap" @key="paged.Id">
+                                <span class="flex-grow-1" style="min-width: 14rem;">
+                                    <a class="mw-row-link" href="@MonitoringDisplay.IncidentUrl(paged.Id)">#@paged.Id @paged.Title</a>
+                                    <span class="d-block small text-body-secondary">
+                                        @paged.Severity · paged you @MonitoringDisplay.Stamp(mine.At) (step @mine.Step of “@paged.Paging.PolicyName”)@(next is { } upcoming ? $" · next page at {MonitoringDisplay.Time(upcoming.Due)}" : null)
+                                    </span>
+                                </span>
+                                <Button Color="ButtonColor.Warning" Size="ButtonSize.Small" @onclick="() => AcknowledgePage(paged)">
+                                    <Icon Name="IconName.HandIndexThumb" class="me-1" aria-hidden="true" />Acknowledge<span class="visually-hidden">&#32;#@paged.Id</span>
+                                </Button>
+                            </li>
+                        }
+                    </ul>
+                </CardBody>
+            </Card>
+        </section>
+    }
+
     @foreach (var incident in ActiveIncidents)
     {
         var service = State.FindService(incident.ServiceId);

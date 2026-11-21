@@ -1,120 +1,21 @@
 /* The sales inbox. The sd-* classes come from SaasShell.razor.css; these are the page's own pieces. */
 
-.sd-leads-status:not(:empty) {
-    margin-bottom: 1rem;
-    padding: .75rem 1rem;
-    border: 1px solid var(--bs-success-border-subtle);
-    border-radius: .75rem;
-    background: var(--bs-success-bg-subtle);
-    color: var(--bs-success-text-emphasis);
-    font-size: .9375rem;
-}
-
-.sd-leads-status:empty {
-    margin: 0;
-}
-
-.sd-leads-status:focus {
-    outline: none;
-}
-
-.sd-leads-status:focus-visible {
+/* The status filter is a group of native radios drawn as buttons; a visible ring shows the keyboard focus. */
+.btn-check:focus-visible + .btn {
     outline: 2px solid var(--sc-primary);
     outline-offset: 2px;
 }
 
-.sd-leads-controls {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: flex-end;
-    justify-content: space-between;
-    gap: 1rem;
-}
-
-.sd-leads-filters {
-    display: flex;
-    flex-wrap: wrap;
-    gap: .5rem;
-}
-
-.sd-leads-filter-count {
-    opacity: .8;
-}
-
-.sd-leads-search {
-    flex: 1 1 16rem;
-    max-width: 28rem;
-}
-
-.sd-leads {
-    margin: 0;
-    padding: 0;
-    list-style: none;
-}
-
-.sd-lead {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-between;
-    gap: .5rem 1rem;
-    padding: .875rem 0;
-    border-top: 1px solid var(--bs-border-color-translucent);
-}
-
-.sd-lead-main {
-    display: flex;
-    flex: 1 1 18rem;
-    flex-direction: column;
-    gap: .125rem;
-    min-width: 0;
-}
-
-/* The lead's name opens it: a button that reads like a link. */
-.sd-lead-open {
-    padding: 0;
-    border: 0;
-    background: none;
-    color: var(--bs-link-color);
-    font-weight: 600;
-    text-align: start;
-    text-decoration: underline;
-    text-underline-offset: .2em;
-}
-
-    .sd-lead-open:hover {
-        color: var(--bs-link-hover-color);
-    }
-
-    .sd-lead-open:focus-visible {
-        outline: 2px solid var(--sc-primary);
-        outline-offset: 2px;
-        border-radius: .25rem;
-    }
-
+/* A message or note in the grid shows its start on one line, cut with an ellipsis. */
 .sd-lead-excerpt {
-    margin: .25rem 0 0;
+    display: inline-block;
+    max-width: 18rem;
     overflow: hidden;
     color: var(--bs-secondary-color);
     font-size: .875rem;
     text-overflow: ellipsis;
     white-space: nowrap;
-}
-
-.sd-lead-create {
-    flex: 0 0 auto;
-}
-
-.sd-leads-empty-icon {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 3rem;
-    height: 3rem;
-    border-radius: 50%;
-    background: rgba(var(--sc-primary-rgb), .12);
-    color: var(--sc-primary);
-    font-size: 1.25rem;
+    vertical-align: bottom;
 }
 
 /* The full message keeps its line breaks. */

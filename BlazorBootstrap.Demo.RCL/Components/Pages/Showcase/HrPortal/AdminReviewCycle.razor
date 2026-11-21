@@ -1,0 +1,312 @@
+@page "/showcase/hr-portal/admin/reviews/{Id:int}"
+@layout HrWorkLayout
+
+@{
+    var cycle = Cycle;
+}
+
+<PageTitle>@(cycle?.Name ?? "Review cycle") · @HrSeedData.ProductName</PageTitle>
+
+<div class="container-fluid px-lg-4">
+    <ShowcaseRoleGuard Roles="@HrSeedData.HrAdminRole" SignInPath="@HrLayout.SignInPath">
+        @if (cycle is null)
+        {
+            <HrNotFound Message="There's no review cycle with this ID, or the link is wrong. Open it from Performance reviews." />
+        }
+        else
+        {
+            var progress = State.CycleProgress(cycle.Id);
+            var included = progress.Total - progress.LeftOut;
+            var reviews = State.CycleReviews(cycle.Id);
+
+            <p class="small mb-2">
+                <a href="@ReviewDisplay.CyclesUrl"><Icon Name="IconName.ArrowLeft" class="me-1" aria-hidden="true" />Performance reviews</a>
+            </p>
+
+            <div class="hr-arc-head mb-3">
+                <div class="min-w-0">
+                    <h1 class="hr-title hr-arc-wrap">@cycle.Name</h1>
+                    <p class="hr-lead mb-0 hr-arc-wrap">
+                        <Badge Color="@ReviewDisplay.StatusColor(cycle.Status)">@ReviewDisplay.StatusLabel(cycle.Status)</Badge>
+                        · @HrDisplay.Plural(progress.Total, "person", "people") in @State.ScopeText(cycle) · self reviews due @HrDisplay.Date(cycle.SelfReviewDue),
+                        manager reviews @HrDisplay.Date(cycle.ManagerReviewDue) · opened @HrDisplay.Date(cycle.CreatedAt) by @(State.FindEmployee(cycle.CreatedById)?.Name ?? "HR")
+                    </p>
+                </div>
+                @if (cycle.Status != HrCycleStatus.Closed)
+                {
+                    <button type="button" class="btn btn-primary" @ref="advanceButton" @onclick="OpenAdvanceAsync">
+                        <Icon Name="IconName.ArrowRightCircle" class="me-1" aria-hidden="true" />@AdvanceLabel(cycle.Status)
+                    </button>
+                }
+            </div>
+
+            @* Always rendered and focusable, so every step is announced and focus has somewhere to go once a dialog closes. *@
+            <p class="hr-live-status" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
+
+            <section class="hr-panel mb-4" aria-labelledby="hr-arc-progress-title">
+                <h2 class="hr-section-title" id="hr-arc-progress-title">Progress</h2>
+                <dl class="hr-arc-stats">
+                    <div><dt>Self reviews in</dt><dd>@progress.SelfDone of @progress.Total</dd></div>
+                    <div><dt>Manager reviews in</dt><dd>@progress.ManagerDone of @progress.Total</dd></div>
+                    <div><dt>Ratings calibrated</dt><dd>@progress.Calibrated of @included</dd></div>
+                    <div><dt>Signed off by both</dt><dd>@progress.Signed of @included</dd></div>
+                    @if (progress.LeftOut > 0)
+                    {
+                        <div><dt>Left out</dt><dd>@progress.LeftOut</dd></div>
+                    }
+                </dl>
+                @* One bar per stage, with its count in words, so the split doesn't rely on color. *@
+                <ul class="list-unstyled hr-arc-stages mb-0">
+                    @foreach (var (stage, count) in StageCounts(progress))
+                    {
+                        <li @key="stage">
+                            <span class="hr-arc-stage-label"><Badge Color="@ReviewDisplay.StageColor(stage)">@ReviewDisplay.StageLabel(stage)</Badge></span>
+                            <Progress Height="8" Class="flex-grow-1">
+                                <ProgressBar Width="@AdminHelpers.Percent(count, progress.Total)" Color="ProgressColor.Primary"
+                                             aria-label="@ReviewDisplay.StageLabel(stage)" aria-valuenow="@Math.Round(AdminHelpers.Percent(count, progress.Total))" aria-valuemin="0" aria-valuemax="100"
+                                             aria-valuetext="@($"{count} of {progress.Total}")" />
+                            </Progress>
+                            <span class="hr-mono small hr-arc-stage-count">@count of @progress.Total</span>
+                        </li>
+                    }
+                </ul>
+            </section>
+
+            <section class="hr-panel mb-4" aria-labelledby="hr-arc-distribution-title">
+                <h2 class="hr-section-title" id="hr-arc-distribution-title">Rating distribution</h2>
+                <p class="small text-body-secondary">
+                    @(cycle.Status == HrCycleStatus.Open
+                        ? "Manager ratings so far, by department. Calibration compares them across the group."
+                        : "Ratings by department: calibrated where HR has done so, otherwise the manager's. Use it to check that each department rates by the same bar.")
+                </p>
+                @* A summary of counts, not a record list, so it stays a plain table (AC-1). *@
+                <div class="table-responsive">
+                    <table class="table table-sm align-middle mb-0 hr-arc-table">
+                        <caption class="visually-hidden">Ratings by department, from 1 Below expectations to 5 Exceptional, and reviews not rated yet</caption>
+                        <thead>
+                            <tr>
+                                <th scope="col">Department</th>
+                                @for (var rating = 1; rating <= 5; rating++)
+                                {
+                                    <th scope="col" class="text-end" @key="rating">@rating <span class="d-block small fw-normal">@HrState.RatingName(rating)</span></th>
+                                }
+                                <th scope="col" class="text-end">Not rated</th>
+                                <th scope="col" class="text-end">Average</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var row in Distribution(reviews))
+                            {
+                                <tr @key="row.Name" class="@(row.IsTotal ? "fw-semibold" : null)">
+                                    <th scope="row">@row.Name</th>
+                                    @for (var rating = 1; rating <= 5; rating++)
+                                    {
+                                        var count = row.Counts[rating - 1];
+                                        <td class="text-end hr-mono" @key="rating">@count@(row.Rated > 0 && count > 0 ? string.Create(CultureInfo.InvariantCulture, $" ({Math.Round(count * 100.0 / row.Rated):0}%)") : null)</td>
+                                    }
+                                    <td class="text-end hr-mono">@row.NotRated</td>
+                                    <td class="text-end hr-mono">@(row.Rated == 0 ? "None" : row.Average.ToString("0.0", CultureInfo.InvariantCulture))</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section class="hr-panel" aria-labelledby="hr-arc-people-title">
+                <div class="d-flex flex-wrap align-items-end justify-content-between column-gap-3 row-gap-2 mb-3">
+                    <div class="d-flex flex-wrap gap-3">
+                        <div>
+                            <h2 class="hr-section-title mb-1" id="hr-arc-people-title">People (@reviews.Count)</h2>
+                            <label class="form-label small fw-semibold mb-1" for="hr-arc-department">Department</label>
+                            <select id="hr-arc-department" class="form-select form-select-sm" value="@departmentFilter" @onchange="OnDepartmentChangedAsync">
+                                <option value="">All departments</option>
+                                @foreach (var department in State.Departments.Where(item => reviews.Any(review => State.FindEmployee(review.EmployeeId)?.DepartmentId == item.Id)))
+                                {
+                                    <option value="@department.Id" @key="department.Id">@department.Name</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="align-self-end">
+                            <label class="form-label small fw-semibold mb-1" for="hr-arc-stage">Stage</label>
+                            <select id="hr-arc-stage" class="form-select form-select-sm" value="@stageFilter" @onchange="OnStageChangedAsync">
+                                <option value="">Any stage</option>
+                                @foreach (var stage in Enum.GetValues<HrReviewStage>())
+                                {
+                                    <option value="@stage" @key="stage">@ReviewDisplay.StageLabel(stage)</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                    @* Back to the saved view's defaults: by name, 25 a page, every column in its place. *@
+                    <Button Color="ButtonColor.Link" Size="ButtonSize.Small" Class="p-0" @onclick="ResetViewAsync">Reset view</Button>
+                </div>
+                <ShowcaseDataState Status="@(viewLoaded ? ShowcaseDataStatus.Ready : ShowcaseDataStatus.Loading)"
+                                   IsEmpty="@(reviews.Count == 0)"
+                                   EmptyIcon="IconName.People"
+                                   EmptyTitle="Nobody in this cycle"
+                                   LoadingText="Loading the people in this cycle…"
+                                   OnRetry="RefreshGridAsync">
+                    <ChildContent>
+                        <Grid @ref="grid"
+                              @key="gridVersion"
+                              TItem="ParticipantRow"
+                              Class="table table-hover sc-grid-row-links"
+                              GridContainerClass="hr-grid"
+                              DataProvider="ProvideParticipantsAsync"
+                              SettingsProvider="view.GetSettingsAsync"
+                              GridSettingsChanged="SaveSettingsAsync"
+                              AllowPaging="true"
+                              PageSize="@pageSize"
+                              PageSizeSelectorVisible="true"
+                              PageSizeSelectorItems="@(new[] { 10, 25, 50, 100 })"
+                              PaginationItemsTextFormat="{0}–{1} of {2} people"
+                              AllowSorting="true"
+                              AllowColumnChooser="true"
+                              AllowExport="true"
+                              ExportFileName="hr-review-participants"
+                              Responsive="true"
+                              EmptyText="Nobody matches these filters."
+                              aria-label="People in this cycle">
+                            <GridColumns>
+                                <GridColumn TItem="ParticipantRow" HeaderText="Employee" PropertyName="Employee" SortString="employee" SortKeySelector="row => row.Employee"
+                                            IsDefaultSortColumn="@view.IsSortColumn("employee")" SortDirection="@view.DirectionFor("employee")" AlwaysVisible="true">
+                                    @* The stretched link makes the whole row open the review; the Calibrate button stays above it. *@
+                                    <a class="hr-grid-link stretched-link" href="@ReviewDisplay.ReviewUrl(context.Id)">@context.Employee</a>
+                                </GridColumn>
+                                <GridColumn TItem="ParticipantRow" HeaderText="Department" PropertyName="Department" SortString="department" SortKeySelector="row => row.Department"
+                                            IsDefaultSortColumn="@view.IsSortColumn("department")" SortDirection="@view.DirectionFor("department")">
+                                    @context.Department
+                                </GridColumn>
+                                <GridColumn TItem="ParticipantRow" HeaderText="Manager" PropertyName="Manager" SortString="manager" SortKeySelector="row => row.Manager"
+                                            IsDefaultSortColumn="@view.IsSortColumn("manager")" SortDirection="@view.DirectionFor("manager")">
+                                    @context.Manager
+                                    @if (!context.ManagerCanSignIn)
+                                    {
+                                        <span class="d-block small text-body-secondary">No sign-in: HR records</span>
+                                    }
+                                </GridColumn>
+                                <GridColumn TItem="ParticipantRow" HeaderText="Stage" PropertyName="Stage" SortString="stage" SortKeySelector="row => row.StageKind"
+                                            IsDefaultSortColumn="@view.IsSortColumn("stage")" SortDirection="@view.DirectionFor("stage")" TextNoWrap="true">
+                                    <Badge Color="@ReviewDisplay.StageColor(context.StageKind)">@context.Stage</Badge>
+                                </GridColumn>
+                                <GridColumn TItem="ParticipantRow" HeaderText="Manager rating" PropertyName="ManagerRating" SortString="rating" SortKeySelector="row => row.ManagerRatingValue"
+                                            IsDefaultSortColumn="@view.IsSortColumn("rating")" SortDirection="@view.DirectionFor("rating")">
+                                    @context.ManagerRating
+                                </GridColumn>
+                                <GridColumn TItem="ParticipantRow" HeaderText="Calibrated rating" PropertyName="CalibratedRating" SortString="calibrated" SortKeySelector="row => row.CalibratedValue"
+                                            IsDefaultSortColumn="@view.IsSortColumn("calibrated")" SortDirection="@view.DirectionFor("calibrated")">
+                                    @context.CalibratedRating
+                                    @if (context.Changed)
+                                    {
+                                        <span class="d-block small text-body-secondary">Changed by HR</span>
+                                    }
+                                </GridColumn>
+                                <GridColumn TItem="ParticipantRow" HeaderText="Calibration note" PropertyName="Note" Sortable="false" Class="hr-arc-note">
+                                    <span class="small hr-plain">@context.Note</span>
+                                </GridColumn>
+                                <GridColumn TItem="ParticipantRow" HeaderText="Actions" Sortable="false" Exportable="false">
+                                    @if (context.CanCalibrate)
+                                    {
+                                        var reviewId = context.Id;
+                                        <button type="button" class="btn btn-sm btn-outline-primary text-nowrap" @ref="calibrateButtons[reviewId]" @onclick="() => OpenCalibrateAsync(reviewId)">
+                                            Calibrate<span class="visually-hidden">&#32;@context.Employee</span>
+                                        </button>
+                                    }
+                                </GridColumn>
+                            </GridColumns>
+                        </Grid>
+                    </ChildContent>
+                </ShowcaseDataState>
+            </section>
+
+            <Modal @ref="advanceModal" IsVerticallyCentered="true" IsScrollable="true" ShowCloseButton="false" aria-labelledby="hr-arc-advance-title" OnHidden="OnAdvanceHiddenAsync">
+                <HeaderTemplate>
+                    <h2 class="modal-title h5" id="hr-arc-advance-title">@AdvanceLabel(cycle.Status)?</h2>
+                </HeaderTemplate>
+                <BodyTemplate>
+                    @{
+                        var missing = Missing(cycle);
+                    }
+                    <p>@AdvanceText(cycle, progress, missing.Count)</p>
+                    @if (missing.Count > 0)
+                    {
+                        <p class="fw-semibold mb-1">@MissingTitle(cycle.Status, missing.Count)</p>
+                        <ul class="small mb-0">
+                            @foreach (var name in missing.Take(12))
+                            {
+                                <li @key="name">@name</li>
+                            }
+                            @if (missing.Count > 12)
+                            {
+                                <li>And @(missing.Count - 12) more</li>
+                            }
+                        </ul>
+                    }
+                </BodyTemplate>
+                <FooterTemplate>
+                    <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => advanceModal.HideAsync()">Cancel</Button>
+                    @if (CanAdvance(cycle, progress))
+                    {
+                        <Button Color="ButtonColor.Primary" @onclick="ConfirmAdvanceAsync">@ConfirmLabel(cycle.Status, Missing(cycle).Count)</Button>
+                    }
+                </FooterTemplate>
+            </Modal>
+
+            <Modal @ref="calibrateModal" IsVerticallyCentered="true" ShowCloseButton="false" aria-labelledby="hr-arc-calibrate-title" OnShown="OnCalibrateShownAsync" OnHidden="OnCalibrateHiddenAsync">
+                <HeaderTemplate>
+                    <h2 class="modal-title h5 hr-arc-wrap" id="hr-arc-calibrate-title">@(CalibrateReview is { } shown ? $"Calibrate {EmployeeName(shown.EmployeeId)}'s rating" : "Calibrate the rating")</h2>
+                </HeaderTemplate>
+                <BodyTemplate>
+                    @if (CalibrateReview is { } review)
+                    {
+                        <p class="small mb-2">
+                            @EmployeeName(review.ManagerId) rated @EmployeeName(review.EmployeeId) @ReviewDisplay.Rating(review.ManagerRating).
+                            @(review.SelfRating is { } selfRating ? $" Their own rating: {ReviewDisplay.Rating(selfRating)}." : null)
+                        </p>
+                        <details class="small mb-3">
+                            <summary>Read the manager's review</summary>
+                            <p class="hr-plain mt-2 mb-0">@review.ManagerText</p>
+                        </details>
+                        <EditForm id="hr-arc-calibrate-form" EditContext="calibrateContext" OnSubmit="SaveCalibrationAsync" FormName="hr-calibrate" novalidate>
+                            <DataAnnotationsValidator />
+                            <ShowcaseFormErrors ShowSummary="true" />
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold" for="hr-arc-rating">Calibrated rating</label>
+                                <InputSelect @ref="ratingSelect" TValue="int?" id="hr-arc-rating" class="form-select" @bind-Value="calibrateForm.Rating" aria-describedby="hr-arc-rating-help">
+                                    @for (var rating = 5; rating >= 1; rating--)
+                                    {
+                                        <option value="@rating" @key="rating">@ReviewDisplay.Rating(rating)</option>
+                                    }
+                                </InputSelect>
+                                <div class="form-text" id="hr-arc-rating-help">@CalibratePreview(review)</div>
+                                <ValidationMessage For="() => calibrateForm.Rating" />
+                            </div>
+                            <div class="mb-0">
+                                <label class="form-label fw-semibold" for="hr-arc-note">Note</label>
+                                <InputTextArea id="hr-arc-note" class="form-control" rows="3" @bind-Value="calibrateForm.Note" @oninput="args => noteText = args.Value?.ToString() ?? string.Empty"
+                                               aria-describedby="hr-arc-note-help" />
+                                <div class="form-text" id="hr-arc-note-help">
+                                    Needed when you change the rating: @EmployeeName(review.EmployeeId) and their manager read it after the release. @AdminHelpers.Counter(noteText, HrState.MaxCalibrationNoteLength)
+                                </div>
+                                <ValidationMessage For="() => calibrateForm.Note" />
+                            </div>
+                        </EditForm>
+                        <p class="hr-live-error mt-3 mb-0" role="alert">@calibrateError</p>
+                    }
+                    else
+                    {
+                        <p class="mb-0">This review can't be calibrated now.</p>
+                    }
+                </BodyTemplate>
+                <FooterTemplate>
+                    <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => calibrateModal.HideAsync()">Cancel</Button>
+                    @if (CalibrateReview is not null)
+                    {
+                        <Button Type="ButtonType.Submit" Color="ButtonColor.Primary" form="hr-arc-calibrate-form">Save rating</Button>
+                    }
+                </FooterTemplate>
+            </Modal>
+        }
+    </ShowcaseRoleGuard>
+</div>

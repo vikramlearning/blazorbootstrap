@@ -242,7 +242,7 @@
                             <span class="tm-ot-entry-at small text-body-secondary">@Transfers.StampText(entry.At)</span>
                             <span class="tm-ot-entry-text">
                                 <span class="fw-semibold">@entry.Action</span>
-                                <span class="small text-body-secondary">by @entry.Actor (@entry.Role)</span>
+                                <span class="small text-body-secondary">by @entry.Actor</span>
                                 @if (!string.IsNullOrWhiteSpace(entry.Details))
                                 {
                                     <span class="d-block small text-break">@entry.Details</span>
@@ -278,18 +278,23 @@
                         @source.Name has @BalanceText(Free(source, transfer)) free after its other scheduled and held transfers, so approving won't go through. Reject the transfer with a reason instead.
                     </p>
                 }
-                <label class="form-label fw-semibold" for="tm-ot-approve-note">Internal note (optional)</label>
-                <textarea id="tm-ot-approve-note" class="form-control" rows="3" maxlength="@MaxApproveNote" @bind="approveNote" @bind:event="oninput" @ref="approveNoteInput"
-                          aria-describedby="tm-ot-approve-note-help tm-ot-approve-note-count"></textarea>
-                <div class="d-flex flex-wrap justify-content-between gap-2 form-text">
-                    <span id="tm-ot-approve-note-help">What you checked. It goes in the audit log; the customer doesn't see it.</span>
-                    <span id="tm-ot-approve-note-count">@approveNote.Length of @MaxApproveNote characters</span>
-                </div>
+                <EditForm id="tm-ot-approve-form" EditContext="approveContext" OnSubmit="ConfirmApproveAsync" FormName="tm-ot-approve" novalidate>
+                    <DataAnnotationsValidator />
+                    <ShowcaseFormErrors />
+                    <label class="form-label fw-semibold" for="tm-ot-approve-note">Internal note (optional)</label>
+                    <InputTextArea id="tm-ot-approve-note" class="form-control" rows="3" maxlength="@MaxApproveNote" @bind-Value="approveForm.Text" @oninput="args => approveLength = Length(args)"
+                                   @ref="approveNoteInput" aria-describedby="tm-ot-approve-note-help tm-ot-approve-note-count" />
+                    <div class="d-flex flex-wrap justify-content-between gap-2 form-text">
+                        <span id="tm-ot-approve-note-help">What you checked. It goes in the audit log; the customer doesn't see it.</span>
+                        <span id="tm-ot-approve-note-count">@approveLength of @MaxApproveNote characters</span>
+                    </div>
+                    <ValidationMessage For="() => approveForm.Text" />
+                </EditForm>
                 <p class="text-danger-emphasis fw-semibold small mt-2 mb-0" role="alert">@dialogError</p>
             </BodyTemplate>
             <FooterTemplate>
                 <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => approveModal.HideAsync()">Cancel</Button>
-                <Button Color="ButtonColor.Primary" @onclick="ConfirmApproveAsync" Disabled="busy">
+                <Button Type="ButtonType.Submit" Color="ButtonColor.Primary" form="tm-ot-approve-form" Disabled="busy">
                     @(transfer.Date > State.Today ? $"Approve and schedule {FintechDisplay.Money(transfer.Amount)}" : $"Approve and send {FintechDisplay.Money(transfer.Amount)}")
                 </Button>
             </FooterTemplate>
@@ -304,20 +309,23 @@
                 <p class="mb-2">@FintechDisplay.Money(transfer.Amount) to @transfer.ToName isn't sent: nothing leaves @transfer.CustomerName's account, and the money set aside is released.</p>
                 <p class="mb-2">@transfer.CustomerName sees your reason on the transfer's receipt and in an alert.</p>
                 <p class="small text-body-secondary mb-3">This can't be undone: to send the money, @transfer.CustomerName would need to make a new transfer.</p>
-                <label class="form-label fw-semibold" for="tm-ot-reject-reason">Reason for @transfer.CustomerName</label>
-                <textarea id="tm-ot-reject-reason" class="form-control @(rejectError is null ? null : "is-invalid")" rows="4" maxlength="@MaxRejectReason"
-                          @bind="rejectReason" @bind:event="oninput" @ref="rejectReasonInput" aria-required="true" aria-invalid="@(rejectError is null ? null : "true")"
-                          aria-describedby="tm-ot-reject-reason-help tm-ot-reject-reason-count tm-ot-reject-reason-error"></textarea>
-                <div class="d-flex flex-wrap justify-content-between gap-2 form-text">
-                    <span id="tm-ot-reject-reason-help">Plain words: what you checked and why it can't go. @MinReason to @MaxRejectReason characters.</span>
-                    <span id="tm-ot-reject-reason-count">@rejectReason.Length of @MaxRejectReason characters</span>
-                </div>
-                <p class="text-danger-emphasis fw-semibold small mt-2 mb-0" id="tm-ot-reject-reason-error">@rejectError</p>
+                <EditForm id="tm-ot-reject-form" EditContext="rejectContext" OnSubmit="ConfirmRejectAsync" FormName="tm-ot-reject" novalidate>
+                    <DataAnnotationsValidator />
+                    <ShowcaseFormErrors />
+                    <label class="form-label fw-semibold" for="tm-ot-reject-reason">Reason for @transfer.CustomerName</label>
+                    <InputTextArea id="tm-ot-reject-reason" class="form-control" rows="4" maxlength="@MaxRejectReason" @bind-Value="rejectForm.Text" @oninput="args => rejectLength = Length(args)"
+                                   @ref="rejectReasonInput" aria-required="true" aria-describedby="tm-ot-reject-reason-help tm-ot-reject-reason-count" />
+                    <div class="d-flex flex-wrap justify-content-between gap-2 form-text">
+                        <span id="tm-ot-reject-reason-help">Plain words: what you checked and why it can't go. @MinReason to @MaxRejectReason characters.</span>
+                        <span id="tm-ot-reject-reason-count">@rejectLength of @MaxRejectReason characters</span>
+                    </div>
+                    <ValidationMessage For="() => rejectForm.Text" />
+                </EditForm>
                 <p class="text-danger-emphasis fw-semibold small mt-2 mb-0" role="alert">@dialogError</p>
             </BodyTemplate>
             <FooterTemplate>
                 <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => rejectModal.HideAsync()">Cancel</Button>
-                <Button Color="ButtonColor.Danger" @onclick="ConfirmRejectAsync" Disabled="busy">Reject transfer</Button>
+                <Button Type="ButtonType.Submit" Color="ButtonColor.Danger" form="tm-ot-reject-form" Disabled="busy">Reject transfer</Button>
             </FooterTemplate>
         </Modal>
 
@@ -329,20 +337,23 @@
             <BodyTemplate>
                 <p class="mb-2">@FintechDisplay.Money(transfer.Amount) from @transfer.CustomerName to @transfer.ToName, scheduled for @Transfers.DateText(transfer.Date), isn't sent until someone approves it in the review queue.</p>
                 <p class="mb-3">@transfer.CustomerName is told it's held for a check, and sees your reason as the hold reason.</p>
-                <label class="form-label fw-semibold" for="tm-ot-hold-reason">Reason</label>
-                <textarea id="tm-ot-hold-reason" class="form-control @(holdError is null ? null : "is-invalid")" rows="2" maxlength="@MaxHoldReason"
-                          @bind="holdReason" @bind:event="oninput" @ref="holdReasonInput" aria-required="true" aria-invalid="@(holdError is null ? null : "true")"
-                          aria-describedby="tm-ot-hold-reason-help tm-ot-hold-reason-count tm-ot-hold-reason-error"></textarea>
-                <div class="d-flex flex-wrap justify-content-between gap-2 form-text">
-                    <span id="tm-ot-hold-reason-help">@MinReason to @MaxHoldReason characters, like "Checking the payee's details with the customer".</span>
-                    <span id="tm-ot-hold-reason-count">@holdReason.Length of @MaxHoldReason characters</span>
-                </div>
-                <p class="text-danger-emphasis fw-semibold small mt-2 mb-0" id="tm-ot-hold-reason-error">@holdError</p>
+                <EditForm id="tm-ot-hold-form" EditContext="holdContext" OnSubmit="ConfirmHoldAsync" FormName="tm-ot-hold" novalidate>
+                    <DataAnnotationsValidator />
+                    <ShowcaseFormErrors />
+                    <label class="form-label fw-semibold" for="tm-ot-hold-reason">Reason</label>
+                    <InputTextArea id="tm-ot-hold-reason" class="form-control" rows="2" maxlength="@MaxHoldReason" @bind-Value="holdForm.Text" @oninput="args => holdLength = Length(args)"
+                                   @ref="holdReasonInput" aria-required="true" aria-describedby="tm-ot-hold-reason-help tm-ot-hold-reason-count" />
+                    <div class="d-flex flex-wrap justify-content-between gap-2 form-text">
+                        <span id="tm-ot-hold-reason-help">@MinReason to @MaxHoldReason characters, like "Checking the payee's details with the customer".</span>
+                        <span id="tm-ot-hold-reason-count">@holdLength of @MaxHoldReason characters</span>
+                    </div>
+                    <ValidationMessage For="() => holdForm.Text" />
+                </EditForm>
                 <p class="text-danger-emphasis fw-semibold small mt-2 mb-0" role="alert">@dialogError</p>
             </BodyTemplate>
             <FooterTemplate>
                 <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => holdModal.HideAsync()">Cancel</Button>
-                <Button Color="ButtonColor.Warning" @onclick="ConfirmHoldAsync" Disabled="busy">Hold for review</Button>
+                <Button Type="ButtonType.Submit" Color="ButtonColor.Warning" form="tm-ot-hold-form" Disabled="busy">Hold for review</Button>
             </FooterTemplate>
         </Modal>
     }

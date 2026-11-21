@@ -4,79 +4,189 @@
 <PageTitle>Review queue · Operations · @FintechSeedData.ProductName</PageTitle>
 
 <div class="container-fluid px-lg-4">
-    @{
-        var held = Held;
-    }
-
     <div class="tm-page-head">
         <div>
-            <h1 class="tm-title">Review queue <span class="tm-oq-count">@CountText(held.Count)</span></h1>
-            <p class="tm-lead">Transfers held for a check, oldest first. Open one to approve or reject it.</p>
+            <h1 class="tm-title">Review queue <span class="tm-oq-count">@CountText(HeldCount)</span></h1>
+            <p class="tm-lead">
+                Transfers held for a check, oldest first. Open one to review it, or select several to release or reject them together. Switch to scheduled
+                transfers to hold several for review before they post.
+            </p>
         </div>
         <a class="btn btn-outline-secondary" href="@($"{FintechOpsLayout.Base}/scheduled")"><Icon Name="IconName.CalendarEvent" class="me-2" aria-hidden="true" />Scheduled postings</a>
     </div>
 
-    <section class="tm-panel mb-4" aria-labelledby="tm-oq-list-title">
-        <h2 class="tm-section-title" id="tm-oq-list-title">Held transfers</h2>
-        @if (held.Count == 0)
-        {
-            <div class="tm-oq-empty">
-                <span class="tm-icon" aria-hidden="true"><Icon Name="IconName.CheckCircle" /></span>
+    <Card Class="tm-card mb-3">
+        <CardBody Class="p-3 p-lg-4">
+            <h2 class="tm-section-title mb-3" id="tm-oq-filters-title">Filter the queue</h2>
+            <div class="tm-list-filters" role="group" aria-labelledby="tm-oq-filters-title">
+                <div class="tm-list-search">
+                    <label class="form-label small fw-semibold" for="tm-oq-search">Search</label>
+                    @* Filters on every keystroke; the bound value changes only on change, so a render during typing never writes an older value back. *@
+                    <input id="tm-oq-search" type="search" class="form-control" value="@searchBoxValue" placeholder="Reference, customer, or payee"
+                           autocomplete="off" maxlength="80" @oninput="OnSearchInputAsync" @onchange="OnSearchChanged" />
+                </div>
                 <div>
-                    <p class="fw-semibold mb-1">Nothing to review</p>
-                    <p class="small text-body-secondary mb-0">Every held transfer has been approved or rejected. New ones appear here as customers send them.</p>
+                    <label class="form-label small fw-semibold" for="tm-oq-status">Show</label>
+                    <select id="tm-oq-status" class="form-select" value="@statusFilter" @onchange="OnStatusChangedAsync">
+                        <option value="@HeldValue">Held for review (@Count(HeldCount))</option>
+                        <option value="@ScheduledValue">Scheduled, not yet held (@Count(ScheduledCount))</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="form-label small fw-semibold" for="tm-oq-reason">Hold reason</label>
+                    <select id="tm-oq-reason" class="form-select" @bind="reasonFilter" @bind:after="FiltersChangedAsync" disabled="@(statusFilter != HeldValue)">
+                        <option value="">Any reason</option>
+                        @foreach (var reason in HoldReasons)
+                        {
+                            <option value="@reason">@reason</option>
+                        }
+                    </select>
                 </div>
             </div>
-        }
-        else
-        {
-            <div class="table-responsive tm-grid">
-                <table class="table tm-oq-table">
-                    <caption class="caption-top small">@(held.Count == 1 ? "1 held transfer" : $"{held.Count.ToString(CultureInfo.InvariantCulture)} held transfers"), oldest first. Waiting is the time since the customer confirmed the transfer.</caption>
-                    <thead>
-                        <tr>
-                            <th scope="col">Reference</th>
-                            <th scope="col">Customer</th>
-                            <th scope="col" class="text-end">Amount</th>
-                            <th scope="col">To</th>
-                            <th scope="col">Date</th>
-                            <th scope="col">Hold reason</th>
-                            <th scope="col">Waiting</th>
-                            <th scope="col"><span class="visually-hidden">Action</span></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var transfer in held)
-                        {
-                            <tr @key="transfer.Reference">
-                                <th scope="row" class="tm-mono fw-semibold text-nowrap">@transfer.Reference</th>
-                                <td class="text-nowrap"><a href="@CustomerUrl(transfer.CustomerId)">@transfer.CustomerName</a></td>
-                                <td class="text-end tm-mono fw-semibold text-nowrap">@FintechDisplay.Money(transfer.Amount)</td>
-                                <td class="tm-oq-wrap">@transfer.ToName</td>
-                                <td class="text-nowrap">@Transfers.DateText(transfer.Date)</td>
-                                <td class="tm-oq-reason">@(transfer.HoldReason ?? "No reason recorded")</td>
-                                <td class="text-nowrap">@WaitText(transfer.CreatedAt, State.Clock.Now)</td>
-                                <td class="text-end">
-                                    <a class="btn btn-sm btn-primary text-nowrap" href="@TransferUrl(transfer.Reference)">Review<span class="visually-hidden"> @transfer.Reference, @FintechDisplay.Money(transfer.Amount) from @transfer.CustomerName</span></a>
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
+            <div class="tm-list-meta mb-0">
+                <p class="small text-body-secondary mb-0" aria-live="polite" tabindex="-1" @ref="countRegion">@ShownText</p>
+                @if (IsFiltered)
+                {
+                    <Button Color="ButtonColor.Link" Size="ButtonSize.Small" Class="p-0" @onclick="ClearFiltersAsync">Clear filters</Button>
+                }
+                @* Back to the saved view's defaults: oldest first, 25 a page, every column in its place. *@
+                <Button Color="ButtonColor.Link" Size="ButtonSize.Small" Class="p-0" @onclick="ResetViewAsync">Reset view</Button>
             </div>
-        }
-    </section>
+        </CardBody>
+    </Card>
+
+    @* Always rendered and focusable, so an outcome is announced and focus has somewhere to go when the bulk bar closes. *@
+    <p class="tm-list-status @(statusIsError ? "text-danger-emphasis" : null)" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
+
+    @if (selected.Count > 0)
+    {
+        <section class="tm-bulk" aria-labelledby="tm-oq-bulk-count">
+            <h2 class="tm-bulk-count" id="tm-oq-bulk-count">@(selected.Count == 1 ? "1 transfer selected" : $"{Count(selected.Count)} transfers selected"), @FintechDisplay.Money(selected.Sum(row => row.Amount))</h2>
+            <EditForm EditContext="bulkContext" OnSubmit="ApplyBulkAsync" FormName="tm-oq-bulk" class="tm-bulk-form" novalidate>
+                <DataAnnotationsValidator />
+                <ShowcaseFormErrors />
+                <div class="tm-bulk-field">
+                    <label class="form-label small fw-semibold" for="tm-oq-bulk-action">Action</label>
+                    <InputSelect id="tm-oq-bulk-action" class="form-select form-select-sm" @bind-Value="bulkForm.Action" aria-describedby="tm-oq-bulk-action-help">
+                        <option value="">Choose an action</option>
+                        @if (statusFilter == HeldValue)
+                        {
+                            <option value="@ReleaseAction">Release (approve and send)</option>
+                            <option value="@RejectAction">Reject</option>
+                        }
+                        else
+                        {
+                            <option value="@HoldAction">Hold for review</option>
+                        }
+                    </InputSelect>
+                    <span class="form-text d-block" id="tm-oq-bulk-action-help">@ActionHelp</span>
+                    <ValidationMessage For="() => bulkForm.Action" />
+                </div>
+                <div class="tm-bulk-field tm-bulk-wide">
+                    <label class="form-label small fw-semibold" for="tm-oq-bulk-reason">@ReasonLabel</label>
+                    <InputTextArea id="tm-oq-bulk-reason" class="form-control form-control-sm" rows="2" maxlength="@FintechState.MaxRejectReason" @bind-Value="bulkForm.Reason"
+                                   aria-describedby="tm-oq-bulk-reason-help" />
+                    <span class="form-text d-block" id="tm-oq-bulk-reason-help">@ReasonHelp</span>
+                    <ValidationMessage For="() => bulkForm.Reason" />
+                </div>
+                <div class="tm-bulk-actions">
+                    <Button Type="ButtonType.Submit" Color="ButtonColor.Primary" Size="ButtonSize.Small">Apply<span class="visually-hidden">&#32;to the selected transfers</span></Button>
+                    <Button Color="ButtonColor.Secondary" Outline="true" Size="ButtonSize.Small" @onclick="ClearSelectionAsync">Clear selection</Button>
+                </div>
+            </EditForm>
+        </section>
+    }
+
+    <Card Class="tm-card mb-4">
+        <CardBody Class="p-3 p-lg-4">
+            <ShowcaseDataState Status="@(viewLoaded ? ShowcaseDataStatus.Ready : ShowcaseDataStatus.Loading)"
+                               IsEmpty="@(Rows(byStatusOnly: true).Count == 0)"
+                               EmptyIcon="IconName.CheckCircle"
+                               EmptyTitle="@(statusFilter == HeldValue ? "Nothing to review" : "Nothing scheduled")"
+                               EmptyText="@(statusFilter == HeldValue ? "Every held transfer has been released or rejected. New ones appear here as customers send them." : "No transfer is waiting for its date. Transfers customers schedule appear here until they post.")"
+                               LoadingText="Loading the review queue…"
+                               OnRetry="RefreshGridAsync">
+                <EmptyActions>
+                    <a class="btn btn-sm btn-outline-primary" href="@($"{FintechOpsLayout.Base}/disputes")">Go to disputes</a>
+                </EmptyActions>
+                <ChildContent>
+                    <Grid @ref="grid"
+                          @key="gridVersion"
+                          TItem="QueueRow"
+                          Class="table table-hover align-middle tm-table-wide sc-grid-row-links"
+                          GridContainerClass="tm-grid border rounded-3"
+                          DataProvider="ProvideRowsAsync"
+                          SettingsProvider="view.GetSettingsAsync"
+                          GridSettingsChanged="SaveSettingsAsync"
+                          AllowPaging="true"
+                          PageSize="@pageSize"
+                          PageSizeSelectorVisible="true"
+                          PageSizeSelectorItems="@(new[] { 10, 25, 50, 100 })"
+                          PaginationItemsTextFormat="{0}–{1} of {2} transfers"
+                          AllowSorting="true"
+                          AllowSelection="true"
+                          SelectionMode="GridSelectionMode.Multiple"
+                          RowSelectionLabel="@(row => $"Select {row.Reference}, {FintechDisplay.Money(row.Amount)} from {row.Customer}")"
+                          SelectAllRowsText="Select all shown transfers"
+                          SelectedItemsChanged="OnSelectionChanged"
+                          RowClass="RowClass"
+                          AllowColumnChooser="true"
+                          AllowExport="true"
+                          ExportFileName="banking-review-queue"
+                          Responsive="true"
+                          EmptyText="No transfers match these filters. Clear a filter, or search for part of a reference or name."
+                          aria-label="Review queue">
+                        <GridColumns>
+                            <GridColumn TItem="QueueRow" HeaderText="Reference" PropertyName="Reference" SortString="reference" SortKeySelector="row => row.Reference"
+                                        IsDefaultSortColumn="@view.IsSortColumn("reference")" SortDirection="@view.DirectionFor("reference")" AlwaysVisible="true" TextNoWrap="true">
+                                @* The stretched link makes the whole row open the transfer; the row's checkbox stays above it. *@
+                                <a class="tm-row-link tm-mono stretched-link" href="@OpsQueue.TransferUrl(context.Reference)">@context.Reference</a>
+                            </GridColumn>
+                            <GridColumn TItem="QueueRow" HeaderText="Customer" PropertyName="Customer" SortString="customer" SortKeySelector="row => row.Customer"
+                                        IsDefaultSortColumn="@view.IsSortColumn("customer")" SortDirection="@view.DirectionFor("customer")" TextNoWrap="true">
+                                @context.Customer
+                                @if (context.OnWatch)
+                                {
+                                    <Badge Color="BadgeColor.Warning" Class="ms-1">Watch</Badge>
+                                }
+                            </GridColumn>
+                            <GridColumn TItem="QueueRow" HeaderText="Amount" PropertyName="Amount" SortString="amount" SortKeySelector="row => row.Amount"
+                                        IsDefaultSortColumn="@view.IsSortColumn("amount")" SortDirection="@view.DirectionFor("amount")" TextAlignment="Alignment.End" TextNoWrap="true">
+                                <span class="tm-mono fw-semibold">@FintechDisplay.Money(context.Amount)</span>
+                            </GridColumn>
+                            <GridColumn TItem="QueueRow" HeaderText="To" PropertyName="To" SortString="to" SortKeySelector="row => row.To"
+                                        IsDefaultSortColumn="@view.IsSortColumn("to")" SortDirection="@view.DirectionFor("to")">
+                                @context.To
+                            </GridColumn>
+                            <GridColumn TItem="QueueRow" HeaderText="Date" PropertyName="Date" SortString="date" SortKeySelector="row => row.Date"
+                                        IsDefaultSortColumn="@view.IsSortColumn("date")" SortDirection="@view.DirectionFor("date")" TextNoWrap="true">
+                                @Transfers.DateText(context.Date)
+                            </GridColumn>
+                            <GridColumn TItem="QueueRow" HeaderText="Hold reason" PropertyName="HoldReason" SortString="reason" SortKeySelector="row => row.HoldReason"
+                                        IsDefaultSortColumn="@view.IsSortColumn("reason")" SortDirection="@view.DirectionFor("reason")">
+                                <span class="small">@(context.HoldReason.Length == 0 ? "Not held" : context.HoldReason)</span>
+                            </GridColumn>
+                            <GridColumn TItem="QueueRow" HeaderText="Waiting" PropertyName="Waiting" SortString="waiting" SortKeySelector="row => row.ConfirmedAt"
+                                        IsDefaultSortColumn="@view.IsSortColumn("waiting")" SortDirection="@view.DirectionFor("waiting")" TextNoWrap="true">
+                                @context.Waiting
+                            </GridColumn>
+                        </GridColumns>
+                    </Grid>
+                </ChildContent>
+            </ShowcaseDataState>
+        </CardBody>
+    </Card>
 
     <section class="tm-panel" aria-labelledby="tm-oq-rules-title">
         <h2 class="tm-section-title" id="tm-oq-rules-title">When a transfer is held</h2>
         <ul class="small mb-2">
             <li>@FintechDisplay.Money(FintechState.HoldLargeAmount) or more to any payee.</li>
             <li>@FintechDisplay.Money(FintechState.HoldNewPayeeAmount) or more to a payee added in the last @FintechState.NewPayeeDays days, or whose name couldn't be confirmed.</li>
-            <li>A scheduled transfer operations put on hold from its page.</li>
+            <li>A scheduled transfer operations put on hold, from its page or several at once here.</li>
         </ul>
         <p class="small text-body-secondary mb-0">
-            Transfers between a customer's own accounts are never held. The money stays set aside while a transfer waits; approving sends it,
-            or schedules it when its date is still ahead, and rejecting releases it. The customer is told either way.
+            Transfers between a customer's own accounts are never held. The money stays set aside while a transfer waits; releasing sends it,
+            or schedules it when its date is still ahead, and rejecting releases the money. The customer is told either way.
         </p>
     </section>
 </div>

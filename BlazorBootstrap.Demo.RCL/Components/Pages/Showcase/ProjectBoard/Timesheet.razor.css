@@ -1,0 +1,34 @@
+/* The timesheet: week navigation, the returned note, and the hours table; the Grids are styled in PbFrame.razor.css. */
+.tb-ts-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .5rem;
+}
+
+.tb-ts-returned {
+    padding: .625rem .875rem;
+    border-left: 4px solid var(--bs-warning);
+    border-radius: .5rem;
+    background: var(--bs-warning-bg-subtle);
+    color: var(--bs-warning-text-emphasis);
+    overflow-wrap: anywhere;
+}
+
+.tb-ts-caption {
+    caption-side: top;
+    padding-top: 0;
+    font-size: .8125rem;
+    color: var(--bs-secondary-color);
+}
+
+.tb-ts-summary {
+    min-width: 36rem;
+}
+
+.tb-ts-wrap {
+    overflow-wrap: anywhere;
+}
+
+.min-w-0 {
+    min-width: 0;
+}

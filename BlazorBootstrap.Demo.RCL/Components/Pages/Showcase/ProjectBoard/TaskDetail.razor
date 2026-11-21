@@ -104,12 +104,13 @@ else
 
                     @if (!readOnly)
                     {
-                        <form @onsubmit="AddChecklistItem" novalidate aria-label="Add a checklist item">
+                        <EditForm EditContext="itemContext" OnSubmit="AddChecklistItem" FormName="pb-checklist-item" novalidate aria-label="Add a checklist item">
+                            <DataAnnotationsValidator />
+                            <ShowcaseFormErrors ShowSummary="true" />
                             <label class="form-label fw-semibold" for="tb-task-new-item">New checklist item</label>
                             <div class="tb-task-add">
-                                <input id="tb-task-new-item" class="@(newItemError is null ? "form-control" : "form-control is-invalid")" @bind="newItem" @ref="newItemInput"
-                                       maxlength="@PbState.MaxChecklistTextLength" autocomplete="off" disabled="@checklistFull"
-                                       aria-invalid="@(newItemError is null ? null : "true")" aria-describedby="tb-task-new-item-help tb-task-new-item-error" />
+                                <InputText @ref="newItemInput" id="tb-task-new-item" class="form-control" @bind-Value="itemForm.Text" maxlength="@PbState.MaxChecklistTextLength" autocomplete="off"
+                                           disabled="@checklistFull" aria-describedby="tb-task-new-item-help" />
                                 <button type="submit" class="btn btn-outline-primary" disabled="@checklistFull">
                                     <Icon Name="IconName.PlusLg" class="me-1" aria-hidden="true" />Add item
                                 </button>
@@ -117,10 +118,10 @@ else
                             <div class="form-text" id="tb-task-new-item-help">
                                 @(checklistFull
                                     ? $"The checklist is full ({PbState.MaxChecklistItems} items). Remove one to add another."
-                                    : $"Up to {PbState.MaxChecklistTextLength} characters. A task holds up to {PbState.MaxChecklistItems} items; this one has {task.Checklist.Count}.")
+                                    : $"1 to {PbState.MaxChecklistTextLength} characters, different from the other items. A task holds up to {PbState.MaxChecklistItems} items; this one has {task.Checklist.Count}.")
                             </div>
-                            <div class="invalid-feedback d-block" id="tb-task-new-item-error">@newItemError</div>
-                        </form>
+                            <ValidationMessage For="() => itemForm.Text" />
+                        </EditForm>
                     }
                 </section>
 
@@ -158,21 +159,22 @@ else
                         </ol>
                     }
 
-                    <form @onsubmit="AddComment" novalidate aria-label="Add a comment">
+                    <EditForm EditContext="commentContext" OnSubmit="AddComment" FormName="pb-comment" novalidate aria-label="Add a comment">
+                        <DataAnnotationsValidator />
+                        <ShowcaseFormErrors ShowSummary="true" />
                         <label class="form-label fw-semibold" for="tb-task-new-comment">Add a comment</label>
-                        <textarea id="tb-task-new-comment" class="@(newCommentError is null ? "form-control" : "form-control is-invalid")" rows="3" @bind="newComment" @bind:event="oninput"
-                                  @ref="newCommentInput" maxlength="@PbState.MaxCommentLength" disabled="@commentsFull"
-                                  aria-invalid="@(newCommentError is null ? null : "true")" aria-describedby="tb-task-new-comment-help tb-task-new-comment-error"></textarea>
+                        <InputTextArea @ref="newCommentInput" id="tb-task-new-comment" class="form-control" rows="3" @bind-Value="commentForm.Text" maxlength="@PbState.MaxCommentLength"
+                                       disabled="@commentsFull" aria-describedby="tb-task-new-comment-help" />
                         <div class="form-text" id="tb-task-new-comment-help">
                             @(commentsFull
                                 ? $"This task has the most comments it can hold ({PbState.MaxComments})."
-                                : $"Plain text. {newComment.Length} of {PbState.MaxCommentLength} characters.")
+                                : $"Plain text, 1 to {PbState.MaxCommentLength.ToString("#,0", CultureInfo.InvariantCulture)} characters. Mention someone with @ and their name, like @Jordan, to tell them.")
                         </div>
-                        <div class="invalid-feedback d-block" id="tb-task-new-comment-error">@newCommentError</div>
+                        <ValidationMessage For="() => commentForm.Text" />
                         <button type="submit" class="btn btn-primary mt-2" disabled="@commentsFull">
                             <Icon Name="IconName.ChatLeftText" class="me-1" aria-hidden="true" />Post comment
                         </button>
-                    </form>
+                    </EditForm>
                 </section>
             </div>
 

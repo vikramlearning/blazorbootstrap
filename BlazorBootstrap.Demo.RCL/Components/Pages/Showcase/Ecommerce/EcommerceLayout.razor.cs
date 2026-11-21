@@ -118,6 +118,10 @@ public partial class EcommerceLayout : LayoutComponentBase, IDisposable
         var count => $"Cart, {count} items",
     };
 
+    /// <summary>Gets whether the sign-in page is open, where the header's search and bell stay out of the way.</summary>
+    private bool IsSignInPage => Navigation.ToBaseRelativePath(Navigation.Uri).Split('?', '#')[0].TrimEnd('/')
+        .Equals(SignInPath.TrimStart('/'), StringComparison.OrdinalIgnoreCase);
+
     [Inject] private NavigationManager Navigation { get; set; } = default!;
 
     [Inject] private EcommerceState State { get; set; } = default!;

@@ -1,5 +1,5 @@
-/* Maintenance windows (admins). Card, CardHeader, CardBody, Badge, and Modal render their own elements; the markup inside
-   them is this page's, so it takes these styles without ::deep. */
+/* Maintenance windows (admins). Card, CardHeader, CardBody, Badge, Grid, and Modal render their own elements; the markup inside
+   them (the grid's cell templates too) is this page's, so it takes these styles without ::deep. */
 
 .mt-status:empty {
     margin: 0;
@@ -9,30 +9,21 @@
     outline: none;
 }
 
-.mt-count {
-    font-weight: 400;
-    color: var(--bs-secondary-color);
-}
-
-.mt-window {
-    padding-block: 1rem;
-    border-top: 1px solid var(--mw-border);
-}
-
-    .mt-window:first-child {
-        padding-top: 0;
-        border-top: 0;
-    }
-
-    .mt-window:last-child {
-        padding-bottom: 0;
-    }
-
+/* The window's title is the row's button when it can be edited; it keeps a readable width when the grid scrolls sideways. */
 .mt-window-title {
+    display: inline-block;
+    min-width: 14rem;
     margin: 0;
-    font-size: 1rem;
     font-weight: 700;
+    overflow-wrap: anywhere;
+}
+
+span.mt-window-title {
     color: var(--mw-ink);
+}
+
+.mt-services-cell {
+    min-width: 9rem;
     overflow-wrap: anywhere;
 }
 

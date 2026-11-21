@@ -20,6 +20,10 @@ else
                     <Badge Color="@HelpDeskDisplay.PriorityColor(Ticket.Priority)">@Ticket.Priority priority</Badge>
                     <Badge Color="@HelpDeskDisplay.StatusColor(Ticket.Status)">@Ticket.Status</Badge>
                     <Badge Color="@HelpDeskDisplay.SlaColor(State.Sla(Ticket))">@HelpDeskDisplay.SlaText(State, Ticket)</Badge>
+                    @if (Ticket.IsEscalated)
+                    {
+                        <Badge Color="BadgeColor.Danger"><Icon Name="IconName.ArrowUpCircleFill" class="me-1" aria-hidden="true" />Escalated to Tier @Ticket.Tier</Badge>
+                    }
                     <span class="small text-body-secondary">@Ticket.CustomerName@(Ticket.Company is null ? null : $", {Ticket.Company}") · opened @HelpDeskDisplay.Ago(Ticket.CreatedAt, State.Now)</span>
                 </div>
             </div>
@@ -246,6 +250,8 @@ else
                             <dd class="col-sm-8">@Ticket.Priority (resolve within @State.TargetHours(Ticket.Priority) h)</dd>
                             <dt class="col-sm-4">Assignee</dt>
                             <dd class="col-sm-8">@(Ticket.Assignee ?? "Unassigned")</dd>
+                            <dt class="col-sm-4">Support tier</dt>
+                            <dd class="col-sm-8">@EscalationText</dd>
                             <dt class="col-sm-4">Opened</dt>
                             <dd class="col-sm-8">@HelpDeskDisplay.Stamp(Ticket.CreatedAt)</dd>
                             <dt class="col-sm-4">Due</dt>

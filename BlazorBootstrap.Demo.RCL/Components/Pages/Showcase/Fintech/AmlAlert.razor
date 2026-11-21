@@ -1,0 +1,156 @@
+@page "/showcase/fintech/ops/aml/alerts/{Id:int}"
+@layout FintechOpsLayout
+
+<div class="container-fluid px-lg-4">
+    @if (Alert is not { } alert)
+    {
+        <PageTitle>Alert not found · Operations · @FintechSeedData.ProductName</PageTitle>
+        <section class="tm-not-found" aria-labelledby="tm-al-missing-title">
+            <span class="tm-icon fs-4" aria-hidden="true"><Icon Name="IconName.Radar" /></span>
+            <h1 class="tm-title fs-3 mt-3 mb-2" id="tm-al-missing-title">We couldn't find that alert</h1>
+            <p class="tm-lead mb-4">There's no AML alert @Id. Find it in the alert queue.</p>
+            <a class="btn btn-primary" href="@AmlDisplay.AlertsPath">AML alerts</a>
+        </section>
+    }
+    else
+    {
+        var customer = State.FindCustomer(alert.CustomerId);
+        var open = alert.Status is FintechAmlAlertStatus.New or FintechAmlAlertStatus.InTriage;
+
+        <PageTitle>Alert @alert.Id · AML · @FintechSeedData.ProductName</PageTitle>
+
+        <p class="mb-3"><a class="small" href="@AmlDisplay.AlertsPath"><Icon Name="IconName.ArrowLeft" class="me-1" aria-hidden="true" />AML alerts</a></p>
+
+        <div class="tm-page-head">
+            <div>
+                <span class="sc-eyebrow">AML alert <span class="tm-mono">@alert.Id</span> · raised @Transfers.StampText(alert.CreatedAt)</span>
+                <h1 class="tm-title">@FintechSeedData.RuleName(alert.Rule) on @(customer?.Name ?? alert.CustomerId)</h1>
+                <p class="tm-lead">
+                    <Badge Color="AmlDisplay.RiskColor(alert.Risk)" Class="rounded-pill me-1">@AmlDisplay.RiskText(alert.Risk)</Badge>
+                    <Badge Color="AmlDisplay.AlertStatusColor(alert.Status)" Class="rounded-pill me-2">@AmlDisplay.AlertStatusText(alert.Status)</Badge>
+                    Score @alert.Score of 100 · @(alert.AssigneeId is null ? "Not assigned yet" : $"Assigned to {AmlDisplay.StaffText(alert.AssigneeId)}")
+                </p>
+            </div>
+        </div>
+
+        @* Always rendered and focusable, so an action's outcome is announced and focus has somewhere to go. *@
+        <p class="tm-list-status @(statusIsError ? "text-danger-emphasis" : null)" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
+
+        <div class="row g-4">
+            <div class="col-xl-7">
+                <section class="tm-panel mb-4" aria-labelledby="tm-al-what-title">
+                    <h2 class="tm-section-title" id="tm-al-what-title">What the rule saw</h2>
+                    <p class="mb-2">@alert.Summary</p>
+                    <p class="small text-body-secondary mb-0">@RuleHelp(alert.Rule)</p>
+                </section>
+
+                @* The triggering transfers are line items of the alert, so they stay a plain table. *@
+                <section class="tm-panel mb-4" aria-labelledby="tm-al-transfers-title">
+                    <h2 class="tm-section-title" id="tm-al-transfers-title">Triggering transfers</h2>
+                    @if (Triggers.Count == 0)
+                    {
+                        <p class="small text-body-secondary mb-0">The rule looked at card payments and incoming funds, which aren't kept in this demo; there are no transfers to show.</p>
+                    }
+                    else
+                    {
+                        <div class="table-responsive">
+                            <table class="table align-middle mb-0">
+                                <caption class="caption-top small">The transfers the rule looked at, newest first.</caption>
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Reference</th>
+                                        <th scope="col">Date</th>
+                                        <th scope="col">To</th>
+                                        <th scope="col" class="text-end">Amount</th>
+                                        <th scope="col">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var transfer in Triggers)
+                                    {
+                                        <tr @key="transfer.Reference">
+                                            <th scope="row" class="fw-normal"><a class="tm-mono" href="@OpsQueue.TransferUrl(transfer.Reference)">@transfer.Reference</a></th>
+                                            <td class="text-nowrap small">@Transfers.DateText(transfer.Date)</td>
+                                            <td>@transfer.ToName</td>
+                                            <td class="text-end tm-mono text-nowrap">@FintechDisplay.Money(transfer.Amount)</td>
+                                            <td><Badge Color="Transfers.StatusColor(transfer.Status)">@OpsTransfer.StatusText(transfer.Status)</Badge></td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                </section>
+
+                @if (alert.Status == FintechAmlAlertStatus.Dismissed)
+                {
+                    <section class="tm-panel" aria-labelledby="tm-al-dismissed-title">
+                        <h2 class="tm-section-title" id="tm-al-dismissed-title">Dismissed as a false positive</h2>
+                        <p class="mb-1">@alert.DismissReason</p>
+                        <p class="small text-body-secondary mb-0">By @AmlDisplay.StaffText(alert.AssigneeId)@(alert.HandledAt is { } handled ? $" on {Transfers.StampText(handled)}" : null).</p>
+                    </section>
+                }
+                else if (alert.CaseId is { } caseId)
+                {
+                    <section class="tm-panel" aria-labelledby="tm-al-case-title">
+                        <h2 class="tm-section-title" id="tm-al-case-title">In a case</h2>
+                        <p class="mb-0">This alert is part of <a class="fw-semibold" href="@AmlDisplay.CasePath(caseId)">case @caseId</a>.</p>
+                    </section>
+                }
+            </div>
+
+            <div class="col-xl-5">
+                <section class="tm-panel mb-4" aria-labelledby="tm-al-customer-title">
+                    <h2 class="tm-section-title" id="tm-al-customer-title">Customer</h2>
+                    @if (customer is not null)
+                    {
+                        <p class="mb-1"><a class="fw-semibold" href="@OpsCustomers.CustomerPath(customer.Id)">@customer.Name</a> <span class="tm-mono small">@customer.Id</span></p>
+                        <p class="small mb-1">@customer.Segment · @customer.City · customer since @OpsCustomers.SinceText(customer.Since)</p>
+                        <p class="small mb-0"><Badge Color="OpsCustomers.StatusColor(customer.Status)" Class="me-1">@OpsCustomers.StatusText(customer.Status)</Badge>@OtherAlertsText(alert)</p>
+                    }
+                </section>
+
+                @if (open)
+                {
+                    <section class="tm-panel" aria-labelledby="tm-al-triage-title">
+                        <h2 class="tm-section-title" id="tm-al-triage-title" tabindex="-1" @ref="triageTitle">Triage</h2>
+                        @if (alert.Status == FintechAmlAlertStatus.New)
+                        {
+                            <p class="small text-body-secondary mb-2">Take it to look into it; it moves to In triage under your name.</p>
+                            <Button Color="ButtonColor.Primary" Outline="true" Class="mb-3" @onclick="StartTriage">Take this alert</Button>
+                        }
+
+                        <EditForm EditContext="caseContext" OnSubmit="OpenCaseAsync" FormName="tm-al-case" novalidate class="mb-4">
+                            <DataAnnotationsValidator />
+                            <ShowcaseFormErrors />
+                            <h3 class="h6 fw-bold">Open a case</h3>
+                            <label class="form-label small fw-semibold" for="tm-al-case-analyst">Case analyst</label>
+                            <InputSelect id="tm-al-case-analyst" class="form-select" @bind-Value="caseForm.AssigneeId" aria-describedby="tm-al-case-help">
+                                <option value="">Choose someone</option>
+                                @foreach (var member in FintechSeedData.Staff())
+                                {
+                                    <option value="@member.Id">@member.Name@(member.Id == State.CurrentStaffId ? " (you)" : null)</option>
+                                }
+                            </InputSelect>
+                            <div class="form-text" id="tm-al-case-help">The case is due in @FintechSeedData.AmlCaseDays days. To include other alerts on this customer, select them together in the queue.</div>
+                            <ValidationMessage For="() => caseForm.AssigneeId" />
+                            <Button Type="ButtonType.Submit" Color="ButtonColor.Primary" Class="mt-2">Open case</Button>
+                        </EditForm>
+
+                        <EditForm EditContext="dismissContext" OnSubmit="Dismiss" FormName="tm-al-dismiss" novalidate>
+                            <DataAnnotationsValidator />
+                            <ShowcaseFormErrors />
+                            <h3 class="h6 fw-bold">Dismiss as a false positive</h3>
+                            <label class="form-label small fw-semibold" for="tm-al-dismiss-reason">Why it's a false positive</label>
+                            <InputTextArea id="tm-al-dismiss-reason" class="form-control" rows="3" maxlength="@FintechState.MaxAmlReason" @bind-Value="dismissForm.Reason"
+                                           aria-describedby="tm-al-dismiss-help" />
+                            <div class="form-text" id="tm-al-dismiss-help">@FintechState.MinAmlNote to @FintechState.MaxAmlReason characters, kept on the alert and in the audit log.</div>
+                            <ValidationMessage For="() => dismissForm.Reason" />
+                            <Button Type="ButtonType.Submit" Color="ButtonColor.Secondary" Outline="true" Class="mt-2">Dismiss alert</Button>
+                        </EditForm>
+                    </section>
+                }
+            </div>
+        </div>
+    }
+</div>

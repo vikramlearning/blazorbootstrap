@@ -38,7 +38,7 @@
             <p class="tb-lead">
                 @(client is null
                     ? "Add a company you work with. You can add its contacts, deals, and notes on its page next."
-                    : "Change the client's name, industry, website, or who owns the relationship.")
+                    : "Change the client's details, who owns the relationship, or how and when it is billed.")
             </p>
 
             @* Always rendered and focusable, so a save is announced and focus has somewhere to go when it fails. *@
@@ -46,65 +46,121 @@
 
             <div class="row g-4">
                 <div class="col-xl-8">
-                    <section class="tb-panel" aria-labelledby="pb-cledit-form-title">
-                        <h2 class="tb-section-title" id="pb-cledit-form-title">Client details</h2>
-                        <form @onsubmit="Save" novalidate aria-labelledby="pb-cledit-form-title">
+                    <EditForm EditContext="editContext" OnSubmit="SaveAsync" FormName="pb-client" novalidate>
+                        <DataAnnotationsValidator />
+                        <ShowcaseFormErrors ShowSummary="true" />
+
+                        <section class="tb-panel mb-4" aria-labelledby="pb-cledit-form-title">
+                            <h2 class="tb-section-title" id="pb-cledit-form-title">Client details</h2>
                             <div class="mb-3">
                                 <label class="form-label fw-semibold" for="pb-cledit-name">Name</label>
-                                <input id="pb-cledit-name" class="form-control @(nameError is null ? null : "is-invalid")" @bind="name" @bind:event="oninput" @ref="nameInput"
-                                       maxlength="@PbState.MaxClientNameLength" autocomplete="off" aria-required="true" aria-invalid="@(nameError is null ? null : "true")"
-                                       aria-describedby="pb-cledit-name-help pb-cledit-name-error" />
-                                <div class="form-text d-flex flex-wrap justify-content-between gap-2" id="pb-cledit-name-help">
+                                <InputText id="pb-cledit-name" class="form-control" @bind-Value="form.Name" maxlength="@PbState.MaxClientNameLength" autocomplete="off"
+                                           aria-describedby="pb-cledit-name-help" />
+                                <ShowcaseUniqueCheck @ref="nameCheck" For="() => form.Name" IsTakenAsync="IsNameTakenAsync" TakenMessage="NameTakenMessage" />
+                                <div class="form-text d-flex flex-wrap justify-content-between gap-2 mt-0" id="pb-cledit-name-help">
                                     <span>The company's name. Each client's name is different.</span>
-                                    <span class="text-nowrap">@DealDisplay.CounterText(name, PbState.MaxClientNameLength)</span>
+                                    <span class="text-nowrap">@DealDisplay.CounterText(form.Name, PbState.MaxClientNameLength)</span>
                                 </div>
-                                <div class="invalid-feedback d-block" id="pb-cledit-name-error">@nameError</div>
+                                <ValidationMessage For="() => form.Name" />
                             </div>
 
                             <div class="row g-3 mb-3">
                                 <div class="col-sm-6">
                                     <label class="form-label fw-semibold" for="pb-cledit-industry">Industry</label>
-                                    <input id="pb-cledit-industry" class="form-control @(industryError is null ? null : "is-invalid")" @bind="industry" @bind:event="oninput" @ref="industryInput"
-                                           maxlength="@PbState.MaxContactFieldLength" autocomplete="off" aria-required="true" aria-invalid="@(industryError is null ? null : "true")"
-                                           aria-describedby="pb-cledit-industry-help pb-cledit-industry-error" />
+                                    <InputText id="pb-cledit-industry" class="form-control" @bind-Value="form.Industry" maxlength="@PbState.MaxContactFieldLength" autocomplete="off"
+                                               aria-describedby="pb-cledit-industry-help" />
                                     <div class="form-text" id="pb-cledit-industry-help">Like Retail or Healthcare. Up to @PbState.MaxContactFieldLength characters.</div>
-                                    <div class="invalid-feedback d-block" id="pb-cledit-industry-error">@industryError</div>
+                                    <ValidationMessage For="() => form.Industry" />
                                 </div>
                                 <div class="col-sm-6">
                                     <label class="form-label fw-semibold" for="pb-cledit-website">Website <span class="fw-normal text-body-secondary">(optional)</span></label>
-                                    <input id="pb-cledit-website" class="form-control @(websiteError is null ? null : "is-invalid")" @bind="website" @bind:event="oninput" @ref="websiteInput"
-                                           maxlength="@PbState.MaxWebsiteLength" autocomplete="off" spellcheck="false" aria-invalid="@(websiteError is null ? null : "true")"
-                                           aria-describedby="pb-cledit-website-help pb-cledit-website-error" />
-                                    <div class="form-text" id="pb-cledit-website-help">Like example.com. It's shown as text, not as a link. Up to @PbState.MaxWebsiteLength characters.</div>
-                                    <div class="invalid-feedback d-block" id="pb-cledit-website-error">@websiteError</div>
+                                    <InputText id="pb-cledit-website" class="form-control" @bind-Value="form.Website" maxlength="@PbState.MaxWebsiteLength" autocomplete="off" spellcheck="false"
+                                               autocapitalize="none" aria-describedby="pb-cledit-website-help" />
+                                    <div class="form-text" id="pb-cledit-website-help">A domain like example.com. It's shown as text, not as a link.</div>
+                                    <ValidationMessage For="() => form.Website" />
                                 </div>
                             </div>
 
-                            <div class="mb-4">
-                                <label class="form-label fw-semibold" for="pb-cledit-owner">Owner</label>
-                                <select id="pb-cledit-owner" class="form-select pb-cledit-owner @(ownerError is null ? null : "is-invalid")" @bind="ownerId" @ref="ownerInput"
-                                        aria-invalid="@(ownerError is null ? null : "true")" aria-describedby="pb-cledit-owner-help pb-cledit-owner-error">
-                                    @if (owners.All(person => person.Id != ownerId))
-                                    {
-                                        <option value="">Choose an account manager</option>
-                                    }
-                                    @foreach (var owner in owners)
-                                    {
-                                        <option value="@owner.Id" @key="owner.Id">@owner.Name@(owner.Id == State.CurrentPerson?.Id ? " (you)" : null)</option>
-                                    }
-                                </select>
-                                <div class="form-text" id="pb-cledit-owner-help">The account manager who looks after the relationship.</div>
-                                <div class="invalid-feedback d-block" id="pb-cledit-owner-error">@ownerError</div>
+                            <div class="row g-3">
+                                <div class="col-sm-6">
+                                    <label class="form-label fw-semibold" for="pb-cledit-owner">Owner</label>
+                                    <InputSelect id="pb-cledit-owner" class="form-select" @bind-Value="form.OwnerId" aria-describedby="pb-cledit-owner-help">
+                                        @if (owners.All(person => person.Id != form.OwnerId))
+                                        {
+                                            <option value="">Choose an account manager</option>
+                                        }
+                                        @foreach (var owner in owners)
+                                        {
+                                            <option value="@owner.Id" @key="owner.Id">@owner.Name@(owner.Id == State.CurrentPerson?.Id ? " (you)" : null)</option>
+                                        }
+                                    </InputSelect>
+                                    <div class="form-text" id="pb-cledit-owner-help">The account manager who looks after the relationship. Someone else who can sign in is told.</div>
+                                    <ValidationMessage For="() => form.OwnerId" />
+                                </div>
+                                <div class="col-sm-6">
+                                    <label class="form-label fw-semibold" for="pb-cledit-phone">Phone <span class="fw-normal text-body-secondary">(optional)</span></label>
+                                    <InputText id="pb-cledit-phone" type="tel" class="form-control" @bind-Value="form.Phone" maxlength="@PbState.MaxPhoneLength" autocomplete="off"
+                                               aria-describedby="pb-cledit-phone-help" />
+                                    <div class="form-text" id="pb-cledit-phone-help">The main number, like +1 555 0100: digits, spaces, and + - ( ) .</div>
+                                    <ValidationMessage For="() => form.Phone" />
+                                </div>
                             </div>
+                        </section>
 
-                            <div class="d-flex flex-wrap align-items-center gap-2">
-                                <Button Type="ButtonType.Submit" Color="ButtonColor.Primary">
-                                    <Icon Name="@(client is null ? IconName.PlusLg : IconName.CheckLg)" class="me-1" aria-hidden="true" />@(client is null ? "Add client" : "Save changes")
-                                </Button>
-                                <a class="btn btn-link" href="@(client is null ? DealDisplay.ClientsUrl : PbDisplay.ClientUrl(client.Id))">Cancel</a>
+                        <section class="tb-panel mb-3" aria-labelledby="pb-cledit-billing-title">
+                            <h2 class="tb-section-title" id="pb-cledit-billing-title">Billing and contract</h2>
+                            <p class="small text-body-secondary">Where the client's invoices go and in which currency, and the dates of the current contract.</p>
+                            <div class="row g-3 mb-3">
+                                <div class="col-sm-5 col-md-4">
+                                    <label class="form-label fw-semibold" for="pb-cledit-currency">Billing currency</label>
+                                    <InputSelect id="pb-cledit-currency" class="form-select" @bind-Value="form.BillingCurrency" aria-describedby="pb-cledit-currency-help">
+                                        @if (!PbSeedData.Currencies.Contains(form.BillingCurrency))
+                                        {
+                                            <option value="">Choose a currency</option>
+                                        }
+                                        @foreach (var currency in PbSeedData.Currencies)
+                                        {
+                                            <option value="@currency" @key="currency">@currency · @CurrencyName(currency)</option>
+                                        }
+                                    </InputSelect>
+                                    <div class="form-text" id="pb-cledit-currency-help">Project budgets are in this currency.</div>
+                                    <ValidationMessage For="() => form.BillingCurrency" />
+                                </div>
+                                <div class="col-sm-7 col-md-8">
+                                    <label class="form-label fw-semibold" for="pb-cledit-billing">Billing email <span class="fw-normal text-body-secondary">(optional)</span></label>
+                                    <InputText id="pb-cledit-billing" inputmode="email" autocapitalize="none" spellcheck="false" class="form-control" @bind-Value="form.BillingEmail"
+                                               maxlength="@ShowcaseIdentity.MaxEmailLength" autocomplete="off" aria-describedby="pb-cledit-billing-help" />
+                                    <div class="form-text" id="pb-cledit-billing-help">Where invoices go, like accounts@example.com. Demo only: nothing is sent.</div>
+                                    <ValidationMessage For="() => form.BillingEmail" />
+                                </div>
                             </div>
-                        </form>
-                    </section>
+                            <div class="row g-3">
+                                <div class="col-sm-6">
+                                    <label class="form-label fw-semibold" for="pb-cledit-start">Contract start <span class="fw-normal text-body-secondary">(optional)</span></label>
+                                    <InputDate TValue="DateTime?" id="pb-cledit-start" class="form-control" @bind-Value="form.ContractStart" min="@DateValue(MinDate)" max="@DateValue(MaxDate)"
+                                               ParsingErrorMessage="Enter the contract start as a full date, like 2026-12-01." />
+                                    <ValidationMessage For="() => form.ContractStart" />
+                                </div>
+                                <div class="col-sm-6">
+                                    <label class="form-label fw-semibold" for="pb-cledit-end">Contract end <span class="fw-normal text-body-secondary">(optional)</span></label>
+                                    <InputDate TValue="DateTime?" id="pb-cledit-end" class="form-control" @bind-Value="form.ContractEnd" min="@DateValue(form.ContractStart ?? MinDate)" max="@DateValue(MaxDate)"
+                                               ParsingErrorMessage="Enter the contract end as a full date, like 2027-11-30." aria-describedby="pb-cledit-end-help" />
+                                    <div class="form-text" id="pb-cledit-end-help">On or after the start. Leave empty for a contract that runs until cancelled.</div>
+                                    <ValidationMessage For="() => form.ContractEnd" />
+                                </div>
+                            </div>
+                        </section>
+
+                        @* Always rendered, so a new error is announced; a counter makes a repeat announce again. *@
+                        <p class="tb-form-error mb-3" role="alert">@errorMessage</p>
+
+                        <div class="d-flex flex-wrap align-items-center gap-2">
+                            <Button Type="ButtonType.Submit" Color="ButtonColor.Primary" Disabled="busy">
+                                <Icon Name="@(client is null ? IconName.PlusLg : IconName.CheckLg)" class="me-1" aria-hidden="true" />@(client is null ? "Add client" : "Save changes")
+                            </Button>
+                            <a class="btn btn-link" href="@(client is null ? DealDisplay.ClientsUrl : PbDisplay.ClientUrl(client.Id))">Cancel</a>
+                        </div>
+                    </EditForm>
                 </div>
 
                 @if (client is not null)
@@ -119,7 +175,7 @@
                                     : $"{client.Name} has projects or deals, so it can't be deleted. Delete says which.")
                             </p>
                             <Button @ref="deleteButton" Color="ButtonColor.Danger" Outline="true" @onclick="OpenDeleteAsync">
-                                <Icon Name="IconName.Trash3" class="me-1" aria-hidden="true" />Delete<span class="visually-hidden"> @client.Name</span>
+                                <Icon Name="IconName.Trash3" class="me-1" aria-hidden="true" />Delete<span class="visually-hidden">&#32;@client.Name</span>
                             </Button>
                         </section>
                     </div>

@@ -62,8 +62,8 @@ Example websites that the Blazor Bootstrap team built to show the enterprise app
       <a href="https://demos.blazorbootstrap.com/showcase/saas">Live demo</a> · <a href="https://docs.blazorbootstrap.com/showcase/saas">How it's built</a>
     </td>
     <td width="33%" valign="top">
-      <a href="https://demos.blazorbootstrap.com/showcase/fintech"><picture><source media="(prefers-color-scheme: dark)" srcset="BlazorBootstrap.Demo.RCL/wwwroot/showcase/gallery/fintech-dark.webp"><img src="BlazorBootstrap.Demo.RCL/wwwroot/showcase/gallery/fintech-light.webp" alt="Personal Finance home screen" width="100%"></picture></a><br>
-      <b>Personal Finance</b><br>
+      <a href="https://demos.blazorbootstrap.com/showcase/fintech"><picture><source media="(prefers-color-scheme: dark)" srcset="BlazorBootstrap.Demo.RCL/wwwroot/showcase/gallery/fintech-dark.webp"><img src="BlazorBootstrap.Demo.RCL/wwwroot/showcase/gallery/fintech-light.webp" alt="Banking Operations home screen" width="100%"></picture></a><br>
+      <b>Banking Operations</b><br>
       <a href="https://demos.blazorbootstrap.com/showcase/fintech">Live demo</a> · <a href="https://docs.blazorbootstrap.com/showcase/fintech">How it's built</a>
     </td>
     <td width="33%" valign="top">

@@ -1,6 +1,7 @@
 using System.Globalization;
 using BlazorBootstrap.Demo.RCL.Models.Showcase.Fintech;
 using BlazorBootstrap.Demo.RCL.Services.Showcase.Fintech;
+using BlazorBootstrap.Demo.RCL.Services.Showcase.Foundation;
 
 namespace BlazorBootstrap.Demo.RCL.Components.Pages.Showcase.Fintech;
 
@@ -83,7 +84,23 @@ public partial class OpsOverview : ComponentBase, IDisposable
     #region Properties, Indexers
 
     /// <summary>Gets how many audit entries were recorded since midnight on the site's clock.</summary>
-    private int ActionsToday => State.AuditLog.Count(entry => entry.At >= State.Clock.Now.Date);
+    private int ActionsToday => State.AuditEntries.Count(entry => entry.At >= State.Clock.Now.Date);
+
+    /// <summary>Gets how many AML alerts nobody has looked at yet.</summary>
+    private int AmlNewAlerts => State.AmlAlerts.Count(alert => alert.Status == FintechAmlAlertStatus.New);
+
+    /// <summary>Gets how many of the open AML cases the signed-in analyst works.</summary>
+    private int AmlMine => State.AmlCases.Count(amlCase => amlCase.Status != FintechAmlCaseStatus.Closed && amlCase.AssigneeId == State.CurrentStaffId);
+
+    /// <summary>Gets how many AML cases aren't closed.</summary>
+    private int AmlOpenCases => State.AmlCases.Count(amlCase => amlCase.Status != FintechAmlCaseStatus.Closed);
+
+    /// <summary>Gets how many AML cases are past their due date.</summary>
+    private int AmlOverdueCases => State.AmlCases.Count(amlCase => AmlDisplay.IsOverdue(amlCase, State.Today));
+
+    /// <summary>Gets how many escalated AML cases wait for the signed-in senior reviewer (and weren't escalated by them).</summary>
+    private int AmlWaitingForMe => State.AmlCases.Count(amlCase => amlCase.Status == FintechAmlCaseStatus.Escalated && amlCase.ReviewerId == State.CurrentStaffId
+        && amlCase.EscalatedById != State.CurrentStaffId);
 
     private static string AuditPath => $"{FintechOpsLayout.Base}/audit";
 
@@ -153,7 +170,7 @@ public partial class OpsOverview : ComponentBase, IDisposable
 
     private static string QueuePath => $"{FintechOpsLayout.Base}/queue";
 
-    private IReadOnlyList<FintechAuditEntry> Recent => State.AuditLog.Take(RecentCount).ToList();
+    private IReadOnlyList<ShowcaseAuditEntry> Recent => State.AuditEntries.Take(RecentCount).ToList();
 
     private static string ScheduledPath => $"{FintechOpsLayout.Base}/scheduled";
 

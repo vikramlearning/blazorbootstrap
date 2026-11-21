@@ -56,11 +56,15 @@ public sealed record RoadmapNode(string Id, string Label, RoadmapNodeKind Kind, 
 /// "3/5", and Done, Missed, or Upcoming in words), and, when the checkbox is ticked, each milestone's open tasks. Selecting
 /// a node shows a details panel with links to the board, the project's editor, and the tasks. Because the map alone is not
 /// enough for every reader, the same plan is listed as a timeline: each project from start to due date with its milestones
-/// in date order. A planned project created from a won deal shows on both, marked as needing a team.
+/// in date order. A planned project created from a won deal shows on both, marked as needing a team. Both open on the
+/// signed-in project manager's own projects; "Projects of" shows another project manager's, or everyone's.
 /// </summary>
 public partial class Roadmap : ComponentBase, IDisposable
 {
     #region Fields and Constants
+
+    /// <summary>The project manager whose projects are shown (a person ID), or empty for everyone's.</summary>
+    private string managerFilter = string.Empty;
 
     private RoadmapNode? selected;
 
@@ -76,6 +80,7 @@ public partial class Roadmap : ComponentBase, IDisposable
 
     protected override void OnInitialized()
     {
+        managerFilter = State.CurrentPerson?.Id ?? string.Empty;
         tree = BuildTree();
         State.Changed += OnStateChanged;
     }
@@ -164,6 +169,14 @@ public partial class Roadmap : ComponentBase, IDisposable
         StateHasChanged();
     });
 
+    /// <summary>Shows one project manager's projects (or everyone's) and builds the map again.</summary>
+    private void SetManager(string? personId)
+    {
+        managerFilter = personId ?? string.Empty;
+        selected = null;
+        tree = BuildTree();
+    }
+
     private void SetShowTasks(bool value)
     {
         showTasks = value;
@@ -197,8 +210,9 @@ public partial class Roadmap : ComponentBase, IDisposable
 
     #region Properties, Indexers
 
-    /// <summary>Gets the projects on the roadmap: every one that isn't completed.</summary>
-    private IReadOnlyList<PbProject> RoadmapProjects => State.Projects.Where(project => project.Status != PbProjectStatus.Completed).ToList();
+    /// <summary>Gets the projects on the roadmap: every one that isn't completed, of the chosen project manager (or everyone's).</summary>
+    private IReadOnlyList<PbProject> RoadmapProjects =>
+        State.Projects.Where(project => project.Status != PbProjectStatus.Completed && (managerFilter.Length == 0 || project.OwnerId == managerFilter)).ToList();
 
     /// <summary>Gets the project of the selected node, if it is still on the roadmap.</summary>
     private PbProject? SelectedProject => selected?.ProjectId is { } id && State.FindProject(id) is { Status: not PbProjectStatus.Completed } project ? project : null;

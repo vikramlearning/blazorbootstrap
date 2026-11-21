@@ -13,8 +13,8 @@
     color: var(--bs-danger-text-emphasis);
 }
 
-/* Long titles and summaries wrap instead of widening the table. */
-.hd-kb-title-cell {
+/* Long titles and summaries wrap instead of widening the table. Grid renders the cell, so its class is reached through ::deep. */
+.hd-kb-grid ::deep .hd-kb-title-cell {
     min-width: 14rem;
     max-width: 28rem;
     overflow-wrap: anywhere;

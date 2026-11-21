@@ -15,20 +15,26 @@
 }
 
 .hd-field-error {
-    max-width: 12rem;
     margin: .25rem 0 0;
     font-size: .8125rem;
-    white-space: normal;
 }
 
     .hd-field-error:empty {
         margin: 0;
     }
 
-/* Wide enough for "720", narrow enough that the table stays compact. */
-.hd-sla-input {
+/* Wide enough for "720", narrow enough to read as an hours field. InputNumber renders the input, so ::deep reaches it. */
+::deep .hd-sla-input {
     width: 6.5rem;
 }
+
+.hd-rule-preview {
+    color: var(--bs-secondary-color);
+}
+
+    .hd-rule-preview:empty {
+        margin: 0 !important;
+    }
 
 .hd-sla-notes {
     padding-left: 1.25rem;

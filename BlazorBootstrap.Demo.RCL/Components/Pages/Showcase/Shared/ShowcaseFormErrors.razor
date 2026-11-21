@@ -1,2 +1,7 @@
 @* Place inside an EditForm. It renders a hidden marker the script uses to find the form. *@
 <span class="d-none" aria-hidden="true" @ref="anchor"></span>
+@if (ShowSummary)
+{
+    @* Filled by the script after a failed submit (rule WR-002); Blazor never renders children into it. *@
+    <div class="alert alert-danger" tabindex="-1" hidden @ref="summary"></div>
+}

@@ -21,7 +21,6 @@ else
     var activity = State.ActivityOf(workspace.Id);
     var seatsUsed = State.SeatsUsed(workspace.Id);
     var mrr = State.MonthlyRevenueFor(workspace);
-    var now = State.Clock.Now;
 
     <PageTitle>@workspace.Name · Tenants · @SaasSeedData.ProductName</PageTitle>
 
@@ -61,7 +60,7 @@ else
     </div>
 
     @* Always rendered, so a saved change is announced. *@
-    <p class="sd-tenant-status" role="status">@statusMessage</p>
+    <p class="sd-tenant-status" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
 
     <div class="row g-3">
         <div class="col-xl-4">
@@ -77,6 +76,10 @@ else
                         <dd class="col-7"><span class="sd-mono">@seatsUsed / @workspace.Seats</span> used<span class="d-block fw-normal text-body-secondary">@PlanSeatText(plan)</span></dd>
                         <dt class="col-5">Status</dt>
                         <dd class="col-7"><Badge Color="SaasDisplay.StatusColor(workspace.Status)" Class="rounded-pill">@SaasDisplay.StatusName(workspace.Status)</Badge></dd>
+                        <dt class="col-5">Subdomain</dt>
+                        <dd class="col-7 text-break"><span class="sd-mono">@workspace.Subdomain</span><span class="d-block fw-normal text-body-secondary">.lumora.example</span></dd>
+                        <dt class="col-5">Account manager</dt>
+                        <dd class="col-7">@(SaasSeedData.ManagerName(workspace.ManagerId) ?? "Nobody")</dd>
                         <dt class="col-5">Country</dt>
                         <dd class="col-7">@workspace.Country</dd>
                         <dt class="col-5">Created</dt>
@@ -141,110 +144,278 @@ else
             </Card>
         </div>
         <div class="col-xl-8">
+            @if (plan.MonthlyPricePerSeat > 0 || State.DunningCases.Any(item => item.WorkspaceId == workspace.Id))
+            {
+                var openCase = State.OpenDunningCase(workspace.Id);
+                var pastCases = State.DunningCases.Where(item => item.WorkspaceId == workspace.Id && !item.IsOpen).ToList();
+
+                <Card Class="sd-card mb-3">
+                    <CardHeader>
+                        <div>
+                            <h2 class="sd-card-title" id="sd-tenant-dunning-title">Payments and dunning</h2>
+                            <p class="sd-card-sub">@(openCase is null ? "No failed payment is open." : $"{SaasDisplay.DunningStageName(openCase.Stage)}: {SaasDisplay.MoneyCents(openCase.Amount)} on {openCase.InvoiceNumber}")</p>
+                        </div>
+                        @if (openCase is not null)
+                        {
+                            <Badge Color="SaasDisplay.DunningColor(openCase.Stage)" Class="rounded-pill">@SaasDisplay.DunningStageName(openCase.Stage)</Badge>
+                        }
+                    </CardHeader>
+                    <CardBody Class="pt-0">
+                        @if (openCase is { } item)
+                        {
+                            <dl class="row sd-dl small mb-3">
+                                <dt class="col-sm-4">Invoice</dt>
+                                <dd class="col-sm-8"><a class="sd-mono" href="@AdminInvoices.DetailPath(item.InvoiceNumber)">@item.InvoiceNumber</a>, <span class="sd-mono">@SaasDisplay.MoneyCents(item.Amount)</span></dd>
+                                <dt class="col-sm-4">Why it failed</dt>
+                                <dd class="col-sm-8">@SaasDisplay.FailureName(item.Reason)<span class="d-block fw-normal text-body-secondary">@CardOnFileText(workspace)</span></dd>
+                                <dt class="col-sm-4">Failed on</dt>
+                                <dd class="col-sm-8">@SaasDisplay.DateTimeShort(item.FailedAt)</dd>
+                                <dt class="col-sm-4">Attempts</dt>
+                                <dd class="col-sm-8">@item.Attempts<span class="d-block fw-normal text-body-secondary">Retries on @SaasSeedData.DaysText(item.RetryDays), then @(item.GraceDays) days of grace</span></dd>
+                                <dt class="col-sm-4">Next step</dt>
+                                <dd class="col-sm-8">@AdminDunning.NextStepText(item)</dd>
+                            </dl>
+                            <div class="d-flex flex-wrap gap-2 mb-3">
+                                <Button @ref="retryButton" Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="RetryNowAsync">
+                                    <Icon Name="IconName.ArrowRepeat" class="me-1" aria-hidden="true" />Retry now
+                                </Button>
+                                @if (item.Stage is SaasDunningStage.Grace or SaasDunningStage.Suspended)
+                                {
+                                    <Button @ref="extendButton" Color="ButtonColor.Primary" Outline="true" Size="ButtonSize.Small" @onclick="() => OpenDunningDialogAsync(DunningDialog.Extend)">
+                                        <Icon Name="IconName.HourglassSplit" class="me-1" aria-hidden="true" />Extend grace
+                                    </Button>
+                                }
+                                @if (item.Stage is SaasDunningStage.Retrying or SaasDunningStage.Grace)
+                                {
+                                    <Button @ref="suspendButton" Color="ButtonColor.Danger" Outline="true" Size="ButtonSize.Small" @onclick="() => OpenDunningDialogAsync(DunningDialog.Suspend)">
+                                        <Icon Name="IconName.SlashCircle" class="me-1" aria-hidden="true" />Suspend now
+                                    </Button>
+                                }
+                            </div>
+                            <h3 class="h6 fw-bold mb-2">Timeline</h3>
+                            <Timeline AriaLabel="@($"Dunning timeline of {item.InvoiceNumber}")">
+                                @foreach (var step in item.Events.Reverse())
+                                {
+                                    <TimelineItem Title="@StepTitle(step.Kind)" Subtitle="@($"{SaasDisplay.DateTimeShort(step.At)} · {step.By}")" IconName="@StepIcon(step.Kind)" Color="TimelineColor.Primary">
+                                        @if (step.Detail is not null)
+                                        {
+                                            <span class="small text-body-secondary">@step.Detail</span>
+                                        }
+                                    </TimelineItem>
+                                }
+                            </Timeline>
+                        }
+                        else
+                        {
+                            <p class="small mb-2">
+                                @(workspace.CardLast4 is null ? "No card on file: the next renewal fails and starts dunning." : $"{CardOnFileText(workspace)}. Renewals are charged to it.")
+                            </p>
+                            @if (workspace.Status == SaasWorkspaceStatus.Active && plan.MonthlyPricePerSeat > 0)
+                            {
+                                <Button @ref="simulateButton" Color="ButtonColor.Secondary" Outline="true" Size="ButtonSize.Small" @onclick="SimulateFailureAsync">
+                                    <Icon Name="IconName.ExclamationOctagon" class="me-1" aria-hidden="true" />Demo: simulate a failed charge
+                                </Button>
+                                <p class="form-text mb-0">Charges the next renewal now with a card that declines, so dunning starts. The customer sees the banner in their workspace.</p>
+                            }
+                        }
+                        @if (pastCases.Count > 0)
+                        {
+                            <h3 class="h6 fw-bold mt-3 mb-2">Earlier failed payments</h3>
+                            <ul class="small mb-0 ps-3">
+                                @foreach (var past in pastCases)
+                                {
+                                    <li @key="past.Id">
+                                        <a class="sd-mono" href="@AdminInvoices.DetailPath(past.InvoiceNumber)">@past.InvoiceNumber</a>, @SaasDisplay.MoneyCents(past.Amount):
+                                        failed @SaasDisplay.Date(past.FailedAt) (@SaasDisplay.FailureName(past.Reason).ToLowerInvariant()), @SaasDisplay.LowerFirst(AdminDunning.NextStepText(past)) after @past.Attempts attempts
+                                    </li>
+                                }
+                            </ul>
+                        }
+                    </CardBody>
+                </Card>
+            }
             <Card Class="sd-card mb-3">
                 <CardHeader>
                     <div>
-                        <h2 class="sd-card-title">Members</h2>
-                        <p class="sd-card-sub">@MembersText(members)</p>
+                        <h2 class="sd-card-title" id="sd-tenant-members-title">Members</h2>
+                        <p class="sd-card-sub">@MembersText(members). The customer manages the team in their workspace.</p>
                     </div>
                 </CardHeader>
                 <CardBody Class="pt-0">
-                    <div class="table-responsive sd-grid">
-                        <table class="table align-middle">
-                            <caption class="visually-hidden">Members and invitations of @workspace.Name</caption>
-                            <thead>
-                                <tr>
-                                    <th scope="col">Name</th>
-                                    <th scope="col">Role</th>
-                                    <th scope="col">Status</th>
-                                    <th scope="col">Added</th>
-                                    <th scope="col">Last active</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var member in members)
-                                {
-                                    <tr @key="member.Id">
-                                        <th scope="row" class="fw-normal">
-                                            <div class="sd-person">
-                                                <Avatar Name="@member.Name" Color="SaasDisplay.AvatarColorFor(member.Id)" Size="AvatarSize.Small" />
-                                                <span class="sd-person-text">
-                                                    <span class="sd-person-name">@member.Name</span>
-                                                    <span class="sd-person-email">@member.Email</span>
-                                                </span>
-                                            </div>
-                                        </th>
-                                        <td>@SaasDisplay.RoleName(member.Role)</td>
-                                        <td>
-                                            <Badge Color="@(member.Status == SaasMemberStatus.Active ? BadgeColor.Success : BadgeColor.Warning)" Class="rounded-pill">@member.Status</Badge>
-                                        </td>
-                                        <td class="text-nowrap">@SaasDisplay.Date(member.AddedOn)</td>
-                                        <td class="text-nowrap">@SaasDisplay.LastSeen(member.LastActiveOn, now)</td>
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
-                    </div>
+                    @* Back to the saved view's defaults: owners first, 10 a page, every column in its place. *@
+                    <Button Color="ButtonColor.Link" Size="ButtonSize.Small" Class="p-0 mb-2" @onclick="ResetMembersViewAsync">Reset view<span class="visually-hidden">&#32;of the members</span></Button>
+                    <ShowcaseDataState Status="@(viewsLoaded ? ShowcaseDataStatus.Ready : ShowcaseDataStatus.Loading)"
+                                       IsEmpty="@(members.Count == 0)"
+                                       EmptyIcon="IconName.People"
+                                       EmptyTitle="No members"
+                                       EmptyText="The owner's invitation appears here when the tenant is created."
+                                       LoadingText="Loading members…"
+                                       OnRetry="RefreshGridsAsync">
+                        @* Members have no page of their own and operators don't edit them, so rows don't open anything. *@
+                        <Grid @ref="membersGrid"
+                              @key="membersVersion"
+                              TItem="SaasMember"
+                              Class="table table-hover align-middle"
+                              GridContainerClass="sd-grid border rounded-3"
+                              DataProvider="ProvideMembersAsync"
+                              SettingsProvider="membersView.GetSettingsAsync"
+                              GridSettingsChanged="SaveMembersSettingsAsync"
+                              AllowPaging="true"
+                              PageSize="@membersPageSize"
+                              PageSizeSelectorVisible="true"
+                              PageSizeSelectorItems="@(new[] { 10, 25, 50 })"
+                              PaginationItemsTextFormat="{0}–{1} of {2} members and invitations"
+                              AllowSorting="true"
+                              AllowColumnChooser="true"
+                              AllowExport="true"
+                              ExportFileName="@MembersExportName"
+                              Responsive="true"
+                              EmptyText="No members."
+                              aria-labelledby="sd-tenant-members-title">
+                            <GridColumns>
+                                <GridColumn TItem="SaasMember" HeaderText="Name" PropertyName="Name" SortString="name" SortKeySelector="member => member.Name"
+                                            IsDefaultSortColumn="@membersView.IsSortColumn("name")" SortDirection="@membersView.DirectionFor("name")" AlwaysVisible="true">
+                                    <div class="sd-person">
+                                        <Avatar Name="@context.Name" Color="SaasDisplay.AvatarColorFor(context.Id)" Size="AvatarSize.Small" aria-hidden="true" />
+                                        <span class="sd-person-text">
+                                            <span class="sd-person-name">@context.Name</span>
+                                            <span class="sd-person-email">@context.Email</span>
+                                        </span>
+                                    </div>
+                                </GridColumn>
+                                <GridColumn TItem="SaasMember" HeaderText="Role" PropertyName="Role" SortString="role" SortKeySelector="member => member.Role"
+                                            IsDefaultSortColumn="@membersView.IsSortColumn("role")" SortDirection="@membersView.DirectionFor("role")" TextNoWrap="true">
+                                    @SaasDisplay.RoleName(context.Role)
+                                </GridColumn>
+                                <GridColumn TItem="SaasMember" HeaderText="Status" PropertyName="Status" SortString="status" SortKeySelector="member => member.Status"
+                                            IsDefaultSortColumn="@membersView.IsSortColumn("status")" SortDirection="@membersView.DirectionFor("status")" TextNoWrap="true">
+                                    <Badge Color="@(context.Status == SaasMemberStatus.Active ? BadgeColor.Success : BadgeColor.Warning)" Class="rounded-pill">@context.Status</Badge>
+                                </GridColumn>
+                                <GridColumn TItem="SaasMember" HeaderText="Added" PropertyName="AddedOn" SortString="added" SortKeySelector="member => member.AddedOn"
+                                            IsDefaultSortColumn="@membersView.IsSortColumn("added")" SortDirection="@membersView.DirectionFor("added")" TextNoWrap="true">
+                                    @SaasDisplay.Date(context.AddedOn)
+                                </GridColumn>
+                                <GridColumn TItem="SaasMember" HeaderText="Last active" PropertyName="LastActiveOn" SortString="active" SortKeySelector="member => member.LastActiveOn ?? DateTime.MinValue"
+                                            IsDefaultSortColumn="@membersView.IsSortColumn("active")" SortDirection="@membersView.DirectionFor("active")" TextNoWrap="true">
+                                    @SaasDisplay.LastSeen(context.LastActiveOn, State.Clock.Now)
+                                </GridColumn>
+                            </GridColumns>
+                        </Grid>
+                    </ShowcaseDataState>
                 </CardBody>
             </Card>
             <Card Class="sd-card">
                 <CardHeader>
                     <div>
-                        <h2 class="sd-card-title">Invoices</h2>
-                        <p class="sd-card-sub">Newest first. Only the card brand and last four digits are kept.</p>
+                        <h2 class="sd-card-title" id="sd-tenant-invoices-title">Invoices</h2>
+                        <p class="sd-card-sub">Newest first. Open one to refund it or retry its payment. Only the card brand and last four digits are kept.</p>
                     </div>
                 </CardHeader>
                 <CardBody Class="pt-0">
-                    @if (invoices.Count == 0)
-                    {
-                        <p class="small text-body-secondary mb-0">@NoInvoicesText(workspace, plan)</p>
-                    }
-                    else
-                    {
-                        <div class="table-responsive sd-grid">
-                            <table class="table align-middle">
-                                <caption class="visually-hidden">Invoices of @workspace.Name</caption>
-                                <thead>
-                                    <tr>
-                                        <th scope="col">Invoice</th>
-                                        <th scope="col">Issued</th>
-                                        <th scope="col">Description</th>
-                                        <th scope="col" class="text-end">Amount</th>
-                                        <th scope="col">Status</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach (var invoice in invoices)
+                    @* Back to the saved view's defaults: newest first, 10 a page, every column in its place. *@
+                    <Button Color="ButtonColor.Link" Size="ButtonSize.Small" Class="p-0 mb-2" @onclick="ResetInvoicesViewAsync">Reset view<span class="visually-hidden">&#32;of the invoices</span></Button>
+                    <ShowcaseDataState Status="@(viewsLoaded ? ShowcaseDataStatus.Ready : ShowcaseDataStatus.Loading)"
+                                       IsEmpty="@(invoices.Count == 0)"
+                                       EmptyIcon="IconName.Receipt"
+                                       EmptyTitle="No invoices yet"
+                                       EmptyText="@NoInvoicesText(workspace, plan)"
+                                       LoadingText="Loading invoices…"
+                                       OnRetry="RefreshGridsAsync">
+                        <Grid @ref="invoicesGrid"
+                              @key="invoicesVersion"
+                              TItem="SaasInvoice"
+                              Class="table table-hover align-middle sc-grid-row-links"
+                              GridContainerClass="sd-grid border rounded-3"
+                              DataProvider="ProvideInvoicesAsync"
+                              SettingsProvider="invoicesView.GetSettingsAsync"
+                              GridSettingsChanged="SaveInvoicesSettingsAsync"
+                              AllowPaging="true"
+                              PageSize="@invoicesPageSize"
+                              PageSizeSelectorVisible="true"
+                              PageSizeSelectorItems="@(new[] { 10, 25, 50 })"
+                              PaginationItemsTextFormat="{0}–{1} of {2} invoices"
+                              AllowSorting="true"
+                              AllowColumnChooser="true"
+                              AllowExport="true"
+                              ExportFileName="@InvoicesExportName"
+                              Responsive="true"
+                              EmptyText="No invoices."
+                              aria-labelledby="sd-tenant-invoices-title">
+                            <GridColumns>
+                                <GridColumn TItem="SaasInvoice" HeaderText="Invoice" PropertyName="Number" SortString="number" SortKeySelector="invoice => invoice.Number"
+                                            IsDefaultSortColumn="@invoicesView.IsSortColumn("number")" SortDirection="@invoicesView.DirectionFor("number")" TextNoWrap="true" AlwaysVisible="true">
+                                    @* The stretched link makes the whole row open the invoice. *@
+                                    <a class="sd-mono fw-semibold stretched-link" href="@AdminInvoices.DetailPath(context.Number)">@context.Number</a>
+                                </GridColumn>
+                                <GridColumn TItem="SaasInvoice" HeaderText="Issued" PropertyName="IssuedOn" SortString="issued" SortKeySelector="invoice => invoice.IssuedOn"
+                                            IsDefaultSortColumn="@invoicesView.IsSortColumn("issued")" SortDirection="@invoicesView.DirectionFor("issued")" TextNoWrap="true">
+                                    @SaasDisplay.Date(context.IssuedOn)
+                                </GridColumn>
+                                <GridColumn TItem="SaasInvoice" HeaderText="Description" PropertyName="Description" Sortable="false">
+                                    <span class="sd-tenant-description">@context.Description</span>
+                                    <span class="d-block small text-body-secondary">
+                                        @SaasDisplay.Date(context.PeriodStart) to @SaasDisplay.Date(context.PeriodEnd)@(context.CardLast4 is null ? string.Empty : $" · {context.CardBrand} ending in {context.CardLast4}")
+                                    </span>
+                                </GridColumn>
+                                <GridColumn TItem="SaasInvoice" HeaderText="Amount" PropertyName="Amount" SortString="amount" SortKeySelector="invoice => invoice.Amount"
+                                            IsDefaultSortColumn="@invoicesView.IsSortColumn("amount")" SortDirection="@invoicesView.DirectionFor("amount")" TextNoWrap="true">
+                                    <span class="sd-mono">@SaasDisplay.MoneyCents(context.Amount)</span>
+                                    @if (context.RefundedAmount > 0)
                                     {
-                                        <tr @key="invoice.Number">
-                                            <th scope="row" class="sd-mono small text-nowrap">@invoice.Number</th>
-                                            <td class="text-nowrap">@SaasDisplay.Date(invoice.IssuedOn)</td>
-                                            <td class="sd-tenant-description">
-                                                @invoice.Description
-                                                <span class="d-block small text-body-secondary">
-                                                    @SaasDisplay.Date(invoice.PeriodStart) to @SaasDisplay.Date(invoice.PeriodEnd)@(invoice.CardLast4 is null ? string.Empty : $" · {invoice.CardBrand} ending in {invoice.CardLast4}")
-                                                </span>
-                                            </td>
-                                            <td class="text-end text-nowrap">
-                                                <span class="sd-mono">@SaasDisplay.MoneyCents(invoice.Amount)</span>
-                                                @if (invoice.RefundedAmount > 0)
-                                                {
-                                                    <span class="d-block small text-body-secondary">@SaasDisplay.MoneyCents(invoice.RefundedAmount) refunded</span>
-                                                }
-                                            </td>
-                                            <td><Badge Color="InvoiceColor(invoice.Status)" Class="rounded-pill">@invoice.Status</Badge></td>
-                                        </tr>
+                                        <span class="d-block small text-body-secondary">@SaasDisplay.MoneyCents(context.RefundedAmount) refunded</span>
                                     }
-                                </tbody>
-                            </table>
-                        </div>
-                    }
+                                </GridColumn>
+                                <GridColumn TItem="SaasInvoice" HeaderText="Status" PropertyName="Status" SortString="status" SortKeySelector="invoice => invoice.Status"
+                                            IsDefaultSortColumn="@invoicesView.IsSortColumn("status")" SortDirection="@invoicesView.DirectionFor("status")" TextNoWrap="true">
+                                    <Badge Color="AdminInvoices.StatusColor(context)" Class="rounded-pill">@AdminInvoices.StatusName(context)</Badge>
+                                </GridColumn>
+                            </GridColumns>
+                        </Grid>
+                    </ShowcaseDataState>
                 </CardBody>
             </Card>
         </div>
     </div>
 
     <SaasTenantEditor @ref="editor" OnSaved="OnSaved" />
+
+    @* Extend grace or suspend now (rule WR-002): a reason, the days for an extension, and what happens in words. *@
+    <Modal @ref="dunningModal" IsVerticallyCentered="true" ShowCloseButton="false" aria-labelledby="sd-dunning-dialog-title" OnShown="OnDunningShownAsync" OnHidden="OnDunningHiddenAsync">
+        <HeaderTemplate>
+            <h2 class="modal-title h5" id="sd-dunning-dialog-title">@(dunningDialog == DunningDialog.Extend ? $"Extend the grace period of {workspace.Name}" : $"Suspend {workspace.Name} now?")</h2>
+        </HeaderTemplate>
+        <BodyTemplate>
+            <EditForm id="sd-dunning-form" EditContext="dunningContext" OnSubmit="ConfirmDunningAsync" FormName="sd-dunning" novalidate>
+                <DataAnnotationsValidator />
+                <ShowcaseFormErrors ShowSummary="true" />
+                @if (dunningDialog == DunningDialog.Extend)
+                {
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold" for="sd-dunning-days">Extra days</label>
+                        <InputNumber @ref="daysInput" TValue="int?" id="sd-dunning-days" class="form-control" @bind-Value="dunningForm.Days" min="1" max="@SaasState.MaxExtensionDays" step="1"
+                                     inputmode="numeric" ParsingErrorMessage="Enter the extra days as a whole number, like 7." aria-describedby="sd-dunning-days-help" />
+                        <div class="form-text" id="sd-dunning-days-help">1 to @SaasState.MaxExtensionDays days.</div>
+                        <ValidationMessage For="() => dunningForm.Days" />
+                    </div>
+                }
+                <div class="mb-3">
+                    <label class="form-label fw-semibold" for="sd-dunning-reason">Reason</label>
+                    <InputTextArea @ref="reasonInput" id="sd-dunning-reason" class="form-control" rows="2" @bind-Value="dunningForm.Reason" maxlength="@SaasState.MaxDunningReasonLength"
+                                   aria-describedby="sd-dunning-reason-help" />
+                    <div class="form-text" id="sd-dunning-reason-help">Required, up to @SaasState.MaxDunningReasonLength characters. It goes on the timeline and the audit log.</div>
+                    <ValidationMessage For="() => dunningForm.Reason" />
+                </div>
+                <p class="sd-policy-preview mb-0" aria-live="polite">@DunningPreview</p>
+                <p class="sd-tenant-error mt-2 mb-0" role="alert">@dunningError</p>
+            </EditForm>
+        </BodyTemplate>
+        <FooterTemplate>
+            <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => dunningModal.HideAsync()">Cancel</Button>
+            <Button Type="ButtonType.Submit" Color="@(dunningDialog == DunningDialog.Extend ? ButtonColor.Primary : ButtonColor.Danger)" form="sd-dunning-form">
+                @(dunningDialog == DunningDialog.Extend ? "Extend grace" : "Suspend now")
+            </Button>
+        </FooterTemplate>
+    </Modal>
 }
 
 @* Outside the tenant markup, so the dialog stays on the page while it closes after the tenant is deleted. *@

@@ -21,16 +21,3 @@
 [data-bs-theme=dark] .ea-products ::deep .ea-featured {
     color: var(--sc-primary);
 }
-
-.ea-products-message:empty {
-    margin: 0 !important;
-}
-
-.ea-products-message:focus {
-    outline: none;
-}
-
-.ea-products-message:focus-visible {
-    outline: 2px solid var(--sc-primary);
-    outline-offset: 2px;
-}

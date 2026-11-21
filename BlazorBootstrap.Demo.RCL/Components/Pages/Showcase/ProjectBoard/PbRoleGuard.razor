@@ -1,7 +1,7 @@
 @implements IDisposable
 
-@* For pages of one role inside PbWorkLayout (which already requires a sign-in): another role sees a short panel instead.
-   Roles: "pm" or "am" (PbSeedData.ProjectManagerRole, PbSeedData.AccountManagerRole). *@
+@* For pages of one or two roles inside PbWorkLayout (which already requires a sign-in): another role sees a short panel instead.
+   Roles: "pm", "am", or both as "pm,am" (PbSeedData.ProjectManagerRole, PbSeedData.AccountManagerRole, PbSeedData.ManagerRoles). *@
 @if (Allowed)
 {
     @ChildContent
@@ -20,16 +20,20 @@ else
     /// <summary>Gets or sets the content shown to the role.</summary>
     [Parameter] public RenderFragment? ChildContent { get; set; }
 
-    /// <summary>Gets or sets the role that may see the content.</summary>
+    /// <summary>Gets or sets the role that may see the content, or two separated by a comma.</summary>
     [Parameter, EditorRequired] public string Role { get; set; } = string.Empty;
 
     [Inject] private PbState State { get; set; } = default!;
 
-    private bool Allowed => Role == PbSeedData.ProjectManagerRole ? State.IsProjectManager : Role == PbSeedData.AccountManagerRole && State.IsAccountManager;
+    private bool Allowed => (ForProjectManagers && State.IsProjectManager) || (ForAccountManagers && State.IsAccountManager);
 
-    private string RoleName => Role == PbSeedData.ProjectManagerRole ? "project managers" : "account managers";
+    private bool ForAccountManagers => Role.Split(',').Contains(PbSeedData.AccountManagerRole);
 
-    private string RoleSingular => Role == PbSeedData.ProjectManagerRole ? "project manager" : "account manager";
+    private bool ForProjectManagers => Role.Split(',').Contains(PbSeedData.ProjectManagerRole);
+
+    private string RoleName => ForProjectManagers && ForAccountManagers ? "project and account managers" : ForProjectManagers ? "project managers" : "account managers";
+
+    private string RoleSingular => ForProjectManagers && ForAccountManagers ? "project manager or account manager" : ForProjectManagers ? "project manager" : "account manager";
 
     /// <summary>Stops listening to state changes.</summary>
     public void Dispose() => State.Changed -= OnStateChanged;

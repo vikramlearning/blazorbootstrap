@@ -118,7 +118,177 @@
 
 .ea-topbar-actions {
     display: flex;
+    flex: 1 1 auto;
+    flex-wrap: wrap;
     align-items: center;
+    justify-content: flex-end;
+    gap: .5rem;
+}
+
+/* The header's global search takes the room the bar has, and wraps onto its own line when there is too little. */
+.sc-ecommerce ::deep .ea-global-search {
+    flex: 1 1 12rem;
+    min-width: 10rem;
+    max-width: 22rem;
+}
+
+/* Grid lists (rules WR-001 and "Showcase record lists use Grid"): the grid's box scrolls sideways on narrow screens, the
+   row's link or button names the record, a selected row is tinted, status lines collapse while empty, and a bulk bar
+   wraps onto several lines at phone width. */
+.sc-ecommerce ::deep .ea-grid {
+    position: relative;
+    background: var(--ec-surface);
+}
+
+    .sc-ecommerce ::deep .ea-grid .table {
+        --bs-table-bg: var(--ec-surface);
+        margin-bottom: 0;
+        vertical-align: middle;
+        font-size: .9375rem;
+    }
+
+        .sc-ecommerce ::deep .ea-grid .table > thead th {
+            font-size: .8125rem;
+            font-weight: 600;
+            color: var(--bs-secondary-color);
+            white-space: nowrap;
+        }
+
+.sc-ecommerce ::deep .ea-table-wide {
+    min-width: 56rem;
+}
+
+.sc-ecommerce ::deep .ea-table-mid {
+    min-width: 40rem;
+}
+
+.sc-ecommerce ::deep .ea-row-link {
+    font-weight: 600;
+    text-decoration: none;
+}
+
+    .sc-ecommerce ::deep .ea-row-link:hover,
+    .sc-ecommerce ::deep .ea-row-link:focus-visible {
+        text-decoration: underline;
+    }
+
+/* A stretched button (a record without its own page opens its dialog) looks like the row's link. */
+.sc-ecommerce ::deep .ea-row-button {
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--bs-link-color);
+    font-weight: 600;
+    text-align: start;
+}
+
+    .sc-ecommerce ::deep .ea-row-button:hover,
+    .sc-ecommerce ::deep .ea-row-button:focus-visible {
+        text-decoration: underline;
+    }
+
+.sc-ecommerce ::deep .ea-row-selected > * {
+    --bs-table-bg-state: rgba(var(--sc-primary-rgb), .08);
+}
+
+.sc-ecommerce ::deep .ea-mono {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: .875em;
+}
+
+.sc-ecommerce ::deep .ea-list-filters {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: .75rem 1rem;
+}
+
+    .sc-ecommerce ::deep .ea-list-filters > * {
+        flex: 1 1 11rem;
+        min-width: 0;
+    }
+
+    .sc-ecommerce ::deep .ea-list-filters > .ea-list-search {
+        flex: 2 1 16rem;
+    }
+
+.sc-ecommerce ::deep .ea-list-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: .25rem 1rem;
+    margin: .75rem 0 0;
+}
+
+.sc-ecommerce ::deep .ea-list-status,
+.sc-ecommerce ::deep .ea-list-error {
+    font-size: .875rem;
+    font-weight: 600;
+}
+
+    .sc-ecommerce ::deep .ea-list-status:empty,
+    .sc-ecommerce ::deep .ea-list-error:empty {
+        margin: 0;
+    }
+
+    .sc-ecommerce ::deep .ea-list-status:focus {
+        outline: none;
+    }
+
+    .sc-ecommerce ::deep .ea-list-status:focus-visible {
+        outline: 2px solid var(--sc-primary);
+        outline-offset: 2px;
+    }
+
+.sc-ecommerce ::deep .ea-list-error {
+    color: var(--bs-danger-text-emphasis);
+}
+
+.sc-ecommerce ::deep .ea-bulk {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: .75rem 1rem;
+    margin-bottom: 1rem;
+    padding: .75rem 1rem;
+    border: 1px solid rgba(var(--sc-primary-rgb), .35);
+    border-radius: .75rem;
+    background: rgba(var(--sc-primary-rgb), .06);
+}
+
+.sc-ecommerce ::deep .ea-bulk-count {
+    flex: 1 0 100%;
+    margin: 0;
+    font-family: var(--sc-font-body);
+    font-size: .9375rem;
+    font-weight: 700;
+}
+
+.sc-ecommerce ::deep .ea-bulk-form {
+    display: flex;
+    flex: 1 0 100%;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: .75rem 1rem;
+    min-width: 0;
+}
+
+.sc-ecommerce ::deep .ea-bulk-field {
+    flex: 1 1 12rem;
+    min-width: 0;
+}
+
+    .sc-ecommerce ::deep .ea-bulk-field .form-label {
+        margin-bottom: .25rem;
+    }
+
+.sc-ecommerce ::deep .ea-bulk-wide {
+    flex: 3 1 18rem;
+}
+
+.sc-ecommerce ::deep .ea-bulk-actions {
+    display: flex;
+    flex-wrap: wrap;
     gap: .5rem;
 }
 

@@ -1,6 +1,6 @@
 ---
 title: IoT & DevOps Monitoring showcase
-description: A public status page with uptime history and email subscriptions, and an engineers' console with live metrics, incidents, logs and traces, on-call, and admin tools, built with Blazor Bootstrap.
+description: A public status page with uptime history and email subscriptions, and an engineers' console with live metrics, an incident queue, escalation policies with paging, logs and traces, on-call, Grid lists with saved views and CSV export, an audit log, and admin tools, built with Blazor Bootstrap.
 sidebar_label: Monitoring
 sidebar_position: 11
 ---
@@ -9,7 +9,9 @@ import CarbonAd from '/carbon-ad.mdx'
 
 # IoT & DevOps Monitoring
 
-Stackwatch is a fictitious company that monitors eight services, from an API gateway to warehouse sensors. Customers read the public "Stackwatch Status" page, its incident history, and subscribe to email updates. Engineers sign in to a separate console to watch live metrics, work incidents, post status page updates, follow logs and traces, and share on-call; admins also manage alert rules, failure drills, maintenance windows, and the monitored services.
+Stackwatch is a fictitious company that monitors eight services, from an API gateway to warehouse sensors. Customers read the public "Stackwatch Status" page, its incident history, and subscribe to email updates. Engineers sign in to a separate console to watch live metrics, work the incident queue, get paged and acknowledge, post status page updates, follow logs and traces, and share on-call; admins also manage alert rules and failure drills, escalation policies, maintenance windows, and the monitored services.
+
+Every record list in the console is a [Grid](/components/grid) with a saved view, a column chooser, and CSV export; forms validate with a linked error summary; and the console header has a global search and notifications. Every change lands in an audit log. The signature workflow is **escalation policies with paging**: an admin defines who is paged and when (the primary on call at once, then the secondary after a set number of minutes without an acknowledgement, then optionally a named engineer); when an alert opens an incident the primary is paged, the secondary is paged if nobody acknowledges in time, acknowledging stops the escalation, and the incident's timeline records each page and the acknowledgement.
 
 <CarbonAd />
 
@@ -22,18 +24,28 @@ Stackwatch is a fictitious company that monitors eight services, from an API gat
 | Engineer | Priya Nair (`priya.nair@example.com`) | `watch-demo-26` | `/showcase/monitoring/console` |
 | Admin | Marcus Osei (`marcus.osei@example.com`) | `watch-admin-26` | `/showcase/monitoring/console` |
 
-There is no registration: engineers are staff, and the status page needs no account. Use "Engineer sign-in" in the status page header.
+There is no registration: engineers are staff, and the status page needs no account. Use "Engineer sign-in" in the status page header. This week Priya is the primary on call and Marcus the secondary, so pages reach both of them.
 
-All data is fictitious and there is no backend. Each browser tab keeps its own data in `sessionStorage` (it survives a reload; other tabs start fresh), and "Reset demo data" in the account menu restores the seed. The sign-in page lists the demo accounts with one-click buttons; credentials are checked only against the tab's accounts. The clock starts at Tuesday, November 24, 2026, 10:30 and moves on with real time. Metrics and log lines are generated from that clock every 2 seconds, without random numbers, so every fresh tab starts the same way. No email is sent: subscriber emails appear on the Subscribe page in the tab.
+The seed holds 201 incidents over the last year (2 active, 59 published on the status page), about 360 log lines at the start (more arrive every 2 seconds), 14 maintenance windows, 3 escalation policies, 150 audit entries, and 6 notifications each for Priya and Marcus (the 2 newest unread). Incident #301 (Payments API) is still paging: Priya and then Marcus were paged and nobody has acknowledged, so step 3 pages Daniel Okafor a few minutes after a fresh tab opens. Incident #300 (Search) was acknowledged by Priya a minute after Marcus was paged. The recent past incidents show their pages and acknowledgements on their timelines.
+
+All data is fictitious and there is no backend. Each browser tab keeps its own data in `sessionStorage` (it survives a reload; other tabs start fresh), and "Reset demo data" in the account menu restores the seed. The sign-in page lists the demo accounts with one-click buttons; credentials are checked only against the tab's accounts. The clock starts at Tuesday, November 24, 2026, 10:30 and moves on with real time. Metrics and log lines are generated from that clock every 2 seconds, without random numbers, so every fresh tab starts the same way. No email, push, or text message is sent: a page is an in-app notification that names the channels it would use, and subscriber emails appear on the Subscribe page in the tab.
 
 ## What to try
 
 1. Without signing in, open the status page: the Payments API shows an ongoing incident (#301). Point at the 90-day uptime bars, open "Days with incidents", then open the incident history and incident #298 to read its postmortem.
-2. Open **Subscribe to updates** and subscribe any email address to the Payments API. Sign in as Priya, open incident #301, and post an update with the stage **Identified**. Back on the Subscribe page, the email is listed under your subscription, and the status page shows the new update.
-3. As Priya, open incident #300 (search latency). It is acknowledged but not on the status page yet. Post a public update and it appears there; resolve it with a public message and it moves to the history.
-4. Open **Logs and traces**, filter by **Payments API** and the error level, and open a trace ID. The trace page shows a waterfall of spans and the same spans as a table. Press **Pause live updates** to freeze the log.
-5. Open **On-call**, take a primary or secondary shift for a coming week (a reason is optional), then set how alerts reach you in **Notifications**.
-6. Sign in as Marcus and open **Alert rules and drills**. Start a drill on Warehouse sensors with the **Outage** impact: after about 20 seconds its rule fires, opens an incident, notifies the on-call engineer, and posts on the status page. Then schedule a window in **Maintenance**, or hide a service from the status page in **Manage services**.
+2. Open **Subscribe to updates**. Submit an empty form or the address "bad": a summary above the form links to each failing field. Subscribe an address such as `you@example.com` to the Payments API, then type the same address again: "already subscribed" appears while you type. Sign in as Priya, open incident #301, and post an update with the stage **Identified**: the email is listed under your subscription, and the status page shows the update.
+3. As Priya, look at the console overview: **Pages waiting for you** lists #301. Open it: the **Escalation** panel shows the policy "Checkout path: page fast", the pages sent so far, and a countdown to the next page. Leave it for later, and open incident #300 to see a stopped escalation (acknowledged by Priya) and its pages on the timeline.
+4. Open **Incidents**. Choose **All**, sort by **Severity**, hide a column with **Columns**, and set 50 a page: the view is kept when you open an incident and come back, and **Reset view** restores it. **Export CSV** downloads the filtered incidents. Turn on **Only incidents waiting for acknowledgement**. Select #301 and #300 and use the bulk bar: a severity change asks for a reason, and **Assign to** Marcus notifies him.
+5. Open **Logs and traces**, filter by **Payments API** and the error level, export the lines, and open a line: it opens its trace (a waterfall of spans and the same spans as a table). Press **Pause live updates** to freeze the log.
+6. Open **Notifications**. Untick email, push, and text messages and save: as the primary on call, Priya must keep one channel, and the form says so. Pages use these channels.
+7. Use the search box in the header: type `301`, a service name, or a trace ID from the logs, and press Enter to open the first match. As Marcus it also finds alert rules, escalation policies, and maintenance windows.
+8. Sign in as Marcus. In **Alert rules and drills**, choose **New rule** and name it "Payments error rate above 2%": "Another rule is already called…" appears while you type. Set a Search latency rule with a threshold of 100 ms: the form says it must be above Search's normal p95 latency. In **Manage services**, add a service with the region "US East": the region must look like `us-east-1`. In **Maintenance**, schedule a window on Orders database that overlaps the planned upgrade: the form names the window it overlaps. **Audit log** lists what you saved.
+9. Run an escalation (about three minutes):
+   1. As Marcus, open **Admin › Escalation policies** and edit "Checkout path: page fast". The preview says in words who is paged and when with this week's rotation: Priya at once, Marcus after 2 minutes, then Daniel Okafor 20 minutes later, twice over. Change a value to see the preview follow, then cancel (or save: the audit log records it).
+   2. Open **Alert rules and drills** and start a drill on **API gateway** with **Elevated errors** for 5 minutes. Stay on the page: after about 20 seconds the rule "API gateway error rate above 2%" fires, the status message says the policy paged Priya Nair, and a new incident opens (#302 in a fresh tab).
+   3. Wait about 2 more minutes on a live page (the drill page, the overview, or the new incident's page). Nobody acknowledges, so Marcus is paged: his bell shows "Paged: incident #302 …". Open it: the Escalation panel shows step 2 of 3, both pages, and a countdown to Daniel Okafor's page; the timeline has "Paged Priya Nair (primary on call, …) by in-app, email, and push" and the same for Marcus.
+   4. Choose **Switch account** and sign in as Priya. The overview's **Pages waiting for you** lists the new incident, and her bell has the page. Choose **Acknowledge** (on the overview, the incident page, or the queue's bulk bar). Paging stops; the timeline says "Acknowledged by Priya Nair; paging stopped after 2 pages."
+   5. Switch back to Marcus: his bell says "Your page for #302 is covered". **Audit log** lists the drill, "Alert fired", each "Paged" by Stackwatch alerts, and Priya's acknowledgement. Stop the drill and resolve the incident.
 
 ## Pages
 
@@ -44,25 +56,26 @@ All data is fictitious and there is no backend. Each browser tab keeps its own d
 | Status | `/showcase/monitoring` | Overall status, ongoing incidents with their public updates, scheduled maintenance, and 90-day uptime bars per component. |
 | Incident history | `/showcase/monitoring/history` | Every published incident by month, filterable by component, with the last stage and a postmortem mark. |
 | Incident | `/showcase/monitoring/incidents/{Id:int}` | The public timeline, summary, and published postmortem; links to subscribe to that component (`?component=`). |
-| Subscribe to updates | `/showcase/monitoring/subscribe` | Subscribe an email to all or chosen components; edit components, unsubscribe, and read the emails sent in this tab. |
+| Subscribe to updates | `/showcase/monitoring/subscribe` | A validated form to subscribe an email to all or chosen components; edit components, unsubscribe, and read the emails sent in this tab. |
 | Engineer sign-in | `/showcase/monitoring/sign-in` | Demo accounts and the sign-in form (`?returnUrl=` returns to a page inside the site). |
 | Not found | `/showcase/monitoring/{*path}` | The site's not-found panel. |
 
-A signed-in engineer sees a "Viewing the public status page as" bar with a link back to the console, and a **Console** item in the Navbar.
+A signed-in engineer sees a "Viewing the public status page as" bar with a link back to the console, and a **Console** item in the Navbar. The status page has no search or notifications bell: those are the console's.
 
 ### Engineers' console (layout: sidebar back office)
 
 | Page | Route | What it does |
 |:--|:--|:--|
-| Overview | `/showcase/monitoring/console` | Active incident alerts, summary cards, live traffic and p95 latency charts, and service health with CPU bars. |
-| Services | `/showcase/monitoring/console/services` | All services with live status, latency, and error rate; filter by kind and status. |
+| Overview | `/showcase/monitoring/console` | **Pages waiting for you** (with Acknowledge), active incident alerts, summary cards, live traffic and p95 latency charts, and service health with CPU bars. |
+| Services | `/showcase/monitoring/console/services` | A Grid of services with live status, latency, error rate, and throughput (exported with their latest values); filter by kind and status. |
 | Service | `/showcase/monitoring/console/services/{Id}` | The service's active incident, latency and error rate charts, resource bars, and recent logs. |
-| Incidents | `/showcase/monitoring/console/incidents` | Incidents filtered by status, severity, service, or status page; **Declare incident** opens a dialog. `?status=` and `?service=` set filters. |
-| Incident | `/showcase/monitoring/console/incidents/{Id:int}` | Acknowledge, change severity, resolve, or reopen; post on the status page by stage; add internal notes; write, publish, or unpublish the postmortem. |
-| Logs and traces | `/showcase/monitoring/console/logs` | Live log tail with search, service, and level filters (`?search=`, `?service=`). |
+| Incidents | `/showcase/monitoring/console/incidents` | The incident queue: summary cards (open, acknowledged, critical, waiting for acknowledgement), filters (status, severity, service, on the status page, waiting for acknowledgement), and a Grid with a Paging column, saved view, column chooser, CSV export, page sizes of 10, 25, or 50, and row selection with bulk assign, severity, acknowledge, and resolve. **Declare incident** opens a validated dialog. `?status=`, `?service=`, and `?paging=1` set filters. |
+| Incident | `/showcase/monitoring/console/incidents/{Id:int}` | The Escalation panel (policy, step, countdown, pages sent, **Acknowledge and stop paging**); acknowledge, assign, change severity, resolve, or reopen; post on the status page by stage; add internal notes; write, publish, or unpublish the postmortem. |
+| Logs and traces | `/showcase/monitoring/console/logs` | A live tail in a Grid with search, service, and level filters (`?search=`, `?service=`), paging, and CSV export of the filtered lines; each line opens its trace. |
 | Trace | `/showcase/monitoring/console/traces/{TraceId}` | One request's spans as a waterfall and a table, and the services it passed through. |
-| On-call | `/showcase/monitoring/console/on-call` | Who is on call now, the escalation policy, and the next 8 weeks; take a shift or remove your override. |
-| Notifications | `/showcase/monitoring/console/notifications` | Your alerts and updates (all or unread, mark read), and how alerts reach you (email, push, text). |
+| On-call | `/showcase/monitoring/console/on-call` | Who is on call now (and which incidents are paging them), the active escalation policies, and the next 8 weeks; take a shift or remove your override. |
+| Notifications | `/showcase/monitoring/console/notifications` | Your pages, alerts, and updates (all or unread, by kind, mark read; the header's bell shows the same list), and a validated form for how they reach you (email, push, text for critical incidents). |
+| Audit log | `/showcase/monitoring/console/audit` | Who did what and when, newest first, in a Grid with column filters, paging, and CSV export. Engineers and admins. |
 | Account | `/showcase/monitoring/console/account` | Your name, email, and password. |
 | Not found | `/showcase/monitoring/console/{*path}` | Keeps unknown console pages inside the console. |
 
@@ -70,30 +83,64 @@ A signed-in engineer sees a "Viewing the public status page as" bar with a link 
 
 | Page | Route | What it does |
 |:--|:--|:--|
-| Alert rules and drills | `/showcase/monitoring/console/admin/alerts` | Create, edit, turn off, or delete rules (some post on the status page on their own); start and stop failure drills. |
-| Maintenance | `/showcase/monitoring/console/admin/maintenance` | Schedule, edit, end, or cancel windows, optionally emailing subscribers; alert rules stay quiet during a window. |
-| Manage services | `/showcase/monitoring/console/admin/services` | The monitored services; show or hide each on the status page, or delete one. |
-| Add or edit service | `/showcase/monitoring/console/admin/services/new`, `/showcase/monitoring/console/admin/services/{Id}` | Name, kind, region, team, normal latency and traffic, status page visibility; live status, rules, and incidents of the service. |
+| Alert rules and drills | `/showcase/monitoring/console/admin/alerts` | A Grid of rules (the whole row opens the validated rule dialog); turn rules off or delete them; start and stop failure drills with a validated form. |
+| Escalation policies | `/showcase/monitoring/console/admin/escalation` | A Grid of policies (what each covers, its steps, the most pages it sends, on or off, incidents paging now); add or edit one in a validated dialog with a live preview; turn it on or off, or delete it. |
+| Maintenance | `/showcase/monitoring/console/admin/maintenance` | A Grid of windows with a status filter; schedule, edit, end, or cancel windows in a validated form, optionally emailing subscribers; alert rules stay quiet during a window. |
+| Manage services | `/showcase/monitoring/console/admin/services` | A Grid of the monitored services; show or hide each on the status page, or delete one. |
+| Add or edit service | `/showcase/monitoring/console/admin/services/new`, `/showcase/monitoring/console/admin/services/{Id}` | A validated form: unique name, kind, region code, team, normal latency and traffic, instances, status page visibility; live status, rules, and incidents of the service. |
+
+## Escalation policies and paging
+
+A policy has these steps:
+
+1. Page the **primary on call** at once.
+2. If nobody acknowledges within the set minutes (1 to 60), page the **secondary on call**.
+3. Optionally, a set number of minutes later (1 to 60), page a **named engineer**.
+
+The steps can run again up to 3 more times; each round ends one secondary wait after its last page. If every page goes out and nobody acknowledges, paging stops, the timeline and audit log say so, and the admins are notified. Who is primary and secondary comes from the on-call rotation at the time of each page, overrides included.
+
+A policy covers chosen services, or is the **default** for every service that no other active policy names. Policy names are unique, an active policy can't name a service another active policy names, and there is one active default at most. A service with no policy isn't paged: its alerts notify the on-call engineers instead. The seed has "Checkout path: page fast" (Payments API, API gateway, Auth service: secondary after 2 minutes, Daniel Okafor 20 minutes later, repeated once), "Data stores" (Orders database, Session cache: secondary after 5 minutes, Aiko Tanaka 10 minutes later), and "Default: everything else" (secondary after 10 minutes, repeated twice).
+
+When an alert rule opens an incident, or an engineer declares one, the policy that covers its service is copied onto the incident; editing or deleting the policy later doesn't change incidents already paging. Each page:
+
+- is an in-app notification to the engineer (the header's bell and Notifications), naming the step;
+- goes on the incident's timeline as "Paged Priya Nair (primary on call, step 1 of 3, round 1 of 2) by in-app, email, and push", with the channels from the engineer's notification settings (a text message only for a critical incident);
+- writes an audit entry by "Stackwatch alerts".
+
+The paging engine runs on the site clock: on every live tick (the console pages that update every 2 seconds, and every second on an incident page that is paging), whenever a console page opens, and when a tab's data is restored. A page that fell due while no console page was open goes out with its due time. Pausing live updates pauses the countdown; the engine catches up when a console page opens or updates resume.
+
+Acknowledging the incident (on its page, on the overview, or from the queue's bulk bar) stops the paging, records "Acknowledged by …; paging stopped after N pages" on the timeline and in the audit log, and tells everyone paged before that their page is covered. Resolving the incident also stops it.
+
+## Enterprise features
+
+- **Grid lists**: incidents, logs, services, managed services, alert rules, escalation policies, maintenance windows, and the audit log use the [Grid](/components/grid) with sorting, a column chooser, and CSV export of the filtered rows. Each list keeps its view (sort, page size, hidden and reordered columns) in the tab's `sessionStorage` until **Reset view**. A whole row opens its record (or, without a page of its own, its edit dialog).
+- **Validated forms**: required, length, and format rules (email, region code), uniqueness checks with a "Checking…" state (service name and ID, alert rule name, escalation policy name, subscriber email), cross-field rules (a threshold above the service's normal level, posting on the status page only for a public service, instances by kind, a maintenance window's start and end and no overlap, a policy's services and step 3, one channel while on call), and a summary that links each failing field after a failed submit.
+- **Global search** in the console header: incidents by number or title, services by name or ID, and a trace by its full ID; admins also find alert rules, escalation policies, and maintenance windows.
+- **Notifications**: pages, assignments, new incidents on your team's services, updates on incidents assigned to you, maintenance, on-call changes, and "nobody acknowledged" for admins, with an unread count and mark as read.
+- **Audit log**: incidents (declared, acknowledged, assigned, severity, updates, notes, resolved, reopened, postmortems), alerts and pages by the system, alert rules, drills, escalation policies, maintenance, services, on-call overrides, notification settings, and status page subscriptions (by number, not address).
+- **Loading, empty, and error states** on every list, with a "Demo: simulate a loading error" control to show the error state and its Retry.
 
 ## Components used
 
+- [Grid](/components/grid): every record list in the console, with the column chooser, CSV export, paging, and multi-row selection on the incident queue.
 - [Navbar](/components/navbar): the status page header with the brand, links, and account menu or "Engineer sign-in".
-- [Sidebar](/components/sidebar): the console menu, with three extra admin items and an "Admin" or "Engineer" badge.
+- [Sidebar](/components/sidebar): the console menu, with four extra admin items and an "Admin" or "Engineer" badge.
 - [Charts](/components/charts) ([line chart](/data-visualization/line-chart), BlazorExpress.ChartJS): live traffic and latency on the overview, latency and error rate per service.
+- [Modal](/components/modal): declare an incident, incident confirmations, alert rules, escalation policies, drills, maintenance, shifts, unsubscribe, and service deletion.
+- [Badge](/components/badge): severities, statuses, paging state, log levels, and the default policy.
+- [Breadcrumb](/components/breadcrumb): public incident, console incident, service, and service edit pages.
 - [Progress](/components/progress): CPU bars on the overview, and CPU, memory, and disk on each service.
 - [Alert](/components/alerts): active incidents on the overview, and results on On-call and Notifications.
 - [Callout](/components/callout): the active incident, or "No active incidents", on each service page.
 - [Tooltip](/components/tooltips): explanations of error rate, p95 latency, and resource metrics.
-- [Modal](/components/modal): declare an incident, incident confirmations, alert rules, drills, maintenance, shifts, unsubscribe, and service deletion.
-- [Card](/components/card), [Badge](/components/badge), [Buttons](/components/buttons), and [Icons](/content/icons): panels, statuses, severities, and log levels across both sides.
-- [Breadcrumb](/components/breadcrumb): public incident, console incident, service, and service edit pages.
 - [Toasts](/components/toasts): the frame hosts them; deleting a service shows one.
+- [Card](/components/card), [Buttons](/components/buttons), and [Icons](/content/icons): panels and actions across both sides.
 
-Tables (services, incidents, logs, spans, on-call weeks, rules) are plain Bootstrap tables, not the Grid component. The shared site bar uses [Theme Switcher](/components/theme-switcher), and the shared account menu uses [Avatar](/components/avatar) and [Dropdown](/components/dropdown).
+The forms use Blazor's `EditForm` with `DataAnnotationsValidator`, `InputText`, `InputTextArea`, `InputNumber`, `InputDate`, `InputSelect`, `InputCheckbox`, and `InputRadioGroup`. Plain Bootstrap tables remain where the content is not a record list: the status page, on-call weeks, trace spans, and the running and recent drills. The shared site bar uses [Theme Switcher](/components/theme-switcher), and the shared account menu, search, and notifications use [Avatar](/components/avatar) and [Dropdown](/components/dropdown).
 
 ## How the theme is built
 
-`MonitoringFrame.razor` is the frame both layouts share. `MonitoringLayout` is the public side (Navbar on top), and `ConsoleLayout` is the back office (a top bar with "View status page" and a sidebar beside the page). The frame sets the color and font tokens on its `.sc-site.sc-monitoring` root in `MonitoringFrame.razor.css`, and styles the pages through `::deep`.
+`MonitoringFrame.razor` is the frame both layouts share. `MonitoringLayout` is the public side (Navbar on top), and `ConsoleLayout` is the back office (a top bar with the global search, "View status page", the notifications, and the account menu, and a sidebar beside the page). The frame sets the color and font tokens on its `.sc-site.sc-monitoring` root in `MonitoringFrame.razor.css`, and styles the pages through `::deep`.
 
 - Light: primary `#15803d` (hover `#166534`, white text on it), page background `#f4f6f5`.
 - Dark (`[data-bs-theme=dark]`): primary `#4ade80` (hover `#86efac`, text `#052e16` on it), page background `#0a0f0c`. Because the dark green is light, the frame also gives primary badges and progress bars dark text.
@@ -105,8 +152,10 @@ Charts draw on a canvas, so they take their colors from `MonitoringChartTheme.cs
 
 ## Accessibility and responsiveness
 
-- **Pause live updates** (WCAG 2.2.2) on the overview, services, service, logs, alert rules, and service edit pages stops the 2-second updates; the logs page can load new lines on request.
-- Live regions announce filter changes and action results, never each tick. Incident alerts on the overview keep a fixed start time so they are not announced again.
+- **Pause live updates** (WCAG 2.2.2) on the overview, services, service, logs, alert rules, and service edit pages stops the 2-second updates, and also the paging countdown on an incident page; the logs page can load new lines on request.
+- Live regions announce filter changes and action results, never each tick or the paging countdown. Incident alerts on the overview keep a fixed start time so they are not announced again. Acknowledging is announced, and focus moves to the announcement when the pressed button goes away.
+- Each queue row's checkbox is labelled with its incident ("Select incident #301, …"), and the header checkbox reads "Select all shown incidents". A row opens its record through a stretched link or button, so the row has no extra interactive role. Paging is written out ("Paging step 2", "Acknowledged by Priya Nair", "Nobody answered"), not shown by color alone.
+- After a failed submit, the error summary takes focus and links to each field; each message is tied to its field with `aria-describedby`. Visually hidden button text keeps its leading space, so names read "Edit Search" rather than "EditSearch".
 - Each chart has a text label with the latest values. Each uptime bar is one group of labelled days (with a `title` for the mouse), plus a "Days with incidents" table for keyboard users. The trace waterfall has the same spans as a table.
 - Dialogs are named by their heading, have a Cancel button, and return focus to the button that opened them.
-- At 375 px, the console sidebar moves above the page, filters stack, and wide tables scroll inside their own box.
+- At 375 px, the console sidebar moves above the page, filters and bulk bars stack, and wide grids and tables scroll inside their own box.

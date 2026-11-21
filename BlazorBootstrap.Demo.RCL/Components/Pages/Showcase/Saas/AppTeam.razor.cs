@@ -1,21 +1,48 @@
 using System.ComponentModel.DataAnnotations;
 using System.Globalization;
+using BlazorBootstrap.Demo.RCL.Components.Pages.Showcase.Shared;
 using BlazorBootstrap.Demo.RCL.Models.Showcase.Saas;
+using BlazorBootstrap.Demo.RCL.Services.Showcase.Foundation;
 using BlazorBootstrap.Demo.RCL.Services.Showcase.Saas;
 using Microsoft.AspNetCore.Components.Forms;
 
 namespace BlazorBootstrap.Demo.RCL.Components.Pages.Showcase.Saas;
 
 /// <summary>
-/// The workspace's team: every member and open invitation with role, status, and last activity, the seats in use, and,
-/// for owners and admins, an invite dialog, a change-role dialog, "Resend" for invitations, and a confirmed remove or
-/// cancel-invitation. Nobody acts on themselves, and only owners see actions on owners or grant the owner role; the
-/// state enforces the same rules. Focus returns to the button that opened a dialog, or to the status message when that
-/// button is gone.
+/// The workspace's team: every member and open invitation in a <see cref="Grid{TItem}" /> (name, role, status, added, last
+/// activity, and actions) with a saved view, sorting, paging, the column chooser, and CSV export, the seats in use, and,
+/// for owners and admins, an invite dialog in an <see cref="EditForm" /> (rule WR-002: an email that isn't in the team yet,
+/// checked as you type, and a role), a change-role dialog (the name opens it, and its stretched area makes the whole row do
+/// so), "Resend" and "Accept (demo)" for invitations, and a confirmed remove or cancel-invitation. Nobody acts on
+/// themselves, and only owners see actions on owners or grant the owner role; the state enforces the same rules. Focus
+/// returns to the button that opened a dialog, or to the status message when that button is gone.
 /// </summary>
 public partial class AppTeam : ComponentBase, IDisposable
 {
     #region Fields and Constants
+
+    private const int DefaultPageSize = 10;
+
+    private readonly Dictionary<int, ElementReference> nameButtons = new();
+
+    private ElementReference? countRegion;
+
+    private ShowcaseUniqueCheck? emailCheck;
+
+    private Grid<SaasMember>? grid;
+
+    /// <summary>Changes when the view is reset, so the grid is built again with its defaults.</summary>
+    private int gridVersion;
+
+    /// <summary>The state's answers that belong to a field of the invite form (someone already in the team).</summary>
+    private ValidationMessageStore? inviteErrorsStore;
+
+    /// <summary>The grid's page size: the saved one once the view is loaded, then whatever the page size selector chose.</summary>
+    private int pageSize = DefaultPageSize;
+
+    private ShowcaseGridView view = default!;
+
+    private bool viewLoaded;
 
     private EditContext inviteContext = default!;
 
@@ -73,9 +100,22 @@ public partial class AppTeam : ComponentBase, IDisposable
 
     #region Protected Override Methods
 
+    /// <summary>Loads the saved view once the page is interactive (it lives in the tab's session storage), then shows the grid.</summary>
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender)
+            return;
+
+        await view.LoadAsync();
+        pageSize = (await view.GetSettingsAsync()).PageSize;
+        viewLoaded = true;
+        StateHasChanged();
+    }
+
     protected override void OnInitialized()
     {
-        inviteContext = new EditContext(inviteForm);
+        view = GridViews.Get(State.SiteSlug, "team", DefaultPageSize);
+        ResetInvite();
         roleContext = new EditContext(roleForm);
         State.Changed += OnStateChanged;
     }
@@ -142,6 +182,26 @@ public partial class AppTeam : ComponentBase, IDisposable
     private static string SeatsText(int used, int seats) =>
         string.Create(CultureInfo.InvariantCulture, $"{used} of {seats} {(seats == 1 ? "seat" : "seats")} used");
 
+    /// <summary>
+    /// Accepts an invitation on the invitee's behalf (a demo shortcut: invitees have no sign-in here). The row stays, so
+    /// focus stays in the list; the status message says what happened and who was told.
+    /// </summary>
+    private void AcceptForDemo(SaasMember member)
+    {
+        pageError = null;
+        var result = State.AcceptInvitationForDemo(member.Id);
+
+        if (result == SaasResult.Ok)
+            SetStatus($"{member.Name} accepted the invitation and is now an active member. In this demo you accepted it for them; the owners and admins who can sign in got a notification.");
+        else
+            SetPageError(result switch
+            {
+                SaasResult.NoChange => $"{member.Name} already accepted the invitation.",
+                SaasResult.NotFound => $"There's no invitation for {member.Email} any more.",
+                _ => "You can't do this. Only owners and admins manage the team.",
+            });
+    }
+
     private async Task AskRemoveAsync(SaasMember member)
     {
         removeTarget = member;
@@ -180,8 +240,30 @@ public partial class AppTeam : ComponentBase, IDisposable
         await removeModal.HideAsync();
     }
 
+    /// <summary>Whether someone in the team (a member or an open invitation) has this email.</summary>
+    private Task<bool> IsInTeamAsync(string email) => Task.FromResult(State.IsInTeam(email));
+
+    private string InTeamMessage(string email) =>
+        State.CurrentWorkspace is { } workspace && State.MembersOf(workspace.Id).FirstOrDefault(member => string.Equals(member.Email, email.Trim(), StringComparison.OrdinalIgnoreCase)) is { } existing
+            ? existing.Status == SaasMemberStatus.Invited
+                ? $"{existing.Name} already has an open invitation, sent {SaasDisplay.Date(existing.AddedOn)}. Resend it from the list instead."
+                : $"{existing.Name} is already in the team."
+            : $"{email.Trim()} is already in the team or has an open invitation.";
+
+    /// <summary>
+    /// Sends the invitation once the form is valid: the team check finishes first, then every rule runs, and a failed submit
+    /// shows the summary (rule WR-002). The state checks again; someone already in the team goes on the email field.
+    /// </summary>
     private async Task InviteAsync()
     {
+        inviteErrorsStore?.Clear();
+        inviteContext.NotifyValidationStateChanged();
+
+        var free = emailCheck is null || await emailCheck.CheckNowAsync();
+
+        if (!inviteContext.Validate() || !free)
+            return;
+
         var email = inviteForm.Email.Trim();
         var result = State.InviteMember(inviteForm.Name, email, inviteForm.Role);
 
@@ -193,13 +275,20 @@ public partial class AppTeam : ComponentBase, IDisposable
             return;
         }
 
+        if (result == SaasResult.AlreadyMember)
+        {
+            inviteErrorsStore?.Add(FieldIdentifier.Create(() => inviteForm.Email), InTeamMessage(email));
+            inviteContext.NotifyValidationStateChanged();
+
+            return;
+        }
+
         var seats = State.CurrentWorkspace?.Seats ?? 0;
         inviteErrorLinksBilling = result == SaasResult.NoFreeSeat;
         SetInviteError(result switch
         {
             SaasResult.NoFreeSeat => string.Create(CultureInfo.InvariantCulture,
                 $"All {seats} seats are in use by members and open invitations. To invite someone new, cancel an invitation or add seats."),
-            SaasResult.AlreadyMember => $"{email} is already in the team or has an open invitation.",
             SaasResult.Invalid => "Check the details: the email needs an @ and no spaces (up to 120 characters), and the name can have up to 60 characters.",
             _ => "You can't send this invitation. Only owners and admins invite people, and only owners invite owners.",
         });
@@ -248,7 +337,44 @@ public partial class AppTeam : ComponentBase, IDisposable
             await SaasDisplay.FocusAsync(statusRegion);
     }
 
-    private void OnStateChanged() => InvokeAsync(StateHasChanged);
+    /// <summary>Another screen or a dialog changed the state: the grid reads the team again.</summary>
+    private void OnStateChanged() => InvokeAsync(async () =>
+    {
+        await RefreshGridAsync();
+        StateHasChanged();
+    });
+
+    /// <summary>The page of people the grid asked for: active members by role and name, then invitations, unless a column is sorted.</summary>
+    private Task<GridDataProviderResult<SaasMember>> ProvideMembersAsync(GridDataProviderRequest<SaasMember> request) =>
+        view.ApplyAsync(request, State.CurrentWorkspace is { } workspace ? State.MembersOf(workspace.Id) : Array.Empty<SaasMember>());
+
+    private async Task RefreshGridAsync()
+    {
+        if (grid is not null)
+            await grid.RefreshDataAsync();
+    }
+
+    /// <summary>Forgets the saved view and builds the grid again with its defaults; focus moves to the line above the list.</summary>
+    private async Task ResetViewAsync()
+    {
+        await view.ResetAsync();
+        pageSize = DefaultPageSize;
+        gridVersion++;
+        SetStatus("The view is reset: owners first, 10 people a page, and every column shown.");
+        StateHasChanged();
+
+        await Task.Yield();
+        await SaasDisplay.FocusAsync(countRegion);
+    }
+
+    /// <summary>Keeps the grid's settings in the saved view, and follows the page size the selector chose.</summary>
+    private async Task SaveSettingsAsync(GridSettings settings)
+    {
+        if (settings.PageSize > 0)
+            pageSize = settings.PageSize;
+
+        await view.SaveSettingsAsync(settings);
+    }
 
     private async Task OpenInviteAsync()
     {
@@ -287,6 +413,8 @@ public partial class AppTeam : ComponentBase, IDisposable
     {
         inviteForm = new InviteForm();
         inviteContext = new EditContext(inviteForm);
+        inviteErrorsStore = new ValidationMessageStore(inviteContext);
+        inviteContext.OnFieldChanged += (_, args) => inviteErrorsStore?.Clear(args.FieldIdentifier);
         inviteError = null;
         inviteErrors = 0;
         inviteErrorLinksBilling = false;
@@ -345,6 +473,8 @@ public partial class AppTeam : ComponentBase, IDisposable
 
     #region Properties, Indexers
 
+    [Inject] private ShowcaseGridViewStore GridViews { get; set; } = default!;
+
     [Inject] private SaasState State { get; set; } = default!;
 
     #endregion
@@ -354,11 +484,11 @@ public partial class AppTeam : ComponentBase, IDisposable
     private sealed class InviteForm
     {
         [Required(ErrorMessage = "Enter the email address of the person to invite.")]
-        [EmailAddress(ErrorMessage = "Enter a valid email address.")]
-        [StringLength(120, ErrorMessage = "Use 120 characters or fewer.")]
+        [RegularExpression(@"^\s*[^@\s]+@[^@\s]+\.[^@\s]+\s*$", ErrorMessage = "Enter an email address like name@example.com.")]
+        [StringLength(120, ErrorMessage = "Use 120 characters or fewer for the email.")]
         public string Email { get; set; } = string.Empty;
 
-        [StringLength(60, ErrorMessage = "Use 60 characters or fewer.")]
+        [StringLength(60, ErrorMessage = "Use 60 characters or fewer for the name.")]
         public string? Name { get; set; }
 
         public SaasMemberRole Role { get; set; } = SaasMemberRole.Member;

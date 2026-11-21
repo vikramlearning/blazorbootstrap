@@ -8,16 +8,17 @@
         <div>
             <span class="sc-eyebrow">Transactions</span>
             <h1 class="tm-title">Every payment, in one place</h1>
-            <p class="tm-lead">Search and filter the last 90 days across all accounts. Open a transaction to change its category, add a note, or dispute it.</p>
+            <p class="tm-lead">Search and filter up to 12 months across all accounts. Open a transaction to change its category, add a note, or dispute it.</p>
         </div>
-        <RadioButtonGroup TValue="FintechPeriod" Value="period" ValueExpression="() => period" ValueChanged="OnPeriodChanged"
+        <RadioButtonGroup TValue="FintechPeriod" Value="period" ValueExpression="() => period" ValueChanged="OnPeriodChangedAsync"
                           AriaLabel="Period" Size="ButtonGroupSize.Small">
             <ButtonGroupItem Value="FintechPeriod.Last30Days" Id="tm-period-30">30 days</ButtonGroupItem>
-            <ButtonGroupItem Value="FintechPeriod.Last60Days" Id="tm-period-60">60 days</ButtonGroupItem>
             <ButtonGroupItem Value="FintechPeriod.Last90Days" Id="tm-period-90">90 days</ButtonGroupItem>
+            <ButtonGroupItem Value="FintechPeriod.Last12Months" Id="tm-period-365">12 months</ButtonGroupItem>
         </RadioButtonGroup>
     </div>
 
+    @* Aggregates of the current filter: they stay cards, not part of the list. *@
     <section aria-label="Totals for the current filter" class="row row-cols-1 row-cols-sm-3 g-3 mb-3">
         <div class="col">
             <Card Class="tm-card h-100"><CardBody Class="p-3">
@@ -41,19 +42,17 @@
 
     <Card Class="tm-card">
         <CardBody Class="p-3 p-lg-4">
-            <div class="row g-2 align-items-end mb-3" role="search" aria-label="Filter transactions">
-                <div class="col-md-6 col-lg-5">
-                    <label class="form-label small fw-semibold" for="tm-search">Search by description</label>
-                    <InputGroup>
-                        <InputGroupText><Icon Name="IconName.Search" aria-hidden="true" /></InputGroupText>
-                        @* The bound value changes only on change; @oninput filters live without writing older text back into the box. *@
-                        <TextInput @ref="searchInput" Id="tm-search" Value="@searchBoxValue" ValueExpression="() => searchBoxValue" ValueChanged="OnSearchChanged"
-                                   @oninput="OnSearchInput" Placeholder="Merchant or description" />
-                    </InputGroup>
+            <h2 class="visually-hidden" id="tm-tx-filters-title">Filter transactions</h2>
+            <div class="tm-list-filters" role="group" aria-labelledby="tm-tx-filters-title">
+                <div class="tm-list-search">
+                    <label class="form-label small fw-semibold" for="tm-search">Search by merchant, description, or note</label>
+                    @* Filters on every keystroke; the bound value changes only on change, so a render during typing never writes an older value back. *@
+                    <input @ref="searchInput" id="tm-search" type="search" class="form-control" value="@searchBoxValue" placeholder="Merchant or description"
+                           autocomplete="off" maxlength="80" @oninput="OnSearchInputAsync" @onchange="OnSearchChanged" />
                 </div>
-                <div class="col-6 col-md-3 col-lg-2">
+                <div>
                     <label class="form-label small fw-semibold" for="tm-account">Account</label>
-                    <select id="tm-account" class="form-select" value="@accountFilter" @onchange="OnAccountChanged">
+                    <select id="tm-account" class="form-select" value="@accountFilter" @onchange="OnAccountChangedAsync">
                         <option value="">All accounts</option>
                         @foreach (var account in State.Accounts)
                         {
@@ -61,9 +60,9 @@
                         }
                     </select>
                 </div>
-                <div class="col-6 col-md-3 col-lg-2">
+                <div>
                     <label class="form-label small fw-semibold" for="tm-category">Category</label>
-                    <select id="tm-category" class="form-select" value="@categoryFilter" @onchange="OnCategoryChanged">
+                    <select id="tm-category" class="form-select" value="@categoryFilter" @onchange="OnCategoryChangedAsync">
                         <option value="">All categories</option>
                         @foreach (var category in State.Categories)
                         {
@@ -71,90 +70,83 @@
                         }
                     </select>
                 </div>
-                <div class="col-lg-3 d-flex flex-wrap align-items-center gap-2 justify-content-lg-end">
-                    @* Polite, so the count is read after typing pauses or a filter changes. *@
-                    <span class="small text-body-secondary" role="status">@MatchText</span>
-                    @if (HasFilters)
-                    {
-                        <Button Color="ButtonColor.Link" Size="ButtonSize.Small" Class="p-0" @onclick="ClearFilters">Clear filters</Button>
-                    }
-                </div>
             </div>
-
-            <div class="table-responsive tm-grid">
-                <table class="table table-hover align-middle mb-0">
-                    <caption class="caption-top small">@CaptionText</caption>
-                    <thead>
-                        <tr>
-                            <th scope="col">Date</th>
-                            <th scope="col">Description</th>
-                            <th scope="col" class="d-none d-md-table-cell">Category</th>
-                            <th scope="col" class="d-none d-lg-table-cell">Account</th>
-                            <th scope="col" class="text-end">Amount</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @if (Shown.Count == 0)
-                        {
-                            <tr>
-                                <td colspan="5" class="text-body-secondary py-4 text-center">No transactions match these filters.</td>
-                            </tr>
-                        }
-                        @foreach (var (item, index) in Shown.Select((item, index) => (item, index)))
-                        {
-                            var category = State.FindCategory(item.CategoryId);
-                            var accountName = State.FindAccount(item.AccountId)?.Name;
-                            <tr @key="item.Id">
-                                <td class="tm-mono small text-nowrap">@FintechDisplay.Day(item.Date)</td>
-                                <td class="text-break">
-                                    @if (index == firstNewIndex)
-                                    {
-                                        @* The first row "Show more" added: focus moves here, so keyboard users carry on reading. *@
-                                        <a class="fw-semibold" href="@TransactionPath(item.Id)" @ref="firstNewLink">@item.Description</a>
-                                    }
-                                    else
-                                    {
-                                        <a class="fw-semibold" href="@TransactionPath(item.Id)">@item.Description</a>
-                                    }
-                                    @if (item.IsPending)
-                                    {
-                                        <Badge Color="BadgeColor.Secondary" Class="ms-1">@(DateOnly.FromDateTime(item.Date) > State.Today ? "Scheduled" : "Pending")</Badge>
-                                    }
-                                    @if (item.DisputeId is not null)
-                                    {
-                                        <Badge Color="BadgeColor.Info" Class="ms-1">Disputed</Badge>
-                                    }
-                                    @if (!string.IsNullOrEmpty(item.Note))
-                                    {
-                                        <span class="d-block small text-body-secondary"><Icon Name="IconName.Sticky" class="me-1" aria-hidden="true" /><span class="visually-hidden">Note: </span>@item.Note</span>
-                                    }
-                                    @* Below md the category and account columns are hidden, so they show under the description instead. *@
-                                    <span class="d-block d-lg-none small text-body-secondary">
-                                        <span class="d-md-none">@category.Name · </span>@accountName
-                                    </span>
-                                </td>
-                                <td class="d-none d-md-table-cell text-nowrap small">
-                                    <Icon Name="@category.IconName" class="me-1 text-body-secondary" aria-hidden="true" />@category.Name
-                                </td>
-                                <td class="d-none d-lg-table-cell text-nowrap small">@accountName</td>
-                                <td class="text-end text-nowrap">
-                                    <span class="tm-mono fw-semibold @FintechDisplay.AmountClass(item.Amount)">@FintechDisplay.SignedMoney(item.Amount)</span>
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
+            <div class="tm-list-meta">
+                @* Polite, so the count is read after typing pauses or a filter changes. *@
+                <p class="small text-body-secondary mb-0" role="status">@MatchText</p>
+                @if (HasFilters)
+                {
+                    <Button Color="ButtonColor.Link" Size="ButtonSize.Small" Class="p-0" @onclick="ClearFiltersAsync">Clear filters</Button>
+                }
+                <Button Color="ButtonColor.Link" Size="ButtonSize.Small" Class="p-0" @onclick="ResetViewAsync">Reset view</Button>
             </div>
+            <p class="tm-list-status" role="status">@statusMessage</p>
 
-            @if (FilteredCount > Shown.Count)
-            {
-                <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mt-3">
-                    <span class="small text-body-secondary">Showing @Shown.Count of @FilteredCount</span>
-                    <Button Color="ButtonColor.Primary" Outline="true" Size="ButtonSize.Small" @onclick="ShowMore">
-                        Show @Math.Min(PageSize, FilteredCount - Shown.Count) more
-                    </Button>
-                </div>
-            }
+            <ShowcaseDataState Status="@(viewLoaded ? ShowcaseDataStatus.Ready : ShowcaseDataStatus.Loading)"
+                               IsEmpty="@(State.Transactions.Count == 0)"
+                               EmptyIcon="IconName.Receipt"
+                               EmptyTitle="No transactions yet"
+                               EmptyText="Payments in and out of your accounts appear here as they happen."
+                               LoadingText="Loading transactions…"
+                               OnRetry="RefreshGridAsync">
+                <EmptyActions>
+                    <a class="btn btn-sm btn-primary" href="@($"{FintechLayout.Base}/transfer")">Move money</a>
+                </EmptyActions>
+                <ChildContent>
+                    <Grid @ref="grid"
+                          @key="gridVersion"
+                          TItem="TransactionRow"
+                          Class="table table-hover align-middle tm-table-mid sc-grid-row-links"
+                          GridContainerClass="tm-grid border rounded-3"
+                          DataProvider="ProvideRowsAsync"
+                          SettingsProvider="view.GetSettingsAsync"
+                          GridSettingsChanged="SaveSettingsAsync"
+                          AllowPaging="true"
+                          PageSize="@pageSize"
+                          PageSizeSelectorVisible="true"
+                          PageSizeSelectorItems="@(new[] { 10, 25, 50, 100 })"
+                          PaginationItemsTextFormat="{0}–{1} of {2} transactions"
+                          AllowSorting="true"
+                          AllowColumnChooser="true"
+                          AllowExport="true"
+                          ExportFileName="banking-transactions"
+                          Responsive="true"
+                          EmptyText="No transactions match these filters. Clear a filter, or choose a longer period."
+                          aria-label="@CaptionText">
+                        <GridColumns>
+                            <GridColumn TItem="TransactionRow" HeaderText="Date" PropertyName="Date" SortString="date" SortKeySelector="row => row.Date"
+                                        IsDefaultSortColumn="@view.IsSortColumn("date")" SortDirection="@view.DirectionFor("date")" TextNoWrap="true">
+                                <span class="tm-mono small">@DayText(context.Date)</span>
+                            </GridColumn>
+                            <GridColumn TItem="TransactionRow" HeaderText="Description" PropertyName="Description" SortString="description" SortKeySelector="row => row.Description"
+                                        IsDefaultSortColumn="@view.IsSortColumn("description")" SortDirection="@view.DirectionFor("description")" AlwaysVisible="true">
+                                @* The stretched link makes the whole row open the transaction. *@
+                                <a class="tm-row-link stretched-link text-break" href="@TransactionPath(context.Id)">@context.Description</a>
+                                @if (context.Status.Length > 0)
+                                {
+                                    <Badge Color="@(context.DisputeId is null ? BadgeColor.Secondary : BadgeColor.Info)" Class="ms-1">@context.Status</Badge>
+                                }
+                                @if (!string.IsNullOrEmpty(context.Note))
+                                {
+                                    <span class="d-block small text-body-secondary"><Icon Name="IconName.Sticky" class="me-1" aria-hidden="true" /><span class="visually-hidden">Note:&#32;</span>@context.Note</span>
+                                }
+                            </GridColumn>
+                            <GridColumn TItem="TransactionRow" HeaderText="Category" PropertyName="Category" SortString="category" SortKeySelector="row => row.Category"
+                                        IsDefaultSortColumn="@view.IsSortColumn("category")" SortDirection="@view.DirectionFor("category")" TextNoWrap="true">
+                                <span class="small">@context.Category</span>
+                            </GridColumn>
+                            <GridColumn TItem="TransactionRow" HeaderText="Account" PropertyName="Account" SortString="account" SortKeySelector="row => row.Account"
+                                        IsDefaultSortColumn="@view.IsSortColumn("account")" SortDirection="@view.DirectionFor("account")" TextNoWrap="true">
+                                <span class="small">@context.Account</span>
+                            </GridColumn>
+                            <GridColumn TItem="TransactionRow" HeaderText="Amount" PropertyName="Amount" SortString="amount" SortKeySelector="row => row.Amount"
+                                        IsDefaultSortColumn="@view.IsSortColumn("amount")" SortDirection="@view.DirectionFor("amount")" TextAlignment="Alignment.End" TextNoWrap="true">
+                                <span class="tm-mono fw-semibold @FintechDisplay.AmountClass(context.Amount)">@FintechDisplay.SignedMoney(context.Amount)</span>
+                            </GridColumn>
+                        </GridColumns>
+                    </Grid>
+                </ChildContent>
+            </ShowcaseDataState>
         </CardBody>
     </Card>
 </div>

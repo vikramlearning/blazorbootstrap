@@ -1,6 +1,8 @@
+using System.ComponentModel.DataAnnotations;
 using System.Globalization;
 using BlazorBootstrap.Demo.RCL.Models.Showcase.Fintech;
 using BlazorBootstrap.Demo.RCL.Services.Showcase.Fintech;
+using Microsoft.AspNetCore.Components.Forms;
 
 namespace BlazorBootstrap.Demo.RCL.Components.Pages.Showcase.Fintech;
 
@@ -8,9 +10,11 @@ namespace BlazorBootstrap.Demo.RCL.Components.Pages.Showcase.Fintech;
 /// One transaction: the amount with its sign and "Money in" or "Money out", the description, date and time, account,
 /// status (Pending or Posted), category, and the transfer it belongs to. The customer can move it to another category
 /// (not a transfer, which says why), keep a private note with a character counter, and dispute it: an open dispute links
-/// to its page with its status, a transaction that can't be disputed says why, and otherwise a form asks what's wrong in
-/// plain words and what happened, says what happens next, and then shows the new dispute's number. Each section announces
-/// its outcome in a status message, and focus moves to the first problem or to the outcome. An unknown transaction shows a
+/// to its page with its status, a transaction that can't be disputed says why, and otherwise an <see cref="EditForm" />
+/// (rule WR-002) asks what's wrong (required), how much of the payment is disputed (more than $0 and at most the payment; less
+/// than all of it when the amount is wrong, a cross-field rule), and what happened (10 to 1,000 characters), with a linked
+/// summary on a failed submit; it says what happens next, and then shows the new dispute's number. Each section announces its
+/// outcome in a status message, and focus moves to the first problem or to the outcome. An unknown transaction shows a
 /// not-found screen.
 /// </summary>
 public partial class TransactionDetail : ComponentBase, IDisposable
@@ -18,7 +22,7 @@ public partial class TransactionDetail : ComponentBase, IDisposable
     #region Fields and Constants
 
     /// <summary>The shortest dispute explanation the bank accepts.</summary>
-    private const int MinDisputeDetails = 10;
+    private const int MinDisputeDetails = FintechState.MinReason;
 
     /// <summary>The dispute reasons in plain words, in the order the form lists them.</summary>
     private static readonly IReadOnlyList<(FintechDisputeReason Reason, string Label, string Hint)> disputeReasons = new List<(FintechDisputeReason, string, string)>
@@ -34,11 +38,13 @@ public partial class TransactionDetail : ComponentBase, IDisposable
 
     private string? categoryMessage;
 
-    private string? detailsError;
+    private InputTextArea? detailsInput;
 
-    private ElementReference detailsInput;
+    private int detailsLength;
 
-    private string? disputeDetails;
+    private EditContext disputeContext = default!;
+
+    private DisputeForm disputeForm = new();
 
     private ElementReference disputeHeading;
 
@@ -49,25 +55,23 @@ public partial class TransactionDetail : ComponentBase, IDisposable
     /// <summary>Whether the dispute form is showing.</summary>
     private bool disputeOpen;
 
-    private FintechDisputeReason? disputeReason;
-
     private ElementReference disputeStatus;
-
-    private ElementReference firstReasonInput;
 
     private int? loadedId;
 
-    private ElementReference noteInput;
+    private EditContext noteContext = default!;
+
+    private NoteForm noteForm = new();
+
+    private InputTextArea? noteInput;
 
     private bool noteIsError;
 
+    private int noteLength;
+
     private string? noteMessage;
 
-    private string? noteText;
-
     private FocusTarget pendingFocus;
-
-    private string? reasonError;
 
     private string selectedCategory = string.Empty;
 
@@ -86,12 +90,14 @@ public partial class TransactionDetail : ComponentBase, IDisposable
 
         switch (target)
         {
+            // The form's radio buttons are rendered by InputRadio, which has no element reference: the section's heading takes
+            // focus, and Tab moves on to the first reason.
             case FocusTarget.FirstReason:
-                await FintechDisplay.FocusAsync(firstReasonInput);
+                await FintechDisplay.FocusAsync(disputeHeading);
                 break;
 
             case FocusTarget.Details:
-                await FintechDisplay.FocusAsync(detailsInput);
+                await FintechDisplay.FocusAsync(detailsInput?.Element);
                 break;
 
             case FocusTarget.DisputeStatus:
@@ -103,12 +109,17 @@ public partial class TransactionDetail : ComponentBase, IDisposable
                 break;
 
             case FocusTarget.Note:
-                await FintechDisplay.FocusAsync(noteInput);
+                await FintechDisplay.FocusAsync(noteInput?.Element);
                 break;
         }
     }
 
-    protected override void OnInitialized() => State.Changed += OnStateChanged;
+    protected override void OnInitialized()
+    {
+        disputeContext = new EditContext(disputeForm);
+        noteContext = new EditContext(noteForm);
+        State.Changed += OnStateChanged;
+    }
 
     protected override void OnParametersSet()
     {
@@ -117,7 +128,7 @@ public partial class TransactionDetail : ComponentBase, IDisposable
 
         loadedId = Id;
         selectedCategory = Item?.CategoryId ?? string.Empty;
-        noteText = Item?.Note ?? string.Empty;
+        ResetNoteForm(Item?.Note);
         categoryMessage = null;
         noteMessage = null;
         disputeMessage = null;
@@ -208,10 +219,16 @@ public partial class TransactionDetail : ComponentBase, IDisposable
     private void ResetDisputeForm()
     {
         disputeOpen = false;
-        disputeReason = null;
-        disputeDetails = string.Empty;
-        reasonError = null;
-        detailsError = null;
+        disputeForm = new DisputeForm { Amount = Item is { } item ? -item.Amount : null, MaxAmount = Item is { } charge ? -charge.Amount : 0 };
+        disputeContext = new EditContext(disputeForm);
+        detailsLength = 0;
+    }
+
+    private void ResetNoteForm(string? note)
+    {
+        noteForm = new NoteForm { Text = note ?? string.Empty };
+        noteContext = new EditContext(noteForm);
+        noteLength = noteForm.Text?.Length ?? 0;
     }
 
     private void SaveCategory()
@@ -234,25 +251,22 @@ public partial class TransactionDetail : ComponentBase, IDisposable
         });
     }
 
-    /// <summary>Checks the reason and the explanation, then opens the dispute; each result gets its own message.</summary>
+    /// <summary>
+    /// Checks the reason, the amount (and that it fits the reason), and the explanation; a failed check shows the summary.
+    /// Then it opens the dispute; each result gets its own message.
+    /// </summary>
     private void SendDispute()
     {
         if (Item is not { } item)
             return;
 
-        var details = disputeDetails?.Trim() ?? string.Empty;
-        reasonError = disputeReason is null ? "Choose what's wrong with this payment." : null;
-        detailsError = details.Length < MinDisputeDetails ? $"Tell us what happened in at least {MinDisputeDetails} characters."
-            : details.Length > FintechState.MaxDisputeDetails ? $"Use {FintechState.MaxDisputeDetails.ToString("#,0", CultureInfo.InvariantCulture)} characters or fewer."
-            : null;
+        disputeForm.MaxAmount = -item.Amount;
 
-        if (reasonError is not null || detailsError is not null)
-        {
-            pendingFocus = reasonError is not null ? FocusTarget.FirstReason : FocusTarget.Details;
+        if (!disputeContext.Validate())
             return;
-        }
 
-        var result = State.OpenDispute(item.Id, disputeReason!.Value, details, out var dispute);
+        var details = disputeForm.Details.Trim();
+        var result = State.OpenDispute(item.Id, disputeForm.Reason!.Value, disputeForm.Amount!.Value, details, out var dispute);
 
         if (result == FintechResult.Ok && dispute is not null)
         {
@@ -265,7 +279,8 @@ public partial class TransactionDetail : ComponentBase, IDisposable
 
         if (result == FintechResult.Invalid)
         {
-            detailsError = $"Choose what's wrong, and tell us what happened in {MinDisputeDetails} to {FintechState.MaxDisputeDetails.ToString("#,0", CultureInfo.InvariantCulture)} characters.";
+            disputeIsError = true;
+            disputeMessage = $"Choose what's wrong, dispute up to {FintechDisplay.Money(item.Amount)}, and tell us what happened in {MinDisputeDetails} to {FintechState.MaxDisputeDetails.ToString("#,0", CultureInfo.InvariantCulture)} characters. Nothing was sent.";
             pendingFocus = FocusTarget.Details;
             return;
         }
@@ -287,10 +302,10 @@ public partial class TransactionDetail : ComponentBase, IDisposable
 
     private void SaveNote()
     {
-        if (Item is not { } item)
+        if (Item is not { } item || !noteContext.Validate())
             return;
 
-        var result = State.SetNote(item.Id, noteText);
+        var result = State.SetNote(item.Id, noteForm.Text);
 
         noteIsError = result is not (FintechResult.Ok or FintechResult.NoChange);
         noteMessage = ResultText(result, value => value switch
@@ -302,20 +317,15 @@ public partial class TransactionDetail : ComponentBase, IDisposable
         });
 
         if (result == FintechResult.Ok)
-            noteText = State.FindTransaction(item.Id)?.Note ?? string.Empty;
+            ResetNoteForm(State.FindTransaction(item.Id)?.Note);
 
         if (noteIsError)
             pendingFocus = FocusTarget.Note;
     }
 
-    private void SelectReason(FintechDisputeReason reason)
-    {
-        disputeReason = reason;
-        reasonError = null;
-    }
-
     private void StartDispute()
     {
+        ResetDisputeForm();
         disputeOpen = true;
         disputeMessage = null;
         disputeIsError = false;
@@ -346,6 +356,46 @@ public partial class TransactionDetail : ComponentBase, IDisposable
     #endregion
 
     #region Nested Types
+
+    /// <summary>
+    /// The dispute form's fields, with the bank's limits (<see cref="FintechState.OpenDispute" />): a reason, an amount of more
+    /// than $0 and at most the payment, and an explanation of 10 to 1,000 characters. Cross-field: a wrong amount disputes
+    /// only the overcharge, so less than the whole payment.
+    /// </summary>
+    private sealed class DisputeForm : IValidatableObject
+    {
+        [Required(ErrorMessage = "Enter how much of the payment you dispute, like $24.99.")]
+        [Range(typeof(decimal), "0.01", "50000", ParseLimitsInInvariantCulture = true, ErrorMessage = "Enter an amount greater than $0.00.")]
+        public decimal? Amount { get; set; }
+
+        [Required(ErrorMessage = "Tell us what happened.")]
+        [StringLength(FintechState.MaxDisputeDetails, MinimumLength = FintechState.MinReason, ErrorMessage = "Tell us what happened in 10 to 1,000 characters.")]
+        public string Details { get; set; } = string.Empty;
+
+        /// <summary>The payment's amount, the most that can be disputed; set by the page, not by a field.</summary>
+        public decimal MaxAmount { get; set; }
+
+        [Required(ErrorMessage = "Choose what's wrong with this payment.")]
+        public FintechDisputeReason? Reason { get; set; }
+
+        /// <summary>Runs once the fields are filled in: the amount fits the payment and the reason.</summary>
+        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+        {
+            if (Amount is { } amount && amount > MaxAmount)
+                yield return new ValidationResult($"You paid {FintechDisplay.Money(MaxAmount)}, so dispute at most that.", new[] { nameof(Amount) });
+            else if (Amount is { } part && decimal.Round(part, 2) != part)
+                yield return new ValidationResult("Enter the amount in dollars and cents.", new[] { nameof(Amount) });
+            else if (Reason == FintechDisputeReason.WrongAmount && Amount == MaxAmount)
+                yield return new ValidationResult($"If the amount is wrong, dispute only what you were overcharged: less than the {FintechDisplay.Money(MaxAmount)} you paid.", new[] { nameof(Amount) });
+        }
+    }
+
+    /// <summary>The note form's field: up to 200 characters, empty to remove the note.</summary>
+    private sealed class NoteForm
+    {
+        [StringLength(FintechState.MaxNoteLength, ErrorMessage = "Keep the note to 200 characters.")]
+        public string? Text { get; set; }
+    }
 
     /// <summary>Where focus goes after the next render.</summary>
     private enum FocusTarget

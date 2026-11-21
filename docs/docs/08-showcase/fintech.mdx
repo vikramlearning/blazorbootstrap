@@ -1,15 +1,17 @@
 ---
-title: Personal Finance showcase
-description: An online bank with a one-time-code sign-in, accounts, transactions, transfers, payees with a name check, budgets, alerts, and disputes, plus a bank operations back office, built with Blazor Bootstrap.
-sidebar_label: Personal Finance
+title: Banking Operations showcase
+description: A bank's back office with a held-transfer review queue, AML alert triage and case management with a four-eyes senior review, disputes, customers, scheduled postings, Grid lists with saved views and CSV export, and an audit log, plus the customer bank with a one-time-code sign-in, built with Blazor Bootstrap.
+sidebar_label: Banking Operations
 sidebar_position: 6
 ---
 
 import CarbonAd from '/carbon-ad.mdx'
 
-# Personal Finance
+# Banking Operations
 
-Tallymint is a fictitious online bank. A customer signs in with a password and a one-time code, checks accounts and 90 days of transactions, moves money, manages payees, sets budgets and alerts, and disputes charges. Bank operations work in a separate back office: they review transfers held for a check, resolve disputes, follow customers and scheduled postings, and read the audit log. No money moves and no text messages are sent.
+Tallymint is a fictitious bank, and this site is its back office first. Bank operations work the review queue of transfers held for a check (one by one or in bulk), triage the alerts the anti-money-laundering (AML) monitoring rules raise and investigate them in cases, decide disputes, follow customers and scheduled postings, and read the audit log. The other half is the customer bank: a customer signs in with a password and a one-time code, checks accounts and 13 months of transactions, moves money, manages payees, sets budgets and alerts, and disputes charges. The two halves share one set of data, so a payment a customer sends shows up in the queue at once. No money moves and no text messages are sent.
+
+Every record list is a [Grid](/components/grid) with a saved view, a column chooser, and CSV export; forms validate with a linked error summary; both headers have a global search and a notifications bell; and every change lands in an audit log. The signature workflow is **AML case management**: monitoring rules raise alerts on customers' payments; an analyst triages them, opens a case, investigates with notes and evidence, and either closes it or escalates it to a senior reviewer, who approves the closing (including a suspicious activity report) or returns it. The person who escalates a case can never decide it, and customers are never told.
 
 <CarbonAd />
 
@@ -19,88 +21,131 @@ Tallymint is a fictitious online bank. A customer signs in with a password and a
 
 | Role | Demo account | Password | Start page |
 |:--|:--|:--|:--|
-| Customer | Jordan Ashdown (`jordan.ashdown@example.com`) | `bank-demo-26` | `/showcase/fintech` |
 | Bank operations | Priya Raman (`priya.raman@tallymint.example`) | `ops-demo-26` | `/showcase/fintech/ops` |
+| Senior reviewer | Mei Lin (`mei.lin@tallymint.example`) | `senior-demo-26` | `/showcase/fintech/ops` |
+| Customer | Jordan Ashdown (`jordan.ashdown@example.com`) | `bank-demo-26` | `/showcase/fintech` |
 
-There is no registration: a bank opens accounts in a branch or an app, so the sign-in page has no register form.
+The sign-in page lists them in this order. A senior reviewer can do everything bank operations do, and also decides escalated AML cases. The AML staff also include two analysts (Daniel Okoro and Samuel Ortiz) and a second senior reviewer (Helen Ward), who can't sign in to the demo; cases and alerts can be assigned to them, and Helen is who Mei escalates to.
 
-After the password, both roles enter a one-time code before any page opens. In the demo the "text message" with the 6-digit code is shown on screen; a code expires after 5 minutes and allows 5 tries. Adding or changing a payee asks for a new code.
+There is no registration: a bank opens accounts in a branch or an app, so the sign-in page has no register form. After the password, every account enters a one-time code before any page opens. In the demo the "text message" with the 6-digit code is shown on screen (choose **Send code**, then type the code); a code expires after 5 minutes and allows 5 tries. Adding or changing a payee asks for a new code.
 
-Jordan has a checking account, a savings account, and a credit card. A $250 transfer to savings is scheduled for next week, a $2,400 payment to a payee added two days ago (Rowan Calloway) is held for a check, and a duplicate restaurant charge is under dispute. Operations also see four other customers, two of them with held transfers.
+The seed holds 240 customers (14 on watch); 551 transactions on Jordan's three accounts over 13 months; 254 transfers (37 held for a check, 41 scheduled over the next four weeks, and four months of history); 62 disputes (5 submitted, 8 under review, 27 refunded, 22 declined; 6 open longer than 14 days and escalated); 107 AML alerts over the last 90 days (59 dismissed as false positives, 31 in cases, 10 in triage, 7 new); 22 AML cases (12 closed, 2 of them reported with a SAR; 5 investigating, 2 overdue; 2 escalated; 3 open); about 800 audit entries; and staff notifications: Priya has 15 (5 unread) and Mei 14 (4 unread).
 
-All data is fictitious and there is no backend. Each browser tab keeps its own data in `sessionStorage` (it survives a reload; other tabs start fresh), and "Reset demo data" in the account menu restores the seed. The sign-in page lists the demo accounts with one-click buttons; credentials are checked only against the tab's accounts. The clock starts at November 24, 2026, 9:00 and moves on with real time; scheduled transfers are posted when their date comes.
+Jordan has a checking account, a savings account, and a credit card. A $250 transfer to savings is scheduled for next week, a $2,400 payment to a payee added two days ago (Rowan Calloway) is held for a check (and raised an AML alert), and a duplicate restaurant charge is under dispute. In AML, case 517 waits for Mei: Priya escalated it proposing a report (SAR-2026-00431). Case 513 waits for Mei too (Daniel asked for a decision). Mei returned case 515 to Priya, who also has two open cases (519 and 522). Cases 509 and 511 are overdue.
+
+All data is fictitious and there is no backend. Each browser tab keeps its own data in `sessionStorage` (it survives a reload; other tabs start fresh), and "Reset demo data" in the account menu restores the seed. The tab stores only what changed since the seed, which is built the same way in every tab, so a fresh tab's data is about 2 KB although it holds thousands of records. Credentials are checked only against the tab's accounts. The clock starts at November 24, 2026, 9:00 and moves on with real time: scheduled transfers post when their date comes, and a dispute still open after 14 days is escalated.
 
 ## What to try
 
-1. Sign in as Jordan and enter the code shown on screen. On **Overview**, open an account card, then a transaction.
-2. Choose **New transfer**: send $600 from Everyday Checking to Rowan Calloway. The form and the review screen say it will be held, because the payee was added in the last 7 days. Confirm, and read the receipt.
-3. Sign in as Priya (with a code). Open **Review queue**, review Jordan's transfer, and approve it or reject it with a reason. Sign in as Jordan: **Alerts** has the outcome, and the transfer's receipt shows the new status.
-4. As Jordan, add a payee: holder `Morgan Ellis`, routing number `123456789`, account `40001001`. "Check name" finds a match; try `M. Ellis` for a close match, or another account for "can't check". Confirm with the code.
-5. As Jordan, dispute a transaction from its page. As Priya, open it in **Disputes**, put it under review, then refund or decline it with a resolution. Jordan's dispute page shows the decision.
-6. As Jordan, freeze the checking account's card. As Priya, open Jordan in **Customers**: the card shows as frozen.
+1. Sign in as Priya (with the code on screen). On **Review queue**, sort by amount, hide a column with **Columns**, and set 50 a page: the view is kept when you leave and come back, and **Reset view** restores it. **Export CSV** downloads the filtered transfers. Select two held transfers, choose **Reject** with an empty reason: the reason is required; write one and apply. Select another and **Release** it.
+2. On **Review queue**, switch **Show** to scheduled transfers, select two, and choose **Hold for review** with a reason: they move to the held list, and Jordan's receipts say "Held for a check".
+3. On **Disputes**, choose **Overdue**, open one, and choose **Refund** with an empty resolution (the message appears), then with a resolution: the dispute closes and the audit log records it.
+4. Use the header search: as Priya, type `lena`, a customer ID such as `c-1005`, `TM-2604`, `3101`, `Case 517`, or `7010`.
+5. Sign in as Jordan. On **Budgets**, **Add budget** and choose Groceries: "already has a budget" appears with a pending state, because each category has one budget a month. On **Alerts**, turn on the low-balance alert with an amount of $5,000: it must be below the checking balance ($4,820.55).
+6. As Jordan, add a payee: holder `Morgan Ellis`, routing number `123456789` (the check digit fails), then `123456780`, account `40001001`. The name `Avery Ashdown` is already a payee, checked as you type. Confirm with the code. Then send Morgan $2,500 from High-Yield Savings with a note (Everyday Checking has less available): the payment is held for a check, and the AML rules raise a "New payee, large first payment" alert. Jordan's alerts say only that the payment is held.
+7. Run an AML case across the three roles:
+   1. As Priya, open **AML alerts**. The bell has "New AML alert …" for Jordan's payment. Filter by risk or rule; select alerts on two different customers and choose **Open one case from them**: a case is about one customer, so it's refused. Select two alerts that are false positives and **Dismiss** them with a reason.
+   2. Open the new alert on Jordan (or any new alert). It shows what the rule saw and the triggering transfers, linked to their pages. Choose **Take this alert**, then **Open case** for yourself: the case opens, due in 30 days.
+   3. On the case, choose **Start investigating**, add a note (under 10 characters is refused), and add evidence such as "Call log" (adding "call log" again is refused while you type). Try **Close the case** as Reported: reporting always needs a senior reviewer.
+   4. Choose **Escalate**: pick Mei Lin, give a reason, propose **Reported (SAR filed)** with a filing reference (`SAR-1` is refused; use `SAR-2026-00500`) and a closing summary. The case waits for Mei; Priya can't close it any more.
+   5. Sign in as Mei. The bell has "Case … is escalated to you", and **Overview** shows the cases waiting for your review. Open the case: the approval form is filled in from Priya's proposal. Approve and close it, or return it to Priya with a reason. Priya's bell says what Mei decided. Open case 517 (Priya's seeded proposal) and approve it, or case 513 and return it.
+   6. Open **Audit log**: alerts dismissed, the case opened, the note (logged by its length, not its text), the evidence, the escalation, and the decision, each linking to its record.
+8. As Priya, open a customer on **Customers**: the **Risk** panel lists their AML cases and alerts; for Jordan, the transfers and transactions are Grids too.
 
 ## Pages
+
+### Bank operations (layout: sidebar back office)
+
+| Page | Route | What it does |
+|:--|:--|:--|
+| Overview | `/showcase/fintech/ops` | Figure cards (held transfers, open disputes, scheduled postings, customers on watch, today's audit entries), the AML figures (new alerts, open and overdue cases, and cases waiting for your review or yours), "Needs attention", and recent audit entries. |
+| Review queue | `/showcase/fintech/ops/queue` | A Grid of held transfers, oldest first, with search, a hold-reason filter, and bulk **Release** and **Reject**; **Show** switches to scheduled transfers for bulk **Hold for review**. |
+| Transfer | `/showcase/fintech/ops/transfers/{Reference}` | The transfer, the source account's balance, and its audit entries; approve, reject with a reason, or hold a scheduled one, each in a validated dialog. |
+| AML alerts | `/showcase/fintech/ops/aml/alerts` | A Grid of alerts (rule and what it saw, risk and score, status, assignee, age) with status, risk, rule, and assignee filters and bulk **Assign**, **Dismiss as false positive**, and **Open one case from them**. |
+| AML alert | `/showcase/fintech/ops/aml/alerts/{Id:int}` | The rule, its explanation, the triggering transfers, the customer; take it, open a case, or dismiss it with a reason. |
+| AML cases | `/showcase/fintech/ops/aml/cases` | A Grid of cases (priority, status, reviewer or disposition, analyst, alerts, opened, due with Overdue) with status, analyst, and priority filters. `?show=review` and `?show=overdue` open it filtered. |
+| AML case | `/showcase/fintech/ops/aml/cases/{Id:int}` | The timeline, linked alerts and their transfers, the customer; start investigating, add a note or evidence, escalate, close, and, for a senior reviewer, approve and close or return. |
+| Disputes | `/showcase/fintech/ops/disputes` | A Grid of every customer's disputes with counts, status (open, overdue, each status) and reason filters. |
+| Dispute | `/showcase/fintech/ops/disputes/{Id:int}` | Put a dispute under review, then refund or decline it with a validated resolution the customer reads. |
+| Customers | `/showcase/fintech/ops/customers` | A Grid of 240 customers with search (name, ID, email, city), status, segment, and open-items filters. |
+| Customer | `/showcase/fintech/ops/customers/{Id}` | Profile, accounts and card status, the Risk panel (AML cases and alerts), disputes, internal notes (a validated form), and Grids of the customer's transfers and, for Jordan, transactions. |
+| Scheduled postings | `/showcase/fintech/ops/scheduled` | Scheduled transfers by date, "Run due postings", and the last posted and rejected. |
+| Audit log | `/showcase/fintech/ops/audit` | Who did what and when, newest first, in a Grid with column filters, paging, and CSV export: operations, the system, and customers. Each record links to its page. |
+| Account | `/showcase/fintech/ops/account` | The staff member's name, email, and password. |
+| Not found | `/showcase/fintech/ops/{*path}` | The back office's not-found screen. |
 
 ### Customer bank (layout: public, Navbar)
 
 | Page | Route | What it does |
 |:--|:--|:--|
 | Overview | `/showcase/fintech` | Unread alerts, net worth, account cards, recent activity, transfers coming up, net worth and spending charts, and budgets near their limit. |
-| Account | `/showcase/fintech/accounts/{Id}` | Balance and what is available, the card with freeze or unfreeze, scheduled and held transfers, and 60 days of transactions. |
-| Transactions | `/showcase/fintech/transactions` | A table by period, account, and category with search and totals, 25 at a time. `?account=` preselects an account. |
-| Transaction | `/showcase/fintech/transactions/{Id:int}` | Details, change the category, a private note, and the dispute form. |
-| Transfers | `/showcase/fintech/transfers` | Coming up (scheduled and held, with Cancel) and recent transfers. |
-| New transfer | `/showcase/fintech/transfer` | From, to (own accounts and payees), amount, date up to 60 days ahead, and a note, with live hints about holds. `?from=` and `?to=` preselect. |
+| Account | `/showcase/fintech/accounts/{Id}` | Balance and what is available, the card with freeze or unfreeze, scheduled and held transfers, and a Grid of 60 days of transactions. |
+| Transactions | `/showcase/fintech/transactions` | A Grid by period (30 days, 90 days, 12 months), account, and category with search and totals. `?account=` preselects an account. |
+| Transaction | `/showcase/fintech/transactions/{Id:int}` | Details, change the category, a private note, and the validated dispute form. |
+| Transfers | `/showcase/fintech/transfers` | A Grid of transfers, coming up first, with a status filter and Cancel on scheduled and held ones. |
+| New transfer | `/showcase/fintech/transfer` | The validated transfer form with live hints about holds. `?from=` and `?to=` preselect. |
 | Review transfer | `/showcase/fintech/transfer/confirm` | What happens next (sent, scheduled, or held and why), then "Confirm transfer" or "Edit". |
 | Transfer receipt | `/showcase/fintech/transfers/{Reference}` | Status, details, and linked transactions; cancel a scheduled or held transfer; print. |
-| Payees | `/showcase/fintech/payees` | Payees with the name-check result and a "New" badge; pay, edit, set a nickname, or delete. |
-| New payee | `/showcase/fintech/payees/new` | Details, name check, then a one-time code. |
+| Payees | `/showcase/fintech/payees` | A Grid of payees with the name check and a "New" badge; pay, set a nickname in a dialog, edit, or delete. |
+| New payee | `/showcase/fintech/payees/new` | Validated details, name check, then a one-time code. |
 | Edit payee | `/showcase/fintech/payees/{Id}` | The same two steps for an existing payee. |
-| Budgets | `/showcase/fintech/budgets` | This month's spending per category against its limit; add, change, and delete budgets. |
-| Alerts | `/showcase/fintech/alerts` | The alert feed with "Mark as read", and settings for each kind and the low-balance and large-transaction amounts. |
-| Disputes | `/showcase/fintech/disputes` | The customer's disputes with their status. |
+| Budgets | `/showcase/fintech/budgets` | This month's spending per category against its limit; add, change, and delete budgets in a validated dialog. |
+| Alerts | `/showcase/fintech/alerts` | The alert feed with "Mark as read" (the bell reads the same feed), and validated settings for each kind and amount. |
+| Disputes | `/showcase/fintech/disputes` | A Grid of the customer's disputes. |
 | Dispute | `/showcase/fintech/disputes/{Id:int}` | Status timeline, the disputed transaction, and the bank's decision. |
 | Profile | `/showcase/fintech/profile` | Name, email, and password. |
 | Sign in | `/showcase/fintech/sign-in` | Demo accounts and the sign-in form; the code step follows on the page you return to. |
 | Not found | `/showcase/fintech/{*path}` | The bank's not-found screen. |
 
-### Bank operations (layout: sidebar back office)
+## AML case management
 
-| Page | Route | What it does |
-|:--|:--|:--|
-| Overview | `/showcase/fintech/ops` | Figure cards for held transfers, open disputes, scheduled postings, customers on watch, and today's audit entries; a "Needs attention" list; recent audit entries. |
-| Review queue | `/showcase/fintech/ops/queue` | Every held transfer, oldest first, with the hold reason and how long it has waited. |
-| Transfer | `/showcase/fintech/ops/transfers/{Reference}` | The transfer, the source account's balance, and its audit entries; approve, reject with a reason, or hold a scheduled one. |
-| Disputes | `/showcase/fintech/ops/disputes` | Every customer's disputes with counts and a status filter (open, closed, all). |
-| Dispute | `/showcase/fintech/ops/disputes/{Id:int}` | Put a dispute under review, then refund or decline it with a resolution the customer reads. |
-| Customers | `/showcase/fintech/ops/customers` | Customers with status, balances, and open items; search and a status filter. |
-| Customer | `/showcase/fintech/ops/customers/{Id}` | Profile, accounts and card status, transfers, disputes, and internal notes. |
-| Scheduled postings | `/showcase/fintech/ops/scheduled` | Scheduled transfers by date, "Run due postings", and the last posted and rejected. |
-| Audit log | `/showcase/fintech/ops/audit` | Every customer, operations, and system action, filtered and searched, 50 at a time; read-only. |
-| Account | `/showcase/fintech/ops/account` | The operations user's name, email, and password. |
-| Not found | `/showcase/fintech/ops/{*path}` | The back office's not-found screen. |
+**Alerts.** Five monitoring rules raise alerts: **structuring** (three or more payments to payees of $1,800.00 to just under the $2,000.00 check threshold within 7 days), **rapid movement of funds** (a large amount in and most of it out again within 24 hours), **new payee, large first payment** ($2,000.00 or more to a payee added in the last 7 days), **high-risk jurisdiction**, and **velocity spike** (far above the customer's 90-day weekly average). Each alert has a score from 0 to 100 (80 and up is high risk, 55 and up medium), the triggering transfers, and a status: New, In triage, Dismissed (with a reason), or In a case. The structuring and new-payee rules also run live as the customer confirms a payment; the seed's alerts on other customers come from all five rules.
+
+**Triage.** An analyst takes an alert (it moves to In triage under their name), assigns alerts to someone, dismisses false positives with a reason of 10 to 500 characters, or opens one case from one or more open alerts on the same customer, assigned to an analyst.
+
+**Cases.** A case is Open, then Investigating, Escalated, or Closed. Its priority is the highest risk of its alerts, and it's due 30 days after it opens; past that it's marked Overdue. The timeline records each step, notes (10 to 2,000 characters), and named evidence (a name unique on the case; the demo keeps no files).
+
+**Dispositions.** A case closes as **Cleared, no suspicion**, **Cleared, explained**, **Reported (SAR filed)** with a filing reference like `SAR-2026-00500`, or **Customer exited**, always with a closing summary of 20 to 2,000 characters.
+
+**Four-eyes rule.** Escalation goes to a senior reviewer other than the person escalating, with a reason and an optional proposal (disposition, filing reference, and summary). Only a senior reviewer closes an escalated case, never the one who escalated it. **Reported** always needs a senior reviewer's approval: an analyst who wants to report escalates the case proposing it. The senior reviewer approves and closes it (the form starts from the proposal) or returns it to the analyst with a reason, and it goes back to investigating.
+
+**No tipping-off.** Customers are never told about alerts, cases, or reports: the customer's alerts feed only says a payment is held for a check, as for any held payment, and every AML notification goes to staff.
+
+**Notifications.** All staff who can sign in are told about a new alert raised live. The assignee is told when alerts or a case are assigned to them (unless they did it), the senior reviewer when a case is escalated to them, and the analyst (and whoever escalated) when a case is returned or closed.
+
+**Audit.** Every step is recorded: "AML alert raised" (by the system), "AML alert assigned", "AML alert dismissed" (with the reason), "AML case opened", "AML investigation started", "AML note added" (its length only, not its text), "AML evidence added" (its name), "AML case escalated", "AML case returned" (with the reason), and "AML case closed" or "AML case closed on review" (with the disposition and filing reference).
+
+## Enterprise features
+
+- **Grid lists**: the review queue, AML alerts and cases, disputes, customers, the audit log, a customer's transfers and transactions, and the customer's transactions (also per account), transfers, disputes, and payees use the [Grid](/components/grid) with sorting, paging, a column chooser, and CSV export of the filtered rows. Each list keeps its view (sort, page size, hidden and reordered columns) in the tab's `sessionStorage` until **Reset view**. A whole row opens its record through a stretched link. The review queue and the AML alert queue have multi-row selection with a bulk bar.
+- **Validated forms**: required, length, and format rules (routing numbers with the ABA check digit, account numbers, amounts in cents, SAR filing references), uniqueness checks with a "Checking…" state (payee name and nickname, one budget per category, evidence names on a case), cross-field rules (from and to accounts, amounts within what's available, what's owed on the card, and the $10,000.00 daily limit for payees; a note on a payment of $2,000.00 or more to a payee; a scheduled date within 60 days; a disputed amount within the payment and less than all of it when the amount is wrong; a low-balance alert below the checking balance; a case from one customer's alerts; Reported only with a senior reviewer), and a summary that links each failing field after a failed submit.
+- **Global search** in both headers: operations find customers (name, ID, email), transfers (reference), disputes, AML cases, and alerts (number); the customer finds their payees, transfers, disputes, and transactions.
+- **Notifications** with an unread count and mark as read: for staff, transfers held for review, new disputes, overdue disputes, new AML alerts, and AML cases assigned, escalated, returned, or closed; for the customer, the alerts feed (transfers, disputes, budgets, balances, security).
+- **Audit log** of operations, the system, and customers. Account numbers only ever show their last four digits, and AML notes are logged by length.
+- **Loading, empty, and error states** on every list, with a "Demo: simulate a loading error" control to show the error state and its Retry.
 
 ## Components used
 
-- [Navbar](/components/navbar): the customer bank's header with its modules.
+- [Grid](/components/grid): every record list, with the column chooser, CSV export, paging, and multi-row selection on the review queue and the AML alert queue.
 - [Sidebar](/components/sidebar): the operations navigation.
+- [Navbar](/components/navbar): the customer bank's header with its modules.
 - [Card](/components/card): account cards, figure cards, and page sections.
-- [Currency input](/forms/currency-input): the transfer amount, budget limits, and the alert amounts.
 - [Line chart](/data-visualization/line-chart) and [Doughnut chart](/data-visualization/doughnut-chart) (BlazorExpress.ChartJS): net worth over 12 months and this month's spending on Overview.
+- [Modal](/components/modal): freeze card, cancel transfer, budgets, nickname, delete payee, approve, reject, or hold a transfer, and resolve a dispute.
+- [Currency input](/forms/currency-input): transfer, dispute, budget, and alert amounts.
+- [Badge](/components/badge) and [Breadcrumb](/components/breadcrumb): statuses and risk in words, and the transaction page.
 - [Progress](/components/progress): budgets on Budgets and Overview.
-- [Modal](/components/modal): freeze card, cancel transfer, budgets, delete payee, approve or reject a transfer, and resolve a dispute.
 - [Alert](/components/alerts): hold notices on the transfer form, review screen, and receipt, and the name-check results.
 - [Button group](/components/button-group) (`RadioButtonGroup`): the period on Transactions.
-- [Text input](/forms/text-input) and [Input group](/components/input-group): search on Transactions and the audit log.
-- [Badge](/components/badge) and [Breadcrumb](/components/breadcrumb): statuses in words, and the account and transaction pages.
+- [Placeholders](/components/placeholders): the lists' loading state.
 - [Buttons](/components/buttons) and [Icons](/content/icons): actions and icons across the site.
-- [Avatar](/components/avatar), [Dropdown](/components/dropdown), and [Theme switcher](/components/theme-switcher): through the shared account menu and site bar.
+- [Avatar](/components/avatar), [Dropdown](/components/dropdown), and [Theme switcher](/components/theme-switcher): through the shared account menu, notifications, and site bar.
 
-The one-time code field is a native input with `autocomplete="one-time-code"`, and the alert settings use native switches.
+Forms use Blazor's `EditForm` with `DataAnnotationsValidator`, `InputText`, `InputTextArea`, `InputSelect`, `InputDate`, and `InputRadioGroup`. The one-time code field is a native input with `autocomplete="one-time-code"`, and the alert settings use native switches. Plain Bootstrap tables remain where the content is not a record list: Jordan's accounts on the customer page, the triggering transfers of an alert and the linked alerts of a case, and the charts' hidden data tables; scheduled postings stay a schedule grouped by day.
 
 ## How the theme is built
 
-`FintechFrame.razor` is the frame both layouts share: `FintechLayout` (the customer bank, with a Navbar) and `FintechOpsLayout` (an operations top bar and a Sidebar). Its root is `.sc-site.sc-fintech`, and `FintechFrame.razor.css` styles the pages of both through `::deep`. Operations have their own layout, separate from the bank (D-031). Both layouts wrap their pages in `FintechGuard`, which adds the one-time-code step to the role check.
+`FintechFrame.razor` is the frame both layouts share: `FintechLayout` (the customer bank, with a Navbar) and `FintechOpsLayout` (an operations top bar with the search, the bell, and the account menu, and a Sidebar). Its root is `.sc-site.sc-fintech`, and `FintechFrame.razor.css` styles the pages of both through `::deep`, including the Grid lists, bulk bars, and AML timeline. Operations have their own layout, separate from the bank (D-031). Both layouts wrap their pages in `FintechGuard`, which adds the one-time-code step to the role check; the back office admits bank operations and senior reviewers.
 
 Color tokens in light mode: `--sc-primary` `#047857` (green), `--sc-primary-hover` `#065f46`, contrast `#fff`, page background `#f3f7f5`. In dark mode (`[data-bs-theme=dark]`): `--sc-primary` `#34d399`, hover `#6ee7b7`, contrast `#052e22`, page background `#08110e`. Because the dark primary is a light green, `.text-bg-primary` text switches to the dark contrast color. Money in and money out have their own tokens (`--tm-in`, `--tm-out`).
 
@@ -111,7 +156,7 @@ The shared stylesheet `wwwroot/css/blazorbootstrap.demo.rcl.css` maps the `--sc-
 ## Accessibility and responsiveness
 
 - The code step has one labelled field (`inputmode="numeric"`, `autocomplete="one-time-code"`) tied to the demo message, the tries left, and the error.
-- Transactions and the audit log are plain tables with a caption and header scopes. Statuses such as Pending, Held, Scheduled, and Disputed are words, not colors alone.
-- Each chart has a label and a visually hidden data table.
-- Outcomes (transfer held, payee saved, dispute resolved) are announced in status messages, and focus moves to the first problem or to the outcome.
-- At 375 px the Navbar collapses into a menu, and below the medium breakpoint the transaction table moves the category and account under the description. Receipts print without the site's chrome.
+- Statuses, risks, and dispositions (held, scheduled, overdue, high risk, escalated, reported) are words in badges, not colors alone. Each chart has a label and a visually hidden data table.
+- Each list row's checkbox is labelled with its record ("Select alert 7012, Structuring on …"), and the header checkbox reads "Select all shown alerts". A row opens its record through a stretched link, so the row has no extra interactive role.
+- After a failed submit, the error summary takes focus and links to each field; each message is tied to its field with `aria-describedby`. Outcomes are announced in status messages (a repeat gets a counter), and focus moves to the outcome when the control that had it goes away.
+- At 375 px the Navbar collapses into a menu, the operations top bar wraps its search onto its own line, filters and bulk bars stack, and wide grids scroll inside their own box. Receipts print without the site's chrome.
