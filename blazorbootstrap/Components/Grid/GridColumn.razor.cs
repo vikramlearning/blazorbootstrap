@@ -237,21 +237,9 @@ public partial class GridColumn<TItem> : BlazorBootstrapComponentBase
     /// its <see cref="PropertyName" />, or its <see cref="HeaderText" /> when it has none. When earlier columns of the
     /// same grid share that name, the key adds the column's place among them (<c>Name#2</c>, <c>Name#3</c>), so every key is unique.
     /// <see langword="null" /> when it has neither; such a column keeps its declared position and cannot be hidden by the user.
+    /// The grid sets it once, when the column is added, so reading it costs nothing during rendering.
     /// </summary>
-    internal string? ColumnKey
-    {
-        get
-        {
-            var name = ColumnName;
-
-            if (name is null || Parent is null)
-                return name;
-
-            var earlier = Parent.CountEarlierColumnsNamed(this, name);
-
-            return earlier == 0 ? name : $"{name}#{earlier + 1}";
-        }
-    }
+    internal string? ColumnKey { get; set; }
 
     /// <summary>
     /// Gets the column's <see cref="PropertyName" />, or its <see cref="HeaderText" /> when it has none; <see langword="null" /> when it has neither.
@@ -466,27 +454,37 @@ public partial class GridColumn<TItem> : BlazorBootstrapComponentBase
                                    // so sorting works from the keyboard (Enter and Space) and the header keeps its table semantics.
                                    if (canSort)
                                    {
-                                       if (currentSortDirection == SortDirection.Ascending)
-                                           builder.AddAttribute(104, "aria-sort", "ascending");
-                                       else if (currentSortDirection == SortDirection.Descending)
-                                           builder.AddAttribute(104, "aria-sort", "descending");
+                                       var ariaSort = currentSortDirection switch
+                                       {
+                                           SortDirection.Ascending => "ascending",
+                                           SortDirection.Descending => "descending",
+                                           _ => null
+                                       };
+
+                                       if (ariaSort is not null)
+                                           builder.AddAttribute(104, "aria-sort", ariaSort);
 
                                        builder.OpenElement(105, "button"); // open: button
                                        builder.AddAttribute(106, "type", "button");
                                        builder.AddAttribute(107, "class", "bb-grid-sort-button");
-                                       builder.AddAttribute(108, "onclick", async () => await OnSortClickAsync());
+
+                                       // A header without text still needs a name for its sort button.
+                                       if (string.IsNullOrWhiteSpace(HeaderText) && !string.IsNullOrWhiteSpace(PropertyName))
+                                           builder.AddAttribute(108, "aria-label", PropertyName);
+
+                                       builder.AddAttribute(109, "onclick", async () => await OnSortClickAsync());
                                    }
 
-                                   builder.OpenElement(109, "span"); // open: span
-                                   builder.AddAttribute(110, "class", "me-2");
-                                   builder.AddContent(111, HeaderText);
+                                   builder.OpenElement(110, "span"); // open: span
+                                   builder.AddAttribute(111, "class", "me-2");
+                                   builder.AddContent(112, HeaderText);
                                    builder.CloseElement(); // close: span
 
                                    if (canSort)
                                    {
-                                       builder.OpenElement(112, "span"); // open: span
-                                       builder.AddAttribute(113, "aria-hidden", "true");
-                                       builder.OpenElement(114, "i"); // open: i
+                                       builder.OpenElement(113, "span"); // open: span
+                                       builder.AddAttribute(114, "aria-hidden", "true");
+                                       builder.OpenElement(115, "i"); // open: i
 
                                        var sortIcon = "bi bi-arrow-down-up"; // default icon
 
@@ -495,7 +493,7 @@ public partial class GridColumn<TItem> : BlazorBootstrapComponentBase
                                        else if (currentSortDirection is not SortDirection.None and SortDirection.Descending)
                                            sortIcon = "bi bi-sort-alpha-down-alt";
 
-                                       builder.AddAttribute(115, "class", sortIcon);
+                                       builder.AddAttribute(116, "class", sortIcon);
                                        builder.CloseElement(); // close: i
                                        builder.CloseElement(); // close: span
                                        builder.CloseElement(); // close: button
@@ -504,7 +502,7 @@ public partial class GridColumn<TItem> : BlazorBootstrapComponentBase
                                else
                                {
                                    // If headercontent is used, filters and sorting wont be added.
-                                   builder.AddContent(116, HeaderContent);
+                                   builder.AddContent(117, HeaderContent);
                                }
 
                                builder.CloseElement(); // close: th

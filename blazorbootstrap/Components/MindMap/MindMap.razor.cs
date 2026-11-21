@@ -274,6 +274,7 @@ public partial class MindMap<TItem> : BlazorBootstrapComponentBase where TItem :
         var pinnedColor = BranchColor?.Invoke(item) ?? inheritedPinnedColor;
         var node = new Node(item, parent, depth, path, label)
                    {
+                       SiblingIndex = siblingIndex,
                        Color = pinnedColor ?? (depth == 0
                                                    ? MindMapColor.None
                                                    : depth == 1
@@ -350,7 +351,7 @@ public partial class MindMap<TItem> : BlazorBootstrapComponentBase where TItem :
 
     private string GetNodeId(Node node) => $"{Id}-n-{node.Path}";
 
-    private static int GetPositionInSet(Node node) => node.Parent is null ? 1 : node.Parent.Children.IndexOf(node) + 1;
+    private static int GetPositionInSet(Node node) => node.SiblingIndex + 1;
 
     private Dictionary<string, object>? GetRootAttributes()
     {
@@ -960,6 +961,9 @@ public partial class MindMap<TItem> : BlazorBootstrapComponentBase where TItem :
         public string Path { get; }
 
         public int RightCount { get; set; }
+
+        /// <summary>The node's place among its parent's children, from 0 (the root is 0).</summary>
+        public int SiblingIndex { get; init; }
 
         public int Size => HasChildren ? Children.Sum(child => child.Size) : 1;
 

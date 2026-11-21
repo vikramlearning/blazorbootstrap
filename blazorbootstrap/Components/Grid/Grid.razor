@@ -59,7 +59,7 @@
                                     var label = GetColumnLabel(column);
                                     var checkboxId = $"{Id}-column-{chooserColumns.IndexOf(column)}";
                                     var position = chooserColumns.IndexOf(column);
-                                    var isLocked = IsColumnLocked(column);
+                                    var isLocked = IsColumnLocked(column, displayColumns.Count);
                                     var isLastShown = isLocked && !column.AlwaysVisible;
 
                                     var isFirst = position == 0;
@@ -107,7 +107,7 @@
                                 }
                             </ul>
                         }
-                        @if (chooserColumns.Any(c => !c.AlwaysVisible && IsColumnLocked(c)))
+                        @if (chooserColumns.Any(c => !c.AlwaysVisible && IsColumnLocked(c, displayColumns.Count)))
                         {
                             <p id="@lockedNoteId" class="small text-body-secondary mb-2">@ColumnChooserLastColumnText</p>
                         }

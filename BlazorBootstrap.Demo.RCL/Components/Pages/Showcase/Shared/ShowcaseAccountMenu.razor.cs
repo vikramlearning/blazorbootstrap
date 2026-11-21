@@ -27,7 +27,9 @@ public partial class ShowcaseAccountMenu : ComponentBase
     {
         var notices = NoticeCount > 0 ? $" {NoticeCountText} new {(NoticeCount == 1 ? "notice" : "notices")}" : null;
 
-        return $"{account.Initials} {account.Name}{notices}, {Identity.CurrentRole?.Label}, account menu";
+        var role = Identity.CurrentRole?.Label is { Length: > 0 } label ? $", {label}" : null;
+
+        return $"{account.Initials} {account.Name}{notices}{role}, account menu";
     }
 
     /// <summary>Opens the host's reset dialog; when it is cancelled, focus goes back to this menu's button.</summary>

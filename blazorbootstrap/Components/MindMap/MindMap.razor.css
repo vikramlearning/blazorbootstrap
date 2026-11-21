@@ -382,9 +382,10 @@
     cursor: pointer;
 }
 
-    /* the card is the focusable tree item; its focus ring is the box-shadow below, and a selected card keeps its outline */
+    /* the card is the focusable tree item; its focus ring is the box-shadow below, and a selected card keeps its outline.
+       A transparent outline (not none) still shows in forced-colors mode, where box-shadow is dropped. */
     .bb-mind-map-card:focus:not(.bb-mind-map-card-selected) {
-        outline: none;
+        outline: 2px solid transparent;
     }
 
 .bb-mind-map-card-root {

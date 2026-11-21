@@ -293,7 +293,22 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     [Description("Asynchronously clears the selection of all items in the grid.")]
     public Task UnSelectAllItemsAsync() => SelectAllItemsInternalAsync(false);
 
-    internal void AddColumn(GridColumn<TItem> column) => columns.Add(column);
+    /// <summary>
+    /// Adds a column and gives it its key: its name (property name, or header text when none), with <c>#2</c>, <c>#3</c>
+    /// added when earlier columns share that name, so every key in the grid is unique.
+    /// </summary>
+    internal void AddColumn(GridColumn<TItem> column)
+    {
+        var name = column.ColumnName;
+
+        if (name is not null)
+        {
+            var earlier = columns.Count(c => string.Equals(c.ColumnName, name, StringComparison.Ordinal));
+            column.ColumnKey = earlier == 0 ? name : $"{name}#{earlier + 1}";
+        }
+
+        columns.Add(column);
+    }
 
     internal void ColumnVisibilityUpdated()
     {
@@ -302,25 +317,6 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
             isColumnVisibilityChanged = true;
             StateHasChanged();
         }
-    }
-
-    /// <summary>
-    /// Counts the columns declared before <paramref name="column" /> whose name (property name, or header text when none) is <paramref name="name" />.
-    /// </summary>
-    internal int CountEarlierColumnsNamed(GridColumn<TItem> column, string name)
-    {
-        var count = 0;
-
-        foreach (var candidate in columns)
-        {
-            if (candidate == column)
-                break;
-
-            if (string.Equals(candidate.ColumnName, name, StringComparison.Ordinal))
-                count++;
-        }
-
-        return count;
     }
 
     /// <summary>
@@ -370,7 +366,7 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     /// </summary>
     internal async Task SetColumnHiddenAsync(GridColumn<TItem> column, bool hidden)
     {
-        if (column.ColumnKey is null || (hidden && IsColumnLocked(column)))
+        if (column.ColumnKey is null || (hidden && IsColumnLocked(column, GetDisplayColumns().Count)))
             return;
 
         if (hidden)
@@ -681,9 +677,10 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
 
     /// <summary>
     /// Determines whether the user cannot hide the column: it is marked <c>AlwaysVisible</c>, or it is the only column still shown.
+    /// <paramref name="shownCount" /> is the number of columns shown, computed once by the caller.
     /// </summary>
-    private bool IsColumnLocked(GridColumn<TItem> column) =>
-        column.AlwaysVisible || (!IsHiddenByUser(column) && GetDisplayColumns().Count <= 1);
+    private bool IsColumnLocked(GridColumn<TItem> column, int shownCount) =>
+        column.AlwaysVisible || (!IsHiddenByUser(column) && shownCount <= 1);
 
     /// <summary>
     /// Determines whether the item is already selected.
@@ -1251,14 +1248,14 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     public string ExportButtonText { get; set; } = "Export CSV";
 
     /// <summary>
-    /// Gets or sets the message shown when the rows cannot be read for export.
+    /// Gets or sets the message shown when the export fails: the rows cannot be read, the file cannot be built, or the browser cannot download it.
     /// <para>
     /// Default value is 'The rows could not be exported. Try again.'.
     /// </para>
     /// </summary>
     [AddedVersion("4.1.0")]
     [DefaultValue("The rows could not be exported. Try again.")]
-    [Description("Gets or sets the message shown when the rows cannot be read for export.")]
+    [Description("Gets or sets the message shown when the export fails: the rows cannot be read, the file cannot be built, or the browser cannot download it.")]
     [Parameter]
     public string ExportErrorText { get; set; } = "The rows could not be exported. Try again.";
 
