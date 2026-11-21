@@ -93,8 +93,8 @@
                             </dd>
                             <dt>Joined</dt>
                             <dd>@member.JoinedAt.ToString("MMMM d, yyyy", CultureInfo.InvariantCulture)</dd>
-                            <dt>Monthly quota</dt>
-                            <dd>@AiDisplay.Tokens(State.Policy.MonthlyTokenQuota) tokens · <a href="@($"{AiLayout.Base}/usage")">See your usage</a></dd>
+                            <dt>Monthly cap</dt>
+                            <dd>@AiDisplay.Tokens(State.CapOf(member)) tokens@(member.MonthlyCap is null ? " (the default)" : " (your own)") · <a href="@($"{AiLayout.Base}/usage")">See your usage</a></dd>
                         </dl>
                     }
                     @if (State.Can(AiPermission.ManageSharedPrompts))

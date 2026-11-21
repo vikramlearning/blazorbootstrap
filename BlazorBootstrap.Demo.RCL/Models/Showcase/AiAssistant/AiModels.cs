@@ -63,6 +63,12 @@ public enum AiPermission
     /// <summary>Read the audit log (Admin, Owner).</summary>
     ViewAudit,
 
+    /// <summary>Set the workspace's monthly spend cap, the default member cap, and members' own caps (Admin, Owner).</summary>
+    ManageSpend,
+
+    /// <summary>Set the sensitive data policy and work its review queue (Admin, Owner).</summary>
+    ReviewSensitiveData,
+
     /// <summary>Change how long conversations are kept (Owner).</summary>
     ManageRetention,
 
@@ -140,6 +146,167 @@ public enum AiResult
 
     /// <summary>The role is above what the signed-in person may grant (nobody grants Owner; it comes only through a transfer).</summary>
     NotGrantable,
+
+    /// <summary>The workspace used its monthly spend cap: nobody can chat until an admin raises it.</summary>
+    WorkspaceCapReached,
+
+    /// <summary>The message holds data the sensitive data policy blocks (a card number, for example); it wasn't sent.</summary>
+    SensitiveBlocked,
+
+    /// <summary>A new cap isn't above what is already used this month.</summary>
+    BelowUse,
+
+    /// <summary>A member's cap can't be above the workspace's cap.</summary>
+    AboveWorkspaceCap,
+}
+
+/// <summary>How much of a monthly spend cap is used.</summary>
+public enum AiSpendLevel
+{
+    /// <summary>Under 80 %.</summary>
+    Ok,
+
+    /// <summary>80 % or more: a warning in chat, and one notification a month.</summary>
+    Warning,
+
+    /// <summary>100 % or more: chat is blocked for the scope until an admin raises the cap.</summary>
+    Blocked,
+}
+
+/// <summary>A kind of data the sensitive data policy looks for in a message.</summary>
+public enum AiDlpKind
+{
+    /// <summary>A payment card number: 13 to 19 digits (spaces or dashes allowed) that pass the Luhn check.</summary>
+    PaymentCard,
+
+    /// <summary>A US Social Security number like 123-45-6789 (impossible ranges left out).</summary>
+    NationalId,
+
+    /// <summary>An international bank account number (IBAN) whose check digits are right.</summary>
+    Iban,
+
+    /// <summary>A secret API key like sk-… (20 or more letters, digits, dashes, or underscores after it).</summary>
+    ApiKey,
+}
+
+/// <summary>What the policy does with a match.</summary>
+public enum AiDlpAction
+{
+    /// <summary>The message is sent with the match replaced, like "[card number removed]".</summary>
+    Redact,
+
+    /// <summary>The message isn't sent.</summary>
+    Block,
+}
+
+/// <summary>Where a sensitive data event is in the review queue.</summary>
+public enum AiDlpStatus
+{
+    /// <summary>Waiting for an admin.</summary>
+    New,
+
+    /// <summary>Reviewed: nothing to change.</summary>
+    Dismissed,
+
+    /// <summary>Reviewed, and the policy was adjusted from it.</summary>
+    PolicyChanged,
+}
+
+/// <summary>One pattern of the sensitive data policy: on or off, and what happens to a match.</summary>
+public sealed class AiDlpRule
+{
+    #region Properties, Indexers
+
+    /// <summary>Gets or sets what happens to a match.</summary>
+    public AiDlpAction Action { get; set; }
+
+    /// <summary>Gets or sets whether the pattern is checked.</summary>
+    public bool Enabled { get; set; } = true;
+
+    /// <summary>Gets or sets the kind of data.</summary>
+    public AiDlpKind Kind { get; set; }
+
+    #endregion
+}
+
+/// <summary>
+/// A message that matched the sensitive data policy: who, when, which kind of data, what was done, and the match masked
+/// (like "•••• •••• •••• 4242"); the raw value is never kept.
+/// </summary>
+public sealed class AiDlpEvent
+{
+    #region Properties, Indexers
+
+    /// <summary>Gets what was done: redacted (sent without the data) or blocked (not sent).</summary>
+    public AiDlpAction ActionTaken { get; init; }
+
+    /// <summary>Gets when the message was sent (or refused).</summary>
+    public DateTime At { get; init; }
+
+    /// <summary>Gets the conversation the redacted message went to, or <see langword="null" /> when it was blocked before a new chat began.</summary>
+    public int? ConversationId { get; init; }
+
+    /// <summary>Gets the conversation's title when the event happened (it never holds the data: titles come from the redacted text).</summary>
+    public string ConversationTitle { get; init; } = string.Empty;
+
+    /// <summary>Gets the event number.</summary>
+    public int Id { get; init; }
+
+    /// <summary>Gets the kind of data matched.</summary>
+    public AiDlpKind Kind { get; init; }
+
+    /// <summary>Gets the match masked, like "•••• •••• •••• 4242".</summary>
+    public string Masked { get; init; } = string.Empty;
+
+    /// <summary>Gets the member who sent it.</summary>
+    public int MemberId { get; init; }
+
+    /// <summary>Gets or sets the reviewer's note (up to 200 characters).</summary>
+    public string Note { get; set; } = string.Empty;
+
+    /// <summary>Gets or sets when it was reviewed.</summary>
+    public DateTime? ReviewedAt { get; set; }
+
+    /// <summary>Gets or sets who reviewed it.</summary>
+    public string? ReviewedBy { get; set; }
+
+    /// <summary>Gets or sets where it is in the review queue.</summary>
+    public AiDlpStatus Status { get; set; }
+
+    #endregion
+}
+
+/// <summary>What the sensitive data policy did with a message being sent: the kinds it blocked and the kinds it redacted.</summary>
+public sealed record AiDlpCheck(IReadOnlyList<AiDlpKind> Blocked, IReadOnlyList<AiDlpKind> Redacted);
+
+/// <summary>Tokens the Spend page's demo control added to a member's month (usage the demo pushes up quickly).</summary>
+public sealed class AiDemoUsage
+{
+    #region Properties, Indexers
+
+    /// <summary>Gets the day (a date without a time).</summary>
+    public DateTime Date { get; init; }
+
+    /// <summary>Gets the member.</summary>
+    public int MemberId { get; init; }
+
+    /// <summary>Gets the model it counts for (the workspace default when it was added).</summary>
+    public string ModelId { get; init; } = string.Empty;
+
+    /// <summary>Gets or sets the tokens.</summary>
+    public int Tokens { get; set; }
+
+    #endregion
+}
+
+/// <summary>How much of a monthly spend cap is used: tokens used this month, the cap, and the level.</summary>
+public sealed record AiSpendStatus(long Used, long Cap, AiSpendLevel Level)
+{
+    /// <summary>Gets the share of the cap used, in percent.</summary>
+    public double Percent => Cap <= 0 ? 0 : Used * 100d / Cap;
+
+    /// <summary>Gets the tokens left this month (0 when blocked).</summary>
+    public long Left => Math.Max(0, Cap - Used);
 }
 
 /// <summary>
@@ -296,6 +463,9 @@ public sealed class AiMember
     /// <summary>Gets or sets the email address (lower-case; it follows the member's profile).</summary>
     public string Email { get; set; } = string.Empty;
 
+    /// <summary>Gets or sets the member's own monthly cap in tokens, or <see langword="null" /> for the workspace's default member cap.</summary>
+    public int? MonthlyCap { get; set; }
+
     /// <summary>Gets the member number, unique within the workspace (the email can change, the number doesn't).</summary>
     public int Id { get; init; }
 
@@ -328,13 +498,16 @@ public sealed class AiPolicy
     /// <summary>Gets or sets the model new conversations start with.</summary>
     public string DefaultModelId { get; set; } = string.Empty;
 
+    /// <summary>Gets or sets the sensitive data policy: one rule per kind of data.</summary>
+    public List<AiDlpRule> DlpRules { get; set; } = new();
+
     /// <summary>Gets or sets the models members can choose.</summary>
     public List<string> EnabledModelIds { get; set; } = new();
 
     /// <summary>Gets or sets the largest attachment, in megabytes.</summary>
     public int MaxAttachmentMb { get; set; } = 10;
 
-    /// <summary>Gets or sets each member's monthly token quota.</summary>
+    /// <summary>Gets or sets the default monthly spend cap of a member, in tokens (a member's own cap replaces it).</summary>
     public int MonthlyTokenQuota { get; set; } = 200_000;
 
     /// <summary>Gets or sets after how many days without changes a conversation is deleted; 0 keeps them (the Owner changes it).</summary>
@@ -342,6 +515,9 @@ public sealed class AiPolicy
 
     /// <summary>Gets or sets the workspace's name, shown in the admin bar and on the members' pages.</summary>
     public string WorkspaceName { get; set; } = string.Empty;
+
+    /// <summary>Gets or sets the workspace's monthly spend cap in tokens, every member together.</summary>
+    public int WorkspaceMonthlyCap { get; set; }
 
     #endregion
 }

@@ -119,7 +119,10 @@ public static partial class AiSeedData
         new("code", "Parley Code", "Tuned for code, queries, and technical explanations.", 40, 128_000, true),
     };
 
-    /// <summary>The workspace policy in a fresh tab: every model on, Balanced by default, two blocked terms.</summary>
+    /// <summary>
+    /// The workspace policy in a fresh tab: every model on, Balanced by default, two blocked terms, a default member cap of
+    /// 200,000 tokens (the workspace cap is set from the seeded usage), and the sensitive data rules of <see cref="AiDlp.DefaultRules" />.
+    /// </summary>
     public static AiPolicy Policy() => new()
     {
         WorkspaceName = WorkspaceName,
@@ -130,6 +133,8 @@ public static partial class AiSeedData
         MaxAttachmentMb = 10,
         RetentionDays = 0,
         BlockedTerms = new() { "password dump", "card numbers" },
+        WorkspaceMonthlyCap = 10_000_000,
+        DlpRules = AiDlp.DefaultRules(),
     };
 
     /// <summary>Returns the members' route of a prompt: the editor of one's own, or the read-only page of a shared one.</summary>

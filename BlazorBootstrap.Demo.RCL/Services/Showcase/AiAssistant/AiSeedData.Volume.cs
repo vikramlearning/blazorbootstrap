@@ -5,8 +5,10 @@ namespace BlazorBootstrap.Demo.RCL.Services.Showcase.AiAssistant;
 
 /// <summary>
 /// The fresh tab's data at realistic volume (rule WR-001), from deterministic generators: about ninety members and
-/// invitations, a couple of hundred conversations of the four demo accounts (short exchanges with the prewritten replies), a
-/// prompt library of about a hundred and fifty personal and shared prompts, the usage ledger those conversations make, the
+/// invitations, a couple of hundred conversations of the four demo accounts (short exchanges with the prewritten replies,
+/// a few of them months old so retention has something to delete), a prompt library of about a hundred and fifty personal
+/// and shared prompts, the usage ledger those conversations make, the spend caps (the demo member near 80 % of their own
+/// cap, a colleague already blocked, the workspace at about 70 %), past sensitive data events (one waiting for review), the
 /// last <see cref="AuditDays" /> days of the audit log, and each demo account's notifications.
 /// </summary>
 public static partial class AiSeedData
@@ -48,8 +50,12 @@ public static partial class AiSeedData
         var members = Members();
         var conversations = Conversations();
         var prompts = Prompts(members);
+        var ledger = Ledger(conversations);
+        var policy = Policy();
+        var dlpEvents = DlpEvents(members, conversations);
+        var caps = SetCaps(members, ledger, policy);
 
-        return new AiSeedSet(members, conversations, prompts, Ledger(conversations), Audit(members, prompts), Notifications(prompts), Policy());
+        return new AiSeedSet(members, conversations, prompts, ledger, Audit(members, prompts, dlpEvents, caps, policy), Notifications(prompts, dlpEvents, members), policy, dlpEvents);
     }
 
     /// <summary>
@@ -92,7 +98,8 @@ public static partial class AiSeedData
     /// The seeded audit log: the last <see cref="AuditDays" /> days of joins, invitations, role changes, access removed,
     /// shared prompts published and edited, and changes to the model policy and settings. Never chat content.
     /// </summary>
-    private static List<ShowcaseAuditEntry> Audit(List<AiMember> members, List<AiPrompt> prompts)
+    private static List<ShowcaseAuditEntry> Audit(List<AiMember> members, List<AiPrompt> prompts, List<AiDlpEvent> dlpEvents, List<(AiMember Member, int Cap, double DaysAgo)> caps,
+        AiPolicy policy)
     {
         var since = Now.AddDays(-AuditDays);
         var entries = new List<(DateTime At, string Actor, string Action, string Target, string? Url, string? Details)>();
@@ -141,6 +148,34 @@ public static partial class AiSeedData
         entries.Add((Now.AddDays(-19), AdminName, "Changed the model policy", "Models and policy", AdminBase + "/settings", "Blocked terms: 1 → 2"));
         entries.Add((Now.AddDays(-12), OwnerName, "Changed the model policy", "Models and policy", AdminBase + "/settings", "Models on: Parley Code turned on"));
         entries.Add((Now.AddDays(-58), OwnerName, "Renamed the workspace", "Workspace settings", AdminBase + "/settings", "Halcyon → Halcyon Studio"));
+        entries.Add((Now.AddDays(-23), OwnerName, "Changed spend caps", "Spend caps", AdminBase + "/spend",
+            Invariant($"Workspace cap: {policy.WorkspaceMonthlyCap - 2_000_000:#,0} → {policy.WorkspaceMonthlyCap:#,0} tokens")));
+
+        foreach (var (member, cap, daysAgo) in caps)
+            entries.Add((Now.AddDays(-daysAgo), AdminName, "Changed member cap", $"Member {member.Name} ({member.Email})", AdminBase + "/spend",
+                Invariant($"default ({policy.MonthlyTokenQuota:#,0}) → {cap:#,0} tokens a month")));
+
+        var names = members.ToDictionary(member => member.Id, member => member.Name);
+
+        foreach (var dlpEvent in dlpEvents)
+        {
+            var target = Invariant($"Sensitive data event {dlpEvent.Id} · {AiDlp.KindLabel(dlpEvent.Kind)}");
+            entries.Add((dlpEvent.At, names[dlpEvent.MemberId], dlpEvent.ActionTaken == AiDlpAction.Block ? "Blocked sensitive data" : "Redacted sensitive data", target, AdminBase + "/sensitive-data",
+                $"{names[dlpEvent.MemberId]}'s message; {dlpEvent.Masked}"));
+
+            if (dlpEvent is { ReviewedAt: { } reviewedAt, ReviewedBy: { } reviewer })
+            {
+                if (dlpEvent.Status == AiDlpStatus.PolicyChanged)
+                {
+                    entries.Add((reviewedAt, reviewer, "Changed the sensitive data policy (from review)", "Sensitive data policy", AdminBase + "/sensitive-data", "Bank account (IBAN): block → redact"));
+                    entries.Add((reviewedAt, reviewer, "Adjusted the policy from review", target, AdminBase + "/sensitive-data", Invariant($"{dlpEvent.Masked}; note {dlpEvent.Note.Length} characters")));
+                }
+                else
+                {
+                    entries.Add((reviewedAt, reviewer, "Dismissed sensitive data event", target, AdminBase + "/sensitive-data", Invariant($"{dlpEvent.Masked}; note {dlpEvent.Note.Length} characters")));
+                }
+            }
+        }
 
         return entries.Where(entry => entry.At >= since && entry.At <= Now)
             .OrderBy(entry => entry.At)
@@ -251,7 +286,48 @@ public static partial class AiSeedData
 
                 Conversation(nextId++, accountId, topic.Title, topic.Model, daysAgo, k > 0 && k % 23 == 0, turns.ToArray());
             }
+
+            // A few older conversations each (two to eleven months), which a 30- or 90-day retention window deletes.
+            for (var k = 0; k < 7; k++)
+            {
+                var topic = topics[((k * 7) + (a * 5) + 2) % topics.Length];
+                Conversation(nextId++, accountId, topic.Title, topic.Model, 62 + (k * 46) + (Hash(k, a, 25) * 5), false, (topic.Text, topic.Key, Hash(k, a, 26) < 0.5 ? 0 : 1, AiFeedback.None));
+            }
         }
+
+        return list;
+    }
+
+    /// <summary>
+    /// The past sensitive data events: the demo accounts' and colleagues' messages that held a card number, an ID number, an
+    /// IBAN, or an API key over the last weeks, most reviewed (dismissed, or the IBAN rule switched to redact from review),
+    /// and one card number blocked two hours ago that waits for review. Only the masked matches are kept.
+    /// </summary>
+    private static List<AiDlpEvent> DlpEvents(List<AiMember> members, List<AiConversation> conversations)
+    {
+        var colleagues = members.Where(member => member.AccountId is null && member.Status == AiMemberStatus.Active && member.Id > 8).ToList();
+        var samChat = conversations.First(conversation => conversation.AccountId == SeededMemberId && conversation.Id > 5);
+        var list = new List<AiDlpEvent>();
+
+        void Add(double daysAgo, int memberId, AiDlpKind kind, string sample, AiDlpAction taken, AiConversation? conversation, string title, AiDlpStatus status, string? reviewer, string note)
+        {
+            var at = Now.AddDays(-daysAgo);
+            list.Add(new AiDlpEvent
+            {
+                Id = list.Count + 1, At = at, MemberId = memberId, Kind = kind, ActionTaken = taken, Masked = AiDlp.Mask(kind, sample), ConversationId = conversation?.Id,
+                ConversationTitle = conversation?.Title ?? title, Status = status, ReviewedBy = reviewer, ReviewedAt = reviewer is null ? null : at.AddHours(3), Note = note,
+            });
+        }
+
+        Add(18, 4, AiDlpKind.NationalId, "219-09-9999", AiDlpAction.Redact, samChat, string.Empty, AiDlpStatus.Dismissed, AdminName, "A sample number from the onboarding guide.");
+        Add(15, 8, AiDlpKind.PaymentCard, "5555 5555 5555 4444", AiDlpAction.Block, null, string.Empty, AiDlpStatus.Dismissed, AdminName, string.Empty);
+        Add(12, colleagues[0].Id, AiDlpKind.Iban, "DE89 3704 0044 0532 0130 00", AiDlpAction.Block, null, "Supplier payment run", AiDlpStatus.PolicyChanged, OwnerName,
+            "Bank details are fine once redacted; the IBAN rule redacts now.");
+        Add(9, 3, AiDlpKind.ApiKey, "sk-test-4eC39HqLyjWDarjtT1zdp7dc", AiDlpAction.Block, null, string.Empty, AiDlpStatus.Dismissed, OwnerName, "The key was a test key; Priya rotated it anyway.");
+        Add(6, 5, AiDlpKind.NationalId, "123-45-6789", AiDlpAction.Redact, null, "HR onboarding form", AiDlpStatus.Dismissed, AdminName, string.Empty);
+        Add(3, colleagues[1].Id, AiDlpKind.PaymentCard, "4000 0566 5566 5556", AiDlpAction.Block, null, string.Empty, AiDlpStatus.Dismissed, AdminName, "Asked them to use the billing portal instead.");
+        Add(1, 4, AiDlpKind.PaymentCard, "4111 1111 1111 1111", AiDlpAction.Block, null, string.Empty, AiDlpStatus.Dismissed, AdminName, "A test card from the payment docs.");
+        Add(1.0 / 12, colleagues[2].Id, AiDlpKind.PaymentCard, "4242 4242 4242 4242", AiDlpAction.Block, null, string.Empty, AiDlpStatus.New, null, string.Empty);
 
         return list;
     }
@@ -319,20 +395,24 @@ public static partial class AiSeedData
         return list;
     }
 
-    /// <summary>Each demo account's notifications: five, the newest two unread; links stay on this site.</summary>
-    private static List<ShowcaseNotification> Notifications(List<AiPrompt> prompts)
+    /// <summary>Each demo account's notifications: five or six, the newest two unread; links stay on this site.</summary>
+    private static List<ShowcaseNotification> Notifications(List<AiPrompt> prompts, List<AiDlpEvent> dlpEvents, List<AiMember> members)
     {
+        var waiting = dlpEvents.First(item => item.Status == AiDlpStatus.New);
+        var waitingText = $"{members.First(member => member.Id == waiting.MemberId).Name}'s message held {AiDlp.KindArticle(waiting.Kind)}; it was blocked. Review it in the queue.";
         var shared = prompts.Where(prompt => prompt.IsShared && prompt.IsPublished).OrderByDescending(prompt => prompt.UpdatedAt).ToList();
         var priyaPrompt = prompts.First(prompt => prompt.IsShared && prompt.AuthorId == SeededEditorId);
         var draft = prompts.First(prompt => prompt.IsShared && !prompt.IsPublished);
         var list = new List<(string AccountId, double HoursAgo, string Title, string? Text, string? Url)>
         {
+            (SeededOwnerId, 1.9, "Sensitive data in a message", waitingText, AdminBase + "/sensitive-data"),
             (SeededOwnerId, 3, "Nora Kim's invitation is waiting", "Invited 2 days ago as a member. Resend it, or remove it, from Members and roles.", MembersPath("nora.kim@example.com")),
             (SeededOwnerId, 20, $"{AdminName} changed the model policy", "Blocked terms: 1 → 2. See the audit log for every change.", AdminBase + "/audit"),
             (SeededOwnerId, 52, $"New shared prompt: \"{shared[0].Title}\"", $"Published by {shared[0].Author}.", PromptPath(shared[0].Id)),
             (SeededOwnerId, 120, "3 people joined this week", "They took up their invitations and chat as members.", MembersPath()),
             (SeededOwnerId, 300, "Usage report for October is ready", "Tokens by model and member, in Usage analytics.", AdminBase),
 
+            (SeededAdminId, 1.9, "Sensitive data in a message", waitingText, AdminBase + "/sensitive-data"),
             (SeededAdminId, 2, "A draft shared prompt needs review", $"\"{draft.Title}\" by {draft.Author} isn't published yet.", SharedPromptPath(draft.Id)),
             (SeededAdminId, 26, "Nora Kim's invitation is waiting", "Invited 2 days ago as a member.", MembersPath("nora.kim@example.com")),
             (SeededAdminId, 70, $"New shared prompt: \"{shared[1].Title}\"", $"Published by {shared[1].Author}.", PromptPath(shared[1].Id)),
@@ -347,7 +427,7 @@ public static partial class AiSeedData
 
             (SeededMemberId, 1.5, $"New shared prompt: \"{shared[0].Title}\"", $"Published by {shared[0].Author}. Use it from the prompt library.", PromptPath(shared[0].Id)),
             (SeededMemberId, 28, $"New shared prompt: \"{shared[4].Title}\"", $"Published by {shared[4].Author}.", PromptPath(shared[4].Id)),
-            (SeededMemberId, 96, "You've used 60% of this month's quota", "See how much is left under Usage.", SiteBase + "/usage"),
+            (SeededMemberId, 96, "Your monthly cap changed", "Mei Chen set your monthly cap; see how much is left under Usage.", SiteBase + "/usage"),
             (SeededMemberId, 170, $"New shared prompt: \"{shared[5].Title}\"", $"Published by {shared[5].Author}.", PromptPath(shared[5].Id)),
             (SeededMemberId, 400, $"Welcome to {ProductName}", "Start a chat, or save a prompt you use often.", SiteBase + "/chat"),
         };
@@ -477,6 +557,31 @@ public static partial class AiSeedData
         return list;
     }
 
+    /// <summary>
+    /// Sets the seeded spend caps from this month's usage: the demo member's own cap so they're at about 75 % (one push of the
+    /// demo control passes 80 %), Leo Martins's below what he used (blocked), Jonas Weber's raised to 400,000, and the
+    /// workspace cap so every member together is at about 70 %. Returns the members' caps, for the audit log.
+    /// </summary>
+    private static List<(AiMember Member, int Cap, double DaysAgo)> SetCaps(List<AiMember> members, List<AiUsageEntry> ledger, AiPolicy policy)
+    {
+        var history = UsageHistory();
+        bool InMonth(DateTime date) => date.Year == Now.Year && date.Month == Now.Month;
+        long Month(AiMember member) =>
+            (history.TryGetValue(member.Id, out var points) ? points.Where(point => InMonth(point.Date)).Sum(point => (long)point.Tokens) : 0)
+            + (member.AccountId is { } accountId ? ledger.Where(line => line.AccountId == accountId && InMonth(line.Date)).Sum(line => (long)line.Tokens) : 0);
+        int Round(double value, int step, bool up) => (int)((up ? Math.Ceiling(value / step) : Math.Floor(value / step)) * step);
+
+        var sam = members.First(member => member.AccountId == SeededMemberId);
+        var leo = members.First(member => member.Id == 5);
+        var jonas = members.First(member => member.Id == 8);
+        sam.MonthlyCap = Math.Clamp(Round(Month(sam) / 0.76, 5_000, true), 1_000, 10_000_000);
+        leo.MonthlyCap = Math.Clamp(Round(Month(leo), 1_000, false), 1_000, 10_000_000);
+        jonas.MonthlyCap = 400_000;
+        policy.WorkspaceMonthlyCap = Round(members.Sum(Month) / 0.70, 500_000, true);
+
+        return new List<(AiMember, int, double)> { (jonas, 400_000, 21), (sam, sam.MonthlyCap.Value, 4), (leo, leo.MonthlyCap.Value, 2.5) };
+    }
+
     /// <summary>A role in words for the middle of a sentence, like "prompt editor".</summary>
     private static string RoleWord(AiMemberRole role) => role switch
     {
@@ -497,4 +602,5 @@ public sealed record AiSeedSet(
     List<AiUsageEntry> Usage,
     List<ShowcaseAuditEntry> Audit,
     List<ShowcaseNotification> Notifications,
-    AiPolicy Policy);
+    AiPolicy Policy,
+    List<AiDlpEvent> DlpEvents);

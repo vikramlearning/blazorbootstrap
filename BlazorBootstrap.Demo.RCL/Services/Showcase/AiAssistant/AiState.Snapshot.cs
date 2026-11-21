@@ -1,6 +1,7 @@
 using System.Globalization;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Text.RegularExpressions;
 using BlazorBootstrap.Demo.RCL.Models.Showcase.AiAssistant;
 using BlazorBootstrap.Demo.RCL.Services.Showcase.Foundation;
 
@@ -24,6 +25,7 @@ public sealed partial class AiState
         var data = seed.Value;
         var (changedAudit, removedAudit) = Diff(audit, data.Audit, entry => entry.Id, SameAudit);
         var (changedConversations, removedConversations) = Diff(conversations, data.Conversations, item => item.Id, SameConversation);
+        var (changedDlp, removedDlp) = Diff(dlpEvents, data.DlpEvents, item => item.Id, SameDlpEvent);
         var (changedMembers, removedMembers) = Diff(members, data.Members, item => item.Id, SameMember);
         var (changedNotifications, removedNotifications) = Diff(notifications, data.Notifications, notice => notice.Id, SameNotification);
         var (changedPrompts, removedPrompts) = Diff(prompts, data.Prompts, item => item.Id, SamePrompt);
@@ -35,6 +37,10 @@ public sealed partial class AiState
             RemovedAuditIds = removedAudit,
             Conversations = changedConversations,
             RemovedConversationIds = removedConversations,
+            DemoUsage = demoUsage.Count == 0 ? null : demoUsage.ToList(),
+            DlpEvents = changedDlp,
+            RemovedDlpEventIds = removedDlp,
+            SpendAlerts = spendAlerts.Count == 0 ? null : spendAlerts.ToList(),
             Members = changedMembers,
             RemovedMemberIds = removedMembers,
             Notifications = changedNotifications,
@@ -47,6 +53,7 @@ public sealed partial class AiState
             Preferences = preferences.Count == 0 ? null : preferences.ToDictionary(pair => pair.Key, pair => pair.Value),
             NextAuditId = nextAuditId,
             NextConversationId = nextConversationId,
+            NextDlpEventId = nextDlpEventId,
             NextMemberId = nextMemberId,
             NextMessageId = nextMessageId,
             NextNotificationId = nextNotificationId,
@@ -74,7 +81,7 @@ public sealed partial class AiState
         }
 
         if (snapshot is null
-            || new[] { snapshot.NextAuditId, snapshot.NextConversationId, snapshot.NextMemberId, snapshot.NextMessageId, snapshot.NextNotificationId, snapshot.NextPromptId }
+            || new[] { snapshot.NextAuditId, snapshot.NextConversationId, snapshot.NextDlpEventId, snapshot.NextMemberId, snapshot.NextMessageId, snapshot.NextNotificationId, snapshot.NextPromptId }
                 .Any(id => id is < 1 or > NextIdLimit))
             return false;
 
@@ -83,6 +90,8 @@ public sealed partial class AiState
 
         if (Overlay(fresh.Audit, snapshot.Audit, snapshot.RemovedAuditIds, entry => entry.Id) is not { Count: <= MaxAudit } storedAudit
             || Overlay(fresh.Conversations, snapshot.Conversations, snapshot.RemovedConversationIds, item => item.Id) is not { } storedConversations
+            || Overlay(fresh.DlpEvents, snapshot.DlpEvents, snapshot.RemovedDlpEventIds, item => item.Id) is not { Count: <= MaxDlpEvents } storedDlpEvents
+            || snapshot.DemoUsage is { Count: > MaxDemoUsage } || snapshot.SpendAlerts is { Count: > MaxSpendAlerts }
             || Overlay(fresh.Members, snapshot.Members, snapshot.RemovedMemberIds, item => item.Id) is not { Count: > 0 and <= MaxMembers } storedMembers
             || Overlay(fresh.Notifications, snapshot.Notifications, snapshot.RemovedNotificationIds, notice => notice.Id) is not { Count: <= MaxNotifications } storedNotifications
             || Overlay(fresh.Prompts, snapshot.Prompts, snapshot.RemovedPromptIds, item => item.Id) is not { Count: <= MaxPrompts } storedPrompts
@@ -92,7 +101,21 @@ public sealed partial class AiState
 
         var storedPolicy = snapshot.Policy ?? fresh.Policy;
 
-        if (!ValidPolicy(storedPolicy) || !ValidMembers(storedMembers, snapshot))
+        // Members' own caps stay within the workspace cap.
+        if (!ValidPolicy(storedPolicy) || !ValidMembers(storedMembers, snapshot) || storedMembers.Any(member => member.MonthlyCap > storedPolicy.WorkspaceMonthlyCap))
+            return false;
+
+        var memberIds = storedMembers.Select(member => member.Id).ToHashSet();
+        var storedDemo = snapshot.DemoUsage ?? new List<AiDemoUsage>();
+        var storedAlerts = snapshot.SpendAlerts ?? new List<string>();
+
+        if (storedDemo.Any(line => line is null || !memberIds.Contains(line.MemberId) || FindModel(line.ModelId) is null || line.Date != line.Date.Date
+                || line.Date < AiSeedData.Now.Date.AddDays(-400) || line.Date > AiSeedData.Now + ShowcaseClock.MaxElapsed || line.Tokens is < 1 or > MaxWorkspaceCap)
+            || !Unique(storedDemo.Select(line => (line.MemberId, line.Date, line.ModelId)))
+            || storedAlerts.Any(alert => alert is null || !SpendAlertPattern().IsMatch(alert)) || !Unique(storedAlerts))
+            return false;
+
+        if (storedDlpEvents.Any(item => !ValidDlpEvent(item, snapshot, memberIds)) || !Unique(storedDlpEvents.Select(item => item.Id)))
             return false;
 
         var accountIds = storedMembers.Where(member => member.AccountId is not null).Select(member => member.AccountId!).ToHashSet(StringComparer.Ordinal);
@@ -113,7 +136,7 @@ public sealed partial class AiState
 
         // The ledger: one line per account, model, and day; a month never holds more than the highest quota (a send is refused past the quota).
         if (storedUsage.Any(entry => entry is null || !accountIds.Contains(entry.AccountId) || FindModel(entry.ModelId) is null || entry.Date != entry.Date.Date
-                || entry.Date < AiSeedData.Now.Date.AddDays(-120) || entry.Date > AiSeedData.Now + ShowcaseClock.MaxElapsed || entry.Messages is < 0 or > 100_000 || entry.Tokens is < 0 or > MaxQuota)
+                || entry.Date < AiSeedData.Now.Date.AddDays(-400) || entry.Date > AiSeedData.Now + ShowcaseClock.MaxElapsed || entry.Messages is < 0 or > 100_000 || entry.Tokens is < 0 or > MaxQuota)
             || !Unique(storedUsage.Select(UsageKey))
             || storedUsage.GroupBy(entry => (entry.AccountId, entry.Date.Year, entry.Date.Month)).Any(group => group.Sum(entry => (long)entry.Tokens) > MaxQuota))
             return false;
@@ -131,6 +154,9 @@ public sealed partial class AiState
 
         Replace(audit, storedAudit);
         Replace(conversations, storedConversations);
+        Replace(demoUsage, storedDemo);
+        Replace(dlpEvents, storedDlpEvents);
+        Replace(spendAlerts, storedAlerts);
         Replace(ledger, storedUsage);
         Replace(members, storedMembers);
         Replace(notifications, storedNotifications);
@@ -143,6 +169,7 @@ public sealed partial class AiState
         policy = storedPolicy;
         nextAuditId = snapshot.NextAuditId;
         nextConversationId = snapshot.NextConversationId;
+        nextDlpEventId = snapshot.NextDlpEventId;
         nextMemberId = snapshot.NextMemberId;
         nextMessageId = snapshot.NextMessageId;
         nextNotificationId = snapshot.NextNotificationId;
@@ -241,9 +268,14 @@ public sealed partial class AiState
         && left.Title == right.Title && left.UpdatedAt == right.UpdatedAt && left.Messages.Count == right.Messages.Count
         && left.Messages.Zip(right.Messages).All(pair => SameMessage(pair.First, pair.Second));
 
+    private static bool SameDlpEvent(AiDlpEvent left, AiDlpEvent right) =>
+        left.Id == right.Id && left.ActionTaken == right.ActionTaken && left.At == right.At && left.ConversationId == right.ConversationId && left.ConversationTitle == right.ConversationTitle
+        && left.Kind == right.Kind && left.Masked == right.Masked && left.MemberId == right.MemberId && left.Note == right.Note && left.ReviewedAt == right.ReviewedAt
+        && left.ReviewedBy == right.ReviewedBy && left.Status == right.Status;
+
     private static bool SameMember(AiMember left, AiMember right) =>
         left.Id == right.Id && left.AccountId == right.AccountId && left.Email == right.Email && left.JoinedAt == right.JoinedAt && left.Name == right.Name
-        && left.Role == right.Role && left.Status == right.Status;
+        && left.Role == right.Role && left.Status == right.Status && left.MonthlyCap == right.MonthlyCap;
 
     private static bool SameMessage(AiMessage left, AiMessage right) =>
         left.Id == right.Id && left.At == right.At && left.Feedback == right.Feedback && left.IsStopped == right.IsStopped && left.ModelId == right.ModelId
@@ -261,6 +293,10 @@ public sealed partial class AiState
 
     private static bool SameUsage(AiUsageEntry left, AiUsageEntry right) =>
         left.AccountId == right.AccountId && left.Date == right.Date && left.ModelId == right.ModelId && left.Messages == right.Messages && left.Tokens == right.Tokens;
+
+    /// <summary>A remembered spend alert: the scope (the workspace, or a member's number), the month, the level, and the cap.</summary>
+    [GeneratedRegex(@"^(w|m[0-9]{1,7})\|20[0-9]{2}-(0[1-9]|1[0-2])\|(80|100)\|[0-9]{1,9}$")]
+    private static partial Regex SpendAlertPattern();
 
     /// <summary>A ledger line's key: its account, model, and day.</summary>
     private static string UsageKey(AiUsageEntry entry) => $"{entry.AccountId}|{entry.ModelId}|{entry.Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}";
@@ -285,6 +321,18 @@ public sealed partial class AiState
     }
 
     /// <summary>
+    /// Checks a stored sensitive data event: its number, a known member, a defined kind, action, and status, a masked match of
+    /// the form the policy writes (so no raw value is ever restored), bounded text, and review details only once reviewed.
+    /// </summary>
+    private static bool ValidDlpEvent(AiDlpEvent? item, AiSnapshot snapshot, HashSet<int> memberIds) =>
+        item is not null && item.Id >= 1 && item.Id < snapshot.NextDlpEventId && memberIds.Contains(item.MemberId) && Enum.IsDefined(item.Kind) && Enum.IsDefined(item.ActionTaken)
+        && Enum.IsDefined(item.Status) && IsPlausible(item.At) && AiDlp.IsMasked(item.Kind, item.Masked) && item.ConversationId is null or >= 1
+        && item.ConversationTitle is { Length: <= MaxTitleLength } && item.Note is { Length: <= MaxReviewNoteLength }
+        && (item.Status == AiDlpStatus.New
+            ? item.ReviewedAt is null && item.ReviewedBy is null
+            : item.ReviewedAt is { } reviewed && IsPlausible(reviewed) && IsText(item.ReviewedBy, ShowcaseIdentity.MaxNameLength));
+
+    /// <summary>
     /// Checks the members: unique numbers, emails, and accounts; defined roles and statuses; an invitation has no account and
     /// isn't for Owner; and exactly one Owner, who is active and can sign in (so the workspace always has someone in charge).
     /// </summary>
@@ -292,15 +340,19 @@ public sealed partial class AiState
         !stored.Any(member => member is null || member.Id < 1 || member.Id >= snapshot.NextMemberId || !IsEmail(member.Email) || member.Email != member.Email.ToLowerInvariant()
                 || !IsText(member.Name, ShowcaseIdentity.MaxNameLength) || !Enum.IsDefined(member.Role) || !Enum.IsDefined(member.Status) || !IsPlausible(member.JoinedAt)
                 || (member.Status == AiMemberStatus.Invited && (member.AccountId is not null || member.Role == AiMemberRole.Owner))
-                || (member.AccountId is not null && !IsAccountId(member.AccountId)))
+                || (member.AccountId is not null && !IsAccountId(member.AccountId)) || member.MonthlyCap is < MinQuota or > MaxQuota)
         && Unique(stored.Select(member => member.Id)) && Unique(stored.Select(member => member.Email))
         && Unique(stored.Where(member => member.AccountId is not null).Select(member => member.AccountId))
         && stored.Count(member => member.Role == AiMemberRole.Owner) == 1
         && stored.Single(member => member.Role == AiMemberRole.Owner) is { Status: AiMemberStatus.Active, AccountId: not null };
 
-    /// <summary>Checks the policy: a name, known and unique enabled models with the default among them, and every limit in range.</summary>
+    /// <summary>
+    /// Checks the policy: a name, known and unique enabled models with the default among them, every limit in range, the
+    /// default member cap within the workspace cap, and one sensitive data rule per kind.
+    /// </summary>
     private bool ValidPolicy(AiPolicy? stored) =>
-        stored is not null && stored.WorkspaceName is { Length: >= MinWorkspaceNameLength and <= MaxWorkspaceNameLength } name && name == name.Trim()
+        stored is not null && stored.WorkspaceMonthlyCap is >= MinWorkspaceCap and <= MaxWorkspaceCap && stored.MonthlyTokenQuota <= stored.WorkspaceMonthlyCap
+        && ValidDlpRules(stored.DlpRules) && stored.WorkspaceName is { Length: >= MinWorkspaceNameLength and <= MaxWorkspaceNameLength } name && name == name.Trim()
         && stored.EnabledModelIds is { Count: > 0 } && stored.EnabledModelIds.All(id => FindModel(id) is not null) && Unique(stored.EnabledModelIds)
         && stored.EnabledModelIds.Contains(stored.DefaultModelId) && stored.MonthlyTokenQuota is >= MinQuota and <= MaxQuota
         && stored.MaxAttachmentMb is >= 1 and <= MaxAttachmentMb && stored.RetentionDays is >= 0 and <= MaxRetentionDays && stored.BlockedTerms is { Count: <= MaxBlockedTerms }
@@ -327,9 +379,10 @@ public sealed partial class AiState
     /// <summary>
     /// Gets the snapshot format version: 2 stores only what differs from the seed, and adds the group roles (Owner, Admin,
     /// Prompt editor, Member), member numbers, published and draft shared prompts with categories and variables, the
-    /// workspace name, the audit log, and notifications.
+    /// workspace name, the audit log, and notifications; 3 adds the spend caps (the workspace's, members' own, the demo
+    /// control's usage, and the alerts raised), older conversations, and the sensitive data policy and its review queue.
     /// </summary>
-    public int SnapshotVersion => 2;
+    public int SnapshotVersion => 3;
 
     #endregion
 
@@ -351,11 +404,19 @@ public sealed partial class AiState
         public List<AiConversation>? Conversations { get; set; }
 
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public List<AiDemoUsage>? DemoUsage { get; set; }
+
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public List<AiDlpEvent>? DlpEvents { get; set; }
+
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public List<AiMember>? Members { get; set; }
 
         public int NextAuditId { get; set; }
 
         public int NextConversationId { get; set; }
+
+        public int NextDlpEventId { get; set; }
 
         public int NextMemberId { get; set; }
 
@@ -384,6 +445,9 @@ public sealed partial class AiState
         public List<int>? RemovedConversationIds { get; set; }
 
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public List<int>? RemovedDlpEventIds { get; set; }
+
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public List<int>? RemovedMemberIds { get; set; }
 
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
@@ -394,6 +458,9 @@ public sealed partial class AiState
 
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public List<string>? RemovedUsageKeys { get; set; }
+
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public List<string>? SpendAlerts { get; set; }
 
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public List<AiUsageEntry>? Usage { get; set; }

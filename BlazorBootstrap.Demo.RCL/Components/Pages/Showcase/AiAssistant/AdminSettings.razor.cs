@@ -11,16 +11,20 @@ namespace BlazorBootstrap.Demo.RCL.Components.Pages.Showcase.AiAssistant;
 /// Models and policy of the Parley back office (Admins and the Owner) as one <see cref="EditForm" /> with Save and Reset
 /// (rule WR-002): the workspace name (required, <see cref="AiState.MinWorkspaceNameLength" /> to
 /// <see cref="AiState.MaxWorkspaceNameLength" /> characters), the enabled models (at least one) and the default (which must
-/// be one of the models that are on: a cross-field rule against the model policy), each member's monthly token quota (a
-/// range), attachments and their largest size (required in range while attachments are on: cross-field), retention (a
-/// range; the Owner only, read-only for Admins), and blocked terms (added in their own small form and removed in a list,
-/// kept in lower case). Messages show after a field is touched or on submit, with a summary linking each field. A retention
-/// that would delete conversations now asks first in a <see cref="Modal" /> naming how many. <see cref="AiState.SavePolicy" />'s
+/// be one of the models that are on: a cross-field rule against the model policy), attachments and their largest size
+/// (required in range while attachments are on: cross-field), retention (AC-4: keep forever, 30, 90, or 365 days, or a
+/// custom window of 1 to 3,650 days, with "N conversations of M members older than D days will be deleted" before saving;
+/// the Owner only, read-only for Admins), and blocked terms (added in their own small form and removed in a list, kept in
+/// lower case). The spend caps are on <see cref="AdminSpend" />, linked from here. Messages show after a field is touched or
+/// on submit, with a summary linking each field. A retention that would delete conversations now asks first in a
+/// <see cref="Modal" /> naming how many. <see cref="AiState.SavePolicy" />'s
 /// results are mapped to messages that say what changed; an unsaved-changes line names the sections that differ.
 /// </summary>
 public partial class AdminSettings : ComponentBase, IDisposable
 {
     #region Fields and Constants
+
+    private const string CustomValue = "custom";
 
     /// <summary>The Remove buttons of the blocked terms, for focus after a removal.</summary>
     private readonly Dictionary<string, ElementReference> removeButtons = new();
@@ -127,6 +131,9 @@ public partial class AdminSettings : ComponentBase, IDisposable
 
     private static string RetentionText(int days) => days == 0 ? "keep forever" : AdminMembers.Plural(days, "day");
 
+    /// <summary>A retention window as the form's choice: the days, or "custom".</summary>
+    private static string RetentionValue(int days) => days.ToString(CultureInfo.InvariantCulture);
+
     /// <summary>Adds a blocked term to the list once its form is valid (it is saved with the rest of the settings).</summary>
     private void AddTerm()
     {
@@ -164,9 +171,6 @@ public partial class AdminSettings : ComponentBase, IDisposable
         if (form.DefaultModelId != policy.DefaultModelId)
             list.Add("default model");
 
-        if (form.Quota != policy.MonthlyTokenQuota)
-            list.Add("quota");
-
         if (form.AllowAttachments != policy.AllowAttachments || (form.AllowAttachments && form.MaxAttachmentMb != policy.MaxAttachmentMb))
             list.Add("attachments");
 
@@ -203,7 +207,7 @@ public partial class AdminSettings : ComponentBase, IDisposable
             parts.Add($"default model: {State.FindModel(after.DefaultModelId)?.Name ?? after.DefaultModelId}");
 
         if (before.MonthlyTokenQuota != after.MonthlyTokenQuota)
-            parts.Add($"monthly quota: {Number(after.MonthlyTokenQuota)} tokens per member");
+            parts.Add($"default member cap: {Number(after.MonthlyTokenQuota)} tokens");
 
         if (before.AllowAttachments != after.AllowAttachments || (after.AllowAttachments && before.MaxAttachmentMb != after.MaxAttachmentMb))
             parts.Add(after.AllowAttachments ? $"attachments on, up to {after.MaxAttachmentMb} MB" : "attachments off");
@@ -230,10 +234,10 @@ public partial class AdminSettings : ComponentBase, IDisposable
             WorkspaceName = policy.WorkspaceName,
             EnabledModels = policy.EnabledModelIds.ToHashSet(StringComparer.Ordinal),
             DefaultModelId = policy.DefaultModelId,
-            Quota = policy.MonthlyTokenQuota,
             AllowAttachments = policy.AllowAttachments,
             MaxAttachmentMb = policy.MaxAttachmentMb,
-            RetentionDays = policy.RetentionDays,
+            RetentionChoice = RetentionOptions.Any(option => option.Value == RetentionValue(policy.RetentionDays)) ? RetentionValue(policy.RetentionDays) : CustomValue,
+            CustomDays = RetentionOptions.Any(option => option.Value == RetentionValue(policy.RetentionDays)) ? null : policy.RetentionDays,
             Terms = policy.BlockedTerms.ToList(),
             ModelNames = State.Models.ToDictionary(model => model.Id, model => model.Name),
         };
@@ -267,20 +271,6 @@ public partial class AdminSettings : ComponentBase, IDisposable
 
     private void OnStateChanged() => InvokeAsync(StateHasChanged);
 
-    /// <summary>Says how many active members already used more than the quota in the form, when it differs from the saved one.</summary>
-    private string? QuotaPreview()
-    {
-        if (form.Quota is not { } quota || quota is < AiState.MinQuota or > AiState.MaxQuota || quota == State.Policy.MonthlyTokenQuota)
-            return null;
-
-        var usage = State.MonthUsageByEmail();
-        var over = State.Members.Count(member => member.Status == AiMemberStatus.Active && usage.TryGetValue(member.Email, out var used) && used.Tokens >= quota);
-
-        return over == 0
-            ? $"With {Number(quota)}, no active member has used it up this month."
-            : $"With {Number(quota)}, {AdminMembers.Plural(over, "active member")} already used it up this month and can't send messages until next month.";
-    }
-
     /// <summary>Removes a blocked term from the list; focus moves to the next term's Remove button, or to the input.</summary>
     private void RemoveTerm(string term)
     {
@@ -303,17 +293,20 @@ public partial class AdminSettings : ComponentBase, IDisposable
         focusStatus = true;
     }
 
-    /// <summary>Says how many conversations a retention in the form would delete now.</summary>
+    /// <summary>Says how many conversations the retention window in the form would delete now (AC-4), before it is applied.</summary>
     private string? RetentionPreview()
     {
-        if (form.RetentionDays is not { } days || days is <= 0 or > AiState.MaxRetentionDays)
+        if (form.RetentionDays is not { } days || days > AiState.MaxRetentionDays || days == State.Policy.RetentionDays)
             return null;
+
+        if (days <= 0)
+            return "Keep forever deletes nothing.";
 
         var count = State.ConversationsOlderThan(days);
 
         return count == 0
-            ? $"With {AdminMembers.Plural(days, "day")}, no conversation is old enough to be deleted now."
-            : $"With {AdminMembers.Plural(days, "day")}, {AdminMembers.Plural(count, "conversation")} would be deleted when you save.";
+            ? $"No conversation is older than {AdminMembers.Plural(days, "day")}, so nothing would be deleted."
+            : $"{AdminMembers.Plural(count, "conversation")} of {AdminMembers.Plural(State.MembersWithConversationsOlderThan(days), "member")} older than {AdminMembers.Plural(days, "day")} will be deleted when you save.";
     }
 
     /// <summary>Checks the form (a failed submit shows the summary); when retention would delete conversations now, asks first; otherwise saves.</summary>
@@ -349,7 +342,7 @@ public partial class AdminSettings : ComponentBase, IDisposable
 
         var before = State.Policy;
         var models = State.Models.Where(model => form.EnabledModels.Contains(model.Id)).Select(model => model.Id).ToList();
-        var input = new AiPolicyInput(form.WorkspaceName, models, form.DefaultModelId ?? string.Empty, form.Quota ?? 0, form.AllowAttachments,
+        var input = new AiPolicyInput(form.WorkspaceName, models, form.DefaultModelId ?? string.Empty, State.Policy.MonthlyTokenQuota, form.AllowAttachments,
             form.AllowAttachments ? form.MaxAttachmentMb ?? 0 : form.MaxAttachmentMb is >= 1 and <= AiState.MaxAttachmentMb ? form.MaxAttachmentMb.Value : before.MaxAttachmentMb,
             form.RetentionDays ?? 0, form.Terms.ToList());
 
@@ -376,7 +369,7 @@ public partial class AdminSettings : ComponentBase, IDisposable
                 return;
 
             case AiResult.NotAllowed when form.RetentionDays != before.RetentionDays && State.Can(AiPermission.ManageSettings):
-                ServerError(() => form.RetentionDays, $"Only the Owner ({State.OwnerName}) changes retention. Put it back to {before.RetentionDays} to save the rest.");
+                ServerError(() => form.RetentionChoice, $"Only the Owner ({State.OwnerName}) changes retention. Put it back to {RetentionText(before.RetentionDays)} to save the rest.");
 
                 return;
 
@@ -428,6 +421,12 @@ public partial class AdminSettings : ComponentBase, IDisposable
 
     #region Properties, Indexers
 
+    /// <summary>The retention windows to choose from (AC-4), and a custom one.</summary>
+    private static IReadOnlyList<(string Value, string Text)> RetentionOptions { get; } = new[]
+    {
+        ("0", "Keep forever"), ("30", "30 days"), ("90", "90 days"), ("365", "365 days"), (CustomValue, "Custom"),
+    };
+
     [Inject] private AiState State { get; set; } = default!;
 
     private bool TermsChanged => !form.Terms.SequenceEqual(State.Policy.BlockedTerms);
@@ -454,13 +453,14 @@ public partial class AdminSettings : ComponentBase, IDisposable
         /// <summary>The models' names, for messages.</summary>
         public Dictionary<string, string> ModelNames { get; set; } = new();
 
-        [Required(ErrorMessage = "Enter the monthly tokens per member.")]
-        [Range(AiState.MinQuota, AiState.MaxQuota, ErrorMessage = "Use from 1,000 to 10,000,000 tokens per member.")]
-        public int? Quota { get; set; }
+        [Range(1, AiState.MaxRetentionDays, ErrorMessage = "Use from 1 to 3,650 days for a custom window.")]
+        public int? CustomDays { get; set; }
 
-        [Required(ErrorMessage = "Enter the number of days, or 0 to keep conversations forever.")]
-        [Range(0, AiState.MaxRetentionDays, ErrorMessage = "Use from 0 to 3,650 days.")]
-        public int? RetentionDays { get; set; }
+        [Required(ErrorMessage = "Choose how long to keep conversations.")]
+        public string RetentionChoice { get; set; } = "0";
+
+        /// <summary>Gets the retention window the form asks for: 0 keeps forever, the custom days, or a fixed window.</summary>
+        public int? RetentionDays => RetentionChoice == CustomValue ? CustomDays : int.TryParse(RetentionChoice, NumberStyles.Integer, CultureInfo.InvariantCulture, out var days) ? days : null;
 
         public List<string> Terms { get; set; } = new();
 
@@ -477,6 +477,9 @@ public partial class AdminSettings : ComponentBase, IDisposable
                 yield return new ValidationResult(
                     $"Choose the default among the models that are on{(DefaultModelId is not null && ModelNames.TryGetValue(DefaultModelId, out var name) ? $": {name} is off" : null)}.",
                     new[] { nameof(DefaultModelId) });
+
+            if (RetentionChoice == CustomValue && CustomDays is null)
+                yield return new ValidationResult("Enter the number of days for the custom window, like 180.", new[] { nameof(CustomDays) });
 
             if (AllowAttachments && MaxAttachmentMb is null)
                 yield return new ValidationResult("Enter the largest file size in MB while attachments are on, like 10.", new[] { nameof(MaxAttachmentMb) });

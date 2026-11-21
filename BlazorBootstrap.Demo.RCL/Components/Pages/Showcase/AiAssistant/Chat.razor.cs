@@ -69,6 +69,9 @@ public partial class Chat : ComponentBase, IDisposable
     /// <summary>The element that gets focus back when the dialog closes.</summary>
     private ElementReference? dialogOpener;
 
+    /// <summary>The kinds of sensitive data the last refused message held, so "Remove it and try again" can take them out.</summary>
+    private IReadOnlyList<AiDlpKind> blockedKinds = Array.Empty<AiDlpKind>();
+
     private string draft = string.Empty;
 
     private Offcanvas drawer = default!;
@@ -254,6 +257,9 @@ public partial class Chat : ComponentBase, IDisposable
 
     private static string Number(int value) => value.ToString("#,0", CultureInfo.InvariantCulture);
 
+    /// <summary>The day the monthly caps start again, like "December 1".</summary>
+    private string ResetText => new DateTime(State.Clock.Now.Year, State.Clock.Now.Month, 1).AddMonths(1).ToString("MMMM d", CultureInfo.InvariantCulture);
+
     private void Announce(bool ok, string message)
     {
         statusIsError = !ok;
@@ -388,6 +394,22 @@ public partial class Chat : ComponentBase, IDisposable
         }
 
         draft = value;
+    }
+
+    /// <summary>
+    /// Takes the sensitive data out of the message box (every match of the policy's patterns becomes its placeholder, like
+    /// "[card number removed]"), so the member can check the message and send it again.
+    /// </summary>
+    private void RemoveSensitiveData()
+    {
+        var matches = AiDlp.Find(draft, State.Policy.DlpRules);
+        var kinds = blockedKinds;
+        draft = AiDlp.Redact(draft, matches);
+        blockedKinds = Array.Empty<AiDlpKind>();
+        focusTarget = () => composerInput;
+        Announce(true, matches.Count == 0
+            ? "There's nothing left to remove. Check the message, then send it."
+            : $"Removed {string.Join(" and ", kinds.Select(AiDlp.KindArticle))} from your message. Check it, then send it again.");
     }
 
     /// <summary>
@@ -602,7 +624,8 @@ public partial class Chat : ComponentBase, IDisposable
             AiResult.WrongState => conversation.Messages.LastOrDefault() is { } last && State.IsStreaming(last)
                 ? "Wait for the answer to finish (or stop it) before regenerating."
                 : $"Not regenerated: {ModelName(conversation.ModelId)} was turned off by a workspace admin. Choose another model, then try again.",
-            AiResult.OverQuota => $"Not regenerated: a new reply would pass your monthly quota of {AiDisplay.Tokens(State.Policy.MonthlyTokenQuota)} tokens. A workspace admin can raise the quota.",
+            AiResult.OverQuota => $"Not regenerated: you've used your monthly cap of {AiDisplay.Tokens(State.CurrentSpend?.Cap ?? 0)} tokens. Ask an Admin or {State.OwnerName} (the Owner) to raise it.",
+            AiResult.WorkspaceCapReached => $"Not regenerated: {State.WorkspaceName} used its monthly cap, so chat is paused for everyone. Ask an Admin or {State.OwnerName} (the Owner) to raise it.",
             AiResult.Invalid => "Not regenerated: this tab's storage is full. Delete a conversation to make room.",
             AiResult.NotFound => "This conversation was deleted, so nothing was regenerated.",
             _ => "Sign in as an active member to regenerate replies. Nothing changed.",
@@ -689,11 +712,12 @@ public partial class Chat : ComponentBase, IDisposable
 
         var files = attachments.ToList();
         var modelId = SelectedModelId;
-        var result = State.Send(existing?.Id ?? 0, trimmed, files, modelId, out var conversation, out _);
+        var result = State.Send(existing?.Id ?? 0, trimmed, files, modelId, out var conversation, out _, out var dlp);
+        blockedKinds = result == AiResult.SensitiveBlocked && dlp is not null ? dlp.Blocked : Array.Empty<AiDlpKind>();
 
         if (result != AiResult.Ok || conversation is null)
         {
-            Announce(false, SendFailure(result, trimmed, files, modelId, existing));
+            Announce(false, SendFailure(result, trimmed, files, modelId, existing, dlp));
             return;
         }
 
@@ -702,6 +726,11 @@ public partial class Chat : ComponentBase, IDisposable
         fileInputKey++;
         statusMessage = null;
         statusIsError = false;
+
+        // A redacted message was sent without the data: the member is told which kind was taken out (never the data itself).
+        if (dlp is { Redacted.Count: > 0 })
+            Announce(true, $"Sent without {string.Join(" and ", dlp.Redacted.Select(AiDlp.KindArticle))}: your workspace's policy replaced it with a placeholder, and an admin can review it.");
+
         followStream = scrollToEnd = true;
         TrackStreaming();
 
@@ -713,15 +742,23 @@ public partial class Chat : ComponentBase, IDisposable
     }
 
     /// <summary>Returns the message for a refused send, naming the limit or the setting that stopped it.</summary>
-    private string SendFailure(AiResult result, string text, IReadOnlyList<AiAttachment> files, string modelId, AiConversation? existing)
+    private string SendFailure(AiResult result, string text, IReadOnlyList<AiAttachment> files, string modelId, AiConversation? existing, AiDlpCheck? dlp)
     {
         switch (result)
         {
             case AiResult.OverQuota:
-                var used = State.CurrentMember is { } member ? State.MonthTokens(member.Email) : 0;
+                return State.CurrentSpend is { } spend
+                    ? $"Not sent: you've used your monthly cap of {AiDisplay.Tokens(spend.Cap)} tokens ({AiDisplay.Tokens(spend.Used)} this month). Ask an Admin or {State.OwnerName} (the Owner) to raise it, or wait until {ResetText}."
+                    : "Not sent: you've used your monthly cap.";
 
-                return $"Not sent: this message and its reply would pass your monthly quota of {AiDisplay.Tokens(State.Policy.MonthlyTokenQuota)} tokens "
-                    + $"(you've used {AiDisplay.Tokens(used)} this month). A workspace admin can raise the quota.";
+            case AiResult.WorkspaceCapReached:
+                return $"Not sent: {State.WorkspaceName} used its monthly cap of {AiDisplay.Tokens(State.WorkspaceSpend.Cap)} tokens, so chat is paused for everyone. Ask an Admin or {State.OwnerName} (the Owner) to raise it.";
+
+            case AiResult.SensitiveBlocked:
+                var kinds = dlp?.Blocked ?? Array.Empty<AiDlpKind>();
+
+                return $"Not sent: your message holds {(kinds.Count == 0 ? "data your workspace protects" : string.Join(" and ", kinds.Select(AiDlp.KindArticle)))}, which your workspace's policy blocks. "
+                    + "Nothing was sent or kept, and an admin can review the event. Remove it and try again.";
 
             case AiResult.WrongState:
                 return files.Count > 0 && !State.Policy.AllowAttachments

@@ -1,0 +1,33 @@
+/* Sensitive data review: the policy's patterns side by side, the review dialog's facts. The queue's Grid is styled from AiFrame. */
+.pa-dlp-rule {
+    padding: .75rem 1rem;
+    border: 1px solid var(--pa-border);
+    border-radius: .75rem;
+}
+
+#pa-dlp-policy:focus {
+    outline: none;
+}
+
+/* Inside the Modal component, so ::deep from the page. */
+::deep .pa-dlp-dialog-title {
+    overflow-wrap: anywhere;
+}
+
+.pa-dlp-facts {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+    gap: .5rem 1rem;
+    margin-bottom: 1rem;
+}
+
+    .pa-dlp-facts dt {
+        font-size: .75rem;
+        font-weight: 600;
+        color: var(--bs-secondary-color);
+    }
+
+    .pa-dlp-facts dd {
+        margin: 0;
+        overflow-wrap: anywhere;
+    }

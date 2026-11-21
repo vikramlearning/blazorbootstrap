@@ -21,7 +21,8 @@ public sealed partial class AiState
     {
         AiPermission.UseAssistant => true,
         AiPermission.ManageSharedPrompts => role >= AiMemberRole.PromptEditor,
-        AiPermission.ViewAnalytics or AiPermission.ManageMembers or AiPermission.ManageSettings or AiPermission.ViewAudit => role >= AiMemberRole.Admin,
+        AiPermission.ViewAnalytics or AiPermission.ManageMembers or AiPermission.ManageSettings or AiPermission.ViewAudit or AiPermission.ManageSpend
+            or AiPermission.ReviewSensitiveData => role >= AiMemberRole.Admin,
         AiPermission.ManageRetention or AiPermission.TransferOwnership => role == AiMemberRole.Owner,
         _ => false,
     };
@@ -363,10 +364,10 @@ public sealed partial class AiState
     private bool IsSelf(AiMember member) => member.AccountId is not null && member.AccountId == Identity.Current?.Id;
 
     /// <summary>Tells the Owner and the active admins who can sign in (except whoever caused it).</summary>
-    private void NotifyManagers(string title, string text, string? link)
+    private void NotifyManagers(string title, string text, string? link, bool fromSystem = false)
     {
         foreach (var manager in members.Where(member => member.Status == AiMemberStatus.Active && RoleAllows(member.Role, AiPermission.ManageMembers)).ToList())
-            Notify(manager.AccountId, title, text, link);
+            Notify(manager.AccountId, title, text, link, fromSystem);
     }
 
     /// <summary>The workspace's Owner.</summary>

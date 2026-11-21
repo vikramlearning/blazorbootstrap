@@ -120,6 +120,12 @@ public sealed partial class AiState : IShowcaseEnterpriseState
 
     private readonly List<AiConversation> conversations;
 
+    /// <summary>The demo control's tokens, by member, model, and day.</summary>
+    private readonly List<AiDemoUsage> demoUsage = new();
+
+    /// <summary>The sensitive data events (the review queue).</summary>
+    private readonly List<AiDlpEvent> dlpEvents;
+
     private readonly List<AiUsageEntry> ledger;
 
     private readonly List<AiMember> members;
@@ -129,6 +135,9 @@ public sealed partial class AiState : IShowcaseEnterpriseState
     private readonly Dictionary<string, AiPreferences> preferences = new();
 
     private readonly List<AiPrompt> prompts;
+
+    /// <summary>The spend alerts already raised, like "m4|2026-11|80|150000", so each cap warns once a month.</summary>
+    private readonly List<string> spendAlerts = new();
 
     /// <summary>How many bulk changes are running; <see cref="Changed" /> is raised once when the outermost one ends.</summary>
     private int batchDepth;
@@ -140,6 +149,8 @@ public sealed partial class AiState : IShowcaseEnterpriseState
     private int nextAuditId;
 
     private int nextConversationId;
+
+    private int nextDlpEventId;
 
     private int nextMemberId;
 
@@ -161,6 +172,7 @@ public sealed partial class AiState : IShowcaseEnterpriseState
         var data = AiSeedData.Build();
         audit = data.Audit;
         conversations = data.Conversations;
+        dlpEvents = data.DlpEvents;
         ledger = data.Usage;
         members = data.Members;
         notifications = data.Notifications;
@@ -248,8 +260,8 @@ public sealed partial class AiState : IShowcaseEnterpriseState
         var variant = (last.Variant + 1) % AiReplies.VariantCount(key);
         var tokens = AiSeedData.TokensOf(AiReplies.Render(key, variant, model));
 
-        if (MonthTokens(MemberEmail()) + tokens > policy.MonthlyTokenQuota)
-            return AiResult.OverQuota;
+        if (CurrentMember is { } member && SpendBlock(member) is { } capped)
+            return capped;
 
         if (nextMessageId >= NextIdLimit)
             return AiResult.Invalid;
@@ -272,6 +284,7 @@ public sealed partial class AiState : IShowcaseEnterpriseState
         conversation.ModelId = model.Id;
         conversation.UpdatedAt = Clock.Now;
         reply = created;
+        CheckSpendAlerts(CurrentMember);
         RaiseChanged();
 
         return AiResult.Ok;
@@ -340,6 +353,9 @@ public sealed partial class AiState : IShowcaseEnterpriseState
             || terms.Count > MaxBlockedTerms || terms.Any(term => term.Length > MaxBlockedTermLength))
             return AiResult.Invalid;
 
+        if (input.MonthlyTokenQuota > policy.WorkspaceMonthlyCap)
+            return AiResult.AboveWorkspaceCap;
+
         // Retention deletes every member's conversations, so only the Owner changes it.
         if (input.RetentionDays != policy.RetentionDays && !Can(AiPermission.ManageRetention))
             return AiResult.NotAllowed;
@@ -348,7 +364,8 @@ public sealed partial class AiState : IShowcaseEnterpriseState
         var after = new AiPolicy
         {
             WorkspaceName = name, EnabledModelIds = enabled, DefaultModelId = input.DefaultModelId, MonthlyTokenQuota = input.MonthlyTokenQuota, AllowAttachments = input.AllowAttachments,
-            MaxAttachmentMb = input.MaxAttachmentMb, RetentionDays = input.RetentionDays, BlockedTerms = terms,
+            MaxAttachmentMb = input.MaxAttachmentMb, RetentionDays = input.RetentionDays, BlockedTerms = terms, WorkspaceMonthlyCap = policy.WorkspaceMonthlyCap,
+            DlpRules = policy.DlpRules,
         };
 
         if (SamePolicy(before, after))
@@ -410,14 +427,19 @@ public sealed partial class AiState : IShowcaseEnterpriseState
     /// <summary>
     /// Sends a message (plain text, up to <see cref="MaxMessageLength" /> characters, with up to <see cref="MaxAttachments" />
     /// attachments' names and sizes) to one of the member's conversations, or starts one (<paramref name="conversationId" />
-    /// 0, titled from the text). The assistant's reply is added at once and streams by the clock. A prompt with a blocked
-    /// term gets the policy refusal. OverQuota: this month's tokens would pass the quota; WrongState: the model is turned off
-    /// or attachments are off. Chat content is never audited.
+    /// 0, titled from the text). The assistant's reply is added at once and streams by the clock; it never repeats the message.
+    /// A prompt with a blocked term gets the policy refusal. The spend caps block at 100 %: OverQuota for the member's own cap,
+    /// WorkspaceCapReached for the workspace's. The sensitive data policy (<see cref="AiDlp" />) runs on the text: a match it
+    /// blocks refuses the message (SensitiveBlocked) and a match it redacts is replaced before anything is kept; either goes to
+    /// the review queue, and <paramref name="dlp" /> says which kinds. WrongState: the model is turned off or attachments are
+    /// off. Chat content is never audited.
     /// </summary>
-    public AiResult Send(int conversationId, string text, IReadOnlyList<AiAttachment> attachments, string modelId, out AiConversation? conversation, out AiMessage? reply)
+    public AiResult Send(int conversationId, string text, IReadOnlyList<AiAttachment> attachments, string modelId, out AiConversation? conversation, out AiMessage? reply,
+        out AiDlpCheck? dlp)
     {
         conversation = null;
         reply = null;
+        dlp = null;
 
         if (ActiveAccount() is not { } account)
             return AiResult.NotAllowed;
@@ -443,14 +465,39 @@ public sealed partial class AiState : IShowcaseEnterpriseState
         if (existing is not null && existing.Messages.Count + 2 > MaxMessages)
             return AiResult.Invalid;
 
+        if (CurrentMember is not { } sender)
+            return AiResult.NotAllowed;
+
+        if (SpendBlock(sender) is { } capped)
+            return capped;
+
+        // Sensitive data: a blocked match stops the message (only the kind and the masked match are kept); redacted matches are replaced first.
+        var matches = AiDlp.Find(text, policy.DlpRules);
+        var blocked = matches.Where(match => match.Action == AiDlpAction.Block).ToList();
+        var redacted = matches.Where(match => match.Action == AiDlpAction.Redact).ToList();
+
+        if (blocked.Count > 0)
+        {
+            dlp = new AiDlpCheck(blocked.Select(match => match.Kind).Distinct().ToList(), Array.Empty<AiDlpKind>());
+            RecordDlpEvents(sender, existing, blocked, AiDlpAction.Block);
+            RaiseChanged();
+
+            return AiResult.SensitiveBlocked;
+        }
+
+        if (redacted.Count > 0)
+        {
+            text = AiDlp.Redact(text, redacted);
+
+            if (text.Length > MaxMessageLength)
+                return AiResult.Invalid;
+        }
+
         var isBlocked = policy.BlockedTerms.Any(term => text.Contains(term, StringComparison.OrdinalIgnoreCase));
         var key = AiReplies.Pick(text, files.Count > 0, isBlocked);
         var variant = (int)(AiSeedData.Hash(nextMessageId, text.Length, 7) * AiReplies.VariantCount(key)) % AiReplies.VariantCount(key);
         var userTokens = AiSeedData.TokensOf(text) + (files.Count * AttachmentTokens);
         var replyTokens = AiSeedData.TokensOf(AiReplies.Render(key, variant, model));
-
-        if (MonthTokens(MemberEmail()) + userTokens + replyTokens > policy.MonthlyTokenQuota)
-            return AiResult.OverQuota;
 
         if (nextMessageId >= NextIdLimit - 2 || (existing is null && nextConversationId >= NextIdLimit))
             return AiResult.Invalid;
@@ -495,6 +542,14 @@ public sealed partial class AiState : IShowcaseEnterpriseState
 
         conversation = target;
         reply = replyMessage;
+
+        if (redacted.Count > 0)
+        {
+            dlp = new AiDlpCheck(Array.Empty<AiDlpKind>(), redacted.Select(match => match.Kind).Distinct().ToList());
+            RecordDlpEvents(sender, target, redacted, AiDlpAction.Redact);
+        }
+
+        CheckSpendAlerts(sender);
         RaiseChanged();
 
         return AiResult.Ok;
@@ -608,6 +663,11 @@ public sealed partial class AiState : IShowcaseEnterpriseState
 
         var emails = members.Where(member => member.AccountId is not null).ToDictionary(member => member.AccountId!, member => member.Email);
 
+        var byId = members.ToDictionary(member => member.Id);
+
+        points.AddRange(demoUsage.Where(line => byId.TryGetValue(line.MemberId, out var owner) && (email is null || owner.Email == email))
+            .Select(line => new AiUsagePoint(line.Date, byId[line.MemberId].Email, line.ModelId, 0, line.Tokens)));
+
         points.AddRange(ledger.Where(entry => emails.TryGetValue(entry.AccountId, out var owner) && (email is null || owner == email))
             .Select(entry => new AiUsagePoint(entry.Date, emails[entry.AccountId], entry.ModelId, entry.Messages, entry.Tokens)));
 
@@ -688,7 +748,9 @@ public sealed partial class AiState : IShowcaseEnterpriseState
     private static bool SamePolicy(AiPolicy left, AiPolicy right) =>
         left.WorkspaceName == right.WorkspaceName && left.EnabledModelIds.Order().SequenceEqual(right.EnabledModelIds.Order()) && left.DefaultModelId == right.DefaultModelId
         && left.MonthlyTokenQuota == right.MonthlyTokenQuota && left.AllowAttachments == right.AllowAttachments && left.MaxAttachmentMb == right.MaxAttachmentMb
-        && left.RetentionDays == right.RetentionDays && left.BlockedTerms.SequenceEqual(right.BlockedTerms);
+        && left.RetentionDays == right.RetentionDays && left.BlockedTerms.SequenceEqual(right.BlockedTerms) && left.WorkspaceMonthlyCap == right.WorkspaceMonthlyCap
+        && left.DlpRules.Count == right.DlpRules.Count
+        && left.DlpRules.Zip(right.DlpRules).All(pair => pair.First.Kind == pair.Second.Kind && pair.First.Enabled == pair.Second.Enabled && pair.First.Action == pair.Second.Action);
 
     [GeneratedRegex("^[a-z0-9][a-z0-9-]*$")]
     private static partial Regex TagPattern();
@@ -716,10 +778,6 @@ public sealed partial class AiState : IShowcaseEnterpriseState
     /// <summary>The signed-in account when it is an active member, or <see langword="null" />.</summary>
     private ShowcaseAccount? ActiveAccount() =>
         Identity.Current is { } account && members.Any(member => member.AccountId == account.Id && member.Status == AiMemberStatus.Active) ? account : null;
-
-    /// <summary>Deletes conversations that haven't changed within the retention period; returns how many (the caller audits it).</summary>
-    private int ApplyRetention() =>
-        policy.RetentionDays <= 0 ? 0 : conversations.RemoveAll(conversation => conversation.UpdatedAt < Clock.Now.AddDays(-policy.RetentionDays));
 
     /// <summary>Whether the snapshot, as it would be saved now, still fits under <see cref="MaxSnapshotLength" />.</summary>
     private bool FitsSnapshot()
@@ -783,6 +841,9 @@ public sealed partial class AiState : IShowcaseEnterpriseState
             }
         }
 
+        if (CurrentMember is { Status: AiMemberStatus.Active } signedIn)
+            CheckSpendAlerts(signedIn);
+
         if (ApplyRetention() is > 0 and var deleted)
             Record("Applied retention", "Models and policy", SettingsPath, FormattableString.Invariant($"{deleted} conversations older than {policy.RetentionDays} days deleted"), system: true);
 
@@ -836,6 +897,7 @@ public sealed partial class AiState : IShowcaseEnterpriseState
     {
         nextAuditId = data.Audit.Count == 0 ? 1 : data.Audit.Max(entry => entry.Id) + 1;
         nextConversationId = data.Conversations.Max(conversation => conversation.Id) + 1;
+        nextDlpEventId = data.DlpEvents.Count == 0 ? 1 : data.DlpEvents.Max(item => item.Id) + 1;
         nextMemberId = data.Members.Max(member => member.Id) + 1;
         nextMessageId = data.Conversations.SelectMany(conversation => conversation.Messages).Max(message => message.Id) + 1;
         nextNotificationId = data.Notifications.Count == 0 ? 1 : data.Notifications.Max(notice => notice.Id) + 1;

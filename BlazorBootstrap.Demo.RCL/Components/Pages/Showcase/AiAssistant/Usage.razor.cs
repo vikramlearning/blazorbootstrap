@@ -5,11 +5,12 @@ using BlazorBootstrap.Demo.RCL.Services.Showcase.AiAssistant;
 namespace BlazorBootstrap.Demo.RCL.Components.Pages.Showcase.AiAssistant;
 
 /// <summary>
-/// The signed-in member's usage (<see cref="AiState.Usage" />): this month's tokens against the workspace's monthly quota
-/// (<see cref="AiPolicy.MonthlyTokenQuota" />) as a progress bar and in words, with a warning in words from 80 % and when
+/// The signed-in member's usage (<see cref="AiState.Usage" />): this month's tokens against their monthly spend cap (their
+/// own, or the default; <see cref="AiState.CurrentSpend" />) as a progress bar and in words, with a warning in words from 80 % and when
 /// over; messages sent this month, conversations, and the most used model; a bar chart of tokens per day over the last 30
 /// days; and tokens by model this month. Each chart has a summary in words and a table of its data. The figures are worked
-/// out on every render, so the page follows the quota when an admin changes it and the member's messages from the chat.
+/// out on every render, so the page follows the cap when an admin changes it and the member's messages from the chat. The
+/// workspace's own cap is said too when it is at 80 % or more.
 /// </summary>
 public partial class Usage : ComponentBase, IDisposable
 {
@@ -58,7 +59,7 @@ public partial class Usage : ComponentBase, IDisposable
         var today = now.Date;
         var points = State.Usage(State.CurrentMember?.Email ?? string.Empty);
         var monthPoints = points.Where(point => point.Date.Year == now.Year && point.Date.Month == now.Month).ToList();
-        var quota = State.Policy.MonthlyTokenQuota;
+        var quota = (int)Math.Min(int.MaxValue, State.CurrentSpend?.Cap ?? State.Policy.MonthlyTokenQuota);
         var monthTokens = (long)monthPoints.Sum(point => (long)point.Tokens);
         var percent = quota <= 0 ? 0 : monthTokens * 100d / quota;
         var level = monthTokens >= quota ? QuotaLevel.Over : percent >= WarningPercent ? QuotaLevel.Warning : QuotaLevel.Normal;
@@ -66,8 +67,8 @@ public partial class Usage : ComponentBase, IDisposable
         var percentText = percent.ToString(percent < 10 ? "0.#" : "0", CultureInfo.InvariantCulture) + "%";
 
         var quotaText = monthTokens >= quota
-            ? $"You've used {Count(monthTokens)} tokens of your {Count(quota)}-token quota ({percentText}): {Count(monthTokens - quota)} over. It resets on {resetText}."
-            : $"You've used {Count(monthTokens)} of {Count(quota)} tokens ({percentText}). {Count(quota - monthTokens)} are left until the quota resets on {resetText}.";
+            ? $"You've used {Count(monthTokens)} tokens of your {Count(quota)}-token monthly cap ({percentText}): chat is paused. It starts again on {resetText}."
+            : $"You've used {Count(monthTokens)} of {Count(quota)} tokens ({percentText}). {Count(quota - monthTokens)} are left until your cap starts again on {resetText}.";
 
         var days = Enumerable.Range(0, 30)
             .Select(offset => today.AddDays(offset - 29))

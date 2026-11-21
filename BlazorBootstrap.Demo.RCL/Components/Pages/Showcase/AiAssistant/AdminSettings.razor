@@ -94,19 +94,13 @@
 
             <div class="row g-4 mb-4">
                 <div class="col-xl-4">
-                    <section class="pa-panel h-100" aria-labelledby="pa-adset-quota-title">
-                        <h2 class="pa-section-title" id="pa-adset-quota-title">Quota</h2>
-                        <label class="form-label fw-semibold" for="pa-adset-quota">Monthly tokens per member</label>
-                        <InputNumber id="pa-adset-quota" class="form-control pa-mono" @bind-Value="form.Quota" min="@AiState.MinQuota" max="@AiState.MaxQuota" step="1000"
-                                     ParsingErrorMessage="Enter the monthly tokens per member as a whole number, like 200000." aria-describedby="pa-adset-quota-help" />
-                        <div class="form-text" id="pa-adset-quota-help">
-                            From @AiDisplay.Tokens(AiState.MinQuota) to @AiDisplay.Tokens(AiState.MaxQuota) tokens. Saved now: @AiDisplay.Tokens(policy.MonthlyTokenQuota).
-                            @if (QuotaPreview() is { } quotaPreview)
-                            {
-                                <span class="d-block mt-1">@quotaPreview</span>
-                            }
-                        </div>
-                        <ValidationMessage For="() => form.Quota" />
+                    <section class="pa-panel h-100" aria-labelledby="pa-adset-spend-title">
+                        <h2 class="pa-section-title" id="pa-adset-spend-title">Spend caps</h2>
+                        <p class="mb-2">
+                            Every member can use @AiDisplay.Tokens(policy.MonthlyTokenQuota) tokens a month unless they have their own cap, and the whole workspace
+                            @AiDisplay.Tokens(policy.WorkspaceMonthlyCap) (@State.WorkspaceSpend.Percent.ToString("0", CultureInfo.InvariantCulture)% used this month).
+                        </p>
+                        <a class="btn btn-sm btn-outline-primary" href="@($"{AiAdminLayout.Base}/spend")"><Icon Name="IconName.PiggyBank" class="me-1" aria-hidden="true" />Set the caps on Spend</a>
                     </section>
                 </div>
 
@@ -133,26 +127,40 @@
                 <div class="col-xl-4">
                     <section class="pa-panel h-100" aria-labelledby="pa-adset-retention-title">
                         <h2 class="pa-section-title" id="pa-adset-retention-title">Retention</h2>
-                        <label class="form-label fw-semibold" for="pa-adset-retention">Delete conversations unchanged for (days)</label>
-                        <InputNumber id="pa-adset-retention" class="form-control pa-mono" @bind-Value="form.RetentionDays" min="0" max="@AiState.MaxRetentionDays" step="1"
-                                     disabled="@(!canRetain)" ParsingErrorMessage="Enter the number of days as a whole number, or 0 to keep conversations forever."
+                        <fieldset aria-describedby="pa-adset-retention-help">
+                            <legend class="form-label fw-semibold fs-6 mb-1">Keep conversations</legend>
+                            <InputRadioGroup @bind-Value="form.RetentionChoice">
+                                @foreach (var option in RetentionOptions)
+                                {
+                                    var inputId = $"pa-adset-retention-{option.Value}";
+                                    <div class="form-check" @key="option.Value">
+                                        <InputRadio class="form-check-input" id="@inputId" Value="option.Value" disabled="@(!canRetain)" />
+                                        <label class="form-check-label" for="@inputId">@option.Text</label>
+                                    </div>
+                                }
+                            </InputRadioGroup>
+                            <ValidationMessage For="() => form.RetentionChoice" />
+                        </fieldset>
+                        <label class="form-label fw-semibold mt-2" for="pa-adset-retention-days">Custom window (days)</label>
+                        <InputNumber id="pa-adset-retention-days" class="form-control pa-mono" @bind-Value="form.CustomDays" min="1" max="@AiState.MaxRetentionDays" step="1"
+                                     disabled="@(!canRetain || form.RetentionChoice != CustomValue)" ParsingErrorMessage="Enter the number of days as a whole number, like 180."
                                      aria-describedby="pa-adset-retention-help" />
+                        <ValidationMessage For="() => form.CustomDays" />
                         <div class="form-text" id="pa-adset-retention-help">
                             @if (canRetain)
                             {
-                                <span>0 keeps conversations forever; up to @AiState.MaxRetentionDays.ToString("#,0", CultureInfo.InvariantCulture) days. It applies to every member's conversations, now and later.</span>
+                                <span>Conversations that haven't changed for longer are deleted when you save, and again as time passes. It applies to every member's conversations.</span>
                             }
                             else
                             {
                                 <span>Only the Owner (@State.OwnerName) changes retention, because it deletes every member's conversations.</span>
                             }
-                            Saved now: @RetentionText(policy.RetentionDays).
-                            @if (canRetain && RetentionPreview() is { } retentionPreview)
-                            {
-                                <span class="d-block mt-1">@retentionPreview</span>
-                            }
+                            Saved now: @RetentionText(policy.RetentionDays). The workspace holds @AdminMembers.Plural(State.ConversationCount, "conversation").
                         </div>
-                        <ValidationMessage For="() => form.RetentionDays" />
+                        @if (canRetain && RetentionPreview() is { } retentionPreview)
+                        {
+                            <p class="pa-adset-note small fw-semibold mt-2 mb-0" aria-live="polite">@retentionPreview</p>
+                        }
                     </section>
                 </div>
             </div>

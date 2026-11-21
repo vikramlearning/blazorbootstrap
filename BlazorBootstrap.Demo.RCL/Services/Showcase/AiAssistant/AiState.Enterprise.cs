@@ -140,11 +140,12 @@ public sealed partial class AiState
 
     /// <summary>
     /// Raises a notification for an account that can sign in (rule WR-001): nothing for a colleague without a sign-in, and
-    /// nothing for the person who caused it. The tab keeps its newest notifications within the limit a restore accepts.
+    /// nothing for the person who caused it, unless the workspace itself sends it (<paramref name="fromSystem" />, like a
+    /// spend cap warning after their own message). The tab keeps its newest notifications within the limit a restore accepts.
     /// </summary>
-    private void Notify(string? accountId, string title, string text, string? link)
+    private void Notify(string? accountId, string title, string text, string? link, bool fromSystem = false)
     {
-        if (accountId is null || Identity.FindAccount(accountId) is null || accountId == Identity.Current?.Id || nextNotificationId >= NextIdLimit)
+        if (accountId is null || Identity.FindAccount(accountId) is null || (!fromSystem && accountId == Identity.Current?.Id) || nextNotificationId >= NextIdLimit)
             return;
 
         notifications.Add(new ShowcaseNotification

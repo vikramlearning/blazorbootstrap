@@ -185,7 +185,50 @@
                     @* Always rendered and focusable, so an outcome is announced and focus has somewhere to go when the pressed button is gone. *@
                     <p class="pa-chat-status @(statusIsError ? "text-danger-emphasis" : null)" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
 
+                    @if (blockedKinds.Count > 0)
+                    {
+                        <p class="mb-2">
+                            <Button Color="ButtonColor.Primary" Outline="true" Size="ButtonSize.Small" @onclick="RemoveSensitiveData">
+                                <Icon Name="IconName.EraserFill" class="me-1" aria-hidden="true" />Remove it and try again<span class="visually-hidden">: take @string.Join(" and ", blockedKinds.Select(AiDlp.KindArticle)) out of the message box</span>
+                            </Button>
+                        </p>
+                    }
+
                     <form class="pa-composer" @onsubmit="Submit" novalidate>
+                        @* The spend caps, in words (not only color): the workspace's first, then the member's own (rule AC-4). *@
+                        @if (State.WorkspaceSpend is { Level: not AiSpendLevel.Ok } workspaceSpend)
+                        {
+                            <div class="alert @(workspaceSpend.Level == AiSpendLevel.Blocked ? "alert-danger" : "alert-warning") d-flex align-items-start gap-2 small py-2 px-3 mb-2" role="status">
+                                <Icon Name="@(workspaceSpend.Level == AiSpendLevel.Blocked ? IconName.SlashCircle : IconName.ExclamationTriangle)" class="mt-1 flex-shrink-0" aria-hidden="true" />
+                                <span>
+                                    @if (workspaceSpend.Level == AiSpendLevel.Blocked)
+                                    {
+                                        <strong>Chat is paused for everyone.</strong> @($" {State.WorkspaceName} used its monthly cap of {AiDisplay.Tokens(workspaceSpend.Cap)} tokens. Ask an Admin or {State.OwnerName} (the Owner) to raise it.")
+                                    }
+                                    else
+                                    {
+                                        <strong>The workspace is near its cap.</strong> @($" {State.WorkspaceName} has used {workspaceSpend.Percent.ToString("0", CultureInfo.InvariantCulture)}% of its monthly cap; at 100% chat pauses for everyone.")
+                                    }
+                                </span>
+                            </div>
+                        }
+                        @if (State.CurrentSpend is { Level: not AiSpendLevel.Ok } mySpend)
+                        {
+                            <div class="alert @(mySpend.Level == AiSpendLevel.Blocked ? "alert-danger" : "alert-warning") d-flex align-items-start gap-2 small py-2 px-3 mb-2" role="status">
+                                <Icon Name="@(mySpend.Level == AiSpendLevel.Blocked ? IconName.SlashCircle : IconName.ExclamationTriangle)" class="mt-1 flex-shrink-0" aria-hidden="true" />
+                                <span>
+                                    @if (mySpend.Level == AiSpendLevel.Blocked)
+                                    {
+                                        <strong>Chat is paused for you.</strong> @($" You've used your monthly cap of {AiDisplay.Tokens(mySpend.Cap)} tokens. Ask an Admin or {State.OwnerName} (the Owner) to raise it, or wait until {ResetText}.")
+                                    }
+                                    else
+                                    {
+                                        <strong>You're near your cap.</strong> @($" You've used {mySpend.Percent.ToString("0", CultureInfo.InvariantCulture)}% of your monthly cap ({AiDisplay.Tokens(mySpend.Used)} of {AiDisplay.Tokens(mySpend.Cap)} tokens); at 100% chat pauses until an admin raises it.")
+                                    }
+                                    &#32;<a href="@($"{AiLayout.Base}/usage")">See your usage</a>
+                                </span>
+                            </div>
+                        }
                         @if (turnedOff is not null)
                         {
                             <div class="alert alert-warning d-flex align-items-start gap-2 small py-2 px-3 mb-2">

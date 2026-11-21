@@ -12,7 +12,7 @@ namespace BlazorBootstrap.Demo.RCL.Components.Pages.Showcase.AiAssistant;
 /// the default model for new chats must be one the workspace enables, or the workspace default, a rule against the model
 /// policy; and whether Enter sends), saved with <see cref="AiState.SavePreferences" /> and every answer said in the status
 /// region or the alert; a note in words when the saved model was turned off by an admin; and the workspace membership
-/// (workspace, role and what it may do, joined date, quota, and for the roles with an admin page a link to it).
+/// (workspace, role and what it may do, joined date, monthly cap, and for the roles with an admin page a link to it).
 /// </summary>
 public partial class Profile : ComponentBase, IDisposable
 {

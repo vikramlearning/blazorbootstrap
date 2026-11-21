@@ -54,6 +54,12 @@ public partial class AiAdminLayout : LayoutComponentBase, IDisposable
         if (State.Can(AiPermission.ManageSettings))
             items.Add(new NavItem { Id = "settings", Href = $"{Base}/settings", IconName = IconName.Sliders, Text = "Models and policy" });
 
+        if (State.Can(AiPermission.ManageSpend))
+            items.Add(new NavItem { Id = "spend", Href = $"{Base}/spend", IconName = IconName.PiggyBank, Text = "Spend" });
+
+        if (State.Can(AiPermission.ReviewSensitiveData))
+            items.Add(new NavItem { Id = "sensitive-data", Href = $"{Base}/sensitive-data", IconName = IconName.ShieldExclamation, Text = "Sensitive data review" });
+
         if (State.Can(AiPermission.ViewAudit))
             items.Add(new NavItem { Id = "audit", Href = $"{Base}/audit", IconName = IconName.ClockHistory, Text = "Audit log" });
 

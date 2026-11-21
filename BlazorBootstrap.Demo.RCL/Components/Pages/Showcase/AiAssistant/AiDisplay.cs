@@ -62,8 +62,10 @@ public static class AiDisplay
         AiPermission.ManageSharedPrompts => "Write, publish, and delete shared prompts",
         AiPermission.ViewAnalytics => "See the workspace's usage analytics",
         AiPermission.ManageMembers => "Invite people, change roles up to Admin, and remove or restore access",
-        AiPermission.ManageSettings => "Change the workspace name, models, quota, attachments, and blocked terms",
+        AiPermission.ManageSettings => "Change the workspace name, models, attachments, and blocked terms",
         AiPermission.ViewAudit => "Read the audit log",
+        AiPermission.ManageSpend => "Set the workspace and member spend caps",
+        AiPermission.ReviewSensitiveData => "Set the sensitive data policy and review its events",
         AiPermission.ManageRetention => "Change how long conversations are kept",
         _ => "Transfer ownership",
     };

@@ -1,0 +1,292 @@
+@page "/showcase/ai-assistant/admin/sensitive-data"
+@layout AiAdminLayout
+
+<PageTitle>Sensitive data review · @AiSeedData.ProductName</PageTitle>
+
+@* Admins and the Owner (AC-7i): the sensitive data policy, and the queue of messages it redacted or blocked, to dismiss or to adjust the policy from. *@
+<div class="container-fluid px-lg-4">
+    <AiMemberGuard Require="AiPermission.ReviewSensitiveData">
+        @{
+            var events = State.DlpEvents;
+            var waiting = events.Count(item => item.Status == AiDlpStatus.New);
+        }
+
+        <div class="mb-3">
+            <h1 class="pa-title">Sensitive data review</h1>
+            <p class="pa-lead mb-0">
+                When a member sends a payment card number, a national ID number, a bank account number, or an API key, the policy below redacts it (the message
+                goes without it) or blocks the message, and tells the member. Each event lands here with only the masked match, never the data itself.
+                @(waiting == 0 ? "Nothing is waiting for review." : $"{AdminMembers.Plural(waiting, "event is", "events are")} waiting for review.")
+            </p>
+        </div>
+
+        @* Always rendered and focusable, so every outcome is announced and focus has somewhere to go when the pressed button is gone. *@
+        <p class="pa-list-status mb-2" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
+        <p class="pa-list-error mb-2" role="alert">@errorMessage</p>
+
+        <section class="pa-panel mb-4" id="pa-dlp-policy" tabindex="-1" aria-labelledby="pa-dlp-policy-title">
+            <h2 class="pa-section-title mb-1" id="pa-dlp-policy-title">Policy</h2>
+            <p class="small text-body-secondary">Each pattern can be off, redact the match (the message is sent with a placeholder like "[card number removed]"), or block the message.</p>
+            <EditForm EditContext="policyContext" OnSubmit="SavePolicy" FormName="pa-dlp-policy" novalidate>
+                <DataAnnotationsValidator />
+                <ShowcaseFormErrors ShowSummary="true" />
+                <div class="row row-cols-1 row-cols-lg-2 g-3">
+                    @foreach (var rule in policyForm.Rules)
+                    {
+                        var kind = rule.Kind;
+                        var groupName = $"pa-dlp-{kind}";
+                        <div class="col" @key="kind">
+                            <fieldset class="pa-dlp-rule h-100" aria-describedby="@($"{groupName}-help")">
+                                <legend class="form-label fw-semibold fs-6 mb-1">@AiDlp.KindLabel(kind)</legend>
+                                <p class="form-text mt-0 mb-2" id="@($"{groupName}-help")">@KindHelp(kind)</p>
+                                <InputRadioGroup @bind-Value="rule.Choice">
+                                    @foreach (var choice in Choices)
+                                    {
+                                        var inputId = $"{groupName}-{choice.Value}";
+                                        <div class="form-check form-check-inline" @key="choice.Value">
+                                            <InputRadio class="form-check-input" id="@inputId" Value="choice.Value" />
+                                            <label class="form-check-label" for="@inputId">@choice.Text</label>
+                                        </div>
+                                    }
+                                </InputRadioGroup>
+                            </fieldset>
+                        </div>
+                    }
+                </div>
+                <div class="d-flex flex-wrap align-items-center gap-2 mt-3">
+                    <Button Type="ButtonType.Submit" Color="ButtonColor.Primary"><Icon Name="IconName.ShieldCheck" class="me-1" aria-hidden="true" />Save policy</Button>
+                    <Button Color="ButtonColor.Secondary" Outline="true" @onclick="ResetPolicy">Reset</Button>
+                </div>
+            </EditForm>
+        </section>
+
+        <section class="pa-panel mb-3" aria-labelledby="pa-dlp-filters-title">
+            <h2 class="pa-section-title" id="pa-dlp-filters-title">Filter events</h2>
+            <div class="pa-list-filters" role="search" aria-labelledby="pa-dlp-filters-title">
+                <div class="pa-list-search">
+                    <label class="form-label small fw-semibold" for="pa-dlp-search">Search</label>
+                    <input id="pa-dlp-search" type="search" class="form-control" value="@searchBoxValue" placeholder="Member or conversation" autocomplete="off" maxlength="80"
+                           @oninput="OnSearchInputAsync" @onchange="OnSearchChanged" />
+                </div>
+                <div>
+                    <label class="form-label small fw-semibold" for="pa-dlp-status">Status</label>
+                    <select id="pa-dlp-status" class="form-select" value="@statusFilter" @onchange="OnStatusFilterChangedAsync">
+                        <option value="">All (@events.Count)</option>
+                        @foreach (var status in Enum.GetValues<AiDlpStatus>())
+                        {
+                            <option value="@status" @key="status">@StatusText(status) (@events.Count(item => item.Status == status))</option>
+                        }
+                    </select>
+                </div>
+                <div>
+                    <label class="form-label small fw-semibold" for="pa-dlp-kind">Pattern</label>
+                    <select id="pa-dlp-kind" class="form-select" value="@kindFilter" @onchange="OnKindFilterChangedAsync">
+                        <option value="">Any pattern</option>
+                        @foreach (var kind in Enum.GetValues<AiDlpKind>())
+                        {
+                            <option value="@kind" @key="kind">@AiDlp.KindLabel(kind) (@events.Count(item => item.Kind == kind))</option>
+                        }
+                    </select>
+                </div>
+            </div>
+            <div class="pa-list-meta">
+                <p class="small text-body-secondary mb-0" aria-live="polite" tabindex="-1" @ref="countRegion">@CountText(events.Count)</p>
+                @if (IsFiltered)
+                {
+                    <Button Color="ButtonColor.Link" Size="ButtonSize.Small" Class="p-0" @onclick="ClearFiltersAsync">Show every event</Button>
+                }
+                @* Back to the saved view's defaults: the newest first, 25 a page, every column in its place. *@
+                <Button Color="ButtonColor.Link" Size="ButtonSize.Small" Class="p-0" @onclick="ResetViewAsync">Reset view</Button>
+            </div>
+        </section>
+
+        @if (selected.Count > 0)
+        {
+            var newOnes = selected.Count(row => row.StatusValue == AiDlpStatus.New);
+
+            <section class="pa-bulk" aria-labelledby="pa-dlp-bulk-count">
+                <h2 class="pa-bulk-count" id="pa-dlp-bulk-count">@(selected.Count == 1 ? "1 event selected" : $"{selected.Count} events selected"), @(newOnes == selected.Count ? "all new" : $"{newOnes} new")</h2>
+                <EditForm EditContext="bulkContext" OnSubmit="DismissSelectedAsync" FormName="pa-dlp-bulk" class="pa-bulk-form" novalidate>
+                    <DataAnnotationsValidator />
+                    <ShowcaseFormErrors ShowSummary="true" />
+                    <div class="pa-bulk-field pa-bulk-wide">
+                        <label class="form-label small fw-semibold" for="pa-dlp-bulk-note">Note (optional)</label>
+                        <InputText id="pa-dlp-bulk-note" class="form-control form-control-sm" @bind-Value="bulkForm.Note" maxlength="@AiState.MaxReviewNoteLength" aria-describedby="pa-dlp-bulk-note-help" />
+                        <span class="form-text d-block" id="pa-dlp-bulk-note-help">Up to @AiState.MaxReviewNoteLength characters, kept with each event. Reviewed events stay as they are.</span>
+                        <ValidationMessage For="() => bulkForm.Note" />
+                    </div>
+                    <div class="pa-bulk-actions">
+                        <Button Type="ButtonType.Submit" Color="ButtonColor.Primary" Size="ButtonSize.Small" Disabled="@(newOnes == 0)">Dismiss<span class="visually-hidden">&#32;the selected events</span></Button>
+                        <Button Color="ButtonColor.Secondary" Outline="true" Size="ButtonSize.Small" @onclick="ClearSelectionAsync">Clear selection</Button>
+                    </div>
+                </EditForm>
+            </section>
+        }
+
+        <section class="pa-panel" aria-label="Sensitive data events">
+            <ShowcaseDataState Status="@(viewLoaded ? ShowcaseDataStatus.Ready : ShowcaseDataStatus.Loading)"
+                               IsEmpty="@(events.Count == 0)"
+                               EmptyIcon="IconName.ShieldCheck"
+                               EmptyTitle="No sensitive data has been caught"
+                               EmptyText="When a message holds data the policy protects, the event shows here for review."
+                               LoadingText="Loading events…"
+                               OnRetry="RefreshGridAsync">
+                <ChildContent>
+                    <Grid @ref="grid"
+                          @key="gridVersion"
+                          TItem="EventRow"
+                          Class="table table-hover align-middle pa-table-wide sc-grid-row-links"
+                          GridContainerClass="pa-grid border rounded-3"
+                          DataProvider="ProvideRowsAsync"
+                          SettingsProvider="view.GetSettingsAsync"
+                          GridSettingsChanged="SaveSettingsAsync"
+                          AllowPaging="true"
+                          PageSize="@pageSize"
+                          PageSizeSelectorVisible="true"
+                          PageSizeSelectorItems="@(new[] { 10, 25, 50 })"
+                          PaginationItemsTextFormat="{0}–{1} of {2} events"
+                          AllowSorting="true"
+                          AllowSelection="true"
+                          SelectionMode="GridSelectionMode.Multiple"
+                          RowSelectionLabel="@(row => $"Select event {row.Id}, {row.Kind} from {row.Member}")"
+                          SelectAllRowsText="Select all shown events"
+                          SelectedItemsChanged="OnSelectionChanged"
+                          RowClass="RowClass"
+                          AllowColumnChooser="true"
+                          AllowExport="true"
+                          ExportFileName="ai-sensitive-data"
+                          Responsive="true"
+                          EmptyText="No events match. Choose All, or clear the search."
+                          aria-label="Sensitive data events">
+                        <GridColumns>
+                            <GridColumn TItem="EventRow" HeaderText="When" PropertyName="WhenText" SortString="when" SortKeySelector="row => row.When"
+                                        IsDefaultSortColumn="@view.IsSortColumn("when")" SortDirection="@view.DirectionFor("when")" TextNoWrap="true">
+                                @context.WhenText
+                            </GridColumn>
+                            <GridColumn TItem="EventRow" HeaderText="Member" PropertyName="Member" SortString="member" SortKeySelector="row => row.Member"
+                                        IsDefaultSortColumn="@view.IsSortColumn("member")" SortDirection="@view.DirectionFor("member")" AlwaysVisible="true">
+                                @{
+                                    var row = context;
+                                }
+                                @* An event has no page of its own: the stretched button makes the whole row open its review dialog. *@
+                                <button type="button" class="pa-row-button stretched-link" @ref="openers[row.Id]" @onclick="() => OpenAsync(row.Id)">@row.Member</button>
+                            </GridColumn>
+                            <GridColumn TItem="EventRow" HeaderText="Pattern" PropertyName="Kind" SortString="kind" SortKeySelector="row => row.Kind"
+                                        IsDefaultSortColumn="@view.IsSortColumn("kind")" SortDirection="@view.DirectionFor("kind")" TextNoWrap="true">
+                                @context.Kind
+                            </GridColumn>
+                            <GridColumn TItem="EventRow" HeaderText="Action taken" PropertyName="Action" SortString="action" SortKeySelector="row => row.Action"
+                                        IsDefaultSortColumn="@view.IsSortColumn("action")" SortDirection="@view.DirectionFor("action")" TextNoWrap="true">
+                                @context.Action
+                            </GridColumn>
+                            <GridColumn TItem="EventRow" HeaderText="Masked match" PropertyName="Masked" SortString="masked" SortKeySelector="row => row.Masked"
+                                        IsDefaultSortColumn="@view.IsSortColumn("masked")" SortDirection="@view.DirectionFor("masked")" TextNoWrap="true">
+                                <span class="pa-mono">@context.Masked</span>
+                            </GridColumn>
+                            <GridColumn TItem="EventRow" HeaderText="Conversation" PropertyName="Conversation" SortString="conversation" SortKeySelector="row => row.Conversation"
+                                        IsDefaultSortColumn="@view.IsSortColumn("conversation")" SortDirection="@view.DirectionFor("conversation")">
+                                @if (context.ConversationUrl is { } url)
+                                {
+                                    <a href="@url">@context.Conversation</a>
+                                }
+                                else
+                                {
+                                    <span class="small">@context.Conversation</span>
+                                }
+                            </GridColumn>
+                            <GridColumn TItem="EventRow" HeaderText="Status" PropertyName="Status" SortString="status" SortKeySelector="row => row.StatusValue"
+                                        IsDefaultSortColumn="@view.IsSortColumn("status")" SortDirection="@view.DirectionFor("status")" TextNoWrap="true">
+                                <Badge Color="@StatusColor(context.StatusValue)" Class="rounded-pill">@context.Status</Badge>
+                            </GridColumn>
+                            <GridColumn TItem="EventRow" HeaderText="Reviewed by" PropertyName="Reviewer" SortString="reviewer" SortKeySelector="row => row.Reviewer"
+                                        IsDefaultSortColumn="@view.IsSortColumn("reviewer")" SortDirection="@view.DirectionFor("reviewer")">
+                                <span class="small">@context.Reviewer</span>
+                            </GridColumn>
+                        </GridColumns>
+                    </Grid>
+                </ChildContent>
+            </ShowcaseDataState>
+            <p class="small text-body-secondary mt-3 mb-0">
+                Members' conversations are private: a conversation opens only for the member who had it. Titles come from the message after redaction, so they never hold the data.
+            </p>
+        </section>
+
+        <Modal @ref="reviewModal" IsVerticallyCentered="true" IsScrollable="true" ShowCloseButton="false" aria-labelledby="pa-dlp-dialog-title" OnShown="OnDialogShownAsync" OnHidden="OnDialogHiddenAsync">
+            <HeaderTemplate>
+                <h2 class="modal-title h5 pa-dlp-dialog-title" id="pa-dlp-dialog-title">@(Opened is { } shown ? $"Event {shown.Id.ToString(CultureInfo.InvariantCulture)}: {AiDlp.KindLabel(shown.Kind)}" : "Event not found")</h2>
+            </HeaderTemplate>
+            <BodyTemplate>
+                @if (Opened is not { } item)
+                {
+                    <p>That event is no longer in the queue.</p>
+                    <button type="button" class="btn btn-outline-secondary" @ref="dialogCancel" @onclick="() => reviewModal.HideAsync()">Close</button>
+                }
+                else
+                {
+                    var rule = State.Policy.DlpRules.First(candidate => candidate.Kind == item.Kind);
+
+                    <dl class="pa-dlp-facts">
+                        <div><dt>When</dt><dd>@AiDisplay.Stamp(item.At)</dd></div>
+                        <div><dt>Member</dt><dd>@(State.FindMember(item.MemberId)?.Name ?? "A former member")</dd></div>
+                        <div><dt>Action taken</dt><dd>@ActionText(item.ActionTaken)</dd></div>
+                        <div><dt>Masked match</dt><dd class="pa-mono">@item.Masked</dd></div>
+                        <div><dt>Conversation</dt><dd>@(item.ConversationTitle.Length == 0 ? "None (not sent)" : item.ConversationTitle)</dd></div>
+                        <div><dt>Status</dt><dd>@StatusText(item.Status)@(item.ReviewedBy is { } by ? $", by {by}" : null)</dd></div>
+                        <div><dt>The policy now</dt><dd>@RuleText(rule)</dd></div>
+                        @if (item.Note.Length > 0)
+                        {
+                            <div><dt>Note</dt><dd>@item.Note</dd></div>
+                        }
+                    </dl>
+
+                    @if (item.Status != AiDlpStatus.New)
+                    {
+                        <p class="small">This event is reviewed. You can still adjust the policy for @AiDlp.KindLabel(item.Kind).ToLowerInvariant() below, or in the Policy panel.</p>
+                    }
+
+                    <EditForm EditContext="reviewContext" OnSubmit="ReviewAsync" FormName="pa-dlp-review" novalidate aria-labelledby="pa-dlp-dialog-title">
+                        <DataAnnotationsValidator />
+                        <ShowcaseFormErrors ShowSummary="true" />
+                        <fieldset class="mb-3">
+                            <legend class="form-label fw-semibold fs-6 mb-1">Decision</legend>
+                            <InputRadioGroup @bind-Value="reviewForm.Decision">
+                                @if (item.Status == AiDlpStatus.New)
+                                {
+                                    <div class="form-check">
+                                        <InputRadio class="form-check-input" id="pa-dlp-decision-dismiss" Value="@DismissValue" />
+                                        <label class="form-check-label" for="pa-dlp-decision-dismiss">Dismiss: the policy did the right thing</label>
+                                    </div>
+                                }
+                                <div class="form-check">
+                                    <InputRadio class="form-check-input" id="pa-dlp-decision-adjust" Value="@AdjustValue" />
+                                    <label class="form-check-label" for="pa-dlp-decision-adjust">Adjust the policy for @AiDlp.KindLabel(item.Kind).ToLowerInvariant()</label>
+                                </div>
+                            </InputRadioGroup>
+                            <ValidationMessage For="() => reviewForm.Decision" />
+                        </fieldset>
+                        @if (reviewForm.Decision == AdjustValue)
+                        {
+                            <label class="form-label fw-semibold" for="pa-dlp-review-choice">From now on</label>
+                            <InputSelect id="pa-dlp-review-choice" class="form-select mb-1" @bind-Value="reviewForm.Choice">
+                                @foreach (var choice in Choices)
+                                {
+                                    <option value="@choice.Value" @key="choice.Value">@choice.Text</option>
+                                }
+                            </InputSelect>
+                            <ValidationMessage For="() => reviewForm.Choice" />
+                        }
+                        <label class="form-label fw-semibold mt-2" for="pa-dlp-review-note">Note (optional)</label>
+                        <InputTextArea id="pa-dlp-review-note" class="form-control" rows="2" maxlength="@AiState.MaxReviewNoteLength" @bind-Value="reviewForm.Note" aria-describedby="pa-dlp-review-note-help" />
+                        <div class="form-text" id="pa-dlp-review-note-help">Up to @AiState.MaxReviewNoteLength characters, kept with the event (the audit log keeps its length only).</div>
+                        <ValidationMessage For="() => reviewForm.Note" />
+                        <p class="pa-form-error mt-2 mb-0" role="alert">@dialogError</p>
+                        <div class="d-flex flex-wrap gap-2 mt-3">
+                            <Button Type="ButtonType.Submit" Color="ButtonColor.Primary">Save review</Button>
+                            <button type="button" class="btn btn-outline-secondary" @ref="dialogCancel" @onclick="() => reviewModal.HideAsync()">Cancel</button>
+                        </div>
+                    </EditForm>
+                }
+            </BodyTemplate>
+        </Modal>
+    </AiMemberGuard>
+</div>
