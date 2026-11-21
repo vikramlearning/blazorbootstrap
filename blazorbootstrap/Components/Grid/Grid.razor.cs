@@ -151,14 +151,18 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     /// <summary>
     /// Downloads a CSV file of every row that matches the current filters and sort, across all pages, with the visible columns in display order.
     /// With a <c>DataProvider</c>, the provider is called once with <c>PageNumber</c> and <c>PageSize</c> set to 0, which means all rows.
-    /// When no row matches, or the data cannot be read, nothing is downloaded and a status message says so.
+    /// When no row matches or no visible column can be exported, or the export fails, nothing is downloaded and a status message says so.
     /// </summary>
     /// <returns>Task</returns>
     [AddedVersion("4.1.0")]
     [Description("Downloads a CSV file of every row that matches the current filters and sort, across all pages, with the visible columns in display order.")]
     public async Task ExportToCsvAsync()
     {
+        // Clear and render first, so the same message twice in a row is announced again. The yield lets the empty
+        // status render before a synchronous failure sets the message again.
         exportStatus = string.Empty;
+        await InvokeAsync(StateHasChanged);
+        await Task.Yield();
 
         // Nothing in an export may break the page: a data source failure or cancellation, a property getter that throws
         // while the CSV is built, or a browser error from the download (for example an outdated cached script).
@@ -176,17 +180,18 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
             var result = DataProvider is not null ? await DataProvider.Invoke(request) : request.ApplyTo(Data!);
             var rows = result?.Data?.ToList() ?? new List<TItem>();
 
-            if (rows.Count == 0)
+            var exportColumns = GetDisplayColumns()
+                                .Where(column => column.Exportable && !string.IsNullOrWhiteSpace(column.PropertyName))
+                                .Select(column => (GetColumnLabel(column), column.PropertyName!))
+                                .ToList();
+
+            // No row, or no column that can be exported: nothing to download.
+            if (rows.Count == 0 || exportColumns.Count == 0)
             {
                 exportStatus = ExportNoDataText;
             }
             else
             {
-                var exportColumns = GetDisplayColumns()
-                                    .Where(column => column.Exportable && !string.IsNullOrWhiteSpace(column.PropertyName))
-                                    .Select(column => (GetColumnLabel(column), column.PropertyName!))
-                                    .ToList();
-
                 var csv = GridCsvUtility.Write(rows, exportColumns, GetCultureInfo());
                 var fileName = ExportFileName.EndsWith(".csv", StringComparison.OrdinalIgnoreCase) ? ExportFileName : $"{ExportFileName}.csv";
 
@@ -342,6 +347,27 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
         await SaveGridSettingsAsync();
         await RefreshDataAsync(false, token);
     }
+
+    /// <summary>
+    /// Formats a localizable text, falling back to the text itself when a translation's placeholders do not match
+    /// the arguments, so a bad translation never breaks rendering.
+    /// </summary>
+    internal static string FormatText(string format, params object?[] args)
+    {
+        try
+        {
+            return string.Format(CultureInfo.CurrentCulture, format, args);
+        }
+        catch (FormatException)
+        {
+            return format;
+        }
+    }
+
+    /// <summary>
+    /// Gets the column's position among the declared columns, from 1.
+    /// </summary>
+    internal int GetDeclaredPosition(GridColumn<TItem> column) => columns.IndexOf(column) + 1;
 
     internal async Task RefreshDataAsync(bool firstRender = false, CancellationToken cancellationToken = default)
     {
@@ -707,7 +733,17 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
         columnOrder = keys.SequenceEqual(declared, StringComparer.Ordinal) ? null : keys;
 
         var listed = GetChooserColumns();
-        columnChooserStatus = string.Format(ColumnChooserMovedText, GetColumnLabel(column), listed.IndexOf(column) + 1, listed.Count);
+        var status = FormatText(ColumnChooserMovedText, GetColumnLabel(column), listed.IndexOf(column) + 1, listed.Count);
+
+        // The same announcement twice in a row is announced again only if the text changes in between.
+        if (status == columnChooserStatus)
+        {
+            columnChooserStatus = string.Empty;
+            await InvokeAsync(StateHasChanged);
+            await Task.Yield();
+        }
+
+        columnChooserStatus = status;
 
         await SaveGridSettingsAsync();
         await InvokeAsync(StateHasChanged);
@@ -941,14 +977,15 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
 
     /// <summary>
     /// If <see langword="true" />, a Columns button above the grid lets the user hide, show, search, and reorder columns.
-    /// The choice is part of the grid settings (<c>GridSettingsChanged</c> and <c>SettingsProvider</c>).
+    /// The choice is part of the grid settings (<c>GridSettingsChanged</c> and <c>SettingsProvider</c>), and saved
+    /// column order and hidden columns apply whether or not the chooser is on.
     /// <para>
     /// Default value is <see langword="false"/>.
     /// </para>
     /// </summary>
     [AddedVersion("4.1.0")]
     [DefaultValue(false)]
-    [Description("If <b>true</b>, a Columns button above the grid lets the user hide, show, search, and reorder columns.")]
+    [Description("If <b>true</b>, a Columns button above the grid lets the user hide, show, search, and reorder columns. Saved column order and hidden columns apply whether or not it is on.")]
     [Parameter]
     public bool AllowColumnChooser { get; set; }
 
@@ -1697,6 +1734,19 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     [Description("Gets or sets the units.")]
     [Parameter]
     public Unit Unit { get; set; } = Unit.Px;
+
+    /// <summary>
+    /// Gets or sets the accessible name of the sort button of a column that has neither header text nor a property name.
+    /// <c>{0}</c> is the column's position among the declared columns.
+    /// <para>
+    /// Default value is 'Sort column {0}'.
+    /// </para>
+    /// </summary>
+    [AddedVersion("4.1.0")]
+    [DefaultValue("Sort column {0}")]
+    [Description("Gets or sets the accessible name of the sort button of a column that has neither header text nor a property name. <b>{0}</b> is the column's position among the declared columns.")]
+    [Parameter]
+    public string UnnamedSortColumnText { get; set; } = "Sort column {0}";
 
     #endregion
 }
