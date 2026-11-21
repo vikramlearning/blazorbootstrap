@@ -262,8 +262,8 @@ public sealed partial class MonitoringState : IShowcaseEnterpriseState
         return MonitoringResult.Ok;
     }
 
-    /// <summary>Returns the snapshot: services, incidents, rules, failures, maintenance, subscriptions, the outbox, notifications, preferences, overrides, the audit log, and the ID counters.</summary>
-    public object CaptureData() => new MonitoringSnapshot
+    /// <summary>Returns the whole state for the snapshot. <see cref="CaptureData" /> stores only what differs from a fresh tab.</summary>
+    private MonitoringSnapshot CaptureFull() => new MonitoringSnapshot
     {
         Audit = audit.ToList(),
         Emails = emails.ToList(),
@@ -849,16 +849,7 @@ public sealed partial class MonitoringState : IShowcaseEnterpriseState
     /// <summary>Validates a stored snapshot against its own data (never the live lists) and applies it only when every part is valid.</summary>
     public bool TryRestoreData(JsonElement data)
     {
-        MonitoringSnapshot? snapshot;
-
-        try
-        {
-            snapshot = data.Deserialize<MonitoringSnapshot>(snapshotOptions);
-        }
-        catch (Exception ex) when (ex is JsonException or NotSupportedException or InvalidOperationException or ArgumentException)
-        {
-            return false;
-        }
+        var snapshot = RebuildFromDelta(data);
 
         if (snapshot is not
             {
@@ -2159,7 +2150,7 @@ public sealed partial class MonitoringState : IShowcaseEnterpriseState
     public string SiteSlug => "monitoring";
 
     /// <summary>Gets the snapshot format version (4: escalation policies and the incidents' paging).</summary>
-    public int SnapshotVersion => 4;
+    public int SnapshotVersion => 5;
 
     /// <summary>Gets the status page subscriptions made in this tab, oldest first.</summary>
     public IReadOnlyList<MonitoringSubscription> Subscriptions => subscriptions;
