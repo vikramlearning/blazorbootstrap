@@ -1,39 +1,21 @@
-.hc-rx-list {
+/* A prescription's dialog: its facts as label and value pairs, in columns where there is room; the Grid list's styles are
+   in HcFrame.razor.css. */
+.hc-rx-facts-list {
     display: grid;
-    grid-template-columns: minmax(0, 1fr);
-    gap: 1rem;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 11rem), 1fr));
+    gap: .75rem 1.5rem;
 }
 
-@media (min-width: 992px) {
-    .hc-rx-list {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
+    .hc-rx-facts-list dt {
+        margin-bottom: .125rem;
+        font-size: .75rem;
+        font-weight: 700;
+        letter-spacing: .02em;
+        text-transform: uppercase;
+        color: var(--bs-secondary-color);
     }
-}
 
-.hc-rx-card {
-    display: flex;
-    flex-direction: column;
-    gap: .75rem;
-    height: 100%;
-    padding: 1rem 1.25rem;
-}
-
-.hc-rx-text {
-    min-width: 0;
-    overflow-wrap: anywhere;
-}
-
-.hc-rx-facts {
-    display: flex;
-    flex-wrap: wrap;
-    gap: .125rem 1rem;
-    padding: 0;
-    margin: 0;
-    list-style: none;
-}
-
-.hc-rx-refill {
-    margin-top: auto;
-    padding-top: .75rem;
-    border-top: 1px solid var(--hc-border);
-}
+    .hc-rx-facts-list dd {
+        margin: 0;
+        overflow-wrap: anywhere;
+    }

@@ -25,6 +25,8 @@ public partial class SlotPicker : ComponentBase, IDisposable
 
     private string? loadedDoctorId;
 
+    private int loadedMinutes = HcState.SlotMinutes;
+
     private DateTime? loadedSelected;
 
     /// <summary>The day whose times are shown, or <see langword="null" /> for the first day with open times.</summary>
@@ -53,10 +55,11 @@ public partial class SlotPicker : ComponentBase, IDisposable
 
     protected override void OnParametersSet()
     {
-        // Another doctor starts over; a new selected time from the page shows its day.
-        if (loadedDoctorId != DoctorId)
+        // Another doctor or visit length starts over; a new selected time from the page shows its day.
+        if (loadedDoctorId != DoctorId || loadedMinutes != Minutes)
         {
             loadedDoctorId = DoctorId;
+            loadedMinutes = Minutes;
             shownDays = PageDays;
             selectedDay = null;
             dayButtons.Clear();
@@ -111,7 +114,7 @@ public partial class SlotPicker : ComponentBase, IDisposable
         for (var offset = 0; offset <= HcState.BookingDays; offset++)
         {
             var date = State.Clock.Today.AddDays(offset);
-            var slots = State.Slots(DoctorId, date);
+            var slots = State.Slots(DoctorId, date, Minutes, ExceptAppointmentId);
 
             if (slots.Count > 0)
                 list.Add(new OpenDay(date, slots));
@@ -149,6 +152,12 @@ public partial class SlotPicker : ComponentBase, IDisposable
 
     /// <summary>Gets or sets the prefix of the element IDs, unique on the page.</summary>
     [Parameter] public string IdPrefix { get; set; } = "hc-sp";
+
+    /// <summary>Gets or sets the appointment being moved, whose own times count as free, or <see langword="null" />.</summary>
+    [Parameter] public int? ExceptAppointmentId { get; set; }
+
+    /// <summary>Gets or sets the length of the visit, in minutes: only times with that long free are offered.</summary>
+    [Parameter] public int Minutes { get; set; } = HcState.SlotMinutes;
 
     /// <summary>Gets or sets the callback raised with the open time the patient picked.</summary>
     [Parameter] public EventCallback<HcSlot> OnSelect { get; set; }

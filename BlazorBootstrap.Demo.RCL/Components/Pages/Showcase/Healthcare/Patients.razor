@@ -3,86 +3,139 @@
 
 <PageTitle>Patients · @HcSeedData.ProductName</PageTitle>
 
-@* Every patient of the clinics, searchable, with their next visit with the signed-in doctor and their last visit. *@
+@* Every patient of the clinics in a Grid: a doctor opens the chart, the front desk the registration details. *@
 <div class="container-fluid px-lg-4">
-    <ShowcaseRoleGuard Roles="@HcSeedData.DoctorRole" SignInPath="@HcLayout.SignInPath">
-        @{
-            var today = State.Clock.Today;
-            var all = State.Patients;
-            var shown = all.Where(Matches).ToList();
-            var search = query.Trim();
-        }
+    @{
+        var all = State.Patients;
+        var isDoctor = State.CurrentDoctor is not null;
+    }
 
-        <h1 class="hc-title mb-1">Patients</h1>
-        <p class="hc-lead mb-3">Everyone registered at the clinics. Open a chart for visits, lab results, prescriptions, and allergies.</p>
-
-        <div class="hc-pts-search mb-2">
-            <label class="form-label fw-semibold" for="hc-pts-search">Search patients</label>
-            <input id="hc-pts-search" type="search" class="form-control" @bind="query" @bind:event="oninput" maxlength="80" autocomplete="off"
-                   aria-describedby="hc-pts-search-help" />
-            <div class="form-text" id="hc-pts-search-help">By name, record number, phone, or email.</div>
+    <div class="d-flex flex-wrap align-items-start justify-content-between gap-3 mb-3">
+        <div>
+            <h1 class="hc-title mb-1">Patients</h1>
+            <p class="hc-lead mb-0">
+                Everyone registered at the clinics. @(isDoctor ? "Open a chart for visits, lab results, prescriptions, and allergies." : "Open a patient to check or update their registration details.")
+            </p>
         </div>
+        <a class="btn btn-primary" href="@HcDisplay.NewPatientUrl"><Icon Name="IconName.PersonPlus" class="me-2" aria-hidden="true" />Register a patient</a>
+    </div>
 
-        @* Always rendered, so the number of matches is announced as the search changes. *@
-        <p class="small fw-semibold hc-pts-count" role="status">
-            @(search.Length == 0 ? $"{Plural(all.Count)}." : shown.Count == 0 ? $"No patients match “{search}”." : $"Showing {shown.Count} of {Plural(all.Count)}.")
-        </p>
-
-        @if (shown.Count > 0)
-        {
-            <div class="table-responsive hc-card">
-                <table class="table align-middle mb-0 hc-pts-table">
-                    <caption class="visually-hidden">Patients, by name, with their next visit with you and their last visit</caption>
-                    <thead>
-                        <tr>
-                            <th scope="col">Name</th>
-                            <th scope="col">Age</th>
-                            <th scope="col">MRN</th>
-                            <th scope="col">Next visit with you</th>
-                            <th scope="col">Last visit</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var patient in shown)
-                        {
-                            var next = NextWithMe(patient.Id);
-                            var last = LastVisit(patient.Id);
-                            var age = HcDisplay.Age(patient.DateOfBirth, today);
-
-                            <tr @key="@($"patient-{patient.Id}")">
-                                <th scope="row"><a href="@HcDisplay.PatientChartUrl(patient.Id)">@patient.Name</a></th>
-                                <td class="text-nowrap">@(age is { } years ? years.ToString(CultureInfo.InvariantCulture) : "Not recorded")</td>
-                                <td class="hc-mono">@patient.Id.ToString(CultureInfo.InvariantCulture)</td>
-                                <td class="text-nowrap">
-                                    @if (next is not null)
-                                    {
-                                        <a href="@HcDisplay.StaffAppointmentUrl(next.Id)">@HcDisplay.When(next.Start)</a>
-                                        @if (next.Start.Date == today)
-                                        {
-                                            <span class="small text-body-secondary"> (today, @HcDisplay.StatusLabel(next.Status).ToLowerInvariant())</span>
-                                        }
-                                    }
-                                    else
-                                    {
-                                        <span class="text-body-secondary">None booked</span>
-                                    }
-                                </td>
-                                <td>
-                                    @if (last is not null)
-                                    {
-                                        <span class="text-nowrap">@HcDisplay.Date(last.Start)</span>
-                                        <span class="d-block small text-body-secondary">@(State.FindDoctor(last.DoctorId)?.Name ?? "A former doctor")</span>
-                                    }
-                                    else
-                                    {
-                                        <span class="text-body-secondary">No visits yet</span>
-                                    }
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
+    <section class="hc-panel mb-3" aria-labelledby="hc-pts-filters-title">
+        <h2 class="hc-section-title" id="hc-pts-filters-title">Find patients</h2>
+        <div class="hc-list-filters" role="search" aria-labelledby="hc-pts-filters-title">
+            <div class="hc-list-search">
+                <label class="form-label small fw-semibold" for="hc-pts-search">Search</label>
+                @* Filters on every keystroke; the bound value changes only on change, so a render during typing never writes an older value back. *@
+                <input id="hc-pts-search" type="search" class="form-control" value="@searchBoxValue" autocomplete="off" maxlength="80" aria-describedby="hc-pts-search-help"
+                       @oninput="OnSearchInputAsync" @onchange="OnSearchChanged" />
+                <div class="form-text" id="hc-pts-search-help">Name, record number, phone, email, or date of birth (like 1988-04-12).</div>
             </div>
-        }
-    </ShowcaseRoleGuard>
+            <div>
+                <label class="form-label small fw-semibold" for="hc-pts-clinic">Home clinic</label>
+                <select id="hc-pts-clinic" class="form-select" value="@clinicFilter" @onchange="OnClinicChangedAsync">
+                    <option value="">All clinics (@all.Count)</option>
+                    @foreach (var clinic in State.Clinics)
+                    {
+                        <option value="@clinic.Id" @key="clinic.Id">@clinic.Name (@all.Count(patient => patient.ClinicId == clinic.Id))</option>
+                    }
+                </select>
+            </div>
+        </div>
+        <div class="hc-list-meta">
+            <p class="small text-body-secondary mb-0" aria-live="polite" tabindex="-1" @ref="countRegion">@CountText(all.Count)</p>
+            @if (IsFiltered)
+            {
+                <Button Color="ButtonColor.Link" Size="ButtonSize.Small" Class="p-0" @onclick="ClearFiltersAsync">Show every patient</Button>
+            }
+            @* Back to the saved view's defaults: by name, 25 a page, every column in its place. *@
+            <Button Color="ButtonColor.Link" Size="ButtonSize.Small" Class="p-0" @onclick="ResetViewAsync">Reset view</Button>
+        </div>
+    </section>
+
+    @* Always rendered and focusable, so a reset is announced and focus has somewhere to go. *@
+    <p class="hc-list-status mb-2" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
+
+    <section class="hc-panel" aria-label="Patient list">
+        <ShowcaseDataState Status="@(viewLoaded ? ShowcaseDataStatus.Ready : ShowcaseDataStatus.Loading)"
+                           IsEmpty="@(all.Count == 0)"
+                           EmptyIcon="IconName.People"
+                           EmptyTitle="No patients yet"
+                           EmptyText="Register the clinics' first patient; patients who sign up online appear here too."
+                           LoadingText="Loading patients…"
+                           OnRetry="RefreshGridAsync">
+            <EmptyActions>
+                <a class="btn btn-primary btn-sm" href="@HcDisplay.NewPatientUrl">Register a patient</a>
+            </EmptyActions>
+            <ChildContent>
+                <Grid @ref="grid"
+                      @key="gridVersion"
+                      TItem="PatientRow"
+                      Class="table table-hover align-middle hc-table-wide sc-grid-row-links"
+                      GridContainerClass="hc-grid border rounded-3"
+                      DataProvider="ProvidePatientsAsync"
+                      SettingsProvider="view.GetSettingsAsync"
+                      GridSettingsChanged="SaveSettingsAsync"
+                      AllowPaging="true"
+                      PageSize="@pageSize"
+                      PageSizeSelectorVisible="true"
+                      PageSizeSelectorItems="@(new[] { 10, 25, 50, 100 })"
+                      PaginationItemsTextFormat="{0}–{1} of {2} patients"
+                      AllowSorting="true"
+                      AllowColumnChooser="true"
+                      AllowExport="true"
+                      ExportFileName="clinic-patients"
+                      Responsive="true"
+                      EmptyText="No patients match. Clear the search, or choose All clinics."
+                      aria-label="Patients">
+                    <GridColumns>
+                        <GridColumn TItem="PatientRow" HeaderText="Name" PropertyName="Name" SortString="name" SortKeySelector="row => row.Name"
+                                    IsDefaultSortColumn="@view.IsSortColumn("name")" SortDirection="@view.DirectionFor("name")" AlwaysVisible="true">
+                            @* The stretched link makes the whole row open the patient. *@
+                            <a class="hc-row-link stretched-link" href="@HcDisplay.PatientUrl(State, context.Id)">@context.Name</a>
+                        </GridColumn>
+                        <GridColumn TItem="PatientRow" HeaderText="Record number" PropertyName="Mrn" SortString="mrn" SortKeySelector="row => row.Mrn"
+                                    IsDefaultSortColumn="@view.IsSortColumn("mrn")" SortDirection="@view.DirectionFor("mrn")" TextNoWrap="true">
+                            <span class="hc-mono">@context.Mrn</span>
+                        </GridColumn>
+                        <GridColumn TItem="PatientRow" HeaderText="Date of birth" PropertyName="BirthText" SortString="dob" SortKeySelector="row => row.DateOfBirth ?? DateTime.MaxValue"
+                                    IsDefaultSortColumn="@view.IsSortColumn("dob")" SortDirection="@view.DirectionFor("dob")" TextNoWrap="true">
+                            @context.BirthText
+                        </GridColumn>
+                        <GridColumn TItem="PatientRow" HeaderText="Age" PropertyName="AgeText" SortString="age" SortKeySelector="row => row.Age ?? -1"
+                                    IsDefaultSortColumn="@view.IsSortColumn("age")" SortDirection="@view.DirectionFor("age")" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End">
+                            @context.AgeText
+                        </GridColumn>
+                        <GridColumn TItem="PatientRow" HeaderText="Phone" PropertyName="Phone" SortString="phone" SortKeySelector="row => row.Phone"
+                                    IsDefaultSortColumn="@view.IsSortColumn("phone")" SortDirection="@view.DirectionFor("phone")" TextNoWrap="true">
+                            @context.Phone
+                        </GridColumn>
+                        <GridColumn TItem="PatientRow" HeaderText="Email" PropertyName="Email" SortString="email" SortKeySelector="row => row.Email"
+                                    IsDefaultSortColumn="@view.IsSortColumn("email")" SortDirection="@view.DirectionFor("email")">
+                            <span class="hc-wrap">@context.Email</span>
+                        </GridColumn>
+                        <GridColumn TItem="PatientRow" HeaderText="Home clinic" PropertyName="Clinic" SortString="clinic" SortKeySelector="row => row.Clinic"
+                                    IsDefaultSortColumn="@view.IsSortColumn("clinic")" SortDirection="@view.DirectionFor("clinic")">
+                            @context.Clinic
+                        </GridColumn>
+                        <GridColumn TItem="PatientRow" HeaderText="Health plan" PropertyName="Plan" SortString="plan" SortKeySelector="row => row.Plan"
+                                    IsDefaultSortColumn="@view.IsSortColumn("plan")" SortDirection="@view.DirectionFor("plan")">
+                            @context.Plan
+                        </GridColumn>
+                        <GridColumn TItem="PatientRow" HeaderText="Next visit" PropertyName="NextText" SortString="next" SortKeySelector="row => row.Next ?? DateTime.MaxValue"
+                                    IsDefaultSortColumn="@view.IsSortColumn("next")" SortDirection="@view.DirectionFor("next")">
+                            @context.NextText
+                        </GridColumn>
+                        <GridColumn TItem="PatientRow" HeaderText="Last visit" PropertyName="LastText" SortString="last" SortKeySelector="row => row.Last ?? DateTime.MinValue"
+                                    IsDefaultSortColumn="@view.IsSortColumn("last")" SortDirection="@view.DirectionFor("last")">
+                            @context.LastText
+                        </GridColumn>
+                        <GridColumn TItem="PatientRow" HeaderText="Registered" PropertyName="RegisteredText" SortString="registered" SortKeySelector="row => row.Registered"
+                                    IsDefaultSortColumn="@view.IsSortColumn("registered")" SortDirection="@view.DirectionFor("registered")" TextNoWrap="true">
+                            @context.RegisteredText
+                        </GridColumn>
+                    </GridColumns>
+                </Grid>
+            </ChildContent>
+        </ShowcaseDataState>
+    </section>
 </div>

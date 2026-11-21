@@ -53,7 +53,7 @@
                 @PatientChart.AgeText(HcDisplay.Age(patient?.DateOfBirth, today))
                 @if (patient is not null)
                 {
-                    <text> · @PatientChart.Mrn(patient.Id) · </text><a href="@HcDisplay.PatientChartUrl(patient.Id)">Open @patient.Name's chart</a>
+                    <text> · @PatientChart.Mrn(patient) · </text><a href="@HcDisplay.PatientChartUrl(patient.Id)">Open @patient.Name's chart</a>
                 }
             </p>
 

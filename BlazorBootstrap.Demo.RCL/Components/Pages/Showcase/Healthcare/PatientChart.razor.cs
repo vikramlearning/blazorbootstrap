@@ -1,17 +1,18 @@
-using System.Globalization;
 using BlazorBootstrap.Demo.RCL.Models.Showcase.Healthcare;
+using BlazorBootstrap.Demo.RCL.Services.Showcase.Foundation;
 using BlazorBootstrap.Demo.RCL.Services.Showcase.Healthcare;
 
 namespace BlazorBootstrap.Demo.RCL.Components.Pages.Showcase.Healthcare;
 
 /// <summary>
-/// A patient's chart for doctors: name, date of birth and age, record number, phone, and email (as text), the allergies
-/// prominently, then tabs. The health summary lists allergies and conditions, each with a labelled Add field
-/// (<see cref="HcState.AddAllergy" />, <see cref="HcState.AddCondition" />) and Remove buttons that name their item, and the
-/// immunizations. Visits lists every visit with any doctor, with the status in words and the notes and summary in a
-/// disclosure. Lab results lists every order with its status, and the values with flags once entered. Prescriptions lists
-/// active and stopped ones; Stop asks first and runs once the dialog is hidden (<see cref="HcState.StopPrescription" />).
-/// Every result is announced in an always-rendered status region. An unknown ID shows <see cref="HcNotFound" />.
+/// A patient's chart for doctors: name, date of birth and age, record number, phone, email, home clinic, health plan, and
+/// emergency contact (as text, with Edit details), the allergies prominently, then tabs. The health summary lists allergies
+/// and conditions, each with a labelled Add field (<see cref="HcState.AddAllergy" />, <see cref="HcState.AddCondition" />)
+/// and Remove buttons that name their item, and the immunizations. Visits, Lab results, and Prescriptions are Grid lists
+/// (<see cref="PatientChartVisits" />, <see cref="PatientChartLabs" />, <see cref="PatientChartPrescriptions" />). Opening
+/// the chart is audited once the tab's data is restored (<see cref="HcState.RecordChartView" />): clinical systems log
+/// every look at a record. Every result is announced in an always-rendered status region. An unknown ID shows
+/// <see cref="HcNotFound" />.
 /// </summary>
 public partial class PatientChart : ComponentBase, IDisposable
 {
@@ -25,29 +26,20 @@ public partial class PatientChart : ComponentBase, IDisposable
 
     private readonly Dictionary<string, ElementReference> removeButtons = new();
 
-    private readonly Dictionary<int, ElementReference> stopButtons = new();
-
     /// <summary>The patient this page was set up for.</summary>
     private int builtFor;
 
     /// <summary>Returns the element to focus after the next render.</summary>
     private Func<ElementReference?>? focusTarget;
 
-    /// <summary>Whether Stop was confirmed, so it runs once the dialog is hidden.</summary>
-    private bool pendingStop;
+    /// <summary>The patient whose chart opening is already in the audit log, so a re-render doesn't log it again.</summary>
+    private int? loggedFor;
 
     private bool statusIsError;
 
     private string? statusMessage;
 
     private ElementReference? statusRegion;
-
-    /// <summary>The prescription the Stop dialog is about.</summary>
-    private int stopId;
-
-    private string stopLabel = string.Empty;
-
-    private Modal stopModal = default!;
 
     #endregion
 
@@ -57,6 +49,13 @@ public partial class PatientChart : ComponentBase, IDisposable
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        // The look is logged once the tab's data is restored (a log entry before that would be replaced by the restore).
+        if (Session?.IsRestored == true && loggedFor != Id && State.CurrentDoctor is not null && State.FindPatient(Id) is not null)
+        {
+            loggedFor = Id;
+            State.RecordChartView(Id);
+        }
+
         if (focusTarget is { } target)
         {
             focusTarget = null;
@@ -92,8 +91,8 @@ public partial class PatientChart : ComponentBase, IDisposable
     /// <summary>Stops listening to state changes.</summary>
     public void Dispose() => State.Changed -= OnStateChanged;
 
-    /// <summary>Returns the medical record number, like "MRN 2" (the patient ID, as on the lab report PDF).</summary>
-    public static string Mrn(int patientId) => $"MRN {patientId.ToString(CultureInfo.InvariantCulture)}";
+    /// <summary>Returns the medical record number, like "MRN CL-100001" (as on the lab report PDF).</summary>
+    public static string Mrn(HcPatient patient) => $"MRN {patient.Mrn}";
 
     /// <summary>Returns a refill count like "no refills", "1 refill", or "3 refills".</summary>
     public static string RefillsText(int refills) => refills switch
@@ -174,54 +173,7 @@ public partial class PatientChart : ComponentBase, IDisposable
         statusMessage = message;
     }
 
-    private async Task ConfirmStopAsync()
-    {
-        pendingStop = true;
-
-        await stopModal.HideAsync();
-    }
-
     private void OnStateChanged() => InvokeAsync(StateHasChanged);
-
-    /// <summary>Stops a confirmed prescription now that the dialog is hidden, or returns focus to its Stop button.</summary>
-    private Task OnStopHiddenAsync()
-    {
-        var accepted = pendingStop;
-        var id = stopId;
-        pendingStop = false;
-
-        if (!accepted)
-        {
-            focusTarget = () => stopButtons.TryGetValue(id, out var button) ? button : statusRegion;
-            StateHasChanged();
-
-            return Task.CompletedTask;
-        }
-
-        var result = State.StopPrescription(id);
-
-        Announce(result is HcResult.Ok or HcResult.NoChange, result switch
-        {
-            HcResult.Ok => $"Stopped {stopLabel}. The patient sees it as stopped.",
-            HcResult.NoChange => $"{stopLabel} was already stopped, so nothing changed.",
-            HcResult.NotFound => $"{stopLabel} isn't on this chart any more, so nothing was stopped.",
-            _ => OtherText(result, "stopped"),
-        });
-        stopButtons.Remove(id);
-        focusTarget = () => statusRegion;
-        StateHasChanged();
-
-        return Task.CompletedTask;
-    }
-
-    private async Task OpenStopAsync(HcPrescription prescription)
-    {
-        stopId = prescription.Id;
-        stopLabel = $"{prescription.Medication} {prescription.Dose}";
-        pendingStop = false;
-
-        await stopModal.ShowAsync();
-    }
 
     /// <summary>The message for a refusal every chart change can return.</summary>
     private static string OtherText(HcResult result, string verb) => result switch
@@ -264,6 +216,8 @@ public partial class PatientChart : ComponentBase, IDisposable
 
     /// <summary>Gets or sets the patient ID from the route.</summary>
     [Parameter] public int Id { get; set; }
+
+    [CascadingParameter] private ShowcaseSession? Session { get; set; }
 
     [Inject] private HcState State { get; set; } = default!;
 

@@ -1,8 +1,9 @@
 @inherits LayoutComponentBase
 @implements IDisposable
 
-@* The patient portal: public pages (find a doctor, locations) and, for a signed-in patient, their health pages. Staff
-   signed in here get a "viewing as" bar back to the back office (D-032). *@
+@* The patient portal: public pages (find a doctor, locations) and, for a signed-in patient, their health pages with the
+   global search and the notifications in the header (not for visitors, staff, or on the sign-in page). Staff signed in
+   here get a "viewing as" bar back to the back office (D-032). *@
 <ShowcaseSessionHost State="State" SiteBase="@Base" SiteName="@HcSeedData.ProductName">
 <HcFrame>
     <Header>
@@ -25,7 +26,13 @@
             </NavbarBrand>
             @if (State.Identity.IsSignedIn)
             {
-                <ShowcaseAccountMenu SiteBase="@Base" SignInPath="@SignInPath" Class="ms-auto me-2 order-lg-last" />
+                <div class="hc-header-tools ms-auto me-2 order-lg-last">
+                    @if (State.CurrentPatient is not null && !IsSignInPage)
+                    {
+                        <ShowcaseNotificationsMenu />
+                    }
+                    <ShowcaseAccountMenu SiteBase="@Base" SignInPath="@SignInPath" />
+                </div>
             }
             else
             {
@@ -45,6 +52,12 @@
                     <NavbarItem Href="@($"{Base}/bills")">Bills</NavbarItem>
                 }
             </NavbarNav>
+            @* A signed-in patient's search: their appointments, visit summaries, lab reports, and bills, and the clinics' doctors. *@
+            @if (State.CurrentPatient is not null && !IsSignInPage)
+            {
+                <ShowcaseGlobalSearch Class="hc-global-search mb-3 mb-lg-0" Placeholder="Search your records and doctors"
+                                      Label="Search your appointments, visit summaries, lab reports, and bills, and the clinics' doctors" />
+            }
         </ChildContent>
     </Navbar>
     </Header>
@@ -63,10 +76,25 @@
 
     [Inject] private HcState State { get; set; } = default!;
 
-    /// <summary>Stops listening to state changes.</summary>
-    public void Dispose() => State.Changed -= OnStateChanged;
+    [Inject] private NavigationManager Navigation { get; set; } = default!;
 
-    protected override void OnInitialized() => State.Changed += OnStateChanged;
+    /// <summary>Whether the sign-in page is open: it keeps the header to the brand and the account menu.</summary>
+    private bool IsSignInPage => Navigation.ToBaseRelativePath(Navigation.Uri).Split('?', '#')[0].TrimEnd('/').Equals(SignInPath.TrimStart('/'), StringComparison.OrdinalIgnoreCase);
+
+    /// <summary>Stops listening to state and navigation changes.</summary>
+    public void Dispose()
+    {
+        State.Changed -= OnStateChanged;
+        Navigation.LocationChanged -= OnLocationChanged;
+    }
+
+    protected override void OnInitialized()
+    {
+        State.Changed += OnStateChanged;
+        Navigation.LocationChanged += OnLocationChanged;
+    }
+
+    private void OnLocationChanged(object? sender, Microsoft.AspNetCore.Components.Routing.LocationChangedEventArgs args) => InvokeAsync(StateHasChanged);
 
     private void OnStateChanged() => InvokeAsync(StateHasChanged);
 }

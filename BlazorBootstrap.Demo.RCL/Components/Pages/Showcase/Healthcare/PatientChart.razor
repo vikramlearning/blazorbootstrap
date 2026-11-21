@@ -1,8 +1,9 @@
 @page "/showcase/healthcare/staff/patients/{Id:int}"
 @layout HcStaffLayout
 
-@* A patient's chart for doctors: demographics, allergies and conditions (add and remove), immunizations, every visit
-   (with notes for staff), every lab order, and prescriptions (stop). *@
+@* A patient's chart for doctors: demographics, allergies and conditions (add and remove), immunizations, and Grid lists of
+   every visit, every lab order, and the prescriptions (stop). Opening it is logged in the audit log, and the patient sees
+   it under Records. *@
 <div class="container-fluid px-lg-4">
     <ShowcaseRoleGuard Roles="@HcSeedData.DoctorRole" SignInPath="@HcLayout.SignInPath">
         @if (State.FindPatient(Id) is not { } patient)
@@ -12,17 +13,14 @@
         else
         {
             var today = State.Clock.Today;
-            var me = State.CurrentDoctor;
             var age = HcDisplay.Age(patient.DateOfBirth, today);
-            var visits = State.PatientAppointments(patient.Id);
-            var labs = State.LabOrdersOf(patient.Id);
-            var prescriptions = State.PrescriptionsOf(patient.Id);
+            var payer = State.FindPayer(patient.InsurancePayerId);
 
             <PageTitle>@patient.Name · @HcSeedData.ProductName</PageTitle>
 
             <nav aria-label="Breadcrumb">
                 <ol class="breadcrumb small mb-2">
-                    <li class="breadcrumb-item"><a href="@($"{HcStaffLayout.Base}/patients")">Patients</a></li>
+                    <li class="breadcrumb-item"><a href="@HcDisplay.PatientsUrl">Patients</a></li>
                     <li class="breadcrumb-item active hc-chart-wrap" aria-current="page">@patient.Name</li>
                 </ol>
             </nav>
@@ -31,8 +29,11 @@
                 <span class="hc-avatar" aria-hidden="true">@Initials(patient.Name)</span>
                 <div class="hc-chart-head-text">
                     <h1 class="hc-title mb-1">@patient.Name</h1>
-                    <p class="hc-lead mb-0">Patient chart · @Mrn(patient.Id)</p>
+                    <p class="hc-lead mb-0">Patient chart · @Mrn(patient)</p>
                 </div>
+                <a class="btn btn-sm btn-outline-secondary ms-auto" href="@HcDisplay.PatientDetailsUrl(patient.Id)">
+                    <Icon Name="IconName.PencilSquare" class="me-1" aria-hidden="true" />Edit details<span class="visually-hidden">&#32;of @patient.Name</span>
+                </a>
             </div>
 
             <dl class="hc-chart-facts mb-3">
@@ -42,7 +43,7 @@
                 </div>
                 <div>
                     <dt>Medical record number</dt>
-                    <dd>@patient.Id.ToString(CultureInfo.InvariantCulture)</dd>
+                    <dd class="hc-mono">@patient.Mrn</dd>
                 </div>
                 <div>
                     <dt>Phone</dt>
@@ -51,6 +52,18 @@
                 <div>
                     <dt>Email</dt>
                     <dd>@patient.Email</dd>
+                </div>
+                <div>
+                    <dt>Home clinic</dt>
+                    <dd>@(State.FindClinic(patient.ClinicId)?.Name ?? "Not chosen")</dd>
+                </div>
+                <div>
+                    <dt>Health plan</dt>
+                    <dd>@(payer is null ? "Self-pay" : $"{payer.Name}, member {patient.InsuranceMemberId}")</dd>
+                </div>
+                <div>
+                    <dt>Emergency contact</dt>
+                    <dd>@(patient.EmergencyContactName.Length > 0 ? $"{patient.EmergencyContactName}, {patient.EmergencyContactPhone}" : "Not recorded")</dd>
                 </div>
             </dl>
 
@@ -87,7 +100,7 @@
                                                 <li @key="itemKey">
                                                     <span class="hc-chart-item-text">@item</span>
                                                     <button type="button" class="btn btn-sm btn-link hc-chart-remove" @ref="removeButtons[itemKey]" @onclick="() => RemoveItem(kind, item)">
-                                                        Remove<span class="visually-hidden"> @Noun(kind) “@item”</span>
+                                                        Remove<span class="visually-hidden">&#32;@Noun(kind) “@item”</span>
                                                     </button>
                                                 </li>
                                             }
@@ -139,167 +152,22 @@
 
                 <Tab Title="Visits" Name="visits">
                     <Content>
-                        <section class="pt-3" aria-labelledby="hc-chart-visits-title">
-                            <h2 class="hc-section-title" id="hc-chart-visits-title">Visits <span class="text-body-secondary fw-normal">(@visits.Count)</span></h2>
-                            @if (visits.Count == 0)
-                            {
-                                <p class="text-body-secondary">No visits yet.</p>
-                            }
-                            else
-                            {
-                                <ol class="list-unstyled hc-chart-list" aria-labelledby="hc-chart-visits-title">
-                                    @foreach (var visit in visits)
-                                    {
-                                        var doctor = State.FindDoctor(visit.DoctorId);
-                                        var clinic = State.FindClinic(visit.ClinicId);
-
-                                        <li class="hc-card hc-chart-card" @key="@($"visit-{visit.Id}")">
-                                            <div class="hc-chart-card-head">
-                                                <h3 class="hc-chart-card-title">@HcDisplay.Date(visit.Start) at @HcDisplay.Time(visit.Start)</h3>
-                                                <span class="@($"badge text-bg-{HcDisplay.StatusColor(visit.Status)}")">@HcDisplay.StatusLabel(visit.Status)</span>
-                                            </div>
-                                            <p class="small text-body-secondary mb-1">
-                                                @(doctor?.Name ?? "A former doctor")@(visit.DoctorId == me?.Id ? " (you)" : null)@(clinic is null ? null : $" · {clinic.Name}")
-                                            </p>
-                                            <p class="hc-plain mb-2">@visit.Reason</p>
-                                            @if (visit.Status == HcAppointmentStatus.Cancelled && visit.CancelReason.Length > 0)
-                                            {
-                                                <p class="small mb-2"><span class="fw-semibold">Cancel reason:</span> <span class="hc-plain">@visit.CancelReason</span></p>
-                                            }
-                                            @if (visit.Notes.Length > 0 || visit.Summary.Length > 0)
-                                            {
-                                                <details class="hc-chart-details mb-2">
-                                                    <summary>Notes and summary<span class="visually-hidden"> of @HcDisplay.Date(visit.Start)</span></summary>
-                                                    <p class="small fw-semibold mt-2 mb-1">Notes (staff only)</p>
-                                                    <p class="hc-plain mb-2">@(visit.Notes.Length > 0 ? visit.Notes : "No notes.")</p>
-                                                    <p class="small fw-semibold mb-1">Summary for the patient@(visit.Status == HcAppointmentStatus.Completed ? null : " (shown once the visit is completed)")</p>
-                                                    <p class="hc-plain mb-0">@(visit.Summary.Length > 0 ? visit.Summary : "No summary.")</p>
-                                                </details>
-                                            }
-                                            <a href="@HcDisplay.StaffAppointmentUrl(visit.Id)">Open visit<span class="visually-hidden"> of @HcDisplay.Date(visit.Start) at @HcDisplay.Time(visit.Start)</span></a>
-                                        </li>
-                                    }
-                                </ol>
-                            }
-                        </section>
+                        <PatientChartVisits PatientId="patient.Id" />
                     </Content>
                 </Tab>
 
                 <Tab Title="Lab results" Name="labs">
                     <Content>
-                        <section class="pt-3" aria-labelledby="hc-chart-labs-title">
-                            <h2 class="hc-section-title" id="hc-chart-labs-title">Lab orders <span class="text-body-secondary fw-normal">(@labs.Count)</span></h2>
-                            @if (labs.Count == 0)
-                            {
-                                <p class="text-body-secondary">No lab tests ordered yet.</p>
-                            }
-                            else
-                            {
-                                <ol class="list-unstyled hc-chart-list" aria-labelledby="hc-chart-labs-title">
-                                    @foreach (var order in labs)
-                                    {
-                                        var panel = State.LabPanel(order.PanelId);
-                                        var panelName = panel?.Name ?? order.PanelId;
-                                        var doctor = State.FindDoctor(order.DoctorId);
-                                        var mine = order.DoctorId == me?.Id;
-
-                                        <li class="hc-card hc-chart-card" @key="@($"lab-{order.Id}")">
-                                            <div class="hc-chart-card-head">
-                                                <h3 class="hc-chart-card-title">@panelName</h3>
-                                                <span class="@($"badge text-bg-{Labs.StatusColor(order.Status)}")">@Labs.StatusLabel(order.Status)</span>
-                                            </div>
-                                            <p class="small text-body-secondary mb-2">
-                                                Ordered @HcDisplay.Date(order.OrderedAt) by @(doctor?.Name ?? "a former doctor")@(mine ? " (you)" : null)
-                                                @if (order.ReleasedAt is { } released)
-                                                {
-                                                    <text> · released @HcDisplay.Date(released)</text>
-                                                }
-                                            </p>
-                                            @if (panel is not null && order.Status != HcLabStatus.Ordered)
-                                            {
-                                                <LabsResultTable Order="order" Panel="panel" Caption="@($"{panelName} results, {Labs.StatusLabel(order.Status).ToLowerInvariant()}")" />
-                                            }
-                                            @if (mine)
-                                            {
-                                                <a class="d-inline-block mt-2" href="@Labs.OrderUrl(order.Id)">
-                                                    @(order.Status switch { HcLabStatus.Ordered => "Enter results", HcLabStatus.Resulted => "Review and release", _ => "Open in Lab results" })<span class="visually-hidden"> for @panelName</span>
-                                                </a>
-                                            }
-                                        </li>
-                                    }
-                                </ol>
-                            }
-                        </section>
+                        <PatientChartLabs PatientId="patient.Id" />
                     </Content>
                 </Tab>
 
                 <Tab Title="Prescriptions" Name="prescriptions">
                     <Content>
-                        <section class="pt-3" aria-labelledby="hc-chart-rx-title">
-                            <h2 class="hc-section-title" id="hc-chart-rx-title">Prescriptions <span class="text-body-secondary fw-normal">(@prescriptions.Count)</span></h2>
-                            @if (prescriptions.Count == 0)
-                            {
-                                <p class="text-body-secondary">No prescriptions yet.</p>
-                            }
-                            else
-                            {
-                                <ol class="list-unstyled hc-chart-list" aria-labelledby="hc-chart-rx-title">
-                                    @foreach (var prescription in prescriptions)
-                                    {
-                                        var doctor = State.FindDoctor(prescription.DoctorId);
-                                        var active = prescription.Status == HcPrescriptionStatus.Active;
-                                        var label = $"{prescription.Medication} {prescription.Dose}";
-
-                                        <li class="@(active ? "hc-card hc-chart-card" : "hc-card hc-chart-card hc-chart-stopped")" @key="@($"rx-{prescription.Id}")">
-                                            <div class="hc-chart-card-head">
-                                                <h3 class="hc-chart-card-title">@label</h3>
-                                                <span class="@(active ? "badge text-bg-success" : "badge text-bg-secondary")">@(active ? "Active" : "Stopped")</span>
-                                            </div>
-                                            <p class="hc-plain mb-1">@prescription.Directions</p>
-                                            <p class="small text-body-secondary mb-2">
-                                                Quantity @prescription.Quantity · @RefillsText(prescription.Refills) left · prescribed @HcDisplay.Date(prescription.PrescribedAt) by @(doctor?.Name ?? "a former doctor")@(prescription.DoctorId == me?.Id ? " (you)" : null)
-                                            </p>
-                                            @if (prescription.RefillRequestedAt is { } requested)
-                                            {
-                                                <p class="small fw-semibold mb-2">
-                                                    <Icon Name="IconName.HourglassSplit" class="me-1" aria-hidden="true" />Refill requested @HcDisplay.When(requested), waiting for an answer.
-                                                    <a href="@($"{HcStaffLayout.Base}/refills")">Refill requests</a>
-                                                </p>
-                                            }
-                                            else if (prescription.RefillNote.Length > 0)
-                                            {
-                                                <p class="small mb-2"><span class="fw-semibold">Last refill answer:</span> <span class="hc-plain">@prescription.RefillNote</span></p>
-                                            }
-                                            @if (active)
-                                            {
-                                                <button type="button" class="btn btn-sm btn-outline-danger" @ref="stopButtons[prescription.Id]" @onclick="() => OpenStopAsync(prescription)">
-                                                    <Icon Name="IconName.SlashCircle" class="me-1" aria-hidden="true" />Stop<span class="visually-hidden"> @label</span>
-                                                </button>
-                                            }
-                                        </li>
-                                    }
-                                </ol>
-                            }
-                        </section>
+                        <PatientChartPrescriptions PatientId="patient.Id" />
                     </Content>
                 </Tab>
             </Tabs>
-
-            <Modal @ref="stopModal" IsVerticallyCentered="true" ShowCloseButton="false" aria-labelledby="hc-chart-stop-title" OnHidden="OnStopHiddenAsync">
-                <HeaderTemplate>
-                    <h2 class="modal-title h5 hc-chart-wrap" id="hc-chart-stop-title">Stop @stopLabel for @patient.Name?</h2>
-                </HeaderTemplate>
-                <BodyTemplate>
-                    <p class="mb-0">
-                        @patient.Name sees it as stopped under Prescriptions and can't ask for refills any more. A waiting refill request is
-                        closed with a note. To restart it, prescribe it again in a visit.
-                    </p>
-                </BodyTemplate>
-                <FooterTemplate>
-                    <button type="button" class="btn btn-outline-secondary" @onclick="() => stopModal.HideAsync()">Cancel</button>
-                    <button type="button" class="btn btn-danger" @onclick="ConfirmStopAsync">Stop prescription</button>
-                </FooterTemplate>
-            </Modal>
         }
     </ShowcaseRoleGuard>
 </div>

@@ -45,7 +45,7 @@ public static class HcLabPdf
         y -= 26;
 
         Text("F2", 10, Left, "Patient");
-        Text("F1", 10, Left + 110, $"{patient.Name}   (record {patient.Id.ToString(CultureInfo.InvariantCulture)})");
+        Text("F1", 10, Left + 110, $"{patient.Name}   (record {patient.Mrn})");
         y -= 15;
         Text("F2", 10, Left, "Date of birth");
         Text("F1", 10, Left + 110, patient.DateOfBirth is { } dob ? Date(dob) : "Not on file");

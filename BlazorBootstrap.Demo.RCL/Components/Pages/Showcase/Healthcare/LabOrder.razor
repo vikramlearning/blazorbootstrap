@@ -1,0 +1,160 @@
+@page "/showcase/healthcare/staff/labs/{Id:int}"
+@layout HcStaffLayout
+
+@* One lab order for doctors: the ordering doctor enters its results, checks the flags, and releases them to the patient
+   (which bills the test); other doctors see it read-only. *@
+<div class="container-fluid px-lg-4">
+    <ShowcaseRoleGuard Roles="@HcSeedData.DoctorRole" SignInPath="@HcLayout.SignInPath">
+        @if (State.FindLabOrder(Id) is not { } order)
+        {
+            <HcNotFound Message="This lab order doesn't exist, or the link is wrong. Your lab work is under Lab results." />
+        }
+        else
+        {
+            var panel = State.LabPanel(order.PanelId);
+            var panelName = panel?.Name ?? order.PanelId;
+            var patient = State.FindPatient(order.PatientId);
+            var patientName = patient?.Name ?? "a former patient";
+            var visit = order.AppointmentId is { } visitId ? State.FindAppointment(visitId) : null;
+            var mine = order.DoctorId == State.CurrentDoctor?.Id;
+            var showForm = mine && panel is not null && draft.Values.Length == panel.Analytes.Count && (order.Status == HcLabStatus.Ordered || editing);
+
+            <PageTitle>@panelName for @patientName · @HcSeedData.ProductName</PageTitle>
+
+            <nav aria-label="Breadcrumb">
+                <ol class="breadcrumb small mb-2">
+                    <li class="breadcrumb-item"><a href="@($"{HcStaffLayout.Base}/labs")">Lab results</a></li>
+                    <li class="breadcrumb-item active hc-wrap" aria-current="page">@($"Lab order {order.Id.ToString(CultureInfo.InvariantCulture)}")</li>
+                </ol>
+            </nav>
+
+            <div class="mb-3">
+                <h1 class="hc-title mb-1 hc-wrap" tabindex="-1" @ref="heading">@panelName<span class="fw-normal"> for @patientName</span></h1>
+                <p class="hc-lead mb-0">
+                    <span class="badge text-bg-@Labs.StatusColor(order.Status) me-1">@Labs.StatusLabel(order.Status)</span>
+                    Lab order @order.Id.ToString(CultureInfo.InvariantCulture), ordered @HcDisplay.When(order.OrderedAt) by @(State.FindDoctor(order.DoctorId)?.Name ?? "a former doctor")@(mine ? " (you)" : null).
+                </p>
+                <p class="small text-body-secondary mb-0 mt-1">
+                    @if (patient is not null)
+                    {
+                        <a href="@HcDisplay.PatientChartUrl(patient.Id)">@patient.Name's chart</a>
+                        <text> · @patient.Mrn</text>
+                    }
+                    @if (visit is not null)
+                    {
+                        <text> · in the visit </text><a href="@HcDisplay.StaffAppointmentUrl(visit.Id)">@HcDisplay.Day(visit.Start): @visit.Reason</a>
+                    }
+                    @if (order.ResultedAt is { } resulted)
+                    {
+                        <text> · entered @HcDisplay.When(resulted)</text>
+                    }
+                    @if (order.ReleasedAt is { } released)
+                    {
+                        <text> · released @HcDisplay.When(released)</text>
+                    }
+                </p>
+            </div>
+
+            @* Always rendered and focusable, so an outcome is announced and focus has somewhere to go. *@
+            <p class="hc-form-status mb-3 @(statusIsError ? "text-danger-emphasis" : null)" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
+
+            <section class="hc-panel" aria-labelledby="hc-lo-results-title">
+                <h2 class="hc-section-title" id="hc-lo-results-title">Results</h2>
+
+                @if (panel is null)
+                {
+                    <p class="text-body-secondary mb-0">This test is no longer offered, so its results can't be shown.</p>
+                }
+                else if (showForm)
+                {
+                    var formId = "hc-lo";
+                    var commentId = $"{formId}-comment";
+
+                    <form @onsubmit="SaveResults" novalidate aria-label="@($"{panelName} results for {patientName}")">
+                        <div class="hc-labs-fields">
+                            @for (var index = 0; index < panel.Analytes.Count; index++)
+                            {
+                                var i = index;
+                                var analyte = panel.Analytes[i];
+                                var fieldId = $"{formId}-value-{i}";
+                                var error = draft.Errors.ElementAtOrDefault(i);
+
+                                <div class="hc-labs-field" @key="@($"field-{i}")">
+                                    <label class="form-label fw-semibold" for="@fieldId">@analyte.Name (@analyte.Unit)</label>
+                                    <input id="@fieldId" type="number" inputmode="decimal" step="any" min="0" max="100000"
+                                           class="@(error is null ? "form-control" : "form-control is-invalid")" @bind="draft.Values[i]" @ref="valueInputs[fieldId]"
+                                           aria-invalid="@(error is null ? null : "true")" aria-describedby="@($"{fieldId}-help {fieldId}-error")" />
+                                    <div class="form-text" id="@($"{fieldId}-help")">Reference range: @Labs.RangeText(analyte)</div>
+                                    <div class="invalid-feedback d-block" id="@($"{fieldId}-error")">@error</div>
+                                </div>
+                            }
+                        </div>
+                        <label class="form-label fw-semibold mt-1" for="@commentId">Comment for the patient (optional)</label>
+                        <textarea id="@commentId" class="@(draft.CommentError is null ? "form-control" : "form-control is-invalid")" rows="3"
+                                  @bind="draft.Comment" @bind:event="oninput" @ref="valueInputs[commentId]" maxlength="@HcState.MaxCommentLength"
+                                  aria-invalid="@(draft.CommentError is null ? null : "true")" aria-describedby="@($"{commentId}-help {commentId}-error")"></textarea>
+                        <div class="form-text" id="@($"{commentId}-help")">
+                            The patient reads this with the results once released. Plain text. @draft.Comment.Length of @HcState.MaxCommentLength characters.
+                        </div>
+                        <div class="invalid-feedback d-block" id="@($"{commentId}-error")">@draft.CommentError</div>
+                        <div class="d-flex flex-wrap gap-2 mt-2">
+                            <button type="submit" class="btn btn-primary">
+                                <Icon Name="IconName.Save" class="me-1" aria-hidden="true" />@(order.Status == HcLabStatus.Ordered ? "Save results" : "Save corrected results")
+                            </button>
+                            @if (order.Status == HcLabStatus.Resulted)
+                            {
+                                <button type="button" class="btn btn-outline-secondary" @onclick="CancelEdit">Cancel</button>
+                            }
+                        </div>
+                    </form>
+                }
+                else if (order.Status == HcLabStatus.Ordered)
+                {
+                    <p class="text-body-secondary mb-0">Waiting for results. Only the ordering doctor enters them.</p>
+                }
+                else
+                {
+                    <LabsResultTable Order="order" Panel="panel" Caption="@($"{panelName} results for {patientName}")" />
+
+                    @if (order.Status == HcLabStatus.Resulted && mine)
+                    {
+                        <div class="d-flex flex-wrap gap-2 mt-3">
+                            <button type="button" class="btn btn-primary" @ref="releaseButton" @onclick="OpenReleaseAsync">
+                                <Icon Name="IconName.Send" class="me-1" aria-hidden="true" />Release to patient<span class="visually-hidden">: @panelName for @patientName</span>
+                            </button>
+                            <button type="button" class="btn btn-outline-secondary" @ref="editButton" @onclick="StartEdit">
+                                <Icon Name="IconName.Pencil" class="me-1" aria-hidden="true" />Correct results<span class="visually-hidden">: @panelName for @patientName</span>
+                            </button>
+                        </div>
+                    }
+                    else if (order.Status == HcLabStatus.Resulted)
+                    {
+                        <p class="small text-body-secondary mt-2 mb-0">Entered, not released yet: the ordering doctor releases them.</p>
+                    }
+                    else
+                    {
+                        <p class="small text-body-secondary mt-2 mb-0">
+                            <Icon Name="IconName.CheckCircle" class="me-1" aria-hidden="true" />@patientName sees these results in Lab reports, with a PDF.
+                        </p>
+                    }
+                }
+            </section>
+
+            <Modal @ref="releaseModal" IsVerticallyCentered="true" ShowCloseButton="false" aria-labelledby="hc-lo-release-title" OnHidden="OnReleaseHiddenAsync">
+                <HeaderTemplate>
+                    <h2 class="modal-title h5 hc-wrap" id="hc-lo-release-title">Release @panelName for @patientName?</h2>
+                </HeaderTemplate>
+                <BodyTemplate>
+                    <p class="mb-2">
+                        @patientName sees the results and your comment in Lab reports, with a PDF, and is billed @HcDisplay.Money(HcSeedData.LabFeeCents) for the test.
+                    </p>
+                    <p class="mb-0">You can't change the results after you release them.</p>
+                </BodyTemplate>
+                <FooterTemplate>
+                    <button type="button" class="btn btn-outline-secondary" @onclick="() => releaseModal.HideAsync()">Cancel</button>
+                    <button type="button" class="btn btn-primary" @onclick="ConfirmReleaseAsync">Release to patient</button>
+                </FooterTemplate>
+            </Modal>
+        }
+    </ShowcaseRoleGuard>
+</div>

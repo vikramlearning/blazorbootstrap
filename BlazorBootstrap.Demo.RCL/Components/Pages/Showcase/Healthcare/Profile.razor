@@ -14,28 +14,74 @@
         {
             <section class="hc-panel hc-profile-details mt-4" aria-labelledby="hc-profile-details-title" data-clarity-mask="true">
                 <h2 class="hc-section-title" id="hc-profile-details-title">Your details</h2>
-                <p class="mb-1">Medical record number: <span class="hc-mono fw-semibold">@patient.Id</span></p>
+                <p class="mb-1">Medical record number: <span class="hc-mono fw-semibold">@patient.Mrn</span></p>
                 <p class="small text-body-secondary mb-4">Give this number when you call a clinic. It never changes.</p>
 
-                <EditForm Model="form" OnSubmit="Save" FormName="hc-profile-details" novalidate>
-                    <ShowcaseFormErrors />
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold" for="hc-profile-dob">Date of birth</label>
-                        <input type="date" id="hc-profile-dob" class="form-control hc-profile-date @(dobError is null ? null : "is-invalid")" value="@form.DateOfBirth" @onchange="OnDateOfBirthChanged" @ref="dobInput"
-                               min="1900-01-01" max="@State.Clock.Today.ToString(HcDisplay.QueryDate, CultureInfo.InvariantCulture)"
-                               aria-describedby="hc-profile-dob-help hc-profile-dob-error" aria-invalid="@(dobError is null ? null : "true")" />
-                        <div class="form-text" id="hc-profile-dob-help">Your doctors use it to make sure they have the right record.</div>
-                        <p class="text-danger-emphasis fw-semibold small mt-1 mb-0" id="hc-profile-dob-error">@dobError</p>
+                <EditForm EditContext="editContext" OnSubmit="Save" FormName="hc-profile-details" novalidate>
+                    <DataAnnotationsValidator />
+                    <ShowcaseFormErrors ShowSummary="true" />
+                    <div class="row g-3 mb-3">
+                        <div class="col-sm-6">
+                            <label class="form-label fw-semibold" for="hc-profile-dob">Date of birth</label>
+                            <InputDate TValue="DateTime?" id="hc-profile-dob" class="form-control hc-profile-date" @bind-Value="form.DateOfBirth"
+                                       min="@DateValue(State.Clock.Today.AddYears(-HcState.MaxAgeYears))" max="@DateValue(State.Clock.Today)"
+                                       ParsingErrorMessage="Enter your date of birth as a full date: day, month, and year." aria-describedby="hc-profile-dob-help" />
+                            <div class="form-text" id="hc-profile-dob-help">Your doctors use it to make sure they have the right record.</div>
+                            <ValidationMessage For="() => form.DateOfBirth" />
+                        </div>
+                        <div class="col-sm-6">
+                            <label class="form-label fw-semibold" for="hc-profile-phone">Phone</label>
+                            <InputText id="hc-profile-phone" type="tel" class="form-control hc-profile-phone" @bind-Value="form.Phone" maxlength="@HcState.MaxPhoneLength" autocomplete="tel"
+                                       aria-describedby="hc-profile-phone-help" />
+                            <div class="form-text" id="hc-profile-phone-help">The clinic calls this number about your appointments. Digits, spaces, and + - ( ); at least 7 digits.</div>
+                            <ValidationMessage For="() => form.Phone" />
+                        </div>
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold" for="hc-profile-phone">Phone</label>
-                        <input type="tel" id="hc-profile-phone" class="form-control hc-profile-phone @(phoneError is null ? null : "is-invalid")" @bind="form.Phone" @ref="phoneInput"
-                               maxlength="@HcState.MaxPhoneLength" autocomplete="tel"
-                               aria-describedby="hc-profile-phone-help hc-profile-phone-error" aria-invalid="@(phoneError is null ? null : "true")" />
-                        <div class="form-text" id="hc-profile-phone-help">The clinic calls this number about your appointments. Up to @HcState.MaxPhoneLength characters.</div>
-                        <p class="text-danger-emphasis fw-semibold small mt-1 mb-0" id="hc-profile-phone-error">@phoneError</p>
-                    </div>
+
+                    <fieldset class="mb-3">
+                        <legend class="form-label fw-semibold fs-6 mb-1">Emergency contact <span class="fw-normal text-body-secondary">(optional)</span></legend>
+                        <p class="form-text mt-0 mb-2" id="hc-profile-emergency-help">Both a name and a phone, or neither. The phone must differ from your own.</p>
+                        <div class="row g-3">
+                            <div class="col-sm-6">
+                                <label class="form-label small fw-semibold" for="hc-profile-ec-name">Name</label>
+                                <InputText id="hc-profile-ec-name" class="form-control" @bind-Value="form.EmergencyName" maxlength="@ShowcaseIdentity.MaxNameLength" autocomplete="off"
+                                           aria-describedby="hc-profile-emergency-help" />
+                                <ValidationMessage For="() => form.EmergencyName" />
+                            </div>
+                            <div class="col-sm-6">
+                                <label class="form-label small fw-semibold" for="hc-profile-ec-phone">Phone</label>
+                                <InputText id="hc-profile-ec-phone" type="tel" class="form-control" @bind-Value="form.EmergencyPhone" maxlength="@HcState.MaxPhoneLength" autocomplete="off"
+                                           aria-describedby="hc-profile-emergency-help" />
+                                <ValidationMessage For="() => form.EmergencyPhone" />
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <fieldset class="mb-3">
+                        <legend class="form-label fw-semibold fs-6 mb-1">Health plan</legend>
+                        <div class="row g-3">
+                            <div class="col-sm-6">
+                                <label class="form-label small fw-semibold" for="hc-profile-payer">Plan</label>
+                                <InputSelect id="hc-profile-payer" class="form-select" @bind-Value="form.PayerId">
+                                    <option value="">Self-pay (no health plan)</option>
+                                    @foreach (var payer in State.Payers)
+                                    {
+                                        <option value="@payer.Id" @key="payer.Id">@payer.Name</option>
+                                    }
+                                </InputSelect>
+                            </div>
+                            <div class="col-sm-6">
+                                <label class="form-label small fw-semibold" for="hc-profile-member">Member ID</label>
+                                <InputText id="hc-profile-member" class="form-control hc-mono" @bind-Value="form.MemberId" maxlength="12" autocomplete="off" autocapitalize="characters" spellcheck="false"
+                                           disabled="@(form.PayerId.Length == 0)" aria-describedby="hc-profile-member-help" />
+                                <div class="form-text" id="hc-profile-member-help">@(State.FindPayer(form.PayerId) is { } chosen ? $"{chosen.MemberIdPrefix} and nine digits, as on your {chosen.Name} card." : "Not needed for self-pay.")</div>
+                                <ValidationMessage For="() => form.MemberId" />
+                            </div>
+                        </div>
+                    </fieldset>
+
                     <Button Type="ButtonType.Submit" Color="ButtonColor.Primary">Save details</Button>
+                    @* Always rendered, so every save is announced; a counter makes a repeat announce again. *@
                     <p class="small fw-semibold mt-3 mb-0 @(statusIsError ? "text-danger-emphasis" : "text-success-emphasis")" role="status">@statusMessage</p>
                 </EditForm>
             </section>

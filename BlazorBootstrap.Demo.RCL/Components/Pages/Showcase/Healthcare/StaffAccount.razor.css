@@ -1,0 +1,8 @@
+/* A staff member's work details: a readable width, with the short fields narrower. */
+.hc-sa-details {
+    max-width: 48rem;
+}
+
+.hc-sa-short {
+    max-width: 22rem;
+}

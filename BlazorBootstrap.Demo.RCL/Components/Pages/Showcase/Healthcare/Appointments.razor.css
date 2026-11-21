@@ -1,37 +1,8 @@
+/* Appointments: the heading beside "Book a visit"; the Grid list's styles are in HcFrame.razor.css. */
 .hc-appts-head {
     display: flex;
     flex-wrap: wrap;
     align-items: flex-end;
     justify-content: space-between;
     gap: 1rem;
-}
-
-/* One card per visit: when, who and where, then the link; side by side on wide screens, stacked at 375 px. */
-.hc-appts-card {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr);
-    gap: .75rem;
-    padding: 1rem 1.25rem;
-}
-
-@media (min-width: 768px) {
-    .hc-appts-card {
-        grid-template-columns: minmax(0, 15rem) minmax(0, 1fr) auto;
-        align-items: center;
-    }
-}
-
-.hc-appts-who {
-    display: flex;
-    gap: .75rem;
-    align-items: flex-start;
-    min-width: 0;
-}
-
-.hc-appts-text {
-    min-width: 0;
-}
-
-.hc-appts-reason {
-    overflow-wrap: anywhere;
 }

@@ -1,0 +1,165 @@
+@page "/showcase/healthcare/staff/patients/new"
+@page "/showcase/healthcare/staff/patients/{Id:int}/edit"
+@layout HcStaffLayout
+
+@{
+    var patient = Patient;
+}
+
+@if (Id is null || patient is not null)
+{
+    <PageTitle>@(patient is not null ? $"{patient.Name}'s details" : "Register a patient") · @HcSeedData.ProductName</PageTitle>
+}
+
+@* Staff register patients and keep their details: who they are, how to reach them, their emergency contact, their home
+   clinic, and their health plan. Opening a patient's details is logged in the audit log, like the chart. *@
+<div class="container-fluid px-lg-4">
+    @if (Id is not null && patient is null)
+    {
+        <HcNotFound Message="This patient isn't in the clinics' records, or the link is wrong. Find them under Patients." />
+    }
+    else
+    {
+        var hasAccount = patient?.AccountId is not null;
+
+        <nav aria-label="Breadcrumb">
+            <ol class="breadcrumb small mb-2">
+                <li class="breadcrumb-item"><a href="@HcDisplay.PatientsUrl">Patients</a></li>
+                <li class="breadcrumb-item active hc-wrap" aria-current="page">@(patient is null ? "Register a patient" : patient.Name)</li>
+            </ol>
+        </nav>
+
+        <div class="d-flex flex-wrap align-items-start justify-content-between gap-3 mb-3">
+            <div class="hc-wrap">
+                <h1 class="hc-title mb-1">@(patient is null ? "Register a patient" : $"{patient.Name}'s details")</h1>
+                <p class="hc-lead mb-0">
+                    @(patient is null
+                        ? "Enter the patient's details from their ID and their health plan card. Every field is checked as you go."
+                        : $"Record number {patient.Mrn}, registered {HcDisplay.Date(patient.RegisteredAt)}. Changes show on the chart and the patient's portal when you save.")
+                </p>
+            </div>
+            @if (patient is not null && State.CurrentDoctor is not null)
+            {
+                <a class="btn btn-outline-secondary" href="@HcDisplay.PatientChartUrl(patient.Id)"><Icon Name="IconName.FileEarmarkMedical" class="me-1" aria-hidden="true" />Open chart</a>
+            }
+        </div>
+
+        @* Always rendered and focusable, so a save is announced and focus has somewhere to go. *@
+        <p class="hc-form-status mb-3 @(statusIsError ? "text-danger-emphasis" : "text-success-emphasis")" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
+
+        <section class="hc-panel" aria-labelledby="hc-pe-form-title">
+            <h2 class="hc-section-title" id="hc-pe-form-title">Patient details</h2>
+            <EditForm EditContext="editContext" OnSubmit="SaveAsync" FormName="hc-patient" novalidate>
+                <DataAnnotationsValidator />
+                <ShowcaseFormErrors ShowSummary="true" />
+
+                <div class="row g-3 mb-3">
+                    <div class="col-md-4">
+                        <label class="form-label fw-semibold" for="hc-pe-mrn">Medical record number</label>
+                        <InputText id="hc-pe-mrn" class="form-control hc-mono" @bind-Value="form.Mrn" maxlength="9" autocomplete="off" autocapitalize="characters" spellcheck="false"
+                                   aria-describedby="hc-pe-mrn-help" />
+                        <ShowcaseUniqueCheck @ref="mrnCheck" For="() => form.Mrn" IsTakenAsync="IsMrnTakenAsync" TakenMessage="MrnTakenMessage" CheckingText="Checking the record number…" />
+                        <div class="form-text" id="hc-pe-mrn-help">CL- and six digits, unique at the clinics. @(patient is null ? "The next free number is filled in; change it only for a patient moving from another clinic." : null)</div>
+                        <ValidationMessage For="() => form.Mrn" />
+                    </div>
+                    <div class="col-md-8">
+                        <label class="form-label fw-semibold" for="hc-pe-name">Full name</label>
+                        <InputText id="hc-pe-name" class="form-control" @bind-Value="form.Name" maxlength="@ShowcaseIdentity.MaxNameLength" autocomplete="off" disabled="@hasAccount"
+                                   aria-describedby="hc-pe-name-help" />
+                        <div class="form-text" id="hc-pe-name-help">@(hasAccount ? "Follows the patient's own account: they change it on their profile." : "As on their ID.")</div>
+                        <ValidationMessage For="() => form.Name" />
+                    </div>
+                </div>
+
+                <div class="row g-3 mb-3">
+                    <div class="col-sm-6 col-md-4">
+                        <label class="form-label fw-semibold" for="hc-pe-dob">Date of birth</label>
+                        <InputDate TValue="DateTime?" id="hc-pe-dob" class="form-control" @bind-Value="form.DateOfBirth" min="@DateValue(State.Clock.Today.AddYears(-HcState.MaxAgeYears))"
+                                   max="@DateValue(State.Clock.Today)" ParsingErrorMessage="Enter the date of birth as a full date: day, month, and year." aria-describedby="hc-pe-dob-help" />
+                        <div class="form-text" id="hc-pe-dob-help">Not in the future; at most @HcState.MaxAgeYears years ago.</div>
+                        <ValidationMessage For="() => form.DateOfBirth" />
+                    </div>
+                    <div class="col-sm-6 col-md-4">
+                        <label class="form-label fw-semibold" for="hc-pe-phone">Phone</label>
+                        <InputText id="hc-pe-phone" type="tel" class="form-control" @bind-Value="form.Phone" maxlength="@HcState.MaxPhoneLength" autocomplete="off" aria-describedby="hc-pe-phone-help" />
+                        <div class="form-text" id="hc-pe-phone-help">Digits, spaces, and + - ( ); at least 7 digits.</div>
+                        <ValidationMessage For="() => form.Phone" />
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label fw-semibold" for="hc-pe-email">Email</label>
+                        <InputText id="hc-pe-email" type="email" class="form-control" @bind-Value="form.Email" maxlength="@ShowcaseIdentity.MaxEmailLength" autocomplete="off" disabled="@hasAccount"
+                                   aria-describedby="hc-pe-email-help" />
+                        <div class="form-text" id="hc-pe-email-help">@(hasAccount ? "Follows the patient's own account." : "For appointment reminders. Family members may share one.")</div>
+                        <ValidationMessage For="() => form.Email" />
+                    </div>
+                </div>
+
+                <div class="row g-3 mb-3">
+                    <div class="col-md-4">
+                        <label class="form-label fw-semibold" for="hc-pe-clinic">Home clinic</label>
+                        <InputSelect id="hc-pe-clinic" class="form-select" @bind-Value="form.ClinicId" aria-describedby="hc-pe-clinic-help">
+                            <option value="">Choose a clinic</option>
+                            @foreach (var clinic in State.Clinics)
+                            {
+                                <option value="@clinic.Id" @key="clinic.Id">@clinic.Name</option>
+                            }
+                        </InputSelect>
+                        <div class="form-text" id="hc-pe-clinic-help">That clinic's front desk looks after their bookings.</div>
+                        <ValidationMessage For="() => form.ClinicId" />
+                    </div>
+                </div>
+
+                <fieldset class="mb-3">
+                    <legend class="form-label fw-semibold fs-6 mb-1">Emergency contact <span class="fw-normal text-body-secondary">(optional)</span></legend>
+                    <p class="form-text mt-0 mb-2" id="hc-pe-emergency-help">Both a name and a phone, or neither. The phone must differ from the patient's own.</p>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label small fw-semibold" for="hc-pe-ec-name">Name</label>
+                            <InputText id="hc-pe-ec-name" class="form-control" @bind-Value="form.EmergencyName" maxlength="@ShowcaseIdentity.MaxNameLength" autocomplete="off" aria-describedby="hc-pe-emergency-help" />
+                            <ValidationMessage For="() => form.EmergencyName" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-semibold" for="hc-pe-ec-phone">Phone</label>
+                            <InputText id="hc-pe-ec-phone" type="tel" class="form-control" @bind-Value="form.EmergencyPhone" maxlength="@HcState.MaxPhoneLength" autocomplete="off" aria-describedby="hc-pe-emergency-help" />
+                            <ValidationMessage For="() => form.EmergencyPhone" />
+                        </div>
+                    </div>
+                </fieldset>
+
+                <fieldset class="mb-3">
+                    <legend class="form-label fw-semibold fs-6 mb-1">Health plan</legend>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label small fw-semibold" for="hc-pe-payer">Plan</label>
+                            <InputSelect id="hc-pe-payer" class="form-select" @bind-Value="form.PayerId" aria-describedby="hc-pe-payer-help">
+                                <option value="">Self-pay (no health plan)</option>
+                                @foreach (var payer in State.Payers)
+                                {
+                                    <option value="@payer.Id" @key="payer.Id">@payer.Name</option>
+                                }
+                            </InputSelect>
+                            <div class="form-text" id="hc-pe-payer-help">Bills go to the patient for now; claims to health plans come later.</div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-semibold" for="hc-pe-member">Member ID</label>
+                            <InputText id="hc-pe-member" class="form-control hc-mono" @bind-Value="form.MemberId" maxlength="12" autocomplete="off" autocapitalize="characters" spellcheck="false"
+                                       disabled="@(form.PayerId.Length == 0)" aria-describedby="hc-pe-member-help" />
+                            <div class="form-text" id="hc-pe-member-help">@MemberIdHelp(form.PayerId)</div>
+                            <ValidationMessage For="() => form.MemberId" />
+                        </div>
+                    </div>
+                </fieldset>
+
+                @* Always rendered, so a new error is announced; a counter makes a repeat announce again. *@
+                <p class="hc-form-error mb-3" role="alert">@errorMessage</p>
+
+                <div class="d-flex flex-wrap align-items-center gap-2">
+                    <Button Type="ButtonType.Submit" Color="ButtonColor.Primary">
+                        <Icon Name="@(patient is null ? IconName.PersonPlus : IconName.CheckLg)" class="me-1" aria-hidden="true" />@(patient is null ? "Register patient" : "Save changes")
+                    </Button>
+                    <a class="btn btn-link" href="@HcDisplay.PatientsUrl">@(patient is null ? "Cancel" : "Back to patients")</a>
+                </div>
+            </EditForm>
+        </section>
+    }
+</div>

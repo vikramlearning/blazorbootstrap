@@ -201,11 +201,11 @@
                             {
                                 <div class="hc-appt-reschedule mt-4" id="hc-appt-reschedule">
                                     <h3 class="h6 fw-bold" tabindex="-1" @ref="rescheduleHeading">Choose a new time with @doctorName</h3>
-                                    <SlotPicker DoctorId="@appointment.DoctorId" Selected="newStart" OnSelect="OnPickNew" IdPrefix="hc-appt-sp" />
+                                    <SlotPicker DoctorId="@appointment.DoctorId" Selected="newStart" OnSelect="OnPickNew" IdPrefix="hc-appt-sp" Minutes="@appointment.Minutes" ExceptAppointmentId="@appointment.Id" />
 
                                     @if (newStart is { } target)
                                     {
-                                        var targetClinic = State.FindClinic(State.Slots(appointment.DoctorId, target.Date).FirstOrDefault(slot => slot.Start == target)?.ClinicId);
+                                        var targetClinic = State.FindClinic(State.Slots(appointment.DoctorId, target.Date, appointment.Minutes, appointment.Id).FirstOrDefault(slot => slot.Start == target)?.ClinicId);
 
                                         <div class="hc-appt-confirm mt-3" tabindex="-1" @ref="confirmBox" role="group" aria-labelledby="hc-appt-confirm-text">
                                             <p class="fw-semibold mb-1" id="hc-appt-confirm-text">Move your visit to @SlotPicker.SlotName(target)?</p>

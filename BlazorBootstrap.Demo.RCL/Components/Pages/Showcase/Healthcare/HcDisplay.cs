@@ -1,5 +1,6 @@
 using System.Globalization;
 using BlazorBootstrap.Demo.RCL.Models.Showcase.Healthcare;
+using BlazorBootstrap.Demo.RCL.Services.Showcase.Healthcare;
 
 namespace BlazorBootstrap.Demo.RCL.Components.Pages.Showcase.Healthcare;
 
@@ -78,11 +79,26 @@ public static class HcDisplay
     /// <summary>Formats a lab value without trailing zeros, like "6.2" or "248".</summary>
     public static string Number(double value) => value.ToString("0.##", CultureInfo.InvariantCulture);
 
+    /// <summary>Returns the staff route of a lab order (the ordering doctor enters, checks, and releases its results there).</summary>
+    public static string LabOrderUrl(int orderId) => HcSeedData.LabOrderPath(orderId);
+
     /// <summary>Returns the route of a released lab report.</summary>
     public static string LabUrl(int orderId) => FormattableString.Invariant($"{HcLayout.Base}/lab-reports/{orderId}");
 
+    /// <summary>Returns the route of the staff form that registers a new patient.</summary>
+    public static string NewPatientUrl => $"{HcStaffLayout.Base}/patients/new";
+
     /// <summary>Returns the staff route of a patient's chart.</summary>
     public static string PatientChartUrl(int patientId) => FormattableString.Invariant($"{HcStaffLayout.Base}/patients/{patientId}");
+
+    /// <summary>Returns the staff route of a patient's registration details.</summary>
+    public static string PatientDetailsUrl(int patientId) => HcSeedData.PatientDetailsPath(patientId);
+
+    /// <summary>Returns the staff route of a patient: the chart for a doctor, the registration details for the front desk.</summary>
+    public static string PatientUrl(HcState state, int patientId) => state.CurrentDoctor is not null ? PatientChartUrl(patientId) : PatientDetailsUrl(patientId);
+
+    /// <summary>Returns the staff patient list.</summary>
+    public static string PatientsUrl => $"{HcStaffLayout.Base}/patients";
 
     /// <summary>Returns the staff route of a visit.</summary>
     public static string StaffAppointmentUrl(int appointmentId) => FormattableString.Invariant($"{HcStaffLayout.Base}/appointments/{appointmentId}");
@@ -108,6 +124,9 @@ public static class HcDisplay
 
     /// <summary>Formats a time like "09:30".</summary>
     public static string Time(DateTime time) => time.ToString("HH:mm", CultureInfo.InvariantCulture);
+
+    /// <summary>Returns a visit type with its length, like "New patient visit (60 minutes)".</summary>
+    public static string VisitTypeText(HcVisitType type) => FormattableString.Invariant($"{HcVisitTypes.Label(type)} ({HcVisitTypes.MinutesOf(type)} minutes)");
 
     /// <summary>Formats a date and time like "Tue, Nov 24 at 09:30".</summary>
     public static string When(DateTime time) => time.ToString("ddd, MMM d 'at' HH:mm", CultureInfo.InvariantCulture);

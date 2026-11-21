@@ -7,14 +7,13 @@
     <ShowcaseRoleGuard Roles="@HcSeedData.PatientRole" SignInPath="@HcLayout.SignInPath">
         @{
             var all = All();
-            var due = all.Where(bill => bill.Status == HcBillStatus.Due).OrderBy(bill => bill.DueDate).ToList();
-            var paid = all.Where(bill => bill.Status == HcBillStatus.Paid).OrderByDescending(bill => bill.PaidAt).ToList();
+            var due = all.Where(bill => bill.Status == HcBillStatus.Due).ToList();
             var today = State.Clock.Today;
             var overdue = due.Count(bill => IsOverdue(bill, today));
         }
 
         <h1 class="hc-title mb-1">Bills</h1>
-        <p class="hc-lead mb-4">Bills for your visits and lab tests. Pay with a test card; only its brand and last four digits are kept.</p>
+        <p class="hc-lead mb-4">Bills for your visits and lab tests. Open a bill to pay it with a test card; only its brand and last four digits are kept.</p>
 
         <section class="hc-panel hc-bills-total mb-4" aria-labelledby="hc-bills-total-title">
             <span class="hc-icon flex-shrink-0" aria-hidden="true"><Icon Name="IconName.Receipt" /></span>
@@ -31,134 +30,163 @@
             </div>
         </section>
 
-        @* Always rendered and focusable: a payment is announced here, and focus lands here once its form is gone. *@
+        <section class="hc-panel mb-3" aria-labelledby="hc-bills-filters-title">
+            <h2 class="hc-section-title" id="hc-bills-filters-title">Show</h2>
+            <div class="hc-list-filters" role="search" aria-labelledby="hc-bills-filters-title">
+                <div>
+                    <label class="form-label small fw-semibold" for="hc-bills-status">Bills</label>
+                    <select id="hc-bills-status" class="form-select" value="@statusFilter" @onchange="OnStatusChangedAsync">
+                        <option value="">All (@all.Count)</option>
+                        <option value="@DueFilter">To pay (@due.Count)</option>
+                        <option value="@PaidFilter">Paid (@(all.Count - due.Count))</option>
+                    </select>
+                </div>
+            </div>
+            <div class="hc-list-meta">
+                <p class="small text-body-secondary mb-0" aria-live="polite" tabindex="-1" @ref="countRegion">@CountText(all.Count)</p>
+                @* Back to the saved view's defaults: to pay first, 10 a page, every column in its place. *@
+                <Button Color="ButtonColor.Link" Size="ButtonSize.Small" Class="p-0" @onclick="ResetViewAsync">Reset view</Button>
+            </div>
+        </section>
+
+        @* Always rendered and focusable: a payment is announced here, and focus lands here once its dialog is gone. *@
         <div class="hc-bills-status" role="status" tabindex="-1" @ref="statusRegion">
             @if (statusMessage is not null)
             {
-                <div class="alert @(statusIsError ? "alert-danger" : "alert-success") mb-4">
+                <div class="alert @(statusIsError ? "alert-danger" : "alert-success") mb-3">
                     <Icon Name="@(statusIsError ? IconName.ExclamationTriangleFill : IconName.CheckCircleFill)" class="me-2" aria-hidden="true" />@statusMessage
                 </div>
             }
         </div>
 
-        <section class="mb-5" aria-labelledby="hc-bills-due-title">
-            <h2 class="hc-section-title" id="hc-bills-due-title">To pay (@due.Count)</h2>
-            @if (due.Count == 0)
-            {
-                <div class="hc-panel">
-                    <p class="mb-0">You have no bills to pay.</p>
-                </div>
-            }
-            else
-            {
-                <ul class="list-unstyled d-grid gap-3 mb-0">
-                    @foreach (var bill in due)
+        <section class="hc-panel" aria-label="Your bills">
+            <ShowcaseDataState Status="@(viewLoaded ? ShowcaseDataStatus.Ready : ShowcaseDataStatus.Loading)"
+                               IsEmpty="@(all.Count == 0)"
+                               EmptyIcon="IconName.Receipt"
+                               EmptyTitle="No bills yet"
+                               EmptyText="Bills for your visits and lab tests appear here after each one."
+                               LoadingText="Loading your bills…"
+                               OnRetry="RefreshGridAsync">
+                <ChildContent>
+                    <Grid @ref="grid"
+                          @key="gridVersion"
+                          TItem="BillRow"
+                          Class="table table-hover align-middle hc-table-wide sc-grid-row-links"
+                          GridContainerClass="hc-grid border rounded-3"
+                          DataProvider="ProvideBillsAsync"
+                          SettingsProvider="view.GetSettingsAsync"
+                          GridSettingsChanged="SaveSettingsAsync"
+                          AllowPaging="true"
+                          PageSize="@pageSize"
+                          PageSizeSelectorVisible="true"
+                          PageSizeSelectorItems="@(new[] { 10, 25, 50 })"
+                          PaginationItemsTextFormat="{0}–{1} of {2} bills"
+                          AllowSorting="true"
+                          AllowColumnChooser="true"
+                          AllowExport="true"
+                          ExportFileName="clinic-my-bills"
+                          Responsive="true"
+                          EmptyText="No bills match. Choose All."
+                          aria-label="Your bills">
+                        <GridColumns>
+                            <GridColumn TItem="BillRow" HeaderText="Bill" PropertyName="Description" SortString="description" SortKeySelector="row => row.Description"
+                                        IsDefaultSortColumn="@view.IsSortColumn("description")" SortDirection="@view.DirectionFor("description")" AlwaysVisible="true">
+                                @{
+                                    var row = context;
+                                }
+                                @* A bill has no page of its own: the stretched button makes the whole row open it, to pay or to see the receipt. *@
+                                <button type="button" class="hc-row-button stretched-link" @ref="openers[row.Id]" @onclick="() => OpenAsync(row.Id)">@row.Description</button>
+                            </GridColumn>
+                            <GridColumn TItem="BillRow" HeaderText="Amount" PropertyName="AmountText" SortString="amount" SortKeySelector="row => row.AmountCents"
+                                        IsDefaultSortColumn="@view.IsSortColumn("amount")" SortDirection="@view.DirectionFor("amount")" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" TextNoWrap="true">
+                                <span class="fw-semibold">@context.AmountText</span>
+                            </GridColumn>
+                            <GridColumn TItem="BillRow" HeaderText="Status" PropertyName="Status" SortString="status" SortKeySelector="row => row.StatusOrder"
+                                        IsDefaultSortColumn="@view.IsSortColumn("status")" SortDirection="@view.DirectionFor("status")" TextNoWrap="true">
+                                <span class="@(context.StatusOrder switch { 0 => "badge text-bg-danger", 1 => "badge text-bg-warning", _ => "badge text-bg-success" })">@context.Status</span>
+                            </GridColumn>
+                            <GridColumn TItem="BillRow" HeaderText="Issued" PropertyName="IssuedText" SortString="issued" SortKeySelector="row => row.Issued"
+                                        IsDefaultSortColumn="@view.IsSortColumn("issued")" SortDirection="@view.DirectionFor("issued")" TextNoWrap="true">
+                                @context.IssuedText
+                            </GridColumn>
+                            <GridColumn TItem="BillRow" HeaderText="Due by" PropertyName="DueText" SortString="due" SortKeySelector="row => row.Due"
+                                        IsDefaultSortColumn="@view.IsSortColumn("due")" SortDirection="@view.DirectionFor("due")" TextNoWrap="true">
+                                @context.DueText
+                            </GridColumn>
+                            <GridColumn TItem="BillRow" HeaderText="Paid" PropertyName="PaidText" SortString="paid" SortKeySelector="row => row.Paid ?? DateTime.MaxValue"
+                                        IsDefaultSortColumn="@view.IsSortColumn("paid")" SortDirection="@view.DirectionFor("paid")">
+                                @context.PaidText
+                            </GridColumn>
+                            <GridColumn TItem="BillRow" HeaderText="Number" PropertyName="Id" SortString="number" SortKeySelector="row => row.Id"
+                                        IsDefaultSortColumn="@view.IsSortColumn("number")" SortDirection="@view.DirectionFor("number")" TextNoWrap="true">
+                                <span class="hc-mono">@context.Id</span>
+                            </GridColumn>
+                        </GridColumns>
+                    </Grid>
+                </ChildContent>
+            </ShowcaseDataState>
+        </section>
+
+        <Modal @ref="billModal" IsVerticallyCentered="true" ShowCloseButton="false" aria-labelledby="hc-bills-dialog-title" OnShown="OnShownAsync" OnHidden="OnHiddenAsync">
+            <HeaderTemplate>
+                <h2 class="modal-title h5 hc-wrap" id="hc-bills-dialog-title" tabindex="-1" @ref="payHeading">
+                    @(Opened is { } shown ? (shown.Status == HcBillStatus.Due ? $"Pay {HcDisplay.Money(shown.AmountCents)} for {shown.Description}" : $"Paid: {shown.Description}") : "Bill")
+                </h2>
+            </HeaderTemplate>
+            <BodyTemplate>
+                @if (Opened is not { } bill)
+                {
+                    <p>This bill can't be found any more.</p>
+                    <button type="button" class="btn btn-outline-secondary" @onclick="() => billModal.HideAsync()">Close</button>
+                }
+                else
+                {
+                    <dl class="hc-bills-facts mb-3">
+                        <div><dt>Bill</dt><dd class="hc-mono">@bill.Id.ToString(CultureInfo.InvariantCulture)</dd></div>
+                        <div><dt>Amount</dt><dd>@HcDisplay.Money(bill.AmountCents)</dd></div>
+                        <div><dt>Issued</dt><dd>@HcDisplay.Date(bill.CreatedAt)</dd></div>
+                        <div><dt>Due by</dt><dd>@HcDisplay.Date(bill.DueDate)@(IsOverdue(bill, today) ? " (overdue)" : null)</dd></div>
+                        @if (bill.Status == HcBillStatus.Paid)
+                        {
+                            <div><dt>Paid</dt><dd>@HcDisplay.Date(bill.PaidAt ?? bill.CreatedAt) with @CardText(bill)</dd></div>
+                        }
+                    </dl>
+                    @if (bill.AppointmentId is { } visitId)
                     {
-                        var billId = bill.Id;
-                        var isOverdue = IsOverdue(bill, today);
-                        var amount = HcDisplay.Money(bill.AmountCents);
-                        var titleId = $"hc-bills-{bill.Id}-title";
-                        var panelId = $"hc-bills-pay-{bill.Id}";
-                        var paying = payingId == bill.Id;
-
-                        <li @key="@($"due-{bill.Id}")">
-                            <article class="hc-card hc-bills-card" aria-labelledby="@titleId">
-                                <div class="hc-bills-row">
-                                    <div class="hc-bills-text">
-                                        <h3 class="h6 fw-bold mb-1" id="@titleId">@bill.Description</h3>
-                                        <p class="small text-body-secondary mb-1">Issued @HcDisplay.Date(bill.CreatedAt) · due by @HcDisplay.Date(bill.DueDate)</p>
-                                        @if (isOverdue)
-                                        {
-                                            <p class="small fw-semibold text-danger-emphasis mb-1"><Icon Name="IconName.ExclamationTriangleFill" class="me-1" aria-hidden="true" />Overdue: it was due by @HcDisplay.Date(bill.DueDate).</p>
-                                        }
-                                        @if (bill.AppointmentId is { } visitId)
-                                        {
-                                            <a class="small" href="@HcDisplay.AppointmentUrl(visitId)">See the visit<span class="visually-hidden">: @bill.Description</span></a>
-                                        }
-                                        else if (bill.LabOrderId is { } labId)
-                                        {
-                                            <a class="small" href="@HcDisplay.LabUrl(labId)">See the lab report<span class="visually-hidden">: @bill.Description</span></a>
-                                        }
-                                    </div>
-                                    <div class="hc-bills-pay">
-                                        <span class="hc-bills-amount-sm">@amount</span>
-                                        @if (!paying)
-                                        {
-                                            <button type="button" class="btn btn-primary btn-sm" @ref="payButtons[billId]" @onclick="() => OpenPay(billId)">
-                                                Pay @amount<span class="visually-hidden">: @bill.Description</span>
-                                            </button>
-                                        }
-                                    </div>
-                                </div>
-
-                                @if (paying)
-                                {
-                                    <div class="hc-bills-form mt-3" id="@panelId">
-                                        <h4 class="h6 fw-bold" id="hc-bills-pay-title" tabindex="-1" @ref="payHeading">Pay @amount for @bill.Description</h4>
-                                        <ShowcaseDemoNotice Class="mb-3" Text="Demo only: use one of the listed test cards; real cards are never accepted and nothing is really charged. Only the card's brand and last four digits are kept." />
-                                        <EditForm EditContext="payContext" OnSubmit="Pay" FormName="hc-bills-pay" aria-labelledby="hc-bills-pay-title" novalidate>
-                                            <ShowcaseFormErrors FocusFirstInvalid="false" />
-                                            @* Only the published test cards pass (D-026). *@
-                                            <div id="hc-bills-card-fields">
-                                                <ShowcaseCardForm Card="card" Today="State.Clock.Today" IdPrefix="hc-pay" />
-                                            </div>
-                                            <div class="text-danger-emphasis fw-semibold mt-3" role="alert">
-                                                @if (payError is not null)
-                                                {
-                                                    <Icon Name="IconName.ExclamationTriangleFill" class="me-2" aria-hidden="true" />@payError
-                                                }
-                                            </div>
-                                            <div class="d-flex flex-wrap gap-2 mt-3">
-                                                <Button Type="ButtonType.Submit" Color="ButtonColor.Primary">Pay @amount</Button>
-                                                <Button Color="ButtonColor.Secondary" Outline="true" @onclick="CancelPay">Cancel</Button>
-                                            </div>
-                                        </EditForm>
-                                    </div>
-                                }
-                            </article>
-                        </li>
+                        <p class="small"><a href="@HcDisplay.AppointmentUrl(visitId)">See the visit<span class="visually-hidden">: @bill.Description</span></a></p>
                     }
-                </ul>
-            }
-        </section>
+                    else if (bill.LabOrderId is { } labId)
+                    {
+                        <p class="small"><a href="@HcDisplay.LabUrl(labId)">See the lab report<span class="visually-hidden">: @bill.Description</span></a></p>
+                    }
 
-        <section aria-labelledby="hc-bills-paid-title">
-            <h2 class="hc-section-title" id="hc-bills-paid-title">Paid (@paid.Count)</h2>
-            @if (paid.Count == 0)
-            {
-                <div class="hc-panel">
-                    <p class="mb-0">No paid bills yet.</p>
-                </div>
-            }
-            else
-            {
-                <div class="hc-panel">
-                    <div class="table-responsive">
-                        <table class="table mb-0">
-                            <caption class="visually-hidden">Paid bills, newest payment first</caption>
-                            <thead>
-                                <tr>
-                                    <th scope="col">Bill</th>
-                                    <th scope="col" class="text-end">Amount</th>
-                                    <th scope="col">Paid on</th>
-                                    <th scope="col">Paid with</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var bill in paid)
+                    @if (bill.Status == HcBillStatus.Due)
+                    {
+                        <ShowcaseDemoNotice Class="mb-3" Text="Demo only: use one of the listed test cards; real cards are never accepted and nothing is really charged. Only the card's brand and last four digits are kept." />
+                        <EditForm EditContext="payContext" OnSubmit="PayAsync" FormName="hc-bills-pay" aria-labelledby="hc-bills-dialog-title" novalidate>
+                            <ShowcaseFormErrors FocusFirstInvalid="false" />
+                            @* Only the published test cards pass (D-026). *@
+                            <div id="hc-bills-card-fields">
+                                <ShowcaseCardForm Card="card" Today="State.Clock.Today" IdPrefix="hc-pay" />
+                            </div>
+                            <div class="text-danger-emphasis fw-semibold mt-3" role="alert">
+                                @if (payError is not null)
                                 {
-                                    <tr @key="@($"paid-{bill.Id}")">
-                                        <th scope="row" class="fw-normal hc-bills-desc">@bill.Description</th>
-                                        <td class="text-end text-nowrap">@HcDisplay.Money(bill.AmountCents)</td>
-                                        <td class="text-nowrap">@HcDisplay.Date(bill.PaidAt ?? bill.CreatedAt)</td>
-                                        <td class="text-nowrap">@CardText(bill)</td>
-                                    </tr>
+                                    <Icon Name="IconName.ExclamationTriangleFill" class="me-2" aria-hidden="true" />@payError
                                 }
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            }
-        </section>
+                            </div>
+                            <div class="d-flex flex-wrap gap-2 mt-3">
+                                <Button Type="ButtonType.Submit" Color="ButtonColor.Primary">Pay @HcDisplay.Money(bill.AmountCents)</Button>
+                                <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => billModal.HideAsync()">Cancel</Button>
+                            </div>
+                        </EditForm>
+                    }
+                    else
+                    {
+                        <button type="button" class="btn btn-outline-secondary" @onclick="() => billModal.HideAsync()">Close</button>
+                    }
+                }
+            </BodyTemplate>
+        </Modal>
     </ShowcaseRoleGuard>
 </div>

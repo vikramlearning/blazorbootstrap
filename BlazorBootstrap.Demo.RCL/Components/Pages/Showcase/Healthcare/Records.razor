@@ -10,50 +10,74 @@
             var visits = Visits(patient);
 
             <h1 class="hc-title mb-1">Your health record</h1>
-            <p class="hc-lead mb-2">Visit summaries from your doctors, and the conditions, allergies, and vaccinations on your chart.</p>
+            <p class="hc-lead mb-2">Visit summaries from your doctors, the conditions, allergies, and vaccinations on your chart, and who at the clinics has looked at your record.</p>
             <p class="small text-body-secondary mb-4">
-                @patient.Name · Medical record number <span class="hc-mono">@patient.Id</span>@(patient.DateOfBirth is { } dob ? $" · Born {HcDisplay.Date(dob)}" : null).
+                @patient.Name · Medical record number <span class="hc-mono">@patient.Mrn</span>@(patient.DateOfBirth is { } dob ? $" · Born {HcDisplay.Date(dob)}" : null).
                 Demo only: the people and records are made up, and nothing here is medical advice.
             </p>
 
             <div class="hc-records-grid">
-                <section class="hc-records-main" aria-labelledby="hc-records-visits-title">
+                <section class="hc-records-main hc-panel" aria-labelledby="hc-records-visits-title">
                     <h2 class="hc-section-title" id="hc-records-visits-title">Visit summaries (@visits.Count)</h2>
-                    <p class="small text-body-secondary">What your doctor wrote for you after each completed visit, newest first.</p>
-                    @if (visits.Count == 0)
-                    {
-                        <div class="hc-panel">
-                            <p class="mb-0">No completed visits yet. After a visit, the doctor's summary appears here. <a href="@($"{HcLayout.Base}/doctors")">Find a doctor</a></p>
-                        </div>
-                    }
-                    else
-                    {
-                        <ul class="list-unstyled d-grid gap-3 mb-0">
-                            @foreach (var visit in visits)
-                            {
-                                var doctor = State.FindDoctor(visit.DoctorId);
-                                var titleId = $"hc-records-visit-{visit.Id}";
-
-                                <li @key="@($"visit-{visit.Id}")">
-                                    <article class="hc-panel" aria-labelledby="@titleId">
-                                        <div class="d-flex flex-wrap justify-content-between align-items-baseline gap-2 mb-2">
-                                            <h3 class="h6 fw-bold mb-0" id="@titleId">@HcDisplay.Date(visit.Start): @visit.Reason</h3>
-                                            <a class="small" href="@HcDisplay.AppointmentUrl(visit.Id)">Visit details<span class="visually-hidden">: @HcDisplay.Date(visit.Start), @visit.Reason</span></a>
-                                        </div>
-                                        <p class="small text-body-secondary mb-2">@(doctor?.Name ?? "Unknown doctor"), @doctor?.Specialty · @State.FindClinic(visit.ClinicId)?.Name</p>
-                                        @if (string.IsNullOrWhiteSpace(visit.Summary))
-                                        {
-                                            <p class="text-body-secondary mb-0">The doctor didn't write a summary for this visit.</p>
-                                        }
-                                        else
-                                        {
-                                            <p class="hc-plain mb-0">@visit.Summary</p>
-                                        }
-                                    </article>
-                                </li>
-                            }
-                        </ul>
-                    }
+                    <div class="hc-list-meta mt-0 mb-2">
+                        <p class="small text-body-secondary mb-0">What your doctor wrote for you after each completed visit, newest first. Open a visit for the whole summary.</p>
+                        @* Back to the saved view's defaults: newest first, 10 a page, every column in its place. *@
+                        <Button Color="ButtonColor.Link" Size="ButtonSize.Small" Class="p-0" @onclick="ResetViewAsync">Reset view<span class="visually-hidden">&#32;of the visit summaries</span></Button>
+                    </div>
+                    <p class="hc-list-status mb-2" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
+                    <ShowcaseDataState Status="@(viewLoaded ? ShowcaseDataStatus.Ready : ShowcaseDataStatus.Loading)"
+                                       IsEmpty="@(visits.Count == 0)"
+                                       EmptyIcon="IconName.FileEarmarkText"
+                                       EmptyTitle="No completed visits yet"
+                                       EmptyText="After a visit, the doctor's summary appears here."
+                                       LoadingText="Loading your visit summaries…"
+                                       OnRetry="RefreshGridAsync">
+                        <EmptyActions>
+                            <a class="btn btn-primary btn-sm" href="@($"{HcLayout.Base}/doctors")">Find a doctor</a>
+                        </EmptyActions>
+                        <ChildContent>
+                            <Grid @ref="grid"
+                                  @key="gridVersion"
+                                  TItem="SummaryRow"
+                                  Class="table table-hover align-middle hc-table-mid sc-grid-row-links"
+                                  GridContainerClass="hc-grid border rounded-3"
+                                  DataProvider="ProvideSummariesAsync"
+                                  SettingsProvider="view.GetSettingsAsync"
+                                  GridSettingsChanged="SaveSettingsAsync"
+                                  AllowPaging="true"
+                                  PageSize="@pageSize"
+                                  PageSizeSelectorVisible="true"
+                                  PageSizeSelectorItems="@(new[] { 10, 25, 50 })"
+                                  PaginationItemsTextFormat="{0}–{1} of {2} visits"
+                                  AllowSorting="true"
+                                  AllowColumnChooser="true"
+                                  AllowExport="true"
+                                  ExportFileName="clinic-my-visit-summaries"
+                                  Responsive="true"
+                                  EmptyText="No completed visits yet."
+                                  aria-label="Visit summaries">
+                                <GridColumns>
+                                    <GridColumn TItem="SummaryRow" HeaderText="Visit" PropertyName="Title" SortString="date" SortKeySelector="row => row.Start"
+                                                IsDefaultSortColumn="@view.IsSortColumn("date")" SortDirection="@view.DirectionFor("date")" AlwaysVisible="true">
+                                        @* The stretched link makes the whole row open the visit. *@
+                                        <a class="hc-row-link stretched-link" href="@HcDisplay.AppointmentUrl(context.Id)">@context.Title</a>
+                                    </GridColumn>
+                                    <GridColumn TItem="SummaryRow" HeaderText="Doctor" PropertyName="Doctor" SortString="doctor" SortKeySelector="row => row.Doctor"
+                                                IsDefaultSortColumn="@view.IsSortColumn("doctor")" SortDirection="@view.DirectionFor("doctor")">
+                                        @context.Doctor
+                                    </GridColumn>
+                                    <GridColumn TItem="SummaryRow" HeaderText="Clinic" PropertyName="Clinic" SortString="clinic" SortKeySelector="row => row.Clinic"
+                                                IsDefaultSortColumn="@view.IsSortColumn("clinic")" SortDirection="@view.DirectionFor("clinic")">
+                                        @context.Clinic
+                                    </GridColumn>
+                                    <GridColumn TItem="SummaryRow" HeaderText="Summary" PropertyName="Summary" SortString="summary" SortKeySelector="row => row.Summary"
+                                                IsDefaultSortColumn="@view.IsSortColumn("summary")" SortDirection="@view.DirectionFor("summary")">
+                                        <span class="hc-plain hc-wrap small">@context.Summary</span>
+                                    </GridColumn>
+                                </GridColumns>
+                            </Grid>
+                        </ChildContent>
+                    </ShowcaseDataState>
                 </section>
 
                 <div class="hc-records-side">
@@ -126,6 +150,8 @@
                     </section>
                 </div>
             </div>
+
+            <RecordsAccess />
         }
     </ShowcaseRoleGuard>
 </div>

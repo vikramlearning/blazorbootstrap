@@ -114,7 +114,8 @@ else
                 <section class="hc-panel" aria-labelledby="hc-dp-open">
                     <h2 class="hc-section-title mb-1" id="hc-dp-open">Open times</h2>
                     <p class="small text-body-secondary">
-                        Times are @HcState.SlotMinutes-minute visits. You can book from an hour from now up to @HcState.BookingDays days ahead.
+                        Times are @HcState.SlotMinutes-minute visits; a first visit with a doctor takes @HcVisitTypes.NewPatientMinutes minutes, and the booking page offers times with that long free.
+                        You can book from an hour from now up to @HcState.BookingDays days ahead.
                     </p>
 
                     @if (!doctor.AcceptingNewPatients)

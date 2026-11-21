@@ -1,0 +1,75 @@
+@* A patient's lab orders on their chart, in a Grid: every order with its status; the row opens the order. *@
+@{
+    var count = State.LabOrdersOf(PatientId).Count;
+}
+<section class="pt-3" aria-labelledby="hc-chart-labs-title">
+    <h2 class="hc-section-title" id="hc-chart-labs-title">Lab orders <span class="text-body-secondary fw-normal">(@count)</span></h2>
+    <div class="hc-list-meta mt-0 mb-2">
+        <p class="small text-body-secondary mb-0">Newest first. Open an order for its values with flags; the ordering doctor enters and releases results there.</p>
+        @* Back to the saved view's defaults: newest first, 10 a page, every column in its place. *@
+        <Button Color="ButtonColor.Link" Size="ButtonSize.Small" Class="p-0" @onclick="ResetViewAsync">Reset view<span class="visually-hidden">&#32;of the lab orders</span></Button>
+    </div>
+    <p class="hc-list-status mb-2" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
+    <ShowcaseDataState Status="@(viewLoaded ? ShowcaseDataStatus.Ready : ShowcaseDataStatus.Loading)"
+                       IsEmpty="@(count == 0)"
+                       EmptyIcon="IconName.Clipboard2Pulse"
+                       EmptyTitle="No lab tests ordered yet"
+                       EmptyText="Order a test in a visit; it shows here with its results once they're entered."
+                       LoadingText="Loading lab orders…"
+                       OnRetry="RefreshGridAsync">
+        <ChildContent>
+            <Grid @ref="grid"
+                  @key="gridVersion"
+                  TItem="LabRow"
+                  Class="table table-hover align-middle hc-table-wide sc-grid-row-links"
+                  GridContainerClass="hc-grid border rounded-3"
+                  DataProvider="ProvideLabsAsync"
+                  SettingsProvider="view.GetSettingsAsync"
+                  GridSettingsChanged="SaveSettingsAsync"
+                  AllowPaging="true"
+                  PageSize="@pageSize"
+                  PageSizeSelectorVisible="true"
+                  PageSizeSelectorItems="@(new[] { 10, 25, 50 })"
+                  PaginationItemsTextFormat="{0}–{1} of {2} lab orders"
+                  AllowSorting="true"
+                  AllowColumnChooser="true"
+                  AllowExport="true"
+                  ExportFileName="clinic-patient-labs"
+                  Responsive="true"
+                  EmptyText="No lab tests ordered yet."
+                  aria-label="Lab orders">
+                <GridColumns>
+                    <GridColumn TItem="LabRow" HeaderText="Test" PropertyName="Test" SortString="test" SortKeySelector="row => row.Test"
+                                IsDefaultSortColumn="@view.IsSortColumn("test")" SortDirection="@view.DirectionFor("test")" AlwaysVisible="true">
+                        @* The stretched link makes the whole row open the order. *@
+                        <a class="hc-row-link stretched-link" href="@HcDisplay.LabOrderUrl(context.Id)">@context.Test</a>
+                    </GridColumn>
+                    <GridColumn TItem="LabRow" HeaderText="Order" PropertyName="Id" SortString="number" SortKeySelector="row => row.Id"
+                                IsDefaultSortColumn="@view.IsSortColumn("number")" SortDirection="@view.DirectionFor("number")" TextNoWrap="true">
+                        <span class="hc-mono">@context.Id</span>
+                    </GridColumn>
+                    <GridColumn TItem="LabRow" HeaderText="Ordered" PropertyName="OrderedText" SortString="ordered" SortKeySelector="row => row.Ordered"
+                                IsDefaultSortColumn="@view.IsSortColumn("ordered")" SortDirection="@view.DirectionFor("ordered")" TextNoWrap="true">
+                        @context.OrderedText
+                    </GridColumn>
+                    <GridColumn TItem="LabRow" HeaderText="Ordered by" PropertyName="Doctor" SortString="doctor" SortKeySelector="row => row.Doctor"
+                                IsDefaultSortColumn="@view.IsSortColumn("doctor")" SortDirection="@view.DirectionFor("doctor")">
+                        @context.Doctor
+                    </GridColumn>
+                    <GridColumn TItem="LabRow" HeaderText="Status" PropertyName="Status" SortString="status" SortKeySelector="row => row.StatusValue"
+                                IsDefaultSortColumn="@view.IsSortColumn("status")" SortDirection="@view.DirectionFor("status")" TextNoWrap="true">
+                        <span class="badge text-bg-@Labs.StatusColor(context.StatusValue)">@context.Status</span>
+                    </GridColumn>
+                    <GridColumn TItem="LabRow" HeaderText="Results" PropertyName="Results" SortString="results" SortKeySelector="row => row.OutOfRange"
+                                IsDefaultSortColumn="@view.IsSortColumn("results")" SortDirection="@view.DirectionFor("results")">
+                        @context.Results
+                    </GridColumn>
+                    <GridColumn TItem="LabRow" HeaderText="Released" PropertyName="ReleasedText" SortString="released" SortKeySelector="row => row.Released ?? DateTime.MaxValue"
+                                IsDefaultSortColumn="@view.IsSortColumn("released")" SortDirection="@view.DirectionFor("released")" TextNoWrap="true">
+                        @context.ReleasedText
+                    </GridColumn>
+                </GridColumns>
+            </Grid>
+        </ChildContent>
+    </ShowcaseDataState>
+</section>

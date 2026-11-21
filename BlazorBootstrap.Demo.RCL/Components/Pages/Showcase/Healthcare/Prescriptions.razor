@@ -7,105 +7,182 @@
     <ShowcaseRoleGuard Roles="@HcSeedData.PatientRole" SignInPath="@HcLayout.SignInPath">
         @{
             var all = All();
+            var eligible = Eligible();
         }
 
-        <h1 class="hc-title mb-1">Prescriptions</h1>
-        <p class="hc-lead mb-2">The medicines your doctors prescribed. When an active one has no refills left, ask your doctor for one here.</p>
-        <p class="small text-body-secondary mb-3">Demo only: the medicines are made up, nothing is sent to a pharmacy, and nothing here is medical advice.</p>
-
-        @* Always rendered and focusable: a refill request is announced here, and focus lands here once its button is gone. *@
-        <div class="hc-rx-status" role="status" tabindex="-1" @ref="statusRegion">
-            @if (statusMessage is not null)
+        <div class="d-flex flex-wrap align-items-start justify-content-between gap-3 mb-2">
+            <div>
+                <h1 class="hc-title mb-1">Prescriptions</h1>
+                <p class="hc-lead mb-0">The medicines your doctors prescribed. When an active one has no refills left, ask your doctor for one here.</p>
+            </div>
+            @if (eligible.Count > 0)
             {
-                <div class="alert @(statusIsError ? "alert-danger" : "alert-success") mb-4">
-                    <Icon Name="@(statusIsError ? IconName.ExclamationTriangleFill : IconName.CheckCircleFill)" class="me-2" aria-hidden="true" />@statusMessage
-                </div>
+                <Button Color="ButtonColor.Primary" @onclick="() => OpenAsync(eligible[0].Id)"><Icon Name="IconName.ArrowRepeat" class="me-2" aria-hidden="true" />Request a refill</Button>
             }
         </div>
+        <p class="small text-body-secondary mb-3">Demo only: the medicines are made up, nothing is sent to a pharmacy, and nothing here is medical advice.</p>
 
-        @foreach (var section in Sections)
-        {
-            var items = all.Where(item => item.Status == section.Status).ToList();
+        <div class="hc-list-meta mt-0 mb-2">
+            <p class="small text-body-secondary mb-0">Active first. Open a prescription for its directions, refills, and your doctor's last answer.</p>
+            @* Back to the saved view's defaults: active first, 10 a page, every column in its place. *@
+            <Button Color="ButtonColor.Link" Size="ButtonSize.Small" Class="p-0" @onclick="ResetViewAsync">Reset view</Button>
+        </div>
 
-            <section class="mb-5" aria-labelledby="@($"hc-rx-{section.Key}-title")" @key="@($"section-{section.Key}")">
-                <h2 class="hc-section-title" id="@($"hc-rx-{section.Key}-title")">@section.Title (@items.Count)</h2>
-                @if (items.Count == 0)
+        @* Always rendered and focusable: a refill request is announced here, and focus lands here once its dialog is gone. *@
+        <p class="hc-list-status mb-2 @(statusIsError ? "text-danger-emphasis" : "text-success-emphasis")" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
+
+        <section class="hc-panel" aria-label="Your prescriptions">
+            <ShowcaseDataState Status="@(viewLoaded ? ShowcaseDataStatus.Ready : ShowcaseDataStatus.Loading)"
+                               IsEmpty="@(all.Count == 0)"
+                               EmptyIcon="IconName.Capsule"
+                               EmptyTitle="No prescriptions yet"
+                               EmptyText="Medicines your doctors prescribe at a visit show here, with their refills."
+                               LoadingText="Loading your prescriptions…"
+                               OnRetry="RefreshGridAsync">
+                <ChildContent>
+                    <Grid @ref="grid"
+                          @key="gridVersion"
+                          TItem="RxRow"
+                          Class="table table-hover align-middle hc-table-wide sc-grid-row-links"
+                          GridContainerClass="hc-grid border rounded-3"
+                          DataProvider="ProvidePrescriptionsAsync"
+                          SettingsProvider="view.GetSettingsAsync"
+                          GridSettingsChanged="SaveSettingsAsync"
+                          AllowPaging="true"
+                          PageSize="@pageSize"
+                          PageSizeSelectorVisible="true"
+                          PageSizeSelectorItems="@(new[] { 10, 25, 50 })"
+                          PaginationItemsTextFormat="{0}–{1} of {2} prescriptions"
+                          AllowSorting="true"
+                          AllowColumnChooser="true"
+                          AllowExport="true"
+                          ExportFileName="clinic-my-prescriptions"
+                          Responsive="true"
+                          EmptyText="No prescriptions yet."
+                          aria-label="Your prescriptions">
+                        <GridColumns>
+                            <GridColumn TItem="RxRow" HeaderText="Medication" PropertyName="Medication" SortString="medication" SortKeySelector="row => row.Medication"
+                                        IsDefaultSortColumn="@view.IsSortColumn("medication")" SortDirection="@view.DirectionFor("medication")" AlwaysVisible="true">
+                                @{
+                                    var row = context;
+                                }
+                                @* A prescription has no page of its own: the stretched button makes the whole row open its dialog. *@
+                                <button type="button" class="hc-row-button stretched-link" @ref="openers[row.Id]" @onclick="() => OpenAsync(row.Id)">@row.Medication</button>
+                            </GridColumn>
+                            <GridColumn TItem="RxRow" HeaderText="Dose" PropertyName="Dose" SortString="dose" SortKeySelector="row => row.Dose"
+                                        IsDefaultSortColumn="@view.IsSortColumn("dose")" SortDirection="@view.DirectionFor("dose")">
+                                @context.Dose
+                            </GridColumn>
+                            <GridColumn TItem="RxRow" HeaderText="Status" PropertyName="Status" SortString="status" SortKeySelector="row => row.StatusValue"
+                                        IsDefaultSortColumn="@view.IsSortColumn("status")" SortDirection="@view.DirectionFor("status")" TextNoWrap="true">
+                                <span class="@(context.StatusValue == HcPrescriptionStatus.Active ? "badge text-bg-success" : "badge text-bg-secondary")">@context.Status</span>
+                            </GridColumn>
+                            <GridColumn TItem="RxRow" HeaderText="Refills left" PropertyName="Refills" SortString="refills" SortKeySelector="row => row.Refills"
+                                        IsDefaultSortColumn="@view.IsSortColumn("refills")" SortDirection="@view.DirectionFor("refills")" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End">
+                                @context.Refills
+                            </GridColumn>
+                            <GridColumn TItem="RxRow" HeaderText="Refill" PropertyName="Refill" SortString="refill" SortKeySelector="row => row.Refill"
+                                        IsDefaultSortColumn="@view.IsSortColumn("refill")" SortDirection="@view.DirectionFor("refill")">
+                                @context.Refill
+                            </GridColumn>
+                            <GridColumn TItem="RxRow" HeaderText="Last filled" PropertyName="LastFilledText" SortString="filled" SortKeySelector="row => row.LastFilled"
+                                        IsDefaultSortColumn="@view.IsSortColumn("filled")" SortDirection="@view.DirectionFor("filled")" TextNoWrap="true">
+                                @context.LastFilledText
+                            </GridColumn>
+                            <GridColumn TItem="RxRow" HeaderText="Prescribed by" PropertyName="Doctor" SortString="doctor" SortKeySelector="row => row.Doctor"
+                                        IsDefaultSortColumn="@view.IsSortColumn("doctor")" SortDirection="@view.DirectionFor("doctor")">
+                                @context.Doctor
+                            </GridColumn>
+                            <GridColumn TItem="RxRow" HeaderText="Prescribed" PropertyName="PrescribedText" SortString="prescribed" SortKeySelector="row => row.Prescribed"
+                                        IsDefaultSortColumn="@view.IsSortColumn("prescribed")" SortDirection="@view.DirectionFor("prescribed")" TextNoWrap="true">
+                                @context.PrescribedText
+                            </GridColumn>
+                        </GridColumns>
+                    </Grid>
+                </ChildContent>
+            </ShowcaseDataState>
+        </section>
+
+        <Modal @ref="modal" IsVerticallyCentered="true" Size="ModalSize.Large" ShowCloseButton="false" aria-labelledby="hc-rx-dialog-title" OnShown="OnShownAsync" OnHidden="OnHiddenAsync">
+            <HeaderTemplate>
+                <h2 class="modal-title h5 hc-wrap" id="hc-rx-dialog-title">@(Opened is { } shown ? (CanRequest(shown) ? "Request a refill" : $"{shown.Medication} {shown.Dose}") : "Prescription")</h2>
+            </HeaderTemplate>
+            <BodyTemplate>
+                @if (Opened is not { } prescription)
                 {
-                    <div class="hc-panel">
-                        <p class="mb-0">@section.Empty</p>
-                    </div>
+                    <p>This prescription isn't on your record any more.</p>
+                    <button type="button" class="btn btn-outline-secondary" @ref="dialogClose" @onclick="() => modal.HideAsync()">Close</button>
+                }
+                else if (CanRequest(prescription))
+                {
+                    var chosen = FindMine(requestForm.PrescriptionId) ?? prescription;
+
+                    <ShowcaseDemoNotice Class="mb-3" Text="Demo only: nothing is sent to a pharmacy. Your doctor answers here, usually within a day." />
+                    <EditForm EditContext="requestContext" OnSubmit="RequestAsync" FormName="hc-refill-request" novalidate aria-labelledby="hc-rx-dialog-title">
+                        <DataAnnotationsValidator />
+                        <ShowcaseFormErrors ShowSummary="true" />
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold" for="hc-rx-medication">Medication</label>
+                                <InputSelect TValue="int" id="hc-rx-medication" class="form-select" @bind-Value="requestForm.PrescriptionId" aria-describedby="hc-rx-medication-help">
+                                    @foreach (var item in Eligible())
+                                    {
+                                        <option value="@item.Id" @key="item.Id">@item.Medication @item.Dose</option>
+                                    }
+                                </InputSelect>
+                                <div class="form-text" id="hc-rx-medication-help">Active prescriptions with no refills left. @chosen.Directions</div>
+                                <ValidationMessage For="() => requestForm.PrescriptionId" />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold" for="hc-rx-pharmacy">Pharmacy</label>
+                                <InputSelect id="hc-rx-pharmacy" class="form-select" @bind-Value="requestForm.PharmacyId" aria-describedby="hc-rx-pharmacy-help">
+                                    <option value="">Choose a pharmacy</option>
+                                    @foreach (var pharmacy in State.Pharmacies)
+                                    {
+                                        <option value="@pharmacy.Id" @key="pharmacy.Id">@pharmacy.Name, @pharmacy.Address</option>
+                                    }
+                                </InputSelect>
+                                <div class="form-text" id="hc-rx-pharmacy-help">Where you'll pick it up.</div>
+                                <ValidationMessage For="() => requestForm.PharmacyId" />
+                            </div>
+                            <div class="col-sm-6">
+                                <label class="form-label fw-semibold" for="hc-rx-quantity">Quantity</label>
+                                <InputNumber TValue="int?" id="hc-rx-quantity" class="form-control" @bind-Value="requestForm.Quantity" inputmode="numeric" step="1" min="1" max="@chosen.Quantity"
+                                             ParsingErrorMessage="Enter the quantity as a whole number." aria-describedby="hc-rx-quantity-help" />
+                                <div class="form-text" id="hc-rx-quantity-help">1 to @chosen.Quantity, one fill at most.</div>
+                                <ValidationMessage For="() => requestForm.Quantity" />
+                            </div>
+                            <div class="col-sm-6">
+                                <label class="form-label fw-semibold" for="hc-rx-pickup">Pick up on</label>
+                                <InputDate TValue="DateTime?" id="hc-rx-pickup" class="form-control" @bind-Value="requestForm.PickupOn" min="@DateValue(Earliest(chosen))"
+                                           max="@DateValue(State.Clock.Today.AddDays(HcState.MaxRefillPickupDays))" ParsingErrorMessage="Enter the pick-up day as a full date." aria-describedby="hc-rx-pickup-help" />
+                                <div class="form-text" id="hc-rx-pickup-help">
+                                    From @HcDisplay.Date(Earliest(chosen)) (@(Earliest(chosen) > State.Clock.Today ? "your last fill lasts until about then" : "today")) to @HcDisplay.Date(State.Clock.Today.AddDays(HcState.MaxRefillPickupDays)).
+                                </div>
+                                <ValidationMessage For="() => requestForm.PickupOn" />
+                            </div>
+                        </div>
+                        <p class="hc-form-error mt-3 mb-0" role="alert">@dialogError</p>
+                        <div class="d-flex flex-wrap gap-2 mt-3">
+                            <Button Type="ButtonType.Submit" Color="ButtonColor.Primary"><Icon Name="IconName.ArrowRepeat" class="me-1" aria-hidden="true" />Send request</Button>
+                            <button type="button" class="btn btn-outline-secondary" @ref="dialogClose" @onclick="() => modal.HideAsync()">Cancel</button>
+                        </div>
+                    </EditForm>
                 }
                 else
                 {
-                    <ul class="list-unstyled hc-rx-list mb-0">
-                        @foreach (var prescription in items)
-                        {
-                            var doctor = State.FindDoctor(prescription.DoctorId);
-                            var doctorName = doctor?.Name ?? "your doctor";
-                            var titleId = $"hc-rx-{prescription.Id}-title";
+                    var doctorName = State.FindDoctor(prescription.DoctorId)?.Name ?? "your doctor";
 
-                            <li @key="@($"rx-{prescription.Id}")">
-                                <article class="hc-card hc-rx-card" aria-labelledby="@titleId">
-                                    <div class="d-flex align-items-start gap-3">
-                                        <span class="hc-icon flex-shrink-0" aria-hidden="true"><Icon Name="IconName.Capsule" /></span>
-                                        <div class="hc-rx-text">
-                                            <h3 class="h6 fw-bold mb-1" id="@titleId">@prescription.Medication <span class="fw-normal">@prescription.Dose</span></h3>
-                                            <p class="hc-plain mb-2">@prescription.Directions</p>
-                                            <ul class="hc-rx-facts small text-body-secondary">
-                                                <li>Quantity: @prescription.Quantity</li>
-                                                <li>Refills left: @prescription.Refills</li>
-                                                <li>Prescribed by @doctorName on @HcDisplay.Date(prescription.PrescribedAt)</li>
-                                            </ul>
-                                        </div>
-                                    </div>
-
-                                    <div class="hc-rx-refill">
-                                        @if (prescription.Status == HcPrescriptionStatus.Stopped)
-                                        {
-                                            <p class="small mb-0">Stopped by your doctor. Don't start taking it again unless a doctor tells you to.</p>
-                                            @if (!string.IsNullOrWhiteSpace(prescription.RefillNote))
-                                            {
-                                                <p class="small mb-0 mt-1"><span class="fw-semibold">Note from @doctorName:</span> <span class="hc-plain">@prescription.RefillNote</span></p>
-                                            }
-                                        }
-                                        else if (prescription.RefillRequestedAt is { } requested)
-                                        {
-                                            <p class="small fw-semibold text-info-emphasis mb-0">
-                                                <Icon Name="IconName.HourglassSplit" class="me-1" aria-hidden="true" />Refill requested on @HcDisplay.Date(requested), waiting for @doctorName.
-                                            </p>
-                                        }
-                                        else
-                                        {
-                                            @if (!string.IsNullOrWhiteSpace(prescription.RefillNote))
-                                            {
-                                                var approved = prescription.Refills > 0;
-
-                                                <p class="small mb-2 @(approved ? "text-success-emphasis" : "text-danger-emphasis")">
-                                                    <Icon Name="@(approved ? IconName.CheckCircleFill : IconName.XCircleFill)" class="me-1" aria-hidden="true" /><span class="fw-semibold">@(approved ? "Refill approved" : "Refill not approved") by @doctorName:</span>
-                                                    <span class="hc-plain">@prescription.RefillNote</span>
-                                                </p>
-                                            }
-                                            @if (prescription.Refills == 0)
-                                            {
-                                                <div class="d-flex flex-wrap align-items-center gap-2">
-                                                    <Button Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="() => RequestRefill(prescription.Id)">
-                                                        <Icon Name="IconName.ArrowRepeat" class="me-1" aria-hidden="true" />Request refill<span class="visually-hidden">: @prescription.Medication @prescription.Dose</span>
-                                                    </Button>
-                                                    <span class="small text-body-secondary">No refills left. @doctorName answers here, usually within a day.</span>
-                                                </div>
-                                            }
-                                            else
-                                            {
-                                                <p class="small mb-0">@RefillsText(prescription.Refills) left: ask your pharmacy when you need more.</p>
-                                            }
-                                        }
-                                    </div>
-                                </article>
-                            </li>
-                        }
-                    </ul>
+                    <dl class="hc-rx-facts-list">
+                        <div><dt>Directions</dt><dd class="hc-plain">@prescription.Directions</dd></div>
+                        <div><dt>Each fill</dt><dd>Quantity @prescription.Quantity, lasts @prescription.DaysSupply days</dd></div>
+                        <div><dt>Refills left</dt><dd>@prescription.Refills</dd></div>
+                        <div><dt>Prescribed</dt><dd>@HcDisplay.Date(prescription.PrescribedAt) by @doctorName</dd></div>
+                    </dl>
+                    <p class="mb-3">@RefillText(prescription, doctorName)</p>
+                    <button type="button" class="btn btn-outline-secondary" @ref="dialogClose" @onclick="() => modal.HideAsync()">Close</button>
                 }
-            </section>
-        }
+            </BodyTemplate>
+        </Modal>
     </ShowcaseRoleGuard>
 </div>

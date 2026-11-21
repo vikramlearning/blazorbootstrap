@@ -301,3 +301,191 @@
 [data-bs-theme=dark] .sc-health ::deep .hc-viewing-bar a {
     color: var(--sc-primary);
 }
+
+/* The app bar's global search takes the room the bar has, and wraps onto its own line when there is too little. */
+.sc-health ::deep .hc-app-bar-actions {
+    flex: 1 1 auto;
+    justify-content: flex-end;
+}
+
+.sc-health ::deep .hc-global-search {
+    flex: 1 1 12rem;
+    min-width: 10rem;
+    max-width: 22rem;
+}
+
+/* The patient portal's header: the bell beside the account menu, and the search after the links on wide screens. */
+.sc-health ::deep .hc-header-tools {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+}
+
+@media (min-width: 992px) {
+    .sc-health ::deep .hc-header .hc-global-search {
+        flex: 0 1 18rem;
+    }
+}
+
+/* Grid lists: filters side by side on wide screens and stacked at phone width, the count and "Reset view" under them, a
+   selected row tinted, status lines that collapse while empty, and a bulk bar that wraps onto several lines. */
+.sc-health ::deep .hc-list-filters {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: .75rem 1rem;
+}
+
+    .sc-health ::deep .hc-list-filters > * {
+        flex: 1 1 11rem;
+        min-width: 0;
+    }
+
+    .sc-health ::deep .hc-list-filters > .hc-list-search {
+        flex: 2 1 16rem;
+    }
+
+.sc-health ::deep .hc-list-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: .25rem 1rem;
+    margin: .75rem 0 0;
+}
+
+.sc-health ::deep .hc-row-selected > * {
+    --bs-table-bg-state: rgba(var(--sc-primary-rgb), .06);
+}
+
+.sc-health ::deep .hc-list-status,
+.sc-health ::deep .hc-list-error {
+    font-size: .875rem;
+    font-weight: 600;
+    overflow-wrap: anywhere;
+}
+
+    .sc-health ::deep .hc-list-status:empty,
+    .sc-health ::deep .hc-list-error:empty {
+        margin: 0;
+    }
+
+    .sc-health ::deep .hc-list-status:focus {
+        outline: none;
+    }
+
+.sc-health ::deep .hc-list-error {
+    color: var(--bs-danger-text-emphasis);
+}
+
+.sc-health ::deep .hc-bulk {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: .75rem 1rem;
+    margin-bottom: 1rem;
+    padding: .75rem 1rem;
+    border: 1px solid rgba(var(--sc-primary-rgb), .35);
+    border-radius: .75rem;
+    background: rgba(var(--sc-primary-rgb), .06);
+}
+
+.sc-health ::deep .hc-bulk-count {
+    flex: 1 0 100%;
+    margin: 0;
+    font-size: .9375rem;
+    font-weight: 700;
+}
+
+.sc-health ::deep .hc-bulk-form {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: .75rem 1rem;
+    flex: 1 1 100%;
+}
+
+.sc-health ::deep .hc-bulk-field {
+    flex: 1 1 12rem;
+    min-width: 0;
+}
+
+    .sc-health ::deep .hc-bulk-field .form-label {
+        margin-bottom: .25rem;
+    }
+
+.sc-health ::deep .hc-bulk-wide {
+    flex: 2 1 18rem;
+}
+
+.sc-health ::deep .hc-bulk-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .5rem;
+}
+
+/* A Grid with many columns scrolls sideways inside its box on narrow screens instead of squeezing names (Grid renders the
+   table, so the class is styled here). The row's link names the record; it underlines on hover and focus. */
+.sc-health ::deep .hc-grid {
+    background: var(--hc-surface);
+}
+
+.sc-health ::deep .hc-table-wide {
+    min-width: 58rem;
+}
+
+.sc-health ::deep .hc-table-mid {
+    min-width: 40rem;
+}
+
+.sc-health ::deep .hc-row-link {
+    font-weight: 600;
+    text-decoration: none;
+    overflow-wrap: anywhere;
+}
+
+    .sc-health ::deep .hc-row-link:hover,
+    .sc-health ::deep .hc-row-link:focus-visible {
+        text-decoration: underline;
+    }
+
+/* A stretched button (a record without its own page opens its dialog) looks like the row's link. */
+.sc-health ::deep .hc-row-button {
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--bs-link-color);
+    font-weight: 600;
+    text-align: start;
+    overflow-wrap: anywhere;
+}
+
+    .sc-health ::deep .hc-row-button:hover,
+    .sc-health ::deep .hc-row-button:focus-visible {
+        text-decoration: underline;
+    }
+
+/* Forms: the error alert and the status line collapse while empty; a page-level status takes focus without an outline. */
+.sc-health ::deep .hc-form-error {
+    color: var(--bs-danger-text-emphasis);
+    font-weight: 600;
+    overflow-wrap: anywhere;
+}
+
+    .sc-health ::deep .hc-form-error:empty {
+        margin: 0;
+    }
+
+.sc-health ::deep .hc-form-status {
+    min-height: 1.25rem;
+    font-weight: 600;
+    overflow-wrap: anywhere;
+}
+
+    .sc-health ::deep .hc-form-status:focus {
+        outline: none;
+    }
+
+.sc-health ::deep .hc-wrap {
+    min-width: 0;
+    overflow-wrap: anywhere;
+}

@@ -1,3 +1,4 @@
+/* Bills: the total due above the Grid list (its styles are in HcFrame.razor.css), and a bill's facts in its dialog. */
 .hc-bills-total {
     display: flex;
     align-items: center;
@@ -11,45 +12,26 @@
     color: var(--hc-ink);
 }
 
-.hc-bills-card {
-    padding: 1rem 1.25rem;
+.hc-bills-status:focus {
+    outline: none;
 }
 
-/* The bill's text beside its amount and Pay button; the button drops below the text at 375 px. */
-.hc-bills-row {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-between;
-    gap: .75rem 1rem;
+.hc-bills-facts {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 9rem), 1fr));
+    gap: .75rem 1.5rem;
 }
 
-.hc-bills-text {
-    flex: 1 1 16rem;
-    min-width: 0;
-    overflow-wrap: anywhere;
-}
+    .hc-bills-facts dt {
+        margin-bottom: .125rem;
+        font-size: .75rem;
+        font-weight: 700;
+        letter-spacing: .02em;
+        text-transform: uppercase;
+        color: var(--bs-secondary-color);
+    }
 
-.hc-bills-pay {
-    display: flex;
-    align-items: center;
-    gap: .75rem;
-}
-
-.hc-bills-amount-sm {
-    font-size: 1.125rem;
-    font-weight: 700;
-    font-variant-numeric: tabular-nums;
-    color: var(--hc-ink);
-}
-
-.hc-bills-form {
-    max-width: 34rem;
-    overflow-wrap: anywhere;
-    padding-top: 1rem;
-    border-top: 1px solid var(--hc-border);
-}
-
-.hc-bills-desc {
-    min-width: 12rem;
-}
+    .hc-bills-facts dd {
+        margin: 0;
+        overflow-wrap: anywhere;
+    }

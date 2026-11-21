@@ -1,52 +1,62 @@
 using System.Globalization;
 using BlazorBootstrap.Demo.RCL.Models.Showcase.Healthcare;
+using BlazorBootstrap.Demo.RCL.Services.Showcase.Foundation;
 using BlazorBootstrap.Demo.RCL.Services.Showcase.Healthcare;
 
 namespace BlazorBootstrap.Demo.RCL.Components.Pages.Showcase.Healthcare;
 
 /// <summary>
-/// The signed-in doctor's lab work (<see cref="HcState.MyLabWork" />) in three groups: waiting for results, entered but not
-/// released, and released. A waiting order has an entry form: one native number field per analyte, labelled with its name
-/// and unit, with the reference range as help, and a comment for the patient (<see cref="HcState.EnterLabResults" />). An
-/// entered order shows its values with flags in words, a Correct results button that reopens the form, and Release to
-/// patient, which asks first (the patient sees the results and is billed) and releases once the dialog is hidden
-/// (<see cref="HcState.ReleaseLab" />). Released orders are read-only. <c>?order={id}</c> highlights one order and moves
-/// focus to it. Every result is announced in an always-rendered status region.
+/// The signed-in doctor's lab work (<see cref="HcState.MyLabWork" />) in a <see cref="Grid{TItem}" />: the test (the row opens
+/// the order, <see cref="LabOrder" />, to enter, correct, and release its results), order number, patient and record number,
+/// when it was ordered, status in words, how many results are out of range, and when they were entered and released, oldest
+/// first, with paging, sorting, the column chooser, and CSV export. The status filter shows what's to do (waiting for
+/// results or entered, the default), one status, or all, and a search narrows by patient, record number, test, or order
+/// number; the grid's view is saved for the visit and can be reset. Selected entered results can be released together after
+/// a confirmation (<see cref="HcState.BulkReleaseLabs" />). <c>?order={id}</c> (older links) opens that order.
 /// </summary>
 public partial class Labs : ComponentBase, IDisposable
 {
     #region Fields and Constants
 
-    private readonly Dictionary<int, LabDraft> drafts = new();
+    private const int DefaultPageSize = 25;
 
-    private readonly Dictionary<int, ElementReference> editButtons = new();
+    /// <summary>The status filter's value for everything not released yet.</summary>
+    private const string ToDoFilter = "todo";
 
-    private readonly Dictionary<int, ElementReference> headings = new();
-
-    private readonly Dictionary<int, ElementReference> releaseButtons = new();
-
-    private readonly Dictionary<string, ElementReference> valueInputs = new();
+    private ElementReference? countRegion;
 
     /// <summary>Returns the element to focus after the next render.</summary>
     private Func<ElementReference?>? focusTarget;
 
-    /// <summary>The <c>?order=</c> value this page last reacted to.</summary>
-    private string? handledOrderQuery;
+    private Grid<OrderRow>? grid;
 
-    /// <summary>The order from <c>?order=</c> that still needs focus once it is on the page.</summary>
-    private int? pendingOrderFocus;
+    /// <summary>Changes when the view is reset, so the grid is built again with its defaults.</summary>
+    private int gridVersion;
+
+    /// <summary>The grid's page size: the saved one once the view is loaded, then whatever the page size selector chose.</summary>
+    private int pageSize = DefaultPageSize;
 
     /// <summary>Whether Release was confirmed, so it runs once the dialog is hidden.</summary>
     private bool pendingRelease;
 
-    /// <summary>The order the Release dialog is about.</summary>
-    private int releaseId;
+    private ElementReference? releaseCancel;
 
-    private string releaseLabel = string.Empty;
+    /// <summary>The orders the Release dialog is about.</summary>
+    private List<int> releaseIds = new();
 
     private Modal releaseModal = default!;
 
-    private string releasePatient = string.Empty;
+    private string search = string.Empty;
+
+    /// <summary>The value bound to the search box; it trails <see cref="search" /> while the user types.</summary>
+    private string searchBoxValue = string.Empty;
+
+    /// <summary>The orders selected in the grid (on its current page).</summary>
+    private List<OrderRow> selected = new();
+
+    private int statusCount;
+
+    private string statusFilter = ToDoFilter;
 
     private bool statusIsError;
 
@@ -54,32 +64,27 @@ public partial class Labs : ComponentBase, IDisposable
 
     private ElementReference? statusRegion;
 
+    private string? statusText;
+
+    private ShowcaseGridView view = default!;
+
+    private bool viewLoaded;
+
     #endregion
 
     #region Methods
 
     #region Protected Override Methods
 
+    /// <summary>Loads the saved view once the page is interactive (it lives in the tab's session storage), then shows the grid.</summary>
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (pendingOrderFocus is { } orderId && State.CurrentDoctor is not null)
+        if (firstRender)
         {
-            if (headings.TryGetValue(orderId, out var heading))
-            {
-                pendingOrderFocus = null;
-                await HcDisplay.FocusAsync(heading);
-
-                return;
-            }
-
-            if (State.MyLabWork.All(item => item.Id != orderId))
-            {
-                pendingOrderFocus = null;
-                Announce(false, $"Lab order {orderId.ToString(CultureInfo.InvariantCulture)} isn't one of yours, or the link is wrong. Your lab work is below.");
-                StateHasChanged();
-
-                return;
-            }
+            await view.LoadAsync();
+            pageSize = (await view.GetSettingsAsync()).PageSize;
+            viewLoaded = true;
+            StateHasChanged();
         }
 
         if (focusTarget is { } target)
@@ -89,15 +94,17 @@ public partial class Labs : ComponentBase, IDisposable
         }
     }
 
-    protected override void OnInitialized() => State.Changed += OnStateChanged;
+    protected override void OnInitialized()
+    {
+        view = GridViews.Get(State.SiteSlug, "lab-orders", DefaultPageSize, "ordered", SortDirection.Ascending);
+        State.Changed += OnStateChanged;
+    }
 
+    /// <summary>An older link with <c>?order={id}</c> opens that order's page.</summary>
     protected override void OnParametersSet()
     {
-        if (handledOrderQuery == OrderQuery)
-            return;
-
-        handledOrderQuery = OrderQuery;
-        pendingOrderFocus = TargetOrder;
+        if (int.TryParse(OrderQuery, NumberStyles.None, CultureInfo.InvariantCulture, out var orderId))
+            Navigation.NavigateTo(HcDisplay.LabOrderUrl(orderId), replace: true);
     }
 
     #endregion
@@ -107,8 +114,8 @@ public partial class Labs : ComponentBase, IDisposable
     /// <summary>Stops listening to state changes.</summary>
     public void Dispose() => State.Changed -= OnStateChanged;
 
-    /// <summary>Returns the staff lab results route that opens one order.</summary>
-    public static string OrderUrl(int orderId) => FormattableString.Invariant($"{HcStaffLayout.Base}/labs?order={orderId}");
+    /// <summary>Returns the staff route of one lab order.</summary>
+    public static string OrderUrl(int orderId) => HcDisplay.LabOrderUrl(orderId);
 
     /// <summary>Returns an analyte's reference range like "4–11 ×10⁹/L" or "Up to 200 mg/dL".</summary>
     public static string RangeText(HcAnalyte analyte) =>
@@ -134,22 +141,35 @@ public partial class Labs : ComponentBase, IDisposable
 
     #region Private Methods
 
-    /// <summary>Returns each value with its flag, like "HbA1c 6.8 % (High)".</summary>
-    private static string FlagsText(HcLabPanel panel, IReadOnlyList<double> values) =>
-        string.Join("; ", panel.Analytes.Select((analyte, index) => $"{analyte.Name} {HcDisplay.Number(values[index])} {analyte.Unit} ({HcState.Flag(analyte, values[index])})"));
+    private static string Plural(int count, string one, string many) => count == 1 ? $"1 {one}" : string.Create(CultureInfo.InvariantCulture, $"{count} {many}");
 
-    private void Announce(bool ok, string message)
+    private async Task AskReleaseAsync()
     {
-        statusIsError = !ok;
-        statusMessage = message;
+        releaseIds = selected.Where(row => row.StatusValue == HcLabStatus.Resulted).Select(row => row.Id).ToList();
+        pendingRelease = false;
+        StateHasChanged();
+
+        await releaseModal.ShowAsync();
     }
 
-    /// <summary>Closes the correction form of an entered order without saving.</summary>
-    private void CancelEdit(int orderId)
+    /// <summary>The link disappears with the filters it clears, so focus moves to the count, which also announces the new total.</summary>
+    private async Task ClearFiltersAsync()
     {
-        drafts.Remove(orderId);
-        Announce(true, "Correction cancelled. The entered results are unchanged.");
-        focusTarget = () => editButtons.TryGetValue(orderId, out var button) ? button : statusRegion;
+        search = searchBoxValue = string.Empty;
+        statusFilter = ToDoFilter;
+        await FiltersChangedAsync();
+        await HcDisplay.FocusAsync(countRegion);
+    }
+
+    /// <summary>The bar closes, so focus moves to the announcement.</summary>
+    private async Task ClearSelectionAsync()
+    {
+        if (grid is not null)
+            await grid.UnSelectAllItemsAsync();
+
+        selected = new List<OrderRow>();
+        SetStatus("Selection cleared.", false);
+        focusTarget = () => statusRegion;
     }
 
     private async Task ConfirmReleaseAsync()
@@ -159,178 +179,131 @@ public partial class Labs : ComponentBase, IDisposable
         await releaseModal.HideAsync();
     }
 
-    /// <summary>Returns the order's form values, starting from the entered results.</summary>
-    private LabDraft DraftFor(HcLabOrder order, HcLabPanel panel)
+    private string CountText(int total)
     {
-        if (drafts.TryGetValue(order.Id, out var draft) && draft.Values.Length == panel.Analytes.Count)
-            return draft;
+        var shown = Shown.Count;
 
-        draft = new LabDraft(panel.Analytes.Count)
-        {
-            Comment = order.Comment,
-        };
-
-        if (order.Values.Count == panel.Analytes.Count)
-        {
-            for (var index = 0; index < order.Values.Count; index++)
-                draft.Values[index] = HcDisplay.Number(order.Values[index]);
-        }
-
-        drafts[order.Id] = draft;
-
-        return draft;
+        return shown == total ? $"{Plural(total, "order", "orders")}." : $"Showing {shown.ToString(CultureInfo.InvariantCulture)} of {Plural(total, "order", "orders")}.";
     }
 
-    /// <summary>Releases a confirmed order now that the dialog is hidden, or returns focus to its Release button.</summary>
-    private Task OnReleaseHiddenAsync()
+    /// <summary>A filter changed: back to the first page of the filtered orders.</summary>
+    private async Task FiltersChangedAsync()
     {
+        if (grid is not null)
+            await grid.ResetPageNumber();
+    }
+
+    /// <summary>Releases the confirmed orders now that the dialog is hidden, or returns focus to the status line.</summary>
+    private async Task OnReleaseHiddenAsync()
+    {
+        var ids = releaseIds;
         var accepted = pendingRelease;
-        var id = releaseId;
         pendingRelease = false;
+        releaseIds = new List<int>();
 
         if (!accepted)
         {
-            focusTarget = () => releaseButtons.TryGetValue(id, out var button) ? button : statusRegion;
+            focusTarget = () => statusRegion;
             StateHasChanged();
 
-            return Task.CompletedTask;
+            return;
         }
 
-        var order = State.MyLabWork.FirstOrDefault(item => item.Id == id);
-        var result = State.ReleaseLab(id);
+        var outcome = State.BulkReleaseLabs(ids);
 
-        Announce(result == HcResult.Ok, result switch
+        SetStatus(outcome.Result switch
         {
-            HcResult.Ok => $"Released {releaseLabel} to {releasePatient}. They see it in Lab reports with a PDF, and were billed {HcDisplay.Money(HcSeedData.LabFeeCents)}.",
-            HcResult.WrongState when order?.Status == HcLabStatus.Released => $"{releaseLabel} was already released.",
-            HcResult.WrongState => $"Enter the results of {releaseLabel} before releasing them.",
-            HcResult.Invalid => "The storage for this demo tab is full, so nothing was released and nothing was billed. Try again after removing something.",
-            HcResult.NotFound => "That lab order isn't one of yours any more, so nothing was released.",
+            HcResult.Ok => $"Released {Plural(outcome.Changed, "result", "results")}: each patient sees theirs in Lab reports and was billed {HcDisplay.Money(HcSeedData.LabFeeCents)}."
+                + (outcome.Unchanged > 0 ? $" {Plural(outcome.Unchanged, "order was", "orders were")} left as they were: released already, or the storage for this demo tab is full." : string.Empty),
+            HcResult.NoChange => "Nothing was released: those orders were released already, or the storage for this demo tab is full.",
             HcResult.NotAllowed => "Only the ordering doctor can release results. Sign in again; nothing was released.",
-            _ => "That didn't work, and nothing was released. Try again.",
-        });
+            _ => "Those results couldn't be released. Nothing changed.",
+        }, outcome.Result is not (HcResult.Ok or HcResult.NoChange));
 
-        if (result == HcResult.Ok)
+        if (grid is not null)
         {
-            drafts.Remove(id);
-            focusTarget = () => headings.TryGetValue(id, out var heading) ? heading : statusRegion;
-        }
-        else
-        {
-            focusTarget = () => statusRegion;
+            await grid.RefreshDataAsync();
+            await grid.UnSelectAllItemsAsync();
         }
 
+        selected = new List<OrderRow>();
+        focusTarget = () => statusRegion;
+        StateHasChanged();
+    }
+
+    private Task OnReleaseShownAsync() => HcDisplay.FocusAsync(releaseCancel);
+
+    private void OnSearchChanged(ChangeEventArgs args) => searchBoxValue = search = args.Value?.ToString() ?? string.Empty;
+
+    /// <summary>Filters on every keystroke without changing the box's bound value, so a slower render never overwrites newer typing.</summary>
+    private async Task OnSearchInputAsync(ChangeEventArgs args)
+    {
+        var value = args.Value?.ToString() ?? string.Empty;
+
+        if (value == search)
+            return;
+
+        search = value;
+        await FiltersChangedAsync();
+    }
+
+    private void OnSelectionChanged(HashSet<OrderRow> items) => selected = items.ToList();
+
+    /// <summary>Another screen or a change here changed the state: the grid reads the orders again.</summary>
+    private void OnStateChanged() => InvokeAsync(async () =>
+    {
+        await RefreshGridAsync();
+        StateHasChanged();
+    });
+
+    private async Task OnStatusFilterChangedAsync(ChangeEventArgs args)
+    {
+        var value = args.Value?.ToString() ?? string.Empty;
+        statusFilter = value == ToDoFilter || Enum.TryParse<HcLabStatus>(value, out _) ? value : string.Empty;
+        await FiltersChangedAsync();
+    }
+
+    /// <summary>The page of orders the grid asked for: oldest first, unless a column is sorted.</summary>
+    private Task<GridDataProviderResult<OrderRow>> ProvideOrdersAsync(GridDataProviderRequest<OrderRow> request) => view.ApplyAsync(request, Shown);
+
+    private async Task RefreshGridAsync()
+    {
+        if (grid is not null)
+            await grid.RefreshDataAsync();
+    }
+
+    /// <summary>Forgets the saved view and builds the grid again with its defaults; focus moves to the count.</summary>
+    private async Task ResetViewAsync()
+    {
+        await view.ResetAsync();
+        pageSize = DefaultPageSize;
+        selected = new List<OrderRow>();
+        gridVersion++;
+        SetStatus("The view is reset: oldest order first, 25 a page, and every column shown.", false);
         StateHasChanged();
 
-        return Task.CompletedTask;
+        await Task.Yield();
+        await HcDisplay.FocusAsync(countRegion);
     }
 
-    private void OnStateChanged() => InvokeAsync(StateHasChanged);
+    private string RowClass(OrderRow row) => selected.Any(item => item.Id == row.Id) ? "hc-row-selected" : string.Empty;
 
-    private async Task OpenReleaseAsync(HcLabOrder order)
+    /// <summary>Keeps the grid's settings in the saved view, and follows the page size the selector chose.</summary>
+    private async Task SaveSettingsAsync(GridSettings settings)
     {
-        releaseId = order.Id;
-        releaseLabel = State.LabPanel(order.PanelId)?.Name ?? order.PanelId;
-        releasePatient = State.FindPatient(order.PatientId)?.Name ?? "The patient";
-        pendingRelease = false;
+        if (settings.PageSize > 0)
+            pageSize = settings.PageSize;
 
-        await releaseModal.ShowAsync();
+        await view.SaveSettingsAsync(settings);
     }
 
-    /// <summary>Checks and saves an order's results; flags are announced in words.</summary>
-    private void SaveResults(int orderId)
+    /// <summary>Shows a status message; the same message again gets a counter, so a screen reader announces it again.</summary>
+    private void SetStatus(string message, bool isError)
     {
-        if (State.MyLabWork.FirstOrDefault(item => item.Id == orderId) is not { } order || State.LabPanel(order.PanelId) is not { } panel)
-        {
-            Announce(false, "That lab order isn't one of yours any more, so nothing was saved.");
-            focusTarget = () => statusRegion;
-
-            return;
-        }
-
-        var draft = DraftFor(order, panel);
-        var values = new List<double>();
-        string? firstInvalid = null;
-
-        for (var index = 0; index < panel.Analytes.Count; index++)
-        {
-            var analyte = panel.Analytes[index];
-            var text = draft.Values[index]?.Trim() ?? string.Empty;
-            var parsed = double.TryParse(text, NumberStyles.Float, CultureInfo.InvariantCulture, out var value);
-
-            draft.Errors[index] = text.Length == 0 ? $"Enter the {analyte.Name} result."
-                : !parsed || !double.IsFinite(value) ? "Enter a number, like 5.4."
-                : value is < 0 or > 100_000 ? "Enter a value from 0 to 100,000."
-                : null;
-
-            if (draft.Errors[index] is not null)
-                firstInvalid ??= $"hc-labs-{order.Id}-value-{index}";
-            else
-                values.Add(value);
-        }
-
-        var comment = draft.Comment.Trim();
-        draft.CommentError = comment.Length > HcState.MaxCommentLength ? $"Shorten the comment to {HcState.MaxCommentLength} characters or fewer (now {comment.Length})." : null;
-
-        if (draft.CommentError is not null)
-            firstInvalid ??= $"hc-labs-{order.Id}-comment";
-
-        if (firstInvalid is not null)
-        {
-            Announce(false, $"The {panel.Name} results weren't saved. Fix the marked fields, then save again.");
-            focusTarget = () => valueInputs.TryGetValue(firstInvalid, out var input) ? input : statusRegion;
-
-            return;
-        }
-
-        var patientName = State.FindPatient(order.PatientId)?.Name ?? "the patient";
-        var wasEntered = order.Status == HcLabStatus.Resulted;
-        var result = State.EnterLabResults(order.Id, values, comment);
-
-        switch (result)
-        {
-            case HcResult.Ok:
-                drafts.Remove(order.Id);
-                Announce(true, $"{(wasEntered ? "Corrected" : "Saved")} {panel.Name} results for {patientName}: {FlagsText(panel, order.Values)}. {patientName} sees nothing until you release them.");
-                focusTarget = () => releaseButtons.TryGetValue(order.Id, out var button) ? button : statusRegion;
-
-                return;
-
-            case HcResult.WrongState:
-                drafts.Remove(order.Id);
-                Announce(false, $"These {panel.Name} results were already released, so they can't change.");
-                break;
-
-            case HcResult.Invalid:
-                Announce(false, "The storage for this demo tab is full, so the results weren't saved. Try again after removing something.");
-                break;
-
-            case HcResult.NotFound:
-                Announce(false, "That lab order isn't one of yours any more, so nothing was saved.");
-                break;
-
-            case HcResult.NotAllowed:
-                Announce(false, "Only the ordering doctor can enter results. Sign in again; nothing was saved.");
-                break;
-
-            default:
-                Announce(false, "That didn't work, and nothing was saved. Try again.");
-                break;
-        }
-
-        focusTarget = () => statusRegion;
-    }
-
-    /// <summary>Reopens the form of an entered order so its results can be corrected.</summary>
-    private void StartEdit(int orderId)
-    {
-        if (State.MyLabWork.FirstOrDefault(item => item.Id == orderId) is not { } order || State.LabPanel(order.PanelId) is not { } panel)
-            return;
-
-        drafts.Remove(orderId);
-        DraftFor(order, panel).Editing = true;
-        statusMessage = null;
-        focusTarget = () => valueInputs.TryGetValue($"hc-labs-{orderId}-value-0", out var input) ? input : statusRegion;
+        statusCount = message == statusText ? statusCount + 1 : 1;
+        statusText = message;
+        statusIsError = isError;
+        statusMessage = statusCount == 1 ? message : string.Create(CultureInfo.InvariantCulture, $"{message} ({statusCount})");
     }
 
     #endregion
@@ -339,42 +312,80 @@ public partial class Labs : ComponentBase, IDisposable
 
     #region Properties, Indexers
 
-    /// <summary>Gets or sets the order to open, from <c>?order=</c>.</summary>
+    [Inject] private ShowcaseGridViewStore GridViews { get; set; } = default!;
+
+    private bool IsFiltered => search.Trim().Length > 0 || statusFilter != ToDoFilter;
+
+    [Inject] private NavigationManager Navigation { get; set; } = default!;
+
+    /// <summary>Gets or sets the order to open, from <c>?order=</c> (older links).</summary>
     [SupplyParameterFromQuery(Name = "order")] public string? OrderQuery { get; set; }
 
-    [Inject] private HcState State { get; set; } = default!;
+    /// <summary>The signed-in doctor's orders that pass the filters, as grid rows.</summary>
+    private IReadOnlyList<OrderRow> Shown
+    {
+        get
+        {
+            var term = search.Trim();
+            var number = term.TrimStart('#').Trim();
 
-    /// <summary>The order from <c>?order=</c>, or <see langword="null" />.</summary>
-    private int? TargetOrder => int.TryParse(OrderQuery, NumberStyles.None, CultureInfo.InvariantCulture, out var id) ? id : null;
+            return State.MyLabWork
+                .Where(order => statusFilter switch
+                {
+                    ToDoFilter => order.Status != HcLabStatus.Released,
+                    "" => true,
+                    _ => order.Status.ToString() == statusFilter,
+                })
+                .Select(order => (Order: order, Patient: State.FindPatient(order.PatientId), Panel: State.LabPanel(order.PanelId)))
+                .Where(item => term.Length == 0 || item.Order.Id.ToString(CultureInfo.InvariantCulture) == number || (item.Panel?.Name.Contains(term, StringComparison.OrdinalIgnoreCase) ?? false)
+                    || (item.Patient is not null && (item.Patient.Name.Contains(term, StringComparison.OrdinalIgnoreCase) || item.Patient.Mrn.Contains(term, StringComparison.OrdinalIgnoreCase))))
+                .Select(item =>
+                {
+                    var outside = item.Panel is null || item.Order.Values.Count != item.Panel.Analytes.Count ? -1
+                        : item.Panel.Analytes.Zip(item.Order.Values).Count(pair => HcState.Flag(pair.First, pair.Second) != "Normal");
+
+                    return new OrderRow(
+                        item.Order.Id,
+                        item.Panel?.Name ?? item.Order.PanelId,
+                        item.Patient?.Name ?? "A former patient",
+                        item.Patient?.Mrn ?? string.Empty,
+                        item.Order.OrderedAt,
+                        HcDisplay.When(item.Order.OrderedAt),
+                        StatusLabel(item.Order.Status),
+                        item.Order.Status,
+                        outside,
+                        outside < 0 ? "Not entered yet" : LabReports.RangeText(outside),
+                        item.Order.ResultedAt,
+                        item.Order.ResultedAt is { } entered ? HcDisplay.Date(entered) : "Not yet",
+                        item.Order.ReleasedAt,
+                        item.Order.ReleasedAt is { } released ? HcDisplay.Date(released) : "Not yet");
+                })
+                .ToList();
+        }
+    }
+
+    [Inject] private HcState State { get; set; } = default!;
 
     #endregion
 
     #region Nested Types
 
-    /// <summary>The entry form of one lab order.</summary>
-    private sealed class LabDraft
-    {
-        public LabDraft(int count)
-        {
-            Values = Enumerable.Repeat(string.Empty, count).ToArray();
-            Errors = new string?[count];
-        }
-
-        /// <summary>Gets or sets the comment for the patient.</summary>
-        public string Comment { get; set; } = string.Empty;
-
-        /// <summary>Gets or sets the comment's error.</summary>
-        public string? CommentError { get; set; }
-
-        /// <summary>Gets or sets whether an entered order's form is open for a correction.</summary>
-        public bool Editing { get; set; }
-
-        /// <summary>Gets each value's error.</summary>
-        public string?[] Errors { get; }
-
-        /// <summary>Gets the values as typed, in the panel's analyte order.</summary>
-        public string[] Values { get; }
-    }
+    /// <summary>One lab order as the grid shows and exports it: every column is a property, so CSV export includes it.</summary>
+    private sealed record OrderRow(
+        int Id,
+        string Test,
+        string Patient,
+        string Mrn,
+        DateTime Ordered,
+        string OrderedText,
+        string Status,
+        HcLabStatus StatusValue,
+        int OutOfRange,
+        string Results,
+        DateTime? Entered,
+        string EnteredText,
+        DateTime? Released,
+        string ReleasedText);
 
     #endregion
 }

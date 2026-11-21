@@ -3,9 +3,75 @@
 
 <PageTitle>Account · @HcSeedData.ProductName</PageTitle>
 
-@* The staff member's profile and password. *@
+@* The staff member's profile and password, then their work details: a doctor's phone, whether they take new patients, and
+   their biography; the front desk's clinic (which bookings they hear about) and phone. *@
 <div class="container-fluid px-lg-4">
     <h1 class="hc-title mb-1">Account</h1>
-    <p class="hc-lead mb-4">Your name, email, and password for this demo. Patients see a doctor's name on their appointments and records.</p>
+    <p class="hc-lead mb-4">Your name, email, and password for this demo, and your work details. Patients see a doctor's name on their appointments and records.</p>
     <ShowcaseAccountProfile />
+
+    @if (State.IsStaff)
+    {
+        var doctor = State.CurrentDoctor;
+
+        <section class="hc-panel hc-sa-details mt-4" aria-labelledby="hc-sa-title">
+            <h2 class="hc-section-title" id="hc-sa-title">Work details</h2>
+            <p class="small text-body-secondary mb-3">
+                @(doctor is null
+                    ? "You hear about new and changed bookings at the clinic you work at."
+                    : $"Patients see your biography and whether you take new patients on your profile; you're based at {State.FindClinic(doctor.ClinicId)?.Name}.")
+            </p>
+
+            <EditForm EditContext="editContext" OnSubmit="Save" FormName="hc-staff-details" novalidate>
+                <DataAnnotationsValidator />
+                <ShowcaseFormErrors ShowSummary="true" />
+
+                @if (doctor is null)
+                {
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold" for="hc-sa-clinic">Clinic</label>
+                        <InputSelect id="hc-sa-clinic" class="form-select hc-sa-short" @bind-Value="form.ClinicId" aria-describedby="hc-sa-clinic-help">
+                            <option value="">Choose a clinic</option>
+                            @foreach (var clinic in State.Clinics)
+                            {
+                                <option value="@clinic.Id" @key="clinic.Id">@clinic.Name</option>
+                            }
+                        </InputSelect>
+                        <div class="form-text" id="hc-sa-clinic-help">New patients you register get it as their home clinic.</div>
+                        <ValidationMessage For="() => form.ClinicId" />
+                    </div>
+                }
+
+                <div class="mb-3">
+                    <label class="form-label fw-semibold" for="hc-sa-phone">Work phone <span class="fw-normal text-body-secondary">(optional)</span></label>
+                    <InputText id="hc-sa-phone" type="tel" class="form-control hc-sa-short" @bind-Value="form.WorkPhone" maxlength="@HcState.MaxPhoneLength" autocomplete="off" aria-describedby="hc-sa-phone-help" />
+                    <div class="form-text" id="hc-sa-phone-help">Your direct line, for colleagues. Digits, spaces, and + - ( ); at least 7 digits.</div>
+                    <ValidationMessage For="() => form.WorkPhone" />
+                </div>
+
+                @if (doctor is not null)
+                {
+                    <div class="form-check form-switch mb-3">
+                        <InputCheckbox id="hc-sa-accepting" class="form-check-input" role="switch" @bind-Value="form.AcceptingNewPatients" aria-describedby="hc-sa-accepting-help" />
+                        <label class="form-check-label fw-semibold" for="hc-sa-accepting">Taking new patients</label>
+                        <div class="form-text" id="hc-sa-accepting-help">When off, only patients you've seen before can book with you.</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold" for="hc-sa-bio">Biography</label>
+                        <InputTextArea id="hc-sa-bio" class="form-control" rows="4" maxlength="@HcState.MaxBioLength" @bind-Value="form.Bio" aria-describedby="hc-sa-bio-help" />
+                        <div class="form-text d-flex flex-wrap justify-content-between gap-2" id="hc-sa-bio-help">
+                            <span>On your public profile. @HcState.MinBioLength to @HcState.MaxBioLength characters, plain text.</span>
+                            <span class="text-nowrap">@((form.Bio ?? string.Empty).Trim().Length) of @HcState.MaxBioLength characters</span>
+                        </div>
+                        <ValidationMessage For="() => form.Bio" />
+                    </div>
+                }
+
+                <Button Type="ButtonType.Submit" Color="ButtonColor.Primary">Save work details</Button>
+                @* Always rendered, so every save is announced; a counter makes a repeat announce again. *@
+                <p class="small fw-semibold mt-3 mb-0 @(statusIsError ? "text-danger-emphasis" : "text-success-emphasis")" role="status">@statusMessage</p>
+            </EditForm>
+        </section>
+    }
 </div>
