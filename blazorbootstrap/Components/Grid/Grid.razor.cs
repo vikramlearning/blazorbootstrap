@@ -23,7 +23,7 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
 
     private GridDetailView<TItem>? detailView;
 
-    private string? draggedColumnKey;
+    private GridColumn<TItem>? draggedColumn;
 
     private string exportStatus = string.Empty;
 
@@ -155,8 +155,9 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     {
         exportStatus = string.Empty;
 
-        List<TItem> rows;
-
+        // Nothing in an export may break the page: a data source failure or cancellation, a property getter that throws
+        // while the CSV is built, or a browser error from the download (for example an outdated cached script).
+        // The status message reports it instead.
         try
         {
             var request = new GridDataProviderRequest<TItem>
@@ -168,32 +169,30 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
             };
 
             var result = DataProvider is not null ? await DataProvider.Invoke(request) : request.ApplyTo(Data!);
-            rows = result?.Data?.ToList() ?? new List<TItem>();
+            var rows = result?.Data?.ToList() ?? new List<TItem>();
+
+            if (rows.Count == 0)
+            {
+                exportStatus = ExportNoDataText;
+            }
+            else
+            {
+                var exportColumns = GetDisplayColumns()
+                                    .Where(column => column.Exportable && !string.IsNullOrWhiteSpace(column.PropertyName))
+                                    .Select(column => (GetColumnLabel(column), column.PropertyName!))
+                                    .ToList();
+
+                var csv = GridCsvUtility.Write(rows, exportColumns, GetCultureInfo());
+                var fileName = ExportFileName.EndsWith(".csv", StringComparison.OrdinalIgnoreCase) ? ExportFileName : $"{ExportFileName}.csv";
+
+                await SafeInvokeVoidAsync("window.blazorBootstrap.grid.downloadFile", fileName, "text/csv;charset=utf-8", csv);
+            }
         }
         catch (Exception)
         {
-            // A data source failure must not break the page; the status message reports it.
             exportStatus = ExportErrorText;
-            await InvokeAsync(StateHasChanged);
-            return;
         }
 
-        if (rows.Count == 0)
-        {
-            exportStatus = ExportNoDataText;
-            await InvokeAsync(StateHasChanged);
-            return;
-        }
-
-        var exportColumns = GetDisplayColumns()
-                            .Where(column => column.Exportable && !string.IsNullOrWhiteSpace(column.PropertyName))
-                            .Select(column => (GetColumnLabel(column), column.PropertyName!))
-                            .ToList();
-
-        var csv = GridCsvUtility.Write(rows, exportColumns, GetCultureInfo());
-        var fileName = ExportFileName.EndsWith(".csv", StringComparison.OrdinalIgnoreCase) ? ExportFileName : $"{ExportFileName}.csv";
-
-        await SafeInvokeVoidAsync("window.blazorBootstrap.grid.downloadFile", fileName, "text/csv;charset=utf-8", csv);
         await InvokeAsync(StateHasChanged);
     }
 
@@ -303,6 +302,25 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
             isColumnVisibilityChanged = true;
             StateHasChanged();
         }
+    }
+
+    /// <summary>
+    /// Counts the columns declared before <paramref name="column" /> whose name (property name, or header text when none) is <paramref name="name" />.
+    /// </summary>
+    internal int CountEarlierColumnsNamed(GridColumn<TItem> column, string name)
+    {
+        var count = 0;
+
+        foreach (var candidate in columns)
+        {
+            if (candidate == column)
+                break;
+
+            if (string.Equals(candidate.ColumnName, name, StringComparison.Ordinal))
+                count++;
+        }
+
+        return count;
     }
 
     /// <summary>
@@ -711,8 +729,8 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
 
     private async Task OnColumnDroppedAsync(GridColumn<TItem> target)
     {
-        var dragged = columns.FirstOrDefault(c => c.ColumnKey is not null && c.ColumnKey == draggedColumnKey);
-        draggedColumnKey = null;
+        var dragged = draggedColumn;
+        draggedColumn = null;
 
         if (dragged is not null)
             await MoveColumnBeforeAsync(dragged, target);

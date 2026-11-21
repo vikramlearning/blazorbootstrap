@@ -62,13 +62,15 @@
                                     var isLocked = IsColumnLocked(column);
                                     var isLastShown = isLocked && !column.AlwaysVisible;
 
-                                    <li @key="column.ColumnKey"
-                                        class="d-flex align-items-center gap-1 py-1 @(draggedColumnKey == column.ColumnKey ? "opacity-50" : "")"
+                                    var isFirst = position == 0;
+                                    var isLast = position == chooserColumns.Count - 1;
+
+                                    <li @key="column"
+                                        class="d-flex align-items-center gap-1 py-1 @(draggedColumn == column ? "opacity-50" : "")"
                                         draggable="true"
-                                        @ondragstart="() => draggedColumnKey = column.ColumnKey"
-                                        @ondragend="() => draggedColumnKey = null"
+                                        @ondragstart="() => draggedColumn = column"
+                                        @ondragend="() => draggedColumn = null"
                                         @ondragover:preventDefault="true"
-                                        @ondragover="() => { }"
                                         @ondrop="() => OnColumnDroppedAsync(column)">
                                         <span class="bb-grid-column-chooser-handle text-body-secondary px-1" aria-hidden="true">
                                             <Icon Name="IconName.GripVertical" />
@@ -83,19 +85,21 @@
                                                    @onchange="args => SetColumnHiddenAsync(column, !(args.Value is bool shown && shown))" />
                                             <label class="form-check-label text-nowrap" for="@checkboxId">@label</label>
                                         </div>
+                                        @* aria-disabled, not disabled: a button that becomes disabled while focused (after moving a column to
+                                           the top or the end) would drop keyboard focus. MoveColumnAsync ignores a move past either end. *@
                                         <button type="button"
-                                                class="btn btn-sm btn-link p-1 text-body-secondary"
+                                                class="btn btn-sm btn-link p-1 text-body-secondary @(isFirst ? "disabled" : "")"
                                                 aria-label="@string.Format(ColumnChooserMoveUpText, label)"
                                                 title="@string.Format(ColumnChooserMoveUpText, label)"
-                                                disabled="@(position == 0)"
+                                                aria-disabled="@(isFirst ? "true" : null)"
                                                 @onclick="() => MoveColumnAsync(column, -1)">
                                             <Icon Name="IconName.ArrowUp" aria-hidden="true" />
                                         </button>
                                         <button type="button"
-                                                class="btn btn-sm btn-link p-1 text-body-secondary"
+                                                class="btn btn-sm btn-link p-1 text-body-secondary @(isLast ? "disabled" : "")"
                                                 aria-label="@string.Format(ColumnChooserMoveDownText, label)"
                                                 title="@string.Format(ColumnChooserMoveDownText, label)"
-                                                disabled="@(position == chooserColumns.Count - 1)"
+                                                aria-disabled="@(isLast ? "true" : null)"
                                                 @onclick="() => MoveColumnAsync(column, 1)">
                                             <Icon Name="IconName.ArrowDown" aria-hidden="true" />
                                         </button>

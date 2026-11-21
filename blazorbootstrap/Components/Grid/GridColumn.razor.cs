@@ -234,10 +234,29 @@ public partial class GridColumn<TItem> : BlazorBootstrapComponentBase
 
     /// <summary>
     /// Gets the key that identifies the column in saved grid settings and the column chooser:
-    /// its <see cref="PropertyName" />, or its <see cref="HeaderText" /> when it has none.
+    /// its <see cref="PropertyName" />, or its <see cref="HeaderText" /> when it has none. When earlier columns of the
+    /// same grid share that name, the key adds the column's place among them (<c>Name#2</c>, <c>Name#3</c>), so every key is unique.
     /// <see langword="null" /> when it has neither; such a column keeps its declared position and cannot be hidden by the user.
     /// </summary>
-    internal string? ColumnKey => !string.IsNullOrWhiteSpace(PropertyName) ? PropertyName : string.IsNullOrWhiteSpace(HeaderText) ? null : HeaderText;
+    internal string? ColumnKey
+    {
+        get
+        {
+            var name = ColumnName;
+
+            if (name is null || Parent is null)
+                return name;
+
+            var earlier = Parent.CountEarlierColumnsNamed(this, name);
+
+            return earlier == 0 ? name : $"{name}#{earlier + 1}";
+        }
+    }
+
+    /// <summary>
+    /// Gets the column's <see cref="PropertyName" />, or its <see cref="HeaderText" /> when it has none; <see langword="null" /> when it has neither.
+    /// </summary>
+    internal string? ColumnName => !string.IsNullOrWhiteSpace(PropertyName) ? PropertyName : string.IsNullOrWhiteSpace(HeaderText) ? null : HeaderText;
 
     /// <summary>
     /// If <see langword="true" />, the column is included in the grid's CSV export when it is shown and has a <see cref="PropertyName" />.

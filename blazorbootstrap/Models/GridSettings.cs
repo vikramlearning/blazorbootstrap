@@ -5,7 +5,8 @@ public class GridSettings
     #region Properties, Indexers
 
     /// <summary>
-    /// Gets or sets the column keys (each column's <c>PropertyName</c>, or its <c>HeaderText</c> when it has none) in display order.
+    /// Gets or sets the column keys (each column's <c>PropertyName</c>, or its <c>HeaderText</c> when it has none;
+    /// a later column with the same name gets <c>#2</c>, <c>#3</c>, and so on) in display order.
     /// <see langword="null" /> keeps the order in which the columns are declared.
     /// </summary>
     [AddedVersion("4.1.0")]
