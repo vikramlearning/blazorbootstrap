@@ -11,7 +11,7 @@
         <h1 class="hc-title fs-2 mb-2" id="hc-home-title">Care close to home, at three @HcSeedData.ProductName clinics</h1>
         <p class="hc-lead mb-4">
             Find a doctor and book a visit online, see your visit summaries and lab reports, ask for prescription refills, and
-            pay your bills.
+            pay your bills, with what your health plan paid shown on each one.
         </p>
         <div class="d-flex flex-wrap gap-2">
             <a class="btn btn-primary" href="@($"{HcLayout.Base}/doctors")"><Icon Name="IconName.Search" class="me-2" aria-hidden="true" />Find a doctor</a>
@@ -22,7 +22,7 @@
         </div>
         @if (!State.Identity.IsSignedIn)
         {
-            <p class="small text-body-secondary mt-3 mb-0">The sign-in page has one-click demo accounts for a patient, a doctor, and the front desk.</p>
+            <p class="small text-body-secondary mt-3 mb-0">The sign-in page has one-click demo accounts for a patient, a doctor, the front desk, and a billing specialist.</p>
         }
     </section>
 

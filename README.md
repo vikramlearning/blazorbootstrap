@@ -74,8 +74,8 @@ Example websites that the Blazor Bootstrap team built to show the enterprise app
   </tr>
   <tr>
     <td width="33%" valign="top">
-      <a href="https://demos.blazorbootstrap.com/showcase/ecommerce"><picture><source media="(prefers-color-scheme: dark)" srcset="BlazorBootstrap.Demo.RCL/wwwroot/showcase/gallery/ecommerce-dark.webp"><img src="BlazorBootstrap.Demo.RCL/wwwroot/showcase/gallery/ecommerce-light.webp" alt="E-commerce Storefront home screen" width="100%"></picture></a><br>
-      <b>E-commerce Storefront</b><br>
+      <a href="https://demos.blazorbootstrap.com/showcase/ecommerce"><picture><source media="(prefers-color-scheme: dark)" srcset="BlazorBootstrap.Demo.RCL/wwwroot/showcase/gallery/ecommerce-dark.webp"><img src="BlazorBootstrap.Demo.RCL/wwwroot/showcase/gallery/ecommerce-light.webp" alt="Commerce Back Office home screen" width="100%"></picture></a><br>
+      <b>Commerce Back Office</b><br>
       <a href="https://demos.blazorbootstrap.com/showcase/ecommerce">Live demo</a> · <a href="https://docs.blazorbootstrap.com/showcase/ecommerce">How it's built</a>
     </td>
     <td width="33%" valign="top">

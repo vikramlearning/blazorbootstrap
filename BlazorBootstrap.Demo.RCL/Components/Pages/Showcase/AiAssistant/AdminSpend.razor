@@ -1,0 +1,287 @@
+@page "/showcase/ai-assistant/admin/spend"
+@layout AiAdminLayout
+
+<PageTitle>Spend · @AiSeedData.ProductName</PageTitle>
+
+@* Admins and the Owner: the workspace's monthly cap, the default member cap, members' own caps, and the demo control that pushes usage up. *@
+<div class="container-fluid px-lg-4">
+    <AiMemberGuard Require="AiPermission.ManageSpend">
+        @{
+            var workspace = State.WorkspaceSpend;
+            var spend = State.SpendByMember();
+            var blocked = spend.Values.Count(item => item.Level == AiSpendLevel.Blocked);
+            var warned = spend.Values.Count(item => item.Level == AiSpendLevel.Warning);
+        }
+
+        <div class="mb-3">
+            <h1 class="pa-title">Spend</h1>
+            <p class="pa-lead mb-0">
+                Monthly spend caps, in tokens (the unit @AiSeedData.ProductName counts; this demo has no prices): one for the whole workspace, a default for every
+                member, and members' own caps. At 80% of a cap, chat warns and the person hears about it; at 100%, chat pauses for that member, or for everyone when
+                it's the workspace's cap, until you raise the cap. Caps start again on @ResetText.
+            </p>
+        </div>
+
+        @* Always rendered and focusable, so every outcome is announced and focus has somewhere to go when the pressed button is gone. *@
+        <p class="pa-list-status mb-2" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
+        <p class="pa-list-error mb-2" role="alert">@errorMessage</p>
+
+        <div class="row g-4 mb-4">
+            <div class="col-xl-7">
+                <section class="pa-panel h-100" aria-labelledby="pa-spend-workspace-title">
+                    <h2 class="pa-section-title mb-1" id="pa-spend-workspace-title">Workspace this month</h2>
+                    <p class="pa-spend-big mb-2">
+                        <span class="pa-mono">@AiDisplay.Tokens(workspace.Used)</span>
+                        <span class="text-body-secondary fs-6 fw-normal">of @AiDisplay.Tokens(workspace.Cap) tokens</span>
+                        <Badge Color="@LevelColor(workspace.Level)" Class="rounded-pill ms-2 align-middle">@LevelText(workspace.Level)</Badge>
+                    </p>
+                    <Progress Height="12" Class="mb-2">
+                        <ProgressBar Width="Math.Min(100, workspace.Percent)" Color="@ProgressColorOf(workspace.Level)" aria-label="Workspace tokens used this month"
+                                     aria-valuenow="@Math.Min(100, Math.Round(workspace.Percent)).ToString(CultureInfo.InvariantCulture)" aria-valuemin="0" aria-valuemax="100"
+                                     aria-valuetext="@WorkspaceText(workspace)" />
+                    </Progress>
+                    <p class="mb-3">@WorkspaceText(workspace) @AdminMembers.Plural(warned, "member is", "members are") at 80% of their own cap or more, and @AdminMembers.Plural(blocked, "member is", "members are") blocked.</p>
+
+                    <EditForm EditContext="capsContext" OnSubmit="SaveCapsAsync" FormName="pa-spend-caps" novalidate>
+                        <DataAnnotationsValidator />
+                        <ShowcaseFormErrors ShowSummary="true" />
+                        <div class="row g-3 align-items-start">
+                            <div class="col-md-5">
+                                <label class="form-label fw-semibold" for="pa-spend-workspace-cap">Workspace cap (tokens a month)</label>
+                                <InputNumber id="pa-spend-workspace-cap" class="form-control pa-mono" @bind-Value="capsForm.WorkspaceCap" min="@AiState.MinWorkspaceCap" max="@AiState.MaxWorkspaceCap"
+                                             step="100000" ParsingErrorMessage="Enter the workspace cap as a whole number of tokens, like 12000000." aria-describedby="pa-spend-workspace-cap-help" />
+                                <div class="form-text" id="pa-spend-workspace-cap-help">
+                                    Above what the workspace used this month (@AiDisplay.Tokens(workspace.Used)), up to @AiDisplay.Tokens(AiState.MaxWorkspaceCap), and at least the highest member cap.
+                                </div>
+                                <ValidationMessage For="() => capsForm.WorkspaceCap" />
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-semibold" for="pa-spend-default-cap">Default member cap</label>
+                                <InputNumber id="pa-spend-default-cap" class="form-control pa-mono" @bind-Value="capsForm.DefaultCap" min="@AiState.MinQuota" max="@AiState.MaxQuota" step="1000"
+                                             ParsingErrorMessage="Enter the default member cap as a whole number of tokens, like 200000." aria-describedby="pa-spend-default-cap-help" />
+                                <div class="form-text" id="pa-spend-default-cap-help">From @AiDisplay.Tokens(AiState.MinQuota) to @AiDisplay.Tokens(AiState.MaxQuota) tokens, at most the workspace cap. Members without their own cap get it.</div>
+                                <ValidationMessage For="() => capsForm.DefaultCap" />
+                            </div>
+                            <div class="col-md-3 pa-spend-submit">
+                                <Button Type="ButtonType.Submit" Color="ButtonColor.Primary"><Icon Name="IconName.CheckLg" class="me-1" aria-hidden="true" />Save caps</Button>
+                            </div>
+                        </div>
+                    </EditForm>
+                </section>
+            </div>
+
+            <div class="col-xl-5">
+                <section class="pa-panel h-100 pa-spend-demo" aria-labelledby="pa-spend-demo-title">
+                    <h2 class="pa-section-title mb-1" id="pa-spend-demo-title">Demo: use tokens</h2>
+                    <p class="small text-body-secondary" id="pa-spend-demo-help">
+                        Pushes this month's usage up, so you can watch the 80% warning and the 100% block without chatting for hours. It counts as usage of the default model.
+                    </p>
+                    <label class="form-label fw-semibold" for="pa-spend-demo-member">Member</label>
+                    <select id="pa-spend-demo-member" class="form-select mb-2" value="@demoMemberId" @onchange="OnDemoMemberChanged" aria-describedby="pa-spend-demo-help">
+                        @foreach (var member in DemoMembers)
+                        {
+                            <option value="@member.Id" @key="member.Id">@member.Name@(member.AccountId is null ? null : " (can sign in)")</option>
+                        }
+                    </select>
+                    <div class="d-flex flex-wrap gap-2">
+                        <Button Color="ButtonColor.Secondary" Outline="true" Size="ButtonSize.Small" @onclick="UseMemberTokens">
+                            <Icon Name="IconName.Speedometer" class="me-1" aria-hidden="true" />Use 10% of their cap
+                        </Button>
+                        <Button Color="ButtonColor.Secondary" Outline="true" Size="ButtonSize.Small" @onclick="UseWorkspaceTokens">
+                            <Icon Name="IconName.Speedometer2" class="me-1" aria-hidden="true" />Use 5% of the workspace cap
+                        </Button>
+                    </div>
+                    <p class="small text-body-secondary mt-2 mb-0">The workspace push is spread over the members without a sign-in, so the demo accounts' own caps stay as they are.</p>
+                </section>
+            </div>
+        </div>
+
+        <section class="pa-panel mb-3" aria-labelledby="pa-spend-filters-title">
+            <h2 class="pa-section-title" id="pa-spend-filters-title">Filter members</h2>
+            <div class="pa-list-filters" role="search" aria-labelledby="pa-spend-filters-title">
+                <div class="pa-list-search">
+                    <label class="form-label small fw-semibold" for="pa-spend-search">Search</label>
+                    <input id="pa-spend-search" type="search" class="form-control" value="@searchBoxValue" placeholder="Name or email" autocomplete="off" maxlength="80"
+                           @oninput="OnSearchInputAsync" @onchange="OnSearchChanged" />
+                </div>
+                <div>
+                    <label class="form-label small fw-semibold" for="pa-spend-level">Status</label>
+                    <select id="pa-spend-level" class="form-select" value="@levelFilter" @onchange="OnLevelFilterChangedAsync">
+                        <option value="">All (@spend.Count)</option>
+                        @foreach (var level in Enum.GetValues<AiSpendLevel>())
+                        {
+                            <option value="@level" @key="level">@LevelText(level) (@spend.Values.Count(item => item.Level == level))</option>
+                        }
+                    </select>
+                </div>
+                <div>
+                    <label class="form-label small fw-semibold" for="pa-spend-cap-filter">Cap</label>
+                    <select id="pa-spend-cap-filter" class="form-select" value="@capFilter" @onchange="OnCapFilterChangedAsync">
+                        <option value="">Any cap</option>
+                        <option value="@OwnValue">Their own cap</option>
+                        <option value="@DefaultValue">The default cap</option>
+                    </select>
+                </div>
+            </div>
+            <div class="pa-list-meta">
+                <p class="small text-body-secondary mb-0" aria-live="polite" tabindex="-1" @ref="countRegion">@CountText(spend.Count)</p>
+                @if (IsFiltered)
+                {
+                    <Button Color="ButtonColor.Link" Size="ButtonSize.Small" Class="p-0" @onclick="ClearFiltersAsync">Show everyone</Button>
+                }
+                @* Back to the saved view's defaults: the most used share first, 25 a page, every column in its place. *@
+                <Button Color="ButtonColor.Link" Size="ButtonSize.Small" Class="p-0" @onclick="ResetViewAsync">Reset view</Button>
+            </div>
+        </section>
+
+        @if (selected.Count > 0)
+        {
+            <section class="pa-bulk" aria-labelledby="pa-spend-bulk-count">
+                <h2 class="pa-bulk-count" id="pa-spend-bulk-count">@(selected.Count == 1 ? "1 member selected" : $"{selected.Count} members selected")</h2>
+                <EditForm EditContext="bulkContext" OnSubmit="ApplyBulkAsync" FormName="pa-spend-bulk" class="pa-bulk-form" novalidate>
+                    <DataAnnotationsValidator />
+                    <ShowcaseFormErrors ShowSummary="true" />
+                    <div class="pa-bulk-field">
+                        <label class="form-label small fw-semibold" for="pa-spend-bulk-mode">Cap</label>
+                        <InputSelect id="pa-spend-bulk-mode" class="form-select form-select-sm" @bind-Value="bulkForm.Mode">
+                            <option value="@SetValue">Set their own cap</option>
+                            <option value="@DefaultValue">Use the default cap</option>
+                        </InputSelect>
+                    </div>
+                    <div class="pa-bulk-field">
+                        <label class="form-label small fw-semibold" for="pa-spend-bulk-cap">Tokens a month</label>
+                        <InputNumber id="pa-spend-bulk-cap" class="form-control form-control-sm pa-mono" @bind-Value="bulkForm.Cap" min="@AiState.MinQuota" max="@AiState.MaxQuota" step="1000"
+                                     disabled="@(bulkForm.Mode == DefaultValue)" ParsingErrorMessage="Enter the cap as a whole number of tokens, like 300000." aria-describedby="pa-spend-bulk-cap-help" />
+                        <span class="form-text d-block" id="pa-spend-bulk-cap-help">@(bulkForm.Mode == DefaultValue ? $"They get the default, {AiDisplay.Tokens(State.Policy.MonthlyTokenQuota)}." : $"Up to the workspace cap, {AiDisplay.Tokens(State.Policy.WorkspaceMonthlyCap)}, and above what each one used.")</span>
+                        <ValidationMessage For="() => bulkForm.Cap" />
+                    </div>
+                    <div class="pa-bulk-actions">
+                        <Button Type="ButtonType.Submit" Color="ButtonColor.Primary" Size="ButtonSize.Small">Apply<span class="visually-hidden">&#32;to the selected members</span></Button>
+                        <Button Color="ButtonColor.Secondary" Outline="true" Size="ButtonSize.Small" @onclick="ClearSelectionAsync">Clear selection</Button>
+                    </div>
+                </EditForm>
+                <p class="form-text w-100 mb-0">A member who already used more than the new cap keeps their cap; each member with a sign-in hears about the change.</p>
+            </section>
+        }
+
+        <section class="pa-panel" aria-label="Members' spend">
+            <ShowcaseDataState Status="@(viewLoaded ? ShowcaseDataStatus.Ready : ShowcaseDataStatus.Loading)"
+                               IsEmpty="@(spend.Count == 0)"
+                               EmptyIcon="IconName.PiggyBank"
+                               EmptyTitle="Nobody has joined the workspace yet"
+                               EmptyText="Members show here with their caps once they join."
+                               LoadingText="Loading spend…"
+                               OnRetry="RefreshGridAsync">
+                <ChildContent>
+                    <Grid @ref="grid"
+                          @key="gridVersion"
+                          TItem="SpendRow"
+                          Class="table table-hover align-middle pa-table-wide sc-grid-row-links"
+                          GridContainerClass="pa-grid border rounded-3"
+                          DataProvider="ProvideRowsAsync"
+                          SettingsProvider="view.GetSettingsAsync"
+                          GridSettingsChanged="SaveSettingsAsync"
+                          AllowPaging="true"
+                          PageSize="@pageSize"
+                          PageSizeSelectorVisible="true"
+                          PageSizeSelectorItems="@(new[] { 10, 25, 50, 100 })"
+                          PaginationItemsTextFormat="{0}–{1} of {2} members"
+                          AllowSorting="true"
+                          AllowSelection="true"
+                          SelectionMode="GridSelectionMode.Multiple"
+                          RowSelectionLabel="@(row => $"Select {row.Name}")"
+                          SelectAllRowsText="Select all shown members"
+                          SelectedItemsChanged="OnSelectionChanged"
+                          RowClass="RowClass"
+                          AllowColumnChooser="true"
+                          AllowExport="true"
+                          ExportFileName="ai-spend"
+                          Responsive="true"
+                          EmptyText="Nobody matches. Choose All, or clear the search."
+                          aria-label="Members' usage against their caps">
+                        <GridColumns>
+                            <GridColumn TItem="SpendRow" HeaderText="Name" PropertyName="Name" SortString="name" SortKeySelector="row => row.Name"
+                                        IsDefaultSortColumn="@view.IsSortColumn("name")" SortDirection="@view.DirectionFor("name")" AlwaysVisible="true">
+                                @{
+                                    var row = context;
+                                }
+                                @* A member has no spend page of their own: the stretched button makes the whole row open their cap dialog. *@
+                                <button type="button" class="pa-row-button stretched-link" @ref="openers[row.Id]" @onclick="() => OpenAsync(row.Id)">@row.Name</button>
+                            </GridColumn>
+                            <GridColumn TItem="SpendRow" HeaderText="Email" PropertyName="Email" SortString="email" SortKeySelector="row => row.Email"
+                                        IsDefaultSortColumn="@view.IsSortColumn("email")" SortDirection="@view.DirectionFor("email")">
+                                <span class="pa-spend-email">@context.Email</span>
+                            </GridColumn>
+                            <GridColumn TItem="SpendRow" HeaderText="Used" PropertyName="Used" SortString="used" SortKeySelector="row => row.Used"
+                                        IsDefaultSortColumn="@view.IsSortColumn("used")" SortDirection="@view.DirectionFor("used")" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" TextNoWrap="true">
+                                <span class="pa-mono">@AiDisplay.Tokens(context.Used)</span>
+                            </GridColumn>
+                            <GridColumn TItem="SpendRow" HeaderText="Cap" PropertyName="CapText" SortString="cap" SortKeySelector="row => row.Cap"
+                                        IsDefaultSortColumn="@view.IsSortColumn("cap")" SortDirection="@view.DirectionFor("cap")" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" TextNoWrap="true">
+                                <span class="pa-mono">@AiDisplay.Tokens(context.Cap)</span> <span class="small text-body-secondary">@(context.HasOwnCap ? "own" : "default")</span>
+                            </GridColumn>
+                            <GridColumn TItem="SpendRow" HeaderText="Used of cap" PropertyName="PercentText" SortString="percent" SortKeySelector="row => row.Percent"
+                                        IsDefaultSortColumn="@view.IsSortColumn("percent")" SortDirection="@view.DirectionFor("percent")" TextNoWrap="true">
+                                <div class="d-flex align-items-center gap-2">
+                                    <Progress Height="6" Class="flex-grow-1 pa-spend-bar">
+                                        <ProgressBar Width="Math.Min(100, context.Percent)" Color="@ProgressColorOf(context.LevelValue)" aria-label="@($"{context.Name}, share of cap used")"
+                                                     aria-valuenow="@Math.Min(100, Math.Round(context.Percent)).ToString(CultureInfo.InvariantCulture)" aria-valuemin="0" aria-valuemax="100" aria-valuetext="@context.PercentText" />
+                                    </Progress>
+                                    <span class="small">@context.PercentText</span>
+                                </div>
+                            </GridColumn>
+                            <GridColumn TItem="SpendRow" HeaderText="Status" PropertyName="Level" SortString="level" SortKeySelector="row => row.LevelValue"
+                                        IsDefaultSortColumn="@view.IsSortColumn("level")" SortDirection="@view.DirectionFor("level")" TextNoWrap="true">
+                                <Badge Color="@LevelColor(context.LevelValue)" Class="rounded-pill">@context.Level</Badge>
+                            </GridColumn>
+                            <GridColumn TItem="SpendRow" HeaderText="Role" PropertyName="Role" SortString="role" SortKeySelector="row => row.Role"
+                                        IsDefaultSortColumn="@view.IsSortColumn("role")" SortDirection="@view.DirectionFor("role")" TextNoWrap="true">
+                                @context.Role
+                            </GridColumn>
+                        </GridColumns>
+                    </Grid>
+                </ChildContent>
+            </ShowcaseDataState>
+        </section>
+
+        <Modal @ref="capModal" IsVerticallyCentered="true" ShowCloseButton="false" aria-labelledby="pa-spend-dialog-title" OnShown="OnDialogShownAsync" OnHidden="OnDialogHiddenAsync">
+            <HeaderTemplate>
+                <h2 class="modal-title h5 pa-spend-dialog-title" id="pa-spend-dialog-title">@(Opened is { } shown ? $"{shown.Name}'s monthly cap" : "Member not found")</h2>
+            </HeaderTemplate>
+            <BodyTemplate>
+                @if (Opened is not { } member)
+                {
+                    <p>That member is no longer in the workspace.</p>
+                    <button type="button" class="btn btn-outline-secondary" @ref="dialogCancel" @onclick="() => capModal.HideAsync()">Close</button>
+                }
+                else
+                {
+                    var status = State.SpendOf(member);
+
+                    <p>
+                        @AiDisplay.Tokens(status.Used) of @AiDisplay.Tokens(status.Cap) tokens this month (@status.Percent.ToString("0", CultureInfo.InvariantCulture)%): @LevelText(status.Level).
+                        @(member.MonthlyCap is null ? $"They have the default cap." : "They have their own cap.")
+                    </p>
+                    <EditForm EditContext="memberContext" OnSubmit="SaveMemberCapAsync" FormName="pa-member-cap" novalidate aria-labelledby="pa-spend-dialog-title">
+                        <DataAnnotationsValidator />
+                        <ShowcaseFormErrors ShowSummary="true" />
+                        <div class="form-check mb-2">
+                            <InputCheckbox class="form-check-input" id="pa-spend-dialog-default" @bind-Value="memberForm.UseDefault" />
+                            <label class="form-check-label" for="pa-spend-dialog-default">Use the default cap (@AiDisplay.Tokens(State.Policy.MonthlyTokenQuota) tokens)</label>
+                        </div>
+                        <label class="form-label fw-semibold" for="pa-spend-dialog-cap">Their own cap (tokens a month)</label>
+                        <InputNumber id="pa-spend-dialog-cap" class="form-control pa-mono" @bind-Value="memberForm.Cap" min="@AiState.MinQuota" max="@AiState.MaxQuota" step="1000"
+                                     disabled="@memberForm.UseDefault" ParsingErrorMessage="Enter the cap as a whole number of tokens, like 300000." aria-describedby="pa-spend-dialog-cap-help" />
+                        <div class="form-text" id="pa-spend-dialog-cap-help">Above what they used (@AiDisplay.Tokens(status.Used)), up to the workspace cap (@AiDisplay.Tokens(State.Policy.WorkspaceMonthlyCap)).</div>
+                        <ValidationMessage For="() => memberForm.Cap" />
+                        <p class="pa-form-error mt-2 mb-0" role="alert">@dialogError</p>
+                        <div class="d-flex flex-wrap gap-2 mt-3">
+                            <Button Type="ButtonType.Submit" Color="ButtonColor.Primary">Save cap</Button>
+                            <button type="button" class="btn btn-outline-secondary" @ref="dialogCancel" @onclick="() => capModal.HideAsync()">Cancel</button>
+                        </div>
+                    </EditForm>
+                }
+            </BodyTemplate>
+        </Modal>
+    </AiMemberGuard>
+</div>

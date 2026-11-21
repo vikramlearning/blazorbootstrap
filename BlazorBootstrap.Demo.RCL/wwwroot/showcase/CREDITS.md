@@ -166,7 +166,7 @@ To refresh one after its home screen changes, capture it the same way:
 |---|---|---|---|---|
 | `gallery/ai-assistant-light.webp`, `gallery/ai-assistant-dark.webp` | Gallery and README: AI Assistant Workspace home screen | Own work | Repository license | Not required |
 | `gallery/saas-light.webp`, `gallery/saas-dark.webp` | Gallery and README: SaaS Product home screen | Own work | Repository license | Not required |
-| `gallery/ecommerce-light.webp`, `gallery/ecommerce-dark.webp` | Gallery and README: E-commerce Storefront home screen | Own work; shows `ecommerce/hero-1.webp` (Magnific license above) | Repository license | Not required |
+| `gallery/ecommerce-light.webp`, `gallery/ecommerce-dark.webp` | Gallery and README: Commerce Back Office home screen | Own work; shows `ecommerce/hero-1.webp` (Magnific license above) | Repository license | Not required |
 | `gallery/project-board-light.webp`, `gallery/project-board-dark.webp` | Gallery and README: Project & Client Board home screen | Own work | Repository license | Not required |
 | `gallery/fintech-light.webp`, `gallery/fintech-dark.webp` | Gallery and README: Banking Operations home screen | Own work; the site's sign-in page, where its home link lands when signed out | Repository license | Not required |
 | `gallery/healthcare-light.webp`, `gallery/healthcare-dark.webp` | Gallery and README: Healthcare Clinic Portal home screen | Own work | Repository license | Not required |

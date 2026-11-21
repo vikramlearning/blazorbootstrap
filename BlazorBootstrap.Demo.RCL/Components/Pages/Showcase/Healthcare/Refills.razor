@@ -3,92 +3,229 @@
 
 <PageTitle>Refill requests · @HcSeedData.ProductName</PageTitle>
 
-@* Patients' refill requests waiting for a doctor: approve (adds one refill) or decline with a note for the patient. *@
+@* Patients' refill requests waiting for a doctor, in a Grid: approve (adds one refill) or deny with a reason the patient
+   reads, one at a time from the row's dialog or several together. *@
 <div class="container-fluid px-lg-4">
     <ShowcaseRoleGuard Roles="@HcSeedData.DoctorRole" SignInPath="@HcLayout.SignInPath">
         @{
             var requests = State.RefillRequests;
             var me = State.CurrentDoctor;
+            var mine = requests.Count(item => item.DoctorId == me?.Id);
         }
 
         <h1 class="hc-title mb-1">Refill requests</h1>
         <p class="hc-lead mb-3">
-            Patients ask for a refill when a prescription has none left. Approving adds one refill; declining needs a note that tells
-            the patient why. The patient sees your answer under Prescriptions.
+            Patients ask for a refill when a prescription has none left, with the pharmacy and the day they'll pick it up. Approving adds one refill; denying
+            needs a reason that tells the patient why. The patient sees your answer under Prescriptions and in their notifications.
         </p>
 
-        @* Always rendered and focusable, so an outcome is announced and focus has somewhere to go when the answered request leaves the list. *@
-        <p class="fw-semibold hc-ref-status @(statusIsError ? "text-danger-emphasis" : null)" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
-
-        @if (requests.Count == 0)
-        {
-            <div class="hc-panel hc-ref-empty">
-                <span class="hc-icon" aria-hidden="true"><Icon Name="IconName.Capsule" /></span>
+        <section class="hc-panel mb-3" aria-labelledby="hc-ref-filters-title">
+            <h2 class="hc-section-title" id="hc-ref-filters-title">Filter requests</h2>
+            <div class="hc-list-filters" role="search" aria-labelledby="hc-ref-filters-title">
+                <div class="hc-list-search">
+                    <label class="form-label small fw-semibold" for="hc-ref-search">Search</label>
+                    @* Filters on every keystroke; the bound value changes only on change, so a render during typing never writes an older value back. *@
+                    <input id="hc-ref-search" type="search" class="form-control" value="@searchBoxValue" placeholder="Patient, record number, or medication" autocomplete="off" maxlength="80"
+                           @oninput="OnSearchInputAsync" @onchange="OnSearchChanged" />
+                </div>
                 <div>
-                    <h2 class="hc-section-title mb-1">No refill requests are waiting</h2>
-                    <p class="text-body-secondary mb-0">When a patient asks for a refill, it shows here.</p>
+                    <label class="form-label small fw-semibold" for="hc-ref-whose">Prescribed by</label>
+                    <select id="hc-ref-whose" class="form-select" value="@whoseFilter" @onchange="OnWhoseChangedAsync">
+                        <option value="@MineFilter">You (@mine)</option>
+                        <option value="">Any doctor (@requests.Count)</option>
+                    </select>
                 </div>
             </div>
-        }
-        else
+            <div class="hc-list-meta">
+                <p class="small text-body-secondary mb-0" aria-live="polite" tabindex="-1" @ref="countRegion">@CountText(requests.Count)</p>
+                @if (IsFiltered)
+                {
+                    <Button Color="ButtonColor.Link" Size="ButtonSize.Small" Class="p-0" @onclick="ClearFiltersAsync">Show your requests</Button>
+                }
+                @* Back to the saved view's defaults: oldest request first, 25 a page, every column in its place. *@
+                <Button Color="ButtonColor.Link" Size="ButtonSize.Small" Class="p-0" @onclick="ResetViewAsync">Reset view</Button>
+            </div>
+        </section>
+
+        @* Always rendered and focusable, so an answer is announced and focus has somewhere to go when the answered request leaves the list. *@
+        <p class="hc-list-status mb-2 @(statusIsError ? "text-danger-emphasis" : null)" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
+        <p class="hc-list-error mb-2" role="alert">@errorMessage</p>
+
+        @if (selected.Count > 0)
         {
-            <p class="text-body-secondary">@(requests.Count == 1 ? "1 request is waiting" : $"{requests.Count} requests are waiting"), oldest first.</p>
-            <ol class="list-unstyled hc-ref-list" aria-label="Refill requests">
-                @foreach (var prescription in requests)
+            <section class="hc-bulk" aria-labelledby="hc-ref-bulk-count">
+                <h2 class="hc-bulk-count" id="hc-ref-bulk-count">@(selected.Count == 1 ? "1 request selected" : $"{selected.Count} requests selected")</h2>
+                <EditForm EditContext="bulkContext" OnSubmit="ApplyBulkAsync" FormName="hc-refills-bulk" class="hc-bulk-form" novalidate>
+                    <DataAnnotationsValidator />
+                    <ShowcaseFormErrors ShowSummary="true" />
+                    <div class="hc-bulk-field">
+                        <label class="form-label small fw-semibold" for="hc-ref-bulk-decision">Answer</label>
+                        <InputSelect id="hc-ref-bulk-decision" class="form-select form-select-sm" @bind-Value="bulkForm.Decision" aria-describedby="hc-ref-bulk-decision-help">
+                            <option value="">Choose an answer</option>
+                            <option value="@ApproveValue">Approve: add one refill</option>
+                            <option value="@DenyValue">Deny</option>
+                        </InputSelect>
+                        <span class="form-text d-block" id="hc-ref-bulk-decision-help">Each patient hears about their own request.</span>
+                        <ValidationMessage For="() => bulkForm.Decision" />
+                    </div>
+                    <div class="hc-bulk-field hc-bulk-wide">
+                        <label class="form-label small fw-semibold" for="hc-ref-bulk-note">@(bulkForm.Decision == DenyValue ? "Reason for the patients" : "Note for the patients (optional)")</label>
+                        <InputTextArea id="hc-ref-bulk-note" class="form-control form-control-sm" rows="2" maxlength="@HcState.MaxReasonLength" @bind-Value="bulkForm.Note" aria-describedby="hc-ref-bulk-note-help" />
+                        <span class="form-text d-block" id="hc-ref-bulk-note-help">
+                            @(bulkForm.Decision == DenyValue ? $"Required, {HcState.MinDenyReasonLength} to {HcState.MaxReasonLength} characters. The patients read it." : $"Up to {HcState.MaxReasonLength} characters.")
+                        </span>
+                        <ValidationMessage For="() => bulkForm.Note" />
+                    </div>
+                    <div class="hc-bulk-actions">
+                        <Button Type="ButtonType.Submit" Color="ButtonColor.Primary" Size="ButtonSize.Small">Apply<span class="visually-hidden">&#32;to the selected requests</span></Button>
+                        <Button Color="ButtonColor.Secondary" Outline="true" Size="ButtonSize.Small" @onclick="ClearSelectionAsync">Clear selection</Button>
+                    </div>
+                </EditForm>
+            </section>
+        }
+
+        <section class="hc-panel" aria-label="Refill request list">
+            <ShowcaseDataState Status="@(viewLoaded ? ShowcaseDataStatus.Ready : ShowcaseDataStatus.Loading)"
+                               IsEmpty="@(requests.Count == 0)"
+                               EmptyIcon="IconName.Capsule"
+                               EmptyTitle="No refill requests are waiting"
+                               EmptyText="When a patient asks for a refill, it shows here and in your notifications."
+                               LoadingText="Loading refill requests…"
+                               OnRetry="RefreshGridAsync">
+                <ChildContent>
+                    <Grid @ref="grid"
+                          @key="gridVersion"
+                          TItem="RequestRow"
+                          Class="table table-hover align-middle hc-table-wide sc-grid-row-links"
+                          GridContainerClass="hc-grid border rounded-3"
+                          DataProvider="ProvideRequestsAsync"
+                          SettingsProvider="view.GetSettingsAsync"
+                          GridSettingsChanged="SaveSettingsAsync"
+                          AllowPaging="true"
+                          PageSize="@pageSize"
+                          PageSizeSelectorVisible="true"
+                          PageSizeSelectorItems="@(new[] { 10, 25, 50 })"
+                          PaginationItemsTextFormat="{0}–{1} of {2} requests"
+                          AllowSorting="true"
+                          AllowSelection="true"
+                          SelectionMode="GridSelectionMode.Multiple"
+                          RowSelectionLabel="@(row => $"Select {row.Medication} for {row.Patient}")"
+                          SelectAllRowsText="Select all shown requests"
+                          SelectedItemsChanged="OnSelectionChanged"
+                          RowClass="RowClass"
+                          AllowColumnChooser="true"
+                          AllowExport="true"
+                          ExportFileName="clinic-refill-requests"
+                          Responsive="true"
+                          EmptyText="No requests match. Choose Any doctor, or clear the search."
+                          aria-label="Refill requests">
+                        <GridColumns>
+                            <GridColumn TItem="RequestRow" HeaderText="Requested" PropertyName="RequestedText" SortString="requested" SortKeySelector="row => row.Requested"
+                                        IsDefaultSortColumn="@view.IsSortColumn("requested")" SortDirection="@view.DirectionFor("requested")" TextNoWrap="true">
+                                @context.RequestedText
+                            </GridColumn>
+                            <GridColumn TItem="RequestRow" HeaderText="Medication" PropertyName="Medication" SortString="medication" SortKeySelector="row => row.Medication"
+                                        IsDefaultSortColumn="@view.IsSortColumn("medication")" SortDirection="@view.DirectionFor("medication")" AlwaysVisible="true">
+                                @{
+                                    var row = context;
+                                }
+                                @* A request has no page of its own: the stretched button makes the whole row open its answer dialog. *@
+                                <button type="button" class="hc-row-button stretched-link" @ref="openers[row.Id]" @onclick="() => OpenAsync(row.Id)">@row.Medication</button>
+                            </GridColumn>
+                            <GridColumn TItem="RequestRow" HeaderText="Patient" PropertyName="Patient" SortString="patient" SortKeySelector="row => row.Patient"
+                                        IsDefaultSortColumn="@view.IsSortColumn("patient")" SortDirection="@view.DirectionFor("patient")">
+                                @context.Patient
+                            </GridColumn>
+                            <GridColumn TItem="RequestRow" HeaderText="Record number" PropertyName="Mrn" SortString="mrn" SortKeySelector="row => row.Mrn"
+                                        IsDefaultSortColumn="@view.IsSortColumn("mrn")" SortDirection="@view.DirectionFor("mrn")" TextNoWrap="true">
+                                <span class="hc-mono">@context.Mrn</span>
+                            </GridColumn>
+                            <GridColumn TItem="RequestRow" HeaderText="Quantity" PropertyName="Quantity" SortString="quantity" SortKeySelector="row => row.Quantity"
+                                        IsDefaultSortColumn="@view.IsSortColumn("quantity")" SortDirection="@view.DirectionFor("quantity")" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End">
+                                @context.Quantity
+                            </GridColumn>
+                            <GridColumn TItem="RequestRow" HeaderText="Pick up" PropertyName="PickupText" SortString="pickup" SortKeySelector="row => row.Pickup"
+                                        IsDefaultSortColumn="@view.IsSortColumn("pickup")" SortDirection="@view.DirectionFor("pickup")" TextNoWrap="true">
+                                @context.PickupText
+                            </GridColumn>
+                            <GridColumn TItem="RequestRow" HeaderText="Pharmacy" PropertyName="Pharmacy" SortString="pharmacy" SortKeySelector="row => row.Pharmacy"
+                                        IsDefaultSortColumn="@view.IsSortColumn("pharmacy")" SortDirection="@view.DirectionFor("pharmacy")">
+                                @context.Pharmacy
+                            </GridColumn>
+                            <GridColumn TItem="RequestRow" HeaderText="Prescribed by" PropertyName="Doctor" SortString="doctor" SortKeySelector="row => row.Doctor"
+                                        IsDefaultSortColumn="@view.IsSortColumn("doctor")" SortDirection="@view.DirectionFor("doctor")">
+                                @context.Doctor
+                            </GridColumn>
+                            <GridColumn TItem="RequestRow" HeaderText="Last filled" PropertyName="LastFilledText" SortString="filled" SortKeySelector="row => row.LastFilled"
+                                        IsDefaultSortColumn="@view.IsSortColumn("filled")" SortDirection="@view.DirectionFor("filled")" TextNoWrap="true">
+                                @context.LastFilledText
+                            </GridColumn>
+                        </GridColumns>
+                    </Grid>
+                </ChildContent>
+            </ShowcaseDataState>
+        </section>
+
+        <Modal @ref="decisionModal" IsVerticallyCentered="true" ShowCloseButton="false" aria-labelledby="hc-ref-dialog-title" OnShown="OnDialogShownAsync" OnHidden="OnDialogHiddenAsync">
+            <HeaderTemplate>
+                <h2 class="modal-title h5 hc-wrap" id="hc-ref-dialog-title">
+                    @(Opened is { } shown ? $"{shown.Medication} {shown.Dose} for {State.FindPatient(shown.PatientId)?.Name ?? "a former patient"}" : "Refill request")
+                </h2>
+            </HeaderTemplate>
+            <BodyTemplate>
+                @if (Opened is not { } prescription)
+                {
+                    <p>This request was already answered, or the prescription was stopped.</p>
+                    <button type="button" class="btn btn-outline-secondary" @ref="dialogCancel" @onclick="() => decisionModal.HideAsync()">Close</button>
+                }
+                else
                 {
                     var patient = State.FindPatient(prescription.PatientId);
-                    var patientName = patient?.Name ?? "A former patient";
-                    var doctor = State.FindDoctor(prescription.DoctorId);
-                    var label = $"{prescription.Medication} {prescription.Dose}";
-                    var noteId = $"hc-ref-note-{prescription.Id}";
-                    var error = noteErrors.GetValueOrDefault(prescription.Id);
-                    var note = notes.GetValueOrDefault(prescription.Id) ?? string.Empty;
 
-                    <li class="hc-card hc-ref-card" @key="@($"refill-{prescription.Id}")">
-                        <h2 class="hc-ref-title">@label<span class="fw-normal"> for @patientName</span></h2>
-                        <dl class="hc-ref-facts">
-                            <div>
-                                <dt>Requested</dt>
-                                <dd>@(prescription.RefillRequestedAt is { } requested ? HcDisplay.When(requested) : "Just now")</dd>
-                            </div>
-                            <div>
-                                <dt>Prescribed by</dt>
-                                <dd>@(doctor?.Name ?? "A former doctor")@(prescription.DoctorId == me?.Id ? " (you)" : null), @HcDisplay.Date(prescription.PrescribedAt)</dd>
-                            </div>
-                            <div>
-                                <dt>Each fill</dt>
-                                <dd>Quantity @prescription.Quantity, @PatientChart.RefillsText(prescription.Refills) left</dd>
-                            </div>
-                            <div>
-                                <dt>Directions</dt>
-                                <dd class="hc-plain">@prescription.Directions</dd>
-                            </div>
-                        </dl>
-                        @if (patient is not null)
-                        {
-                            <p class="mb-3"><a href="@HcDisplay.PatientChartUrl(patient.Id)">Open @patient.Name's chart</a></p>
-                        }
+                    <dl class="hc-ref-facts">
+                        <div><dt>Requested</dt><dd>@(prescription.RefillRequestedAt is { } requested ? HcDisplay.When(requested) : "Just now")</dd></div>
+                        <div><dt>Asks for</dt><dd>@prescription.RefillQuantity.ToString(CultureInfo.InvariantCulture) of @prescription.Quantity.ToString(CultureInfo.InvariantCulture), to pick up @HcDisplay.Day(prescription.RefillPickupOn ?? State.Clock.Today) at @(State.FindPharmacy(prescription.RefillPharmacyId)?.Name)</dd></div>
+                        <div><dt>Prescribed by</dt><dd>@(State.FindDoctor(prescription.DoctorId)?.Name ?? "A former doctor")@(prescription.DoctorId == me?.Id ? " (you)" : null), @HcDisplay.Date(prescription.PrescribedAt)</dd></div>
+                        <div><dt>Each fill</dt><dd>Quantity @prescription.Quantity, lasts @prescription.DaysSupply days; last filled @HcDisplay.Date(prescription.LastFilledOn)</dd></div>
+                        <div><dt>Directions</dt><dd class="hc-plain">@prescription.Directions</dd></div>
+                    </dl>
+                    @if (patient is not null)
+                    {
+                        <p class="small mb-3"><a href="@HcDisplay.PatientChartUrl(patient.Id)">Open @patient.Name's chart</a></p>
+                    }
 
-                        <label class="form-label fw-semibold" for="@noteId">Note for the patient</label>
-                        <textarea id="@noteId" class="@(error is null ? "form-control" : "form-control is-invalid")" rows="2" maxlength="@HcState.MaxReasonLength"
-                                  value="@note" @oninput="args => notes[prescription.Id] = args.Value?.ToString() ?? string.Empty" @ref="noteInputs[prescription.Id]"
-                                  aria-invalid="@(error is null ? null : "true")" aria-describedby="@($"{noteId}-help {noteId}-error")"></textarea>
-                        <div class="form-text" id="@($"{noteId}-help")">
-                            Optional when you approve; needed when you decline. The patient sees it. @note.Length of @HcState.MaxReasonLength characters.
+                    <EditForm EditContext="decisionContext" OnSubmit="DecideAsync" FormName="hc-refill-decision" novalidate aria-labelledby="hc-ref-dialog-title">
+                        <DataAnnotationsValidator />
+                        <ShowcaseFormErrors ShowSummary="true" />
+                        <fieldset class="mb-3">
+                            <legend class="form-label fw-semibold fs-6 mb-1">Answer</legend>
+                            <InputRadioGroup @bind-Value="decisionForm.Decision">
+                                <div class="form-check">
+                                    <InputRadio class="form-check-input" id="hc-ref-approve" Value="@ApproveValue" />
+                                    <label class="form-check-label" for="hc-ref-approve">Approve: add one refill</label>
+                                </div>
+                                <div class="form-check">
+                                    <InputRadio class="form-check-input" id="hc-ref-deny" Value="@DenyValue" />
+                                    <label class="form-check-label" for="hc-ref-deny">Deny</label>
+                                </div>
+                            </InputRadioGroup>
+                            <ValidationMessage For="() => decisionForm.Decision" />
+                        </fieldset>
+                        <label class="form-label fw-semibold" for="hc-ref-note">@(decisionForm.Decision == DenyValue ? "Reason for the patient" : "Note for the patient (optional)")</label>
+                        <InputTextArea id="hc-ref-note" class="form-control" rows="3" maxlength="@HcState.MaxReasonLength" @bind-Value="decisionForm.Note" aria-describedby="hc-ref-note-help" />
+                        <div class="form-text" id="hc-ref-note-help">
+                            @(decisionForm.Decision == DenyValue ? $"Required when you deny: {HcState.MinDenyReasonLength} to {HcState.MaxReasonLength} characters." : $"Up to {HcState.MaxReasonLength} characters.") The patient sees it.
+                            @((decisionForm.Note ?? string.Empty).Trim().Length) of @HcState.MaxReasonLength characters.
                         </div>
-                        <div class="invalid-feedback d-block" id="@($"{noteId}-error")">@error</div>
-
-                        <div class="d-flex flex-wrap gap-2 mt-2">
-                            <button type="button" class="btn btn-success" @onclick="() => Decide(prescription.Id, true)">
-                                <Icon Name="IconName.CheckLg" class="me-1" aria-hidden="true" />Approve<span class="visually-hidden"> @label for @patientName</span>
-                            </button>
-                            <button type="button" class="btn btn-outline-danger" @onclick="() => Decide(prescription.Id, false)">
-                                <Icon Name="IconName.XLg" class="me-1" aria-hidden="true" />Decline<span class="visually-hidden"> @label for @patientName</span>
-                            </button>
+                        <ValidationMessage For="() => decisionForm.Note" />
+                        <p class="hc-form-error mt-2 mb-0" role="alert">@dialogError</p>
+                        <div class="d-flex flex-wrap gap-2 mt-3">
+                            <Button Type="ButtonType.Submit" Color="ButtonColor.Primary">Send answer</Button>
+                            <button type="button" class="btn btn-outline-secondary" @ref="dialogCancel" @onclick="() => decisionModal.HideAsync()">Cancel</button>
                         </div>
-                    </li>
+                    </EditForm>
                 }
-            </ol>
-        }
+            </BodyTemplate>
+        </Modal>
     </ShowcaseRoleGuard>
 </div>

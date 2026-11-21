@@ -1,0 +1,376 @@
+@page "/showcase/ecommerce/admin/purchase-orders/{Id:int}"
+@layout EcommerceAdminLayout
+
+<div class="ea-po">
+    <a class="small" href="@ListUrl"><Icon Name="IconName.ArrowLeft" class="me-1" aria-hidden="true" />All purchase orders</a>
+
+    @if (Order is not { } order)
+    {
+        <PageTitle>Purchase order not found · @EcommerceSeedData.StoreName admin</PageTitle>
+
+        <section class="ea-panel text-center py-5 mt-3" aria-labelledby="ea-po-missing-title">
+            <h1 class="ea-title" id="ea-po-missing-title">Purchase order not found</h1>
+            <p class="ea-lead mb-4">No purchase order has the number @Id. The link may be old.</p>
+            <a class="btn btn-primary" href="@ListUrl">Back to purchase orders</a>
+        </section>
+    }
+    else
+    {
+        var supplier = State.FindSupplier(order.SupplierId);
+        var currency = supplier?.Currency;
+        var creator = State.Identity.FindAccount(order.CreatedBy)?.Name ?? order.CreatedBy;
+
+        <PageTitle>@order.Number · @EcommerceSeedData.StoreName admin</PageTitle>
+
+        <div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mt-2 mb-3">
+            <div>
+                <h1 class="ea-title ea-mono">@order.Number</h1>
+                <p class="ea-lead">
+                    To <a href="@EcommerceSeedData.AdminSupplierPath(order.SupplierId)">@(supplier?.Name ?? "a removed supplier")</a> · raised by @creator on @EcommerceDisplay.Date(order.CreatedOn)
+                    · expected @EcommerceDisplay.Date(order.ExpectedOn) · @State.MoneyIn(order)@(currency is "USD" or null ? null : $" (about {EcommerceDisplay.Money(State.TotalUsd(order))})")
+                </p>
+            </div>
+            <div class="d-flex flex-wrap gap-2">
+                <Badge Color="@EcommerceDisplay.PurchaseOrderColor(order.Status)" Class="fs-6">@EcommerceDisplay.PurchaseOrderLabel(order.Status)</Badge>
+                @if (State.IsOverdue(order))
+                {
+                    <Badge Color="BadgeColor.Danger" Class="fs-6">Overdue</Badge>
+                }
+            </div>
+        </div>
+
+        @* Always rendered and focusable: every step is announced here, and focus moves here when the button that started it is gone. *@
+        <p class="ea-list-status mb-3" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
+        <p class="ea-list-error mb-3" role="alert">@errorMessage</p>
+
+        @if (order.StatusReason is { } reason && order.Status is EcommercePurchaseOrderStatus.Draft or EcommercePurchaseOrderStatus.Cancelled)
+        {
+            <div class="alert @(order.Status == EcommercePurchaseOrderStatus.Cancelled ? "alert-secondary" : "alert-warning")">
+                <strong>@(order.Status == EcommercePurchaseOrderStatus.Cancelled ? "Cancelled:" : "Returned to draft:")</strong> @reason
+            </div>
+        }
+
+        <div class="row g-4">
+            <div class="col-xxl-8 d-grid gap-4 align-content-start">
+                @if (IsEditable(order))
+                {
+                    <section class="ea-panel" aria-labelledby="ea-po-edit-title">
+                        <h2 class="ea-section-title" id="ea-po-edit-title">@(order.Status == EcommercePurchaseOrderStatus.Draft ? "Lines" : "Lines (changes after submitting are audited)")</h2>
+                        <EditForm EditContext="editContext" OnSubmit="Save" FormName="ea-po-edit" novalidate>
+                            <DataAnnotationsValidator />
+                            @* On a failed save, a summary here names and links every field to fix (rule WR-002). *@
+                            <ShowcaseFormErrors ShowSummary="true" />
+                            @if (form.Lines.Count == 0)
+                            {
+                                <p class="ea-empty">No lines yet. Add the products to order below.</p>
+                            }
+                            else
+                            {
+                                @* Line items being edited: a plain table with one row of inputs per product. *@
+                                <div class="table-responsive">
+                                    <table class="table ea-table align-middle ea-po-lines">
+                                        <caption class="visually-hidden">Products on @order.Number, with quantity and unit cost</caption>
+                                        <thead>
+                                            <tr>
+                                                <th scope="col">Product</th>
+                                                <th scope="col" class="ea-po-number-col">Quantity</th>
+                                                <th scope="col" class="ea-po-number-col">Unit cost (@(currency ?? "USD"))</th>
+                                                <th scope="col" class="text-end">Line total</th>
+                                                <th scope="col"><span class="visually-hidden">Remove</span></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var line in form.Lines)
+                                            {
+                                                var row = line;
+                                                var quantityId = $"ea-po-qty-{row.ProductId}";
+                                                var costId = $"ea-po-cost-{row.ProductId}";
+                                                <tr @key="row.ProductId">
+                                                    <th scope="row" class="fw-normal">
+                                                        <span class="d-block fw-semibold">@row.Name</span>
+                                                        <span class="small text-body-secondary">@row.Hint</span>
+                                                    </th>
+                                                    <td>
+                                                        <label class="visually-hidden" for="@quantityId">Quantity of @row.Name</label>
+                                                        <NumberInput TValue="int?" Id="@quantityId" @bind-Value="row.Quantity" Step="1" />
+                                                        <ValidationMessage For="() => row.Quantity" />
+                                                    </td>
+                                                    <td>
+                                                        <label class="visually-hidden" for="@costId">Unit cost of @row.Name</label>
+                                                        <NumberInput TValue="decimal?" Id="@costId" @bind-Value="row.UnitCost" Step="0.01" />
+                                                        <ValidationMessage For="() => row.UnitCost" />
+                                                    </td>
+                                                    <td class="text-end text-nowrap">@(row.Quantity is { } quantity && row.UnitCost is { } cost ? EcommerceSeedData.MoneyIn(quantity * cost, currency) : "—")</td>
+                                                    <td class="text-end">
+                                                        <Button Color="ButtonColor.Danger" Outline="true" Size="ButtonSize.Small" @onclick="() => RemoveLine(row)">
+                                                            <Icon Name="IconName.Trash3" aria-hidden="true" /><span class="visually-hidden">Remove @row.Name</span>
+                                                        </Button>
+                                                    </td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                        <tfoot>
+                                            <tr>
+                                                <th scope="row" colspan="3" class="text-end">Total</th>
+                                                <td class="text-end fw-semibold text-nowrap">@EcommerceSeedData.MoneyIn(form.Lines.Sum(line => (line.Quantity ?? 0) * (line.UnitCost ?? 0)), currency)</td>
+                                                <td></td>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
+                                </div>
+                            }
+
+                            <div class="row g-2 align-items-end mb-3">
+                                <div class="col-md-8">
+                                    <label class="form-label small fw-semibold" for="ea-po-add">Add a product</label>
+                                    <InputSelect id="ea-po-add" class="form-select" @bind-Value="form.AddProductId" aria-describedby="ea-po-add-help">
+                                        <option value="0">Choose a product</option>
+                                        @foreach (var product in AddableProducts(order))
+                                        {
+                                            var setting = State.ReplenishmentFor(product.Id);
+                                            <option value="@product.Id" @key="product.Id">
+                                                @product.Name (@product.Sku)@(setting.SupplierId == order.SupplierId ? " · preferred" : null)@(State.IsLowStock(product) ? " · below reorder point" : null)
+                                            </option>
+                                        }
+                                    </InputSelect>
+                                    <div class="form-text" id="ea-po-add-help">This supplier's products are listed first; each product goes on one line.</div>
+                                    <ValidationMessage For="() => form.AddProductId" />
+                                </div>
+                                <div class="col-md-4">
+                                    <Button Color="ButtonColor.Secondary" Outline="true" Class="w-100" @onclick="AddLine"><Icon Name="IconName.PlusLg" class="me-1" aria-hidden="true" />Add line</Button>
+                                </div>
+                            </div>
+
+                            <div class="row g-3">
+                                <div class="col-md-5">
+                                    <label class="form-label" for="ea-po-expected">Expected date</label>
+                                    <DateInput TValue="DateTime?" Id="ea-po-expected" @bind-Value="form.ExpectedOn" aria-describedby="ea-po-expected-help" />
+                                    <div class="form-text" id="ea-po-expected-help">Today or later. @(supplier is null ? null : $"{supplier.Name} delivers in about {supplier.LeadTimeDays} days.")</div>
+                                    <ValidationMessage For="() => form.ExpectedOn" />
+                                </div>
+                                <div class="col-md-7">
+                                    <label class="form-label" for="ea-po-note">Note for the supplier (optional)</label>
+                                    <InputTextArea id="ea-po-note" class="form-control" rows="2" maxlength="@EcommerceState.MaxPurchaseOrderNoteLength" @bind-Value="form.Note" aria-describedby="ea-po-note-help" />
+                                    <div class="form-text" id="ea-po-note-help">Up to 300 characters.</div>
+                                    <ValidationMessage For="() => form.Note" />
+                                </div>
+                            </div>
+
+                            <div class="d-flex flex-wrap gap-2 mt-3">
+                                <Button Type="ButtonType.Submit" Color="ButtonColor.Primary">Save lines</Button>
+                            </div>
+                        </EditForm>
+                    </section>
+                }
+                else
+                {
+                    <section class="ea-panel" aria-labelledby="ea-po-lines-title">
+                        <h2 class="ea-section-title" id="ea-po-lines-title">Lines</h2>
+                        @* The order's lines: a line-item table, so a plain table. *@
+                        <div class="table-responsive">
+                            <table class="table ea-table align-middle">
+                                <caption class="visually-hidden">Products on @order.Number: ordered, received, and outstanding</caption>
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Product</th>
+                                        <th scope="col">Supplier SKU</th>
+                                        <th scope="col" class="text-end">Ordered</th>
+                                        <th scope="col" class="text-end">Received</th>
+                                        <th scope="col" class="text-end">Outstanding</th>
+                                        <th scope="col" class="text-end">Unit cost</th>
+                                        <th scope="col" class="text-end">Line total</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var line in order.Lines)
+                                    {
+                                        <tr @key="line.ProductId">
+                                            <th scope="row" class="fw-normal"><a href="@EcommerceSeedData.AdminProductPath(line.ProductId)">@line.Name</a></th>
+                                            <td class="ea-mono">@(line.SupplierSku ?? "—")</td>
+                                            <td class="text-end">@line.Quantity</td>
+                                            <td class="text-end">@line.Received</td>
+                                            <td class="text-end">@line.Outstanding</td>
+                                            <td class="text-end text-nowrap">@EcommerceSeedData.MoneyIn(line.UnitCost, currency)</td>
+                                            <td class="text-end text-nowrap">@EcommerceSeedData.MoneyIn(line.Total, currency)</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <th scope="row" colspan="2" class="text-end">Total</th>
+                                        <td class="text-end fw-semibold">@order.Units</td>
+                                        <td class="text-end fw-semibold">@order.UnitsReceived</td>
+                                        <td class="text-end fw-semibold">@(order.Units - order.UnitsReceived)</td>
+                                        <td></td>
+                                        <td class="text-end fw-semibold text-nowrap">@State.MoneyIn(order)</td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                        @if (order.Note is { } note)
+                        {
+                            <p class="small mb-0"><span class="fw-semibold">Note for the supplier:</span> @note</p>
+                        }
+                    </section>
+                }
+
+                @if (order.IsOpenForReceipt)
+                {
+                    <section class="ea-panel" aria-labelledby="ea-po-receive-title">
+                        <h2 class="ea-section-title" id="ea-po-receive-title">Receive goods</h2>
+                        <p class="small text-body-secondary">
+                            Count what arrived and enter it per product: anything from 0 to what's outstanding. It goes into stock at once; what's left stays on order until it arrives.
+                        </p>
+                        <EditForm EditContext="receiveContext" OnSubmit="Receive" FormName="ea-po-receive" novalidate>
+                            <DataAnnotationsValidator />
+                            <ShowcaseFormErrors ShowSummary="true" />
+                            <div class="table-responsive">
+                                <table class="table ea-table align-middle ea-po-lines">
+                                    <caption class="visually-hidden">Quantities received now on @order.Number</caption>
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">Product</th>
+                                            <th scope="col" class="text-end">Outstanding</th>
+                                            <th scope="col" class="ea-po-number-col">Received now</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var line in receiveForm.Lines)
+                                        {
+                                            var row = line;
+                                            var inputId = $"ea-po-receive-{row.ProductId}";
+                                            <tr @key="row.ProductId">
+                                                <th scope="row" class="fw-normal">@row.Name</th>
+                                                <td class="text-end">@row.Outstanding</td>
+                                                <td>
+                                                    <label class="visually-hidden" for="@inputId">Received now of @row.Name, up to @row.Outstanding</label>
+                                                    <NumberInput TValue="int?" Id="@inputId" @bind-Value="row.Quantity" Step="1" Placeholder="0" />
+                                                    <ValidationMessage For="() => row.Quantity" />
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label" for="ea-po-receive-note">Note (optional)</label>
+                                <InputText id="ea-po-receive-note" class="form-control" @bind-Value="receiveForm.Note" maxlength="@EcommerceState.MaxPurchaseOrderNoteLength" aria-describedby="ea-po-receive-note-help" />
+                                <div class="form-text" id="ea-po-receive-note-help">Like a delivery note number or a damaged box. Up to 300 characters, kept on the timeline.</div>
+                                <ValidationMessage For="() => receiveForm.Note" />
+                            </div>
+                            <div class="d-flex flex-wrap gap-2">
+                                <Button Type="ButtonType.Submit" Color="ButtonColor.Success"><Icon Name="IconName.BoxArrowInDown" class="me-1" aria-hidden="true" />Receive into stock</Button>
+                                <Button Color="ButtonColor.Secondary" Outline="true" @onclick="FillOutstanding">Fill in everything outstanding</Button>
+                            </div>
+                        </EditForm>
+                    </section>
+                }
+            </div>
+
+            <div class="col-xxl-4 d-grid gap-4 align-content-start">
+                <section class="ea-panel" aria-labelledby="ea-po-approval-title">
+                    <h2 class="ea-section-title" id="ea-po-approval-title">Approval</h2>
+                    <p class="small">@ApprovalRule(order)</p>
+                    @if (order.ApprovedBy is { } approvedBy && order.ApprovedOn is { } approvedOn)
+                    {
+                        <p class="small mb-3"><Icon Name="IconName.CheckCircle" class="me-1" aria-hidden="true" />Approved by @approvedBy on @EcommerceDisplay.Date(approvedOn).</p>
+                    }
+                    <div class="d-flex flex-wrap gap-2">
+                        @switch (order.Status)
+                        {
+                            case EcommercePurchaseOrderStatus.Draft:
+                                <Button @ref="submitButton" Color="ButtonColor.Primary" @onclick="Submit">Submit for approval</Button>
+                                break;
+                            case EcommercePurchaseOrderStatus.Submitted:
+                                if (State.CanApprove(order))
+                                {
+                                    <Button @ref="approveButton" Color="ButtonColor.Success" @onclick="AskApproveAsync">Approve and send</Button>
+                                }
+                                <Button @ref="returnButton" Color="ButtonColor.Secondary" Outline="true" @onclick="() => AskReasonAsync(ReasonMode.Return)">Return to draft</Button>
+                                break;
+                        }
+                        @if (order.IsOpen && order.UnitsReceived == 0)
+                        {
+                            <Button @ref="cancelButton" Color="ButtonColor.Danger" Outline="true" @onclick="() => AskReasonAsync(ReasonMode.Cancel)">Cancel order</Button>
+                        }
+                    </div>
+                </section>
+
+                @if (supplier is not null)
+                {
+                    <section class="ea-panel" aria-labelledby="ea-po-supplier-title">
+                        <h2 class="ea-section-title" id="ea-po-supplier-title">Supplier</h2>
+                        <dl class="ea-facts">
+                            <div><dt>Name</dt><dd><a href="@EcommerceSeedData.AdminSupplierPath(supplier.Id)">@supplier.Name</a></dd></div>
+                            <div><dt>Contact</dt><dd>@supplier.ContactName · <span class="text-break">@supplier.Email</span></dd></div>
+                            <div><dt>Lead time</dt><dd>@EcommerceDisplay.Plural(supplier.LeadTimeDays, "day")</dd></div>
+                            <div><dt>Currency and terms</dt><dd>@supplier.Currency · @supplier.PaymentTerms</dd></div>
+                        </dl>
+                    </section>
+                }
+
+                <section class="ea-panel" aria-labelledby="ea-po-timeline-title">
+                    <h2 class="ea-section-title" id="ea-po-timeline-title">Timeline</h2>
+                    <ol class="ea-po-timeline">
+                        @foreach (var step in order.Events.Reverse())
+                        {
+                            <li class="ea-po-step">
+                                <span class="d-block fw-semibold">@StepTitle(step.Kind)</span>
+                                <span class="d-block small text-body-secondary">@step.Actor · @EcommerceDisplay.DateTimeShort(step.At)</span>
+                                <span class="d-block small">@step.Text</span>
+                            </li>
+                        }
+                    </ol>
+                </section>
+            </div>
+        </div>
+    }
+</div>
+
+@* The dialogs stay outside the conditional content, so they are still on the page when they finish closing. *@
+<Modal @ref="approveModal" IsVerticallyCentered="true" ShowCloseButton="false" aria-labelledby="ea-po-approve-title" OnHidden="OnApproveHiddenAsync">
+    <HeaderTemplate>
+        <h2 class="modal-title h5" id="ea-po-approve-title">Approve @(Order?.Number) and send it?</h2>
+    </HeaderTemplate>
+    <BodyTemplate>
+        @if (Order is { } order)
+        {
+            <p class="mb-2">
+                @State.MoneyIn(order) for @EcommerceDisplay.Plural(order.Units, "unit") from @(State.FindSupplier(order.SupplierId)?.Name). The order goes to the supplier and its
+                quantities count as on order until they arrive.
+            </p>
+            <p class="small text-body-secondary mb-0">@ApprovalRule(order) Once approved, its lines can't change; cancel it instead while nothing has arrived.</p>
+        }
+    </BodyTemplate>
+    <FooterTemplate>
+        <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => approveModal.HideAsync()">Not now</Button>
+        <Button Color="ButtonColor.Success" @onclick="ConfirmApproveAsync">Approve and send</Button>
+    </FooterTemplate>
+</Modal>
+
+<Modal @ref="reasonModal" IsVerticallyCentered="true" ShowCloseButton="false" aria-labelledby="ea-po-reason-title" OnShown="OnReasonShownAsync" OnHidden="OnReasonHiddenAsync">
+    <HeaderTemplate>
+        <h2 class="modal-title h5" id="ea-po-reason-title">@(reasonMode == ReasonMode.Cancel ? $"Cancel {Order?.Number}?" : $"Return {Order?.Number} to draft?")</h2>
+    </HeaderTemplate>
+    <BodyTemplate>
+        <p>
+            @(reasonMode == ReasonMode.Cancel
+                ? "Its quantities no longer count as on order, so the products show on the reorder list again. It can't be reopened."
+                : "Its creator can change it and submit it again; they're told your reason.")
+        </p>
+        <EditForm id="ea-po-reason-form" EditContext="reasonContext" OnValidSubmit="ConfirmReasonAsync" FormName="ea-po-reason" novalidate>
+            <DataAnnotationsValidator />
+            <ShowcaseFormErrors ShowSummary="true" />
+            <label class="form-label" for="ea-po-reason">Reason</label>
+            <InputTextArea @ref="reasonInput" id="ea-po-reason" class="form-control" rows="3" maxlength="@EcommerceState.MaxDecisionNoteLength" @bind-Value="reasonForm.Reason" aria-describedby="ea-po-reason-help" />
+            <div class="form-text" id="ea-po-reason-help">Required, 5 to 200 characters. Kept on the timeline and in the audit log.</div>
+            <ValidationMessage For="() => reasonForm.Reason" />
+        </EditForm>
+    </BodyTemplate>
+    <FooterTemplate>
+        <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => reasonModal.HideAsync()">Keep it</Button>
+        <Button Type="ButtonType.Submit" Color="@(reasonMode == ReasonMode.Cancel ? ButtonColor.Danger : ButtonColor.Primary)" form="ea-po-reason-form">
+            @(reasonMode == ReasonMode.Cancel ? "Cancel order" : "Return to draft")
+        </Button>
+    </FooterTemplate>
+</Modal>

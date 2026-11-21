@@ -19,6 +19,19 @@ public partial class ShowcaseAccountMenu : ComponentBase
 
     #region Private Methods
 
+    /// <summary>
+    /// The button's accessible name starts with the text it shows (the avatar initials, the name, and the notice count),
+    /// so speech input users can say what they see (WCAG 2.5.3 Label in Name), then says what the button is.
+    /// </summary>
+    private string AccountLabel(ShowcaseAccount account)
+    {
+        var notices = NoticeCount > 0 ? $" {NoticeCountText} new {(NoticeCount == 1 ? "notice" : "notices")}" : null;
+
+        var role = Identity.CurrentRole?.Label is { Length: > 0 } label ? $", {label}" : null;
+
+        return $"{account.Initials} {account.Name}{notices}{role}, account menu";
+    }
+
     /// <summary>Opens the host's reset dialog; when it is cancelled, focus goes back to this menu's button.</summary>
     private Task AskResetAsync() => Session.RequestResetAsync(FocusToggleAsync);
 
@@ -64,6 +77,8 @@ public partial class ShowcaseAccountMenu : ComponentBase
 
     /// <summary>Gets or sets the number of unread notices; above zero, the button shows a count and names it.</summary>
     [Parameter] public int NoticeCount { get; set; }
+
+    private string NoticeCountText => NoticeCount > 9 ? "9+" : NoticeCount.ToString(System.Globalization.CultureInfo.InvariantCulture);
 
     /// <summary>Gets or sets where the account's notices are; <see langword="null" /> hides the menu item.</summary>
     [Parameter] public string? NoticesPath { get; set; }

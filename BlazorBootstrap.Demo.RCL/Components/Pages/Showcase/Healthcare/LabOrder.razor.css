@@ -1,0 +1,15 @@
+/* A lab order: the entry form lays out one field per analyte in a responsive grid. */
+.hc-labs-fields {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 14rem), 1fr));
+    gap: .25rem 1rem;
+}
+
+.hc-title:focus {
+    outline: none;
+}
+
+.hc-title:focus-visible {
+    outline: 2px solid var(--bs-focus-ring-color, var(--sc-primary));
+    outline-offset: 2px;
+}

@@ -1,0 +1,29 @@
+/* Spend: the workspace figure, the caps form, the demo control, and the members' Grid (styled from AiFrame). */
+.pa-spend-big {
+    font-size: 1.75rem;
+    font-weight: 700;
+}
+
+/* Lines the button up with the inputs, whose labels sit above them. */
+@media (min-width: 768px) {
+    .pa-spend-submit {
+        padding-top: 2rem;
+    }
+}
+
+.pa-spend-demo {
+    border-style: dashed;
+}
+
+.pa-spend-email {
+    overflow-wrap: anywhere;
+}
+
+::deep .pa-spend-bar {
+    min-width: 4rem;
+}
+
+/* Inside the Modal component, so ::deep from the page. */
+::deep .pa-spend-dialog-title {
+    overflow-wrap: anywhere;
+}

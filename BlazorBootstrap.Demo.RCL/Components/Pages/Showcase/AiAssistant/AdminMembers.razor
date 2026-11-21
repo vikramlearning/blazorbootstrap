@@ -3,243 +3,463 @@
 
 <PageTitle>Members and roles · @AiSeedData.ProductName</PageTitle>
 
+@* Admins and the Owner: invite people, see who has which role and what each role may do, change roles and access one at a
+   time from the row's dialog or several together, and (the Owner) hand ownership on. The state enforces every rule. *@
 <div class="container-fluid px-lg-4">
-    @{
-        var all = State.Members;
-        var rows = Rows;
-        var full = all.Count >= AiState.MaxMembers;
-    }
+    <AiMemberGuard Require="AiPermission.ManageMembers">
+        @{
+            var all = State.Members;
+            var me = State.CurrentMember;
+            var full = all.Count >= AiState.MaxMembers;
+        }
 
-    <div class="mb-4">
-        <h1 class="pa-title">Members and roles</h1>
-        <p class="pa-lead mb-0">Who can use @AiSeedData.ProductName at @AiSeedData.WorkspaceName. Members chat and keep their own prompts; workspace admins also manage members, shared prompts, and the model and policy settings.</p>
-    </div>
+        <div class="mb-3">
+            <h1 class="pa-title">Members and roles</h1>
+            <p class="pa-lead mb-0">
+                Who can use @AiSeedData.ProductName at @State.WorkspaceName, and with which role. You're @RoleWords(me?.Role ?? AiMemberRole.Member):
+                you can invite people, give roles up to Admin, and remove or restore access@(State.Can(AiPermission.TransferOwnership) ? ", and hand ownership on" : null).
+                Every change is in the audit log, and the person hears about it when they can sign in.
+            </p>
+        </div>
 
-    @* Always rendered and focusable, so every outcome is announced and focus has somewhere to go when the pressed button is gone. *@
-    <p class="fw-semibold pa-admem-status @(statusIsError ? "text-danger-emphasis" : null)" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
+        @* Always rendered and focusable, so every outcome is announced and focus has somewhere to go when the pressed button is gone. *@
+        <p class="pa-list-status mb-2 @(statusIsError ? "text-danger-emphasis" : null)" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
+        <p class="pa-list-error mb-2" role="alert">@errorMessage</p>
 
-    <section class="pa-panel mb-4" aria-labelledby="pa-admem-invite-title">
-        <h2 class="pa-section-title mb-1" id="pa-admem-invite-title">Invite someone</h2>
-        <p class="small text-body-secondary" id="pa-admem-invite-help">
-            They join with the role you choose when they create an account with this email address. Demo only: no email is sent.
-            The workspace holds up to @AiState.MaxMembers members and invitations together; it has @all.Count now.
-        </p>
-        <form @onsubmit="Invite" novalidate aria-labelledby="pa-admem-invite-title" aria-describedby="pa-admem-invite-help">
-            <div class="row g-3 align-items-start">
-                <div class="col-md-6 col-xl-4">
-                    <label class="form-label fw-semibold" for="pa-admem-email">Email</label>
-                    <input id="pa-admem-email" type="email" class="form-control @(emailError is null ? null : "is-invalid")" @bind="inviteEmail" @ref="emailInput"
-                           maxlength="@ShowcaseIdentity.MaxEmailLength" autocomplete="off" spellcheck="false" aria-required="true"
-                           aria-invalid="@(emailError is null ? null : "true")" aria-describedby="pa-admem-email-error" />
-                    <div class="invalid-feedback d-block" id="pa-admem-email-error">@emailError</div>
-                </div>
-                <div class="col-md-6 col-xl-4">
-                    <label class="form-label fw-semibold" for="pa-admem-name">Name</label>
-                    <input id="pa-admem-name" class="form-control @(nameError is null ? null : "is-invalid")" @bind="inviteName" @ref="nameInput"
-                           maxlength="@ShowcaseIdentity.MaxNameLength" autocomplete="off" aria-required="true"
-                           aria-invalid="@(nameError is null ? null : "true")" aria-describedby="pa-admem-name-help pa-admem-name-error" />
-                    <div class="form-text" id="pa-admem-name-help">Up to @ShowcaseIdentity.MaxNameLength characters. Their account's name replaces it when they join.</div>
-                    <div class="invalid-feedback d-block" id="pa-admem-name-error">@nameError</div>
-                </div>
-                <div class="col-md-6 col-xl-2">
-                    <label class="form-label fw-semibold" for="pa-admem-role">Role</label>
-                    <select id="pa-admem-role" class="form-select" @bind="inviteRole">
-                        @foreach (var role in Enum.GetValues<AiMemberRole>())
+        <div class="row g-4 mb-4">
+            <div class="col-xl-7">
+                <section class="pa-panel h-100" aria-labelledby="pa-admem-invite-title">
+                    <h2 class="pa-section-title mb-1" id="pa-admem-invite-title">Invite someone</h2>
+                    <p class="small text-body-secondary" id="pa-admem-invite-help">
+                        They join with the role you choose when they create an account with this email address. Demo only: no email is sent.
+                        The workspace holds up to @AiState.MaxMembers members and invitations together; it has @all.Count now.
+                    </p>
+                    <EditForm EditContext="inviteContext" OnSubmit="InviteAsync" FormName="pa-invite" novalidate aria-describedby="pa-admem-invite-help">
+                        <DataAnnotationsValidator />
+                        <ShowcaseFormErrors ShowSummary="true" />
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold" for="pa-admem-email">Email</label>
+                                <InputText id="pa-admem-email" type="email" class="form-control" @bind-Value="inviteForm.Email" maxlength="@ShowcaseIdentity.MaxEmailLength"
+                                           autocomplete="off" spellcheck="false" aria-describedby="pa-admem-email-help" />
+                                <ShowcaseUniqueCheck @ref="emailCheck" For="() => inviteForm.Email" IsTakenAsync="IsEmailTakenAsync" TakenMessage="EmailTakenMessage"
+                                                     CheckingText="Checking whether they're already in the workspace…" />
+                                <div class="form-text" id="pa-admem-email-help">Like name@example.com. Someone already in the workspace or invited can't be invited again.</div>
+                                <ValidationMessage For="() => inviteForm.Email" />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold" for="pa-admem-name">Name</label>
+                                <InputText id="pa-admem-name" class="form-control" @bind-Value="inviteForm.Name" maxlength="@ShowcaseIdentity.MaxNameLength" autocomplete="off"
+                                           aria-describedby="pa-admem-name-help" />
+                                <div class="form-text" id="pa-admem-name-help">As members will see it, up to @ShowcaseIdentity.MaxNameLength characters. Their account's name replaces it when they join.</div>
+                                <ValidationMessage For="() => inviteForm.Name" />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold" for="pa-admem-role">Role</label>
+                                <InputSelect id="pa-admem-role" class="form-select" @bind-Value="inviteForm.Role" aria-describedby="pa-admem-role-help">
+                                    @foreach (var role in GrantableRoles)
+                                    {
+                                        <option value="@role" @key="role">@AiDisplay.RoleLabel(role)</option>
+                                    }
+                                </InputSelect>
+                                <div class="form-text" id="pa-admem-role-help">@AiDisplay.RoleSummary(inviteForm.Role) Owner comes only through a transfer.</div>
+                                <ValidationMessage For="() => inviteForm.Role" />
+                            </div>
+                            <div class="col-md-6 d-flex align-items-end">
+                                <Button Type="ButtonType.Submit" Color="ButtonColor.Primary" Disabled="full">
+                                    <Icon Name="IconName.PersonPlus" class="me-1" aria-hidden="true" />Send invitation
+                                </Button>
+                            </div>
+                        </div>
+                        @if (full)
                         {
-                            <option value="@role">@AiDisplay.RoleLabel(role)</option>
+                            <p class="small mt-3 mb-0">The workspace is full (@AiState.MaxMembers members and invitations). Withdraw an invitation before you invite someone else.</p>
                         }
-                    </select>
-                </div>
-                <div class="col-md-6 col-xl-2 pa-admem-invite-submit">
-                    <Button Type="ButtonType.Submit" Color="ButtonColor.Primary" Disabled="full">
-                        <Icon Name="IconName.PersonPlus" class="me-1" aria-hidden="true" />Send invitation
-                    </Button>
-                </div>
+                    </EditForm>
+                </section>
             </div>
-            @if (full)
-            {
-                <p class="small mt-3 mb-0">The workspace is full (@AiState.MaxMembers members and invitations). Remove an invitation before you invite someone else.</p>
-            }
-        </form>
-    </section>
 
-    <section class="pa-panel" aria-labelledby="pa-admem-list-title">
-        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
-            <h2 class="pa-section-title mb-0" id="pa-admem-list-title">Members</h2>
-            <div class="pa-admem-filter" role="group" aria-label="Show members by status">
-                @foreach (var option in FilterOptions)
-                {
-                    var pressed = filter == option.Status;
-                    <button type="button" class="btn btn-sm @(pressed ? "btn-primary" : "btn-outline-secondary")" aria-pressed="@(pressed ? "true" : "false")"
-                            @onclick="() => filter = option.Status" @key="option.Text">
-                        @option.Text <span class="pa-admem-count">(@(option.Status is { } status ? all.Count(member => member.Status == status) : all.Count))</span>
-                    </button>
-                }
+            <div class="col-xl-5">
+                <section class="pa-panel h-100" aria-labelledby="pa-admem-matrix-title">
+                    <h2 class="pa-section-title mb-1" id="pa-admem-matrix-title">Roles and permissions</h2>
+                    <p class="small text-body-secondary mb-2">Each role has the rights of the roles before it. The workspace checks them on every action, not only on these pages.</p>
+                    <div class="table-responsive">
+                        <table class="table table-sm align-middle pa-admem-matrix mb-2">
+                            <caption class="visually-hidden">What each workspace role may do</caption>
+                            <thead>
+                                <tr>
+                                    <th scope="col">Permission</th>
+                                    @foreach (var role in Enum.GetValues<AiMemberRole>())
+                                    {
+                                        <th scope="col" class="text-center" @key="role">@AiDisplay.RoleLabel(role)</th>
+                                    }
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var permission in Enum.GetValues<AiPermission>())
+                                {
+                                    <tr @key="permission">
+                                        <th scope="row" class="fw-normal">@AiDisplay.PermissionLabel(permission)</th>
+                                        @foreach (var role in Enum.GetValues<AiMemberRole>())
+                                        {
+                                            <td class="text-center" @key="role">
+                                                @if (AiState.RoleAllows(role, permission))
+                                                {
+                                                    <Icon Name="IconName.CheckLg" class="text-success-emphasis" aria-hidden="true" /><span class="visually-hidden">Yes</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="text-body-secondary" aria-hidden="true">—</span><span class="visually-hidden">No</span>
+                                                }
+                                            </td>
+                                        }
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                    <ul class="small mb-0 ps-3">
+                        <li>The workspace has exactly one Owner, @State.OwnerName now. Only the Owner hands the role on, by a transfer.</li>
+                        <li>Nobody changes their own role or access.</li>
+                        <li>Admins and the Owner give roles up to Admin; nobody changes or removes the Owner.</li>
+                    </ul>
+                </section>
             </div>
         </div>
 
-        @if (rows.Count == 0)
+        @if (State.Can(AiPermission.TransferOwnership))
         {
-            <p class="text-body-secondary mb-0">No @FilterWord members.</p>
-        }
-        else
-        {
-            <div class="table-responsive">
-                <table class="table align-middle mb-0">
-                    <caption class="pa-admem-caption">
-                        @(filter is null ? $"Everyone in the workspace: {AdminMembers.Plural(rows.Count, "person", "people")}." : $"{AiDisplay.StatusLabel(filter.Value)}: {AdminMembers.Plural(rows.Count, "person", "people")} of {all.Count}.")
-                        Tokens are this month's, against a quota of @AiDisplay.Tokens(State.Policy.MonthlyTokenQuota) per member.
-                    </caption>
-                    <thead>
-                        <tr>
-                            <th scope="col">Name</th>
-                            <th scope="col">Email</th>
-                            <th scope="col">Role</th>
-                            <th scope="col">Status</th>
-                            <th scope="col">Joined</th>
-                            <th scope="col" class="text-end">Tokens this month</th>
-                            <th scope="col">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var member in rows)
-                        {
-                            var isMe = IsMe(member);
-                            var email = member.Email;
-                            <tr @key="email">
-                                <th scope="row" class="pa-admem-name">
-                                    @member.Name
-                                    @if (isMe)
+            var candidates = State.OwnershipCandidates;
+
+            <section class="pa-panel mb-4" aria-labelledby="pa-admem-transfer-title">
+                <h2 class="pa-section-title mb-1" id="pa-admem-transfer-title">Transfer ownership</h2>
+                <p class="small text-body-secondary" id="pa-admem-transfer-help">
+                    Hand the Owner role to an active member who can sign in. You become an Admin, and they get retention and ownership transfer. You'll confirm before it happens.
+                </p>
+                @if (candidates.Count == 0)
+                {
+                    <p class="small mb-0">No other active member can sign in in this tab, so there's nobody to hand ownership to.</p>
+                }
+                else
+                {
+                    <EditForm EditContext="transferContext" OnSubmit="AskTransferAsync" FormName="pa-transfer" novalidate aria-describedby="pa-admem-transfer-help">
+                        <DataAnnotationsValidator />
+                        <ShowcaseFormErrors ShowSummary="true" />
+                        <div class="row g-3 align-items-start">
+                            <div class="col-md-5">
+                                <label class="form-label fw-semibold" for="pa-admem-new-owner">New Owner</label>
+                                <InputSelect id="pa-admem-new-owner" class="form-select" @bind-Value="transferForm.NewOwnerId">
+                                    <option value="">Choose a member</option>
+                                    @foreach (var candidate in candidates)
                                     {
-                                        <span class="fw-normal text-body-secondary"> (you)</span>
+                                        <option value="@candidate.Id" @key="candidate.Id">@candidate.Name (@AiDisplay.RoleLabel(candidate.Role))</option>
                                     }
-                                </th>
-                                <td class="pa-admem-email">@member.Email</td>
-                                <td class="text-nowrap">@AiDisplay.RoleLabel(member.Role)</td>
-                                <td class="text-nowrap">
-                                    <Badge Color="@StatusColor(member.Status)" Class="rounded-pill">
-                                        <Icon Name="@StatusIcon(member.Status)" class="me-1" aria-hidden="true" />@AiDisplay.StatusLabel(member.Status)
-                                    </Badge>
-                                </td>
-                                <td class="text-nowrap">
-                                    @(member.Status == AiMemberStatus.Invited ? "Invited " : null)@member.JoinedAt.ToString("MMM d, yyyy", CultureInfo.InvariantCulture)
-                                </td>
-                                <td class="text-end pa-mono">@(member.Status == AiMemberStatus.Invited ? "None yet" : AiDisplay.Tokens(State.MonthTokens(email)))</td>
-                                <td>
-                                    <div class="pa-admem-actions">
-                                        @if (member.Status != AiMemberStatus.Deactivated)
-                                        {
-                                            <Button @ref="actionButtons[ButtonKey(DialogKind.Role, email)]" Color="ButtonColor.Secondary" Outline="true" Size="ButtonSize.Small"
-                                                    @onclick="() => OpenAsync(DialogKind.Role, member)">
-                                                <Icon Name="IconName.PersonGear" class="me-1" aria-hidden="true" />Change role<span class="visually-hidden"> of @member.Name</span>
-                                            </Button>
-                                        }
-                                        @if (member.Status == AiMemberStatus.Active && !isMe)
-                                        {
-                                            <Button @ref="actionButtons[ButtonKey(DialogKind.Deactivate, email)]" Color="ButtonColor.Danger" Outline="true" Size="ButtonSize.Small"
-                                                    @onclick="() => OpenAsync(DialogKind.Deactivate, member)">
-                                                <Icon Name="IconName.PersonSlash" class="me-1" aria-hidden="true" />Deactivate<span class="visually-hidden"> @member.Name</span>
-                                            </Button>
-                                        }
-                                        else if (member.Status == AiMemberStatus.Deactivated)
-                                        {
-                                            <Button @ref="actionButtons[ButtonKey(DialogKind.Reactivate, email)]" Color="ButtonColor.Primary" Outline="true" Size="ButtonSize.Small"
-                                                    @onclick="() => OpenAsync(DialogKind.Reactivate, member)">
-                                                <Icon Name="IconName.PersonCheck" class="me-1" aria-hidden="true" />Reactivate<span class="visually-hidden"> @member.Name</span>
-                                            </Button>
-                                        }
-                                        else if (member.Status == AiMemberStatus.Invited)
-                                        {
-                                            <Button @ref="actionButtons[ButtonKey(DialogKind.RemoveInvitation, email)]" Color="ButtonColor.Danger" Outline="true" Size="ButtonSize.Small"
-                                                    @onclick="() => OpenAsync(DialogKind.RemoveInvitation, member)">
-                                                <Icon Name="IconName.XCircle" class="me-1" aria-hidden="true" />Remove invitation<span class="visually-hidden"> for @member.Name</span>
-                                            </Button>
-                                        }
-                                        @if (isMe)
-                                        {
-                                            <span class="small text-body-secondary text-nowrap">You can't deactivate yourself</span>
-                                        }
-                                    </div>
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            </div>
+                                </InputSelect>
+                                <ValidationMessage For="() => transferForm.NewOwnerId" />
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-semibold" for="pa-admem-transfer-confirm">Type the workspace name to confirm</label>
+                                <InputText id="pa-admem-transfer-confirm" class="form-control" @bind-Value="transferForm.Confirm" autocomplete="off" spellcheck="false"
+                                           maxlength="@AiState.MaxWorkspaceNameLength" aria-describedby="pa-admem-transfer-confirm-help" />
+                                <div class="form-text" id="pa-admem-transfer-confirm-help">Type <span class="pa-mono">@State.WorkspaceName</span>.</div>
+                                <ValidationMessage For="() => transferForm.Confirm" />
+                            </div>
+                            <div class="col-md-3 pa-admem-transfer-submit">
+                                <Button Type="ButtonType.Submit" Color="ButtonColor.Danger" Outline="true"><Icon Name="IconName.ArrowLeftRight" class="me-1" aria-hidden="true" />Transfer ownership</Button>
+                            </div>
+                        </div>
+                    </EditForm>
+                }
+            </section>
         }
 
-        <p class="small text-body-secondary mt-3 mb-0">
-            A deactivated member can't sign in to chat; their conversations and usage history are kept, and they can be reactivated.
-            The workspace always keeps at least one active workspace admin.
-        </p>
-    </section>
+        <section class="pa-panel mb-3" aria-labelledby="pa-admem-filters-title">
+            <h2 class="pa-section-title" id="pa-admem-filters-title">Filter members</h2>
+            <div class="pa-list-filters" role="search" aria-labelledby="pa-admem-filters-title">
+                <div class="pa-list-search">
+                    <label class="form-label small fw-semibold" for="pa-admem-search">Search</label>
+                    @* Filters on every keystroke; the bound value changes only on change, so a render during typing never writes an older value back. *@
+                    <input id="pa-admem-search" type="search" class="form-control" value="@searchBoxValue" placeholder="Name or email" autocomplete="off" maxlength="80"
+                           @oninput="OnSearchInputAsync" @onchange="OnSearchChanged" />
+                </div>
+                <div>
+                    <label class="form-label small fw-semibold" for="pa-admem-status">Status</label>
+                    <select id="pa-admem-status" class="form-select" value="@statusFilter" @onchange="OnStatusFilterChangedAsync">
+                        <option value="">All (@all.Count)</option>
+                        @foreach (var status in Enum.GetValues<AiMemberStatus>())
+                        {
+                            <option value="@status" @key="status">@AiDisplay.StatusLabel(status) (@all.Count(member => member.Status == status))</option>
+                        }
+                    </select>
+                </div>
+                <div>
+                    <label class="form-label small fw-semibold" for="pa-admem-role-filter">Role</label>
+                    <select id="pa-admem-role-filter" class="form-select" value="@roleFilter" @onchange="OnRoleFilterChangedAsync">
+                        <option value="">All roles</option>
+                        @foreach (var role in Enum.GetValues<AiMemberRole>().Reverse())
+                        {
+                            <option value="@role" @key="role">@AiDisplay.RoleLabel(role) (@all.Count(member => member.Role == role))</option>
+                        }
+                    </select>
+                </div>
+            </div>
+            <div class="pa-list-meta">
+                <p class="small text-body-secondary mb-0" aria-live="polite" tabindex="-1" @ref="countRegion">@CountText(all.Count)</p>
+                @if (IsFiltered)
+                {
+                    <Button Color="ButtonColor.Link" Size="ButtonSize.Small" Class="p-0" @onclick="ClearFiltersAsync">Show everyone</Button>
+                }
+                @* Back to the saved view's defaults: by name, 25 a page, every column in its place. *@
+                <Button Color="ButtonColor.Link" Size="ButtonSize.Small" Class="p-0" @onclick="ResetViewAsync">Reset view</Button>
+            </div>
+        </section>
 
-    <Modal @ref="dialogModal" IsVerticallyCentered="true" IsScrollable="true" ShowCloseButton="false" aria-labelledby="pa-admem-dialog-title" OnHidden="OnDialogHiddenAsync">
-        <HeaderTemplate>
-            <h2 class="modal-title h5 pa-admem-dialog-title" id="pa-admem-dialog-title">@DialogTitle</h2>
-        </HeaderTemplate>
-        <BodyTemplate>
-            @if (DialogMember is not { } target)
-            {
-                <p class="mb-0">That person is no longer in the workspace, so there's nothing to change.</p>
-            }
-            else if (dialogKind == DialogKind.Role)
-            {
-                <fieldset>
-                    <legend class="form-label fw-semibold fs-6">Role</legend>
-                    @foreach (var role in Enum.GetValues<AiMemberRole>())
-                    {
-                        var inputId = $"pa-admem-dialog-role-{role}";
-                        <div class="form-check mb-2" @key="role">
-                            <input class="form-check-input" type="radio" name="pa-admem-dialog-role" id="@inputId" checked="@(dialogRole == role)"
-                                   @onchange="() => dialogRole = role" aria-describedby="@($"{inputId}-help")" />
-                            <label class="form-check-label fw-semibold" for="@inputId">
-                                @AiDisplay.RoleLabel(role)
-                                @if (role == target.Role)
-                                {
-                                    <span class="fw-normal text-body-secondary"> (current)</span>
+        @if (selected.Count > 0)
+        {
+            <section class="pa-bulk" aria-labelledby="pa-admem-bulk-count">
+                <h2 class="pa-bulk-count" id="pa-admem-bulk-count">@(selected.Count == 1 ? "1 person selected" : $"{selected.Count} people selected")</h2>
+                <EditForm EditContext="bulkContext" OnSubmit="ApplyBulkAsync" FormName="pa-members-bulk" class="pa-bulk-form" novalidate>
+                    <DataAnnotationsValidator />
+                    <ShowcaseFormErrors ShowSummary="true" />
+                    <div class="pa-bulk-field">
+                        <label class="form-label small fw-semibold" for="pa-admem-bulk-action">Action</label>
+                        <InputSelect id="pa-admem-bulk-action" class="form-select form-select-sm" @bind-Value="bulkForm.Action" aria-describedby="pa-admem-bulk-action-help">
+                            <option value="">Choose an action</option>
+                            @foreach (var role in GrantableRoles)
+                            {
+                                <option value="@($"{RolePrefix}{role}")" @key="role">Change role to @AiDisplay.RoleLabel(role)</option>
+                            }
+                            <option value="@RemoveValue">Remove access (invitations are withdrawn)</option>
+                            <option value="@RestoreValue">Restore access</option>
+                            <option value="@ResendValue">Resend invitations</option>
+                        </InputSelect>
+                        <span class="form-text d-block" id="pa-admem-bulk-action-help">You and the Owner are left as they are; so is anyone the action doesn't fit.</span>
+                        <ValidationMessage For="() => bulkForm.Action" />
+                    </div>
+                    <div class="pa-bulk-actions">
+                        <Button Type="ButtonType.Submit" Color="ButtonColor.Primary" Size="ButtonSize.Small">Apply<span class="visually-hidden">&#32;to the selected people</span></Button>
+                        <Button Color="ButtonColor.Secondary" Outline="true" Size="ButtonSize.Small" @onclick="ClearSelectionAsync">Clear selection</Button>
+                    </div>
+                </EditForm>
+            </section>
+        }
+
+        <section class="pa-panel" aria-label="Member list">
+            <ShowcaseDataState Status="@(viewLoaded ? ShowcaseDataStatus.Ready : ShowcaseDataStatus.Loading)"
+                               IsEmpty="@(all.Count == 0)"
+                               EmptyIcon="IconName.People"
+                               EmptyTitle="Nobody is in the workspace yet"
+                               EmptyText="Invite someone above; they show here as an invitation until they join."
+                               LoadingText="Loading members…"
+                               OnRetry="RefreshGridAsync">
+                <ChildContent>
+                    <Grid @ref="grid"
+                          @key="gridVersion"
+                          TItem="MemberRow"
+                          Class="table table-hover align-middle pa-table-wide sc-grid-row-links"
+                          GridContainerClass="pa-grid border rounded-3"
+                          DataProvider="ProvideMembersAsync"
+                          SettingsProvider="view.GetSettingsAsync"
+                          GridSettingsChanged="SaveSettingsAsync"
+                          AllowPaging="true"
+                          PageSize="@pageSize"
+                          PageSizeSelectorVisible="true"
+                          PageSizeSelectorItems="@(new[] { 10, 25, 50, 100 })"
+                          PaginationItemsTextFormat="{0}–{1} of {2} people"
+                          AllowSorting="true"
+                          AllowSelection="true"
+                          SelectionMode="GridSelectionMode.Multiple"
+                          RowSelectionLabel="@(row => $"Select {row.Name}")"
+                          SelectAllRowsText="Select all shown people"
+                          SelectedItemsChanged="OnSelectionChanged"
+                          RowClass="RowClass"
+                          AllowColumnChooser="true"
+                          AllowExport="true"
+                          ExportFileName="ai-members"
+                          Responsive="true"
+                          EmptyText="Nobody matches. Choose All, or clear the search."
+                          aria-label="Members and invitations">
+                        <GridColumns>
+                            <GridColumn TItem="MemberRow" HeaderText="Name" PropertyName="Name" SortString="name" SortKeySelector="row => row.Name"
+                                        IsDefaultSortColumn="@view.IsSortColumn("name")" SortDirection="@view.DirectionFor("name")" AlwaysVisible="true">
+                                @{
+                                    var row = context;
                                 }
-                            </label>
-                            <div class="form-text mt-0" id="@($"{inputId}-help")">@RoleSummary(role)</div>
-                        </div>
+                                @* A member has no page of their own: the stretched button makes the whole row open their dialog. *@
+                                <button type="button" class="pa-row-button stretched-link" @ref="openers[row.Id]" @onclick="() => OpenAsync(row.Id)">@row.Name</button>
+                                @if (row.IsYou)
+                                {
+                                    <span class="small text-body-secondary">&#32;(you)</span>
+                                }
+                            </GridColumn>
+                            <GridColumn TItem="MemberRow" HeaderText="Email" PropertyName="Email" SortString="email" SortKeySelector="row => row.Email"
+                                        IsDefaultSortColumn="@view.IsSortColumn("email")" SortDirection="@view.DirectionFor("email")">
+                                <span class="pa-admem-email">@context.Email</span>
+                            </GridColumn>
+                            <GridColumn TItem="MemberRow" HeaderText="Role" PropertyName="Role" SortString="role" SortKeySelector="row => row.RoleValue"
+                                        IsDefaultSortColumn="@view.IsSortColumn("role")" SortDirection="@view.DirectionFor("role")" TextNoWrap="true">
+                                @context.Role
+                            </GridColumn>
+                            <GridColumn TItem="MemberRow" HeaderText="Status" PropertyName="Status" SortString="status" SortKeySelector="row => row.StatusValue"
+                                        IsDefaultSortColumn="@view.IsSortColumn("status")" SortDirection="@view.DirectionFor("status")" TextNoWrap="true">
+                                <Badge Color="@StatusColor(context.StatusValue)" Class="rounded-pill">
+                                    <Icon Name="@StatusIcon(context.StatusValue)" class="me-1" aria-hidden="true" />@context.Status
+                                </Badge>
+                            </GridColumn>
+                            <GridColumn TItem="MemberRow" HeaderText="Joined or invited" PropertyName="JoinedText" SortString="joined" SortKeySelector="row => row.Joined"
+                                        IsDefaultSortColumn="@view.IsSortColumn("joined")" SortDirection="@view.DirectionFor("joined")" TextNoWrap="true">
+                                @context.JoinedText
+                            </GridColumn>
+                            <GridColumn TItem="MemberRow" HeaderText="Tokens this month" PropertyName="Tokens" SortString="tokens" SortKeySelector="row => row.Tokens"
+                                        IsDefaultSortColumn="@view.IsSortColumn("tokens")" SortDirection="@view.DirectionFor("tokens")" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" TextNoWrap="true">
+                                <span class="pa-mono">@(context.StatusValue == AiMemberStatus.Invited ? "None yet" : AiDisplay.Tokens(context.Tokens))</span>
+                            </GridColumn>
+                            <GridColumn TItem="MemberRow" HeaderText="Sign-in" PropertyName="SignIn" SortString="signin" SortKeySelector="row => row.SignIn"
+                                        IsDefaultSortColumn="@view.IsSortColumn("signin")" SortDirection="@view.DirectionFor("signin")" TextNoWrap="true">
+                                <span class="small">@context.SignIn</span>
+                            </GridColumn>
+                        </GridColumns>
+                    </Grid>
+                </ChildContent>
+            </ShowcaseDataState>
+            <p class="small text-body-secondary mt-3 mb-0">
+                Tokens are this month's; each member's cap (by default @AiDisplay.Tokens(State.Policy.MonthlyTokenQuota)) is on <a href="@($"{AiAdminLayout.Base}/spend")">Spend</a>. "Can sign in" marks the demo accounts and the
+                accounts made in this tab: only they get notifications. A member whose access is removed keeps their conversations, and can be restored.
+            </p>
+        </section>
+
+        <Modal @ref="memberModal" IsVerticallyCentered="true" IsScrollable="true" ShowCloseButton="false" aria-labelledby="pa-admem-dialog-title" OnShown="OnDialogShownAsync" OnHidden="OnDialogHiddenAsync">
+            <HeaderTemplate>
+                <h2 class="modal-title h5 pa-admem-dialog-title" id="pa-admem-dialog-title">@(Opened is { } shown ? shown.Name : "Person not found")</h2>
+            </HeaderTemplate>
+            <BodyTemplate>
+                @if (Opened is not { } target)
+                {
+                    <p>That person is no longer in the workspace, so there's nothing to change.</p>
+                    <button type="button" class="btn btn-outline-secondary" @ref="dialogCancel" @onclick="() => memberModal.HideAsync()">Close</button>
+                }
+                else
+                {
+                    var isMe = IsMe(target);
+
+                    <dl class="pa-admem-facts">
+                        <div><dt>Email</dt><dd class="pa-admem-email">@target.Email</dd></div>
+                        <div><dt>Role</dt><dd>@AiDisplay.RoleLabel(target.Role)</dd></div>
+                        <div><dt>Status</dt><dd>@AiDisplay.StatusLabel(target.Status)</dd></div>
+                        <div><dt>@(target.Status == AiMemberStatus.Invited ? "Invited" : "Joined")</dt><dd>@target.JoinedAt.ToString("MMM d, yyyy", CultureInfo.InvariantCulture)</dd></div>
+                    </dl>
+
+                    @if (isMe)
+                    {
+                        <p class="mb-3">
+                            Nobody changes their own role or access, so there's nothing for you to change here.
+                            @(target.Role == AiMemberRole.Owner ? "To stop being the Owner, transfer ownership on this page." : $"Ask another Admin or {State.OwnerName} (the Owner).")
+                        </p>
                     }
-                </fieldset>
-                @if (target.Status == AiMemberStatus.Invited)
-                {
-                    <p class="small mb-0">This changes the role @target.Name joins with when they create an account.</p>
+                    else if (target.Role == AiMemberRole.Owner)
+                    {
+                        <p class="mb-3">@target.Name is the Owner. The Owner's role and access can't be changed or removed; only the Owner hands the role on, by a transfer.</p>
+                    }
+                    else
+                    {
+                        @if (target.Status == AiMemberStatus.Deactivated)
+                        {
+                            <p class="mb-3">@target.Name's access is removed: they can't use @AiSeedData.ProductName. Their conversations are kept. Restore their access to change their role.</p>
+                        }
+                        else
+                        {
+                            <EditForm EditContext="roleContext" OnSubmit="SaveRoleAsync" FormName="pa-member-role" novalidate aria-labelledby="pa-admem-dialog-title">
+                                <DataAnnotationsValidator />
+                                <ShowcaseFormErrors ShowSummary="true" />
+                                <fieldset class="mb-3">
+                                    <legend class="form-label fw-semibold fs-6 mb-1">@(target.Status == AiMemberStatus.Invited ? "Role they join with" : "Role")</legend>
+                                    <InputRadioGroup @bind-Value="roleForm.Role">
+                                        @foreach (var role in GrantableRoles)
+                                        {
+                                            var inputId = $"pa-admem-dialog-role-{role}";
+                                            <div class="form-check mb-2" @key="role">
+                                                <InputRadio class="form-check-input" id="@inputId" Value="role" aria-describedby="@($"{inputId}-help")" />
+                                                <label class="form-check-label fw-semibold" for="@inputId">
+                                                    @AiDisplay.RoleLabel(role)@(role == target.Role ? " (current)" : null)
+                                                </label>
+                                                <div class="form-text mt-0" id="@($"{inputId}-help")">@AiDisplay.RoleSummary(role)</div>
+                                            </div>
+                                        }
+                                    </InputRadioGroup>
+                                    <ValidationMessage For="() => roleForm.Role" />
+                                </fieldset>
+                                <p class="pa-form-error mb-2" role="alert">@dialogError</p>
+                                <Button Type="ButtonType.Submit" Color="ButtonColor.Primary" Size="ButtonSize.Small">Save role</Button>
+                            </EditForm>
+                        }
+
+                        <h3 class="h6 fw-bold mt-4 mb-2">Access</h3>
+                        <div class="d-flex flex-wrap gap-2">
+                            @if (target.Status == AiMemberStatus.Active)
+                            {
+                                <Button Color="ButtonColor.Danger" Outline="true" Size="ButtonSize.Small" @onclick="() => RunDialogActionAsync(DialogAction.Remove)">
+                                    <Icon Name="IconName.PersonSlash" class="me-1" aria-hidden="true" />Remove access
+                                </Button>
+                            }
+                            else if (target.Status == AiMemberStatus.Deactivated)
+                            {
+                                <Button Color="ButtonColor.Primary" Outline="true" Size="ButtonSize.Small" @onclick="() => RunDialogActionAsync(DialogAction.Restore)">
+                                    <Icon Name="IconName.PersonCheck" class="me-1" aria-hidden="true" />Restore access
+                                </Button>
+                            }
+                            else
+                            {
+                                <Button Color="ButtonColor.Secondary" Outline="true" Size="ButtonSize.Small" @onclick="() => RunDialogActionAsync(DialogAction.Resend)">
+                                    <Icon Name="IconName.EnvelopeArrowUp" class="me-1" aria-hidden="true" />Resend invitation
+                                </Button>
+                                <Button Color="ButtonColor.Danger" Outline="true" Size="ButtonSize.Small" @onclick="() => RunDialogActionAsync(DialogAction.Withdraw)">
+                                    <Icon Name="IconName.XCircle" class="me-1" aria-hidden="true" />Withdraw invitation
+                                </Button>
+                            }
+                        </div>
+                        <p class="small text-body-secondary mt-2 mb-3">
+                            @(target.Status switch
+                            {
+                                AiMemberStatus.Active => "Removing access deactivates them at once. Their conversations are kept, and you can restore access here.",
+                                AiMemberStatus.Deactivated => $"Restoring access lets them chat again as {RoleWords(target.Role)}.",
+                                _ => "Resending moves the invitation's date to today (no email is sent in this demo). Withdrawing means they join as a member if they sign up anyway.",
+                            })
+                        </p>
+                    }
+                    <button type="button" class="btn btn-outline-secondary" @ref="dialogCancel" @onclick="() => memberModal.HideAsync()">Close</button>
                 }
-                else if (IsMe(target) && dialogRole == AiMemberRole.Member && target.Role == AiMemberRole.Admin)
-                {
-                    <p class="pa-admem-warning small mb-0">
-                        <Icon Name="IconName.ExclamationTriangleFill" class="me-1" aria-hidden="true" /><strong>You'll lose access to Workspace admin.</strong>
-                        As soon as you save, this back office closes for you and you go on as a member. Another workspace admin can promote you again.
-                    </p>
-                }
-            }
-            else if (dialogKind == DialogKind.Deactivate)
-            {
-                <p>@target.Name (@target.Email) can't sign in to chat or use @AiSeedData.ProductName until a workspace admin reactivates them.</p>
-                <p class="mb-0">
-                    Their conversations and usage history are kept.@(target.Role == AiMemberRole.Admin ? " They also lose access to Workspace admin while deactivated." : null)
+            </BodyTemplate>
+        </Modal>
+
+        <Modal @ref="removeModal" IsVerticallyCentered="true" ShowCloseButton="false" aria-labelledby="pa-admem-remove-title" OnHidden="OnRemoveHiddenAsync">
+            <HeaderTemplate>
+                <h2 class="modal-title h5" id="pa-admem-remove-title">Remove access for @(selected.Count == 1 ? "1 person" : $"{selected.Count} people")?</h2>
+            </HeaderTemplate>
+            <BodyTemplate>
+                <p>
+                    Active members are deactivated at once: they can't use @AiSeedData.ProductName, their conversations are kept, and you can restore their access.
+                    Invitations are withdrawn. You and the Owner are left as they are.
                 </p>
-            }
-            else if (dialogKind == DialogKind.Reactivate)
-            {
-                <p class="mb-0">@target.Name can sign in to chat again, as @AiDisplay.RoleLabel(target.Role).ToLowerInvariant(). Their conversations are where they left them.</p>
-            }
-            else
-            {
-                <p class="mb-0">
-                    @target.Email can no longer join with this invitation. If they create an account with that email anyway, they join as a member.
-                </p>
-            }
-        </BodyTemplate>
-        <FooterTemplate>
-            <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => dialogModal.HideAsync()">Cancel</Button>
-            @if (DialogMember is not null)
-            {
-                <Button Color="@(dialogKind is DialogKind.Deactivate or DialogKind.RemoveInvitation ? ButtonColor.Danger : ButtonColor.Primary)" @onclick="ConfirmAsync">@ConfirmText</Button>
-            }
-        </FooterTemplate>
-    </Modal>
+                <p class="mb-0">@RemoveSummary</p>
+            </BodyTemplate>
+            <FooterTemplate>
+                <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => removeModal.HideAsync()">Cancel</Button>
+                <Button Color="ButtonColor.Danger" @onclick="ConfirmRemoveAsync"><Icon Name="IconName.PersonSlash" class="me-1" aria-hidden="true" />Remove access</Button>
+            </FooterTemplate>
+        </Modal>
+
+        <Modal @ref="transferModal" IsVerticallyCentered="true" ShowCloseButton="false" aria-labelledby="pa-admem-transfer-dialog-title" OnHidden="OnTransferHiddenAsync">
+            <HeaderTemplate>
+                <h2 class="modal-title h5" id="pa-admem-transfer-dialog-title">Transfer ownership to @(TransferTarget?.Name ?? "this member")?</h2>
+            </HeaderTemplate>
+            <BodyTemplate>
+                <p>@(TransferTarget?.Name ?? "The new Owner") becomes the Owner of @State.WorkspaceName: they change retention and can hand the role on. You become an Admin at once.</p>
+                <p class="mb-0">Only the new Owner can give the role back. It's in the audit log, and they and the other Admins hear about it.</p>
+            </BodyTemplate>
+            <FooterTemplate>
+                <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => transferModal.HideAsync()">Cancel</Button>
+                <Button Color="ButtonColor.Danger" @onclick="ConfirmTransferAsync"><Icon Name="IconName.ArrowLeftRight" class="me-1" aria-hidden="true" />Transfer ownership</Button>
+            </FooterTemplate>
+        </Modal>
+    </AiMemberGuard>
 </div>

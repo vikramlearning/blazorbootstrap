@@ -1,5 +1,7 @@
 @inherits LayoutComponentBase
 
+@* The members' app. A signed-in active member gets the global search after the links and the notifications beside the
+   account menu (not visitors, not on the sign-in page); the "Workspace admin" link shows only to roles with an admin page. *@
 <ShowcaseSessionHost State="State" SiteBase="@Base" SiteName="@AiSeedData.ProductName">
 <AiFrame>
     <Header>
@@ -15,7 +17,13 @@
             </NavbarBrand>
             @if (State.Identity.IsSignedIn)
             {
-                <ShowcaseAccountMenu SiteBase="@Base" SignInPath="@SignInPath" Class="ms-auto me-2 order-lg-last" />
+                <div class="pa-header-tools ms-auto me-2 order-lg-last">
+                    @if (State.IsActiveMember && !IsSignInPage)
+                    {
+                        <ShowcaseNotificationsMenu />
+                    }
+                    <ShowcaseAccountMenu SiteBase="@Base" SignInPath="@SignInPath" />
+                </div>
             }
             else
             {
@@ -29,9 +37,9 @@
                     <NavbarItem Href="@($"{Base}/chat")">Chat</NavbarItem>
                     <NavbarItem Href="@($"{Base}/prompts")">Prompts</NavbarItem>
                     <NavbarItem Href="@($"{Base}/usage")">Usage</NavbarItem>
-                    @if (State.IsWorkspaceAdmin)
+                    @if (State.Can(AiPermission.ManageSharedPrompts))
                     {
-                        <NavbarItem Href="@AiAdminLayout.Base">Workspace admin</NavbarItem>
+                        <NavbarItem Href="@AiDisplay.AdminHomeFor(State)">@(State.Can(AiPermission.ManageMembers) ? "Workspace admin" : "Shared prompts")</NavbarItem>
                     }
                 }
                 else
@@ -39,6 +47,10 @@
                     <NavbarItem Href="@Base" Match="NavLinkMatch.All">Home</NavbarItem>
                 }
             </NavbarNav>
+            @if (State.IsActiveMember && !IsSignInPage)
+            {
+                <ShowcaseGlobalSearch Class="pa-global-search mb-3 mb-lg-0" Placeholder="@SearchPlaceholder" Label="@SearchLabel" />
+            }
         </ChildContent>
     </Navbar>
     </Header>

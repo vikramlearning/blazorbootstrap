@@ -1,0 +1,167 @@
+@page "/showcase/ecommerce/admin/purchase-orders"
+@layout EcommerceAdminLayout
+
+<PageTitle>Purchase orders · @EcommerceSeedData.StoreName admin</PageTitle>
+
+<div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-4">
+    <div>
+        <h1 class="ea-title">Purchase orders</h1>
+        <p class="ea-lead">@LeadText</p>
+    </div>
+    <div class="d-flex flex-wrap gap-2">
+        <a class="btn btn-outline-secondary" href="@($"{EcommerceAdminLayout.Base}/reorder")"><Icon Name="IconName.ArrowRepeat" class="me-1" aria-hidden="true" />Reorder list</a>
+        <Button @ref="newButton" Color="ButtonColor.Primary" @onclick="OpenNewAsync"><Icon Name="IconName.PlusLg" class="me-1" aria-hidden="true" />New purchase order</Button>
+    </div>
+</div>
+
+<p class="ea-list-status mb-3" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
+
+<section class="ea-panel" aria-labelledby="ea-pos-title">
+    <h2 class="ea-section-title" id="ea-pos-title">All purchase orders</h2>
+
+    <div class="ea-list-filters" role="search" aria-label="Filter purchase orders">
+        <div class="ea-list-search">
+            <label class="form-label small fw-semibold" for="ea-pos-search">Search</label>
+            <InputGroup>
+                <InputGroupText><Icon Name="IconName.Search" aria-hidden="true" /></InputGroupText>
+                <TextInput Id="ea-pos-search" Value="@searchBoxValue" ValueExpression="() => searchBoxValue" ValueChanged="OnSearchChanged"
+                           @oninput="OnSearchInput" Placeholder="Number, supplier, or product" MaxLength="80" />
+            </InputGroup>
+        </div>
+        <div>
+            <label class="form-label small fw-semibold" for="ea-pos-status">Status</label>
+            <select id="ea-pos-status" class="form-select" value="@statusFilter" @onchange="OnStatusChanged">
+                <option value="">All (@State.PurchaseOrders.Count)</option>
+                <option value="@OpenValue">Open: not received or cancelled (@State.PurchaseOrders.Count(order => order.IsOpen))</option>
+                <option value="@OverdueValue">Overdue (@State.PurchaseOrders.Count(State.IsOverdue))</option>
+                @foreach (var status in Enum.GetValues<EcommercePurchaseOrderStatus>())
+                {
+                    <option value="@status" @key="status">@EcommerceDisplay.PurchaseOrderLabel(status) (@State.PurchaseOrders.Count(order => order.Status == status))</option>
+                }
+            </select>
+        </div>
+        <div>
+            <label class="form-label small fw-semibold" for="ea-pos-supplier">Supplier</label>
+            <select id="ea-pos-supplier" class="form-select" value="@supplierFilter" @onchange="OnSupplierChanged">
+                <option value="">All suppliers</option>
+                @foreach (var supplier in State.Suppliers.OrderBy(supplier => supplier.Name, StringComparer.OrdinalIgnoreCase))
+                {
+                    <option value="@supplier.Id" @key="supplier.Id">@supplier.Name</option>
+                }
+            </select>
+        </div>
+    </div>
+    <div class="ea-list-meta mb-3">
+        <p class="small text-body-secondary mb-0" aria-live="polite" tabindex="-1" @ref="countRegion">@MatchText</p>
+        @if (IsFiltered)
+        {
+            <Button Color="ButtonColor.Link" Size="ButtonSize.Small" Class="p-0" @onclick="ClearFiltersAsync">Show every purchase order</Button>
+        }
+        @* Back to the saved view's defaults: newest first, 25 a page, every column in its place. *@
+        <Button Color="ButtonColor.Link" Size="ButtonSize.Small" Class="p-0" @onclick="ResetViewAsync">Reset view</Button>
+    </div>
+
+    <ShowcaseDataState Status="@(viewLoaded ? ShowcaseDataStatus.Ready : ShowcaseDataStatus.Loading)"
+                       IsEmpty="@(State.PurchaseOrders.Count == 0)"
+                       EmptyIcon="IconName.ClipboardCheck"
+                       EmptyTitle="No purchase orders yet"
+                       EmptyText="Create one from the reorder list, or start an empty one for a supplier."
+                       LoadingText="Loading purchase orders…"
+                       OnRetry="RefreshGridAsync">
+        <EmptyActions>
+            <a class="btn btn-sm btn-primary" href="@($"{EcommerceAdminLayout.Base}/reorder")">Open the reorder list</a>
+        </EmptyActions>
+        <ChildContent>
+            <Grid @ref="grid"
+                  @key="gridVersion"
+                  TItem="PurchaseOrderRow"
+                  Class="table table-hover align-middle ea-table-wide sc-grid-row-links"
+                  GridContainerClass="ea-grid border rounded-3"
+                  DataProvider="ProvideRowsAsync"
+                  SettingsProvider="view.GetSettingsAsync"
+                  GridSettingsChanged="SaveSettingsAsync"
+                  AllowPaging="true"
+                  PageSize="@pageSize"
+                  PageSizeSelectorVisible="true"
+                  PageSizeSelectorItems="@(new[] { 10, 25, 50 })"
+                  PaginationItemsTextFormat="{0}–{1} of {2} purchase orders"
+                  AllowSorting="true"
+                  AllowColumnChooser="true"
+                  AllowExport="true"
+                  ExportFileName="commerce-purchase-orders"
+                  Responsive="true"
+                  EmptyText="No purchase orders match these filters. Clear a filter, or search for part of a number or a supplier."
+                  aria-label="Purchase orders">
+                <GridColumns>
+                    <GridColumn TItem="PurchaseOrderRow" HeaderText="Number" PropertyName="Number" SortString="number" SortKeySelector="row => row.Id"
+                                IsDefaultSortColumn="@view.IsSortColumn("number")" SortDirection="@view.DirectionFor("number")" TextNoWrap="true" AlwaysVisible="true">
+                        @* The stretched link makes the whole row open the purchase order. *@
+                        <a class="ea-row-link stretched-link ea-mono" href="@EcommerceSeedData.AdminPurchaseOrderPath(context.Id)">@context.Number</a>
+                    </GridColumn>
+                    <GridColumn TItem="PurchaseOrderRow" HeaderText="Supplier" PropertyName="Supplier" SortString="supplier" SortKeySelector="row => row.Supplier"
+                                IsDefaultSortColumn="@view.IsSortColumn("supplier")" SortDirection="@view.DirectionFor("supplier")">
+                        @context.Supplier
+                    </GridColumn>
+                    <GridColumn TItem="PurchaseOrderRow" HeaderText="Status" PropertyName="Status" SortString="status" SortKeySelector="row => row.StatusValue"
+                                IsDefaultSortColumn="@view.IsSortColumn("status")" SortDirection="@view.DirectionFor("status")" TextNoWrap="true">
+                        <Badge Color="@EcommerceDisplay.PurchaseOrderColor(context.StatusValue)">@context.Status</Badge>
+                        @if (context.IsOverdue)
+                        {
+                            <Badge Color="BadgeColor.Danger" Class="ms-1">Overdue</Badge>
+                        }
+                    </GridColumn>
+                    <GridColumn TItem="PurchaseOrderRow" HeaderText="Lines" PropertyName="Lines" SortString="lines" SortKeySelector="row => row.Lines"
+                                IsDefaultSortColumn="@view.IsSortColumn("lines")" SortDirection="@view.DirectionFor("lines")" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End">
+                        @context.Lines
+                    </GridColumn>
+                    <GridColumn TItem="PurchaseOrderRow" HeaderText="Received" PropertyName="ReceivedText" SortString="received" SortKeySelector="row => row.ReceivedShare"
+                                IsDefaultSortColumn="@view.IsSortColumn("received")" SortDirection="@view.DirectionFor("received")" TextNoWrap="true">
+                        @context.ReceivedText
+                    </GridColumn>
+                    <GridColumn TItem="PurchaseOrderRow" HeaderText="Total" PropertyName="TotalText" SortString="total" SortKeySelector="row => row.TotalUsd"
+                                IsDefaultSortColumn="@view.IsSortColumn("total")" SortDirection="@view.DirectionFor("total")" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" TextNoWrap="true">
+                        @context.TotalText
+                    </GridColumn>
+                    <GridColumn TItem="PurchaseOrderRow" HeaderText="Raised by" PropertyName="CreatedBy" SortString="creator" SortKeySelector="row => row.CreatedBy"
+                                IsDefaultSortColumn="@view.IsSortColumn("creator")" SortDirection="@view.DirectionFor("creator")" TextNoWrap="true">
+                        @context.CreatedBy
+                    </GridColumn>
+                    <GridColumn TItem="PurchaseOrderRow" HeaderText="Created" PropertyName="CreatedText" SortString="created" SortKeySelector="row => row.CreatedOn"
+                                IsDefaultSortColumn="@view.IsSortColumn("created")" SortDirection="@view.DirectionFor("created")" TextNoWrap="true">
+                        @EcommerceDisplay.Date(context.CreatedOn)
+                    </GridColumn>
+                    <GridColumn TItem="PurchaseOrderRow" HeaderText="Expected" PropertyName="ExpectedText" SortString="expected" SortKeySelector="row => row.ExpectedOn"
+                                IsDefaultSortColumn="@view.IsSortColumn("expected")" SortDirection="@view.DirectionFor("expected")" TextNoWrap="true">
+                        @EcommerceDisplay.Date(context.ExpectedOn)
+                    </GridColumn>
+                </GridColumns>
+            </Grid>
+        </ChildContent>
+    </ShowcaseDataState>
+</section>
+
+<Modal @ref="newModal" IsVerticallyCentered="true" ShowCloseButton="false" aria-labelledby="ea-new-po-title" OnHidden="OnNewHiddenAsync">
+    <HeaderTemplate>
+        <h2 class="modal-title h5" id="ea-new-po-title">New purchase order</h2>
+    </HeaderTemplate>
+    <BodyTemplate>
+        <EditForm id="ea-new-po-form" EditContext="newContext" OnValidSubmit="CreateAsync" FormName="ea-new-po" novalidate>
+            <DataAnnotationsValidator />
+            <ShowcaseFormErrors ShowSummary="true" />
+            <label class="form-label" for="ea-new-po-supplier">Supplier</label>
+            <InputSelect id="ea-new-po-supplier" class="form-select" @bind-Value="newForm.SupplierId" aria-describedby="ea-new-po-supplier-help">
+                <option value="">Choose a supplier</option>
+                @foreach (var supplier in State.Suppliers.OrderBy(supplier => supplier.Name, StringComparer.OrdinalIgnoreCase))
+                {
+                    <option value="@supplier.Id" @key="supplier.Id">@supplier.Name (@supplier.Currency, @supplier.LeadTimeDays days)</option>
+                }
+            </InputSelect>
+            <div class="form-text" id="ea-new-po-supplier-help">The draft opens next, to add its lines. For products below their reorder point, the reorder list fills the lines in for you.</div>
+            <ValidationMessage For="() => newForm.SupplierId" />
+        </EditForm>
+    </BodyTemplate>
+    <FooterTemplate>
+        <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => newModal.HideAsync()">Cancel</Button>
+        <Button Type="ButtonType.Submit" Color="ButtonColor.Primary" form="ea-new-po-form">Create draft</Button>
+    </FooterTemplate>
+</Modal>

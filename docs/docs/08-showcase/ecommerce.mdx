@@ -1,15 +1,17 @@
 ---
-title: E-commerce Storefront showcase
-description: An online store with catalog filters, product pages, a cart drawer, test-card checkout, and customer accounts, plus the retailer's back office for orders, products, pricing, offers, returns, reviews, and analytics, built with Blazor Bootstrap.
-sidebar_label: E-commerce
+title: Commerce Back Office showcase
+description: A retailer's back office with Grid lists, bulk fulfilment, returns and refunds, bulk pricing with a reason, coupons, stock replenishment by purchase order with a second approver over $5,000 and partial receiving, suppliers, an audit log, global search, and notifications, plus the storefront with test-card checkout and customer accounts, built with Blazor Bootstrap.
+sidebar_label: Commerce Back Office
 sidebar_position: 4
 ---
 
 import CarbonAd from '/carbon-ad.mdx'
 
-# E-commerce Storefront
+# Commerce Back Office
 
-Kindred Goods is a fictitious home goods store. Shoppers browse and filter the catalog, read and write reviews, fill a cart, and check out with a test card; customers with an account track orders, request returns, and keep addresses and a wishlist. The retailer runs the store from a separate back office: fulfilment, products and stock, prices and coupons, customers, returns, review moderation, and sales analytics.
+Kindred Goods is a fictitious home goods store, and this site is its back office first. The store team fulfils orders (one by one on a fulfilment board, or in bulk from the order list), decides returns and refunds, changes prices in bulk with a reason, runs coupons, keeps products, customers, and reviews, reads sales analytics, and restocks products through purchase orders to its suppliers. The other half is the storefront: shoppers browse and filter the catalog, read and write reviews, fill a cart, and check out with a test card; customers with an account track orders, request returns, and keep addresses and a wishlist. Both halves share one set of data, so an order a customer places lands in the back office at once, and stock a purchase order brings in is for sale right away. Nothing is sold, shipped, charged, or sent to a supplier.
+
+Every record list is a [Grid](/components/grid) with a saved view, a column chooser, and CSV export; forms validate with a linked error summary; both headers have a global search and a notifications bell; and every change lands in an audit log. The signature workflow is **stock replenishment by purchase order**: products that fall to their reorder point are flagged on the reorder list; the store turns them into draft purchase orders, one per preferred supplier; an approver approves each one (a second person over $5,000); and the goods are received in full or in part, going into stock as they arrive.
 
 <CarbonAd />
 
@@ -19,25 +21,62 @@ Kindred Goods is a fictitious home goods store. Shoppers browse and filter the c
 
 | Role | Demo account | Password | Start page |
 |:--|:--|:--|:--|
-| Customer | Maya Lindqvist (`maya@kindredgoods.example`) | `shop-demo-24` | `/showcase/ecommerce/account` |
 | Retailer | Owen Hart (`owen@kindredgoods.example`) | `store-demo-24` | `/showcase/ecommerce/admin` |
+| Purchasing manager | Lena Brooks (`lena@kindredgoods.example`) | `buy-demo-24` | `/showcase/ecommerce/admin` |
+| Customer | Maya Lindqvist (`maya@kindredgoods.example`) | `shop-demo-24` | `/showcase/ecommerce/account` |
 
-You can also register ("Create an account" in the account menu, or `?mode=register` on the sign-in page). A new account is a customer. You don't need an account to shop: a visitor can check out as a guest.
+The sign-in page lists them in this order, with one-click buttons. The retailer and the purchasing manager both work the whole back office; the purchasing manager also approves purchase orders over $5,000 that someone else raised. You can also register ("Create an account" in the account menu, or `?mode=register` on the sign-in page); a new account is a customer. You don't need an account to shop: a visitor can check out as a guest.
 
-Maya starts with past orders, two saved addresses in the same-day delivery area, and a wishlist with one product in stock and one out of stock (with a back-in-stock notice requested).
+The seed holds 120 products (31 originals and 89 sizes and editions of them, which share the originals' photos; 3 archived; 18 at or below their reorder point, 9 of them with nothing on order); 480 orders over the last year from 217 customers (115 registered); 26 coupons over the year (seasonal ones expired, three scheduled for the holidays, two paused); 48 returns (6 waiting for a decision, 8 refunded less a restocking fee); 420 reviews (13 hidden, 46 with the store's reply); 10 suppliers in four currencies; 14 purchase orders (8 received, 1 cancelled, 1 approved and on its way, 1 approved and overdue, 1 partly received, 1 waiting for approval, 1 draft); 116 audit entries; and notifications for each demo account, its newest two unread.
 
-All data is fictitious and there is no backend. Each browser tab keeps its own data in `sessionStorage` (it survives a reload; other tabs start fresh), and "Reset demo data" in the account menu restores the seed. The sign-in page lists the demo accounts with one-click buttons; credentials are checked only against the tab's accounts. The clock starts at November 9, 2026, 10:00 and moves on with real time. Checkout accepts only the published test cards (for example `4242 4242 4242 4242`; `4000 0000 0000 0002` is declined and `4000 0000 0000 9995` fails for insufficient funds), with any future expiry.
+Owen's bell has today's new orders, the returns waiting for him, the newest reviews, and purchasing news: 9 products below their reorder point with nothing on order, PO-2026-0010 overdue, and PO-2026-0012 approved by Lena. Lena's bell has the same 9 products, PO-2026-0013 (CA$9,946.64, raised by Owen) waiting for her approval, and part of PO-2026-0011 arriving. Maya starts with 14 orders (one packed and one on its way), two saved addresses in the same-day delivery area, and a wishlist with one product in stock and one out of stock (the Stoneware Bud Vase, with a back-in-stock notice requested).
+
+All data is fictitious and there is no backend. Each browser tab keeps its own data in `sessionStorage` (it survives a reload; other tabs start fresh), and "Reset demo data" in the account menu restores the seed. The tab stores only what changed since the seed, which is built the same way in every tab, so a fresh tab's data is about 1 KB although it holds hundreds of orders. Credentials are checked only against the tab's accounts. The clock starts at November 9, 2026, 10:00 and moves on with real time. Checkout accepts only the published test cards (for example `4242 4242 4242 4242`; `4000 0000 0000 0002` is declined and `4000 0000 0000 9995` fails for insufficient funds), with any future expiry.
 
 ## What to try
 
-1. As a visitor, filter the catalog by category, price, and rating, add products from the cards or a product page, and open the cart drawer. On the cart page, apply `WELCOME10` (10% off a first order), then check out with `4242 4242 4242 4242`. Try the decline card first: the cart stays as it was.
-2. Sign in as Maya and check out to her saved Fairbank address with same-day local delivery: a map of the courier's route and the estimated arrival appear. `WELCOME10` is refused, since Maya has ordered before.
-3. Sign in as Owen. In **Orders**, use the fulfilment board to pack the new order, ship it with a tracking number, and mark it delivered. Sign in as Maya: each step is a notice on her account, and the order page shows the timeline.
-4. As Maya, request a return on a delivered order. As Owen, approve it in **Returns**: the items go back into stock and the amount is refunded.
-5. As Owen, open **Products**, give the Stoneware Bud Vase (out of stock) some stock. The store shows the change at once, and Maya gets a back-in-stock notice for the vase on her wishlist. A sale started in **Pricing** shows in the store the same way.
-6. As Owen, choose **View store**: a bar says you are viewing the store as the retailer, and the cart and checkout are not offered to staff.
+1. Sign in as Owen. On **Orders**, sort by total, hide a column with **Columns**, and set 50 a page: the view is kept when you leave and come back, and **Reset view** restores it. **Export CSV** downloads the filtered orders. Select the placed and packed orders: the bar offers **Mark … packed** and **Print labels and ship** (each order gets its carrier tracking number, and each customer hears about their order).
+2. On **Pricing**, select a few products, choose **Lower by a percentage** with 10 and an empty reason: the summary names the reason field. Write one and choose **Review changes**: a dialog lists each product's old and new prices before you confirm. Open one product's row to set its price with a compare-at price below the price: the compare-at price must be above it.
+3. On **Offers & coupons**, choose **New coupon**: type `TAKE20` as the code ("already another coupon's code" appears while you type), a percentage of 95 (1 to 90 only), and an end date before the start date (refused). Open `BLACKFRI25`: it's scheduled, so it isn't usable at checkout before November 27.
+4. On **Returns**, select two waiting returns and approve them with a full refund, or reject them with a reason. Open another and approve it with a refund below the items' total: a note saying why is required.
+5. On **Products**, open a product: its SKU must be unique (try `KG-KIT-0101`), and a product with a photo needs a photo description. The **Replenishment** section sets the reorder point, reorder quantity (not below the reorder point), preferred supplier, supplier SKU, and unit cost.
+6. Use the header search: as Owen, type `maya`, `10480`, `R-0012`, `KG-KIT`, `BLACK`, `PO-2026-0013`, or `fairbank`.
+7. Restock by purchase order, across the two back-office roles:
+   1. As Owen, open **Reorder**: the 9 products below their reorder point with nothing on order, lowest stock first. **Show** switches to everything below its reorder point, with what's already on order. Select the Stoneware Bud Vase and the Ceramic Canister Trio and choose **Create purchase orders**: one draft to Fairbank Ceramics, with each product's reorder quantity at its unit cost, linked under the message. Run it again on the same products: they're on order now, so they're left out.
+   2. Open the draft. Change a quantity to 0 or clear a unit cost and save: each line shows its message and the summary links to it. Add a product from the list (Fairbank Ceramics' own products come first), set an expected date in the past (refused), then save and **Submit for approval**.
+   3. At about $1,100 it's within the $5,000 limit, so Owen can **Approve and send** it himself after a confirmation. It's on its way now, and the Reorder list no longer shows it.
+   4. Under **Receive goods**, enter more vases than are outstanding (refused), then 10 vases and nothing else: the order becomes **Partly received**, the vases go into stock, and the timeline records the receipt. Sign in as Maya: her bell says the vase is back in stock. As Owen again, choose **Fill in everything outstanding** and receive the rest: the order is **Received** and closed. On the product's page, stock is above its reorder point again.
+   5. Open **PO-2026-0013** (CA$9,946.64, over the limit): Owen raised it, so he can't approve it, only return it to draft. Sign in as Lena: the bell says it waits for her approval. Approve it; Owen's bell says it was approved.
+   6. Open **PO-2026-0010** (overdue, nothing received) and **Cancel order** with an empty reason (refused), then with one: its products are back on the reorder list. On **Suppliers**, add a supplier named `fairbank ceramics` ("already a supplier" while you type) and a lead time of 120 (1 to 90 only).
+   7. Open **Audit log**: the purchase orders created, changed, submitted, approved, received, and cancelled, each receipt's stock change with stock before and after, and the supplier and reorder settings changes, each linking to its record.
+8. Sign in as Maya. The bell lists the same notices as **Overview**, and marking them read in one marks them read in the other. Request a return on a delivered order: Owen's bell says it waits for him. In the header search, type an order number such as `10475`.
+9. As a visitor, filter the catalog, add products, and check out with `4242 4242 4242 4242` and `WELCOME10`: Owen's bell says a new order waits to be fulfilled, and a product that falls to its reorder point is flagged for both back-office accounts.
 
 ## Pages
+
+### Back office (layout: sidebar back office)
+
+| Page | Route | What it does |
+|:--|:--|:--|
+| Dashboard | `/showcase/ecommerce/admin` | Net revenue, orders to fulfil, and average order value for 30 days; purchasing (products below their reorder point, purchase orders awaiting approval or receipt, and overdue ones, each linked); stock alerts; recent orders; and best sellers. |
+| Orders | `/showcase/ecommerce/admin/orders` | A Grid of every order with search and a status filter (`?status=`), and bulk **Mark packed**, **Print labels and ship**, and **Mark delivered**; a fulfilment board with each order's next step. |
+| Order | `/showcase/ecommerce/admin/orders/{Id:int}` | Items, totals, customer, delivery, payment, history, and returns; pack, ship, deliver, cancel, or refund. |
+| Products | `/showcase/ecommerce/admin/products` | A Grid of every product, archived ones included, with stock and what's on order; filters for category, status, and stock; "Adjust stock"; bulk **Publish**, **Unpublish**, and **Move to category**. |
+| New product | `/showcase/ecommerce/admin/products/new` | The product editor for a new product, with a suggested SKU. |
+| Edit product | `/showcase/ecommerce/admin/products/{Id:int}` | The editor with SKU and photo description, sales and rating, Archive or Restore, Delete when nothing refers to it, and the **Replenishment** settings. |
+| Reorder | `/showcase/ecommerce/admin/reorder` | A Grid of products at or below their reorder point (with nothing on order by default) and bulk **Create purchase orders**, one draft per preferred supplier. |
+| Purchase orders | `/showcase/ecommerce/admin/purchase-orders` | A Grid of purchase orders with status (open and overdue included) and supplier filters (`?status=`), and **New purchase order** for a supplier. |
+| Purchase order | `/showcase/ecommerce/admin/purchase-orders/{Id:int}` | Lines (edited while a draft or waiting for approval), approval, receiving, cancelling, the supplier, and the timeline. |
+| Suppliers | `/showcase/ecommerce/admin/suppliers` | A Grid of suppliers with contact, lead time, currency, terms, products, and open orders; add and edit in a validated dialog (`?supplier=` opens one). |
+| Pricing | `/showcase/ecommerce/admin/pricing` | A Grid of prices with a price dialog per product, and bulk changes by a percentage or an amount, start or end a sale, with a reason and a preview. |
+| Offers & coupons | `/showcase/ecommerce/admin/offers` | A Grid of coupons with status in words (active, scheduled, paused, expired, used up); create, edit (`?code=` opens one), pause, resume, and delete. |
+| Customers | `/showcase/ecommerce/admin/customers` | A Grid of customers with account type, country, orders, and spend; choosing one (or `?email=`) shows their orders. |
+| Returns | `/showcase/ecommerce/admin/returns` | A Grid of return requests, waiting ones first, with bulk approve with a full refund and reject with a reason. |
+| Return | `/showcase/ecommerce/admin/returns/{Id:int}` | The request, its items, and the decision: approve with a refund up to the items' total, or reject with a reason. |
+| Reviews | `/showcase/ecommerce/admin/reviews` | A Grid of reviews with status, rating, and reply filters; bulk **Publish** and **Hide**; the store's public reply in a dialog. |
+| Analytics | `/showcase/ecommerce/admin/analytics` | KPIs for 7, 14, or 30 days against the period before; revenue per day, revenue by category, orders by status, top products, and coupon usage. |
+| Audit log | `/showcase/ecommerce/admin/audit` | Who did what and when, newest first, in a Grid with column filters, paging, and CSV export: the store team, customers, and the store's system. Each record links to its page. |
+| Account | `/showcase/ecommerce/admin/account` | The staff member's name, email, and password. |
 
 ### Storefront (layout: public, Navbar)
 
@@ -56,56 +95,69 @@ All data is fictitious and there is no backend. Each browser tab keeps its own d
 
 | Page | Route | What it does |
 |:--|:--|:--|
-| Overview | `/showcase/ecommerce/account` | Notices with "Mark all as read", recent orders, the default address, and a wishlist summary. |
+| Overview | `/showcase/ecommerce/account` | Notices with "Mark all as read" (the bell reads the same notices), recent orders, the default address, and a wishlist summary. |
 | Orders | `/showcase/ecommerce/account/orders` | Orders by status group, with "Buy again" and "Cancel" (before the order is packed). |
-| Addresses | `/showcase/ecommerce/account/addresses` | Up to ten addresses: add, edit, set as default, and delete. |
+| Addresses | `/showcase/ecommerce/account/addresses` | Up to ten addresses with unique labels: add, edit, set as default, and delete. |
 | Wishlist | `/showcase/ecommerce/account/wishlist` | Saved products with stock in words, add to cart, and a "Tell me when it's back" switch. |
 | Profile | `/showcase/ecommerce/account/profile` | Name, email, and password. |
 
-### Store admin (layout: sidebar back office)
+## Purchasing and receiving
 
-| Page | Route | What it does |
-|:--|:--|:--|
-| Dashboard | `/showcase/ecommerce/admin` | Net revenue, orders to fulfil, average order value, and stock alerts for 30 days, recent orders, and best sellers. |
-| Orders | `/showcase/ecommerce/admin/orders` | A searchable, sortable grid with a status filter (`?status=`), and a fulfilment board with each order's next step. |
-| Order | `/showcase/ecommerce/admin/orders/{Id:int}` | Items, totals, customer, delivery, payment, history, and returns; pack, ship, deliver, cancel, or refund. |
-| Products | `/showcase/ecommerce/admin/products` | Every product, archived ones included, with filters and an "Adjust stock" dialog. |
-| New product | `/showcase/ecommerce/admin/products/new` | The product editor for a new product. |
-| Edit product | `/showcase/ecommerce/admin/products/{Id:int}` | The editor with sales and rating, "View in store", Archive or Restore, and Delete when nothing refers to the product. |
-| Pricing | `/showcase/ecommerce/admin/pricing` | A bulk price change or sale for a category, previewed row by row, and per-product prices. |
-| Offers & coupons | `/showcase/ecommerce/admin/offers` | Coupons with rules and status in words; create, edit, pause, resume, and delete. |
-| Customers | `/showcase/ecommerce/admin/customers` | Customers with order count and spend; choosing one (or `?email=`) shows their orders. |
-| Returns | `/showcase/ecommerce/admin/returns` | Return requests, waiting ones first; approve (restock and refund) or reject with a note. |
-| Reviews | `/showcase/ecommerce/admin/reviews` | Moderation: hide or publish reviews, and post, edit, or remove the store's public reply. |
-| Analytics | `/showcase/ecommerce/admin/analytics` | KPIs for 7, 14, or 30 days against the period before; revenue per day, revenue by category, orders by status, top products, and coupon usage. |
-| Account | `/showcase/ecommerce/admin/account` | The retailer's name, email, and password. |
+**Reorder points.** Each product has a reorder point (0 to 1,000 units), a reorder quantity (1 to 5,000, and not below the reorder point), a preferred supplier, the supplier's SKU, and a unit cost in the supplier's currency. At or below its reorder point a product is flagged: it shows on the reorder list, the dashboard, and the product list ("Low, 3 left"). What open purchase orders still have to deliver counts as **on order** and shows next to stock, so a product isn't ordered twice: the reorder list leaves products already on order out unless you ask to see them, and **Create purchase orders** skips them. A product added in the tab starts with a reorder point of 5 and no supplier.
+
+**Suppliers.** Each has a unique name, a contact, an order email, a lead time of 1 to 90 days (a new purchase order is expected after it), a currency (USD, CAD, EUR, or GBP), and payment terms.
+
+**Purchase orders.** A purchase order (numbered like `PO-2026-0014`) goes to one supplier and moves from **Draft** to **Waiting for approval**, **Approved, sent**, **Partly received**, and **Received**, or is **Cancelled**. A draft (or a submitted order, which the audit log records as a change after submitting) has 1 to 50 lines, each product once, quantities of 1 to 10,000, unit costs above 0, an expected date from today to a year ahead, and an optional note. Submitting needs at least one line.
+
+**Approval.** The total is compared with $5,000 in US dollars at fixed demo rates (CAD 0.73, EUR 1.08, GBP 1.27). At or below it, anyone in the back office approves the order, its creator included, after a confirmation. Above it, a second person approves it: the purchasing manager approves an order someone else raised, and the retailer approves one the purchasing manager raised. Anyone in the back office can also return a submitted order to draft with a reason (5 to 200 characters), for its creator to change. Approved lines can't change.
+
+**Receiving.** On an approved or partly received order, enter what arrived per product, from 0 to what's outstanding (more is refused), with at least one above 0 and an optional note. The quantities go into stock at once: each stock change is audited with stock before and after, a product above its reorder point again leaves the reorder list, and customers waiting for a sold-out product are told it's back. What's left stays on order; when nothing is outstanding, the order is received and closed. An order past its expected date that isn't received in full is **Overdue**.
+
+**Cancelling.** An open order that nothing arrived on can be cancelled with a reason (5 to 200 characters); its quantities no longer count as on order.
+
+**Notifications.** Both back-office accounts are told, in one notification per change, when products fall to their reorder point (except the person who caused it); the people who may approve an order when it's submitted; the creator when it's approved, returned, cancelled, or received by someone else; and the creator, when they sign in, of their overdue orders.
+
+**Audit.** Every step is recorded: "Purchase order created", "Purchase order changed" (or "… changed after submit"), "Purchase order submitted", "Purchase order approved" (within or over the limit), "Purchase order returned" (with the reason), "Goods received" (the quantities), "Stock received" (stock before and after, per product), "Purchase order cancelled" (with the reason), "Supplier created" or "Supplier updated" (what changed), and "Reorder settings changed" (what changed).
+
+## Enterprise features
+
+- **Grid lists**: orders, products, reorder, purchase orders, suppliers, pricing, coupons, customers, returns, reviews, and the audit log use the [Grid](/components/grid) with sorting, paging, a column chooser, and CSV export of the filtered rows. Each list keeps its view (sort, page size, hidden and reordered columns) in the tab's `sessionStorage` until **Reset view**. A whole row opens its record through a stretched link, or, for a record without its own page (a coupon, a supplier, a price, a review, a customer), a stretched button that opens its dialog or panel. Orders, products, reorder, pricing, returns, and reviews have multi-row selection with a bulk bar.
+- **Validated forms**: required, length, and format rules (SKUs, coupon codes, supplier emails, supplier SKUs, tracking numbers), uniqueness checks with a "Checking…" state (product SKU, coupon code, supplier name, address label), cross-field rules (a compare-at price above the price, a coupon's start on or before its end and a usage limit not below its uses, a refund up to the items' total with a note when it's less, a reorder quantity not below the reorder point, a supplier's unit cost, purchase-order lines and receipts within what's outstanding, an expected date from today), and a summary that links each failing field after a failed submit.
+- **Global search** in both headers: the back office finds customers, orders, returns, products (name or SKU), coupons, purchase orders, and suppliers; a customer finds their own orders and the store's products.
+- **Notifications** with an unread count and mark as read: for the back office, new orders, returns to decide, reviews to moderate, products below their reorder point, and purchase orders waiting for approval, approved, returned, cancelled, received, or overdue; for the customer, the account's notices (order steps, return decisions and refunds, back in stock).
+- **Audit log** of the store team, customers, and the store's system.
+- **Loading, empty, and error states** on every list, with a "Demo: simulate a loading error" control to show the error state and its Retry.
 
 ## Components used
 
-- [Navbar](/components/navbar): the store header, with a Categories dropdown.
+- [Grid](/components/grid): every back-office record list, with the column chooser, CSV export, paging, and multi-row selection.
+- [Sidebar](/components/sidebar): the back-office navigation.
+- [Modal](/components/modal): ship with a tracking number, adjust stock, prices and the bulk preview, coupons, suppliers, a new purchase order, approve, return, and cancel a purchase order, return decisions, review replies, addresses, cancel and refund, and deletes.
+- [Line chart](/data-visualization/line-chart), [Bar chart](/data-visualization/bar-chart), and [Doughnut chart](/data-visualization/doughnut-chart) (BlazorExpress.ChartJS): the analytics.
+- [Badge](/components/badge): order, purchase-order, return, and stock statuses in words.
+- [Navbar](/components/navbar) and [Dropdown](/components/dropdown): the store header, with a Categories dropdown, the account menu, and the bell.
 - [Offcanvas](/components/offcanvas): the cart drawer.
 - [Toasts](/components/toasts): "Added to cart" messages.
 - [Carousel](/components/carousel): the hero on Home.
 - [Card](/components/card): product cards.
-- [List group](/components/list-group), [Range input](/forms/range-input), [Switch](/forms/switch), and [Collapse](/components/collapse): the catalog filters (category, maximum price, sale only), which fold behind a toggle on small screens.
-- [Pagination](/components/pagination): the catalog, admin customers, and reviews.
+- [List group](/components/list-group), [Range input](/forms/range-input), [Switch](/forms/switch), and [Collapse](/components/collapse): the catalog filters, which fold behind a toggle on small screens.
+- [Pagination](/components/pagination): the catalog.
 - [Rating input](/forms/rating-input): the average rating (read-only) and the review form on product pages.
 - [Tabs](/components/tabs): details, reviews, and shipping on product pages.
 - [Breadcrumb](/components/breadcrumb): the catalog and product pages.
 - [Timeline](/components/timeline): the order status on the order pages.
-- [Grid](/components/grid): the admin order and product lists.
-- [Sidebar](/components/sidebar): the store admin navigation.
-- [Modal](/components/modal): addresses, cancel and refund, ship with a tracking number, adjust stock, bulk pricing, coupons, returns, review edits, and deletes.
-- [Line chart](/data-visualization/line-chart), [Bar chart](/data-visualization/bar-chart), and [Doughnut chart](/data-visualization/doughnut-chart) (BlazorExpress.ChartJS): the admin analytics.
-- [Text input](/forms/text-input), [Text area input](/forms/textarea-input), [Number input](/forms/number-input), [Checkbox input](/forms/checkbox-input), [Date input](/forms/date-input), and [Input group](/components/input-group): checkout, the product editor, pricing, coupons, and search boxes.
-- [Button group](/components/button-group) (`RadioButtonGroup`): the minimum rating filter, color choice, delivery choice, order views, and date ranges.
+- [Text input](/forms/text-input), [Text area input](/forms/textarea-input), [Number input](/forms/number-input), [Checkbox input](/forms/checkbox-input), [Date input](/forms/date-input), and [Input group](/components/input-group): every form and search box.
+- [Button group](/components/button-group) (`RadioButtonGroup`): the minimum rating filter, color choice, delivery choice, coupon kind, order views, and date ranges.
+- [Placeholders](/components/placeholders): the lists' loading state.
 - [Google Map](/components/google-map): the same-day delivery route at checkout, when the host has a Maps API key (otherwise a static placeholder with the same places).
-- [Badge](/components/badge), [Alert](/components/alerts), [Buttons](/components/buttons), and [Icons](/content/icons): statuses, notes, and actions.
-- [Avatar](/components/avatar), [Dropdown](/components/dropdown), and [Theme switcher](/components/theme-switcher): through the shared account menu and site bar.
+- [Alert](/components/alerts), [Buttons](/components/buttons), and [Icons](/content/icons): notes and actions.
+- [Avatar](/components/avatar) and [Theme switcher](/components/theme-switcher): through the shared account menu and site bar.
+
+Forms use Blazor's `EditForm` with `DataAnnotationsValidator`, `InputText`, `InputTextArea`, `InputSelect`, and `InputRadioGroup`. Plain Bootstrap tables remain where the content is not a record list: an order's, a return's, and a purchase order's lines (the purchase-order line editor and the receiving form are tables of inputs), the bulk pricing preview, a customer's orders in their panel, the dashboard's lists, and the analytics charts' hidden data tables.
 
 ## How the theme is built
 
-This is one of the older sites, so there is no shared frame component. The storefront layout, `EcommerceLayout.razor`, has the root `.sc-site.sc-ecommerce`; the back office, `EcommerceAdminLayout.razor`, has `.sc-site.sc-ecommerce.ea-admin`. Scoped CSS ties each layout's variables to its own elements, so `EcommerceAdminLayout.razor.css` repeats the store's color tokens (with a slightly darker page background, `#f7f4f0`). The admin has its own layout with the modules in a sidebar, separate from the storefront (D-031). When the retailer views the store, a "Viewing your store as Owen Hart (Retailer)" bar with "Back to admin" sits above the header, and buying is hidden (D-032).
+The storefront layout, `EcommerceLayout.razor`, has the root `.sc-site.sc-ecommerce`; the back office, `EcommerceAdminLayout.razor`, has `.sc-site.sc-ecommerce.ea-admin`, a top bar with the search, the bell, "View store", and the account menu, and a sidebar. Scoped CSS ties each layout's variables to its own elements, so `EcommerceAdminLayout.razor.css` repeats the store's color tokens (with a slightly darker page background, `#f7f4f0`) and styles the Grid lists and bulk bars of every back-office page through `::deep`. The back office has its own layout, separate from the storefront (D-031), and admits the retailer and the purchasing manager. When staff view the store, a "Viewing your store as … (Retailer)" bar with "Back to admin" sits above the header, and buying is hidden (D-032).
 
 Color tokens in light mode: `--sc-primary` `#c2410c` (burnt orange), `--sc-primary-hover` `#9a3412`, contrast `#fff`, page background `#fdfaf6`. In dark mode (`[data-bs-theme=dark]`): `--sc-primary` `#fb923c`, hover `#fdba74`, contrast `#1c1009`, page background `#16110d`. Because the dark primary is a light orange, `.text-bg-primary` text switches to the dark contrast color. Sale prices and stars have their own tokens (`--ec-sale`, `--ec-star`).
 
@@ -113,10 +165,12 @@ Fonts come from Google Fonts: Fraunces (600 and 700) for headings and DM Sans fo
 
 The shared stylesheet `wwwroot/css/blazorbootstrap.demo.rcl.css` maps the `--sc-*` tokens to Bootstrap (`--bs-primary`, link and focus colors, body and heading fonts, primary buttons). There is no chart theme class: the analytics page sets its chart colors itself. The series colors are mid-tones that keep 3:1 contrast on both the light and the dark panel (store orange `#ea580c`, and one color per order status), and the axis, grid, and legend colors follow the color mode. When you switch the theme, the admin's site bar tells `EcommerceState`, and the charts redraw.
 
+The product photos and home hero images are licensed stock photos listed in `wwwroot/showcase/CREDITS.md`; a product's sizes and editions show the original product's photo, and a product added in the tab shows a placeholder.
+
 ## Accessibility and responsiveness
 
-- The quantity stepper's minus and plus buttons stay enabled at the limits, so keyboard focus never drops; a press past a limit does nothing.
-- The wishlist heart uses `aria-pressed` and announces the change; star ratings on cards are icons with a text alternative, so a grid of cards adds no extra tab stops.
-- Each analytics chart has a visually hidden data table, and a status region announces the chosen range.
-- The account tabs mark the current page with `aria-current="page"` and a filled pill, not color alone. Dialogs return focus to the button that opened them, or to the status message when that button is gone.
-- At 375 px the catalog filters fold behind a "Show filters" button (with the number of active filters), the header collapses into a menu, and the account tabs wrap.
+- Statuses (waiting for approval, partly received, overdue, low stock, scheduled, used up) are words in badges, not colors alone; the purchase-order timeline is a list of steps in words.
+- Each list row's checkbox is labelled with its record ("Select order #10480, …"), and the header checkbox reads "Select all shown orders". A row opens its record through a stretched link or button, so the row has no extra interactive role. Inputs in the purchase-order line and receiving tables have labels naming the product.
+- After a failed submit, the error summary takes focus and links to each field, the purchase-order lines included; each message is tied to its field with `aria-describedby`. Outcomes are announced in status messages (a repeat gets a counter), and focus moves to the outcome when the control that had it goes away; dialogs return focus to the button that opened them.
+- The quantity stepper's minus and plus buttons stay enabled at the limits, so keyboard focus never drops; the wishlist heart uses `aria-pressed`; each analytics chart has a visually hidden data table.
+- At 375 px the catalog filters fold behind a "Show filters" button, the store header collapses into a menu, the back office's top bar wraps its search onto its own line, filters and bulk bars stack, and wide grids and line tables scroll inside their own box.

@@ -14,6 +14,7 @@ else
 
         <ShowcaseRoleGuard Roles="@HcSeedData.PatientRole" SignInPath="@HcLayout.SignInPath">
             @{
+                var minutes = HcVisitTypes.MinutesOf(form.VisitType);
                 var slot = ChosenSlot;
                 var clinic = State.FindClinic(slot?.ClinicId ?? doctor.ClinicId);
                 var upcoming = UpcomingCount;
@@ -21,7 +22,10 @@ else
             }
 
             <h1 class="hc-title mb-1">Book a visit with @doctor.Name</h1>
-            <p class="hc-lead mb-4">Choose an open time, tell @doctor.Name what the visit is for, and book. Visits are @HcState.SlotMinutes minutes.</p>
+            <p class="hc-lead mb-4">
+                Choose the kind of visit and an open time, tell @doctor.Name what it's for, and book. A first visit with a doctor is a new patient visit of
+                @HcVisitTypes.NewPatientMinutes minutes; later visits take @HcVisitTypes.StandardMinutes.
+            </p>
 
             <div class="row g-4">
                 <div class="col-lg-7">
@@ -43,54 +47,95 @@ else
                             </div>
                         }
 
-                        <section aria-labelledby="hc-book-time-title">
-                            <h2 class="hc-section-title" id="hc-book-time-title" tabindex="-1" @ref="timeHeading">Your time</h2>
-                            @if (slot is not null)
-                            {
-                                <p class="hc-book-chosen mb-1">
-                                    <Icon Name="IconName.CalendarCheck" class="me-2" aria-hidden="true" />@HcDisplay.DayLong(slot.Start) at @HcDisplay.Time(slot.Start)
-                                </p>
-                                <p class="small text-body-secondary mb-2">@HcState.SlotMinutes minutes at @(clinic?.Name)</p>
-                                <button type="button" class="btn btn-sm btn-outline-primary" aria-expanded="@(pickerOpen ? "true" : "false")" aria-controls="hc-book-picker" @onclick="TogglePicker">
-                                    <Icon Name="IconName.Clock" class="me-1" aria-hidden="true" />@(pickerOpen ? "Keep this time" : "Change time")
-                                </button>
-                            }
-                            else if (chosen is { } missing)
-                            {
-                                <p class="text-warning-emphasis fw-semibold mb-0">
-                                    <Icon Name="IconName.ExclamationTriangleFill" class="me-2" aria-hidden="true" />@HcDisplay.When(missing) isn't open any more: someone may have just booked it, or it's too soon. Choose another time below.
-                                </p>
-                            }
-                            else
-                            {
-                                <p class="mb-0">You haven't chosen a time yet. Choose a day, then a time below.</p>
-                            }
+                        <EditForm EditContext="editContext" OnSubmit="SubmitAsync" FormName="hc-book" novalidate>
+                            <DataAnnotationsValidator />
+                            <ShowcaseFormErrors ShowSummary="true" />
 
-                            @* Always rendered, so picking a time is announced. *@
-                            <p class="small fw-semibold text-success-emphasis mt-2 mb-0" role="status">@timeMessage</p>
+                            <fieldset class="mb-4">
+                                <legend class="hc-section-title mb-2">Kind of visit</legend>
+                                <InputRadioGroup @bind-Value="form.VisitType">
+                                    <div class="form-check">
+                                        <InputRadio class="form-check-input" id="hc-book-type-new" Value="@HcVisitType.NewPatient" aria-describedby="hc-book-type-help" />
+                                        <label class="form-check-label" for="hc-book-type-new">@HcDisplay.VisitTypeText(HcVisitType.NewPatient): my first visit with @doctor.Name</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <InputRadio class="form-check-input" id="hc-book-type-standard" Value="@HcVisitType.Standard" aria-describedby="hc-book-type-help" />
+                                        <label class="form-check-label" for="hc-book-type-standard">@HcDisplay.VisitTypeText(HcVisitType.Standard): I've seen @doctor.Name before</label>
+                                    </div>
+                                </InputRadioGroup>
+                                <div class="form-text" id="hc-book-type-help">@(HasSeenDoctor ? $"You've seen {doctor.Name} before." : $"You haven't seen {doctor.Name} yet.")</div>
+                                <ValidationMessage For="() => form.VisitType" />
+                            </fieldset>
 
-                            @if (slot is null || pickerOpen)
-                            {
-                                <div class="mt-3" id="hc-book-picker">
-                                    <SlotPicker DoctorId="@doctor.Id" Selected="slot?.Start" OnSelect="OnPick" IdPrefix="hc-book-sp" />
+                            <section aria-labelledby="hc-book-time-title" class="mb-4">
+                                <h2 class="hc-section-title" id="hc-book-time-title" tabindex="-1" @ref="timeHeading">Your time</h2>
+                                @if (slot is not null)
+                                {
+                                    <p class="hc-book-chosen mb-1">
+                                        <Icon Name="IconName.CalendarCheck" class="me-2" aria-hidden="true" />@HcDisplay.DayLong(slot.Start) at @HcDisplay.Time(slot.Start)
+                                    </p>
+                                    <p class="small text-body-secondary mb-2">@minutes minutes at @(clinic?.Name)</p>
+                                    <button type="button" class="btn btn-sm btn-outline-primary" aria-expanded="@(pickerOpen ? "true" : "false")" aria-controls="hc-book-picker" @onclick="TogglePicker">
+                                        <Icon Name="IconName.Clock" class="me-1" aria-hidden="true" />@(pickerOpen ? "Keep this time" : "Change time")
+                                    </button>
+                                }
+                                else if (form.Start is { } missing)
+                                {
+                                    <p class="text-warning-emphasis fw-semibold mb-0">
+                                        <Icon Name="IconName.ExclamationTriangleFill" class="me-2" aria-hidden="true" />@HcDisplay.When(missing) isn't open for a @minutes-minute visit any more: someone may have just booked it, or it's too soon. Choose another time below.
+                                    </p>
+                                }
+                                else
+                                {
+                                    <p class="mb-0">You haven't chosen a time yet. Choose a day, then a time below.</p>
+                                }
+
+                                @* Always rendered, so picking a time and the free-time check are announced. *@
+                                <p class="small fw-semibold text-success-emphasis mt-2 mb-0" role="status">@(checkingTime ? "Checking the time is still free…" : timeMessage)</p>
+                                <ValidationMessage For="() => form.Start" />
+
+                                @if (slot is null || pickerOpen)
+                                {
+                                    <div class="mt-3" id="hc-book-picker">
+                                        <SlotPicker DoctorId="@doctor.Id" Selected="slot?.Start" OnSelect="OnPick" IdPrefix="hc-book-sp" Minutes="minutes" />
+                                    </div>
+                                }
+                            </section>
+
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold" for="hc-book-reason">Reason for the visit</label>
+                                <InputTextArea id="hc-book-reason" class="form-control" rows="3" maxlength="@HcState.MaxReasonLength" @bind-Value="form.Reason"
+                                               aria-describedby="hc-book-reason-help hc-book-reason-count" />
+                                <div class="d-flex flex-wrap justify-content-between column-gap-3">
+                                    <div class="form-text" id="hc-book-reason-help">In a few words, like "Knee pain when climbing stairs". @doctor.Name reads it before the visit.</div>
+                                    <div class="form-text" id="hc-book-reason-count">@((form.Reason ?? string.Empty).Trim().Length) of @HcState.MaxReasonLength characters</div>
                                 </div>
-                            }
-                        </section>
-
-                        <EditForm Model="form" OnSubmit="Submit" FormName="hc-book" class="mt-4" novalidate>
-                            <ShowcaseFormErrors />
-                            <label class="form-label fw-semibold" for="hc-book-reason">
-                                Reason for the visit <span class="fw-normal text-body-secondary">(required)</span>
-                            </label>
-                            <textarea id="hc-book-reason" class="form-control @(reasonError is null ? null : "is-invalid")" rows="3" maxlength="@HcState.MaxReasonLength"
-                                      @bind="form.Reason" @bind:event="oninput" @bind:after="OnReasonInput" @ref="reasonInput"
-                                      aria-describedby="hc-book-reason-help hc-book-reason-count hc-book-reason-error" aria-required="true"
-                                      aria-invalid="@(reasonError is null ? null : "true")"></textarea>
-                            <div class="d-flex flex-wrap justify-content-between column-gap-3">
-                                <div class="form-text" id="hc-book-reason-help">In a few words, like "Knee pain when climbing stairs". @doctor.Name reads it before the visit.</div>
-                                <div class="form-text" id="hc-book-reason-count">@(form.Reason?.Length ?? 0) of @HcState.MaxReasonLength characters</div>
+                                <ValidationMessage For="() => form.Reason" />
                             </div>
-                            <p class="text-danger-emphasis fw-semibold small mt-1 mb-0" id="hc-book-reason-error">@reasonError</p>
+
+                            <fieldset class="mb-3">
+                                <legend class="form-label fw-semibold fs-6 mb-1">How you'll pay</legend>
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label small fw-semibold" for="hc-book-payer">Health plan</label>
+                                        <InputSelect id="hc-book-payer" class="form-select" @bind-Value="form.PayerId" aria-describedby="hc-book-payer-help">
+                                            <option value="">Self-pay (no health plan)</option>
+                                            @foreach (var payer in State.Payers)
+                                            {
+                                                <option value="@payer.Id" @key="payer.Id">@payer.Name</option>
+                                            }
+                                        </InputSelect>
+                                        <div class="form-text" id="hc-book-payer-help">From your record; a change here is saved to it.</div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label small fw-semibold" for="hc-book-member">Member ID</label>
+                                        <InputText id="hc-book-member" class="form-control hc-mono" @bind-Value="form.MemberId" maxlength="12" autocomplete="off" autocapitalize="characters" spellcheck="false"
+                                                   disabled="@(form.PayerId.Length == 0)" aria-describedby="hc-book-member-help" />
+                                        <div class="form-text" id="hc-book-member-help">@(State.FindPayer(form.PayerId) is { } chosenPayer ? $"{chosenPayer.MemberIdPrefix} and nine digits, as on your {chosenPayer.Name} card." : "Not needed for self-pay.")</div>
+                                        <ValidationMessage For="() => form.MemberId" />
+                                    </div>
+                                </div>
+                            </fieldset>
 
                             <div class="mt-3" role="alert">
                                 @if (bookError is not null)
@@ -105,7 +150,7 @@ else
                                 }
                             </div>
 
-                            <Button Type="ButtonType.Submit" Color="ButtonColor.Primary" Size="ButtonSize.Large" Class="w-100 mt-3" Disabled="booking">
+                            <Button Type="ButtonType.Submit" Color="ButtonColor.Primary" Size="ButtonSize.Large" Class="w-100 mt-3" Disabled="@(booking || checkingTime)">
                                 <Icon Name="IconName.CalendarPlus" class="me-2" aria-hidden="true" />Book appointment
                             </Button>
                             <p class="small text-body-secondary text-center mt-2 mb-0">You can reschedule or cancel online up to 2 hours before the visit.</p>

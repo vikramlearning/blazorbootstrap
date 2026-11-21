@@ -1,0 +1,434 @@
+@page "/showcase/healthcare/staff/claims/{Id:int}"
+@layout HcStaffLayout
+
+@* One insurance claim: what was sent and to whom, every version of its codes, the plan's answers, its history, and the
+   next step for billing (submit, record the answer, correct, appeal, write off, or bill the patient). Doctors see it
+   read-only and correct codes on the visit page. *@
+<div class="container-fluid px-lg-4">
+    <ShowcaseRoleGuard Roles="@ClaimRoles" SignInPath="@HcLayout.SignInPath">
+        @if (State.FindClaim(Id) is not { } claim)
+        {
+            <HcNotFound Message="This claim doesn't exist, or the link is wrong. Find it under Claims." />
+        }
+        else
+        {
+            var patient = State.FindPatient(claim.PatientId);
+            var visit = State.FindAppointment(claim.AppointmentId);
+            var doctor = State.FindDoctor(visit?.DoctorId);
+            var payer = State.FindPayer(claim.PayerId);
+            var billing = State.IsBilling;
+            var last = claim.Responses.LastOrDefault();
+            var bill = patient is null ? null : State.BillsOf(patient.Id).FirstOrDefault(item => item.AppointmentId == claim.AppointmentId);
+            var final = HcState.IsFinalDenial(claim);
+            var history = State.AuditEntries.Where(entry => entry.TargetUrl == Url(claim.Id)).OrderBy(entry => entry.At).ThenBy(entry => entry.Id).ToList();
+
+            <PageTitle>@claim.Number · @HcSeedData.ProductName</PageTitle>
+
+            <nav aria-label="Breadcrumb">
+                <ol class="breadcrumb small mb-2">
+                    @if (billing)
+                    {
+                        <li class="breadcrumb-item"><a href="@Claims.ListUrl">Claims</a></li>
+                    }
+                    else if (visit is not null)
+                    {
+                        <li class="breadcrumb-item"><a href="@HcDisplay.StaffAppointmentUrl(visit.Id)">Visit @HcDisplay.Day(visit.Start)</a></li>
+                    }
+                    <li class="breadcrumb-item active" aria-current="page">@claim.Number</li>
+                </ol>
+            </nav>
+
+            <div class="d-flex flex-wrap align-items-start justify-content-between gap-3 mb-3">
+                <div class="hc-wrap">
+                    <h1 class="hc-title mb-1">Claim @claim.Number</h1>
+                    <p class="hc-lead mb-0">
+                        <span class="badge text-bg-@StatusColor(claim.Status) me-1">@StatusLabel(claim)</span>
+                        @(patient?.Name ?? "A former patient") · @(payer?.Name) · version @claim.Versions.Count · billed @HcDisplay.Money(claim.BilledCents)
+                    </p>
+                </div>
+            </div>
+
+            @* Always rendered and focusable, so every step is announced and focus has somewhere to go once a dialog closes. *@
+            <p class="hc-form-status mb-3 @(statusIsError ? "text-danger-emphasis" : "text-success-emphasis")" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
+
+            @if (billing)
+            {
+                <section class="hc-panel mb-3" aria-labelledby="hc-cd-next-title">
+                    <h2 class="hc-section-title" id="hc-cd-next-title">Next step</h2>
+                    <p class="mb-3">@NextStepText(claim)</p>
+                    <div class="d-flex flex-wrap gap-2">
+                        @switch (claim.Status)
+                        {
+                            case HcClaimStatus.Draft or HcClaimStatus.Corrected:
+                                <Button Color="ButtonColor.Primary" @onclick="() => OpenAsync(Dialog.Submit)"><Icon Name="IconName.Send" class="me-1" aria-hidden="true" />@(claim.Status == HcClaimStatus.Corrected ? "Resubmit…" : "Submit…")</Button>
+                                <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => OpenAsync(Dialog.Codes)"><Icon Name="IconName.Tags" class="me-1" aria-hidden="true" />Edit codes…</Button>
+                                break;
+
+                            case HcClaimStatus.Submitted or HcClaimStatus.Appealed:
+                                <Button Color="ButtonColor.Primary" @onclick="() => OpenAsync(Dialog.Response)"><Icon Name="IconName.Inbox" class="me-1" aria-hidden="true" />Record the plan's answer…</Button>
+                                break;
+
+                            case HcClaimStatus.Denied:
+                                @if (!final)
+                                {
+                                    <Button Color="ButtonColor.Primary" @onclick="() => OpenAsync(Dialog.Codes)"><Icon Name="IconName.PencilSquare" class="me-1" aria-hidden="true" />Correct…</Button>
+                                    <Button Color="ButtonColor.Primary" Outline="true" @onclick="() => OpenAsync(Dialog.Appeal)"><Icon Name="IconName.Megaphone" class="me-1" aria-hidden="true" />Appeal…</Button>
+                                }
+                                <Button Color="ButtonColor.Danger" Outline="true" @onclick="() => OpenAsync(Dialog.Close)"><Icon Name="IconName.XCircle" class="me-1" aria-hidden="true" />Write off or bill the patient…</Button>
+                                break;
+
+                            default:
+                                <p class="small text-body-secondary mb-0">Closed: nothing more to do.</p>
+                                break;
+                        }
+                    </div>
+                </section>
+            }
+
+            <div class="row g-3">
+                <div class="col-xl-7">
+                    <section class="hc-panel mb-3" aria-labelledby="hc-cd-facts-title">
+                        <h2 class="hc-section-title" id="hc-cd-facts-title">Claim</h2>
+                        <dl class="hc-cd-facts mb-0">
+                            <div>
+                                <dt>Patient</dt>
+                                <dd>
+                                    @if (patient is not null)
+                                    {
+                                        <a href="@HcDisplay.PatientUrl(State, patient.Id)">@patient.Name</a><span class="hc-mono"> · @patient.Mrn</span>
+                                    }
+                                </dd>
+                            </div>
+                            <div>
+                                <dt>Visit</dt>
+                                <dd>
+                                    @if (visit is not null)
+                                    {
+                                        @if (State.CurrentDoctor is not null)
+                                        {
+                                            <a href="@HcDisplay.StaffAppointmentUrl(visit.Id)">@HcDisplay.When(visit.Start)</a>
+                                        }
+                                        else
+                                        {
+                                            @HcDisplay.When(visit.Start)
+                                        }
+                                        <span> · @(doctor?.Name) · @HcDisplay.VisitTypeText(visit.VisitType)</span>
+                                    }
+                                </dd>
+                            </div>
+                            <div><dt>Health plan</dt><dd>@(payer?.Name), member <span class="hc-mono">@claim.MemberId</span></dd></div>
+                            <div><dt>Billed</dt><dd>@HcDisplay.Money(claim.BilledCents)</dd></div>
+                            <div><dt>Filing deadline</dt><dd>@HcDisplay.Date(State.FilingDeadline(claim))@(claim.SubmittedAt is { } sent ? $" · sent {HcDisplay.Date(sent)}" : null)</dd></div>
+                            <div>
+                                <dt>Appeal</dt>
+                                <dd>
+                                    @(claim.AppealedAt is { } appealed ? $"Appealed {HcDisplay.Date(appealed)}" : claim.AppealDeadline is { } deadline ? $"By {HcDisplay.Date(deadline)} ({DaysLeftText(deadline)})" : final ? "Denied after appeal" : "None")
+                                </dd>
+                            </div>
+                            <div><dt>Patient's bill</dt><dd>@BillText(bill)</dd></div>
+                            @if (claim.WriteOffReason.Length > 0)
+                            {
+                                <div><dt>@(claim.BilledToPatient ? "Billed to the patient" : "Written off")</dt><dd class="hc-plain">@claim.WriteOffReason</dd></div>
+                            }
+                        </dl>
+                    </section>
+
+                    <section class="hc-panel mb-3" aria-labelledby="hc-cd-codes-title">
+                        <h2 class="hc-section-title" id="hc-cd-codes-title">Codes sent (version @claim.Versions.Count)</h2>
+                        <div class="table-responsive">
+                            <table class="table table-sm align-middle mb-0">
+                                <caption class="visually-hidden">The claim's diagnosis and procedure codes, with the procedure fees</caption>
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Code</th>
+                                        <th scope="col">Description</th>
+                                        <th scope="col" class="text-end">Fee</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var listed in claim.DiagnosisCodes)
+                                    {
+                                        <tr @key="@($"dx-{listed}")">
+                                            <th scope="row" class="hc-mono fw-semibold">@listed</th>
+                                            <td>Diagnosis: @(State.DiagnosisCodes.FirstOrDefault(item => item.Code == listed)?.Description)</td>
+                                            <td></td>
+                                        </tr>
+                                    }
+                                    @foreach (var listed in claim.ProcedureCodes)
+                                    {
+                                        var known = State.ProcedureCodes.FirstOrDefault(item => item.Code == listed);
+                                        <tr @key="@($"px-{listed}")">
+                                            <th scope="row" class="hc-mono fw-semibold">@listed</th>
+                                            <td>@(known?.Description)</td>
+                                            <td class="text-end text-nowrap">@HcDisplay.Money(known?.FeeCents ?? 0)</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <th scope="row" colspan="2">Billed</th>
+                                        <td class="text-end fw-semibold text-nowrap">@HcDisplay.Money(claim.BilledCents)</td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </section>
+
+                    <section class="hc-panel mb-3" aria-labelledby="hc-cd-answers-title">
+                        <h2 class="hc-section-title" id="hc-cd-answers-title">Plan's answers (@claim.Responses.Count)</h2>
+                        @if (claim.Responses.Count == 0)
+                        {
+                            <p class="text-body-secondary mb-0">No answer yet.</p>
+                        }
+                        else
+                        {
+                            <div class="table-responsive">
+                                <table class="table table-sm align-middle mb-0">
+                                    <caption class="visually-hidden">The plan's answers, oldest first</caption>
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">Recorded</th>
+                                            <th scope="col">Answer</th>
+                                            <th scope="col" class="text-end">Allowed</th>
+                                            <th scope="col" class="text-end">Paid</th>
+                                            <th scope="col" class="text-end">Patient</th>
+                                            <th scope="col">Codes</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var response in claim.Responses)
+                                        {
+                                            <tr @key="@($"answer-{response.At.Ticks}")">
+                                                <td class="text-nowrap">@HcDisplay.Date(response.At)<span class="d-block small text-body-secondary">version @response.Version@(response.AfterAppeal ? ", after appeal" : null)</span></td>
+                                                <th scope="row" class="fw-normal">@OutcomeLabel(response.Outcome)@(response.Remark.Length > 0 ? ": " : null)<span class="hc-plain small">@response.Remark</span></th>
+                                                <td class="text-end text-nowrap">@HcDisplay.Money(response.AllowedCents)</td>
+                                                <td class="text-end text-nowrap">@HcDisplay.Money(response.PaidCents)</td>
+                                                <td class="text-end text-nowrap">@HcDisplay.Money(response.PatientCents)</td>
+                                                <td>@CodesText(State, response.DenialCodes)</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        }
+                    </section>
+                </div>
+
+                <div class="col-xl-5">
+                    <section class="hc-panel mb-3" aria-labelledby="hc-cd-versions-title">
+                        <h2 class="hc-section-title" id="hc-cd-versions-title">Versions (@claim.Versions.Count)</h2>
+                        <ol class="list-unstyled hc-cd-list mb-0">
+                            @for (var index = claim.Versions.Count - 1; index >= 0; index--)
+                            {
+                                var version = claim.Versions[index];
+                                var previous = index > 0 ? claim.Versions[index - 1] : null;
+
+                                <li @key="@($"version-{version.Number}")">
+                                    <p class="fw-semibold mb-1">Version @version.Number · @HcDisplay.When(version.At) · @version.By</p>
+                                    @if (previous is null)
+                                    {
+                                        <p class="small mb-0">Diagnoses @string.Join(", ", version.DiagnosisCodes); procedures @string.Join(", ", version.ProcedureCodes); member @version.MemberId</p>
+                                    }
+                                    else
+                                    {
+                                        <ul class="small mb-1">
+                                            @foreach (var change in DiffText(previous, version))
+                                            {
+                                                <li>@change</li>
+                                            }
+                                        </ul>
+                                    }
+                                    @if (version.Note.Length > 0)
+                                    {
+                                        <p class="small hc-plain mb-0"><span class="fw-semibold">Note:</span> @version.Note</p>
+                                    }
+                                </li>
+                            }
+                        </ol>
+                    </section>
+
+                    @if (claim.AppealLetter.Length > 0)
+                    {
+                        <section class="hc-panel mb-3" aria-labelledby="hc-cd-letter-title">
+                            <h2 class="hc-section-title" id="hc-cd-letter-title">Appeal letter</h2>
+                            <p class="hc-plain small mb-0">@claim.AppealLetter</p>
+                        </section>
+                    }
+
+                    <section class="hc-panel mb-3" aria-labelledby="hc-cd-history-title">
+                        <h2 class="hc-section-title" id="hc-cd-history-title">History</h2>
+                        @if (history.Count == 0)
+                        {
+                            <p class="text-body-secondary small mb-0">Nothing in the audit log's last weeks. Created @HcDisplay.When(claim.CreatedAt).</p>
+                        }
+                        else
+                        {
+                            <ol class="list-unstyled hc-cd-list mb-0">
+                                @foreach (var entry in history)
+                                {
+                                    <li @key="entry.Id">
+                                        <span class="fw-semibold">@entry.Action</span> · @HcDisplay.When(entry.At) · @entry.Actor
+                                        @if (entry.Details is { } details)
+                                        {
+                                            <span class="d-block small text-body-secondary hc-wrap">@details</span>
+                                        }
+                                    </li>
+                                }
+                            </ol>
+                        }
+                    </section>
+                </div>
+            </div>
+
+            <Modal @ref="modal" IsVerticallyCentered="true" Size="ModalSize.Large" ShowCloseButton="false" aria-labelledby="hc-cd-dialog-title" OnShown="OnShownAsync" OnHidden="OnDialogHidden">
+                <HeaderTemplate>
+                    <h2 class="modal-title h5 hc-wrap" id="hc-cd-dialog-title" tabindex="-1" @ref="dialogHeading">@DialogTitle(claim)</h2>
+                </HeaderTemplate>
+                <BodyTemplate>
+                    @switch (dialog)
+                    {
+                        case Dialog.Submit:
+                            <p>
+                                Send version @claim.Versions.Count of @claim.Number to @(payer?.Name) for @HcDisplay.Money(claim.BilledCents), with member ID <span class="hc-mono">@claim.MemberId</span>.
+                                It must go by @HcDisplay.Date(State.FilingDeadline(claim)), @HcSeedData.FilingDays days after the visit.
+                            </p>
+                            <p class="hc-form-error" role="alert">@dialogError</p>
+                            <div class="d-flex flex-wrap gap-2">
+                                <Button Color="ButtonColor.Primary" @onclick="SubmitAsync"><Icon Name="IconName.Send" class="me-1" aria-hidden="true" />@(claim.Status == HcClaimStatus.Corrected ? "Resubmit" : "Submit")</Button>
+                                <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => modal.HideAsync()">Cancel</Button>
+                            </div>
+                            break;
+
+                        case Dialog.Codes when visit is not null:
+                            <HcCodingForm Appointment="visit" Claim="claim" ShowMemberId="@(claim.Status is HcClaimStatus.Denied or HcClaimStatus.Corrected)" IdPrefix="hc-cd-coding" OnSaved="OnCodedAsync"
+                                          OnCancel="() => modal.HideAsync()" />
+                            break;
+
+                        case Dialog.Response:
+                            <EditForm EditContext="responseContext" OnSubmit="RecordResponseAsync" FormName="hc-claim-response" novalidate>
+                                <DataAnnotationsValidator />
+                                <ShowcaseFormErrors ShowSummary="true" />
+                                <fieldset class="mb-3">
+                                    <legend class="form-label fw-semibold fs-6 mb-1">The plan's answer</legend>
+                                    <InputRadioGroup @bind-Value="responseForm.Outcome">
+                                        @foreach (var outcome in Enum.GetValues<HcClaimOutcome>())
+                                        {
+                                            <div class="form-check" @key="outcome">
+                                                <InputRadio class="form-check-input" id="@($"hc-cd-outcome-{outcome}")" Value="@outcome" />
+                                                <label class="form-check-label" for="@($"hc-cd-outcome-{outcome}")">@OutcomeLabel(outcome)</label>
+                                            </div>
+                                        }
+                                    </InputRadioGroup>
+                                    <ValidationMessage For="() => responseForm.Outcome" />
+                                </fieldset>
+                                @if (responseForm.Outcome != HcClaimOutcome.Denied)
+                                {
+                                    <div class="row g-3 mb-2">
+                                        <div class="col-sm-4">
+                                            <label class="form-label fw-semibold" for="hc-cd-allowed">Allowed ($)</label>
+                                            <InputNumber TValue="decimal?" id="hc-cd-allowed" class="form-control" @bind-Value="responseForm.Allowed" step="0.01" min="0" inputmode="decimal"
+                                                         ParsingErrorMessage="Enter the allowed amount in dollars, like 82.80." aria-describedby="hc-cd-amounts-help" />
+                                            <ValidationMessage For="() => responseForm.Allowed" />
+                                        </div>
+                                        <div class="col-sm-4">
+                                            <label class="form-label fw-semibold" for="hc-cd-paid">Plan paid ($)</label>
+                                            <InputNumber TValue="decimal?" id="hc-cd-paid" class="form-control" @bind-Value="responseForm.Paid" step="0.01" min="0" inputmode="decimal"
+                                                         ParsingErrorMessage="Enter the paid amount in dollars." aria-describedby="hc-cd-amounts-help" />
+                                            <ValidationMessage For="() => responseForm.Paid" />
+                                        </div>
+                                        <div class="col-sm-4">
+                                            <label class="form-label fw-semibold" for="hc-cd-patient">Patient owes ($)</label>
+                                            <InputNumber TValue="decimal?" id="hc-cd-patient" class="form-control" @bind-Value="responseForm.Patient" step="0.01" min="0" inputmode="decimal"
+                                                         ParsingErrorMessage="Enter the patient's share in dollars." aria-describedby="hc-cd-amounts-help" />
+                                            <ValidationMessage For="() => responseForm.Patient" />
+                                        </div>
+                                    </div>
+                                    <p class="form-text mt-0 mb-3" id="hc-cd-amounts-help">
+                                        Billed @HcDisplay.Money(claim.BilledCents). The plan's payment and the patient's share (copay, coinsurance, deductible) add up to the allowed amount.
+                                        @(payer is null ? null : $"{payer.Name} usually allows about {payer.AllowedPercent}% with a {HcDisplay.Money(payer.CopayCents)} copay; the form starts with those.")
+                                    </p>
+                                }
+                                <fieldset class="mb-3">
+                                    <legend class="form-label fw-semibold fs-6 mb-1">Reason and adjustment codes <span class="fw-normal text-body-secondary">(up to @HcState.MaxResponseCodes)</span></legend>
+                                    <div class="hc-cd-codes">
+                                        @foreach (var listed in State.DenialCodes)
+                                        {
+                                            <div class="form-check" @key="listed.Code">
+                                                <input class="form-check-input" type="checkbox" id="@($"hc-cd-code-{listed.Code}")" checked="@responseForm.Codes.Contains(listed.Code)"
+                                                       @onchange="args => ToggleCode(listed.Code, args.Value is true)" />
+                                                <label class="form-check-label" for="@($"hc-cd-code-{listed.Code}")"><span class="hc-mono fw-semibold">@listed.Code</span> @listed.Description</label>
+                                            </div>
+                                        }
+                                    </div>
+                                    <ValidationMessage For="() => responseForm.Codes" />
+                                </fieldset>
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold" for="hc-cd-remark">Plan's remark <span class="fw-normal text-body-secondary">(optional)</span></label>
+                                    <InputText id="hc-cd-remark" class="form-control" @bind-Value="responseForm.Remark" maxlength="@HcState.MaxClaimNoteLength" />
+                                    <ValidationMessage For="() => responseForm.Remark" />
+                                </div>
+                                <p class="hc-form-error" role="alert">@dialogError</p>
+                                <div class="d-flex flex-wrap gap-2">
+                                    <Button Type="ButtonType.Submit" Color="ButtonColor.Primary">Record answer</Button>
+                                    <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => modal.HideAsync()">Cancel</Button>
+                                </div>
+                            </EditForm>
+                            break;
+
+                        case Dialog.Appeal:
+                            <EditForm EditContext="appealContext" OnSubmit="AppealAsync" FormName="hc-claim-appeal" novalidate>
+                                <DataAnnotationsValidator />
+                                <ShowcaseFormErrors ShowSummary="true" />
+                                <p>
+                                    @(payer?.Name) denied it: @CodesText(State, last?.DenialCodes ?? new List<string>()). Appeal by
+                                    @(claim.AppealDeadline is { } appealBy ? HcDisplay.Date(appealBy) : "the deadline"); a denied appeal can only be written off or billed to the patient.
+                                </p>
+                                <label class="form-label fw-semibold" for="hc-cd-letter">Appeal letter</label>
+                                <InputTextArea id="hc-cd-letter" class="form-control" rows="7" maxlength="@HcState.MaxAppealLength" @bind-Value="appealForm.Letter" aria-describedby="hc-cd-letter-help" />
+                                <div class="form-text" id="hc-cd-letter-help">
+                                    Why the plan should pay, in plain text: @HcState.MinAppealLength to @HcState.MaxAppealLength characters. Don't paste the visit notes. @((appealForm.Letter ?? string.Empty).Trim().Length) characters.
+                                </div>
+                                <ValidationMessage For="() => appealForm.Letter" />
+                                <p class="hc-form-error mt-2" role="alert">@dialogError</p>
+                                <div class="d-flex flex-wrap gap-2">
+                                    <Button Type="ButtonType.Submit" Color="ButtonColor.Primary">Send appeal</Button>
+                                    <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => modal.HideAsync()">Cancel</Button>
+                                </div>
+                            </EditForm>
+                            break;
+
+                        case Dialog.Close:
+                            <EditForm EditContext="closeContext" OnSubmit="CloseAsync" FormName="hc-claim-close" novalidate>
+                                <DataAnnotationsValidator />
+                                <ShowcaseFormErrors ShowSummary="true" />
+                                <fieldset class="mb-3">
+                                    <legend class="form-label fw-semibold fs-6 mb-1">How to close it</legend>
+                                    <InputRadioGroup @bind-Value="closeForm.Choice">
+                                        <div class="form-check">
+                                            <InputRadio class="form-check-input" id="hc-cd-writeoff" Value="@WriteOffValue" />
+                                            <label class="form-check-label" for="hc-cd-writeoff">Write off: the clinic absorbs it, and the patient owes nothing</label>
+                                        </div>
+                                        <div class="form-check">
+                                            <InputRadio class="form-check-input" id="hc-cd-patient-bill" Value="@BillPatientValue" />
+                                            <label class="form-check-label" for="hc-cd-patient-bill">Bill the patient the whole @HcDisplay.Money(claim.BilledCents)</label>
+                                        </div>
+                                    </InputRadioGroup>
+                                    <ValidationMessage For="() => closeForm.Choice" />
+                                </fieldset>
+                                <label class="form-label fw-semibold" for="hc-cd-reason">Reason</label>
+                                <InputTextArea id="hc-cd-reason" class="form-control" rows="2" maxlength="@HcState.MaxClaimNoteLength" @bind-Value="closeForm.Reason" aria-describedby="hc-cd-reason-help" />
+                                <div class="form-text" id="hc-cd-reason-help">@HcState.MinClaimNoteLength to @HcState.MaxClaimNoteLength characters, kept with the claim.</div>
+                                <ValidationMessage For="() => closeForm.Reason" />
+                                <p class="hc-form-error mt-2" role="alert">@dialogError</p>
+                                <div class="d-flex flex-wrap gap-2">
+                                    <Button Type="ButtonType.Submit" Color="ButtonColor.Danger">Close the claim</Button>
+                                    <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => modal.HideAsync()">Cancel</Button>
+                                </div>
+                            </EditForm>
+                            break;
+                    }
+                </BodyTemplate>
+            </Modal>
+        }
+    </ShowcaseRoleGuard>
+</div>

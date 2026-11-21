@@ -3,7 +3,7 @@
 
 <PageTitle>Usage · @AiSeedData.ProductName</PageTitle>
 
-@* The signed-in member's usage: this month's tokens against the workspace quota, a chart of the last 30 days, and tokens by model. *@
+@* The signed-in member's usage: this month's tokens against their monthly cap, a chart of the last 30 days, and tokens by model. *@
 <div class="container-xl">
     <AiMemberGuard>
         @{
@@ -13,12 +13,20 @@
 
         <h1 class="pa-title mb-1">Usage</h1>
         <p class="pa-lead mb-4">
-            How much of your monthly quota you've used in @report.MonthName. Tokens are counted as about 4 characters each, for your messages and the assistant's
-            replies. Your quota resets on the 1st of every month.
+            How much of your monthly cap you've used in @report.MonthName. Tokens are counted as about 4 characters each, for your messages and the assistant's
+            replies. Your cap starts again on the 1st of every month.
         </p>
 
+        @if (State.WorkspaceSpend is { Level: not AiSpendLevel.Ok } workspaceSpend)
+        {
+            <p class="pa-usage-alert @(workspaceSpend.Level == AiSpendLevel.Blocked ? "pa-usage-alert-danger" : "pa-usage-alert-warning") mb-4" role="status">
+                <Icon Name="IconName.ExclamationTriangle" class="me-2" aria-hidden="true" /><strong>@(workspaceSpend.Level == AiSpendLevel.Blocked ? "The workspace used its monthly cap." : "The workspace is near its monthly cap.")</strong>
+                @($" {State.WorkspaceName} has used {workspaceSpend.Percent.ToString("0", CultureInfo.InvariantCulture)}% of it; at 100% chat pauses for everyone until an admin raises it.")
+            </p>
+        }
+
         <section class="pa-panel mb-4" aria-labelledby="pa-usage-quota-title">
-            <h2 class="pa-section-title" id="pa-usage-quota-title">This month's quota</h2>
+            <h2 class="pa-section-title" id="pa-usage-quota-title">This month's cap</h2>
             <p class="pa-usage-big mb-2">
                 <span class="pa-mono">@AiDisplay.Tokens(report.MonthTokens)</span>
                 <span class="text-body-secondary fs-6 fw-normal">of @AiDisplay.Tokens(report.Quota) tokens</span>
@@ -32,15 +40,15 @@
             @if (level == QuotaLevel.Over)
             {
                 <p class="pa-usage-alert pa-usage-alert-danger mt-3 mb-0">
-                    <Icon Name="IconName.ExclamationOctagon" class="me-2" aria-hidden="true" /><strong>Over the quota.</strong>
-                    You've used all of this month's tokens, so new messages can't be sent until @report.ResetText, or until a workspace admin raises the quota.
+                    <Icon Name="IconName.ExclamationOctagon" class="me-2" aria-hidden="true" /><strong>Chat is paused.</strong>
+                    You've used all of this month's tokens, so new messages can't be sent until @report.ResetText, or until an Admin or @State.OwnerName (the Owner) raises your cap.
                 </p>
             }
             else if (level == QuotaLevel.Warning)
             {
                 <p class="pa-usage-alert pa-usage-alert-warning mt-3 mb-0">
-                    <Icon Name="IconName.ExclamationTriangle" class="me-2" aria-hidden="true" /><strong>Almost at the quota.</strong>
-                    You've used @report.PercentText of it. When a message and its reply would go over, it isn't sent; the quota resets on @report.ResetText.
+                    <Icon Name="IconName.ExclamationTriangle" class="me-2" aria-hidden="true" /><strong>Almost at your cap.</strong>
+                    You've used @report.PercentText of it. At 100% chat pauses until an admin raises it; the cap starts again on @report.ResetText.
                 </p>
             }
         </section>
@@ -69,6 +77,13 @@
             </div>
         </section>
 
+        @* The charts and their tables, with the empty and error states of a data screen (rule WR-001). *@
+        <ShowcaseDataState IsEmpty="@(report.Days.All(day => day.Tokens == 0))" EmptyIcon="IconName.BarChart" EmptyTitle="No usage in the last 30 days"
+                           EmptyText="Start a chat: your messages and the replies count here.">
+            <EmptyActions>
+                <a class="btn btn-primary" href="@($"{AiLayout.Base}/chat")">New chat</a>
+            </EmptyActions>
+            <ChildContent>
         <div class="row g-4">
             <div class="col-xl-7">
                 <section class="pa-panel h-100" aria-labelledby="pa-usage-daily-title">
@@ -147,5 +162,7 @@
                 </section>
             </div>
         </div>
+            </ChildContent>
+        </ShowcaseDataState>
     </AiMemberGuard>
 </div>

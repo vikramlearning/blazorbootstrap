@@ -1,0 +1,146 @@
+@* A patient's prescriptions on their chart, in a Grid; a prescription has no page of its own, so the row opens a dialog
+   with its details and Stop. *@
+@{
+    var count = State.PrescriptionsOf(PatientId).Count;
+    var patientName = State.FindPatient(PatientId)?.Name ?? "the patient";
+}
+<section class="pt-3" aria-labelledby="hc-chart-rx-title">
+    <h2 class="hc-section-title" id="hc-chart-rx-title">Prescriptions <span class="text-body-secondary fw-normal">(@count)</span></h2>
+    <div class="hc-list-meta mt-0 mb-2">
+        <p class="small text-body-secondary mb-0">Active first. Open a prescription for its directions, its last refill answer, and Stop.</p>
+        @* Back to the saved view's defaults: active first, 10 a page, every column in its place. *@
+        <Button Color="ButtonColor.Link" Size="ButtonSize.Small" Class="p-0" @onclick="ResetViewAsync">Reset view<span class="visually-hidden">&#32;of the prescriptions</span></Button>
+    </div>
+    @* Always rendered and focusable, so Stop is announced and focus has somewhere to go once the dialog closes. *@
+    <p class="hc-list-status mb-2 @(statusIsError ? "text-danger-emphasis" : null)" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
+    <ShowcaseDataState Status="@(viewLoaded ? ShowcaseDataStatus.Ready : ShowcaseDataStatus.Loading)"
+                       IsEmpty="@(count == 0)"
+                       EmptyIcon="IconName.Capsule"
+                       EmptyTitle="No prescriptions yet"
+                       EmptyText="Prescribe a medicine in a visit; it shows here, and the patient sees it under Prescriptions."
+                       LoadingText="Loading prescriptions…"
+                       OnRetry="RefreshGridAsync">
+        <ChildContent>
+            <Grid @ref="grid"
+                  @key="gridVersion"
+                  TItem="RxRow"
+                  Class="table table-hover align-middle hc-table-wide sc-grid-row-links"
+                  GridContainerClass="hc-grid border rounded-3"
+                  DataProvider="ProvidePrescriptionsAsync"
+                  SettingsProvider="view.GetSettingsAsync"
+                  GridSettingsChanged="SaveSettingsAsync"
+                  AllowPaging="true"
+                  PageSize="@pageSize"
+                  PageSizeSelectorVisible="true"
+                  PageSizeSelectorItems="@(new[] { 10, 25, 50 })"
+                  PaginationItemsTextFormat="{0}–{1} of {2} prescriptions"
+                  AllowSorting="true"
+                  AllowColumnChooser="true"
+                  AllowExport="true"
+                  ExportFileName="clinic-patient-prescriptions"
+                  Responsive="true"
+                  EmptyText="No prescriptions yet."
+                  aria-label="Prescriptions">
+                <GridColumns>
+                    <GridColumn TItem="RxRow" HeaderText="Medication" PropertyName="Medication" SortString="medication" SortKeySelector="row => row.Medication"
+                                IsDefaultSortColumn="@view.IsSortColumn("medication")" SortDirection="@view.DirectionFor("medication")" AlwaysVisible="true">
+                        @{
+                            var row = context;
+                        }
+                        @* No page of its own: the stretched button makes the whole row open the prescription's dialog. *@
+                        <button type="button" class="hc-row-button stretched-link" @ref="openers[row.Id]" @onclick="() => OpenAsync(row.Id)">@row.Medication</button>
+                    </GridColumn>
+                    <GridColumn TItem="RxRow" HeaderText="Dose" PropertyName="Dose" SortString="dose" SortKeySelector="row => row.Dose"
+                                IsDefaultSortColumn="@view.IsSortColumn("dose")" SortDirection="@view.DirectionFor("dose")">
+                        @context.Dose
+                    </GridColumn>
+                    <GridColumn TItem="RxRow" HeaderText="Status" PropertyName="Status" SortString="status" SortKeySelector="row => row.StatusValue"
+                                IsDefaultSortColumn="@view.IsSortColumn("status")" SortDirection="@view.DirectionFor("status")" TextNoWrap="true">
+                        <span class="@(context.StatusValue == HcPrescriptionStatus.Active ? "badge text-bg-success" : "badge text-bg-secondary")">@context.Status</span>
+                    </GridColumn>
+                    <GridColumn TItem="RxRow" HeaderText="Quantity" PropertyName="Quantity" SortString="quantity" SortKeySelector="row => row.Quantity"
+                                IsDefaultSortColumn="@view.IsSortColumn("quantity")" SortDirection="@view.DirectionFor("quantity")" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End">
+                        @context.Quantity
+                    </GridColumn>
+                    <GridColumn TItem="RxRow" HeaderText="Refills left" PropertyName="Refills" SortString="refills" SortKeySelector="row => row.Refills"
+                                IsDefaultSortColumn="@view.IsSortColumn("refills")" SortDirection="@view.DirectionFor("refills")" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End">
+                        @context.Refills
+                    </GridColumn>
+                    <GridColumn TItem="RxRow" HeaderText="Prescribed" PropertyName="PrescribedText" SortString="prescribed" SortKeySelector="row => row.Prescribed"
+                                IsDefaultSortColumn="@view.IsSortColumn("prescribed")" SortDirection="@view.DirectionFor("prescribed")" TextNoWrap="true">
+                        @context.PrescribedText
+                    </GridColumn>
+                    <GridColumn TItem="RxRow" HeaderText="Prescribed by" PropertyName="Doctor" SortString="doctor" SortKeySelector="row => row.Doctor"
+                                IsDefaultSortColumn="@view.IsSortColumn("doctor")" SortDirection="@view.DirectionFor("doctor")">
+                        @context.Doctor
+                    </GridColumn>
+                    <GridColumn TItem="RxRow" HeaderText="Refill" PropertyName="Refill" SortString="refill" SortKeySelector="row => row.Refill"
+                                IsDefaultSortColumn="@view.IsSortColumn("refill")" SortDirection="@view.DirectionFor("refill")">
+                        @context.Refill
+                    </GridColumn>
+                </GridColumns>
+            </Grid>
+        </ChildContent>
+    </ShowcaseDataState>
+</section>
+
+<Modal @ref="modal" IsVerticallyCentered="true" ShowCloseButton="false" aria-labelledby="hc-chart-rx-dialog-title" OnShown="OnShownAsync" OnHidden="OnHiddenAsync">
+    <HeaderTemplate>
+        <h2 class="modal-title h5 hc-wrap" id="hc-chart-rx-dialog-title">
+            @(Opened is { } shown ? (confirmStop ? $"Stop {shown.Medication} {shown.Dose} for {patientName}?" : $"{shown.Medication} {shown.Dose}") : "Prescription")
+        </h2>
+    </HeaderTemplate>
+    <BodyTemplate>
+        @if (Opened is not { } prescription)
+        {
+            <p class="mb-0">This prescription isn't on the chart any more.</p>
+        }
+        else if (confirmStop)
+        {
+            <p class="mb-0">
+                @patientName sees it as stopped under Prescriptions and can't ask for refills any more. A waiting refill request is closed with a note. To restart
+                it, prescribe it again in a visit.
+            </p>
+        }
+        else
+        {
+            <dl class="hc-chart-facts mb-0">
+                <div>
+                    <dt>Directions</dt>
+                    <dd class="hc-plain">@prescription.Directions</dd>
+                </div>
+                <div>
+                    <dt>Each fill</dt>
+                    <dd>Quantity @prescription.Quantity, lasts @prescription.DaysSupply days; @PatientChart.RefillsText(prescription.Refills) left</dd>
+                </div>
+                <div>
+                    <dt>Last filled</dt>
+                    <dd>@HcDisplay.Date(prescription.LastFilledOn); next refill from @HcDisplay.Date(HcState.EarliestRefillOn(prescription))</dd>
+                </div>
+                <div>
+                    <dt>Prescribed</dt>
+                    <dd>@HcDisplay.Date(prescription.PrescribedAt) by @(State.FindDoctor(prescription.DoctorId)?.Name ?? "a former doctor")</dd>
+                </div>
+                <div>
+                    <dt>Refill</dt>
+                    <dd class="hc-plain">@RefillText(prescription)</dd>
+                </div>
+            </dl>
+        }
+    </BodyTemplate>
+    <FooterTemplate>
+        @if (Opened is { Status: HcPrescriptionStatus.Active } && confirmStop)
+        {
+            <Button Color="ButtonColor.Secondary" Outline="true" @onclick="KeepIt">Keep it</Button>
+            <Button Color="ButtonColor.Danger" @onclick="ConfirmStopAsync"><Icon Name="IconName.SlashCircle" class="me-1" aria-hidden="true" />Stop prescription</Button>
+        }
+        else
+        {
+            @if (Opened is { Status: HcPrescriptionStatus.Active })
+            {
+                <Button Color="ButtonColor.Danger" Outline="true" @onclick="AskStop"><Icon Name="IconName.SlashCircle" class="me-1" aria-hidden="true" />Stop…</Button>
+            }
+            <button type="button" class="btn btn-secondary" @ref="dialogClose" @onclick="() => modal.HideAsync()">Close</button>
+        }
+    </FooterTemplate>
+</Modal>

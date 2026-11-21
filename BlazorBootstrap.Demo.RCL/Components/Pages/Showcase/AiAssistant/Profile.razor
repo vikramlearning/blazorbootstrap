@@ -3,7 +3,7 @@
 
 <PageTitle>Profile · @AiSeedData.ProductName</PageTitle>
 
-@* The member's name, email, and password; their chat preferences; and their workspace membership. *@
+@* The member's name, email, and password; their chat preferences; and their workspace membership and role. *@
 <div class="container-xl">
     <AiMemberGuard>
         @{
@@ -14,8 +14,8 @@
 
         <h1 class="pa-title mb-1">Profile</h1>
         <p class="pa-lead mb-4">
-            Your name, email, and password for this demo, how you like to chat, and your place in the @AiSeedData.WorkspaceName workspace.
-            Workspace admins see your name and email in the members list.
+            Your name, email, and password for this demo, how you like to chat, and your place in the @State.WorkspaceName workspace.
+            Admins and the Owner see your name and email in the members list.
         </p>
 
         <ShowcaseAccountProfile />
@@ -29,21 +29,23 @@
                     {
                         <p class="pa-profile-notice">
                             <Icon Name="IconName.InfoCircle" class="me-2" aria-hidden="true" />
-                            Your saved default model, @offModel.Name, was turned off by a workspace admin. New chats start with the workspace default,
+                            Your saved default model, @offModel.Name, was turned off by an Admin. New chats start with the workspace default,
                             @(defaultModel?.Name ?? State.Policy.DefaultModelId), until you choose another model and save.
                         </p>
                     }
 
-                    <form @onsubmit="SavePreferences" novalidate aria-labelledby="pa-profile-prefs-title">
+                    <EditForm EditContext="editContext" OnSubmit="SavePreferences" FormName="pa-preferences" novalidate>
+                        <DataAnnotationsValidator />
+                        <ShowcaseFormErrors ShowSummary="true" />
                         <div class="mb-3">
                             <label class="form-label fw-semibold" for="pa-profile-model">Default model for new chats</label>
-                            <select id="pa-profile-model" class="form-select" @bind="modelChoice" @ref="modelSelect" aria-describedby="pa-profile-model-help">
+                            <InputSelect id="pa-profile-model" class="form-select" @bind-Value="form.ModelId" aria-describedby="pa-profile-model-help">
                                 <option value="">Workspace default (@(defaultModel?.Name ?? State.Policy.DefaultModelId))</option>
                                 @foreach (var model in State.EnabledModels)
                                 {
                                     <option value="@model.Id" @key="model.Id">@model.Name</option>
                                 }
-                            </select>
+                            </InputSelect>
                             <div class="form-text" id="pa-profile-model-help">
                                 <span class="d-block mb-1">You can still change the model in any chat. The models your workspace offers:</span>
                                 <ul class="pa-profile-models mb-0">
@@ -55,24 +57,24 @@
                                     }
                                 </ul>
                             </div>
+                            <ValidationMessage For="() => form.ModelId" />
                         </div>
 
                         <div class="form-check mb-1">
-                            <input class="form-check-input" type="checkbox" id="pa-profile-enter" @bind="enterToSend" aria-describedby="pa-profile-enter-help" />
+                            <InputCheckbox class="form-check-input" id="pa-profile-enter" @bind-Value="form.EnterToSend" aria-describedby="pa-profile-enter-help" />
                             <label class="form-check-label fw-semibold" for="pa-profile-enter">Press Enter to send (Shift+Enter for a new line)</label>
                         </div>
                         <div class="form-text mt-0 mb-3" id="pa-profile-enter-help">
-                            @(enterToSend
+                            @(form.EnterToSend
                                 ? "Enter sends your message; Shift+Enter starts a new line."
                                 : "Off: Enter starts a new line, and Ctrl+Enter sends your message.")
                         </div>
 
-                        <div class="d-flex flex-wrap align-items-center gap-3">
-                            <Button Type="ButtonType.Submit" Color="ButtonColor.Primary">Save preferences</Button>
-                        </div>
-                        @* Always rendered and focusable, so a save is announced and focus has somewhere to go when it fails. *@
-                        <p class="pa-profile-status fw-semibold mt-3 mb-0 @(statusIsError ? "text-danger-emphasis" : null)" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
-                    </form>
+                        <p class="pa-form-error mb-3" role="alert">@errorMessage</p>
+                        <Button Type="ButtonType.Submit" Color="ButtonColor.Primary">Save preferences</Button>
+                        @* Always rendered and focusable, so a save is announced. *@
+                        <p class="pa-profile-status fw-semibold mt-3 mb-0" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
+                    </EditForm>
                 </section>
             </div>
 
@@ -83,29 +85,25 @@
                     {
                         <dl class="pa-profile-facts">
                             <dt>Workspace</dt>
-                            <dd>@AiSeedData.WorkspaceName</dd>
+                            <dd>@State.WorkspaceName</dd>
                             <dt>Your role</dt>
                             <dd>
                                 @AiDisplay.RoleLabel(member.Role)
-                                <span class="d-block small text-body-secondary">
-                                    @(member.Role == AiMemberRole.Admin
-                                        ? "You chat, and you also manage members, shared prompts, and the model and policy settings."
-                                        : "You chat with the assistant, save your own prompts, and use the shared ones.")
-                                </span>
+                                <span class="d-block small text-body-secondary">@AiDisplay.RoleSummary(member.Role)</span>
                             </dd>
                             <dt>Joined</dt>
                             <dd>@member.JoinedAt.ToString("MMMM d, yyyy", CultureInfo.InvariantCulture)</dd>
-                            <dt>Monthly quota</dt>
-                            <dd>@AiDisplay.Tokens(State.Policy.MonthlyTokenQuota) tokens · <a href="@($"{AiLayout.Base}/usage")">See your usage</a></dd>
+                            <dt>Monthly cap</dt>
+                            <dd>@AiDisplay.Tokens(State.CapOf(member)) tokens@(member.MonthlyCap is null ? " (the default)" : " (your own)") · <a href="@($"{AiLayout.Base}/usage")">See your usage</a></dd>
                         </dl>
                     }
-                    @if (State.IsWorkspaceAdmin)
+                    @if (State.Can(AiPermission.ManageSharedPrompts))
                     {
-                        <a class="btn btn-outline-primary" href="@AiAdminLayout.Base"><Icon Name="IconName.Speedometer2" class="me-2" aria-hidden="true" />Open Workspace admin</a>
+                        <a class="btn btn-outline-primary" href="@AiDisplay.AdminHomeFor(State)"><Icon Name="IconName.Speedometer2" class="me-2" aria-hidden="true" />Open Workspace admin</a>
                     }
                     else
                     {
-                        <p class="small text-body-secondary mb-0">Workspace admins manage members, roles, and settings. Ask one if you need a change.</p>
+                        <p class="small text-body-secondary mb-0">Admins and the Owner (@State.OwnerName) manage members, roles, and settings. Ask one of them if you need a change.</p>
                     }
                 </section>
             </div>

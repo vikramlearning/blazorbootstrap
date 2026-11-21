@@ -129,10 +129,10 @@
                                             <td>
                                                 <div class="d-flex flex-wrap justify-content-end gap-2">
                                                     <button type="button" class="btn btn-sm btn-outline-primary" @ref="openers[editKey]" @onclick="() => EditBlock(block)">
-                                                        Edit<span class="visually-hidden"> @label</span>
+                                                        Edit<span class="visually-hidden">&#32;@label</span>
                                                     </button>
                                                     <button type="button" class="btn btn-sm btn-outline-danger" @ref="openers[deleteKey]" @onclick="() => AskDeleteBlockAsync(block, deleteKey)">
-                                                        Delete<span class="visually-hidden"> @label</span>
+                                                        Delete<span class="visually-hidden">&#32;@label</span>
                                                     </button>
                                                 </div>
                                             </td>
@@ -150,53 +150,57 @@
 
                 <div class="hc-panel">
                     <h3 class="hc-av-form-title" id="hc-av-hours-form-title" tabindex="-1" @ref="hoursFormHeading">@(editingBlockId == 0 ? "Add hours" : $"Edit {editingBlockLabel}")</h3>
-                    <form @onsubmit="SaveHours" novalidate>
+                    <EditForm EditContext="hoursContext" OnSubmit="SaveHours" FormName="hc-hours" novalidate aria-labelledby="hc-av-hours-form-title">
+                        <DataAnnotationsValidator />
+                        <ShowcaseFormErrors ShowSummary="true" />
                         <div class="row g-3">
                             <div class="col-sm-6">
                                 <label class="form-label fw-semibold" for="hc-av-day">Day</label>
-                                <select id="hc-av-day" class="form-select" @bind="hoursDay">
+                                <InputSelect id="hc-av-day" class="form-select" @bind-Value="hoursForm.Day">
                                     @foreach (var day in DoctorProfile.Week)
                                     {
                                         <option value="@day">@day</option>
                                     }
-                                </select>
+                                </InputSelect>
+                                <ValidationMessage For="() => hoursForm.Day" />
                             </div>
                             <div class="col-sm-6">
                                 <label class="form-label fw-semibold" for="hc-av-clinic">Clinic</label>
-                                <select id="hc-av-clinic" class="form-select" @bind="hoursClinic">
+                                <InputSelect id="hc-av-clinic" class="form-select" @bind-Value="hoursForm.ClinicId" aria-describedby="hc-av-clinic-help">
+                                    <option value="">Choose a clinic</option>
                                     @foreach (var clinic in State.Clinics)
                                     {
                                         <option value="@clinic.Id">@clinic.Name</option>
                                     }
-                                </select>
+                                </InputSelect>
+                                <div class="form-text" id="hc-av-clinic-help">@(State.FindClinic(hoursForm.ClinicId) is { } open ? $"Open {open.Hours}." : "Where the doctor sees patients in these hours.")</div>
+                                <ValidationMessage For="() => hoursForm.ClinicId" />
                             </div>
                             <div class="col-sm-6">
                                 <label class="form-label fw-semibold" for="hc-av-start">Start</label>
-                                <select id="hc-av-start" class="form-select @(hoursError is null ? null : "is-invalid")" @bind="hoursStart" @ref="hoursStartInput"
-                                        aria-invalid="@(hoursError is null ? null : "true")" aria-describedby="hc-av-times-help hc-av-hours-error">
+                                <InputSelect TValue="int" id="hc-av-start" class="form-select" @bind-Value="hoursForm.StartMinute" aria-describedby="hc-av-times-help">
                                     @for (var minute = HcState.DayStartMinute; minute < HcState.DayEndMinute; minute += HcState.SlotMinutes)
                                     {
                                         <option value="@minute">@HcDisplay.Minutes(minute)</option>
                                     }
-                                </select>
+                                </InputSelect>
+                                <ValidationMessage For="() => hoursForm.StartMinute" />
                             </div>
                             <div class="col-sm-6">
                                 <label class="form-label fw-semibold" for="hc-av-end">End</label>
-                                <select id="hc-av-end" class="form-select @(hoursError is null && endError is null ? null : "is-invalid")" @bind="hoursEnd" @ref="hoursEndInput"
-                                        aria-invalid="@(hoursError is null && endError is null ? null : "true")" aria-describedby="hc-av-times-help hc-av-end-error hc-av-hours-error">
+                                <InputSelect TValue="int" id="hc-av-end" class="form-select" @bind-Value="hoursForm.EndMinute" aria-describedby="hc-av-times-help">
                                     @for (var minute = HcState.DayStartMinute + HcState.SlotMinutes; minute <= HcState.DayEndMinute; minute += HcState.SlotMinutes)
                                     {
                                         <option value="@minute">@HcDisplay.Minutes(minute)</option>
                                     }
-                                </select>
-                                <div class="hc-av-error" id="hc-av-end-error">@endError</div>
+                                </InputSelect>
+                                <ValidationMessage For="() => hoursForm.EndMinute" />
                             </div>
                         </div>
                         <p class="form-text mb-2" id="hc-av-times-help">
-                            Whole or half hours from @HcDisplay.Minutes(HcState.DayStartMinute) to @HcDisplay.Minutes(HcState.DayEndMinute), in @HcState.SlotMinutes-minute appointments.
-                            Blocks on the same day can't overlap.
+                            Whole or half hours on a weekday, within the clinic's opening hours, in @HcState.SlotMinutes-minute appointments (a new patient visit takes two). Blocks
+                            on the same day can't overlap.
                         </p>
-                        <div class="hc-av-error mb-2" id="hc-av-hours-error">@hoursError</div>
                         <div class="d-flex flex-wrap gap-2 mt-3">
                             <button type="submit" class="btn btn-primary">@(editingBlockId == 0 ? "Add hours" : "Save changes")</button>
                             @if (editingBlockId != 0)
@@ -204,7 +208,7 @@
                                 <button type="button" class="btn btn-outline-secondary" @onclick="StopEditingBlock">Stop editing</button>
                             }
                         </div>
-                    </form>
+                    </EditForm>
                 </div>
             </section>
 
@@ -262,31 +266,30 @@
 
                 <div class="hc-panel">
                     <h3 class="hc-av-form-title" id="hc-av-off-form-title" tabindex="-1" @ref="offFormHeading">@(editingOffId == 0 ? "Add time off" : $"Edit time off {editingOffLabel}")</h3>
-                    <form @onsubmit="SaveTimeOff" novalidate>
+                    <EditForm EditContext="offContext" OnSubmit="SaveTimeOff" FormName="hc-time-off" novalidate aria-labelledby="hc-av-off-form-title">
+                        <DataAnnotationsValidator />
+                        <ShowcaseFormErrors ShowSummary="true" />
                         <div class="row g-3">
                             <div class="col-sm-6 col-xl-12 col-xxl-6">
                                 <label class="form-label fw-semibold" for="hc-av-from">First day away</label>
-                                <input id="hc-av-from" type="date" class="form-control @(fromError is null && offError is null ? null : "is-invalid")" value="@offFrom" @onchange="OnFromChanged"
-                                       min="@QueryValue(today)" @ref="offFromInput" aria-invalid="@(fromError is null && offError is null ? null : "true")"
-                                       aria-describedby="hc-av-from-error hc-av-off-error" />
-                                <div class="hc-av-error" id="hc-av-from-error">@fromError</div>
+                                <InputDate TValue="DateTime?" id="hc-av-from" class="form-control" @bind-Value="offForm.From" min="@QueryValue(today)"
+                                           ParsingErrorMessage="Enter the first day away as a full date." />
+                                <ValidationMessage For="() => offForm.From" />
                             </div>
                             <div class="col-sm-6 col-xl-12 col-xxl-6">
                                 <label class="form-label fw-semibold" for="hc-av-to">Last day away</label>
-                                <input id="hc-av-to" type="date" class="form-control @(toError is null && offError is null ? null : "is-invalid")" value="@offTo" @onchange="OnToChanged"
-                                       min="@QueryValue(today)" @ref="offToInput" aria-invalid="@(toError is null && offError is null ? null : "true")"
-                                       aria-describedby="hc-av-to-help hc-av-to-error hc-av-off-error" />
+                                <InputDate TValue="DateTime?" id="hc-av-to" class="form-control" @bind-Value="offForm.To" min="@QueryValue(offForm.From ?? today)"
+                                           ParsingErrorMessage="Enter the last day away as a full date." aria-describedby="hc-av-to-help" />
                                 <div class="form-text" id="hc-av-to-help">Whole days, up to @HcState.MaxTimeOffDays days, ending today or later.</div>
-                                <div class="hc-av-error" id="hc-av-to-error">@toError</div>
+                                <ValidationMessage For="() => offForm.To" />
                             </div>
                             <div class="col-12">
                                 <label class="form-label fw-semibold" for="hc-av-reason">Reason (optional)</label>
-                                <input id="hc-av-reason" type="text" class="form-control" maxlength="@HcState.MaxReasonLength" autocomplete="off"
-                                       @bind="offReason" @bind:event="oninput" aria-describedby="hc-av-reason-help" />
-                                <div class="form-text" id="hc-av-reason-help">Staff only: patients see the dates, never the reason. @offReason.Length of @HcState.MaxReasonLength characters.</div>
+                                <InputText id="hc-av-reason" class="form-control" maxlength="@HcState.MaxReasonLength" autocomplete="off" @bind-Value="offForm.Reason" aria-describedby="hc-av-reason-help" />
+                                <div class="form-text" id="hc-av-reason-help">Staff only: patients see the dates, never the reason. @((offForm.Reason ?? string.Empty).Trim().Length) of @HcState.MaxReasonLength characters.</div>
+                                <ValidationMessage For="() => offForm.Reason" />
                             </div>
                         </div>
-                        <div class="hc-av-error mt-2" id="hc-av-off-error">@offError</div>
                         <div class="d-flex flex-wrap gap-2 mt-3">
                             <button type="submit" class="btn btn-primary">@(editingOffId == 0 ? "Add time off" : "Save changes")</button>
                             @if (editingOffId != 0)
@@ -294,7 +297,7 @@
                                 <button type="button" class="btn btn-outline-secondary" @onclick="StopEditingTimeOff">Stop editing</button>
                             }
                         </div>
-                    </form>
+                    </EditForm>
                 </div>
             </section>
         </div>

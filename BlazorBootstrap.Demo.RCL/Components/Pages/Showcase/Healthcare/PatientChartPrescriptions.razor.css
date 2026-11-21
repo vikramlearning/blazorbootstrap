@@ -1,0 +1,20 @@
+/* A prescription's dialog: its facts as label and value pairs, in columns where there is room. */
+.hc-chart-facts {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr));
+    gap: .75rem 1.5rem;
+}
+
+    .hc-chart-facts dt {
+        margin-bottom: .125rem;
+        font-size: .75rem;
+        font-weight: 700;
+        letter-spacing: .02em;
+        text-transform: uppercase;
+        color: var(--bs-secondary-color);
+    }
+
+    .hc-chart-facts dd {
+        margin: 0;
+        overflow-wrap: anywhere;
+    }

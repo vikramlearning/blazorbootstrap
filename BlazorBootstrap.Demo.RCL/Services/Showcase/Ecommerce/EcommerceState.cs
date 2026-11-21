@@ -120,7 +120,12 @@ public sealed partial class EcommerceState : IShowcaseEnterpriseState
         nextAuditId = audit.Count == 0 ? 1 : audit.Max(entry => entry.Id) + 1;
 
         Identity = new ShowcaseIdentity(EcommerceSeedData.Roles(), EcommerceSeedData.DemoAccounts());
-        Identity.Changed += () => Changed?.Invoke();
+        Identity.Changed += () =>
+        {
+            // A back-office sign-in hears about its overdue purchase orders.
+            RemindOverduePurchaseOrders();
+            Changed?.Invoke();
+        };
     }
 
     #endregion
@@ -449,9 +454,10 @@ public sealed partial class EcommerceState : IShowcaseEnterpriseState
         return ratings.Count == 0 ? 0 : ratings.Average();
     }
 
-    /// <summary>Returns whether a product can be deleted: no order, return, or cart line refers to it. Others can only be archived.</summary>
+    /// <summary>Returns whether a product can be deleted: no order, return, purchase order, or cart line refers to it. Others can only be archived.</summary>
     public bool CanDeleteProduct(int productId) =>
         !orders.Any(order => order.Lines.Any(line => line.ProductId == productId))
+        && !purchaseOrders.Any(order => order.Lines.Any(line => line.ProductId == productId))
         && !returns.Any(item => item.Lines.Any(line => line.ProductId == productId))
         && !cart.Any(line => line.ProductId == productId);
 
@@ -501,9 +507,19 @@ public sealed partial class EcommerceState : IShowcaseEnterpriseState
         var (changedReturns, removedReturns) = Diff(returns, data.Returns, item => item.Id);
         var (changedNotices, removedNotices) = Diff(notices, data.Notices, notice => notice.Id);
         var (changedAudit, removedAudit) = Diff(audit, data.Audit, entry => entry.Id, SameAudit);
+        var (changedSuppliers, removedSuppliers) = Diff(suppliers, data.Suppliers, supplier => supplier.Id);
+        var (changedReplenishment, removedReplenishment) = Diff(replenishment, data.Replenishment, item => item.ProductId);
+        var (changedPurchaseOrders, removedPurchaseOrders) = Diff(purchaseOrders, data.PurchaseOrders, order => order.Id);
 
         return new EcommerceSnapshot
         {
+            NextPurchaseOrderId = nextPurchaseOrderId,
+            PurchaseOrders = changedPurchaseOrders,
+            RemovedPurchaseOrderIds = removedPurchaseOrders,
+            RemovedReplenishmentIds = removedReplenishment,
+            RemovedSupplierIds = removedSuppliers,
+            Replenishment = changedReplenishment,
+            Suppliers = changedSuppliers,
             Addresses = addresses.ToList(),
             Audit = changedAudit,
             Cart = cart.Count == 0 ? null : cart.ToList(),
@@ -639,6 +655,7 @@ public sealed partial class EcommerceState : IShowcaseEnterpriseState
         reviews.RemoveAll(review => review.ProductId == productId);
         // A wish item for a missing product would make the next restore discard the whole snapshot.
         wishlist.RemoveAll(item => item.ProductId == productId);
+        replenishment.RemoveAll(item => item.ProductId == productId);
         Record("Product deleted", ProductTarget(product), null, "Removed with its reviews.");
         RaiseChanged();
 
@@ -1120,6 +1137,9 @@ public sealed partial class EcommerceState : IShowcaseEnterpriseState
             || storedAudit.Select(entry => entry.Id).Distinct().Count() != storedAudit.Count)
             return false;
 
+        if (!TryRebuildPurchasing(snapshot, byId, out var storedSuppliers, out var storedReplenishment, out var storedPurchaseOrders))
+            return false;
+
         Reload(products, storedProducts);
         Reload(cart, storedCart);
         AppliedPromoCode = snapshot.PromoCode;
@@ -1131,6 +1151,11 @@ public sealed partial class EcommerceState : IShowcaseEnterpriseState
         Reload(wishlist, storedWishlist);
         Reload(notices, storedNotices);
         Reload(audit, storedAudit);
+        Reload(suppliers, storedSuppliers);
+        Reload(replenishment, storedReplenishment);
+        Reload(purchaseOrders, storedPurchaseOrders);
+        lowStockCrossings.Clear();
+        nextPurchaseOrderId = snapshot.NextPurchaseOrderId;
         nextOrderId = snapshot.NextOrderId;
         nextProductId = snapshot.NextProductId;
         nextReviewId = snapshot.NextReviewId;
@@ -1384,7 +1409,10 @@ public sealed partial class EcommerceState : IShowcaseEnterpriseState
     private EcommerceReview? OwnReview(int reviewId) =>
         Identity.Current is { } account ? reviews.FirstOrDefault(review => review.Id == reviewId && review.AuthorAccountId == account.Id) : null;
 
-    /// <summary>Raises <see cref="Changed" />, or, during a bulk action, once when the last bulk action ends.</summary>
+    /// <summary>
+    /// Raises <see cref="Changed" />, or, during a bulk action, once when the last bulk action ends; first sends the one
+    /// notification about products that fell to their reorder point meanwhile.
+    /// </summary>
     private void RaiseChanged()
     {
         if (batchDepth > 0)
@@ -1394,6 +1422,7 @@ public sealed partial class EcommerceState : IShowcaseEnterpriseState
             return;
         }
 
+        FlushLowStock();
         Changed?.Invoke();
     }
 
@@ -1425,7 +1454,8 @@ public sealed partial class EcommerceState : IShowcaseEnterpriseState
 
     /// <summary>
     /// Replaces a product. A product back in stock tells everyone who asked to hear about it (once); a product that falls to
-    /// the low-stock threshold or sells out tells the retailer, unless they changed it themselves.
+    /// its reorder point or sells out is noted, and the back office hears about every such product in one notification when
+    /// the change ends (<see cref="FlushLowStock" />), except the person who caused it.
     /// </summary>
     private void ReplaceProduct(EcommerceProduct product, bool notify = true)
     {
@@ -1445,14 +1475,8 @@ public sealed partial class EcommerceState : IShowcaseEnterpriseState
             }
         }
 
-        if (!product.IsArchived && product.Stock < before.Stock && ((IsLowStock(product) && !IsLowStock(before)) || product.Stock == 0))
-        {
-            NotifyRetailers(product.Stock == 0 ? $"Out of stock: {product.Name}" : $"Low stock: {product.Name}",
-                product.Stock == 0
-                    ? $"{product.Sku} sold out. Restock it or archive it."
-                    : string.Create(CultureInfo.InvariantCulture, $"{product.Stock} left of {product.Sku}. Restock it soon."),
-                EcommerceSeedData.AdminProductPath(product.Id));
-        }
+        if (!product.IsArchived && product.Stock < before.Stock && ((IsLowStock(product) && !IsLowStock(before)) || product.Stock == 0) && !lowStockCrossings.Contains(product.Id))
+            lowStockCrossings.Add(product.Id);
 
         // Stock or archive changes can leave cart lines over what's left.
         foreach (var line in cart.Where(line => line.ProductId == product.Id).ToList())
@@ -1573,10 +1597,10 @@ public sealed partial class EcommerceState : IShowcaseEnterpriseState
     public string SiteSlug => "ecommerce";
 
     /// <summary>
-    /// Gets the snapshot format version (4: the enterprise baseline; a year of seeded history, SKUs, coupon start dates,
-    /// partial refunds, the audit log, retailer notifications, and only what differs from the seed).
+    /// Gets the snapshot format version (5: suppliers, replenishment settings, and purchase orders, after 4: the enterprise
+    /// baseline with a year of seeded history and only what differs from the seed).
     /// </summary>
-    public int SnapshotVersion => 4;
+    public int SnapshotVersion => 5;
 
     #endregion
 
@@ -1649,6 +1673,20 @@ public sealed partial class EcommerceState : IShowcaseEnterpriseState
         public List<EcommerceReview>? Reviews { get; set; }
 
         public List<EcommerceWishItem>? Wishlist { get; set; }
+
+        public int NextPurchaseOrderId { get; set; }
+
+        public List<EcommercePurchaseOrder>? PurchaseOrders { get; set; }
+
+        public List<int>? RemovedPurchaseOrderIds { get; set; }
+
+        public List<int>? RemovedReplenishmentIds { get; set; }
+
+        public List<string>? RemovedSupplierIds { get; set; }
+
+        public List<EcommerceReplenishment>? Replenishment { get; set; }
+
+        public List<EcommerceSupplier>? Suppliers { get; set; }
 
         #endregion
     }

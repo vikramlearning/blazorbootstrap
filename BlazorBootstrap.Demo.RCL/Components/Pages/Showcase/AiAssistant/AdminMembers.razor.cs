@@ -1,64 +1,121 @@
+using System.ComponentModel.DataAnnotations;
 using System.Globalization;
-using System.Text.RegularExpressions;
+using BlazorBootstrap.Demo.RCL.Components.Pages.Showcase.Shared;
 using BlazorBootstrap.Demo.RCL.Models.Showcase.AiAssistant;
 using BlazorBootstrap.Demo.RCL.Services.Showcase.AiAssistant;
 using BlazorBootstrap.Demo.RCL.Services.Showcase.Foundation;
+using Microsoft.AspNetCore.Components.Forms;
 
 namespace BlazorBootstrap.Demo.RCL.Components.Pages.Showcase.AiAssistant;
 
 /// <summary>
-/// Members and roles of the Parley workspace admin back office: an invite form (email, name, role; <see cref="AiState.Invite" />)
-/// and a table of members and invitations (name, email, role, status in words, joined, this month's tokens) with a filter by
-/// status. Each row offers Change role (active members and invitations), Deactivate or Reactivate, or Remove invitation; each
-/// opens a <see cref="Modal" /> that names the person and the consequence, and the change runs once the dialog is hidden.
-/// Demoting yourself warns that you'll lose access to Workspace admin. The state's refusals (last active admin, deactivating
-/// yourself, an invitation's status) are mapped to specific messages in an always-rendered status region; focus returns to
-/// the pressed button, or to the status message when the button is gone.
+/// Members and roles of the Parley back office (Admins and the Owner, AC-4):
+/// <list type="bullet">
+/// <item>An invite <see cref="EditForm" /> (rule WR-002): email (required, of the right form, not already a member or
+/// invited: an asynchronous check with a pending state, run again on submit), name (required, up to 80 characters), and a
+/// role up to Admin (a rule against what the inviter may grant); <see cref="AiState.Invite" />'s refusals land on the field.</item>
+/// <item>A "Roles and permissions" panel with the matrix of <see cref="AiState.RoleAllows" /> and the rules.</item>
+/// <item>For the Owner, a transfer form (a new Owner who can sign in, and the workspace name typed to confirm), then a
+/// confirmation dialog (<see cref="AiState.TransferOwnership" />).</item>
+/// <item>The members and invitations in a <see cref="Grid{TItem}" /> with a saved view, search (also from <c>?search=</c>,
+/// the header search's and notifications' links), status and role filters, sorting, paging, the column chooser, and CSV
+/// export. A row opens the person's dialog (role, remove or restore access, resend or withdraw an invitation), and the bulk
+/// bar changes roles, removes access (after a confirmation), restores access, or resends invitations for the selection.</item>
+/// </list>
+/// Every refusal of the state (yourself, the Owner, a role above Admin, a deactivated member) is said in words in the status
+/// region or the dialog; outcomes are announced with a repeat counter, and focus goes back to the row or to the status line.
 /// </summary>
 public partial class AdminMembers : ComponentBase, IDisposable
 {
     #region Fields and Constants
 
-    /// <summary>The row buttons by <see cref="ButtonKey" />, for focus after a dialog.</summary>
-    private readonly Dictionary<string, Button> actionButtons = new();
+    private const int DefaultPageSize = 25;
 
-    /// <summary>The member the dialog is about (by email).</summary>
-    private string? dialogEmail;
+    private const string RemoveValue = "remove";
 
-    private DialogKind dialogKind;
+    private const string ResendValue = "resend";
 
-    private Modal dialogModal = default!;
+    private const string RestoreValue = "restore";
 
-    /// <summary>The role chosen in the change-role dialog.</summary>
-    private AiMemberRole dialogRole;
+    private const string RolePrefix = "role:";
 
-    private string? emailError;
+    /// <summary>The rows' buttons, by member number, so focus returns to one when its dialog closes.</summary>
+    private readonly Dictionary<int, ElementReference> openers = new();
 
-    private ElementReference? emailInput;
+    private EditContext bulkContext;
 
-    /// <summary>The status filter, or <see langword="null" /> for everyone.</summary>
-    private AiMemberStatus? filter;
+    private BulkForm bulkForm = new();
 
-    /// <summary>The button key to focus after the next render (when its button is still there; otherwise the status message).</summary>
-    private string? focusButtonKey;
+    private ElementReference? countRegion;
 
-    private bool focusStatus;
+    private ElementReference? dialogCancel;
 
-    /// <summary>Returns the field to focus after the next render (the first invalid one).</summary>
+    private int dialogErrorCount;
+
+    private string? dialogError;
+
+    private ShowcaseUniqueCheck? emailCheck;
+
+    private int errorCount;
+
+    private string? errorMessage;
+
+    private string? errorText;
+
+    /// <summary>Returns the element to focus after the next render.</summary>
     private Func<ElementReference?>? focusTarget;
 
-    private string inviteEmail = string.Empty;
+    private Grid<MemberRow>? grid;
 
-    private string inviteName = string.Empty;
+    /// <summary>Changes when the view is reset, so the grid is built again with its defaults.</summary>
+    private int gridVersion;
 
-    private AiMemberRole inviteRole = AiMemberRole.Member;
+    private EditContext inviteContext = default!;
 
-    private string? nameError;
+    /// <summary>The state's answers that belong to an invite field (a taken email, a role above what you may grant).</summary>
+    private ValidationMessageStore? inviteErrors;
 
-    private ElementReference? nameInput;
+    private InviteForm inviteForm = new();
 
-    /// <summary>The confirmed change, run once the dialog is hidden.</summary>
-    private Action? pendingAction;
+    /// <summary>The <c>?search=</c> value the filter was last set from, so a new link sets it again.</summary>
+    private string? loadedSearchQuery;
+
+    private Modal memberModal = default!;
+
+    /// <summary>The person the dialog is about.</summary>
+    private int openedId;
+
+    /// <summary>The grid's page size: the saved one once the view is loaded, then whatever the page size selector chose.</summary>
+    private int pageSize = DefaultPageSize;
+
+    /// <summary>The outcome of the dialog, announced once it is hidden.</summary>
+    private (string Message, bool IsError)? pendingAnnouncement;
+
+    /// <summary>Whether the bulk removal was confirmed; it runs once its dialog is hidden.</summary>
+    private bool pendingRemove;
+
+    /// <summary>Whether the transfer was confirmed; it runs once its dialog is hidden.</summary>
+    private bool pendingTransfer;
+
+    private Modal removeModal = default!;
+
+    private string roleFilter = string.Empty;
+
+    private EditContext roleContext;
+
+    private RoleForm roleForm = new();
+
+    private string search = string.Empty;
+
+    /// <summary>The value bound to the search box; it trails <see cref="search" /> while the user types.</summary>
+    private string searchBoxValue = string.Empty;
+
+    /// <summary>The people selected in the grid (on its current page).</summary>
+    private List<MemberRow> selected = new();
+
+    private int statusCount;
+
+    private string statusFilter = string.Empty;
 
     private bool statusIsError;
 
@@ -66,45 +123,85 @@ public partial class AdminMembers : ComponentBase, IDisposable
 
     private ElementReference? statusRegion;
 
+    private string? statusText;
+
+    private EditContext transferContext;
+
+    private TransferForm transferForm = new();
+
+    private Modal transferModal = default!;
+
+    private ShowcaseGridView view = default!;
+
+    private bool viewLoaded;
+
+    #endregion
+
+    #region Constructors and Finalizers
+
+    /// <summary>Starts with empty forms.</summary>
+    public AdminMembers()
+    {
+        bulkContext = new EditContext(bulkForm);
+        roleContext = new EditContext(roleForm);
+        transferContext = new EditContext(transferForm);
+        NewInviteForm();
+    }
+
     #endregion
 
     #region Methods
 
     #region Protected Override Methods
 
+    /// <summary>Loads the saved view once the page is interactive (it lives in the tab's session storage), then shows the grid.</summary>
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        if (firstRender)
+        {
+            await view.LoadAsync();
+            pageSize = (await view.GetSettingsAsync()).PageSize;
+            viewLoaded = true;
+            StateHasChanged();
+        }
+
         if (focusTarget is { } target)
         {
             focusTarget = null;
             await AiDisplay.FocusAsync(target());
         }
-
-        if (focusButtonKey is { } key)
-        {
-            focusButtonKey = null;
-
-            if (HasButton(key) && actionButtons.TryGetValue(key, out var button))
-                await AiDisplay.FocusAsync(button.Element);
-            else
-                await AiDisplay.FocusAsync(statusRegion);
-        }
-
-        if (focusStatus)
-        {
-            focusStatus = false;
-            await AiDisplay.FocusAsync(statusRegion);
-        }
     }
 
-    protected override void OnInitialized() => State.Changed += OnStateChanged;
+    protected override void OnInitialized()
+    {
+        view = GridViews.Get(State.SiteSlug, "members", DefaultPageSize, "name", SortDirection.Ascending);
+        State.Changed += OnStateChanged;
+    }
+
+    /// <summary>A link with <c>?search=</c> (the header search, a notification) filters the list to that person.</summary>
+    protected override async Task OnParametersSetAsync()
+    {
+        if (SearchQuery == loadedSearchQuery)
+            return;
+
+        loadedSearchQuery = SearchQuery;
+        search = searchBoxValue = SearchQuery?.Trim() ?? string.Empty;
+        statusFilter = roleFilter = string.Empty;
+
+        if (grid is not null)
+            await grid.ResetPageNumber();
+    }
 
     #endregion
 
     #region Public Methods
 
-    /// <summary>Stops listening to state changes.</summary>
-    public void Dispose() => State.Changed -= OnStateChanged;
+    /// <summary>Stops listening to state and form changes.</summary>
+    public void Dispose()
+    {
+        State.Changed -= OnStateChanged;
+        inviteContext.OnFieldChanged -= OnInviteFieldChanged;
+    }
 
     #endregion
 
@@ -118,14 +215,13 @@ public partial class AdminMembers : ComponentBase, IDisposable
 
     #region Private Methods
 
-    private static string ButtonKey(DialogKind kind, string email) => $"{kind}-{email}";
-
-    [GeneratedRegex(@"^[^@\s]{1,64}@[^@\s]+\.[^@\s]{2,}$")]
-    private static partial Regex EmailPattern();
-
-    private static string RoleSummary(AiMemberRole role) => role == AiMemberRole.Admin
-        ? "Chats, and also manages members, shared prompts, usage, and the model and policy settings."
-        : "Chats with the assistant, keeps their own prompts, and follows their usage.";
+    private static string RoleWords(AiMemberRole role) => role switch
+    {
+        AiMemberRole.Owner => "the Owner",
+        AiMemberRole.Admin => "an Admin",
+        AiMemberRole.PromptEditor => "a prompt editor",
+        _ => "a member",
+    };
 
     private static BadgeColor StatusColor(AiMemberStatus status) => status switch
     {
@@ -141,237 +237,548 @@ public partial class AdminMembers : ComponentBase, IDisposable
         _ => IconName.SlashCircle,
     };
 
-    private void Announce(bool ok, string message)
+    /// <summary>Runs the bulk bar's action on the selection once its form is valid; removing access asks first.</summary>
+    private async Task ApplyBulkAsync()
     {
-        statusIsError = !ok;
-        statusMessage = message;
-    }
+        if (!bulkContext.Validate())
+            return;
 
-    /// <summary>Changes a member's role (or an invitation's) and says what happened.</summary>
-    private void ApplyRole(string email, AiMemberRole role)
-    {
-        if (State.FindMember(email) is not { } member)
+        ClearError();
+
+        if (bulkForm.Action == RemoveValue)
         {
-            Announce(false, "That person is no longer in the workspace, so nothing changed.");
+            pendingRemove = false;
+            await removeModal.ShowAsync();
 
             return;
         }
 
-        var wasMe = IsMe(member);
-        var result = State.SetMember(email, role, member.Status);
-        var roleText = AiDisplay.RoleLabel(role).ToLowerInvariant();
+        var ids = selected.Select(row => row.Id).ToList();
+        AiBulkOutcome outcome;
+        string done;
 
-        Announce(result is AiResult.Ok or AiResult.NoChange, result switch
+        if (bulkForm.Action.StartsWith(RolePrefix, StringComparison.Ordinal) && Enum.TryParse<AiMemberRole>(bulkForm.Action[RolePrefix.Length..], out var role))
         {
-            AiResult.Ok when member.Status == AiMemberStatus.Invited => $"{member.Name}'s invitation is now for a {roleText}: they join as one when they create an account.",
-            AiResult.Ok when wasMe && role == AiMemberRole.Member => "You're a member now and no longer a workspace admin.",
-            AiResult.Ok => role == AiMemberRole.Admin
-                ? $"{member.Name} is now a workspace admin: they can manage members, shared prompts, and the model and policy settings."
-                : $"{member.Name} is now a member and can no longer open Workspace admin.",
-            AiResult.NoChange => $"{member.Name} is already a {roleText}, so nothing changed.",
-            AiResult.WrongState => member.Status == AiMemberStatus.Invited
-                ? $"{member.Name}'s invitation can't change that way: its status changes only when they create an account. Nothing changed."
-                : LastAdminMessage(member),
-            _ => OtherMessage(result, member),
-        });
-    }
-
-    /// <summary>Deactivates or reactivates a member and says what happened.</summary>
-    private void ApplyStatus(string email, AiMemberStatus status)
-    {
-        if (State.FindMember(email) is not { } member)
+            outcome = State.BulkSetRole(ids, role);
+            done = $"Changed {Plural(outcome.Changed, "person's role", "people's roles")} to {AiDisplay.RoleLabel(role)}. Each person with a sign-in hears about it.";
+        }
+        else if (bulkForm.Action == RestoreValue)
         {
-            Announce(false, "That person is no longer in the workspace, so nothing changed.");
-
-            return;
+            outcome = State.BulkRestoreAccess(ids);
+            done = $"Restored access for {Plural(outcome.Changed, "person", "people")}. They can chat again.";
+        }
+        else
+        {
+            outcome = State.BulkResendInvitations(ids);
+            done = $"Resent {Plural(outcome.Changed, "invitation", "invitations")}. Demo only: no email is sent.";
         }
 
-        var result = State.SetMember(email, member.Role, status);
-
-        Announce(result is AiResult.Ok or AiResult.NoChange, result switch
-        {
-            AiResult.Ok when status == AiMemberStatus.Deactivated => $"{member.Name} is deactivated: they can't sign in to chat. Their conversations are kept, and you can reactivate them here.",
-            AiResult.Ok => $"{member.Name} is active again and can sign in to chat as a {AiDisplay.RoleLabel(member.Role).ToLowerInvariant()}.",
-            AiResult.NoChange => status == AiMemberStatus.Deactivated ? $"{member.Name} is already deactivated, so nothing changed." : $"{member.Name} is already active, so nothing changed.",
-            AiResult.WrongState when member.Status == AiMemberStatus.Invited =>
-                $"{member.Name} hasn't joined yet, so there's nothing to deactivate: an invitation becomes active only when they create an account. Remove the invitation instead. Nothing changed.",
-            AiResult.WrongState when IsMe(member) => "You can't deactivate yourself. Ask another workspace admin to do it. Nothing changed.",
-            AiResult.WrongState => LastAdminMessage(member),
-            _ => OtherMessage(result, member),
-        });
+        AnnounceBulk(outcome, done);
+        await FinishBulkAsync();
     }
 
-    /// <summary>Removes an invitation and says what happened.</summary>
-    private void ApplyRemoveInvitation(string email)
+    /// <summary>Says what a bulk action did, including who the role rules left as they were.</summary>
+    private void AnnounceBulk(AiBulkOutcome outcome, string done)
     {
-        var member = State.FindMember(email);
-        var name = member?.Name ?? email;
-        var result = State.RemoveInvitation(email);
+        var kept = outcome.Protected > 0 ? $" {Plural(outcome.Protected, "person was", "people were")} left as they were: nobody changes their own role or access, or the Owner's." : null;
+        var unchanged = outcome.Unchanged > 0 ? $" {Plural(outcome.Unchanged, "person was", "people were")} already that way, or the action doesn't fit them." : null;
 
-        Announce(result == AiResult.Ok, result switch
+        switch (outcome.Result)
         {
-            AiResult.Ok => $"The invitation for {name} ({email}) is removed. They can no longer join with it.",
-            AiResult.WrongState => $"{name} already joined, so there's no invitation to remove. Deactivate them instead if they shouldn't use {AiSeedData.ProductName}. Nothing changed.",
-            AiResult.NotFound => $"The invitation for {email} was already removed, so nothing changed.",
-            _ => OtherMessage(result, member),
-        });
+            case AiResult.Ok:
+                SetStatus(done + unchanged + kept, false);
+                break;
+
+            case AiResult.NoChange:
+                SetStatus("Nobody changed." + unchanged + kept, false);
+                break;
+
+            case AiResult.NotGrantable:
+                ShowError("Owner can't be given this way: only the Owner hands the role on, by a transfer. Nothing changed.");
+                break;
+
+            case AiResult.NotAllowed:
+                ShowError("Only Admins and the Owner manage members. Nothing changed.");
+                break;
+
+            default:
+                ShowError("That didn't work, and nothing changed. Try again.");
+                break;
+        }
     }
 
-    private async Task ConfirmAsync()
+    /// <summary>Checks the transfer form, then asks to confirm in a dialog.</summary>
+    private async Task AskTransferAsync()
     {
-        if (pendingAction is not null || dialogEmail is not { } email)
+        transferForm.WorkspaceName = State.WorkspaceName;
+
+        if (!transferContext.Validate())
             return;
 
-        var role = dialogRole;
-        pendingAction = dialogKind switch
+        pendingTransfer = false;
+        await transferModal.ShowAsync();
+    }
+
+    /// <summary>The link disappears with the filters it clears, so focus moves to the count, which also announces the new total.</summary>
+    private async Task ClearFiltersAsync()
+    {
+        search = searchBoxValue = string.Empty;
+        statusFilter = roleFilter = string.Empty;
+        await FiltersChangedAsync();
+        await AiDisplay.FocusAsync(countRegion);
+    }
+
+    private void ClearError()
+    {
+        errorMessage = errorText = null;
+        errorCount = 0;
+    }
+
+    /// <summary>The bar closes, so focus moves to the announcement.</summary>
+    private async Task ClearSelectionAsync()
+    {
+        if (grid is not null)
+            await grid.UnSelectAllItemsAsync();
+
+        selected = new List<MemberRow>();
+        ClearError();
+        SetStatus("Selection cleared.", false);
+        focusTarget = () => statusRegion;
+    }
+
+    private async Task ConfirmRemoveAsync()
+    {
+        pendingRemove = true;
+        await removeModal.HideAsync();
+    }
+
+    private async Task ConfirmTransferAsync()
+    {
+        pendingTransfer = true;
+        await transferModal.HideAsync();
+    }
+
+    private string CountText(int total)
+    {
+        var shown = Shown.Count;
+
+        return shown == total ? $"{Plural(total, "person is", "people are")} in the workspace (members and invitations)." : $"Showing {shown.ToString(CultureInfo.InvariantCulture)} of {Plural(total, "person", "people")}.";
+    }
+
+    /// <summary>The duplicate email in words, naming who has it.</summary>
+    private string EmailTakenMessage(string email)
+    {
+        var existing = State.FindMember(email);
+
+        return existing?.Status switch
         {
-            DialogKind.Role => () => ApplyRole(email, role),
-            DialogKind.Deactivate => () => ApplyStatus(email, AiMemberStatus.Deactivated),
-            DialogKind.Reactivate => () => ApplyStatus(email, AiMemberStatus.Active),
-            _ => () => ApplyRemoveInvitation(email),
+            AiMemberStatus.Invited => $"{email.Trim().ToLowerInvariant()} is already invited (as {existing.Name}). Resend that invitation instead.",
+            AiMemberStatus.Deactivated => $"{email.Trim().ToLowerInvariant()} belongs to {existing.Name}, whose access is removed. Restore their access instead.",
+            AiMemberStatus.Active => $"{email.Trim().ToLowerInvariant()} is already a member ({existing.Name}).",
+            _ => $"{email.Trim().ToLowerInvariant()} is already in the workspace.",
         };
-
-        await dialogModal.HideAsync();
     }
 
-    /// <summary>Whether the button with that key is rendered now: the row is shown (filter) and offers that action.</summary>
-    private bool HasButton(string key)
+    /// <summary>A filter changed: back to the first page of the filtered people.</summary>
+    private async Task FiltersChangedAsync()
     {
-        if (dialogEmail is not { } email || State.FindMember(email) is not { } member || (filter is { } status && member.Status != status))
-            return false;
-
-        return key == ButtonKey(DialogKind.Role, email) ? member.Status != AiMemberStatus.Deactivated
-            : key == ButtonKey(DialogKind.Deactivate, email) ? member.Status == AiMemberStatus.Active && !IsMe(member)
-            : key == ButtonKey(DialogKind.Reactivate, email) ? member.Status == AiMemberStatus.Deactivated
-            : key == ButtonKey(DialogKind.RemoveInvitation, email) && member.Status == AiMemberStatus.Invited;
+        if (grid is not null)
+            await grid.ResetPageNumber();
     }
 
-    /// <summary>Checks the invite form, invites, and maps the state's answer to a field or the status message.</summary>
-    private void Invite()
+    /// <summary>A bulk action ended: the bar's form is emptied, the selection cleared, and focus moves to the announcement.</summary>
+    private async Task FinishBulkAsync()
     {
-        var email = inviteEmail.Trim().ToLowerInvariant();
-        var name = inviteName.Trim();
+        bulkForm = new BulkForm();
+        bulkContext = new EditContext(bulkForm);
 
-        emailError = email.Length == 0 ? "Enter the email address of the person to invite."
-            : email.Length > ShowcaseIdentity.MaxEmailLength ? $"Shorten the email address to {ShowcaseIdentity.MaxEmailLength} characters or fewer."
-            : !EmailPattern().IsMatch(email) ? "Enter an email address like name@example.com."
-            : State.FindMember(email) is { } existing ? DuplicateText(existing)
-            : null;
-        nameError = name.Length == 0 ? "Enter their name, as members will see it."
-            : name.Length > ShowcaseIdentity.MaxNameLength ? $"Shorten the name to {ShowcaseIdentity.MaxNameLength} characters or fewer (now {name.Length})."
-            : null;
-
-        focusTarget = emailError is not null ? () => emailInput : nameError is not null ? () => nameInput : null;
-
-        if (focusTarget is not null)
+        if (grid is not null)
         {
-            Announce(false, "Fix the highlighted fields, then send the invitation again.");
-
-            return;
+            await grid.RefreshDataAsync();
+            await grid.UnSelectAllItemsAsync();
         }
 
-        if (State.Members.Count >= AiState.MaxMembers)
-        {
-            Announce(false, $"The workspace is full ({AiState.MaxMembers} members and invitations). Remove an invitation first. Nobody was invited.");
-            focusStatus = true;
+        selected = new List<MemberRow>();
+        focusTarget = () => statusRegion;
+        StateHasChanged();
+    }
 
+    /// <summary>
+    /// Sends the invitation once the form is valid: the email check finishes first, then every rule runs, and a failed submit
+    /// shows the summary (rule WR-002). The state checks again; its answer maps to a field, the status line, or the alert.
+    /// </summary>
+    private async Task InviteAsync()
+    {
+        inviteErrors?.Clear();
+        inviteContext.NotifyValidationStateChanged();
+
+        var emailFree = emailCheck is null || await emailCheck.CheckNowAsync();
+
+        if (!inviteContext.Validate() || !emailFree)
             return;
-        }
 
-        var result = State.Invite(email, name, inviteRole, out var invited);
+        ClearError();
+        var result = State.Invite(inviteForm.Email, inviteForm.Name, inviteForm.Role, out var invited);
 
         switch (result)
         {
             case AiResult.Ok when invited is not null:
-                Announce(true, $"{invited.Name} ({invited.Email}) is invited as a {AiDisplay.RoleLabel(invited.Role).ToLowerInvariant()}. They join when they create an account with that email."
-                    + (filter is null or AiMemberStatus.Invited ? null : " Show \"Invited\" to see the invitation."));
-                inviteEmail = inviteName = string.Empty;
-                inviteRole = AiMemberRole.Member;
-                focusTarget = () => emailInput;
+                SetStatus($"{invited.Name} ({invited.Email}) is invited as {RoleWords(invited.Role)}. They join when they create an account with that email."
+                    + (statusFilter is "" or nameof(AiMemberStatus.Invited) ? null : " Show \"Invited\" to see the invitation."), false);
+                NewInviteForm();
+                await RefreshGridAsync();
+                focusTarget = () => statusRegion;
 
                 return;
 
             case AiResult.Duplicate:
-                emailError = State.FindMember(email) is { } taken ? DuplicateText(taken) : "That email address is already a member or invited.";
-                focusTarget = () => emailInput;
-                Announce(false, "That person is already in the workspace. Nobody was invited.");
+                InviteError(() => inviteForm.Email, EmailTakenMessage(inviteForm.Email));
+
+                return;
+
+            case AiResult.NotGrantable:
+                InviteError(() => inviteForm.Role, "Choose Member, Prompt editor, or Admin: Owner comes only through a transfer.");
+
+                return;
+
+            case AiResult.Invalid when State.Members.Count >= AiState.MaxMembers:
+                ShowError($"The workspace is full ({AiState.MaxMembers} members and invitations). Withdraw an invitation first. Nobody was invited.");
 
                 return;
 
             case AiResult.Invalid:
-                if (State.Members.Count >= AiState.MaxMembers)
-                {
-                    Announce(false, $"The workspace is full ({AiState.MaxMembers} members and invitations). Remove an invitation first. Nobody was invited.");
-                    focusStatus = true;
-                }
-                else
-                {
-                    emailError = "Check the email address and the name: one of them isn't valid.";
-                    focusTarget = () => emailInput;
-                    Announce(false, "The invitation couldn't be sent. Nobody was invited.");
-                }
+                ShowError("The invitation couldn't be saved: a value is out of range, or this tab's storage is full. Nobody was invited.");
 
                 return;
 
             case AiResult.NotAllowed:
-                Announce(false, "Only active workspace admins can invite people. Nobody was invited.");
-                focusStatus = true;
+                ShowError("Only Admins and the Owner invite people. Nobody was invited.");
 
                 return;
 
             default:
-                Announce(false, "That didn't work, and nobody was invited. Try again.");
-                focusStatus = true;
+                ShowError("That didn't work, and nobody was invited. Try again.");
 
                 return;
         }
     }
 
+    /// <summary>Shows a state answer under its invite field, like the form's own messages; the summary and focus follow.</summary>
+    private void InviteError(System.Linq.Expressions.Expression<Func<object?>> field, string message)
+    {
+        inviteErrors?.Clear();
+        inviteErrors?.Add(FieldIdentifier.Create(field), message);
+        inviteContext.NotifyValidationStateChanged();
+    }
+
     private bool IsMe(AiMember member) => member.AccountId is not null && member.AccountId == State.Identity.Current?.Id;
 
-    private string LastAdminMessage(AiMember member) =>
-        State.Members.Count(item => item.Role == AiMemberRole.Admin && item.Status == AiMemberStatus.Active && item.AccountId is not null) <= 1 && member is { Role: AiMemberRole.Admin, Status: AiMemberStatus.Active }
-            ? $"{(IsMe(member) ? "You're" : $"{member.Name} is")} the only active workspace admin who can sign in here, and the workspace needs one. Make another member with an account a workspace admin first. Nothing changed."
-            : $"{member.Name} can't be changed that way right now. Nothing changed.";
+    private Task<bool> IsEmailTakenAsync(string email) => Task.FromResult(State.IsEmailTaken(email));
 
-    /// <summary>Runs a confirmed change now that the dialog is hidden; focus goes back to its button, or to the status message.</summary>
+    /// <summary>A refusal of one person's change, in words.</summary>
+    private string MemberRefusal(AiResult result, AiMember member) => result switch
+    {
+        AiResult.OwnRole => "Nobody changes their own role or access. Ask another Admin or the Owner. Nothing changed.",
+        AiResult.OwnerProtected => $"{member.Name} is the Owner: the Owner's role and access can't be changed. Only the Owner hands the role on. Nothing changed.",
+        AiResult.NotGrantable => "Owner can't be given this way: only the Owner hands the role on, by a transfer. Nothing changed.",
+        AiResult.WrongState when member.Status == AiMemberStatus.Deactivated => $"{member.Name}'s access is removed. Restore it first, then change their role. Nothing changed.",
+        AiResult.WrongState when member.Status == AiMemberStatus.Invited => $"{member.Name} hasn't joined yet: an invitation has no access to remove. Withdraw it instead. Nothing changed.",
+        AiResult.WrongState => $"{member.Name} already joined, so there's no invitation to change. Nothing changed.",
+        AiResult.NotFound => $"{member.Name} is no longer in the workspace, so nothing changed.",
+        AiResult.NotAllowed => "Only Admins and the Owner manage members. Nothing changed.",
+        _ => "That didn't work, and nothing changed. Try again.",
+    };
+
+    /// <summary>A fresh invite form, listening for its fields' changes.</summary>
+    private void NewInviteForm()
+    {
+        if (inviteContext is not null)
+            inviteContext.OnFieldChanged -= OnInviteFieldChanged;
+
+        inviteForm = new InviteForm();
+        inviteContext = new EditContext(inviteForm);
+        inviteErrors = new ValidationMessageStore(inviteContext);
+        inviteContext.OnFieldChanged += OnInviteFieldChanged;
+    }
+
+    private Task OnDialogShownAsync() => AiDisplay.FocusAsync(dialogCancel);
+
+    /// <summary>The dialog opens from code, so Bootstrap doesn't return focus: after a change focus moves to the announcement, otherwise back to the row.</summary>
     private Task OnDialogHiddenAsync()
     {
-        var action = pendingAction;
-        pendingAction = null;
-        action?.Invoke();
-        focusButtonKey = dialogEmail is { } email ? ButtonKey(dialogKind, email) : null;
+        var id = openedId;
+
+        if (pendingAnnouncement is { } announcement)
+        {
+            pendingAnnouncement = null;
+
+            if (announcement.IsError)
+                ShowError(announcement.Message);
+            else
+                SetStatus(announcement.Message, false);
+
+            focusTarget = () => statusRegion;
+        }
+        else
+        {
+            focusTarget = () => openers.TryGetValue(id, out var opener) ? opener : statusRegion;
+        }
+
         StateHasChanged();
 
         return Task.CompletedTask;
     }
 
-    private void OnStateChanged() => InvokeAsync(StateHasChanged);
+    /// <summary>A change to an invite field clears the state's earlier answer on that field (the email check handles its own).</summary>
+    private void OnInviteFieldChanged(object? sender, FieldChangedEventArgs args) => inviteErrors?.Clear(args.FieldIdentifier);
 
-    private async Task OpenAsync(DialogKind kind, AiMember member)
+    /// <summary>Removes access for the selection once its dialog is hidden (or returns focus to the bar when cancelled).</summary>
+    private async Task OnRemoveHiddenAsync()
     {
-        dialogKind = kind;
-        dialogEmail = member.Email;
-        dialogRole = member.Role;
-        pendingAction = null;
+        if (!pendingRemove)
+        {
+            focusTarget = () => statusRegion;
 
-        await dialogModal.ShowAsync();
+            return;
+        }
+
+        pendingRemove = false;
+        var outcome = State.BulkRemoveAccess(selected.Select(row => row.Id).ToList());
+        AnnounceBulk(outcome, $"Removed access for {Plural(outcome.Changed, "person", "people")}: members are deactivated (their conversations are kept), invitations withdrawn.");
+        await FinishBulkAsync();
     }
 
-    private string OtherMessage(AiResult result, AiMember? member) => result switch
+    private async Task OnRoleFilterChangedAsync(ChangeEventArgs args)
     {
-        AiResult.NotFound => $"{member?.Name ?? "That person"} is no longer in the workspace, so nothing changed.",
-        AiResult.NotAllowed => "Only active workspace admins can manage members. Nothing changed.",
-        AiResult.Invalid => "That role or status isn't valid. Nothing changed.",
-        _ => "That didn't work, and nothing changed. Try again.",
-    };
+        roleFilter = Enum.TryParse<AiMemberRole>(args.Value?.ToString(), out var role) ? role.ToString() : string.Empty;
+        await FiltersChangedAsync();
+    }
 
-    private string DuplicateText(AiMember existing) => existing.Status switch
+    private void OnSearchChanged(ChangeEventArgs args) => searchBoxValue = search = args.Value?.ToString() ?? string.Empty;
+
+    /// <summary>Filters on every keystroke without changing the box's bound value, so a slower render never overwrites newer typing.</summary>
+    private async Task OnSearchInputAsync(ChangeEventArgs args)
     {
-        AiMemberStatus.Invited => $"{existing.Email} is already invited (as {existing.Name}).",
-        AiMemberStatus.Deactivated => $"{existing.Email} belongs to {existing.Name}, who is deactivated. Reactivate them in the table instead.",
-        _ => $"{existing.Email} is already a member ({existing.Name}).",
-    };
+        var value = args.Value?.ToString() ?? string.Empty;
+
+        if (value == search)
+            return;
+
+        search = value;
+        await FiltersChangedAsync();
+    }
+
+    private void OnSelectionChanged(HashSet<MemberRow> items)
+    {
+        selected = items.ToList();
+
+        if (selected.Count > 0)
+            ClearError();
+    }
+
+    /// <summary>Another screen or a change here changed the state: the grid reads the people again.</summary>
+    private void OnStateChanged() => InvokeAsync(async () =>
+    {
+        await RefreshGridAsync();
+        StateHasChanged();
+    });
+
+    private async Task OnStatusFilterChangedAsync(ChangeEventArgs args)
+    {
+        statusFilter = Enum.TryParse<AiMemberStatus>(args.Value?.ToString(), out var status) ? status.ToString() : string.Empty;
+        await FiltersChangedAsync();
+    }
+
+    /// <summary>Transfers ownership once its dialog is hidden, and says what happened.</summary>
+    private async Task OnTransferHiddenAsync()
+    {
+        if (!pendingTransfer || transferForm.NewOwnerId is not { } id)
+            return;
+
+        pendingTransfer = false;
+        var target = State.FindMember(id);
+        var name = target?.Name ?? "That member";
+        var result = State.TransferOwnership(id);
+
+        switch (result)
+        {
+            case AiResult.Ok:
+                SetStatus($"{name} is now the Owner of {State.WorkspaceName}, and you're an Admin. They and the other Admins heard about it.", false);
+                transferForm = new TransferForm();
+                transferContext = new EditContext(transferForm);
+                break;
+
+            case AiResult.OwnRole:
+                ShowError("You're already the Owner: choose someone else to hand the role to. Nothing changed.");
+                break;
+
+            case AiResult.WrongState:
+                ShowError($"{name} can't become the Owner: the Owner must be an active member who can sign in. Nothing changed.");
+                break;
+
+            case AiResult.NotFound:
+                ShowError("That member is no longer in the workspace. Nothing changed.");
+                break;
+
+            case AiResult.NotAllowed:
+                ShowError("Only the Owner transfers ownership. Nothing changed.");
+                break;
+
+            default:
+                ShowError("That didn't work, and nothing changed. Try again.");
+                break;
+        }
+
+        await RefreshGridAsync();
+        focusTarget = () => statusRegion;
+        StateHasChanged();
+    }
+
+    /// <summary>Opens the dialog of one person, with their current role chosen.</summary>
+    private async Task OpenAsync(int memberId)
+    {
+        openedId = memberId;
+        roleForm = new RoleForm { Role = State.FindMember(memberId)?.Role is { } role && role <= AiMemberRole.Admin ? role : AiMemberRole.Member };
+        roleContext = new EditContext(roleForm);
+        dialogError = null;
+        dialogErrorCount = 0;
+        pendingAnnouncement = null;
+        await memberModal.ShowAsync();
+    }
+
+    /// <summary>The page of people the grid asked for: by name, unless a column is sorted.</summary>
+    private Task<GridDataProviderResult<MemberRow>> ProvideMembersAsync(GridDataProviderRequest<MemberRow> request) => view.ApplyAsync(request, Shown);
+
+    private async Task RefreshGridAsync()
+    {
+        if (grid is not null)
+            await grid.RefreshDataAsync();
+    }
+
+    /// <summary>Forgets the saved view and builds the grid again with its defaults; focus moves to the count.</summary>
+    private async Task ResetViewAsync()
+    {
+        await view.ResetAsync();
+        pageSize = DefaultPageSize;
+        selected = new List<MemberRow>();
+        gridVersion++;
+        SetStatus("The view is reset: by name, 25 a page, and every column shown.", false);
+        StateHasChanged();
+
+        await Task.Yield();
+        await AiDisplay.FocusAsync(countRegion);
+    }
+
+    private string RowClass(MemberRow row) => selected.Any(item => item.Id == row.Id) ? "pa-row-selected" : string.Empty;
+
+    /// <summary>Runs one of the dialog's access buttons; the outcome is announced once the dialog is hidden.</summary>
+    private async Task RunDialogActionAsync(DialogAction action)
+    {
+        if (Opened is not { } member)
+        {
+            pendingAnnouncement = ("That person is no longer in the workspace, so nothing changed.", true);
+            await memberModal.HideAsync();
+
+            return;
+        }
+
+        var result = action switch
+        {
+            DialogAction.Remove => State.SetAccess(member.Id, false),
+            DialogAction.Restore => State.SetAccess(member.Id, true),
+            DialogAction.Resend => State.ResendInvitation(member.Id),
+            _ => State.RemoveInvitation(member.Id),
+        };
+
+        if (result is not (AiResult.Ok or AiResult.NoChange))
+        {
+            ShowDialogError(MemberRefusal(result, member));
+
+            return;
+        }
+
+        pendingAnnouncement = (result == AiResult.NoChange ? $"{member.Name} is already that way, so nothing changed." : action switch
+        {
+            DialogAction.Remove => $"Removed {member.Name}'s access: they can't use {AiSeedData.ProductName}. Their conversations are kept, and you can restore access.",
+            DialogAction.Restore => $"Restored {member.Name}'s access: they can chat again as {RoleWords(member.Role)}.",
+            DialogAction.Resend => $"Resent the invitation for {member.Email}. Demo only: no email is sent.",
+            _ => $"Withdrew the invitation for {member.Email}. They join as a member if they sign up anyway.",
+        }, false);
+        await memberModal.HideAsync();
+    }
+
+    /// <summary>Keeps the grid's settings in the saved view, and follows the page size the selector chose.</summary>
+    private async Task SaveSettingsAsync(GridSettings settings)
+    {
+        if (settings.PageSize > 0)
+            pageSize = settings.PageSize;
+
+        await view.SaveSettingsAsync(settings);
+    }
+
+    /// <summary>Saves the dialog's role once its form is valid; the outcome is announced once the dialog is hidden, a refusal in the dialog.</summary>
+    private async Task SaveRoleAsync()
+    {
+        if (!roleContext.Validate())
+            return;
+
+        if (Opened is not { } member)
+        {
+            pendingAnnouncement = ("That person is no longer in the workspace, so nothing changed.", true);
+            await memberModal.HideAsync();
+
+            return;
+        }
+
+        var before = member.Role;
+        var result = State.SetRole(member.Id, roleForm.Role);
+
+        switch (result)
+        {
+            case AiResult.Ok:
+                pendingAnnouncement = (member.Status == AiMemberStatus.Invited
+                    ? $"{member.Name}'s invitation is now for {RoleWords(roleForm.Role)}: they join as one when they create an account."
+                    : $"{member.Name} is now {RoleWords(roleForm.Role)} (was {RoleWords(before)}). {AiDisplay.RoleSummary(roleForm.Role)}", false);
+                await memberModal.HideAsync();
+
+                return;
+
+            case AiResult.NoChange:
+                pendingAnnouncement = ($"{member.Name} is already {RoleWords(roleForm.Role)}, so nothing changed.", false);
+                await memberModal.HideAsync();
+
+                return;
+
+            default:
+                ShowDialogError(MemberRefusal(result, member));
+
+                return;
+        }
+    }
+
+    /// <summary>Shows a status message; the same message again gets a counter, so a screen reader announces it again.</summary>
+    private void SetStatus(string message, bool isError)
+    {
+        statusCount = message == statusText ? statusCount + 1 : 1;
+        statusText = message;
+        statusIsError = isError;
+        statusMessage = statusCount == 1 ? message : string.Create(CultureInfo.InvariantCulture, $"{message} ({statusCount})");
+    }
+
+    /// <summary>Shows a refusal in the dialog's alert; the same one again gets a counter, so it is announced again.</summary>
+    private void ShowDialogError(string problem)
+    {
+        dialogErrorCount = dialogError?.StartsWith(problem, StringComparison.Ordinal) == true ? dialogErrorCount + 1 : 1;
+        dialogError = dialogErrorCount == 1 ? problem : string.Create(CultureInfo.InvariantCulture, $"{problem} ({dialogErrorCount})");
+    }
+
+    /// <summary>Shows a refusal in the page's alert; the same one again gets a counter, so it is announced again.</summary>
+    private void ShowError(string message)
+    {
+        errorCount = message == errorText ? errorCount + 1 : 1;
+        errorText = message;
+        errorMessage = errorCount == 1 ? message : string.Create(CultureInfo.InvariantCulture, $"{message} ({errorCount})");
+    }
 
     #endregion
 
@@ -379,49 +786,158 @@ public partial class AdminMembers : ComponentBase, IDisposable
 
     #region Properties, Indexers
 
-    private string ConfirmText => dialogKind switch
+    /// <summary>The roles the signed-in person may give: up to Admin (Owner comes only through a transfer).</summary>
+    private static IReadOnlyList<AiMemberRole> GrantableRoles { get; } = new[] { AiMemberRole.Member, AiMemberRole.PromptEditor, AiMemberRole.Admin };
+
+    [Inject] private ShowcaseGridViewStore GridViews { get; set; } = default!;
+
+    private bool IsFiltered => search.Trim().Length > 0 || statusFilter.Length > 0 || roleFilter.Length > 0;
+
+    private AiMember? Opened => State.FindMember(openedId) is { } member && State.Can(AiPermission.ManageMembers) ? member : null;
+
+    /// <summary>What the bulk removal would do, in words.</summary>
+    private string RemoveSummary
     {
-        DialogKind.Role => "Save role",
-        DialogKind.Deactivate => "Deactivate",
-        DialogKind.Reactivate => "Reactivate",
-        _ => "Remove invitation",
-    };
+        get
+        {
+            var rows = selected.Select(row => State.FindMember(row.Id)).Where(member => member is not null).ToList();
+            var kept = rows.Count(member => IsMe(member!) || member!.Role == AiMemberRole.Owner);
+            var invitations = rows.Count(member => member!.Status == AiMemberStatus.Invited);
+            var active = rows.Count(member => member!.Status == AiMemberStatus.Active && !IsMe(member) && member.Role != AiMemberRole.Owner);
 
-    private AiMember? DialogMember => State.FindMember(dialogEmail);
+            return $"Of the selection: {Plural(active, "active member", "active members")} to deactivate, {Plural(invitations, "invitation", "invitations")} to withdraw"
+                + (kept > 0 ? $", and {Plural(kept, "person", "people")} (you or the Owner) left as they are." : ".");
+        }
+    }
 
-    private string DialogTitle => DialogMember is not { } member ? "Person not found" : dialogKind switch
+    /// <summary>Gets or sets the person to show, from a link like <c>?search=sam.rivera@example.com</c>.</summary>
+    [SupplyParameterFromQuery(Name = "search")] public string? SearchQuery { get; set; }
+
+    /// <summary>The people that pass the filters, as grid rows, by name.</summary>
+    private IReadOnlyList<MemberRow> Shown
     {
-        DialogKind.Role => member.Status == AiMemberStatus.Invited ? $"Change the role {member.Name} is invited with" : $"Change the role of {member.Name}",
-        DialogKind.Deactivate => $"Deactivate {member.Name}?",
-        DialogKind.Reactivate => $"Reactivate {member.Name}?",
-        _ => $"Remove the invitation for {member.Name}?",
-    };
+        get
+        {
+            var term = search.Trim();
+            var usage = State.MonthUsageByEmail();
 
-    private static IReadOnlyList<(AiMemberStatus? Status, string Text)> FilterOptions { get; } = new (AiMemberStatus?, string)[]
-    {
-        (null, "All"),
-        (AiMemberStatus.Active, "Active"),
-        (AiMemberStatus.Invited, "Invited"),
-        (AiMemberStatus.Deactivated, "Deactivated"),
-    };
-
-    private string FilterWord => filter is { } status ? AiDisplay.StatusLabel(status).ToLowerInvariant() : string.Empty;
-
-    private IReadOnlyList<AiMember> Rows => State.Members.Where(member => filter is not { } status || member.Status == status).ToList();
+            return State.Members
+                .Where(member => statusFilter.Length == 0 || member.Status.ToString() == statusFilter)
+                .Where(member => roleFilter.Length == 0 || member.Role.ToString() == roleFilter)
+                .Where(member => term.Length == 0 || member.Name.Contains(term, StringComparison.OrdinalIgnoreCase) || member.Email.Contains(term, StringComparison.OrdinalIgnoreCase))
+                .Select(member => new MemberRow(
+                    member.Id,
+                    member.Name,
+                    member.Email,
+                    member.Role,
+                    AiDisplay.RoleLabel(member.Role),
+                    member.Status,
+                    AiDisplay.StatusLabel(member.Status),
+                    member.JoinedAt,
+                    (member.Status == AiMemberStatus.Invited ? "Invited " : string.Empty) + member.JoinedAt.ToString("MMM d, yyyy", CultureInfo.InvariantCulture),
+                    usage.TryGetValue(member.Email, out var used) ? used.Tokens : 0,
+                    member.AccountId is not null ? "Can sign in" : "No sign-in",
+                    IsMe(member)))
+                .OrderBy(row => row.Name, StringComparer.OrdinalIgnoreCase)
+                .ToList();
+        }
+    }
 
     [Inject] private AiState State { get; set; } = default!;
+
+    private AiMember? TransferTarget => transferForm.NewOwnerId is { } id ? State.FindMember(id) : null;
 
     #endregion
 
     #region Nested Types
 
-    /// <summary>What the dialog asks to confirm.</summary>
-    private enum DialogKind
+    /// <summary>What a button of the member dialog does.</summary>
+    private enum DialogAction
     {
-        Role,
-        Deactivate,
-        Reactivate,
-        RemoveInvitation,
+        Remove,
+        Restore,
+        Resend,
+        Withdraw,
+    }
+
+    /// <summary>The bulk bar's action.</summary>
+    private sealed class BulkForm
+    {
+        [Required(ErrorMessage = "Choose what to do with the selected people.")]
+        public string Action { get; set; } = string.Empty;
+    }
+
+    /// <summary>
+    /// The invite fields, with the limits of <see cref="AiState.Invite" />: a required email of the right form, a required
+    /// name, and a role up to Admin (a cross-field rule with what the inviter may grant).
+    /// </summary>
+    private sealed class InviteForm : IValidatableObject
+    {
+        [Required(ErrorMessage = "Enter the email address of the person to invite.")]
+        [StringLength(ShowcaseIdentity.MaxEmailLength, ErrorMessage = "Use 120 characters or fewer for the email address.")]
+        [RegularExpression(@"^\s*[^@\s]{1,64}@[^@\s]+\.[^@\s]{2,}\s*$", ErrorMessage = "Enter the email address like name@example.com.")]
+        public string Email { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Enter their name, as members will see it.")]
+        [StringLength(ShowcaseIdentity.MaxNameLength, ErrorMessage = "Use 80 characters or fewer for the name.")]
+        public string Name { get; set; } = string.Empty;
+
+        public AiMemberRole Role { get; set; } = AiMemberRole.Member;
+
+        /// <summary>Runs once the fields are filled in: the role must be one an Admin or the Owner may give.</summary>
+        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+        {
+            if (!Enum.IsDefined(Role) || Role > AiMemberRole.Admin)
+                yield return new ValidationResult("Choose Member, Prompt editor, or Admin: Owner comes only through a transfer.", new[] { nameof(Role) });
+        }
+    }
+
+    /// <summary>One person as the grid shows and exports them: every column is a property, so CSV export includes it.</summary>
+    private sealed record MemberRow(
+        int Id,
+        string Name,
+        string Email,
+        AiMemberRole RoleValue,
+        string Role,
+        AiMemberStatus StatusValue,
+        string Status,
+        DateTime Joined,
+        string JoinedText,
+        long Tokens,
+        string SignIn,
+        bool IsYou);
+
+    /// <summary>The member dialog's role.</summary>
+    private sealed class RoleForm : IValidatableObject
+    {
+        public AiMemberRole Role { get; set; } = AiMemberRole.Member;
+
+        /// <summary>The role must be one an Admin or the Owner may give.</summary>
+        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+        {
+            if (!Enum.IsDefined(Role) || Role > AiMemberRole.Admin)
+                yield return new ValidationResult("Choose Member, Prompt editor, or Admin: Owner comes only through a transfer.", new[] { nameof(Role) });
+        }
+    }
+
+    /// <summary>The ownership transfer: a new Owner, and the workspace name typed to confirm (a rule against the name).</summary>
+    private sealed class TransferForm : IValidatableObject
+    {
+        [Required(ErrorMessage = "Type the workspace name to confirm.")]
+        public string Confirm { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Choose who becomes the Owner.")]
+        public int? NewOwnerId { get; set; }
+
+        /// <summary>The workspace's name, set by the page before it validates.</summary>
+        public string WorkspaceName { get; set; } = string.Empty;
+
+        /// <summary>Runs once the fields are filled in: the typed name must match the workspace's.</summary>
+        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+        {
+            if (Confirm.Trim().Length > 0 && !string.Equals(Confirm.Trim(), WorkspaceName, StringComparison.OrdinalIgnoreCase))
+                yield return new ValidationResult($"Type \"{WorkspaceName}\" exactly, to confirm the transfer.", new[] { nameof(Confirm) });
+        }
     }
 
     #endregion

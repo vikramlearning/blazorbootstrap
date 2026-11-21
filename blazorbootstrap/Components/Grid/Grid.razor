@@ -59,16 +59,18 @@
                                     var label = GetColumnLabel(column);
                                     var checkboxId = $"{Id}-column-{chooserColumns.IndexOf(column)}";
                                     var position = chooserColumns.IndexOf(column);
-                                    var isLocked = IsColumnLocked(column);
+                                    var isLocked = IsColumnLocked(column, displayColumns.Count);
                                     var isLastShown = isLocked && !column.AlwaysVisible;
 
-                                    <li @key="column.ColumnKey"
-                                        class="d-flex align-items-center gap-1 py-1 @(draggedColumnKey == column.ColumnKey ? "opacity-50" : "")"
+                                    var isFirst = position == 0;
+                                    var isLast = position == chooserColumns.Count - 1;
+
+                                    <li @key="column"
+                                        class="d-flex align-items-center gap-1 py-1 @(draggedColumn == column ? "opacity-50" : "")"
                                         draggable="true"
-                                        @ondragstart="() => draggedColumnKey = column.ColumnKey"
-                                        @ondragend="() => draggedColumnKey = null"
+                                        @ondragstart="() => draggedColumn = column"
+                                        @ondragend="() => draggedColumn = null"
                                         @ondragover:preventDefault="true"
-                                        @ondragover="() => { }"
                                         @ondrop="() => OnColumnDroppedAsync(column)">
                                         <span class="bb-grid-column-chooser-handle text-body-secondary px-1" aria-hidden="true">
                                             <Icon Name="IconName.GripVertical" />
@@ -83,19 +85,21 @@
                                                    @onchange="args => SetColumnHiddenAsync(column, !(args.Value is bool shown && shown))" />
                                             <label class="form-check-label text-nowrap" for="@checkboxId">@label</label>
                                         </div>
+                                        @* aria-disabled, not disabled: a button that becomes disabled while focused (after moving a column to
+                                           the top or the end) would drop keyboard focus. MoveColumnAsync ignores a move past either end. *@
                                         <button type="button"
-                                                class="btn btn-sm btn-link p-1 text-body-secondary"
+                                                class="btn btn-sm btn-link p-1 text-body-secondary @(isFirst ? "disabled" : "")"
                                                 aria-label="@string.Format(ColumnChooserMoveUpText, label)"
                                                 title="@string.Format(ColumnChooserMoveUpText, label)"
-                                                disabled="@(position == 0)"
+                                                aria-disabled="@(isFirst ? "true" : null)"
                                                 @onclick="() => MoveColumnAsync(column, -1)">
                                             <Icon Name="IconName.ArrowUp" aria-hidden="true" />
                                         </button>
                                         <button type="button"
-                                                class="btn btn-sm btn-link p-1 text-body-secondary"
+                                                class="btn btn-sm btn-link p-1 text-body-secondary @(isLast ? "disabled" : "")"
                                                 aria-label="@string.Format(ColumnChooserMoveDownText, label)"
                                                 title="@string.Format(ColumnChooserMoveDownText, label)"
-                                                disabled="@(position == chooserColumns.Count - 1)"
+                                                aria-disabled="@(isLast ? "true" : null)"
                                                 @onclick="() => MoveColumnAsync(column, 1)">
                                             <Icon Name="IconName.ArrowDown" aria-hidden="true" />
                                         </button>
@@ -103,7 +107,7 @@
                                 }
                             </ul>
                         }
-                        @if (chooserColumns.Any(c => !c.AlwaysVisible && IsColumnLocked(c)))
+                        @if (chooserColumns.Any(c => !c.AlwaysVisible && IsColumnLocked(c, displayColumns.Count)))
                         {
                             <p id="@lockedNoteId" class="small text-body-secondary mb-2">@ColumnChooserLastColumnText</p>
                         }
@@ -180,6 +184,7 @@
                                         <GridColumnFilter EnumFilterSelectText="@EnumFilterSelectText"
                                         FilterButtonColor="@column.FilterButtonColor"
                                         FilterButtonCSSClass="@column.FilterButtonCSSClass"
+                                        FilterInputLabel="@string.Format(FilterInputLabelText, GetColumnLabel(column))"
                                         FilterOperator="@column.FilterOperator"
                                         FilterValue="@column.FilterValue"
                                         FilterWidth="@column.FilterTextboxWidth"

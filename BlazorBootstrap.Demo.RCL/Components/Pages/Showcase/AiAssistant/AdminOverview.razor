@@ -3,7 +3,9 @@
 
 <PageTitle>Usage analytics · @AiSeedData.ProductName</PageTitle>
 
+@* Admins and the Owner: prompt editors open the back office too, but this page needs the analytics permission. *@
 <div class="container-fluid px-lg-4">
+    <AiMemberGuard Require="AiPermission.ViewAnalytics">
     @{
         var quota = State.Policy.MonthlyTokenQuota;
         var rows = MemberRows;
@@ -14,12 +16,12 @@
 
     <div class="pa-adov-head mb-4">
         <h1 class="pa-title">Usage analytics</h1>
-        <p class="pa-lead mb-1">How @AiSeedData.WorkspaceName uses @AiSeedData.ProductName: members, messages, and tokens by model, against the monthly quota of @AiDisplay.Tokens(quota) tokens per member.</p>
+        <p class="pa-lead mb-1">How @State.WorkspaceName uses @AiSeedData.ProductName: members, messages, and tokens by model, against each member's monthly cap (by default @AiDisplay.Tokens(quota) tokens) and the workspace's.</p>
         <p class="small text-body-secondary mb-0">Sample figures: the history before today is generated; messages sent in this tab are added to it.</p>
     </div>
 
     <section aria-label="Totals for @monthName" class="row row-cols-1 row-cols-sm-2 row-cols-xl-4 g-3 mb-4">
-        @foreach (var total in Totals(rows, quota))
+        @foreach (var total in Totals(rows))
         {
             <div class="col" @key="total.Label">
                 <div class="pa-card pa-adov-kpi h-100">
@@ -29,6 +31,52 @@
                 </div>
             </div>
         }
+    </section>
+
+    @* Governance at a glance (AC-4, AC-7i): each card says its figure in words and links to its page. *@
+    <section class="mb-4" aria-labelledby="pa-adov-governance-title">
+        <h2 class="pa-section-title" id="pa-adov-governance-title">Governance</h2>
+        <div class="row row-cols-1 row-cols-md-3 g-3">
+            @{
+                var workspaceSpend = State.WorkspaceSpend;
+                var blockedMembers = State.SpendByMember().Values.Count(item => item.Level == AiSpendLevel.Blocked);
+                var waitingEvents = State.NewDlpEventCount;
+                var retention = State.Policy.RetentionDays;
+            }
+            <div class="col">
+                <a class="pa-card pa-adov-module h-100" href="@($"{AiAdminLayout.Base}/spend")">
+                    <span class="pa-icon flex-shrink-0" aria-hidden="true"><Icon Name="IconName.PiggyBank" /></span>
+                    <span>
+                        <span class="d-block fw-bold">Spend: @workspaceSpend.Percent.ToString("0", CultureInfo.InvariantCulture)% of the workspace cap</span>
+                        <span class="d-block small text-body-secondary">
+                            @AiDisplay.Tokens(workspaceSpend.Used) of @AiDisplay.Tokens(workspaceSpend.Cap) tokens@(workspaceSpend.Level == AiSpendLevel.Blocked ? ": chat is paused for everyone" : workspaceSpend.Level == AiSpendLevel.Warning ? ": past the 80% warning" : null).
+                            @AdminMembers.Plural(blockedMembers, "member is", "members are") blocked by their own cap.
+                        </span>
+                    </span>
+                </a>
+            </div>
+            <div class="col">
+                <a class="pa-card pa-adov-module h-100" href="@($"{AiAdminLayout.Base}/settings")">
+                    <span class="pa-icon flex-shrink-0" aria-hidden="true"><Icon Name="IconName.HourglassSplit" /></span>
+                    <span>
+                        <span class="d-block fw-bold">Retention: @(retention == 0 ? "keep forever" : AdminMembers.Plural(retention, "day"))</span>
+                        <span class="d-block small text-body-secondary">
+                            @(retention == 0 ? $"Conversations are kept; {AdminMembers.Plural(State.ConversationsOlderThan(90), "conversation is", "conversations are")} older than 90 days." : $"Older conversations are deleted. The workspace holds {AdminMembers.Plural(State.ConversationCount, "conversation")}.")
+                            The Owner sets it.
+                        </span>
+                    </span>
+                </a>
+            </div>
+            <div class="col">
+                <a class="pa-card pa-adov-module h-100" href="@($"{AiAdminLayout.Base}/sensitive-data")">
+                    <span class="pa-icon flex-shrink-0" aria-hidden="true"><Icon Name="IconName.ShieldExclamation" /></span>
+                    <span>
+                        <span class="d-block fw-bold">Sensitive data: @(waitingEvents == 0 ? "nothing to review" : $"{AdminMembers.Plural(waitingEvents, "event")} to review")</span>
+                        <span class="d-block small text-body-secondary">Messages the policy redacted or blocked, with only the masked match.</span>
+                    </span>
+                </a>
+            </div>
+        </div>
     </section>
 
     <div class="row g-3 mb-4">
@@ -121,16 +169,12 @@
             <h2 class="pa-section-title mb-0" id="pa-adov-top-title">Top members this month</h2>
             <a class="small" href="@($"{AiAdminLayout.Base}/members")">Manage members and roles</a>
         </div>
-        @if (rows.Count == 0)
-        {
-            <p class="text-body-secondary mb-0">Nobody has joined the workspace yet.</p>
-        }
-        else
-        {
+        <ShowcaseDataState IsEmpty="@(rows.Count == 0)" EmptyIcon="IconName.People" EmptyTitle="Nobody has joined the workspace yet"
+                           EmptyText="Invite people from Members and roles; their usage shows here once they chat.">
             <div class="table-responsive">
                 <table class="table align-middle mb-0 pa-adov-top">
                     <caption class="pa-adov-caption">
-                        Members by tokens used in @monthName, the most first (top @Math.Min(TopCount, rows.Count) of @rows.Count). The quota is @AiDisplay.Tokens(quota) tokens per member each month.
+                        Members by tokens used in @monthName, the most first (top @Math.Min(TopCount, rows.Count) of @rows.Count). Each share is of the member's own cap, or of the default of @AiDisplay.Tokens(quota) tokens a month.
                     </caption>
                     <thead>
                         <tr>
@@ -138,20 +182,20 @@
                             <th scope="col">Email</th>
                             <th scope="col" class="text-end">Messages</th>
                             <th scope="col" class="text-end">Tokens</th>
-                            <th scope="col" class="pa-adov-share">Share of quota</th>
+                            <th scope="col" class="pa-adov-share">Share of cap</th>
                             <th scope="col">Status</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach (var row in rows.Take(TopCount))
                         {
-                            var percent = SharePercent(row.Tokens, quota);
+                            var percent = SharePercent(row.Tokens, State.CapOf(row.Member));
                             <tr @key="row.Member.Email">
                                 <th scope="row" class="pa-adov-name">
                                     @row.Member.Name
                                     @if (row.Member.AccountId is not null && row.Member.AccountId == State.Identity.Current?.Id)
                                     {
-                                        <span class="fw-normal text-body-secondary"> (you)</span>
+                                        <span class="fw-normal text-body-secondary">&#32;(you)</span>
                                     }
                                 </th>
                                 <td class="pa-adov-email">@row.Member.Email</td>
@@ -161,7 +205,7 @@
                                     <div class="d-flex align-items-center gap-2">
                                         <Progress Height="6" Class="flex-grow-1">
                                             <ProgressBar Width="Math.Min(100, percent)" Color="@QuotaColor(percent)"
-                                                         aria-label="@($"{row.Member.Name}, share of quota")" aria-valuenow="@Math.Round(percent)" aria-valuemin="0" aria-valuemax="100"
+                                                         aria-label="@($"{row.Member.Name}, share of cap")" aria-valuenow="@Math.Round(percent)" aria-valuemin="0" aria-valuemax="100"
                                                          aria-valuetext="@QuotaText(percent)" />
                                         </Progress>
                                         <span class="small text-nowrap">@QuotaText(percent)</span>
@@ -173,13 +217,13 @@
                     </tbody>
                 </table>
             </div>
-        }
+        </ShowcaseDataState>
     </section>
 
     <section aria-labelledby="pa-adov-more-title">
         <h2 class="pa-section-title" id="pa-adov-more-title">More workspace admin</h2>
-        <div class="row row-cols-1 row-cols-md-3 g-3">
-            @foreach (var module in Modules)
+        <div class="row row-cols-1 row-cols-md-2 row-cols-xxl-3 g-3">
+            @foreach (var module in Modules.Where(module => State.Can(module.Permission)))
             {
                 <div class="col" @key="module.Href">
                     <a class="pa-card pa-adov-module h-100" href="@module.Href">
@@ -193,4 +237,5 @@
             }
         </div>
     </section>
+    </AiMemberGuard>
 </div>

@@ -83,14 +83,38 @@
     </div>
 
     <div class="col-xl-4 d-grid gap-4">
+        @{
+            var needsOrdering = StockAlerts.Count(product => State.OnOrderFor(product.Id) == 0);
+            var awaitingApproval = State.PurchaseOrders.Count(order => order.Status == EcommercePurchaseOrderStatus.Submitted);
+            var awaitingReceipt = State.PurchaseOrders.Count(order => order.IsOpenForReceipt);
+            var overdue = State.PurchaseOrders.Count(State.IsOverdue);
+        }
+        <section class="ea-panel" aria-labelledby="ea-purchasing-title">
+            <div class="d-flex flex-wrap justify-content-between align-items-baseline gap-2">
+                <h2 class="ea-section-title" id="ea-purchasing-title">Purchasing</h2>
+                <a class="small" href="@($"{EcommerceAdminLayout.Base}/purchase-orders")">Purchase orders</a>
+            </div>
+            <ul class="list-unstyled d-grid gap-2 mb-0">
+                <li><a href="@($"{EcommerceAdminLayout.Base}/reorder")">@EcommerceDisplay.Plural(StockAlerts.Count, "product") below reorder point</a>, @needsOrdering with nothing on order</li>
+                <li><a href="@($"{EcommerceAdminLayout.Base}/purchase-orders?status=submitted")">@EcommerceDisplay.Plural(awaitingApproval, "purchase order") awaiting approval</a></li>
+                <li>
+                    <a href="@($"{EcommerceAdminLayout.Base}/purchase-orders?status=open")">@EcommerceDisplay.Plural(awaitingReceipt, "purchase order") awaiting receipt</a>
+                    @if (overdue > 0)
+                    {
+                        <span>, <a href="@($"{EcommerceAdminLayout.Base}/purchase-orders?status=overdue")">@overdue overdue</a></span>
+                    }
+                </li>
+            </ul>
+        </section>
+
         <section class="ea-panel" aria-labelledby="ea-stock-title">
             <div class="d-flex flex-wrap justify-content-between align-items-baseline gap-2">
                 <h2 class="ea-section-title" id="ea-stock-title">Stock alerts</h2>
-                <a class="small" href="@($"{EcommerceAdminLayout.Base}/products")">Products</a>
+                <a class="small" href="@($"{EcommerceAdminLayout.Base}/reorder")">Reorder list</a>
             </div>
             @if (StockAlerts.Count == 0)
             {
-                <p class="ea-empty mb-0">Every product has more than @LowStockLimit in stock.</p>
+                <p class="ea-empty mb-0">Every product is above its reorder point.</p>
             }
             else
             {
@@ -99,14 +123,20 @@
                     {
                         <li class="d-flex justify-content-between gap-2" @key="product.Id">
                             <a href="@($"{EcommerceAdminLayout.Base}/products/{product.Id}")">@product.Name</a>
-                            <Badge Color="@(product.Stock == 0 ? BadgeColor.Danger : BadgeColor.Warning)">@(product.Stock == 0 ? "Out of stock" : $"{product.Stock} left")</Badge>
+                            <span class="text-nowrap">
+                                <Badge Color="@(product.Stock == 0 ? BadgeColor.Danger : BadgeColor.Warning)">@(product.Stock == 0 ? "Out of stock" : $"{product.Stock} left")</Badge>
+                                @if (State.OnOrderFor(product.Id) is > 0 and var onOrder)
+                                {
+                                    <span class="small text-body-secondary">@onOrder on order</span>
+                                }
+                            </span>
                         </li>
                     }
                 </ul>
                 @if (StockAlerts.Count > MaxStockAlerts)
                 {
                     <p class="small mt-3 mb-0">
-                        <a href="@($"{EcommerceAdminLayout.Base}/products")">@(StockAlerts.Count - MaxStockAlerts) more running low or out of stock</a>: filter the product list by stock.
+                        <a href="@($"{EcommerceAdminLayout.Base}/reorder")">@(StockAlerts.Count - MaxStockAlerts) more at or below their reorder point</a> on the reorder list.
                     </p>
                 }
             }

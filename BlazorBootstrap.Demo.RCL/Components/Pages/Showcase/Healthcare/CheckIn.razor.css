@@ -1,19 +1,4 @@
-/* Check-in: status counts and today's arrivals table. */
-.hc-ci-status:empty {
-    margin: 0;
-}
-
-.hc-ci-status:focus,
-#hc-ci-summary:focus {
-    outline: none;
-}
-
-.hc-ci-status:focus-visible,
-#hc-ci-summary:focus-visible {
-    outline: 2px solid var(--bs-focus-ring-color, var(--sc-primary));
-    outline-offset: 2px;
-}
-
+/* Check-in: status counts above today's arrivals; the Grid list's styles are in HcFrame.razor.css. */
 .hc-ci-counts {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(min(100%, 9.5rem), 1fr));
@@ -43,20 +28,23 @@
     color: var(--bs-secondary-color);
 }
 
-.hc-ci-table {
-    font-size: .9375rem;
+/* The arrival's dialog: its facts as label and value pairs, in columns where there is room. */
+.hc-ci-facts {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 11rem), 1fr));
+    gap: .75rem 1.5rem;
 }
 
-    .hc-ci-table th,
-    .hc-ci-table td {
-        padding: .625rem .75rem;
+    .hc-ci-facts dt {
+        margin-bottom: .125rem;
+        font-size: .75rem;
+        font-weight: 700;
+        letter-spacing: .02em;
+        text-transform: uppercase;
+        color: var(--bs-secondary-color);
     }
 
-.hc-ci-patient {
-    min-width: 11rem;
-    overflow-wrap: anywhere;
-}
-
-.hc-ci-closed .hc-ci-patient {
-    color: var(--bs-secondary-color);
-}
+    .hc-ci-facts dd {
+        margin: 0;
+        overflow-wrap: anywhere;
+    }

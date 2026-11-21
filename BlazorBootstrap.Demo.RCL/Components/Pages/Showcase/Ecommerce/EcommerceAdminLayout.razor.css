@@ -350,6 +350,8 @@
 }
 
 .sc-ecommerce ::deep .ea-panel {
+    /* A grid item may shrink below its table's width, so the table scrolls in its own wrapper at 320 CSS px. */
+    min-width: 0;
     height: 100%;
     padding: 1.25rem;
     border: 1px solid var(--ec-border);

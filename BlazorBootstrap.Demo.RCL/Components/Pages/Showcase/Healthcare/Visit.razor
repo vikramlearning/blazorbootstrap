@@ -1,8 +1,9 @@
 @page "/showcase/healthcare/staff/appointments/{Id:int}"
 @layout HcStaffLayout
 
-@* One visit for its doctor: the patient's header with allergies, notes and the summary for the patient, lab orders,
-   prescriptions, and Complete visit. Another doctor's visit is read-only. *@
+@* One visit for its doctor: the patient's header with allergies, vital signs, notes and the summary for the patient, lab
+   orders, prescriptions, Complete visit, and the coding of the completed visit with its insurance claim. Another doctor's
+   visit is read-only. *@
 <div class="container-fluid px-lg-4">
     <ShowcaseRoleGuard Roles="@HcSeedData.DoctorRole" SignInPath="@HcLayout.SignInPath">
         @if (State.FindAppointment(Id) is not { } appointment)
@@ -23,7 +24,8 @@
             var visitLabs = State.LabOrdersOf(appointment.PatientId).Where(item => item.AppointmentId == appointment.Id).ToList();
             var visitPrescriptions = VisitPrescriptions(appointment);
             var bill = State.BillsOf(appointment.PatientId).FirstOrDefault(item => item.AppointmentId == appointment.Id);
-            var unsaved = canEdit && (notes.Trim() != appointment.Notes || summary.Trim() != appointment.Summary);
+            var claim = State.ClaimOfVisit(appointment.Id);
+            var unsaved = canEdit && ((notesForm.Notes ?? string.Empty).Trim() != appointment.Notes || (notesForm.Summary ?? string.Empty).Trim() != appointment.Summary);
 
             <PageTitle>Visit: @name · @HcSeedData.ProductName</PageTitle>
 
@@ -46,14 +48,14 @@
             </nav>
 
             <p class="small text-body-secondary mb-1">
-                Visit · @HcDisplay.DayLong(appointment.Start) at @HcDisplay.Time(appointment.Start) · @appointment.Minutes minutes@(clinic is null ? null : $" · {clinic.Name}")
+                Visit · @HcDisplay.DayLong(appointment.Start) at @HcDisplay.Time(appointment.Start) · @HcDisplay.VisitTypeText(appointment.VisitType)@(clinic is null ? null : $" · {clinic.Name}")
             </p>
             <h1 class="hc-title mb-1">@name</h1>
             <p class="mb-3">
                 @PatientChart.AgeText(HcDisplay.Age(patient?.DateOfBirth, today))
                 @if (patient is not null)
                 {
-                    <text> · @PatientChart.Mrn(patient.Id) · </text><a href="@HcDisplay.PatientChartUrl(patient.Id)">Open @patient.Name's chart</a>
+                    <text> · @PatientChart.Mrn(patient) · @(State.FindPayer(patient.InsurancePayerId)?.Name ?? "Self-pay") · </text><a href="@HcDisplay.PatientChartUrl(patient.Id)">Open @patient.Name's chart</a>
                 }
             </p>
 
@@ -99,42 +101,38 @@
                     <h2 class="hc-section-title" id="hc-visit-notes-title">Notes and summary</h2>
                     @if (canEdit)
                     {
-                        <form @onsubmit="SaveNotes" novalidate aria-label="Visit notes and summary">
+                        <EditForm EditContext="notesContext" OnSubmit="SaveNotes" FormName="hc-visit-notes" novalidate>
+                            <DataAnnotationsValidator />
+                            <ShowcaseFormErrors ShowSummary="true" />
                             <div class="mb-3">
                                 <label class="form-label fw-semibold" for="hc-visit-notes">Visit notes (staff only)</label>
-                                <textarea id="hc-visit-notes" class="@(notesError is null ? "form-control" : "form-control is-invalid")" rows="7" @bind="notes" @bind:event="oninput"
-                                          @ref="notesInput" maxlength="@HcState.MaxNotesLength"
-                                          aria-invalid="@(notesError is null ? null : "true")" aria-describedby="hc-visit-notes-help hc-visit-notes-error"></textarea>
-                                <div class="form-text" id="hc-visit-notes-help">Only staff see these; the patient never does. @notes.Length of @HcState.MaxNotesLength characters.</div>
-                                <div class="invalid-feedback d-block" id="hc-visit-notes-error">@notesError</div>
+                                <InputTextArea id="hc-visit-notes" class="form-control" rows="7" @bind-Value="notesForm.Notes" maxlength="@HcState.MaxNotesLength" aria-describedby="hc-visit-notes-help" />
+                                <div class="form-text" id="hc-visit-notes-help">Only staff see these; the patient never does. @((notesForm.Notes ?? string.Empty).Length) of @HcState.MaxNotesLength characters.</div>
+                                <ValidationMessage For="() => notesForm.Notes" />
                             </div>
                             <div class="mb-3">
                                 <label class="form-label fw-semibold" for="hc-visit-summary">Summary for the patient</label>
-                                <textarea id="hc-visit-summary" class="@(summaryError is null ? "form-control" : "form-control is-invalid")" rows="5" @bind="summary" @bind:event="oninput"
-                                          @ref="summaryInput" maxlength="@HcState.MaxSummaryLength"
-                                          aria-invalid="@(summaryError is null ? null : "true")" aria-describedby="hc-visit-summary-help hc-visit-summary-error"></textarea>
+                                <InputTextArea id="hc-visit-summary" class="form-control" rows="5" @bind-Value="notesForm.Summary" maxlength="@HcState.MaxSummaryLength" aria-describedby="hc-visit-summary-help" />
                                 <div class="form-text" id="hc-visit-summary-help">
                                     @(appointment.Status == HcAppointmentStatus.Completed
                                         ? "The patient already sees this in their records, so a saved change shows to them right away."
                                         : "The patient sees this in their records after you complete the visit. Use plain words.")
-                                    @summary.Length of @HcState.MaxSummaryLength characters.
+                                    @((notesForm.Summary ?? string.Empty).Length) of @HcState.MaxSummaryLength characters.
                                 </div>
-                                <div class="invalid-feedback d-block" id="hc-visit-summary-error">@summaryError</div>
+                                <ValidationMessage For="() => notesForm.Summary" />
                             </div>
                             <div class="d-flex flex-wrap align-items-center gap-2">
-                                <button type="submit" class="btn btn-primary">
-                                    <Icon Name="IconName.Save" class="me-1" aria-hidden="true" />Save notes
-                                </button>
+                                <Button Type="ButtonType.Submit" Color="ButtonColor.Primary"><Icon Name="IconName.Save" class="me-1" aria-hidden="true" />Save notes</Button>
                                 <span class="small text-body-secondary">@(unsaved ? "You have unsaved changes." : "Everything is saved.")</span>
                             </div>
-                        </form>
+                        </EditForm>
                     }
                     else if (own)
                     {
                         @switch (appointment.Status)
                         {
                             case HcAppointmentStatus.CheckedIn:
-                                <p>@name is checked in. Start the visit to write notes, order labs, and prescribe.</p>
+                                <p>@name is checked in. Start the visit to write notes, take vitals, order labs, and prescribe.</p>
                                 <button type="button" class="btn btn-primary" @ref="startButton" @onclick="StartVisit">
                                     <Icon Name="IconName.PlayFill" class="me-1" aria-hidden="true" />Start visit
                                 </button>
@@ -165,15 +163,69 @@
                     }
                 </section>
 
+                <section class="hc-panel hc-visit-vitals" aria-labelledby="hc-visit-vitals-title">
+                    <h2 class="hc-section-title" id="hc-visit-vitals-title">Vital signs</h2>
+                    @if (canEdit)
+                    {
+                        <EditForm EditContext="vitalsContext" OnSubmit="SaveVitals" FormName="hc-visit-vitals" novalidate>
+                            <DataAnnotationsValidator />
+                            <ShowcaseFormErrors ShowSummary="true" />
+                            <div class="hc-visit-vitals-fields">
+                                <div>
+                                    <label class="form-label fw-semibold" for="hc-visit-sys">Systolic (mmHg)</label>
+                                    <InputNumber TValue="int?" id="hc-visit-sys" class="form-control" @bind-Value="vitalsForm.Systolic" inputmode="numeric" min="60" max="250" step="1"
+                                                 ParsingErrorMessage="Enter the systolic pressure as a whole number." aria-describedby="hc-visit-bp-help" />
+                                    <ValidationMessage For="() => vitalsForm.Systolic" />
+                                </div>
+                                <div>
+                                    <label class="form-label fw-semibold" for="hc-visit-dia">Diastolic (mmHg)</label>
+                                    <InputNumber TValue="int?" id="hc-visit-dia" class="form-control" @bind-Value="vitalsForm.Diastolic" inputmode="numeric" min="30" max="150" step="1"
+                                                 ParsingErrorMessage="Enter the diastolic pressure as a whole number." aria-describedby="hc-visit-bp-help" />
+                                    <ValidationMessage For="() => vitalsForm.Diastolic" />
+                                </div>
+                                <div>
+                                    <label class="form-label fw-semibold" for="hc-visit-pulse">Pulse (a minute)</label>
+                                    <InputNumber TValue="int?" id="hc-visit-pulse" class="form-control" @bind-Value="vitalsForm.Pulse" inputmode="numeric" min="30" max="220" step="1"
+                                                 ParsingErrorMessage="Enter the pulse as a whole number." />
+                                    <ValidationMessage For="() => vitalsForm.Pulse" />
+                                </div>
+                                <div>
+                                    <label class="form-label fw-semibold" for="hc-visit-temp">Temperature (°C)</label>
+                                    <InputNumber TValue="double?" id="hc-visit-temp" class="form-control" @bind-Value="vitalsForm.TemperatureC" inputmode="decimal" min="34" max="42" step="0.1"
+                                                 ParsingErrorMessage="Enter the temperature as a number, like 36.8." />
+                                    <ValidationMessage For="() => vitalsForm.TemperatureC" />
+                                </div>
+                                <div>
+                                    <label class="form-label fw-semibold" for="hc-visit-weight">Weight (kg)</label>
+                                    <InputNumber TValue="double?" id="hc-visit-weight" class="form-control" @bind-Value="vitalsForm.WeightKg" inputmode="decimal" min="1" max="400" step="0.1"
+                                                 ParsingErrorMessage="Enter the weight as a number, like 72.5." />
+                                    <ValidationMessage For="() => vitalsForm.WeightKg" />
+                                </div>
+                            </div>
+                            <p class="form-text mt-1" id="hc-visit-bp-help">Blood pressure: both values or neither, systolic 60 to 250 above diastolic 30 to 150. Leave out what you didn't measure.</p>
+                            <Button Type="ButtonType.Submit" Color="ButtonColor.Primary" Outline="true"><Icon Name="IconName.HeartPulse" class="me-1" aria-hidden="true" />Save vitals</Button>
+                        </EditForm>
+                    }
+                    else if (appointment.Vitals is { } vitals)
+                    {
+                        <p class="mb-0">@VitalsText(vitals)</p>
+                    }
+                    else
+                    {
+                        <p class="text-body-secondary mb-0">No vital signs recorded.</p>
+                    }
+                </section>
+
                 <section class="hc-panel hc-visit-labs" aria-labelledby="hc-visit-labs-title">
                     <h2 class="hc-section-title" id="hc-visit-labs-title">Lab orders</h2>
                     @if (canEdit)
                     {
-                        <form class="mb-3" @onsubmit="OrderLab" novalidate aria-label="Order a lab test">
+                        <EditForm EditContext="labContext" OnSubmit="OrderLab" FormName="hc-visit-lab" class="mb-3" novalidate>
+                            <DataAnnotationsValidator />
+                            <ShowcaseFormErrors ShowSummary="true" />
                             <label class="form-label fw-semibold" for="hc-visit-panel">Order a lab test</label>
                             <div class="hc-visit-inline">
-                                <select id="hc-visit-panel" class="@(panelError is null ? "form-select" : "form-select is-invalid")" @bind="panelId" @ref="panelSelect"
-                                        aria-invalid="@(panelError is null ? null : "true")" aria-describedby="hc-visit-panel-help hc-visit-panel-error">
+                                <InputSelect id="hc-visit-panel" class="form-select" @bind-Value="labForm.PanelId" aria-describedby="hc-visit-panel-help">
                                     <option value="">Choose a test</option>
                                     @foreach (var panel in State.LabPanels)
                                     {
@@ -181,12 +233,12 @@
                                             @panel.Name: @panel.Description@(visitLabs.Any(item => item.PanelId == panel.Id) ? " (already ordered in this visit)" : null)
                                         </option>
                                     }
-                                </select>
-                                <button type="submit" class="btn btn-outline-primary text-nowrap">Order test</button>
+                                </InputSelect>
+                                <Button Type="ButtonType.Submit" Color="ButtonColor.Primary" Outline="true" Class="text-nowrap">Order test</Button>
                             </div>
                             <div class="form-text" id="hc-visit-panel-help">You enter the results under Lab results. Each test is billed @HcDisplay.Money(HcSeedData.LabFeeCents) when you release it.</div>
-                            <div class="invalid-feedback d-block" id="hc-visit-panel-error">@panelError</div>
-                        </form>
+                            <ValidationMessage For="() => labForm.PanelId" />
+                        </EditForm>
                     }
                     else if (own && !started)
                     {
@@ -223,50 +275,51 @@
                     <h2 class="hc-section-title" id="hc-visit-rx-title">Prescriptions</h2>
                     @if (canEdit)
                     {
-                        <form class="mb-3" @onsubmit="Prescribe" novalidate aria-label="Prescribe a medication">
+                        <EditForm EditContext="rxContext" OnSubmit="Prescribe" FormName="hc-visit-rx" class="mb-3" novalidate>
+                            <DataAnnotationsValidator />
+                            <ShowcaseFormErrors ShowSummary="true" />
                             <div class="hc-visit-rx-fields">
                                 <div class="hc-visit-rx-wide">
                                     <label class="form-label fw-semibold" for="hc-visit-rx-medication">Medication</label>
-                                    <input id="hc-visit-rx-medication" class="@FieldClass(MedicationField)" @bind="medication" @ref="rxInputs[MedicationField]" maxlength="@HcState.MaxMedicationLength"
-                                           autocomplete="off" aria-invalid="@Invalid(MedicationField)" aria-describedby="hc-visit-rx-medication-error" />
-                                    <div class="invalid-feedback d-block" id="hc-visit-rx-medication-error">@rxErrors.GetValueOrDefault(MedicationField)</div>
+                                    <InputText id="hc-visit-rx-medication" class="form-control" @bind-Value="rxForm.Medication" maxlength="@HcState.MaxMedicationLength" autocomplete="off" />
+                                    <ValidationMessage For="() => rxForm.Medication" />
                                 </div>
                                 <div class="hc-visit-rx-wide">
                                     <label class="form-label fw-semibold" for="hc-visit-rx-dose">Dose</label>
-                                    <input id="hc-visit-rx-dose" class="@FieldClass(DoseField)" @bind="dose" @ref="rxInputs[DoseField]" maxlength="@HcState.MaxDoseLength"
-                                           autocomplete="off" aria-invalid="@Invalid(DoseField)" aria-describedby="hc-visit-rx-dose-help hc-visit-rx-dose-error" />
+                                    <InputText id="hc-visit-rx-dose" class="form-control" @bind-Value="rxForm.Dose" maxlength="@HcState.MaxDoseLength" autocomplete="off" aria-describedby="hc-visit-rx-dose-help" />
                                     <div class="form-text" id="hc-visit-rx-dose-help">Like “10 mg tablet”.</div>
-                                    <div class="invalid-feedback d-block" id="hc-visit-rx-dose-error">@rxErrors.GetValueOrDefault(DoseField)</div>
+                                    <ValidationMessage For="() => rxForm.Dose" />
                                 </div>
                                 <div class="hc-visit-rx-full">
                                     <label class="form-label fw-semibold" for="hc-visit-rx-directions">Directions</label>
-                                    <textarea id="hc-visit-rx-directions" class="@FieldClass(DirectionsField)" rows="2" @bind="directions" @bind:event="oninput" @ref="rxInputs[DirectionsField]"
-                                              maxlength="@HcState.MaxDirectionsLength" aria-invalid="@Invalid(DirectionsField)"
-                                              aria-describedby="hc-visit-rx-directions-help hc-visit-rx-directions-error"></textarea>
-                                    <div class="form-text" id="hc-visit-rx-directions-help">How to take it, in the patient's words. @directions.Length of @HcState.MaxDirectionsLength characters.</div>
-                                    <div class="invalid-feedback d-block" id="hc-visit-rx-directions-error">@rxErrors.GetValueOrDefault(DirectionsField)</div>
+                                    <InputTextArea id="hc-visit-rx-directions" class="form-control" rows="2" @bind-Value="rxForm.Directions" maxlength="@HcState.MaxDirectionsLength" aria-describedby="hc-visit-rx-directions-help" />
+                                    <div class="form-text" id="hc-visit-rx-directions-help">How to take it, in the patient's words. @((rxForm.Directions ?? string.Empty).Length) of @HcState.MaxDirectionsLength characters.</div>
+                                    <ValidationMessage For="() => rxForm.Directions" />
                                 </div>
                                 <div>
                                     <label class="form-label fw-semibold" for="hc-visit-rx-quantity">Quantity</label>
-                                    <input id="hc-visit-rx-quantity" type="number" inputmode="numeric" min="1" max="@HcState.MaxQuantity" step="1" class="@FieldClass(QuantityField)"
-                                           @bind="quantity" @ref="rxInputs[QuantityField]" aria-invalid="@Invalid(QuantityField)"
-                                           aria-describedby="hc-visit-rx-quantity-help hc-visit-rx-quantity-error" />
+                                    <InputNumber TValue="int?" id="hc-visit-rx-quantity" class="form-control" @bind-Value="rxForm.Quantity" inputmode="numeric" min="1" max="@HcState.MaxQuantity" step="1"
+                                                 ParsingErrorMessage="Enter the quantity as a whole number." aria-describedby="hc-visit-rx-quantity-help" />
                                     <div class="form-text" id="hc-visit-rx-quantity-help">1 to @HcState.MaxQuantity per fill.</div>
-                                    <div class="invalid-feedback d-block" id="hc-visit-rx-quantity-error">@rxErrors.GetValueOrDefault(QuantityField)</div>
+                                    <ValidationMessage For="() => rxForm.Quantity" />
+                                </div>
+                                <div>
+                                    <label class="form-label fw-semibold" for="hc-visit-rx-days">Days per fill</label>
+                                    <InputNumber TValue="int?" id="hc-visit-rx-days" class="form-control" @bind-Value="rxForm.DaysSupply" inputmode="numeric" min="1" max="@HcState.MaxDaysSupply" step="1"
+                                                 ParsingErrorMessage="Enter the days as a whole number." aria-describedby="hc-visit-rx-days-help" />
+                                    <div class="form-text" id="hc-visit-rx-days-help">1 to @HcState.MaxDaysSupply.</div>
+                                    <ValidationMessage For="() => rxForm.DaysSupply" />
                                 </div>
                                 <div>
                                     <label class="form-label fw-semibold" for="hc-visit-rx-refills">Refills</label>
-                                    <input id="hc-visit-rx-refills" type="number" inputmode="numeric" min="0" max="@HcState.MaxRefills" step="1" class="@FieldClass(RefillsField)"
-                                           @bind="refills" @ref="rxInputs[RefillsField]" aria-invalid="@Invalid(RefillsField)"
-                                           aria-describedby="hc-visit-rx-refills-help hc-visit-rx-refills-error" />
-                                    <div class="form-text" id="hc-visit-rx-refills-help">0 to @HcState.MaxRefills.</div>
-                                    <div class="invalid-feedback d-block" id="hc-visit-rx-refills-error">@rxErrors.GetValueOrDefault(RefillsField)</div>
+                                    <InputNumber TValue="int?" id="hc-visit-rx-refills" class="form-control" @bind-Value="rxForm.Refills" inputmode="numeric" min="0" max="@HcState.MaxRefills" step="1"
+                                                 ParsingErrorMessage="Enter the refills as a whole number." aria-describedby="hc-visit-rx-refills-help" />
+                                    <div class="form-text" id="hc-visit-rx-refills-help">0 to @HcState.MaxRefills; all fills together at most a year.</div>
+                                    <ValidationMessage For="() => rxForm.Refills" />
                                 </div>
                             </div>
-                            <button type="submit" class="btn btn-outline-primary mt-1">
-                                <Icon Name="IconName.Capsule" class="me-1" aria-hidden="true" />Prescribe
-                            </button>
-                        </form>
+                            <Button Type="ButtonType.Submit" Color="ButtonColor.Primary" Outline="true" Class="mt-1"><Icon Name="IconName.Capsule" class="me-1" aria-hidden="true" />Prescribe</Button>
+                        </EditForm>
                     }
                     else if (own && !started)
                     {
@@ -286,7 +339,7 @@
                                     <span class="hc-visit-wrap">
                                         <span class="fw-semibold">@prescription.Medication @prescription.Dose</span>
                                         <span class="d-block small hc-plain">@prescription.Directions</span>
-                                        <span class="d-block small text-body-secondary">Quantity @prescription.Quantity · @PatientChart.RefillsText(prescription.Refills)</span>
+                                        <span class="d-block small text-body-secondary">Quantity @prescription.Quantity · @prescription.DaysSupply days · @PatientChart.RefillsText(prescription.Refills)</span>
                                     </span>
                                     <span class="@(prescription.Status == HcPrescriptionStatus.Active ? "badge text-bg-success" : "badge text-bg-secondary")">
                                         @(prescription.Status == HcPrescriptionStatus.Active ? "Active" : "Stopped")
@@ -305,7 +358,10 @@
                         {
                             <p>
                                 Completing shows your summary to @name in their records and bills the visit
-                                (@HcDisplay.Money(FeeCents(doctor)), @FeeLabel(doctor) fee). You can still edit the notes, order labs, and prescribe afterwards.
+                                @(State.FindPayer(patient?.InsurancePayerId) is { } payer
+                                    ? $"to {payer.Name} first: code it afterwards, below or by billing, to send the claim."
+                                    : $"({HcDisplay.Money(FeeCents(doctor))}, {FeeLabel(doctor)} fee, self-pay).")
+                                You can still edit the notes, order labs, and prescribe afterwards.
                             </p>
                             <button type="button" class="btn btn-success" @ref="completeButton" @onclick="OpenCompleteAsync">
                                 <Icon Name="IconName.CheckCircle" class="me-1" aria-hidden="true" />Complete visit
@@ -323,6 +379,51 @@
                         }
                     </section>
                 }
+
+                @if (appointment.Status == HcAppointmentStatus.Completed)
+                {
+                    <section class="hc-panel hc-visit-coding" aria-labelledby="hc-visit-coding-title">
+                        <h2 class="hc-section-title" id="hc-visit-coding-title">Coding and insurance claim</h2>
+                        @if (claim is not null)
+                        {
+                            var lastAnswer = claim.Responses.LastOrDefault();
+
+                            <p class="mb-2">
+                                <a href="@ClaimDetail.Url(claim.Id)">@claim.Number</a> to @(State.FindPayer(claim.PayerId)?.Name):
+                                <span class="badge text-bg-@ClaimDetail.StatusColor(claim.Status) ms-1">@ClaimDetail.StatusLabel(claim)</span>
+                                · billed @HcDisplay.Money(claim.BilledCents)
+                            </p>
+                            @if (claim.Status == HcClaimStatus.Denied && lastAnswer is not null)
+                            {
+                                <p class="hc-visit-warning mb-3">
+                                    <Icon Name="IconName.ExclamationTriangleFill" class="me-1" aria-hidden="true" />
+                                    <strong>Denied:</strong> @ClaimDetail.CodesText(State, lastAnswer.DenialCodes)@(lastAnswer.Remark.Length > 0 ? $" ({lastAnswer.Remark})" : null)
+                                    @(HcState.IsFinalDenial(claim) ? " The appeal was denied too, so the codes can't change any more." : " Correct the codes below with a note, and billing resubmits the claim.")
+                                </p>
+                            }
+                        }
+                        else if (State.FindPayer(patient?.InsurancePayerId) is null)
+                        {
+                            <p class="small text-body-secondary">@name pays themselves (self-pay), so coding is for the record: no claim is sent.</p>
+                        }
+                        else if (appointment.ProcedureCodes.Count == 0)
+                        {
+                            <p class="small text-body-secondary">Not coded yet: coding it creates the claim to @(State.FindPayer(patient?.InsurancePayerId)?.Name) for billing to submit.</p>
+                        }
+
+                        @if (own && (claim is null || claim.Status is HcClaimStatus.Draft or HcClaimStatus.Corrected || (claim.Status == HcClaimStatus.Denied && !HcState.IsFinalDenial(claim))))
+                        {
+                            <HcCodingForm Appointment="appointment" Claim="claim" IdPrefix="hc-visit-coding" OnSaved="OnCoded" />
+                        }
+                        else
+                        {
+                            <p class="mb-0">
+                                <span class="fw-semibold">Diagnoses:</span> @(appointment.DiagnosisCodes.Count == 0 ? "none" : ClaimDetail.DiagnosesText(State, appointment.DiagnosisCodes))<br />
+                                <span class="fw-semibold">Procedures:</span> @(appointment.ProcedureCodes.Count == 0 ? "none" : string.Join(", ", appointment.ProcedureCodes))
+                            </p>
+                        }
+                    </section>
+                }
             </div>
 
             <Modal @ref="completeModal" IsVerticallyCentered="true" ShowCloseButton="false" aria-labelledby="hc-visit-complete-dialog-title" OnHidden="OnCompleteHiddenAsync">
@@ -330,11 +431,11 @@
                     <h2 class="modal-title h5 hc-visit-wrap" id="hc-visit-complete-dialog-title">Complete the visit with @name?</h2>
                 </HeaderTemplate>
                 <BodyTemplate>
-                    <p class="@(summary.Trim().Length == 0 ? "mb-2" : "mb-0")">
-                        @name sees your summary in their records, and the visit is billed @HcDisplay.Money(FeeCents(doctor)) (@FeeLabel(doctor) fee).
+                    <p class="@((notesForm.Summary ?? string.Empty).Trim().Length == 0 ? "mb-2" : "mb-0")">
+                        @name sees your summary in their records@(State.FindPayer(patient?.InsurancePayerId) is { } plan ? $", and the visit is billed to {plan.Name} once it's coded." : $", and the visit is billed {HcDisplay.Money(FeeCents(doctor))} ({FeeLabel(doctor)} fee).")
                         @(unsaved ? "Your unsaved notes and summary are saved first." : null)
                     </p>
-                    @if (summary.Trim().Length == 0)
+                    @if ((notesForm.Summary ?? string.Empty).Trim().Length == 0)
                     {
                         <p class="hc-visit-warning mb-0">
                             <Icon Name="IconName.ExclamationTriangleFill" class="me-1" aria-hidden="true" />

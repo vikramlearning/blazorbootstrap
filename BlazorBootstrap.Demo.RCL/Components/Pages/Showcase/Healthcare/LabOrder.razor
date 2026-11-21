@@ -1,0 +1,185 @@
+@page "/showcase/healthcare/staff/labs/{Id:int}"
+@layout HcStaffLayout
+
+@* One lab order for doctors: the ordering doctor enters its results, checks the flags, and releases them to the patient
+   (which bills the test); other doctors see it read-only. *@
+<div class="container-fluid px-lg-4">
+    <ShowcaseRoleGuard Roles="@HcSeedData.DoctorRole" SignInPath="@HcLayout.SignInPath">
+        @if (State.FindLabOrder(Id) is not { } order)
+        {
+            <HcNotFound Message="This lab order doesn't exist, or the link is wrong. Your lab work is under Lab results." />
+        }
+        else
+        {
+            var panel = State.LabPanel(order.PanelId);
+            var panelName = panel?.Name ?? order.PanelId;
+            var patient = State.FindPatient(order.PatientId);
+            var patientName = patient?.Name ?? "a former patient";
+            var visit = order.AppointmentId is { } visitId ? State.FindAppointment(visitId) : null;
+            var mine = order.DoctorId == State.CurrentDoctor?.Id;
+            var showForm = mine && panel is not null && labForm.Count == panel.Analytes.Count && (order.Status == HcLabStatus.Ordered || editing);
+
+            <PageTitle>@panelName for @patientName · @HcSeedData.ProductName</PageTitle>
+
+            <nav aria-label="Breadcrumb">
+                <ol class="breadcrumb small mb-2">
+                    <li class="breadcrumb-item"><a href="@($"{HcStaffLayout.Base}/labs")">Lab results</a></li>
+                    <li class="breadcrumb-item active hc-wrap" aria-current="page">@($"Lab order {order.Id.ToString(CultureInfo.InvariantCulture)}")</li>
+                </ol>
+            </nav>
+
+            <div class="mb-3">
+                <h1 class="hc-title mb-1 hc-wrap" tabindex="-1" @ref="heading">@panelName<span class="fw-normal"> for @patientName</span></h1>
+                <p class="hc-lead mb-0">
+                    <span class="badge text-bg-@Labs.StatusColor(order.Status) me-1">@Labs.StatusLabel(order.Status)</span>
+                    Lab order @order.Id.ToString(CultureInfo.InvariantCulture), ordered @HcDisplay.When(order.OrderedAt) by @(State.FindDoctor(order.DoctorId)?.Name ?? "a former doctor")@(mine ? " (you)" : null).
+                </p>
+                <p class="small text-body-secondary mb-0 mt-1">
+                    @if (patient is not null)
+                    {
+                        <a href="@HcDisplay.PatientChartUrl(patient.Id)">@patient.Name's chart</a>
+                        <text> · @patient.Mrn</text>
+                    }
+                    @if (visit is not null)
+                    {
+                        <text> · in the visit </text><a href="@HcDisplay.StaffAppointmentUrl(visit.Id)">@HcDisplay.Day(visit.Start): @visit.Reason</a>
+                    }
+                    @if (order.ResultedAt is { } resulted)
+                    {
+                        <text> · entered @HcDisplay.When(resulted)</text>
+                    }
+                    @if (order.ReleasedAt is { } released)
+                    {
+                        <text> · released @HcDisplay.When(released)</text>
+                    }
+                </p>
+            </div>
+
+            @* Always rendered and focusable, so an outcome is announced and focus has somewhere to go. *@
+            <p class="hc-form-status mb-3 @(statusIsError ? "text-danger-emphasis" : null)" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
+
+            <section class="hc-panel" aria-labelledby="hc-lo-results-title">
+                <h2 class="hc-section-title" id="hc-lo-results-title">Results</h2>
+
+                @if (panel is null)
+                {
+                    <p class="text-body-secondary mb-0">This test is no longer offered, so its results can't be shown.</p>
+                }
+                else if (showForm)
+                {
+                    <EditForm EditContext="labContext" OnSubmit="SaveResults" FormName="hc-lab-results" novalidate aria-label="@($"{panelName} results for {patientName}")">
+                        <DataAnnotationsValidator />
+                        <ShowcaseFormErrors ShowSummary="true" />
+                        <div class="hc-labs-fields">
+                            @if (panel.Analytes.Count > 0)
+                            {
+                                var analyte0 = panel.Analytes[0];
+                                <div class="hc-labs-field">
+                                    <label class="form-label fw-semibold" for="hc-lo-value-0">@analyte0.Name (@analyte0.Unit)</label>
+                                    <InputNumber TValue="double?" id="hc-lo-value-0" class="form-control" @bind-Value="labForm.Value0" inputmode="decimal" step="any" min="0" max="@analyte0.MaxValue"
+                                                 ParsingErrorMessage="@($"Enter the {analyte0.Name} result as a number, like 5.4.")" aria-describedby="hc-lo-value-0-help" />
+                                    <div class="form-text" id="hc-lo-value-0-help">Reference range: @Labs.RangeText(analyte0). @FlagText(analyte0, labForm.Value0)</div>
+                                    <ValidationMessage For="() => labForm.Value0" />
+                                </div>
+                            }
+                            @if (panel.Analytes.Count > 1)
+                            {
+                                var analyte1 = panel.Analytes[1];
+                                <div class="hc-labs-field">
+                                    <label class="form-label fw-semibold" for="hc-lo-value-1">@analyte1.Name (@analyte1.Unit)</label>
+                                    <InputNumber TValue="double?" id="hc-lo-value-1" class="form-control" @bind-Value="labForm.Value1" inputmode="decimal" step="any" min="0" max="@analyte1.MaxValue"
+                                                 ParsingErrorMessage="@($"Enter the {analyte1.Name} result as a number, like 5.4.")" aria-describedby="hc-lo-value-1-help" />
+                                    <div class="form-text" id="hc-lo-value-1-help">Reference range: @Labs.RangeText(analyte1). @FlagText(analyte1, labForm.Value1)</div>
+                                    <ValidationMessage For="() => labForm.Value1" />
+                                </div>
+                            }
+                            @if (panel.Analytes.Count > 2)
+                            {
+                                var analyte2 = panel.Analytes[2];
+                                <div class="hc-labs-field">
+                                    <label class="form-label fw-semibold" for="hc-lo-value-2">@analyte2.Name (@analyte2.Unit)</label>
+                                    <InputNumber TValue="double?" id="hc-lo-value-2" class="form-control" @bind-Value="labForm.Value2" inputmode="decimal" step="any" min="0" max="@analyte2.MaxValue"
+                                                 ParsingErrorMessage="@($"Enter the {analyte2.Name} result as a number, like 5.4.")" aria-describedby="hc-lo-value-2-help" />
+                                    <div class="form-text" id="hc-lo-value-2-help">Reference range: @Labs.RangeText(analyte2). @FlagText(analyte2, labForm.Value2)</div>
+                                    <ValidationMessage For="() => labForm.Value2" />
+                                </div>
+                            }
+                            @if (panel.Analytes.Count > 3)
+                            {
+                                var analyte3 = panel.Analytes[3];
+                                <div class="hc-labs-field">
+                                    <label class="form-label fw-semibold" for="hc-lo-value-3">@analyte3.Name (@analyte3.Unit)</label>
+                                    <InputNumber TValue="double?" id="hc-lo-value-3" class="form-control" @bind-Value="labForm.Value3" inputmode="decimal" step="any" min="0" max="@analyte3.MaxValue"
+                                                 ParsingErrorMessage="@($"Enter the {analyte3.Name} result as a number, like 5.4.")" aria-describedby="hc-lo-value-3-help" />
+                                    <div class="form-text" id="hc-lo-value-3-help">Reference range: @Labs.RangeText(analyte3). @FlagText(analyte3, labForm.Value3)</div>
+                                    <ValidationMessage For="() => labForm.Value3" />
+                                </div>
+                            }
+                        </div>
+                        <label class="form-label fw-semibold mt-1" for="hc-lo-comment">Comment for the patient (optional)</label>
+                        <InputTextArea id="hc-lo-comment" class="form-control" rows="3" @bind-Value="labForm.Comment" maxlength="@HcState.MaxCommentLength" aria-describedby="hc-lo-comment-help" />
+                        <div class="form-text" id="hc-lo-comment-help">
+                            The patient reads this with the results once released. Plain text. @((labForm.Comment ?? string.Empty).Length) of @HcState.MaxCommentLength characters.
+                        </div>
+                        <ValidationMessage For="() => labForm.Comment" />
+                        <div class="d-flex flex-wrap gap-2 mt-2">
+                            <Button Type="ButtonType.Submit" Color="ButtonColor.Primary">
+                                <Icon Name="IconName.Save" class="me-1" aria-hidden="true" />@(order.Status == HcLabStatus.Ordered ? "Save results" : "Save corrected results")
+                            </Button>
+                            @if (order.Status == HcLabStatus.Resulted)
+                            {
+                                <button type="button" class="btn btn-outline-secondary" @onclick="CancelEdit">Cancel</button>
+                            }
+                        </div>
+                    </EditForm>
+                }
+                else if (order.Status == HcLabStatus.Ordered)
+                {
+                    <p class="text-body-secondary mb-0">Waiting for results. Only the ordering doctor enters them.</p>
+                }
+                else
+                {
+                    <LabsResultTable Order="order" Panel="panel" Caption="@($"{panelName} results for {patientName}")" />
+
+                    @if (order.Status == HcLabStatus.Resulted && mine)
+                    {
+                        <div class="d-flex flex-wrap gap-2 mt-3">
+                            <button type="button" class="btn btn-primary" @ref="releaseButton" @onclick="OpenReleaseAsync">
+                                <Icon Name="IconName.Send" class="me-1" aria-hidden="true" />Release to patient<span class="visually-hidden">: @panelName for @patientName</span>
+                            </button>
+                            <button type="button" class="btn btn-outline-secondary" @ref="editButton" @onclick="StartEdit">
+                                <Icon Name="IconName.Pencil" class="me-1" aria-hidden="true" />Correct results<span class="visually-hidden">: @panelName for @patientName</span>
+                            </button>
+                        </div>
+                    }
+                    else if (order.Status == HcLabStatus.Resulted)
+                    {
+                        <p class="small text-body-secondary mt-2 mb-0">Entered, not released yet: the ordering doctor releases them.</p>
+                    }
+                    else
+                    {
+                        <p class="small text-body-secondary mt-2 mb-0">
+                            <Icon Name="IconName.CheckCircle" class="me-1" aria-hidden="true" />@patientName sees these results in Lab reports, with a PDF.
+                        </p>
+                    }
+                }
+            </section>
+
+            <Modal @ref="releaseModal" IsVerticallyCentered="true" ShowCloseButton="false" aria-labelledby="hc-lo-release-title" OnHidden="OnReleaseHiddenAsync">
+                <HeaderTemplate>
+                    <h2 class="modal-title h5 hc-wrap" id="hc-lo-release-title">Release @panelName for @patientName?</h2>
+                </HeaderTemplate>
+                <BodyTemplate>
+                    <p class="mb-2">
+                        @patientName sees the results and your comment in Lab reports, with a PDF, and is billed @HcDisplay.Money(HcSeedData.LabFeeCents) for the test.
+                    </p>
+                    <p class="mb-0">You can't change the results after you release them.</p>
+                </BodyTemplate>
+                <FooterTemplate>
+                    <button type="button" class="btn btn-outline-secondary" @onclick="() => releaseModal.HideAsync()">Cancel</button>
+                    <button type="button" class="btn btn-primary" @onclick="ConfirmReleaseAsync">Release to patient</button>
+                </FooterTemplate>
+            </Modal>
+        }
+    </ShowcaseRoleGuard>
+</div>

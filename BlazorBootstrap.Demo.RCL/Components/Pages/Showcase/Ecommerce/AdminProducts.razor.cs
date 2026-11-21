@@ -422,7 +422,9 @@ public partial class AdminProducts : ComponentBase, IDisposable
             product.AddedOn,
             product.ImagePath,
             category?.Accent,
-            category?.IconName ?? IconName.Image);
+            category?.IconName ?? IconName.Image,
+            State.IsLowStock(product),
+            State.OnOrderFor(product.Id));
     }
 
     #endregion
@@ -473,7 +475,9 @@ public partial class AdminProducts : ComponentBase, IDisposable
         DateTime AddedOn,
         string ImagePath,
         string? Accent,
-        IconName Icon)
+        IconName Icon,
+        bool IsLow,
+        int OnOrder)
     {
         /// <summary>Gets the date the product was added, as it is exported, like "2026-11-09".</summary>
         public string AddedText => AddedOn.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);

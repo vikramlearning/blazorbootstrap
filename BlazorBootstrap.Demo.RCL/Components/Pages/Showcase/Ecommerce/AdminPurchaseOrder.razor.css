@@ -1,0 +1,57 @@
+/* The supplier's facts: a label above each value. */
+.ea-facts {
+    display: grid;
+    gap: .75rem;
+    margin: 0;
+}
+
+    .ea-facts dt {
+        font-size: .8125rem;
+        font-weight: 600;
+        color: var(--bs-secondary-color);
+    }
+
+    .ea-facts dd {
+        margin: .125rem 0 0;
+        overflow-wrap: anywhere;
+    }
+
+/* Quantity and cost inputs keep a usable width while the table scrolls sideways on phones. */
+.ea-po-lines {
+    min-width: 36rem;
+}
+
+.ea-po-number-col {
+    width: 9rem;
+    min-width: 8rem;
+}
+
+/* The timeline: newest first, each step with a marker on a line; the text never relies on color. */
+.ea-po-timeline {
+    list-style: none;
+    margin: 0;
+    padding: 0 0 0 1rem;
+    border-left: 2px solid var(--ec-border);
+}
+
+.ea-po-step {
+    position: relative;
+    padding: 0 0 1rem .75rem;
+    overflow-wrap: anywhere;
+}
+
+    .ea-po-step::before {
+        content: "";
+        position: absolute;
+        top: .375rem;
+        left: -1.4375rem;
+        width: .75rem;
+        height: .75rem;
+        border: 2px solid var(--sc-primary);
+        border-radius: 50%;
+        background: var(--ec-surface);
+    }
+
+    .ea-po-step:last-child {
+        padding-bottom: 0;
+    }

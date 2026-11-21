@@ -4,12 +4,13 @@
     <Dropdown Color="DropdownColor.None">
         @if (Identity.Current is { } account)
         {
-            <DropdownToggleButton @ref="toggle" Class="sc-account-toggle" aria-label="@($"Account menu for {account.Name}, {Identity.CurrentRole?.Label}{(NoticeCount > 0 ? $", {NoticeCount} new {(NoticeCount == 1 ? "notice" : "notices")}" : null)}")">
+            <DropdownToggleButton @ref="toggle" Class="sc-account-toggle" aria-label="@AccountLabel(account)">
                 <Avatar Name="@account.Name" Initials="@account.Initials" Color="AvatarColor.Primary" Size="AvatarSize.Small" />
                 <span class="sc-account-name d-none d-xl-inline" aria-hidden="true">@account.Name</span>
                 @if (NoticeCount > 0)
                 {
-                    <span class="sc-account-dot" aria-hidden="true">@(NoticeCount > 9 ? "9+" : NoticeCount.ToString(System.Globalization.CultureInfo.InvariantCulture))</span>
+                    @* The space keeps the name and the count apart in the button's text, as its accessible name has them. *@
+                    @(" ")<span class="sc-account-dot" aria-hidden="true">@NoticeCountText</span>
                 }
             </DropdownToggleButton>
             <DropdownMenu Position="DropdownMenuPosition.End">
@@ -34,7 +35,7 @@
         }
         else
         {
-            <DropdownToggleButton @ref="toggle" Class="sc-account-toggle sc-account-signed-out" aria-label="Account menu, signed out">
+            <DropdownToggleButton @ref="toggle" Class="sc-account-toggle sc-account-signed-out" aria-label="Sign in, account menu">
                 <Icon Name="IconName.PersonCircle" aria-hidden="true" /><span class="d-none d-sm-inline ms-1" aria-hidden="true">Sign in</span>
             </DropdownToggleButton>
             <DropdownMenu Position="DropdownMenuPosition.End">

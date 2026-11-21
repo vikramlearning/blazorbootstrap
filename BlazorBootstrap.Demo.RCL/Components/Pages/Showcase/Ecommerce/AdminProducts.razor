@@ -53,7 +53,7 @@
                 <label class="form-label small fw-semibold" for="ea-product-stock">Stock</label>
                 <select id="ea-product-stock" class="form-select" value="@stockFilter" @onchange="OnStockChanged">
                     <option value="@StockAll">All</option>
-                    <option value="@StockLow">Low (@EcommerceSeedData.LowStockThreshold or fewer)</option>
+                    <option value="@StockLow">At or below reorder point</option>
                     <option value="@StockOut">Out of stock</option>
                 </select>
             </div>
@@ -178,14 +178,22 @@
                             {
                                 <Badge Color="BadgeColor.Danger">Out of stock</Badge>
                             }
-                            else if (context.Stock <= EcommerceSeedData.LowStockThreshold)
+                            else if (context.IsLow)
                             {
-                                <Badge Color="BadgeColor.Warning">@context.Stock left</Badge>
+                                <Badge Color="BadgeColor.Warning">Low, @context.Stock left</Badge>
                             }
                             else
                             {
                                 <span class="ea-number">@context.Stock</span>
                             }
+                            @if (context.OnOrder > 0)
+                            {
+                                <span class="d-block small text-body-secondary">@context.OnOrder on order</span>
+                            }
+                        </GridColumn>
+                        <GridColumn TItem="ProductRow" HeaderText="On order" PropertyName="OnOrder" SortString="onorder" SortKeySelector="row => row.OnOrder"
+                                    IsDefaultSortColumn="@view.IsSortColumn("onorder")" SortDirection="@view.DirectionFor("onorder")" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End">
+                            @context.OnOrder
                         </GridColumn>
                         <GridColumn TItem="ProductRow" HeaderText="Status" PropertyName="Status" SortString="status" SortKeySelector="row => row.IsArchived"
                                     IsDefaultSortColumn="@view.IsSortColumn("status")" SortDirection="@view.DirectionFor("status")">

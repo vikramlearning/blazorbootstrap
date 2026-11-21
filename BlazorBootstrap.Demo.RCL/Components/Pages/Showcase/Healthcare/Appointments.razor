@@ -5,6 +5,12 @@
 
 <div class="container-xl hc-appts">
     <ShowcaseRoleGuard Roles="@HcSeedData.PatientRole" SignInPath="@HcLayout.SignInPath">
+        @{
+            var all = All();
+            var now = State.Clock.Now;
+            var upcoming = all.Count(item => IsUpcoming(item, now));
+        }
+
         <div class="hc-appts-head mb-4">
             <div>
                 <h1 class="hc-title mb-1">Appointments</h1>
@@ -13,60 +19,102 @@
             <a class="btn btn-primary" href="@FindDoctorUrl"><Icon Name="IconName.CalendarPlus" class="me-2" aria-hidden="true" />Book a visit</a>
         </div>
 
-        @foreach (var section in Sections())
-        {
-            <section class="mb-5" aria-labelledby="@($"hc-appts-{section.Key}-title")" @key="@($"section-{section.Key}")">
-                <h2 class="hc-section-title" id="@($"hc-appts-{section.Key}-title")">@section.Title (@section.Items.Count)</h2>
-                @if (section.Items.Count == 0)
-                {
-                    <div class="hc-panel">
-                        <p class="mb-0">@section.Empty <a href="@FindDoctorUrl">Find a doctor</a> to book @(section.IsPast ? "your first visit" : "one").</p>
-                    </div>
-                }
-                else
-                {
-                    <ul class="list-unstyled d-grid gap-3 mb-0">
-                        @foreach (var appointment in section.Items)
-                        {
-                            var doctor = State.FindDoctor(appointment.DoctorId);
-                            var clinic = State.FindClinic(appointment.ClinicId);
-                            var when = HcDisplay.When(appointment.Start);
-                            var titleId = $"hc-appts-{appointment.Id}-when";
+        <section class="hc-panel mb-3" aria-labelledby="hc-appts-filters-title">
+            <h2 class="hc-section-title" id="hc-appts-filters-title">Show</h2>
+            <div class="hc-list-filters" role="search" aria-labelledby="hc-appts-filters-title">
+                <div>
+                    <label class="form-label small fw-semibold" for="hc-appts-when">Appointments</label>
+                    <select id="hc-appts-when" class="form-select" value="@whenFilter" @onchange="OnWhenChangedAsync">
+                        <option value="">All (@all.Count)</option>
+                        <option value="@UpcomingFilter">Upcoming (@upcoming)</option>
+                        <option value="@PastFilter">Past (@(all.Count - upcoming))</option>
+                    </select>
+                </div>
+                <div class="hc-list-search">
+                    <label class="form-label small fw-semibold" for="hc-appts-search">Search</label>
+                    <input id="hc-appts-search" type="search" class="form-control" value="@searchBoxValue" placeholder="Doctor, reason, or number" autocomplete="off" maxlength="80"
+                           @oninput="OnSearchInputAsync" @onchange="OnSearchChanged" />
+                </div>
+            </div>
+            <div class="hc-list-meta">
+                <p class="small text-body-secondary mb-0" aria-live="polite" tabindex="-1" @ref="countRegion">@CountText(all.Count)</p>
+                @* Back to the saved view's defaults: newest first, 10 a page, every column in its place. *@
+                <Button Color="ButtonColor.Link" Size="ButtonSize.Small" Class="p-0" @onclick="ResetViewAsync">Reset view</Button>
+            </div>
+        </section>
 
-                            <li @key="@($"{section.Key}-{appointment.Id}")">
-                                <article class="hc-card hc-appts-card" aria-labelledby="@titleId">
-                                    <div class="hc-appts-when">
-                                        <h3 class="h6 fw-bold mb-1" id="@titleId">@HcDisplay.DayLong(appointment.Start) at @HcDisplay.Time(appointment.Start)</h3>
-                                        <span class="badge text-bg-@HcDisplay.StatusColor(appointment.Status)">@HcDisplay.StatusLabel(appointment.Status)</span>
-                                    </div>
-                                    <div class="hc-appts-who">
-                                        <HcDoctorAvatar Doctor="doctor" />
-                                        <div class="hc-appts-text">
-                                            <p class="fw-semibold mb-0">@(doctor?.Name ?? "Unknown doctor")<span class="fw-normal text-body-secondary"> · @doctor?.Specialty</span></p>
-                                            <p class="small text-body-secondary mb-0">@clinic?.Name, @clinic?.Address</p>
-                                            <p class="small mb-0 hc-appts-reason"><span class="text-body-secondary">Reason:</span> @appointment.Reason</p>
-                                        </div>
-                                    </div>
-                                    <div class="hc-appts-actions">
-                                        @if (!section.IsPast)
-                                        {
-                                            <a class="btn btn-sm btn-outline-primary" href="@HcDisplay.AppointmentUrl(appointment.Id)">View or change<span class="visually-hidden">: @when with @doctor?.Name</span></a>
-                                        }
-                                        else if (appointment.Status == HcAppointmentStatus.Completed)
-                                        {
-                                            <a class="btn btn-sm btn-outline-primary" href="@HcDisplay.AppointmentUrl(appointment.Id)">Visit summary<span class="visually-hidden">: @when with @doctor?.Name</span></a>
-                                        }
-                                        else
-                                        {
-                                            <a class="btn btn-sm btn-outline-secondary" href="@HcDisplay.AppointmentUrl(appointment.Id)">Details<span class="visually-hidden">: @when with @doctor?.Name</span></a>
-                                        }
-                                    </div>
-                                </article>
-                            </li>
-                        }
-                    </ul>
-                }
-            </section>
-        }
+        <p class="hc-list-status mb-2" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
+
+        <section class="hc-panel" aria-label="Your appointments">
+            <ShowcaseDataState Status="@(viewLoaded ? ShowcaseDataStatus.Ready : ShowcaseDataStatus.Loading)"
+                               IsEmpty="@(all.Count == 0)"
+                               EmptyIcon="IconName.CalendarPlus"
+                               EmptyTitle="No appointments yet"
+                               EmptyText="Find a doctor and book your first visit; it shows here."
+                               LoadingText="Loading your appointments…"
+                               OnRetry="RefreshGridAsync">
+                <EmptyActions>
+                    <a class="btn btn-primary btn-sm" href="@FindDoctorUrl">Find a doctor</a>
+                </EmptyActions>
+                <ChildContent>
+                    <Grid @ref="grid"
+                          @key="gridVersion"
+                          TItem="AppointmentRow"
+                          Class="table table-hover align-middle hc-table-wide sc-grid-row-links"
+                          GridContainerClass="hc-grid border rounded-3"
+                          DataProvider="ProvideAppointmentsAsync"
+                          SettingsProvider="view.GetSettingsAsync"
+                          GridSettingsChanged="SaveSettingsAsync"
+                          AllowPaging="true"
+                          PageSize="@pageSize"
+                          PageSizeSelectorVisible="true"
+                          PageSizeSelectorItems="@(new[] { 10, 25, 50 })"
+                          PaginationItemsTextFormat="{0}–{1} of {2} appointments"
+                          AllowSorting="true"
+                          AllowColumnChooser="true"
+                          AllowExport="true"
+                          ExportFileName="clinic-my-appointments"
+                          Responsive="true"
+                          EmptyText="No appointments match. Choose All, or clear the search."
+                          aria-label="Your appointments">
+                        <GridColumns>
+                            <GridColumn TItem="AppointmentRow" HeaderText="When" PropertyName="WhenText" SortString="when" SortKeySelector="row => row.Start"
+                                        IsDefaultSortColumn="@view.IsSortColumn("when")" SortDirection="@view.DirectionFor("when")" AlwaysVisible="true" TextNoWrap="true">
+                                @* The stretched link makes the whole row open the appointment. *@
+                                <a class="hc-row-link stretched-link" href="@HcDisplay.AppointmentUrl(context.Id)">@context.WhenText</a>
+                            </GridColumn>
+                            <GridColumn TItem="AppointmentRow" HeaderText="Doctor" PropertyName="Doctor" SortString="doctor" SortKeySelector="row => row.Doctor"
+                                        IsDefaultSortColumn="@view.IsSortColumn("doctor")" SortDirection="@view.DirectionFor("doctor")">
+                                @context.Doctor
+                            </GridColumn>
+                            <GridColumn TItem="AppointmentRow" HeaderText="Specialty" PropertyName="Specialty" SortString="specialty" SortKeySelector="row => row.Specialty"
+                                        IsDefaultSortColumn="@view.IsSortColumn("specialty")" SortDirection="@view.DirectionFor("specialty")">
+                                @context.Specialty
+                            </GridColumn>
+                            <GridColumn TItem="AppointmentRow" HeaderText="Clinic" PropertyName="Clinic" SortString="clinic" SortKeySelector="row => row.Clinic"
+                                        IsDefaultSortColumn="@view.IsSortColumn("clinic")" SortDirection="@view.DirectionFor("clinic")">
+                                @context.Clinic
+                            </GridColumn>
+                            <GridColumn TItem="AppointmentRow" HeaderText="Reason" PropertyName="Reason" SortString="reason" SortKeySelector="row => row.Reason"
+                                        IsDefaultSortColumn="@view.IsSortColumn("reason")" SortDirection="@view.DirectionFor("reason")">
+                                <span class="hc-wrap">@context.Reason</span>
+                            </GridColumn>
+                            <GridColumn TItem="AppointmentRow" HeaderText="Visit" PropertyName="VisitType" SortString="type" SortKeySelector="row => row.VisitType"
+                                        IsDefaultSortColumn="@view.IsSortColumn("type")" SortDirection="@view.DirectionFor("type")">
+                                @context.VisitType
+                            </GridColumn>
+                            <GridColumn TItem="AppointmentRow" HeaderText="Status" PropertyName="Status" SortString="status" SortKeySelector="row => row.StatusValue"
+                                        IsDefaultSortColumn="@view.IsSortColumn("status")" SortDirection="@view.DirectionFor("status")" TextNoWrap="true">
+                                <span class="badge text-bg-@HcDisplay.StatusColor(context.StatusValue)">@context.Status</span>
+                            </GridColumn>
+                            <GridColumn TItem="AppointmentRow" HeaderText="Number" PropertyName="Id" SortString="number" SortKeySelector="row => row.Id"
+                                        IsDefaultSortColumn="@view.IsSortColumn("number")" SortDirection="@view.DirectionFor("number")" TextNoWrap="true">
+                                <span class="hc-mono">@context.Id</span>
+                            </GridColumn>
+                        </GridColumns>
+                    </Grid>
+                </ChildContent>
+            </ShowcaseDataState>
+        </section>
     </ShowcaseRoleGuard>
 </div>

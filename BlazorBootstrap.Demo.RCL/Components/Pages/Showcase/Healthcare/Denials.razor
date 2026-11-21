@@ -1,0 +1,119 @@
+@page "/showcase/healthcare/staff/claims/denials"
+@layout HcStaffLayout
+
+<PageTitle>Denials · @HcSeedData.ProductName</PageTitle>
+
+@* Billing's denied claims, in a Grid: the plan's reasons, the appeal deadline in words (overdue and soon marked), and the
+   visit's doctor; the row opens the claim to correct, appeal, write off, or bill the patient. *@
+<div class="container-fluid px-lg-4">
+    <ShowcaseRoleGuard Roles="@HcSeedData.BillingRole" SignInPath="@HcLayout.SignInPath">
+        @{
+            var denied = State.Claims.Where(claim => claim.Status == HcClaimStatus.Denied).ToList();
+        }
+
+        <p class="small mb-2"><a href="@Claims.ListUrl"><Icon Name="IconName.ArrowLeft" class="me-1" aria-hidden="true" />Claims</a></p>
+        <h1 class="hc-title mb-1">Denials</h1>
+        <p class="hc-lead mb-3">
+            Claims the plans denied, soonest appeal deadline first. Correct and resubmit what the codes or the member ID got wrong, appeal what was medically
+            necessary within @HcSeedData.AppealDays days, and close the rest. Denials about the codes or the medical need also go to the visit's doctor.
+        </p>
+
+        <section class="hc-panel mb-3" aria-labelledby="hc-dn-filters-title">
+            <h2 class="hc-section-title" id="hc-dn-filters-title">Show</h2>
+            <div class="hc-list-filters" role="search" aria-labelledby="hc-dn-filters-title">
+                <div>
+                    <label class="form-label small fw-semibold" for="hc-dn-state">Denials</label>
+                    <select id="hc-dn-state" class="form-select" value="@stateFilter" @onchange="OnStateFilterChangedAsync">
+                        <option value="">All (@denied.Count)</option>
+                        <option value="@AppealableFilter">Can still be appealed (@denied.Count(claim => !HcState.IsFinalDenial(claim)))</option>
+                        <option value="@SoonFilter">Appeal due in 14 days (@denied.Count(claim => claim.AppealDeadline is { } deadline && deadline <= State.Clock.Today.AddDays(14)))</option>
+                        <option value="@FinalFilter">Denied after appeal (@denied.Count(HcState.IsFinalDenial))</option>
+                    </select>
+                </div>
+            </div>
+            <div class="hc-list-meta">
+                <p class="small text-body-secondary mb-0" aria-live="polite" tabindex="-1" @ref="countRegion">Showing @Shown.Count of @denied.Count denied claims.</p>
+                @* Back to the saved view's defaults: soonest deadline first, 25 a page, every column in its place. *@
+                <Button Color="ButtonColor.Link" Size="ButtonSize.Small" Class="p-0" @onclick="ResetViewAsync">Reset view</Button>
+            </div>
+        </section>
+
+        <p class="hc-list-status mb-2" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
+
+        <section class="hc-panel" aria-label="Denied claims">
+            <ShowcaseDataState Status="@(viewLoaded ? ShowcaseDataStatus.Ready : ShowcaseDataStatus.Loading)"
+                               IsEmpty="@(denied.Count == 0)"
+                               EmptyIcon="IconName.CheckCircle"
+                               EmptyTitle="No denials to follow up"
+                               EmptyText="When a plan denies a claim, record its answer on the claim and the denial shows here."
+                               LoadingText="Loading denials…"
+                               OnRetry="RefreshGridAsync">
+                <EmptyActions>
+                    <a class="btn btn-primary btn-sm" href="@Claims.ListUrl">Open the claims</a>
+                </EmptyActions>
+                <ChildContent>
+                    <Grid @ref="grid"
+                          @key="gridVersion"
+                          TItem="DenialRow"
+                          Class="table table-hover align-middle hc-table-wide sc-grid-row-links"
+                          GridContainerClass="hc-grid border rounded-3"
+                          DataProvider="ProvideDenialsAsync"
+                          SettingsProvider="view.GetSettingsAsync"
+                          GridSettingsChanged="SaveSettingsAsync"
+                          AllowPaging="true"
+                          PageSize="@pageSize"
+                          PageSizeSelectorVisible="true"
+                          PageSizeSelectorItems="@(new[] { 10, 25, 50 })"
+                          PaginationItemsTextFormat="{0}–{1} of {2} denials"
+                          AllowSorting="true"
+                          AllowColumnChooser="true"
+                          AllowExport="true"
+                          ExportFileName="clinic-denials"
+                          Responsive="true"
+                          EmptyText="No denials match. Choose All."
+                          aria-label="Denied claims">
+                        <GridColumns>
+                            <GridColumn TItem="DenialRow" HeaderText="Claim" PropertyName="Number" SortString="number" SortKeySelector="row => row.Id"
+                                        IsDefaultSortColumn="@view.IsSortColumn("number")" SortDirection="@view.DirectionFor("number")" AlwaysVisible="true" TextNoWrap="true">
+                                @* The stretched link makes the whole row open the claim. *@
+                                <a class="hc-row-link stretched-link hc-mono" href="@ClaimDetail.Url(context.Id)">@context.Number</a>
+                            </GridColumn>
+                            <GridColumn TItem="DenialRow" HeaderText="Patient" PropertyName="Patient" SortString="patient" SortKeySelector="row => row.Patient"
+                                        IsDefaultSortColumn="@view.IsSortColumn("patient")" SortDirection="@view.DirectionFor("patient")">
+                                @context.Patient
+                            </GridColumn>
+                            <GridColumn TItem="DenialRow" HeaderText="Health plan" PropertyName="Payer" SortString="payer" SortKeySelector="row => row.Payer"
+                                        IsDefaultSortColumn="@view.IsSortColumn("payer")" SortDirection="@view.DirectionFor("payer")">
+                                @context.Payer
+                            </GridColumn>
+                            <GridColumn TItem="DenialRow" HeaderText="Reason" PropertyName="Reason" SortString="reason" SortKeySelector="row => row.Reason"
+                                        IsDefaultSortColumn="@view.IsSortColumn("reason")" SortDirection="@view.DirectionFor("reason")">
+                                <span class="hc-wrap">@context.Reason</span>
+                            </GridColumn>
+                            <GridColumn TItem="DenialRow" HeaderText="Denied" PropertyName="DeniedText" SortString="denied" SortKeySelector="row => row.Denied"
+                                        IsDefaultSortColumn="@view.IsSortColumn("denied")" SortDirection="@view.DirectionFor("denied")" TextNoWrap="true">
+                                @context.DeniedText
+                            </GridColumn>
+                            <GridColumn TItem="DenialRow" HeaderText="Appeal by" PropertyName="DeadlineText" SortString="deadline" SortKeySelector="row => row.Deadline ?? DateTime.MaxValue"
+                                        IsDefaultSortColumn="@view.IsSortColumn("deadline")" SortDirection="@view.DirectionFor("deadline")" TextNoWrap="true">
+                                @context.DeadlineText
+                                @if (context.Urgency.Length > 0)
+                                {
+                                    <span class="@(context.IsOverdue ? "badge text-bg-danger ms-1" : "badge text-bg-warning ms-1")">@context.Urgency</span>
+                                }
+                            </GridColumn>
+                            <GridColumn TItem="DenialRow" HeaderText="Doctor" PropertyName="Doctor" SortString="doctor" SortKeySelector="row => row.Doctor"
+                                        IsDefaultSortColumn="@view.IsSortColumn("doctor")" SortDirection="@view.DirectionFor("doctor")">
+                                @context.Doctor
+                            </GridColumn>
+                            <GridColumn TItem="DenialRow" HeaderText="Billed" PropertyName="BilledText" SortString="billed" SortKeySelector="row => row.Billed"
+                                        IsDefaultSortColumn="@view.IsSortColumn("billed")" SortDirection="@view.DirectionFor("billed")" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" TextNoWrap="true">
+                                @context.BilledText
+                            </GridColumn>
+                        </GridColumns>
+                    </Grid>
+                </ChildContent>
+            </ShowcaseDataState>
+        </section>
+    </ShowcaseRoleGuard>
+</div>

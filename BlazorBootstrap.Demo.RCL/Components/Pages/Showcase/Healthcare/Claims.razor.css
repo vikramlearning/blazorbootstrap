@@ -1,0 +1,34 @@
+/* The claims work queue: the day's counts as cards above the aging table and the Grid lists (their styles are in
+   HcFrame.razor.css). */
+.hc-cl-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 10rem), 1fr));
+    gap: .75rem;
+    margin-bottom: 1rem;
+}
+
+.hc-cl-card {
+    display: flex;
+    flex-direction: column;
+    padding: .75rem 1rem;
+    border: 1px solid var(--hc-border);
+    border-radius: .75rem;
+    background: var(--hc-surface);
+}
+
+.hc-cl-number {
+    font-size: 1.5rem;
+    font-weight: 700;
+    line-height: 1.2;
+    color: var(--hc-ink);
+    font-variant-numeric: tabular-nums;
+}
+
+.hc-cl-label {
+    font-size: .8125rem;
+    color: var(--bs-secondary-color);
+}
+
+.hc-cl-aging {
+    font-variant-numeric: tabular-nums;
+}

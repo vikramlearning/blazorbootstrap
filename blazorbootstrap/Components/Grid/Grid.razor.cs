@@ -23,7 +23,7 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
 
     private GridDetailView<TItem>? detailView;
 
-    private string? draggedColumnKey;
+    private GridColumn<TItem>? draggedColumn;
 
     private string exportStatus = string.Empty;
 
@@ -155,8 +155,9 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     {
         exportStatus = string.Empty;
 
-        List<TItem> rows;
-
+        // Nothing in an export may break the page: a data source failure or cancellation, a property getter that throws
+        // while the CSV is built, or a browser error from the download (for example an outdated cached script).
+        // The status message reports it instead.
         try
         {
             var request = new GridDataProviderRequest<TItem>
@@ -168,32 +169,30 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
             };
 
             var result = DataProvider is not null ? await DataProvider.Invoke(request) : request.ApplyTo(Data!);
-            rows = result?.Data?.ToList() ?? new List<TItem>();
+            var rows = result?.Data?.ToList() ?? new List<TItem>();
+
+            if (rows.Count == 0)
+            {
+                exportStatus = ExportNoDataText;
+            }
+            else
+            {
+                var exportColumns = GetDisplayColumns()
+                                    .Where(column => column.Exportable && !string.IsNullOrWhiteSpace(column.PropertyName))
+                                    .Select(column => (GetColumnLabel(column), column.PropertyName!))
+                                    .ToList();
+
+                var csv = GridCsvUtility.Write(rows, exportColumns, GetCultureInfo());
+                var fileName = ExportFileName.EndsWith(".csv", StringComparison.OrdinalIgnoreCase) ? ExportFileName : $"{ExportFileName}.csv";
+
+                await SafeInvokeVoidAsync("window.blazorBootstrap.grid.downloadFile", fileName, "text/csv;charset=utf-8", csv);
+            }
         }
         catch (Exception)
         {
-            // A data source failure must not break the page; the status message reports it.
             exportStatus = ExportErrorText;
-            await InvokeAsync(StateHasChanged);
-            return;
         }
 
-        if (rows.Count == 0)
-        {
-            exportStatus = ExportNoDataText;
-            await InvokeAsync(StateHasChanged);
-            return;
-        }
-
-        var exportColumns = GetDisplayColumns()
-                            .Where(column => column.Exportable && !string.IsNullOrWhiteSpace(column.PropertyName))
-                            .Select(column => (GetColumnLabel(column), column.PropertyName!))
-                            .ToList();
-
-        var csv = GridCsvUtility.Write(rows, exportColumns, GetCultureInfo());
-        var fileName = ExportFileName.EndsWith(".csv", StringComparison.OrdinalIgnoreCase) ? ExportFileName : $"{ExportFileName}.csv";
-
-        await SafeInvokeVoidAsync("window.blazorBootstrap.grid.downloadFile", fileName, "text/csv;charset=utf-8", csv);
         await InvokeAsync(StateHasChanged);
     }
 
@@ -294,7 +293,22 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     [Description("Asynchronously clears the selection of all items in the grid.")]
     public Task UnSelectAllItemsAsync() => SelectAllItemsInternalAsync(false);
 
-    internal void AddColumn(GridColumn<TItem> column) => columns.Add(column);
+    /// <summary>
+    /// Adds a column and gives it its key: its name (property name, or header text when none), with <c>#2</c>, <c>#3</c>
+    /// added when earlier columns share that name, so every key in the grid is unique.
+    /// </summary>
+    internal void AddColumn(GridColumn<TItem> column)
+    {
+        var name = column.ColumnName;
+
+        if (name is not null)
+        {
+            var earlier = columns.Count(c => string.Equals(c.ColumnName, name, StringComparison.Ordinal));
+            column.ColumnKey = earlier == 0 ? name : $"{name}#{earlier + 1}";
+        }
+
+        columns.Add(column);
+    }
 
     internal void ColumnVisibilityUpdated()
     {
@@ -352,7 +366,7 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     /// </summary>
     internal async Task SetColumnHiddenAsync(GridColumn<TItem> column, bool hidden)
     {
-        if (column.ColumnKey is null || (hidden && IsColumnLocked(column)))
+        if (column.ColumnKey is null || (hidden && IsColumnLocked(column, GetDisplayColumns().Count)))
             return;
 
         if (hidden)
@@ -663,9 +677,10 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
 
     /// <summary>
     /// Determines whether the user cannot hide the column: it is marked <c>AlwaysVisible</c>, or it is the only column still shown.
+    /// <paramref name="shownCount" /> is the number of columns shown, computed once by the caller.
     /// </summary>
-    private bool IsColumnLocked(GridColumn<TItem> column) =>
-        column.AlwaysVisible || (!IsHiddenByUser(column) && GetDisplayColumns().Count <= 1);
+    private bool IsColumnLocked(GridColumn<TItem> column, int shownCount) =>
+        column.AlwaysVisible || (!IsHiddenByUser(column) && shownCount <= 1);
 
     /// <summary>
     /// Determines whether the item is already selected.
@@ -711,8 +726,8 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
 
     private async Task OnColumnDroppedAsync(GridColumn<TItem> target)
     {
-        var dragged = columns.FirstOrDefault(c => c.ColumnKey is not null && c.ColumnKey == draggedColumnKey);
-        draggedColumnKey = null;
+        var dragged = draggedColumn;
+        draggedColumn = null;
 
         if (dragged is not null)
             await MoveColumnBeforeAsync(dragged, target);
@@ -1233,14 +1248,14 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     public string ExportButtonText { get; set; } = "Export CSV";
 
     /// <summary>
-    /// Gets or sets the message shown when the rows cannot be read for export.
+    /// Gets or sets the message shown when the export fails: the rows cannot be read, the file cannot be built, or the browser cannot download it.
     /// <para>
     /// Default value is 'The rows could not be exported. Try again.'.
     /// </para>
     /// </summary>
     [AddedVersion("4.1.0")]
     [DefaultValue("The rows could not be exported. Try again.")]
-    [Description("Gets or sets the message shown when the rows cannot be read for export.")]
+    [Description("Gets or sets the message shown when the export fails: the rows cannot be read, the file cannot be built, or the browser cannot download it.")]
     [Parameter]
     public string ExportErrorText { get; set; } = "The rows could not be exported. Try again.";
 
@@ -1267,6 +1282,19 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     [Description("Gets or sets the message shown when no row matches the current filters.")]
     [Parameter]
     public string ExportNoDataText { get; set; } = "There are no rows to export.";
+
+    /// <summary>
+    /// Gets or sets the accessible name of each filter input in the filters row. <c>{0}</c> is the column's header text
+    /// (or its property name when it has none).
+    /// <para>
+    /// Default value is 'Filter by {0}'.
+    /// </para>
+    /// </summary>
+    [AddedVersion("4.1.0")]
+    [DefaultValue("Filter by {0}")]
+    [Description("Gets or sets the accessible name of each filter input in the filters row. <b>{0}</b> is the column's header text (or its property name when it has none).")]
+    [Parameter]
+    public string FilterInputLabelText { get; set; } = "Filter by {0}";
 
     /// <summary>
     /// Gets or sets the filters row css class.

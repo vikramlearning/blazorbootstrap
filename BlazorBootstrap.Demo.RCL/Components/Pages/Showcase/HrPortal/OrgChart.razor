@@ -95,7 +95,8 @@
                                 var length = start >= 0 ? node.SearchText!.Length : 0;
                             }
                             <span class="hr-oc-node @(hit ? "hr-oc-node-hit" : null)">
-                                <span class="hr-oc-initials" aria-hidden="true">@node.Item.Initials</span>
+                                @* Not aria-hidden: the card is the tree item, and its name must include the initials it shows (WCAG 2.5.3). *@
+                                <span class="hr-oc-initials">@node.Item.Initials</span>
                                 <span class="hr-oc-text">
                                     <span class="d-block fw-semibold">
                                         @if (start >= 0)

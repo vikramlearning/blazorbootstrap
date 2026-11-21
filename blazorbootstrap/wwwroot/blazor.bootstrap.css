@@ -245,6 +245,25 @@ table button.dropdown-toggle.bb-grid-filter::after {
     cursor: grab;
 }
 
+/* grid - sortable header: a real button that looks like the header text it replaces */
+.bb-grid-sort-button {
+    padding: 0;
+    border: 0;
+    background: none;
+    color: inherit;
+    font: inherit;
+    letter-spacing: inherit;
+    text-align: inherit;
+    text-transform: inherit;
+    cursor: pointer;
+}
+
+    .bb-grid-sort-button:focus-visible {
+        border-radius: var(--bs-border-radius-sm);
+        outline: 2px solid var(--bs-primary);
+        outline-offset: 2px;
+    }
+
 /* forms - validation */
 .valid.modified:not([type=checkbox]) {
     outline: var(--bb-validation-outline-width) solid var(--bb-validation-valid-outline-color);

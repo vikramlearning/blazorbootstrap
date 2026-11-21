@@ -1,0 +1,65 @@
+@* "Who viewed my record": every time a doctor opened the signed-in patient's chart or the front desk opened their details,
+   from the clinics' audit log, in a Grid. *@
+@{
+    var count = State.RecordAccessOfMine().Count;
+}
+<section class="hc-panel mt-4" aria-labelledby="hc-access-title">
+    <h2 class="hc-section-title" id="hc-access-title">Who viewed your record (@count)</h2>
+    <div class="hc-list-meta mt-0 mb-2">
+        <p class="small text-body-secondary mb-0">
+            The clinics log every time staff open your chart or your registration details, newest first. Ask the front desk if a look doesn't seem right.
+        </p>
+        @* Back to the saved view's defaults: newest first, 10 a page, every column in its place. *@
+        <Button Color="ButtonColor.Link" Size="ButtonSize.Small" Class="p-0" @onclick="ResetViewAsync">Reset view<span class="visually-hidden">&#32;of who viewed your record</span></Button>
+    </div>
+    <p class="hc-list-status mb-2" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
+    <ShowcaseDataState Status="@(viewLoaded ? ShowcaseDataStatus.Ready : ShowcaseDataStatus.Loading)"
+                       IsEmpty="@(count == 0)"
+                       EmptyIcon="IconName.ShieldCheck"
+                       EmptyTitle="Nobody has opened your record yet"
+                       EmptyText="When a doctor or the front desk opens your record, it's listed here."
+                       LoadingText="Loading who viewed your record…"
+                       OnRetry="RefreshGridAsync">
+        <ChildContent>
+            <Grid @ref="grid"
+                  @key="gridVersion"
+                  TItem="AccessRow"
+                  Class="table align-middle hc-table-mid"
+                  GridContainerClass="hc-grid border rounded-3"
+                  DataProvider="ProvideAccessAsync"
+                  SettingsProvider="view.GetSettingsAsync"
+                  GridSettingsChanged="SaveSettingsAsync"
+                  AllowPaging="true"
+                  PageSize="@pageSize"
+                  PageSizeSelectorVisible="true"
+                  PageSizeSelectorItems="@(new[] { 10, 25, 50 })"
+                  PaginationItemsTextFormat="{0}–{1} of {2} looks"
+                  AllowSorting="true"
+                  AllowColumnChooser="true"
+                  AllowExport="true"
+                  ExportFileName="clinic-my-record-access"
+                  Responsive="true"
+                  EmptyText="Nobody has opened your record yet."
+                  aria-label="Who viewed your record">
+                <GridColumns>
+                    <GridColumn TItem="AccessRow" HeaderText="When" PropertyName="WhenText" SortString="when" SortKeySelector="row => row.At"
+                                IsDefaultSortColumn="@view.IsSortColumn("when")" SortDirection="@view.DirectionFor("when")" TextNoWrap="true">
+                        @context.WhenText
+                    </GridColumn>
+                    <GridColumn TItem="AccessRow" HeaderText="Who" PropertyName="Actor" SortString="who" SortKeySelector="row => row.Actor"
+                                IsDefaultSortColumn="@view.IsSortColumn("who")" SortDirection="@view.DirectionFor("who")" AlwaysVisible="true">
+                        <span class="fw-semibold">@context.Actor</span>
+                    </GridColumn>
+                    <GridColumn TItem="AccessRow" HeaderText="Role" PropertyName="Role" SortString="role" SortKeySelector="row => row.Role"
+                                IsDefaultSortColumn="@view.IsSortColumn("role")" SortDirection="@view.DirectionFor("role")">
+                        @context.Role
+                    </GridColumn>
+                    <GridColumn TItem="AccessRow" HeaderText="What" PropertyName="What" SortString="what" SortKeySelector="row => row.What"
+                                IsDefaultSortColumn="@view.IsSortColumn("what")" SortDirection="@view.DirectionFor("what")">
+                        @context.What
+                    </GridColumn>
+                </GridColumns>
+            </Grid>
+        </ChildContent>
+    </ShowcaseDataState>
+</section>

@@ -1,38 +1,33 @@
+using System.ComponentModel.DataAnnotations;
 using System.Globalization;
+using System.Linq.Expressions;
 using BlazorBootstrap.Demo.RCL.Models.Showcase.AiAssistant;
 using BlazorBootstrap.Demo.RCL.Services.Showcase.AiAssistant;
+using Microsoft.AspNetCore.Components.Forms;
 
 namespace BlazorBootstrap.Demo.RCL.Components.Pages.Showcase.AiAssistant;
 
 /// <summary>
-/// Models and policy of the Parley workspace admin back office, as one form with Save and Reset: the enabled models (at least
-/// one) and the default among them, each member's monthly token quota, attachments and their largest size, retention (0
-/// keeps conversations forever), and blocked terms (added and removed in a list, kept in lower case). Native inputs with
-/// labels; each problem is shown under its field and the first invalid field takes focus after the render that shows it.
-/// A retention that would delete conversations now asks first in a <see cref="Modal" /> naming how many, and saves once the
-/// dialog is hidden. <see cref="AiState.SavePolicy" />'s results are mapped to messages that say what changed and how many
-/// conversations retention deleted; an unsaved-changes line names the sections that differ from the saved policy.
+/// Models and policy of the Parley back office (Admins and the Owner) as one <see cref="EditForm" /> with Save and Reset
+/// (rule WR-002): the workspace name (required, <see cref="AiState.MinWorkspaceNameLength" /> to
+/// <see cref="AiState.MaxWorkspaceNameLength" /> characters), the enabled models (at least one) and the default (which must
+/// be one of the models that are on: a cross-field rule against the model policy), attachments and their largest size
+/// (required in range while attachments are on: cross-field), retention (AC-4: keep forever, 30, 90, or 365 days, or a
+/// custom window of 1 to 3,650 days, with "N conversations of M members older than D days will be deleted" before saving;
+/// the Owner only, read-only for Admins), and blocked terms (added in their own small form and removed in a list, kept in
+/// lower case). The spend caps are on <see cref="AdminSpend" />, linked from here. Messages show after a field is touched or
+/// on submit, with a summary linking each field. A retention that would delete conversations now asks first in a
+/// <see cref="Modal" /> naming how many. <see cref="AiState.SavePolicy" />'s
+/// results are mapped to messages that say what changed; an unsaved-changes line names the sections that differ.
 /// </summary>
 public partial class AdminSettings : ComponentBase, IDisposable
 {
     #region Fields and Constants
 
-    /// <summary>The default-model radio buttons by model ID, for focus.</summary>
-    private readonly Dictionary<string, ElementReference> defaultInputs = new();
-
-    /// <summary>The models that are on in the form.</summary>
-    private readonly HashSet<string> enabled = new();
-
-    /// <summary>The model checkboxes by model ID, for focus.</summary>
-    private readonly Dictionary<string, ElementReference> modelInputs = new();
+    private const string CustomValue = "custom";
 
     /// <summary>The Remove buttons of the blocked terms, for focus after a removal.</summary>
     private readonly Dictionary<string, ElementReference> removeButtons = new();
-
-    /// <summary>The blocked terms in the form, in the order they were added.</summary>
-    private readonly List<string> terms = new();
-
-    private bool allowAttachments;
 
     /// <summary>How many conversations the retention dialog said would be deleted.</summary>
     private int confirmCount;
@@ -40,45 +35,32 @@ public partial class AdminSettings : ComponentBase, IDisposable
     /// <summary>The retention the dialog asked about.</summary>
     private int confirmDays;
 
-    private string? defaultError;
+    private EditContext editContext = default!;
 
-    private string? defaultModelId;
+    private int errorCount;
+
+    private string? errorMessage;
 
     private bool focusSaveButton;
 
     private bool focusStatus;
 
-    /// <summary>Returns the element to focus after the next render (the first invalid field, or a blocked term's neighbour).</summary>
+    /// <summary>Returns the element to focus after the next render (a blocked term's neighbour).</summary>
     private Func<ElementReference?>? focusTarget;
 
-    private string? maxMbError;
-
-    private ElementReference? maxMbInput;
-
-    private string maxMbText = string.Empty;
-
-    private string? modelsError;
-
-    private string newTerm = string.Empty;
+    private SettingsForm form = new();
 
     /// <summary>Whether the retention dialog was confirmed; the policy is saved once it is hidden.</summary>
     private bool pendingSave;
 
-    private string? quotaError;
-
-    private ElementReference? quotaInput;
-
-    private string quotaText = string.Empty;
-
     private Modal retentionModal = default!;
 
-    private string? retentionError;
-
-    private ElementReference? retentionInput;
-
-    private string retentionText = string.Empty;
-
     private Button? saveButton;
+
+    /// <summary>The state's answers that belong to a field, shown like the form's own messages.</summary>
+    private ValidationMessageStore? serverErrors;
+
+    private int statusCount;
 
     private bool statusIsError;
 
@@ -86,9 +68,16 @@ public partial class AdminSettings : ComponentBase, IDisposable
 
     private ElementReference? statusRegion;
 
-    private string? termError;
+    private EditContext termContext;
 
-    private ElementReference? termInput;
+    private TermForm termForm = new();
+
+    #endregion
+
+    #region Constructors and Finalizers
+
+    /// <summary>Starts with an empty term form; the settings form is filled from the policy.</summary>
+    public AdminSettings() => termContext = new EditContext(termForm);
 
     #endregion
 
@@ -127,8 +116,12 @@ public partial class AdminSettings : ComponentBase, IDisposable
 
     #region Public Methods
 
-    /// <summary>Stops listening to state changes.</summary>
-    public void Dispose() => State.Changed -= OnStateChanged;
+    /// <summary>Stops listening to state and form changes.</summary>
+    public void Dispose()
+    {
+        State.Changed -= OnStateChanged;
+        editContext.OnFieldChanged -= OnFieldChanged;
+    }
 
     #endregion
 
@@ -136,58 +129,52 @@ public partial class AdminSettings : ComponentBase, IDisposable
 
     private static string Number(int value) => value.ToString("#,0", CultureInfo.InvariantCulture);
 
-    private static bool TryInt(string value, out int result) => int.TryParse(value.Trim(), NumberStyles.Integer, CultureInfo.InvariantCulture, out result);
-
     private static string RetentionText(int days) => days == 0 ? "keep forever" : AdminMembers.Plural(days, "day");
 
-    /// <summary>Adds a blocked term to the list (it is saved with the rest of the form).</summary>
+    /// <summary>A retention window as the form's choice: the days, or "custom".</summary>
+    private static string RetentionValue(int days) => days.ToString(CultureInfo.InvariantCulture);
+
+    /// <summary>Adds a blocked term to the list once its form is valid (it is saved with the rest of the settings).</summary>
     private void AddTerm()
     {
-        var term = newTerm.Trim().ToLowerInvariant();
+        termForm.Existing = form.Terms.ToList();
 
-        termError = term.Length == 0 ? "Enter a word or phrase to block."
-            : term.Length > AiState.MaxBlockedTermLength ? $"Shorten the term to {AiState.MaxBlockedTermLength} characters or fewer (now {term.Length})."
-            : terms.Contains(term) ? $"\"{term}\" is already blocked."
-            : terms.Count >= AiState.MaxBlockedTerms ? $"There are already {AiState.MaxBlockedTerms} blocked terms, the most allowed. Remove one first."
-            : null;
-
-        if (termError is not null)
-        {
-            focusTarget = () => termInput;
-
+        if (!termContext.Validate())
             return;
-        }
 
-        terms.Add(term);
-        newTerm = string.Empty;
+        var term = termForm.Term.Trim().ToLowerInvariant();
+        form.Terms.Add(term);
+        termForm = new TermForm();
+        termContext = new EditContext(termForm);
         Announce(true, $"\"{term}\" is added to the blocked terms. Save the settings to apply it.");
     }
 
     private void Announce(bool ok, string message)
     {
+        statusCount = statusMessage?.StartsWith(message, StringComparison.Ordinal) == true ? statusCount + 1 : 1;
         statusIsError = !ok;
-        statusMessage = message;
+        statusMessage = statusCount == 1 ? message : string.Create(CultureInfo.InvariantCulture, $"{message} ({statusCount})");
     }
 
-    /// <summary>Names the sections that differ from the saved policy (enabled models, default, quota, attachments, retention, blocked terms).</summary>
+    /// <summary>Names the sections that differ from the saved policy.</summary>
     private List<string> ChangedSections()
     {
         var policy = State.Policy;
         var list = new List<string>();
 
-        if (!enabled.SetEquals(policy.EnabledModelIds))
+        if (form.WorkspaceName.Trim() != policy.WorkspaceName)
+            list.Add("workspace name");
+
+        if (!form.EnabledModels.SetEquals(policy.EnabledModelIds))
             list.Add("models");
 
-        if (defaultModelId != policy.DefaultModelId)
+        if (form.DefaultModelId != policy.DefaultModelId)
             list.Add("default model");
 
-        if (!TryInt(quotaText, out var quota) || quota != policy.MonthlyTokenQuota)
-            list.Add("quota");
-
-        if (allowAttachments != policy.AllowAttachments || !TryInt(maxMbText, out var size) || size != policy.MaxAttachmentMb)
+        if (form.AllowAttachments != policy.AllowAttachments || (form.AllowAttachments && form.MaxAttachmentMb != policy.MaxAttachmentMb))
             list.Add("attachments");
 
-        if (!TryInt(retentionText, out var days) || days != policy.RetentionDays)
+        if (form.RetentionDays != policy.RetentionDays)
             list.Add("retention");
 
         if (TermsChanged)
@@ -210,6 +197,9 @@ public partial class AdminSettings : ComponentBase, IDisposable
     {
         var parts = new List<string>();
 
+        if (before.WorkspaceName != after.WorkspaceName)
+            parts.Add($"workspace name: {after.WorkspaceName}");
+
         if (!before.EnabledModelIds.Order().SequenceEqual(after.EnabledModelIds.Order()))
             parts.Add("models on: " + string.Join(", ", State.Models.Where(model => after.EnabledModelIds.Contains(model.Id)).Select(model => model.Name)));
 
@@ -217,12 +207,10 @@ public partial class AdminSettings : ComponentBase, IDisposable
             parts.Add($"default model: {State.FindModel(after.DefaultModelId)?.Name ?? after.DefaultModelId}");
 
         if (before.MonthlyTokenQuota != after.MonthlyTokenQuota)
-            parts.Add($"monthly quota: {Number(after.MonthlyTokenQuota)} tokens per member");
+            parts.Add($"default member cap: {Number(after.MonthlyTokenQuota)} tokens");
 
         if (before.AllowAttachments != after.AllowAttachments || (after.AllowAttachments && before.MaxAttachmentMb != after.MaxAttachmentMb))
             parts.Add(after.AllowAttachments ? $"attachments on, up to {after.MaxAttachmentMb} MB" : "attachments off");
-        else if (before.MaxAttachmentMb != after.MaxAttachmentMb)
-            parts.Add($"largest attachment: {after.MaxAttachmentMb} MB (attachments stay off)");
 
         if (before.RetentionDays != after.RetentionDays)
             parts.Add($"retention: {RetentionText(after.RetentionDays)}");
@@ -233,23 +221,38 @@ public partial class AdminSettings : ComponentBase, IDisposable
         return parts.Count == 0 ? "Saved." : "Saved. Changed " + string.Join("; ", parts) + ".";
     }
 
-    /// <summary>Fills the form from the saved policy and clears the errors.</summary>
+    /// <summary>Fills the form from the saved policy and clears the messages.</summary>
     private void Load()
     {
         var policy = State.Policy;
 
-        enabled.Clear();
-        enabled.UnionWith(policy.EnabledModelIds);
-        defaultModelId = policy.DefaultModelId;
-        quotaText = policy.MonthlyTokenQuota.ToString(CultureInfo.InvariantCulture);
-        allowAttachments = policy.AllowAttachments;
-        maxMbText = policy.MaxAttachmentMb.ToString(CultureInfo.InvariantCulture);
-        retentionText = policy.RetentionDays.ToString(CultureInfo.InvariantCulture);
-        terms.Clear();
-        terms.AddRange(policy.BlockedTerms);
+        if (editContext is not null)
+            editContext.OnFieldChanged -= OnFieldChanged;
+
+        form = new SettingsForm
+        {
+            WorkspaceName = policy.WorkspaceName,
+            EnabledModels = policy.EnabledModelIds.ToHashSet(StringComparer.Ordinal),
+            DefaultModelId = policy.DefaultModelId,
+            AllowAttachments = policy.AllowAttachments,
+            MaxAttachmentMb = policy.MaxAttachmentMb,
+            RetentionChoice = RetentionOptions.Any(option => option.Value == RetentionValue(policy.RetentionDays)) ? RetentionValue(policy.RetentionDays) : CustomValue,
+            CustomDays = RetentionOptions.Any(option => option.Value == RetentionValue(policy.RetentionDays)) ? null : policy.RetentionDays,
+            Terms = policy.BlockedTerms.ToList(),
+            ModelNames = State.Models.ToDictionary(model => model.Id, model => model.Name),
+        };
+        editContext = new EditContext(form);
+        serverErrors = new ValidationMessageStore(editContext);
+        editContext.OnFieldChanged += OnFieldChanged;
         removeButtons.Clear();
-        newTerm = string.Empty;
-        modelsError = defaultError = quotaError = maxMbError = retentionError = termError = null;
+        errorMessage = null;
+    }
+
+    /// <summary>A change clears the state's earlier answer on that field and the alert; no field changes another, so nothing re-enters.</summary>
+    private void OnFieldChanged(object? sender, FieldChangedEventArgs args)
+    {
+        serverErrors?.Clear(args.FieldIdentifier);
+        errorMessage = null;
     }
 
     /// <summary>Saves once the retention dialog is hidden, or returns focus to Save when it was cancelled.</summary>
@@ -268,31 +271,18 @@ public partial class AdminSettings : ComponentBase, IDisposable
 
     private void OnStateChanged() => InvokeAsync(StateHasChanged);
 
-    /// <summary>Says how many active members already used more than the quota in the form, when it differs from the saved one.</summary>
-    private string? QuotaPreview()
-    {
-        if (!TryInt(quotaText, out var quota) || quota is < AiState.MinQuota or > AiState.MaxQuota || quota == State.Policy.MonthlyTokenQuota)
-            return null;
-
-        var over = State.Members.Count(member => member.Status == AiMemberStatus.Active && State.MonthTokens(member.Email) >= quota);
-
-        return over == 0
-            ? $"With {Number(quota)}, no active member has used it up this month."
-            : $"With {Number(quota)}, {AdminMembers.Plural(over, "active member")} already used it up this month and can't send messages until next month.";
-    }
-
     /// <summary>Removes a blocked term from the list; focus moves to the next term's Remove button, or to the input.</summary>
     private void RemoveTerm(string term)
     {
-        var index = terms.IndexOf(term);
+        var index = form.Terms.IndexOf(term);
 
         if (index < 0)
             return;
 
-        terms.RemoveAt(index);
+        form.Terms.RemoveAt(index);
         removeButtons.Remove(term);
-        var next = index < terms.Count ? terms[index] : index > 0 ? terms[index - 1] : null;
-        focusTarget = () => next is not null && removeButtons.TryGetValue(next, out var button) ? button : termInput;
+        var next = index < form.Terms.Count ? form.Terms[index] : index > 0 ? form.Terms[index - 1] : null;
+        focusTarget = () => next is not null && removeButtons.TryGetValue(next, out var button) ? button : null;
         Announce(true, $"\"{term}\" is removed from the blocked terms. Save the settings to apply it.");
     }
 
@@ -300,33 +290,36 @@ public partial class AdminSettings : ComponentBase, IDisposable
     {
         Load();
         Announce(true, "The form is back to the saved settings.");
+        focusStatus = true;
     }
 
-    /// <summary>Says how many conversations a retention in the form would delete now.</summary>
+    /// <summary>Says how many conversations the retention window in the form would delete now (AC-4), before it is applied.</summary>
     private string? RetentionPreview()
     {
-        if (!TryInt(retentionText, out var days) || days is <= 0 or > AiState.MaxRetentionDays)
+        if (form.RetentionDays is not { } days || days > AiState.MaxRetentionDays || days == State.Policy.RetentionDays)
             return null;
+
+        if (days <= 0)
+            return "Keep forever deletes nothing.";
 
         var count = State.ConversationsOlderThan(days);
 
         return count == 0
-            ? $"With {AdminMembers.Plural(days, "day")}, no conversation is old enough to be deleted now."
-            : $"With {AdminMembers.Plural(days, "day")}, {AdminMembers.Plural(count, "conversation")} would be deleted when you save.";
+            ? $"No conversation is older than {AdminMembers.Plural(days, "day")}, so nothing would be deleted."
+            : $"{AdminMembers.Plural(count, "conversation")} of {AdminMembers.Plural(State.MembersWithConversationsOlderThan(days), "member")} older than {AdminMembers.Plural(days, "day")} will be deleted when you save.";
     }
 
-    /// <summary>Checks the form; when retention would delete conversations now, asks first; otherwise saves.</summary>
+    /// <summary>Checks the form (a failed submit shows the summary); when retention would delete conversations now, asks first; otherwise saves.</summary>
     private async Task SaveAsync()
     {
-        if (!Validate())
-        {
-            Announce(false, "Fix the highlighted fields, then save again.");
+        serverErrors?.Clear();
+        editContext.NotifyValidationStateChanged();
 
+        if (!editContext.Validate())
             return;
-        }
 
-        TryInt(retentionText, out var days);
-        var count = State.ConversationsOlderThan(days);
+        var days = form.RetentionDays ?? 0;
+        var count = days != State.Policy.RetentionDays ? State.ConversationsOlderThan(days) : 0;
 
         if (days > 0 && count > 0)
         {
@@ -341,23 +334,19 @@ public partial class AdminSettings : ComponentBase, IDisposable
         SavePolicy();
     }
 
-    /// <summary>Saves the policy from the (valid) form and maps the state's answer to the status message or a field.</summary>
+    /// <summary>Saves the policy from the (valid) form and maps the state's answer to the status message, a field, or the alert.</summary>
     private void SavePolicy()
     {
-        if (!Validate())
-        {
-            Announce(false, "Fix the highlighted fields, then save again.");
-
+        if (!editContext.Validate())
             return;
-        }
 
         var before = State.Policy;
-        TryInt(quotaText, out var quota);
-        TryInt(retentionText, out var days);
-        var size = TryInt(maxMbText, out var parsed) && parsed is >= 1 and <= 100 ? parsed : before.MaxAttachmentMb;
-        var models = State.Models.Where(model => enabled.Contains(model.Id)).Select(model => model.Id).ToList();
+        var models = State.Models.Where(model => form.EnabledModels.Contains(model.Id)).Select(model => model.Id).ToList();
+        var input = new AiPolicyInput(form.WorkspaceName, models, form.DefaultModelId ?? string.Empty, State.Policy.MonthlyTokenQuota, form.AllowAttachments,
+            form.AllowAttachments ? form.MaxAttachmentMb ?? 0 : form.MaxAttachmentMb is >= 1 and <= AiState.MaxAttachmentMb ? form.MaxAttachmentMb.Value : before.MaxAttachmentMb,
+            form.RetentionDays ?? 0, form.Terms.ToList());
 
-        var result = State.SavePolicy(models, defaultModelId ?? string.Empty, quota, allowAttachments, size, days, terms.ToList(), out var deleted);
+        var result = State.SavePolicy(input, out var deleted);
 
         switch (result)
         {
@@ -379,82 +368,51 @@ public partial class AdminSettings : ComponentBase, IDisposable
 
                 return;
 
-            case AiResult.Invalid:
-                if (!Validate())
-                {
-                    Announce(false, "Fix the highlighted fields, then save again. Nothing was saved.");
-
-                    return;
-                }
-
-                Announce(false, "The settings couldn't be saved: a value is out of range. Nothing was saved.");
-                focusStatus = true;
+            case AiResult.NotAllowed when form.RetentionDays != before.RetentionDays && State.Can(AiPermission.ManageSettings):
+                ServerError(() => form.RetentionChoice, $"Only the Owner ({State.OwnerName}) changes retention. Put it back to {RetentionText(before.RetentionDays)} to save the rest.");
 
                 return;
 
             case AiResult.NotAllowed:
-                Announce(false, "Only active workspace admins can change the models and policy. Nothing was saved.");
-                focusStatus = true;
+                ShowError("Only Admins and the Owner change the models and policy. Nothing was saved.");
+
+                return;
+
+            case AiResult.Invalid:
+                ShowError("The settings couldn't be saved: a value is out of range. Nothing was saved.");
 
                 return;
 
             default:
-                Announce(false, "That didn't work, and nothing was saved. Try again.");
-                focusStatus = true;
+                ShowError("That didn't work, and nothing was saved. Try again.");
 
                 return;
         }
     }
 
-    private void SetDefault(string modelId)
+    /// <summary>Shows a state answer under its field, like the form's own messages; the summary and focus follow.</summary>
+    private void ServerError(Expression<Func<object?>> field, string message)
     {
-        defaultModelId = modelId;
-        defaultError = null;
+        serverErrors?.Clear();
+        serverErrors?.Add(FieldIdentifier.Create(field), message);
+        editContext.NotifyValidationStateChanged();
     }
 
+    private void ShowError(string message)
+    {
+        errorCount = errorMessage?.StartsWith(message, StringComparison.Ordinal) == true ? errorCount + 1 : 1;
+        errorMessage = errorCount == 1 ? message : string.Create(CultureInfo.InvariantCulture, $"{message} ({errorCount})");
+    }
+
+    /// <summary>Turns a model on or off (a click, not a field handler), and checks the models and the default again.</summary>
     private void ToggleModel(string modelId, bool isOn)
     {
         if (isOn)
-            enabled.Add(modelId);
+            form.EnabledModels.Add(modelId);
         else
-            enabled.Remove(modelId);
+            form.EnabledModels.Remove(modelId);
 
-        if (enabled.Count > 0)
-            modelsError = null;
-    }
-
-    /// <summary>Checks every field like <see cref="AiState.SavePolicy" />; sets the errors and the field to focus. Returns whether all are valid.</summary>
-    private bool Validate()
-    {
-        modelsError = enabled.Count == 0 ? "Turn on at least one model: members need one to chat." : null;
-        defaultError = enabled.Count > 0 && (defaultModelId is null || !enabled.Contains(defaultModelId))
-            ? $"Choose the default among the models that are on{(defaultModelId is not null && State.FindModel(defaultModelId) is { } off ? $": {off.Name} is off" : null)}."
-            : null;
-
-        quotaError = !TryInt(quotaText, out var quota) ? $"Enter the monthly tokens per member as a whole number, like {Number(200_000)}."
-            : quota is < AiState.MinQuota or > AiState.MaxQuota ? $"Use from {Number(AiState.MinQuota)} to {Number(AiState.MaxQuota)} tokens."
-            : null;
-
-        maxMbError = !allowAttachments ? null
-            : !TryInt(maxMbText, out var size) ? "Enter the largest file size in MB as a whole number, like 10."
-            : size is < 1 or > 100 ? "Use from 1 to 100 MB."
-            : null;
-
-        retentionError = !TryInt(retentionText, out var days) ? "Enter the number of days as a whole number, or 0 to keep conversations forever."
-            : days is < 0 or > AiState.MaxRetentionDays ? $"Use from 0 to {Number(AiState.MaxRetentionDays)} days."
-            : null;
-
-        var firstOn = State.Models.FirstOrDefault(model => enabled.Contains(model.Id))?.Id;
-        var firstModel = State.Models[0].Id;
-
-        focusTarget = modelsError is not null ? () => modelInputs.TryGetValue(firstModel, out var input) ? input : null
-            : defaultError is not null ? () => firstOn is not null && defaultInputs.TryGetValue(firstOn, out var input) ? input : null
-            : quotaError is not null ? () => quotaInput
-            : maxMbError is not null ? () => maxMbInput
-            : retentionError is not null ? () => retentionInput
-            : null;
-
-        return focusTarget is null;
+        editContext.NotifyFieldChanged(FieldIdentifier.Create(() => form.EnabledModels));
     }
 
     #endregion
@@ -463,9 +421,92 @@ public partial class AdminSettings : ComponentBase, IDisposable
 
     #region Properties, Indexers
 
+    /// <summary>The retention windows to choose from (AC-4), and a custom one.</summary>
+    private static IReadOnlyList<(string Value, string Text)> RetentionOptions { get; } = new[]
+    {
+        ("0", "Keep forever"), ("30", "30 days"), ("90", "90 days"), ("365", "365 days"), (CustomValue, "Custom"),
+    };
+
     [Inject] private AiState State { get; set; } = default!;
 
-    private bool TermsChanged => !terms.SequenceEqual(State.Policy.BlockedTerms);
+    private bool TermsChanged => !form.Terms.SequenceEqual(State.Policy.BlockedTerms);
+
+    #endregion
+
+    #region Nested Types
+
+    /// <summary>
+    /// The settings' fields, with the limits of <see cref="AiState.SavePolicy" />: a required name, ranges, and the cross-field
+    /// rules (the default among the models that are on; a file size while attachments are on).
+    /// </summary>
+    private sealed class SettingsForm : IValidatableObject
+    {
+        public bool AllowAttachments { get; set; }
+
+        public string? DefaultModelId { get; set; }
+
+        public HashSet<string> EnabledModels { get; set; } = new();
+
+        [Range(1, AiState.MaxAttachmentMb, ErrorMessage = "Use from 1 to 100 MB for the largest file.")]
+        public int? MaxAttachmentMb { get; set; }
+
+        /// <summary>The models' names, for messages.</summary>
+        public Dictionary<string, string> ModelNames { get; set; } = new();
+
+        [Range(1, AiState.MaxRetentionDays, ErrorMessage = "Use from 1 to 3,650 days for a custom window.")]
+        public int? CustomDays { get; set; }
+
+        [Required(ErrorMessage = "Choose how long to keep conversations.")]
+        public string RetentionChoice { get; set; } = "0";
+
+        /// <summary>Gets the retention window the form asks for: 0 keeps forever, the custom days, or a fixed window.</summary>
+        public int? RetentionDays => RetentionChoice == CustomValue ? CustomDays : int.TryParse(RetentionChoice, NumberStyles.Integer, CultureInfo.InvariantCulture, out var days) ? days : null;
+
+        public List<string> Terms { get; set; } = new();
+
+        [Required(ErrorMessage = "Enter the workspace's name.")]
+        [StringLength(AiState.MaxWorkspaceNameLength, MinimumLength = AiState.MinWorkspaceNameLength, ErrorMessage = "Use 2 to 60 characters for the workspace name.")]
+        public string WorkspaceName { get; set; } = string.Empty;
+
+        /// <summary>Runs once the fields are filled in: a model on, the default among them, and a file size while attachments are on.</summary>
+        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+        {
+            if (EnabledModels.Count == 0)
+                yield return new ValidationResult("Turn on at least one model: members need one to chat.", new[] { nameof(EnabledModels) });
+            else if (DefaultModelId is null || !EnabledModels.Contains(DefaultModelId))
+                yield return new ValidationResult(
+                    $"Choose the default among the models that are on{(DefaultModelId is not null && ModelNames.TryGetValue(DefaultModelId, out var name) ? $": {name} is off" : null)}.",
+                    new[] { nameof(DefaultModelId) });
+
+            if (RetentionChoice == CustomValue && CustomDays is null)
+                yield return new ValidationResult("Enter the number of days for the custom window, like 180.", new[] { nameof(CustomDays) });
+
+            if (AllowAttachments && MaxAttachmentMb is null)
+                yield return new ValidationResult("Enter the largest file size in MB while attachments are on, like 10.", new[] { nameof(MaxAttachmentMb) });
+        }
+    }
+
+    /// <summary>A blocked term to add: required, up to 40 characters, not already listed, and room for it (rules against the list).</summary>
+    private sealed class TermForm : IValidatableObject
+    {
+        /// <summary>The terms already listed, set by the page before it validates.</summary>
+        public List<string> Existing { get; set; } = new();
+
+        [Required(ErrorMessage = "Enter a word or phrase to block.")]
+        [StringLength(AiState.MaxBlockedTermLength, ErrorMessage = "Use 40 characters or fewer for the term.")]
+        public string Term { get; set; } = string.Empty;
+
+        /// <summary>Runs once the term is filled in: not listed already, and room for it.</summary>
+        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+        {
+            var term = Term.Trim().ToLowerInvariant();
+
+            if (Existing.Contains(term))
+                yield return new ValidationResult($"\"{term}\" is already blocked.", new[] { nameof(Term) });
+            else if (Existing.Count >= AiState.MaxBlockedTerms)
+                yield return new ValidationResult($"There are already {AiState.MaxBlockedTerms} blocked terms, the most allowed. Remove one first.", new[] { nameof(Term) });
+        }
+    }
 
     #endregion
 }

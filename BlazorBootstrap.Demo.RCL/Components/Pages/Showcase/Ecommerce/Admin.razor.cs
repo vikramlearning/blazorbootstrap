@@ -4,18 +4,16 @@ using BlazorBootstrap.Demo.RCL.Services.Showcase.Ecommerce;
 namespace BlazorBootstrap.Demo.RCL.Components.Pages.Showcase.Ecommerce;
 
 /// <summary>
-/// The retailer's dashboard for the last 30 days: net revenue, orders to fulfil, average order value, stock alerts, the
-/// most recent orders, and the best sellers. Every figure is derived from the store's state, so an order a customer
+/// The back office's dashboard for the last 30 days: net revenue, orders to fulfil, average order value, purchasing (products
+/// below their reorder point, purchase orders awaiting approval or receipt, and overdue ones), stock alerts, the most
+/// recent orders, and the best sellers. Every figure is derived from the store's state, so an order a customer
 /// places, or a refund in the admin, shows up here.
 /// </summary>
 public partial class Admin : ComponentBase, IDisposable
 {
     #region Fields and Constants
 
-    /// <summary>Products with this many or fewer in stock are flagged (the store-wide threshold the product list and notifications use).</summary>
-    private const int LowStockLimit = EcommerceSeedData.LowStockThreshold;
-
-    /// <summary>The most stock alerts the dashboard lists; the product list's stock filter shows the rest.</summary>
+    /// <summary>The most stock alerts the dashboard lists; the reorder list shows the rest.</summary>
     private const int MaxStockAlerts = 8;
 
     #endregion
@@ -80,7 +78,7 @@ public partial class Admin : ComponentBase, IDisposable
     [Inject] private EcommerceState State { get; set; } = default!;
 
     private IReadOnlyList<EcommerceProduct> StockAlerts => State.Products
-        .Where(product => product.Stock <= LowStockLimit)
+        .Where(State.IsLowStock)
         .OrderBy(product => product.Stock)
         .ThenBy(product => product.Name)
         .ToList();

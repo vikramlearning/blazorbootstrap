@@ -27,8 +27,9 @@
                 <Icon Name="IconName.Printer" Size="IconSize.x5" @onclick="PrintAsync" />
             </Tooltip> *@
             <div class="dropdown">
-                <i class="bi bi-three-dots-vertical fs-5 dropdown-toggle pdf-viewer-dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                </i>
+                <button type="button" class="btn btn-link p-0 text-body dropdown-toggle pdf-viewer-dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" aria-label="@MoreActionsText" title="@MoreActionsText">
+                    <i class="bi bi-three-dots-vertical fs-5" aria-hidden="true"></i>
+                </button>
                 <ul class="dropdown-menu">
                     <li><span class="dropdown-item d-flex align-items-center" role="button" @onclick="RotateClockwiseAsync"><Icon Class="mx-2" Name="IconName.ArrowClockwise" Size="IconSize.x5" /> Rotate Clockwise</span></li>
                     <li><span class="dropdown-item d-flex align-items-center" role="button" @onclick="RotateCounterclockwiseAsync"><Icon Class="mx-2" Name="IconName.ArrowCounterclockwise" Size="IconSize.x5" /> Rotate Counterclockwise</span></li>

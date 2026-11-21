@@ -7,9 +7,11 @@ namespace BlazorBootstrap.Demo.RCL.Components.Pages.Showcase.AiAssistant;
 
 /// <summary>
 /// Usage analytics of the Parley workspace admin back office: KPI cards (active members and pending invitations, this
-/// month's messages and tokens, members at or over 80 % of the quota), workspace tokens per day for the last 30 days
+/// month's messages and tokens, members at or over 80 % of their cap), governance cards (the workspace's spend and the
+/// members blocked by their caps, the retention window, and the sensitive data events to review, each linking to its page),
+/// workspace tokens per day for the last 30 days
 /// stacked by model, this month's tokens by model, and the members who used the most this month with their share of the
-/// quota. Figures come from <see cref="AiState.Usage" /> (generated history plus this tab's messages), so members without a
+/// cap. Figures come from <see cref="AiState.Usage" /> (generated history plus this tab's messages), so members without a
 /// demo account appear too. Each chart has a text summary and a data table; charts use <see cref="AiChartTheme" /> and
 /// redraw when the theme or the state changes.
 /// </summary>
@@ -37,7 +39,15 @@ public partial class AdminOverview : ComponentBase, IDisposable
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (firstRender)
+        // The charts render only for roles with the analytics permission; a role changed in this tab hides or shows them again.
+        if (!State.Can(AiPermission.ViewAnalytics))
+        {
+            chartsReady = false;
+
+            return;
+        }
+
+        if (!chartsReady && dailyChart is not null && modelsChart is not null)
         {
             var initializedDark = State.IsDarkTheme;
 
@@ -82,7 +92,7 @@ public partial class AdminOverview : ComponentBase, IDisposable
 
     private static ProgressColor QuotaColor(double percent) => percent >= 100 ? ProgressColor.Danger : percent >= 80 ? ProgressColor.Warning : ProgressColor.Primary;
 
-    private static string QuotaText(double percent) => percent.ToString("0", CultureInfo.InvariantCulture) + "% of quota" + (percent >= 100 ? ", used up" : percent >= 80 ? ", nearly used" : null);
+    private static string QuotaText(double percent) => percent.ToString("0", CultureInfo.InvariantCulture) + "% of cap" + (percent >= 100 ? ", blocked" : percent >= 80 ? ", warning" : null);
 
     private static double SharePercent(long tokens, int quota) => quota <= 0 ? 0 : tokens * 100.0 / quota;
 
@@ -201,21 +211,21 @@ public partial class AdminOverview : ComponentBase, IDisposable
         await modelsChart.UpdateAsync(ModelsData(), ModelsOptions());
     }
 
-    private IEnumerable<Total> Totals(IReadOnlyList<MemberRow> rows, int quota)
+    private IEnumerable<Total> Totals(IReadOnlyList<MemberRow> rows)
     {
         var members = State.Members;
         var joined = members.Count(member => member.Status != AiMemberStatus.Invited);
         var active = members.Count(member => member.Status == AiMemberStatus.Active);
         var invited = members.Count(member => member.Status == AiMemberStatus.Invited);
-        var near = rows.Count(row => row.Member.Status == AiMemberStatus.Active && SharePercent(row.Tokens, quota) >= 80);
-        var over = rows.Count(row => row.Member.Status == AiMemberStatus.Active && SharePercent(row.Tokens, quota) >= 100);
+        var near = rows.Count(row => row.Member.Status == AiMemberStatus.Active && SharePercent(row.Tokens, State.CapOf(row.Member)) >= 80);
+        var over = rows.Count(row => row.Member.Status == AiMemberStatus.Active && SharePercent(row.Tokens, State.CapOf(row.Member)) >= 100);
 
         return new[]
         {
             new Total("Active members", Count(active), $"of {AdminMembers.Plural(joined, "member")} · {AdminMembers.Plural(invited, "invitation")} pending"),
             new Total("Messages this month", Count(rows.Sum(row => (long)row.Messages)), "Sent by members to the assistant"),
             new Total("Tokens this month", AiDisplay.Tokens(rows.Sum(row => row.Tokens)), "Messages and replies, every member"),
-            new Total("At 80 % of quota or more", Count(near), near == 0 ? "No active member is close to the quota" : over > 0 ? $"{Count(over)} used it up" : "None used it up yet"),
+            new Total("At 80 % of their cap or more", Count(near), near == 0 ? "No active member is close to their cap" : over > 0 ? $"{Count(over)} blocked at 100 %" : "None blocked yet"),
         };
     }
 
@@ -261,9 +271,12 @@ public partial class AdminOverview : ComponentBase, IDisposable
     /// <summary>Gets the other admin modules, for the links at the bottom.</summary>
     private static IReadOnlyList<Module> Modules { get; } = new[]
     {
-        new Module($"{AiAdminLayout.Base}/members", IconName.People, "Members and roles", "Invite people, change roles, and deactivate or reactivate members."),
-        new Module($"{AiAdminLayout.Base}/prompts", IconName.JournalText, "Shared prompts", "The prompts every member sees in their prompt library."),
-        new Module($"{AiAdminLayout.Base}/settings", IconName.Sliders, "Models and policy", "Models, the monthly quota, attachments, retention, and blocked terms."),
+        new Module($"{AiAdminLayout.Base}/members", IconName.People, "Members and roles", "Invite people, change roles, remove or restore access, and see what each role may do.", AiPermission.ManageMembers),
+        new Module($"{AiAdminLayout.Base}/prompts", IconName.JournalText, "Shared prompts", "The prompts every member sees in their prompt library, and drafts.", AiPermission.ManageSharedPrompts),
+        new Module($"{AiAdminLayout.Base}/settings", IconName.Sliders, "Models and policy", "The workspace name, models, attachments, retention, and blocked terms.", AiPermission.ManageSettings),
+        new Module($"{AiAdminLayout.Base}/spend", IconName.PiggyBank, "Spend", "The workspace's monthly cap, the default member cap, and members' own caps.", AiPermission.ManageSpend),
+        new Module($"{AiAdminLayout.Base}/sensitive-data", IconName.ShieldExclamation, "Sensitive data review", "The redact-or-block policy and the events it raised.", AiPermission.ReviewSensitiveData),
+        new Module($"{AiAdminLayout.Base}/audit", IconName.ClockHistory, "Audit log", "Who changed roles, members, prompts, and the policy, and when.", AiPermission.ViewAudit),
     };
 
     /// <summary>Gets this calendar month's tokens by model, every model of the catalog, the most first.</summary>
@@ -296,7 +309,7 @@ public partial class AdminOverview : ComponentBase, IDisposable
     private sealed record MemberRow(AiMember Member, int Messages, long Tokens);
 
     /// <summary>A link to another admin module.</summary>
-    private sealed record Module(string Href, IconName Icon, string Title, string Description);
+    private sealed record Module(string Href, IconName Icon, string Title, string Description, AiPermission Permission);
 
     /// <summary>One model's tokens this month.</summary>
     private sealed record ModelTotal(AiModel Model, long Tokens);

@@ -127,6 +127,9 @@ public partial class GridColumnFilter : BlazorBootstrapComponentBase
            builder.SetUpdatesAttributeName("value");
        }
 
+       if (!string.IsNullOrWhiteSpace(FilterInputLabel))
+           builder.AddAttribute(107, "aria-label", FilterInputLabel);
+
        builder.CloseElement();
    };
 
@@ -227,6 +230,15 @@ public partial class GridColumnFilter : BlazorBootstrapComponentBase
     public string? FilterButtonCSSClass { get; set; }
 
     private string filterButtonColorString => FilterButtonColor.ToButtonColorClass();
+
+    /// <summary>
+    /// Gets or sets the accessible name of the filter input.
+    /// </summary>
+    /// <para>
+    /// Default value is null.
+    /// </para>
+    [Parameter]
+    public string? FilterInputLabel { get; set; }
 
     /// <summary>
     /// Gets or sets filter operator.

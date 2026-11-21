@@ -1,6 +1,6 @@
 ---
 title: Healthcare Clinic Portal showcase
-description: A clinic portal where patients book visits, read records and lab reports, and pay bills, while doctors and the front desk work in a staff back office, built with Blazor Bootstrap.
+description: A clinic portal where patients book visits, read records and lab reports, and pay what insurance leaves, while doctors, the front desk, and billing work in a staff back office with Grid lists, validated forms, insurance claims from coding to denial follow-up, notifications, and an audit log, built with Blazor Bootstrap.
 sidebar_label: Healthcare
 sidebar_position: 7
 ---
@@ -9,7 +9,9 @@ import CarbonAd from '/carbon-ad.mdx'
 
 # Healthcare Clinic Portal
 
-Cedarline Health is a fictitious network of three family clinics (Downtown, Lakeview, and Northfield) with six doctors. Patients find a doctor, book and change visits, read visit summaries and lab reports (with a PDF), ask for refills, and pay bills. Doctors run their visits, charts, lab results, and refill requests, and the front desk keeps the calendar, checks patients in, and sets doctors' hours. Nothing on the site is medical advice.
+Cedarline Health is a fictitious network of three family clinics (Downtown, Lakeview, and Northfield) with six doctors. Patients find a doctor, book and change visits, read visit summaries and lab reports (with a PDF), see who at the clinics opened their record, ask for refills, and pay their bills. Doctors run their visits (notes, vital signs, lab orders, prescriptions, and the visit's codes), charts, lab results, and refill requests; the front desk registers patients, keeps the calendar, checks patients in, and sets doctors' hours; and a billing specialist turns coded visits into insurance claims and follows them until they're paid or closed. Nothing on the site is medical advice.
+
+Every record list in the back office and the portal is a [Grid](/components/grid) with a saved view, a column chooser, and CSV export; forms validate with a linked error summary; the header has a global search and a notifications bell; and every step, including each look at a patient's chart, lands in an audit log. The signature workflow is **insurance claims and denial follow-up**: the doctor codes a completed visit, billing submits the claim to the patient's health plan, records the plan's answer, and works a denial by correcting and resubmitting the claim or appealing it before the deadline, until it's paid, written off, or billed to the patient. The patient's bill follows each step in plain words.
 
 <CarbonAd />
 
@@ -22,12 +24,17 @@ Cedarline Health is a fictitious network of three family clinics (Downtown, Lake
 | Patient | Maya Thompson (`maya.thompson@example.com`) | `care-demo-26` | `/showcase/healthcare/appointments` |
 | Doctor | Dr. Samuel Okoye (`samuel.okoye@example.com`) | `care-doc-26` | `/showcase/healthcare/staff/schedule` |
 | Front desk | Lena Fischer (`lena.fischer@example.com`) | `care-desk-26` | `/showcase/healthcare/staff/calendar` |
+| Billing specialist | Rafael Moreno (`rafael.moreno@example.com`) | `care-bill-26` | `/showcase/healthcare/staff/claims` |
 
 You can also create an account ("Register as a patient" on the start page). A new account is a patient with an empty record, so you can book right away.
 
-Finding a doctor, doctor profiles, and locations are public. The other five doctors and seven other patients can't sign in.
+Finding a doctor, doctor profiles, and locations are public. The other five doctors and the other patients appear on calendars, charts, and claims but can't sign in.
 
-All data is fictitious and there is no backend. Each browser tab keeps its own data in `sessionStorage` (it survives a reload; other tabs start fresh), and "Reset demo data" in the account menu restores the seed: 8 patients, 17 appointments (today's clinic days, past visits, and upcoming ones), 5 lab orders, 4 prescriptions, and 4 bills. The sign-in page lists the demo accounts with one-click buttons; credentials are checked only against the tab's accounts. The clock starts on Tuesday, November 24, 2026, 8:20, before the first visit of the day, and moves on with real time.
+The seed holds the clinics' last year and the weeks ahead: 320 patients (250 with a health plan), 1,953 appointments from November 2025 to January 2027 (1,358 completed with vitals, 339 booked, 160 cancelled, 94 no-shows, and 2 already checked in this morning), 349 lab orders (15 entered and waiting to be released, 4 waiting for results), 338 prescriptions with 16 refill requests, 1,686 bills, and 1,066 insurance claims across the four health plans (Evergreen Mutual, Harborview Health Plan, Northstar Family Health, and Summit Care Alliance): 2 drafts, 119 with the plans, 771 paid, 109 partly paid, 17 denied (one of them after an appeal), 1 corrected and waiting to be resubmitted, 4 appealed, and 43 closed (10 of them billed to the patient). Eight completed visits wait to be coded, four of them Dr. Okoye's. Dr. Okoye has nine visits today; Daniel Brooks is checked in for 8:30. Maya's annual physical and her dermatology visit were paid by her plan and leave $25.00 each to pay, and her diabetes follow-up is with her plan. The audit log starts with 2,308 entries from the last three weeks. Rafael has 116 notifications, Dr. Okoye 35, Lena 7, and Maya 5; the newest two of each are unread, and Rafael gets reminders when he signs in for appeals and filing deadlines that are near.
+
+All data is fictitious and there is no backend. Each browser tab keeps its own data in `sessionStorage` (it survives a reload; other tabs start fresh), and "Reset demo data" in the account menu restores the seed. The tab stores only what changed since the seed, which is built the same way in every tab, so a fresh tab's data is about 220 bytes although it holds thousands of records; a stored change list that doesn't fit the seed (a claim number of the wrong form, amounts that don't add up, codes the visit can't be billed with) is discarded and the seed is used. The sign-in page lists the demo accounts with one-click buttons; credentials are checked only against the tab's accounts. The clock starts on Tuesday, November 24, 2026, 8:20, before the first visit of the day, and moves on with real time. Nothing is emailed, sent to a health plan, or charged.
+
+The diagnosis codes (ICD-10 style, like `I10`) and procedure codes (CPT style, five digits, like `99213`), their fees, the plans, the denial reason codes, and the plans' answers are illustrative only; they aren't a coding reference.
 
 Bills are paid with a test card form that accepts only these published test numbers, with any future expiry and any CVC (4 digits for American Express). Only the brand and last four digits are kept.
 
@@ -41,12 +48,21 @@ Bills are paid with a test card form that accepts only these published test numb
 
 ## What to try
 
-1. Without signing in, open **Find a doctor**, open Dr. Okoye's profile, and pick one of today's open times. Sign in as Maya when asked, give a reason, and book. Then sign in as Lena: **Check-in** lists the new visit.
-2. As Lena, check Maya in. Sign in as Dr. Okoye: **My schedule** shows her as checked in and waiting. **Start visit**, write notes and a summary, order a lab test, prescribe, and **Complete the visit**. As Maya, the appointment shows the summary (never the staff notes), the prescription, and a new bill.
-3. As Dr. Okoye, open **Lab results**, enter Maya's HbA1c, and release it (each released test bills $25.00). As Maya, open **Lab reports**: the report shows the values with flags in words, the doctor's comment, and the PDF with a download link.
-4. As Maya, open **Prescriptions** and request a refill of metformin (it has none left). As Dr. Okoye, approve it in **Refill requests**. Maya sees the answer and one refill left.
-5. As Lena, open **Doctors' hours** and add a day off for Dr. Okoye. His public profile then shows him away that day, with no open times.
-6. As Maya, open **Bills** and pay the dermatology bill with `4242 4242 4242 4242`. Try `4000 0000 0000 0002` first to see a decline.
+1. Without signing in, open **Find a doctor**, open Dr. Bello's profile, and pick one of her open times. Sign in as Maya when asked. Maya hasn't seen Dr. Bello, so a standard visit is refused (a first visit is a 60-minute new patient visit); choose **New patient visit**. In the health plan fields, the member ID `HHP204518837` with Evergreen Mutual is refused (Evergreen member IDs start with EVM); keep `EVM204518837` and book. Then sign in as Lena: **Check-in** lists the new visit.
+2. As Lena, open **Check-in**, select two of today's arrivals, and check them in together; mark someone who didn't come as a no-show. Open **Patients** and **Register a patient**: the record number `CL-100001` is taken ("Checking…", then a taken message), a date of birth in the future is refused, and a member ID needs its plan. Open **Doctors' hours** and give Dr. Raman Wednesday hours from 16:00 to 18:00: Cedarline Downtown closes at 17:00, so they're refused; 10:00 to 11:00 works. Add a day off for Dr. Okoye: his public profile then shows him away that day, with no open times.
+3. As Dr. Okoye, **My schedule** shows Daniel Brooks checked in and waiting. **Start visit** and run each part of the visit page: save vitals with a systolic pressure below the diastolic (refused) and then 128/82, pulse 72, 36.8 °C, 81.5 kg; write notes and a summary; order a lab test; and prescribe 90 tablets for 90 days with 4 refills (refused: all fills together are at most a year), then 3 refills. **Complete the visit**: Daniel has a health plan, so his bill goes to the plan first and the visit waits for its codes.
+4. As Dr. Okoye, open **Lab results**: the Grid shows your orders. Open one waiting for results and enter a value above the test's allowed range (refused), then a value outside the reference range: the flag ("High" or "Low") shows as you type. Back on the list, select the entered results and **Release results…** together: each patient is told and billed $25.00. As Maya, **Lab reports** shows a released report with values and flags in words, the doctor's comment, and the PDF with a download link.
+5. As Maya, open **Records**: "Who viewed your record" lists each time staff opened your chart or details, with their role. Open **Prescriptions** and request a refill of metformin (it has none left); as Dr. Okoye, approve it in **Refill requests** (a denial needs a reason of at least 5 characters).
+6. Run the claim loop (a few minutes, three roles):
+   1. As Dr. Okoye, on Daniel's completed visit, **Coding and insurance claim** lists the clinics' diagnosis and procedure codes. Save with nothing chosen (the summary links to both lists), then with `I10` and `99203`: Daniel was seen before, so a new-patient visit code is refused. Choose `99213` and save: claim CLM-2026-01067 (in a fresh tab) is created as a draft for $115.00, and Rafael is told.
+   2. Sign in as Rafael. **Claims** shows the day's work (visits to code, claims to submit, with the plans, denied, and appeals due in 14 days), the open claims by age, the visits to code, and every claim in a Grid. Filter **Status: To submit**, select the drafts, and **Submit** them together; or open CLM-2026-01067 and choose **Submit…**.
+   3. On the claim, choose **Record the plan's answer…**: a paid amount above the allowed, or an allowed amount above the billed, is refused. Record **Denied** with `CO-16` (information missing or wrong) and no amounts: the claim is denied with an appeal deadline 60 days out.
+   4. Choose **Correct…**: saving without a note is refused; add `E78.5` and `36415` (a blood draw) with a note. Version 2 is listed with what changed, the billed amount is now $130.00, and **Resubmit…** sends it again.
+   5. Record a second denial with `CO-50` (not medically necessary): Dr. Okoye is told to check his codes. Choose **Appeal…**: a letter under 50 characters is refused; write a proper one and send it. Record the plan's answer once more: **Partly paid**, allowed $91.00, plan paid $66.00, patient owes $25.00, with `CO-45` and `PR-3`. The claim is closed, and Daniel's bill is now $25.00 due in 30 days. **History** lists each step.
+   6. Open **Denials**: denied claims with the plan's reason, the appeal deadline in words, and "Due soon" or "Overdue" badges. Open CLM-2026-00638 (denied after appeal): it can only be closed. Choose **Write off or bill the patient…**, try a reason under 10 characters (refused), then bill the patient: Ingrid Abbott owes the whole visit.
+   7. Sign in as Maya and open **Bills**: the annual physical and the dermatology visit say what Evergreen Mutual paid and leave $25.00 each; the diabetes follow-up is "With your plan", with nothing to pay until it answers. Pay one $25.00 bill with `4000 0000 0000 0002` (declined), then with `4242 4242 4242 4242`.
+7. As any staff member, open **Audit log**: every step of this tab is on top (vitals saved, visit coded, claim submitted, payer response recorded, claim corrected, claim appealed, billed to the patient, bill updated after insurance), with links to the records.
+8. Use the header search. As Rafael, a claim number (`CLM-2026-00617`) opens the claim and a visit number opens its claim; as Lena, a date of birth (`1988-04-12`) finds Maya; as Dr. Okoye, `Maya` opens her chart and a lab order number opens the order; as Maya, `lipid` finds her lab report.
 
 ## Pages
 
@@ -58,73 +74,120 @@ Bills are paid with a test card form that accepts only these published test numb
 | Find a doctor | `/showcase/healthcare/doctors` | Filters by name, specialty, clinic, language, and "accepting new patients" (all but the name are kept in the URL), each doctor's next open time, and Book. |
 | Doctor profile | `/showcase/healthcare/doctors/{Id}` | Bio, languages, weekly hours in words, time away (without the reason), and open times by week. |
 | Locations | `/showcase/healthcare/locations` | A map with numbered pins, then each clinic's address, phone, hours, and doctors. |
-| Book | `/showcase/healthcare/book/{DoctorId}` | Patients: pick a day and a 30-minute time, give a reason, and book (`?time=` preselects a time). |
-| Appointments | `/showcase/healthcare/appointments` | Your upcoming and past visits; you can hold up to 5 upcoming ones. |
-| Appointment | `/showcase/healthcare/appointments/{Id:int}` | Details, reschedule or cancel up to 2 hours before, and after the visit its summary, lab tests, prescriptions, and bill. |
-| Records | `/showcase/healthcare/records` | Visit summaries, conditions, allergies, and vaccinations. |
-| Lab reports | `/showcase/healthcare/lab-reports` | Your released lab reports. |
+| Book | `/showcase/healthcare/book/{DoctorId}` | A validated form: visit type (a new patient visit of 60 minutes for a first visit with the doctor, a standard visit of 30 minutes after that), a time that fits it, the reason (3 to 200 characters), and the health plan and member ID (or self-pay). `?time=` preselects a time. |
+| Appointments | `/showcase/healthcare/appointments` | A Grid of your upcoming and past visits; you can hold up to 5 upcoming ones. |
+| Appointment | `/showcase/healthcare/appointments/{Id:int}` | Details, reschedule or cancel up to 2 hours before, and after the visit its summary, lab tests, prescriptions, and bill, with what the health plan paid. |
+| Records | `/showcase/healthcare/records` | Visit summaries in a Grid, conditions, allergies, vaccinations, and "Who viewed your record" (each time staff opened your chart or details) in a Grid. |
+| Lab reports | `/showcase/healthcare/lab-reports` | Your lab tests in a Grid: ready to view or waiting for results. |
 | Lab report | `/showcase/healthcare/lab-reports/{Id:int}` | The results table with reference ranges and flags, the doctor's comment, and the report as a PDF with Download PDF. |
-| Prescriptions | `/showcase/healthcare/prescriptions` | Your medicines, refill requests, and the doctor's answers. |
-| Bills | `/showcase/healthcare/bills` | Total due, bills to pay with the inline test-card form, and paid bills. |
-| Profile | `/showcase/healthcare/profile` | Name, email, and password; date of birth and phone on file. |
+| Prescriptions | `/showcase/healthcare/prescriptions` | Your medicines in a Grid, and a validated refill request (pharmacy, quantity, and pick-up day). |
+| Bills | `/showcase/healthcare/bills` | Total due and a Grid of bills: to pay, with your health plan, paid, or nothing to pay, each with what the plan paid in words. A bill to pay opens the test-card form. |
+| Profile | `/showcase/healthcare/profile` | Name, email, and password; date of birth, phone, emergency contact, and health plan on file. |
 | Sign in | `/showcase/healthcare/sign-in` | Demo accounts, the sign-in form, and the register form (`?mode=register`). |
-| Not found | `/showcase/healthcare/{*path}` | The site's not-found panel, also shown for an unknown doctor, appointment, or report. |
+| Not found | `/showcase/healthcare/{*path}` | The site's not-found panel, also shown for an unknown doctor, appointment, report, or claim. |
 
-A doctor or the front desk who opens the portal sees a "Viewing the patient portal as …" bar with a link back to the staff area.
+A staff member who opens the portal sees a "Viewing the patient portal as …" bar with a link back to the staff area.
 
-### Doctor (layout: sidebar back office)
+### Everyone on staff (layout: sidebar back office)
 
 | Page | Route | What it does |
 |:--|:--|:--|
-| My schedule | `/showcase/healthcare/staff/schedule` | The day's visits (`?date=`); checked-in patients stand out with Start visit; the rest of the week below. |
-| Visit | `/showcase/healthcare/staff/appointments/{Id:int}` | The patient's header with allergies, staff-only notes, the summary for the patient, lab orders, prescriptions, and Complete the visit, which bills it ($40.00 primary care, $60.00 specialist). Another doctor's visit is read-only. |
-| Patients | `/showcase/healthcare/staff/patients` | Every patient, searchable, with their next visit with you and their last visit. |
-| Patient chart | `/showcase/healthcare/staff/patients/{Id:int}` | Tabs for the health summary (add and remove allergies and conditions, immunizations), visits, lab results, and prescriptions (stop one). |
-| Lab results | `/showcase/healthcare/staff/labs` | Your lab orders: enter each value, check the flags, and release to the patient. |
-| Refill requests | `/showcase/healthcare/staff/refills` | Approve (adds one refill) or decline with a note for the patient. |
-| Account | `/showcase/healthcare/staff/account` | Name, email, and password. |
+| Patients | `/showcase/healthcare/staff/patients` | A Grid of every patient with search and a clinic filter; a doctor opens the chart, the front desk and billing open the registration details. |
+| Register a patient, Patient details | `/showcase/healthcare/staff/patients/new`, `/showcase/healthcare/staff/patients/{Id:int}/edit` | A validated form: record number (unique), name, date of birth, phone, email, clinic, emergency contact, and health plan with member ID. |
+| Audit log | `/showcase/healthcare/staff/audit` | Who did what and when, newest first, in a Grid with column filters, paging, and CSV export. |
+| Account | `/showcase/healthcare/staff/account` | Name, email, and password, and your work details (clinic and work phone; a doctor's bio and "accepting new patients"). |
 
-### Front desk (layout: sidebar back office)
+### Doctor
+
+| Page | Route | What it does |
+|:--|:--|:--|
+| My schedule | `/showcase/healthcare/staff/schedule` | The day's visits (`?date=`); checked-in patients stand out with Start visit; the rest of the week; and **Coding for billing**: your finished visits to code and the denials that question your codes. |
+| Visit | `/showcase/healthcare/staff/appointments/{Id:int}` | The patient's header with allergies; validated forms for staff-only notes and the summary, vital signs, a lab order, and a prescription; Complete the visit, which bills it; and **Coding and insurance claim**, with the claim's status and the plan's denial reason when there is one. Another doctor's visit is read-only. |
+| Patient chart | `/showcase/healthcare/staff/patients/{Id:int}` | Tabs for the health summary (add and remove allergies and conditions, immunizations), visits, lab results, and prescriptions (stop one); each of the last three is a Grid. |
+| Lab results | `/showcase/healthcare/staff/labs` | A Grid of your lab orders (to do, waiting for results, entered, released) with bulk release. |
+| Lab order | `/showcase/healthcare/staff/labs/{Id:int}` | A validated form for each value (within the test's allowed range) with its flag as you type, a comment, and Release. |
+| Refill requests | `/showcase/healthcare/staff/refills` | A Grid of refill requests with bulk approve (adds one refill) and bulk deny with a reason for the patient. |
+| Claim | `/showcase/healthcare/staff/claims/{Id:int}` | Read-only for a doctor: the claim of one of your visits, its answers, versions, and history. |
+
+### Front desk
 
 | Page | Route | What it does |
 |:--|:--|:--|
 | Calendar | `/showcase/healthcare/staff/calendar` | A column per doctor for one day (`?date=`, `?clinic=`, `?doctor=`); open a visit to check in, mark a no-show, or cancel; a week overview table. |
-| Check-in | `/showcase/healthcare/staff/check-in` | Today's arrivals at every clinic, filtered by name and clinic; check in or mark a no-show. |
-| Doctors' hours | `/showcase/healthcare/staff/availability` | Each doctor's weekly hours (half hours from 07:00 to 20:00, no overlaps) and time off, and the booked visits that no longer fit and need rebooking. |
-| Account | `/showcase/healthcare/staff/account` | Name, email, and password. |
+| Check-in | `/showcase/healthcare/staff/check-in` | A Grid of today's arrivals at every clinic, filtered by name, clinic, and status, with bulk check-in and bulk no-show. |
+| Doctors' hours | `/showcase/healthcare/staff/availability` | Each doctor's weekly hours (half hours within the clinic's opening hours, no overlaps) and time off, and the booked visits that no longer fit and need rebooking. |
+
+### Billing specialist
+
+| Page | Route | What it does |
+|:--|:--|:--|
+| Claims | `/showcase/healthcare/staff/claims` | The day's work in cards, open claims by age (0–30, 31–60, 61–90, and over 90 days since the visit, with what they bill), the visits to code in a Grid (coding opens in a dialog), and every claim in a Grid with status, health plan, age, and text filters and bulk Submit. |
+| Claim | `/showcase/healthcare/staff/claims/{Id:int}` | The header (patient, plan, member ID, visit, billed, status, filing and appeal deadlines), the next step in words, the codes sent, the plan's answers, the versions with what changed, the appeal letter, the history, and the actions in validated dialogs: submit or resubmit, edit or correct the codes, record the plan's answer, appeal, and write off or bill the patient. |
+| Denials | `/showcase/healthcare/staff/claims/denials` | A Grid of denied claims with the plan's reason, the appeal deadline in words with "Due soon" and "Overdue" badges (or "After appeal: close it"), the visit's doctor, and what was billed; filter by "can still be appealed", "due in 14 days", or "denied after appeal". |
+
+## Insurance claims
+
+**Coding.** When a doctor completes a visit of a patient with a health plan, the bill goes to the plan first ("With your health plan", nothing to pay yet) and billing is told the visit needs codes. The visit's doctor (on the visit page) or billing (on Claims) codes it: one to four diagnosis codes and one to six procedure codes from the clinics' lists, each once, with exactly one office visit code that fits the visit (a new-patient code, 99202 to 99204, for a new patient visit; an established-patient code, 99212 to 99214, otherwise; or a preventive check-up). The procedure fees add up to the billed amount. The first coding creates a draft claim numbered CLM-2026-#####; a self-pay visit keeps its codes and has no claim, and its bill is due right away.
+
+**Submitting.** Billing submits a draft (one at a time or in bulk) within 90 days of the visit; after that the plans refuse it (timely filing), and billing is reminded at sign-in when a draft's deadline is near. A claim with the plan can't change.
+
+**The plan's answer.** Billing records it on the claim: **Paid** or **Partly paid** with the allowed amount (at most the billed amount), what the plan paid (at most the allowed amount), and the patient's share, which together make the allowed amount; partly paid needs the code for the part not paid. **Denied** pays nothing and needs a denial code (CO-11, CO-16, CO-18, CO-29, CO-31, CO-50, or CO-97). Up to four reason codes (also CO-45 and PR-1 to PR-3) and a remark of up to 300 characters. A paid or partly paid answer closes the claim and turns the patient's bill into their share, due in 30 days ("Nothing to pay" when it's $0.00).
+
+**Denials.** A first denial gets an appeal deadline 60 days out. Billing can correct it (new codes or the member ID from the patient's card, with a note of 10 to 300 characters): the claim gets a new version, listed with what changed, and is resubmitted. Or billing appeals it before the deadline with a letter of 50 to 2,000 characters; the plan's answer to the appeal is final, and a denial after an appeal can't be appealed again. Any denied claim can be closed with a reason of 10 to 300 characters: **written off** (the patient owes nothing) or **billed to the patient** (the whole billed amount, due in 30 days). Denials about the codes or the medical need (CO-11, CO-50, CO-97) also go to the visit's doctor.
+
+**What the patient sees.** The bill and the appointment say in plain words where the claim is: being prepared, sent to the plan on a date, being followed up by the clinic, what the plan paid and what's left, or that the plan didn't cover it and the clinic wrote it off or billed the patient. A bill with the plan can't be paid.
+
+**Notifications.** Billing: a visit to code, a claim ready to submit (coded by the doctor), a claim the doctor corrected and that waits to be resubmitted, and at sign-in appeal deadlines within 10 days and filing deadlines that are near; the seed also has the plans' denials and an appeal the plan turned down. The visit's doctor: denials that question the codes or the medical need. The patient: "Your plan covered your visit", "Bill updated after insurance: you owe …", "Your plan hasn't paid for a visit yet", and a new bill when the clinic bills them.
+
+**Audit.** "Visit coded", "Codes changed", "Claim created", "Claim submitted", "Claim resubmitted", "Payer response recorded", "Claim corrected", "Member ID corrected from a claim", "Claim appealed", "Claim written off", "Billed to the patient", and "Bill updated after insurance", each with the claim's number and the amounts or lengths, never the letter or note itself.
+
+## Enterprise features
+
+- **Grid lists**: patients, check-in, lab orders, refill requests, a chart's visits, labs, and prescriptions, visits to code, claims, denials, the audit log, and the patient's appointments, visit summaries, record access, lab reports, prescriptions, and bills use the [Grid](/components/grid) with sorting, paging, a column chooser, and CSV export of the filtered rows. Each list keeps its view (sort, page size, hidden and reordered columns) in the tab's `sessionStorage` until **Reset view**. A whole row opens its record (or, without a page of its own, its dialog). Check-in, lab results, refill requests, and claims have multi-row selection with a bulk bar.
+- **Validated forms**: booking, patient registration, profile, work details, visit notes, vital signs, lab orders, lab results, prescriptions, refill requests and answers, doctors' hours and time off, payments, coding, and every claim dialog use `EditForm`. Required, length, and format rules (phone numbers, emails, record numbers, member IDs, codes, dollars and cents), a uniqueness check with a "Checking…" state (record number), ranges (systolic 60 to 250 and above the diastolic of 30 to 150, pulse 30 to 220, temperature 34 to 42 °C, weight 1 to 400 kg, lab values within the test's allowed range, quantity, refills, and days per fill), cross-field rules (visit type against the patient's history, a time that fits the visit, a member ID that matches its plan, hours within the clinic's opening hours, all fills within a year, the claim amounts above), and a summary that links each failing field after a failed submit.
+- **Global search** in the header: staff find patients (name, record number, or date of birth) and appointments by number; doctors also find their lab orders, and billing and doctors find claims by number; a patient finds their appointments, visit summaries, lab reports, bills, and the clinics' doctors.
+- **Notifications** with an unread count and mark as read: bookings and changes, check-ins, lab results to review and released, refill requests and answers, new bills, and every claim step above.
+- **Audit log** of registrations and detail changes, bookings, check-ins, no-shows, cancellations, visits, vitals, coding, lab orders and results, prescriptions and refill answers, claims, bills and payments, doctors' hours and time off, and every look at a patient's chart or details, which the patient also sees under Records. Notes, results, letters, and chart items are never copied into it.
+- **Loading, empty, and error states** on every list, with a "Demo: simulate a loading error" control to show the error state and its Retry.
 
 ## Components used
 
+- [Grid](/components/grid): every record list, with the column chooser, CSV export, paging, and multi-row selection with bulk bars on Check-in, Lab results, Refill requests, and Claims.
 - [PDF Viewer](/components/pdf-viewer): each lab report, which the site writes as a one-page PDF (`HcLabPdf.cs`) and shows from a data URL.
 - [Google Map](/components/google-map): the clinics on Locations. Without a `GoogleMap:ApiKey` setting the site shows a drawn map preview with the same numbered pins.
+- [Sidebar](/components/sidebar): the staff back office, with the doctor's, the front desk's, or billing's modules.
 - [Tabs](/components/tabs): the doctor's patient chart.
-- [Modal](/components/modal): cancel an appointment, complete a visit, release a lab result, stop a prescription, the calendar's visit actions, mark a no-show, and delete hours or time off.
-- [Sidebar](/components/sidebar): the staff back office, with the doctor's or the front desk's modules.
+- [Modal](/components/modal): the claim dialogs (submit, codes, the plan's answer, appeal, and close), coding on Claims, cancel an appointment, complete a visit, release lab results, stop a prescription, the calendar's visit actions, the bulk confirmations, pay a bill, and delete hours or time off.
 - [Navbar](/components/navbar): the patient portal header.
 - [Breadcrumb](/components/breadcrumb): the booking, appointment, and lab report pages.
 - [Alert](/components/alerts): a PDF that fails to load.
-- [Input Group](/components/input-group): the test card form on Bills.
+- [Placeholders](/components/placeholders): the lists' loading state.
 - [Buttons](/components/buttons) and [Icons](/content/icons): actions and icons across the site.
-- [Text Input](/forms/text-input), [Avatar](/components/avatar), [Dropdown](/components/dropdown), and [Theme Switcher](/components/theme-switcher): through the shared sign-in, profile, account menu, and site bar.
+- [Text Input](/forms/text-input), [Avatar](/components/avatar), [Dropdown](/components/dropdown), and [Theme Switcher](/components/theme-switcher): through the shared sign-in, profile, account menu, notifications, and site bar.
 
-The booking times are toggle buttons in the site's `SlotPicker` component; other form fields are native inputs and selects. The site has no charts.
+Forms use Blazor's `EditForm` with `DataAnnotationsValidator`, `InputText`, `InputTextArea`, `InputNumber`, `InputDate`, `InputSelect`, and `InputCheckbox`. The booking times are toggle buttons in the site's `SlotPicker` component. Plain Bootstrap tables remain where the content is not a record list: the calendar, doctors' hours, a lab report's results, the claims by age, and a claim's codes and answers. The site has no charts.
 
 ## How the theme is built
 
-`HcFrame.razor` is the frame both layouts share: `HcLayout` (the public and patient portal, with a Navbar) and `HcStaffLayout` (the staff back office, with a top bar, "View patient portal", and a Sidebar). Its root is `.sc-site.sc-health`, and `HcFrame.razor.css` styles the pages of both through `::deep`.
+`HcFrame.razor` is the frame both layouts share: `HcLayout` (the public and patient portal, with a Navbar) and `HcStaffLayout` (the staff back office, with a top bar holding the search, the notifications, "View patient portal", and the account menu, and a Sidebar). Its root is `.sc-site.sc-health`, and `HcFrame.razor.css` styles the pages of both through `::deep`, including the Grid lists and bulk bars.
 
 Color tokens in light mode: `--sc-primary` `#0e7490` (teal), `--sc-primary-hover` `#155e75`, contrast `#fff`, page background `#f4f8fa`. In dark mode (`[data-bs-theme=dark]`): `--sc-primary` `#67e8f9`, hover `#a5f3fc`, contrast `#062a33`, page background `#0a1519`. Because the dark primary is light, `.text-bg-primary` and `.progress-bar` text switch to the dark contrast color. The sidebar sets the `--bb-sidebar-*` variables to `#0b3440` with light text in both modes.
 
-Fonts come from Google Fonts: Source Sans 3 (400, 600, 700) for body and headings, and JetBrains Mono for times, hours, and medical record numbers.
+Fonts come from Google Fonts: Source Sans 3 (400, 600, 700) for body and headings, and JetBrains Mono for times, hours, medical record numbers, codes, and claim numbers.
 
 The shared stylesheet `wwwroot/css/blazorbootstrap.demo.rcl.css` maps the `--sc-*` tokens to Bootstrap (`--bs-primary`, link and focus colors, body and heading fonts, primary buttons).
 
-The site follows the shared split between the public side and the back office: patients use the portal, staff work in a separate back office with a sidebar, and staff who open the portal get the "viewing as" bar. Each page has its own role guard, and `HcState` checks the role and ownership on every action. Patients get copies of their records without the staff notes, without a summary before the visit is completed, and without lab values before release.
+The doctors' portraits and the clinic photos are licensed stock photos listed in `wwwroot/showcase/CREDITS.md`; the people shown are models, not the fictitious doctors, and the places aren't the fictitious clinics.
+
+The site follows the shared split between the public side and the back office: patients use the portal, staff work in a separate back office with a sidebar, and staff who open the portal get the "viewing as" bar. Each page has its own role guard, and `HcState` checks the role and ownership on every action. Patients get copies of their records without the staff notes, without a summary before the visit is completed, without lab values before release, and without the claims themselves: only their status in words on the bill.
 
 ## Accessibility and responsiveness
 
 - Open times are buttons with `aria-pressed`, grouped by day, so booking and rescheduling work with the keyboard.
-- Visit statuses and lab flags (such as "High") are written in words, not shown by color alone.
+- Visit, bill, and claim statuses, lab flags (such as "High"), and "Due soon" and "Overdue" deadlines are written in words, not shown by color alone.
+- After a failed submit, the error summary takes focus and links to each field; each message is tied to its field with `aria-describedby`. The code lists are labelled groups of checkboxes.
+- Every check-in, booking, payment, claim step, and refusal is announced in a status region (a repeated message is announced again), and focus returns to the button that opened a dialog, or to the status message when that button is gone.
+- Each list row's checkbox is labelled with its record, and a row opens its record through a stretched link or button, so the row has no extra interactive role.
 - The PDF viewer's toolbar is mouse-only, so every report also has a Download PDF link, and the results are on the page as a table.
 - The map (or its preview) is described in words and the clinics are listed below it with matching numbers.
-- Every check-in, booking, payment, and refusal is announced in a status region, and focus returns to the button that opened a dialog. At 375 px the staff sidebar sits above the page, the calendar's doctor columns stack, and wide tables scroll.
+- At 375 px the staff sidebar sits above the page, the header search wraps onto its own line, filters and bulk bars stack, the calendar's doctor columns stack, and wide grids and tables scroll inside their own box.

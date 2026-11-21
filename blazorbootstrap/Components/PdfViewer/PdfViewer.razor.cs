@@ -235,6 +235,18 @@ public partial class PdfViewer : BlazorBootstrapComponentBase
     #region Properties, Indexers
 
     /// <summary>
+    /// Gets or sets the accessible name and tooltip of the toolbar button that opens the menu of more actions.
+    /// <para>
+    /// Default value is 'More actions'.
+    /// </para>
+    /// </summary>
+    [AddedVersion("4.1.0")]
+    [DefaultValue("More actions")]
+    [Description("Gets or sets the accessible name and tooltip of the toolbar button that opens the menu of more actions.")]
+    [Parameter]
+    public string MoreActionsText { get; set; } = "More actions";
+
+    /// <summary>
     /// This event fires immediately after the PDF document is loaded.
     /// </summary>
     [AddedVersion("1.0.0")]

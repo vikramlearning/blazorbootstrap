@@ -83,8 +83,34 @@ public static class EcommerceDisplay
         _ => BadgeColor.Danger,
     };
 
+    /// <summary>Returns the badge color of a purchase-order status; the status name is always shown with it.</summary>
+    public static BadgeColor PurchaseOrderColor(EcommercePurchaseOrderStatus status) => status switch
+    {
+        EcommercePurchaseOrderStatus.Draft => BadgeColor.Secondary,
+        EcommercePurchaseOrderStatus.Submitted => BadgeColor.Warning,
+        EcommercePurchaseOrderStatus.Approved => BadgeColor.Primary,
+        EcommercePurchaseOrderStatus.PartlyReceived => BadgeColor.Info,
+        EcommercePurchaseOrderStatus.Received => BadgeColor.Success,
+        _ => BadgeColor.Dark,
+    };
+
+    /// <summary>Returns a purchase-order status as a label, like "Waiting for approval".</summary>
+    public static string PurchaseOrderLabel(EcommercePurchaseOrderStatus status) => status switch
+    {
+        EcommercePurchaseOrderStatus.Draft => "Draft",
+        EcommercePurchaseOrderStatus.Submitted => "Waiting for approval",
+        EcommercePurchaseOrderStatus.Approved => "Approved, sent",
+        EcommercePurchaseOrderStatus.PartlyReceived => "Partly received",
+        EcommercePurchaseOrderStatus.Received => "Received",
+        _ => "Cancelled",
+    };
+
     /// <summary>Formats an average rating with one decimal.</summary>
     public static string Rating(double value) => value.ToString("0.0", CultureInfo.InvariantCulture);
+
+    /// <summary>Returns a product's stock with what's on order, like "3 left · 24 on order".</summary>
+    public static string StockWithOnOrder(int stock, int onOrder) =>
+        (stock == 0 ? "Out of stock" : $"{Count(stock)} in stock") + (onOrder > 0 ? $" · {Count(onOrder)} on order" : string.Empty);
 
     /// <summary>Returns the star icons for an average rating, rounded to the nearest half star.</summary>
     public static IEnumerable<IconName> Stars(double rating)

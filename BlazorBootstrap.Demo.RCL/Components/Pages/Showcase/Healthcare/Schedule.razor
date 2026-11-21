@@ -145,6 +145,36 @@
                             </li>
                         }
                     </ul>
+
+                    @* Billing waits on the doctor for two things: coding finished visits, and fixing codes a plan denied. *@
+                    @{
+                        var toCode = State.VisitsToCode.Where(item => item.DoctorId == doctor.Id).ToList();
+                        var denied = State.Claims.Where(claim => claim.Status == HcClaimStatus.Denied && !HcState.IsFinalDenial(claim)
+                                && State.FindAppointment(claim.AppointmentId)?.DoctorId == doctor.Id
+                                && (claim.Responses.LastOrDefault()?.DenialCodes.Any(code => State.DenialCodes.Any(item => item.Code == code && item.NeedsDoctor)) ?? false))
+                            .OrderBy(claim => claim.AppealDeadline).ToList();
+                    }
+                    <h2 class="hc-section-title mb-1 mt-4" id="hc-sch-coding-title">Coding for billing</h2>
+                    <p class="small text-body-secondary mb-2">
+                        @(toCode.Count == 0 ? "All your finished visits are coded." : toCode.Count == 1 ? "1 finished visit to code." : $"{toCode.Count} finished visits to code.")
+                        @(denied.Count == 0 ? null : denied.Count == 1 ? " 1 denial questions your codes." : $" {denied.Count} denials question your codes.")
+                    </p>
+                    <ul class="list-unstyled mb-0" aria-labelledby="hc-sch-coding-title">
+                        @foreach (var claim in denied.Take(3))
+                        {
+                            <li class="hc-sch-week-day" @key="@($"denied-{claim.Id}")">
+                                <a href="@HcDisplay.StaffAppointmentUrl(claim.AppointmentId)">@(State.FindPatient(claim.PatientId)?.Name ?? "A patient")<span class="visually-hidden">: correct the codes</span></a>
+                                <span class="badge text-bg-danger">Denied</span>
+                            </li>
+                        }
+                        @foreach (var visit in toCode.Take(3))
+                        {
+                            <li class="hc-sch-week-day" @key="@($"code-{visit.Id}")">
+                                <a href="@HcDisplay.StaffAppointmentUrl(visit.Id)">@(State.FindPatient(visit.PatientId)?.Name ?? "A patient")<span class="visually-hidden">: code the visit</span></a>
+                                <span class="small text-body-secondary">@HcDisplay.Day(visit.Start)</span>
+                            </li>
+                        }
+                    </ul>
                 </aside>
             </div>
         }

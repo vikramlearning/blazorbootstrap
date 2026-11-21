@@ -30,7 +30,7 @@
                     @if (State.IsStaff)
                     {
                         <ShowcaseGlobalSearch Class="ea-global-search" Placeholder="Search orders, products, customers"
-                                              Label="Search orders by number or customer, returns by number, products by name or SKU, customers by name or email, and coupons by code" />
+                                              Label="Search customers by name or email, orders by number or customer, returns and purchase orders by number, products by name or SKU, coupons by code, and suppliers by name" />
                         <ShowcaseNotificationsMenu />
                     }
                     <a class="btn btn-sm ea-view-store" href="@EcommerceLayout.Base">
@@ -43,7 +43,7 @@
             @* The back office shows shoppers' names, emails, and addresses as page text, so the whole content area is masked from
                session recording (Clarity masks inputs by default, not text). *@
             <main class="sc-main ea-content" id="ea-main" data-clarity-mask="true">
-                <ShowcaseRoleGuard Roles="@EcommerceSeedData.RetailerRole" SignInPath="@EcommerceLayout.SignInPath">
+                <ShowcaseRoleGuard Roles="@StaffRoles" SignInPath="@EcommerceLayout.SignInPath">
                     @Body
                 </ShowcaseRoleGuard>
             </main>
@@ -54,7 +54,7 @@
 
             <footer class="ea-footer">
                 <span>© 2026 @EcommerceSeedData.StoreName (fictitious). Orders, customers, and figures here are made up and stay in this browser tab.</span>
-                <span class="d-none d-lg-inline">Built with Sidebar, Card, Badge, Dropdown, Modal, and form inputs.</span>
+                <span class="d-none d-lg-inline">Built with Grid, Sidebar, Modal, Charts, Badge, Dropdown, and form inputs.</span>
             </footer>
         </div>
     </div>

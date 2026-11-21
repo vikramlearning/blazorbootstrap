@@ -225,6 +225,8 @@
     --bb-sidebar-content-border-color: rgba(255, 255, 255, .08);
     --bb-sidebar-nav-item-text-color: #e5defa;
     --bb-sidebar-nav-item-text-active-color-rgb: 255, 255, 255;
+    /* The package resolves the active color from its own -rgb value at :root, so set the color itself too. */
+    --bb-sidebar-nav-item-text-active-color: #fff;
     --bb-sidebar-nav-item-text-hover-color: rgba(255, 255, 255, .95);
     --bb-sidebar-nav-item-background-hover-color: rgba(255, 255, 255, .08);
     --bb-sidebar-nav-item-group-background-color: rgba(255, 255, 255, .06);
@@ -268,3 +270,199 @@
     position: relative;
     overflow-y: hidden;
 }
+
+/* The header's global search and notifications: the bell beside the account menu, the search after the links on wide
+   screens and on its own line in the open menu on narrow ones; in the admin bar it takes the room the bar has. */
+.sc-ai ::deep .pa-header-tools {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+}
+
+.sc-ai ::deep .pa-global-search {
+    flex: 1 1 12rem;
+    min-width: 10rem;
+    max-width: 22rem;
+}
+
+@media (min-width: 992px) {
+    .sc-ai ::deep .pa-header .pa-global-search {
+        flex: 0 1 18rem;
+    }
+}
+
+.sc-ai ::deep .pa-admin-bar-actions {
+    flex: 1 1 auto;
+    justify-content: flex-end;
+}
+
+/* Grid lists: filters side by side on wide screens and stacked at phone width, the count and "Reset view" under them, a
+   selected row tinted, status lines that collapse while empty, and a bulk bar that wraps onto several lines. Grid renders
+   the table, so its classes are styled here. */
+.sc-ai ::deep .pa-list-filters {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: .75rem 1rem;
+}
+
+    .sc-ai ::deep .pa-list-filters > * {
+        flex: 1 1 11rem;
+        min-width: 0;
+    }
+
+    .sc-ai ::deep .pa-list-filters > .pa-list-search {
+        flex: 2 1 16rem;
+    }
+
+.sc-ai ::deep .pa-list-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: .25rem 1rem;
+    margin: .75rem 0 0;
+}
+
+.sc-ai ::deep .pa-list-status,
+.sc-ai ::deep .pa-list-error {
+    font-size: .875rem;
+    font-weight: 600;
+    overflow-wrap: anywhere;
+}
+
+    .sc-ai ::deep .pa-list-status:empty,
+    .sc-ai ::deep .pa-list-error:empty {
+        margin: 0;
+    }
+
+    .sc-ai ::deep .pa-list-status:focus {
+        outline: none;
+    }
+
+    .sc-ai ::deep .pa-list-status:focus-visible {
+        outline: 2px solid var(--bs-focus-ring-color, var(--sc-primary));
+        outline-offset: 2px;
+    }
+
+.sc-ai ::deep .pa-list-error {
+    color: var(--bs-danger-text-emphasis);
+}
+
+.sc-ai ::deep .pa-bulk {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: .75rem 1rem;
+    margin-bottom: 1rem;
+    padding: .75rem 1rem;
+    border: 1px solid rgba(var(--sc-primary-rgb), .35);
+    border-radius: .75rem;
+    background: rgba(var(--sc-primary-rgb), .06);
+}
+
+.sc-ai ::deep .pa-bulk-count {
+    flex: 1 0 100%;
+    margin: 0;
+    font-size: .9375rem;
+    font-weight: 700;
+}
+
+.sc-ai ::deep .pa-bulk-form {
+    display: flex;
+    flex: 1 1 100%;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: .75rem 1rem;
+}
+
+.sc-ai ::deep .pa-bulk-field {
+    flex: 1 1 12rem;
+    min-width: 0;
+}
+
+    .sc-ai ::deep .pa-bulk-field .form-label {
+        margin-bottom: .25rem;
+    }
+
+.sc-ai ::deep .pa-bulk-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .5rem;
+}
+
+.sc-ai ::deep .pa-grid {
+    background: var(--pa-surface);
+}
+
+    .sc-ai ::deep .pa-grid .table {
+        --bs-table-bg: var(--pa-surface);
+        margin-bottom: 0;
+    }
+
+        .sc-ai ::deep .pa-grid .table > thead th {
+            font-size: .8125rem;
+            font-weight: 600;
+            color: var(--bs-secondary-color);
+            white-space: nowrap;
+        }
+
+.sc-ai ::deep .pa-table-wide {
+    min-width: 58rem;
+}
+
+.sc-ai ::deep .pa-table-mid {
+    min-width: 42rem;
+}
+
+.sc-ai ::deep .pa-row-selected > * {
+    --bs-table-bg-state: rgba(var(--sc-primary-rgb), .08);
+}
+
+/* The row's link names the record; it underlines on hover and focus. A stretched button (a record without its own page
+   opens its dialog) looks the same. */
+.sc-ai ::deep .pa-row-link,
+.sc-ai ::deep .pa-row-button {
+    font-weight: 600;
+    text-decoration: none;
+    overflow-wrap: anywhere;
+}
+
+.sc-ai ::deep .pa-row-button {
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--bs-link-color);
+    text-align: start;
+}
+
+    .sc-ai ::deep .pa-row-link:hover,
+    .sc-ai ::deep .pa-row-link:focus-visible,
+    .sc-ai ::deep .pa-row-button:hover,
+    .sc-ai ::deep .pa-row-button:focus-visible {
+        text-decoration: underline;
+    }
+
+/* A form's status line: always rendered, so a save is announced; it takes focus when the pressed button is gone. */
+.sc-ai ::deep .pa-form-status {
+    min-height: 1.5rem;
+    overflow-wrap: anywhere;
+}
+
+    .sc-ai ::deep .pa-form-status:focus {
+        outline: none;
+    }
+
+    .sc-ai ::deep .pa-form-status:focus-visible {
+        outline: 2px solid var(--bs-focus-ring-color, var(--sc-primary));
+        outline-offset: 2px;
+    }
+
+.sc-ai ::deep .pa-form-error {
+    font-weight: 600;
+    color: var(--bs-danger-text-emphasis);
+    overflow-wrap: anywhere;
+}
+
+    .sc-ai ::deep .pa-form-error:empty {
+        margin: 0 !important;
+    }

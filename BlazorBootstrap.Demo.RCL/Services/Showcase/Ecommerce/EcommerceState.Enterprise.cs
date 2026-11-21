@@ -115,12 +115,6 @@ public sealed partial class EcommerceState
         && coupons.Any(coupon => string.Equals(coupon.Code, code.Trim(), StringComparison.OrdinalIgnoreCase) && !string.Equals(coupon.Code, exceptCode?.Trim(), StringComparison.OrdinalIgnoreCase));
 
     /// <summary>
-    /// Returns whether a product is running low: at or below <see cref="EcommerceSeedData.LowStockThreshold" /> (one
-    /// store-wide threshold; a per-product reorder point can take its place here).
-    /// </summary>
-    public bool IsLowStock(EcommerceProduct product) => product.Stock <= EcommerceSeedData.LowStockThreshold;
-
-    /// <summary>
     /// Returns whether a SKU has the store's form: 4 to 20 letters, digits, and single dashes, starting with a letter, like
     /// KG-KIT-0101 (any case; it is saved in capitals).
     /// </summary>
@@ -233,6 +227,30 @@ public sealed partial class EcommerceState
             {
                 if (Rank(term, coupon.Code) is { } found)
                     matches.Add((found, 4, 0, new ShowcaseSearchResult("Coupon", coupon.Code, $"{CouponValue(coupon)} · {coupon.Description}", $"{OffersPath}?code={Uri.EscapeDataString(coupon.Code)}")));
+            }
+
+            // Kind 5: a purchase order, by number (like "PO-2026-0014" or "14"); kind 6: a supplier, by name or email.
+            if (hasDigit)
+            {
+                foreach (var order in purchaseOrders)
+                {
+                    if (Rank(term, order.Number, order.Id.ToString(CultureInfo.InvariantCulture)) is { } found)
+                    {
+                        matches.Add((found, 5, -order.CreatedOn.Ticks, new ShowcaseSearchResult("Purchase order", order.Number,
+                            $"{FindSupplier(order.SupplierId)?.Name} · {MoneyIn(order)} · {PurchaseOrderStatusWord(order.Status)}{(IsOverdue(order) ? " · overdue" : null)}",
+                            EcommerceSeedData.AdminPurchaseOrderPath(order.Id))));
+                    }
+                }
+            }
+
+            foreach (var supplier in suppliers)
+            {
+                if (Rank(term, supplier.Name, supplier.Email) is { } found)
+                {
+                    matches.Add((found, 6, 0, new ShowcaseSearchResult("Supplier", supplier.Name,
+                        string.Create(CultureInfo.InvariantCulture, $"{supplier.ContactName} · {supplier.LeadTimeDays} days · {supplier.Currency} · {supplier.PaymentTerms}"),
+                        EcommerceSeedData.AdminSupplierPath(supplier.Id))));
+                }
             }
         }
         else
@@ -348,6 +366,7 @@ public sealed partial class EcommerceState
         if (batchDepth == 0 && changedInBatch)
         {
             changedInBatch = false;
+            FlushLowStock();
             Changed?.Invoke();
         }
 
@@ -376,7 +395,7 @@ public sealed partial class EcommerceState
             notices.RemoveAt(0);
     }
 
-    /// <summary>Tells every retailer account that can sign in, except the one who caused it: an order to fulfil, a return to decide, low stock, a review to moderate.</summary>
+    /// <summary>Tells every retailer account that can sign in, except the one who caused it: an order to fulfil, a return to decide, a review to moderate.</summary>
     private void NotifyRetailers(string title, string text, string? link)
     {
         foreach (var account in Identity.Accounts.Where(account => account.RoleId == EcommerceSeedData.RetailerRole).ToList())

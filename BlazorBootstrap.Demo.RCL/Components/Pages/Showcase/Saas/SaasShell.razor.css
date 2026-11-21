@@ -1,8 +1,8 @@
 .sc-saas {
     /* Lumora's brand, shared with the public site. */
-    --sc-primary: #c026d3;
-    --sc-primary-rgb: 192, 38, 211;
-    --sc-primary-hover: #a21caf;
+    --sc-primary: #a21caf;
+    --sc-primary-rgb: 162, 28, 175;
+    --sc-primary-hover: #86198f;
     --sc-primary-contrast: #fff;
     --sc-font-body: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
     --sc-font-heading: "Sora", "Inter", system-ui, sans-serif;

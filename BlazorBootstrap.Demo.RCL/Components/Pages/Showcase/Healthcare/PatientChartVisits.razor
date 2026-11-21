@@ -1,0 +1,75 @@
+@* A patient's visits on their chart, in a Grid: every visit with any doctor; the row opens the visit. *@
+@{
+    var count = State.PatientAppointments(PatientId).Count;
+}
+<section class="pt-3" aria-labelledby="hc-chart-visits-title">
+    <h2 class="hc-section-title" id="hc-chart-visits-title">Visits <span class="text-body-secondary fw-normal">(@count)</span></h2>
+    <div class="hc-list-meta mt-0 mb-2">
+        <p class="small text-body-secondary mb-0">Newest first. Open a visit for its notes, labs, and prescriptions.</p>
+        @* Back to the saved view's defaults: newest first, 10 a page, every column in its place. *@
+        <Button Color="ButtonColor.Link" Size="ButtonSize.Small" Class="p-0" @onclick="ResetViewAsync">Reset view<span class="visually-hidden">&#32;of the visits</span></Button>
+    </div>
+    <p class="hc-list-status mb-2" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
+    <ShowcaseDataState Status="@(viewLoaded ? ShowcaseDataStatus.Ready : ShowcaseDataStatus.Loading)"
+                       IsEmpty="@(count == 0)"
+                       EmptyIcon="IconName.CalendarX"
+                       EmptyTitle="No visits yet"
+                       EmptyText="The patient's visits with any doctor show here once they're booked."
+                       LoadingText="Loading visits…"
+                       OnRetry="RefreshGridAsync">
+        <ChildContent>
+            <Grid @ref="grid"
+                  @key="gridVersion"
+                  TItem="VisitRow"
+                  Class="table table-hover align-middle hc-table-wide sc-grid-row-links"
+                  GridContainerClass="hc-grid border rounded-3"
+                  DataProvider="ProvideVisitsAsync"
+                  SettingsProvider="view.GetSettingsAsync"
+                  GridSettingsChanged="SaveSettingsAsync"
+                  AllowPaging="true"
+                  PageSize="@pageSize"
+                  PageSizeSelectorVisible="true"
+                  PageSizeSelectorItems="@(new[] { 10, 25, 50 })"
+                  PaginationItemsTextFormat="{0}–{1} of {2} visits"
+                  AllowSorting="true"
+                  AllowColumnChooser="true"
+                  AllowExport="true"
+                  ExportFileName="clinic-patient-visits"
+                  Responsive="true"
+                  EmptyText="No visits yet."
+                  aria-label="Visits">
+                <GridColumns>
+                    <GridColumn TItem="VisitRow" HeaderText="When" PropertyName="WhenText" SortString="when" SortKeySelector="row => row.Start"
+                                IsDefaultSortColumn="@view.IsSortColumn("when")" SortDirection="@view.DirectionFor("when")" AlwaysVisible="true" TextNoWrap="true">
+                        @* The stretched link makes the whole row open the visit. *@
+                        <a class="hc-row-link stretched-link" href="@HcDisplay.StaffAppointmentUrl(context.Id)">@context.WhenText</a>
+                    </GridColumn>
+                    <GridColumn TItem="VisitRow" HeaderText="Number" PropertyName="Id" SortString="number" SortKeySelector="row => row.Id"
+                                IsDefaultSortColumn="@view.IsSortColumn("number")" SortDirection="@view.DirectionFor("number")" TextNoWrap="true">
+                        <span class="hc-mono">@context.Id</span>
+                    </GridColumn>
+                    <GridColumn TItem="VisitRow" HeaderText="Doctor" PropertyName="Doctor" SortString="doctor" SortKeySelector="row => row.Doctor"
+                                IsDefaultSortColumn="@view.IsSortColumn("doctor")" SortDirection="@view.DirectionFor("doctor")">
+                        @context.Doctor
+                    </GridColumn>
+                    <GridColumn TItem="VisitRow" HeaderText="Clinic" PropertyName="Clinic" SortString="clinic" SortKeySelector="row => row.Clinic"
+                                IsDefaultSortColumn="@view.IsSortColumn("clinic")" SortDirection="@view.DirectionFor("clinic")">
+                        @context.Clinic
+                    </GridColumn>
+                    <GridColumn TItem="VisitRow" HeaderText="Type" PropertyName="VisitType" SortString="type" SortKeySelector="row => row.VisitType"
+                                IsDefaultSortColumn="@view.IsSortColumn("type")" SortDirection="@view.DirectionFor("type")">
+                        @context.VisitType
+                    </GridColumn>
+                    <GridColumn TItem="VisitRow" HeaderText="Reason" PropertyName="Reason" SortString="reason" SortKeySelector="row => row.Reason"
+                                IsDefaultSortColumn="@view.IsSortColumn("reason")" SortDirection="@view.DirectionFor("reason")">
+                        <span class="hc-wrap">@context.Reason</span>
+                    </GridColumn>
+                    <GridColumn TItem="VisitRow" HeaderText="Status" PropertyName="Status" SortString="status" SortKeySelector="row => row.StatusValue"
+                                IsDefaultSortColumn="@view.IsSortColumn("status")" SortDirection="@view.DirectionFor("status")" TextNoWrap="true">
+                        <span class="badge text-bg-@HcDisplay.StatusColor(context.StatusValue)">@context.Status</span>
+                    </GridColumn>
+                </GridColumns>
+            </Grid>
+        </ChildContent>
+    </ShowcaseDataState>
+</section>

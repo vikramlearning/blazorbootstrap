@@ -1,6 +1,6 @@
 ---
 title: AI Assistant Workspace showcase
-description: An AI chat workspace with streaming Markdown replies, attachments, a prompt library, and a workspace admin back office, built with Blazor Bootstrap.
+description: An AI chat workspace with streaming Markdown replies, attachments, and a prompt library, where the Owner, Admins, and prompt editors each get the admin pages their role allows, with Grid lists, validated forms, spend caps, a retention window, sensitive-data protection with a review queue, notifications, and an audit log, built with Blazor Bootstrap.
 sidebar_label: AI Assistant
 sidebar_position: 2
 ---
@@ -9,7 +9,9 @@ import CarbonAd from '/carbon-ad.mdx'
 
 # AI Assistant Workspace
 
-Parley is the AI assistant of Halcyon Studio, a fictitious company. Members chat with simulated models whose answers stream in as Markdown, attach files, and keep a prompt library; workspace admins manage members, shared prompts, usage, and the model policy in a separate back office. No model is called: replies are prewritten templates picked by keywords in your message.
+Parley is the AI assistant of Halcyon Studio, a fictitious company. Members chat with simulated models whose answers stream in as Markdown, attach files, and keep a prompt library. The workspace has four roles, Owner, Admin, Prompt editor, and Member, and each one sees only the admin pages and actions it may use: Admins and the Owner manage members and roles, the model policy, spend caps, and the sensitive data review; prompt editors write and publish the shared prompts; only the Owner changes retention and hands ownership on. No model is called: replies are prewritten templates picked by keywords in your message, and they never repeat what you typed.
+
+Every record list is a [Grid](/components/grid) with a saved view, a column chooser, and CSV export; forms validate with a linked error summary; the header has a global search and a notifications bell; and every change to roles, members, prompts, the policy, and the caps lands in an audit log. On top of that, the workspace has the governance an enterprise AI console needs: **monthly spend caps** for the workspace and for each member that warn at 80% and pause chat at 100% until an admin raises them, a **conversation retention window** that says how many conversations it will delete before it does, and **sensitive data protection** that redacts or blocks card numbers, ID numbers, bank accounts, and API keys as a message is sent, with a review queue where admins dismiss events or adjust the policy.
 
 <CarbonAd />
 
@@ -19,22 +21,29 @@ Parley is the AI assistant of Halcyon Studio, a fictitious company. Members chat
 
 | Role | Demo account | Password | Start page |
 |:--|:--|:--|:--|
+| Owner | Alex Morgan (`alex.morgan@example.com`) | `chat-admin-26` | `/showcase/ai-assistant/admin` |
+| Admin | Mei Chen (`mei.chen@example.com`) | `chat-ops-26` | `/showcase/ai-assistant/admin` |
+| Prompt editor | Priya Shah (`priya.shah@example.com`) | `chat-editor-26` | `/showcase/ai-assistant/admin/prompts` |
 | Member | Sam Rivera (`sam.rivera@example.com`) | `chat-demo-26` | `/showcase/ai-assistant/chat` |
-| Workspace admin | Alex Morgan (`alex.morgan@example.com`) | `chat-admin-26` | `/showcase/ai-assistant/admin` |
 
-You can also create an account ("Join the workspace" on the start page). A new account joins as an active member. If you register with the email of an open invitation (the seed has one for `nora.kim@example.com`), the account takes up that invitation and its role.
+You can also create an account ("Join the workspace" on the start page). A new account joins as a member. If you register with the email of an open invitation (the seed has one for `nora.kim@example.com`), the account takes up that invitation and its role, and the Owner and Admins hear about it.
 
-Access comes from the workspace membership, not the sign-in role: an admin can promote, demote, or deactivate members in the tab, and the pages follow at once.
+What you may do comes from your workspace role, not the sign-in: when an Admin changes your role in the tab, your pages and actions change at once. The account menu keeps showing the demo account's original role.
 
-All data is fictitious and there is no backend. Each browser tab keeps its own data in `sessionStorage` (it survives a reload; other tabs start fresh), and "Reset demo data" in the account menu restores the seed. The sign-in page lists the demo accounts with one-click buttons; credentials are checked only against the tab's accounts. The clock starts at November 24, 2026, 9:30 and moves on with real time.
+The seed holds 92 members and invitations (81 active, 5 invited, 6 deactivated; 1 Owner, 3 Admins, 9 prompt editors, 79 members), 262 conversations of the four demo accounts with 954 messages (Sam has 77, Alex 58, Mei 62, Priya 65; 115 of them are older than 30 days and 24 older than 90 days), 157 prompts (36 personal, 106 published shared prompts, 15 drafts), the usage of every member this month, 8 sensitive data events (1 new, 6 dismissed, 1 that changed the policy), and an audit log of 89 entries from the last 60 days. The workspace has used about 67% of its 11,000,000-token monthly cap; Sam has used about 73% of his own 90,000-token cap, and Leo Martins has already used all of his 94,000 tokens, so his chat is paused. Each demo account has five or six notifications; the newest two are unread.
+
+All data is fictitious and there is no backend. Each browser tab keeps its own data in `sessionStorage` (it survives a reload; other tabs start fresh), and "Reset demo data" in the account menu restores the seed. The tab stores only what changed since the seed, which is built the same way in every tab, so a fresh tab's data is about 140 bytes although it holds hundreds of records; a stored change list that doesn't fit the seed (two Owners, prompt variables that don't match the text, a sensitive data event with an unmasked value) is discarded and the seed is used. The sign-in page lists the demo accounts in role order with one-click buttons; credentials are checked only against the tab's accounts. The clock starts on November 24, 2026, 9:30 and moves on with real time.
 
 ## What to try
 
-1. Sign in as Sam, open **Chat**, and pick a starter such as "Write a SQL query". Watch the reply stream in, press **Stop** on another one, then rate a reply and press **Regenerate**.
-2. In a conversation, choose **Prompts** to insert a saved prompt, attach a file (only its name and size are kept), and send. Then open **Usage** to see the new tokens against the monthly quota.
-3. Open **Prompts**, create a prompt with tags, and use **Use in chat** to put it in the message box.
-4. Sign in as Alex. In **Models and policy**, turn off Parley Swift, lower the monthly quota, or add a blocked term. Sign in as Sam again: the chat shows the model notice, refuses messages over the quota, and answers a message with a blocked term with a policy refusal.
-5. As Alex, open **Members and roles**: invite someone, promote Sam to admin (Sam's header then shows **Workspace admin**), or deactivate Sam (Sam's chat then says access was removed).
+1. **Prompt editor.** Sign in as Priya. The navbar shows **Shared prompts** instead of **Workspace admin**, and the sidebar lists only Shared prompts. Open `/showcase/ai-assistant/admin/members` or `/showcase/ai-assistant/admin/spend`: "This page is for Admins and the Owner". In **Shared prompts**, filter **Status: Drafts**, select two, and **Publish** them: every member hears about it once. Choose **New shared prompt** and try the form's rules: the title "Meeting summary" is taken ("Checking the title…", then a message); a text with `{{audience}}` and no variables is refused ("isn't declared"); a declared `tone` the text doesn't use is refused; **Use the variables in the text** fixes it.
+2. **Member.** Sign in as Sam. The bell has the new shared prompt. In **Prompts**, the Grid lists your prompts and the published shared ones; create a prompt called "Tighten my writing" (refused: you already have one).
+3. **Sensitive data.** As Sam, send `Charge my card 4242 4242 4242 4242 please` in **Chat**: the message isn't sent, the status says it holds a payment card number, and **Remove it and try again** replaces it with `[card number removed]`. Send `My SSN is 123-45-6789, explain the form`: it's sent with `[ID number removed]`, and you're told. Sign in as Mei: the bell says "Sensitive data in a message". Open **Sensitive data review**: the two events are New, with the matches masked (`•••• •••• •••• 4242`). Open the card event and choose **Adjust the policy for payment card number** → **Redact**: the event is "Policy changed", and the next card number Sam sends goes through redacted. Select the other event and **Dismiss** it with a note.
+4. **Spend.** As Mei, open **Spend**: the workspace bar and the members' Grid with their caps and status. Sam is at about 73% of his cap. In **Demo: use tokens**, choose Sam and press **Use 10% of their cap** once: he's at about 84%, "Warning". Sign in as Sam: the chat shows "You're near your cap" and the bell "You've used 80% of your monthly cap" (once a month). As Mei, push Sam twice more: "Blocked". As Sam, any message is refused: "you've used your monthly cap… Ask an Admin or Alex Morgan (the Owner) to raise it". As Mei, open Sam's row: a cap at or below what he used is refused; set one higher, and Sam can chat again ("Your cap was raised: you can chat again"). Press **Use 5% of the workspace cap** until the workspace passes 80% (Mei and Alex are told) and then 100%: everyone's chat pauses. Raising the workspace cap below what's used is refused; above it, chat is open again and every member is told.
+5. **Retention.** Sign in as Alex. In **Models and policy**, choose **90 days**: "24 conversations of 4 members older than 90 days will be deleted when you save". Save, confirm in the dialog, and the conversations are gone; each member whose conversations went gets one notice, and the audit log has the count. **Keep forever** deletes nothing. As Mei, retention is read-only.
+6. **Roles.** As Alex, open **Members and roles**: the "Roles and permissions" panel shows the matrix. Promote Sam to Prompt editor (Sam is told); your own row says nobody changes their own role, and Owner isn't in the role list. Transfer ownership to Mei after typing the workspace name: you're an Admin now, and Retention is read-only for you.
+7. **Audit log.** As Alex or Mei, open **Audit log**: every step above is on top, with the cap changes, the demo usage, the sensitive data events with masked matches only, the reviews, and retention with its count.
+8. **Search.** As Mei, search `sam` in the header: Sam's membership opens the members list filtered to him; search a prompt title or one of your conversations. As Sam, the search finds only prompts and your own conversations.
 
 ## Pages
 
@@ -43,58 +52,103 @@ All data is fictitious and there is no backend. Each browser tab keeps its own d
 | Page | Route | What it does |
 |:--|:--|:--|
 | Start page | `/showcase/ai-assistant` | What Parley does; for a signed-in member, recent conversations and a "New chat" button. |
-| Sign in | `/showcase/ai-assistant/sign-in` | Demo accounts, sign-in form, and the register form (`?mode=register`). |
-| Chat | `/showcase/ai-assistant/chat` | New chat with four starters; the composer has model choice, attachments, saved prompts, and Enter-to-send. |
+| Sign in | `/showcase/ai-assistant/sign-in` | Demo accounts in role order, the sign-in form, and the register form (`?mode=register`). |
+| Chat | `/showcase/ai-assistant/chat` | New chat with four starters; the composer has model choice, attachments, saved prompts, Enter-to-send, the spend cap warnings, and "Remove it and try again" after a blocked message. |
 | Conversation | `/showcase/ai-assistant/chat/{Id:int}` | Streaming replies with Stop, rating, and Regenerate; conversation list with search, pin, rename, and delete. `?prompt={id}` fills the message box. |
-| Prompt library | `/showcase/ai-assistant/prompts` | Your prompts (edit, delete) and the shared workspace prompts (read-only), with a filter and tag buttons. |
-| New prompt | `/showcase/ai-assistant/prompts/new` | Title, text, and comma-separated tags, with checks under each field. |
-| Edit prompt | `/showcase/ai-assistant/prompts/{Id:int}/edit` | Edits one of your prompts; a shared prompt opens read-only. |
-| Usage | `/showcase/ai-assistant/usage` | This month's tokens against the quota, tokens per day (30 days), and tokens by model. |
-| Profile | `/showcase/ai-assistant/profile` | Name, email, and password; default model and Enter-to-send; workspace membership. |
+| Prompt library | `/showcase/ai-assistant/prompts` | A Grid of your prompts and the published shared ones, with search, "whose" and category filters, "Use" in chat, and bulk delete of your own. |
+| New prompt, Edit prompt | `/showcase/ai-assistant/prompts/new`, `/showcase/ai-assistant/prompts/{Id:int}/edit` | A validated form: title (unique among your prompts), category, text, variables, and tags; a shared prompt opens read-only. |
+| Usage | `/showcase/ai-assistant/usage` | This month's tokens against your cap, with warnings in words, tokens per day (30 days), and tokens by model. |
+| Profile | `/showcase/ai-assistant/profile` | Name, email, and password; default model and Enter-to-send; your role, what it may do, and your cap. |
 | Not found | `/showcase/ai-assistant/{*path}` | The site's not-found panel, also shown for an unknown conversation or prompt. |
 
 ### Workspace admin (layout: sidebar back office)
 
-| Page | Route | What it does |
+| Page | Route | Roles | What it does |
+|:--|:--|:--|:--|
+| Usage analytics | `/showcase/ai-assistant/admin` | Admin, Owner | KPI cards, governance cards (spend, retention, sensitive data to review), tokens per day by model, tokens by model, and top members with their share of their cap. |
+| Members and roles | `/showcase/ai-assistant/admin/members` | Admin, Owner | Invite form, the roles and permissions panel, ownership transfer (Owner), and a Grid of members and invitations with a dialog per person and bulk role, remove access, restore access, and resend. `?search=` filters it. |
+| Shared prompts | `/showcase/ai-assistant/admin/prompts` | Prompt editor, Admin, Owner | A Grid of shared prompts with drafts, with bulk publish, unpublish, and delete. |
+| New shared prompt, Edit shared prompt | `/showcase/ai-assistant/admin/prompts/new`, `/showcase/ai-assistant/admin/prompts/{Id:int}/edit` | Prompt editor, Admin, Owner | The prompt form, unique among the shared prompts, with Published. |
+| Models and policy | `/showcase/ai-assistant/admin/settings` | Admin, Owner | Workspace name, enabled models and the default, attachments, retention (Owner only) with its preview, and blocked terms. |
+| Spend | `/showcase/ai-assistant/admin/spend` | Admin, Owner | The workspace's tokens against its cap, the workspace and default member caps, "Demo: use tokens", and a Grid of members with their use, cap, share, and status, a cap dialog per member, and bulk "set cap". |
+| Sensitive data review | `/showcase/ai-assistant/admin/sensitive-data` | Admin, Owner | The redact-or-block policy and a Grid of events with a review dialog (dismiss, or adjust the policy) and bulk dismiss. |
+| Audit log | `/showcase/ai-assistant/admin/audit` | Admin, Owner | Who did what and when, newest first, in a Grid with column filters, paging, and CSV export. |
+
+## Roles and permissions
+
+| Permission | Member | Prompt editor | Admin | Owner |
+|:--|:--:|:--:|:--:|:--:|
+| Chat, keep personal prompts, and see their own usage | Yes | Yes | Yes | Yes |
+| Write, publish, and delete shared prompts | | Yes | Yes | Yes |
+| Usage analytics, members and roles (up to Admin), settings and model policy, spend caps, sensitive data review, audit log | | | Yes | Yes |
+| Retention and transferring ownership | | | | Yes |
+
+The workspace has exactly one Owner, who is active and can sign in. Nobody changes their own role or access, nobody grants Owner by a role change, and nobody changes or removes the Owner. Ownership moves only by a transfer: the Owner picks an active member who can sign in, types the workspace name to confirm, and confirms again in a dialog; the old Owner becomes an Admin. "Remove access" deactivates a member (their conversations are kept and access can be restored) and withdraws an invitation. `AiState` checks every rule on every action, so a page or a bulk bar can't get around it, and each refusal is said in words. Role changes, access changes, and transfers are audited, and the person they're about is told when they can sign in.
+
+## Governance
+
+**Audit log.** Invitations, joins, role and access changes, ownership transfers, shared prompts (created, edited, published, unpublished, deleted), the workspace name, the model policy, retention and what it deleted, spend caps and the demo control's usage, the sensitive data policy, its events, and their reviews. Entries name what changed with lengths and counts; chat content and prompt text are never copied, and a sensitive match appears only masked. Personal prompts are private and aren't audited.
+
+**Spend caps.** Caps count tokens, the unit the site already uses (about four characters each, for messages and replies); there are no prices. The workspace has a monthly cap for every member together, every member has the default member cap unless an admin gives them their own, and a member's cap can't be above the workspace's. At 80% of a cap the chat shows a warning in words for that scope and the person hears about it once a month (the member about their own cap, the Owner and Admins about the workspace's). At 100% the state refuses to send, for that member or, for the workspace cap, for everyone, until an admin raises the cap above what is already used; raising it unblocks at once and tells whoever it unblocked. A new cap must be above what was used this month; the default can't be above the workspace cap, and the workspace cap can't be below a member's own cap. "Demo: use tokens" on Spend adds usage quickly (10% of a member's cap, or 5% of the workspace cap spread over the members without a sign-in) so you can watch the thresholds. Caps start again on the 1st of each month.
+
+**Retention.** The Owner chooses Keep forever, 30, 90, or 365 days, or a custom number of days. Before saving, the page says how many conversations of how many members are older than the window; saving asks to confirm, deletes them, and tells each member whose conversations went once. The window keeps applying as time passes. Keep forever deletes nothing.
+
+## Sensitive data protection
+
+The policy has four patterns, each off, redact, or block:
+
+| Pattern | Matches | Starts as |
 |:--|:--|:--|
-| Usage analytics | `/showcase/ai-assistant/admin` | KPI cards, workspace tokens per day stacked by model, tokens by model, and top members with their share of the quota. |
-| Members and roles | `/showcase/ai-assistant/admin/members` | Invite form and a member table with a status filter; change role, deactivate, reactivate, or remove an invitation. |
-| Shared prompts | `/showcase/ai-assistant/admin/prompts` | Every shared prompt, the most used first, with Edit and Delete. |
-| New shared prompt | `/showcase/ai-assistant/admin/prompts/new` | Adds a prompt every member can use. |
-| Edit shared prompt | `/showcase/ai-assistant/admin/prompts/{Id:int}/edit` | Edits a shared prompt. |
-| Models and policy | `/showcase/ai-assistant/admin/settings` | Enabled models and the default, monthly token quota, attachments and size limit, retention, and blocked terms. |
+| Payment card number | 13 to 19 digits, spaces or dashes allowed, that pass the Luhn check, like `4242 4242 4242 4242` | Block |
+| National ID (SSN) | A US Social Security number like `123-45-6789`, without the impossible ranges (000, 666, 900 and up, a 00 group, a 0000 serial) | Redact |
+| Bank account (IBAN) | Two letters, two check digits, and the account, like `DE89 3704 0044 0532 0130 00`, when the check digits are right | Redact |
+| API key | `sk-` and 20 or more letters, digits, dashes, or underscores | Block |
+
+When a member sends a message, a match the policy blocks stops it: nothing is sent or kept, the member is told which kind of data it held (never the data), and **Remove it and try again** puts the message back with placeholders. A match the policy redacts is replaced (like `[card number removed]`) before the message, its title, or its usage is kept, and the member is told. The assistant's replies are templates and never repeat the message. Each match goes to the **Sensitive data review** queue with the member, the pattern, what was done, the conversation's title (it comes from the redacted text), and the match masked to its last four characters. Admins and the Owner hear about new events (one notice a minute at most), dismiss them one at a time or in bulk with a note, or adjust the pattern from the review, which marks the event "Policy changed". Attachment names aren't checked.
+
+## Enterprise features
+
+- **Grid lists**: members and invitations, shared prompts, the prompt library, spend, sensitive data events, and the audit log use the [Grid](/components/grid) with sorting, paging, a column chooser, and CSV export of the filtered rows (`ai-members`, `ai-shared-prompts`, `ai-prompt-library`, `ai-spend`, `ai-sensitive-data`, `ai-audit-log`). Each list keeps its view (sort, page size, hidden and reordered columns) in the tab's `sessionStorage` until **Reset view**. A whole row opens its record, or its dialog when it has no page of its own. Members, shared prompts, the prompt library, spend, and sensitive data have multi-row selection with a bulk bar.
+- **Validated forms**: invitations, the prompt forms, settings, retention, spend caps, a member's cap, the bulk bars, the sensitive data policy and reviews, ownership transfer, and preferences use `EditForm`. Required, length, and format rules, uniqueness checks with a "Checking…" state (an invitation's email; a prompt's title in its scope), ranges, cross-field rules (variables against the text, the default model among the models that are on, a file size while attachments are on, a role up to what you may give, caps against the workspace cap and against what's used, a review that changes the policy), and a summary that links each failing field after a failed submit.
+- **Global search** in the header: everyone finds prompts in their scope and their own conversations; prompt editors also find drafts; Admins and the Owner also find members and invitations.
+- **Notifications** with an unread count and mark as read: role and access changes, shared prompts published, a prompt you wrote edited or deleted by someone else, ownership transfers, joins, an admin's policy change (to the Owner), spend warnings and blocks, caps raised, conversations deleted by retention, and sensitive data events.
+- **Audit log** of everything under [Governance](#governance).
+- **Loading, empty, and error states** on every list and on the usage charts, with a "Demo: simulate a loading error" control to show the error state and its Retry.
 
 ## Components used
 
+- [Grid](/components/grid): every record list, with the column chooser, CSV export, paging, and multi-row selection with bulk bars.
 - [Markdown](/components/markdown): every assistant reply, re-rendered as it streams.
+- [Sidebar](/components/sidebar): the admin back office, listing only the modules your role may use.
+- [Modal](/components/modal): rename and delete a conversation, insert a saved prompt, the member, cap, and review dialogs, bulk confirmations, ownership transfer, and the retention warning.
+- [Bar chart](/data-visualization/bar-chart) and [Doughnut chart](/data-visualization/doughnut-chart) (BlazorExpress.ChartJS): tokens per day and by model on Usage and Usage analytics.
 - [Offcanvas](/components/offcanvas): the conversation list on narrow screens.
-- [Modal](/components/modal): rename and delete a conversation, insert a saved prompt, delete a prompt, member changes, and the retention warning.
-- [Placeholders](/components/placeholders): the glowing lines while a reply has no text yet.
-- [Sidebar](/components/sidebar): the admin back office navigation.
+- [Progress](/components/progress): your cap on Usage, the workspace and each member on Spend, and each top member's share on Usage analytics.
+- [Badge](/components/badge): member, prompt, spend, and event statuses, always in words.
+- [Placeholders](/components/placeholders): the glowing lines while a reply has no text yet, and the lists' loading state.
 - [Navbar](/components/navbar): the members' app header.
-- [Bar chart](/data-visualization/bar-chart) and [Doughnut chart](/data-visualization/doughnut-chart) (BlazorExpress.ChartJS): bar charts for tokens per day and by model on Usage, and for workspace tokens per day on Usage analytics; a doughnut for tokens by model on Usage analytics.
-- [Progress](/components/progress): the quota bar on Usage and each top member's share on Usage analytics.
 - [Breadcrumb](/components/breadcrumb): the prompt editors.
-- [Badge](/components/badge): member status in the members table.
 - [Buttons](/components/buttons) and [Icons](/content/icons): actions and icons across the site.
-- [Avatar](/components/avatar), [Dropdown](/components/dropdown), and [Theme switcher](/components/theme-switcher): through the shared account menu and site bar.
+- [Avatar](/components/avatar), [Dropdown](/components/dropdown), and [Theme switcher](/components/theme-switcher): through the shared account menu, notifications, and site bar.
 
-Form fields are native inputs (`textarea`, `select`, checkboxes, number inputs) and Blazor's `InputFile` for attachments.
+Forms use Blazor's `EditForm` with `DataAnnotationsValidator`, `InputText`, `InputTextArea`, `InputNumber`, `InputSelect`, `InputCheckbox`, and `InputRadioGroup`; attachments use `InputFile`. Plain Bootstrap tables remain where the content is not a record list: the roles and permissions matrix, the usage charts' data tables, and the top members on Usage analytics.
 
 ## How the theme is built
 
-`AiFrame.razor` is the frame both layouts share: `AiLayout` (members' app with a Navbar) and `AiAdminLayout` (top bar with "Back to chat" and a dark violet Sidebar). Its root is `.sc-site.sc-ai`, and `AiFrame.razor.css` styles the pages of both through `::deep`.
+`AiFrame.razor` is the frame both layouts share: `AiLayout` (members' app with a Navbar, the search, and the bell) and `AiAdminLayout` (top bar with the search, the bell, "Back to chat", and a dark violet Sidebar). Its root is `.sc-site.sc-ai`, and `AiFrame.razor.css` styles the pages of both through `::deep`, including the Grid lists and bulk bars.
 
 Color tokens in light mode: `--sc-primary` `#6d28d9`, `--sc-primary-hover` `#5b21b6`, contrast `#fff`, page background `#f7f5fc`. In dark mode (`[data-bs-theme=dark]`): `--sc-primary` `#c4b5fd`, hover `#ddd6fe`, contrast `#1e1338`, page background `#0f0c18`. Because the dark primary is a light violet, `.text-bg-primary` and `.progress-bar` text switch to the dark contrast color. The admin sidebar sets the `--bb-sidebar-*` variables to `#1e1338` with light text in both modes.
 
-Fonts come from Google Fonts: Plus Jakarta Sans (400 to 700) for body and headings, and JetBrains Mono for code blocks and figures.
+Fonts come from Google Fonts: Plus Jakarta Sans (400 to 700) for body and headings, and JetBrains Mono for code blocks, figures, and masked matches.
 
 The shared stylesheet `wwwroot/css/blazorbootstrap.demo.rcl.css` maps the `--sc-*` tokens to Bootstrap (`--bs-primary`, link and focus colors, body and heading fonts, primary buttons). Charts draw on a canvas, so `AiChartTheme.cs` holds their colors: series `#6d28d9`, `#2563eb`, `#059669`, `#b45309`, `#be185d` in light mode and `#c4b5fd`, `#60a5fa`, `#34d399`, `#fbbf24`, `#f472b6` in dark mode, plus axis, grid, legend, and tooltip colors. When you switch the theme, the site bar tells `AiState`, and the charts redraw.
 
 ## Accessibility and responsiveness
 
 - Streamed text is not read aloud token by token: a status region says once when a reply starts and once when it ends, and the reply is `aria-busy` while it streams. When Stop disappears, focus moves to the rating buttons.
-- Every outcome (sent, refused and why, saved, deleted) is announced in a status region, and focus returns to the button that opened a dialog, or to the status message when that button is gone.
+- Spend warnings and blocks are status regions with the share and what to do, in words and with an icon, not color alone; statuses in the lists are words in badges.
+- After a failed submit, the error summary takes focus and links to each field; each message is tied to its field with `aria-describedby`. A refused message says why and keeps the text in the box.
+- Every outcome is announced in a status region (a repeated message is announced again), and focus returns to the button that opened a dialog, or to the status message when that button is gone. When your role changes while a page is open, focus moves to the page's "This page is for …" heading.
+- Each list row's checkbox is labelled with its record, and a row opens its record through a stretched link or button, so the row has no extra interactive role.
 - Each chart has a text summary and a data table with a caption.
-- Enter sends and Shift+Enter adds a line (Ctrl+Enter or ⌘+Enter when Enter-to-send is off in the profile); the pin toggle uses `aria-pressed`.
-- At 375 px the conversation list moves into an Offcanvas drawer, the admin sidebar sits above the page, and wide tables scroll sideways.
+- At 375 px the conversation list moves into an Offcanvas drawer, the admin sidebar sits above the page, the header search wraps onto its own line, filters and bulk bars stack, and wide grids scroll inside their own box.

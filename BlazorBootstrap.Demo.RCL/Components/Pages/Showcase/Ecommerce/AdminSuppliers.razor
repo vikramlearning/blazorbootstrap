@@ -1,0 +1,192 @@
+@page "/showcase/ecommerce/admin/suppliers"
+@layout EcommerceAdminLayout
+
+<PageTitle>Suppliers · @EcommerceSeedData.StoreName admin</PageTitle>
+
+<div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-4">
+    <div>
+        <h1 class="ea-title">Suppliers</h1>
+        <p class="ea-lead">Who the store buys stock from: contact, lead time, currency, and payment terms. Purchase orders use the supplier's currency and lead time.</p>
+    </div>
+    <Button @ref="newButton" Color="ButtonColor.Primary" @onclick="() => OpenEditorAsync(null)"><Icon Name="IconName.PlusLg" class="me-1" aria-hidden="true" />Add supplier</Button>
+</div>
+
+<p class="ea-list-status mb-3" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
+
+<section class="ea-panel" aria-labelledby="ea-suppliers-title">
+    <h2 class="ea-section-title" id="ea-suppliers-title">All suppliers</h2>
+
+    <div class="ea-list-filters" role="search" aria-label="Filter suppliers">
+        <div class="ea-list-search">
+            <label class="form-label small fw-semibold" for="ea-suppliers-search">Search</label>
+            <InputGroup>
+                <InputGroupText><Icon Name="IconName.Search" aria-hidden="true" /></InputGroupText>
+                <TextInput Id="ea-suppliers-search" Value="@searchBoxValue" ValueExpression="() => searchBoxValue" ValueChanged="OnSearchChanged"
+                           @oninput="OnSearchInput" Placeholder="Name, contact, or email" MaxLength="80" />
+            </InputGroup>
+        </div>
+        <div>
+            <label class="form-label small fw-semibold" for="ea-suppliers-currency">Currency</label>
+            <select id="ea-suppliers-currency" class="form-select" value="@currencyFilter" @onchange="OnCurrencyChanged">
+                <option value="">All currencies</option>
+                @foreach (var currency in EcommerceSeedData.SupplierCurrencies)
+                {
+                    <option value="@currency" @key="currency">@currency</option>
+                }
+            </select>
+        </div>
+    </div>
+    <div class="ea-list-meta mb-3">
+        <p class="small text-body-secondary mb-0" aria-live="polite" tabindex="-1" @ref="countRegion">@MatchText</p>
+        @* Back to the saved view's defaults: by name, 25 a page, every column in its place. *@
+        <Button Color="ButtonColor.Link" Size="ButtonSize.Small" Class="p-0" @onclick="ResetViewAsync">Reset view</Button>
+    </div>
+
+    <ShowcaseDataState Status="@(viewLoaded ? ShowcaseDataStatus.Ready : ShowcaseDataStatus.Loading)"
+                       IsEmpty="@(State.Suppliers.Count == 0)"
+                       EmptyIcon="IconName.Truck"
+                       EmptyTitle="No suppliers yet"
+                       EmptyText="Add the companies you buy stock from, then set them as products' preferred suppliers."
+                       LoadingText="Loading suppliers…"
+                       OnRetry="RefreshGridAsync">
+        <EmptyActions>
+            <Button Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="() => OpenEditorAsync(null)">Add supplier</Button>
+        </EmptyActions>
+        <ChildContent>
+            <Grid @ref="grid"
+                  @key="gridVersion"
+                  TItem="SupplierRow"
+                  Class="table table-hover align-middle ea-table-wide sc-grid-row-links"
+                  GridContainerClass="ea-grid border rounded-3"
+                  DataProvider="ProvideRowsAsync"
+                  SettingsProvider="view.GetSettingsAsync"
+                  GridSettingsChanged="SaveSettingsAsync"
+                  AllowPaging="true"
+                  PageSize="@pageSize"
+                  PageSizeSelectorVisible="true"
+                  PageSizeSelectorItems="@(new[] { 10, 25, 50 })"
+                  PaginationItemsTextFormat="{0}–{1} of {2} suppliers"
+                  AllowSorting="true"
+                  AllowColumnChooser="true"
+                  AllowExport="true"
+                  ExportFileName="commerce-suppliers"
+                  Responsive="true"
+                  EmptyText="No suppliers match these filters. Clear the search, or show every currency."
+                  aria-label="Suppliers">
+                <GridColumns>
+                    <GridColumn TItem="SupplierRow" HeaderText="Supplier" PropertyName="Name" SortString="name" SortKeySelector="row => row.Name"
+                                IsDefaultSortColumn="@view.IsSortColumn("name")" SortDirection="@view.DirectionFor("name")" AlwaysVisible="true">
+                        @* No page of its own: the stretched button opens the supplier's editor. *@
+                        @{
+                            var supplierId = context.Id;
+                        }
+                        <button type="button" class="ea-row-button stretched-link" @ref="editButtons[supplierId]" @onclick="() => OpenEditorAsync(supplierId)">
+                            @context.Name<span class="visually-hidden">: edit supplier</span>
+                        </button>
+                    </GridColumn>
+                    <GridColumn TItem="SupplierRow" HeaderText="Contact" PropertyName="Contact" SortString="contact" SortKeySelector="row => row.Contact"
+                                IsDefaultSortColumn="@view.IsSortColumn("contact")" SortDirection="@view.DirectionFor("contact")">
+                        @context.Contact
+                    </GridColumn>
+                    <GridColumn TItem="SupplierRow" HeaderText="Email" PropertyName="Email" SortString="email" SortKeySelector="row => row.Email"
+                                IsDefaultSortColumn="@view.IsSortColumn("email")" SortDirection="@view.DirectionFor("email")">
+                        <span class="small text-break">@context.Email</span>
+                    </GridColumn>
+                    <GridColumn TItem="SupplierRow" HeaderText="Lead time (days)" PropertyName="LeadTimeDays" SortString="lead" SortKeySelector="row => row.LeadTimeDays"
+                                IsDefaultSortColumn="@view.IsSortColumn("lead")" SortDirection="@view.DirectionFor("lead")" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End">
+                        @context.LeadTimeDays
+                    </GridColumn>
+                    <GridColumn TItem="SupplierRow" HeaderText="Currency" PropertyName="Currency" SortString="currency" SortKeySelector="row => row.Currency"
+                                IsDefaultSortColumn="@view.IsSortColumn("currency")" SortDirection="@view.DirectionFor("currency")">
+                        @context.Currency
+                    </GridColumn>
+                    <GridColumn TItem="SupplierRow" HeaderText="Terms" PropertyName="Terms" SortString="terms" SortKeySelector="row => row.Terms"
+                                IsDefaultSortColumn="@view.IsSortColumn("terms")" SortDirection="@view.DirectionFor("terms")" TextNoWrap="true">
+                        @context.Terms
+                    </GridColumn>
+                    <GridColumn TItem="SupplierRow" HeaderText="Products" PropertyName="Products" SortString="products" SortKeySelector="row => row.Products"
+                                IsDefaultSortColumn="@view.IsSortColumn("products")" SortDirection="@view.DirectionFor("products")" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End">
+                        @context.Products
+                    </GridColumn>
+                    <GridColumn TItem="SupplierRow" HeaderText="Open orders" PropertyName="OpenOrders" SortString="open" SortKeySelector="row => row.OpenOrders"
+                                IsDefaultSortColumn="@view.IsSortColumn("open")" SortDirection="@view.DirectionFor("open")" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End">
+                        @if (context.OpenOrders > 0)
+                        {
+                            <a href="@($"{EcommerceAdminLayout.Base}/purchase-orders?status=open")">@context.OpenOrders<span class="visually-hidden">&#32;open purchase orders</span></a>
+                        }
+                        else
+                        {
+                            @context.OpenOrders
+                        }
+                    </GridColumn>
+                </GridColumns>
+            </Grid>
+        </ChildContent>
+    </ShowcaseDataState>
+</section>
+
+<Modal @ref="editorModal" IsVerticallyCentered="true" Size="ModalSize.Large" ShowCloseButton="false" aria-labelledby="ea-supplier-editor-title" OnShown="OnEditorShownAsync" OnHidden="OnEditorHiddenAsync">
+    <HeaderTemplate>
+        <h2 class="modal-title h5" id="ea-supplier-editor-title">@(editingId is null ? "Add supplier" : $"Edit {State.FindSupplier(editingId)?.Name}")</h2>
+    </HeaderTemplate>
+    <BodyTemplate>
+        <EditForm id="ea-supplier-form" EditContext="editContext" OnSubmit="SaveAsync" FormName="ea-supplier" novalidate>
+            <DataAnnotationsValidator />
+            @* On a failed save, a summary here names and links every field to fix (rule WR-002). *@
+            <ShowcaseFormErrors ShowSummary="true" />
+            <div class="row g-3">
+                <div class="col-md-7">
+                    <label class="form-label" for="ea-supplier-name">Company name</label>
+                    <InputText @ref="nameInput" id="ea-supplier-name" class="form-control" @bind-Value="form.Name" maxlength="@EcommerceState.MaxSupplierNameLength" autocomplete="organization" aria-describedby="ea-supplier-name-help" />
+                    <ShowcaseUniqueCheck @ref="nameCheck" For="() => form.Name" IsTakenAsync="IsNameTakenAsync" TakenMessage="NameTakenMessage" />
+                    <div class="form-text mt-0" id="ea-supplier-name-help">2 to 60 characters, unique among the suppliers.</div>
+                    <ValidationMessage For="() => form.Name" />
+                </div>
+                <div class="col-md-5">
+                    <label class="form-label" for="ea-supplier-contact">Contact name</label>
+                    <InputText id="ea-supplier-contact" class="form-control" @bind-Value="form.ContactName" maxlength="60" autocomplete="name" />
+                    <ValidationMessage For="() => form.ContactName" />
+                </div>
+                <div class="col-md-7">
+                    <label class="form-label" for="ea-supplier-email">Order email</label>
+                    <InputText id="ea-supplier-email" class="form-control" @bind-Value="form.Email" maxlength="120" autocomplete="email" type="email" aria-describedby="ea-supplier-email-help" />
+                    <div class="form-text" id="ea-supplier-email-help">Where purchase orders go, like orders@example.com.</div>
+                    <ValidationMessage For="() => form.Email" />
+                </div>
+                <div class="col-md-5">
+                    <label class="form-label" for="ea-supplier-lead">Lead time (days)</label>
+                    <NumberInput TValue="int?" Id="ea-supplier-lead" @bind-Value="form.LeadTimeDays" Step="1" aria-describedby="ea-supplier-lead-help" />
+                    <div class="form-text" id="ea-supplier-lead-help">1 to 90 days from order to delivery; sets new purchase orders' expected date.</div>
+                    <ValidationMessage For="() => form.LeadTimeDays" />
+                </div>
+                <div class="col-md-5">
+                    <label class="form-label" for="ea-supplier-currency">Currency</label>
+                    <InputSelect id="ea-supplier-currency" class="form-select" @bind-Value="form.Currency" aria-describedby="ea-supplier-currency-help">
+                        <option value="">Choose a currency</option>
+                        @foreach (var currency in EcommerceSeedData.SupplierCurrencies)
+                        {
+                            <option value="@currency" @key="currency">@currency</option>
+                        }
+                    </InputSelect>
+                    <div class="form-text" id="ea-supplier-currency-help">Purchase orders are in this currency; the approval limit converts at fixed demo rates.</div>
+                    <ValidationMessage For="() => form.Currency" />
+                </div>
+                <div class="col-md-7">
+                    <label class="form-label" for="ea-supplier-terms">Payment terms</label>
+                    <InputSelect id="ea-supplier-terms" class="form-select" @bind-Value="form.PaymentTerms">
+                        <option value="">Choose payment terms</option>
+                        @foreach (var terms in EcommerceSeedData.PaymentTermsOptions)
+                        {
+                            <option value="@terms" @key="terms">@terms</option>
+                        }
+                    </InputSelect>
+                    <ValidationMessage For="() => form.PaymentTerms" />
+                </div>
+            </div>
+        </EditForm>
+    </BodyTemplate>
+    <FooterTemplate>
+        <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => editorModal.HideAsync()">Cancel</Button>
+        <Button Type="ButtonType.Submit" Color="ButtonColor.Primary" form="ea-supplier-form">@(editingId is null ? "Add supplier" : "Save changes")</Button>
+    </FooterTemplate>
+</Modal>
