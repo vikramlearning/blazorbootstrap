@@ -241,6 +241,79 @@
                     </section>
                 }
             </div>
+
+            @if (Product is { } replenished)
+            {
+                var onOrder = State.OnOrderFor(replenished.Id);
+                var supplier = State.FindSupplier(replenishmentForm.SupplierId);
+
+                <div class="col-12">
+                    <section class="ea-panel" id="replenishment" aria-labelledby="ea-replenishment-title">
+                        <div class="d-flex flex-wrap justify-content-between align-items-baseline gap-2">
+                            <h2 class="ea-section-title" id="ea-replenishment-title">Replenishment</h2>
+                            <span class="small">
+                                @EcommerceDisplay.StockWithOnOrder(replenished.Stock, onOrder)
+                                @if (State.IsLowStock(replenished))
+                                {
+                                    <Badge Color="BadgeColor.Warning" Class="ms-1">At or below reorder point</Badge>
+                                    @if (onOrder == 0)
+                                    {
+                                        <a class="ms-2" href="@($"{EcommerceAdminLayout.Base}/reorder")">Reorder it</a>
+                                    }
+                                }
+                            </span>
+                        </div>
+                        <p class="small text-body-secondary">When stock falls to the reorder point, the product shows on the reorder list, and a purchase order made from there buys the reorder quantity from the preferred supplier.</p>
+
+                        @* Always rendered: a saved change is announced here. *@
+                        <p class="ea-list-status mb-2" role="status">@replenishmentMessage</p>
+
+                        <EditForm EditContext="replenishmentContext" OnValidSubmit="SaveReplenishment" FormName="ea-replenishment" novalidate>
+                            <DataAnnotationsValidator />
+                            <ShowcaseFormErrors ShowSummary="true" />
+                            <div class="row g-3">
+                                <div class="col-sm-6 col-lg-2">
+                                    <label class="form-label" for="ea-reorder-point">Reorder point</label>
+                                    <NumberInput TValue="int?" Id="ea-reorder-point" @bind-Value="replenishmentForm.ReorderPoint" Step="1" aria-describedby="ea-reorder-point-help" />
+                                    <div class="form-text" id="ea-reorder-point-help">0 to 1,000 units.</div>
+                                    <ValidationMessage For="() => replenishmentForm.ReorderPoint" />
+                                </div>
+                                <div class="col-sm-6 col-lg-2">
+                                    <label class="form-label" for="ea-reorder-quantity">Reorder quantity</label>
+                                    <NumberInput TValue="int?" Id="ea-reorder-quantity" @bind-Value="replenishmentForm.ReorderQuantity" Step="1" aria-describedby="ea-reorder-quantity-help" />
+                                    <div class="form-text" id="ea-reorder-quantity-help">1 to 5,000, and no less than the reorder point.</div>
+                                    <ValidationMessage For="() => replenishmentForm.ReorderQuantity" />
+                                </div>
+                                <div class="col-sm-12 col-lg-3">
+                                    <label class="form-label" for="ea-preferred-supplier">Preferred supplier</label>
+                                    <InputSelect id="ea-preferred-supplier" class="form-select" @bind-Value="replenishmentForm.SupplierId">
+                                        <option value="">None</option>
+                                        @foreach (var choice in State.Suppliers.OrderBy(choice => choice.Name, StringComparer.OrdinalIgnoreCase))
+                                        {
+                                            <option value="@choice.Id" @key="choice.Id">@choice.Name (@choice.Currency)</option>
+                                        }
+                                    </InputSelect>
+                                    <ValidationMessage For="() => replenishmentForm.SupplierId" />
+                                </div>
+                                <div class="col-sm-6 col-lg-3">
+                                    <label class="form-label" for="ea-supplier-sku">Supplier SKU</label>
+                                    <InputText id="ea-supplier-sku" class="form-control ea-mono" @bind-Value="replenishmentForm.SupplierSku" maxlength="@EcommerceState.MaxSupplierSkuLength"
+                                               autocapitalize="characters" spellcheck="false" aria-describedby="ea-supplier-sku-help" />
+                                    <div class="form-text" id="ea-supplier-sku-help">The supplier's own code, optional. Letters, digits, and dashes.</div>
+                                    <ValidationMessage For="() => replenishmentForm.SupplierSku" />
+                                </div>
+                                <div class="col-sm-6 col-lg-2">
+                                    <label class="form-label" for="ea-unit-cost">Unit cost@(supplier is null ? null : $" ({supplier.Currency})")</label>
+                                    <NumberInput TValue="decimal?" Id="ea-unit-cost" @bind-Value="replenishmentForm.UnitCost" Step="0.01" aria-describedby="ea-unit-cost-help" />
+                                    <div class="form-text" id="ea-unit-cost-help">What the supplier charges; required with a supplier.</div>
+                                    <ValidationMessage For="() => replenishmentForm.UnitCost" />
+                                </div>
+                            </div>
+                            <Button Type="ButtonType.Submit" Color="ButtonColor.Primary" Class="mt-3">Save replenishment</Button>
+                        </EditForm>
+                    </section>
+                </div>
+            }
         </div>
     }
 </div>

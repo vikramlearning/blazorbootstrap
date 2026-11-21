@@ -1,0 +1,186 @@
+@page "/showcase/ecommerce/admin/reorder"
+@layout EcommerceAdminLayout
+
+<PageTitle>Reorder · @EcommerceSeedData.StoreName admin</PageTitle>
+
+<div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-4">
+    <div>
+        <h1 class="ea-title">Reorder</h1>
+        <p class="ea-lead">
+            Products at or below their reorder point. Select the ones to restock and create purchase orders: one draft per preferred supplier, each line the
+            product's reorder quantity at its unit cost. Products already on order show what's coming, so nothing is ordered twice.
+        </p>
+    </div>
+    <a class="btn btn-outline-secondary" href="@($"{EcommerceAdminLayout.Base}/purchase-orders")"><Icon Name="IconName.ClipboardCheck" class="me-1" aria-hidden="true" />Purchase orders</a>
+</div>
+
+@* Always rendered and focusable: the outcome of "Create purchase orders" is announced here, with links to the new drafts. *@
+<p class="ea-list-status mb-2" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
+<p class="ea-list-error mb-2" role="alert">@errorMessage</p>
+@if (created.Count > 0)
+{
+    <ul class="list-inline mb-3">
+        @foreach (var order in created)
+        {
+            <li class="list-inline-item" @key="order.Id"><a href="@EcommerceSeedData.AdminPurchaseOrderPath(order.Id)">Open @order.Number<span class="visually-hidden">,&#32;@(State.FindSupplier(order.SupplierId)?.Name)</span></a></li>
+        }
+    </ul>
+}
+
+<section class="ea-panel" aria-labelledby="ea-reorder-title">
+    <h2 class="ea-section-title" id="ea-reorder-title">Below reorder point</h2>
+
+    <div class="ea-list-filters" role="search" aria-label="Filter the reorder list">
+        <div class="ea-list-search">
+            <label class="form-label small fw-semibold" for="ea-reorder-search">Search</label>
+            <InputGroup>
+                <InputGroupText><Icon Name="IconName.Search" aria-hidden="true" /></InputGroupText>
+                <TextInput Id="ea-reorder-search" Value="@searchBoxValue" ValueExpression="() => searchBoxValue" ValueChanged="OnSearchChanged"
+                           @oninput="OnSearchInput" Placeholder="Product name or SKU" MaxLength="80" />
+            </InputGroup>
+        </div>
+        <div>
+            <label class="form-label small fw-semibold" for="ea-reorder-supplier">Supplier</label>
+            <select id="ea-reorder-supplier" class="form-select" value="@supplierFilter" @onchange="OnSupplierChanged">
+                <option value="">All suppliers</option>
+                @foreach (var supplier in State.Suppliers.OrderBy(supplier => supplier.Name, StringComparer.OrdinalIgnoreCase))
+                {
+                    <option value="@supplier.Id" @key="supplier.Id">@supplier.Name</option>
+                }
+            </select>
+        </div>
+        <div>
+            <label class="form-label small fw-semibold" for="ea-reorder-show">Show</label>
+            <select id="ea-reorder-show" class="form-select" value="@showFilter" @onchange="OnShowChanged">
+                <option value="@ShowNeeds">Nothing on order yet (@NeedsCount)</option>
+                <option value="@ShowAll">Everything below its reorder point (@State.ReorderList().Count)</option>
+            </select>
+        </div>
+    </div>
+    <div class="ea-list-meta mb-3">
+        <p class="small text-body-secondary mb-0" aria-live="polite" tabindex="-1" @ref="countRegion">@MatchText</p>
+        @* Back to the saved view's defaults: lowest stock first, 25 a page, every column in its place. *@
+        <Button Color="ButtonColor.Link" Size="ButtonSize.Small" Class="p-0" @onclick="ResetViewAsync">Reset view</Button>
+    </div>
+
+    @if (selected.Count > 0)
+    {
+        var ready = selected.Count(row => row.OnOrder == 0 && row.SupplierId is not null);
+        var suppliers = selected.Where(row => row.OnOrder == 0 && row.SupplierId is not null).Select(row => row.SupplierId).Distinct().Count();
+
+        <section class="ea-bulk" aria-labelledby="ea-reorder-bulk-count">
+            <h2 class="ea-bulk-count" id="ea-reorder-bulk-count">@(selected.Count == 1 ? "1 product selected" : $"{EcommerceDisplay.Count(selected.Count)} products selected")</h2>
+            <p class="small mb-0 w-100">
+                @(ready == 0
+                    ? "These are on order already, or have no preferred supplier: set one in the product's replenishment settings."
+                    : $"Creates {EcommerceDisplay.Plural(suppliers, "draft purchase order")} for {EcommerceDisplay.Plural(ready, "product")}, one per supplier. Products already on order are left out.")
+            </p>
+            <div class="ea-bulk-actions">
+                @if (ready > 0)
+                {
+                    <Button Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="CreateOrdersAsync">
+                        <Icon Name="IconName.ClipboardPlus" class="me-1" aria-hidden="true" />Create purchase orders
+                    </Button>
+                }
+                <Button Color="ButtonColor.Secondary" Outline="true" Size="ButtonSize.Small" @onclick="ClearSelectionAsync">Clear selection</Button>
+            </div>
+        </section>
+    }
+
+    <ShowcaseDataState Status="@(viewLoaded ? ShowcaseDataStatus.Ready : ShowcaseDataStatus.Loading)"
+                       IsEmpty="@(State.ReorderList().Count == 0)"
+                       EmptyIcon="IconName.CheckCircle"
+                       EmptyTitle="Nothing to reorder"
+                       EmptyText="Every product is above its reorder point. Products that sell down to it appear here."
+                       LoadingText="Loading the reorder list…"
+                       OnRetry="RefreshGridAsync">
+        <EmptyActions>
+            <a class="btn btn-sm btn-outline-primary" href="@($"{EcommerceAdminLayout.Base}/products")">Open products</a>
+        </EmptyActions>
+        <ChildContent>
+            <Grid @ref="grid"
+                  @key="gridVersion"
+                  TItem="ReorderRow"
+                  Class="table table-hover align-middle ea-table-wide sc-grid-row-links"
+                  GridContainerClass="ea-grid border rounded-3"
+                  DataProvider="ProvideRowsAsync"
+                  SettingsProvider="view.GetSettingsAsync"
+                  GridSettingsChanged="SaveSettingsAsync"
+                  AllowPaging="true"
+                  PageSize="@pageSize"
+                  PageSizeSelectorVisible="true"
+                  PageSizeSelectorItems="@(new[] { 10, 25, 50 })"
+                  PaginationItemsTextFormat="{0}–{1} of {2} products"
+                  AllowSorting="true"
+                  AllowSelection="true"
+                  SelectionMode="GridSelectionMode.Multiple"
+                  RowSelectionLabel="@(row => $"Select {row.Name}, {row.Sku}")"
+                  SelectAllRowsText="Select all shown products"
+                  SelectedItemsChanged="OnSelectionChanged"
+                  RowClass="RowClass"
+                  AllowColumnChooser="true"
+                  AllowExport="true"
+                  ExportFileName="commerce-reorder"
+                  Responsive="true"
+                  EmptyText="@(showFilter == ShowNeeds ? "Everything below its reorder point is on order already. Show everything to see it." : "No products match these filters.")"
+                  aria-label="Products below their reorder point">
+                <GridColumns>
+                    <GridColumn TItem="ReorderRow" HeaderText="Product" PropertyName="Name" SortString="name" SortKeySelector="row => row.Name"
+                                IsDefaultSortColumn="@view.IsSortColumn("name")" SortDirection="@view.DirectionFor("name")" AlwaysVisible="true">
+                        @* The stretched link opens the product's editor, where its replenishment settings are. *@
+                        <a class="ea-row-link stretched-link" href="@EcommerceSeedData.AdminProductPath(context.Id)">@context.Name</a>
+                    </GridColumn>
+                    <GridColumn TItem="ReorderRow" HeaderText="SKU" PropertyName="Sku" SortString="sku" SortKeySelector="row => row.Sku"
+                                IsDefaultSortColumn="@view.IsSortColumn("sku")" SortDirection="@view.DirectionFor("sku")" TextNoWrap="true">
+                        <span class="ea-mono">@context.Sku</span>
+                    </GridColumn>
+                    <GridColumn TItem="ReorderRow" HeaderText="In stock" PropertyName="Stock" SortString="stock" SortKeySelector="row => row.Stock"
+                                IsDefaultSortColumn="@view.IsSortColumn("stock")" SortDirection="@view.DirectionFor("stock")" TextNoWrap="true">
+                        @if (context.Stock == 0)
+                        {
+                            <Badge Color="BadgeColor.Danger">Out of stock</Badge>
+                        }
+                        else
+                        {
+                            <Badge Color="BadgeColor.Warning">@context.Stock left</Badge>
+                        }
+                    </GridColumn>
+                    <GridColumn TItem="ReorderRow" HeaderText="Reorder point" PropertyName="ReorderPoint" SortString="point" SortKeySelector="row => row.ReorderPoint"
+                                IsDefaultSortColumn="@view.IsSortColumn("point")" SortDirection="@view.DirectionFor("point")" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End">
+                        @context.ReorderPoint
+                    </GridColumn>
+                    <GridColumn TItem="ReorderRow" HeaderText="On order" PropertyName="OnOrder" SortString="onorder" SortKeySelector="row => row.OnOrder"
+                                IsDefaultSortColumn="@view.IsSortColumn("onorder")" SortDirection="@view.DirectionFor("onorder")" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End">
+                        @if (context.OnOrder > 0)
+                        {
+                            @context.OnOrder
+                        }
+                        else
+                        {
+                            <span class="text-body-secondary">None</span>
+                        }
+                    </GridColumn>
+                    <GridColumn TItem="ReorderRow" HeaderText="Reorder quantity" PropertyName="ReorderQuantity" SortString="quantity" SortKeySelector="row => row.ReorderQuantity"
+                                IsDefaultSortColumn="@view.IsSortColumn("quantity")" SortDirection="@view.DirectionFor("quantity")" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End">
+                        @context.ReorderQuantity
+                    </GridColumn>
+                    <GridColumn TItem="ReorderRow" HeaderText="Supplier" PropertyName="Supplier" SortString="supplier" SortKeySelector="row => row.Supplier"
+                                IsDefaultSortColumn="@view.IsSortColumn("supplier")" SortDirection="@view.DirectionFor("supplier")">
+                        @if (context.SupplierId is null)
+                        {
+                            <span class="text-danger-emphasis">No preferred supplier</span>
+                        }
+                        else
+                        {
+                            @context.Supplier
+                        }
+                    </GridColumn>
+                    <GridColumn TItem="ReorderRow" HeaderText="Line total" PropertyName="LineTotalText" SortString="total" SortKeySelector="row => row.LineTotalUsd"
+                                IsDefaultSortColumn="@view.IsSortColumn("total")" SortDirection="@view.DirectionFor("total")" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" TextNoWrap="true">
+                        @context.LineTotalText
+                    </GridColumn>
+                </GridColumns>
+            </Grid>
+        </ChildContent>
+    </ShowcaseDataState>
+</section>

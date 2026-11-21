@@ -9,7 +9,7 @@ namespace BlazorBootstrap.Demo.RCL.Services.Showcase.Ecommerce;
 /// an index, so each load shows the same catalog, a year of orders, customers, coupons, returns, reviews, the audit log,
 /// and the demo accounts' notifications (rule WR-001: hundreds of records on the main lists).
 /// </summary>
-public static class EcommerceSeedData
+public static partial class EcommerceSeedData
 {
     #region Fields and Constants
 
@@ -44,10 +44,13 @@ public static class EcommerceSeedData
     public const string LocalDeliveryCountry = "United States";
 
     /// <summary>
-    /// Products with this many or fewer in stock count as low, on the dashboard, the product list, and in the retailer's
-    /// notifications. One store-wide threshold for now; per-product reorder points can replace it.
+    /// The reorder point a product starts with when it has no replenishment settings yet (a product added in the tab):
+    /// at or below it, the product counts as low and is flagged for reordering.
     /// </summary>
     public const int LowStockThreshold = 5;
+
+    /// <summary>The reorder quantity a product starts with when it has no replenishment settings yet.</summary>
+    public const int DefaultReorderQuantity = 20;
 
     /// <summary>Highest quantity of one line in the cart.</summary>
     public const int MaxQuantity = 10;
@@ -189,8 +192,8 @@ public static class EcommerceSeedData
 
     /// <summary>
     /// Builds the whole seed once: the catalog, reviews, coupons with their uses, a year of orders, returns (approved ones
-    /// refunded on their orders), the audit log, and the demo accounts' notifications. Every tab starts from it, and the tab
-    /// snapshot stores only what differs from it.
+    /// refunded on their orders), suppliers, replenishment settings, purchase orders, the audit log, and the demo accounts'
+    /// notifications. Every tab starts from it, and the tab snapshot stores only what differs from it.
     /// </summary>
     public static EcommerceSeedSet Build()
     {
@@ -207,19 +210,26 @@ public static class EcommerceSeedData
             orders[index] = orders[index] with { RefundedAmount = Math.Min(orders[index].Totals.Total, orders[index].RefundedAmount + approved.Refunded) };
         }
 
-        var audit = Audit(products, coupons, orders, returns);
-        var notices = Notices(products, reviews, orders, returns);
+        var suppliers = Suppliers();
+        var replenishment = Replenishment(products);
+        var purchaseOrders = PurchaseOrders(products, suppliers, replenishment);
+        var audit = Audit(products, coupons, orders, returns, suppliers, purchaseOrders);
+        var notices = Notices(products, reviews, orders, returns, replenishment, suppliers, purchaseOrders);
 
-        return new EcommerceSeedSet(products, reviews, coupons, orders, returns, notices, audit);
+        return new EcommerceSeedSet(products, reviews, coupons, orders, returns, notices, audit, suppliers, replenishment, purchaseOrders);
     }
 
-    /// <summary>Returns the role IDs of the store team.</summary>
-    public static IReadOnlyList<string> StaffRoles() => new[] { RetailerRole };
+    /// <summary>Returns the role IDs of the store team: the retailer and the purchasing manager.</summary>
+    public static IReadOnlyList<string> StaffRoles() => new[] { RetailerRole, PurchasingRole };
 
-    /// <summary>The demo accounts listed on the sign-in page, the retailer first. Fictitious people with <c>.example</c> addresses.</summary>
+    /// <summary>
+    /// The demo accounts listed on the sign-in page, the back office first: the retailer, the purchasing manager (who approves
+    /// large purchase orders), then the customer. Fictitious people with <c>.example</c> addresses.
+    /// </summary>
     public static IReadOnlyList<ShowcaseDemoAccount> DemoAccounts() => new List<ShowcaseDemoAccount>
     {
         new(DemoRetailerId, RetailerRole, "Owen Hart", "owen@kindredgoods.example", "store-demo-24", "OH"),
+        new(DemoPurchasingId, PurchasingRole, "Lena Brooks", "lena@kindredgoods.example", "buy-demo-24", "LB"),
         new(DemoCustomerId, CustomerRole, "Maya Lindqvist", "maya@kindredgoods.example", "shop-demo-24", "ML"),
     };
 
@@ -227,7 +237,9 @@ public static class EcommerceSeedData
     public static IReadOnlyList<ShowcaseRole> Roles() => new List<ShowcaseRole>
     {
         new(RetailerRole, "Retailer", AdminBase, $"{AdminBase}/account",
-            "Runs the back office: fulfils orders, decides returns, sets prices and offers, manages products, customers, and reviews, and reads analytics and the audit log."),
+            "Runs the back office: fulfils orders, decides returns, sets prices and offers, manages products, customers, reviews, and stock, raises purchase orders, and reads analytics and the audit log."),
+        new(PurchasingRole, "Purchasing manager", AdminBase, $"{AdminBase}/account",
+            "Works the whole back office and approves purchase orders over $5,000 that someone else raised; keeps suppliers and reorder points."),
         new(CustomerRole, "Customer", $"{SiteBase}/account", $"{SiteBase}/account", "Shops the storefront, checks out, and tracks orders, returns, and reviews."),
     };
 
@@ -529,10 +541,11 @@ public static class EcommerceSeedData
 
     /// <summary>
     /// The seeded audit log, oldest first: the last two weeks of orders placed and moved on, cancellations and refunds, the
-    /// last month of returns requested and decided, and the coupons and products the retailer created in the last weeks.
+    /// last month of returns requested and decided, the coupons and products the retailer created in the last weeks, and the
+    /// last month of purchase-order steps and the stock their receipts added.
     /// </summary>
     private static List<ShowcaseAuditEntry> Audit(IReadOnlyList<EcommerceProduct> products, IReadOnlyList<EcommerceCoupon> coupons, IReadOnlyList<EcommerceOrder> orders,
-        IReadOnlyList<EcommerceReturn> returns)
+        IReadOnlyList<EcommerceReturn> returns, IReadOnlyList<EcommerceSupplier> suppliers, IReadOnlyList<EcommercePurchaseOrder> purchaseOrders)
     {
         var retailer = DemoAccounts().First(account => account.Id == DemoRetailerId).Name;
         var entries = new List<(DateTime At, string Actor, string Action, string Target, string? Url, string? Details)>();
@@ -593,6 +606,8 @@ public static class EcommerceSeedData
         foreach (var product in products.Where(product => product.AddedOn >= Today.AddDays(-30)))
             entries.Add((product.AddedOn.AddHours(9), retailer, "Product created", $"Product {product.Name} ({product.Sku})", AdminProductPath(product.Id),
                 $"{Money(product.Price)} · {product.Stock} in stock"));
+
+        entries.AddRange(PurchasingAudit(suppliers, purchaseOrders));
 
         return entries
             .Where(entry => entry.At <= SeedTime)
@@ -786,11 +801,14 @@ public static class EcommerceSeedData
 
     /// <summary>
     /// The demo accounts' notifications, oldest first, each account's newest two unread. The retailer's: today's orders to
-    /// fulfil, returns waiting for a decision, low and out-of-stock products, and the newest reviews to moderate. The demo
-    /// customer's: the last weeks' steps of her orders and her approved return.
+    /// fulfil, returns waiting for a decision, the newest reviews to moderate, and the purchasing ones (products below their
+    /// reorder point, an approved purchase order). The purchasing manager's: products below their reorder point, a purchase
+    /// order waiting for approval, and an overdue one. The demo customer's: the last weeks' steps of her orders and her
+    /// approved return.
     /// </summary>
     private static List<EcommerceNotice> Notices(IReadOnlyList<EcommerceProduct> products, IReadOnlyList<EcommerceReview> reviews, IReadOnlyList<EcommerceOrder> orders,
-        IReadOnlyList<EcommerceReturn> returns)
+        IReadOnlyList<EcommerceReturn> returns, IReadOnlyList<EcommerceReplenishment> replenishment, IReadOnlyList<EcommerceSupplier> suppliers,
+        IReadOnlyList<EcommercePurchaseOrder> purchaseOrders)
     {
         var ordersById = orders.ToDictionary(order => order.Id);
         var productsById = products.ToDictionary(product => product.Id);
@@ -804,16 +822,7 @@ public static class EcommerceSeedData
             items.Add((DemoRetailerId, item.RequestedOn, $"Return {ReturnNumber(item.Id)} requested", $"{ordersById[item.OrderId].ShipTo.FullName} · order #{item.OrderId} · {item.Reason}",
                 AdminReturnPath(item.Id)));
 
-        var stockAlerts = products.Where(product => !product.IsArchived && product.Stock <= LowStockThreshold).OrderBy(product => product.Stock).ThenBy(product => product.Id).Take(4).ToList();
-
-        for (var index = 0; index < stockAlerts.Count; index++)
-        {
-            var product = stockAlerts[index];
-            items.Add((DemoRetailerId, SeedTime.AddHours(-30 - (index * 7)),
-                product.Stock == 0 ? $"Out of stock: {product.Name}" : $"Low stock: {product.Name}",
-                product.Stock == 0 ? $"{product.Sku} sold out. Restock it or archive it." : $"{product.Stock} left of {product.Sku}. Restock it soon.",
-                AdminProductPath(product.Id)));
-        }
+        items.AddRange(PurchasingNotices(products, replenishment, suppliers, purchaseOrders));
 
         // The newest unanswered review of each of the three products reviewed most recently.
         foreach (var review in reviews.Where(review => review.Status == EcommerceReviewStatus.Published && review.Reply is null)
@@ -929,4 +938,7 @@ public sealed record EcommerceSeedSet(
     IReadOnlyList<EcommerceOrder> Orders,
     IReadOnlyList<EcommerceReturn> Returns,
     IReadOnlyList<EcommerceNotice> Notices,
-    IReadOnlyList<ShowcaseAuditEntry> Audit);
+    IReadOnlyList<ShowcaseAuditEntry> Audit,
+    IReadOnlyList<EcommerceSupplier> Suppliers,
+    IReadOnlyList<EcommerceReplenishment> Replenishment,
+    IReadOnlyList<EcommercePurchaseOrder> PurchaseOrders);

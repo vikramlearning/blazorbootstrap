@@ -47,6 +47,9 @@ public partial class EcommerceAdminLayout : LayoutComponentBase, IDisposable
             new() { Id = "dashboard", Href = Base, IconName = IconName.Speedometer2, Text = "Dashboard", Match = NavLinkMatch.All },
             new() { Id = "orders", Href = $"{Base}/orders", IconName = IconName.Receipt, Text = "Orders" },
             new() { Id = "products", Href = $"{Base}/products", IconName = IconName.BoxSeam, Text = "Products" },
+            new() { Id = "reorder", Href = $"{Base}/reorder", IconName = IconName.ArrowRepeat, Text = "Reorder" },
+            new() { Id = "purchase-orders", Href = $"{Base}/purchase-orders", IconName = IconName.ClipboardCheck, Text = "Purchase orders" },
+            new() { Id = "suppliers", Href = $"{Base}/suppliers", IconName = IconName.Truck, Text = "Suppliers" },
             new() { Id = "pricing", Href = $"{Base}/pricing", IconName = IconName.CurrencyDollar, Text = "Pricing" },
             new() { Id = "offers", Href = $"{Base}/offers", IconName = IconName.Tags, Text = "Offers & coupons" },
             new() { Id = "customers", Href = $"{Base}/customers", IconName = IconName.People, Text = "Customers" },
@@ -67,6 +70,9 @@ public partial class EcommerceAdminLayout : LayoutComponentBase, IDisposable
     #region Properties, Indexers
 
     [Inject] private EcommerceState State { get; set; } = default!;
+
+    /// <summary>Gets the back office's roles for the guard: the retailer and the purchasing manager.</summary>
+    private static string StaffRoles => string.Join(',', EcommerceSeedData.StaffRoles());
 
     #endregion
 }

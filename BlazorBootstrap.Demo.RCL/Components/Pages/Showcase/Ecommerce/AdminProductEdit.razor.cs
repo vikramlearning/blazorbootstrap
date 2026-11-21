@@ -62,6 +62,14 @@ public partial class AdminProductEdit : ComponentBase, IDisposable
 
     private ShowcaseUniqueCheck? skuCheck;
 
+    private EditContext replenishmentContext = new(new ReplenishmentForm());
+
+    private ReplenishmentForm replenishmentForm = new();
+
+    private string? replenishmentMessage;
+
+    private int replenishmentSaves;
+
     private string? statusMessage;
 
     private ElementReference statusRegion;
@@ -97,6 +105,9 @@ public partial class AdminProductEdit : ComponentBase, IDisposable
         focusStatus = pendingStatus is not null;
         pendingStatus = null;
         SetForm(Product is { } product ? FromProduct(product) : new ProductForm { Sku = State.SuggestSku(null) });
+        replenishmentSaves = 0;
+        replenishmentMessage = null;
+        LoadReplenishment();
     }
 
     #endregion
@@ -283,6 +294,47 @@ public partial class AdminProductEdit : ComponentBase, IDisposable
         statusMessage = saves == 1 ? "Changes saved." : $"Changes saved ({saves} times this visit).";
     }
 
+    /// <summary>Loads the replenishment form from the product's stored settings (the store-wide defaults when it has none).</summary>
+    private void LoadReplenishment()
+    {
+        var setting = State.ReplenishmentFor(Id ?? 0);
+
+        replenishmentForm = new ReplenishmentForm
+        {
+            ReorderPoint = setting.ReorderPoint,
+            ReorderQuantity = setting.ReorderQuantity,
+            SupplierId = setting.SupplierId ?? string.Empty,
+            SupplierSku = setting.SupplierSku,
+            UnitCost = setting.SupplierId is null ? null : setting.UnitCost,
+        };
+        replenishmentContext = new EditContext(replenishmentForm);
+    }
+
+    /// <summary>Saves the replenishment settings once the form is valid (rule WR-002); the change is announced and audited.</summary>
+    private void SaveReplenishment()
+    {
+        if (Product is not { } product)
+            return;
+
+        var supplierId = string.IsNullOrEmpty(replenishmentForm.SupplierId) ? null : replenishmentForm.SupplierId;
+        var result = State.SaveReplenishment(product.Id, replenishmentForm.ReorderPoint!.Value, replenishmentForm.ReorderQuantity!.Value, supplierId,
+            replenishmentForm.SupplierSku, replenishmentForm.UnitCost ?? 0m);
+
+        replenishmentSaves++;
+        replenishmentMessage = (result switch
+        {
+            EcommercePurchaseResult.Ok => State.IsLowStock(State.FindAnyProduct(product.Id)!)
+                ? $"Replenishment saved. {product.Name} is at or below its reorder point now, so it's on the reorder list."
+                : "Replenishment saved.",
+            EcommercePurchaseResult.NoChange => "Nothing changed: the replenishment settings are already like this.",
+            EcommercePurchaseResult.NotAllowed => "Only the back office can change replenishment settings. Nothing was saved.",
+            _ => "These settings couldn't be saved: the supplier is gone, or a value is out of range. Nothing was saved.",
+        }) + (replenishmentSaves > 1 ? string.Create(CultureInfo.InvariantCulture, $" ({replenishmentSaves})") : null);
+
+        if (result == EcommercePurchaseResult.Ok)
+            LoadReplenishment();
+    }
+
     private void ServerError(System.Linq.Expressions.Expression<Func<object?>> field, string message)
     {
         serverErrors?.Clear();
@@ -404,6 +456,41 @@ public partial class AdminProductEdit : ComponentBase, IDisposable
     #endregion
 
     #region Nested Types
+
+    /// <summary>
+    /// The replenishment form, with the limits of <see cref="EcommerceState.SaveReplenishment" />: a reorder point of 0 to
+    /// 1,000, a reorder quantity of 1 to 5,000 and not below the reorder point (a cross-field rule), and with a preferred
+    /// supplier a unit cost above 0; a supplier SKU of letters, digits, and dashes.
+    /// </summary>
+    private sealed class ReplenishmentForm : IValidatableObject
+    {
+        [Required(ErrorMessage = "Enter the reorder point, from 0 to 1,000.")]
+        [Range(0, EcommerceState.MaxReorderPoint, ErrorMessage = "Enter a reorder point from 0 to 1,000.")]
+        public int? ReorderPoint { get; set; }
+
+        [Required(ErrorMessage = "Enter the reorder quantity, from 1 to 5,000.")]
+        [Range(1, EcommerceState.MaxReorderQuantity, ErrorMessage = "Enter a reorder quantity from 1 to 5,000.")]
+        public int? ReorderQuantity { get; set; }
+
+        public string SupplierId { get; set; } = string.Empty;
+
+        [StringLength(EcommerceState.MaxSupplierSkuLength, ErrorMessage = "Use 30 characters or fewer for the supplier SKU.")]
+        [RegularExpression("^[A-Za-z0-9]+(-[A-Za-z0-9]+)*$", ErrorMessage = "Use letters, digits, and single dashes in the supplier SKU.")]
+        public string? SupplierSku { get; set; }
+
+        [Range(0.01, 100_000, ErrorMessage = "Enter a unit cost from 0.01 to 100,000.")]
+        public decimal? UnitCost { get; set; }
+
+        /// <summary>Runs once the fields are filled in: the reorder quantity covers the reorder point, and a supplier needs a unit cost.</summary>
+        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+        {
+            if (ReorderPoint is { } point && ReorderQuantity is { } quantity && quantity < point)
+                yield return new ValidationResult($"Order at least as many as the reorder point ({point}), so one purchase order lifts stock above it.", new[] { nameof(ReorderQuantity) });
+
+            if (SupplierId.Length > 0 && UnitCost is null)
+                yield return new ValidationResult("Enter what the supplier charges per unit.", new[] { nameof(UnitCost) });
+        }
+    }
 
     /// <summary>
     /// The editor's form; mapped to an <see cref="EcommerceProductDraft" /> on save. The cross-field rules: a compare-at price
