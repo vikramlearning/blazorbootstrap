@@ -1,14 +1,18 @@
+using System.ComponentModel.DataAnnotations;
 using System.Globalization;
 using BlazorBootstrap.Demo.RCL.Models.Showcase.Healthcare;
 using BlazorBootstrap.Demo.RCL.Services.Showcase.Healthcare;
+using Microsoft.AspNetCore.Components.Forms;
 
 namespace BlazorBootstrap.Demo.RCL.Components.Pages.Showcase.Healthcare;
 
 /// <summary>
 /// One lab order for doctors: the test and patient, its status in words, who ordered it and in which visit, and its
-/// results. For the ordering doctor, a waiting order has an entry form: one native number field per analyte, labelled with
-/// its name and unit, with the reference range as help, and a comment for the patient (<see cref="HcState.EnterLabResults" />).
-/// An entered order shows its values with flags in words, Correct results (which reopens the form), and Release to patient,
+/// results. For the ordering doctor, a waiting order has an entry <see cref="EditForm" /> (rule WR-002): one number field per
+/// analyte, labelled with its name and unit, required, from 0 up to the most the lab can report for it, with the reference
+/// range and the flag the value gets (low, normal, or high) as help while typing, and a comment for the patient of up to
+/// 1,000 characters; a failed submit shows a summary that links to each field (<see cref="HcState.EnterLabResults" />). An
+/// entered order shows its values with flags in words, Correct results (which reopens the form), and Release to patient,
 /// which asks first (the patient sees the results and is billed) and releases once the dialog is hidden
 /// (<see cref="HcState.ReleaseLab" />). Released orders, and other doctors' orders, are read-only. Every result is announced
 /// in an always-rendered status region. An unknown ID shows <see cref="HcNotFound" />.
@@ -17,11 +21,7 @@ public partial class LabOrder : ComponentBase, IDisposable
 {
     #region Fields and Constants
 
-    private readonly Dictionary<string, ElementReference> valueInputs = new();
-
-    private LabDraft draft = new(0);
-
-    /// <summary>The order the draft was made for.</summary>
+    /// <summary>The order the form was made for.</summary>
     private int draftFor;
 
     private ElementReference? editButton;
@@ -33,6 +33,10 @@ public partial class LabOrder : ComponentBase, IDisposable
     private Func<ElementReference?>? focusTarget;
 
     private ElementReference? heading;
+
+    private EditContext labContext;
+
+    private LabResultForm labForm = new();
 
     /// <summary>Whether Release was confirmed, so it runs once the dialog is hidden.</summary>
     private bool pendingRelease;
@@ -46,6 +50,13 @@ public partial class LabOrder : ComponentBase, IDisposable
     private string? statusMessage;
 
     private ElementReference? statusRegion;
+
+    #endregion
+
+    #region Constructors and Finalizers
+
+    /// <summary>Starts with an empty form.</summary>
+    public LabOrder() => labContext = new EditContext(labForm);
 
     #endregion
 
@@ -71,7 +82,7 @@ public partial class LabOrder : ComponentBase, IDisposable
 
         statusMessage = null;
         editing = false;
-        ResetDraft();
+        ResetForm();
     }
 
     #endregion
@@ -84,6 +95,10 @@ public partial class LabOrder : ComponentBase, IDisposable
     #endregion
 
     #region Private Methods
+
+    /// <summary>Returns the flag a typed value gets, like "Flag: High", or nothing before a value is typed.</summary>
+    private static string? FlagText(HcAnalyte analyte, double? value) =>
+        value is { } number && double.IsFinite(number) && number >= 0 && number <= analyte.MaxValue ? $"Flag: {HcState.Flag(analyte, number)}." : null;
 
     /// <summary>Returns each value with its flag, like "HbA1c 6.8 % (High)".</summary>
     private static string FlagsText(HcLabPanel panel, IReadOnlyList<double> values) =>
@@ -99,7 +114,7 @@ public partial class LabOrder : ComponentBase, IDisposable
     private void CancelEdit()
     {
         editing = false;
-        ResetDraft();
+        ResetForm();
         Announce(true, "Correction cancelled. The entered results are unchanged.");
         focusTarget = () => editButton ?? statusRegion;
     }
@@ -150,8 +165,8 @@ public partial class LabOrder : ComponentBase, IDisposable
     /// <summary>Another screen changed the state: a form that was set up before the order was found starts from it now.</summary>
     private void OnStateChanged() => InvokeAsync(() =>
     {
-        if (State.FindLabOrder(Id) is { } order && State.LabPanel(order.PanelId) is { } panel && draft.Values.Length != panel.Analytes.Count)
-            ResetDraft();
+        if (State.FindLabOrder(Id) is { } order && State.LabPanel(order.PanelId) is { } panel && labForm.Count != panel.Analytes.Count)
+            ResetForm();
 
         StateHasChanged();
     });
@@ -164,27 +179,24 @@ public partial class LabOrder : ComponentBase, IDisposable
     }
 
     /// <summary>Starts the form from the entered results (or empty fields for a waiting order).</summary>
-    private void ResetDraft()
+    private void ResetForm()
     {
         draftFor = Id;
-
-        if (State.FindLabOrder(Id) is not { } order || State.LabPanel(order.PanelId) is not { } panel)
-        {
-            draft = new LabDraft(0);
-
-            return;
-        }
-
-        draft = new LabDraft(panel.Analytes.Count) { Comment = order.Comment };
-
-        if (order.Values.Count == panel.Analytes.Count)
-        {
-            for (var index = 0; index < order.Values.Count; index++)
-                draft.Values[index] = HcDisplay.Number(order.Values[index]);
-        }
+        labForm = State.FindLabOrder(Id) is { } order && State.LabPanel(order.PanelId) is { } panel
+            ? new LabResultForm
+            {
+                Analytes = panel.Analytes,
+                Comment = order.Comment,
+                Value0 = order.Values.Count > 0 ? order.Values[0] : null,
+                Value1 = order.Values.Count > 1 ? order.Values[1] : null,
+                Value2 = order.Values.Count > 2 ? order.Values[2] : null,
+                Value3 = order.Values.Count > 3 ? order.Values[3] : null,
+            }
+            : new LabResultForm();
+        labContext = new EditContext(labForm);
     }
 
-    /// <summary>Checks and saves the order's results; flags are announced in words.</summary>
+    /// <summary>Saves the order's results once the form is valid; the flags are announced in words.</summary>
     private void SaveResults()
     {
         if (State.FindLabOrder(Id) is not { } order || State.LabPanel(order.PanelId) is not { } panel || order.DoctorId != State.CurrentDoctor?.Id)
@@ -195,52 +207,19 @@ public partial class LabOrder : ComponentBase, IDisposable
             return;
         }
 
-        if (draft.Values.Length != panel.Analytes.Count)
-            ResetDraft();
-
-        var values = new List<double>();
-        string? firstInvalid = null;
-
-        for (var index = 0; index < panel.Analytes.Count; index++)
-        {
-            var analyte = panel.Analytes[index];
-            var text = draft.Values[index]?.Trim() ?? string.Empty;
-            var parsed = double.TryParse(text, NumberStyles.Float, CultureInfo.InvariantCulture, out var value);
-
-            draft.Errors[index] = text.Length == 0 ? $"Enter the {analyte.Name} result."
-                : !parsed || !double.IsFinite(value) ? "Enter a number, like 5.4."
-                : value is < 0 or > 100_000 ? "Enter a value from 0 to 100,000."
-                : null;
-
-            if (draft.Errors[index] is not null)
-                firstInvalid ??= $"hc-lo-value-{index}";
-            else
-                values.Add(value);
-        }
-
-        var comment = draft.Comment.Trim();
-        draft.CommentError = comment.Length > HcState.MaxCommentLength ? $"Shorten the comment to {HcState.MaxCommentLength} characters or fewer (now {comment.Length})." : null;
-
-        if (draft.CommentError is not null)
-            firstInvalid ??= "hc-lo-comment";
-
-        if (firstInvalid is not null)
-        {
-            Announce(false, $"The {panel.Name} results weren't saved. Fix the marked fields, then save again.");
-            focusTarget = () => valueInputs.TryGetValue(firstInvalid, out var input) ? input : statusRegion;
-
+        if (!labContext.Validate())
             return;
-        }
 
+        var values = labForm.Values.Take(panel.Analytes.Count).Select(value => value!.Value).ToList();
         var patientName = State.FindPatient(order.PatientId)?.Name ?? "the patient";
         var wasEntered = order.Status == HcLabStatus.Resulted;
-        var result = State.EnterLabResults(order.Id, values, comment);
+        var result = State.EnterLabResults(order.Id, values, labForm.Comment ?? string.Empty);
 
         switch (result)
         {
             case HcResult.Ok:
                 editing = false;
-                ResetDraft();
+                ResetForm();
                 Announce(true, $"{(wasEntered ? "Corrected" : "Saved")} {panel.Name} results for {patientName}: {FlagsText(panel, order.Values)}. {patientName} sees nothing until you release them.");
                 focusTarget = () => releaseButton ?? statusRegion;
 
@@ -252,7 +231,7 @@ public partial class LabOrder : ComponentBase, IDisposable
                 break;
 
             case HcResult.Invalid:
-                Announce(false, "The storage for this demo tab is full, so the results weren't saved. Try again after removing something.");
+                Announce(false, "The results weren't saved: a value is out of range, or this demo tab's storage is full.");
                 break;
 
             case HcResult.NotFound:
@@ -275,9 +254,9 @@ public partial class LabOrder : ComponentBase, IDisposable
     private void StartEdit()
     {
         editing = true;
-        ResetDraft();
+        ResetForm();
         statusMessage = null;
-        focusTarget = () => valueInputs.TryGetValue("hc-lo-value-0", out var input) ? input : statusRegion;
+        focusTarget = () => statusRegion;
     }
 
     #endregion
@@ -295,26 +274,46 @@ public partial class LabOrder : ComponentBase, IDisposable
 
     #region Nested Types
 
-    /// <summary>The entry form of the lab order.</summary>
-    private sealed class LabDraft
+    /// <summary>
+    /// The results of a lab order: one value per analyte of the panel (at most four), each required, from 0 up to the most the
+    /// lab reports for it, and a comment for the patient.
+    /// </summary>
+    private sealed class LabResultForm : IValidatableObject
     {
-        public LabDraft(int count)
+        /// <summary>The panel's analytes, in order, set by the page.</summary>
+        public IReadOnlyList<HcAnalyte> Analytes { get; init; } = Array.Empty<HcAnalyte>();
+
+        [StringLength(HcState.MaxCommentLength, ErrorMessage = "Shorten the comment to 1,000 characters or fewer.")]
+        public string? Comment { get; set; } = string.Empty;
+
+        /// <summary>How many values the panel has.</summary>
+        public int Count => Analytes.Count;
+
+        public double? Value0 { get; set; }
+
+        public double? Value1 { get; set; }
+
+        public double? Value2 { get; set; }
+
+        public double? Value3 { get; set; }
+
+        /// <summary>The values in the panel's order.</summary>
+        public IReadOnlyList<double?> Values => new[] { Value0, Value1, Value2, Value3 };
+
+        /// <summary>Runs on every change: each of the panel's values is entered and within what the lab can report.</summary>
+        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
-            Values = Enumerable.Repeat(string.Empty, count).ToArray();
-            Errors = new string?[count];
+            for (var index = 0; index < Analytes.Count && index < 4; index++)
+            {
+                var analyte = Analytes[index];
+                var field = $"Value{index.ToString(CultureInfo.InvariantCulture)}";
+
+                if (Values[index] is not { } value)
+                    yield return new ValidationResult($"Enter the {analyte.Name} result.", new[] { field });
+                else if (!double.IsFinite(value) || value < 0 || value > analyte.MaxValue)
+                    yield return new ValidationResult($"Enter a {analyte.Name} result from 0 to {HcDisplay.Number(analyte.MaxValue)} {analyte.Unit}: anything else is a typing error.", new[] { field });
+            }
         }
-
-        /// <summary>Gets or sets the comment for the patient.</summary>
-        public string Comment { get; set; } = string.Empty;
-
-        /// <summary>Gets or sets the comment's error.</summary>
-        public string? CommentError { get; set; }
-
-        /// <summary>Gets each value's error.</summary>
-        public string?[] Errors { get; }
-
-        /// <summary>Gets the values as typed, in the panel's analyte order.</summary>
-        public string[] Values { get; }
     }
 
     #endregion

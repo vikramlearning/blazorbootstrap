@@ -17,7 +17,7 @@
             var patientName = patient?.Name ?? "a former patient";
             var visit = order.AppointmentId is { } visitId ? State.FindAppointment(visitId) : null;
             var mine = order.DoctorId == State.CurrentDoctor?.Id;
-            var showForm = mine && panel is not null && draft.Values.Length == panel.Analytes.Count && (order.Status == HcLabStatus.Ordered || editing);
+            var showForm = mine && panel is not null && labForm.Count == panel.Analytes.Count && (order.Status == HcLabStatus.Ordered || editing);
 
             <PageTitle>@panelName for @patientName · @HcSeedData.ProductName</PageTitle>
 
@@ -67,46 +67,71 @@
                 }
                 else if (showForm)
                 {
-                    var formId = "hc-lo";
-                    var commentId = $"{formId}-comment";
-
-                    <form @onsubmit="SaveResults" novalidate aria-label="@($"{panelName} results for {patientName}")">
+                    <EditForm EditContext="labContext" OnSubmit="SaveResults" FormName="hc-lab-results" novalidate aria-label="@($"{panelName} results for {patientName}")">
+                        <DataAnnotationsValidator />
+                        <ShowcaseFormErrors ShowSummary="true" />
                         <div class="hc-labs-fields">
-                            @for (var index = 0; index < panel.Analytes.Count; index++)
+                            @if (panel.Analytes.Count > 0)
                             {
-                                var i = index;
-                                var analyte = panel.Analytes[i];
-                                var fieldId = $"{formId}-value-{i}";
-                                var error = draft.Errors.ElementAtOrDefault(i);
-
-                                <div class="hc-labs-field" @key="@($"field-{i}")">
-                                    <label class="form-label fw-semibold" for="@fieldId">@analyte.Name (@analyte.Unit)</label>
-                                    <input id="@fieldId" type="number" inputmode="decimal" step="any" min="0" max="100000"
-                                           class="@(error is null ? "form-control" : "form-control is-invalid")" @bind="draft.Values[i]" @ref="valueInputs[fieldId]"
-                                           aria-invalid="@(error is null ? null : "true")" aria-describedby="@($"{fieldId}-help {fieldId}-error")" />
-                                    <div class="form-text" id="@($"{fieldId}-help")">Reference range: @Labs.RangeText(analyte)</div>
-                                    <div class="invalid-feedback d-block" id="@($"{fieldId}-error")">@error</div>
+                                var analyte0 = panel.Analytes[0];
+                                <div class="hc-labs-field">
+                                    <label class="form-label fw-semibold" for="hc-lo-value-0">@analyte0.Name (@analyte0.Unit)</label>
+                                    <InputNumber TValue="double?" id="hc-lo-value-0" class="form-control" @bind-Value="labForm.Value0" inputmode="decimal" step="any" min="0" max="@analyte0.MaxValue"
+                                                 ParsingErrorMessage="@($"Enter the {analyte0.Name} result as a number, like 5.4.")" aria-describedby="hc-lo-value-0-help" />
+                                    <div class="form-text" id="hc-lo-value-0-help">Reference range: @Labs.RangeText(analyte0). @FlagText(analyte0, labForm.Value0)</div>
+                                    <ValidationMessage For="() => labForm.Value0" />
+                                </div>
+                            }
+                            @if (panel.Analytes.Count > 1)
+                            {
+                                var analyte1 = panel.Analytes[1];
+                                <div class="hc-labs-field">
+                                    <label class="form-label fw-semibold" for="hc-lo-value-1">@analyte1.Name (@analyte1.Unit)</label>
+                                    <InputNumber TValue="double?" id="hc-lo-value-1" class="form-control" @bind-Value="labForm.Value1" inputmode="decimal" step="any" min="0" max="@analyte1.MaxValue"
+                                                 ParsingErrorMessage="@($"Enter the {analyte1.Name} result as a number, like 5.4.")" aria-describedby="hc-lo-value-1-help" />
+                                    <div class="form-text" id="hc-lo-value-1-help">Reference range: @Labs.RangeText(analyte1). @FlagText(analyte1, labForm.Value1)</div>
+                                    <ValidationMessage For="() => labForm.Value1" />
+                                </div>
+                            }
+                            @if (panel.Analytes.Count > 2)
+                            {
+                                var analyte2 = panel.Analytes[2];
+                                <div class="hc-labs-field">
+                                    <label class="form-label fw-semibold" for="hc-lo-value-2">@analyte2.Name (@analyte2.Unit)</label>
+                                    <InputNumber TValue="double?" id="hc-lo-value-2" class="form-control" @bind-Value="labForm.Value2" inputmode="decimal" step="any" min="0" max="@analyte2.MaxValue"
+                                                 ParsingErrorMessage="@($"Enter the {analyte2.Name} result as a number, like 5.4.")" aria-describedby="hc-lo-value-2-help" />
+                                    <div class="form-text" id="hc-lo-value-2-help">Reference range: @Labs.RangeText(analyte2). @FlagText(analyte2, labForm.Value2)</div>
+                                    <ValidationMessage For="() => labForm.Value2" />
+                                </div>
+                            }
+                            @if (panel.Analytes.Count > 3)
+                            {
+                                var analyte3 = panel.Analytes[3];
+                                <div class="hc-labs-field">
+                                    <label class="form-label fw-semibold" for="hc-lo-value-3">@analyte3.Name (@analyte3.Unit)</label>
+                                    <InputNumber TValue="double?" id="hc-lo-value-3" class="form-control" @bind-Value="labForm.Value3" inputmode="decimal" step="any" min="0" max="@analyte3.MaxValue"
+                                                 ParsingErrorMessage="@($"Enter the {analyte3.Name} result as a number, like 5.4.")" aria-describedby="hc-lo-value-3-help" />
+                                    <div class="form-text" id="hc-lo-value-3-help">Reference range: @Labs.RangeText(analyte3). @FlagText(analyte3, labForm.Value3)</div>
+                                    <ValidationMessage For="() => labForm.Value3" />
                                 </div>
                             }
                         </div>
-                        <label class="form-label fw-semibold mt-1" for="@commentId">Comment for the patient (optional)</label>
-                        <textarea id="@commentId" class="@(draft.CommentError is null ? "form-control" : "form-control is-invalid")" rows="3"
-                                  @bind="draft.Comment" @bind:event="oninput" @ref="valueInputs[commentId]" maxlength="@HcState.MaxCommentLength"
-                                  aria-invalid="@(draft.CommentError is null ? null : "true")" aria-describedby="@($"{commentId}-help {commentId}-error")"></textarea>
-                        <div class="form-text" id="@($"{commentId}-help")">
-                            The patient reads this with the results once released. Plain text. @draft.Comment.Length of @HcState.MaxCommentLength characters.
+                        <label class="form-label fw-semibold mt-1" for="hc-lo-comment">Comment for the patient (optional)</label>
+                        <InputTextArea id="hc-lo-comment" class="form-control" rows="3" @bind-Value="labForm.Comment" maxlength="@HcState.MaxCommentLength" aria-describedby="hc-lo-comment-help" />
+                        <div class="form-text" id="hc-lo-comment-help">
+                            The patient reads this with the results once released. Plain text. @((labForm.Comment ?? string.Empty).Length) of @HcState.MaxCommentLength characters.
                         </div>
-                        <div class="invalid-feedback d-block" id="@($"{commentId}-error")">@draft.CommentError</div>
+                        <ValidationMessage For="() => labForm.Comment" />
                         <div class="d-flex flex-wrap gap-2 mt-2">
-                            <button type="submit" class="btn btn-primary">
+                            <Button Type="ButtonType.Submit" Color="ButtonColor.Primary">
                                 <Icon Name="IconName.Save" class="me-1" aria-hidden="true" />@(order.Status == HcLabStatus.Ordered ? "Save results" : "Save corrected results")
-                            </button>
+                            </Button>
                             @if (order.Status == HcLabStatus.Resulted)
                             {
                                 <button type="button" class="btn btn-outline-secondary" @onclick="CancelEdit">Cancel</button>
                             }
                         </div>
-                    </form>
+                    </EditForm>
                 }
                 else if (order.Status == HcLabStatus.Ordered)
                 {

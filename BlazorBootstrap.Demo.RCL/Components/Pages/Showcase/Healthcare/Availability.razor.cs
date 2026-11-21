@@ -24,6 +24,9 @@ public partial class Availability : ComponentBase, IDisposable
 {
     #region Fields and Constants
 
+    /// <summary>Set while the hours form re-checks start and end against each other, so the re-check doesn't recurse.</summary>
+    private bool rechecking;
+
     /// <summary>The <c>?doctor=</c> value applied last, so a re-render with the same query keeps the selection.</summary>
     private string? appliedDoctorQuery;
 
@@ -276,11 +279,25 @@ public partial class Availability : ComponentBase, IDisposable
         hoursServerErrors?.Clear();
         UpdateHoursRules();
 
-        if (args.FieldIdentifier.FieldName is nameof(HoursForm.Day) or nameof(HoursForm.ClinicId) or nameof(HoursForm.StartMinute))
-            hoursContext.NotifyFieldChanged(FieldIdentifier.Create(() => hoursForm.EndMinute));
+        // Start and end re-check each other. The notifications below raise this handler again, so a guard stops
+        // the second round; without it the two would notify each other until the stack overflows.
+        if (rechecking)
+            return;
 
-        if (args.FieldIdentifier.FieldName is nameof(HoursForm.Day) or nameof(HoursForm.ClinicId) or nameof(HoursForm.EndMinute))
-            hoursContext.NotifyFieldChanged(FieldIdentifier.Create(() => hoursForm.StartMinute));
+        rechecking = true;
+
+        try
+        {
+            if (args.FieldIdentifier.FieldName is nameof(HoursForm.Day) or nameof(HoursForm.ClinicId) or nameof(HoursForm.StartMinute))
+                hoursContext.NotifyFieldChanged(FieldIdentifier.Create(() => hoursForm.EndMinute));
+
+            if (args.FieldIdentifier.FieldName is nameof(HoursForm.Day) or nameof(HoursForm.ClinicId) or nameof(HoursForm.EndMinute))
+                hoursContext.NotifyFieldChanged(FieldIdentifier.Create(() => hoursForm.StartMinute));
+        }
+        finally
+        {
+            rechecking = false;
+        }
     }
 
     /// <summary>A first day without a last day gets the same day; a new first day re-checks the last.</summary>

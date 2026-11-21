@@ -171,11 +171,19 @@
                                 <h2 class="hc-section-title" id="hc-appt-bill-title">Bill for this visit</h2>
                                 <p class="mb-2">
                                     @HcDisplay.Money(bill.AmountCents):
-                                    @(bill.Status == HcBillStatus.Paid
-                                        ? $"paid on {HcDisplay.Date(bill.PaidAt ?? bill.CreatedAt)}."
-                                        : $"due by {HcDisplay.Date(bill.DueDate)}.")
+                                    @(bill.Status switch
+                                    {
+                                        HcBillStatus.Paid => $"paid on {HcDisplay.Date(bill.PaidAt ?? bill.CreatedAt)}.",
+                                        HcBillStatus.Pending => "billed to your health plan first.",
+                                        HcBillStatus.Covered => "nothing to pay after insurance.",
+                                        _ => $"due by {HcDisplay.Date(bill.DueDate)}.",
+                                    })
                                 </p>
-                                <a class="small" href="@($"{HcLayout.Base}/bills")">@(bill.Status == HcBillStatus.Paid ? "See your bills" : "Pay it on the Bills page")</a>
+                                @if (State.PatientClaimText(bill) is { } insurance)
+                                {
+                                    <p class="small mb-2">@insurance</p>
+                                }
+                                <a class="small" href="@($"{HcLayout.Base}/bills")">@(bill.Status == HcBillStatus.Due ? "Pay it on the Bills page" : "See your bills")</a>
                             </section>
                         }
                     }

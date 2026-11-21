@@ -30,6 +30,8 @@ public partial class Bills : ComponentBase, IDisposable
 
     private const string PaidFilter = "paid";
 
+    private const string PendingFilter = "pending";
+
     /// <summary>The rows' buttons, by bill ID, so focus returns to one when its dialog closes.</summary>
     private readonly Dictionary<int, ElementReference> openers = new();
 
@@ -236,7 +238,7 @@ public partial class Bills : ComponentBase, IDisposable
     private async Task OnStatusChangedAsync(ChangeEventArgs args)
     {
         var value = args.Value?.ToString() ?? string.Empty;
-        statusFilter = value is DueFilter or PaidFilter ? value : string.Empty;
+        statusFilter = value is DueFilter or PaidFilter or PendingFilter ? value : string.Empty;
 
         if (grid is not null)
             await grid.ResetPageNumber();
@@ -289,7 +291,7 @@ public partial class Bills : ComponentBase, IDisposable
                 break;
 
             case HcResult.WrongState:
-                pendingAnnouncement = ("This bill is already paid, so nothing was charged.", true);
+                pendingAnnouncement = ("This bill has nothing to pay now (it's paid, with your health plan, or covered), so nothing was charged.", true);
                 await billModal.HideAsync();
                 break;
 
@@ -374,18 +376,25 @@ public partial class Bills : ComponentBase, IDisposable
             var today = State.Clock.Today;
 
             return All()
-                .Where(bill => statusFilter switch { DueFilter => bill.Status == HcBillStatus.Due, PaidFilter => bill.Status == HcBillStatus.Paid, _ => true })
+                .Where(bill => statusFilter switch
+                {
+                    DueFilter => bill.Status == HcBillStatus.Due,
+                    PendingFilter => bill.Status == HcBillStatus.Pending,
+                    PaidFilter => bill.Status is HcBillStatus.Paid or HcBillStatus.Covered,
+                    _ => true,
+                })
                 .Select(bill => new BillRow(
                     bill.Id,
                     bill.Description,
                     bill.AmountCents,
                     HcDisplay.Money(bill.AmountCents),
-                    IsOverdue(bill, today) ? "Overdue" : bill.Status == HcBillStatus.Due ? "To pay" : "Paid",
-                    IsOverdue(bill, today) ? 0 : bill.Status == HcBillStatus.Due ? 1 : 2,
+                    IsOverdue(bill, today) ? "Overdue" : bill.Status switch { HcBillStatus.Due => "To pay", HcBillStatus.Pending => "With your plan", HcBillStatus.Covered => "Nothing to pay", _ => "Paid" },
+                    IsOverdue(bill, today) ? 0 : bill.Status switch { HcBillStatus.Due => 1, HcBillStatus.Pending => 2, _ => 3 },
+                    State.PatientClaimText(bill) ?? (bill.AppointmentId is null ? "Billed by the clinic directly" : "No health plan on file"),
                     bill.CreatedAt,
                     HcDisplay.Date(bill.CreatedAt),
                     bill.DueDate,
-                    HcDisplay.Date(bill.DueDate),
+                    bill.Status switch { HcBillStatus.Pending => "After your plan answers", HcBillStatus.Covered => "Nothing to pay", _ => HcDisplay.Date(bill.DueDate) },
                     bill.PaidAt,
                     bill.Status == HcBillStatus.Paid ? $"{HcDisplay.Date(bill.PaidAt ?? bill.CreatedAt)} with {CardText(bill)}" : "Not yet"))
                 .ToList();
@@ -415,6 +424,7 @@ public partial class Bills : ComponentBase, IDisposable
         string AmountText,
         string Status,
         int StatusOrder,
+        string Insurance,
         DateTime Issued,
         string IssuedText,
         DateTime Due,

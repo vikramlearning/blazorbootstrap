@@ -1,0 +1,85 @@
+@* Codes a completed visit, or corrects a denied claim: diagnosis and procedure codes as checkbox lists, the billed amount
+   they make, and, for a correction, the member ID and a note. *@
+@{
+    var billed = State.ProcedureCodes.Where(code => form.Procedures.Contains(code.Code)).Sum(code => code.FeeCents);
+    var correcting = Claim is { Status: HcClaimStatus.Denied };
+}
+<EditForm EditContext="editContext" OnSubmit="SaveAsync" FormName="@($"{IdPrefix}-coding")" novalidate>
+    <DataAnnotationsValidator />
+    <ShowcaseFormErrors ShowSummary="true" />
+
+    <fieldset class="mb-3">
+        <legend class="form-label fw-semibold fs-6 mb-1">Diagnoses <span class="fw-normal text-body-secondary">(@form.Diagnoses.Count of up to @HcState.MaxDiagnoses)</span></legend>
+        <p class="form-text mt-0 mb-2" id="@($"{IdPrefix}-dx-help")">What the visit was for. The first one you tick is the main diagnosis.</p>
+        <div class="hc-coding-list" role="group" aria-describedby="@($"{IdPrefix}-dx-help")">
+            @foreach (var listed in State.DiagnosisCodes)
+            {
+                var inputId = $"{IdPrefix}-dx-{listed.Code.Replace(".", "-", StringComparison.Ordinal)}";
+                <div class="form-check" @key="listed.Code">
+                    <input class="form-check-input" type="checkbox" id="@inputId" checked="@form.Diagnoses.Contains(listed.Code)" @onchange="args => Toggle(form.Diagnoses, listed.Code, args.Value is true, nameof(CodingForm.Diagnoses))" />
+                    <label class="form-check-label" for="@inputId"><span class="hc-mono fw-semibold">@listed.Code</span> @listed.Description</label>
+                </div>
+            }
+        </div>
+        <ValidationMessage For="() => form.Diagnoses" />
+    </fieldset>
+
+    <fieldset class="mb-3">
+        <legend class="form-label fw-semibold fs-6 mb-1">Procedures <span class="fw-normal text-body-secondary">(@form.Procedures.Count of up to @HcState.MaxProcedures)</span></legend>
+        <p class="form-text mt-0 mb-2" id="@($"{IdPrefix}-px-help")">
+            Exactly one office visit code: @(Appointment.VisitType == HcVisitType.NewPatient ? "a new-patient code (99202 to 99204), as this was a new patient visit" : "an established-patient code (99212 to 99214)"),
+            or a preventive check-up; then what else was done.
+        </p>
+        <div class="hc-coding-list" role="group" aria-describedby="@($"{IdPrefix}-px-help")">
+            @foreach (var listed in State.ProcedureCodes)
+            {
+                var inputId = $"{IdPrefix}-px-{listed.Code}";
+                <div class="form-check" @key="listed.Code">
+                    <input class="form-check-input" type="checkbox" id="@inputId" checked="@form.Procedures.Contains(listed.Code)" @onchange="args => Toggle(form.Procedures, listed.Code, args.Value is true, nameof(CodingForm.Procedures))" />
+                    <label class="form-check-label" for="@inputId">
+                        <span class="hc-mono fw-semibold">@listed.Code</span> @listed.Description <span class="text-body-secondary">· @HcDisplay.Money(listed.FeeCents)@(listed.IsVisit ? " · office visit" : null)</span>
+                    </label>
+                </div>
+            }
+        </div>
+        <p class="small fw-semibold mt-2 mb-0">Billed: @HcDisplay.Money(billed)</p>
+        <ValidationMessage For="() => form.Procedures" />
+    </fieldset>
+
+    @if (ShowMemberId && Claim is not null)
+    {
+        <div class="mb-3">
+            <label class="form-label fw-semibold" for="@($"{IdPrefix}-member")">Member ID</label>
+            <InputText id="@($"{IdPrefix}-member")" class="form-control hc-mono hc-coding-short" @bind-Value="form.MemberId" maxlength="12" autocomplete="off" autocapitalize="characters" spellcheck="false"
+                       aria-describedby="@($"{IdPrefix}-member-help")" />
+            <div class="form-text" id="@($"{IdPrefix}-member-help")">
+                @(State.FindPayer(Claim.PayerId) is { } payer ? $"{payer.MemberIdPrefix} and nine digits, from the patient's {payer.Name} card. A change is saved to their record." : null)
+            </div>
+            <ValidationMessage For="() => form.MemberId" />
+        </div>
+    }
+
+    @if (correcting || Claim is { Status: HcClaimStatus.Corrected })
+    {
+        <div class="mb-3">
+            <label class="form-label fw-semibold" for="@($"{IdPrefix}-note")">What you corrected</label>
+            <InputTextArea id="@($"{IdPrefix}-note")" class="form-control" rows="2" maxlength="@HcState.MaxClaimNoteLength" @bind-Value="form.Note" aria-describedby="@($"{IdPrefix}-note-help")" />
+            <div class="form-text" id="@($"{IdPrefix}-note-help")">
+                @(correcting ? $"Required: {HcState.MinClaimNoteLength} to {HcState.MaxClaimNoteLength} characters. It's kept with the new version of the claim." : $"Up to {HcState.MaxClaimNoteLength} characters.")
+            </div>
+            <ValidationMessage For="() => form.Note" />
+        </div>
+    }
+
+    @* Always rendered, so a refusal is announced; a counter makes a repeat announce again. *@
+    <p class="hc-form-error mb-2" role="alert">@errorMessage</p>
+    <div class="d-flex flex-wrap gap-2">
+        <Button Type="ButtonType.Submit" Color="ButtonColor.Primary">
+            <Icon Name="IconName.Tags" class="me-1" aria-hidden="true" />@(correcting ? "Save correction" : Claim is null ? "Save codes" : "Save changes")
+        </Button>
+        @if (OnCancel.HasDelegate)
+        {
+            <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => OnCancel.InvokeAsync()">Cancel</Button>
+        }
+    </div>
+</EditForm>

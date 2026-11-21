@@ -22,7 +22,7 @@ public enum HcAppointmentStatus
     NoShow,
 }
 
-/// <summary>Whether a bill is paid.</summary>
+/// <summary>Whether a bill is paid, waiting for the patient's health plan, or covered by it.</summary>
 public enum HcBillStatus
 {
     /// <summary>Waiting for payment.</summary>
@@ -30,6 +30,53 @@ public enum HcBillStatus
 
     /// <summary>Paid with a test card.</summary>
     Paid,
+
+    /// <summary>Sent to the patient's health plan first: nothing to pay until the plan answers.</summary>
+    Pending,
+
+    /// <summary>Nothing to pay: the health plan paid it all, or the clinic wrote it off.</summary>
+    Covered,
+}
+
+/// <summary>Where an insurance claim is.</summary>
+public enum HcClaimStatus
+{
+    /// <summary>Coded, not sent to the plan yet.</summary>
+    Draft,
+
+    /// <summary>Sent to the plan; waiting for its answer.</summary>
+    Submitted,
+
+    /// <summary>The plan paid what it allows; the patient owes their share (if any).</summary>
+    Paid,
+
+    /// <summary>The plan paid part of it, with adjustment codes for the rest; the patient owes their share.</summary>
+    PartlyPaid,
+
+    /// <summary>The plan denied it, with reason codes: correct and resubmit, appeal, write off, or bill the patient.</summary>
+    Denied,
+
+    /// <summary>Changed after a denial (a new version); ready to resubmit.</summary>
+    Corrected,
+
+    /// <summary>Appealed to the plan with a letter; waiting for its answer.</summary>
+    Appealed,
+
+    /// <summary>Closed without payment: the clinic wrote it off, or billed the patient instead.</summary>
+    WrittenOff,
+}
+
+/// <summary>What a health plan answered to a claim.</summary>
+public enum HcClaimOutcome
+{
+    /// <summary>Paid what it allows.</summary>
+    Paid,
+
+    /// <summary>Paid part of it.</summary>
+    PartlyPaid,
+
+    /// <summary>Denied.</summary>
+    Denied,
 }
 
 /// <summary>Where a lab order is.</summary>
@@ -126,6 +173,9 @@ public enum HcResult
 
     /// <summary>A key value (like a medical record number) already belongs to another record.</summary>
     Duplicate,
+
+    /// <summary>A deadline has passed (a claim's filing deadline, or an appeal's).</summary>
+    TooLate,
 }
 
 /// <summary>A clinic location.</summary>
@@ -145,7 +195,14 @@ public sealed record HcClinic(string Id, string Name, string Address, string Pho
 }
 
 /// <summary>A health plan patients can have on file (fictitious), with the letters its member IDs start with.</summary>
-public sealed record HcPayer(string Id, string Name, string MemberIdPrefix);
+public sealed record HcPayer(string Id, string Name, string MemberIdPrefix)
+{
+    /// <summary>Gets the share of the billed amount the plan usually allows, in percent (the seed's answers use it).</summary>
+    public int AllowedPercent { get; init; } = 70;
+
+    /// <summary>Gets the plan's usual copay for an office visit, in cents.</summary>
+    public int CopayCents { get; init; } = 2_500;
+}
 
 /// <summary>A pharmacy patients can pick up refills at (fictitious).</summary>
 public sealed record HcPharmacy(string Id, string Name, string Address);
@@ -164,7 +221,168 @@ public sealed class HcStaffProfile
 }
 
 /// <summary>One measurement of a lab panel, with its reference range.</summary>
-public sealed record HcAnalyte(string Name, string Unit, double Low, double High);
+public sealed record HcAnalyte(string Name, string Unit, double Low, double High)
+{
+    /// <summary>Gets the highest value the lab can report for it (anything above is a typing error).</summary>
+    public double MaxValue { get; init; } = 100_000;
+}
+
+/// <summary>A diagnosis code the clinics bill with (ICD-10 style; the list is illustrative).</summary>
+public sealed record HcDiagnosisCode(string Code, string Description);
+
+/// <summary>
+/// A procedure code the clinics bill with (CPT style, five digits; the list and fees are illustrative), with its fee and
+/// whether it is the office visit itself (a claim has exactly one), for a new or an established patient.
+/// </summary>
+public sealed record HcProcedureCode(string Code, string Description, int FeeCents, bool IsVisit = false, bool? ForNewPatient = null);
+
+/// <summary>A reason code a health plan gives when it denies or adjusts a claim (the list is illustrative).</summary>
+public sealed record HcDenialCode(string Code, string Description, bool NeedsDoctor = false);
+
+/// <summary>The vital signs taken at a visit; each is optional.</summary>
+public sealed class HcVitals
+{
+    /// <summary>Gets or sets the lower blood pressure, in mmHg.</summary>
+    public int? Diastolic { get; set; }
+
+    /// <summary>Gets or sets the pulse, in beats a minute.</summary>
+    public int? Pulse { get; set; }
+
+    /// <summary>Gets or sets the upper blood pressure, in mmHg.</summary>
+    public int? Systolic { get; set; }
+
+    /// <summary>Gets or sets the temperature, in °C.</summary>
+    public double? TemperatureC { get; set; }
+
+    /// <summary>Gets or sets the weight, in kg.</summary>
+    public double? WeightKg { get; set; }
+}
+
+/// <summary>One answer of a health plan to a claim, as the billing team recorded it.</summary>
+public sealed class HcClaimResponse
+{
+    /// <summary>Gets or sets what the plan allows for the claim, in cents (0 when denied).</summary>
+    public int AllowedCents { get; init; }
+
+    /// <summary>Gets or sets whether it answered an appeal.</summary>
+    public bool AfterAppeal { get; init; }
+
+    /// <summary>Gets or sets when it was recorded.</summary>
+    public DateTime At { get; init; }
+
+    /// <summary>Gets or sets the plan's reason and adjustment codes.</summary>
+    public List<string> DenialCodes { get; init; } = new();
+
+    /// <summary>Gets or sets the answer.</summary>
+    public HcClaimOutcome Outcome { get; init; }
+
+    /// <summary>Gets or sets what the plan paid, in cents.</summary>
+    public int PaidCents { get; init; }
+
+    /// <summary>Gets or sets what the patient owes (copay, coinsurance, deductible), in cents.</summary>
+    public int PatientCents { get; init; }
+
+    /// <summary>Gets or sets who recorded it.</summary>
+    public string RecordedBy { get; init; } = string.Empty;
+
+    /// <summary>Gets or sets the plan's remark (plain text).</summary>
+    public string Remark { get; init; } = string.Empty;
+
+    /// <summary>Gets or sets the claim version it answered.</summary>
+    public int Version { get; init; }
+}
+
+/// <summary>A version of a claim's codes and member ID: the first, and one more for each correction.</summary>
+public sealed class HcClaimVersion
+{
+    /// <summary>Gets or sets when it was made.</summary>
+    public DateTime At { get; init; }
+
+    /// <summary>Gets or sets who made it.</summary>
+    public string By { get; init; } = string.Empty;
+
+    /// <summary>Gets or sets the diagnosis codes.</summary>
+    public List<string> DiagnosisCodes { get; init; } = new();
+
+    /// <summary>Gets or sets the member ID sent.</summary>
+    public string MemberId { get; init; } = string.Empty;
+
+    /// <summary>Gets or sets why it was corrected (empty for the first version).</summary>
+    public string Note { get; init; } = string.Empty;
+
+    /// <summary>Gets or sets the procedure codes.</summary>
+    public List<string> ProcedureCodes { get; init; } = new();
+
+    /// <summary>Gets or sets the version number, from 1.</summary>
+    public int Number { get; init; }
+}
+
+/// <summary>
+/// An insurance claim for a completed visit of a patient with a health plan: the codes and member ID sent (with every
+/// version), the amount billed from the procedure fees, the plan's answers, and how it ended.
+/// </summary>
+public sealed class HcClaim
+{
+    /// <summary>Gets or sets the deadline to appeal a denial (60 days after it), or <see langword="null" />.</summary>
+    public DateTime? AppealDeadline { get; set; }
+
+    /// <summary>Gets or sets the appeal letter (plain text), or empty.</summary>
+    public string AppealLetter { get; set; } = string.Empty;
+
+    /// <summary>Gets or sets when it was appealed, or <see langword="null" />.</summary>
+    public DateTime? AppealedAt { get; set; }
+
+    /// <summary>Gets or sets the visit.</summary>
+    public int AppointmentId { get; init; }
+
+    /// <summary>Gets or sets the amount billed, the sum of the procedure fees, in cents.</summary>
+    public int BilledCents { get; set; }
+
+    /// <summary>Gets or sets when it was closed (paid, partly paid, or written off), or <see langword="null" />.</summary>
+    public DateTime? ClosedAt { get; set; }
+
+    /// <summary>Gets or sets when it was created (the visit was coded).</summary>
+    public DateTime CreatedAt { get; init; }
+
+    /// <summary>Gets or sets the diagnosis codes sent.</summary>
+    public List<string> DiagnosisCodes { get; set; } = new();
+
+    /// <summary>Gets or sets the ID.</summary>
+    public int Id { get; init; }
+
+    /// <summary>Gets or sets the member ID sent.</summary>
+    public string MemberId { get; set; } = string.Empty;
+
+    /// <summary>Gets or sets the claim number, like "CLM-2026-00412".</summary>
+    public string Number { get; init; } = string.Empty;
+
+    /// <summary>Gets or sets the patient.</summary>
+    public int PatientId { get; init; }
+
+    /// <summary>Gets or sets the health plan.</summary>
+    public string PayerId { get; init; } = string.Empty;
+
+    /// <summary>Gets or sets whether the patient was billed the whole amount instead of writing it off.</summary>
+    public bool BilledToPatient { get; set; }
+
+    /// <summary>Gets or sets the procedure codes sent.</summary>
+    public List<string> ProcedureCodes { get; set; } = new();
+
+    /// <summary>Gets or sets the plan's answers, oldest first.</summary>
+    public List<HcClaimResponse> Responses { get; set; } = new();
+
+    /// <summary>Gets or sets where it is.</summary>
+    public HcClaimStatus Status { get; set; }
+
+    /// <summary>Gets or sets when the current version was sent, or <see langword="null" /> before.</summary>
+    public DateTime? SubmittedAt { get; set; }
+
+    /// <summary>Gets or sets every version of the codes and member ID, oldest first.</summary>
+    public List<HcClaimVersion> Versions { get; set; } = new();
+
+    /// <summary>Gets or sets why it was written off or billed to the patient (plain text), or empty.</summary>
+    public string WriteOffReason { get; set; } = string.Empty;
+}
 
 /// <summary>A lab test the doctors can order.</summary>
 public sealed record HcLabPanel(string Id, string Name, string Description, IReadOnlyList<HcAnalyte> Analytes);
@@ -193,10 +411,7 @@ public sealed class HcAppointment
     /// <summary>Gets or sets when it was booked.</summary>
     public DateTime CreatedAt { get; init; }
 
-    /// <summary>
-    /// Gets or sets the diagnosis codes of the visit, for billing a health plan later (empty for now: visit coding and
-    /// claims are not part of the portal yet).
-    /// </summary>
+    /// <summary>Gets or sets the diagnosis codes the visit was coded with (<see cref="HcDiagnosisCode" />), empty until coded.</summary>
     public List<string> DiagnosisCodes { get; set; } = new();
 
     /// <summary>Gets or sets the doctor.</summary>
@@ -208,7 +423,7 @@ public sealed class HcAppointment
     /// <summary>Gets or sets the length in minutes (<see cref="HcVisitTypes.MinutesOf" /> of <see cref="VisitType" />).</summary>
     public int Minutes { get; set; } = 30;
 
-    /// <summary>Gets or sets the procedure codes of the visit, for billing a health plan later (empty for now, like <see cref="DiagnosisCodes" />).</summary>
+    /// <summary>Gets or sets the procedure codes the visit was coded with (<see cref="HcProcedureCode" />), empty until coded.</summary>
     public List<string> ProcedureCodes { get; set; } = new();
 
     /// <summary>Gets or sets the doctor's visit notes (plain text, staff only).</summary>
@@ -231,6 +446,9 @@ public sealed class HcAppointment
 
     /// <summary>Gets or sets the kind of visit, which sets <see cref="Minutes" />.</summary>
     public HcVisitType VisitType { get; set; }
+
+    /// <summary>Gets or sets the vital signs taken at the visit, or <see langword="null" />.</summary>
+    public HcVitals? Vitals { get; set; }
 }
 
 /// <summary>A weekly block of time a doctor sees patients at a clinic.</summary>
@@ -258,8 +476,8 @@ public sealed class HcAvailability
 /// <summary>A bill for a visit or a lab test.</summary>
 public sealed class HcBill
 {
-    /// <summary>Gets or sets the amount in cents.</summary>
-    public int AmountCents { get; init; }
+    /// <summary>Gets or sets the amount the patient owes in cents (after insurance, once the plan answered).</summary>
+    public int AmountCents { get; set; }
 
     /// <summary>Gets or sets the appointment it is for, if any.</summary>
     public int? AppointmentId { get; init; }
@@ -277,7 +495,7 @@ public sealed class HcBill
     public string Description { get; init; } = string.Empty;
 
     /// <summary>Gets or sets when it is due.</summary>
-    public DateTime DueDate { get; init; }
+    public DateTime DueDate { get; set; }
 
     /// <summary>Gets or sets the ID.</summary>
     public int Id { get; init; }
@@ -402,7 +620,7 @@ public sealed class HcPatient
     /// <summary>Gets or sets the member ID on the health plan card, or empty for self-pay.</summary>
     public string InsuranceMemberId { get; set; } = string.Empty;
 
-    /// <summary>Gets or sets the health plan (<see cref="HcPayer.Id" />), or empty for self-pay; claims to it are not part of the portal yet.</summary>
+    /// <summary>Gets or sets the health plan (<see cref="HcPayer.Id" />), or empty for self-pay (no insurance claims; the patient pays the bill).</summary>
     public string InsurancePayerId { get; set; } = string.Empty;
 
     /// <summary>Gets or sets the medical record number, like "CL-100001": unique, and what staff and the patient quote.</summary>

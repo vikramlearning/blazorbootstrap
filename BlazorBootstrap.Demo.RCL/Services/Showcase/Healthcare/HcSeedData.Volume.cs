@@ -88,11 +88,13 @@ public static partial class HcSeedData
         GeneratePatients(patients);
         GenerateAppointments(appointments, patients, doctors, availability, timeOff);
         GenerateClinicalWork(appointments, firstGeneratedVisit, doctors, labs, prescriptions, bills);
+        AddVitals(appointments);
 
-        var audit = Audit(appointments, patients, doctors, labs, prescriptions, bills);
-        var notifications = Notifications(appointments, patients, doctors, labs, prescriptions, bills);
+        var claims = GenerateClaims(appointments, patients, doctors, labs, bills, out var claimAudit, out var claimNotices);
+        var audit = Audit(appointments, patients, doctors, labs, prescriptions, bills, claimAudit);
+        var notifications = Notifications(appointments, patients, doctors, labs, prescriptions, bills, claimNotices);
 
-        return new HcSeedSet(appointments, audit, availability, bills, labs, notifications, patients, prescriptions, StaffProfiles(), timeOff, doctors);
+        return new HcSeedSet(appointments, audit, availability, bills, labs, notifications, patients, prescriptions, StaffProfiles(), timeOff, doctors, claims);
     }
 
     /// <summary>Returns the staff route of a lab order.</summary>
@@ -123,7 +125,7 @@ public static partial class HcSeedData
 
     /// <summary>The seeded audit log: the last <see cref="AuditDays" /> days of bookings, check-ins, visits, chart views, labs, prescriptions, refills, payments, and registrations.</summary>
     private static List<ShowcaseAuditEntry> Audit(List<HcAppointment> appointments, List<HcPatient> patients, IReadOnlyList<HcDoctor> doctors, List<HcLabOrder> labs,
-        List<HcPrescription> prescriptions, List<HcBill> bills)
+        List<HcPrescription> prescriptions, List<HcBill> bills, List<(DateTime At, string Actor, string Action, string Target, string? Url, string? Details)> claimAudit)
     {
         var since = Now.AddDays(-AuditDays);
         var patientsById = patients.ToDictionary(patient => patient.Id);
@@ -207,6 +209,8 @@ public static partial class HcSeedData
             entries.Add((bill.PaidAt!.Value, patientsById[bill.PatientId].Name, "Bill paid", Invariant($"Bill {bill.Id} · {patientsById[bill.PatientId].Name}"), PatientDetailsPath(bill.PatientId),
                 $"{Money(bill.AmountCents)} with {bill.CardBrand} ending {bill.CardLast4}"));
         }
+
+        entries.AddRange(claimAudit.Where(entry => InWindow(entry.At)));
 
         return entries
             .Where(entry => entry.At <= Now)
@@ -595,7 +599,7 @@ public static partial class HcSeedData
     /// the patient about her confirmed appointment, released lab results, and new bills. The newest two of each are unread.
     /// </summary>
     private static List<ShowcaseNotification> Notifications(List<HcAppointment> appointments, List<HcPatient> patients, IReadOnlyList<HcDoctor> doctors, List<HcLabOrder> labs,
-        List<HcPrescription> prescriptions, List<HcBill> bills)
+        List<HcPrescription> prescriptions, List<HcBill> bills, List<(string AccountId, DateTime At, string Title, string Text, string Url)> claimNotices)
     {
         var patientsById = patients.ToDictionary(patient => patient.Id);
         var doctorsById = doctors.ToDictionary(doctor => doctor.Id);
@@ -646,8 +650,10 @@ public static partial class HcSeedData
         foreach (var order in labs.Where(item => item.PatientId == SeededPatientId && item.ReleasedAt is not null))
             items.Add((SeededPatientAccountId, order.ReleasedAt!.Value, $"Lab results released: {panels[order.PanelId].Name}", $"{doctorsById[order.DoctorId].Name} released your results.", LabReportPath(order.Id)));
 
-        foreach (var bill in bills.Where(item => item.PatientId == SeededPatientId && item.CreatedAt >= Now.AddDays(-60)))
+        foreach (var bill in bills.Where(item => item.PatientId == SeededPatientId && item.CreatedAt >= Now.AddDays(-60) && item.Status is HcBillStatus.Due or HcBillStatus.Paid && item.AppointmentId is null))
             items.Add((SeededPatientAccountId, bill.CreatedAt, $"New bill: {Money(bill.AmountCents)}", $"{bill.Description}, due {bill.DueDate.ToString("MMM d", CultureInfo.InvariantCulture)}.", SiteBase + "/bills"));
+
+        items.AddRange(claimNotices);
 
         var all = items.Where(item => item.At <= Now).OrderByDescending(item => item.At).ThenBy(item => item.Title, StringComparer.Ordinal).ToList();
         var unread = new Dictionary<string, int>(StringComparer.Ordinal);
@@ -721,4 +727,5 @@ public sealed record HcSeedSet(
     List<HcPrescription> Prescriptions,
     List<HcStaffProfile> StaffProfiles,
     List<HcTimeOff> TimeOff,
-    IReadOnlyList<HcDoctor> Doctors);
+    IReadOnlyList<HcDoctor> Doctors,
+    List<HcClaim> Claims);

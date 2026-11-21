@@ -8,12 +8,16 @@
         @{
             var all = All();
             var due = all.Where(bill => bill.Status == HcBillStatus.Due).ToList();
+            var pending = all.Count(bill => bill.Status == HcBillStatus.Pending);
             var today = State.Clock.Today;
             var overdue = due.Count(bill => IsOverdue(bill, today));
         }
 
         <h1 class="hc-title mb-1">Bills</h1>
-        <p class="hc-lead mb-4">Bills for your visits and lab tests. Open a bill to pay it with a test card; only its brand and last four digits are kept.</p>
+        <p class="hc-lead mb-4">
+            Bills for your visits and lab tests. With a health plan on file, a visit goes to your plan first: its bill shows what the plan paid and what's
+            left for you. Open a bill to pay it with a test card; only its brand and last four digits are kept.
+        </p>
 
         <section class="hc-panel hc-bills-total mb-4" aria-labelledby="hc-bills-total-title">
             <span class="hc-icon flex-shrink-0" aria-hidden="true"><Icon Name="IconName.Receipt" /></span>
@@ -27,6 +31,10 @@
                     }
                     @DueSummary(due.Count, overdue)
                 </p>
+                @if (pending > 0)
+                {
+                    <p class="small text-body-secondary mb-0">@(pending == 1 ? "1 visit is" : $"{pending} visits are") with your health plan: nothing to pay until it answers.</p>
+                }
             </div>
         </section>
 
@@ -38,7 +46,8 @@
                     <select id="hc-bills-status" class="form-select" value="@statusFilter" @onchange="OnStatusChangedAsync">
                         <option value="">All (@all.Count)</option>
                         <option value="@DueFilter">To pay (@due.Count)</option>
-                        <option value="@PaidFilter">Paid (@(all.Count - due.Count))</option>
+                        <option value="@PendingFilter">With your health plan (@pending)</option>
+                        <option value="@PaidFilter">Paid or nothing to pay (@(all.Count - due.Count - pending))</option>
                     </select>
                 </div>
             </div>
@@ -103,7 +112,11 @@
                             </GridColumn>
                             <GridColumn TItem="BillRow" HeaderText="Status" PropertyName="Status" SortString="status" SortKeySelector="row => row.StatusOrder"
                                         IsDefaultSortColumn="@view.IsSortColumn("status")" SortDirection="@view.DirectionFor("status")" TextNoWrap="true">
-                                <span class="@(context.StatusOrder switch { 0 => "badge text-bg-danger", 1 => "badge text-bg-warning", _ => "badge text-bg-success" })">@context.Status</span>
+                                <span class="@(context.StatusOrder switch { 0 => "badge text-bg-danger", 1 => "badge text-bg-warning", 2 => "badge text-bg-info", _ => "badge text-bg-success" })">@context.Status</span>
+                            </GridColumn>
+                            <GridColumn TItem="BillRow" HeaderText="Insurance" PropertyName="Insurance" SortString="insurance" SortKeySelector="row => row.Insurance"
+                                        IsDefaultSortColumn="@view.IsSortColumn("insurance")" SortDirection="@view.DirectionFor("insurance")">
+                                <span class="hc-wrap small">@context.Insurance</span>
                             </GridColumn>
                             <GridColumn TItem="BillRow" HeaderText="Issued" PropertyName="IssuedText" SortString="issued" SortKeySelector="row => row.Issued"
                                         IsDefaultSortColumn="@view.IsSortColumn("issued")" SortDirection="@view.DirectionFor("issued")" TextNoWrap="true">
@@ -130,7 +143,13 @@
         <Modal @ref="billModal" IsVerticallyCentered="true" ShowCloseButton="false" aria-labelledby="hc-bills-dialog-title" OnShown="OnShownAsync" OnHidden="OnHiddenAsync">
             <HeaderTemplate>
                 <h2 class="modal-title h5 hc-wrap" id="hc-bills-dialog-title" tabindex="-1" @ref="payHeading">
-                    @(Opened is { } shown ? (shown.Status == HcBillStatus.Due ? $"Pay {HcDisplay.Money(shown.AmountCents)} for {shown.Description}" : $"Paid: {shown.Description}") : "Bill")
+                    @(Opened is { } shown ? shown.Status switch
+                    {
+                        HcBillStatus.Due => $"Pay {HcDisplay.Money(shown.AmountCents)} for {shown.Description}",
+                        HcBillStatus.Pending => $"With your health plan: {shown.Description}",
+                        HcBillStatus.Covered => $"Nothing to pay: {shown.Description}",
+                        _ => $"Paid: {shown.Description}",
+                    } : "Bill")
                 </h2>
             </HeaderTemplate>
             <BodyTemplate>
@@ -143,9 +162,17 @@
                 {
                     <dl class="hc-bills-facts mb-3">
                         <div><dt>Bill</dt><dd class="hc-mono">@bill.Id.ToString(CultureInfo.InvariantCulture)</dd></div>
-                        <div><dt>Amount</dt><dd>@HcDisplay.Money(bill.AmountCents)</dd></div>
+                        <div><dt>@(bill.Status == HcBillStatus.Pending ? "Billed to your plan" : "Amount")</dt><dd>@HcDisplay.Money(bill.AmountCents)</dd></div>
                         <div><dt>Issued</dt><dd>@HcDisplay.Date(bill.CreatedAt)</dd></div>
-                        <div><dt>Due by</dt><dd>@HcDisplay.Date(bill.DueDate)@(IsOverdue(bill, today) ? " (overdue)" : null)</dd></div>
+                        @if (bill.Status is HcBillStatus.Due or HcBillStatus.Paid)
+                        {
+                            <div><dt>Due by</dt><dd>@HcDisplay.Date(bill.DueDate)@(IsOverdue(bill, today) ? " (overdue)" : null)</dd></div>
+                        }
+                        @if (State.PatientClaimText(bill) is { } insurance)
+                        {
+                            @* The claim's state in plain words: sent, being followed up, paid with your share, or not covered. *@
+                            <div><dt>Insurance</dt><dd>@insurance</dd></div>
+                        }
                         @if (bill.Status == HcBillStatus.Paid)
                         {
                             <div><dt>Paid</dt><dd>@HcDisplay.Date(bill.PaidAt ?? bill.CreatedAt) with @CardText(bill)</dd></div>

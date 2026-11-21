@@ -1,8 +1,8 @@
 @inherits LayoutComponentBase
 @implements IDisposable
 
-@* The staff back office (D-031): doctors and the front desk, each with their own modules in the sidebar, and the audit
-   log for both. Pages for one of the two roles add their own ShowcaseRoleGuard. The header has the global search and the
+@* The staff back office (D-031): doctors, the front desk, and billing, each with their own modules in the sidebar, and
+   the audit log for all three. Pages for one of the two roles add their own ShowcaseRoleGuard. The header has the global search and the
    notifications once someone is signed in. *@
 <ShowcaseSessionHost State="State" SiteBase="@HcLayout.Base" SiteName="@HcSeedData.ProductName">
     <HcFrame>
@@ -11,8 +11,7 @@
                 <span class="hc-app-bar-title">@HcSeedData.ProductName staff</span>
                 <div class="hc-app-bar-actions">
                     @* The search and the notifications show once someone is signed in. *@
-                    <ShowcaseGlobalSearch Class="hc-global-search" Placeholder="@(State.IsFrontDesk ? "Search patients, appointments" : "Search patients, appointments, labs")"
-                                          Label="@(State.IsFrontDesk ? "Search patients by name, record number, or date of birth, and appointments by number" : "Search patients by name, record number, or date of birth, appointments by number, and your lab orders")" />
+                    <ShowcaseGlobalSearch Class="hc-global-search" Placeholder="@SearchPlaceholder" Label="@SearchLabel" />
                     <ShowcaseNotificationsMenu />
                     <a class="btn btn-sm btn-outline-secondary" href="@HcLayout.Base">
                         <Icon Name="IconName.BoxArrowUpRight" class="me-1" aria-hidden="true" />View patient portal
@@ -29,7 +28,7 @@
                          Href="@HomeFor(State)"
                          IconName="IconName.HeartPulse"
                          Title="@HcSeedData.ProductName"
-                         BadgeText="@(State.IsFrontDesk ? "Front desk" : "Doctor")"
+                         BadgeText="@(State.IsFrontDesk ? "Front desk" : State.IsBilling ? "Billing" : "Doctor")"
                          DataProvider="SidebarDataProvider" />
             }
         </Sidebar>
@@ -48,7 +47,16 @@
     [Inject] private HcState State { get; set; } = default!;
 
     /// <summary>Returns the staff start page of the signed-in role.</summary>
-    public static string HomeFor(HcState state) => state.IsFrontDesk ? $"{Base}/calendar" : $"{Base}/schedule";
+    public static string HomeFor(HcState state) => state.IsFrontDesk ? $"{Base}/calendar" : state.IsBilling ? $"{Base}/claims" : $"{Base}/schedule";
+
+    /// <summary>What the header search finds, in words, for the signed-in role.</summary>
+    private string SearchLabel => State.IsFrontDesk
+        ? "Search patients by name, record number, or date of birth, and appointments by number"
+        : State.IsBilling
+            ? "Search patients by name, record number, or date of birth, visits by appointment number, and claims by number"
+            : "Search patients by name, record number, or date of birth, appointments by number, your lab orders, and your patients' claims by number";
+
+    private string SearchPlaceholder => State.IsFrontDesk ? "Search patients, appointments" : State.IsBilling ? "Search patients, visits, claims" : "Search patients, appointments, labs";
 
     /// <summary>Stops listening to state changes.</summary>
     public void Dispose() => State.Changed -= OnStateChanged;
@@ -57,10 +65,19 @@
 
     private void OnStateChanged() => InvokeAsync(StateHasChanged);
 
-    /// <summary>The doctor's or the front desk's modules.</summary>
+    /// <summary>The doctor's, the front desk's, or billing's modules.</summary>
     private Task<SidebarDataProviderResult> SidebarDataProvider(SidebarDataProviderRequest request)
     {
-        var items = State.IsFrontDesk
+        var items = State.IsBilling
+            ? new List<NavItem>
+            {
+                new() { Id = "claims", Href = $"{Base}/claims", IconName = IconName.Receipt, Text = "Claims", Match = NavLinkMatch.All },
+                new() { Id = "denials", Href = $"{Base}/claims/denials", IconName = IconName.ExclamationOctagon, Text = "Denials" },
+                new() { Id = "patients", Href = $"{Base}/patients", IconName = IconName.People, Text = "Patients" },
+                new() { Id = "audit", Href = $"{Base}/audit", IconName = IconName.JournalText, Text = "Audit log" },
+                new() { Id = "account", Href = $"{Base}/account", IconName = IconName.PersonGear, Text = "Account" },
+            }
+            : State.IsFrontDesk
             ? new List<NavItem>
             {
                 new() { Id = "calendar", Href = $"{Base}/calendar", IconName = IconName.CalendarWeek, Text = "Calendar" },

@@ -137,7 +137,7 @@ public sealed partial class HcState
             var doctor = Doctor();
             var birthDate = DateTime.TryParseExact(term, birthDateFormats, CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces, out var parsed) ? parsed.Date : (DateTime?)null;
 
-            // Kind: 0 a patient, 1 an appointment, 2 a lab order.
+            // Kind: 0 a patient, 1 an appointment, 2 a lab order, 3 a claim.
             foreach (var patient in patients)
             {
                 var found = birthDate is { } dob && patient.DateOfBirth?.Date == dob ? 0 : Rank(term, term.Length >= 2 ? patient.Name : null, patient.Mrn, hasDigit ? patient.Mrn[3..] : null);
@@ -159,7 +159,22 @@ public sealed partial class HcState
                         var name = patientsById.GetValueOrDefault(appointment.PatientId)?.Name ?? "A former patient";
                         matches.Add((found, 1, -appointment.Start.Ticks, new ShowcaseSearchResult("Appointment", Invariant($"Appointment {appointment.Id}"),
                             $"{name} · {doctorNames.GetValueOrDefault(appointment.DoctorId)} · {HcDisplayText.When(appointment.Start)} · {HcDisplayText.StatusWord(appointment.Status)}",
-                            doctor is not null ? StaffAppointmentPath(appointment.Id) : HcSeedData.StaffCalendarPath(appointment.Start.Date, appointment.DoctorId))));
+                            doctor is not null ? StaffAppointmentPath(appointment.Id)
+                            : IsBilling ? claims.FirstOrDefault(item => item.AppointmentId == appointment.Id) is { } visitClaim ? HcSeedData.ClaimPath(visitClaim.Id) : PatientDetailsPath(appointment.PatientId)
+                            : HcSeedData.StaffCalendarPath(appointment.Start.Date, appointment.DoctorId))));
+                    }
+                }
+            }
+
+            if ((IsBilling || doctor is not null) && hasDigit && birthDate is null)
+            {
+                foreach (var claim in claims)
+                {
+                    if (Rank(number, claim.Number, claim.Number[^5..], claim.Id.ToString(CultureInfo.InvariantCulture)) is { } found)
+                    {
+                        matches.Add((found, 3, -claim.CreatedAt.Ticks, new ShowcaseSearchResult("Claim", claim.Number,
+                            $"{patientsById.GetValueOrDefault(claim.PatientId)?.Name} · {FindPayer(claim.PayerId)?.Name} · {HcDisplayText.ClaimWord(claim.Status)} · {HcDisplayText.Money(claim.BilledCents)}",
+                            HcSeedData.ClaimPath(claim.Id))));
                     }
                 }
             }
@@ -217,7 +232,7 @@ public sealed partial class HcState
                 if (found is { } rank)
                 {
                     matches.Add((rank, 3, -bill.CreatedAt.Ticks, new ShowcaseSearchResult("Bill", Invariant($"Bill {bill.Id} · {HcDisplayText.Money(bill.AmountCents)}"),
-                        $"{bill.Description} · {(bill.Status == HcBillStatus.Paid ? "paid" : $"due {HcDisplayText.Date(bill.DueDate)}")}", BillsPath(bill.Id))));
+                        $"{bill.Description} · {bill.Status switch { HcBillStatus.Paid => "paid", HcBillStatus.Pending => "with the health plan", HcBillStatus.Covered => "nothing to pay", _ => $"due {HcDisplayText.Date(bill.DueDate)}" }}", BillsPath(bill.Id))));
                 }
             }
 
@@ -414,6 +429,14 @@ internal static class HcDisplayText
 
     /// <summary>Formats a date like "Tue, Nov 24".</summary>
     public static string Day(DateTime date) => date.ToString("ddd, MMM d", CultureInfo.InvariantCulture);
+
+    /// <summary>Returns a claim status in words for a sentence, like "partly paid".</summary>
+    public static string ClaimWord(HcClaimStatus status) => status switch
+    {
+        HcClaimStatus.PartlyPaid => "partly paid",
+        HcClaimStatus.WrittenOff => "closed",
+        _ => status.ToString().ToLowerInvariant(),
+    };
 
     /// <summary>Returns a lab status in words, like "waiting for results".</summary>
     public static string LabWord(HcLabStatus status) => status switch

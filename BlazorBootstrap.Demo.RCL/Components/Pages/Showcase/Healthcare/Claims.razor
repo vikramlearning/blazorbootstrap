@@ -1,0 +1,314 @@
+@page "/showcase/healthcare/staff/claims"
+@layout HcStaffLayout
+
+<PageTitle>Claims · @HcSeedData.ProductName</PageTitle>
+
+@* Billing's work queue: what needs doing today, the open claims by age, the visits to code, and every claim in a Grid. *@
+<div class="container-fluid px-lg-4">
+    <ShowcaseRoleGuard Roles="@HcSeedData.BillingRole" SignInPath="@HcLayout.SignInPath">
+        @{
+            var all = State.Claims;
+            var toCode = State.VisitsToCode;
+            var today = State.Clock.Today;
+            var open = all.Where(IsOpen).ToList();
+        }
+
+        <h1 class="hc-title mb-1">Claims</h1>
+        <p class="hc-lead mb-3">
+            Insurance claims for the clinics' visits: code the visits, submit the claims within @HcSeedData.FilingDays days of the visit, record each plan's answer, and
+            follow up denials with a correction or an appeal within @HcSeedData.AppealDays days.
+        </p>
+
+        <ul class="hc-cl-cards list-unstyled" aria-label="Claims work today">
+            <li class="hc-cl-card"><span class="hc-cl-number">@toCode.Count</span><span class="hc-cl-label">Visits to code</span></li>
+            <li class="hc-cl-card"><span class="hc-cl-number">@all.Count(item => item.Status is HcClaimStatus.Draft or HcClaimStatus.Corrected)</span><span class="hc-cl-label">To submit</span></li>
+            <li class="hc-cl-card"><span class="hc-cl-number">@all.Count(item => item.Status is HcClaimStatus.Submitted or HcClaimStatus.Appealed)</span><span class="hc-cl-label">With the plans</span></li>
+            <li class="hc-cl-card"><span class="hc-cl-number">@all.Count(item => item.Status == HcClaimStatus.Denied)</span><span class="hc-cl-label"><a href="@DenialsUrl">Denied, to follow up</a></span></li>
+            <li class="hc-cl-card">
+                <span class="hc-cl-number">@all.Count(item => item.Status == HcClaimStatus.Denied && item.AppealDeadline is { } deadline && deadline <= today.AddDays(14))</span>
+                <span class="hc-cl-label">Appeals due in 14 days</span>
+            </li>
+        </ul>
+
+        <section class="hc-panel mb-3" aria-labelledby="hc-cl-aging-title">
+            <h2 class="hc-section-title" id="hc-cl-aging-title">Open claims by age</h2>
+            <div class="table-responsive">
+                <table class="table table-sm align-middle mb-0 hc-cl-aging">
+                    <caption class="small">Open claims (not paid or closed yet) by days since the visit, with what they bill.</caption>
+                    <thead>
+                        <tr>
+                            <th scope="col">Days since the visit</th>
+                            @foreach (var bucket in Buckets)
+                            {
+                                <th scope="col" class="text-end" @key="bucket">@bucket</th>
+                            }
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th scope="row">Claims</th>
+                            @foreach (var bucket in Buckets)
+                            {
+                                <td class="text-end" @key="@($"count-{bucket}")">@open.Count(item => BucketOf(item) == bucket)</td>
+                            }
+                        </tr>
+                        <tr>
+                            <th scope="row">Billed</th>
+                            @foreach (var bucket in Buckets)
+                            {
+                                <td class="text-end text-nowrap" @key="@($"sum-{bucket}")">@HcDisplay.Money(open.Where(item => BucketOf(item) == bucket).Sum(item => item.BilledCents))</td>
+                            }
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        @* Always rendered and focusable, so every step is announced and focus has somewhere to go when a row leaves a list. *@
+        <p class="hc-list-status mb-2 @(statusIsError ? "text-danger-emphasis" : null)" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
+
+        <section class="hc-panel mb-3" aria-labelledby="hc-cl-code-title">
+            <h2 class="hc-section-title" id="hc-cl-code-title">Visits to code (@toCode.Count)</h2>
+            <p class="small text-body-secondary">Completed visits of patients with a health plan that have no codes yet. Coding one creates its draft claim; the visit's doctor can code it too.</p>
+            <ShowcaseDataState Status="@(codeViewLoaded ? ShowcaseDataStatus.Ready : ShowcaseDataStatus.Loading)"
+                               IsEmpty="@(toCode.Count == 0)"
+                               EmptyIcon="IconName.CheckAll"
+                               EmptyTitle="Every visit is coded"
+                               EmptyText="When a doctor completes a visit of a patient with a health plan, it shows here until it's coded."
+                               LoadingText="Loading visits to code…"
+                               OnRetry="RefreshGridsAsync">
+                <ChildContent>
+                    <Grid @ref="codeGrid"
+                          @key="codeGridVersion"
+                          TItem="VisitRow"
+                          Class="table table-hover align-middle hc-table-mid sc-grid-row-links"
+                          GridContainerClass="hc-grid border rounded-3"
+                          DataProvider="ProvideVisitsAsync"
+                          SettingsProvider="codeView.GetSettingsAsync"
+                          GridSettingsChanged="SaveCodeSettingsAsync"
+                          AllowPaging="true"
+                          PageSize="@codePageSize"
+                          PageSizeSelectorVisible="true"
+                          PageSizeSelectorItems="@(new[] { 5, 10, 25 })"
+                          PaginationItemsTextFormat="{0}–{1} of {2} visits"
+                          AllowSorting="true"
+                          AllowColumnChooser="true"
+                          AllowExport="true"
+                          ExportFileName="clinic-visits-to-code"
+                          Responsive="true"
+                          EmptyText="Every visit is coded."
+                          aria-label="Visits to code">
+                        <GridColumns>
+                            <GridColumn TItem="VisitRow" HeaderText="Visit" PropertyName="WhenText" SortString="when" SortKeySelector="row => row.Start"
+                                        IsDefaultSortColumn="@codeView.IsSortColumn("when")" SortDirection="@codeView.DirectionFor("when")" AlwaysVisible="true" TextNoWrap="true">
+                                @{
+                                    var row = context;
+                                }
+                                @* A visit to code has no billing page: the stretched button makes the whole row open the coding dialog. *@
+                                <button type="button" class="hc-row-button stretched-link" @ref="visitOpeners[row.Id]" @onclick="() => OpenCodingAsync(row.Id)">@row.WhenText</button>
+                            </GridColumn>
+                            <GridColumn TItem="VisitRow" HeaderText="Patient" PropertyName="Patient" SortString="patient" SortKeySelector="row => row.Patient"
+                                        IsDefaultSortColumn="@codeView.IsSortColumn("patient")" SortDirection="@codeView.DirectionFor("patient")">
+                                @context.Patient
+                            </GridColumn>
+                            <GridColumn TItem="VisitRow" HeaderText="Doctor" PropertyName="Doctor" SortString="doctor" SortKeySelector="row => row.Doctor"
+                                        IsDefaultSortColumn="@codeView.IsSortColumn("doctor")" SortDirection="@codeView.DirectionFor("doctor")">
+                                @context.Doctor
+                            </GridColumn>
+                            <GridColumn TItem="VisitRow" HeaderText="Reason" PropertyName="Reason" SortString="reason" SortKeySelector="row => row.Reason"
+                                        IsDefaultSortColumn="@codeView.IsSortColumn("reason")" SortDirection="@codeView.DirectionFor("reason")">
+                                <span class="hc-wrap">@context.Reason</span>
+                            </GridColumn>
+                            <GridColumn TItem="VisitRow" HeaderText="Health plan" PropertyName="Payer" SortString="payer" SortKeySelector="row => row.Payer"
+                                        IsDefaultSortColumn="@codeView.IsSortColumn("payer")" SortDirection="@codeView.DirectionFor("payer")">
+                                @context.Payer
+                            </GridColumn>
+                            <GridColumn TItem="VisitRow" HeaderText="File by" PropertyName="FileByText" SortString="fileby" SortKeySelector="row => row.FileBy"
+                                        IsDefaultSortColumn="@codeView.IsSortColumn("fileby")" SortDirection="@codeView.DirectionFor("fileby")" TextNoWrap="true">
+                                @context.FileByText
+                            </GridColumn>
+                        </GridColumns>
+                    </Grid>
+                </ChildContent>
+            </ShowcaseDataState>
+        </section>
+
+        <section class="hc-panel mb-3" aria-labelledby="hc-cl-filters-title">
+            <h2 class="hc-section-title" id="hc-cl-filters-title">Find claims</h2>
+            <div class="hc-list-filters" role="search" aria-labelledby="hc-cl-filters-title">
+                <div class="hc-list-search">
+                    <label class="form-label small fw-semibold" for="hc-cl-search">Search</label>
+                    @* Filters on every keystroke; the bound value changes only on change, so a render during typing never writes an older value back. *@
+                    <input id="hc-cl-search" type="search" class="form-control" value="@searchBoxValue" placeholder="Claim number, patient, or record number" autocomplete="off" maxlength="80"
+                           @oninput="OnSearchInputAsync" @onchange="OnSearchChanged" />
+                </div>
+                <div>
+                    <label class="form-label small fw-semibold" for="hc-cl-status">Status</label>
+                    <select id="hc-cl-status" class="form-select" value="@statusFilter" @onchange="OnStatusChangedAsync">
+                        <option value="@OpenFilter">Open (@open.Count)</option>
+                        <option value="@ToSubmitFilter">To submit (@all.Count(item => item.Status is HcClaimStatus.Draft or HcClaimStatus.Corrected))</option>
+                        <option value="@WithPlanFilter">With the plan (@all.Count(item => item.Status is HcClaimStatus.Submitted or HcClaimStatus.Appealed))</option>
+                        <option value="@DeniedFilter">Denied (@all.Count(item => item.Status == HcClaimStatus.Denied))</option>
+                        <option value="@PaidFilter">Paid or partly paid (@all.Count(item => item.Status is HcClaimStatus.Paid or HcClaimStatus.PartlyPaid))</option>
+                        <option value="@ClosedFilter">Written off or billed to the patient (@all.Count(item => item.Status == HcClaimStatus.WrittenOff))</option>
+                        <option value="">All (@all.Count)</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="form-label small fw-semibold" for="hc-cl-payer">Health plan</label>
+                    <select id="hc-cl-payer" class="form-select" value="@payerFilter" @onchange="OnPayerChangedAsync">
+                        <option value="">All plans</option>
+                        @foreach (var payer in State.Payers)
+                        {
+                            <option value="@payer.Id" @key="payer.Id">@payer.Name</option>
+                        }
+                    </select>
+                </div>
+                <div>
+                    <label class="form-label small fw-semibold" for="hc-cl-age">Days since the visit</label>
+                    <select id="hc-cl-age" class="form-select" value="@ageFilter" @onchange="OnAgeChangedAsync">
+                        <option value="">Any</option>
+                        @foreach (var bucket in Buckets)
+                        {
+                            <option value="@bucket" @key="bucket">@bucket</option>
+                        }
+                    </select>
+                </div>
+            </div>
+            <div class="hc-list-meta">
+                <p class="small text-body-secondary mb-0" aria-live="polite" tabindex="-1" @ref="countRegion">@CountText(all.Count)</p>
+                @if (IsFiltered)
+                {
+                    <Button Color="ButtonColor.Link" Size="ButtonSize.Small" Class="p-0" @onclick="ClearFiltersAsync">Show the open claims</Button>
+                }
+                @* Back to the saved view's defaults: oldest visit first, 25 a page, every column in its place. *@
+                <Button Color="ButtonColor.Link" Size="ButtonSize.Small" Class="p-0" @onclick="ResetViewAsync">Reset view</Button>
+            </div>
+        </section>
+
+        @if (selected.Count > 0)
+        {
+            var ready = selected.Count(row => row.StatusValue is HcClaimStatus.Draft or HcClaimStatus.Corrected);
+
+            <section class="hc-bulk" aria-labelledby="hc-cl-bulk-count">
+                <h2 class="hc-bulk-count" id="hc-cl-bulk-count">@(selected.Count == 1 ? "1 claim selected" : $"{selected.Count} claims selected"), @ready ready to submit</h2>
+                <div class="hc-bulk-actions">
+                    <Button Color="ButtonColor.Primary" Size="ButtonSize.Small" Disabled="@(ready == 0)" @onclick="SubmitSelectedAsync">
+                        <Icon Name="IconName.Send" class="me-1" aria-hidden="true" />Submit<span class="visually-hidden">&#32;the selected claims</span>
+                    </Button>
+                    <Button Color="ButtonColor.Secondary" Outline="true" Size="ButtonSize.Small" @onclick="ClearSelectionAsync">Clear selection</Button>
+                </div>
+                <p class="form-text w-100 mb-0">Only drafts and corrected claims are sent, and only within @HcSeedData.FilingDays days of their visit; the others stay as they are.</p>
+            </section>
+        }
+
+        <section class="hc-panel" aria-label="Claim list">
+            <ShowcaseDataState Status="@(viewLoaded ? ShowcaseDataStatus.Ready : ShowcaseDataStatus.Loading)"
+                               IsEmpty="@(all.Count == 0)"
+                               EmptyIcon="IconName.Receipt"
+                               EmptyTitle="No claims yet"
+                               EmptyText="Code a visit of a patient with a health plan; its claim shows here."
+                               LoadingText="Loading claims…"
+                               OnRetry="RefreshGridsAsync">
+                <ChildContent>
+                    <Grid @ref="grid"
+                          @key="gridVersion"
+                          TItem="ClaimRow"
+                          Class="table table-hover align-middle hc-table-wide sc-grid-row-links"
+                          GridContainerClass="hc-grid border rounded-3"
+                          DataProvider="ProvideClaimsAsync"
+                          SettingsProvider="view.GetSettingsAsync"
+                          GridSettingsChanged="SaveSettingsAsync"
+                          AllowPaging="true"
+                          PageSize="@pageSize"
+                          PageSizeSelectorVisible="true"
+                          PageSizeSelectorItems="@(new[] { 10, 25, 50, 100 })"
+                          PaginationItemsTextFormat="{0}–{1} of {2} claims"
+                          AllowSorting="true"
+                          AllowSelection="true"
+                          SelectionMode="GridSelectionMode.Multiple"
+                          RowSelectionLabel="@(row => $"Select {row.Number}, {row.Patient}")"
+                          SelectAllRowsText="Select all shown claims"
+                          SelectedItemsChanged="OnSelectionChanged"
+                          RowClass="RowClass"
+                          AllowColumnChooser="true"
+                          AllowExport="true"
+                          ExportFileName="clinic-claims"
+                          Responsive="true"
+                          EmptyText="No claims match. Choose another status, plan, or age, or clear the search."
+                          aria-label="Claims">
+                        <GridColumns>
+                            <GridColumn TItem="ClaimRow" HeaderText="Claim" PropertyName="Number" SortString="number" SortKeySelector="row => row.Id"
+                                        IsDefaultSortColumn="@view.IsSortColumn("number")" SortDirection="@view.DirectionFor("number")" AlwaysVisible="true" TextNoWrap="true">
+                                @* The stretched link makes the whole row open the claim; the checkbox stays above it. *@
+                                <a class="hc-row-link stretched-link hc-mono" href="@ClaimDetail.Url(context.Id)">@context.Number</a>
+                            </GridColumn>
+                            <GridColumn TItem="ClaimRow" HeaderText="Patient" PropertyName="Patient" SortString="patient" SortKeySelector="row => row.Patient"
+                                        IsDefaultSortColumn="@view.IsSortColumn("patient")" SortDirection="@view.DirectionFor("patient")">
+                                @context.Patient
+                            </GridColumn>
+                            <GridColumn TItem="ClaimRow" HeaderText="Health plan" PropertyName="Payer" SortString="payer" SortKeySelector="row => row.Payer"
+                                        IsDefaultSortColumn="@view.IsSortColumn("payer")" SortDirection="@view.DirectionFor("payer")">
+                                @context.Payer
+                            </GridColumn>
+                            <GridColumn TItem="ClaimRow" HeaderText="Visit" PropertyName="VisitText" SortString="visit" SortKeySelector="row => row.Visit"
+                                        IsDefaultSortColumn="@view.IsSortColumn("visit")" SortDirection="@view.DirectionFor("visit")" TextNoWrap="true">
+                                @context.VisitText
+                            </GridColumn>
+                            <GridColumn TItem="ClaimRow" HeaderText="Status" PropertyName="Status" SortString="status" SortKeySelector="row => row.StatusValue"
+                                        IsDefaultSortColumn="@view.IsSortColumn("status")" SortDirection="@view.DirectionFor("status")" TextNoWrap="true">
+                                <span class="badge text-bg-@ClaimDetail.StatusColor(context.StatusValue)">@context.Status</span>
+                            </GridColumn>
+                            <GridColumn TItem="ClaimRow" HeaderText="Billed" PropertyName="BilledText" SortString="billed" SortKeySelector="row => row.Billed"
+                                        IsDefaultSortColumn="@view.IsSortColumn("billed")" SortDirection="@view.DirectionFor("billed")" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" TextNoWrap="true">
+                                @context.BilledText
+                            </GridColumn>
+                            <GridColumn TItem="ClaimRow" HeaderText="Plan paid" PropertyName="PaidText" SortString="paid" SortKeySelector="row => row.Paid"
+                                        IsDefaultSortColumn="@view.IsSortColumn("paid")" SortDirection="@view.DirectionFor("paid")" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" TextNoWrap="true">
+                                @context.PaidText
+                            </GridColumn>
+                            <GridColumn TItem="ClaimRow" HeaderText="Patient owes" PropertyName="PatientText" SortString="owes" SortKeySelector="row => row.PatientOwes"
+                                        IsDefaultSortColumn="@view.IsSortColumn("owes")" SortDirection="@view.DirectionFor("owes")" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" TextNoWrap="true">
+                                @context.PatientText
+                            </GridColumn>
+                            <GridColumn TItem="ClaimRow" HeaderText="Age" PropertyName="Bucket" SortString="age" SortKeySelector="row => row.AgeDays"
+                                        IsDefaultSortColumn="@view.IsSortColumn("age")" SortDirection="@view.DirectionFor("age")" TextNoWrap="true">
+                                @context.AgeDays d <span class="small text-body-secondary">(@context.Bucket)</span>
+                            </GridColumn>
+                            <GridColumn TItem="ClaimRow" HeaderText="Codes" PropertyName="Codes" SortString="codes" SortKeySelector="row => row.Codes"
+                                        IsDefaultSortColumn="@view.IsSortColumn("codes")" SortDirection="@view.DirectionFor("codes")">
+                                <span class="small hc-mono">@context.Codes</span>
+                            </GridColumn>
+                            <GridColumn TItem="ClaimRow" HeaderText="Version" PropertyName="Version" SortString="version" SortKeySelector="row => row.Version"
+                                        IsDefaultSortColumn="@view.IsSortColumn("version")" SortDirection="@view.DirectionFor("version")" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End">
+                                @context.Version
+                            </GridColumn>
+                        </GridColumns>
+                    </Grid>
+                </ChildContent>
+            </ShowcaseDataState>
+        </section>
+
+        <Modal @ref="codingModal" IsVerticallyCentered="true" Size="ModalSize.Large" ShowCloseButton="false" aria-labelledby="hc-cl-dialog-title" OnShown="OnCodingShownAsync" OnHidden="OnCodingHidden">
+            <HeaderTemplate>
+                <h2 class="modal-title h5 hc-wrap" id="hc-cl-dialog-title" tabindex="-1" @ref="codingHeading">
+                    @(CodingVisit is { } shown ? $"Code {State.FindPatient(shown.PatientId)?.Name}'s visit of {HcDisplay.Day(shown.Start)}" : "Code a visit")
+                </h2>
+            </HeaderTemplate>
+            <BodyTemplate>
+                @if (CodingVisit is { } visit)
+                {
+                    <p class="small text-body-secondary">
+                        @(State.FindDoctor(visit.DoctorId)?.Name) · @HcDisplay.VisitTypeText(visit.VisitType) · reason: <span class="hc-plain">@visit.Reason</span>
+                    </p>
+                    <HcCodingForm Appointment="visit" IdPrefix="hc-cl-coding" OnSaved="OnCodedAsync" OnCancel="() => codingModal.HideAsync()" />
+                }
+                else
+                {
+                    <p>This visit is coded already, or it can't be found.</p>
+                    <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => codingModal.HideAsync()">Close</Button>
+                }
+            </BodyTemplate>
+        </Modal>
+    </ShowcaseRoleGuard>
+</div>

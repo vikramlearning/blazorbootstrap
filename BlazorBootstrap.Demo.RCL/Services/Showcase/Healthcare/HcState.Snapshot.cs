@@ -26,6 +26,7 @@ public sealed partial class HcState
         var (changedAudit, removedAudit) = Diff(audit, data.Audit, entry => entry.Id, SameAudit);
         var (changedAvailability, removedAvailability) = Diff(availability, data.Availability, item => item.Id, SameJson);
         var (changedBills, removedBills) = Diff(bills, data.Bills, item => item.Id, SameBill);
+        var (changedClaims, removedClaims) = Diff(claims, data.Claims, item => item.Id, SameClaim);
         var (changedLabs, removedLabs) = Diff(labOrders, data.LabOrders, item => item.Id, SameLab);
         var (changedNotifications, removedNotifications) = Diff(notifications, data.Notifications, notice => notice.Id, SameNotification);
         var (changedPatients, removedPatients) = Diff(patients, data.Patients, item => item.Id, SamePatient);
@@ -46,6 +47,8 @@ public sealed partial class HcState
             RemovedAvailabilityIds = removedAvailability,
             Bills = changedBills,
             RemovedBillIds = removedBills,
+            Claims = changedClaims,
+            RemovedClaimIds = removedClaims,
             DoctorDetails = doctorDetails.Count == 0 ? null : doctorDetails,
             LabOrders = changedLabs,
             RemovedLabOrderIds = removedLabs,
@@ -63,6 +66,7 @@ public sealed partial class HcState
             NextAuditId = nextAuditId,
             NextAvailabilityId = nextAvailabilityId,
             NextBillId = nextBillId,
+            NextClaimId = nextClaimId,
             NextLabOrderId = nextLabOrderId,
             NextNotificationId = nextNotificationId,
             NextPatientId = nextPatientId,
@@ -92,7 +96,7 @@ public sealed partial class HcState
         if (snapshot is null
             || new[]
                 {
-                    snapshot.NextAppointmentId, snapshot.NextAuditId, snapshot.NextAvailabilityId, snapshot.NextBillId, snapshot.NextLabOrderId, snapshot.NextNotificationId,
+                    snapshot.NextAppointmentId, snapshot.NextAuditId, snapshot.NextAvailabilityId, snapshot.NextBillId, snapshot.NextClaimId, snapshot.NextLabOrderId, snapshot.NextNotificationId,
                     snapshot.NextPatientId, snapshot.NextPrescriptionId, snapshot.NextTimeOffId,
                 }
                 .Any(id => id is < 1 or > NextIdLimit))
@@ -105,6 +109,7 @@ public sealed partial class HcState
             || Overlay(fresh.Audit, snapshot.Audit, snapshot.RemovedAuditIds, entry => entry.Id) is not { Count: <= MaxAudit } storedAudit
             || Overlay(fresh.Availability, snapshot.Availability, snapshot.RemovedAvailabilityIds, item => item.Id) is not { Count: <= MaxAvailability } storedAvailability
             || Overlay(fresh.Bills, snapshot.Bills, snapshot.RemovedBillIds, item => item.Id) is not { Count: <= MaxBills } storedBills
+            || Overlay(fresh.Claims, snapshot.Claims, snapshot.RemovedClaimIds, item => item.Id) is not { Count: <= MaxClaims } storedClaims
             || Overlay(fresh.LabOrders, snapshot.LabOrders, snapshot.RemovedLabOrderIds, item => item.Id) is not { Count: <= MaxLabOrders } storedLabs
             || Overlay(fresh.Notifications, snapshot.Notifications, snapshot.RemovedNotificationIds, notice => notice.Id) is not { Count: <= MaxNotifications } storedNotifications
             || Overlay(fresh.Patients, snapshot.Patients, snapshot.RemovedPatientIds, item => item.Id) is not { Count: > 0 and <= MaxPatients } storedPatients
@@ -148,7 +153,8 @@ public sealed partial class HcState
                 || LabPanel(order.PanelId) is not { } panel || !Enum.IsDefined(order.Status) || !IsPlausible(order.OrderedAt) || order.Comment is not { Length: <= MaxCommentLength }
                 || (order.AppointmentId is { } appointmentId && (!appointmentsById.TryGetValue(appointmentId, out var visit) || visit.PatientId != order.PatientId))
                 || order.Values is null || (order.Status == HcLabStatus.Ordered ? order.Values.Count != 0 || order.ResultedAt is not null : order.Values.Count != panel.Analytes.Count || order.ResultedAt is null)
-                || order.Values.Any(value => !double.IsFinite(value) || value is < 0 or > 100_000) || (order.ReleasedAt is not null) != (order.Status == HcLabStatus.Released))
+                || order.Values.Select((value, index) => (value, index)).Any(pair => !double.IsFinite(pair.value) || pair.value < 0 || pair.value > panel.Analytes[Math.Min(pair.index, panel.Analytes.Count - 1)].MaxValue)
+                || (order.ReleasedAt is not null) != (order.Status == HcLabStatus.Released))
             || !Unique(storedLabs.Select(order => order.Id)))
             return false;
 
@@ -157,12 +163,17 @@ public sealed partial class HcState
 
         var labIds = storedLabs.Select(order => order.Id).ToHashSet();
 
-        if (storedBills.Any(bill => bill is null || bill.Id < 1 || bill.Id >= snapshot.NextBillId || !patientIds.Contains(bill.PatientId) || bill.AmountCents is < 1 or > 1_000_000
+        if (storedBills.Any(bill => bill is null || bill.Id < 1 || bill.Id >= snapshot.NextBillId || !patientIds.Contains(bill.PatientId) || bill.AmountCents is < 0 or > 1_000_000
+                || (bill.AmountCents == 0) != (bill.Status == HcBillStatus.Covered)
                 || !IsText(bill.Description, MaxBillDescriptionLength) || !IsPlausible(bill.CreatedAt) || !IsPlausible(bill.DueDate) || !Enum.IsDefined(bill.Status)
                 || (bill.AppointmentId is { } appointmentId && (!appointmentsById.TryGetValue(appointmentId, out var visit) || visit.PatientId != bill.PatientId))
                 || (bill.LabOrderId is { } labId && !labIds.Contains(labId)) || (bill.PaidAt is not null) != (bill.Status == HcBillStatus.Paid)
                 || bill.CardBrand is not { Length: <= 20 } || bill.CardLast4 is not { Length: <= 4 } || (bill.CardLast4.Length > 0 && !bill.CardLast4.All(char.IsAsciiDigit)))
             || !Unique(storedBills.Select(bill => bill.Id)))
+            return false;
+
+        if (storedClaims.Any(claim => !ValidClaim(claim, snapshot, patientIds, appointmentsById)) || !Unique(storedClaims.Select(claim => claim.Id)) || !Unique(storedClaims.Select(claim => claim.Number))
+            || !Unique(storedClaims.Select(claim => claim.AppointmentId)))
             return false;
 
         if (storedAudit.Any(entry => entry is null || entry.Id < 1 || entry.Id >= snapshot.NextAuditId || !IsPlausible(entry.At) || !IsText(entry.Actor, ShowcaseIdentity.MaxNameLength)
@@ -183,6 +194,7 @@ public sealed partial class HcState
         Replace(audit, storedAudit);
         Replace(availability, storedAvailability);
         Replace(bills, storedBills);
+        Replace(claims, storedClaims);
         Replace(labOrders, storedLabs);
         Replace(notifications, storedNotifications);
         Replace(patients, storedPatients);
@@ -201,6 +213,7 @@ public sealed partial class HcState
         nextAuditId = snapshot.NextAuditId;
         nextAvailabilityId = snapshot.NextAvailabilityId;
         nextBillId = snapshot.NextBillId;
+        nextClaimId = snapshot.NextClaimId;
         nextLabOrderId = snapshot.NextLabOrderId;
         nextNotificationId = snapshot.NextNotificationId;
         nextPatientId = snapshot.NextPatientId;
@@ -213,6 +226,9 @@ public sealed partial class HcState
     #endregion
 
     #region Private Methods
+
+    [GeneratedRegex("^CLM-20[0-9]{2}-[0-9]{5}$")]
+    private static partial Regex ClaimNumberPattern();
 
     [GeneratedRegex("^[A-Z0-9][A-Z0-9.]{2,7}$")]
     private static partial Regex CodePattern();
@@ -292,7 +308,7 @@ public sealed partial class HcState
         left.Id == right.Id && left.PatientId == right.PatientId && left.DoctorId == right.DoctorId && left.ClinicId == right.ClinicId && left.Start == right.Start && left.Minutes == right.Minutes
         && left.VisitType == right.VisitType && left.Reason == right.Reason && left.Status == right.Status && left.CreatedAt == right.CreatedAt && left.CheckedInAt == right.CheckedInAt
         && left.CompletedAt == right.CompletedAt && left.CancelledAt == right.CancelledAt && left.CancelReason == right.CancelReason && left.Notes == right.Notes && left.Summary == right.Summary
-        && left.DiagnosisCodes.SequenceEqual(right.DiagnosisCodes) && left.ProcedureCodes.SequenceEqual(right.ProcedureCodes);
+        && left.DiagnosisCodes.SequenceEqual(right.DiagnosisCodes) && left.ProcedureCodes.SequenceEqual(right.ProcedureCodes) && SameVitals(left.Vitals, right.Vitals);
 
     private static bool SameAudit(ShowcaseAuditEntry left, ShowcaseAuditEntry right) =>
         left.Id == right.Id && left.At == right.At && left.Actor == right.Actor && left.Action == right.Action && left.Target == right.Target
@@ -302,6 +318,19 @@ public sealed partial class HcState
         left.Id == right.Id && left.PatientId == right.PatientId && left.AppointmentId == right.AppointmentId && left.LabOrderId == right.LabOrderId && left.AmountCents == right.AmountCents
         && left.Description == right.Description && left.CreatedAt == right.CreatedAt && left.DueDate == right.DueDate && left.Status == right.Status && left.PaidAt == right.PaidAt
         && left.CardBrand == right.CardBrand && left.CardLast4 == right.CardLast4;
+
+    private static bool SameClaim(HcClaim left, HcClaim right) =>
+        left.Id == right.Id && left.Number == right.Number && left.PatientId == right.PatientId && left.AppointmentId == right.AppointmentId && left.PayerId == right.PayerId
+        && left.MemberId == right.MemberId && left.BilledCents == right.BilledCents && left.Status == right.Status && left.CreatedAt == right.CreatedAt && left.SubmittedAt == right.SubmittedAt
+        && left.ClosedAt == right.ClosedAt && left.AppealDeadline == right.AppealDeadline && left.AppealedAt == right.AppealedAt && left.AppealLetter == right.AppealLetter
+        && left.WriteOffReason == right.WriteOffReason && left.BilledToPatient == right.BilledToPatient && left.DiagnosisCodes.SequenceEqual(right.DiagnosisCodes)
+        && left.ProcedureCodes.SequenceEqual(right.ProcedureCodes) && left.Versions.Count == right.Versions.Count && left.Responses.Count == right.Responses.Count
+        && left.Versions.Zip(right.Versions).All(pair => pair.First.Number == pair.Second.Number && pair.First.At == pair.Second.At && pair.First.By == pair.Second.By && pair.First.MemberId == pair.Second.MemberId
+            && pair.First.Note == pair.Second.Note && pair.First.DiagnosisCodes.SequenceEqual(pair.Second.DiagnosisCodes) && pair.First.ProcedureCodes.SequenceEqual(pair.Second.ProcedureCodes))
+        && left.Responses.Zip(right.Responses).All(pair => pair.First.Version == pair.Second.Version && pair.First.At == pair.Second.At && pair.First.Outcome == pair.Second.Outcome
+            && pair.First.AllowedCents == pair.Second.AllowedCents && pair.First.PaidCents == pair.Second.PaidCents && pair.First.PatientCents == pair.Second.PatientCents
+            && pair.First.AfterAppeal == pair.Second.AfterAppeal && pair.First.RecordedBy == pair.Second.RecordedBy && pair.First.Remark == pair.Second.Remark
+            && pair.First.DenialCodes.SequenceEqual(pair.Second.DenialCodes));
 
     private static bool SameJson<T>(T left, T right) => JsonSerializer.Serialize(left, snapshotOptions) == JsonSerializer.Serialize(right, snapshotOptions);
 
@@ -326,6 +355,10 @@ public sealed partial class HcState
         && left.LastFilledOn == right.LastFilledOn && left.Status == right.Status && left.RefillNote == right.RefillNote && left.RefillOutcome == right.RefillOutcome
         && left.RefillRequestedAt == right.RefillRequestedAt && left.RefillPharmacyId == right.RefillPharmacyId && left.RefillQuantity == right.RefillQuantity && left.RefillPickupOn == right.RefillPickupOn;
 
+    private static bool SameVitals(HcVitals? left, HcVitals? right) =>
+        left is null ? right is null
+        : right is not null && left.Systolic == right.Systolic && left.Diastolic == right.Diastolic && left.Pulse == right.Pulse && left.TemperatureC == right.TemperatureC && left.WeightKg == right.WeightKg;
+
     private static bool ValidCodes(List<string>? codes) => codes is { Count: <= MaxCodes } && codes.All(code => code is not null && CodePattern().IsMatch(code)) && Unique(codes);
 
     private bool ValidAppointment(HcAppointment? appointment, HcSnapshot snapshot, HashSet<int> patientIds) =>
@@ -334,9 +367,53 @@ public sealed partial class HcState
         && Enum.IsDefined(appointment.VisitType) && appointment.Minutes == HcVisitTypes.MinutesOf(appointment.VisitType) && IsText(appointment.Reason, MaxReasonLength)
         && Enum.IsDefined(appointment.Status) && IsPlausible(appointment.CreatedAt) && appointment.Notes is { Length: <= MaxNotesLength } && appointment.Summary is { Length: <= MaxSummaryLength }
         && appointment.CancelReason is { Length: <= MaxReasonLength } && ValidCodes(appointment.DiagnosisCodes) && ValidCodes(appointment.ProcedureCodes)
+        && (appointment.Vitals is null || VitalsProblem(appointment.Vitals) is null)
         && (appointment.CancelledAt is not null) == (appointment.Status == HcAppointmentStatus.Cancelled)
         && (appointment.CompletedAt is not null) == (appointment.Status == HcAppointmentStatus.Completed)
         && !(appointment.CheckedInAt is null && appointment.Status is HcAppointmentStatus.CheckedIn or HcAppointmentStatus.InVisit);
+
+    /// <summary>
+    /// Checks a claim: known patient, completed visit of that patient, and plan; a number of the clinics' form; codes the
+    /// visit can be billed with and the billed amount they make; a member ID of the plan's form; every version and answer in
+    /// range; and dates, deadlines, letters, and reasons that fit its status.
+    /// </summary>
+    private bool ValidClaim(HcClaim? claim, HcSnapshot snapshot, HashSet<int> patientIds, Dictionary<int, HcAppointment> visits)
+    {
+        if (claim is null || claim.Id < 1 || claim.Id >= snapshot.NextClaimId || claim.Number is null || !ClaimNumberPattern().IsMatch(claim.Number) || !patientIds.Contains(claim.PatientId)
+            || !visits.TryGetValue(claim.AppointmentId, out var visit) || visit.PatientId != claim.PatientId || visit.Status != HcAppointmentStatus.Completed || FindPayer(claim.PayerId) is null
+            || claim.DiagnosisCodes is null || claim.ProcedureCodes is null || claim.Versions is not { Count: >= 1 and <= 20 } || claim.Responses is not { Count: <= 20 }
+            || CodingProblem(claim.DiagnosisCodes, claim.ProcedureCodes, visit.VisitType) is not (null, null) || claim.BilledCents != BilledCents(claim.ProcedureCodes)
+            || claim.MemberId is null || MemberIdProblem(claim.PayerId, claim.MemberId) is not null || !Enum.IsDefined(claim.Status) || !IsPlausible(claim.CreatedAt)
+            || claim.AppealLetter is not { Length: <= MaxAppealLength } || claim.WriteOffReason is not { Length: <= MaxClaimNoteLength })
+            return false;
+
+        if (claim.Versions.Select((version, index) => (version, index)).Any(pair => pair.version is null || pair.version.Number != pair.index + 1 || !IsPlausible(pair.version.At)
+                || !IsText(pair.version.By, ShowcaseIdentity.MaxNameLength) || pair.version.Note is not { Length: <= MaxClaimNoteLength } || pair.version.MemberId is null
+                || MemberIdProblem(claim.PayerId, pair.version.MemberId) is not null || pair.version.DiagnosisCodes is null || pair.version.ProcedureCodes is null
+                || CodingProblem(pair.version.DiagnosisCodes, pair.version.ProcedureCodes, visit.VisitType) is not (null, null)))
+            return false;
+
+        var known = HcSeedData.DenialCodes().Select(code => code.Code).ToHashSet(StringComparer.Ordinal);
+
+        if (claim.Responses.Any(response => response is null || !Enum.IsDefined(response.Outcome) || response.Version < 1 || response.Version > claim.Versions.Count || !IsPlausible(response.At)
+                || response.AllowedCents is < 0 or > 1_000_000 || response.PaidCents < 0 || response.PatientCents < 0 || response.PaidCents + response.PatientCents != response.AllowedCents
+                || (response.Outcome == HcClaimOutcome.Denied) != (response.AllowedCents == 0) || response.DenialCodes is not { Count: <= MaxResponseCodes } || response.DenialCodes.Any(code => !known.Contains(code))
+                || !IsText(response.RecordedBy, ShowcaseIdentity.MaxNameLength) || response.Remark is not { Length: <= MaxClaimNoteLength }))
+            return false;
+
+        var last = claim.Responses.LastOrDefault();
+        var closed = claim.Status is HcClaimStatus.Paid or HcClaimStatus.PartlyPaid or HcClaimStatus.WrittenOff;
+
+        return (claim.SubmittedAt is null) == (claim.Status == HcClaimStatus.Draft) && (claim.SubmittedAt is not { } submitted || IsPlausible(submitted))
+            && (claim.ClosedAt is not null) == closed && (claim.ClosedAt is not { } closedAt || IsPlausible(closedAt))
+            && (claim.Status is not (HcClaimStatus.Paid or HcClaimStatus.PartlyPaid) || last?.Outcome == (claim.Status == HcClaimStatus.Paid ? HcClaimOutcome.Paid : HcClaimOutcome.PartlyPaid))
+            && (claim.Status != HcClaimStatus.Denied || last?.Outcome == HcClaimOutcome.Denied)
+            // A first denial has an appeal deadline, and an appealed claim keeps it to show the appeal was in time; a final denial has none.
+            && (claim.AppealDeadline is not null) == (claim.Status == HcClaimStatus.Appealed || (claim.Status == HcClaimStatus.Denied && last?.AfterAppeal != true))
+            && (claim.AppealDeadline is not { } deadline || IsPlausible(deadline))
+            && (claim.Status != HcClaimStatus.Appealed || (claim.AppealedAt is { } appealed && IsPlausible(appealed) && claim.AppealLetter.Length >= MinAppealLength))
+            && (claim.Status != HcClaimStatus.WrittenOff || claim.WriteOffReason.Length >= MinClaimNoteLength) && (!claim.BilledToPatient || claim.Status == HcClaimStatus.WrittenOff);
+    }
 
     /// <summary>
     /// Checks the patients: unique IDs, record numbers, and accounts; a seeded record keeps its account (or none) exactly, any
@@ -382,9 +459,10 @@ public sealed partial class HcState
     /// <summary>
     /// Gets the snapshot format version: 2 stores only what differs from the seed, and adds the audit log, notifications,
     /// staff work details, doctors' profiles, visit types, registration and health plan details, refill requests with a
-    /// pharmacy and a day, and room for visit codes.
+    /// pharmacy and a day, and room for visit codes; 3 adds insurance claims, visit codes and vital signs, bills waiting for
+    /// or covered by a plan, and the billing account.
     /// </summary>
-    public int SnapshotVersion => 2;
+    public int SnapshotVersion => 3;
 
     #endregion
 
@@ -420,6 +498,9 @@ public sealed partial class HcState
         public List<HcBill>? Bills { get; set; }
 
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public List<HcClaim>? Claims { get; set; }
+
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public List<HcDoctorDetails>? DoctorDetails { get; set; }
 
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
@@ -432,6 +513,8 @@ public sealed partial class HcState
         public int NextAvailabilityId { get; set; }
 
         public int NextBillId { get; set; }
+
+        public int NextClaimId { get; set; }
 
         public int NextLabOrderId { get; set; }
 
@@ -463,6 +546,9 @@ public sealed partial class HcState
 
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public List<int>? RemovedBillIds { get; set; }
+
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public List<int>? RemovedClaimIds { get; set; }
 
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public List<int>? RemovedLabOrderIds { get; set; }

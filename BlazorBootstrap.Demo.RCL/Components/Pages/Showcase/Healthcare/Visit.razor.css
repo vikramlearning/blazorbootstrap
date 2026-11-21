@@ -61,7 +61,17 @@
         grid-template-areas:
             "notes labs"
             "notes rx"
-            "complete rx";
+            "vitals rx"
+            "complete rx"
+            "coding coding";
+    }
+
+    .hc-visit-vitals {
+        grid-area: vitals;
+    }
+
+    .hc-visit-coding {
+        grid-area: coding;
     }
 
     .hc-visit-notes {
@@ -127,4 +137,11 @@
     border-radius: .5rem;
     background: var(--bs-warning-bg-subtle);
     color: var(--bs-warning-text-emphasis);
+}
+
+/* Vital signs: one field per measurement in a responsive grid. */
+.hc-visit-vitals-fields {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 9rem), 1fr));
+    gap: .25rem 1rem;
 }

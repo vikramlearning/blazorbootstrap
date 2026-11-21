@@ -76,6 +76,9 @@ public sealed partial class HcState : IShowcaseEnterpriseState
     /// <summary>The longest phone number.</summary>
     public const int MaxPhoneLength = 30;
 
+    /// <summary>The most days one fill of a prescription may last.</summary>
+    public const int MaxDaysSupply = 90;
+
     /// <summary>The highest prescription quantity.</summary>
     public const int MaxQuantity = 365;
 
@@ -155,6 +158,8 @@ public sealed partial class HcState : IShowcaseEnterpriseState
 
     private readonly List<HcBill> bills;
 
+    private readonly List<HcClaim> claims;
+
     private readonly List<HcLabOrder> labOrders;
 
     private readonly List<ShowcaseNotification> notifications;
@@ -180,6 +185,8 @@ public sealed partial class HcState : IShowcaseEnterpriseState
 
     private int nextBillId;
 
+    private int nextClaimId;
+
     private int nextLabOrderId;
 
     private int nextNotificationId;
@@ -202,6 +209,7 @@ public sealed partial class HcState : IShowcaseEnterpriseState
         audit = data.Audit;
         availability = data.Availability;
         bills = data.Bills;
+        claims = data.Claims;
         labOrders = data.LabOrders;
         notifications = data.Notifications;
         patients = data.Patients;
@@ -235,9 +243,11 @@ public sealed partial class HcState : IShowcaseEnterpriseState
     public IReadOnlyList<HcAvailability> AvailabilityOf(string doctorId) =>
         availability.Where(item => item.DoctorId == doctorId).OrderBy(item => ((int)item.Day + 6) % 7).ThenBy(item => item.StartMinute).ToList();
 
-    /// <summary>Returns a patient's bills, due first (staff, or the patient themselves).</summary>
+    /// <summary>Returns a patient's bills, due first, then those waiting for the health plan (staff, or the patient themselves).</summary>
     public IReadOnlyList<HcBill> BillsOf(int patientId) =>
-        CanSeePatient(patientId) ? bills.Where(item => item.PatientId == patientId).OrderBy(item => item.Status).ThenByDescending(item => item.CreatedAt).ToList() : Array.Empty<HcBill>();
+        CanSeePatient(patientId)
+            ? bills.Where(item => item.PatientId == patientId).OrderBy(item => item.Status switch { HcBillStatus.Due => 0, HcBillStatus.Pending => 1, _ => 2 }).ThenByDescending(item => item.CreatedAt).ToList()
+            : Array.Empty<HcBill>();
 
     /// <summary>
     /// Books an open time with a doctor for the signed-in patient, as a standard or a new patient visit (which needs two free
@@ -266,6 +276,10 @@ public sealed partial class HcState : IShowcaseEnterpriseState
 
         if (!doctor.AcceptingNewPatients && !HasSeen(patient.Id, doctor.Id))
             return HcResult.WrongState;
+
+        // A first visit with the doctor is a new patient visit, and later ones are standard visits (the booking form says so first).
+        if ((visitType == HcVisitType.NewPatient) == HasSeen(patient.Id, doctor.Id))
+            return HcResult.Invalid;
 
         var minutes = HcVisitTypes.MinutesOf(visitType);
 
@@ -391,7 +405,8 @@ public sealed partial class HcState : IShowcaseEnterpriseState
 
     /// <summary>
     /// Completes the signed-in doctor's visit in progress: the patient sees the summary under their records, and the visit is
-    /// billed (primary care or specialist fee, due in 30 days); the patient hears about both.
+    /// billed (primary care or specialist fee, due in 30 days); the patient hears about both. A patient with a health plan
+    /// pays nothing yet: the bill waits for the plan's answer to the claim, and billing hears the visit is ready to code.
     /// </summary>
     public HcResult CompleteVisit(int appointmentId, out HcBill? bill)
     {
@@ -410,10 +425,12 @@ public sealed partial class HcState : IShowcaseEnterpriseState
             return HcResult.Invalid;
 
         var fee = doctor.Specialty is "Family medicine" or "Pediatrics" ? HcSeedData.PrimaryCareFeeCents : HcSeedData.SpecialistFeeCents;
+        var payer = FindPayer(patients.FirstOrDefault(item => item.Id == appointment.PatientId)?.InsurancePayerId);
         var created = new HcBill
         {
             Id = nextBillId++, PatientId = appointment.PatientId, AppointmentId = appointment.Id, AmountCents = fee, CreatedAt = Clock.Now, DueDate = Clock.Today.AddDays(30),
             Description = Clip($"Visit: {HcSeedData.LowerFirst(appointment.Reason)} with {doctor.Name}", MaxBillDescriptionLength),
+            Status = payer is null ? HcBillStatus.Due : HcBillStatus.Pending,
         };
         appointment.Status = HcAppointmentStatus.Completed;
         appointment.CompletedAt = Clock.Now;
@@ -430,7 +447,16 @@ public sealed partial class HcState : IShowcaseEnterpriseState
             Record("Visit completed", AppointmentTarget(appointment), StaffAppointmentPath(appointment.Id),
                 Invariant($"Notes {appointment.Notes.Length} characters, summary {appointment.Summary.Length} characters; billed {HcDisplayText.Money(fee)}"));
             Notify(owner?.AccountId, "Your visit summary is ready", $"{doctor.Name} completed your visit on {HcDisplayText.Day(appointment.Start)}.", HcSeedData.AppointmentPath(appointment.Id));
-            Notify(owner?.AccountId, $"New bill: {HcDisplayText.Money(fee)}", $"{created.Description}, due {HcDisplayText.Day(created.DueDate)}.", BillsPath(created.Id));
+
+            if (payer is null)
+            {
+                Notify(owner?.AccountId, $"New bill: {HcDisplayText.Money(fee)}", $"{created.Description}, due {HcDisplayText.Day(created.DueDate)}.", BillsPath(created.Id));
+            }
+            else
+            {
+                Notify(owner?.AccountId, "Your visit goes to your health plan first", $"Nothing to pay until {payer.Name} answers; your bill shows what you owe after that.", BillsPath(created.Id));
+                NotifyBilling($"Visit to code: {owner?.Name}", $"{doctor.Name}, {HcDisplayText.Day(appointment.Start)}: {appointment.Reason}. Code it to claim {payer.Name}.", HcSeedData.StaffBase + "/claims");
+            }
         });
 
         if (result == HcResult.Ok)
@@ -534,7 +560,8 @@ public sealed partial class HcState : IShowcaseEnterpriseState
 
         comment = comment?.Trim() ?? string.Empty;
 
-        if (values is null || values.Count != panel.Analytes.Count || values.Any(value => !double.IsFinite(value) || value is < 0 or > 100_000) || comment.Length > MaxCommentLength)
+        if (values is null || values.Count != panel.Analytes.Count || values.Select((value, index) => (value, index)).Any(pair => !double.IsFinite(pair.value) || pair.value < 0 || pair.value > panel.Analytes[pair.index].MaxValue)
+            || comment.Length > MaxCommentLength)
             return HcResult.Invalid;
 
         var corrected = order.Status == HcLabStatus.Resulted;
@@ -731,7 +758,8 @@ public sealed partial class HcState : IShowcaseEnterpriseState
         if (bills.FirstOrDefault(item => item.Id == billId && item.PatientId == patient.Id) is not { } bill)
             return HcResult.NotFound;
 
-        if (bill.Status == HcBillStatus.Paid)
+        // Only a bill to pay can be paid: not one already paid, one still with the health plan, or one insurance covered.
+        if (bill.Status != HcBillStatus.Due)
             return HcResult.WrongState;
 
         if (charge is null || !charge.IsApproved)
@@ -747,8 +775,11 @@ public sealed partial class HcState : IShowcaseEnterpriseState
         return HcResult.Ok;
     }
 
-    /// <summary>Prescribes a medication in the signed-in doctor's visit (in progress or completed); the first fill is today.</summary>
-    public HcResult Prescribe(int appointmentId, string medication, string dose, string directions, int quantity, int refills, out HcPrescription? prescribed)
+    /// <summary>
+    /// Prescribes a medication in the signed-in doctor's visit (in progress or completed); the first fill is today and lasts
+    /// <paramref name="daysSupply" /> days (1 to <see cref="MaxDaysSupply" />), and all fills together at most a year.
+    /// </summary>
+    public HcResult Prescribe(int appointmentId, string medication, string dose, string directions, int quantity, int refills, int daysSupply, out HcPrescription? prescribed)
     {
         prescribed = null;
 
@@ -766,13 +797,13 @@ public sealed partial class HcState : IShowcaseEnterpriseState
         directions = directions?.Trim() ?? string.Empty;
 
         if (!IsText(medication, MaxMedicationLength) || !IsText(dose, MaxDoseLength) || !IsText(directions, MaxDirectionsLength) || quantity is < 1 or > MaxQuantity || refills is < 0 or > MaxRefills
-            || prescriptions.Count >= MaxPrescriptions || nextPrescriptionId >= NextIdLimit)
+            || daysSupply is < 1 or > MaxDaysSupply || (refills + 1) * daysSupply > 366 || prescriptions.Count >= MaxPrescriptions || nextPrescriptionId >= NextIdLimit)
             return HcResult.Invalid;
 
         var prescription = new HcPrescription
         {
             Id = nextPrescriptionId++, PatientId = appointment.PatientId, DoctorId = doctor.Id, Medication = medication, Dose = dose, Directions = directions, Quantity = quantity, Refills = refills,
-            PrescribedAt = Clock.Now, LastFilledOn = Clock.Today, DaysSupply = 30, Status = HcPrescriptionStatus.Active,
+            PrescribedAt = Clock.Now, LastFilledOn = Clock.Today, DaysSupply = daysSupply, Status = HcPrescriptionStatus.Active,
         };
         prescriptions.Add(prescription);
         var result = Commit(() =>
@@ -804,7 +835,7 @@ public sealed partial class HcState : IShowcaseEnterpriseState
             return;
 
         Record(details ? "Viewed details" : "Viewed chart", PatientTarget(patient), details ? PatientDetailsPath(patient.Id) : PatientChartPath(patient.Id),
-            IsFrontDesk ? "Front desk" : "Doctor");
+            IsFrontDesk ? "Front desk" : IsBilling ? "Billing" : "Doctor");
         RaiseChanged();
     }
 
@@ -1159,7 +1190,7 @@ public sealed partial class HcState : IShowcaseEnterpriseState
     /// <summary>Saves the signed-in front desk's work details: the clinic they work at (and get new bookings for) and a work phone (or none).</summary>
     public HcResult SaveStaffProfile(string clinicId, string workPhone)
     {
-        if (!IsFrontDesk || Identity.Current is not { } account)
+        if (!(IsFrontDesk || IsBilling) || Identity.Current is not { } account)
             return HcResult.NotAllowed;
 
         workPhone = workPhone?.Trim() ?? string.Empty;
@@ -1193,7 +1224,7 @@ public sealed partial class HcState : IShowcaseEnterpriseState
 
             if (isNew)
                 staffProfiles.Remove(profile);
-        }, () => Record("Work details changed", $"Front desk {account.Name}", HcSeedData.StaffBase + "/account", "Changed: " + (changed.Count == 0 ? "work details" : string.Join(", ", changed))));
+        }, () => Record("Work details changed", $"{(IsBilling ? "Billing" : "Front desk")} {account.Name}", HcSeedData.StaffBase + "/account", "Changed: " + (changed.Count == 0 ? "work details" : string.Join(", ", changed))));
     }
 
     /// <summary>
@@ -1255,6 +1286,42 @@ public sealed partial class HcState : IShowcaseEnterpriseState
             saved = entry;
 
         return result;
+    }
+
+    /// <summary>
+    /// Saves the vital signs of the signed-in doctor's visit in progress or completed, checked by <see cref="VitalsProblem" />;
+    /// the audit names the measurements taken, not their values.
+    /// </summary>
+    public HcResult SaveVitals(int appointmentId, HcVitals vitals)
+    {
+        if (Doctor() is not { } doctor)
+            return HcResult.NotAllowed;
+
+        if (appointments.FirstOrDefault(item => item.Id == appointmentId && item.DoctorId == doctor.Id) is not { } appointment)
+            return HcResult.NotFound;
+
+        if (appointment.Status is not (HcAppointmentStatus.InVisit or HcAppointmentStatus.Completed))
+            return HcResult.WrongState;
+
+        if (vitals is null || VitalsProblem(vitals) is not null)
+            return HcResult.Invalid;
+
+        var saved = new HcVitals
+        {
+            Systolic = vitals.Systolic, Diastolic = vitals.Diastolic, Pulse = vitals.Pulse,
+            TemperatureC = vitals.TemperatureC is { } temperature ? Math.Round(temperature, 1) : null, WeightKg = vitals.WeightKg is { } weight ? Math.Round(weight, 1) : null,
+        };
+
+        if (appointment.Vitals is { } current && current.Systolic == saved.Systolic && current.Diastolic == saved.Diastolic && current.Pulse == saved.Pulse
+            && current.TemperatureC == saved.TemperatureC && current.WeightKg == saved.WeightKg)
+            return HcResult.NoChange;
+
+        var previous = appointment.Vitals;
+        appointment.Vitals = saved;
+        var taken = new[] { saved.Systolic is null ? null : "blood pressure", saved.Pulse is null ? null : "pulse", saved.TemperatureC is null ? null : "temperature", saved.WeightKg is null ? null : "weight" }
+            .Where(item => item is not null);
+
+        return Commit(() => appointment.Vitals = previous, () => Record("Vitals saved", AppointmentTarget(appointment), StaffAppointmentPath(appointment.Id), "Taken: " + string.Join(", ", taken)));
     }
 
     /// <summary>Saves the signed-in doctor's notes and patient summary for a visit in progress or completed (plain text); only their lengths are audited.</summary>
@@ -1418,6 +1485,22 @@ public sealed partial class HcState : IShowcaseEnterpriseState
     /// soonest first (staff, or the patient themselves).
     /// </summary>
     public IReadOnlyList<HcAppointment> UpcomingOf(int patientId) => CanSeePatient(patientId) ? Upcoming(patientId).Select(ForViewer).ToList() : Array.Empty<HcAppointment>();
+
+    /// <summary>
+    /// Returns why vital signs can't be kept, or <see langword="null" />: at least one measurement; both blood pressure values
+    /// or neither, systolic 60 to 250 above diastolic 30 to 150 mmHg; pulse 30 to 220 a minute; temperature 34 to 42 °C;
+    /// weight 1 to 400 kg.
+    /// </summary>
+    public static string? VitalsProblem(HcVitals vitals) =>
+        vitals.Systolic is null && vitals.Diastolic is null && vitals.Pulse is null && vitals.TemperatureC is null && vitals.WeightKg is null ? "Enter at least one measurement."
+        : (vitals.Systolic is null) != (vitals.Diastolic is null) ? "Enter both blood pressure values, or neither."
+        : vitals.Systolic is < 60 or > 250 ? "Systolic pressure is 60 to 250 mmHg."
+        : vitals.Diastolic is < 30 or > 150 ? "Diastolic pressure is 30 to 150 mmHg."
+        : vitals.Systolic <= vitals.Diastolic ? "Systolic pressure must be above diastolic."
+        : vitals.Pulse is < 30 or > 220 ? "Pulse is 30 to 220 beats a minute."
+        : vitals.TemperatureC is { } temperature && (!double.IsFinite(temperature) || temperature < 34 || temperature > 42) ? "Temperature is 34 to 42 °C."
+        : vitals.WeightKg is { } weight && (!double.IsFinite(weight) || weight < 1 || weight > 400) ? "Weight is 1 to 400 kg."
+        : null;
 
     /// <summary>Returns whether a date of birth can be kept: not in the future, and at most <see cref="MaxAgeYears" /> years ago.</summary>
     public bool ValidBirthDate(DateTime dateOfBirth) => dateOfBirth.Date <= Clock.Today && dateOfBirth.Date >= Clock.Today.AddYears(-MaxAgeYears);
@@ -1644,6 +1727,7 @@ public sealed partial class HcState : IShowcaseEnterpriseState
         }
 
         RemindLabResults();
+        RemindClaims();
         Changed?.Invoke();
     }
 
@@ -1703,6 +1787,7 @@ public sealed partial class HcState : IShowcaseEnterpriseState
         nextAuditId = data.Audit.Count == 0 ? 1 : data.Audit.Max(item => item.Id) + 1;
         nextAvailabilityId = data.Availability.Max(item => item.Id) + 1;
         nextBillId = data.Bills.Max(item => item.Id) + 1;
+        nextClaimId = data.Claims.Count == 0 ? 1 : data.Claims.Max(item => item.Id) + 1;
         nextLabOrderId = data.LabOrders.Max(item => item.Id) + 1;
         nextNotificationId = data.Notifications.Count == 0 ? 1 : data.Notifications.Max(item => item.Id) + 1;
         nextPatientId = data.Patients.Max(item => item.Id) + 1;
@@ -1752,8 +1837,8 @@ public sealed partial class HcState : IShowcaseEnterpriseState
     /// <summary>Gets whether the signed-in account is the front desk.</summary>
     public bool IsFrontDesk => Identity.Current?.RoleId == HcSeedData.FrontDeskRole;
 
-    /// <summary>Gets whether the signed-in account is staff (a doctor with a record, or the front desk).</summary>
-    public bool IsStaff => IsFrontDesk || Doctor() is not null;
+    /// <summary>Gets whether the signed-in account is staff (a doctor with a record, the front desk, or billing).</summary>
+    public bool IsStaff => IsFrontDesk || IsBilling || Doctor() is not null;
 
     /// <summary>Gets the lab tests doctors can order.</summary>
     public IReadOnlyList<HcLabPanel> LabPanels { get; } = HcSeedData.LabPanels();

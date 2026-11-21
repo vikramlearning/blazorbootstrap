@@ -13,6 +13,9 @@ public static partial class HcSeedData
 {
     #region Fields and Constants
 
+    /// <summary>The identity role of the billing team (insurance claims).</summary>
+    public const string BillingRole = "billing";
+
     /// <summary>The identity role of doctors.</summary>
     public const string DoctorRole = "doctor";
 
@@ -27,6 +30,9 @@ public static partial class HcSeedData
 
     /// <summary>The fictitious clinic network.</summary>
     public const string ProductName = "Cedarline Health";
+
+    /// <summary>The demo billing specialist's account ID.</summary>
+    public const string SeededBillingId = "billing";
 
     /// <summary>The demo doctor's ID.</summary>
     public const string SeededDoctorId = "okoye";
@@ -43,8 +49,8 @@ public static partial class HcSeedData
     /// <summary>The site's base route (the same as <c>HcLayout.Base</c>).</summary>
     public const string SiteBase = "/showcase/healthcare";
 
-    /// <summary>The staff roles (doctors and the front desk).</summary>
-    public const string StaffRoles = DoctorRole + "," + FrontDeskRole;
+    /// <summary>The staff roles (doctors, the front desk, and billing).</summary>
+    public const string StaffRoles = DoctorRole + "," + FrontDeskRole + "," + BillingRole;
 
     /// <summary>The staff back office's base route (the same as <c>HcStaffLayout.Base</c>).</summary>
     public const string StaffBase = SiteBase + "/staff";
@@ -75,12 +81,13 @@ public static partial class HcSeedData
         new("northfield", "Cedarline Northfield", "88 Northfield Road", "(555) 010-2400", "Mon–Fri 8:00–18:30", 47.7000, -122.3250) { OpenMinute = 8 * 60, CloseMinute = (18 * 60) + 30 },
     };
 
-    /// <summary>The demo accounts: a patient, a doctor, and the front desk.</summary>
+    /// <summary>The demo accounts: a patient, a doctor, the front desk, and a billing specialist.</summary>
     public static IReadOnlyList<ShowcaseDemoAccount> DemoAccounts() => new List<ShowcaseDemoAccount>
     {
         new(SeededPatientAccountId, PatientRole, "Maya Thompson", "maya.thompson@example.com", "care-demo-26", "MT"),
         new(SeededDoctorId, DoctorRole, "Dr. Samuel Okoye", "samuel.okoye@example.com", "care-doc-26", "SO"),
         new(SeededFrontDeskId, FrontDeskRole, "Lena Fischer", "lena.fischer@example.com", "care-desk-26", "LF"),
+        new(SeededBillingId, BillingRole, "Rafael Moreno", "rafael.moreno@example.com", "care-bill-26", "RM"),
     };
 
     /// <summary>The doctors.</summary>
@@ -105,19 +112,21 @@ public static partial class HcSeedData
     {
         new("cbc", "Complete blood count", "Red and white blood cells and platelets.", new[]
         {
-            new HcAnalyte("White blood cells", "×10⁹/L", 4.0, 11.0), new HcAnalyte("Hemoglobin", "g/dL", 12.0, 15.5), new HcAnalyte("Platelets", "×10⁹/L", 150, 450),
+            new HcAnalyte("White blood cells", "×10⁹/L", 4.0, 11.0) { MaxValue = 200 }, new HcAnalyte("Hemoglobin", "g/dL", 12.0, 15.5) { MaxValue = 25 },
+            new HcAnalyte("Platelets", "×10⁹/L", 150, 450) { MaxValue = 2_000 },
         }),
         new("lipid", "Lipid panel", "Cholesterol and triglycerides.", new[]
         {
-            new HcAnalyte("Total cholesterol", "mg/dL", 0, 200), new HcAnalyte("LDL cholesterol", "mg/dL", 0, 100), new HcAnalyte("HDL cholesterol", "mg/dL", 40, 100),
-            new HcAnalyte("Triglycerides", "mg/dL", 0, 150),
+            new HcAnalyte("Total cholesterol", "mg/dL", 0, 200) { MaxValue = 1_000 }, new HcAnalyte("LDL cholesterol", "mg/dL", 0, 100) { MaxValue = 800 },
+            new HcAnalyte("HDL cholesterol", "mg/dL", 40, 100) { MaxValue = 250 }, new HcAnalyte("Triglycerides", "mg/dL", 0, 150) { MaxValue = 5_000 },
         }),
-        new("a1c", "Hemoglobin A1c", "Average blood sugar over the last three months.", new[] { new HcAnalyte("HbA1c", "%", 4.0, 5.6) }),
+        new("a1c", "Hemoglobin A1c", "Average blood sugar over the last three months.", new[] { new HcAnalyte("HbA1c", "%", 4.0, 5.6) { MaxValue = 20 } }),
         new("bmp", "Basic metabolic panel", "Blood sugar, salts, and kidney function.", new[]
         {
-            new HcAnalyte("Glucose", "mg/dL", 70, 99), new HcAnalyte("Sodium", "mmol/L", 135, 145), new HcAnalyte("Potassium", "mmol/L", 3.5, 5.1), new HcAnalyte("Creatinine", "mg/dL", 0.6, 1.2),
+            new HcAnalyte("Glucose", "mg/dL", 70, 99) { MaxValue = 1_500 }, new HcAnalyte("Sodium", "mmol/L", 135, 145) { MaxValue = 200 },
+            new HcAnalyte("Potassium", "mmol/L", 3.5, 5.1) { MaxValue = 10 }, new HcAnalyte("Creatinine", "mg/dL", 0.6, 1.2) { MaxValue = 25 },
         }),
-        new("tsh", "Thyroid stimulating hormone", "How well the thyroid is working.", new[] { new HcAnalyte("TSH", "mIU/L", 0.4, 4.0) }),
+        new("tsh", "Thyroid stimulating hormone", "How well the thyroid is working.", new[] { new HcAnalyte("TSH", "mIU/L", 0.4, 4.0) { MaxValue = 150 } }),
     };
 
     /// <summary>Returns the medical record number of a patient ID, like "CL-100001".</summary>
@@ -126,10 +135,10 @@ public static partial class HcSeedData
     /// <summary>The health plans patients can have on file (fictitious), with the letters their member IDs start with.</summary>
     public static IReadOnlyList<HcPayer> Payers() => new List<HcPayer>
     {
-        new("evergreen", "Evergreen Mutual", "EVM"),
-        new("harborview", "Harborview Health Plan", "HHP"),
-        new("northstar", "Northstar Family Health", "NFH"),
-        new("summit", "Summit Care Alliance", "SCA"),
+        new("evergreen", "Evergreen Mutual", "EVM") { AllowedPercent = 72, CopayCents = 2_500 },
+        new("harborview", "Harborview Health Plan", "HHP") { AllowedPercent = 68, CopayCents = 3_000 },
+        new("northstar", "Northstar Family Health", "NFH") { AllowedPercent = 75, CopayCents = 2_000 },
+        new("summit", "Summit Care Alliance", "SCA") { AllowedPercent = 65, CopayCents = 3_500 },
     };
 
     /// <summary>The pharmacies patients can pick up refills at (fictitious).</summary>
@@ -144,9 +153,10 @@ public static partial class HcSeedData
     /// <summary>The roles of the site, with their start pages.</summary>
     public static IReadOnlyList<ShowcaseRole> Roles() => new List<ShowcaseRole>
     {
-        new(PatientRole, "Patient", "/showcase/healthcare/appointments", "/showcase/healthcare/profile", "Books and manages appointments, and sees records, lab reports, prescriptions, and bills."),
-        new(DoctorRole, "Doctor", "/showcase/healthcare/staff/schedule", "/showcase/healthcare/staff/account", "Runs their schedule: visit notes, patient charts, lab results, and prescriptions."),
+        new(PatientRole, "Patient", "/showcase/healthcare/appointments", "/showcase/healthcare/profile", "Books and manages appointments, and sees records, lab reports, prescriptions, and bills with what insurance paid."),
+        new(DoctorRole, "Doctor", "/showcase/healthcare/staff/schedule", "/showcase/healthcare/staff/account", "Runs their schedule: visit notes and vitals, patient charts, lab results, prescriptions, and the visit's codes."),
         new(FrontDeskRole, "Front desk", "/showcase/healthcare/staff/calendar", "/showcase/healthcare/staff/account", "Runs the clinics' calendar, registers and checks patients in, and keeps doctors' hours and time off."),
+        new(BillingRole, "Billing specialist", "/showcase/healthcare/staff/claims", "/showcase/healthcare/staff/account", "Codes visits, submits insurance claims, records the plans' answers, and follows up denials with corrections and appeals."),
     };
 
     #endregion
@@ -340,11 +350,12 @@ public static partial class HcSeedData
         };
     }
 
-    /// <summary>The staff accounts' work details in a fresh tab: both work at Cedarline Downtown.</summary>
+    /// <summary>The staff accounts' work details in a fresh tab: all work at Cedarline Downtown.</summary>
     private static List<HcStaffProfile> StaffProfiles() => new()
     {
         new() { AccountId = SeededDoctorId, ClinicId = "downtown", WorkPhone = "(555) 010-2210" },
         new() { AccountId = SeededFrontDeskId, ClinicId = "downtown", WorkPhone = "(555) 010-2201" },
+        new() { AccountId = SeededBillingId, ClinicId = "downtown", WorkPhone = "(555) 010-2290" },
     };
 
     /// <summary>Doctors' time off in a fresh tab.</summary>
