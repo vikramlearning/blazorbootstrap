@@ -1,12 +1,20 @@
 @inherits LayoutComponentBase
 
-@* The workspace admin back office (D-031): its own sidebar, separate from the members' app. *@
+@* The workspace admin back office (D-031): its own sidebar, separate from the members' app. The layout asks for an active
+   membership; each page adds its own AiMemberGuard for the permission it needs (so a direct link says which roles may use
+   it), and the sidebar lists only the modules the signed-in role may use. The header has the global search and the
+   notifications for the roles with an admin page. *@
 <ShowcaseSessionHost State="State" SiteBase="@AiLayout.Base" SiteName="@AiSeedData.ProductName">
     <AiFrame>
         <Header>
             <div class="pa-admin-bar">
-                <span class="pa-admin-bar-title">Workspace admin · @AiSeedData.WorkspaceName</span>
+                <span class="pa-admin-bar-title">Workspace admin · @State.WorkspaceName</span>
                 <div class="pa-admin-bar-actions">
+                    @if (State.Can(AiPermission.ManageSharedPrompts))
+                    {
+                        <ShowcaseGlobalSearch Class="pa-global-search" Placeholder="@SearchPlaceholder" Label="@SearchLabel" />
+                        <ShowcaseNotificationsMenu />
+                    }
                     <a class="btn btn-sm btn-outline-secondary" href="@($"{AiLayout.Base}/chat")">
                         <Icon Name="IconName.ChatDots" class="me-1" aria-hidden="true" />Back to chat
                     </a>
@@ -15,19 +23,20 @@
             </div>
         </Header>
         <Sidebar>
-            @if (State.IsWorkspaceAdmin)
+            @if (State.CurrentRole is { } role && State.Can(AiPermission.ManageSharedPrompts))
             {
-                <Sidebar @key="State.Identity.Current?.Id"
+                @* Keyed by account and role, so the modules are listed again when a role changes in this tab. *@
+                <Sidebar @key="@($"{State.Identity.Current?.Id}-{role}")"
                          Class="pa-sidebar"
-                         Href="@Base"
+                         Href="@AiDisplay.AdminHomeFor(State)"
                          IconName="IconName.Stars"
                          Title="@AiSeedData.ProductName"
-                         BadgeText="Admin"
+                         BadgeText="@AiDisplay.RoleLabel(role)"
                          DataProvider="SidebarDataProvider" />
             }
         </Sidebar>
         <ChildContent>
-            <AiMemberGuard RequireAdmin="true">
+            <AiMemberGuard>
                 @Body
             </AiMemberGuard>
         </ChildContent>

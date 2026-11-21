@@ -69,6 +69,13 @@
             </div>
         </section>
 
+        @* The charts and their tables, with the empty and error states of a data screen (rule WR-001). *@
+        <ShowcaseDataState IsEmpty="@(report.Days.All(day => day.Tokens == 0))" EmptyIcon="IconName.BarChart" EmptyTitle="No usage in the last 30 days"
+                           EmptyText="Start a chat: your messages and the replies count here.">
+            <EmptyActions>
+                <a class="btn btn-primary" href="@($"{AiLayout.Base}/chat")">New chat</a>
+            </EmptyActions>
+            <ChildContent>
         <div class="row g-4">
             <div class="col-xl-7">
                 <section class="pa-panel h-100" aria-labelledby="pa-usage-daily-title">
@@ -147,5 +154,7 @@
                 </section>
             </div>
         </div>
+            </ChildContent>
+        </ShowcaseDataState>
     </AiMemberGuard>
 </div>

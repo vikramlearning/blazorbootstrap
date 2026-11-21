@@ -1,0 +1,92 @@
+@* The prompt form both editors share (a member's own prompt, and a shared prompt in the back office). *@
+<EditForm EditContext="editContext" OnSubmit="SaveAsync" FormName="@FormName" novalidate>
+    <DataAnnotationsValidator />
+    <ShowcaseFormErrors ShowSummary="true" />
+
+    <div class="row g-3 mb-3">
+        <div class="col-md-8">
+            <label class="form-label fw-semibold" for="@($"{IdPrefix}-title")">Title</label>
+            <InputText id="@($"{IdPrefix}-title")" class="form-control" @bind-Value="form.Title" maxlength="@AiState.MaxPromptTitleLength" autocomplete="off"
+                       aria-describedby="@($"{IdPrefix}-title-help")" />
+            <ShowcaseUniqueCheck @ref="titleCheck" For="() => form.Title" IsTakenAsync="IsTitleTakenAsync" TakenMessage="TitleTakenMessage" CheckingText="Checking the title…" />
+            <div class="form-text" id="@($"{IdPrefix}-title-help")">
+                @(Shared ? "What members see in their library, like \"Weekly status update\". Unique among the shared prompts." : "A short name you'll recognize. Unique among your own prompts.")
+                Up to @AiState.MaxPromptTitleLength characters.
+            </div>
+            <ValidationMessage For="() => form.Title" />
+        </div>
+        <div class="col-md-4">
+            <label class="form-label fw-semibold" for="@($"{IdPrefix}-category")">Category</label>
+            <InputSelect id="@($"{IdPrefix}-category")" class="form-select" @bind-Value="form.Category">
+                <option value="">Choose a category</option>
+                @foreach (var category in Enum.GetValues<AiPromptCategory>())
+                {
+                    <option value="@category" @key="category">@category</option>
+                }
+            </InputSelect>
+            <ValidationMessage For="() => form.Category" />
+        </div>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label fw-semibold" for="@($"{IdPrefix}-text")">Prompt text</label>
+        <InputTextArea id="@($"{IdPrefix}-text")" class="form-control pa-promptform-text" rows="8" @bind-Value="form.Text" maxlength="@AiState.MaxPromptTextLength"
+                       aria-describedby="@($"{IdPrefix}-text-help")" />
+        <div class="form-text d-flex flex-wrap justify-content-between gap-2" id="@($"{IdPrefix}-text-help")">
+            <span>What you'd type in the chat, @AiState.MinPromptTextLength to @AiState.MaxPromptTextLength.ToString("#,0", CultureInfo.InvariantCulture) characters. Write a variable like {{audience}} for the part that changes each time.</span>
+            <span class="text-nowrap">@CounterText(form.Text)</span>
+        </div>
+        <ValidationMessage For="() => form.Text" />
+    </div>
+
+    <div class="row g-3 mb-3">
+        <div class="col-md-6">
+            <label class="form-label fw-semibold" for="@($"{IdPrefix}-variables")">Variables <span class="fw-normal text-body-secondary">(optional)</span></label>
+            <InputText id="@($"{IdPrefix}-variables")" class="form-control pa-mono" @bind-Value="form.VariablesText" autocomplete="off" spellcheck="false" maxlength="200"
+                       aria-describedby="@($"{IdPrefix}-variables-help")" />
+            <div class="form-text" id="@($"{IdPrefix}-variables-help")">
+                Separate them with commas, like <span class="pa-mono">audience, tone</span>: up to @AiPromptText.MaxVariables, each used in the text as {{name}}.
+                @if (AiPromptText.VariablesIn(form.Text) is { Count: > 0 } found)
+                {
+                    <span class="d-block mt-1">In the text now: <span class="pa-mono">@string.Join(", ", found)</span>.</span>
+                }
+            </div>
+            <ValidationMessage For="() => form.VariablesText" />
+            @if (AiPromptText.VariablesIn(form.Text) is { Count: > 0 } inText && !inText.SequenceEqual(AiPromptText.ParseVariables(form.VariablesText)))
+            {
+                <button type="button" class="btn btn-link btn-sm p-0" @onclick="FillVariables">Use the variables in the text</button>
+            }
+        </div>
+        <div class="col-md-6">
+            <label class="form-label fw-semibold" for="@($"{IdPrefix}-tags")">Tags <span class="fw-normal text-body-secondary">(optional)</span></label>
+            <InputText id="@($"{IdPrefix}-tags")" class="form-control pa-mono" @bind-Value="form.TagsText" autocomplete="off" spellcheck="false" maxlength="200"
+                       aria-describedby="@($"{IdPrefix}-tags-help")" />
+            <div class="form-text" id="@($"{IdPrefix}-tags-help")">
+                Separate tags with commas, like <span class="pa-mono">writing, code-review</span>. Up to @AiState.MaxTags tags of @AiState.MaxTagLength characters: letters, digits,
+                and hyphens, starting with a letter or digit. Capitals become lower case.
+            </div>
+            <ValidationMessage For="() => form.TagsText" />
+        </div>
+    </div>
+
+    @if (Shared)
+    {
+        <div class="form-check mb-3">
+            <InputCheckbox id="@($"{IdPrefix}-publish")" class="form-check-input" @bind-Value="form.Publish" aria-describedby="@($"{IdPrefix}-publish-help")" />
+            <label class="form-check-label fw-semibold" for="@($"{IdPrefix}-publish")">Published</label>
+            <div class="form-text mt-0" id="@($"{IdPrefix}-publish-help")">
+                @(form.Publish ? "Every member sees it in their prompt library, and hears about it when it's first published." : "A draft: only prompt editors, Admins, and the Owner see it.")
+            </div>
+        </div>
+    }
+
+    @* Always rendered, so a new error is announced; a counter makes a repeat announce again. *@
+    <p class="pa-form-error mb-3" role="alert">@errorMessage</p>
+
+    <div class="d-flex flex-wrap align-items-center gap-2">
+        <Button Type="ButtonType.Submit" Color="ButtonColor.Primary">
+            <Icon Name="@(Prompt is null ? IconName.PlusLg : IconName.CheckLg)" class="me-1" aria-hidden="true" />@SubmitText
+        </Button>
+        <a class="btn btn-link" href="@CancelUrl">Cancel<span class="visually-hidden">&#32;and go back to the list</span></a>
+    </div>
+</EditForm>

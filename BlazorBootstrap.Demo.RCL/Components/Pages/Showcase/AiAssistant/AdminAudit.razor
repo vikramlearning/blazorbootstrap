@@ -1,0 +1,28 @@
+@page "/showcase/ai-assistant/admin/audit"
+@layout AiAdminLayout
+
+<PageTitle>Audit log · @AiSeedData.ProductName</PageTitle>
+
+@* Admins and the Owner read it: the page's guard keeps prompt editors out, and the state shows the log to those roles only. *@
+<div class="container-fluid px-lg-4">
+    <AiMemberGuard Require="AiPermission.ViewAudit">
+        <div class="mb-3">
+            <h1 class="pa-title mb-1">Audit log</h1>
+            <p class="pa-lead mb-0">
+                Who did what, and when, newest first: invitations, joins, role changes, access removed and restored, ownership transfers, shared prompts created,
+                edited, published, unpublished, and deleted, and changes to the workspace name, the model policy, and retention. Chat content and prompt text are never
+                copied here: entries name what changed, with lengths and counts only.
+            </p>
+        </div>
+
+        <section class="pa-panel" aria-labelledby="pa-audit-title">
+            <h2 class="visually-hidden" id="pa-audit-title">Entries</h2>
+            <p class="small text-body-secondary mb-3">
+                <Icon Name="IconName.Lock" class="me-1" aria-hidden="true" />Kept for this browser tab. Entries can't be changed or deleted.
+            </p>
+            <div class="pa-grid">
+                <ShowcaseAuditLog ExportFileName="ai-audit-log" AriaLabel="Audit log of the workspace" />
+            </div>
+        </section>
+    </AiMemberGuard>
+</div>

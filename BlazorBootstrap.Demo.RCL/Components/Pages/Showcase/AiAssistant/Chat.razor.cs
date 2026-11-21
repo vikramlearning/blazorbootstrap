@@ -755,7 +755,7 @@ public partial class Chat : ComponentBase, IDisposable
                 return "Not sent: this conversation was deleted. Start a new chat.";
 
             case AiResult.NotAllowed:
-                return $"Not sent: sign in as an active member of {AiSeedData.WorkspaceName} to chat.";
+                return $"Not sent: sign in as an active member of {State.WorkspaceName} to chat.";
 
             default:
                 return "Not sent. Try again.";
@@ -981,7 +981,7 @@ public partial class Chat : ComponentBase, IDisposable
 
             yield return ("mine", "Your prompts", term.Length == 0 ? "You haven't saved any prompts yet. Save them in the prompt library." : "None of your prompts match.",
                 State.MyPrompts.Where(Matches).ToList());
-            yield return ("shared", $"Shared with {AiSeedData.WorkspaceName}", term.Length == 0 ? "Workspace admins haven't shared any prompts yet." : "No shared prompts match.",
+            yield return ("shared", $"Shared with {State.WorkspaceName}", term.Length == 0 ? "No shared prompts are published yet." : "No shared prompts match.",
                 State.SharedPrompts.Where(Matches).ToList());
         }
     }

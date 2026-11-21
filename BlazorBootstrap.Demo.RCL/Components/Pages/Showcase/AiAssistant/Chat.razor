@@ -266,7 +266,7 @@
                             else
                             {
                                 <p class="pa-composer-field small text-body-secondary mb-0">
-                                    <Icon Name="IconName.Paperclip" class="me-1" aria-hidden="true" />A workspace admin turned attachments off for @AiSeedData.WorkspaceName, so you can't attach files.
+                                    <Icon Name="IconName.Paperclip" class="me-1" aria-hidden="true" />A workspace admin turned attachments off for @State.WorkspaceName, so you can't attach files.
                                 </p>
                             }
 
@@ -367,7 +367,7 @@
                                             }
                                         </div>
                                         <button type="button" class="btn btn-sm btn-outline-primary flex-shrink-0" @onclick="() => ChoosePromptAsync(prompt)">
-                                            Use<span class="visually-hidden"> @prompt.Title</span>
+                                            Use<span class="visually-hidden">&#32;@prompt.Title</span>
                                         </button>
                                     </li>
                                 }

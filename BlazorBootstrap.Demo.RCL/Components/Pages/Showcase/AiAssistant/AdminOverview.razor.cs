@@ -37,7 +37,15 @@ public partial class AdminOverview : ComponentBase, IDisposable
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (firstRender)
+        // The charts render only for roles with the analytics permission; a role changed in this tab hides or shows them again.
+        if (!State.Can(AiPermission.ViewAnalytics))
+        {
+            chartsReady = false;
+
+            return;
+        }
+
+        if (!chartsReady && dailyChart is not null && modelsChart is not null)
         {
             var initializedDark = State.IsDarkTheme;
 
@@ -261,9 +269,10 @@ public partial class AdminOverview : ComponentBase, IDisposable
     /// <summary>Gets the other admin modules, for the links at the bottom.</summary>
     private static IReadOnlyList<Module> Modules { get; } = new[]
     {
-        new Module($"{AiAdminLayout.Base}/members", IconName.People, "Members and roles", "Invite people, change roles, and deactivate or reactivate members."),
-        new Module($"{AiAdminLayout.Base}/prompts", IconName.JournalText, "Shared prompts", "The prompts every member sees in their prompt library."),
-        new Module($"{AiAdminLayout.Base}/settings", IconName.Sliders, "Models and policy", "Models, the monthly quota, attachments, retention, and blocked terms."),
+        new Module($"{AiAdminLayout.Base}/members", IconName.People, "Members and roles", "Invite people, change roles, remove or restore access, and see what each role may do.", AiPermission.ManageMembers),
+        new Module($"{AiAdminLayout.Base}/prompts", IconName.JournalText, "Shared prompts", "The prompts every member sees in their prompt library, and drafts.", AiPermission.ManageSharedPrompts),
+        new Module($"{AiAdminLayout.Base}/settings", IconName.Sliders, "Models and policy", "The workspace name, models, the monthly quota, attachments, retention, and blocked terms.", AiPermission.ManageSettings),
+        new Module($"{AiAdminLayout.Base}/audit", IconName.ClockHistory, "Audit log", "Who changed roles, members, prompts, and the policy, and when.", AiPermission.ViewAudit),
     };
 
     /// <summary>Gets this calendar month's tokens by model, every model of the catalog, the most first.</summary>
@@ -296,7 +305,7 @@ public partial class AdminOverview : ComponentBase, IDisposable
     private sealed record MemberRow(AiMember Member, int Messages, long Tokens);
 
     /// <summary>A link to another admin module.</summary>
-    private sealed record Module(string Href, IconName Icon, string Title, string Description);
+    private sealed record Module(string Href, IconName Icon, string Title, string Description, AiPermission Permission);
 
     /// <summary>One model's tokens this month.</summary>
     private sealed record ModelTotal(AiModel Model, long Tokens);

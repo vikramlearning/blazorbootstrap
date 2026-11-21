@@ -2,10 +2,6 @@
 @page "/showcase/ai-assistant/prompts/{Id:int}/edit"
 @layout AiLayout
 
-@{
-    var prompt = Prompt;
-}
-
 @if (leaving)
 {
     @* The prompt was saved and the library is loading: no form flash in between. *@
@@ -16,44 +12,52 @@ else
 {
     <div class="container-xl">
         <AiMemberGuard>
+            @{
+                var prompt = Prompt;
+            }
+
             @if (Id is not null && prompt is null)
             {
                 <AiNotFound />
             }
             else if (prompt is not null && !IsOwn(prompt))
             {
+                var canManage = State.Can(AiPermission.ManageSharedPrompts);
+
                 <PageTitle>@prompt.Title · @AiSeedData.ProductName</PageTitle>
 
                 <Breadcrumb Items="BreadcrumbItems(prompt)" Class="mb-3" />
 
                 <h1 class="pa-title mb-1">@prompt.Title</h1>
                 <p class="pa-lead mb-4">
-                    This prompt is shared with everyone at @AiSeedData.WorkspaceName, so it's read-only here.
-                    @(State.IsWorkspaceAdmin
-                        ? "As a workspace admin, you can change it under Workspace admin, Shared prompts."
-                        : "Workspace admins manage shared prompts; you can use it in a chat.")
+                    This prompt is shared with everyone at @State.WorkspaceName, so it's read-only here.
+                    @(canManage
+                        ? "As someone who manages shared prompts, you can change it in the back office."
+                        : "Prompt editors, Admins, and the Owner manage shared prompts; you can use it in a chat.")
                 </p>
 
                 <section class="pa-panel pa-promptedit-readonly mb-4" aria-labelledby="pa-promptedit-text-title">
                     <h2 class="pa-section-title" id="pa-promptedit-text-title">Prompt text</h2>
                     <p class="pa-plain mb-3">@prompt.Text</p>
+                    @if (prompt.Variables.Count > 0)
+                    {
+                        <p class="small mb-2">Fill in: <span class="pa-mono">@string.Join(", ", prompt.Variables.Select(name => "{{" + name + "}}"))</span></p>
+                    }
                     <PromptsTags Tags="prompt.Tags" />
-                    <p class="small text-body-secondary mb-0">By @prompt.Author · @Prompts.UseText(prompt.UseCount) · updated @AiDisplay.Stamp(prompt.UpdatedAt)</p>
+                    <p class="small text-body-secondary mb-0">@prompt.Category · by @prompt.Author · @Prompts.UseText(prompt.UseCount) · updated @AiDisplay.Stamp(prompt.UpdatedAt)</p>
                 </section>
 
                 <div class="d-flex flex-wrap gap-2">
                     <a class="btn btn-primary" href="@Prompts.ChatUrl(prompt.Id)"><Icon Name="IconName.ChatDots" class="me-2" aria-hidden="true" />Use in chat</a>
-                    @if (State.IsWorkspaceAdmin)
+                    @if (canManage)
                     {
-                        <a class="btn btn-outline-primary" href="@string.Create(CultureInfo.InvariantCulture, $"{AiAdminLayout.Base}/prompts/{prompt.Id}/edit")">Edit in Workspace admin</a>
+                        <a class="btn btn-outline-primary" href="@AdminPrompts.EditUrl(prompt.Id)">Edit in the back office</a>
                     }
                     <a class="btn btn-link" href="@Prompts.ListUrl">Back to the prompt library</a>
                 </div>
             }
             else
             {
-                var tagProblem = TagsProblem(ParseTags(tagsText));
-
                 <PageTitle>@(prompt is null ? "New prompt" : $"Edit {prompt.Title}") · @AiSeedData.ProductName</PageTitle>
 
                 <Breadcrumb Items="BreadcrumbItems(prompt)" Class="mb-3" />
@@ -65,59 +69,12 @@ else
                         : "Only you see this prompt. Changes apply the next time you use it; chats you already had keep their messages.")
                 </p>
 
-                @* Always rendered and focusable, so a save is announced and focus has somewhere to go when it fails. *@
-                <p class="pa-promptedit-status fw-semibold @(statusIsError ? "text-danger-emphasis" : null)" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
+                @* Always rendered and focusable, so a save that changed nothing is announced. *@
+                <p class="pa-form-status fw-semibold mb-2" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
 
                 <section class="pa-panel pa-promptedit-form" aria-labelledby="pa-promptedit-form-title">
                     <h2 class="visually-hidden" id="pa-promptedit-form-title">Prompt details</h2>
-                    <form @onsubmit="Save" novalidate aria-labelledby="pa-promptedit-form-title">
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold" for="pa-promptedit-title">Title</label>
-                            <input id="pa-promptedit-title" class="form-control @(titleError is null ? null : "is-invalid")" @bind="title" @bind:event="oninput" @ref="titleInput"
-                                   autocomplete="off" maxlength="@AiState.MaxPromptTitleLength" aria-required="true" aria-invalid="@(titleError is null ? null : "true")"
-                                   aria-describedby="pa-promptedit-title-help pa-promptedit-title-error" />
-                            <div class="form-text" id="pa-promptedit-title-help">A short name you'll recognize in the library, up to @AiState.MaxPromptTitleLength characters.</div>
-                            <div class="invalid-feedback d-block" id="pa-promptedit-title-error">@titleError</div>
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold" for="pa-promptedit-text">Prompt text</label>
-                            <textarea id="pa-promptedit-text" class="form-control pa-promptedit-textarea @(textError is null ? null : "is-invalid")" rows="8" @bind="text" @bind:event="oninput"
-                                      @ref="textInput" maxlength="@AiState.MaxPromptTextLength" aria-required="true" aria-invalid="@(textError is null ? null : "true")"
-                                      aria-describedby="pa-promptedit-text-help pa-promptedit-text-error"></textarea>
-                            <div class="form-text d-flex flex-wrap justify-content-between gap-2" id="pa-promptedit-text-help">
-                                <span>What you'd type in the chat. Leave a placeholder like [paste text here] for the part that changes each time.</span>
-                                <span class="text-nowrap @(text.Trim().Length > AiState.MaxPromptTextLength ? "text-danger-emphasis" : null)">@CounterText(text, AiState.MaxPromptTextLength)</span>
-                            </div>
-                            <div class="invalid-feedback d-block" id="pa-promptedit-text-error">@textError</div>
-                        </div>
-
-                        <div class="mb-4">
-                            <label class="form-label fw-semibold" for="pa-promptedit-tags">Tags <span class="fw-normal text-body-secondary">(optional)</span></label>
-                            <input id="pa-promptedit-tags" class="form-control @(tagsError is null ? null : "is-invalid")" @bind="tagsText" @bind:event="oninput" @ref="tagsInput"
-                                   autocomplete="off" spellcheck="false" maxlength="@TagsMaxLength" aria-invalid="@(tagsError is null ? null : "true")"
-                                   aria-describedby="pa-promptedit-tags-help pa-promptedit-tags-error" />
-                            <div class="form-text" id="pa-promptedit-tags-help">
-                                Separate tags with commas, like <span class="pa-mono">writing, code-review</span>. Up to @AiState.MaxTags tags of up to @AiState.MaxTagLength characters each:
-                                letters, digits, and hyphens, starting with a letter or digit. Capitals become lower case.
-                            </div>
-                            <div class="invalid-feedback d-block" id="pa-promptedit-tags-error">@tagsError</div>
-                            @if (tagProblem is null && ParseTags(tagsText) is { Count: > 0 } preview)
-                            {
-                                <div class="mt-2">
-                                    <span class="small text-body-secondary d-block mb-1">Saved as:</span>
-                                    <PromptsTags Tags="preview" />
-                                </div>
-                            }
-                        </div>
-
-                        <div class="d-flex flex-wrap align-items-center gap-2">
-                            <Button Type="ButtonType.Submit" Color="ButtonColor.Primary">
-                                <Icon Name="@(prompt is null ? IconName.PlusLg : IconName.CheckLg)" class="me-1" aria-hidden="true" />@(prompt is null ? "Save prompt" : "Save changes")
-                            </Button>
-                            <a class="btn btn-link" href="@Prompts.ListUrl">Cancel</a>
-                        </div>
-                    </form>
+                    <AiPromptForm Prompt="prompt" Shared="false" FormName="pa-own-prompt" IdPrefix="pa-promptedit" CancelUrl="@Prompts.ListUrl" OnSaved="OnSavedAsync" />
                 </section>
             }
         </AiMemberGuard>

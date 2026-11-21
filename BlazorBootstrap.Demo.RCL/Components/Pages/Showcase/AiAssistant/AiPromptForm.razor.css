@@ -1,0 +1,4 @@
+/* The prompt form of both editors: room for a long prompt. */
+::deep .pa-promptform-text {
+    min-height: 10rem;
+}

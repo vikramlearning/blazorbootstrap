@@ -3,174 +3,184 @@
 
 <PageTitle>Prompt library · @AiSeedData.ProductName</PageTitle>
 
-@* The member's own prompts (create, edit, delete) and the workspace's shared prompts (read-only here), with a filter. *@
+@* The member's own prompts (create, edit, delete, also in bulk) and the workspace's published shared prompts (read-only here), in one Grid. *@
 <div class="container-xl">
     <AiMemberGuard>
         @{
             var mine = State.MyPrompts;
             var shared = State.SharedPrompts;
-            var tags = AllTags(mine, shared);
-            var shownMine = mine.Where(Matches).ToList();
-            var shownShared = shared.Where(Matches).ToList();
-            var isFiltered = IsFiltered;
         }
 
         <div class="pa-prompts-head mb-3">
             <div>
                 <h1 class="pa-title mb-1">Prompt library</h1>
                 <p class="pa-lead mb-0">
-                    Prompts you use often, ready to drop into a chat. Keep your own here, and use the ones your workspace shares.
+                    Prompts you use often, ready to drop into a chat: your own, and the ones @State.WorkspaceName shares.
+                    @if (State.Can(AiPermission.ManageSharedPrompts))
+                    {
+                        <a href="@AdminPrompts.ListUrl">Manage shared prompts</a>
+                    }
                 </p>
             </div>
             <a class="btn btn-primary" href="@NewUrl"><Icon Name="IconName.PlusLg" class="me-2" aria-hidden="true" />New prompt</a>
         </div>
 
         @* Always rendered and focusable, so an outcome is announced and focus has somewhere to go after a deletion. *@
-        <p class="pa-prompts-status fw-semibold @(statusIsError ? "text-danger-emphasis" : null)" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
+        <p class="pa-list-status mb-2" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
+        <p class="pa-list-error mb-2" role="alert">@errorMessage</p>
 
-        @if (mine.Count + shared.Count > 0)
-        {
-            <section class="pa-panel mb-4" aria-labelledby="pa-prompts-filter-title">
-                <h2 class="visually-hidden" id="pa-prompts-filter-title">Filter prompts</h2>
-                <div class="row g-3 align-items-start">
-                    <div class="col-md-5">
-                        <label class="form-label fw-semibold" for="pa-prompts-search">Filter prompts</label>
-                        <input id="pa-prompts-search" class="form-control" type="search" autocomplete="off" maxlength="100" @bind="search" @bind:event="oninput"
-                               @ref="searchInput" aria-describedby="pa-prompts-search-help" />
-                        <div class="form-text" id="pa-prompts-search-help">Matches the title, the text, or a tag.</div>
-                    </div>
-                    <div class="col-md-7">
-                        <span class="form-label fw-semibold d-block" id="pa-prompts-tags-label">Tag</span>
-                        <div class="pa-prompts-tags" role="group" aria-labelledby="pa-prompts-tags-label">
-                            <button type="button" class="btn btn-sm rounded-pill @(selectedTag is null ? "btn-primary" : "btn-outline-primary")"
-                                    aria-pressed="@(selectedTag is null ? "true" : "false")" @onclick="() => selectedTag = null">
-                                All tags
-                            </button>
-                            @foreach (var tag in tags)
-                            {
-                                var isSelected = tag == selectedTag;
-                                <button type="button" class="btn btn-sm rounded-pill @(isSelected ? "btn-primary" : "btn-outline-primary")" @key="@($"tag-{tag}")"
-                                        aria-pressed="@(isSelected ? "true" : "false")" @onclick="() => selectedTag = isSelected ? null : tag">
-                                    @tag
-                                </button>
-                            }
-                        </div>
-                    </div>
+        <section class="pa-panel mb-3" aria-labelledby="pa-prompts-filter-title">
+            <h2 class="pa-section-title" id="pa-prompts-filter-title">Filter prompts</h2>
+            <div class="pa-list-filters" role="search" aria-labelledby="pa-prompts-filter-title">
+                <div class="pa-list-search">
+                    <label class="form-label small fw-semibold" for="pa-prompts-search">Search</label>
+                    <input id="pa-prompts-search" type="search" class="form-control" value="@searchBoxValue" placeholder="Title, text, or tag" autocomplete="off" maxlength="80"
+                           @oninput="OnSearchInputAsync" @onchange="OnSearchChanged" />
                 </div>
-                @if (isFiltered)
+                <div>
+                    <label class="form-label small fw-semibold" for="pa-prompts-scope">Whose</label>
+                    <select id="pa-prompts-scope" class="form-select" value="@scopeFilter" @onchange="OnScopeFilterChangedAsync">
+                        <option value="">All (@(mine.Count + shared.Count))</option>
+                        <option value="@MineValue">Mine (@mine.Count)</option>
+                        <option value="@SharedValue">Shared (@shared.Count)</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="form-label small fw-semibold" for="pa-prompts-category">Category</label>
+                    <select id="pa-prompts-category" class="form-select" value="@categoryFilter" @onchange="OnCategoryFilterChangedAsync">
+                        <option value="">All categories</option>
+                        @foreach (var category in Enum.GetValues<AiPromptCategory>())
+                        {
+                            <option value="@category" @key="category">@category</option>
+                        }
+                    </select>
+                </div>
+            </div>
+            <div class="pa-list-meta">
+                <p class="small text-body-secondary mb-0" aria-live="polite" tabindex="-1" @ref="countRegion">@CountText(mine.Count + shared.Count)</p>
+                @if (IsFiltered)
                 {
-                    <p class="small mt-3 mb-0">
-                        Showing @CountText(shownMine.Count + shownShared.Count, "prompt") for @FilterText.
-                        <button type="button" class="btn btn-link btn-sm p-0 align-baseline" @onclick="ClearFilters">Clear the filter</button>
-                    </p>
+                    <Button Color="ButtonColor.Link" Size="ButtonSize.Small" Class="p-0" @onclick="ClearFiltersAsync">Show every prompt</Button>
                 }
+                @* Back to the saved view's defaults: the most recently changed first, 25 a page, every column in its place. *@
+                <Button Color="ButtonColor.Link" Size="ButtonSize.Small" Class="p-0" @onclick="ResetViewAsync">Reset view</Button>
+            </div>
+        </section>
+
+        @if (selected.Count > 0)
+        {
+            var own = selected.Count(row => row.IsMine);
+
+            <section class="pa-bulk" aria-labelledby="pa-prompts-bulk-count">
+                <h2 class="pa-bulk-count" id="pa-prompts-bulk-count">
+                    @(selected.Count == 1 ? "1 prompt selected" : $"{selected.Count} prompts selected"), @(own == selected.Count ? "all yours" : $"{own} of them yours")
+                </h2>
+                <div class="pa-bulk-actions">
+                    <Button Color="ButtonColor.Danger" Outline="true" Size="ButtonSize.Small" Disabled="@(own == 0)" @onclick="AskDeleteAsync">
+                        <Icon Name="IconName.Trash3" class="me-1" aria-hidden="true" />Delete yours
+                    </Button>
+                    <Button Color="ButtonColor.Secondary" Outline="true" Size="ButtonSize.Small" @onclick="ClearSelectionAsync">Clear selection</Button>
+                </div>
+                <p class="form-text w-100 mb-0">You can delete only your own prompts; shared ones in the selection are left as they are.</p>
             </section>
         }
 
-        <section class="mb-5" aria-labelledby="pa-prompts-mine-title">
-            <h2 class="pa-section-title" id="pa-prompts-mine-title">My prompts <span class="text-body-secondary fw-normal">(@mine.Count)</span></h2>
-
-            @if (mine.Count == 0)
-            {
-                <div class="pa-panel text-center py-4">
-                    <span class="pa-icon fs-5" aria-hidden="true"><Icon Name="IconName.Bookmark" /></span>
-                    <p class="fw-semibold mt-3 mb-1">You haven't saved any prompts yet</p>
-                    <p class="text-body-secondary mb-3">Save a prompt you type often, like "Summarize this for my manager", and start a chat with it in one click.</p>
+        <section class="pa-panel" aria-label="Prompt list">
+            <ShowcaseDataState Status="@(viewLoaded ? ShowcaseDataStatus.Ready : ShowcaseDataStatus.Loading)"
+                               IsEmpty="@(mine.Count + shared.Count == 0)"
+                               EmptyIcon="IconName.Bookmark"
+                               EmptyTitle="You haven't saved any prompts yet"
+                               EmptyText="Save a prompt you type often, like “Summarize this for my manager”, and start a chat with it in one click."
+                               LoadingText="Loading prompts…"
+                               OnRetry="RefreshGridAsync">
+                <EmptyActions>
                     <a class="btn btn-primary" href="@NewUrl">New prompt</a>
-                </div>
-            }
-            else if (shownMine.Count == 0)
-            {
-                <p class="pa-panel text-body-secondary mb-0">None of your prompts match @FilterText.</p>
-            }
-            else
-            {
-                <ul class="pa-prompts-list list-unstyled mb-0">
-                    @foreach (var prompt in shownMine)
-                    {
-                        <li class="pa-card pa-prompt" @key="@($"mine-{prompt.Id}")">
-                            <h3 class="pa-prompt-title">@prompt.Title</h3>
-                            <p class="pa-plain pa-prompt-text">@prompt.Text</p>
-                            <PromptsTags Tags="prompt.Tags" />
-                            <p class="small text-body-secondary mb-3">
-                                Updated <time datetime="@prompt.UpdatedAt.ToString("s", CultureInfo.InvariantCulture)" title="@AiDisplay.Stamp(prompt.UpdatedAt)">@AiDisplay.Ago(prompt.UpdatedAt, State.Clock.Now)</time>
-                                · @UseText(prompt.UseCount)
-                            </p>
-                            <div class="pa-prompt-actions">
-                                <a class="btn btn-primary btn-sm" href="@ChatUrl(prompt.Id)" aria-label="@($"Use {prompt.Title} in chat")">
-                                    <Icon Name="IconName.ChatDots" class="me-1" aria-hidden="true" />Use in chat
+                </EmptyActions>
+                <ChildContent>
+                    <Grid @ref="grid"
+                          @key="gridVersion"
+                          TItem="PromptRow"
+                          Class="table table-hover align-middle pa-table-wide sc-grid-row-links"
+                          GridContainerClass="pa-grid border rounded-3"
+                          DataProvider="ProvidePromptsAsync"
+                          SettingsProvider="view.GetSettingsAsync"
+                          GridSettingsChanged="SaveSettingsAsync"
+                          AllowPaging="true"
+                          PageSize="@pageSize"
+                          PageSizeSelectorVisible="true"
+                          PageSizeSelectorItems="@(new[] { 10, 25, 50, 100 })"
+                          PaginationItemsTextFormat="{0}–{1} of {2} prompts"
+                          AllowSorting="true"
+                          AllowSelection="true"
+                          SelectionMode="GridSelectionMode.Multiple"
+                          RowSelectionLabel="@(row => $"Select {row.Title}")"
+                          SelectAllRowsText="Select all shown prompts"
+                          SelectedItemsChanged="OnSelectionChanged"
+                          RowClass="RowClass"
+                          AllowColumnChooser="true"
+                          AllowExport="true"
+                          ExportFileName="ai-prompt-library"
+                          Responsive="true"
+                          EmptyText="No prompts match. Choose All, or clear the search."
+                          aria-label="Prompts">
+                        <GridColumns>
+                            <GridColumn TItem="PromptRow" HeaderText="Title" PropertyName="Title" SortString="title" SortKeySelector="row => row.Title"
+                                        IsDefaultSortColumn="@view.IsSortColumn("title")" SortDirection="@view.DirectionFor("title")" AlwaysVisible="true">
+                                @* The stretched link makes the whole row open the prompt (your editor, or a shared prompt's page); the chat link stays above it. *@
+                                <a class="pa-row-link stretched-link" href="@PromptEdit.EditUrl(context.Id)">@context.Title</a>
+                            </GridColumn>
+                            <GridColumn TItem="PromptRow" HeaderText="Whose" PropertyName="Whose" SortString="whose" SortKeySelector="row => row.Whose"
+                                        IsDefaultSortColumn="@view.IsSortColumn("whose")" SortDirection="@view.DirectionFor("whose")" TextNoWrap="true">
+                                <Badge Color="@(context.IsMine ? BadgeColor.Primary : BadgeColor.Info)" Class="rounded-pill">@context.Whose</Badge>
+                            </GridColumn>
+                            <GridColumn TItem="PromptRow" HeaderText="Category" PropertyName="Category" SortString="category" SortKeySelector="row => row.Category"
+                                        IsDefaultSortColumn="@view.IsSortColumn("category")" SortDirection="@view.DirectionFor("category")" TextNoWrap="true">
+                                @context.Category
+                            </GridColumn>
+                            <GridColumn TItem="PromptRow" HeaderText="Variables" PropertyName="Variables" SortString="variables" SortKeySelector="row => row.Variables"
+                                        IsDefaultSortColumn="@view.IsSortColumn("variables")" SortDirection="@view.DirectionFor("variables")">
+                                <span class="pa-mono small">@(context.Variables.Length == 0 ? "None" : context.Variables)</span>
+                            </GridColumn>
+                            <GridColumn TItem="PromptRow" HeaderText="Tags" PropertyName="Tags" SortString="tags" SortKeySelector="row => row.Tags"
+                                        IsDefaultSortColumn="@view.IsSortColumn("tags")" SortDirection="@view.DirectionFor("tags")">
+                                <span class="small">@(context.Tags.Length == 0 ? "None" : context.Tags)</span>
+                            </GridColumn>
+                            <GridColumn TItem="PromptRow" HeaderText="Author" PropertyName="Author" SortString="author" SortKeySelector="row => row.Author"
+                                        IsDefaultSortColumn="@view.IsSortColumn("author")" SortDirection="@view.DirectionFor("author")">
+                                @context.Author
+                            </GridColumn>
+                            <GridColumn TItem="PromptRow" HeaderText="Uses" PropertyName="Uses" SortString="uses" SortKeySelector="row => row.Uses"
+                                        IsDefaultSortColumn="@view.IsSortColumn("uses")" SortDirection="@view.DirectionFor("uses")" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End">
+                                <span class="pa-mono">@context.Uses.ToString("#,0", CultureInfo.InvariantCulture)</span>
+                            </GridColumn>
+                            <GridColumn TItem="PromptRow" HeaderText="Updated" PropertyName="UpdatedText" SortString="updated" SortKeySelector="row => row.Updated"
+                                        IsDefaultSortColumn="@view.IsSortColumn("updated")" SortDirection="@view.DirectionFor("updated")" TextNoWrap="true">
+                                @context.UpdatedText
+                            </GridColumn>
+                            <GridColumn TItem="PromptRow" HeaderText="Chat" Sortable="false" Exportable="false" TextNoWrap="true">
+                                <a class="btn btn-sm btn-outline-primary" href="@ChatUrl(context.Id)">
+                                    <Icon Name="IconName.ChatDots" class="me-1" aria-hidden="true" />Use<span class="visually-hidden">&#32;@context.Title in chat</span>
                                 </a>
-                                <a class="btn btn-outline-secondary btn-sm" href="@PromptEdit.EditUrl(prompt.Id)" aria-label="@($"Edit {prompt.Title}")">Edit</a>
-                                <button type="button" class="btn btn-outline-danger btn-sm" @ref="deleteButtons[prompt.Id]" @onclick="() => AskDeleteAsync(prompt)"
-                                        aria-label="@($"Delete {prompt.Title}")">
-                                    Delete
-                                </button>
-                            </div>
-                        </li>
-                    }
-                </ul>
-            }
-        </section>
-
-        <section aria-labelledby="pa-prompts-shared-title">
-            <h2 class="pa-section-title mb-1" id="pa-prompts-shared-title">Shared with the workspace <span class="text-body-secondary fw-normal">(@shared.Count)</span></h2>
-            <p class="small text-body-secondary mb-3">
-                Prompts everyone at @AiSeedData.WorkspaceName can use, the most used first. Workspace admins write and manage them; you can use them in a chat.
-                @if (State.IsWorkspaceAdmin)
-                {
-                    <a href="@($"{AiAdminLayout.Base}/prompts")">Manage shared prompts</a>
-                }
-            </p>
-
-            @if (shared.Count == 0)
-            {
-                <div class="pa-panel text-center py-4">
-                    <span class="pa-icon fs-5" aria-hidden="true"><Icon Name="IconName.People" /></span>
-                    <p class="fw-semibold mt-3 mb-1">No shared prompts yet</p>
-                    <p class="text-body-secondary mb-0">When a workspace admin shares a prompt with the team, it shows up here.</p>
-                </div>
-            }
-            else if (shownShared.Count == 0)
-            {
-                <p class="pa-panel text-body-secondary mb-0">No shared prompts match @FilterText.</p>
-            }
-            else
-            {
-                <ul class="pa-prompts-list list-unstyled mb-0">
-                    @foreach (var prompt in shownShared)
-                    {
-                        <li class="pa-card pa-prompt" @key="@($"shared-{prompt.Id}")">
-                            <h3 class="pa-prompt-title">@prompt.Title</h3>
-                            <p class="pa-plain pa-prompt-text">@prompt.Text</p>
-                            <PromptsTags Tags="prompt.Tags" />
-                            <p class="small text-body-secondary mb-3">
-                                By @prompt.Author · @UseText(prompt.UseCount) · updated
-                                <time datetime="@prompt.UpdatedAt.ToString("s", CultureInfo.InvariantCulture)" title="@AiDisplay.Stamp(prompt.UpdatedAt)">@AiDisplay.Ago(prompt.UpdatedAt, State.Clock.Now)</time>
-                            </p>
-                            <div class="pa-prompt-actions">
-                                <a class="btn btn-primary btn-sm" href="@ChatUrl(prompt.Id)" aria-label="@($"Use {prompt.Title} in chat")">
-                                    <Icon Name="IconName.ChatDots" class="me-1" aria-hidden="true" />Use in chat
-                                </a>
-                            </div>
-                        </li>
-                    }
-                </ul>
-            }
+                            </GridColumn>
+                        </GridColumns>
+                    </Grid>
+                </ChildContent>
+            </ShowcaseDataState>
         </section>
     </AiMemberGuard>
 </div>
 
-@* Outside the lists, so the dialog is never removed while it is open. *@
+@* Outside the guard, so the dialog is never removed while it is open. *@
 <Modal @ref="deleteModal" IsVerticallyCentered="true" ShowCloseButton="false" aria-labelledby="pa-prompts-delete-title" OnHidden="OnDeleteHiddenAsync">
     <HeaderTemplate>
-        <h2 class="modal-title h5 pa-prompt-title" id="pa-prompts-delete-title">Delete "@deleting?.Title"?</h2>
+        <h2 class="modal-title h5 pa-prompt-title" id="pa-prompts-delete-title">Delete @(OwnSelected == 1 ? "1 of your prompts" : $"{OwnSelected} of your prompts")?</h2>
     </HeaderTemplate>
     <BodyTemplate>
-        <p class="pa-prompts-dialog-text mb-2">The prompt "@deleting?.Title" is removed from your prompts. Chats you started with it keep their messages.</p>
+        <p class="pa-prompts-dialog-text mb-2">They're removed from your prompts. Chats you started with them keep their messages. Shared prompts in the selection stay.</p>
         <p class="small text-body-secondary mb-0">This can't be undone.</p>
     </BodyTemplate>
     <FooterTemplate>
-        <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => deleteModal.HideAsync()">Keep prompt</Button>
-        <Button Color="ButtonColor.Danger" @onclick="ConfirmDeleteAsync"><Icon Name="IconName.Trash3" class="me-1" aria-hidden="true" />Delete prompt</Button>
+        <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => deleteModal.HideAsync()">Keep them</Button>
+        <Button Color="ButtonColor.Danger" @onclick="ConfirmDeleteAsync"><Icon Name="IconName.Trash3" class="me-1" aria-hidden="true" />Delete</Button>
     </FooterTemplate>
 </Modal>

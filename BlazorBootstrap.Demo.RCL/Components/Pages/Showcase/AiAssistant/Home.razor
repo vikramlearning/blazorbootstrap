@@ -2,13 +2,13 @@
 @layout AiLayout
 @implements IDisposable
 
-<PageTitle>@AiSeedData.ProductName · @AiSeedData.WorkspaceName</PageTitle>
+<PageTitle>@AiSeedData.ProductName · @State.WorkspaceName</PageTitle>
 
 @* The start page: what Parley does, and for a signed-in member their recent conversations. *@
 <div class="container-xl">
     <section class="pa-hero mb-5" aria-labelledby="pa-home-title">
         <span class="pa-icon mb-3" aria-hidden="true"><Icon Name="IconName.Stars" class="fs-4" /></span>
-        <h1 class="pa-title fs-2 mb-2" id="pa-home-title">@AiSeedData.ProductName, the assistant for @AiSeedData.WorkspaceName</h1>
+        <h1 class="pa-title fs-2 mb-2" id="pa-home-title">@AiSeedData.ProductName, the assistant for @State.WorkspaceName</h1>
         <p class="pa-lead mb-4">
             Ask questions, draft and summarize, plan, and get help with code, in conversations you can search, pin, and come back to.
             Save the prompts you use often, and share the best ones with the team.
@@ -22,7 +22,7 @@
         }
         else if (State.Identity.IsSignedIn)
         {
-            <p class="mb-0">You're signed in, but your account isn't an active member of @AiSeedData.WorkspaceName, so chat isn't open to you. Ask a workspace admin.</p>
+            <p class="mb-0">You're signed in, but your account isn't an active member of @State.WorkspaceName, so chat isn't open to you. Ask a workspace admin.</p>
         }
         else
         {
@@ -32,7 +32,7 @@
                 </a>
                 <a class="btn btn-outline-primary" href="@($"{AiLayout.SignInPath}?mode=register")">Join the workspace</a>
             </div>
-            <p class="small text-body-secondary mt-3 mb-0">The sign-in page has one-click demo accounts: a member, and a workspace admin.</p>
+            <p class="small text-body-secondary mt-3 mb-0">The sign-in page has one-click demo accounts for each workspace role: the Owner, an Admin, a Prompt editor, and a Member.</p>
         }
     </section>
 

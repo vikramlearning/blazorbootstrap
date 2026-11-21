@@ -3,205 +3,229 @@
 
 <PageTitle>Models and policy · @AiSeedData.ProductName</PageTitle>
 
+@* Admins and the Owner: the workspace name and the model policy, as one validated form; retention is the Owner's alone. *@
 <div class="container-fluid px-lg-4">
-    @{
-        var policy = State.Policy;
-        var changes = ChangedSections();
-    }
+    <AiMemberGuard Require="AiPermission.ManageSettings">
+        @{
+            var policy = State.Policy;
+            var changes = ChangedSections();
+            var canRetain = State.Can(AiPermission.ManageRetention);
+        }
 
-    <div class="mb-4">
-        <h1 class="pa-title">Models and policy</h1>
-        <p class="pa-lead mb-0">The models members can choose, how many tokens each member can use a month, attachments, how long conversations are kept, and the terms the assistant refuses. Changes apply to every member when you save.</p>
-    </div>
+        <div class="mb-4">
+            <h1 class="pa-title">Models and policy</h1>
+            <p class="pa-lead mb-0">
+                The workspace's name, the models members can choose, how many tokens each member can use a month, attachments, how long conversations are kept, and the
+                terms the assistant refuses. Changes apply to every member when you save, and each one is in the audit log.
+            </p>
+        </div>
 
-    @* Always rendered and focusable, so a save is announced and focus has somewhere to go after the dialog. *@
-    <p class="fw-semibold pa-adset-status @(statusIsError ? "text-danger-emphasis" : null)" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
+        @* Always rendered and focusable, so a save is announced and focus has somewhere to go after the dialog. *@
+        <p class="pa-form-status fw-semibold mb-2 @(statusIsError ? "text-danger-emphasis" : null)" role="status" tabindex="-1" @ref="statusRegion">@statusMessage</p>
 
-    <form id="pa-adset-form" @onsubmit="SaveAsync" novalidate aria-label="Models and policy">
-        <section class="pa-panel mb-4" aria-labelledby="pa-adset-models-title">
-            <h2 class="pa-section-title" id="pa-adset-models-title">Models</h2>
-            <fieldset class="mb-4" aria-describedby="pa-adset-models-help pa-adset-models-error">
-                <legend class="form-label fw-semibold fs-6 mb-1">Models members can choose</legend>
-                <p class="form-text mt-0 mb-2" id="pa-adset-models-help">Turn on at least one. No model is called: they differ in streaming speed and the style of their replies.</p>
-                <div class="row row-cols-1 row-cols-lg-2 g-2">
-                    @foreach (var model in State.Models)
-                    {
-                        var modelId = model.Id;
-                        var inputId = $"pa-adset-model-{modelId}";
-                        var isOn = enabled.Contains(modelId);
-                        var turningOff = !isOn && policy.EnabledModelIds.Contains(modelId);
-                        <div class="col" @key="modelId">
-                            <div class="form-check pa-adset-model @(isOn ? "pa-adset-model-on" : null)">
-                                <input class="form-check-input" type="checkbox" id="@inputId" checked="@isOn" @ref="modelInputs[modelId]"
-                                       @onchange="args => ToggleModel(modelId, args.Value is true)"
-                                       aria-invalid="@(modelsError is null ? null : "true")" aria-describedby="@($"{inputId}-help")" />
-                                <label class="form-check-label fw-semibold" for="@inputId">@model.Name</label>
-                                <div class="form-text mt-0" id="@($"{inputId}-help")">
-                                    <span class="d-block">@model.Description</span>
-                                    <span class="d-block">
-                                        @model.TokensPerSecond tokens/s · context @AiDisplay.Tokens(model.ContextTokens) tokens@(model.IsCodeTuned ? " · tuned for code" : null)
-                                    </span>
-                                    @if (turningOff)
-                                    {
-                                        var usedBy = State.ConversationsUsingModel(modelId);
-                                        <span class="d-block pa-adset-note mt-1">
-                                            Turning it off when you save: members can't choose it, and conversations that use it get their next reply from the default model
-                                            (@AdminMembers.Plural(usedBy, "conversation") in the workspace now).
+        <EditForm EditContext="editContext" OnSubmit="SaveAsync" FormName="pa-settings" id="pa-adset-form" novalidate>
+            <DataAnnotationsValidator />
+            <ShowcaseFormErrors ShowSummary="true" />
+
+            <section class="pa-panel mb-4" aria-labelledby="pa-adset-name-title">
+                <h2 class="pa-section-title" id="pa-adset-name-title">Workspace</h2>
+                <label class="form-label fw-semibold" for="pa-adset-name">Workspace name</label>
+                <InputText id="pa-adset-name" class="form-control pa-adset-name" @bind-Value="form.WorkspaceName" maxlength="@AiState.MaxWorkspaceNameLength" autocomplete="off"
+                           aria-describedby="pa-adset-name-help" />
+                <div class="form-text" id="pa-adset-name-help">@AiState.MinWorkspaceNameLength to @AiState.MaxWorkspaceNameLength characters. Members see it in the header and on their pages.</div>
+                <ValidationMessage For="() => form.WorkspaceName" />
+            </section>
+
+            <section class="pa-panel mb-4" aria-labelledby="pa-adset-models-title">
+                <h2 class="pa-section-title" id="pa-adset-models-title">Models</h2>
+                <fieldset class="mb-4" aria-describedby="pa-adset-models-help">
+                    <legend class="form-label fw-semibold fs-6 mb-1">Models members can choose</legend>
+                    <p class="form-text mt-0 mb-2" id="pa-adset-models-help">Turn on at least one. No model is called: they differ in streaming speed and the style of their replies.</p>
+                    <div class="row row-cols-1 row-cols-lg-2 g-2">
+                        @foreach (var model in State.Models)
+                        {
+                            var modelId = model.Id;
+                            var inputId = $"pa-adset-model-{modelId}";
+                            var isOn = form.EnabledModels.Contains(modelId);
+                            var turningOff = !isOn && policy.EnabledModelIds.Contains(modelId);
+                            <div class="col" @key="modelId">
+                                <div class="form-check pa-adset-model @(isOn ? "pa-adset-model-on" : null)">
+                                    <input class="form-check-input" type="checkbox" id="@inputId" checked="@isOn" @onchange="args => ToggleModel(modelId, args.Value is true)"
+                                           aria-describedby="@($"{inputId}-help")" />
+                                    <label class="form-check-label fw-semibold" for="@inputId">@model.Name</label>
+                                    <div class="form-text mt-0" id="@($"{inputId}-help")">
+                                        <span class="d-block">@model.Description</span>
+                                        <span class="d-block">
+                                            @model.TokensPerSecond tokens/s · context @AiDisplay.Tokens(model.ContextTokens) tokens@(model.IsCodeTuned ? " · tuned for code" : null)
                                         </span>
-                                    }
+                                        @if (turningOff)
+                                        {
+                                            var usedBy = State.ConversationsUsingModel(modelId);
+                                            <span class="d-block pa-adset-note mt-1">
+                                                Turning it off when you save: members can't choose it, and conversations that use it get their next reply from the default model
+                                                (@AdminMembers.Plural(usedBy, "conversation") in the workspace now).
+                                            </span>
+                                        }
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    }
-                </div>
-                <div class="invalid-feedback d-block" id="pa-adset-models-error">@modelsError</div>
-            </fieldset>
-
-            <fieldset aria-describedby="pa-adset-default-help pa-adset-default-error">
-                <legend class="form-label fw-semibold fs-6 mb-1">Default model</legend>
-                <p class="form-text mt-0 mb-2" id="pa-adset-default-help">New conversations start with it, unless a member prefers another model that is on. Choose one of the models that are on.</p>
-                @foreach (var model in State.Models)
-                {
-                    var modelId = model.Id;
-                    var inputId = $"pa-adset-default-{modelId}";
-                    var isOn = enabled.Contains(modelId);
-                    <div class="form-check mb-1" @key="modelId">
-                        <input class="form-check-input" type="radio" name="pa-adset-default" id="@inputId" checked="@(defaultModelId == modelId)" disabled="@(!isOn)"
-                               @ref="defaultInputs[modelId]" @onchange="() => SetDefault(modelId)" aria-invalid="@(defaultError is null ? null : "true")" />
-                        <label class="form-check-label" for="@inputId">
-                            @model.Name@(isOn ? null : " (off)")
-                        </label>
+                        }
                     </div>
-                }
-                <div class="invalid-feedback d-block" id="pa-adset-default-error">@defaultError</div>
-            </fieldset>
+                    <ValidationMessage For="() => form.EnabledModels" />
+                </fieldset>
+
+                <fieldset aria-describedby="pa-adset-default-help">
+                    <legend class="form-label fw-semibold fs-6 mb-1">Default model</legend>
+                    <p class="form-text mt-0 mb-2" id="pa-adset-default-help">New conversations start with it, unless a member prefers another model that is on. It must be one of the models that are on.</p>
+                    <InputRadioGroup @bind-Value="form.DefaultModelId">
+                        @foreach (var model in State.Models)
+                        {
+                            var inputId = $"pa-adset-default-{model.Id}";
+                            var isOn = form.EnabledModels.Contains(model.Id);
+                            <div class="form-check mb-1" @key="model.Id">
+                                <InputRadio class="form-check-input" id="@inputId" Value="model.Id" />
+                                <label class="form-check-label" for="@inputId">@model.Name@(isOn ? null : " (off)")</label>
+                            </div>
+                        }
+                    </InputRadioGroup>
+                    <ValidationMessage For="() => form.DefaultModelId" />
+                </fieldset>
+            </section>
+
+            <div class="row g-4 mb-4">
+                <div class="col-xl-4">
+                    <section class="pa-panel h-100" aria-labelledby="pa-adset-quota-title">
+                        <h2 class="pa-section-title" id="pa-adset-quota-title">Quota</h2>
+                        <label class="form-label fw-semibold" for="pa-adset-quota">Monthly tokens per member</label>
+                        <InputNumber id="pa-adset-quota" class="form-control pa-mono" @bind-Value="form.Quota" min="@AiState.MinQuota" max="@AiState.MaxQuota" step="1000"
+                                     ParsingErrorMessage="Enter the monthly tokens per member as a whole number, like 200000." aria-describedby="pa-adset-quota-help" />
+                        <div class="form-text" id="pa-adset-quota-help">
+                            From @AiDisplay.Tokens(AiState.MinQuota) to @AiDisplay.Tokens(AiState.MaxQuota) tokens. Saved now: @AiDisplay.Tokens(policy.MonthlyTokenQuota).
+                            @if (QuotaPreview() is { } quotaPreview)
+                            {
+                                <span class="d-block mt-1">@quotaPreview</span>
+                            }
+                        </div>
+                        <ValidationMessage For="() => form.Quota" />
+                    </section>
+                </div>
+
+                <div class="col-xl-4">
+                    <section class="pa-panel h-100" aria-labelledby="pa-adset-attach-title">
+                        <h2 class="pa-section-title" id="pa-adset-attach-title">Attachments</h2>
+                        <div class="form-check mb-3">
+                            <InputCheckbox class="form-check-input" id="pa-adset-attach" @bind-Value="form.AllowAttachments" aria-describedby="pa-adset-attach-help" />
+                            <label class="form-check-label fw-semibold" for="pa-adset-attach">Allow attachments</label>
+                            <div class="form-text mt-0" id="pa-adset-attach-help">
+                                @(form.AllowAttachments
+                                    ? "Members can attach files to a message. Only the name and size are kept; files are never read."
+                                    : "Members can't attach files. Files already attached stay listed in their conversations.")
+                            </div>
+                        </div>
+                        <label class="form-label fw-semibold" for="pa-adset-size">Largest file (MB)</label>
+                        <InputNumber id="pa-adset-size" class="form-control pa-mono" @bind-Value="form.MaxAttachmentMb" min="1" max="@AiState.MaxAttachmentMb" step="1"
+                                     disabled="@(!form.AllowAttachments)" ParsingErrorMessage="Enter the largest file size in MB as a whole number, like 10." aria-describedby="pa-adset-size-help" />
+                        <div class="form-text" id="pa-adset-size-help">From 1 to @AiState.MaxAttachmentMb MB per file@(form.AllowAttachments ? "; required while attachments are on." : ", used when attachments are on.")</div>
+                        <ValidationMessage For="() => form.MaxAttachmentMb" />
+                    </section>
+                </div>
+
+                <div class="col-xl-4">
+                    <section class="pa-panel h-100" aria-labelledby="pa-adset-retention-title">
+                        <h2 class="pa-section-title" id="pa-adset-retention-title">Retention</h2>
+                        <label class="form-label fw-semibold" for="pa-adset-retention">Delete conversations unchanged for (days)</label>
+                        <InputNumber id="pa-adset-retention" class="form-control pa-mono" @bind-Value="form.RetentionDays" min="0" max="@AiState.MaxRetentionDays" step="1"
+                                     disabled="@(!canRetain)" ParsingErrorMessage="Enter the number of days as a whole number, or 0 to keep conversations forever."
+                                     aria-describedby="pa-adset-retention-help" />
+                        <div class="form-text" id="pa-adset-retention-help">
+                            @if (canRetain)
+                            {
+                                <span>0 keeps conversations forever; up to @AiState.MaxRetentionDays.ToString("#,0", CultureInfo.InvariantCulture) days. It applies to every member's conversations, now and later.</span>
+                            }
+                            else
+                            {
+                                <span>Only the Owner (@State.OwnerName) changes retention, because it deletes every member's conversations.</span>
+                            }
+                            Saved now: @RetentionText(policy.RetentionDays).
+                            @if (canRetain && RetentionPreview() is { } retentionPreview)
+                            {
+                                <span class="d-block mt-1">@retentionPreview</span>
+                            }
+                        </div>
+                        <ValidationMessage For="() => form.RetentionDays" />
+                    </section>
+                </div>
+            </div>
+
+            <p class="pa-form-error mb-3" role="alert">@errorMessage</p>
+        </EditForm>
+
+        <section class="pa-panel mb-4" aria-labelledby="pa-adset-terms-title">
+            <h2 class="pa-section-title mb-1" id="pa-adset-terms-title">Blocked terms</h2>
+            <p class="small text-body-secondary" id="pa-adset-terms-help">
+                A message containing a blocked term (in any letter case) gets a refusal instead of an answer. Up to @AiState.MaxBlockedTerms terms of @AiState.MaxBlockedTermLength characters,
+                kept in lower case. They're saved with the settings.
+            </p>
+            <EditForm EditContext="termContext" OnSubmit="AddTerm" FormName="pa-blocked-term" novalidate aria-labelledby="pa-adset-terms-title">
+                <DataAnnotationsValidator />
+                <ShowcaseFormErrors />
+                <label class="form-label fw-semibold" for="pa-adset-term">Word or phrase to block</label>
+                <div class="pa-adset-term-add">
+                    <InputText id="pa-adset-term" class="form-control" @bind-Value="termForm.Term" maxlength="@AiState.MaxBlockedTermLength" autocomplete="off" spellcheck="false"
+                               aria-describedby="pa-adset-terms-help" />
+                    <Button Type="ButtonType.Submit" Color="ButtonColor.Secondary" Outline="true"><Icon Name="IconName.PlusLg" class="me-1" aria-hidden="true" />Add</Button>
+                </div>
+                <ValidationMessage For="() => termForm.Term" />
+            </EditForm>
+
+            <h3 class="h6 fw-bold mt-3 mb-2" id="pa-adset-terms-list-title">@AdminMembers.Plural(form.Terms.Count, "blocked term") @(TermsChanged ? "(not saved yet)" : null)</h3>
+            @if (form.Terms.Count == 0)
+            {
+                <p class="small text-body-secondary mb-0">No terms are blocked: the assistant answers every message.</p>
+            }
+            else
+            {
+                <ul class="list-unstyled pa-adset-terms mb-0" aria-labelledby="pa-adset-terms-list-title">
+                    @foreach (var term in form.Terms)
+                    {
+                        <li @key="term">
+                            <span class="pa-mono pa-adset-term">@term</span>
+                            <button type="button" class="btn btn-sm btn-outline-danger" @ref="removeButtons[term]" @onclick="() => RemoveTerm(term)">
+                                <Icon Name="IconName.XLg" class="me-1" aria-hidden="true" />Remove<span class="visually-hidden"> blocked term @term</span>
+                            </button>
+                        </li>
+                    }
+                </ul>
+            }
         </section>
 
-        <div class="row g-4 mb-4">
-            <div class="col-xl-4">
-                <section class="pa-panel h-100" aria-labelledby="pa-adset-quota-title">
-                    <h2 class="pa-section-title" id="pa-adset-quota-title">Quota</h2>
-                    <label class="form-label fw-semibold" for="pa-adset-quota">Monthly tokens per member</label>
-                    <input id="pa-adset-quota" type="number" inputmode="numeric" min="@AiState.MinQuota" max="@AiState.MaxQuota" step="1000"
-                           class="form-control pa-mono @(quotaError is null ? null : "is-invalid")" @bind="quotaText" @bind:event="oninput" @ref="quotaInput"
-                           aria-required="true" aria-invalid="@(quotaError is null ? null : "true")" aria-describedby="pa-adset-quota-help pa-adset-quota-error" />
-                    <div class="form-text" id="pa-adset-quota-help">
-                        From @AiDisplay.Tokens(AiState.MinQuota) to @AiDisplay.Tokens(AiState.MaxQuota) tokens, in steps of 1,000. Saved now: @AiDisplay.Tokens(policy.MonthlyTokenQuota).
-                        @if (QuotaPreview() is { } quotaPreview)
-                        {
-                            <span class="d-block mt-1">@quotaPreview</span>
-                        }
-                    </div>
-                    <div class="invalid-feedback d-block" id="pa-adset-quota-error">@quotaError</div>
-                </section>
-            </div>
-
-            <div class="col-xl-4">
-                <section class="pa-panel h-100" aria-labelledby="pa-adset-attach-title">
-                    <h2 class="pa-section-title" id="pa-adset-attach-title">Attachments</h2>
-                    <div class="form-check mb-3">
-                        <input class="form-check-input" type="checkbox" id="pa-adset-attach" @bind="allowAttachments" aria-describedby="pa-adset-attach-help" />
-                        <label class="form-check-label fw-semibold" for="pa-adset-attach">Allow attachments</label>
-                        <div class="form-text mt-0" id="pa-adset-attach-help">
-                            @(allowAttachments
-                                ? "Members can attach files to a message. Only the name and size are kept; files are never read."
-                                : "Members can't attach files. Files already attached stay listed in their conversations.")
-                        </div>
-                    </div>
-                    <label class="form-label fw-semibold" for="pa-adset-size">Largest file (MB)</label>
-                    <input id="pa-adset-size" type="number" inputmode="numeric" min="1" max="100" step="1" disabled="@(!allowAttachments)"
-                           class="form-control pa-mono @(maxMbError is null ? null : "is-invalid")" @bind="maxMbText" @bind:event="oninput" @ref="maxMbInput"
-                           aria-invalid="@(maxMbError is null ? null : "true")" aria-describedby="pa-adset-size-help pa-adset-size-error" />
-                    <div class="form-text" id="pa-adset-size-help">From 1 to 100 MB per file@(allowAttachments ? "." : ", used when attachments are on.")</div>
-                    <div class="invalid-feedback d-block" id="pa-adset-size-error">@maxMbError</div>
-                </section>
-            </div>
-
-            <div class="col-xl-4">
-                <section class="pa-panel h-100" aria-labelledby="pa-adset-retention-title">
-                    <h2 class="pa-section-title" id="pa-adset-retention-title">Retention</h2>
-                    <label class="form-label fw-semibold" for="pa-adset-retention">Delete conversations unchanged for (days)</label>
-                    <input id="pa-adset-retention" type="number" inputmode="numeric" min="0" max="@AiState.MaxRetentionDays" step="1"
-                           class="form-control pa-mono @(retentionError is null ? null : "is-invalid")" @bind="retentionText" @bind:event="oninput" @ref="retentionInput"
-                           aria-required="true" aria-invalid="@(retentionError is null ? null : "true")" aria-describedby="pa-adset-retention-help pa-adset-retention-error" />
-                    <div class="form-text" id="pa-adset-retention-help">
-                        0 keeps conversations forever; up to @AiState.MaxRetentionDays.ToString("#,0", CultureInfo.InvariantCulture) days. It applies to every member's conversations, now and later.
-                        Saved now: @RetentionText(policy.RetentionDays).
-                        @if (RetentionPreview() is { } retentionPreview)
-                        {
-                            <span class="d-block mt-1">@retentionPreview</span>
-                        }
-                    </div>
-                    <div class="invalid-feedback d-block" id="pa-adset-retention-error">@retentionError</div>
-                </section>
-            </div>
-        </div>
-    </form>
-
-    <section class="pa-panel mb-4" aria-labelledby="pa-adset-terms-title">
-        <h2 class="pa-section-title mb-1" id="pa-adset-terms-title">Blocked terms</h2>
-        <p class="small text-body-secondary" id="pa-adset-terms-help">
-            A message containing a blocked term (in any letter case) gets a refusal instead of an answer. Up to @AiState.MaxBlockedTerms terms of @AiState.MaxBlockedTermLength characters,
-            kept in lower case.
-        </p>
-        <form @onsubmit="AddTerm" novalidate aria-labelledby="pa-adset-terms-title">
-            <label class="form-label fw-semibold" for="pa-adset-term">Word or phrase to block</label>
-            <div class="pa-adset-term-add">
-                <input id="pa-adset-term" class="form-control @(termError is null ? null : "is-invalid")" @bind="newTerm" @ref="termInput"
-                       maxlength="@AiState.MaxBlockedTermLength" autocomplete="off" spellcheck="false"
-                       aria-invalid="@(termError is null ? null : "true")" aria-describedby="pa-adset-terms-help pa-adset-term-error" />
-                <Button Type="ButtonType.Submit" Color="ButtonColor.Secondary" Outline="true"><Icon Name="IconName.PlusLg" class="me-1" aria-hidden="true" />Add</Button>
-            </div>
-            <div class="invalid-feedback d-block" id="pa-adset-term-error">@termError</div>
-        </form>
-
-        <h3 class="h6 fw-bold mt-3 mb-2" id="pa-adset-terms-list-title">@AdminMembers.Plural(terms.Count, "blocked term") @(TermsChanged ? "(not saved yet)" : null)</h3>
-        @if (terms.Count == 0)
-        {
-            <p class="small text-body-secondary mb-0">No terms are blocked: the assistant answers every message.</p>
-        }
-        else
-        {
-            <ul class="list-unstyled pa-adset-terms mb-0" aria-labelledby="pa-adset-terms-list-title">
-                @foreach (var term in terms)
-                {
-                    <li @key="term">
-                        <span class="pa-mono pa-adset-term">@term</span>
-                        <button type="button" class="btn btn-sm btn-outline-danger" @ref="removeButtons[term]" @onclick="() => RemoveTerm(term)">
-                            <Icon Name="IconName.XLg" class="me-1" aria-hidden="true" />Remove<span class="visually-hidden"> blocked term @term</span>
-                        </button>
-                    </li>
-                }
-            </ul>
-        }
-    </section>
-
-    <div class="pa-adset-actions">
-        <Button @ref="saveButton" Type="ButtonType.Submit" Color="ButtonColor.Primary" form="pa-adset-form">
-            <Icon Name="IconName.CheckLg" class="me-1" aria-hidden="true" />Save settings
-        </Button>
-        <Button Color="ButtonColor.Secondary" Outline="true" @onclick="Reset">
-            <Icon Name="IconName.ArrowCounterclockwise" class="me-1" aria-hidden="true" />Reset
-        </Button>
-        <p class="small mb-0 @(changes.Count > 0 ? "fw-semibold" : "text-body-secondary")">
-            @(changes.Count == 0 ? "No unsaved changes." : $"Unsaved changes: {string.Join(", ", changes)}. Save to apply them to every member, or Reset to go back to the saved settings.")
-        </p>
-    </div>
-
-    <Modal @ref="retentionModal" IsVerticallyCentered="true" ShowCloseButton="false" aria-labelledby="pa-adset-dialog-title" OnHidden="OnRetentionHidden">
-        <HeaderTemplate>
-            <h2 class="modal-title h5" id="pa-adset-dialog-title">Save and delete @AdminMembers.Plural(confirmCount, "conversation")?</h2>
-        </HeaderTemplate>
-        <BodyTemplate>
-            <p>
-                A retention of @AdminMembers.Plural(confirmDays, "day") deletes @AdminMembers.Plural(confirmCount, "conversation") that haven't changed for that long, as soon as you save.
-                It applies to every member's conversations, not only yours.
+        <div class="pa-adset-actions">
+            <Button @ref="saveButton" Type="ButtonType.Submit" Color="ButtonColor.Primary" form="pa-adset-form">
+                <Icon Name="IconName.CheckLg" class="me-1" aria-hidden="true" />Save settings
+            </Button>
+            <Button Color="ButtonColor.Secondary" Outline="true" @onclick="Reset">
+                <Icon Name="IconName.ArrowCounterclockwise" class="me-1" aria-hidden="true" />Reset
+            </Button>
+            <p class="small mb-0 @(changes.Count > 0 ? "fw-semibold" : "text-body-secondary")">
+                @(changes.Count == 0 ? "No unsaved changes." : $"Unsaved changes: {string.Join(", ", changes)}. Save to apply them to every member, or Reset to go back to the saved settings.")
             </p>
-            <p class="mb-0">This can't be undone.</p>
-        </BodyTemplate>
-        <FooterTemplate>
-            <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => retentionModal.HideAsync()">Cancel</Button>
-            <Button Color="ButtonColor.Danger" @onclick="ConfirmRetentionAsync"><Icon Name="IconName.Trash3" class="me-1" aria-hidden="true" />Save and delete</Button>
-        </FooterTemplate>
-    </Modal>
+        </div>
+
+        <Modal @ref="retentionModal" IsVerticallyCentered="true" ShowCloseButton="false" aria-labelledby="pa-adset-dialog-title" OnHidden="OnRetentionHidden">
+            <HeaderTemplate>
+                <h2 class="modal-title h5" id="pa-adset-dialog-title">Save and delete @AdminMembers.Plural(confirmCount, "conversation")?</h2>
+            </HeaderTemplate>
+            <BodyTemplate>
+                <p>
+                    A retention of @AdminMembers.Plural(confirmDays, "day") deletes @AdminMembers.Plural(confirmCount, "conversation") that haven't changed for that long, as soon as you save.
+                    It applies to every member's conversations, not only yours.
+                </p>
+                <p class="mb-0">This can't be undone.</p>
+            </BodyTemplate>
+            <FooterTemplate>
+                <Button Color="ButtonColor.Secondary" Outline="true" @onclick="() => retentionModal.HideAsync()">Cancel</Button>
+                <Button Color="ButtonColor.Danger" @onclick="ConfirmRetentionAsync"><Icon Name="IconName.Trash3" class="me-1" aria-hidden="true" />Save and delete</Button>
+            </FooterTemplate>
+        </Modal>
+    </AiMemberGuard>
 </div>

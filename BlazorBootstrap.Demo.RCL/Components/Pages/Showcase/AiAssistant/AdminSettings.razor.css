@@ -37,7 +37,7 @@
     max-width: 32rem;
 }
 
-    .pa-adset-term-add input {
+    .pa-adset-term-add ::deep input {
         flex: 1 1 auto;
         min-width: 0;
     }
@@ -86,3 +86,8 @@
         flex: 1 1 16rem;
         overflow-wrap: anywhere;
     }
+
+/* The workspace name needs no more than a short line. */
+::deep .pa-adset-name {
+    max-width: 28rem;
+}

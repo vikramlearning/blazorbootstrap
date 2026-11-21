@@ -117,7 +117,7 @@ public partial class ChatConversationList : ComponentBase
     /// <summary>Gets or sets the prefix of the element IDs (the list is on the page twice).</summary>
     [Parameter, EditorRequired] public string Prefix { get; set; } = default!;
 
-    private IReadOnlyList<AiConversation> Results => State.Search(search);
+    private IReadOnlyList<AiConversation> Results => State.SearchConversations(search);
 
     private string? SearchSummary => search.Trim().Length == 0
         ? null
