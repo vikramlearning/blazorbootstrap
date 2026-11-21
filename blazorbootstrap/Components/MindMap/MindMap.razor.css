@@ -48,10 +48,6 @@
     align-items: center;
 }
 
-    .bb-mind-map-node:focus {
-        outline: none;
-    }
-
 .bb-mind-map-children {
     position: relative;
     display: flex;
@@ -386,6 +382,11 @@
     cursor: pointer;
 }
 
+    /* the card is the focusable tree item; its focus ring is the box-shadow below, and a selected card keeps its outline */
+    .bb-mind-map-card:focus:not(.bb-mind-map-card-selected) {
+        outline: none;
+    }
+
 .bb-mind-map-card-root {
     padding: .625rem 1rem;
     border: 0;
@@ -446,7 +447,7 @@
     outline-offset: 2px;
 }
 
-.bb-mind-map-node:focus-visible > .bb-mind-map-card {
+.bb-mind-map-card:focus-visible {
     box-shadow: 0 0 0 .25rem rgba(var(--bs-primary-rgb), .4);
 }
 

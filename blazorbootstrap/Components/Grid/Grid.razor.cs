@@ -1287,6 +1287,19 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     public string ExportNoDataText { get; set; } = "There are no rows to export.";
 
     /// <summary>
+    /// Gets or sets the accessible name of each filter input in the filters row. <c>{0}</c> is the column's header text
+    /// (or its property name when it has none).
+    /// <para>
+    /// Default value is 'Filter by {0}'.
+    /// </para>
+    /// </summary>
+    [AddedVersion("4.1.0")]
+    [DefaultValue("Filter by {0}")]
+    [Description("Gets or sets the accessible name of each filter input in the filters row. <b>{0}</b> is the column's header text (or its property name when it has none).")]
+    [Parameter]
+    public string FilterInputLabelText { get; set; } = "Filter by {0}";
+
+    /// <summary>
     /// Gets or sets the filters row css class.
     /// <para>
     /// Default value is <see langword="null"/>.

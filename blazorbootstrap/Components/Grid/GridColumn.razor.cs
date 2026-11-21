@@ -460,21 +460,33 @@ public partial class GridColumn<TItem> : BlazorBootstrapComponentBase
 
                                if (HeaderContent is null)
                                {
-                                   if (CanSort())
+                                   var canSort = CanSort();
+
+                                   // A sortable header stays a column header (aria-sort tells the order) and holds a real button,
+                                   // so sorting works from the keyboard (Enter and Space) and the header keeps its table semantics.
+                                   if (canSort)
                                    {
-                                       builder.AddAttribute(104, "role", "button");
-                                       builder.AddAttribute(105, "onclick", async () => await OnSortClickAsync());
+                                       if (currentSortDirection == SortDirection.Ascending)
+                                           builder.AddAttribute(104, "aria-sort", "ascending");
+                                       else if (currentSortDirection == SortDirection.Descending)
+                                           builder.AddAttribute(104, "aria-sort", "descending");
+
+                                       builder.OpenElement(105, "button"); // open: button
+                                       builder.AddAttribute(106, "type", "button");
+                                       builder.AddAttribute(107, "class", "bb-grid-sort-button");
+                                       builder.AddAttribute(108, "onclick", async () => await OnSortClickAsync());
                                    }
 
-                                   builder.OpenElement(106, "span"); // open: span
-                                   builder.AddAttribute(107, "class", "me-2");
-                                   builder.AddContent(108, HeaderText);
+                                   builder.OpenElement(109, "span"); // open: span
+                                   builder.AddAttribute(110, "class", "me-2");
+                                   builder.AddContent(111, HeaderText);
                                    builder.CloseElement(); // close: span
 
-                                   if (CanSort())
+                                   if (canSort)
                                    {
-                                       builder.OpenElement(109, "span"); // open: span
-                                       builder.OpenElement(110, "i"); // open: i
+                                       builder.OpenElement(112, "span"); // open: span
+                                       builder.AddAttribute(113, "aria-hidden", "true");
+                                       builder.OpenElement(114, "i"); // open: i
 
                                        var sortIcon = "bi bi-arrow-down-up"; // default icon
 
@@ -483,15 +495,16 @@ public partial class GridColumn<TItem> : BlazorBootstrapComponentBase
                                        else if (currentSortDirection is not SortDirection.None and SortDirection.Descending)
                                            sortIcon = "bi bi-sort-alpha-down-alt";
 
-                                       builder.AddAttribute(111, "class", sortIcon);
+                                       builder.AddAttribute(115, "class", sortIcon);
                                        builder.CloseElement(); // close: i
                                        builder.CloseElement(); // close: span
+                                       builder.CloseElement(); // close: button
                                    }
                                }
                                else
                                {
                                    // If headercontent is used, filters and sorting wont be added.
-                                   builder.AddContent(112, HeaderContent);
+                                   builder.AddContent(116, HeaderContent);
                                }
 
                                builder.CloseElement(); // close: th

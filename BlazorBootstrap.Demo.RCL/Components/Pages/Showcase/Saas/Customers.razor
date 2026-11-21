@@ -19,7 +19,7 @@
                 var testimonial = testimonials[index];
                 <CarouselItem Active="index == 0" Label="@($"Quote from {testimonial.Person}")">
                     <figure class="mk-testimonial mb-0">
-                        <div class="mk-stars mb-3" aria-label="@($"{testimonial.Rating} out of 5 stars")">
+                        <div class="mk-stars mb-3" role="img" aria-label="@($"{testimonial.Rating} out of 5 stars")">
                             @for (var star = 1; star <= 5; star++)
                             {
                                 <Icon Name="@(star <= testimonial.Rating ? IconName.StarFill : IconName.Star)" aria-hidden="true" />

@@ -350,6 +350,8 @@ public partial class MindMap<TItem> : BlazorBootstrapComponentBase where TItem :
 
     private string GetNodeId(Node node) => $"{Id}-n-{node.Path}";
 
+    private static int GetPositionInSet(Node node) => node.Parent is null ? 1 : node.Parent.Children.IndexOf(node) + 1;
+
     private Dictionary<string, object>? GetRootAttributes()
     {
         if (AdditionalAttributes is null)
@@ -371,6 +373,8 @@ public partial class MindMap<TItem> : BlazorBootstrapComponentBase where TItem :
 
         return path;
     }
+
+    private static int GetSetSize(Node node) => node.Parent?.Children.Count ?? 1;
 
     private string? GetTabIndex(Node node, Node? tabStop) =>
         isInteractive ? IsTabStop(node, tabStop) ? "0" : "-1" : null;
@@ -422,7 +426,7 @@ public partial class MindMap<TItem> : BlazorBootstrapComponentBase where TItem :
     private void MoveFocus(Node node)
     {
         focusedNode = node;
-        pendingFocusId = GetNodeId(node);
+        pendingFocusId = GetCardId(node);
     }
 
     private async Task NotifyExpandedChangedAsync(IReadOnlyList<TItem> opened, IReadOnlyList<TItem> closed)

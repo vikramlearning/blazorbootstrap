@@ -70,7 +70,8 @@
             <div class="ec-results-bar">
                 <p class="mb-0 fw-semibold" id="ec-results-count" aria-live="polite" tabindex="-1" @ref="resultsCount">@ResultsText</p>
                 <Dropdown Color="DropdownColor.None">
-                    <DropdownToggleButton Class="btn btn-outline-secondary btn-sm" aria-label="@($"Sort products, currently {SortLabel(Filter.Sort)}")">
+                    @* No aria-label: the visible "Sort: Featured" is the name, so speech input users can say what they see (WCAG 2.5.3). *@
+                    <DropdownToggleButton Class="btn btn-outline-secondary btn-sm">
                         <Icon Name="IconName.SortDown" class="me-1" aria-hidden="true" />Sort: @SortLabel(Filter.Sort)
                     </DropdownToggleButton>
                     <DropdownMenu Position="DropdownMenuPosition.End">

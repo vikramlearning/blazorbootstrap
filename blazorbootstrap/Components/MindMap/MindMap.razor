@@ -74,7 +74,8 @@
 @code {
     private RenderFragment RenderGroup(IEnumerable<Node> children, bool mirror, bool stack, Node? tabStop) => __builder =>
     {
-        <div class="@GetGroupClass(mirror, stack)" role="group">
+        @* Presentational: each tree item is its card, so the hierarchy is carried by aria-level, aria-setsize, and aria-posinset. *@
+        <div class="@GetGroupClass(mirror, stack)" role="none">
             @foreach (var child in children)
             {
                 <div @key="child.Key" class="bb-mind-map-child" role="none">
@@ -89,17 +90,21 @@
         var open = node.HasChildren && IsExpanded(node);
         var handlers = GetHandlers(node);
 
-        <div id="@GetNodeId(node)"
-             class="@GetNodeClass(node)"
-             role="treeitem"
-             aria-level="@(node.Depth + 1)"
-             aria-expanded="@(node.HasChildren ? (open ? "true" : "false") : null)"
-             aria-selected="@(isInteractive ? (IsSelected(node) ? "true" : "false") : null)"
-             aria-labelledby="@GetCardId(node)"
-             tabindex="@GetTabIndex(node, tabStop)"
-             @onkeydown="handlers.KeyDown"
-             @onkeydown:stopPropagation="true">
-            <div id="@GetCardId(node)" class="@GetCardClass(node)" @onclick="handlers.Click">
+        @* The card is the tree item, so its accessible name is exactly the text it shows; the child cards sit outside it
+           (WCAG 2.5.3 Label in Name). *@
+        <div id="@GetNodeId(node)" class="@GetNodeClass(node)" role="none">
+            <div id="@GetCardId(node)"
+                 class="@GetCardClass(node)"
+                 role="treeitem"
+                 aria-level="@(node.Depth + 1)"
+                 aria-setsize="@GetSetSize(node)"
+                 aria-posinset="@GetPositionInSet(node)"
+                 aria-expanded="@(node.HasChildren ? (open ? "true" : "false") : null)"
+                 aria-selected="@(isInteractive ? (IsSelected(node) ? "true" : "false") : null)"
+                 tabindex="@GetTabIndex(node, tabStop)"
+                 @onclick="handlers.Click"
+                 @onkeydown="handlers.KeyDown"
+                 @onkeydown:stopPropagation="true">
                 @if (isInteractive && node.HasChildren)
                 {
                     <span class="bb-mind-map-toggle" aria-hidden="true" @onclick="handlers.Toggle" @onclick:stopPropagation="true">@(open ? "−" : "+")</span>
