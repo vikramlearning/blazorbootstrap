@@ -589,6 +589,9 @@ public partial class Markdown : BlazorBootstrapComponentBase
             var builder = new RenderTreeBuilder();
             ChildContent.Invoke(builder);
 
+            // The markdown source is read from the rendered ChildContent markup frames.
+            // Blazor exposes no public API for that, so BL0006 is suppressed for this block only.
+#pragma warning disable BL0006
             var frames = builder.GetFrames().Array;
 
             foreach (var frame in frames)
@@ -599,6 +602,7 @@ public partial class Markdown : BlazorBootstrapComponentBase
                     if (lines.Any())
                         inputs.AddRange(lines);
                 }
+#pragma warning restore BL0006
         }
 
         if (inputs.Any())

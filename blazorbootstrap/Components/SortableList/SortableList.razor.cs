@@ -9,11 +9,6 @@ public partial class SortableList<TItem> : BlazorBootstrapComponentBase
     #region Fields and Constants
 
     /// <summary>
-    /// A cancellation token source for managing asynchronous operations.
-    /// </summary>
-    private CancellationTokenSource cancellationTokenSource = default!;
-
-    /// <summary>
     /// A CSS selector used to filter disabled items.
     /// </summary>
     private string filter = ".bb-sortable-list-item-disabled";

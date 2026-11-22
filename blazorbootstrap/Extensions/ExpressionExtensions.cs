@@ -310,7 +310,7 @@ public static class ExpressionExtensions
 
         if (propertyType is not null && propertyType.IsEnum)
         {
-            _ = Enum.TryParse(propertyType, filterItem.Value, out object filterValue);
+            _ = Enum.TryParse(propertyType, filterItem.Value, out object? filterValue);
             value = Expression.Constant(filterValue);
         }
 
