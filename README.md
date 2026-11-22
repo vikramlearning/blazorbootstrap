@@ -12,7 +12,7 @@
 <p align="center">
   An Enterprise-class Blazor Bootstrap Component library built on the Blazor and Bootstrap CSS frameworks.
   <br>
-  <a href="https://docs.blazorbootstrap.com/getting-started/blazor-webassembly-net-8"><strong>Getting Started »</strong></a>
+  <a href="https://docs.blazorbootstrap.com/getting-started/blazor-webassembly-net-11"><strong>Getting Started »</strong></a>
   <br>
 </p>
 
@@ -113,7 +113,7 @@ Install [Blazor Bootstrap templates](https://github.com/vikramlearning/blazorboo
 
   ![image](https://user-images.githubusercontent.com/2337067/233800604-43986ae7-27dd-4f17-9af6-c2f1a6f07097.png)
 
-- Read the [Getting started page](https://docs.blazorbootstrap.com/getting-started/blazor-webassembly-net-8) for information on the framework installation, contents, examples, and more.
+- Read the [Getting started page](https://docs.blazorbootstrap.com/getting-started/blazor-webassembly-net-11) for information on the framework installation, contents, examples, and more.
 
 ## Charts
 
