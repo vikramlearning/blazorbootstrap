@@ -9,3 +9,17 @@
   height: 200px;
   width: 200px;
 }
+
+.section {
+  margin-bottom: 1.5rem;
+}
+
+.sectionTitle {
+  font-size: 1.25rem;
+  margin-bottom: 0.5rem;
+}
+
+/* The purple link color is too dark on the dark-mode background; use the lighter step there. */
+:global([data-theme="dark"]) .sectionTitle a {
+  color: var(--ifm-color-primary-lighter);
+}
