@@ -63,12 +63,12 @@ The default Blazor template includes demonstration code and Bootstrap. To remove
 
 1. Delete the **bootstrap** folder from the **wwwroot** directory:
 
-   - Delete the **wwwroot/css/bootstrap** folder.
+   - Delete the **wwwroot/lib/bootstrap** folder.
 
 1. Remove the following line from **Components/App.razor** file:
 
    ``` html showLineNumbers
-   <link rel="stylesheet" href="bootstrap/bootstrap.min.css" />
+   <link rel="stylesheet" href="@Assets["lib/bootstrap/dist/css/bootstrap.min.css"]" />
    ```
 
 ## Starter template
