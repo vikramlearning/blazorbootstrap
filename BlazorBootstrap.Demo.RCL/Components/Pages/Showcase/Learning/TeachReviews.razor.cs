@@ -294,7 +294,6 @@ public partial class TeachReviews : ComponentBase, IDisposable
             deleteDone = false;
             focusReviewId = review.Id;
             pendingFocus = FocusTarget.Reply;
-            StateHasChanged();
         }
         else if (deleteButtons.TryGetValue(review.Id, out var button))
         {
@@ -319,7 +318,6 @@ public partial class TeachReviews : ComponentBase, IDisposable
             hideDone = false;
             focusReviewId = review.Id;
             pendingFocus = FocusTarget.Visibility;
-            StateHasChanged();
         }
         else if (visibilityButtons.TryGetValue(review.Id, out var button))
         {

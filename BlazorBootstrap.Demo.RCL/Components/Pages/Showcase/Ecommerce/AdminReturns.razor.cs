@@ -128,7 +128,7 @@ public partial class AdminReturns : ComponentBase, IDisposable
     /// </summary>
     private async Task ApplyBulkAsync()
     {
-        if (!bulkContext.Validate())
+        if (!await bulkContext.ValidateAsync())
             return;
 
         errorMessage = null;
@@ -169,7 +169,6 @@ public partial class AdminReturns : ComponentBase, IDisposable
 
         selected = new List<ReturnRow>();
         focusStatus = true;
-        StateHasChanged();
     }
 
     /// <summary>The bar closes, so focus moves to the announcement.</summary>

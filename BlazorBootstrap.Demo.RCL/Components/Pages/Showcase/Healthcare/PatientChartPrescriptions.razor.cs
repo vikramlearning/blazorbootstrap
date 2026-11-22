@@ -139,7 +139,6 @@ public partial class PatientChartPrescriptions : ComponentBase, IDisposable
         if (!stop)
         {
             focusTarget = () => openers.TryGetValue(id, out var button) ? button : statusRegion;
-            StateHasChanged();
 
             return Task.CompletedTask;
         }
@@ -157,7 +156,6 @@ public partial class PatientChartPrescriptions : ComponentBase, IDisposable
             _ => "That didn't work, and nothing was stopped. Try again.",
         }, result is not (HcResult.Ok or HcResult.NoChange));
         focusTarget = () => statusRegion;
-        StateHasChanged();
 
         return Task.CompletedTask;
     }

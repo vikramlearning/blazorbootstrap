@@ -328,7 +328,7 @@ public partial class AdminServiceEdit : ComponentBase, IDisposable
 
         var nameFree = nameCheck is null || await nameCheck.CheckNowAsync();
 
-        if (!editContext.Validate() || !nameFree)
+        if (!await editContext.ValidateAsync() || !nameFree)
             return;
 
         if (existing is null && State.Services.Count >= MonitoringState.MaxServices)

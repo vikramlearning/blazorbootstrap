@@ -174,7 +174,7 @@ public partial class Invoices : ComponentBase, IDisposable
         form.Today = State.Clock.Today;
         serverErrors?.Clear();
 
-        if (!editContext.Validate())
+        if (!await editContext.ValidateAsync())
             return;
 
         var result = State.CreateDraftInvoice(form.ClientId, form.UpTo!.Value, out var created);

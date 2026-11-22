@@ -289,7 +289,7 @@ public partial class AdminSuppliers : ComponentBase, IDisposable
 
         var nameFree = nameCheck is null || await nameCheck.CheckNowAsync();
 
-        if (!editContext.Validate() || !nameFree)
+        if (!await editContext.ValidateAsync() || !nameFree)
             return;
 
         var input = new EcommerceSupplier(editingId ?? string.Empty, form.Name, form.ContactName, form.Email, form.LeadTimeDays!.Value, form.Currency, form.PaymentTerms);

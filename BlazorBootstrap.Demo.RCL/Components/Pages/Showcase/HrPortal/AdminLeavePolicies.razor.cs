@@ -340,7 +340,7 @@ public partial class AdminLeavePolicies : ComponentBase, IDisposable
 
         var nameFree = nameCheck is null || await nameCheck.CheckNowAsync();
 
-        if (!editContext.Validate() || !nameFree)
+        if (!await editContext.ValidateAsync() || !nameFree)
             return;
 
         var existing = editId == 0 ? null : State.FindPolicy(editId);

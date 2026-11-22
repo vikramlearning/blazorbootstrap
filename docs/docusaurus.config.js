@@ -75,7 +75,7 @@ const config = {
                     height: 32,
                 },
                 items: [
-                    { type: 'doc', docId: 'getting-started/blazor-webassembly-net-8', label: 'Docs', position: 'left' },
+                    { type: 'doc', docId: 'getting-started/blazor-webassembly-net-11', label: 'Docs', position: 'left' },
                     { href: 'https://demos.blazorbootstrap.com', label: 'Demos', position: 'left' },
                     { to: '/blog', label: 'Blog', position: 'left' },
                     { href: 'https://github.com/vikramlearning/blazorbootstrap', label: 'GitHub', position: 'right', },
@@ -98,7 +98,7 @@ const config = {
                         title: 'Product',
                         items: [
                             { label: 'Demos', href: 'https://demos.blazorbootstrap.com/', },
-                            { label: 'Docs', to: '/getting-started/blazor-webassembly-net-8', },
+                            { label: 'Docs', to: '/getting-started/blazor-webassembly-net-11', },
                             { label: 'Showcase', href: 'https://demos.blazorbootstrap.com/showcase', },
                             { label: 'Blog', to: '/blog', },
                         ],
@@ -106,8 +106,8 @@ const config = {
                     {
                         title: 'Resources',
                         items: [
-                            { label: 'Getting started', to: '/getting-started/blazor-webassembly-net-8', },
-                            { label: 'Install NuGet', to: '/getting-started/blazor-webassembly-net-8#install-nuget-package', },
+                            { label: 'Getting started', to: '/getting-started/blazor-webassembly-net-11', },
+                            { label: 'Install NuGet', to: '/getting-started/blazor-webassembly-net-11#install-nuget-package', },
                             { label: 'Starter templates', href: 'https://github.com/vikramlearning/blazorbootstrap-starter-templates', },
                         ],
                     },
@@ -149,21 +149,28 @@ const config = {
             '@docusaurus/plugin-client-redirects',
             {
                 redirects: [
+                    // The .NET 8 getting-started pages were replaced by .NET 11 and .NET 10 pages (4.1.0).
+                    { from: '/getting-started/blazor-webassembly-net-8', to: '/getting-started/blazor-webassembly-net-11' },
+                    { from: '/getting-started/blazor-webassembly-standalone-net-8', to: '/getting-started/blazor-webassembly-net-11' },
+                    { from: '/getting-started/blazor-webapp-server-global-net-8', to: '/getting-started/blazor-webapp-server-global-net-11' },
+                    { from: '/getting-started/blazor-server-net-8', to: '/getting-started/blazor-webapp-server-global-net-11' },
+                    { from: '/getting-started/blazor-webapp-auto-global-net-8', to: '/getting-started/blazor-webapp-auto-global-net-11' },
+                    { from: '/getting-started/maui-blazor-net-8', to: '/getting-started/maui-blazor-net-11' },
                     {
                         from: '/getting-started/blazor-webassembly',
-                        to: '/getting-started/blazor-webassembly-net-8',
+                        to: '/getting-started/blazor-webassembly-net-11',
                     },
                     {
                         from: '/getting-started/blazor-server',
-                        to: '/getting-started/blazor-webapp-server-global-net-8',
+                        to: '/getting-started/blazor-webapp-server-global-net-11',
                     },
                     {
                         from: '/docs/getting-started/maui-blazor',
-                        to: '/getting-started/maui-blazor-net-8',
+                        to: '/getting-started/maui-blazor-net-11',
                     },
                     {
                         from: '/getting-started/maui-blazor',
-                        to: '/getting-started/maui-blazor-net-8',
+                        to: '/getting-started/maui-blazor-net-11',
                     },
                     {
                         from: '/docs/layout/blazor-webassembly',

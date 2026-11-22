@@ -97,7 +97,6 @@ public partial class ShowcaseSignIn : ComponentBase
     private async Task SignOutAsync()
     {
         Identity.SignOut();
-        StateHasChanged();
         await Task.Yield();
         await FocusAsync(heading);
     }

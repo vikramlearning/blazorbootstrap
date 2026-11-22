@@ -158,7 +158,7 @@ public partial class AiPromptForm : ComponentBase, IDisposable
 
         var titleFree = titleCheck is null || await titleCheck.CheckNowAsync();
 
-        if (!editContext.Validate() || !titleFree || form.Category is not { } category)
+        if (!await editContext.ValidateAsync() || !titleFree || form.Category is not { } category)
             return;
 
         var input = new AiPromptInput(form.Title, form.Text, category, AiPromptText.ParseVariables(form.VariablesText), ParseTags(form.TagsText), Shared && form.Publish);

@@ -312,7 +312,7 @@ public partial class AdminTenantNew : ComponentBase, IDisposable
         var nameFree = nameCheck is null || await nameCheck.CheckNowAsync();
         var subdomainFree = subdomainCheck is null || await subdomainCheck.CheckNowAsync();
 
-        if (!editContext.Validate() || !nameFree || !subdomainFree)
+        if (!await editContext.ValidateAsync() || !nameFree || !subdomainFree)
             return;
 
         var plan = SelectedPlan;

@@ -159,7 +159,7 @@ public partial class DealEditor : ComponentBase, IDisposable
         form.ClientExists = State.FindClient(form.ClientId) is not null;
         serverErrors?.Clear();
 
-        if (!editContext.Validate())
+        if (!await editContext.ValidateAsync())
             return;
 
         var trimmed = form.Title.Trim();

@@ -312,7 +312,6 @@ public partial class AdminInvoices : ComponentBase, IDisposable
 
         selected = new List<InvoiceRow>();
         focusStatus = true;
-        StateHasChanged();
     }
 
     private string RowClass(InvoiceRow row) => selected.Any(item => item.Number == row.Number) ? "sd-row-selected" : string.Empty;

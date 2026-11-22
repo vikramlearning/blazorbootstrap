@@ -102,9 +102,9 @@ public partial class InvoiceDetail : ComponentBase, IDisposable
         await deleteModal.HideAsync();
     }
 
-    private void Issue()
+    private async Task Issue()
     {
-        if (!issueContext.Validate())
+        if (!await issueContext.ValidateAsync())
             return;
 
         var result = State.IssueInvoice(Id, issueForm.TermsDays);
@@ -120,7 +120,7 @@ public partial class InvoiceDetail : ComponentBase, IDisposable
         focusStatus = true;
     }
 
-    private void MarkPaid()
+    private async Task MarkPaid()
     {
         if (State.FindInvoice(Id) is not { IssuedOn: { } issued })
             return;
@@ -128,7 +128,7 @@ public partial class InvoiceDetail : ComponentBase, IDisposable
         paidForm.IssuedOn = issued;
         paidForm.Today = State.Clock.Today;
 
-        if (!paidContext.Validate())
+        if (!await paidContext.ValidateAsync())
             return;
 
         var result = State.MarkInvoicePaid(Id, paidForm.PaidOn!.Value);
@@ -171,7 +171,6 @@ public partial class InvoiceDetail : ComponentBase, IDisposable
             _ => "That didn't work, and nothing was deleted. Try again.",
         }, true);
         focusStatus = true;
-        StateHasChanged();
     }
 
     private void OnStateChanged() => InvokeAsync(StateHasChanged);

@@ -154,7 +154,6 @@ public partial class TravelAvailabilityCalendar : ComponentBase, IDisposable
 
         if (!CanGoForward)
         {
-            StateHasChanged();
             await TravelDisplay.FocusAsync(previousButton);
         }
     }
@@ -171,7 +170,6 @@ public partial class TravelAvailabilityCalendar : ComponentBase, IDisposable
 
         if (!CanGoBack)
         {
-            StateHasChanged();
             await TravelDisplay.FocusAsync(nextButton);
         }
     }

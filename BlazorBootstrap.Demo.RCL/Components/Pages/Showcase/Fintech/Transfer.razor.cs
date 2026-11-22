@@ -152,16 +152,16 @@ public partial class Transfer : ComponentBase, IDisposable
     /// Stores the transfer for the review screen once the form is valid (a failed submit shows the summary); the bank checks
     /// again, and its message shows in the alert.
     /// </summary>
-    private Task ContinueAsync()
+    private async Task ContinueAsync()
     {
         // Guards a double submit: the first one stores the transfer and opens the review screen.
         if (busy)
-            return Task.CompletedTask;
+            return;
 
         UpdateLimits();
 
-        if (!editContext.Validate())
-            return Task.CompletedTask;
+        if (!await editContext.ValidateAsync())
+            return;
 
         busy = true;
         var date = form.IsLater ? form.LaterDate!.Value : State.Today;
@@ -172,13 +172,11 @@ public partial class Transfer : ComponentBase, IDisposable
             busy = false;
             ShowError(message);
 
-            return Task.CompletedTask;
+            return;
         }
 
         error = null;
         Navigation.NavigateTo($"{FintechLayout.Base}/transfer/confirm");
-
-        return Task.CompletedTask;
     }
 
     /// <summary>

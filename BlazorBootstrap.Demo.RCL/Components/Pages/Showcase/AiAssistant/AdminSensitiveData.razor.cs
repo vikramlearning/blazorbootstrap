@@ -223,7 +223,7 @@ public partial class AdminSensitiveData : ComponentBase, IDisposable
     /// <summary>Dismisses the selection's new events in one <see cref="AiState.DismissDlpEvents" /> call once the bar's form is valid.</summary>
     private async Task DismissSelectedAsync()
     {
-        if (!bulkContext.Validate())
+        if (!await bulkContext.ValidateAsync())
             return;
 
         ClearError();
@@ -259,7 +259,6 @@ public partial class AdminSensitiveData : ComponentBase, IDisposable
 
         selected = new List<EventRow>();
         focusTarget = () => statusRegion;
-        StateHasChanged();
     }
 
     /// <summary>A filter changed: back to the first page of the filtered events.</summary>
@@ -293,8 +292,6 @@ public partial class AdminSensitiveData : ComponentBase, IDisposable
         {
             focusTarget = () => openers.TryGetValue(id, out var opener) ? opener : statusRegion;
         }
-
-        StateHasChanged();
 
         return Task.CompletedTask;
     }
@@ -401,7 +398,7 @@ public partial class AdminSensitiveData : ComponentBase, IDisposable
 
         reviewForm.CurrentChoice = ChoiceOf(State.Policy.DlpRules.First(rule => rule.Kind == item.Kind));
 
-        if (!reviewContext.Validate())
+        if (!await reviewContext.ValidateAsync())
             return;
 
         var kind = AiDlp.KindLabel(item.Kind);
@@ -458,9 +455,9 @@ public partial class AdminSensitiveData : ComponentBase, IDisposable
     private string RowClass(EventRow row) => selected.Any(item => item.Id == row.Id) ? "pa-row-selected" : string.Empty;
 
     /// <summary>Saves the policy form; the state's answer goes to the status line or the alert, which take focus.</summary>
-    private void SavePolicy()
+    private async Task SavePolicy()
     {
-        if (!policyContext.Validate())
+        if (!await policyContext.ValidateAsync())
             return;
 
         ClearError();

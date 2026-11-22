@@ -216,7 +216,7 @@ public partial class ClaimDetail : ComponentBase, IDisposable
 
         appealForm.PastDeadline = claim.AppealDeadline is { } deadline && State.Clock.Today > deadline;
 
-        if (!appealContext.Validate())
+        if (!await appealContext.ValidateAsync())
             return;
 
         var result = State.AppealClaim(claim.Id, appealForm.Letter ?? string.Empty);
@@ -247,7 +247,7 @@ public partial class ClaimDetail : ComponentBase, IDisposable
 
     private async Task CloseAsync()
     {
-        if (State.FindClaim(Id) is not { } claim || !closeContext.Validate())
+        if (State.FindClaim(Id) is not { } claim || !await closeContext.ValidateAsync())
             return;
 
         var billPatient = closeForm.Choice == BillPatientValue;
@@ -324,7 +324,6 @@ public partial class ClaimDetail : ComponentBase, IDisposable
         }
 
         focusStatus = true;
-        StateHasChanged();
     }
 
     private Task OnShownAsync() => HcDisplay.FocusAsync(dialogHeading);
@@ -391,7 +390,7 @@ public partial class ClaimDetail : ComponentBase, IDisposable
 
         responseForm.BilledCents = claim.BilledCents;
 
-        if (!responseContext.Validate())
+        if (!await responseContext.ValidateAsync())
             return;
 
         var (allowed, paid, patient) = (Cents(responseForm.Allowed), Cents(responseForm.Paid), Cents(responseForm.Patient));

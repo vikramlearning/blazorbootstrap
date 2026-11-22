@@ -244,7 +244,6 @@ public partial class AdminPricing : ComponentBase, IDisposable
 
         selected = new List<PriceRow>();
         focusStatus = true;
-        StateHasChanged();
     }
 
     private async Task OnCategoryChanged(ChangeEventArgs args)
@@ -368,7 +367,7 @@ public partial class AdminPricing : ComponentBase, IDisposable
     /// </summary>
     private async Task ReviewBulkAsync()
     {
-        if (!bulkContext.Validate())
+        if (!await bulkContext.ValidateAsync())
             return;
 
         var changes = new List<PendingChange>();

@@ -372,12 +372,12 @@ public partial class Availability : ComponentBase, IDisposable
     }
 
     /// <summary>Checks the hours form and saves the block, saying what changed or what is wrong (rule WR-002).</summary>
-    private void SaveHours()
+    private async Task SaveHours()
     {
         hoursServerErrors?.Clear();
         UpdateHoursRules();
 
-        if (!hoursContext.Validate())
+        if (!await hoursContext.ValidateAsync())
             return;
 
         var blockId = editingBlockId;
@@ -430,12 +430,12 @@ public partial class Availability : ComponentBase, IDisposable
     }
 
     /// <summary>Checks the time-off form and saves it, saying what changed or what is wrong (rule WR-002).</summary>
-    private void SaveTimeOff()
+    private async Task SaveTimeOff()
     {
         offServerErrors?.Clear();
         UpdateTimeOffRules();
 
-        if (!offContext.Validate())
+        if (!await offContext.ValidateAsync())
             return;
 
         var offId = editingOffId;

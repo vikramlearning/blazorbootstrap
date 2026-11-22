@@ -576,7 +576,7 @@ public partial class IncidentDetail : ComponentBase, IDisposable
     /// <summary>Checks the postmortem form and asks to confirm publishing it (or saving a published one).</summary>
     private async Task RequestPublishFromFormAsync()
     {
-        if (ValidPostmortem(publish: true) is not { } request)
+        if (await ValidPostmortemAsync(publish: true) is not { } request)
             return;
 
         pmRequest = request;
@@ -605,7 +605,7 @@ public partial class IncidentDetail : ComponentBase, IDisposable
             return;
         }
 
-        if (ValidPostmortem(publish: false) is not { } request)
+        if (await ValidPostmortemAsync(publish: false) is not { } request)
             return;
 
         if (!ApplyPostmortem(incident, request))
@@ -638,7 +638,7 @@ public partial class IncidentDetail : ComponentBase, IDisposable
         dialogForm.CurrentSeverity = incident.Severity;
         dialogForm.IsPublished = incident.IsPublished;
 
-        if ((dialog is DialogKind.Severity or DialogKind.Resolve or DialogKind.Reopen) && !dialogContext.Validate())
+        if ((dialog is DialogKind.Severity or DialogKind.Resolve or DialogKind.Reopen) && !await dialogContext.ValidateAsync())
             return;
 
         var reason = dialogForm.Reason.Trim();
@@ -679,9 +679,9 @@ public partial class IncidentDetail : ComponentBase, IDisposable
     }
 
     /// <summary>Adds the note once the form is valid (a failed submit shows the summary, rule WR-002); the state checks again.</summary>
-    private void SubmitNote()
+    private async Task SubmitNote()
     {
-        if (Incident is not { } incident || !noteContext.Validate())
+        if (Incident is not { } incident || !await noteContext.ValidateAsync())
             return;
 
         var text = noteForm.Text.Trim();
@@ -705,7 +705,7 @@ public partial class IncidentDetail : ComponentBase, IDisposable
     /// </summary>
     private async Task SubmitPostAsync()
     {
-        if (Incident is not { } incident || !postContext.Validate())
+        if (Incident is not { } incident || !await postContext.ValidateAsync())
             return;
 
         if (!incident.IsPublished)
@@ -722,8 +722,8 @@ public partial class IncidentDetail : ComponentBase, IDisposable
         State.Subscriptions.Count(subscription => subscription.ServiceIds.Count == 0 || subscription.ServiceIds.Contains(incident.ServiceId));
 
     /// <summary>Checks the postmortem form; a failed check shows the summary and moves focus to it (rule WR-002).</summary>
-    private PostmortemRequest? ValidPostmortem(bool publish) =>
-        pmContext.Validate()
+    private async Task<PostmortemRequest?> ValidPostmortemAsync(bool publish) =>
+        await pmContext.ValidateAsync()
             ? new PostmortemRequest(pmForm.Summary.Trim(), pmForm.RootCause.Trim(), pmItems.Select(item => item.Text.Trim()).Where(text => text.Length > 0).ToList(), publish)
             : null;
 

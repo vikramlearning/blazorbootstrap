@@ -319,7 +319,7 @@ public partial class CurrencyInput<TValue> : BlazorBootstrapComponentBase
             options.MaximumFractionDigits = 0;
         }
 
-        formattedValue = await JSRuntime.InvokeAsync<string>("window.blazorBootstrap.currencyInput.getFormattedValue", Value is null ? "" : Value, Locale, options);
+        formattedValue = await SafeInvokeAsync("window.blazorBootstrap.currencyInput.getFormattedValue", formattedValue, Value is null ? "" : Value, Locale, options);
     }
 
     private bool TryParseValue(object value, out TValue newValue)

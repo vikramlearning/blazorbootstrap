@@ -164,7 +164,6 @@ public partial class AccountOrders : ComponentBase, IDisposable
     private async Task ShowAllAsync()
     {
         group = OrderGroup.All;
-        StateHasChanged();
 
         await Task.Yield();
 

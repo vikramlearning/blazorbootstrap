@@ -208,7 +208,6 @@ public partial class Timesheet : ComponentBase, IDisposable
         {
             var id = deleteId;
             focusTarget = () => editButtons.TryGetValue(id, out var button) ? button : statusRegion;
-            StateHasChanged();
 
             return;
         }
@@ -225,7 +224,6 @@ public partial class Timesheet : ComponentBase, IDisposable
         }, result != PbResult.Ok);
         editButtons.Remove(deleteId);
         focusTarget = () => statusRegion;
-        StateHasChanged();
     }
 
     private void OnEditorHidden()
@@ -241,8 +239,6 @@ public partial class Timesheet : ComponentBase, IDisposable
             var id = editId;
             focusTarget = () => id != 0 && editButtons.TryGetValue(id, out var button) ? button : logButton ?? statusRegion;
         }
-
-        StateHasChanged();
     }
 
     private async Task OnEditorShownAsync() => await PbDisplay.FocusAsync(projectInput?.Element);
@@ -375,7 +371,7 @@ public partial class Timesheet : ComponentBase, IDisposable
             : 0m;
         serverErrors?.Clear();
 
-        if (!editContext.Validate())
+        if (!await editContext.ValidateAsync())
             return;
 
         var input = new PbTimeEntryInput(form.ProjectId, form.TaskId, form.Date!.Value, form.Hours!.Value, form.IsBillable && !form.IsInternal, form.Note ?? string.Empty);

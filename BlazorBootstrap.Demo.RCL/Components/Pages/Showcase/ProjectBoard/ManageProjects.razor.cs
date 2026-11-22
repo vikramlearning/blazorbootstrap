@@ -226,7 +226,6 @@ public partial class ManageProjects : ComponentBase, IDisposable
 
         selected = new List<ProjectRow>();
         focusStatus = true;
-        StateHasChanged();
     }
 
     /// <summary>The link disappears with the filters it clears, so focus moves to the count, which also announces the new total.</summary>

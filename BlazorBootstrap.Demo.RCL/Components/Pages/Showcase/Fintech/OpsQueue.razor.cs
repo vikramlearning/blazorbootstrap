@@ -159,7 +159,7 @@ public partial class OpsQueue : ComponentBase, IDisposable
     {
         bulkForm.Scheduled = statusFilter == ScheduledValue;
 
-        if (!bulkContext.Validate())
+        if (!await bulkContext.ValidateAsync())
             return;
 
         var references = selected.Select(row => row.Reference).ToList();
@@ -192,7 +192,6 @@ public partial class OpsQueue : ComponentBase, IDisposable
 
         selected = new List<QueueRow>();
         focusStatus = true;
-        StateHasChanged();
     }
 
     /// <summary>The link disappears with the filters it clears, so focus moves to the count, which also announces the new total.</summary>

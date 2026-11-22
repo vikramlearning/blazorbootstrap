@@ -204,7 +204,7 @@ public partial class TaskEditor : ComponentBase, IDisposable
         form.AssigneeName = State.FindPerson(string.IsNullOrEmpty(form.AssigneeId) ? null : form.AssigneeId)?.Name;
         serverErrors?.Clear();
 
-        if (!editContext.Validate())
+        if (!await editContext.ValidateAsync())
             return;
 
         var input = new PbTaskInput(form.Title.Trim(), (form.Description ?? string.Empty).Trim(), string.IsNullOrEmpty(form.AssigneeId) ? null : form.AssigneeId, form.Priority, form.DueDate?.Date,

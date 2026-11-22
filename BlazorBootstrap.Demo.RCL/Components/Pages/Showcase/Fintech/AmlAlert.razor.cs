@@ -85,9 +85,9 @@ public partial class AmlAlert : ComponentBase, IDisposable
         _ => "Velocity spike: money out in a week far above the customer's 90-day weekly average.",
     };
 
-    private void Dismiss()
+    private async Task Dismiss()
     {
-        if (Alert is not { } alert || !dismissContext.Validate())
+        if (Alert is not { } alert || !await dismissContext.ValidateAsync())
             return;
 
         var outcome = State.DismissAlerts(new[] { alert.Id }, dismissForm.Reason.Trim());
@@ -97,10 +97,10 @@ public partial class AmlAlert : ComponentBase, IDisposable
 
     private void OnStateChanged() => InvokeAsync(StateHasChanged);
 
-    private Task OpenCaseAsync()
+    private async Task OpenCaseAsync()
     {
-        if (Alert is not { } alert || !caseContext.Validate())
-            return Task.CompletedTask;
+        if (Alert is not { } alert || !await caseContext.ValidateAsync())
+            return;
 
         var (result, amlCase) = State.OpenCase(new[] { alert.Id }, caseForm.AssigneeId);
 
@@ -108,8 +108,6 @@ public partial class AmlAlert : ComponentBase, IDisposable
             Navigation.NavigateTo(AmlDisplay.CasePath(amlCase.Id));
         else
             Report(AmlDisplay.ResultText(result), true);
-
-        return Task.CompletedTask;
     }
 
     /// <summary>Says how many other open alerts the customer has, so the analyst can open one case from them together.</summary>

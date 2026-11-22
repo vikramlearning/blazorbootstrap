@@ -292,7 +292,7 @@ public partial class AgentArticleEdit : ComponentBase, IDisposable
         bodyError = BodyProblem();
 
         // Every field rule runs (the summary lists the failing fields); the body is outside the form and shows its own message.
-        if (!editContext.Validate() || bodyError is not null)
+        if (!await editContext.ValidateAsync() || bodyError is not null)
             return;
 
         var before = Item;

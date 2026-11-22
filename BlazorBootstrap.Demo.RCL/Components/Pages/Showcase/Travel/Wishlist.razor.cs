@@ -88,7 +88,6 @@ public partial class Wishlist : ComponentBase, IDisposable
             TravelResult.NotFound => $"{stay.Name} is no longer listed, so it couldn't be saved again.",
             _ => "Sign in as a guest to save stays.",
         });
-        StateHasChanged();
 
         await Task.Yield();
         await TravelDisplay.FocusAsync(statusRegion);

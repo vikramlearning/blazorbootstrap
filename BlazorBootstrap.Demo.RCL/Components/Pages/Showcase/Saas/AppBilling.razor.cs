@@ -211,7 +211,6 @@ public partial class AppBilling : ComponentBase, IDisposable
         cardFormOpen = false;
         NewCard();
         cardError = null;
-        StateHasChanged();
 
         await Task.Yield();
         await FocusCardOpenerAsync();
@@ -231,7 +230,6 @@ public partial class AppBilling : ComponentBase, IDisposable
             planError = string.Empty;
             SetStatus(PlanChangedText(before, plan, quote, wasTrial));
             ResetPicker();
-            StateHasChanged();
 
             await Task.Yield();
             await SaasDisplay.FocusAsync(statusRegion);
@@ -346,7 +344,6 @@ public partial class AppBilling : ComponentBase, IDisposable
                     ? $"The payment is still failing: {FailingNextText(workspace, item)}"
                     : "The payment went through, and the workspace is in good standing.")
             : string.Create(CultureInfo.InvariantCulture, $"The demo clock is already {SaasState.MaxDemoDays} days ahead, the most it goes."));
-        StateHasChanged();
 
         await Task.Yield();
         await SaasDisplay.FocusAsync(statusRegion);
@@ -406,7 +403,6 @@ public partial class AppBilling : ComponentBase, IDisposable
                 text += " The workspace is no longer past due.";
 
             SetStatus(text + " Nothing real is charged in this demo.");
-            StateHasChanged();
 
             // The panel and its button are gone once nothing is open.
             await Task.Yield();
@@ -462,7 +458,7 @@ public partial class AppBilling : ComponentBase, IDisposable
     private async Task SaveCardAsync()
     {
         // The card fields and the postal code are checked together, and a failed save shows the summary (rule WR-002).
-        if (!cardContext.Validate() || ShowcaseCards.Validate(card, State.Clock.Today).Count > 0)
+        if (!await cardContext.ValidateAsync() || ShowcaseCards.Validate(card, State.Clock.Today).Count > 0)
             return;
 
         var charge = ShowcaseCards.Charge(card);

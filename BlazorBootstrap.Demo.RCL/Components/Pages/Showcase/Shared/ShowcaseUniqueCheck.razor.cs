@@ -8,7 +8,7 @@ namespace BlazorBootstrap.Demo.RCL.Components.Pages.Showcase.Shared;
 /// "Checking…", asks <see cref="IsTakenAsync" />, and adds a validation message when the value is taken. The message stays
 /// until the value changes, so the form can't be submitted with a taken value. Before saving, a page calls
 /// <see cref="CheckNowAsync" /> so a check still running finishes first:
-/// <code>if (!await emailCheck.CheckNowAsync() || !editContext.Validate()) return;</code>
+/// <code>if (!await emailCheck.CheckNowAsync() || !await editContext.ValidateAsync()) return;</code>
 /// </summary>
 public partial class ShowcaseUniqueCheck : ComponentBase, IDisposable
 {

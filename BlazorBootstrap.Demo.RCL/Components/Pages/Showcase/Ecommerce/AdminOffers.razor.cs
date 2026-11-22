@@ -407,7 +407,7 @@ public partial class AdminOffers : ComponentBase, IDisposable
 
         var codeFree = codeCheck is null || await codeCheck.CheckNowAsync();
 
-        if (!editContext.Validate() || !codeFree)
+        if (!await editContext.ValidateAsync() || !codeFree)
             return;
 
         var coupon = new EcommerceCoupon(

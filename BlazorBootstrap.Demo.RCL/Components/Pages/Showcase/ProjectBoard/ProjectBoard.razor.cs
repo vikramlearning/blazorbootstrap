@@ -305,8 +305,6 @@ public partial class ProjectBoard : ComponentBase, IDisposable
         {
             _ = PbDisplay.FocusAsync(opener);
         }
-
-        StateHasChanged();
     }
 
     private void OnFiltersChanged() => Rebuild();

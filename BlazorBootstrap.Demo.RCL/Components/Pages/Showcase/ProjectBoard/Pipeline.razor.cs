@@ -359,7 +359,6 @@ public partial class Pipeline : ComponentBase, IDisposable
         if (!pendingDelete)
         {
             focusTarget = () => deleteButtons.TryGetValue(id, out var button) && State.FindDeal(id) is { } deal && Matches(deal) ? button : statusRegion;
-            StateHasChanged();
 
             return;
         }
@@ -377,7 +376,6 @@ public partial class Pipeline : ComponentBase, IDisposable
             _ => "That didn't work, and nothing was deleted. Try again.",
         }, result == PbResult.WrongState ? target?.ProjectId : null);
         focusTarget = () => statusRegion;
-        StateHasChanged();
     }
 
     /// <summary>A card dropped in another column (raised on the source column).</summary>
@@ -440,7 +438,6 @@ public partial class Pipeline : ComponentBase, IDisposable
         if (!pendingMove)
         {
             focusTarget = () => FocusOnCard(id);
-            StateHasChanged();
 
             return;
         }
@@ -453,7 +450,6 @@ public partial class Pipeline : ComponentBase, IDisposable
             Announce(false, "That deal was deleted meanwhile, so nothing moved.");
 
         focusTarget = () => FocusOnCard(id);
-        StateHasChanged();
     }
 
     private void OnStateChanged() => InvokeAsync(StateHasChanged);

@@ -50,9 +50,10 @@
         base.OnInitialized();
     }
 
-    public void HandleOnValidSubmit()
+    public async Task HandleOnValidSubmit()
     {
-        disableSave = !(editContext?.Validate() ?? false);
+        // .NET 10 and earlier: use editContext.Validate()
+        disableSave = !(editContext is not null && await editContext.ValidateAsync());
 
         var toastMessage = new ToastMessage
             {
@@ -66,9 +67,11 @@
         ToastService.Notify(toastMessage);
     }
 
-    private void HandleFieldChanged(object sender, FieldChangedEventArgs e)
+    private async void HandleFieldChanged(object sender, FieldChangedEventArgs e)
     {
-        disableSave = !(editContext?.Validate() ?? false);
+        // .NET 10 and earlier: use editContext.Validate()
+        disableSave = !(editContext is not null && await editContext.ValidateAsync());
+        StateHasChanged();
 
         var toastMessage = new ToastMessage
             {

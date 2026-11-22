@@ -70,9 +70,9 @@ public partial class Rates : ComponentBase, IDisposable
         return count == 1 ? "1 person on the team." : string.Create(CultureInfo.InvariantCulture, $"{count} people on the team.");
     }
 
-    private void Save()
+    private async Task Save()
     {
-        if (!editContext.Validate())
+        if (!await editContext.ValidateAsync())
             return;
 
         var result = State.SaveRates(new Dictionary<PbRateRole, int>

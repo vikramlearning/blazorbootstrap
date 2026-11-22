@@ -129,7 +129,7 @@ public partial class TaskDetail : ComponentBase, IDisposable
     /// Adds the checklist item once the form is valid (rule WR-002: a failed submit shows the summary); the state checks
     /// again, and its refusal goes on the field.
     /// </summary>
-    private void AddChecklistItem()
+    private async Task AddChecklistItem()
     {
         if (State.FindTask(Id) is not { } task)
             return;
@@ -137,7 +137,7 @@ public partial class TaskDetail : ComponentBase, IDisposable
         itemForm.OtherTexts = task.Checklist.Select(item => item.Text).ToList();
         itemErrors?.Clear();
 
-        if (!itemContext.Validate())
+        if (!await itemContext.ValidateAsync())
             return;
 
         var text = itemForm.Text.Trim();
@@ -173,14 +173,14 @@ public partial class TaskDetail : ComponentBase, IDisposable
     }
 
     /// <summary>Posts the comment once the form is valid; the state checks again, and its refusal goes on the field.</summary>
-    private void AddComment()
+    private async Task AddComment()
     {
         if (State.FindTask(Id) is not { } task)
             return;
 
         commentErrors?.Clear();
 
-        if (!commentContext.Validate())
+        if (!await commentContext.ValidateAsync())
             return;
 
         var result = State.AddComment(task.Id, commentForm.Text.Trim());
@@ -284,7 +284,6 @@ public partial class TaskDetail : ComponentBase, IDisposable
             if (!accepted)
             {
                 focusTarget = () => deleteTaskButton;
-                StateHasChanged();
 
                 return Task.CompletedTask;
             }
@@ -293,7 +292,6 @@ public partial class TaskDetail : ComponentBase, IDisposable
             {
                 Announce(false, "This task was already deleted.");
                 focusTarget = () => statusRegion;
-                StateHasChanged();
 
                 return Task.CompletedTask;
             }
@@ -316,7 +314,6 @@ public partial class TaskDetail : ComponentBase, IDisposable
                 _ => "That didn't work, and nothing was deleted. Try again.",
             });
             focusTarget = () => deleteTaskButton;
-            StateHasChanged();
 
             return Task.CompletedTask;
         }
@@ -326,7 +323,6 @@ public partial class TaskDetail : ComponentBase, IDisposable
         if (!accepted)
         {
             focusTarget = () => commentButtons.TryGetValue(commentId, out var button) ? button : statusRegion;
-            StateHasChanged();
 
             return Task.CompletedTask;
         }
@@ -342,7 +338,6 @@ public partial class TaskDetail : ComponentBase, IDisposable
         });
         commentButtons.Remove(commentId);
         focusTarget = () => statusRegion;
-        StateHasChanged();
 
         return Task.CompletedTask;
     }
@@ -354,7 +349,6 @@ public partial class TaskDetail : ComponentBase, IDisposable
             Announce(true, message);
 
         focusTarget = () => editButton;
-        StateHasChanged();
     }
 
     private void OnStateChanged() => InvokeAsync(StateHasChanged);

@@ -185,7 +185,6 @@ public partial class HostReviews : ComponentBase, IDisposable
             removed = false;
             focusReviewId = review.Id;
             pendingFocus = FocusTarget.Action;
-            StateHasChanged();
         }
         else if (removeButtons.TryGetValue(review.Id, out var button))
         {

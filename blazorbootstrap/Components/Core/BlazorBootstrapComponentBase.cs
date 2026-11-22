@@ -53,6 +53,30 @@ public abstract class BlazorBootstrapComponentBase : ComponentBase, IDisposable,
         }
     }
 
+    /// <summary>
+    /// Invokes a JS function that returns a value. When the call is cancelled or the JS runtime has disconnected,
+    /// returns <paramref name="fallback" /> instead of throwing, like <see cref="SafeInvokeVoidAsync" />.
+    /// </summary>
+    private protected async Task<T> SafeInvokeAsync<T>(string identifier, T fallback, params object?[] args)
+    {
+        if (!isJsRuntimeAvailable)
+            return fallback;
+
+        try
+        {
+            return await JSRuntime.InvokeAsync<T>(identifier, args);
+        }
+        catch (TaskCanceledException)
+        {
+            return fallback;
+        }
+        catch (JSDisconnectedException)
+        {
+            isJsRuntimeAvailable = false;
+            return fallback;
+        }
+    }
+
     public static string BuildClassNames(params (string? cssClass, bool when)[] cssClassList)
     {
         var list = new HashSet<string>();

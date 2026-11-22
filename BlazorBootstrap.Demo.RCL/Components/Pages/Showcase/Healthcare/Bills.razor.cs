@@ -222,7 +222,6 @@ public partial class Bills : ComponentBase, IDisposable
 
         card = new ShowcaseCardInput();
         payContext = new EditContext(card);
-        StateHasChanged();
 
         return Task.CompletedTask;
     }
@@ -265,7 +264,7 @@ public partial class Bills : ComponentBase, IDisposable
         payError = null;
 
         // Validate() runs the card form's checks (ShowcaseCards.Validate) and shows each field's message.
-        if (!payContext.Validate() || ShowcaseCards.Validate(card, State.Clock.Today).Count > 0)
+        if (!await payContext.ValidateAsync() || ShowcaseCards.Validate(card, State.Clock.Today).Count > 0)
         {
             focusTarget = FocusTarget.FirstInvalidField;
 

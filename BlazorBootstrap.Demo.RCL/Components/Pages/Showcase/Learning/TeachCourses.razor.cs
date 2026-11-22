@@ -206,8 +206,6 @@ public partial class TeachCourses : ComponentBase, IDisposable
                 focusAfterRender = () => statusRegion;
                 break;
         }
-
-        StateHasChanged();
     }
 
     private void OnStateChanged() => InvokeAsync(StateHasChanged);
@@ -236,7 +234,6 @@ public partial class TeachCourses : ComponentBase, IDisposable
             _ => ResultText(result, course),
         }, isError: result is not (LearningResult.Ok or LearningResult.NoChange));
         focusAfterRender = () => statusRegion;
-        StateHasChanged();
     }
 
     /// <summary>Unpublishing asks first; publishing happens at once (a course needs a published lesson) and is reported.</summary>

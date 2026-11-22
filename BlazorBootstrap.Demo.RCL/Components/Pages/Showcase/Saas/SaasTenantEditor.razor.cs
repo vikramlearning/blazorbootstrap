@@ -205,7 +205,7 @@ public partial class SaasTenantEditor : ComponentBase, IDisposable
         form.PlanName = SelectedPlan.Name;
         editContext.NotifyValidationStateChanged();
 
-        if (!editContext.Validate())
+        if (!await editContext.ValidateAsync())
             return;
 
         var result = State.UpdateWorkspaceAsOperator(before.Id, form.PlanId, form.Seats!.Value, form.Status, string.IsNullOrEmpty(form.ManagerId) ? null : form.ManagerId);

@@ -137,9 +137,9 @@ public partial class OpsCustomer : ComponentBase, IDisposable
         _ => "That didn't work, and the note wasn't added. Try again.",
     };
 
-    private void AddNote()
+    private async Task AddNote()
     {
-        if (Customer is not { } customer || !noteContext.Validate())
+        if (Customer is not { } customer || !await noteContext.ValidateAsync())
             return;
 
         var result = State.AddCustomerNote(customer.Id, noteForm.Text.Trim());

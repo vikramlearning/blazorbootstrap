@@ -203,7 +203,6 @@ public partial class ClientEdit : ComponentBase, IDisposable
         {
             pendingDelete = false;
             focusDelete = true;
-            StateHasChanged();
 
             return;
         }
@@ -237,7 +236,6 @@ public partial class ClientEdit : ComponentBase, IDisposable
         }
 
         focusDelete = true;
-        StateHasChanged();
     }
 
     /// <summary>A change clears the last error and the state's message on that field; a new start date checks the end again.</summary>
@@ -284,7 +282,7 @@ public partial class ClientEdit : ComponentBase, IDisposable
 
         var nameFree = nameCheck is null || await nameCheck.CheckNowAsync();
 
-        if (!editContext.Validate() || !nameFree)
+        if (!await editContext.ValidateAsync() || !nameFree)
             return;
 
         var existing = Client;

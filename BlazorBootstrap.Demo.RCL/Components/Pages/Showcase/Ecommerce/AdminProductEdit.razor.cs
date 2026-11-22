@@ -241,7 +241,7 @@ public partial class AdminProductEdit : ComponentBase, IDisposable
 
         var skuFree = skuCheck is null || await skuCheck.CheckNowAsync();
 
-        if (!editContext.Validate() || !skuFree)
+        if (!await editContext.ValidateAsync() || !skuFree)
             return;
 
         var draft = ToDraft();

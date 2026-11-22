@@ -128,7 +128,6 @@ public partial class Alerts : ComponentBase, IDisposable
         feedMessage = count == 1 ? "1 alert marked as read." : $"{count.ToString(CultureInfo.InvariantCulture)} alerts marked as read.";
 
         // The button goes away with the last unread alert, so focus moves to the feed's heading.
-        StateHasChanged();
         await Task.Yield();
         await FintechDisplay.FocusAsync(feedTitle);
     }
@@ -171,7 +170,7 @@ public partial class Alerts : ComponentBase, IDisposable
     /// Checks the amounts and the cross-field rule into the form's messages, then asks the form to validate, so a failed save
     /// shows the summary and moves focus to it (rule WR-002). The bank checks the amounts again.
     /// </summary>
-    private Task SaveAsync()
+    private async Task SaveAsync()
     {
         messages.Clear();
         settingsError = false;
@@ -192,19 +191,19 @@ public partial class Alerts : ComponentBase, IDisposable
                 $"Choose a low-balance amount below your Everyday Checking balance of {FintechDisplay.Money(CheckingBalance)}, or the alert would fire straight away. Or switch the alert off.");
         }
 
-        if (!editContext.Validate())
+        if (!await editContext.ValidateAsync())
         {
             settingsError = true;
             settingsMessage = "Check the highlighted amounts, then save again.";
 
-            return Task.CompletedTask;
+            return;
         }
 
         if (Same(settings, State.AlertSettings))
         {
             settingsMessage = "Nothing changed: these are already your settings.";
 
-            return Task.CompletedTask;
+            return;
         }
 
         var result = State.UpdateAlerts(settings);
@@ -216,8 +215,6 @@ public partial class Alerts : ComponentBase, IDisposable
             FintechResult.Invalid => "One of the amounts isn't allowed. Use $0 to $1,000,000 for low balance and $1 to $1,000,000 for large transactions.",
             _ => "Your settings weren't saved. Try again.",
         };
-
-        return Task.CompletedTask;
     }
 
     private static bool Same(FintechAlertSettings left, FintechAlertSettings right) =>

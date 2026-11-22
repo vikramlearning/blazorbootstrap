@@ -21,7 +21,7 @@ jobs:
     if: ${{ inputs.prod_release }} || (github.event_name == 'pull_request' && github.event.action != 'closed')
     runs-on: ubuntu-latest
     env:
-      DOTNET_VERSION: "net10.0"
+      DOTNET_VERSION: "net11.0"
       DOTNET_CLI_TELEMETRY_OPTOUT: 1
       PROJECT: "BlazorBootstrap.Demo.WebAssembly/BlazorBootstrap.Demo.WebAssembly.csproj"
       BUILD_CONFIG: "Release"
@@ -33,11 +33,11 @@ jobs:
           submodules: true
           lfs: false
 
-      # Setup .NET 10.0
-      - name: Setup .NET 10.0
+      # Setup .NET 11.0
+      - name: Setup .NET 11.0
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '10.0.x'
+          dotnet-version: '11.0.x'
       
       # .NET Restore
       - name: .NET Restore

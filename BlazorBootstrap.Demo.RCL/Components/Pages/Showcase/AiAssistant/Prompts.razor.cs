@@ -246,7 +246,6 @@ public partial class Prompts : ComponentBase, IDisposable
 
         selected = new List<PromptRow>();
         focusTarget = () => statusRegion;
-        StateHasChanged();
     }
 
     private async Task OnScopeFilterChangedAsync(ChangeEventArgs args)

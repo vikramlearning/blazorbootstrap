@@ -114,7 +114,7 @@ public partial class AdminTemplates : ComponentBase, IDisposable
     {
         var nameFree = nameCheck is null || await nameCheck.CheckNowAsync();
 
-        if (!editContext.Validate() || !nameFree)
+        if (!await editContext.ValidateAsync() || !nameFree)
             return;
 
         var result = State.SaveTemplate(0, form.Name.Trim(), form.Description, out var saved);

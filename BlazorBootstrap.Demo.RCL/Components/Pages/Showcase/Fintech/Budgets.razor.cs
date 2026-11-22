@@ -171,7 +171,6 @@ public partial class Budgets : ComponentBase, IDisposable
         {
             deleteButtons.Remove(categoryId);
             editButtons.Remove(categoryId);
-            StateHasChanged();
             await Task.Yield();
             await FintechDisplay.FocusAsync(addButton?.Element);
         }
@@ -189,7 +188,6 @@ public partial class Budgets : ComponentBase, IDisposable
         editingCategoryId = null;
         addedCategoryId = null;
 
-        StateHasChanged();
         await Task.Yield();
 
         if (target is not null && editButtons.TryGetValue(target, out var button))
@@ -230,7 +228,7 @@ public partial class Budgets : ComponentBase, IDisposable
         serverErrors?.Clear();
         var categoryFree = !adding || categoryCheck is null || await categoryCheck.CheckNowAsync();
 
-        if (!editContext.Validate() || !categoryFree)
+        if (!await editContext.ValidateAsync() || !categoryFree)
             return;
 
         if (adding)

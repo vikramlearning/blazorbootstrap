@@ -256,7 +256,6 @@ public partial class Incidents : ComponentBase, IDisposable
 
         selected = new List<MonitoringIncident>();
         focusStatus = true;
-        StateHasChanged();
     }
 
     /// <summary>The link disappears with the filters it clears, so focus moves to the count, which also announces the new total.</summary>
@@ -332,7 +331,6 @@ public partial class Incidents : ComponentBase, IDisposable
 
         SetStatus(DeclareRefusedText(result), true);
         focusStatus = true;
-        StateHasChanged();
     }
 
     private Task OnDeclareShownAsync() => MonitoringDisplay.FocusAsync(serviceInput?.Element);
@@ -421,7 +419,7 @@ public partial class Incidents : ComponentBase, IDisposable
     /// <summary>Declares once the form is valid (a failed submit shows the summary and moves focus to it, rule WR-002).</summary>
     private async Task SubmitDeclareAsync()
     {
-        if (pendingDeclare is not null || !declareContext.Validate())
+        if (pendingDeclare is not null || !await declareContext.ValidateAsync())
             return;
 
         if (State.FindService(declareForm.ServiceId) is null)

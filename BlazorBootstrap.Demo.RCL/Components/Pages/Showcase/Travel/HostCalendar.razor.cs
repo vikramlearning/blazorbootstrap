@@ -322,7 +322,6 @@ public partial class HostCalendar : ComponentBase, IDisposable
         // A button that becomes disabled loses focus, so focus moves to the other one.
         if (!CanGoForward)
         {
-            StateHasChanged();
             await TravelDisplay.FocusAsync(previousButton);
         }
     }
@@ -390,7 +389,6 @@ public partial class HostCalendar : ComponentBase, IDisposable
         if (removeDone)
         {
             removeDone = false;
-            StateHasChanged();
             await TravelDisplay.FocusAsync(statusRegion);
         }
         else if (block is not null && removeButtons.TryGetValue(BlockKey(block), out var button))
@@ -422,7 +420,6 @@ public partial class HostCalendar : ComponentBase, IDisposable
         // A button that becomes disabled loses focus, so focus moves to the other one.
         if (!CanGoBack)
         {
-            StateHasChanged();
             await TravelDisplay.FocusAsync(nextButton);
         }
     }
@@ -471,7 +468,6 @@ public partial class HostCalendar : ComponentBase, IDisposable
     private async Task ShowThisMonthAsync()
     {
         shownMonth = StartOfMonth(State.Today);
-        StateHasChanged();
         await TravelDisplay.FocusAsync(CanGoBack ? previousButton : nextButton);
     }
 

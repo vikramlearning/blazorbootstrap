@@ -168,7 +168,6 @@ public partial class Subscribe : ComponentBase, IDisposable
         if (!unsubscribeConfirmed)
         {
             pendingFocus = () => unsubscribeButtons.TryGetValue(subscription.Id, out var button) ? button : subscriptionsHeading;
-            StateHasChanged();
 
             return;
         }
@@ -194,7 +193,6 @@ public partial class Subscribe : ComponentBase, IDisposable
         }
 
         pendingFocus = () => subscriptionsHeading;
-        StateHasChanged();
     }
 
     private void SaveEdit()
@@ -308,7 +306,7 @@ public partial class Subscribe : ComponentBase, IDisposable
 
         var free = emailCheck is null || await emailCheck.CheckNowAsync();
 
-        if (!formContext.Validate() || !free)
+        if (!await formContext.ValidateAsync() || !free)
         {
             formStatus = "Not subscribed. Fix the errors listed above the form.";
             formStatusIsError = true;

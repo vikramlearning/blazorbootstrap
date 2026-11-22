@@ -178,7 +178,7 @@ public partial class Book : ComponentBase, IDisposable
     /// Checks everything at once (dates, availability, message, card), then charges the test card and books. The state
     /// checks availability before the card, so taken nights are reported even when the card would be declined.
     /// </summary>
-    private void Submit()
+    private async Task Submit()
     {
         // Guards a double submit: the first successful click navigates away.
         if (booking || Stay is null)
@@ -188,7 +188,7 @@ public partial class Book : ComponentBase, IDisposable
         paymentError = null;
 
         // Validate() runs the card form's checks; the dates and the message are checked here.
-        var cardValid = editContext.Validate();
+        var cardValid = await editContext.ValidateAsync();
         messageError = MessageProblem();
         var datesValid = RuleError is null && IsAvailable;
 

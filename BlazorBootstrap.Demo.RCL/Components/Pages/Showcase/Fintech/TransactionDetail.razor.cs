@@ -255,14 +255,14 @@ public partial class TransactionDetail : ComponentBase, IDisposable
     /// Checks the reason, the amount (and that it fits the reason), and the explanation; a failed check shows the summary.
     /// Then it opens the dispute; each result gets its own message.
     /// </summary>
-    private void SendDispute()
+    private async Task SendDispute()
     {
         if (Item is not { } item)
             return;
 
         disputeForm.MaxAmount = -item.Amount;
 
-        if (!disputeContext.Validate())
+        if (!await disputeContext.ValidateAsync())
             return;
 
         var details = disputeForm.Details.Trim();
@@ -300,9 +300,9 @@ public partial class TransactionDetail : ComponentBase, IDisposable
         pendingFocus = FocusTarget.DisputeStatus;
     }
 
-    private void SaveNote()
+    private async Task SaveNote()
     {
-        if (Item is not { } item || !noteContext.Validate())
+        if (Item is not { } item || !await noteContext.ValidateAsync())
             return;
 
         var result = State.SetNote(item.Id, noteForm.Text);

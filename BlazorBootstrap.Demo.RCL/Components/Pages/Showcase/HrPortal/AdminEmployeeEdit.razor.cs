@@ -221,7 +221,7 @@ public partial class AdminEmployeeEdit : ComponentBase, IDisposable
 
         var emailFree = emailCheck is null || await emailCheck.CheckNowAsync();
 
-        if (!editContext.Validate() || !emailFree)
+        if (!await editContext.ValidateAsync() || !emailFree)
             return;
 
         var today = State.Clock.Today;

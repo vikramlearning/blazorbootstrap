@@ -269,7 +269,7 @@ public partial class AdminSla : ComponentBase, IDisposable
 
         var nameFree = ruleNameCheck is null || await ruleNameCheck.CheckNowAsync();
 
-        if (!ruleContext.Validate() || !nameFree)
+        if (!await ruleContext.ValidateAsync() || !nameFree)
             return;
 
         HelpDeskPriority? priority = Enum.TryParse<HelpDeskPriority>(ruleForm.Priority, out var parsed) && Enum.IsDefined(parsed) ? parsed : null;
@@ -387,7 +387,7 @@ public partial class AdminSla : ComponentBase, IDisposable
     {
         formError = null;
 
-        if (editing is not { } priority || !editContext.Validate())
+        if (editing is not { } priority || !await editContext.ValidateAsync())
             return;
 
         var first = form.FirstReplyHours!.Value;
