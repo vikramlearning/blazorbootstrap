@@ -70,7 +70,6 @@ public partial class Contact : ComponentBase, IDisposable
         error = null;
         attempts = 0;
         form = new ContactForm();
-        StateHasChanged();
         await Task.Yield();
         await SaasDisplay.FocusAsync(nameInput?.Element);
     }
@@ -92,7 +91,6 @@ public partial class Contact : ComponentBase, IDisposable
         error = null;
         attempts = 0;
         sent = lead;
-        StateHasChanged();
         await Task.Yield();
 
         // The form and its button are gone: focus the confirmation.

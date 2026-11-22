@@ -52,7 +52,6 @@ public partial class Stays : ComponentBase, IDisposable
     private async Task ClearFiltersAsync()
     {
         State.Filter.Clear();
-        StateHasChanged();
 
         await TravelDisplay.FocusAsync(resultsCount);
     }

@@ -188,7 +188,6 @@ public partial class ClientDetail : ComponentBase, IDisposable
         dealStatusIsError = false;
         dealMessage = dealMessage == DealResetText ? DealResetText + " (2)" : DealResetText;
         focusTarget = () => dealStatusRegion;
-        StateHasChanged();
     }
 
     private async Task RefreshDealsAsync()

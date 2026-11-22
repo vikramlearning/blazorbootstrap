@@ -226,7 +226,6 @@ public partial class HostListings : ComponentBase, IDisposable
         {
             actionDone = false;
             pending = null;
-            StateHasChanged();
             await TravelDisplay.FocusAsync(statusRegion);
         }
         else

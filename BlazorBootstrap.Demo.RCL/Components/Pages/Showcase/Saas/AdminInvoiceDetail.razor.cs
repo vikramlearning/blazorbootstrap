@@ -132,7 +132,6 @@ public partial class AdminInvoiceDetail : ComponentBase, IDisposable
             message += $" {after.Name} stays suspended; change its status on the tenant page.";
 
         ShowStatus(message);
-        StateHasChanged();
 
         // The button is gone once the invoice is paid.
         await Task.Yield();
@@ -193,7 +192,6 @@ public partial class AdminInvoiceDetail : ComponentBase, IDisposable
         refunded = false;
         refund = new RefundForm();
         ClearMessages();
-        StateHasChanged();
         await Task.Yield();
 
         // A full refund removes the Refund button, so focus goes to the message that says what happened.

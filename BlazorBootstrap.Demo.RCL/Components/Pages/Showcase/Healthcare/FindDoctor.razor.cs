@@ -68,7 +68,6 @@ public partial class FindDoctor : ComponentBase, IDisposable
         specialty = clinicId = language = null;
         acceptingOnly = false;
         UpdateQuery();
-        StateHasChanged();
 
         await HcDisplay.FocusAsync(countRegion);
     }

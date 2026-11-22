@@ -122,7 +122,6 @@ public partial class Signup : ComponentBase, IDisposable
         attempts = 0;
         emailInUse = null;
         error = null;
-        StateHasChanged();
         await Task.Yield();
         await SaasDisplay.FocusAsync(formHeading);
     }

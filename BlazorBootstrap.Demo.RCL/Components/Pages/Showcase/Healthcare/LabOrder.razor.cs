@@ -135,7 +135,6 @@ public partial class LabOrder : ComponentBase, IDisposable
         if (!accepted)
         {
             focusTarget = () => releaseButton ?? statusRegion;
-            StateHasChanged();
 
             return Task.CompletedTask;
         }
@@ -157,7 +156,6 @@ public partial class LabOrder : ComponentBase, IDisposable
         });
 
         focusTarget = () => result == HcResult.Ok ? heading : statusRegion;
-        StateHasChanged();
 
         return Task.CompletedTask;
     }

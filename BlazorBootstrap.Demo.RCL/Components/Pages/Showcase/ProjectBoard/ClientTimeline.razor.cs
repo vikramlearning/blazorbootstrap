@@ -159,7 +159,6 @@ public partial class ClientTimeline : ComponentBase, IDisposable
         {
             var id = deleteId;
             focusTarget = () => deleteButtons.TryGetValue(id, out var button) ? button : statusRegion;
-            StateHasChanged();
 
             return;
         }
@@ -177,7 +176,6 @@ public partial class ClientTimeline : ComponentBase, IDisposable
         });
         deleteButtons.Remove(deleteId);
         focusTarget = () => statusRegion;
-        StateHasChanged();
     }
 
     private void OnStateChanged() => InvokeAsync(StateHasChanged);

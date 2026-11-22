@@ -215,7 +215,6 @@ public partial class Transfers : ComponentBase, IDisposable
         {
             actionDone = false;
             cancelling = null;
-            StateHasChanged();
             await Task.Yield();
             await FintechDisplay.FocusAsync(statusRegion);
         }

@@ -58,7 +58,6 @@ public partial class Directory : ComponentBase, IDisposable
         search = string.Empty;
         departmentId = location = null;
         UpdateQuery();
-        StateHasChanged();
 
         await HrDisplay.FocusAsync(countRegion);
     }

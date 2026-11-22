@@ -189,8 +189,6 @@ public partial class Prescriptions : ComponentBase, IDisposable
             focusTarget = () => openers.TryGetValue(id, out var opener) ? opener : statusRegion;
         }
 
-        StateHasChanged();
-
         return Task.CompletedTask;
     }
 

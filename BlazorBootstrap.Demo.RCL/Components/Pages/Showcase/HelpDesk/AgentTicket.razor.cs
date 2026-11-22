@@ -131,7 +131,6 @@ public partial class AgentTicket : ComponentBase, IDisposable
 
         SetStatus($"Ticket #{ticket.Id} is assigned to you.");
         Toasts.Notify(new ToastMessage(ToastType.Info, IconName.PersonCheck, "Assigned", statusText!));
-        StateHasChanged();
 
         await Task.Yield();
         await HelpDeskDisplay.FocusAsync(statusRegion);

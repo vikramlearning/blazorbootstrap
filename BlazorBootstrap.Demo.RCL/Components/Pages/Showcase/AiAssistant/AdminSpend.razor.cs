@@ -243,7 +243,6 @@ public partial class AdminSpend : ComponentBase, IDisposable
 
         selected = new List<SpendRow>();
         focusTarget = () => statusRegion;
-        StateHasChanged();
     }
 
     /// <summary>The link disappears with the filters it clears, so focus moves to the count, which also announces the new total.</summary>
@@ -328,8 +327,6 @@ public partial class AdminSpend : ComponentBase, IDisposable
         {
             focusTarget = () => openers.TryGetValue(id, out var opener) ? opener : statusRegion;
         }
-
-        StateHasChanged();
 
         return Task.CompletedTask;
     }

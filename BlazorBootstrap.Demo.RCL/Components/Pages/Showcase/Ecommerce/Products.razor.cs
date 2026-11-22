@@ -79,7 +79,6 @@ public partial class Products : ComponentBase, IDisposable
         ResetFilter();
         searchBoxValue = string.Empty;
         State.NotifyFilterChanged();
-        StateHasChanged();
         await Task.Yield();
         await EcommerceDisplay.FocusAsync(resultsCount);
     }

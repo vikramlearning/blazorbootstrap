@@ -208,7 +208,6 @@ public partial class Timesheet : ComponentBase, IDisposable
         {
             var id = deleteId;
             focusTarget = () => editButtons.TryGetValue(id, out var button) ? button : statusRegion;
-            StateHasChanged();
 
             return;
         }
@@ -225,7 +224,6 @@ public partial class Timesheet : ComponentBase, IDisposable
         }, result != PbResult.Ok);
         editButtons.Remove(deleteId);
         focusTarget = () => statusRegion;
-        StateHasChanged();
     }
 
     private void OnEditorHidden()
@@ -241,8 +239,6 @@ public partial class Timesheet : ComponentBase, IDisposable
             var id = editId;
             focusTarget = () => id != 0 && editButtons.TryGetValue(id, out var button) ? button : logButton ?? statusRegion;
         }
-
-        StateHasChanged();
     }
 
     private async Task OnEditorShownAsync() => await PbDisplay.FocusAsync(projectInput?.Element);

@@ -329,7 +329,6 @@ public partial class AdminDunning : ComponentBase, IDisposable
         {
             policySaved = false;
             focusStatus = true;
-            StateHasChanged();
 
             return;
         }

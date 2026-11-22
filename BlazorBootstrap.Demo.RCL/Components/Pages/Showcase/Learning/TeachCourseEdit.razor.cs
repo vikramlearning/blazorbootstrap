@@ -541,8 +541,6 @@ public partial class TeachCourseEdit : ComponentBase, IDisposable
                 focusAfterRender = () => curriculumStatusRegion;
                 break;
         }
-
-        StateHasChanged();
     }
 
     private void OnDescriptionInput(ChangeEventArgs args)
@@ -630,7 +628,6 @@ public partial class TeachCourseEdit : ComponentBase, IDisposable
             _ => RefusalText(result, "The course"),
         }, isError: result is not (LearningResult.Ok or LearningResult.NoChange));
         focusAfterRender = () => publishStatusRegion;
-        StateHasChanged();
     }
 
     private void RemoveOutcome(int index)

@@ -208,7 +208,6 @@ public partial class OpsDispute : ComponentBase, IDisposable
         if (resolveDone)
         {
             resolveDone = false;
-            StateHasChanged();
             await FintechDisplay.FocusAsync(statusRegion);
         }
         else

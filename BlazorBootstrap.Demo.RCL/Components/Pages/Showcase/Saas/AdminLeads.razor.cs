@@ -273,7 +273,6 @@ public partial class AdminLeads : ComponentBase, IDisposable
 
         selected = new List<SaasLead>();
         focusStatus = true;
-        StateHasChanged();
     }
 
     private void ClearErrorAndNote()

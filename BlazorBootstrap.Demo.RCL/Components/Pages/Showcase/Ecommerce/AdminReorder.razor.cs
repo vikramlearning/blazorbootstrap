@@ -168,7 +168,6 @@ public partial class AdminReorder : ComponentBase, IDisposable
 
         selected = new List<ReorderRow>();
         focusStatus = true;
-        StateHasChanged();
     }
 
     private IEnumerable<EcommerceProduct> Matching()

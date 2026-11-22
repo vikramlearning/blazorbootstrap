@@ -188,7 +188,6 @@ public partial class Refills : ComponentBase, IDisposable
 
         selected = new List<RequestRow>();
         focusTarget = () => statusRegion;
-        StateHasChanged();
     }
 
     /// <summary>The link disappears with the filters it clears, so focus moves to the count, which also announces the new total.</summary>
@@ -300,8 +299,6 @@ public partial class Refills : ComponentBase, IDisposable
         {
             focusTarget = () => openers.TryGetValue(id, out var opener) ? opener : statusRegion;
         }
-
-        StateHasChanged();
 
         return Task.CompletedTask;
     }

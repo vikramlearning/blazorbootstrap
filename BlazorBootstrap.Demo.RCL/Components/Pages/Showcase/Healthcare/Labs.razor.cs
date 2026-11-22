@@ -145,7 +145,6 @@ public partial class Labs : ComponentBase, IDisposable
     {
         releaseIds = selected.Where(row => row.StatusValue == HcLabStatus.Resulted).Select(row => row.Id).ToList();
         pendingRelease = false;
-        StateHasChanged();
 
         await releaseModal.ShowAsync();
     }
@@ -202,7 +201,6 @@ public partial class Labs : ComponentBase, IDisposable
         if (!accepted)
         {
             focusTarget = () => statusRegion;
-            StateHasChanged();
 
             return;
         }
@@ -226,7 +224,6 @@ public partial class Labs : ComponentBase, IDisposable
 
         selected = new List<OrderRow>();
         focusTarget = () => statusRegion;
-        StateHasChanged();
     }
 
     private Task OnReleaseShownAsync() => HcDisplay.FocusAsync(releaseCancel);

@@ -256,7 +256,6 @@ public partial class Incidents : ComponentBase, IDisposable
 
         selected = new List<MonitoringIncident>();
         focusStatus = true;
-        StateHasChanged();
     }
 
     /// <summary>The link disappears with the filters it clears, so focus moves to the count, which also announces the new total.</summary>
@@ -332,7 +331,6 @@ public partial class Incidents : ComponentBase, IDisposable
 
         SetStatus(DeclareRefusedText(result), true);
         focusStatus = true;
-        StateHasChanged();
     }
 
     private Task OnDeclareShownAsync() => MonitoringDisplay.FocusAsync(serviceInput?.Element);

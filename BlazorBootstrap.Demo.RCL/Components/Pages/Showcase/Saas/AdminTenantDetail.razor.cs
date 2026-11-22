@@ -340,7 +340,6 @@ public partial class AdminTenantDetail : ComponentBase, IDisposable
         {
             dunningDone = false;
             focusStatus = true;
-            StateHasChanged();
 
             return;
         }

@@ -48,7 +48,6 @@ public partial class Requests : ComponentBase, IDisposable
     private async Task ShowOtherAsync()
     {
         filter = filter == RequestFilter.Open ? RequestFilter.Solved : RequestFilter.Open;
-        StateHasChanged();
 
         await Task.Yield();
 

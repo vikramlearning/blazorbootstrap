@@ -524,8 +524,6 @@ public partial class AdminMembers : ComponentBase, IDisposable
             focusTarget = () => openers.TryGetValue(id, out var opener) ? opener : statusRegion;
         }
 
-        StateHasChanged();
-
         return Task.CompletedTask;
     }
 
@@ -631,7 +629,6 @@ public partial class AdminMembers : ComponentBase, IDisposable
 
         await RefreshGridAsync();
         focusTarget = () => statusRegion;
-        StateHasChanged();
     }
 
     /// <summary>Opens the dialog of one person, with their current role chosen.</summary>

@@ -196,7 +196,6 @@ public partial class HostReservation : ComponentBase, IDisposable
         if (actionDone)
         {
             actionDone = false;
-            StateHasChanged();
             await TravelDisplay.FocusAsync(statusRegion);
         }
         else

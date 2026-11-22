@@ -168,7 +168,6 @@ public partial class Subscribe : ComponentBase, IDisposable
         if (!unsubscribeConfirmed)
         {
             pendingFocus = () => unsubscribeButtons.TryGetValue(subscription.Id, out var button) ? button : subscriptionsHeading;
-            StateHasChanged();
 
             return;
         }
@@ -194,7 +193,6 @@ public partial class Subscribe : ComponentBase, IDisposable
         }
 
         pendingFocus = () => subscriptionsHeading;
-        StateHasChanged();
     }
 
     private void SaveEdit()

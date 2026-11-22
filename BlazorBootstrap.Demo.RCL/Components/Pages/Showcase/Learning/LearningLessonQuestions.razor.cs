@@ -185,7 +185,6 @@ public partial class LearningLessonQuestions : ComponentBase
         if (deleteDone)
         {
             deleteDone = false;
-            StateHasChanged();
             await LearningDisplay.FocusAsync(statusRegion);
         }
         else if (threadId is int id && deleteButtons.TryGetValue(id, out var opener))

@@ -185,7 +185,6 @@ public partial class AdminTenants : ComponentBase, IDisposable
 
         selected = new List<TenantRow>();
         focusStatus = true;
-        StateHasChanged();
     }
 
     /// <summary>The link disappears with the filters it clears, so focus moves to the count, which also announces the new total.</summary>

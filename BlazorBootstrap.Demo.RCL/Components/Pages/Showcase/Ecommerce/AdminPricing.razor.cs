@@ -244,7 +244,6 @@ public partial class AdminPricing : ComponentBase, IDisposable
 
         selected = new List<PriceRow>();
         focusStatus = true;
-        StateHasChanged();
     }
 
     private async Task OnCategoryChanged(ChangeEventArgs args)

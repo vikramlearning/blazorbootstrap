@@ -259,7 +259,6 @@ public partial class AdminSensitiveData : ComponentBase, IDisposable
 
         selected = new List<EventRow>();
         focusTarget = () => statusRegion;
-        StateHasChanged();
     }
 
     /// <summary>A filter changed: back to the first page of the filtered events.</summary>
@@ -293,8 +292,6 @@ public partial class AdminSensitiveData : ComponentBase, IDisposable
         {
             focusTarget = () => openers.TryGetValue(id, out var opener) ? opener : statusRegion;
         }
-
-        StateHasChanged();
 
         return Task.CompletedTask;
     }

@@ -284,7 +284,6 @@ public partial class TaskDetail : ComponentBase, IDisposable
             if (!accepted)
             {
                 focusTarget = () => deleteTaskButton;
-                StateHasChanged();
 
                 return Task.CompletedTask;
             }
@@ -293,7 +292,6 @@ public partial class TaskDetail : ComponentBase, IDisposable
             {
                 Announce(false, "This task was already deleted.");
                 focusTarget = () => statusRegion;
-                StateHasChanged();
 
                 return Task.CompletedTask;
             }
@@ -316,7 +314,6 @@ public partial class TaskDetail : ComponentBase, IDisposable
                 _ => "That didn't work, and nothing was deleted. Try again.",
             });
             focusTarget = () => deleteTaskButton;
-            StateHasChanged();
 
             return Task.CompletedTask;
         }
@@ -326,7 +323,6 @@ public partial class TaskDetail : ComponentBase, IDisposable
         if (!accepted)
         {
             focusTarget = () => commentButtons.TryGetValue(commentId, out var button) ? button : statusRegion;
-            StateHasChanged();
 
             return Task.CompletedTask;
         }
@@ -342,7 +338,6 @@ public partial class TaskDetail : ComponentBase, IDisposable
         });
         commentButtons.Remove(commentId);
         focusTarget = () => statusRegion;
-        StateHasChanged();
 
         return Task.CompletedTask;
     }
@@ -354,7 +349,6 @@ public partial class TaskDetail : ComponentBase, IDisposable
             Announce(true, message);
 
         focusTarget = () => editButton;
-        StateHasChanged();
     }
 
     private void OnStateChanged() => InvokeAsync(StateHasChanged);

@@ -223,7 +223,6 @@ public partial class OnCall : ComponentBase, IDisposable
         if (actionDone)
         {
             actionDone = false;
-            StateHasChanged();
             await Task.Yield();
             await MonitoringDisplay.FocusAsync(statusRegion);
         }

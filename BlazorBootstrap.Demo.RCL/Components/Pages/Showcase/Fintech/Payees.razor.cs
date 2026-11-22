@@ -247,7 +247,6 @@ public partial class Payees : ComponentBase, IDisposable
         if (actionDone)
         {
             actionDone = false;
-            StateHasChanged();
             await Task.Yield();
             await FintechDisplay.FocusAsync(statusRegion);
         }
@@ -267,7 +266,6 @@ public partial class Payees : ComponentBase, IDisposable
         if (renameDone)
         {
             renameDone = false;
-            StateHasChanged();
             await Task.Yield();
             await FintechDisplay.FocusAsync(statusRegion);
         }

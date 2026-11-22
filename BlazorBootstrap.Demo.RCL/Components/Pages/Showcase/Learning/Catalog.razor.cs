@@ -45,7 +45,6 @@ public partial class Catalog : ComponentBase, IDisposable
     {
         State.Filter.Clear();
         searchBoxValue = string.Empty;
-        StateHasChanged();
 
         await LearningDisplay.FocusAsync(resultsCount);
     }

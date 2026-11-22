@@ -170,7 +170,6 @@ public partial class ClientContacts : ComponentBase, IDisposable
         if (!pendingDelete)
         {
             focusTarget = () => statusRegion;
-            StateHasChanged();
 
             return;
         }
@@ -188,7 +187,6 @@ public partial class ClientContacts : ComponentBase, IDisposable
         });
         editButtons.Remove(id);
         focusTarget = () => statusRegion;
-        StateHasChanged();
     }
 
     /// <summary>Announces a save once the form's dialog is hidden; focus goes back to the button that opened it.</summary>
@@ -207,8 +205,6 @@ public partial class ClientContacts : ComponentBase, IDisposable
         {
             focusTarget = () => OpenerButton(id) ?? statusRegion;
         }
-
-        StateHasChanged();
     }
 
     private async Task OnEditorShownAsync() => await PbDisplay.FocusAsync(nameInput?.Element);
@@ -286,7 +282,6 @@ public partial class ClientContacts : ComponentBase, IDisposable
         gridVersion++;
         Announce(true, "The contacts view is reset: primary contact first, 10 a page, and every column shown.");
         focusTarget = () => statusRegion;
-        StateHasChanged();
     }
 
     /// <summary>

@@ -345,7 +345,6 @@ public partial class TripDetail : ComponentBase, IDisposable
         if (changeDone)
         {
             changeDone = false;
-            StateHasChanged();
             await TravelDisplay.FocusAsync(statusRegion);
         }
         else

@@ -171,7 +171,6 @@ public partial class InvoiceDetail : ComponentBase, IDisposable
             _ => "That didn't work, and nothing was deleted. Try again.",
         }, true);
         focusStatus = true;
-        StateHasChanged();
     }
 
     private void OnStateChanged() => InvokeAsync(StateHasChanged);

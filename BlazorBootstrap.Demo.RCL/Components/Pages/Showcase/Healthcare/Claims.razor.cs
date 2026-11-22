@@ -233,8 +233,6 @@ public partial class Claims : ComponentBase, IDisposable
         {
             await HcDisplay.FocusAsync(opener);
         }
-
-        StateHasChanged();
     }
 
     private Task OnCodingShownAsync() => HcDisplay.FocusAsync(codingHeading);
@@ -378,7 +376,6 @@ public partial class Claims : ComponentBase, IDisposable
 
         selected = new List<ClaimRow>();
         focusStatus = true;
-        StateHasChanged();
     }
 
     #endregion

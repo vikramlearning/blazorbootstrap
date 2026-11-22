@@ -324,7 +324,6 @@ public partial class ClaimDetail : ComponentBase, IDisposable
         }
 
         focusStatus = true;
-        StateHasChanged();
     }
 
     private Task OnShownAsync() => HcDisplay.FocusAsync(dialogHeading);

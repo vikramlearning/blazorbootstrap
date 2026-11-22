@@ -169,7 +169,6 @@ public partial class AdminReturns : ComponentBase, IDisposable
 
         selected = new List<ReturnRow>();
         focusStatus = true;
-        StateHasChanged();
     }
 
     /// <summary>The bar closes, so focus moves to the announcement.</summary>

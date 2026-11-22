@@ -254,7 +254,6 @@ public partial class CourseDetail : ComponentBase, IDisposable
         if (deleteDone)
         {
             deleteDone = false;
-            StateHasChanged();
             await LearningDisplay.FocusAsync(reviewStatusRegion);
         }
         else

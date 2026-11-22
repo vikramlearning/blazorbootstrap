@@ -188,7 +188,6 @@ public partial class AmlAlerts : ComponentBase, IDisposable
 
         selected = new List<AlertRow>();
         focusStatus = true;
-        StateHasChanged();
     }
 
     private async Task ClearFiltersAsync()

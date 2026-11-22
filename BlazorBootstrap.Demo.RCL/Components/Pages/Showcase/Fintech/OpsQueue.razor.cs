@@ -192,7 +192,6 @@ public partial class OpsQueue : ComponentBase, IDisposable
 
         selected = new List<QueueRow>();
         focusStatus = true;
-        StateHasChanged();
     }
 
     /// <summary>The link disappears with the filters it clears, so focus moves to the count, which also announces the new total.</summary>

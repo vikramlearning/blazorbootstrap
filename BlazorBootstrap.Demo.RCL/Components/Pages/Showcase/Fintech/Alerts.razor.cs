@@ -128,7 +128,6 @@ public partial class Alerts : ComponentBase, IDisposable
         feedMessage = count == 1 ? "1 alert marked as read." : $"{count.ToString(CultureInfo.InvariantCulture)} alerts marked as read.";
 
         // The button goes away with the last unread alert, so focus moves to the feed's heading.
-        StateHasChanged();
         await Task.Yield();
         await FintechDisplay.FocusAsync(feedTitle);
     }

@@ -197,7 +197,6 @@ public partial class Visit : ComponentBase, IDisposable
         if (!accepted)
         {
             focusTarget = () => completeButton;
-            StateHasChanged();
 
             return;
         }
@@ -207,7 +206,6 @@ public partial class Visit : ComponentBase, IDisposable
         if (Own() is not { } appointment)
         {
             Announce(false, "This visit isn't on your schedule any more, so it wasn't completed.");
-            StateHasChanged();
 
             return;
         }
@@ -221,7 +219,6 @@ public partial class Visit : ComponentBase, IDisposable
             if (!await notesContext.ValidateAsync())
             {
                 Announce(false, "The visit wasn't completed: fix the notes, save them, then complete it.");
-                StateHasChanged();
 
                 return;
             }
@@ -231,7 +228,6 @@ public partial class Visit : ComponentBase, IDisposable
             if (saved is not (HcResult.Ok or HcResult.NoChange))
             {
                 Announce(false, $"The visit wasn't completed because your notes couldn't be saved. {NotesFailureText(saved)}");
-                StateHasChanged();
 
                 return;
             }
@@ -251,7 +247,6 @@ public partial class Visit : ComponentBase, IDisposable
             HcResult.NotAllowed => "Only the visit's doctor can complete it. Sign in again; nothing changed.",
             _ => "That didn't work, and the visit wasn't completed. Try again.",
         });
-        StateHasChanged();
     }
 
     /// <summary>The coding form saved: its message is announced here.</summary>

@@ -76,7 +76,6 @@ public partial class EcommerceOrderReturns : ComponentBase, IDisposable
     {
         showForm = false;
         error = null;
-        StateHasChanged();
         await Task.Yield();
         await EcommerceDisplay.FocusAsync(heading);
     }
@@ -89,7 +88,6 @@ public partial class EcommerceOrderReturns : ComponentBase, IDisposable
         quantities.Clear();
         error = null;
         showForm = true;
-        StateHasChanged();
         await Task.Yield();
         await EcommerceDisplay.FocusAsync(heading);
     }
@@ -129,7 +127,6 @@ public partial class EcommerceOrderReturns : ComponentBase, IDisposable
         showForm = false;
         error = null;
         status = $"Return R-{request.Id.ToString("0000", CultureInfo.InvariantCulture)} is sent. {EcommerceSeedData.StoreName} will review it.";
-        StateHasChanged();
         await Task.Yield();
         await EcommerceDisplay.FocusAsync(heading);
     }

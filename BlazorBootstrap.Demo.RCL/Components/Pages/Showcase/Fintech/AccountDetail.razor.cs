@@ -199,7 +199,6 @@ public partial class AccountDetail : ComponentBase, IDisposable
         if (freezeDone)
         {
             freezeDone = false;
-            StateHasChanged();
             await FintechDisplay.FocusAsync(statusRegion);
         }
         else

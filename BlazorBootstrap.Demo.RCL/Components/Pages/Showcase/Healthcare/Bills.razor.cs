@@ -222,7 +222,6 @@ public partial class Bills : ComponentBase, IDisposable
 
         card = new ShowcaseCardInput();
         payContext = new EditContext(card);
-        StateHasChanged();
 
         return Task.CompletedTask;
     }

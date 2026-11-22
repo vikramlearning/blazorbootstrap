@@ -155,7 +155,6 @@ public partial class Clients : ComponentBase, IDisposable
 
         selected = new List<ClientRow>();
         focusStatus = true;
-        StateHasChanged();
     }
 
     /// <summary>The link disappears with the filters it clears, so focus moves to the count, which also announces the new total.</summary>
