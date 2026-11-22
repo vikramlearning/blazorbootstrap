@@ -1,0 +1,23 @@
+<Project>
+
+  <!-- Imported by both demo hosts. Builds the generator first (no assembly reference), then writes sitemap.xml,
+       llms.txt, robots.txt (and staticwebapp.config.json for the WebAssembly host) into the host's wwwroot before
+       static web assets are collected, so the files are served and published. Set SeoHost before importing. -->
+  <ItemGroup>
+    <ProjectReference Include="$(MSBuildThisFileDirectory)BlazorBootstrap.Demo.Seo.csproj"
+                      ReferenceOutputAssembly="false"
+                      Private="false"
+                      SkipGetTargetFrameworkProperties="true"
+                      GlobalPropertiesToRemove="RuntimeIdentifier;SelfContained" />
+  </ItemGroup>
+
+  <Target Name="GenerateSeoFiles" AfterTargets="ResolveProjectReferences" Condition="'$(DesignTimeBuild)' != 'true'">
+    <PropertyGroup>
+      <_SeoDotnet Condition="'$(DOTNET_HOST_PATH)' != ''">$(DOTNET_HOST_PATH)</_SeoDotnet>
+      <_SeoDotnet Condition="'$(_SeoDotnet)' == ''">dotnet</_SeoDotnet>
+      <_SeoToolDll>$(MSBuildThisFileDirectory)bin\$(Configuration)\net11.0\BlazorBootstrap.Demo.Seo.dll</_SeoToolDll>
+    </PropertyGroup>
+    <Exec Command="&quot;$(_SeoDotnet)&quot; exec &quot;$(_SeoToolDll)&quot; --out &quot;$(MSBuildProjectDirectory)\wwwroot&quot; --host $(SeoHost)" />
+  </Target>
+
+</Project>

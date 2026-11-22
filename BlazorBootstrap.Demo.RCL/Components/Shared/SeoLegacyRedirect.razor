@@ -1,0 +1,26 @@
+@namespace BlazorBootstrap.Demo.RCL
+@inject NavigationManager NavigationManager
+
+@* Placed in a router's NotFound template. When the address is an old demo URL, it replaces it with the current page,
+   keeping the query (rules.md "Renamed demo routes redirect"). It covers hosts whose server-side redirect missed the
+   request, such as a case or trailing-slash variant on Static Web Apps. Any other address shows ChildContent. *@
+@if (target is null)
+{
+    @ChildContent
+}
+
+@code {
+    private string? target;
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    protected override void OnInitialized()
+    {
+        var uri = new Uri(NavigationManager.Uri);
+        target = SeoRoutes.TryGetLegacyRedirect(uri.AbsolutePath);
+
+        if (target is not null)
+            NavigationManager.NavigateTo(target + uri.Query, replace: true);
+    }
+}

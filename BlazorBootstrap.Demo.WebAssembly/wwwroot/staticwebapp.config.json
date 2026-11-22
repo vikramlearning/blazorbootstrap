@@ -1,6 +1,494 @@
 {
   "navigationFallback": {
     "rewrite": "/index.html",
-    "exclude": [ "/images/*.{png,jpg,gif}", "/css/*" ]
-  }
+    "exclude": [
+      "/images/*.{png,jpg,gif}",
+      "/css/*",
+      "/sitemap.xml",
+      "/robots.txt",
+      "/llms.txt"
+    ]
+  },
+  "routes": [
+    {
+      "route": "/alerts",
+      "redirect": "/demos/alerts",
+      "statusCode": 301
+    },
+    {
+      "route": "/alerts/",
+      "redirect": "/demos/alerts",
+      "statusCode": 301
+    },
+    {
+      "route": "/autocomplete",
+      "redirect": "/demos/form/autocomplete",
+      "statusCode": 301
+    },
+    {
+      "route": "/autocomplete/",
+      "redirect": "/demos/form/autocomplete",
+      "statusCode": 301
+    },
+    {
+      "route": "/breadcrumb",
+      "redirect": "/demos/breadcrumb",
+      "statusCode": 301
+    },
+    {
+      "route": "/breadcrumb/",
+      "redirect": "/demos/breadcrumb",
+      "statusCode": 301
+    },
+    {
+      "route": "/buttons",
+      "redirect": "/demos/buttons",
+      "statusCode": 301
+    },
+    {
+      "route": "/buttons/",
+      "redirect": "/demos/buttons",
+      "statusCode": 301
+    },
+    {
+      "route": "/callout",
+      "redirect": "/demos/callout",
+      "statusCode": 301
+    },
+    {
+      "route": "/callout/",
+      "redirect": "/demos/callout",
+      "statusCode": 301
+    },
+    {
+      "route": "/charts",
+      "redirect": "/demos/charts",
+      "statusCode": 301
+    },
+    {
+      "route": "/charts/",
+      "redirect": "/demos/charts",
+      "statusCode": 301
+    },
+    {
+      "route": "/checkbox-input",
+      "redirect": "/demos/form/checkbox-input",
+      "statusCode": 301
+    },
+    {
+      "route": "/checkbox-input/",
+      "redirect": "/demos/form/checkbox-input",
+      "statusCode": 301
+    },
+    {
+      "route": "/confirm-dialog",
+      "redirect": "/demos/confirm-dialog",
+      "statusCode": 301
+    },
+    {
+      "route": "/confirm-dialog/",
+      "redirect": "/demos/confirm-dialog",
+      "statusCode": 301
+    },
+    {
+      "route": "/currency-input",
+      "redirect": "/demos/form/currency-input",
+      "statusCode": 301
+    },
+    {
+      "route": "/currency-input/",
+      "redirect": "/demos/form/currency-input",
+      "statusCode": 301
+    },
+    {
+      "route": "/date-input",
+      "redirect": "/demos/form/date-input",
+      "statusCode": 301
+    },
+    {
+      "route": "/date-input/",
+      "redirect": "/demos/form/date-input",
+      "statusCode": 301
+    },
+    {
+      "route": "/docs/getting-started/blazor-server",
+      "redirect": "/docs/getting-started",
+      "statusCode": 301
+    },
+    {
+      "route": "/docs/getting-started/blazor-server/",
+      "redirect": "/docs/getting-started",
+      "statusCode": 301
+    },
+    {
+      "route": "/docs/getting-started/blazor-webassembly",
+      "redirect": "/docs/getting-started",
+      "statusCode": 301
+    },
+    {
+      "route": "/docs/getting-started/blazor-webassembly/",
+      "redirect": "/docs/getting-started",
+      "statusCode": 301
+    },
+    {
+      "route": "/docs/getting-started/maui-blazor",
+      "redirect": "/docs/getting-started",
+      "statusCode": 301
+    },
+    {
+      "route": "/docs/getting-started/maui-blazor/",
+      "redirect": "/docs/getting-started",
+      "statusCode": 301
+    },
+    {
+      "route": "/drag-and-drop-file-input",
+      "redirect": "/demos/form/drag-and-drop-file-input",
+      "statusCode": 301
+    },
+    {
+      "route": "/drag-and-drop-file-input/",
+      "redirect": "/demos/form/drag-and-drop-file-input",
+      "statusCode": 301
+    },
+    {
+      "route": "/enum-input",
+      "redirect": "/demos/form/enum-input",
+      "statusCode": 301
+    },
+    {
+      "route": "/enum-input/",
+      "redirect": "/demos/form/enum-input",
+      "statusCode": 301
+    },
+    {
+      "route": "/file-input",
+      "redirect": "/demos/form/file-input",
+      "statusCode": 301
+    },
+    {
+      "route": "/file-input/",
+      "redirect": "/demos/form/file-input",
+      "statusCode": 301
+    },
+    {
+      "route": "/form/autocomplete",
+      "redirect": "/demos/form/autocomplete",
+      "statusCode": 301
+    },
+    {
+      "route": "/form/autocomplete/",
+      "redirect": "/demos/form/autocomplete",
+      "statusCode": 301
+    },
+    {
+      "route": "/form/currency-input",
+      "redirect": "/demos/form/currency-input",
+      "statusCode": 301
+    },
+    {
+      "route": "/form/currency-input/",
+      "redirect": "/demos/form/currency-input",
+      "statusCode": 301
+    },
+    {
+      "route": "/form/number-input",
+      "redirect": "/demos/form/number-input",
+      "statusCode": 301
+    },
+    {
+      "route": "/form/number-input/",
+      "redirect": "/demos/form/number-input",
+      "statusCode": 301
+    },
+    {
+      "route": "/form/switch",
+      "redirect": "/demos/form/switch",
+      "statusCode": 301
+    },
+    {
+      "route": "/form/switch/",
+      "redirect": "/demos/form/switch",
+      "statusCode": 301
+    },
+    {
+      "route": "/getting-started",
+      "redirect": "/demos/getting-started",
+      "statusCode": 301
+    },
+    {
+      "route": "/getting-started/",
+      "redirect": "/demos/getting-started",
+      "statusCode": 301
+    },
+    {
+      "route": "/getting-started/blazor-server",
+      "redirect": "/demos/getting-started",
+      "statusCode": 301
+    },
+    {
+      "route": "/getting-started/blazor-server/",
+      "redirect": "/demos/getting-started",
+      "statusCode": 301
+    },
+    {
+      "route": "/getting-started/blazor-webassembly",
+      "redirect": "/demos/getting-started",
+      "statusCode": 301
+    },
+    {
+      "route": "/getting-started/blazor-webassembly/",
+      "redirect": "/demos/getting-started",
+      "statusCode": 301
+    },
+    {
+      "route": "/getting-started/maui-blazor",
+      "redirect": "/demos/getting-started",
+      "statusCode": 301
+    },
+    {
+      "route": "/getting-started/maui-blazor/",
+      "redirect": "/demos/getting-started",
+      "statusCode": 301
+    },
+    {
+      "route": "/grid",
+      "redirect": "/demos/grid/overview",
+      "statusCode": 301
+    },
+    {
+      "route": "/grid/",
+      "redirect": "/demos/grid/overview",
+      "statusCode": 301
+    },
+    {
+      "route": "/icons",
+      "redirect": "/demos/icons",
+      "statusCode": 301
+    },
+    {
+      "route": "/icons/",
+      "redirect": "/demos/icons",
+      "statusCode": 301
+    },
+    {
+      "route": "/modal-service",
+      "redirect": "/demos/services/modal-service",
+      "statusCode": 301
+    },
+    {
+      "route": "/modal-service/",
+      "redirect": "/demos/services/modal-service",
+      "statusCode": 301
+    },
+    {
+      "route": "/modals",
+      "redirect": "/demos/modals",
+      "statusCode": 301
+    },
+    {
+      "route": "/modals/",
+      "redirect": "/demos/modals",
+      "statusCode": 301
+    },
+    {
+      "route": "/number-input",
+      "redirect": "/demos/form/number-input",
+      "statusCode": 301
+    },
+    {
+      "route": "/number-input/",
+      "redirect": "/demos/form/number-input",
+      "statusCode": 301
+    },
+    {
+      "route": "/offcanvas",
+      "redirect": "/demos/offcanvas",
+      "statusCode": 301
+    },
+    {
+      "route": "/offcanvas/",
+      "redirect": "/demos/offcanvas",
+      "statusCode": 301
+    },
+    {
+      "route": "/otp-input",
+      "redirect": "/demos/form/otp-input",
+      "statusCode": 301
+    },
+    {
+      "route": "/otp-input/",
+      "redirect": "/demos/form/otp-input",
+      "statusCode": 301
+    },
+    {
+      "route": "/pagination",
+      "redirect": "/demos/pagination",
+      "statusCode": 301
+    },
+    {
+      "route": "/pagination/",
+      "redirect": "/demos/pagination",
+      "statusCode": 301
+    },
+    {
+      "route": "/password-input",
+      "redirect": "/demos/form/password-input",
+      "statusCode": 301
+    },
+    {
+      "route": "/password-input/",
+      "redirect": "/demos/form/password-input",
+      "statusCode": 301
+    },
+    {
+      "route": "/placeholders",
+      "redirect": "/demos/placeholders",
+      "statusCode": 301
+    },
+    {
+      "route": "/placeholders/",
+      "redirect": "/demos/placeholders",
+      "statusCode": 301
+    },
+    {
+      "route": "/preload",
+      "redirect": "/demos/preload",
+      "statusCode": 301
+    },
+    {
+      "route": "/preload/",
+      "redirect": "/demos/preload",
+      "statusCode": 301
+    },
+    {
+      "route": "/progress",
+      "redirect": "/demos/progress",
+      "statusCode": 301
+    },
+    {
+      "route": "/progress/",
+      "redirect": "/demos/progress",
+      "statusCode": 301
+    },
+    {
+      "route": "/radio-input",
+      "redirect": "/demos/form/radio-input",
+      "statusCode": 301
+    },
+    {
+      "route": "/radio-input/",
+      "redirect": "/demos/form/radio-input",
+      "statusCode": 301
+    },
+    {
+      "route": "/range-input",
+      "redirect": "/demos/form/range-input",
+      "statusCode": 301
+    },
+    {
+      "route": "/range-input/",
+      "redirect": "/demos/form/range-input",
+      "statusCode": 301
+    },
+    {
+      "route": "/rich-text-editor",
+      "redirect": "/demos/form/rich-text-editor",
+      "statusCode": 301
+    },
+    {
+      "route": "/rich-text-editor/",
+      "redirect": "/demos/form/rich-text-editor",
+      "statusCode": 301
+    },
+    {
+      "route": "/sidebar",
+      "redirect": "/demos/sidebar",
+      "statusCode": 301
+    },
+    {
+      "route": "/sidebar/",
+      "redirect": "/demos/sidebar",
+      "statusCode": 301
+    },
+    {
+      "route": "/switch",
+      "redirect": "/demos/form/switch",
+      "statusCode": 301
+    },
+    {
+      "route": "/switch/",
+      "redirect": "/demos/form/switch",
+      "statusCode": 301
+    },
+    {
+      "route": "/tabs",
+      "redirect": "/demos/tabs",
+      "statusCode": 301
+    },
+    {
+      "route": "/tabs/",
+      "redirect": "/demos/tabs",
+      "statusCode": 301
+    },
+    {
+      "route": "/text-area-input",
+      "redirect": "/demos/form/text-area-input",
+      "statusCode": 301
+    },
+    {
+      "route": "/text-area-input/",
+      "redirect": "/demos/form/text-area-input",
+      "statusCode": 301
+    },
+    {
+      "route": "/text-input",
+      "redirect": "/demos/form/text-input",
+      "statusCode": 301
+    },
+    {
+      "route": "/text-input/",
+      "redirect": "/demos/form/text-input",
+      "statusCode": 301
+    },
+    {
+      "route": "/time-input",
+      "redirect": "/demos/form/time-input",
+      "statusCode": 301
+    },
+    {
+      "route": "/time-input/",
+      "redirect": "/demos/form/time-input",
+      "statusCode": 301
+    },
+    {
+      "route": "/toast-service",
+      "redirect": "/demos/services/toast-service",
+      "statusCode": 301
+    },
+    {
+      "route": "/toast-service/",
+      "redirect": "/demos/services/toast-service",
+      "statusCode": 301
+    },
+    {
+      "route": "/toasts",
+      "redirect": "/demos/toasts",
+      "statusCode": 301
+    },
+    {
+      "route": "/toasts/",
+      "redirect": "/demos/toasts",
+      "statusCode": 301
+    },
+    {
+      "route": "/tooltips",
+      "redirect": "/demos/tooltips",
+      "statusCode": 301
+    },
+    {
+      "route": "/tooltips/",
+      "redirect": "/demos/tooltips",
+      "statusCode": 301
+    }
+  ]
 }

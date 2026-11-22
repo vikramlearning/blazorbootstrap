@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- Build-time generator of the demos site's sitemap.xml, llms.txt, robots.txt and the WebAssembly host's
+       staticwebapp.config.json. Both demo hosts run it during their build (see their GenerateSeoFiles target). -->
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net11.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\BlazorBootstrap.Demo.RCL\BlazorBootstrap.Demo.RCL.csproj" />
+  </ItemGroup>
+
+</Project>
