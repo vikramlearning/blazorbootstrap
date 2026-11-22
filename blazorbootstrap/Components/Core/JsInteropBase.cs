@@ -13,8 +13,25 @@ public abstract class JsInteropBase : IAsyncDisposable
 
     protected JsInteropBase(IJSRuntime jsRuntime, string modulePath)
     {
-        moduleTask = new Lazy<Task<IJSObjectReference>>(() =>
-            jsRuntime.InvokeAsync<IJSObjectReference>("import", modulePath).AsTask());
+        moduleTask = new Lazy<Task<IJSObjectReference>>(() => ImportModuleAsync(jsRuntime, modulePath));
+    }
+
+    #endregion
+
+    #region Private Methods
+
+    private async Task<IJSObjectReference> ImportModuleAsync(IJSRuntime jsRuntime, string modulePath)
+    {
+        try
+        {
+            return await jsRuntime.InvokeAsync<IJSObjectReference>("import", modulePath);
+        }
+        catch (JSDisconnectedException)
+        {
+            // Mark the runtime unavailable so later calls are skipped; callers absorb the exception.
+            isJsRuntimeAvailable = false;
+            throw;
+        }
     }
 
     #endregion

@@ -31,7 +31,7 @@ public partial class Ribbon : BlazorBootstrapComponentBase
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
-            await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.tabs.initialize", Id, objRef);
+            await SafeInvokeVoidAsync("window.blazorBootstrap.tabs.initialize", Id, objRef);
 
         // Set active tab
         if (firstRender && !isDefaultActiveTabSet)
@@ -275,7 +275,7 @@ public partial class Ribbon : BlazorBootstrapComponentBase
         if (!isDefaultActiveTabSet)
             isDefaultActiveTabSet = true;
 
-        await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.tabs.show", tab.Id);
+        await SafeInvokeVoidAsync("window.blazorBootstrap.tabs.show", tab.Id);
 
         if (tab?.OnClick.HasDelegate ?? false)
             await tab.OnClick.InvokeAsync(new TabEventArgs(tab.Name!, tab.Title!));

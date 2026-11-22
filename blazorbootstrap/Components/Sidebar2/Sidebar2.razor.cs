@@ -24,11 +24,12 @@ public partial class Sidebar2 : BlazorBootstrapComponentBase
     {
         if (firstRender)
         {
-            await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.sidebar.initialize", Id, objRef);
+            await SafeInvokeVoidAsync("window.blazorBootstrap.sidebar.initialize", Id, objRef);
 
-            var width = await JSRuntime.InvokeAsync<int>("window.blazorBootstrap.sidebar.windowSize");
+            var width = await SafeInvokeAsync<int?>("window.blazorBootstrap.sidebar.windowSize", null);
 
-            bsWindowResize(width);
+            if (width.HasValue)
+                bsWindowResize(width.Value);
 
             await RefreshDataAsync(firstRender);
         }

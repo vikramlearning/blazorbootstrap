@@ -51,7 +51,7 @@ public partial class Button : BlazorBootstrapComponentBase
             isFirstRenderComplete = true;
 
             if (!string.IsNullOrWhiteSpace(TooltipTitle))
-                await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.tooltip.initialize", Element);
+                await SafeInvokeVoidAsync("window.blazorBootstrap.tooltip.initialize", Element);
         }
 
         await base.OnAfterRenderAsync(firstRender);
@@ -127,12 +127,12 @@ public partial class Button : BlazorBootstrapComponentBase
             // NOTE: do not change the below sequence
             if (Disabled)
             {
-                await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.tooltip.dispose", Element);
+                await SafeInvokeVoidAsync("window.blazorBootstrap.tooltip.dispose", Element);
             }
             else if (previousTooltipTitle != TooltipTitle || previousTooltipColor != TooltipColor)
             {
-                await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.tooltip.dispose", Element);
-                await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.tooltip.update", Element, TooltipTitle);
+                await SafeInvokeVoidAsync("window.blazorBootstrap.tooltip.dispose", Element);
+                await SafeInvokeVoidAsync("window.blazorBootstrap.tooltip.update", Element, TooltipTitle);
             }
 
             previousTooltipTitle = TooltipTitle;

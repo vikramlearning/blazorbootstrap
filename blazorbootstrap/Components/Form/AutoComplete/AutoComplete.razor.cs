@@ -291,7 +291,7 @@ public partial class AutoComplete<TItem> : BlazorBootstrapComponentBase
         var key = args.Code is not null ? args.Code : args.Key;
 
         if (key is "ArrowDown" or "ArrowUp" or "Home" or "End")
-            selectedIndex = await JSRuntime.InvokeAsync<int>("window.blazorBootstrap.autocomplete.focusListItem", list, key, selectedIndex);
+            selectedIndex = await SafeInvokeAsync("window.blazorBootstrap.autocomplete.focusListItem", selectedIndex, list, key, selectedIndex);
         else if (key == "Enter")
             if (selectedIndex >= 0 && selectedIndex <= items!.Count() - 1)
                 await OnItemSelectedAsync(items!.ElementAt(selectedIndex));
