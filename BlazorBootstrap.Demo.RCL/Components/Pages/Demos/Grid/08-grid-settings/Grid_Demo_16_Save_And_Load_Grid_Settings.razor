@@ -55,12 +55,30 @@
         //settings.PageNumber = 1;
         //settings.PageSize = 10;
 
-        await JS.InvokeVoidAsync("window.localStorage.setItem", "grid-settings", JsonSerializer.Serialize(settings));
+        try
+        {
+            await JS.InvokeVoidAsync("window.localStorage.setItem", "grid-settings", JsonSerializer.Serialize(settings));
+        }
+        catch (Exception ex) when (ex is JSDisconnectedException or TaskCanceledException)
+        {
+            // The browser connection closed while saving; there is nowhere to save the settings.
+        }
     }
 
     private async Task<GridSettings> GridSettingsProvider()
     {
-        var settingsJson = await JS.InvokeAsync<string>("window.localStorage.getItem", "grid-settings");
+        string? settingsJson;
+
+        try
+        {
+            settingsJson = await JS.InvokeAsync<string>("window.localStorage.getItem", "grid-settings");
+        }
+        catch (Exception ex) when (ex is JSDisconnectedException or TaskCanceledException)
+        {
+            // The browser connection closed while loading; start with the default settings.
+            return null!;
+        }
+
         if (string.IsNullOrWhiteSpace(settingsJson))
             return null!;
 

@@ -47,7 +47,7 @@ public partial class WebsiteNavbar : BlazorBootstrapComponentBase
 
     private async Task SetTheme(string themeName)
     {
-        await JSRuntime.InvokeVoidAsync("setTheme", themeName);
+        await SafeInvokeVoidAsync("setTheme", themeName);
         navbarMenuActive = false;
     }
 
@@ -57,7 +57,7 @@ public partial class WebsiteNavbar : BlazorBootstrapComponentBase
     }
 
     private async ValueTask OnThemeChanged(string themeName)
-        => await JSRuntime.InvokeVoidAsync("updateDemoCodeThemeCss", themeName);
+        => await SafeInvokeVoidAsync("updateDemoCodeThemeCss", themeName);
 
     #endregion
 
