@@ -40,6 +40,10 @@ public partial class Button : BlazorBootstrapComponentBase
             {
                 // do nothing
             }
+            catch (TaskCanceledException)
+            {
+                // do nothing
+            }
 
         await base.DisposeAsyncCore(disposing);
     }
