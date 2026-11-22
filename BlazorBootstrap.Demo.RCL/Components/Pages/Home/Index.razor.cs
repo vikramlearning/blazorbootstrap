@@ -13,7 +13,7 @@ public partial class Index : BlazorBootstrapComponentBase
 
     private const string CopyFailedText = "Couldn't copy. Select the command to copy it.";
 
-    private const string GettingStartedUrl = "/getting-started/blazor-webassembly";
+    private const string GettingStartedUrl = "/demos/getting-started";
 
     // The same shields.io sources as the production NuGet and GitHub badges, in JSON form.
     // shields.io caches them for 30 minutes and allows cross-origin requests from the WebAssembly host.
