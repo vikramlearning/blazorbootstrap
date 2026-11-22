@@ -1,0 +1,16 @@
+@namespace BlazorBootstrap.Demo.RCL
+@using Microsoft.AspNetCore.Components.Sections
+
+@* A second head outlet for search metadata, next to HeadOutlet. Blazor shows only the most recently rendered
+   HeadContent, so the Showcase layouts' font links and a page's meta tags cannot share it. PageMetaTags writes to
+   MetaSection and SeoRobotsMeta to RobotsSection; each page has at most one writer per section. *@
+<SectionOutlet SectionName="@MetaSection" />
+<SectionOutlet SectionName="@RobotsSection" />
+
+@code {
+    /// <summary>The section <see cref="PageMetaTags" /> renders its description, canonical, social and JSON-LD tags into.</summary>
+    public const string MetaSection = "seo-meta";
+
+    /// <summary>The section <see cref="SeoRobotsMeta" /> renders its robots tag into.</summary>
+    public const string RobotsSection = "seo-robots";
+}

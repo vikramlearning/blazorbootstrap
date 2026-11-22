@@ -58,6 +58,9 @@ public partial class FintechLayout : LayoutComponentBase, IDisposable
 
     #region Properties, Indexers
 
+    /// <summary>Gets whether the current page is the bank's landing page (the overview).</summary>
+    private bool IsLandingPage => string.Equals(new Uri(Navigation.Uri).AbsolutePath.TrimEnd('/'), Base, StringComparison.OrdinalIgnoreCase);
+
     /// <summary>Gets whether the current page is the sign-in page, the only one without the customer guard.</summary>
     private bool IsSignInPage => new Uri(Navigation.Uri).AbsolutePath.TrimEnd('/').EndsWith("/fintech/sign-in", StringComparison.OrdinalIgnoreCase);
 

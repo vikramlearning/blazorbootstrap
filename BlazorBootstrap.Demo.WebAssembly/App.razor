@@ -1,6 +1,8 @@
 <Router AppAssembly="@typeof(Program).Assembly"
         AdditionalAssemblies="new[] { typeof(BlazorBootstrap.Demo.RCL.App).Assembly }">
     <Found Context="routeData">
+        <PageTitle>Blazor Bootstrap</PageTitle>
+        <BlazorBootstrap.Demo.RCL.SeoRobotsMeta RouteData="@routeData" />
         <RouteView RouteData="@routeData" DefaultLayout="@typeof(BlazorBootstrap.Demo.RCL.MainLayout)" />
         <FocusOnNavigate RouteData="@routeData" Selector="h1" />
     </Found>
