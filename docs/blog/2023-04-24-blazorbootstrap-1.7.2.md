@@ -1,5 +1,6 @@
 ---
 title: Blazor Bootstrap v1.7.2
+description: "Release notes for Blazor Bootstrap 1.7.2: what changed in the CurrencyInput component in this version."
 authors:
   name: Vikram Reddy
   title: Creator

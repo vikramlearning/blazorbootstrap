@@ -1,5 +1,6 @@
 ---
 title: Blazor Bootstrap v3.0.0
+description: "What's new in Blazor Bootstrap 3.0.0: changes to the Carousel, Chart, Grid, Modal, PdfViewer and Tabs components in this release."
 authors:
   name: Vikram Reddy
   title: Creator

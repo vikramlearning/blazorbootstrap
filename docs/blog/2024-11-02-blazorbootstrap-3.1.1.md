@@ -1,5 +1,6 @@
 ---
 title: Blazor Bootstrap v3.1.1
+description: "Release notes for Blazor Bootstrap 3.1.1: what changed in the Charts, Dropdown, GoogleMap, Grid, LineChart and Markdown components in this version."
 authors:
   name: Vikram Reddy
   title: Creator

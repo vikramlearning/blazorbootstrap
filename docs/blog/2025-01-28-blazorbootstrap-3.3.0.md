@@ -1,5 +1,6 @@
 ---
 title: Blazor Bootstrap v3.3.0
+description: "Release notes for Blazor Bootstrap 3.3.0: what changed in the CheckboxInput, Grid, PasswordInput, RadioInput and TextInput components in this version."
 authors:
   name: Vikram Reddy
   title: Creator

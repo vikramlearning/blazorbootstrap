@@ -1,5 +1,6 @@
 ---
 title: Blazor Bootstrap v1.9.0
+description: "What's new in Blazor Bootstrap 1.9.0: changes to the Modal, Icon, Toasts and Tabs components, with links to each pull request."
 authors:
   name: Vikram Reddy
   title: Creator

@@ -1,5 +1,6 @@
 ---
 title: Blazor Bootstrap v0.6.0
+description: "What's new in Blazor Bootstrap 0.6.0: changes to the Progress component in this release."
 authors:
   name: Vikram Reddy
   title: Creator

@@ -1,5 +1,6 @@
 ---
 title: BlazorBootstrap v0.2.5
+description: "What's new in Blazor Bootstrap 0.2.5: changes to the Offcanvas and Modal components in this release."
 authors:
   name: Vikram Reddy
   title: Creator

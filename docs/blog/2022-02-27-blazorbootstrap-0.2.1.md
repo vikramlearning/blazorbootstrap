@@ -1,5 +1,6 @@
 ---
 title: BlazorBootstrap v0.2.1
+description: "Release notes for Blazor Bootstrap 0.2.1: what changed in the Icon, ConfirmDialog and Toasts components in this version."
 authors:
   name: Vikram Reddy
   title: Creator

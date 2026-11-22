@@ -1,5 +1,6 @@
 ---
 title: Blazor Bootstrap v2.2.1
+description: "What's new in Blazor Bootstrap 2.2.1: changes to the ConfirmDialog and Grid components in this release."
 authors:
   name: Vikram Reddy
   title: Creator

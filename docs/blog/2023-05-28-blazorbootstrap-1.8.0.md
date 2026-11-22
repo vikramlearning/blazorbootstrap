@@ -1,5 +1,6 @@
 ---
 title: Blazor Bootstrap v1.8.0
+description: "What's new in Blazor Bootstrap 1.8.0: changes to the Grid, Offcanvas and Switch components, with links to each pull request."
 authors:
   name: Vikram Reddy
   title: Creator

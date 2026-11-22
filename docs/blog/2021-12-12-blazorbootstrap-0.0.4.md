@@ -1,5 +1,6 @@
 ---
 title: BlazorBootstrap v0.0.4
+description: "Release notes for Blazor Bootstrap 0.0.4: the components and features added or changed in this version."
 authors:
   name: Vikram Reddy
   title: Creator

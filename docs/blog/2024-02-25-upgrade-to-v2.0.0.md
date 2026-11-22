@@ -1,5 +1,6 @@
 ---
 title: Upgrade to v2.x.x
+description: "How to upgrade to Blazor Bootstrap 2.x: what changed for the ClassBuilder and StyleBuilder references and what to update in your app."
 authors:
   name: Vikram Reddy
   title: Creator

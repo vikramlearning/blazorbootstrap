@@ -1,5 +1,6 @@
 ---
 title: BlazorBootstrap v0.2.0
+description: "Release notes for Blazor Bootstrap 0.2.0: what changed in the Modal, Offcanvas, Grid and Pagination components in this version."
 authors:
   name: Vikram Reddy
   title: Creator

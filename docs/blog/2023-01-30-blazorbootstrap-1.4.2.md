@@ -1,5 +1,6 @@
 ---
 title: Blazor Bootstrap v1.4.2
+description: "Release notes for Blazor Bootstrap 1.4.2: what changed in the AutoComplete component in this version."
 authors:
   name: Vikram Reddy
   title: Creator

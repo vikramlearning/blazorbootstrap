@@ -1,5 +1,6 @@
 ---
 title: BlazorBootstrap v0.3.0
+description: "What's new in Blazor Bootstrap 0.3.0: changes to the Grid component in this release."
 authors:
   name: Vikram Reddy
   title: Creator

@@ -1,5 +1,6 @@
 ---
 title: Blazor Bootstrap v1.11.0
+description: "What's new in Blazor Bootstrap 1.11.0: changes to the Badge, Grid and Tabs components, with links to each pull request."
 authors:
   name: Vikram Reddy
   title: Creator

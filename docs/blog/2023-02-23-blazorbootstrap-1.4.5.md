@@ -1,5 +1,6 @@
 ---
 title: Blazor Bootstrap v1.4.5
+description: "What's new in Blazor Bootstrap 1.4.5: changes to the Toasts component in this release."
 authors:
   name: Vikram Reddy
   title: Creator

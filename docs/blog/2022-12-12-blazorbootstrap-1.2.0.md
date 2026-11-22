@@ -1,5 +1,6 @@
 ---
 title: Blazor Bootstrap v1.2.0
+description: "Release notes for Blazor Bootstrap 1.2.0: what changed in the CurrencyInput component in this version."
 authors:
   name: Vikram Reddy
   title: Creator

@@ -1,5 +1,6 @@
 ---
 title: BlazorBootstrap v0.2.4
+description: "What's new in Blazor Bootstrap 0.2.4: changes to the Alert component in this release."
 authors:
   name: Vikram Reddy
   title: Creator

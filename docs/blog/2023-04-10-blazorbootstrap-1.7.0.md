@@ -1,5 +1,6 @@
 ---
 title: Blazor Bootstrap v1.7.0
+description: "What's new in Blazor Bootstrap 1.7.0: changes to the Badge, Collapse, Accordion and Buttons components, with links to each pull request."
 authors:
   name: Vikram Reddy
   title: Creator

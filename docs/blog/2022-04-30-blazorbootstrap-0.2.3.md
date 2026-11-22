@@ -1,5 +1,6 @@
 ---
 title: BlazorBootstrap v0.2.3
+description: "Release notes for Blazor Bootstrap 0.2.3: what changed in the Placeholders component in this version."
 authors:
   name: Vikram Reddy
   title: Creator

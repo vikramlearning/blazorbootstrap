@@ -1,5 +1,6 @@
 ---
 title: BlazorBootstrap v0.5.0
+description: "Release notes for Blazor Bootstrap 0.5.0: what changed in the Charts, BarChart, DoughnutChart, LineChart and PieChart components in this version."
 authors:
   name: Vikram Reddy
   title: Creator

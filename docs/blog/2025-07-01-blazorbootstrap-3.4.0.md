@@ -1,5 +1,6 @@
 ---
 title: Blazor Bootstrap v3.4.0
+description: "Release notes for Blazor Bootstrap 3.4.0: what changed in the Icon, Grid and Tabs components in this version."
 authors:
   name: Vikram Reddy
   title: Creator

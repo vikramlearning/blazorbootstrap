@@ -1,5 +1,6 @@
 ---
 title: Blazor Bootstrap v1.1.0
+description: "What's new in Blazor Bootstrap 1.1.0: changes to the ConfirmDialog and Icon components in this release."
 authors:
   name: Vikram Reddy
   title: Creator

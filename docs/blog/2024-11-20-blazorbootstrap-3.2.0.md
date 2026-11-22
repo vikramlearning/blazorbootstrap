@@ -1,5 +1,6 @@
 ---
 title: Blazor Bootstrap v3.2.0
+description: "Release notes for Blazor Bootstrap 3.2.0: what changed in the Grid, PdfViewer and ThemeSwitcher components in this version."
 authors:
   name: Vikram Reddy
   title: Creator
