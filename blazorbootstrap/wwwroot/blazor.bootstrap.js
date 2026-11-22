@@ -1355,7 +1355,7 @@ window.blazorBootstrap = {
         // Saves text as a file through a temporary object URL; used by the grid's CSV export.
         // The byte order mark lets spreadsheet apps read the CSV as UTF-8.
         downloadFile: (fileName, mimeType, text) => {
-            let blob = new Blob(['﻿', text], { type: mimeType });
+            let blob = new Blob(['\uFEFF', text], { type: mimeType });
             let url = URL.createObjectURL(blob);
             let link = document.createElement('a');
             link.href = url;
@@ -3036,3 +3036,10 @@ window.blazorBootstrap = {
         }
     }
 }
+
+// Firefox starts an HTML drag only when the drag carries data, and the grid's column chooser starts its drag from .NET,
+// which cannot set any; give chooser drags an empty text payload.
+document.addEventListener('dragstart', (event) => {
+    if (event.dataTransfer && event.target instanceof Element && event.target.closest('.bb-grid-column-chooser-list'))
+        event.dataTransfer.setData('text/plain', '');
+});

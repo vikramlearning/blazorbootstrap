@@ -161,16 +161,6 @@ public sealed partial class EcommerceState
         var hasDigit = number.Any(char.IsAsciiDigit);
         var matches = new List<(int Rank, int Kind, long Order, ShowcaseSearchResult Result)>();
 
-        // 0: exactly the term, 1: starts with it, 2: contains it; null: no match.
-        static int? Rank(string text, params string?[] values) => values
-            .Select(value => value is null ? (int?)null
-                : string.Equals(value, text, StringComparison.OrdinalIgnoreCase) ? 0
-                : value.StartsWith(text, StringComparison.OrdinalIgnoreCase) ? 1
-                : value.Contains(text, StringComparison.OrdinalIgnoreCase) ? 2
-                : null)
-            .Where(rank => rank is not null)
-            .DefaultIfEmpty(null)
-            .Min();
 
         if (IsStaff)
         {
@@ -179,7 +169,7 @@ public sealed partial class EcommerceState
             {
                 foreach (var customer in Customers())
                 {
-                    if (Rank(term, customer.Name, customer.Email) is { } found)
+                    if (ShowcaseSearch.Rank(term, customer.Name, customer.Email) is { } found)
                     {
                         matches.Add((found, 0, -(customer.LastOrderOn ?? DateTime.MinValue).Ticks, new ShowcaseSearchResult("Customer", customer.Name,
                             $"{customer.Email} · {(customer.OrderCount == 1 ? "1 order" : string.Create(CultureInfo.InvariantCulture, $"{customer.OrderCount} orders"))} · {EcommerceSeedData.Money(customer.Spent)}",
@@ -190,8 +180,8 @@ public sealed partial class EcommerceState
 
             foreach (var order in orders)
             {
-                var found = hasDigit ? Rank(number, order.Id.ToString(CultureInfo.InvariantCulture)) : null;
-                found = Min(found, term.Length >= 2 ? Rank(term, order.ShipTo.FullName, order.ShipTo.Email) : null);
+                var found = hasDigit ? ShowcaseSearch.Rank(number, order.Id.ToString(CultureInfo.InvariantCulture)) : null;
+                found = Min(found, term.Length >= 2 ? ShowcaseSearch.Rank(term, order.ShipTo.FullName, order.ShipTo.Email) : null);
 
                 if (found is { } rank)
                 {
@@ -205,7 +195,7 @@ public sealed partial class EcommerceState
             {
                 foreach (var item in returns)
                 {
-                    if (Rank(term, EcommerceSeedData.ReturnNumber(item.Id), item.Id.ToString(CultureInfo.InvariantCulture)) is { } found)
+                    if (ShowcaseSearch.Rank(term, EcommerceSeedData.ReturnNumber(item.Id), item.Id.ToString(CultureInfo.InvariantCulture)) is { } found)
                     {
                         matches.Add((found, 2, -item.RequestedOn.Ticks, new ShowcaseSearchResult("Return", EcommerceSeedData.ReturnNumber(item.Id),
                             $"{FindOrder(item.OrderId)?.ShipTo.FullName ?? "Unknown customer"} · order #{item.OrderId} · {ReturnWord(item.Status)}", EcommerceSeedData.AdminReturnPath(item.Id))));
@@ -215,7 +205,7 @@ public sealed partial class EcommerceState
 
             foreach (var product in products)
             {
-                if (Rank(term, product.Name, product.Sku) is { } found)
+                if (ShowcaseSearch.Rank(term, product.Name, product.Sku) is { } found)
                 {
                     matches.Add((found, 3, product.IsArchived ? 1 : 0, new ShowcaseSearchResult("Product", product.Name,
                         string.Create(CultureInfo.InvariantCulture, $"{product.Sku} · {EcommerceSeedData.Money(product.Price)} · {product.Stock} in stock{(product.IsArchived ? " · archived" : null)}"),
@@ -225,7 +215,7 @@ public sealed partial class EcommerceState
 
             foreach (var coupon in coupons)
             {
-                if (Rank(term, coupon.Code) is { } found)
+                if (ShowcaseSearch.Rank(term, coupon.Code) is { } found)
                     matches.Add((found, 4, 0, new ShowcaseSearchResult("Coupon", coupon.Code, $"{CouponValue(coupon)} · {coupon.Description}", $"{OffersPath}?code={Uri.EscapeDataString(coupon.Code)}")));
             }
 
@@ -234,7 +224,7 @@ public sealed partial class EcommerceState
             {
                 foreach (var order in purchaseOrders)
                 {
-                    if (Rank(term, order.Number, order.Id.ToString(CultureInfo.InvariantCulture)) is { } found)
+                    if (ShowcaseSearch.Rank(term, order.Number, order.Id.ToString(CultureInfo.InvariantCulture)) is { } found)
                     {
                         matches.Add((found, 5, -order.CreatedOn.Ticks, new ShowcaseSearchResult("Purchase order", order.Number,
                             $"{FindSupplier(order.SupplierId)?.Name} · {MoneyIn(order)} · {PurchaseOrderStatusWord(order.Status)}{(IsOverdue(order) ? " · overdue" : null)}",
@@ -245,7 +235,7 @@ public sealed partial class EcommerceState
 
             foreach (var supplier in suppliers)
             {
-                if (Rank(term, supplier.Name, supplier.Email) is { } found)
+                if (ShowcaseSearch.Rank(term, supplier.Name, supplier.Email) is { } found)
                 {
                     matches.Add((found, 6, 0, new ShowcaseSearchResult("Supplier", supplier.Name,
                         string.Create(CultureInfo.InvariantCulture, $"{supplier.ContactName} · {supplier.LeadTimeDays} days · {supplier.Currency} · {supplier.PaymentTerms}"),
@@ -260,7 +250,7 @@ public sealed partial class EcommerceState
             {
                 foreach (var order in orders.Where(order => order.CustomerId == account.Id))
                 {
-                    if (Rank(number, order.Id.ToString(CultureInfo.InvariantCulture)) is { } found)
+                    if (ShowcaseSearch.Rank(number, order.Id.ToString(CultureInfo.InvariantCulture)) is { } found)
                     {
                         matches.Add((found, 0, -order.PlacedOn.Ticks, new ShowcaseSearchResult("Your order", $"Order #{order.Id}",
                             $"Placed {order.PlacedOn.ToString("MMM d, yyyy", CultureInfo.InvariantCulture)} · {StatusWord(order.Status)} · {EcommerceSeedData.Money(order.Totals.Total)}",
@@ -271,7 +261,7 @@ public sealed partial class EcommerceState
 
             foreach (var product in products.Where(product => !product.IsArchived))
             {
-                if (Rank(term, product.Name) is { } found)
+                if (ShowcaseSearch.Rank(term, product.Name) is { } found)
                 {
                     matches.Add((found, 1, 0, new ShowcaseSearchResult("Product", product.Name,
                         $"{FindCategory(product.CategoryId)?.Name} · {EcommerceSeedData.Money(product.Price)}{(product.Stock == 0 ? " · out of stock" : null)}",
@@ -309,9 +299,7 @@ public sealed partial class EcommerceState
     #region Private Methods
 
     /// <summary>Checks a stored link: none, or a path on this site without spaces, quotes, or a second slash.</summary>
-    private static bool IsSiteLink(string? url) =>
-        url is null || (url.Length <= 200 && (url == SiteBase || url.StartsWith(SiteBase + "/", StringComparison.Ordinal)) && !url.Contains("//", StringComparison.Ordinal)
-            && url.All(character => !char.IsWhiteSpace(character) && !char.IsControl(character) && character is not ('"' or '\'' or '<' or '>' or '\\')));
+    private static bool IsSiteLink(string? url) => ShowcaseLinks.IsSiteLink(url, SiteBase, allowSiteBase: true);
 
     private static int? Min(int? left, int? right) => left is null ? right : right is null ? left : Math.Min(left.Value, right.Value);
 

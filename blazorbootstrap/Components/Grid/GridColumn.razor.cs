@@ -469,8 +469,10 @@ public partial class GridColumn<TItem> : BlazorBootstrapComponentBase
                                        builder.AddAttribute(107, "class", "bb-grid-sort-button");
 
                                        // A header without text still needs a name for its sort button.
-                                       if (string.IsNullOrWhiteSpace(HeaderText) && !string.IsNullOrWhiteSpace(PropertyName))
-                                           builder.AddAttribute(108, "aria-label", PropertyName);
+                                       if (string.IsNullOrWhiteSpace(HeaderText))
+                                           builder.AddAttribute(108, "aria-label", !string.IsNullOrWhiteSpace(PropertyName)
+                                                                                       ? PropertyName
+                                                                                       : Grid<TItem>.FormatText(Parent.UnnamedSortColumnText, Parent.GetDeclaredPosition(this)));
 
                                        builder.AddAttribute(109, "onclick", async () => await OnSortClickAsync());
                                    }

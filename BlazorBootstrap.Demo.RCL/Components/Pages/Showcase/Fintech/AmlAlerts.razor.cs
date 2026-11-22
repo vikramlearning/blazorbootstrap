@@ -124,8 +124,6 @@ public partial class AmlAlerts : ComponentBase, IDisposable
 
     private static string Count(int value) => value.ToString("#,0", CultureInfo.InvariantCulture);
 
-    private static string Plural(int count, string one, string many) => count == 1 ? $"1 {one}" : $"{Count(count)} {many}";
-
     /// <summary>Applies the bulk bar's action once the form is valid; opening a case goes to the new case.</summary>
     private async Task ApplyBulkAsync()
     {
@@ -158,8 +156,8 @@ public partial class AmlAlerts : ComponentBase, IDisposable
                 var assigned = State.AssignAlerts(ids, bulkForm.AssigneeId);
                 message = assigned.Result switch
                 {
-                    FintechResult.Ok => $"Assigned {Plural(assigned.Changed, "alert", "alerts")} to {AmlDisplay.StaffText(bulkForm.AssigneeId)}."
-                        + (assigned.Unchanged > 0 ? $" {Plural(assigned.Unchanged, "alert was", "alerts were")} left as they were: already dismissed, in a case, or with them." : string.Empty),
+                    FintechResult.Ok => $"Assigned {FintechDisplay.Plural(assigned.Changed, "alert", "alerts")} to {AmlDisplay.StaffText(bulkForm.AssigneeId)}."
+                        + (assigned.Unchanged > 0 ? $" {FintechDisplay.Plural(assigned.Unchanged, "alert was", "alerts were")} left as they were: already dismissed, in a case, or with them." : string.Empty),
                     FintechResult.NoChange => "No alerts changed: they're already dismissed, in a case, or assigned to that person.",
                     _ => AmlDisplay.ResultText(assigned.Result),
                 };
@@ -170,8 +168,8 @@ public partial class AmlAlerts : ComponentBase, IDisposable
                 var dismissed = State.DismissAlerts(ids, bulkForm.Reason ?? string.Empty);
                 message = dismissed.Result switch
                 {
-                    FintechResult.Ok => $"Dismissed {Plural(dismissed.Changed, "alert", "alerts")} as false positives."
-                        + (dismissed.Unchanged > 0 ? $" {Plural(dismissed.Unchanged, "alert was", "alerts were")} left as they were: already dismissed or in a case." : string.Empty),
+                    FintechResult.Ok => $"Dismissed {FintechDisplay.Plural(dismissed.Changed, "alert", "alerts")} as false positives."
+                        + (dismissed.Unchanged > 0 ? $" {FintechDisplay.Plural(dismissed.Unchanged, "alert was", "alerts were")} left as they were: already dismissed or in a case." : string.Empty),
                     FintechResult.NoChange => "No alerts changed: they're already dismissed or in a case.",
                     _ => AmlDisplay.ResultText(dismissed.Result),
                 };

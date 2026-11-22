@@ -152,8 +152,6 @@ public partial class Claims : ComponentBase, IDisposable
 
     #region Private Methods
 
-    private static string Plural(int count, string one, string many) => count == 1 ? $"1 {one}" : string.Create(CultureInfo.InvariantCulture, $"{count} {many}");
-
     /// <summary>Returns the age bucket of a claim by days since its visit.</summary>
     private string BucketOf(HcClaim claim) => AgeDays(claim) switch
     {
@@ -197,7 +195,7 @@ public partial class Claims : ComponentBase, IDisposable
     {
         var shown = Shown.Count;
 
-        return string.Create(CultureInfo.InvariantCulture, $"Showing {shown:#,0} of {Plural(total, "claim", "claims")}.");
+        return string.Create(CultureInfo.InvariantCulture, $"Showing {shown:#,0} of {HcDisplay.Plural(total, "claim", "claims")}.");
     }
 
     /// <summary>A filter changed: back to the first page of the filtered claims.</summary>
@@ -365,8 +363,8 @@ public partial class Claims : ComponentBase, IDisposable
 
         SetStatus(outcome.Result switch
         {
-            HcResult.Ok => $"Submitted {Plural(outcome.Changed, "claim", "claims")} to the plans."
-                + (outcome.Unchanged > 0 ? $" {Plural(outcome.Unchanged, "claim was", "claims were")} left as they were: past the filing deadline, or already sent." : string.Empty),
+            HcResult.Ok => $"Submitted {HcDisplay.Plural(outcome.Changed, "claim", "claims")} to the plans."
+                + (outcome.Unchanged > 0 ? $" {HcDisplay.Plural(outcome.Unchanged, "claim was", "claims were")} left as they were: past the filing deadline, or already sent." : string.Empty),
             HcResult.NoChange => "No claims were sent: they're past the filing deadline, or already sent.",
             HcResult.NotAllowed => "Only billing can submit claims. Sign in again; nothing was sent.",
             _ => "Those claims couldn't be sent. Nothing changed.",

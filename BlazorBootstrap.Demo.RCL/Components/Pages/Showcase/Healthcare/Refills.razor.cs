@@ -146,8 +146,6 @@ public partial class Refills : ComponentBase, IDisposable
 
     #region Private Methods
 
-    private static string Plural(int count, string one, string many) => count == 1 ? $"1 {one}" : string.Create(CultureInfo.InvariantCulture, $"{count} {many}");
-
     /// <summary>Answers the selected requests in one <see cref="HcState.BulkDecideRefills" /> call once the bar's form is valid.</summary>
     private async Task ApplyBulkAsync()
     {
@@ -161,9 +159,9 @@ public partial class Refills : ComponentBase, IDisposable
         switch (outcome.Result)
         {
             case HcResult.Ok:
-                SetStatus((approve ? $"Approved {Plural(outcome.Changed, "refill", "refills")}: one refill added to each." : $"Denied {Plural(outcome.Changed, "refill", "refills")}.")
+                SetStatus((approve ? $"Approved {HcDisplay.Plural(outcome.Changed, "refill", "refills")}: one refill added to each." : $"Denied {HcDisplay.Plural(outcome.Changed, "refill", "refills")}.")
                     + " Each patient sees your answer under Prescriptions."
-                    + (outcome.Unchanged > 0 ? $" {Plural(outcome.Unchanged, "request was", "requests were")} answered meanwhile or at the most refills, and left as they were." : string.Empty), false);
+                    + (outcome.Unchanged > 0 ? $" {HcDisplay.Plural(outcome.Unchanged, "request was", "requests were")} answered meanwhile or at the most refills, and left as they were." : string.Empty), false);
                 break;
 
             case HcResult.NoChange:
@@ -218,7 +216,7 @@ public partial class Refills : ComponentBase, IDisposable
     {
         var shown = Shown.Count;
 
-        return shown == total ? $"{Plural(total, "request is", "requests are")} waiting." : $"Showing {shown.ToString(CultureInfo.InvariantCulture)} of {Plural(total, "waiting request", "waiting requests")}.";
+        return shown == total ? $"{HcDisplay.Plural(total, "request is", "requests are")} waiting." : $"Showing {shown.ToString(CultureInfo.InvariantCulture)} of {HcDisplay.Plural(total, "waiting request", "waiting requests")}.";
     }
 
     /// <summary>Answers the dialog's request once its form is valid; the answer is announced when the dialog is hidden, a refusal in the dialog.</summary>

@@ -141,8 +141,6 @@ public partial class Labs : ComponentBase, IDisposable
 
     #region Private Methods
 
-    private static string Plural(int count, string one, string many) => count == 1 ? $"1 {one}" : string.Create(CultureInfo.InvariantCulture, $"{count} {many}");
-
     private async Task AskReleaseAsync()
     {
         releaseIds = selected.Where(row => row.StatusValue == HcLabStatus.Resulted).Select(row => row.Id).ToList();
@@ -183,7 +181,7 @@ public partial class Labs : ComponentBase, IDisposable
     {
         var shown = Shown.Count;
 
-        return shown == total ? $"{Plural(total, "order", "orders")}." : $"Showing {shown.ToString(CultureInfo.InvariantCulture)} of {Plural(total, "order", "orders")}.";
+        return shown == total ? $"{HcDisplay.Plural(total, "order", "orders")}." : $"Showing {shown.ToString(CultureInfo.InvariantCulture)} of {HcDisplay.Plural(total, "order", "orders")}.";
     }
 
     /// <summary>A filter changed: back to the first page of the filtered orders.</summary>
@@ -213,8 +211,8 @@ public partial class Labs : ComponentBase, IDisposable
 
         SetStatus(outcome.Result switch
         {
-            HcResult.Ok => $"Released {Plural(outcome.Changed, "result", "results")}: each patient sees theirs in Lab reports and was billed {HcDisplay.Money(HcSeedData.LabFeeCents)}."
-                + (outcome.Unchanged > 0 ? $" {Plural(outcome.Unchanged, "order was", "orders were")} left as they were: released already, or the storage for this demo tab is full." : string.Empty),
+            HcResult.Ok => $"Released {HcDisplay.Plural(outcome.Changed, "result", "results")}: each patient sees theirs in Lab reports and was billed {HcDisplay.Money(HcSeedData.LabFeeCents)}."
+                + (outcome.Unchanged > 0 ? $" {HcDisplay.Plural(outcome.Unchanged, "order was", "orders were")} left as they were: released already, or the storage for this demo tab is full." : string.Empty),
             HcResult.NoChange => "Nothing was released: those orders were released already, or the storage for this demo tab is full.",
             HcResult.NotAllowed => "Only the ordering doctor can release results. Sign in again; nothing was released.",
             _ => "Those results couldn't be released. Nothing changed.",

@@ -114,8 +114,6 @@ public partial class Clients : ComponentBase, IDisposable
 
     private static string Count(int value) => value.ToString("#,0", CultureInfo.InvariantCulture);
 
-    private static string Plural(int count, string one, string many) => count == 1 ? $"1 {one}" : $"{Count(count)} {many}";
-
     /// <summary>
     /// Hands the selected clients to the chosen account manager in one <see cref="PbState.BulkChangeClientOwner" /> call, then
     /// refreshes the grid and clears the selection; the bar closes, so focus moves to the announcement.
@@ -138,8 +136,8 @@ public partial class Clients : ComponentBase, IDisposable
         var outcome = State.BulkChangeClientOwner(selected.Select(row => row.Id).ToList(), bulkOwner);
         var message = outcome.Result switch
         {
-            PbResult.Ok => $"Handed {Plural(outcome.Changed, "client", "clients")} to {owner}."
-                + (outcome.Unchanged > 0 ? $" {Plural(outcome.Unchanged, "client was", "clients were")} already {owner}'s, or no longer there." : string.Empty),
+            PbResult.Ok => $"Handed {PbDisplay.Plural(outcome.Changed, "client", "clients")} to {owner}."
+                + (outcome.Unchanged > 0 ? $" {PbDisplay.Plural(outcome.Unchanged, "client was", "clients were")} already {owner}'s, or no longer there." : string.Empty),
             PbResult.NoChange => $"No clients changed: the selected clients are already {owner}'s.",
             PbResult.NotAllowed => "Only account managers can change client owners. Nothing changed.",
             PbResult.NotFound => "That person is no longer an account manager. Nothing changed.",
@@ -230,7 +228,7 @@ public partial class Clients : ComponentBase, IDisposable
                 deals.Count,
                 deals.Sum(deal => (long)deal.Value),
                 projects.Count,
-                projects.Count == 0 ? "None" : active == 0 ? Plural(projects.Count, "project", "projects") : $"{active} active of {projects.Count}",
+                projects.Count == 0 ? "None" : active == 0 ? PbDisplay.Plural(projects.Count, "project", "projects") : $"{active} active of {projects.Count}",
                 client.BillingCurrency,
                 client.ContractEnd,
                 last?.At,

@@ -142,7 +142,7 @@ public partial class Projects : ComponentBase, IDisposable
                 people.GetValueOrDefault(project.OwnerId)?.Name ?? "Nobody",
                 project.DueDate,
                 ManageProjects.Percent(done, total),
-                total == 0 ? "No tasks yet" : $"{done} of {TaskCard.Plural(total, "task")} done",
+                total == 0 ? "No tasks yet" : $"{done} of {PbDisplay.Plural(total, "task")} done",
                 mine.GetValueOrDefault(project.Id),
                 next is null ? "None coming up" : $"{next.Title}, {PbDisplay.Date(next.Due)}",
                 next?.Due,

@@ -471,6 +471,14 @@
         margin: 0;
     }
 
+/* At 320 CSS px the toggle's spacing would push the page sideways. */
+@media (max-width: 399.98px) {
+    .sc-lumora ::deep .mk-billing {
+        gap: .5rem;
+        padding: .5rem .75rem;
+    }
+}
+
 .sc-lumora ::deep .mk-testimonial {
     max-width: 46rem;
     margin-inline: auto;

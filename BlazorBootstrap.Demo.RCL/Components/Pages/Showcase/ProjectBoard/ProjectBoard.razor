@@ -63,7 +63,7 @@ else
                         {
                             var milestoneProgress = State.MilestoneProgress(project.Id, nextMilestone.Id);
                             <span class="tb-board-wrap">@nextMilestone.Title</span>
-                            <span class="d-block small text-body-secondary">@PbDisplay.Date(nextMilestone.Due), @milestoneProgress.Done of @TaskCard.Plural(milestoneProgress.Total, "task") done</span>
+                            <span class="d-block small text-body-secondary">@PbDisplay.Date(nextMilestone.Due), @milestoneProgress.Done of @PbDisplay.Plural(milestoneProgress.Total, "task") done</span>
                         }
                         else
                         {
@@ -76,7 +76,7 @@ else
                     <dd>
                         @{
                             var percent = progress.Total == 0 ? 0 : progress.Done * 100.0 / progress.Total;
-                            var progressText = $"{progress.Done} of {TaskCard.Plural(progress.Total, "task")} done";
+                            var progressText = $"{progress.Done} of {PbDisplay.Plural(progress.Total, "task")} done";
                         }
                         <Progress Height="8" Class="mb-1 tb-board-progress">
                             <ProgressBar Width="percent" aria-label="Project progress" aria-valuenow="@Math.Round(percent).ToString(CultureInfo.InvariantCulture)"
@@ -171,11 +171,11 @@ else
         <p class="small text-body-secondary mb-2">
             @if (filtersOn)
             {
-                <span>Showing @shown of @TaskCard.Plural(progress.Total, "task").</span>
+                <span>Showing @shown of @PbDisplay.Plural(progress.Total, "task").</span>
             }
             else
             {
-                <span>@TaskCard.Plural(progress.Total, "task").</span>
+                <span>@PbDisplay.Plural(progress.Total, "task").</span>
             }
             @if (!IsList)
             {
@@ -207,7 +207,7 @@ else
                         <section class="tb-column tb-board-column" aria-labelledby="@headingId" @key="@($"column-{status}")">
                             <div class="tb-board-column-head">
                                 <h2 class="tb-board-column-title" id="@headingId">@label</h2>
-                                <span class="small text-body-secondary">@TaskCard.Plural(list.Count, "task") · @TaskCard.HoursText(hours)</span>
+                                <span class="small text-body-secondary">@PbDisplay.Plural(list.Count, "task") · @TaskCard.HoursText(hours)</span>
                             </div>
                             <div class="tb-board-list">
                                 <SortableList TItem="PbTask" @key="@($"list-{status}-{boardVersion}")" Group="@($"tb-board-{project.Id}")" Name="@status.ToString()"
@@ -264,7 +264,7 @@ else
                 <div class="table-responsive tb-board-table-box">
                     <table class="table align-middle mb-0 tb-board-table">
                         <caption class="tb-board-caption">
-                            Tasks of @project.Key@(filtersOn ? ", filtered" : null): @TaskCard.Plural(rows.Count, "task"), @SortText. Choose a column heading to sort by it.
+                            Tasks of @project.Key@(filtersOn ? ", filtered" : null): @PbDisplay.Plural(rows.Count, "task"), @SortText. Choose a column heading to sort by it.
                         </caption>
                         <thead>
                             <tr>

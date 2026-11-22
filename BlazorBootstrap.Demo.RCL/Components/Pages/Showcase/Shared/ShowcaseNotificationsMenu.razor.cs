@@ -53,8 +53,6 @@ public partial class ShowcaseNotificationsMenu : ComponentBase, IDisposable
 
     #region Properties, Indexers
 
-    /// <summary>Gets or sets extra CSS classes.</summary>
-    [Parameter] public string? Class { get; set; }
 
     private IShowcaseEnterpriseState? Enterprise => Session.State as IShowcaseEnterpriseState;
 

@@ -48,12 +48,17 @@ internal static class GridCsvUtility
 
     #region Private Methods
 
+    /// <summary>
+    /// Built-in numbers, dates, times, and enums are written as values a spreadsheet reads as such (a negative number keeps
+    /// its sign); every other value is written as text and neutralized, including the output of a custom <see cref="IFormattable" />.
+    /// </summary>
     private static string FormatValue(object? value, CultureInfo culture) =>
         value switch
         {
             null => string.Empty,
             string text => Neutralize(text),
-            IFormattable formattable => formattable.ToString(null, culture),
+            IFormattable formattable when IsBuiltInValue(value) => formattable.ToString(null, culture),
+            IFormattable formattable => Neutralize(formattable.ToString(null, culture)),
             _ => Neutralize(value.ToString() ?? string.Empty)
         };
 
@@ -75,8 +80,21 @@ internal static class GridCsvUtility
         return value;
     }
 
-    private static string Neutralize(string text) =>
-        text.Length > 0 && Array.IndexOf(formulaPrefixes, text[0]) >= 0 ? $"'{text}" : text;
+    private static bool IsBuiltInValue(object value) =>
+        value is sbyte or byte or short or ushort or int or uint or long or ulong or Int128 or UInt128
+                 or Half or float or double or decimal or System.Numerics.BigInteger
+                 or DateTime or DateTimeOffset or DateOnly or TimeOnly or TimeSpan or Enum;
+
+    /// <summary>
+    /// Prefixes an apostrophe when the text, after any leading spaces, starts with a formula character.
+    /// A tab or carriage return is itself a formula character, so only spaces are skipped.
+    /// </summary>
+    private static string Neutralize(string text)
+    {
+        var start = text.TrimStart(' ');
+
+        return start.Length > 0 && Array.IndexOf(formulaPrefixes, start[0]) >= 0 ? $"'{text}" : text;
+    }
 
     private static string Quote(string text) => $"\"{text.Replace("\"", "\"\"")}\"";
 

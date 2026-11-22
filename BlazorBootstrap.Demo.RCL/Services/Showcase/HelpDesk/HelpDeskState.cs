@@ -13,7 +13,7 @@ namespace BlazorBootstrap.Demo.RCL.Services.Showcase.HelpDesk;
 /// It also keeps the enterprise baseline (rule WR-001): an audit log of every create, change, and delete, in-app
 /// notifications for the staff accounts, and the header's global search.
 /// </summary>
-public sealed class HelpDeskState : IShowcaseEnterpriseState
+public sealed partial class HelpDeskState : IShowcaseEnterpriseState
 {
     #region Fields and Constants
 
@@ -318,8 +318,8 @@ public sealed class HelpDeskState : IShowcaseEnterpriseState
         return changed;
     }
 
-    /// <summary>Returns the snapshot of the help desk: tickets, saved replies, articles and votes, the admin settings, the audit log and notifications, and the ID counters.</summary>
-    public object CaptureData() => new HelpDeskSnapshot
+    /// <summary>Returns the whole help desk: tickets, saved replies, articles and votes, the admin settings, the audit log and notifications, and the ID counters. <see cref="CaptureData" /> stores only what differs from a fresh tab.</summary>
+    private HelpDeskSnapshot CaptureFull() => new HelpDeskSnapshot
     {
         Agents = agents.ToList(),
         Articles = articles.ToList(),
@@ -944,16 +944,7 @@ public sealed class HelpDeskState : IShowcaseEnterpriseState
 
         var number = term.TrimStart('#');
 
-        // 0: exactly the term, 1: starts with it, 2: contains it; null: no match.
-        int? Rank(params string?[] values) => values
-            .Select(value => value is null ? (int?)null
-                : string.Equals(value, term, StringComparison.OrdinalIgnoreCase) ? 0
-                : value.StartsWith(term, StringComparison.OrdinalIgnoreCase) ? 1
-                : value.Contains(term, StringComparison.OrdinalIgnoreCase) ? 2
-                : null)
-            .Where(rank => rank is not null)
-            .DefaultIfEmpty(null)
-            .Min();
+        int? Rank(params string?[] values) => ShowcaseSearch.Rank(term, values);
 
         int? NumberRank(int id)
         {
@@ -1334,19 +1325,10 @@ public sealed class HelpDeskState : IShowcaseEnterpriseState
         return ticket;
     }
 
-    /// <summary>Validates a stored snapshot and applies it only when every part is valid.</summary>
+    /// <summary>Rebuilds the help desk from a fresh tab and the stored changes, validates every part, and applies it only when everything is valid.</summary>
     public bool TryRestoreData(JsonElement data)
     {
-        HelpDeskSnapshot? snapshot;
-
-        try
-        {
-            snapshot = data.Deserialize<HelpDeskSnapshot>(snapshotOptions);
-        }
-        catch (Exception ex) when (ex is JsonException or NotSupportedException or InvalidOperationException)
-        {
-            return false;
-        }
+        var snapshot = RebuildFromDelta(data);
 
         if (snapshot is not
             {
@@ -1518,9 +1500,7 @@ public sealed class HelpDeskState : IShowcaseEnterpriseState
     private static bool IsPlausibleDate(DateTime value) => value >= HelpDeskSeedData.Now.AddYears(-2) && value <= HelpDeskSeedData.Now.AddYears(2);
 
     /// <summary>Checks a stored audit or notification link: none, or a path on this site without spaces, quotes, or a second slash.</summary>
-    private static bool IsSiteLink(string? url) =>
-        url is null || (url.Length <= 200 && url.StartsWith(SiteBase + "/", StringComparison.Ordinal) && !url.Contains("//", StringComparison.Ordinal)
-            && url.All(character => !char.IsWhiteSpace(character) && !char.IsControl(character) && character is not ('"' or '\'' or '<' or '>' or '\\')));
+    private static bool IsSiteLink(string? url) => ShowcaseLinks.IsSiteLink(url, SiteBase, allowSiteBase: false);
 
     private static bool IsText(string? value, int maxLength) => !string.IsNullOrWhiteSpace(value) && value.Length <= maxLength;
 
@@ -1942,7 +1922,7 @@ public sealed class HelpDeskState : IShowcaseEnterpriseState
     public IReadOnlyList<HelpDeskSlaPolicy> SlaPolicies => slaPolicies;
 
     /// <summary>Gets the snapshot format version (4: escalation rules, ticket tiers, and team leads).</summary>
-    public int SnapshotVersion => 4;
+    public int SnapshotVersion => 5;
 
     /// <summary>Gets the teams, in order.</summary>
     public IReadOnlyList<HelpDeskTeam> Teams => teams;

@@ -167,8 +167,6 @@ public partial class AdminInvoices : ComponentBase, IDisposable
         _ => true,
     };
 
-    private static string Plural(int count, string one, string many) => count == 1 ? $"1 {one}" : $"{Count(count)} {many}";
-
     /// <summary>The link disappears with the filters it clears, so focus moves to the count, which also announces the new total.</summary>
     private async Task ClearFiltersAsync()
     {
@@ -292,17 +290,17 @@ public partial class AdminInvoices : ComponentBase, IDisposable
 
         var parts = new List<string>
         {
-            paid == 0 ? "No payment went through." : $"{Plural(paid, "invoice is", "invoices are")} paid with the card on file.",
+            paid == 0 ? "No payment went through." : $"{SaasState.Plural(paid, "invoice is", "invoices are")} paid with the card on file.",
         };
 
         if (noCard > 0)
-            parts.Add($"{Plural(noCard, "tenant has", "tenants have")} no card on file, so {(noCard == 1 ? "its invoice stays" : "their invoices stay")} open until the customer adds one.");
+            parts.Add($"{SaasState.Plural(noCard, "tenant has", "tenants have")} no card on file, so {(noCard == 1 ? "its invoice stays" : "their invoices stay")} open until the customer adds one.");
 
         if (declined > 0)
-            parts.Add($"{Plural(declined, "card was", "cards were")} declined again, so {(declined == 1 ? "that tenant stays" : "those tenants stay")} in dunning until the customer replaces the card.");
+            parts.Add($"{SaasState.Plural(declined, "card was", "cards were")} declined again, so {(declined == 1 ? "that tenant stays" : "those tenants stay")} in dunning until the customer replaces the card.");
 
         if (other > 0)
-            parts.Add($"{Plural(other, "invoice", "invoices")} couldn't be retried: already paid, or no longer in this tab.");
+            parts.Add($"{SaasState.Plural(other, "invoice", "invoices")} couldn't be retried: already paid, or no longer in this tab.");
 
         SetStatus(string.Join(" ", parts), paid == 0);
 

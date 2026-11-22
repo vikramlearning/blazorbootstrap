@@ -25,7 +25,7 @@
                     <div class="tb-panel h-100">
                         <span class="pb-fc-label">Open pipeline</span>
                         <span class="pb-fc-value">@PbDisplay.Money(report.OpenValue)</span>
-                        <span class="small text-body-secondary">@DealDisplay.Plural(report.OpenCount, "open deal")</span>
+                        <span class="small text-body-secondary">@PbDisplay.Plural(report.OpenCount, "open deal")</span>
                     </div>
                 </div>
                 <div class="col-sm-6 col-xl-3">
@@ -51,7 +51,7 @@
                         <span class="pb-fc-label">Win rate</span>
                         <span class="pb-fc-value">@(report.ClosedCount == 0 ? "None yet" : DealDisplay.Percent(report.WinRate))</span>
                         <span class="small text-body-secondary">
-                            @(report.ClosedCount == 0 ? "No deals won or lost yet" : $"{report.WonCount} won of {DealDisplay.Plural(report.ClosedCount, "closed deal")} ({report.LostCount} lost)")
+                            @(report.ClosedCount == 0 ? "No deals won or lost yet" : $"{report.WonCount} won of {PbDisplay.Plural(report.ClosedCount, "closed deal")} ({report.LostCount} lost)")
                         </span>
                     </div>
                 </div>
@@ -84,8 +84,8 @@
                             {
                                 <tr @key="month.Start">
                                     <th scope="row" class="text-nowrap">@month.Label@(month.IsCurrent ? " (this month)" : null)</th>
-                                    <td class="text-end">@PbDisplay.Money(month.Won) <span class="small text-body-secondary">(@DealDisplay.Plural(month.WonCount, "deal"))</span></td>
-                                    <td class="text-end">@PbDisplay.Money(month.Weighted) <span class="small text-body-secondary">(@DealDisplay.Plural(month.OpenCount, "deal"))</span></td>
+                                    <td class="text-end">@PbDisplay.Money(month.Won) <span class="small text-body-secondary">(@PbDisplay.Plural(month.WonCount, "deal"))</span></td>
+                                    <td class="text-end">@PbDisplay.Money(month.Weighted) <span class="small text-body-secondary">(@PbDisplay.Plural(month.OpenCount, "deal"))</span></td>
                                     <td class="text-end">@targetText</td>
                                 </tr>
                             }
@@ -108,7 +108,7 @@
                         <div class="table-responsive">
                             <table class="table align-middle mb-0">
                                 <caption class="pb-fc-caption">
-                                    @DealDisplay.Plural(report.Closing.Count, "open deal") expected to close by @PbDisplay.Date(report.HorizonEnd), the soonest first:
+                                    @PbDisplay.Plural(report.Closing.Count, "open deal") expected to close by @PbDisplay.Date(report.HorizonEnd), the soonest first:
                                     @PbDisplay.Money(report.Closing.Sum(deal => (long)deal.Value)), weighted @PbDisplay.Money(report.Closing.Sum(deal => (long)PbState.Weighted(deal))).
                                 </caption>
                                 <thead>

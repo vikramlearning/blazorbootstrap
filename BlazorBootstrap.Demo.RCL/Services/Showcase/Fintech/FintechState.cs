@@ -422,7 +422,7 @@ public sealed partial class FintechState : IShowcaseEnterpriseState
                 break;
 
             case FintechTransferStatus.Held:
-                Notify(FintechAlertKind.Transfer, "Transfer held for a check", $"Your {Money(transfer.Amount)} transfer to {transfer.ToName} is held for a routine check ({LowerFirst(holdReason!)}). We'll update you within one business day.", TransferPath(transfer));
+                Notify(FintechAlertKind.Transfer, "Transfer held for a check", $"Your {Money(transfer.Amount)} transfer to {transfer.ToName} is held for a routine check ({FintechSeedData.LowerFirst(holdReason!)}). We'll update you within one business day.", TransferPath(transfer));
                 break;
 
             default:
@@ -434,7 +434,7 @@ public sealed partial class FintechState : IShowcaseEnterpriseState
         {
             Record("Transfer confirmed", TransferTarget(transfer), TransferOpsPath(transfer.Reference), $"{Money(transfer.Amount)} to {transfer.ToName} on {Day(transfer.Date)}.");
             RecordAs(FintechSeedData.SystemActor, "Transfer held", TransferTarget(transfer), TransferOpsPath(transfer.Reference), $"{transfer.HoldReason}.");
-            NotifyOps($"{transfer.Reference} is held for review", $"{Money(transfer.Amount)} from {transfer.CustomerName} to {transfer.ToName}: {LowerFirst(holdReason!)}.",
+            NotifyOps($"{transfer.Reference} is held for review", $"{Money(transfer.Amount)} from {transfer.CustomerName} to {transfer.ToName}: {FintechSeedData.LowerFirst(holdReason!)}.",
                 TransferOpsPath(transfer.Reference), fromSystem: true);
         }
         else
@@ -1475,9 +1475,6 @@ public sealed partial class FintechState : IShowcaseEnterpriseState
 
     private static bool IsText(string? value, int maxLength) => !string.IsNullOrWhiteSpace(value) && value.Length <= maxLength;
 
-    /// <summary>Lower-cases the first letter only, for a sentence fragment used mid-sentence (names and dates in it keep their case).</summary>
-    private static string LowerFirst(string text) => text.Length == 0 ? text : char.ToLowerInvariant(text[0]) + text[1..];
-
     private static string Money(decimal value) => value.ToString("$#,0.00", CultureInfo.InvariantCulture);
 
     /// <summary>Returns the next free ID after the seeded ones.</summary>
@@ -1525,9 +1522,9 @@ public sealed partial class FintechState : IShowcaseEnterpriseState
         var name = FindCategory(categoryId).Name;
 
         if (was <= 1 && after > 1)
-            Notify(FintechAlertKind.Budget, $"{name} is over budget", $"You've spent more than this month's {LowerFirst(name)} budget.", BudgetsPath);
+            Notify(FintechAlertKind.Budget, $"{name} is over budget", $"You've spent more than this month's {FintechSeedData.LowerFirst(name)} budget.", BudgetsPath);
         else if (was < 0.8m && after >= 0.8m)
-            Notify(FintechAlertKind.Budget, $"{name} is at 80% of its budget", $"You've used most of this month's {LowerFirst(name)} budget.", BudgetsPath);
+            Notify(FintechAlertKind.Budget, $"{name} is at 80% of its budget", $"You've used most of this month's {FintechSeedData.LowerFirst(name)} budget.", BudgetsPath);
     }
 
     /// <summary>Returns why a transfer to a payee would be held for a check, or <see langword="null" /> when it wouldn't.</summary>

@@ -440,7 +440,9 @@ public sealed partial class SaasState
             IconName.CheckCircle, bySystem);
     }
 
-    private static string Plural(int count, string one, string many) => count == 1 ? $"1 {one}" : string.Create(CultureInfo.InvariantCulture, $"{count} {many}");
+    /// <summary>Formats a count with its noun, like "1 invoice" or "1,204 invoices"; <paramref name="plural" /> defaults to the noun plus "s".</summary>
+    internal static string Plural(int count, string noun, string? plural = null) =>
+        count == 1 ? $"1 {noun}" : $"{count.ToString("#,0", CultureInfo.InvariantCulture)} {plural ?? noun + "s"}";
 
     private void ReplaceCase(SaasDunningCase updated)
     {

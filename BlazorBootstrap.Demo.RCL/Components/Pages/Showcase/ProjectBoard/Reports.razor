@@ -198,7 +198,7 @@
                                     <th scope="row" class="tb-rp-name"><a href="@PbDisplay.TaskUrl(task.Id)">@task.Title</a></th>
                                     <td class="tb-rp-project">@(project?.Name ?? "Unknown project")</td>
                                     <td class="text-nowrap">@(State.FindPerson(task.AssigneeId)?.Name ?? "Unassigned")</td>
-                                    <td class="text-end text-nowrap fw-semibold text-danger-emphasis">@ManageProjects.Plural(days, "day")</td>
+                                    <td class="text-end text-nowrap fw-semibold text-danger-emphasis">@PbDisplay.Plural(days, "day")</td>
                                 </tr>
                             }
                         </tbody>

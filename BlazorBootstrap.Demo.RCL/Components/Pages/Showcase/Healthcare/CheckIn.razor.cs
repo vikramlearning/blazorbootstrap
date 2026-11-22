@@ -133,8 +133,6 @@ public partial class CheckIn : ComponentBase, IDisposable
 
     #region Private Methods
 
-    private static string Plural(int count, string one, string many) => count == 1 ? $"1 {one}" : string.Create(CultureInfo.InvariantCulture, $"{count} {many}");
-
     private static string SummaryText(int shown, int total)
     {
         var count = total == 1 ? "1 appointment" : FormattableString.Invariant($"{total} appointments");
@@ -160,7 +158,7 @@ public partial class CheckIn : ComponentBase, IDisposable
         var ids = selected.Where(row => row.StatusValue == HcAppointmentStatus.Booked).Select(row => row.Id).ToList();
         var outcome = State.BulkCheckIn(ids);
 
-        await FinishBulkAsync(outcome, $"Checked in {Plural(outcome.Changed, "patient", "patients")}: they're in the waiting room, and their doctors can see them.",
+        await FinishBulkAsync(outcome, $"Checked in {HcDisplay.Plural(outcome.Changed, "patient", "patients")}: they're in the waiting room, and their doctors can see them.",
             "No one was checked in: the selected patients are checked in already, or their appointments are closed.", "already checked in or closed");
     }
 
@@ -243,7 +241,7 @@ public partial class CheckIn : ComponentBase, IDisposable
     {
         var message = outcome.Result switch
         {
-            HcResult.Ok => changedText + (outcome.Unchanged > 0 ? $" {Plural(outcome.Unchanged, "appointment was", "appointments were")} left as they were: {unchangedReason}." : string.Empty),
+            HcResult.Ok => changedText + (outcome.Unchanged > 0 ? $" {HcDisplay.Plural(outcome.Unchanged, "appointment was", "appointments were")} left as they were: {unchangedReason}." : string.Empty),
             HcResult.NoChange => noChangeText,
             HcResult.NotAllowed => "Only the front desk can check patients in. Sign in again; nothing changed.",
             _ => "Those changes couldn't be saved. Nothing changed.",
@@ -332,7 +330,7 @@ public partial class CheckIn : ComponentBase, IDisposable
             return;
         }
 
-        _ = InvokeAsync(() => FinishBulkAsync(State.BulkMarkNoShow(ids), $"Marked {Plural(ids.Count, "patient", "patients")} as no-shows.",
+        _ = InvokeAsync(() => FinishBulkAsync(State.BulkMarkNoShow(ids), $"Marked {HcDisplay.Plural(ids.Count, "patient", "patients")} as no-shows.",
             "No one was marked: the selected appointments haven't started yet, or they aren't booked any more.", "not started yet or not booked"));
     }
 

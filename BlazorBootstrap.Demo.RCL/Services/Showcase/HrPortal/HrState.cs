@@ -213,8 +213,8 @@ public sealed partial class HrState : IShowcaseEnterpriseState
         });
     }
 
-    /// <summary>Returns the snapshot: every collection, the review cycles, the audit log and notifications, and the ID counters.</summary>
-    public object CaptureData() => new HrSnapshot
+    /// <summary>Returns the whole state for the snapshot. <see cref="CaptureData" /> stores only what differs from a fresh tab.</summary>
+    private HrSnapshot CaptureFull() => new HrSnapshot
     {
         Audit = audit.ToList(),
         Cycles = cycles.ToList(),
@@ -810,16 +810,7 @@ public sealed partial class HrState : IShowcaseEnterpriseState
 
         var number = term.TrimStart('#');
 
-        // 0: exactly the term, 1: starts with it, 2: contains it; null: no match.
-        int? Rank(params string?[] values) => values
-            .Select(value => value is null ? (int?)null
-                : string.Equals(value, term, StringComparison.OrdinalIgnoreCase) ? 0
-                : value.StartsWith(term, StringComparison.OrdinalIgnoreCase) ? 1
-                : value.Contains(term, StringComparison.OrdinalIgnoreCase) ? 2
-                : null)
-            .Where(rank => rank is not null)
-            .DefaultIfEmpty(null)
-            .Min();
+        int? Rank(params string?[] values) => ShowcaseSearch.Rank(term, values);
 
         int? NumberRank(int id)
         {
@@ -979,16 +970,7 @@ public sealed partial class HrState : IShowcaseEnterpriseState
     /// <summary>Validates a stored snapshot against its own data and applies it only when every part is valid.</summary>
     public bool TryRestoreData(JsonElement data)
     {
-        HrSnapshot? snapshot;
-
-        try
-        {
-            snapshot = data.Deserialize<HrSnapshot>(snapshotOptions);
-        }
-        catch (Exception ex) when (ex is JsonException or NotSupportedException or InvalidOperationException or ArgumentException)
-        {
-            return false;
-        }
+        var snapshot = RebuildFromDelta(data);
 
         if (snapshot is not
             {
@@ -1190,9 +1172,7 @@ public sealed partial class HrState : IShowcaseEnterpriseState
         probationEnd is not { } end || (end.Date > start.Date && end.Date <= start.Date.AddMonths(MaxProbationMonths) && IsPlausible(end));
 
     /// <summary>Checks a stored audit or notification link: none, or a path on this site without spaces, quotes, or a second slash.</summary>
-    private static bool IsSiteLink(string? url) =>
-        url is null || (url.Length <= 200 && url.StartsWith(SiteBase + "/", StringComparison.Ordinal) && !url.Contains("//", StringComparison.Ordinal)
-            && url.All(character => !char.IsWhiteSpace(character) && !char.IsControl(character) && character is not ('"' or '\'' or '<' or '>' or '\\')));
+    private static bool IsSiteLink(string? url) => ShowcaseLinks.IsSiteLink(url, SiteBase, allowSiteBase: false);
 
     /// <summary>A template task's due day in words, like "3 days before day one", "day one", or "day 14".</summary>
     private static string OffsetWords(int offset) => offset switch
@@ -1621,7 +1601,7 @@ public sealed partial class HrState : IShowcaseEnterpriseState
     public string SiteSlug => "hr-portal";
 
     /// <summary>Gets the snapshot format version (3: performance review cycles; 2 added the audit log, notifications, probation end dates, and the larger seed).</summary>
-    public int SnapshotVersion => 3;
+    public int SnapshotVersion => 4;
 
     /// <summary>
     /// Gets the leave requests the signed-in person decides: their direct reports' (managers), or everyone's (HR admin);

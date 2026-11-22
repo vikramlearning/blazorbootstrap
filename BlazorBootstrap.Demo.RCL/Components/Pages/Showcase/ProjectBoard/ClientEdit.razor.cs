@@ -189,7 +189,7 @@ public partial class ClientEdit : ComponentBase, IDisposable
         var contacts = State.ContactsOf(client.Id).Count;
         var activities = State.ActivitiesOf(client.Id).Count;
 
-        return $"{client.Name} leaves the client list, with its {DealDisplay.Plural(contacts, "contact")} and {DealDisplay.Plural(activities, "activity entry", "activity entries")}.";
+        return $"{client.Name} leaves the client list, with its {PbDisplay.Plural(contacts, "contact")} and {PbDisplay.Plural(activities, "activity entry", "activity entries")}.";
     }
 
     private Task<bool> IsNameTakenAsync(string name) => Task.FromResult(State.IsClientNameTaken(name, Client?.Id ?? 0));

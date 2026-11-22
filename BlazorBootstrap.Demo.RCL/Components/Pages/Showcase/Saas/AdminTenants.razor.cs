@@ -165,8 +165,8 @@ public partial class AdminTenants : ComponentBase, IDisposable
         var outcome = State.BulkUpdateTenants(selected.Select(row => row.Id).ToList(), planId, status, managerId);
         var message = outcome.Result switch
         {
-            SaasResult.Ok => $"Updated {Plural(outcome.Changed, "tenant", "tenants")}."
-                + (outcome.Unchanged > 0 ? $" {Plural(outcome.Unchanged, "tenant was", "tenants were")} left as they were: cancelled, too many members for the plan, or already like that." : string.Empty),
+            SaasResult.Ok => $"Updated {SaasState.Plural(outcome.Changed, "tenant", "tenants")}."
+                + (outcome.Unchanged > 0 ? $" {SaasState.Plural(outcome.Unchanged, "tenant was", "tenants were")} left as they were: cancelled, too many members for the plan, or already like that." : string.Empty),
             SaasResult.NoChange => "No tenants changed: the selected tenants already had those values, are cancelled, or have more members than the plan allows.",
             SaasResult.NotAllowed => "Sign in as a Lumora operator to change tenants. Nothing changed.",
             SaasResult.NotFound => "That plan or account manager is no longer available. Nothing changed.",
@@ -293,8 +293,6 @@ public partial class AdminTenants : ComponentBase, IDisposable
         await RefreshGridAsync();
         StateHasChanged();
     });
-
-    private static string Plural(int count, string one, string many) => count == 1 ? $"1 {one}" : $"{Count(count)} {many}";
 
     /// <summary>The page of tenants the grid asked for, from the filtered list, newest first unless a column is sorted.</summary>
     private Task<GridDataProviderResult<TenantRow>> ProvideTenantsAsync(GridDataProviderRequest<TenantRow> request) => view.ApplyAsync(request, Shown);

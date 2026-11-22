@@ -156,13 +156,9 @@ public partial class ManageProjects : ComponentBase, IDisposable
     /// <summary>Returns a share as a percentage from 0 to 100 (0 when there is nothing to count).</summary>
     internal static double Percent(int part, int whole) => whole <= 0 ? 0 : Math.Clamp(part * 100.0 / whole, 0, 100);
 
-    /// <summary>Returns a count with its noun, like "1 task" or "3 tasks".</summary>
-    internal static string Plural(int count, string noun, string? plural = null) =>
-        string.Create(CultureInfo.InvariantCulture, $"{count} {(count == 1 ? noun : plural ?? noun + "s")}");
-
     /// <summary>Returns tasks done in words, like "3 of 5 tasks done" or "No tasks yet".</summary>
     internal static string ProgressText(int done, int total) =>
-        total == 0 ? "No tasks yet" : string.Create(CultureInfo.InvariantCulture, $"{done} of {Plural(total, "task")} done");
+        total == 0 ? "No tasks yet" : string.Create(CultureInfo.InvariantCulture, $"{done} of {PbDisplay.Plural(total, "task")} done");
 
     /// <summary>Returns the badge color of a project status (always shown with its name).</summary>
     internal static BadgeColor StatusBadge(PbProjectStatus status) => PbDisplay.ProjectStatusColor(status) switch
@@ -211,8 +207,8 @@ public partial class ManageProjects : ComponentBase, IDisposable
         var outcome = State.BulkUpdateProjects(selected.Select(row => row.Id).ToList(), status, managerId);
         var message = outcome.Result switch
         {
-            PbResult.Ok => $"Updated {Plural(outcome.Changed, "project")}."
-                + (outcome.Unchanged > 0 ? $" {Plural(outcome.Unchanged, "project was", "projects were")} already like that, or no longer there." : string.Empty),
+            PbResult.Ok => $"Updated {PbDisplay.Plural(outcome.Changed, "project")}."
+                + (outcome.Unchanged > 0 ? $" {PbDisplay.Plural(outcome.Unchanged, "project was", "projects were")} already like that, or no longer there." : string.Empty),
             PbResult.NoChange => "No projects changed: the selected projects already had those values.",
             PbResult.NotAllowed => "Only project managers can change projects. Nothing changed.",
             PbResult.NotFound => "That person no longer runs projects. Nothing changed.",
@@ -267,8 +263,8 @@ public partial class ManageProjects : ComponentBase, IDisposable
         var deal = State.FindDeal(project.FromDealId);
         var taskText = tasks.Count == 0
             ? "It has no tasks."
-            : $"Its {Plural(tasks.Count, "task")} {(tasks.Count == 1 ? "is" : "are")} deleted too ({open} open), with their comments and checklists.";
-        var milestoneText = project.Milestones.Count == 0 ? null : $" Its {Plural(project.Milestones.Count, "milestone")} {(project.Milestones.Count == 1 ? "goes" : "go")} with it.";
+            : $"Its {PbDisplay.Plural(tasks.Count, "task")} {(tasks.Count == 1 ? "is" : "are")} deleted too ({open} open), with their comments and checklists.";
+        var milestoneText = project.Milestones.Count == 0 ? null : $" Its {PbDisplay.Plural(project.Milestones.Count, "milestone")} {(project.Milestones.Count == 1 ? "goes" : "go")} with it.";
         var dealText = deal is null ? null : $" The deal “{deal.Title}” it came from stays won.";
 
         return taskText + milestoneText + dealText;
@@ -360,7 +356,7 @@ public partial class ManageProjects : ComponentBase, IDisposable
         switch (result)
         {
             case PbResult.Ok:
-                Announce(true, $"Deleted {label} and its {Plural(taskCount, "task")}." + (deal is null ? null : $" The deal “{deal.Title}” stays won."));
+                Announce(true, $"Deleted {label} and its {PbDisplay.Plural(taskCount, "task")}." + (deal is null ? null : $" The deal “{deal.Title}” stays won."));
                 deleteButtons.Remove(id);
                 focusStatus = true;
 

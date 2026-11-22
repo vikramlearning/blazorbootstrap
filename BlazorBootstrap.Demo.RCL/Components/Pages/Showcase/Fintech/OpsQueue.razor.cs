@@ -151,8 +151,6 @@ public partial class OpsQueue : ComponentBase, IDisposable
 
     private static string CountText(int count) => $"{Count(count)} waiting";
 
-    private static string Plural(int count, string one, string many) => count == 1 ? $"1 {one}" : $"{Count(count)} {many}";
-
     /// <summary>
     /// Applies the bulk bar's action to the selected transfers in one call, once the form is valid, then refreshes the grid
     /// and clears the selection; the bar closes, so focus moves to the announcement.
@@ -176,8 +174,8 @@ public partial class OpsQueue : ComponentBase, IDisposable
         var done = action switch { ReleaseAction => "Released", RejectAction => "Rejected", _ => "Held for review" };
         var message = outcome.Result switch
         {
-            FintechResult.Ok => $"{done}: {Plural(outcome.Changed, "transfer", "transfers")}. The customers are told."
-                + (outcome.Unchanged > 0 ? $" {Plural(outcome.Unchanged, "transfer was", "transfers were")} left as they were: already decided, or the account no longer holds the money." : string.Empty),
+            FintechResult.Ok => $"{done}: {FintechDisplay.Plural(outcome.Changed, "transfer", "transfers")}. The customers are told."
+                + (outcome.Unchanged > 0 ? $" {FintechDisplay.Plural(outcome.Unchanged, "transfer was", "transfers were")} left as they were: already decided, or the account no longer holds the money." : string.Empty),
             FintechResult.NoChange => "No transfers changed: they were already decided meanwhile, or the accounts no longer hold the money.",
             FintechResult.NotAllowed => "Sign in again as operations, with a one-time code, to change transfers. Nothing changed.",
             _ => "Those changes couldn't be saved. Nothing changed.",

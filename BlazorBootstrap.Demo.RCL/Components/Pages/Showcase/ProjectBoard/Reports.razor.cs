@@ -54,7 +54,7 @@ public partial class Reports : ComponentBase, IDisposable
     {
         var total = items.Sum(item => item.Count);
 
-        return $"{ManageProjects.Plural(total, "open task")}: "
+        return $"{PbDisplay.Plural(total, "open task")}: "
                + string.Join(", ", items.Select(item => $"{PbDisplay.StatusLabel(item.Status).ToLowerInvariant()} {item.Count} ({Share(item.Count, total)})")) + ".";
     }
 
@@ -74,7 +74,7 @@ public partial class Reports : ComponentBase, IDisposable
         var thisWeek = weeks[^1];
         var average = (total / (double)weeks.Count).ToString("0.#", CultureInfo.InvariantCulture);
 
-        return $"{ManageProjects.Plural(total, "task")} ({weeks.Sum(week => week.Hours).ToString(CultureInfo.InvariantCulture)} estimated hours) done in the last {weeks.Count} weeks, about {average} a week. "
+        return $"{PbDisplay.Plural(total, "task")} ({weeks.Sum(week => week.Hours).ToString(CultureInfo.InvariantCulture)} estimated hours) done in the last {weeks.Count} weeks, about {average} a week. "
                + $"The busiest was the week of {ShortDate(busiest.WeekStart)} with {busiest.Tasks}. This week so far: {thisWeek.Tasks}.";
     }
 
@@ -89,7 +89,7 @@ public partial class Reports : ComponentBase, IDisposable
 
         return new[]
         {
-            new Kpi("Open tasks", Count(open), $"{Count(unassigned)} unassigned · {ManageProjects.Plural(activeProjects, "active project")}"),
+            new Kpi("Open tasks", Count(open), $"{Count(unassigned)} unassigned · {PbDisplay.Plural(activeProjects, "active project")}"),
             new Kpi("Overdue", Count(overdue), overdue == 0 ? "Nothing is past its due date" : $"{Share(overdue, open)} of open tasks"),
             new Kpi("Done this week", Count(doneThisWeek), $"Since Monday, {PbDisplay.Date(weekStart)}"),
             new Kpi("Done in the last 4 weeks", Count(lastFour), "This week and the three before"),

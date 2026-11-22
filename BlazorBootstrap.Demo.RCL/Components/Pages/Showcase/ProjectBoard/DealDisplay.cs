@@ -118,10 +118,6 @@ public static class DealDisplay
     /// <summary>Formats a percentage like "75%".</summary>
     public static string Percent(int percent) => string.Create(CultureInfo.InvariantCulture, $"{percent}%");
 
-    /// <summary>Formats a count with its noun, like "1 deal" or "3 deals" (or the given plural).</summary>
-    public static string Plural(int count, string noun, string? plural = null) =>
-        count == 1 ? $"1 {noun}" : string.Create(CultureInfo.InvariantCulture, $"{count} {plural ?? noun + "s"}");
-
     /// <summary>Formats a date for a native date input (<c>yyyy-MM-dd</c>).</summary>
     public static string ToDateInput(DateTime date) => date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
 

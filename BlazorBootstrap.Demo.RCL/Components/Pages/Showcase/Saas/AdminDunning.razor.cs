@@ -173,8 +173,6 @@ public partial class AdminDunning : ComponentBase, IDisposable
         _ => item.Stage.ToString() == filter,
     };
 
-    private static string Plural(int count, string one, string many) => count == 1 ? $"1 {one}" : $"{Count(count)} {many}";
-
     private static string TenantPath(int workspaceId) => string.Create(CultureInfo.InvariantCulture, $"{SaasAdminLayout.Base}/tenants/{workspaceId}");
 
     /// <summary>Moves the site's clock a day; the status message says what dunning did (from the audit log's new entries).</summary>
@@ -202,19 +200,19 @@ public partial class AdminDunning : ComponentBase, IDisposable
         var parts = new List<string>();
 
         if (failed > 0)
-            parts.Add($"{Plural(failed, "new charge", "new charges")} failed");
+            parts.Add($"{SaasState.Plural(failed, "new charge", "new charges")} failed");
 
         if (retries > 0)
-            parts.Add($"{Plural(retries, "retry", "retries")} failed");
+            parts.Add($"{SaasState.Plural(retries, "retry", "retries")} failed");
 
         if (graces > 0)
-            parts.Add($"{Plural(graces, "tenant", "tenants")} entered grace");
+            parts.Add($"{SaasState.Plural(graces, "tenant", "tenants")} entered grace");
 
         if (suspended > 0)
-            parts.Add($"{Plural(suspended, "tenant was", "tenants were")} suspended");
+            parts.Add($"{SaasState.Plural(suspended, "tenant was", "tenants were")} suspended");
 
         if (recovered > 0)
-            parts.Add($"{Plural(recovered, "tenant", "tenants")} recovered");
+            parts.Add($"{SaasState.Plural(recovered, "tenant", "tenants")} recovered");
 
         SetStatus($"It's now {State.Clock.Now.ToString("dddd, MMM d", CultureInfo.InvariantCulture)}. "
             + (parts.Count == 0 ? "No dunning step was due." : $"Dunning: {string.Join(", ", parts)}.") + " Renewals that came due are billed.", false);
@@ -264,8 +262,8 @@ public partial class AdminDunning : ComponentBase, IDisposable
         var outcome = State.BulkExtendGrace(selected.Select(row => row.Id).ToList(), bulkDays!.Value, reason);
         SetStatus(outcome.Result switch
         {
-            SaasResult.Ok => $"Gave {Plural(outcome.Changed, "case", "cases")} {Plural(bulkDays.Value, "more day", "more days")} of grace; suspended ones are usable again."
-                + (outcome.Unchanged > 0 ? $" {Plural(outcome.Unchanged, "case was", "cases were")} left out: still retrying or already recovered." : string.Empty),
+            SaasResult.Ok => $"Gave {SaasState.Plural(outcome.Changed, "case", "cases")} {SaasState.Plural(bulkDays.Value, "more day", "more days")} of grace; suspended ones are usable again."
+                + (outcome.Unchanged > 0 ? $" {SaasState.Plural(outcome.Unchanged, "case was", "cases were")} left out: still retrying or already recovered." : string.Empty),
             SaasResult.NoChange => "No case was extended: only cases in grace or suspended can be. Cases still retrying wait for their retries.",
             SaasResult.NotAllowed => "Sign in as a Lumora operator to extend grace. Nothing changed.",
             _ => "The extension couldn't be saved. Nothing changed.",
@@ -373,7 +371,7 @@ public partial class AdminDunning : ComponentBase, IDisposable
     {
         var open = cases.Count(item => item.IsOpen);
 
-        return open == 0 ? "No case is open now." : $"The {Plural(open, "open case keeps", "open cases keep")} the schedule {(open == 1 ? "it" : "they")} started with.";
+        return open == 0 ? "No case is open now." : $"The {SaasState.Plural(open, "open case keeps", "open cases keep")} the schedule {(open == 1 ? "it" : "they")} started with.";
     }
 
     private async Task OpenPolicyAsync()
@@ -422,8 +420,8 @@ public partial class AdminDunning : ComponentBase, IDisposable
         {
             SaasResult.NotAllowed => "Sign in as a Lumora operator to retry payments. Nothing changed.",
             SaasResult.Invalid => "Select the cases to retry.",
-            _ => (outcome.Changed == 0 ? "No payment went through." : $"{Plural(outcome.Changed, "payment", "payments")} went through, and those tenants are recovered.")
-                + (outcome.Unchanged > 0 ? $" {Plural(outcome.Unchanged, "case still fails", "cases still fail")} (or {(outcome.Unchanged == 1 ? "was" : "were")} already recovered): the customer needs to replace the card." : string.Empty),
+            _ => (outcome.Changed == 0 ? "No payment went through." : $"{SaasState.Plural(outcome.Changed, "payment", "payments")} went through, and those tenants are recovered.")
+                + (outcome.Unchanged > 0 ? $" {SaasState.Plural(outcome.Unchanged, "case still fails", "cases still fail")} (or {(outcome.Unchanged == 1 ? "was" : "were")} already recovered): the customer needs to replace the card." : string.Empty),
         }, outcome.Changed == 0);
 
         await FinishBulkAsync();
@@ -502,7 +500,7 @@ public partial class AdminDunning : ComponentBase, IDisposable
         yield return ("Retrying", Count(retrying.Count), retrying.Count == 0 ? "No retry is scheduled" : $"Next retry {SaasDisplay.Date(nextRetry)}", IconName.ArrowRepeat);
         yield return ("In grace", Count(grace.Count), grace.Count == 0 ? "Nobody is about to be suspended" : $"First suspension {SaasDisplay.Date(nextSuspension)}", IconName.HourglassSplit);
         yield return ("Suspended for non-payment", Count(suspended), suspended == 0 ? "None right now" : "Paying restores them", IconName.SlashCircle);
-        yield return ("At risk", SaasDisplay.Money(State.DunningAtRisk), $"in {Plural(cases.Count(item => item.IsOpen), "open case", "open cases")}", IconName.CashCoin);
+        yield return ("At risk", SaasDisplay.Money(State.DunningAtRisk), $"in {SaasState.Plural(cases.Count(item => item.IsOpen), "open case", "open cases")}", IconName.CashCoin);
     }
 
     #endregion

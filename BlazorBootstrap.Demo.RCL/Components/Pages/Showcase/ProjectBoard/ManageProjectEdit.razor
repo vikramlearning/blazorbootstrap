@@ -163,7 +163,7 @@
 
                             <fieldset class="mb-3">
                                 <legend class="form-label fw-semibold fs-6 mb-1">Team</legend>
-                                <p class="form-text mt-0 mb-2">The people who can be assigned this project's tasks. @(memberIds.Count == 0 ? "Nobody is on it yet." : $"{ManageProjects.Plural(memberIds.Count, "person", "people")} selected.")</p>
+                                <p class="form-text mt-0 mb-2">The people who can be assigned this project's tasks. @(memberIds.Count == 0 ? "Nobody is on it yet." : $"{PbDisplay.Plural(memberIds.Count, "person", "people")} selected.")</p>
                                 <div class="tb-pe-team">
                                     @foreach (var person in State.People)
                                     {
@@ -311,7 +311,7 @@
                                     <p class="mb-0">
                                         @(count == 0
                                             ? "No tasks count toward it. It leaves the roadmap."
-                                            : $"Its {ManageProjects.Plural(count, "task")} stay on the board but no longer count toward a milestone. It leaves the roadmap.")
+                                            : $"Its {PbDisplay.Plural(count, "task")} stay on the board but no longer count toward a milestone. It leaves the roadmap.")
                                     </p>
                                 }
                                 else

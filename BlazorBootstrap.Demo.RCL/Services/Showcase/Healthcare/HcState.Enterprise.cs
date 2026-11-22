@@ -121,16 +121,6 @@ public sealed partial class HcState
         var doctorNames = Doctors.ToDictionary(doctor => doctor.Id, doctor => doctor.Name);
         var patientsById = patients.ToDictionary(patient => patient.Id);
 
-        // 0: exactly the term, 1: starts with it, 2: contains it; null: no match.
-        static int? Rank(string text, params string?[] values) => values
-            .Select(value => value is null ? (int?)null
-                : string.Equals(value, text, StringComparison.OrdinalIgnoreCase) ? 0
-                : value.StartsWith(text, StringComparison.OrdinalIgnoreCase) ? 1
-                : value.Contains(text, StringComparison.OrdinalIgnoreCase) ? 2
-                : null)
-            .Where(rank => rank is not null)
-            .DefaultIfEmpty(null)
-            .Min();
 
         if (IsStaff)
         {
@@ -140,7 +130,7 @@ public sealed partial class HcState
             // Kind: 0 a patient, 1 an appointment, 2 a lab order, 3 a claim.
             foreach (var patient in patients)
             {
-                var found = birthDate is { } dob && patient.DateOfBirth?.Date == dob ? 0 : Rank(term, term.Length >= 2 ? patient.Name : null, patient.Mrn, hasDigit ? patient.Mrn[3..] : null);
+                var found = birthDate is { } dob && patient.DateOfBirth?.Date == dob ? 0 : ShowcaseSearch.Rank(term, term.Length >= 2 ? patient.Name : null, patient.Mrn, hasDigit ? patient.Mrn[3..] : null);
 
                 if (found is { } rank)
                 {
@@ -154,7 +144,7 @@ public sealed partial class HcState
             {
                 foreach (var appointment in appointments)
                 {
-                    if (Rank(number, appointment.Id.ToString(CultureInfo.InvariantCulture)) is { } found)
+                    if (ShowcaseSearch.Rank(number, appointment.Id.ToString(CultureInfo.InvariantCulture)) is { } found)
                     {
                         var name = patientsById.GetValueOrDefault(appointment.PatientId)?.Name ?? "A former patient";
                         matches.Add((found, 1, -appointment.Start.Ticks, new ShowcaseSearchResult("Appointment", Invariant($"Appointment {appointment.Id}"),
@@ -170,7 +160,7 @@ public sealed partial class HcState
             {
                 foreach (var claim in claims)
                 {
-                    if (Rank(number, claim.Number, claim.Number[^5..], claim.Id.ToString(CultureInfo.InvariantCulture)) is { } found)
+                    if (ShowcaseSearch.Rank(number, claim.Number, claim.Number[^5..], claim.Id.ToString(CultureInfo.InvariantCulture)) is { } found)
                     {
                         matches.Add((found, 3, -claim.CreatedAt.Ticks, new ShowcaseSearchResult("Claim", claim.Number,
                             $"{patientsById.GetValueOrDefault(claim.PatientId)?.Name} · {FindPayer(claim.PayerId)?.Name} · {HcDisplayText.ClaimWord(claim.Status)} · {HcDisplayText.Money(claim.BilledCents)}",
@@ -184,8 +174,8 @@ public sealed partial class HcState
                 foreach (var order in labOrders.Where(order => order.DoctorId == doctor.Id))
                 {
                     var panel = LabPanel(order.PanelId)?.Name ?? order.PanelId;
-                    var found = birthDate is null && hasDigit ? Rank(number, order.Id.ToString(CultureInfo.InvariantCulture)) : null;
-                    found = Min(found, term.Length >= 3 ? Rank(term, panel) : null);
+                    var found = birthDate is null && hasDigit ? ShowcaseSearch.Rank(number, order.Id.ToString(CultureInfo.InvariantCulture)) : null;
+                    found = Min(found, term.Length >= 3 ? ShowcaseSearch.Rank(term, panel) : null);
 
                     if (found is { } rank)
                     {
@@ -202,8 +192,8 @@ public sealed partial class HcState
             foreach (var appointment in appointments.Where(item => item.PatientId == patient.Id))
             {
                 var doctorName = doctorNames.GetValueOrDefault(appointment.DoctorId);
-                var found = hasDigit ? Rank(number, appointment.Id.ToString(CultureInfo.InvariantCulture)) : null;
-                found = Min(found, term.Length >= 2 ? Rank(term, doctorName, appointment.Reason) : null);
+                var found = hasDigit ? ShowcaseSearch.Rank(number, appointment.Id.ToString(CultureInfo.InvariantCulture)) : null;
+                found = Min(found, term.Length >= 2 ? ShowcaseSearch.Rank(term, doctorName, appointment.Reason) : null);
 
                 if (found is not { } rank)
                     continue;
@@ -217,7 +207,7 @@ public sealed partial class HcState
             {
                 var panel = LabPanel(order.PanelId)?.Name ?? order.PanelId;
 
-                if ((term.Length >= 2 ? Rank(term, panel) : null) is { } found)
+                if ((term.Length >= 2 ? ShowcaseSearch.Rank(term, panel) : null) is { } found)
                 {
                     matches.Add((found, 2, -(order.ReleasedAt ?? order.OrderedAt).Ticks, new ShowcaseSearchResult("Lab report", panel,
                         $"Released {HcDisplayText.Date(order.ReleasedAt ?? order.OrderedAt)} · ordered by {doctorNames.GetValueOrDefault(order.DoctorId)}", HcSeedData.LabReportPath(order.Id))));
@@ -226,8 +216,8 @@ public sealed partial class HcState
 
             foreach (var bill in bills.Where(item => item.PatientId == patient.Id))
             {
-                var found = hasDigit ? Rank(number, bill.Id.ToString(CultureInfo.InvariantCulture)) : null;
-                found = Min(found, term.Length >= 3 ? Rank(term, bill.Description) : null);
+                var found = hasDigit ? ShowcaseSearch.Rank(number, bill.Id.ToString(CultureInfo.InvariantCulture)) : null;
+                found = Min(found, term.Length >= 3 ? ShowcaseSearch.Rank(term, bill.Description) : null);
 
                 if (found is { } rank)
                 {
@@ -238,7 +228,7 @@ public sealed partial class HcState
 
             foreach (var doctor in Doctors)
             {
-                if ((term.Length >= 2 ? Rank(term, doctor.Name, doctor.Name.Replace("Dr. ", string.Empty, StringComparison.Ordinal), doctor.Specialty) : null) is { } found)
+                if ((term.Length >= 2 ? ShowcaseSearch.Rank(term, doctor.Name, doctor.Name.Replace("Dr. ", string.Empty, StringComparison.Ordinal), doctor.Specialty) : null) is { } found)
                 {
                     matches.Add((found, 4, 0, new ShowcaseSearchResult("Doctor", doctor.Name,
                         $"{doctor.Specialty} · {FindClinic(doctor.ClinicId)?.Name}{(doctor.AcceptingNewPatients ? null : " · not taking new patients")}",
@@ -262,9 +252,7 @@ public sealed partial class HcState
     #region Private Methods
 
     /// <summary>Checks a stored audit or notification link: none, or a path on this site without spaces, quotes, or a second slash.</summary>
-    private static bool IsSiteLink(string? url) =>
-        url is null || (url.Length <= 200 && (url == SiteBase || url.StartsWith(SiteBase + "/", StringComparison.Ordinal)) && !url.Contains("//", StringComparison.Ordinal)
-            && url.All(character => !char.IsWhiteSpace(character) && !char.IsControl(character) && character is not ('"' or '\'' or '<' or '>' or '\\')));
+    private static bool IsSiteLink(string? url) => ShowcaseLinks.IsSiteLink(url, SiteBase, allowSiteBase: true);
 
     private static int? Min(int? left, int? right) => left is null ? right : right is null ? left : Math.Min(left.Value, right.Value);
 

@@ -424,7 +424,9 @@ public sealed partial class MonitoringState
         };
     }
 
-    private static string Plural(int count, string noun) => count == 1 ? $"1 {noun}" : string.Create(CultureInfo.InvariantCulture, $"{count} {noun}s");
+    /// <summary>Formats a count with its noun, like "1 policy" or "12 policies"; <paramref name="plural" /> defaults to the noun plus "s".</summary>
+    internal static string Plural(int count, string noun, string? plural = null) =>
+        count == 1 ? $"1 {noun}" : $"{count.ToString("#,0", CultureInfo.InvariantCulture)} {plural ?? noun + "s"}";
 
     private static string PolicyTarget(string name) => $"Escalation policy: {name}";
 

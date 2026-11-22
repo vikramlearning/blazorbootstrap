@@ -76,7 +76,7 @@
                         <span class="hd-kpi-label">Response rate</span>
                         <span class="hd-kpi-value">@PercentText(ratings, report.Resolved)</span>
                         <span class="d-block small text-body-secondary">
-                            @(report.Resolved == 0 ? "No ticket was resolved in this range." : $"{Count(ratings)} of {Plural(report.Resolved, "resolved ticket", "resolved tickets")} rated")
+                            @(report.Resolved == 0 ? "No ticket was resolved in this range." : $"{Count(ratings)} of {HelpDeskDisplay.Plural(report.Resolved, "resolved ticket", "resolved tickets")} rated")
                         </span>
                     </span>
                 </CardBody>

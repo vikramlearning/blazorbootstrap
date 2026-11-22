@@ -118,7 +118,7 @@ public partial class Workload : ComponentBase, IDisposable
         var capacity = rows.Sum(row => row.Person.CapacityHours);
         var overText = over.Count == 0
             ? "Nobody is over capacity this week."
-            : $"{ManageProjects.Plural(over.Count, "person is", "people are")} over capacity this week: "
+            : $"{PbDisplay.Plural(over.Count, "person is", "people are")} over capacity this week: "
               + string.Join(", ", over.Select(row => string.Create(CultureInfo.InvariantCulture, $"{row.Person.Name} ({row.HoursThisWeek} of {row.Person.CapacityHours} h)"))) + ".";
         var busiest = rows.MaxBy(row => row.HoursThisWeek + row.HoursLater);
 

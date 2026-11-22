@@ -5,7 +5,7 @@
     var notifications = Enterprise.GetNotificationsForCurrentAccount();
     var unread = notifications.Count(n => !n.IsRead);
 
-    <div class="sc-notifications-menu @Class">
+    <div>
         <Dropdown Color="DropdownColor.None" AutoCloseBehavior="DropdownAutoCloseBehavior.Outside">
             <DropdownToggleButton Class="btn-sm position-relative" aria-label="@(unread == 0 ? "Notifications" : $"Notifications, {unread} unread")">
                 <Icon Name="IconName.Bell" aria-hidden="true" />

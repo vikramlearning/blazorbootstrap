@@ -84,8 +84,6 @@ public partial class AgentReportSatisfaction : ComponentBase, IDisposable
     /// <summary>A share like "92%", or "—" when there is nothing to divide.</summary>
     private static string PercentText(int part, int whole) => HelpDeskReport.Percent(part, whole) is { } percent ? FormattableString.Invariant($"{percent}%") : "—";
 
-    private static string Plural(int count, string one, string many) => count == 1 ? $"1 {one}" : $"{Count(count)} {many}";
-
     private ChartData ChartData() => new()
     {
         Labels = report.Days.Select(day => DayLabel(day.Date)).ToList(),
@@ -171,7 +169,7 @@ public partial class AgentReportSatisfaction : ComponentBase, IDisposable
             return ratings == 0
                 ? $"Stacked bar chart of good and bad ratings per day, {RangeText}: no ratings."
                 : $"Stacked bar chart of good and bad ratings per day, {RangeText}: {Count(report.Good)} good and {Count(report.Bad)} bad, "
-                  + $"over {Plural(rated, "day", "days")} with ratings; CSAT {PercentText(report.Good, ratings)}.";
+                  + $"over {HelpDeskDisplay.Plural(rated, "day", "days")} with ratings; CSAT {PercentText(report.Good, ratings)}.";
         }
     }
 

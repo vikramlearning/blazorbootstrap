@@ -14,6 +14,9 @@ public sealed class ShowcaseGridView
 {
     #region Fields and Constants
 
+    /// <summary>Every page size a Showcase list offers; a stored size outside them came from edited storage.</summary>
+    private static readonly HashSet<int> pageSizes = new() { 5, 10, 25, 50, 100 };
+
     private readonly int defaultPageSize;
 
     private readonly SortDirection defaultSortDirection;
@@ -62,7 +65,7 @@ public sealed class ShowcaseGridView
             if (sortKey == defaultSortKey && direction == defaultSortDirection)
                 sortKey = null;
 
-            if ((saved?.SortKey ?? null) != sortKey || (sortKey is not null && saved!.SortDirection != direction))
+            if (saved?.SortKey != sortKey || (sortKey is not null && saved!.SortDirection != direction))
                 await store.UpdateAsync(key, state =>
                 {
                     state.SortKey = sortKey;
@@ -87,11 +90,14 @@ public sealed class ShowcaseGridView
     /// <summary>Gets the saved grid settings, or the list's defaults (first page, its page size) when nothing is saved.</summary>
     public async Task<GridSettings> GetSettingsAsync()
     {
-        var saved = await store.GetAsync(key);
+        var saved = (await store.GetAsync(key))?.Settings;
 
-        return saved?.Settings is { PageSize: > 0 } settings
-                   ? settings
-                   : new GridSettings { PageNumber = 1, PageSize = defaultPageSize, Filters = saved?.Settings?.Filters, ColumnOrder = saved?.Settings?.ColumnOrder, HiddenColumns = saved?.Settings?.HiddenColumns };
+        // A page size no Showcase list offers, or a page before the first, can only come from edited storage: the list's
+        // defaults are used for them. A hidden-column set that would hide every column is ignored by the grid itself.
+        var pageSize = saved is not null && pageSizes.Contains(saved.PageSize) ? saved.PageSize : defaultPageSize;
+        var pageNumber = saved is not null && saved.PageSize == pageSize && saved.PageNumber > 0 ? saved.PageNumber : 1;
+
+        return new GridSettings { PageNumber = pageNumber, PageSize = pageSize, Filters = saved?.Filters, ColumnOrder = saved?.ColumnOrder, HiddenColumns = saved?.HiddenColumns };
     }
 
     /// <summary>Gets whether the column with this <c>SortString</c> is the one the list opens sorted by.</summary>
