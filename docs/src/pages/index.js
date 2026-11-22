@@ -15,7 +15,7 @@ const pageDescription = 'Docs for Blazor Bootstrap, free Bootstrap 5.3 component
 function HomepageHeader() {
     const { siteConfig } = useDocusaurusContext();
     return (
-        <header className={clsx('hero hero--primary', styles.heroBanner)}>
+        <div className={clsx('hero hero--primary', styles.heroBanner)}>
             <div className="container">
                 <img className={styles.mb_3} src={siteConfig.customFields.logo_white} width="200" alt="" />
                 <h1 className="hero__title">Blazor Bootstrap documentation</h1>
@@ -33,7 +33,7 @@ function HomepageHeader() {
                     </Link>
                 </div>
             </div>
-        </header>
+        </div>
     );
 }
 
