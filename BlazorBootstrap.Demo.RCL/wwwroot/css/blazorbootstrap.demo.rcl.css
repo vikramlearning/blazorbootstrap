@@ -735,6 +735,12 @@ pre[class*=language-] {
         color: var(--sc-primary-contrast, #fff) !important;
     }
 
+    /* The site bar's theme switcher shows only its icon on the nine kept sites, so the bar fits on one line at 320 CSS px;
+       its accessible name ("Toggle theme") is unchanged. Online Learning and Travel keep the label (D-006 of 26112201). */
+    .sc-site:not(.sc-learning):not(.sc-travel) .sc-sitebar #bb-theme-text {
+        display: none;
+    }
+
     /* Grid pagination: the current page uses the site color with its contrast text, and the page buttons wrap instead of
        pushing the page sideways at 320 CSS px. */
     .sc-site:not(.sc-learning):not(.sc-travel) .pagination {
