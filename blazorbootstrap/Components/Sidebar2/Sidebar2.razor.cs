@@ -92,14 +92,27 @@ public partial class Sidebar2 : BlazorBootstrapComponentBase
         StateHasChanged();
     }
 
+    /// <summary>
+    /// Collapses the nav menu on mobile when an item is chosen. Items call this from their own click handler,
+    /// so the sidebar re-renders itself here.
+    /// </summary>
     internal void HideNavMenuOnMobile()
     {
-        if (isMobile && !collapseNavMenu)
-        {
-            collapseNavMenu = true;
+        if (CollapseNavMenuOnMobile())
             StateHasChanged();
-        }           
     }
+
+    private bool CollapseNavMenuOnMobile()
+    {
+        if (!isMobile || collapseNavMenu)
+            return false;
+
+        collapseNavMenu = true;
+        return true;
+    }
+
+    // The brand link is this component's own event handler, so Blazor re-renders after it without StateHasChanged.
+    private void OnBrandLinkClick() => CollapseNavMenuOnMobile();
 
     private string GetNavMenuCssClass()
     {

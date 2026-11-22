@@ -15,19 +15,16 @@ public partial class DragAndDropFileInput : FileInputBase
     protected void OnDragEnter(DragEventArgs _)
     {
         dragDepth++;
-        StateHasChanged();
     }
 
     protected void OnDragLeave(DragEventArgs _)
     {
         dragDepth = Math.Max(0, dragDepth - 1);
-        StateHasChanged();
     }
 
     protected void OnDrop(DragEventArgs _)
     {
         dragDepth = 0;
-        StateHasChanged();
     }
 
     #endregion
