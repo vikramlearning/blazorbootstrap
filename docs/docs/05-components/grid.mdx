@@ -21,7 +21,7 @@ Use Blazor Bootstrap grid component to display tabular data from the data source
 
 | Name | Type | Default | Required | Description | Added Version |
 |:--|:--|:--|:--|:--|:--|
-| AllowColumnChooser | bool | false | | If true, a Columns button above the grid lets the user hide, show, search, and reorder columns. The choice is part of the grid settings. | 4.1.0 |
+| AllowColumnChooser | bool | false | | If true, a Columns button above the grid lets the user hide, show, search, and reorder columns. The choice is part of the grid settings, and saved column order and hidden columns apply whether or not it is on. | 4.1.0 |
 | AllowDetailView | bool | false | | Gets or sets a value indicating whether the grid detail view is enabled. | 3.0.0 |
 | AllowExport | bool | false | | If true, an Export CSV button above the grid downloads every row that matches the current filters and sort, with the visible columns. | 4.1.0 |
 | AllowFiltering | bool | false | | Gets or sets the grid filtering. | 1.0.0 |
@@ -49,7 +49,7 @@ Use Blazor Bootstrap grid component to display tabular data from the data source
 | ExportButtonText | string | `Export CSV` | | Gets or sets the export button text. | 4.1.0 |
 | ExportErrorText | string | `The rows could not be exported. Try again.` | | Gets or sets the message shown when the export fails: the rows cannot be read, the file cannot be built, or the browser cannot download it. | 4.1.0 |
 | ExportFileName | string | `export` | | Gets or sets the downloaded file name; .csv is added when missing. | 4.1.0 |
-| ExportNoDataText | string | `There are no rows to export.` | | Gets or sets the message shown when no row matches the current filters. | 4.1.0 |
+| ExportNoDataText | string | `There are no rows to export.` | | Gets or sets the message shown when no row matches the current filters, or no visible column can be exported. | 4.1.0 |
 | FilterInputLabelText | string | `Filter by {0}` | | Gets or sets the accessible name of each filter input in the filters row. {0} is the column's header text (or its property name when it has none). | 4.1.0 |
 | FiltersRowCssClass | string | null | | Gets or sets the filters row css class. | 1.9.2 |
 | FiltersTranslationProvider | `GridFiltersTranslationDelegate` | null | | Filters transalation is for grid filters to render. The provider should always return a 'FilterOperatorInfo' collection, and 'null' is not allowed. | 1.10.0 |
@@ -73,6 +73,7 @@ Use Blazor Bootstrap grid component to display tabular data from the data source
 | SettingsProvider | `GridSettingsProviderDelegate` | null | | Settings are for the grid to render. The provider should always return an instance of 'GridSettings', and 'null' is not allowed. | 1.0.0 |
 | THeadCssClass | `string?` | null | | Gets or sets the thead css class. | 1.10.3 | 
 | Unit | `Unit` | `Unit.px` | | Gets or sets the units. | 1.10.3 |
+| UnnamedSortColumnText | string | `Sort column {0}` | | Gets or sets the accessible name of the sort button of a column that has neither header text nor a property name. {0} is the column's position among the declared columns. | 4.1.0 |
 
 :::note IMPORTANT
 Grid requires either `Data` or `DataProvider` parameter, but not both.
@@ -135,8 +136,8 @@ Grid requires either `Data` or `DataProvider` parameter, but not both.
 
 | Name | Type | Default | Required | Description | Added Version |
 |:--|:--|:--|:--|:--|:--|
-| ColumnOrder | `IEnumerable<string>?` | null | | Column keys (`PropertyName`, or `HeaderText` when there is none) in display order. null keeps the declared order. | 4.1.0 |
-| HiddenColumns | `IEnumerable<string>?` | null | | Keys of the columns the user has hidden. null hides none. | 4.1.0 |
+| ColumnOrder | `IEnumerable<string>?` | null | | Column keys (`PropertyName`, or `HeaderText` when there is none; a later column with the same name gets `#2`, `#3`) in display order. null keeps the declared order. It applies whether or not the column chooser is on. | 4.1.0 |
+| HiddenColumns | `IEnumerable<string>?` | null | | Keys of the columns the user has hidden. null hides none. It applies whether or not the column chooser is on. | 4.1.0 |
 | PageNumber | int | | | Page number. | 1.0.0 |
 | PageSize | int | | | Size of the page. | 1.0.0 |
 | Filters | `IEnumerable<FilterItem>` | | | Current filters. | 1.0.0 |
@@ -4484,7 +4485,7 @@ Summaries can be combined with detail view and row selection. Set the `AllowSumm
 
 ### Column chooser
 
-Set `AllowColumnChooser="true"` to show a **Columns** button above the grid. It opens a list with a search box, a checkbox for each column, and move up and move down buttons; columns can also be dragged. The last visible column, and columns with `AlwaysVisible="true"`, cannot be hidden. The choice is part of the grid settings (`GridSettings.ColumnOrder` and `GridSettings.HiddenColumns`), so handle `GridSettingsChanged` and `SettingsProvider` to keep it. **Reset to default**, or `ResetColumnsAsync()`, restores the declared columns.
+Set `AllowColumnChooser="true"` to show a **Columns** button above the grid. It opens a list with a search box, a checkbox for each column, and move up and move down buttons; columns can also be dragged. The last visible column, and columns with `AlwaysVisible="true"`, cannot be hidden. The choice is part of the grid settings (`GridSettings.ColumnOrder` and `GridSettings.HiddenColumns`), so handle `GridSettingsChanged` and `SettingsProvider` to keep it. Saved order and hidden columns apply even if you later turn the chooser off. **Reset to default**, or `ResetColumnsAsync()`, restores the declared columns.
 
 ```cshtml {} showLineNumbers
 <Grid TItem="Employee1"
