@@ -135,11 +135,11 @@ public partial class AdminSettings : ComponentBase, IDisposable
     private static string RetentionValue(int days) => days.ToString(CultureInfo.InvariantCulture);
 
     /// <summary>Adds a blocked term to the list once its form is valid (it is saved with the rest of the settings).</summary>
-    private void AddTerm()
+    private async Task AddTerm()
     {
         termForm.Existing = form.Terms.ToList();
 
-        if (!termContext.Validate())
+        if (!await termContext.ValidateAsync())
             return;
 
         var term = termForm.Term.Trim().ToLowerInvariant();
@@ -256,7 +256,7 @@ public partial class AdminSettings : ComponentBase, IDisposable
     }
 
     /// <summary>Saves once the retention dialog is hidden, or returns focus to Save when it was cancelled.</summary>
-    private void OnRetentionHidden()
+    private async Task OnRetentionHidden()
     {
         if (!pendingSave)
         {
@@ -266,7 +266,7 @@ public partial class AdminSettings : ComponentBase, IDisposable
         }
 
         pendingSave = false;
-        SavePolicy();
+        await SavePolicy();
     }
 
     private void OnStateChanged() => InvokeAsync(StateHasChanged);
@@ -315,7 +315,7 @@ public partial class AdminSettings : ComponentBase, IDisposable
         serverErrors?.Clear();
         editContext.NotifyValidationStateChanged();
 
-        if (!editContext.Validate())
+        if (!await editContext.ValidateAsync())
             return;
 
         var days = form.RetentionDays ?? 0;
@@ -331,13 +331,13 @@ public partial class AdminSettings : ComponentBase, IDisposable
             return;
         }
 
-        SavePolicy();
+        await SavePolicy();
     }
 
     /// <summary>Saves the policy from the (valid) form and maps the state's answer to the status message, a field, or the alert.</summary>
-    private void SavePolicy()
+    private async Task SavePolicy()
     {
-        if (!editContext.Validate())
+        if (!await editContext.ValidateAsync())
             return;
 
         var before = State.Policy;

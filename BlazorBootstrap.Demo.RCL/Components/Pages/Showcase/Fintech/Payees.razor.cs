@@ -311,7 +311,7 @@ public partial class Payees : ComponentBase, IDisposable
         renameError = null;
         var free = nicknameCheck is null || await nicknameCheck.CheckNowAsync();
 
-        if (!renameContext.Validate() || !free)
+        if (!await renameContext.ValidateAsync() || !free)
             return;
 
         var result = State.SetPayeeNickname(payee.Id, renameForm.Nickname);

@@ -189,7 +189,7 @@ public partial class Visit : ComponentBase, IDisposable
     };
 
     /// <summary>Saves unsaved notes, then completes a confirmed visit now that the dialog is hidden.</summary>
-    private Task OnCompleteHiddenAsync()
+    private async Task OnCompleteHiddenAsync()
     {
         var accepted = pendingComplete;
         pendingComplete = false;
@@ -199,7 +199,7 @@ public partial class Visit : ComponentBase, IDisposable
             focusTarget = () => completeButton;
             StateHasChanged();
 
-            return Task.CompletedTask;
+            return;
         }
 
         focusTarget = () => statusRegion;
@@ -209,7 +209,7 @@ public partial class Visit : ComponentBase, IDisposable
             Announce(false, "This visit isn't on your schedule any more, so it wasn't completed.");
             StateHasChanged();
 
-            return Task.CompletedTask;
+            return;
         }
 
         var name = State.FindPatient(appointment.PatientId)?.Name ?? "The patient";
@@ -218,12 +218,12 @@ public partial class Visit : ComponentBase, IDisposable
 
         if (notes != appointment.Notes || summary != appointment.Summary)
         {
-            if (!notesContext.Validate())
+            if (!await notesContext.ValidateAsync())
             {
                 Announce(false, "The visit wasn't completed: fix the notes, save them, then complete it.");
                 StateHasChanged();
 
-                return Task.CompletedTask;
+                return;
             }
 
             var saved = State.SaveVisitNotes(appointment.Id, notes, summary);
@@ -233,7 +233,7 @@ public partial class Visit : ComponentBase, IDisposable
                 Announce(false, $"The visit wasn't completed because your notes couldn't be saved. {NotesFailureText(saved)}");
                 StateHasChanged();
 
-                return Task.CompletedTask;
+                return;
             }
         }
 
@@ -252,8 +252,6 @@ public partial class Visit : ComponentBase, IDisposable
             _ => "That didn't work, and the visit wasn't completed. Try again.",
         });
         StateHasChanged();
-
-        return Task.CompletedTask;
     }
 
     /// <summary>The coding form saved: its message is announced here.</summary>
@@ -277,7 +275,7 @@ public partial class Visit : ComponentBase, IDisposable
     }
 
     /// <summary>Orders the chosen lab test in this visit once the form is valid.</summary>
-    private void OrderLab()
+    private async Task OrderLab()
     {
         if (Own() is not { } appointment)
             return;
@@ -285,7 +283,7 @@ public partial class Visit : ComponentBase, IDisposable
         labServerErrors?.Clear();
         labForm.AlreadyOrdered = State.LabOrdersOf(appointment.PatientId).Where(item => item.AppointmentId == appointment.Id).Select(item => item.PanelId).ToList();
 
-        if (!labContext.Validate() || State.LabPanel(labForm.PanelId) is not { } panel)
+        if (!await labContext.ValidateAsync() || State.LabPanel(labForm.PanelId) is not { } panel)
             return;
 
         var result = State.OrderLab(appointment.Id, panel.Id, out _);
@@ -325,9 +323,9 @@ public partial class Visit : ComponentBase, IDisposable
         State.FindAppointment(Id) is { } appointment && State.CurrentDoctor is { } doctor && appointment.DoctorId == doctor.Id ? appointment : null;
 
     /// <summary>Prescribes in this visit once the form is valid.</summary>
-    private void Prescribe()
+    private async Task Prescribe()
     {
-        if (Own() is not { } appointment || !rxContext.Validate())
+        if (Own() is not { } appointment || !await rxContext.ValidateAsync())
             return;
 
         var name = State.FindPatient(appointment.PatientId)?.Name ?? "The patient";
@@ -355,9 +353,9 @@ public partial class Visit : ComponentBase, IDisposable
     }
 
     /// <summary>Saves the notes and the summary for the patient once the form is valid.</summary>
-    private void SaveNotes()
+    private async Task SaveNotes()
     {
-        if (Own() is not { } appointment || !notesContext.Validate())
+        if (Own() is not { } appointment || !await notesContext.ValidateAsync())
             return;
 
         var result = State.SaveVisitNotes(appointment.Id, notesForm.Notes ?? string.Empty, notesForm.Summary ?? string.Empty);
@@ -378,9 +376,9 @@ public partial class Visit : ComponentBase, IDisposable
     }
 
     /// <summary>Saves the vital signs once the form is valid.</summary>
-    private void SaveVitals()
+    private async Task SaveVitals()
     {
-        if (Own() is not { } appointment || !vitalsContext.Validate())
+        if (Own() is not { } appointment || !await vitalsContext.ValidateAsync())
             return;
 
         var vitals = new HcVitals { Systolic = vitalsForm.Systolic, Diastolic = vitalsForm.Diastolic, Pulse = vitalsForm.Pulse, TemperatureC = vitalsForm.TemperatureC, WeightKg = vitalsForm.WeightKg };

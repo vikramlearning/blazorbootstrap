@@ -141,7 +141,7 @@ public partial class Signup : ComponentBase, IDisposable
         var emailFree = emailCheck is null || await emailCheck.CheckNowAsync();
         var companyFree = companyCheck is null || await companyCheck.CheckNowAsync();
 
-        if (!editContext.Validate() || !emailFree || !companyFree)
+        if (!await editContext.ValidateAsync() || !emailFree || !companyFree)
             return;
 
         if (State.FindPlan(form.PlanId) is not { IsSelfServe: true } plan)

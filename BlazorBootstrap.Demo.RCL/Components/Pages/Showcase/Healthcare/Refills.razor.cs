@@ -149,7 +149,7 @@ public partial class Refills : ComponentBase, IDisposable
     /// <summary>Answers the selected requests in one <see cref="HcState.BulkDecideRefills" /> call once the bar's form is valid.</summary>
     private async Task ApplyBulkAsync()
     {
-        if (!bulkContext.Validate())
+        if (!await bulkContext.ValidateAsync())
             return;
 
         errorMessage = null;
@@ -222,7 +222,7 @@ public partial class Refills : ComponentBase, IDisposable
     /// <summary>Answers the dialog's request once its form is valid; the answer is announced when the dialog is hidden, a refusal in the dialog.</summary>
     private async Task DecideAsync()
     {
-        if (!decisionContext.Validate())
+        if (!await decisionContext.ValidateAsync())
             return;
 
         if (Opened is not { } prescription)

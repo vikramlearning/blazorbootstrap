@@ -138,11 +138,11 @@ public partial class Profile : ComponentBase, IDisposable
     });
 
     /// <summary>Saves the details once the form is valid, and maps every result.</summary>
-    private void Save()
+    private async Task Save()
     {
         form.Today = State.Clock.Today;
 
-        if (!editContext.Validate())
+        if (!await editContext.ValidateAsync())
             return;
 
         switch (State.SaveMyDetails(form.DateOfBirth, form.Phone, form.EmergencyName, form.EmergencyPhone, form.PayerId, form.MemberId))

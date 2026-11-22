@@ -211,7 +211,7 @@ public partial class Book : ComponentBase, IDisposable
         serverErrors?.Clear();
         UpdateRules();
 
-        if (!editContext.Validate())
+        if (!await editContext.ValidateAsync())
             return;
 
         checkingTime = true;

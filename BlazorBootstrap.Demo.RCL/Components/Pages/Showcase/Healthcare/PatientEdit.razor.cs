@@ -242,7 +242,7 @@ public partial class PatientEdit : ComponentBase, IDisposable
 
         var mrnFree = mrnCheck is null || await mrnCheck.CheckNowAsync();
 
-        if (!editContext.Validate() || !mrnFree)
+        if (!await editContext.ValidateAsync() || !mrnFree)
             return;
 
         var input = new HcPatientInput(form.Mrn, form.Name, form.DateOfBirth!.Value, form.Phone, form.Email, form.ClinicId, form.EmergencyName, form.EmergencyPhone, form.PayerId,

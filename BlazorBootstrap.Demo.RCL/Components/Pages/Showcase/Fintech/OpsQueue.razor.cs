@@ -159,7 +159,7 @@ public partial class OpsQueue : ComponentBase, IDisposable
     {
         bulkForm.Scheduled = statusFilter == ScheduledValue;
 
-        if (!bulkContext.Validate())
+        if (!await bulkContext.ValidateAsync())
             return;
 
         var references = selected.Select(row => row.Reference).ToList();

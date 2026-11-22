@@ -103,9 +103,9 @@ public partial class AdminReturnDetail : ComponentBase, IDisposable
     /// Records the decision once the form is valid; a failed submit shows the summary (rule WR-002). The state checks again;
     /// a refusal (the return was decided meanwhile, or the order refunded) shows in the alert.
     /// </summary>
-    private void Save()
+    private async Task Save()
     {
-        if (Return is not { } item || !editContext.Validate())
+        if (Return is not { } item || !await editContext.ValidateAsync())
             return;
 
         var number = EcommerceDisplay.ReturnNumber(item.Id);

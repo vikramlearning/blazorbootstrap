@@ -436,7 +436,7 @@ public partial class Leave : ComponentBase, IDisposable
     /// Requests the leave (or saves the edited request) once the form is valid; a failed submit shows the summary (rule
     /// WR-002). The state checks again: an overlap or a short balance is shown under the dates, anything else is announced.
     /// </summary>
-    private Task SubmitAsync()
+    private async Task SubmitAsync()
     {
         serverErrors?.Clear();
 
@@ -444,11 +444,11 @@ public partial class Leave : ComponentBase, IDisposable
         {
             SetStatus("Your sign-in ended. Sign in again to request leave; nothing was saved.", true);
 
-            return Task.CompletedTask;
+            return;
         }
 
-        if (!editContext.Validate() || State.FindPolicy(form.PolicyId) is not { } policy || form.From is not { } fromValue || form.To is not { } toValue)
-            return Task.CompletedTask;
+        if (!await editContext.ValidateAsync() || State.FindPolicy(form.PolicyId) is not { } policy || form.From is not { } fromValue || form.To is not { } toValue)
+            return;
 
         var first = fromValue.Date;
         var last = toValue.Date;
@@ -527,8 +527,6 @@ public partial class Leave : ComponentBase, IDisposable
 
                 break;
         }
-
-        return Task.CompletedTask;
     }
 
     #endregion

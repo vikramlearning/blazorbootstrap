@@ -135,11 +135,11 @@ public partial class Notifications : ComponentBase, IDisposable
     });
 
     /// <summary>Saves once the form is valid (a failed submit shows the summary, rule WR-002); the state checks again and its answer maps to a message.</summary>
-    private void SavePreferences()
+    private async Task SavePreferences()
     {
         prefsForm.IsOnCallSoon = IsOnCallSoon();
 
-        if (!prefsContext.Validate())
+        if (!await prefsContext.ValidateAsync())
             return;
 
         var value = new MonitoringNotificationPreferences { Email = prefsForm.Email, Push = prefsForm.Push, SmsForCritical = prefsForm.SmsForCritical, IncidentUpdates = prefsForm.IncidentUpdates };

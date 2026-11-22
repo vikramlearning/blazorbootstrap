@@ -230,7 +230,7 @@ public partial class Budgets : ComponentBase, IDisposable
         serverErrors?.Clear();
         var categoryFree = !adding || categoryCheck is null || await categoryCheck.CheckNowAsync();
 
-        if (!editContext.Validate() || !categoryFree)
+        if (!await editContext.ValidateAsync() || !categoryFree)
             return;
 
         if (adding)

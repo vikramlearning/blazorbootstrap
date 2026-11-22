@@ -152,7 +152,7 @@ public partial class OpsDispute : ComponentBase, IDisposable
         resolutionError = null;
 
         // A failed check shows the message under the field, and ShowcaseFormErrors moves focus to it.
-        if (!resolveContext.Validate())
+        if (!await resolveContext.ValidateAsync())
             return;
 
         var text = resolveForm.Resolution.Trim();

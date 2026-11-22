@@ -112,44 +112,42 @@ public partial class AmlCase : ComponentBase, IDisposable
     {
         var free = evidenceCheck is null || await evidenceCheck.CheckNowAsync();
 
-        if (Case is not { } amlCase || !evidenceContext.Validate() || !free)
+        if (Case is not { } amlCase || !await evidenceContext.ValidateAsync() || !free)
             return;
 
         var result = State.AddCaseEvidence(amlCase.Id, evidenceForm.Name, evidenceForm.Description);
         Report(result == FintechResult.Ok ? $"Evidence \"{evidenceForm.Name.Trim()}\" is on the timeline." : AmlDisplay.ResultText(result), result);
     }
 
-    private void AddNote()
+    private async Task AddNote()
     {
-        if (Case is not { } amlCase || !noteContext.Validate())
+        if (Case is not { } amlCase || !await noteContext.ValidateAsync())
             return;
 
         var result = State.AddCaseNote(amlCase.Id, noteForm.Text);
         Report(result == FintechResult.Ok ? "The note is on the timeline." : AmlDisplay.ResultText(result), result);
     }
 
-    private Task CloseAsync()
+    private async Task CloseAsync()
     {
         if (Case is not { } amlCase)
-            return Task.CompletedTask;
+            return;
 
         closeForm.Approving = amlCase.Status == FintechAmlCaseStatus.Escalated;
 
-        if (!closeContext.Validate())
-            return Task.CompletedTask;
+        if (!await closeContext.ValidateAsync())
+            return;
 
         var disposition = closeForm.Disposition!.Value;
         var result = State.CloseCase(amlCase.Id, disposition, disposition == FintechAmlDisposition.Reported ? closeForm.Filing : null, closeForm.Summary);
         Report(result == FintechResult.Ok
             ? $"Case {amlCase.Id.ToString(CultureInfo.InvariantCulture)} is closed: {FintechSeedData.DispositionName(disposition)}. The analyst is told; the customer never is."
             : AmlDisplay.ResultText(result), result);
-
-        return Task.CompletedTask;
     }
 
-    private void Escalate()
+    private async Task Escalate()
     {
-        if (Case is not { } amlCase || !escalateContext.Validate())
+        if (Case is not { } amlCase || !await escalateContext.ValidateAsync())
             return;
 
         var proposal = escalateForm.Proposal;
@@ -199,9 +197,9 @@ public partial class AmlCase : ComponentBase, IDisposable
         returnContext = new EditContext(returnForm);
     }
 
-    private void ReturnCase()
+    private async Task ReturnCase()
     {
-        if (Case is not { } amlCase || !returnContext.Validate())
+        if (Case is not { } amlCase || !await returnContext.ValidateAsync())
             return;
 
         var result = State.ReturnCase(amlCase.Id, returnForm.Reason);

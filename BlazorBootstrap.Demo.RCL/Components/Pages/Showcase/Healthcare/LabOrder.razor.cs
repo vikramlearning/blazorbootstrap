@@ -197,7 +197,7 @@ public partial class LabOrder : ComponentBase, IDisposable
     }
 
     /// <summary>Saves the order's results once the form is valid; the flags are announced in words.</summary>
-    private void SaveResults()
+    private async Task SaveResults()
     {
         if (State.FindLabOrder(Id) is not { } order || State.LabPanel(order.PanelId) is not { } panel || order.DoctorId != State.CurrentDoctor?.Id)
         {
@@ -207,7 +207,7 @@ public partial class LabOrder : ComponentBase, IDisposable
             return;
         }
 
-        if (!labContext.Validate())
+        if (!await labContext.ValidateAsync())
             return;
 
         var values = labForm.Values.Take(panel.Analytes.Count).Select(value => value!.Value).ToList();

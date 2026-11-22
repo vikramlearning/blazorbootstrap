@@ -88,7 +88,7 @@ public partial class AdminMaintenance : ComponentBase, IDisposable
     private int pageSize = DefaultPageSize;
 
     /// <summary>The confirmed action, run once the dialog is hidden (it changes the page under the dialog).</summary>
-    private Action? pendingAction;
+    private Func<Task>? pendingAction;
 
     /// <summary>The checked form values waiting for the save confirmation.</summary>
     private Draft? pendingDraft;
@@ -219,7 +219,7 @@ public partial class AdminMaintenance : ComponentBase, IDisposable
     }
 
     /// <summary>Saves the confirmed form: schedules a new window, or changes the edited one.</summary>
-    private void ApplySave(Draft draft, int? windowId)
+    private async Task ApplySave(Draft draft, int? windowId)
     {
         var followers = Followers(draft.ServiceIds);
         var names = ServiceNames(draft.ServiceIds);
@@ -306,7 +306,7 @@ public partial class AdminMaintenance : ComponentBase, IDisposable
                 // The clock moved on while the dialog was open (a start that just passed), or the tab is out of room.
                 form.Now = State.Clock.Now;
 
-                if (!editContext.Validate())
+                if (!await editContext.ValidateAsync())
                 {
                     statusMessage = $"Nothing was {verb}: check the fields marked below.";
                     statusIsError = true;
@@ -352,12 +352,12 @@ public partial class AdminMaintenance : ComponentBase, IDisposable
                 break;
 
             case DialogKind.Cancel when dialogWindow is { } window:
-                pendingAction = () => FinishWindow(window, notifyChoice, cancel: true);
+                pendingAction = () => { FinishWindow(window, notifyChoice, cancel: true); return Task.CompletedTask; };
 
                 break;
 
             case DialogKind.End when dialogWindow is { } window:
-                pendingAction = () => FinishWindow(window, notifyChoice, cancel: false);
+                pendingAction = () => { FinishWindow(window, notifyChoice, cancel: false); return Task.CompletedTask; };
 
                 break;
 
@@ -488,7 +488,7 @@ public partial class AdminMaintenance : ComponentBase, IDisposable
     /// The dialog opens from code, so Bootstrap does not return focus. A confirmed action runs now that the dialog is gone,
     /// and focus moves to its outcome; Cancel or Escape returns focus to the button that opened the dialog.
     /// </summary>
-    private void OnDialogHidden()
+    private async Task OnDialogHidden()
     {
         var action = pendingAction;
         var openerKey = dialogOpenerKey;
@@ -498,7 +498,7 @@ public partial class AdminMaintenance : ComponentBase, IDisposable
         dialogOpenerKey = null;
 
         if (action is not null)
-            action();
+            await action();
         else if (openerKey is not null && openers.TryGetValue(openerKey, out var opener))
             focusTarget = () => opener;
     }
@@ -654,7 +654,7 @@ public partial class AdminMaintenance : ComponentBase, IDisposable
         form.Now = State.Clock.Now;
         form.ServiceIds = ChosenIds.ToList();
 
-        if (!editContext.Validate() || form.Start is not { } start || form.End is not { } end)
+        if (!await editContext.ValidateAsync() || form.Start is not { } start || form.End is not { } end)
             return;
 
         pendingDraft = new Draft(form.Title.Trim(), form.Description.Trim(), form.ServiceIds, start, end, form.Notify);

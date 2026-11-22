@@ -377,13 +377,13 @@ public partial class AdminPurchaseOrder : ComponentBase, IDisposable
     /// Records the goods received once the form is valid (rule WR-002): each quantity 0 to outstanding, at least one above 0.
     /// The state checks again and refuses an over-receipt.
     /// </summary>
-    private void Receive()
+    private async Task Receive()
     {
         if (Order is not { } order)
             return;
 
         receiveErrors.Clear();
-        receiveContext.Validate();
+        await receiveContext.ValidateAsync();
 
         foreach (var line in receiveForm.Lines)
         {
@@ -433,13 +433,13 @@ public partial class AdminPurchaseOrder : ComponentBase, IDisposable
     /// Saves the lines once the form is valid: the lines' rules run with the form's own (rule WR-002) and a failed save shows
     /// the summary. The state checks again; its refusal shows in the alert.
     /// </summary>
-    private void Save()
+    private async Task Save()
     {
         if (Order is not { } order)
             return;
 
         editErrors.Clear();
-        editContext.Validate();
+        await editContext.ValidateAsync();
         ValidateLines();
         editContext.NotifyValidationStateChanged();
 

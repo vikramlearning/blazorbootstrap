@@ -375,7 +375,7 @@ public partial class Timesheet : ComponentBase, IDisposable
             : 0m;
         serverErrors?.Clear();
 
-        if (!editContext.Validate())
+        if (!await editContext.ValidateAsync())
             return;
 
         var input = new PbTimeEntryInput(form.ProjectId, form.TaskId, form.Date!.Value, form.Hours!.Value, form.IsBillable && !form.IsInternal, form.Note ?? string.Empty);

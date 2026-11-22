@@ -80,9 +80,9 @@ public partial class Profile : ComponentBase, IDisposable
     });
 
     /// <summary>Saves the work details once the form is valid; the state's answer is announced next to the button.</summary>
-    private void SaveWork()
+    private async Task SaveWork()
     {
-        if (!editContext.Validate())
+        if (!await editContext.ValidateAsync())
             return;
 
         var result = State.UpdateMyWork(form.Title, form.CapacityHours!.Value);

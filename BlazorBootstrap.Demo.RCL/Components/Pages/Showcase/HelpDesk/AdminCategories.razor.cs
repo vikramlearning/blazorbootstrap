@@ -294,7 +294,7 @@ public partial class AdminCategories : ComponentBase, IDisposable
 
         var nameFree = nameCheck is null || await nameCheck.CheckNowAsync();
 
-        if (!editContext.Validate() || !nameFree)
+        if (!await editContext.ValidateAsync() || !nameFree)
             return;
 
         var previousTeamId = editing is null ? null : State.Categories.FirstOrDefault(category => category.Id == editing.Id)?.TeamId;

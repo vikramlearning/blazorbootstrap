@@ -295,7 +295,7 @@ public partial class AdminPlans : ComponentBase, IDisposable
 
         // The name check finishes first; then every rule runs, and a failed save shows the summary, which takes focus (rule WR-002).
         var nameFree = nameCheck is null || await nameCheck.CheckNowAsync();
-        planContext.Validate();
+        await planContext.ValidateAsync();
 
         foreach (var (field, message) in draft.Validate(current, State.Plans, summary.Workspaces, summary.LargestSeats))
             planErrors?.Add(new FieldIdentifier(draft, field), message);

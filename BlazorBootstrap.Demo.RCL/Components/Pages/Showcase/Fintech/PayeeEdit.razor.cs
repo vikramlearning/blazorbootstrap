@@ -150,7 +150,7 @@ public partial class PayeeEdit : ComponentBase, IDisposable
         var nameFree = nameCheck is null || await nameCheck.CheckNowAsync();
         var nicknameFree = nicknameCheck is null || await nicknameCheck.CheckNowAsync();
 
-        if (!editContext.Validate() || !nameFree || !nicknameFree)
+        if (!await editContext.ValidateAsync() || !nameFree || !nicknameFree)
             return;
 
         check = State.CheckPayee(form.ToDraft());

@@ -129,7 +129,7 @@ public partial class AmlAlerts : ComponentBase, IDisposable
     {
         bulkForm.CustomerCount = SelectedCustomers;
 
-        if (!bulkContext.Validate())
+        if (!await bulkContext.ValidateAsync())
             return;
 
         var ids = selected.Select(row => row.Id).ToList();

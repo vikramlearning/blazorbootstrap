@@ -314,7 +314,7 @@ public partial class AdminTemplateEdit : ComponentBase, IDisposable
 
         var nameFree = nameCheck is null || await nameCheck.CheckNowAsync();
 
-        if (!detailsContext.Validate() || !nameFree)
+        if (!await detailsContext.ValidateAsync() || !nameFree)
             return;
 
         var previousName = template.Name;
@@ -367,10 +367,10 @@ public partial class AdminTemplateEdit : ComponentBase, IDisposable
     /// Saves the task once the form is valid (a failed submit shows the summary) with <see cref="HrState.SaveTemplateTask" />,
     /// whose answer maps to a message.
     /// </summary>
-    private Task SaveTaskAsync()
+    private async Task SaveTaskAsync()
     {
-        if (Template is not { } template || !taskContext.Validate())
-            return Task.CompletedTask;
+        if (Template is not { } template || !await taskContext.ValidateAsync())
+            return;
 
         var editing = taskEditId == 0 ? null : template.Tasks.FirstOrDefault(item => item.Id == taskEditId);
 
@@ -380,7 +380,7 @@ public partial class AdminTemplateEdit : ComponentBase, IDisposable
             Announce(false, "That task was deleted, so the changes couldn't be saved.");
             focusStatus = true;
 
-            return Task.CompletedTask;
+            return;
         }
 
         var title = taskForm.Title.Trim();
@@ -433,8 +433,6 @@ public partial class AdminTemplateEdit : ComponentBase, IDisposable
 
                 break;
         }
-
-        return Task.CompletedTask;
     }
 
     /// <summary>Fills the task form with a task, to change it.</summary>

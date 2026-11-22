@@ -129,7 +129,7 @@ public partial class TaskDetail : ComponentBase, IDisposable
     /// Adds the checklist item once the form is valid (rule WR-002: a failed submit shows the summary); the state checks
     /// again, and its refusal goes on the field.
     /// </summary>
-    private void AddChecklistItem()
+    private async Task AddChecklistItem()
     {
         if (State.FindTask(Id) is not { } task)
             return;
@@ -137,7 +137,7 @@ public partial class TaskDetail : ComponentBase, IDisposable
         itemForm.OtherTexts = task.Checklist.Select(item => item.Text).ToList();
         itemErrors?.Clear();
 
-        if (!itemContext.Validate())
+        if (!await itemContext.ValidateAsync())
             return;
 
         var text = itemForm.Text.Trim();
@@ -173,14 +173,14 @@ public partial class TaskDetail : ComponentBase, IDisposable
     }
 
     /// <summary>Posts the comment once the form is valid; the state checks again, and its refusal goes on the field.</summary>
-    private void AddComment()
+    private async Task AddComment()
     {
         if (State.FindTask(Id) is not { } task)
             return;
 
         commentErrors?.Clear();
 
-        if (!commentContext.Validate())
+        if (!await commentContext.ValidateAsync())
             return;
 
         var result = State.AddComment(task.Id, commentForm.Text.Trim());

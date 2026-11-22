@@ -113,11 +113,11 @@ public partial class Profile : ComponentBase, IDisposable
     });
 
     /// <summary>Saves the preferences once the form is valid (the model must be one the workspace enables now); the state checks again.</summary>
-    private void SavePreferences()
+    private async Task SavePreferences()
     {
         form.EnabledModelIds = State.Policy.EnabledModelIds.ToList();
 
-        if (!editContext.Validate())
+        if (!await editContext.ValidateAsync())
             return;
 
         var modelId = form.ModelId.Length == 0 ? null : form.ModelId;

@@ -92,9 +92,9 @@ public partial class ApprovalDetail : ComponentBase, IDisposable
     }
 
     /// <summary>Returns the week once the reason is valid; the outcome is announced.</summary>
-    private void ReturnWeek()
+    private async Task ReturnWeek()
     {
-        if (!editContext.Validate())
+        if (!await editContext.ValidateAsync())
             return;
 
         var result = State.ReturnWeek(Id, form.Reason);

@@ -261,7 +261,7 @@ public partial class AppTeam : ComponentBase, IDisposable
 
         var free = emailCheck is null || await emailCheck.CheckNowAsync();
 
-        if (!inviteContext.Validate() || !free)
+        if (!await inviteContext.ValidateAsync() || !free)
             return;
 
         var email = inviteForm.Email.Trim();

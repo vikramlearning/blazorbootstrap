@@ -199,7 +199,7 @@ public partial class AdminSpend : ComponentBase, IDisposable
     {
         bulkForm.WorkspaceCap = State.Policy.WorkspaceMonthlyCap;
 
-        if (!bulkContext.Validate())
+        if (!await bulkContext.ValidateAsync())
             return;
 
         ClearError();
@@ -408,7 +408,7 @@ public partial class AdminSpend : ComponentBase, IDisposable
     private string RowClass(SpendRow row) => selected.Any(item => item.Id == row.Id) ? "pa-row-selected" : string.Empty;
 
     /// <summary>Saves the workspace and default caps once the form is valid; the state's refusals land on their fields.</summary>
-    private void SaveCaps()
+    private async Task SaveCaps()
     {
         var workspace = State.WorkspaceSpend;
         capsForm.WorkspaceUsed = workspace.Used;
@@ -417,7 +417,7 @@ public partial class AdminSpend : ComponentBase, IDisposable
         capsErrors?.Clear();
         capsContext.NotifyValidationStateChanged();
 
-        if (!capsContext.Validate())
+        if (!await capsContext.ValidateAsync())
             return;
 
         ClearError();
@@ -460,11 +460,9 @@ public partial class AdminSpend : ComponentBase, IDisposable
         }
     }
 
-    private Task SaveCapsAsync()
+    private async Task SaveCapsAsync()
     {
-        SaveCaps();
-
-        return Task.CompletedTask;
+        await SaveCaps();
     }
 
     /// <summary>Keeps the grid's settings in the saved view, and follows the page size the selector chose.</summary>
@@ -491,7 +489,7 @@ public partial class AdminSpend : ComponentBase, IDisposable
         memberForm.Used = status.Used;
         memberForm.WorkspaceCap = State.Policy.WorkspaceMonthlyCap;
 
-        if (!memberContext.Validate())
+        if (!await memberContext.ValidateAsync())
             return;
 
         var wasBlocked = status.Level == AiSpendLevel.Blocked;

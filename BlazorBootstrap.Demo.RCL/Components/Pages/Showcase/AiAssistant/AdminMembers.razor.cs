@@ -240,7 +240,7 @@ public partial class AdminMembers : ComponentBase, IDisposable
     /// <summary>Runs the bulk bar's action on the selection once its form is valid; removing access asks first.</summary>
     private async Task ApplyBulkAsync()
     {
-        if (!bulkContext.Validate())
+        if (!await bulkContext.ValidateAsync())
             return;
 
         ClearError();
@@ -312,7 +312,7 @@ public partial class AdminMembers : ComponentBase, IDisposable
     {
         transferForm.WorkspaceName = State.WorkspaceName;
 
-        if (!transferContext.Validate())
+        if (!await transferContext.ValidateAsync())
             return;
 
         pendingTransfer = false;
@@ -414,7 +414,7 @@ public partial class AdminMembers : ComponentBase, IDisposable
 
         var emailFree = emailCheck is null || await emailCheck.CheckNowAsync();
 
-        if (!inviteContext.Validate() || !emailFree)
+        if (!await inviteContext.ValidateAsync() || !emailFree)
             return;
 
         ClearError();
@@ -719,7 +719,7 @@ public partial class AdminMembers : ComponentBase, IDisposable
     /// <summary>Saves the dialog's role once its form is valid; the outcome is announced once the dialog is hidden, a refusal in the dialog.</summary>
     private async Task SaveRoleAsync()
     {
-        if (!roleContext.Validate())
+        if (!await roleContext.ValidateAsync())
             return;
 
         if (Opened is not { } member)

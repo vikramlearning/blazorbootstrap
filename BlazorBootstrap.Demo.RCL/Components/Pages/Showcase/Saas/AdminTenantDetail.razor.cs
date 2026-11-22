@@ -290,7 +290,7 @@ public partial class AdminTenantDetail : ComponentBase, IDisposable
     /// <summary>Runs the dialog's action once its form is valid (rule WR-002); the state checks again, and its answer becomes the status message.</summary>
     private async Task ConfirmDunningAsync()
     {
-        if (!dunningContext.Validate() || Workspace is not { } workspace || State.OpenDunningCase(workspace.Id) is not { } item)
+        if (!await dunningContext.ValidateAsync() || Workspace is not { } workspace || State.OpenDunningCase(workspace.Id) is not { } item)
             return;
 
         var reason = dunningForm.Reason.Trim();

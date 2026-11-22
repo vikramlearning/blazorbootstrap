@@ -284,7 +284,7 @@ public partial class ClientEdit : ComponentBase, IDisposable
 
         var nameFree = nameCheck is null || await nameCheck.CheckNowAsync();
 
-        if (!editContext.Validate() || !nameFree)
+        if (!await editContext.ValidateAsync() || !nameFree)
             return;
 
         var existing = Client;

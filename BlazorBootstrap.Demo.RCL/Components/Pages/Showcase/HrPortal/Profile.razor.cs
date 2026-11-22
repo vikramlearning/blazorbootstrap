@@ -94,11 +94,11 @@ public partial class Profile : ComponentBase, IDisposable
     });
 
     /// <summary>Saves the three fields once the form is valid (a failed submit shows the summary), and maps every result.</summary>
-    private void Save()
+    private async Task Save()
     {
         statusMessage = null;
 
-        if (!editContext.Validate())
+        if (!await editContext.ValidateAsync())
             return;
 
         switch (State.SaveMyProfile(form.Phone ?? string.Empty, form.Pronouns ?? string.Empty, form.Bio ?? string.Empty))

@@ -85,7 +85,7 @@ public partial class HcCodingForm : ComponentBase
     {
         serverErrors?.Clear();
 
-        if (!editContext.Validate())
+        if (!await editContext.ValidateAsync())
             return;
 
         HcResult result;

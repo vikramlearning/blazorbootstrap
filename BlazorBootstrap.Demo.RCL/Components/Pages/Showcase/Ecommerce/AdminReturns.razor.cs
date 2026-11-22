@@ -128,7 +128,7 @@ public partial class AdminReturns : ComponentBase, IDisposable
     /// </summary>
     private async Task ApplyBulkAsync()
     {
-        if (!bulkContext.Validate())
+        if (!await bulkContext.ValidateAsync())
             return;
 
         errorMessage = null;

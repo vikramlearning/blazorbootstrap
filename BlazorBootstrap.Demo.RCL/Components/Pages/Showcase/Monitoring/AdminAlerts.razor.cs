@@ -562,7 +562,7 @@ public partial class AdminAlerts : ComponentBase, IDisposable
     {
         drillServerErrors?.Clear();
 
-        if (!drillContext.Validate())
+        if (!await drillContext.ValidateAsync())
             return;
 
         if (State.FindService(drillForm.ServiceId) is not { } service)
@@ -611,7 +611,7 @@ public partial class AdminAlerts : ComponentBase, IDisposable
 
         var nameFree = ruleNameCheck is null || await ruleNameCheck.CheckNowAsync();
 
-        if (!ruleContext.Validate() || !nameFree)
+        if (!await ruleContext.ValidateAsync() || !nameFree)
             return;
 
         if (editingRuleId == 0 && State.Rules.Count >= MonitoringState.MaxRules)

@@ -316,7 +316,7 @@ public partial class AdminLeads : ComponentBase, IDisposable
 
         var emailFree = emailCheck is null || await emailCheck.CheckNowAsync();
 
-        if (!newContext.Validate() || !emailFree)
+        if (!await newContext.ValidateAsync() || !emailFree)
             return;
 
         var (result, lead) = State.CreateLead(newForm.Name, newForm.Email, newForm.Company, newForm.TeamSize, newForm.Message, newForm.Status, newForm.Note);
@@ -541,7 +541,7 @@ public partial class AdminLeads : ComponentBase, IDisposable
             return;
         }
 
-        if (!editContext.Validate())
+        if (!await editContext.ValidateAsync())
             return;
 
         var before = lead.Status;

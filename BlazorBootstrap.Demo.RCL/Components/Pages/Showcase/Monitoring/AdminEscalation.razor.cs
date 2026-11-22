@@ -291,7 +291,7 @@ public partial class AdminEscalation : ComponentBase, IDisposable
 
         var nameFree = nameCheck is null || await nameCheck.CheckNowAsync();
 
-        if (!formContext.Validate() || !nameFree)
+        if (!await formContext.ValidateAsync() || !nameFree)
             return;
 
         if (editingId == 0 && State.Policies.Count >= MonitoringState.MaxPolicies)

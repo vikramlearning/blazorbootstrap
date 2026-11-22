@@ -387,7 +387,7 @@ public partial class ManageProjectEdit : ComponentBase, IDisposable
         var keyFree = keyCheck is null || await keyCheck.CheckNowAsync();
         var nameFree = nameCheck is null || await nameCheck.CheckNowAsync();
 
-        if (!editContext.Validate() || !keyFree || !nameFree)
+        if (!await editContext.ValidateAsync() || !keyFree || !nameFree)
             return;
 
         if (existing is null && State.Projects.Count >= PbState.MaxProjects)
@@ -483,7 +483,7 @@ public partial class ManageProjectEdit : ComponentBase, IDisposable
     }
 
     /// <summary>Saves the milestone form with <see cref="PbState.SaveMilestone" /> once it is valid; the state's answer maps to a field or the milestone status.</summary>
-    private void SaveMilestone()
+    private async Task SaveMilestone()
     {
         if (Project is not { } project)
             return;
@@ -504,7 +504,7 @@ public partial class ManageProjectEdit : ComponentBase, IDisposable
         msForm.ProjectDue = project.DueDate;
         msServerErrors?.Clear();
 
-        if (!msContext.Validate())
+        if (!await msContext.ValidateAsync())
             return;
 
         var title = msForm.Title.Trim();

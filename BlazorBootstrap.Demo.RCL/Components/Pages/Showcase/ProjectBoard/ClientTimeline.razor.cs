@@ -91,14 +91,14 @@ public partial class ClientTimeline : ComponentBase, IDisposable
     }
 
     /// <summary>Logs the entry once the form is valid (a failed submit shows the summary); the state's answer maps to a field or the status message.</summary>
-    private void Log()
+    private async Task Log()
     {
         form.Today = State.Clock.Today;
         form.ClientSince = State.FindClient(ClientId)?.CreatedAt.Date ?? DateTime.MinValue;
         form.DealOk = form.DealId == 0 || State.FindDeal(form.DealId)?.ClientId == ClientId;
         serverErrors?.Clear();
 
-        if (!editContext.Validate())
+        if (!await editContext.ValidateAsync())
             return;
 
         var trimmed = form.Text.Trim();

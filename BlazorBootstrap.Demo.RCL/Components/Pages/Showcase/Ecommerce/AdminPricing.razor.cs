@@ -368,7 +368,7 @@ public partial class AdminPricing : ComponentBase, IDisposable
     /// </summary>
     private async Task ReviewBulkAsync()
     {
-        if (!bulkContext.Validate())
+        if (!await bulkContext.ValidateAsync())
             return;
 
         var changes = new List<PendingChange>();

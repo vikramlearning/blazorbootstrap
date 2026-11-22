@@ -303,7 +303,7 @@ public partial class ClientContacts : ComponentBase, IDisposable
 
         var emailFree = emailCheck is null || await emailCheck.CheckNowAsync();
 
-        if (!editContext.Validate() || !emailFree)
+        if (!await editContext.ValidateAsync() || !emailFree)
             return;
 
         var input = new PbContactInput(form.Name, form.Title ?? string.Empty, form.Email, form.Phone ?? string.Empty, form.Role!.Value, form.IsPrimary);

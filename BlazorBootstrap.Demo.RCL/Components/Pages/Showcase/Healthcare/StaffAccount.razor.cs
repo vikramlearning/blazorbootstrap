@@ -104,9 +104,9 @@ public partial class StaffAccount : ComponentBase, IDisposable
     });
 
     /// <summary>Saves the work details once the form is valid, and maps every result.</summary>
-    private void Save()
+    private async Task Save()
     {
-        if (!editContext.Validate())
+        if (!await editContext.ValidateAsync())
             return;
 
         var result = form.IsDoctor ? State.SaveDoctorProfile(form.WorkPhone, form.AcceptingNewPatients, form.Bio ?? string.Empty) : State.SaveStaffProfile(form.ClinicId, form.WorkPhone);

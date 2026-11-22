@@ -308,7 +308,7 @@ public partial class Subscribe : ComponentBase, IDisposable
 
         var free = emailCheck is null || await emailCheck.CheckNowAsync();
 
-        if (!formContext.Validate() || !free)
+        if (!await formContext.ValidateAsync() || !free)
         {
             formStatus = "Not subscribed. Fix the errors listed above the form.";
             formStatusIsError = true;

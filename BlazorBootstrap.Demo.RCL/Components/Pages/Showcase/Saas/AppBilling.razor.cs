@@ -462,7 +462,7 @@ public partial class AppBilling : ComponentBase, IDisposable
     private async Task SaveCardAsync()
     {
         // The card fields and the postal code are checked together, and a failed save shows the summary (rule WR-002).
-        if (!cardContext.Validate() || ShowcaseCards.Validate(card, State.Clock.Today).Count > 0)
+        if (!await cardContext.ValidateAsync() || ShowcaseCards.Validate(card, State.Clock.Today).Count > 0)
             return;
 
         var charge = ShowcaseCards.Charge(card);

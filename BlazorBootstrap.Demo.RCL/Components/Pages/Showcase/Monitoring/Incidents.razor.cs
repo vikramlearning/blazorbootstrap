@@ -421,7 +421,7 @@ public partial class Incidents : ComponentBase, IDisposable
     /// <summary>Declares once the form is valid (a failed submit shows the summary and moves focus to it, rule WR-002).</summary>
     private async Task SubmitDeclareAsync()
     {
-        if (pendingDeclare is not null || !declareContext.Validate())
+        if (pendingDeclare is not null || !await declareContext.ValidateAsync())
             return;
 
         if (State.FindService(declareForm.ServiceId) is null)

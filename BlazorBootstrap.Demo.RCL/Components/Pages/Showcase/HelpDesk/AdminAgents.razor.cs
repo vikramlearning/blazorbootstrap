@@ -382,7 +382,7 @@ public partial class AdminAgents : ComponentBase, IDisposable
         var nameFree = agentNameCheck is null || await agentNameCheck.CheckNowAsync();
         var emailFree = agentEmailCheck is null || await agentEmailCheck.CheckNowAsync();
 
-        if (!agentContext.Validate() || !nameFree || !emailFree)
+        if (!await agentContext.ValidateAsync() || !nameFree || !emailFree)
             return;
 
         var oldName = editingAgent is null ? null : State.FindAgent(editingAgent.Id)?.Name;
@@ -436,7 +436,7 @@ public partial class AdminAgents : ComponentBase, IDisposable
 
         var nameFree = teamNameCheck is null || await teamNameCheck.CheckNowAsync();
 
-        if (!teamContext.Validate() || !nameFree)
+        if (!await teamContext.ValidateAsync() || !nameFree)
             return;
 
         var result = State.SaveTeam(editingTeam?.Id, teamForm.Name, teamForm.Description, teamForm.LeadAgentId, out var saved);

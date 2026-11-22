@@ -432,7 +432,7 @@ public partial class AdminDunning : ComponentBase, IDisposable
     /// <summary>Saves the policy once the form is valid (rule WR-002); the state checks the same rules again.</summary>
     private async Task SavePolicyAsync()
     {
-        if (!policyContext.Validate() || ParseDays(policyForm.RetryDays) is not { } days || policyForm.GraceDays is not { } grace)
+        if (!await policyContext.ValidateAsync() || ParseDays(policyForm.RetryDays) is not { } days || policyForm.GraceDays is not { } grace)
             return;
 
         var result = State.UpdateDunningPolicy(days, grace, policyForm.EmailCustomer);

@@ -174,43 +174,37 @@ public partial class ReviewDetail : ComponentBase, IDisposable
     }
 
     /// <summary>Signs off as the employee once the comment is valid (a failed submit shows the summary).</summary>
-    private Task SignAsEmployeeAsync()
+    private async Task SignAsEmployeeAsync()
     {
-        if (Review is not { } review || !signContext.Validate())
-            return Task.CompletedTask;
+        if (Review is not { } review || !await signContext.ValidateAsync())
+            return;
 
         var (message, isError) = ResultText(State.SignOff(review.Id, asManager: false, signForm.Comment),
             "You signed off your review." + (review.ManagerSignedAt is null ? " Your manager signs off next." : " Your manager has signed too: it's done."));
         Announce(message, isError);
-
-        return Task.CompletedTask;
     }
 
     /// <summary>Submits the manager review once the form is valid (a failed submit shows the summary); the employee sees it after the release.</summary>
-    private Task SubmitManagerAsync()
+    private async Task SubmitManagerAsync()
     {
-        if (Review is not { } review || !managerContext.Validate())
-            return Task.CompletedTask;
+        if (Review is not { } review || !await managerContext.ValidateAsync())
+            return;
 
         var first = FirstName(EmployeeName(review));
         var (message, isError) = ResultText(State.SubmitManagerReview(review.Id, managerForm.Text, managerForm.Rating!.Value),
             $"Submitted your review of {first}, rated {ReviewDisplay.Rating(managerForm.Rating)}. HR calibrates ratings next; {first} sees the outcome when it's released.");
         Announce(message, isError);
-
-        return Task.CompletedTask;
     }
 
     /// <summary>Submits the self review once the form is valid (a failed submit shows the summary); the manager is told.</summary>
-    private Task SubmitSelfAsync()
+    private async Task SubmitSelfAsync()
     {
-        if (Review is not { } review || !selfContext.Validate())
-            return Task.CompletedTask;
+        if (Review is not { } review || !await selfContext.ValidateAsync())
+            return;
 
         var (message, isError) = ResultText(State.SubmitSelfReview(review.Id, selfForm.Text, selfForm.Rating),
             $"Submitted your self review. {EmployeeName(review.ManagerId)} writes their review next; you see it, and your rating, when HR releases the cycle.");
         Announce(message, isError);
-
-        return Task.CompletedTask;
     }
 
     /// <summary>The review's steps in order, each done, current, or waiting, in words.</summary>

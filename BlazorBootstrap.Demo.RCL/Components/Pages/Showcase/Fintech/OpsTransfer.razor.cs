@@ -194,7 +194,7 @@ public partial class OpsTransfer : ComponentBase, IDisposable
 
     private async Task ConfirmApproveAsync()
     {
-        if (busy || Item is not { } transfer || !approveContext.Validate())
+        if (busy || Item is not { } transfer || !await approveContext.ValidateAsync())
             return;
 
         busy = true;
@@ -222,7 +222,7 @@ public partial class OpsTransfer : ComponentBase, IDisposable
 
     private async Task ConfirmHoldAsync()
     {
-        if (busy || Item is not { } transfer || !holdContext.Validate())
+        if (busy || Item is not { } transfer || !await holdContext.ValidateAsync())
             return;
 
         busy = true;
@@ -251,7 +251,7 @@ public partial class OpsTransfer : ComponentBase, IDisposable
 
     private async Task ConfirmRejectAsync()
     {
-        if (busy || Item is not { } transfer || !rejectContext.Validate())
+        if (busy || Item is not { } transfer || !await rejectContext.ValidateAsync())
             return;
 
         busy = true;

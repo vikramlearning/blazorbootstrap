@@ -391,7 +391,7 @@ public partial class AdminReviewCycle : ComponentBase, IDisposable
     /// </summary>
     private async Task SaveCalibrationAsync()
     {
-        if (CalibrateReview is not { } review || !calibrateContext.Validate())
+        if (CalibrateReview is not { } review || !await calibrateContext.ValidateAsync())
             return;
 
         var name = EmployeeName(review.EmployeeId);

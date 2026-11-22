@@ -288,7 +288,7 @@ public partial class Prescriptions : ComponentBase, IDisposable
         if (FindMine(requestForm.PrescriptionId) is { } current)
             SetLimits(current);
 
-        if (!requestContext.Validate())
+        if (!await requestContext.ValidateAsync())
             return;
 
         if (FindMine(requestForm.PrescriptionId) is not { } prescription)
