@@ -16,6 +16,18 @@ Version **4.1.0** adds features and accessibility fixes without breaking the pub
 
 ---
 
+## .NET 11
+
+The package now includes a build for .NET 11 (`net11.0`) and keeps its .NET 8, .NET 9, and .NET 10 builds, so an app on any of these versions installs the same package. The getting-started guides now cover .NET 11 and .NET 10.
+
+On .NET 11, `EditContext.Validate()` is obsolete; the demos and code samples now call `await editContext.ValidateAsync()`. On .NET 10 and earlier, keep using `editContext.Validate()`.
+
+### Coming from 3.x?
+
+Chart components such as `LineChart`, `LineChartDataset`, `LineChartOptions`, and `ChartAxes` are no longer part of Blazor Bootstrap. They moved to the [BlazorExpress.ChartJS](https://chartjs.blazorexpress.com/) package in 4.0.0. If your charts stop compiling after upgrading, follow the chart steps in [Upgrade to v4.0.0](/blog/2025/12/01/upgrade-to-v4.0.0).
+
+---
+
 ## Markup changes you may target
 
 ### Grid

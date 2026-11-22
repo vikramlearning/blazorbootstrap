@@ -105,9 +105,11 @@ Example websites that the Blazor Bootstrap team built to show the enterprise app
 
 Install with [NuGet](https://www.nuget.org/): `Install-Package Blazor.Bootstrap -Version 4.0.0`
 
+Supported .NET versions: .NET 8, .NET 9, .NET 10, and .NET 11.
+
 ## Install Blazor Bootstrap templates
 
-Install [Blazor Bootstrap templates](https://github.com/vikramlearning/blazorbootstrap-project-templates) with **.NET CLI**: `dotnet new install Blazor.Bootstrap.Templates::1.10.0`
+Install [Blazor Bootstrap templates](https://github.com/vikramlearning/blazorbootstrap-project-templates) with **.NET CLI**: `dotnet new install Blazor.Bootstrap.Templates::1.11.0`
 
   ![image](https://user-images.githubusercontent.com/2337067/233800604-43986ae7-27dd-4f17-9af6-c2f1a6f07097.png)
 
