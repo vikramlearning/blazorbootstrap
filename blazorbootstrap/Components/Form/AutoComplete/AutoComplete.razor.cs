@@ -62,7 +62,7 @@ public partial class AutoComplete<TItem> : BlazorBootstrapComponentBase
 
         AdditionalAttributes ??= new Dictionary<string, object>();
 
-        fieldIdentifier = FieldIdentifier.Create(ValueExpression);
+        fieldIdentifier = FieldIdentifier.Create(ValueExpression!);
 
         // check the default value is assigned.
         if (Value is not null && Value.Length > 0)
@@ -173,7 +173,7 @@ public partial class AutoComplete<TItem> : BlazorBootstrapComponentBase
         if (string.IsNullOrWhiteSpace(searchKey))
             return;
 
-        var request = new AutoCompleteDataProviderRequest<TItem> { Filter = new FilterItem(PropertyName, searchKey, GetFilterOperator(), StringComparison), CancellationToken = cancellationToken };
+        var request = new AutoCompleteDataProviderRequest<TItem> { Filter = new FilterItem(PropertyName!, searchKey, GetFilterOperator(), StringComparison), CancellationToken = cancellationToken };
 
         if (DataProvider != null)
         {

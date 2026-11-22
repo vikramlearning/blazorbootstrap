@@ -93,7 +93,7 @@ public partial class RibbonTab : BlazorBootstrapComponentBase
     /// Gets or sets the parent ribbon.
     /// </summary>
     [CascadingParameter(Name = "Ribbon1")]
-    internal Ribbon? Parent { get; set; }
+    internal Ribbon Parent { get; set; } = default!;
 
     /// <summary>
     /// Gets or sets the tab title.

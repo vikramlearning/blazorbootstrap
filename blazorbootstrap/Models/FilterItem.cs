@@ -19,7 +19,7 @@ public sealed record class FilterItem
         StringComparison = stringComparison;
     }
 
-    public Type PropertType { get; private set; }
+    public Type PropertType { get; private set; } = default!;
     public string PropertyName { get; private set; }
     public string Value { get; private set; }
     public FilterOperator Operator { get; private set; }

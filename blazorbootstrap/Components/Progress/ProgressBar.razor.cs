@@ -101,6 +101,10 @@ public partial class ProgressBar
             // FIX: Toast progressbar not showing: https://github.com/vikramlearning/blazorbootstrap/issues/155
             ($"width:{width.ToString(CultureInfo.InvariantCulture)}%", width is >= 0 and <= 100));
 
+    // Color, Type and Width re-render the bar when SetColor, SetWidth, IncreaseWidth and DecreaseWidth
+    // change them, so they keep their setters. BL0007 is suppressed for these three parameters only.
+#pragma warning disable BL0007
+
     /// <summary>
     /// Gets or sets the progress color.
     /// <para>
@@ -172,6 +176,7 @@ public partial class ProgressBar
             StateHasChanged();
         }
     }
+#pragma warning restore BL0007
 
     #endregion
 }

@@ -322,7 +322,7 @@
                                 }
                                 else if (column.SummaryType != GridSummaryColumnType.None)
                                 {
-                                    <td class="@column.TextAlignment.ToTextAlignmentClass()">@GetColumnSummaryValue(column.SummaryType, column.PropertyName, column.SummaryValueDisplayFormat, column.SummaryValuePrefix)</td>
+                                    <td class="@column.TextAlignment.ToTextAlignmentClass()">@GetColumnSummaryValue(column.SummaryType, column.PropertyName!, column.SummaryValueDisplayFormat, column.SummaryValuePrefix)</td>
                                 }
                             }
                         }

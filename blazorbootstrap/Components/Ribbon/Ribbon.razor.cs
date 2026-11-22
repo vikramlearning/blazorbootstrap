@@ -278,7 +278,7 @@ public partial class Ribbon : BlazorBootstrapComponentBase
         await JSRuntime.InvokeVoidAsync("window.blazorBootstrap.tabs.show", tab.Id);
 
         if (tab?.OnClick.HasDelegate ?? false)
-            await tab.OnClick.InvokeAsync(new TabEventArgs(tab!.Name, tab.Title));
+            await tab.OnClick.InvokeAsync(new TabEventArgs(tab.Name!, tab.Title!));
     }
 
     #endregion

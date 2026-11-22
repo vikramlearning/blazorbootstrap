@@ -30,7 +30,7 @@ public partial class AccordionItem : BlazorBootstrapComponentBase
     private async Task OnCollapseHiddenAsync()
     {
         if (Parent is not null && Parent.OnHidden.HasDelegate)
-            await Parent.OnHidden.InvokeAsync(new AccordionEventArgs(Name, Title));
+            await Parent.OnHidden.InvokeAsync(new AccordionEventArgs(Name!, Title!));
     }
 
     private async Task OnCollapseHidingAsync()
@@ -38,7 +38,7 @@ public partial class AccordionItem : BlazorBootstrapComponentBase
         isCollapsed = true;
 
         if (Parent is not null && Parent.OnHiding.HasDelegate)
-            await Parent.OnHiding.InvokeAsync(new AccordionEventArgs(Name, Title));
+            await Parent.OnHiding.InvokeAsync(new AccordionEventArgs(Name!, Title!));
     }
 
     private async Task OnCollapseShowingAsync()
@@ -46,13 +46,13 @@ public partial class AccordionItem : BlazorBootstrapComponentBase
         isCollapsed = false;
 
         if (Parent is not null && Parent.OnShowing.HasDelegate)
-            await Parent.OnShowing.InvokeAsync(new AccordionEventArgs(Name, Title));
+            await Parent.OnShowing.InvokeAsync(new AccordionEventArgs(Name!, Title!));
     }
 
     private async Task OnCollapseShownAsync()
     {
         if (Parent is not null && Parent.OnShown.HasDelegate)
-            await Parent.OnShown.InvokeAsync(new AccordionEventArgs(Name, Title));
+            await Parent.OnShown.InvokeAsync(new AccordionEventArgs(Name!, Title!));
     }
 
     private async Task ToggleAsync() => await collapse.ToggleAsync();
