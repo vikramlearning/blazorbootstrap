@@ -55,6 +55,6 @@ Version **4.1.0** adds features and accessibility fixes without breaking the pub
 | Grid | `UnnamedSortColumnText` | `Sort column {0}` |
 | PdfViewer | `MoreActionsText` | `More actions` |
 
-A translated text whose placeholders don't match is shown as written instead of failing.
+If a translation of one of these texts has placeholders that don't match, it is shown as written instead of failing.
 
 See the [Grid](/docs/components/grid) page for the new column chooser and CSV export.

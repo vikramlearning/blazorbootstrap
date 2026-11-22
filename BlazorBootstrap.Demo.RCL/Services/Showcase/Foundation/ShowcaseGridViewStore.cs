@@ -119,6 +119,12 @@ public sealed class ShowcaseGridViewStore
             // Storage can't be read (prerendering or blocked storage): views work in memory for this visit, and nothing
             // is written over the views that could not be read.
         }
+        catch (Exception)
+        {
+            // Anything else (for example stored data the reader doesn't support): the same, so a failed load never stays
+            // cached as a fault that every later call would rethrow.
+            storageRead = false;
+        }
 
         views = loaded;
     }

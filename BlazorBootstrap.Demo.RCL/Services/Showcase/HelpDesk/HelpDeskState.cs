@@ -1325,7 +1325,6 @@ public sealed partial class HelpDeskState : IShowcaseEnterpriseState
         return ticket;
     }
 
-    /// <summary>Validates a stored snapshot and applies it only when every part is valid.</summary>
     /// <summary>Rebuilds the help desk from a fresh tab and the stored changes, validates every part, and applies it only when everything is valid.</summary>
     public bool TryRestoreData(JsonElement data)
     {

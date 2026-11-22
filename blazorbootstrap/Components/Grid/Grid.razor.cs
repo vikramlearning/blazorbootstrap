@@ -70,6 +70,9 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
 
     private bool isColumnsLoading = false;
 
+    /// <summary>How long a status message stays empty before the next one, so a repeated message is announced again.</summary>
+    private const int StatusClearDelay = 150;
+
     #endregion
 
     #region Methods
@@ -158,17 +161,33 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     [Description("Downloads a CSV file of every row that matches the current filters and sort, across all pages, with the visible columns in display order.")]
     public async Task ExportToCsvAsync()
     {
-        // Clear and render first, so the same message twice in a row is announced again. The yield lets the empty
-        // status render before a synchronous failure sets the message again.
-        exportStatus = string.Empty;
-        await InvokeAsync(StateHasChanged);
-        await Task.Yield();
+        // A shown message is cleared and left empty for a moment before the next one, so screen readers announce the
+        // same message twice in a row: a change inside one frame never reaches the accessibility tree.
+        if (exportStatus.Length > 0)
+        {
+            exportStatus = string.Empty;
+            await InvokeAsync(StateHasChanged);
+            await Task.Delay(StatusClearDelay);
+        }
 
         // Nothing in an export may break the page: a data source failure or cancellation, a property getter that throws
         // while the CSV is built, or a browser error from the download (for example an outdated cached script).
         // The status message reports it instead.
         try
         {
+            var exportColumns = GetDisplayColumns()
+                                .Where(column => column.Exportable && !string.IsNullOrWhiteSpace(column.PropertyName))
+                                .Select(column => (GetColumnLabel(column), column.PropertyName!))
+                                .ToList();
+
+            // No column that can be exported: nothing to download, and no need to read the rows.
+            if (exportColumns.Count == 0)
+            {
+                exportStatus = ExportNoDataText;
+                await InvokeAsync(StateHasChanged);
+                return;
+            }
+
             var request = new GridDataProviderRequest<TItem>
             {
                 PageNumber = 0,
@@ -180,13 +199,7 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
             var result = DataProvider is not null ? await DataProvider.Invoke(request) : request.ApplyTo(Data!);
             var rows = result?.Data?.ToList() ?? new List<TItem>();
 
-            var exportColumns = GetDisplayColumns()
-                                .Where(column => column.Exportable && !string.IsNullOrWhiteSpace(column.PropertyName))
-                                .Select(column => (GetColumnLabel(column), column.PropertyName!))
-                                .ToList();
-
-            // No row, or no column that can be exported: nothing to download.
-            if (rows.Count == 0 || exportColumns.Count == 0)
+            if (rows.Count == 0)
             {
                 exportStatus = ExportNoDataText;
             }
@@ -740,7 +753,7 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
         {
             columnChooserStatus = string.Empty;
             await InvokeAsync(StateHasChanged);
-            await Task.Yield();
+            await Task.Delay(StatusClearDelay);
         }
 
         columnChooserStatus = status;
@@ -909,10 +922,6 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
     }
 
     /// <summary>
-    /// Set filters.
-    /// </summary>
-    /// <param name="filterItems"></param>
-    /// <summary>
     /// Hides or shows a column for the user, then saves the grid settings. A column marked <c>AlwaysVisible</c>,
     /// a column without a key, and the last shown column cannot be hidden.
     /// </summary>
@@ -932,6 +941,10 @@ public partial class Grid<TItem> : BlazorBootstrapComponentBase
         await InvokeAsync(StateHasChanged);
     }
 
+    /// <summary>
+    /// Set filters.
+    /// </summary>
+    /// <param name="filterItems"></param>
     private void SetFilters(IEnumerable<FilterItem> filterItems)
     {
         if (filterItems is null || !filterItems.Any())
