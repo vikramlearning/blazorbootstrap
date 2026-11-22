@@ -38,10 +38,11 @@
         base.OnInitialized();
     }
 
-    public void HandleOnValidSubmit()
+    public async Task HandleOnValidSubmit()
     {
         // additional check
-        if (editContext.Validate())
+        // .NET 10 and earlier: use editContext.Validate()
+        if (await editContext.ValidateAsync())
         {
             // do something
             // submit the form
