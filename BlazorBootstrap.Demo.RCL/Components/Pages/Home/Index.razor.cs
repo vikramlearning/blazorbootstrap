@@ -34,7 +34,7 @@ public partial class Index : BlazorBootstrapComponentBase
 
     private string copyStatus = string.Empty;
 
-    private string description = "An Enterprise-class Blazor Bootstrap Component library built on the Blazor and Bootstrap CSS frameworks.";
+    private string description = "Free, open-source Bootstrap 5.3 components for Blazor Server, WebAssembly and MAUI on .NET 8 to 11: Grid, Modal, Sidebar, forms and more, with live demos.";
 
     private string filterText = string.Empty;
 
@@ -56,7 +56,7 @@ public partial class Index : BlazorBootstrapComponentBase
 
     private IReadOnlyList<(string Label, string Value, string? Url)> stats = Array.Empty<(string Label, string Value, string? Url)>();
 
-    private string title = "Blazor Bootstrap Component Library";
+    private string title = "Bootstrap 5.3 components for Blazor";
 
     private string version = default!;
 
