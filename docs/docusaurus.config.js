@@ -3,6 +3,30 @@ const { themes } = require('prism-react-renderer');
 const lightCodeTheme = themes.vsDark;
 const darkCodeTheme = themes.dracula;
 
+/**
+ * Sitemap lastmod for pages without a source file. A docs page or blog post gets the date its file last changed in
+ * git (lastmod: 'date'). A blog listing page changes when a post it lists changes, so it gets the newest date among
+ * those posts: a tag page from the posts with that tag, every other blog listing (and the search page) from all posts.
+ */
+async function addListingLastmod({ defaultCreateSitemapItems, ...params }) {
+    const items = await defaultCreateSitemapItems(params);
+    const lastmodByPath = new Map(items.map(item => [new URL(item.url).pathname, item.lastmod]));
+    const archive = params.routes.find(route => route.path === '/blog/archive');
+    const posts = archive?.props?.archive?.blogPosts ?? [];
+    const newest = dates => dates.filter(Boolean).sort().at(-1);
+    const newestPost = newest(posts.map(post => lastmodByPath.get(post.metadata.permalink)));
+
+    return items.map(item => {
+        if (item.lastmod) return item;
+        const path = new URL(item.url).pathname;
+        const tagPath = path.match(/^\/blog\/tags\/[^/]+/)?.[0];
+        const lastmod = tagPath
+            ? newest(posts.filter(post => post.metadata.tags.some(tag => tag.permalink === tagPath)).map(post => lastmodByPath.get(post.metadata.permalink)))
+            : newestPost;
+        return lastmod ? { ...item, lastmod } : item;
+    });
+}
+
 /** @type {import('@docusaurus/types').Config} */
 const config = {
     title: 'Blazor Bootstrap Docs',
@@ -42,6 +66,11 @@ const config = {
                 },
                 theme: {
                     customCss: require.resolve('./src/css/custom.css'),
+                },
+                // Each sitemap entry carries the date its source file last changed in git (work item 26112202).
+                sitemap: {
+                    lastmod: 'date',
+                    createSitemapItems: addListingLastmod,
                 },
                 // googleAnalytics: {
                 //     trackingID: 'UA-214301343-1',
@@ -135,6 +164,8 @@ const config = {
         logo_color: '/img/logo/logo-color.svg'
     },
     plugins: [
+        // Writes build/llms.txt, an index of every docs page for AI tools (work item 26112202).
+        require.resolve('./plugins/llms-txt'),
         [
             require.resolve('@easyops-cn/docusaurus-search-local'),
             {
