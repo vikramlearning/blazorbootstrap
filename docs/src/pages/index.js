@@ -40,8 +40,9 @@ function HomepageHeader() {
 export default function Home() {
     return (
         <Layout title={pageTitle} description={pageDescription}>
-            <HomepageHeader />
+            {/* The hero is inside <main> so the theme's "Skip to main content" link lands on the H1 and buttons. */}
             <main>
+                <HomepageHeader />
                 <div className="container">
                     <CarbonAd />
                 </div>
