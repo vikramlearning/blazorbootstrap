@@ -12,12 +12,24 @@
   </ItemGroup>
 
   <Target Name="GenerateSeoFiles" AfterTargets="ResolveProjectReferences" Condition="'$(DesignTimeBuild)' != 'true'">
+    <!-- Forward slashes so the same paths work on the Windows and Linux CI runners. -->
     <PropertyGroup>
       <_SeoDotnet Condition="'$(DOTNET_HOST_PATH)' != ''">$(DOTNET_HOST_PATH)</_SeoDotnet>
       <_SeoDotnet Condition="'$(_SeoDotnet)' == ''">dotnet</_SeoDotnet>
-      <_SeoToolDll>$(MSBuildThisFileDirectory)bin\$(Configuration)\net11.0\BlazorBootstrap.Demo.Seo.dll</_SeoToolDll>
+      <_SeoToolDll>$(MSBuildThisFileDirectory)bin/$(Configuration)/net11.0/BlazorBootstrap.Demo.Seo.dll</_SeoToolDll>
     </PropertyGroup>
-    <Exec Command="&quot;$(_SeoDotnet)&quot; exec &quot;$(_SeoToolDll)&quot; --out &quot;$(MSBuildProjectDirectory)\wwwroot&quot; --host $(SeoHost)" />
+    <Exec Command="&quot;$(_SeoDotnet)&quot; exec &quot;$(_SeoToolDll)&quot; --out &quot;$(MSBuildProjectDirectory)/wwwroot&quot; --host $(SeoHost)" />
+
+    <!-- The wwwroot glob ran when the project was loaded, before these files existed on a clean clone. Add them as
+         Content now, so static web assets (serving, compression, publish) include them in this same build. Remove
+         matches item names as written, so they are spelled as the SDK glob spells them (MSBuild turns the
+         backslashes into slashes on Linux, where the glob uses slashes too). -->
+    <ItemGroup>
+      <_SeoGeneratedFile Include="wwwroot\sitemap.xml;wwwroot\llms.txt;wwwroot\robots.txt" />
+      <_SeoGeneratedFile Include="wwwroot\staticwebapp.config.json" Condition="'$(SeoHost)' == 'webassembly'" />
+      <Content Remove="@(_SeoGeneratedFile)" />
+      <Content Include="@(_SeoGeneratedFile)" CopyToPublishDirectory="PreserveNewest" />
+    </ItemGroup>
   </Target>
 
 </Project>
