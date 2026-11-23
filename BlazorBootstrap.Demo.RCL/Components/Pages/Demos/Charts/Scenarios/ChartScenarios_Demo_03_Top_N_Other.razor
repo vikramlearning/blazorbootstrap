@@ -1,0 +1,93 @@
+<div class="d-flex flex-wrap align-items-center gap-3 mb-3">
+    <RadioButtonGroup @bind-Value="topCount" @bind-Value:after="UpdateChartAsync" AriaLabel="Countries to show" Size="ButtonGroupSize.Small">
+        <ButtonGroupItem Value="5">Top 5 + Other</ButtonGroupItem>
+        <ButtonGroupItem Value="8">Top 8 + Other</ButtonGroupItem>
+        <ButtonGroupItem Value="@countries.Count">All @countries.Count</ButtonGroupItem>
+    </RadioButtonGroup>
+</div>
+
+<div class="row g-3 align-items-center">
+    <div class="col-12 col-lg-7" style="min-width: 0;">
+        <DoughnutChart @ref="revenueChart" ContainerStyle="position: relative; width: 100%; aspect-ratio: 9 / 5; min-height: 240px;"
+                       role="img" aria-label="Doughnut chart: share of 2025 revenue by country" />
+    </div>
+    <div class="col-12 col-lg-5">
+        @if (OtherCountries.Count > 0)
+        {
+            <h3 class="h6">Other (@OtherCountries.Count countries, @OtherShare.ToString("P1"))</h3>
+            <p class="small text-body-secondary mb-0">@string.Join(", ", OtherCountries.Select(country => country.Name))</p>
+        }
+        else
+        {
+            <p class="small text-body-secondary mb-0">
+                All @countries.Count countries are drawn as their own slice. The smallest slices are too thin to read,
+                and with more slices than palette colours, colours start to repeat.
+            </p>
+        }
+    </div>
+</div>
+
+@code {
+    private const string otherColor = "#adb5bd";
+
+    // Revenue in USD thousands, already sorted from the largest to the smallest.
+    private readonly List<CountryRevenue> countries =
+    [
+        new("United States", 4820), new("Germany", 1960), new("United Kingdom", 1740), new("India", 1380),
+        new("Japan", 1120), new("Canada", 890), new("France", 760), new("Australia", 540),
+        new("Brazil", 310), new("Netherlands", 270), new("Singapore", 220), new("Spain", 180),
+        new("Mexico", 140), new("Sweden", 120), new("South Africa", 90), new("New Zealand", 60),
+    ];
+
+    private DoughnutChart revenueChart = default!;
+    private DoughnutChartOptions options = default!;
+    private int topCount = 5;
+
+    private List<CountryRevenue> OtherCountries => countries.Skip(topCount).ToList();
+    private double OtherShare => OtherCountries.Sum(country => country.Revenue) / countries.Sum(country => country.Revenue);
+
+    protected override void OnInitialized()
+    {
+        options = new DoughnutChartOptions { Responsive = true, MaintainAspectRatio = false };
+        options.Plugins.Legend.Position = "right";
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+            await revenueChart.InitializeAsync(GetChartData(), options);
+
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
+    private async Task UpdateChartAsync() => await revenueChart.UpdateAsync(GetChartData(), options);
+
+    private ChartData GetChartData()
+    {
+        var palette = ColorUtility.CategoricalTwelveColors;
+
+        // Keep the largest slices and add the rest together as one "Other" slice, drawn last in a neutral colour.
+        var slices = countries.Take(topCount)
+                              .Select((country, index) => (country.Name, country.Revenue, Color: palette[index % palette.Length]))
+                              .ToList();
+
+        if (OtherCountries.Count > 0)
+            slices.Add(("Other", OtherCountries.Sum(country => country.Revenue), otherColor));
+
+        return new ChartData
+        {
+            Labels = slices.Select(slice => slice.Name).ToList(),
+            Datasets =
+            [
+                new DoughnutChartDataset
+                {
+                    Label = "Revenue (USD thousands)",
+                    Data = slices.Select(slice => (double?)slice.Revenue).ToList(),
+                    BackgroundColor = slices.Select(slice => slice.Color).ToList(),
+                },
+            ],
+        };
+    }
+
+    private sealed record CountryRevenue(string Name, double Revenue);
+}

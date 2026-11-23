@@ -114,6 +114,7 @@ public partial class MainLayout : MainLayoutBase
             new (){ Id = "605", Text = "Polar Area Chart", Href = DemoRouteConstants.Demos_URL_PolarAreaChart, IconName = IconName.PieChartFill, ParentId = "6", Match = NavLinkMatch.All },
             new (){ Id = "606", Text = "Radar Chart", Href = DemoRouteConstants.Demos_URL_RadarChart, IconName = IconName.Radar, ParentId = "6", Match = NavLinkMatch.All },
             new (){ Id = "607", Text = "Scatter Chart", Href = DemoRouteConstants.Demos_URL_ScatterChart, IconName = IconName.GraphUpArrow, ParentId = "6", Match = NavLinkMatch.All },
+            new (){ Id = "608", Text = "Chart Scenarios", Href = DemoRouteConstants.Demos_URL_ChartScenarios, IconName = IconName.Lightbulb, ParentId = "6", Match = NavLinkMatch.All },
 
             new(){ Id = "7", Text = "Services", IconName = IconName.WrenchAdjustableCircleFill, IconColor = IconColor.Success },
             new (){ Id = "701", Text = "Breadcrumb Service", Href = DemoRouteConstants.Demos_URL_BreadcrumbService, IconName = IconName.SegmentedNav, ParentId = "7" },

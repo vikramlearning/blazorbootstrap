@@ -1,0 +1,97 @@
+@using System.Globalization
+
+<div class="d-flex flex-wrap align-items-center gap-3 mb-3">
+    <RadioButtonGroup @bind-Value="fillMissingDays" @bind-Value:after="UpdateChartAsync" AriaLabel="Days to show" Size="ButtonGroupSize.Small">
+        <ButtonGroupItem Value="false">As returned by the query</ButtonGroupItem>
+        <ButtonGroupItem Value="true">Every day in the range</ButtonGroupItem>
+    </RadioButtonGroup>
+    <Badge Color="@(fillMissingDays ? BadgeColor.Success : BadgeColor.Warning)" role="status">
+        @(fillMissingDays
+            ? $"{missingDays.Count} missing days shown as 0 orders"
+            : $"{missingDays.Count} days missing from the query result")
+    </Badge>
+</div>
+
+<BarChart @ref="ordersChart" ContainerStyle="position: relative; width: 100%; aspect-ratio: 5 / 2; min-height: 220px;" role="img" aria-label="Bar chart: orders per day, 1 to 21 March 2026" />
+
+<p class="small text-body-secondary mt-2 mb-0">
+    Missing days: @string.Join(", ", missingDays.Select(day => day.ToString("ddd d MMM", CultureInfo.InvariantCulture))).
+    The store is closed on Sundays, and checkout was down on 11 March.
+</p>
+
+@code {
+    private static readonly DateOnly from = new(2026, 3, 1);
+    private static readonly DateOnly to = new(2026, 3, 21);
+
+    // What "SELECT OrderDate, COUNT(*) ... GROUP BY OrderDate" returns: only the days that had orders.
+    private static readonly List<DailyOrders> queryResult =
+    [
+        new(new(2026, 3, 2), 148), new(new(2026, 3, 3), 162), new(new(2026, 3, 4), 155), new(new(2026, 3, 5), 171),
+        new(new(2026, 3, 6), 204), new(new(2026, 3, 7), 236), new(new(2026, 3, 9), 151), new(new(2026, 3, 10), 158),
+        new(new(2026, 3, 12), 189), new(new(2026, 3, 13), 213), new(new(2026, 3, 14), 241), new(new(2026, 3, 16), 160),
+        new(new(2026, 3, 17), 166), new(new(2026, 3, 18), 172), new(new(2026, 3, 19), 180), new(new(2026, 3, 20), 219),
+        new(new(2026, 3, 21), 252),
+    ];
+
+    private BarChart ordersChart = default!;
+    private BarChartOptions options = default!;
+    private bool fillMissingDays;
+    private List<DateOnly> missingDays = [];
+
+    protected override void OnInitialized()
+    {
+        missingDays = FillMissingDays(queryResult, from, to).Where(day => day.Orders == 0).Select(day => day.Date).ToList();
+
+        options = new BarChartOptions { Responsive = true, MaintainAspectRatio = false };
+        options.Plugins.Legend.Display = false;
+        options.Scales.Y!.Title = new ChartAxesTitle { Text = "Orders", Display = true, Color = null };
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+            await ordersChart.InitializeAsync(GetChartData(), options);
+
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
+    private async Task UpdateChartAsync() => await ordersChart.UpdateAsync(GetChartData(), options);
+
+    private ChartData GetChartData()
+    {
+        var days = fillMissingDays ? FillMissingDays(queryResult, from, to) : queryResult;
+        var color = ColorUtility.CategoricalTwelveColors[0].ToChartColor().ToChartRgbString();
+
+        return new ChartData
+        {
+            Labels = days.Select(day => day.Date.ToString("ddd d MMM", CultureInfo.InvariantCulture)).ToList(),
+            Datasets =
+            [
+                new BarChartDataset
+                {
+                    Label = "Orders",
+                    Data = days.Select(day => (double?)day.Orders).ToList(),
+                    BackgroundColor = [color],
+                    BorderWidth = [0],
+                },
+            ],
+        };
+    }
+
+    /// <summary>
+    /// Returns one row for every day from <paramref name="start" /> to <paramref name="end" />, using 0 for the days the query did not return.
+    /// Use null instead of 0 when a missing day means "no data" rather than "nothing happened", so the chart shows a gap.
+    /// </summary>
+    private static List<DailyOrders> FillMissingDays(IEnumerable<DailyOrders> rows, DateOnly start, DateOnly end)
+    {
+        var ordersByDate = rows.ToDictionary(row => row.Date, row => row.Orders);
+        var days = new List<DailyOrders>();
+
+        for (var date = start; date <= end; date = date.AddDays(1))
+            days.Add(new DailyOrders(date, ordersByDate.GetValueOrDefault(date)));
+
+        return days;
+    }
+
+    private sealed record DailyOrders(DateOnly Date, int Orders);
+}

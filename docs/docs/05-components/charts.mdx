@@ -22,7 +22,7 @@ When upgrading from a BlazorBootstrap version that included charts, add the `Bla
 ## Install the package
 
 ```shell
-dotnet add package BlazorExpress.ChartJS --version 1.2.4
+dotnet add package BlazorExpress.ChartJS --version 2.0.0
 ```
 
 Add the namespace to the `_Imports.razor` used by your chart pages:
@@ -33,13 +33,22 @@ Add the namespace to the `_Imports.razor` used by your chart pages:
 
 ## Add browser scripts
 
-Load these scripts from the host page after the Blazor framework script and in the order shown. The data-labels plugin is needed only by charts that use data labels.
+Load these scripts from the host page (`wwwroot/index.html` for Blazor WebAssembly, `Components/App.razor` for a Blazor Web App) after the Blazor framework script and in the order shown. BlazorExpress.ChartJS 2.0.0 is built for Chart.js 4.6.1. The data-labels plugin is needed only by charts that use data labels, and time axes need no extra date-adapter script.
 
 ```html
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.6.1/chart.umd.js" integrity="sha512-Vj/VnWZpOof68AJOIBxA90+7KQccA7eISngKbl18q5MQO3KnvO1a0z76Q+7hj8+iDIwETpKUBPN+cLy7PxvTEQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js" integrity="sha512-JPcRR8yFa8mmCsfrw4TNte1ZvF1e3+1SdGMslZvmrzDYxS69J7J49vkFL8u6u8PlPJK+H3voElBtUCzaXj+6ig==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="_content/BlazorExpress.ChartJS/blazorexpress.chartjs.js"></script>
 ```
+
+| BlazorExpress.ChartJS | .NET | Chart.js | chartjs-plugin-datalabels |
+|:--|:--|:--|:--|
+| 2.0.0 | 8, 9, 10, 11 | 4.6.1 | 2.2.0 |
+| 1.2.2 to 1.2.4 | 8, 9, 10 | 4.4.1 | 2.2.0 |
+
+:::info Upgrading from 1.x
+BlazorExpress.ChartJS 2.0.0 changes some defaults and behaviour, such as radar and bubble axes starting at zero, hidden datasets staying hidden after `UpdateAsync`, and a built-in date adapter that replaces third-party adapters. Read the [2.0.0 breaking changes](https://chartjs.blazorexpress.com/blog/releases/2-0-0-breaking-changes) before you update.
+:::
 
 ## Documentation and original demos
 
@@ -51,9 +60,9 @@ Use the dedicated project as the source of truth for current chart APIs and exam
 
 We recommend checking the original demos before adapting advanced examples.
 
-## Click events in 1.2.4
+## Click events
 
-BlazorExpress.ChartJS 1.2.4 adds chart item click callbacks for every supported chart family. Set the package-provided `OnClick` callback to receive `ChartClickEventArgs`, which includes the selected dataset index and label, data-item index and label, and raw selected value.
+BlazorExpress.ChartJS 1.2.4 added chart item click callbacks for every supported chart family. Set the package-provided `OnClick` callback to receive `ChartClickEventArgs`, which includes the selected dataset index and label, data-item index and label, and raw selected value.
 
 Use the official documentation and original demos below for the current click-event examples and API details.
 

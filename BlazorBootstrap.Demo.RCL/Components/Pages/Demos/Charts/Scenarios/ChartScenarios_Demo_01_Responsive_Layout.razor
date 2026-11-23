@@ -1,0 +1,102 @@
+<div class="d-flex flex-wrap align-items-center gap-2 mb-3">
+    <Button Type="ButtonType.Button" Color="ButtonColor.Secondary" Outline="true" Size="ButtonSize.Small"
+            aria-controls="revenue-filters" aria-expanded="@(showFilters ? "true" : "false")"
+            @onclick="() => showFilters = !showFilters">
+        <Icon Name="IconName.Funnel" class="me-1" aria-hidden="true" />@(showFilters ? "Hide filters" : "Show filters")
+    </Button>
+    <span class="text-body-secondary small">The chart resizes when the filter panel opens or closes, not only when the window resizes.</span>
+</div>
+
+<div class="row g-3">
+    @if (showFilters)
+    {
+        <div class="col-12 col-md-4 col-xl-3" id="revenue-filters">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h3 class="h6 card-title">Regions</h3>
+                    @foreach (var region in regions)
+                    {
+                        <CheckboxInput Label="@region.Name" @bind-Value="region.Visible" @bind-Value:after="UpdateChartAsync" />
+                    }
+                </div>
+            </div>
+        </div>
+    }
+
+    @* A Bootstrap .col is a flex item, and a flex item never gets narrower than its content (min-width: auto).
+       min-width: 0 lets this column shrink below the chart's current width, so the chart can shrink and grow again. *@
+    <div class="col-12 col-md" style="min-width: 0;">
+        <div class="card h-100">
+            <div class="card-body">
+                <h3 class="h6 card-title">Revenue by month, FY2026 (USD thousands)</h3>
+                @* Chart.js never makes a chart taller than its container already is. A container without its own height is only as tall
+                   as the canvas, so the chart could shrink but never grow back. aspect-ratio gives the container a height that follows its width. *@
+                <BarChart @ref="revenueChart" ContainerStyle="position: relative; width: 100%; aspect-ratio: 2 / 1; min-height: 240px;"
+                          role="img" aria-label="Bar chart: revenue in thousands of US dollars per month, April to September 2025, by region" />
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private BarChart revenueChart = default!;
+    private BarChartOptions options = default!;
+    private bool showFilters = true;
+
+    private static readonly List<string> months = ["Apr", "May", "Jun", "Jul", "Aug", "Sep"];
+
+    private readonly List<RegionRevenue> regions =
+    [
+        new("North America", [412, 398, 455, 471, 502, 538]),
+        new("Europe", [286, 301, 297, 318, 289, 342]),
+        new("Asia Pacific", [174, 193, 221, 236, 264, 291]),
+    ];
+
+    protected override void OnInitialized()
+    {
+        // MaintainAspectRatio = false: the chart fills its container, whose size the layout and aspect-ratio decide.
+        options = new BarChartOptions { Responsive = true, MaintainAspectRatio = false, Interaction = new Interaction { Mode = InteractionMode.Index } };
+        options.Scales.Y!.Title = new ChartAxesTitle { Text = "USD thousands", Display = true, Color = null };
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+            await revenueChart.InitializeAsync(GetChartData(), options);
+
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
+    private async Task UpdateChartAsync() => await revenueChart.UpdateAsync(GetChartData(), options);
+
+    private ChartData GetChartData()
+    {
+        var datasets = new List<IChartDataset>();
+
+        for (var index = 0; index < regions.Count; index++)
+        {
+            if (!regions[index].Visible)
+                continue;
+
+            var color = ColorUtility.CategoricalTwelveColors[index].ToChartColor().ToChartRgbString();
+
+            datasets.Add(new BarChartDataset
+            {
+                Label = regions[index].Name,
+                Data = regions[index].Revenue,
+                BackgroundColor = [color],
+                BorderColor = [color],
+                BorderWidth = [0],
+            });
+        }
+
+        return new ChartData { Labels = months, Datasets = datasets };
+    }
+
+    private sealed class RegionRevenue(string name, List<double?> revenue)
+    {
+        public string Name { get; } = name;
+        public List<double?> Revenue { get; } = revenue;
+        public bool Visible { get; set; } = true;
+    }
+}

@@ -1,0 +1,129 @@
+<p class="mb-3">
+    <Badge Color="BadgeColor.Primary">@vitalFewCount of @reasons.Count reasons</Badge>
+    cause @vitalFewShare.ToString("P0") of the @totalReturns.ToString("N0") returns this quarter. Fix those first.
+</p>
+
+<BarChart @ref="paretoChart" ContainerStyle="position: relative; width: 100%; aspect-ratio: 5 / 2; min-height: 260px;"
+          role="img" aria-label="Pareto chart: product returns by reason in Q2 2026 as bars from most to fewest, with the cumulative share of returns as a line" />
+
+@code {
+    private const double threshold = 80; // percent
+
+    // Unsorted, as the returns system exports them.
+    private readonly List<ReturnReason> reasons =
+    [
+        new("Late delivery", 61), new("Wrong size", 412), new("Defective", 44), new("Not as described", 154),
+        new("Wrong item sent", 27), new("Damaged in transit", 268), new("Other", 18), new("Changed mind", 97),
+    ];
+
+    private BarChart paretoChart = default!;
+    private List<ParetoRow> rows = [];
+    private int totalReturns;
+    private int vitalFewCount;
+    private double vitalFewShare;
+
+    protected override void OnInitialized()
+    {
+        // 1. Sort from the most to the fewest returns. 2. Add a running total as a share of all returns.
+        totalReturns = reasons.Sum(reason => reason.Returns);
+
+        var runningTotal = 0;
+        rows = reasons.OrderByDescending(reason => reason.Returns)
+                      .Select(reason =>
+                      {
+                          runningTotal += reason.Returns;
+                          return new ParetoRow(reason.Name, reason.Returns, Math.Round(100.0 * runningTotal / totalReturns, 1));
+                      })
+                      .ToList();
+
+        // The "vital few": the reasons up to and including the one that takes the running total past the threshold.
+        vitalFewCount = rows.FindIndex(row => row.CumulativePercent >= threshold) + 1;
+        vitalFewShare = rows[vitalFewCount - 1].CumulativePercent / 100;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+            await paretoChart.InitializeAsync(GetChartData(), GetOptions());
+
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
+    private ChartData GetChartData()
+    {
+        var strong = ColorUtility.CategoricalTwelveColors[0].ToChartColor();
+        var lineColor = ColorUtility.CategoricalTwelveColors[2].ToChartColor().ToChartRgbString();
+
+        return new ChartData
+        {
+            Labels = rows.Select(row => row.Reason).ToList(),
+            Datasets =
+            [
+                new BarChartDataset
+                {
+                    Label = "Returns",
+                    Data = rows.Select(row => (double?)row.Returns).ToList(),
+                    // The vital few in full colour, the rest faded.
+                    BackgroundColor = rows.Select((_, index) => index < vitalFewCount ? strong.ToChartRgbString() : strong.ToChartRgbaString(0.3)).ToList(),
+                    BorderWidth = [0],
+                    Order = 2,
+                },
+                new LineChartDataset
+                {
+                    Label = "Cumulative share",
+                    Data = rows.Select(row => (double?)row.CumulativePercent).ToList(),
+                    YAxisID = "y1",
+                    BorderColor = lineColor,
+                    BackgroundColor = lineColor,
+                    PointRadius = [4],
+                    Order = 0,
+                },
+                new LineChartDataset
+                {
+                    Label = $"{threshold}% line",
+                    Data = rows.Select(_ => (double?)threshold).ToList(),
+                    YAxisID = "y1",
+                    BorderColor = "#6c757d",
+                    BorderDash = [6, 4],
+                    BorderWidth = 1,
+                    PointRadius = [0],
+                    PointHoverRadius = [0],
+                    Order = 1,
+                },
+            ],
+        };
+    }
+
+    private static BarChartOptions GetOptions()
+    {
+        var options = new BarChartOptions
+        {
+            Locale = "en-US",
+            Responsive = true,
+            MaintainAspectRatio = false,
+            Interaction = new Interaction { Mode = InteractionMode.Index, Intersect = false },
+        };
+
+        options.Scales.Y!.Title = new ChartAxesTitle { Text = "Returns", Display = true, Color = null };
+        options.Scales.AdditionalAxes = new()
+        {
+            // The cumulative share always ends at 100%, so its axis runs from 0 to 100.
+            ["y1"] = new ChartAxes
+            {
+                Type = ChartAxesType.Linear,
+                Position = "right",
+                Min = 0,
+                Max = 100,
+                Grid = new ChartAxesGrid { DrawOnChartArea = false },
+                Title = new ChartAxesTitle { Text = "Cumulative share", Display = true, Color = null },
+                Ticks = new ChartAxesTicks { Format = new ChartNumberFormat { Style = "unit", Unit = "percent" } },
+            },
+        };
+
+        return options;
+    }
+
+    private sealed record ReturnReason(string Name, int Returns);
+
+    private sealed record ParetoRow(string Reason, int Returns, double CumulativePercent);
+}

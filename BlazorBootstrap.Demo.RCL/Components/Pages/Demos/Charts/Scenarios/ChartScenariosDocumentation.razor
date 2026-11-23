@@ -1,0 +1,127 @@
+@attribute [Route(pageUrl)]
+@layout DemosMainLayout
+
+<DemosPageHeadSection PageUrl="@pageUrl"
+                      PageTitle="@pageTitle"
+                      PageDescription="@pageDescription"
+                      MetaTitle="@metaTitle"
+                      MetaDescription="@metaDescription"
+                      ImageUrl="@imageUrl" />
+
+<div class="mb-3">
+    Each example below starts from a problem people hit when they put charts into real business screens, reported in the
+    <a href="https://github.com/vikramlearning/blazorbootstrap/issues?q=is%3Aissue%20chart" target="_blank" rel="noopener noreferrer">Blazor Bootstrap issues</a>
+    or common to Chart.js reports. For each chart type and option on its own, see the
+    <a href="https://chartjs.blazorexpress.com/demos/samples" target="_blank" rel="noopener noreferrer">BlazorExpress.ChartJS samples</a>.
+</div>
+
+<Section Size="HeadingSize.H2" Name="Charts that shrink and grow in Bootstrap rows and cards" PageUrl="@pageUrl" Link="responsive-layout">
+    <div class="mb-3">
+        <strong>The problem:</strong> a chart in a Bootstrap column or a flex card gets smaller when the window narrows but does not grow back, or
+        pushes past the edge of its card when a side panel opens
+        (<a href="https://github.com/vikramlearning/blazorbootstrap/issues/1089" target="_blank" rel="noopener noreferrer">#1089</a>,
+        <a href="https://github.com/vikramlearning/blazorbootstrap/issues/797" target="_blank" rel="noopener noreferrer">#797</a>).
+        Two things cause it. A Bootstrap <code>.col</code> is a flex item, and a flex item never gets narrower than its content, so the canvas holds the column open.
+        And Chart.js never makes a chart taller than its container already is; a container without its own height is only as tall as the canvas,
+        so the chart can shrink but never grow back.
+        <br />
+        <strong>The fix:</strong>
+        <ol class="mt-2 mb-0">
+            <li>Add <code>style="min-width: 0;"</code> to the column or flex item that holds the chart.</li>
+            <li>
+                Give the chart's container a height that follows its width: <code>ContainerStyle="position: relative; width: 100%; aspect-ratio: 2 / 1; min-height: 240px;"</code>.
+                Keep <code>width: 100%</code>; without it, <code>aspect-ratio</code> turns the minimum height into a minimum width and the chart overflows on small screens.
+            </li>
+            <li>Set <code>MaintainAspectRatio = false</code> in the chart options, so the chart fills that container.</li>
+            <li>Do not set <code>Width</code> or <code>Height</code> on the chart; a fixed size stops it following the layout.</li>
+        </ol>
+    </div>
+    <Demo Type="typeof(ChartScenarios_Demo_01_Responsive_Layout)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Days missing from the query result" PageUrl="@pageUrl" Link="missing-dates">
+    <div class="mb-3">
+        <strong>The problem:</strong> a <code>GROUP BY</code> date query returns only the days that had data, so a chart of orders per day silently
+        skips closed days and outages, and the bars look evenly spaced when they are not
+        (<a href="https://github.com/vikramlearning/blazorbootstrap/issues/643" target="_blank" rel="noopener noreferrer">#643</a>).
+        <br />
+        <strong>The fix:</strong> build the full list of days for the range in C# and fill the days the query did not return.
+        Use <code>0</code> when a missing day means nothing happened, and <code>null</code> when it means no data was reported, so the chart shows a gap.
+    </div>
+    <Demo Type="typeof(ChartScenarios_Demo_02_Missing_Dates)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Too many slices: top N plus Other" PageUrl="@pageUrl" Link="top-n-other">
+    <div class="mb-3">
+        <strong>The problem:</strong> a pie or doughnut chart of every customer, country or product turns into thin slices nobody can read,
+        and once there are more slices than palette colours, colours repeat.
+        <br />
+        <strong>The fix:</strong> sort the rows, keep the largest few as their own slices, add the rest together as one <b>Other</b> slice in a neutral colour,
+        and list what <b>Other</b> contains next to the chart.
+    </div>
+    <Demo Type="typeof(ChartScenarios_Demo_03_Top_N_Other)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Keep each category's colour when the data changes" PageUrl="@pageUrl" Link="stable-colors">
+    <div class="mb-3">
+        <strong>The problem:</strong> colours given by list position move to another category when the data is sorted differently or a category
+        has no rows, so <b>Billing</b> is teal in one quarter and orange in the next, and readers compare the wrong slices
+        (<a href="https://github.com/vikramlearning/blazorbootstrap/issues/411" target="_blank" rel="noopener noreferrer">#411</a>).
+        <br />
+        <strong>The fix:</strong> give every category a colour once, from the full category list, and look the colour up by name each time you build the data.
+        Use the same lookup for every chart on the page.
+    </div>
+    <Demo Type="typeof(ChartScenarios_Demo_04_Stable_Colors)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Mixed bar and line charts" PageUrl="@pageUrl" Link="mixed-charts">
+    <div class="mb-3">
+        A <code>BarChart</code> can hold <code>LineChartDataset</code>s next to its <code>BarChartDataset</code>s. Bars and a line together answer
+        two questions on one chart, such as how much and how good, but they bring their own traps: units that do not share a scale, lines drawn behind bars,
+        and lines that get stacked by accident. Set <code>Order</code> on each dataset to choose what is drawn on top; a lower order is drawn later, in front.
+    </div>
+</Section>
+
+<Section Size="HeadingSize.H3" Name="Revenue and margin: two units on one chart" PageUrl="@pageUrl" Link="mixed-units">
+    <div class="mb-3">
+        <strong>The problem:</strong> revenue in dollars and gross margin in percent share one y-axis, so a 34% margin next to $538,000 of revenue
+        is a flat line along the bottom and its ups and downs disappear.
+        <br />
+        <strong>The fix:</strong> add a second y-axis on the right with <code>Scales.AdditionalAxes["y1"]</code>, set <code>YAxisID = "y1"</code> on the line,
+        give each axis its own number format and title, and turn off the second axis's grid lines with <code>DrawOnChartArea = false</code>.
+    </div>
+    <Demo Type="typeof(ChartScenarios_Demo_05_Mixed_Units)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H3" Name="Pareto chart: find the few causes behind most problems" PageUrl="@pageUrl" Link="pareto-chart">
+    <div class="mb-3">
+        <strong>The problem:</strong> a quality, support or returns team needs to know which few causes account for most of the problems.
+        Chart.js has no Pareto chart type, and a plain bar chart of unsorted export data does not show where the 80% line falls.
+        <br />
+        <strong>The fix:</strong> sort the causes from most to fewest, add a running total as a share of the whole, and draw it as a line on a second axis from 0 to 100%.
+        A dashed line at 80% and faded bars after it show which causes to fix first.
+    </div>
+    <Demo Type="typeof(ChartScenarios_Demo_06_Pareto)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H3" Name="Stacked bars with reference lines" PageUrl="@pageUrl" Link="stacked-bars-reference-lines">
+    <div class="mb-3">
+        <strong>The problem:</strong> with <code>Scales.Y.Stacked = true</code>, every dataset that has no <code>Stack</code> joins the default stack of its type.
+        Two reference lines, such as team capacity and the same week last year, are then added together, and the second line is drawn far too high.
+        Turning stacking off fixes the lines but breaks the bars.
+        <br />
+        <strong>The fix:</strong> keep the axis stacked, put the bars in one named stack, and give each reference line a <code>Stack</code> of its own.
+    </div>
+    <Demo Type="typeof(ChartScenarios_Demo_07_Stacked_Bars_Reference_Lines)" Tabs="true" />
+</Section>
+
+<ChartJSCallout />
+
+@code {
+    private const string pageUrl = DemoRouteConstants.Demos_URL_ChartScenarios;
+    private const string pageTitle = "Blazor Chart Scenarios";
+    private const string pageDescription = "Fixes for problems people hit when they put charts into real business screens: charts that do not grow back in Bootstrap layouts, days missing from query results, pie charts with too many slices, colours that move between categories, and mixed bar and line charts: two units on one chart, a Pareto chart, and stacked bars with reference lines.";
+    private const string metaTitle = "Blazor chart scenarios and fixes";
+    private const string metaDescription = "Live Blazor chart examples with source code that fix common chart problems: responsive charts in Bootstrap rows and cards, missing dates, top N plus Other, stable category colours, and mixed bar and line charts with a second axis, a Pareto chart and stacked bars with reference lines.";
+    private const string imageUrl = "https://i.imgur.com/IX3bajc.png";
+}
