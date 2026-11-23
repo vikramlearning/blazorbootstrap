@@ -1,0 +1,67 @@
+﻿<Grid TItem="Employee1"
+      Class="table table-hover table-bordered"
+      Data="employees"
+      AllowDetailView="true"
+      AllowRowClick="true"
+      OnRowClick="OnRowClick">
+
+    <GridColumns>
+        <GridColumn TItem="Employee1" HeaderText="Id" PropertyName="Id">
+            @context.Id
+        </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Employee Name" PropertyName="Name">
+            @context.Name
+        </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Designation" PropertyName="Designation">
+            @context.Designation
+        </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Active" PropertyName="IsActive">
+            @context.IsActive
+        </GridColumn>
+    </GridColumns>
+
+    <GridDetailView TItem="Employee1">
+        <div class="row">
+            <div class="col-2 fw-bold">DOJ</div>
+            <div class="col">@context.DOJ</div>
+        </div>
+        <div class="row">
+            <div class="col-2 fw-bold">Email</div>
+            <div class="col">@context.Email</div>
+        </div>
+    </GridDetailView>
+
+</Grid>
+
+<div class="mt-3" aria-live="polite">
+    Row clicks: <b>@rowClickCount</b>, last clicked: <b>@(lastClickedEmployee?.Name ?? "none")</b>
+</div>
+
+@code {
+    private int rowClickCount;
+    private Employee1? lastClickedEmployee;
+
+    private List<Employee1> employees = new List<Employee1> {
+        new Employee1 { Id = 107, Name = "Alice", Designation = "AI Engineer", DOJ = new DateOnly(1998, 11, 17), Email = "alice@example.com", IsActive = true },
+        new Employee1 { Id = 103, Name = "Bob", Designation = "Senior DevOps Engineer", DOJ = new DateOnly(1985, 1, 5), Email = "bob@example.com", IsActive = true },
+        new Employee1 { Id = 106, Name = "John", Designation = "Data Engineer", DOJ = new DateOnly(1995, 4, 17), Email = "john@example.com", IsActive = true },
+        new Employee1 { Id = 104, Name = "Pop", Designation = "Associate Architect", DOJ = new DateOnly(1985, 6, 8), Email = "pop@example.com", IsActive = false },
+        new Employee1 { Id = 105, Name = "Ronald", Designation = "Senior Data Engineer", DOJ = new DateOnly(1991, 8, 23), Email = "ronald@example.com", IsActive = true }
+    };
+
+    private void OnRowClick(GridRowEventArgs<Employee1> args)
+    {
+        rowClickCount++;
+        lastClickedEmployee = args.Item;
+    }
+
+    public record class Employee1
+    {
+        public int Id { get; set; }
+        public string? Name { get; set; }
+        public string? Designation { get; set; }
+        public DateOnly DOJ { get; set; }
+        public string? Email { get; set; }
+        public bool IsActive { get; set; }
+    }
+}
