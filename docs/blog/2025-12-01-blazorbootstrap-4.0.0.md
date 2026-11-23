@@ -1,5 +1,6 @@
 ---
 title: Blazor Bootstrap v4.0.0
+description: "Release notes for Blazor Bootstrap 4.0.0: what changed in the RichTextEditor, FileInput, SplitView, OTPInput, Charts and PdfViewer components in this version."
 authors:
   name: Vikram Reddy
   title: Creator

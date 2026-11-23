@@ -364,3 +364,12 @@ MigrationBackup/
 FodyWeavers.xsd
 .DS_Store
 /.idea/.idea.blazorbootstrap/.idea
+
+# Generated at build by tools/BlazorBootstrap.Demo.Seo (work item 26112202).
+BlazorBootstrap.Demo.Server/wwwroot/sitemap.xml
+BlazorBootstrap.Demo.Server/wwwroot/llms.txt
+BlazorBootstrap.Demo.Server/wwwroot/robots.txt
+BlazorBootstrap.Demo.WebAssembly/wwwroot/sitemap.xml
+BlazorBootstrap.Demo.WebAssembly/wwwroot/llms.txt
+BlazorBootstrap.Demo.WebAssembly/wwwroot/robots.txt
+BlazorBootstrap.Demo.WebAssembly/wwwroot/staticwebapp.config.json

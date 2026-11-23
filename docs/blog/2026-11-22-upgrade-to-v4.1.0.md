@@ -1,5 +1,6 @@
 ---
 title: Upgrade to v4.1.0
+description: "Upgrade to Blazor Bootstrap 4.1.0: .NET 11 support, Grid sorting and MindMap markup changes, and the new localizable text parameters."
 draft: true
 authors:
   name: Vikram Reddy

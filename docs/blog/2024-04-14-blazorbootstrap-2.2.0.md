@@ -1,5 +1,6 @@
 ---
 title: Blazor Bootstrap v2.2.0
+description: "What's new in Blazor Bootstrap 2.2.0: changes to the Ribbon, SortableList, ConfirmDialog, Grid, PdfViewer and Tabs components in this release."
 authors:
   name: Vikram Reddy
   title: Creator

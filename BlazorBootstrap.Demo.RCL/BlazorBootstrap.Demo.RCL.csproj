@@ -11,6 +11,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <!-- The build-time generator of sitemap.xml and llms.txt reads HomeCatalog. -->
+    <InternalsVisibleTo Include="BlazorBootstrap.Demo.Seo" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="BlazorExpress.ChartJS" Version="2.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="11.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="11.0.0" />

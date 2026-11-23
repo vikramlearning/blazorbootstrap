@@ -1,0 +1,21 @@
+@namespace BlazorBootstrap.Demo.RCL
+@using Microsoft.AspNetCore.Components.Sections
+@inject NavigationManager NavigationManager
+
+@* Placed in each host router's Found template with the current RouteData, so it re-renders on every navigation.
+   Pages SeoRoutes keeps out of search results (Showcase pages other than the gallery and site landing pages) get a
+   noindex meta tag; robots.txt never blocks them, so crawlers can see it (rules.md "Demo site search indexing"). *@
+@if (SeoRoutes.IsNoIndex(new Uri(NavigationManager.Uri).AbsolutePath))
+{
+    <SectionContent SectionName="@SeoHeadOutlet.RobotsSection">
+        <meta name="robots" content="noindex">
+    </SectionContent>
+}
+
+@code {
+    /// <summary>
+    /// The router's current route data. Passing it makes the component re-render when the route changes.
+    /// </summary>
+    [Parameter]
+    public RouteData? RouteData { get; set; }
+}

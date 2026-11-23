@@ -1,5 +1,6 @@
 ---
 title: Blazor Bootstrap v1.9.4
+description: "Release notes for Blazor Bootstrap 1.9.4: what changed in the Modal and Modal service components in this version."
 authors:
   name: Vikram Reddy
   title: Creator

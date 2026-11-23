@@ -1,5 +1,6 @@
 ---
 title: BlazorBootstrap v0.1.1
+description: "Release notes for Blazor Bootstrap 0.1.1: what changed in the Alert component in this version."
 authors:
   name: Vikram Reddy
   title: Creator

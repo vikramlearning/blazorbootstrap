@@ -1,5 +1,6 @@
 ---
 title: Blazor Bootstrap v1.10.4
+description: "What's new in Blazor Bootstrap 1.10.4: changes to the Grid, Preload, Switch, Charts and Modal components, with links to each pull request."
 authors:
   name: Vikram Reddy
   title: Creator

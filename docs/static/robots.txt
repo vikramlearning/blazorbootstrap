@@ -1,0 +1,5 @@
+# Blazor Bootstrap docs. Every crawler, AI crawlers included, may crawl every page.
+User-agent: *
+Allow: /
+
+Sitemap: https://docs.blazorbootstrap.com/sitemap.xml

@@ -1,5 +1,6 @@
 ---
 title: BlazorBootstrap v0.4.1
+description: "What's new in Blazor Bootstrap 0.4.1: changes to the AutoComplete, Callout and Grid components in this release."
 authors:
   name: Vikram Reddy
   title: Creator

@@ -1,5 +1,6 @@
 ---
 title: Blazor Bootstrap v1.8.2
+description: "What's new in Blazor Bootstrap 1.8.2: changes to the Grid, Button and DateInput components, with links to each pull request."
 authors:
   name: Vikram Reddy
   title: Creator

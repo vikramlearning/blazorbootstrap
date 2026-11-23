@@ -1,5 +1,6 @@
 ---
 title: Blazor Bootstrap v1.10.5
+description: "What's new in Blazor Bootstrap 1.10.5: changes to the Accordion, Chart, Grid, Modal and Toast components, with links to each pull request."
 authors:
   name: Vikram Reddy
   title: Creator

@@ -1,5 +1,6 @@
 ---
 title: Blazor Bootstrap v1.10.1
+description: "Release notes for Blazor Bootstrap 1.10.1: what changed in the Grid component in this version."
 authors:
   name: Vikram Reddy
   title: Creator

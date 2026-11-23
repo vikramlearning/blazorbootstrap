@@ -20,6 +20,9 @@ jobs:
     steps:
       - name: Check 🛎️
         uses: actions/checkout@v4
+        with:
+          # Full history, so the sitemap lastmod dates come from each file's last commit (work item 26112202).
+          fetch-depth: 0
 
       - name: Install Node 24
         uses: actions/setup-node@v4

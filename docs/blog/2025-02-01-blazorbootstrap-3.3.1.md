@@ -1,5 +1,6 @@
 ---
 title: Blazor Bootstrap v3.3.1
+description: "Release notes for Blazor Bootstrap 3.3.1: what changed in the RadioInput component in this version."
 authors:
   name: Vikram Reddy
   title: Creator

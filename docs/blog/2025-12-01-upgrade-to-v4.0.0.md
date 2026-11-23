@@ -1,5 +1,6 @@
 ---
 title: Upgrade to v4.0.0
+description: "How to upgrade to Blazor Bootstrap 4.0.0: .NET 6 support is dropped and charts move to the BlazorExpress.ChartJS package, with migration steps."
 authors:
   name: Vikram Reddy
   title: Creator

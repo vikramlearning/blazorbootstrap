@@ -1,5 +1,6 @@
 ---
 title: Blazor Bootstrap v1.10.2
+description: "What's new in Blazor Bootstrap 1.10.2: changes to the AutoComplete, Tooltip and Sidebar components, with links to each pull request."
 authors:
   name: Vikram Reddy
   title: Creator

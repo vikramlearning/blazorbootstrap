@@ -1,5 +1,6 @@
 ---
 title: BlazorBootstrap v0.2.6
+description: "What's new in Blazor Bootstrap 0.2.6: changes to the Buttons component in this release."
 authors:
   name: Vikram Reddy
   title: Creator

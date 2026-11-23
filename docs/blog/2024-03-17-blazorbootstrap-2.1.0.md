@@ -1,5 +1,6 @@
 ---
 title: Blazor Bootstrap v2.1.0
+description: "What's new in Blazor Bootstrap 2.1.0: changes to the Sidebar2, BarChart, Callout, CurrencyInput and Grid components in this release."
 authors:
   name: Vikram Reddy
   title: Creator

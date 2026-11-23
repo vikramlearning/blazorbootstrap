@@ -1,5 +1,6 @@
 ---
 title: Blazor Bootstrap v3.1.0
+description: "What's new in Blazor Bootstrap 3.1.0: changes to the Markdown component in this release."
 authors:
   name: Vikram Reddy
   title: Creator

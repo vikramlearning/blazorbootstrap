@@ -24,6 +24,20 @@ if (!app.Environment.IsDevelopment())
 app.UseStatusCodePagesWithReExecute("/not-found", createScopeForStatusCodePages: true);
 app.UseHttpsRedirection();
 
+// Old demo URLs answer with a permanent redirect to their current page. Targets come only from the fixed
+// SeoRoutes map; the request supplies just the query string (rules.md "Renamed demo routes redirect").
+app.Use(async (context, next) =>
+{
+    var target = BlazorBootstrap.Demo.RCL.SeoRoutes.TryGetLegacyRedirect(context.Request.Path.Value);
+    if (target is null)
+    {
+        await next(context);
+        return;
+    }
+
+    context.Response.Redirect(target + context.Request.QueryString.Value, permanent: true);
+});
+
 app.UseAntiforgery();
 
 app.MapStaticAssets();

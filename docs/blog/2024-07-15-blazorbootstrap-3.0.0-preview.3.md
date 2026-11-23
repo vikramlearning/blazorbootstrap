@@ -1,5 +1,6 @@
 ---
 title: Blazor Bootstrap v3.0.0-preview.3
+description: "What's new in Blazor Bootstrap 3.0.0-preview.3: changes to the Grid, Sidebar2 and PdfViewer components in this release."
 authors:
   name: Vikram Reddy
   title: Creator

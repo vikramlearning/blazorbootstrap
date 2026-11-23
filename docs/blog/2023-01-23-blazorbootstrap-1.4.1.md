@@ -1,5 +1,6 @@
 ---
 title: Blazor Bootstrap v1.4.1
+description: "What's new in Blazor Bootstrap 1.4.1: changes to the Modal component in this release."
 authors:
   name: Vikram Reddy
   title: Creator

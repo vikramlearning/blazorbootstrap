@@ -3,6 +3,22 @@ const { themes } = require('prism-react-renderer');
 const lightCodeTheme = themes.vsDark;
 const darkCodeTheme = themes.dracula;
 
+/**
+ * Sitemap lastmod for pages without a source file. A docs page or blog post gets the date its file last changed in
+ * git (lastmod: 'date'). The other blog listing pages are noindex and left out of the sitemap (src/theme wrappers), so
+ * the pages without a file left here are /blog and the search page; they get the newest date among the blog posts.
+ * The post list comes from the archive route, which is in `routes` even though its page is noindex.
+ */
+async function addListingLastmod({ defaultCreateSitemapItems, ...params }) {
+    const items = await defaultCreateSitemapItems(params);
+    const lastmodByPath = new Map(items.map(item => [new URL(item.url).pathname, item.lastmod]));
+    const archive = params.routes.find(route => route.path === '/blog/archive');
+    if (!archive) throw new Error('addListingLastmod: no /blog/archive route to read the blog posts from');
+    const newestPost = archive.props.archive.blogPosts.map(post => lastmodByPath.get(post.metadata.permalink)).filter(Boolean).sort().at(-1);
+
+    return items.map(item => item.lastmod || !newestPost ? item : { ...item, lastmod: newestPost });
+}
+
 /** @type {import('@docusaurus/types').Config} */
 const config = {
     title: 'Blazor Bootstrap Docs',
@@ -35,6 +51,8 @@ const config = {
                     editUrl: 'https://github.com/vikramlearning/blazorbootstrap/edit/master/docs/',
                 },
                 blog: {
+                    // The description of /blog, the one indexed blog listing page (work item 26112202 D-016).
+                    blogDescription: 'Release notes, upgrade guides and news for Blazor Bootstrap, the free Bootstrap 5.3 component library for Blazor, newest first.',
                     showReadingTime: true,
                     onInlineAuthors: 'ignore', // posts declare their author inline in front matter
                     onUntruncatedBlogPosts: 'ignore',
@@ -42,6 +60,11 @@ const config = {
                 },
                 theme: {
                     customCss: require.resolve('./src/css/custom.css'),
+                },
+                // Each sitemap entry carries the date its source file last changed in git (work item 26112202).
+                sitemap: {
+                    lastmod: 'date',
+                    createSitemapItems: addListingLastmod,
                 },
                 // googleAnalytics: {
                 //     trackingID: 'UA-214301343-1',
@@ -135,6 +158,8 @@ const config = {
         logo_color: '/img/logo/logo-color.svg'
     },
     plugins: [
+        // Writes build/llms.txt, an index of every docs page for AI tools (work item 26112202).
+        require.resolve('./plugins/llms-txt'),
         [
             require.resolve('@easyops-cn/docusaurus-search-local'),
             {

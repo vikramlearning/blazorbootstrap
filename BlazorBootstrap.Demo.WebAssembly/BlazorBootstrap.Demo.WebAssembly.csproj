@@ -19,4 +19,9 @@
     <ProjectReference Include="..\BlazorBootstrap.Demo.RCL\BlazorBootstrap.Demo.RCL.csproj" />
   </ItemGroup>
 
+  <PropertyGroup>
+    <SeoHost>webassembly</SeoHost>
+  </PropertyGroup>
+  <Import Project="..\tools\BlazorBootstrap.Demo.Seo\GenerateSeoFiles.targets" />
+
 </Project>

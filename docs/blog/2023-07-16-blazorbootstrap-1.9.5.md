@@ -1,5 +1,6 @@
 ---
 title: Blazor Bootstrap v1.9.5
+description: "What's new in Blazor Bootstrap 1.9.5: changes to the Grid, TimeInput, Switch, Modal and Sidebar components, with links to each pull request."
 authors:
   name: Vikram Reddy
   title: Creator

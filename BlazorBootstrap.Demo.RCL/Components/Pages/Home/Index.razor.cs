@@ -13,7 +13,7 @@ public partial class Index : BlazorBootstrapComponentBase
 
     private const string CopyFailedText = "Couldn't copy. Select the command to copy it.";
 
-    private const string GettingStartedUrl = "/getting-started/blazor-webassembly";
+    private const string GettingStartedUrl = "/demos/getting-started";
 
     // The same shields.io sources as the production NuGet and GitHub badges, in JSON form.
     // shields.io caches them for 30 minutes and allows cross-origin requests from the WebAssembly host.
@@ -34,7 +34,7 @@ public partial class Index : BlazorBootstrapComponentBase
 
     private string copyStatus = string.Empty;
 
-    private string description = "An Enterprise-class Blazor Bootstrap Component library built on the Blazor and Bootstrap CSS frameworks.";
+    private string description = "Free, open-source Bootstrap 5.3 components for Blazor Server, WebAssembly and MAUI on .NET 8 to 11: Grid, Modal, Sidebar, forms and more, with live demos.";
 
     private string filterText = string.Empty;
 
@@ -56,7 +56,7 @@ public partial class Index : BlazorBootstrapComponentBase
 
     private IReadOnlyList<(string Label, string Value, string? Url)> stats = Array.Empty<(string Label, string Value, string? Url)>();
 
-    private string title = "Blazor Bootstrap Component Library";
+    private string title = "Bootstrap 5.3 components for Blazor";
 
     private string version = default!;
 

@@ -3,6 +3,10 @@
 
 <PageTitle>Sign in · @FintechSeedData.ProductName</PageTitle>
 
+@* The bank's overview is behind sign-in, so this is the page visitors and crawlers land on; it is Fintech's indexed
+   landing page (rules.md "Demo site search indexing", D-015 of work item 26112202). *@
+<PageMetaTags PageUrl="@(FintechLayout.Base + "/sign-in")" Title="Online banking app example" Description="An online banking app built with Blazor Bootstrap components: transactions, transfers, payees, budgets and an operations console, with sample data." ImageUrl="@(SeoRoutes.DemosSiteUrl + "/_content/BlazorBootstrap.Demo.RCL/images/social-card.png")" IncludePageTitle="false" />
+
 @* Step one is the password (or the one-click demo account); step two, the one-time code, follows on the page you return to. *@
 <div class="container-xl">
     <ShowcaseSignIn SiteBase="@FintechLayout.Base" SiteName="@FintechSeedData.ProductName" ReturnUrl="@ReturnUrl" />

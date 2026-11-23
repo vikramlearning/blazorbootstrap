@@ -1,5 +1,6 @@
 ---
 title: Blazor Bootstrap v1.5.0
+description: "What's new in Blazor Bootstrap 1.5.0: changes to the DateInput, Offcanvas, Button and Tooltip components in this release."
 authors:
   name: Vikram Reddy
   title: Creator

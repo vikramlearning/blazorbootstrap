@@ -1,5 +1,6 @@
 ---
 title: Blazor Bootstrap v2.0.0
+description: "What's new in Blazor Bootstrap 2.0.0: changes to the Spinner, Button and Callout components in this release."
 authors:
   name: Vikram Reddy
   title: Creator

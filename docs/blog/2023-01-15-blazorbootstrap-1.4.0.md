@@ -1,5 +1,6 @@
 ---
 title: Blazor Bootstrap v1.4.0
+description: "What's new in Blazor Bootstrap 1.4.0: changes to the Sidebar component in this release."
 authors:
   name: Vikram Reddy
   title: Creator

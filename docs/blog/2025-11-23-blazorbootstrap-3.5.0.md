@@ -1,5 +1,6 @@
 ---
 title: Blazor Bootstrap v3.5.0
+description: "Release notes for Blazor Bootstrap 3.5.0: what changed in the EnumInput and PdfViewer components in this version."
 authors:
   name: Vikram Reddy
   title: Creator

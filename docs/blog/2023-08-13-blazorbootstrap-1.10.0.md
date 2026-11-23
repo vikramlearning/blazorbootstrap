@@ -1,5 +1,6 @@
 ---
 title: Blazor Bootstrap v1.10.0
+description: "What's new in Blazor Bootstrap 1.10.0: changes to the Grid, Button, Tooltip and Switch components, with links to each pull request."
 authors:
   name: Vikram Reddy
   title: Creator

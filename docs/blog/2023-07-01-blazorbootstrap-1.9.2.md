@@ -1,5 +1,6 @@
 ---
 title: Blazor Bootstrap v1.9.2
+description: "Release notes for Blazor Bootstrap 1.9.2: what changed in the Breadcrumb service, Breadcrumb, Toast and Toast service components in this version."
 authors:
   name: Vikram Reddy
   title: Creator

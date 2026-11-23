@@ -1,5 +1,6 @@
 ---
 title: Blazor Bootstrap v1.7.1
+description: "What's new in Blazor Bootstrap 1.7.1: changes to the Buttons component, with links to each pull request."
 authors:
   name: Vikram Reddy
   title: Creator
