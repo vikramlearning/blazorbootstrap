@@ -1,6 +1,6 @@
 ---
 title: BlazorBootstrap v0.1.0
-description: "Release notes for Blazor Bootstrap 0.1.0: the components and features added or changed in this version."
+description: "Blazor Bootstrap 0.1.0 moves to .NET 6, adds the Preload, Breadcrumb, Confirm Dialog and Callout components, and opens the demo website."
 authors:
   name: Vikram Reddy
   title: Creator

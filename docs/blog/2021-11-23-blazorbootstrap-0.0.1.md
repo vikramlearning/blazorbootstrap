@@ -1,6 +1,6 @@
 ---
 title: BlazorBootstrap v0.0.1
-description: "Release notes for Blazor Bootstrap 0.0.1: the components and features added or changed in this version."
+description: "The first Blazor Bootstrap release, 0.0.1: Alert, Button, Icon, Modal, Offcanvas and Tooltip components for Blazor apps."
 authors:
   name: Vikram Reddy
   title: Creator
