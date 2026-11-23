@@ -1,0 +1,100 @@
+<div class="d-flex flex-wrap align-items-center gap-3 mb-3">
+    <RadioButtonGroup @bind-Value="quarter" @bind-Value:after="UpdateChartsAsync" AriaLabel="Quarter" Size="ButtonGroupSize.Small">
+        @foreach (var item in ticketsByQuarter.Keys)
+        {
+            <ButtonGroupItem Value="item">@item</ButtonGroupItem>
+        }
+    </RadioButtonGroup>
+    <span class="text-body-secondary small">Switch quarters and follow <b>Billing</b> in both charts.</span>
+</div>
+
+<div class="row g-3">
+    <div class="col-12 col-md-6" style="min-width: 0;">
+        <div class="card h-100">
+            <div class="card-body">
+                <h3 class="h6 card-title">Colour by position <Badge Color="BadgeColor.Danger">Problem</Badge></h3>
+                <DoughnutChart @ref="byPositionChart" ContainerStyle="position: relative; width: 100%; aspect-ratio: 4 / 3; min-height: 240px;"
+                               role="img" aria-label="Doughnut chart: support tickets by product, colours assigned by position" />
+            </div>
+        </div>
+    </div>
+    <div class="col-12 col-md-6" style="min-width: 0;">
+        <div class="card h-100">
+            <div class="card-body">
+                <h3 class="h6 card-title">Colour by product <Badge Color="BadgeColor.Success">Fix</Badge></h3>
+                <DoughnutChart @ref="byProductChart" ContainerStyle="position: relative; width: 100%; aspect-ratio: 4 / 3; min-height: 240px;"
+                               role="img" aria-label="Doughnut chart: support tickets by product, each product keeps its colour" />
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    // Each quarter's rows come back sorted by ticket count, and a product with no tickets is not returned at all.
+    private readonly Dictionary<string, List<ProductTickets>> ticketsByQuarter = new()
+    {
+        ["Q1"] = [new("Billing", 420), new("Web portal", 310), new("Mobile app", 260), new("Reporting", 120), new("Integrations", 90)],
+        ["Q2"] = [new("Mobile app", 480), new("Billing", 350), new("Web portal", 280), new("Integrations", 150), new("Single sign-on", 70), new("Reporting", 60)],
+        ["Q3"] = [new("Integrations", 390), new("Mobile app", 300), new("Billing", 290), new("Single sign-on", 210), new("Web portal", 180)],
+        ["Q4"] = [new("Billing", 510), new("Single sign-on", 260), new("Integrations", 220), new("Mobile app", 190), new("Web portal", 150), new("Reporting", 40)],
+    };
+
+    // The fix: give every product a colour once, from the full product list, and look the colour up by name.
+    private static readonly Dictionary<string, string> colorByProduct =
+        new[] { "Billing", "Web portal", "Mobile app", "Integrations", "Reporting", "Single sign-on" }
+            .Select((product, index) => (product, color: ColorUtility.CategoricalTwelveColors[index]))
+            .ToDictionary(item => item.product, item => item.color);
+
+    private DoughnutChart byPositionChart = default!;
+    private DoughnutChart byProductChart = default!;
+    private DoughnutChartOptions options = default!;
+    private string quarter = "Q1";
+
+    protected override void OnInitialized()
+    {
+        options = new DoughnutChartOptions { Responsive = true, MaintainAspectRatio = false };
+        options.Plugins.Legend.Position = "bottom";
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await byPositionChart.InitializeAsync(GetChartData(colorByPosition: true), options);
+            await byProductChart.InitializeAsync(GetChartData(colorByPosition: false), options);
+        }
+
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
+    private async Task UpdateChartsAsync()
+    {
+        await byPositionChart.UpdateAsync(GetChartData(colorByPosition: true), options);
+        await byProductChart.UpdateAsync(GetChartData(colorByPosition: false), options);
+    }
+
+    private ChartData GetChartData(bool colorByPosition)
+    {
+        var rows = ticketsByQuarter[quarter];
+
+        var colors = colorByPosition
+            ? rows.Select((_, index) => ColorUtility.CategoricalTwelveColors[index]).ToList() // the first row always gets the first colour
+            : rows.Select(row => colorByProduct[row.Product]).ToList();
+
+        return new ChartData
+        {
+            Labels = rows.Select(row => row.Product).ToList(),
+            Datasets =
+            [
+                new DoughnutChartDataset
+                {
+                    Label = $"Tickets in {quarter}",
+                    Data = rows.Select(row => (double?)row.Tickets).ToList(),
+                    BackgroundColor = colors,
+                },
+            ],
+        };
+    }
+
+    private sealed record ProductTickets(string Product, int Tickets);
+}

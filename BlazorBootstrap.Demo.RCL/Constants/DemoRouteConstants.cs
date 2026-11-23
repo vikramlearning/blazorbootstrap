@@ -143,6 +143,7 @@ public static class DemoRouteConstants
     public const string Demos_URL_PolarAreaChart = Demos_URL_Charts_Prefix + "/polar-area-chart";
     public const string Demos_URL_RadarChart = Demos_URL_Charts_Prefix + "/radar-chart";
     public const string Demos_URL_ScatterChart = Demos_URL_Charts_Prefix + "/scatter-chart";
+    public const string Demos_URL_ChartScenarios = Demos_URL_Charts_Prefix + "/scenarios";
 
     // Services
     public const string Demos_URL_Services_Prefix = Demos_URL_Prefix + "/services";

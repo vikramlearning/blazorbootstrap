@@ -10,7 +10,7 @@
     <ol class="mb-3">
         <li class="mb-3">
             <strong>Install the package used by these demos:</strong>
-            <pre class="mt-2 mb-0"><code>dotnet add package BlazorExpress.ChartJS --version 1.2.4</code></pre>
+            <pre class="mt-2 mb-0"><code>dotnet add package BlazorExpress.ChartJS --version 2.0.0</code></pre>
         </li>
         <li class="mb-3">
             <strong>Import the component namespace</strong> in <code>_Imports.razor</code>:
@@ -18,12 +18,17 @@
         </li>
         <li>
             <strong>Load the browser scripts in this order</strong> from the host page, after the Blazor framework script.
-            The data-labels plugin is needed only when a chart uses data labels.
-            <pre class="mt-2 mb-0"><code>&lt;script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"&gt;&lt;/script&gt;
-&lt;script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js"&gt;&lt;/script&gt;
+            BlazorExpress.ChartJS 2.0.0 is built for Chart.js 4.6.1. The data-labels plugin is needed only when a chart uses data labels,
+            and time axes need no extra date-adapter script.
+            <pre class="mt-2 mb-0"><code>&lt;script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.6.1/chart.umd.js" integrity="sha512-Vj/VnWZpOof68AJOIBxA90+7KQccA7eISngKbl18q5MQO3KnvO1a0z76Q+7hj8+iDIwETpKUBPN+cLy7PxvTEQ==" crossorigin="anonymous" referrerpolicy="no-referrer"&gt;&lt;/script&gt;
+&lt;script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js" integrity="sha512-JPcRR8yFa8mmCsfrw4TNte1ZvF1e3+1SdGMslZvmrzDYxS69J7J49vkFL8u6u8PlPJK+H3voElBtUCzaXj+6ig==" crossorigin="anonymous" referrerpolicy="no-referrer"&gt;&lt;/script&gt;
 &lt;script src="_content/BlazorExpress.ChartJS/blazorexpress.chartjs.js"&gt;&lt;/script&gt;</code></pre>
         </li>
     </ol>
+    <p>
+        <strong>Upgrading from 1.x?</strong> Version 2.0.0 changes some defaults and behaviour.
+        Read the <a href="https://chartjs.blazorexpress.com/blog/releases/2-0-0-breaking-changes" target="_blank" rel="noopener noreferrer">2.0.0 breaking changes</a> before you update.
+    </p>
     <p class="mb-0">
         See the <a href="https://chartjs.blazorexpress.com/" target="_blank" rel="noopener noreferrer">BlazorExpress.ChartJS website</a>
         and <a href="https://github.com/BlazorExpress/BlazorExpress.ChartJS" target="_blank" rel="noopener noreferrer">GitHub repository</a>

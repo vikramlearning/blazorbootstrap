@@ -115,6 +115,7 @@ public class DemoScreenshotSrcConstants
     public const string Demos_URL_PolarAreaChart = DemoScreenshotSrcPrefix + "polar-area-chart.png";
     public const string Demos_URL_RadarChart = DemoScreenshotSrcPrefix + "radar-chart.png";
     public const string Demos_URL_ScatterChart = DemoScreenshotSrcPrefix + "scatter-chart.png";
+    public const string Demos_URL_ChartScenarios = DemoScreenshotSrcPrefix + "charts.png"; // TODO: add a dedicated screenshot
 
     // Services
     public const string Demos_URL_Services_Prefix = DemoScreenshotSrcPrefix + "home.png"; // TODO: update screenshot
