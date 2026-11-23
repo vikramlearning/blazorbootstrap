@@ -1,12 +1,5 @@
 @inherits LayoutComponentBase
 
-@* The overview is behind the customer guard, which prerenders only a loading message; the landing page's search
-   metadata is set here so crawlers get it (rules.md "Demo site search indexing"). *@
-@if (IsLandingPage)
-{
-    <PageMetaTags PageUrl="@DemoRouteConstants.Showcase_URL_Fintech" Title="Online banking app example" Description="An online banking app built with Blazor Bootstrap components: transactions, transfers, payees, budgets and an operations console, with sample data." ImageUrl="@(SeoRoutes.DemosSiteUrl + "/_content/BlazorBootstrap.Demo.RCL/images/social-card.png")" IncludePageTitle="false" />
-}
-
 <ShowcaseSessionHost State="State" SiteBase="@Base" SiteName="@FintechSeedData.ProductName">
 <FintechFrame>
     <Header>

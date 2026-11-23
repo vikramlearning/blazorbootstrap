@@ -87,7 +87,8 @@ public static class SeoRoutes
         DemoRouteConstants.Showcase_URL_Prefix,
         DemoRouteConstants.Showcase_URL_AiAssistant,
         DemoRouteConstants.Showcase_URL_Ecommerce,
-        DemoRouteConstants.Showcase_URL_Fintech,
+        // The bank's overview is behind sign-in, so its sign-in page is Fintech's landing page (26112202 D-015).
+        DemoRouteConstants.Showcase_URL_Fintech + "/sign-in",
         DemoRouteConstants.Showcase_URL_Healthcare,
         DemoRouteConstants.Showcase_URL_HelpDesk,
         DemoRouteConstants.Showcase_URL_HrPortal,
