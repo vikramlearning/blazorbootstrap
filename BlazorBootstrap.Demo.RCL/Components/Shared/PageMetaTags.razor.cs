@@ -46,7 +46,7 @@ public partial class PageMetaTags : BlazorBootstrapComponentBase
         var items = new JsonArray { CreateListItem(1, section.Value.Name, SeoRoutes.DemosSiteUrl + section.Value.StartPage) };
 
         if (!string.Equals(path, section.Value.StartPage, StringComparison.OrdinalIgnoreCase))
-            items.Add(CreateListItem(2, Title, SeoRoutes.DemosSiteUrl + path));
+            items.Add(CreateListItem(2, Title, SeoRoutes.GetCanonicalUrl(path))); // the docs-site page for a mapped /docs page
 
         var breadcrumb = new JsonObject
         {
