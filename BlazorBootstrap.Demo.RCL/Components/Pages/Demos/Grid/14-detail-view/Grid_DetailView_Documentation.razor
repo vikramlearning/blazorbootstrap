@@ -25,11 +25,16 @@
     <Demo Type="typeof(Grid_Demo_14_C_DetailView_With_Selection)" Tabs="false" />
 </Section>
 
+<Section Size="HeadingSize.H2" Name="Detail view with row click" PageUrl="@pageUrl" Link="detail-view-with-row-click">
+    <div class="mb-3">Detail view can be combined with row click. Set both <code>AllowDetailView</code> and <code>AllowRowClick</code> parameters to <b>true</b> and handle <code>OnRowClick</code>. Clicking the detail view toggle only expands or collapses the row; it does not raise <code>OnRowClick</code> or <code>OnRowDoubleClick</code>. Clicking any other cell raises <code>OnRowClick</code>.</div>
+    <Demo Type="typeof(Grid_Demo_14_D_DetailView_With_Row_Click)" Tabs="false" />
+</Section>
+
 @code {
     private const string pageUrl = DemoRouteConstants.Demos_URL_Grid_DetailView;
     private const string pageTitle = "Blazor Grid - Detail View";
-    private const string pageDescription = "The Blazor Grid component shows tabular data with client-side or server-side paging, sorting and filtering, plus selection, a column chooser, saved settings and CSV export. The examples below cover dynamic data and detail view with selection.";
+    private const string pageDescription = "The Blazor Grid component shows tabular data with client-side or server-side paging, sorting and filtering, plus selection, a column chooser, saved settings and CSV export. The examples below cover dynamic data, detail view with selection and detail view with row click.";
     private const string metaTitle = "Blazor Grid detail view examples";
-    private const string metaDescription = "Live Blazor Grid detail view examples with source code: dynamic data and detail view with selection.";
+    private const string metaDescription = "Live Blazor Grid detail view examples with source code: dynamic data, detail view with selection and detail view with row click.";
     private const string imageUrl = "https://i.imgur.com/eetvhBB.png";
 }

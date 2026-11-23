@@ -4101,6 +4101,50 @@ Detail view can be combined with row selection. Set both `AllowDetailView` and `
 
 [See demo here](https://demos.blazorbootstrap.com/demos/grid/detail-view#detail-view-with-selection)
 
+### Detail View with row click
+
+Detail view can be combined with row click. Set both `AllowDetailView` and `AllowRowClick` parameters to **true** and handle `OnRowClick`. Clicking the detail view toggle only expands or collapses the row; it does not raise `OnRowClick` or `OnRowDoubleClick`. Clicking any other cell raises `OnRowClick`.
+
+```cshtml {3-5} showLineNumbers
+<Grid TItem="Employee1"
+      Data="employees"
+      AllowDetailView="true"
+      AllowRowClick="true"
+      OnRowClick="OnRowClick">
+
+    <GridColumns>
+        <GridColumn TItem="Employee1" HeaderText="Id" PropertyName="Id">
+            @context.Id
+        </GridColumn>
+        <GridColumn TItem="Employee1" HeaderText="Employee Name" PropertyName="Name">
+            @context.Name
+        </GridColumn>
+    </GridColumns>
+
+    <GridDetailView TItem="Employee1">
+        <div class="row">
+            <div class="col-2 fw-bold">Designation</div>
+            <div class="col">@context.Designation</div>
+        </div>
+    </GridDetailView>
+
+</Grid>
+```
+
+```cshtml {} showLineNumbers
+@code {
+    private Employee1? selectedEmployee;
+
+    private void OnRowClick(GridRowEventArgs<Employee1> args)
+    {
+        // Not raised when the detail view toggle is clicked.
+        selectedEmployee = args.Item;
+    }
+}
+```
+
+[See demo here](https://demos.blazorbootstrap.com/demos/grid/detail-view#detail-view-with-row-click)
+
 ### Nested Grid
 
 To create a nested grid, we first need to enable the detail view. To enable the detail view, set the **AllowDetailView** parameter to **true**. In the following example, existing `<GridColumn>` tags are nested under `<GridColumns>` tag to distinguish them from `<GridDetailView>`.
