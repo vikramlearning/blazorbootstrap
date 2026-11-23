@@ -74,13 +74,54 @@
     <Demo Type="typeof(ChartScenarios_Demo_04_Stable_Colors)" Tabs="true" />
 </Section>
 
+<Section Size="HeadingSize.H2" Name="Mixed bar and line charts" PageUrl="@pageUrl" Link="mixed-charts">
+    <div class="mb-3">
+        A <code>BarChart</code> can hold <code>LineChartDataset</code>s next to its <code>BarChartDataset</code>s. Bars and a line together answer
+        two questions on one chart, such as how much and how good, but they bring their own traps: units that do not share a scale, lines drawn behind bars,
+        and lines that get stacked by accident. Set <code>Order</code> on each dataset to choose what is drawn on top; a lower order is drawn later, in front.
+    </div>
+</Section>
+
+<Section Size="HeadingSize.H3" Name="Revenue and margin: two units on one chart" PageUrl="@pageUrl" Link="mixed-units">
+    <div class="mb-3">
+        <strong>The problem:</strong> revenue in dollars and gross margin in percent share one y-axis, so a 34% margin next to $538,000 of revenue
+        is a flat line along the bottom and its ups and downs disappear.
+        <br />
+        <strong>The fix:</strong> add a second y-axis on the right with <code>Scales.AdditionalAxes["y1"]</code>, set <code>YAxisID = "y1"</code> on the line,
+        give each axis its own number format and title, and turn off the second axis's grid lines with <code>DrawOnChartArea = false</code>.
+    </div>
+    <Demo Type="typeof(ChartScenarios_Demo_05_Mixed_Units)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H3" Name="Pareto chart: find the few causes behind most problems" PageUrl="@pageUrl" Link="pareto-chart">
+    <div class="mb-3">
+        <strong>The problem:</strong> a quality, support or returns team needs to know which few causes account for most of the problems.
+        Chart.js has no Pareto chart type, and a plain bar chart of unsorted export data does not show where the 80% line falls.
+        <br />
+        <strong>The fix:</strong> sort the causes from most to fewest, add a running total as a share of the whole, and draw it as a line on a second axis from 0 to 100%.
+        A dashed line at 80% and faded bars after it show which causes to fix first.
+    </div>
+    <Demo Type="typeof(ChartScenarios_Demo_06_Pareto)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H3" Name="Stacked bars with reference lines" PageUrl="@pageUrl" Link="stacked-bars-reference-lines">
+    <div class="mb-3">
+        <strong>The problem:</strong> with <code>Scales.Y.Stacked = true</code>, every dataset that has no <code>Stack</code> joins the default stack of its type.
+        Two reference lines, such as team capacity and the same week last year, are then added together, and the second line is drawn far too high.
+        Turning stacking off fixes the lines but breaks the bars.
+        <br />
+        <strong>The fix:</strong> keep the axis stacked, put the bars in one named stack, and give each reference line a <code>Stack</code> of its own.
+    </div>
+    <Demo Type="typeof(ChartScenarios_Demo_07_Stacked_Bars_Reference_Lines)" Tabs="true" />
+</Section>
+
 <ChartJSCallout />
 
 @code {
     private const string pageUrl = DemoRouteConstants.Demos_URL_ChartScenarios;
     private const string pageTitle = "Blazor Chart Scenarios";
-    private const string pageDescription = "Fixes for problems people hit when they put charts into real business screens: charts that do not grow back in Bootstrap layouts, days missing from query results, pie charts with too many slices, and colours that move between categories.";
+    private const string pageDescription = "Fixes for problems people hit when they put charts into real business screens: charts that do not grow back in Bootstrap layouts, days missing from query results, pie charts with too many slices, colours that move between categories, and mixed bar and line charts: two units on one chart, a Pareto chart, and stacked bars with reference lines.";
     private const string metaTitle = "Blazor chart scenarios and fixes";
-    private const string metaDescription = "Live Blazor chart examples with source code that fix common chart problems: responsive charts in Bootstrap rows and cards, missing dates, top N plus Other, and stable category colours.";
+    private const string metaDescription = "Live Blazor chart examples with source code that fix common chart problems: responsive charts in Bootstrap rows and cards, missing dates, top N plus Other, stable category colours, and mixed bar and line charts with a second axis, a Pareto chart and stacked bars with reference lines.";
     private const string imageUrl = "https://i.imgur.com/IX3bajc.png";
 }

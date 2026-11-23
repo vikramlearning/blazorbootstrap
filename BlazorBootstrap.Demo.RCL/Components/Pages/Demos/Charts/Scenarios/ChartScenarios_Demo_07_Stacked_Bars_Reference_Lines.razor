@@ -1,0 +1,103 @@
+<div class="d-flex flex-wrap align-items-center gap-3 mb-3">
+    <RadioButtonGroup @bind-Value="lineInOwnStack" @bind-Value:after="UpdateChartAsync" AriaLabel="How the lines are stacked" Size="ButtonGroupSize.Small">
+        <ButtonGroupItem Value="false">Lines without a stack</ButtonGroupItem>
+        <ButtonGroupItem Value="true">Each line in its own stack</ButtonGroupItem>
+    </RadioButtonGroup>
+    <Badge Color="@(lineInOwnStack ? BadgeColor.Success : BadgeColor.Danger)">
+        @(lineInOwnStack ? "Fix: last year's week 1 shows 150" : "Problem: last year's week 1 shows 320 (170 + 150)")
+    </Badge>
+</div>
+
+<BarChart @ref="ticketsChart" ContainerStyle="position: relative; width: 100%; aspect-ratio: 5 / 2; min-height: 260px;"
+          role="img" aria-label="Stacked bar chart: support tickets per week by priority, with team capacity and the same week last year as lines, weeks 1 to 8" />
+
+@code {
+    private static readonly List<string> weeks = ["Wk 1", "Wk 2", "Wk 3", "Wk 4", "Wk 5", "Wk 6", "Wk 7", "Wk 8"];
+
+    private BarChart ticketsChart = default!;
+    private bool lineInOwnStack;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+            await ticketsChart.InitializeAsync(GetChartData(), GetOptions());
+
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
+    private async Task UpdateChartAsync() => await ticketsChart.UpdateAsync(GetChartData(), GetOptions());
+
+    private ChartData GetChartData()
+    {
+        var capacityLine = new LineChartDataset
+        {
+            Label = "Team capacity",
+            Data = [170, 170, 170, 170, 200, 200, 200, 200], // a new hire starts in week 5
+            Stepped = true,
+            BorderColor = "#495057",
+            BackgroundColor = "#495057",
+            BorderWidth = 2,
+            PointRadius = [0],
+            Order = 0,
+        };
+
+        var lastYearLine = new LineChartDataset
+        {
+            Label = "Same week last year",
+            Data = [150, 142, 161, 158, 149, 171, 166, 160],
+            BorderColor = ColorUtility.CategoricalTwelveColors[4].ToChartColor().ToChartRgbString(),
+            BackgroundColor = ColorUtility.CategoricalTwelveColors[4].ToChartColor().ToChartRgbString(),
+            BorderDash = [6, 4],
+            PointRadius = [3],
+            Order = 0,
+        };
+
+        // On a stacked axis, every dataset without a Stack joins the default stack of its type, so the second line is drawn on top of the first.
+        // The fix: give each reference line a stack of its own, so it is drawn at its own value.
+        if (lineInOwnStack)
+        {
+            capacityLine.Stack = "capacity";
+            lastYearLine.Stack = "last-year";
+        }
+
+        return new ChartData
+        {
+            Labels = weeks,
+            Datasets =
+            [
+                CreatePriorityDataset("P1 Urgent", [12, 9, 15, 11, 8, 14, 10, 9], ColorUtility.CategoricalTwelveColors[5]),
+                CreatePriorityDataset("P2 High", [48, 52, 61, 57, 44, 66, 58, 50], ColorUtility.CategoricalTwelveColors[3]),
+                CreatePriorityDataset("P3 Normal", [96, 101, 112, 108, 90, 121, 117, 104], ColorUtility.CategoricalTwelveColors[0]),
+                capacityLine,
+                lastYearLine,
+            ],
+        };
+    }
+
+    private static BarChartDataset CreatePriorityDataset(string label, List<double?> data, string color) => new()
+    {
+        Label = label,
+        Data = data,
+        BackgroundColor = [color.ToChartColor().ToChartRgbString()],
+        BorderWidth = [0],
+        Stack = "tickets", // the three priorities add up in one column
+        Order = 1,
+    };
+
+    private static BarChartOptions GetOptions()
+    {
+        var options = new BarChartOptions
+        {
+            Responsive = true,
+            MaintainAspectRatio = false,
+            Interaction = new Interaction { Mode = InteractionMode.Index, Intersect = false },
+        };
+
+        options.Scales.X!.Stacked = true;
+        options.Scales.Y!.Stacked = true;
+        options.Scales.Y!.BeginAtZero = true; // the lines would otherwise lift the axis start and hide the bottom of each stack
+        options.Scales.Y!.Title = new ChartAxesTitle { Text = "Tickets", Display = true, Color = null };
+
+        return options;
+    }
+}

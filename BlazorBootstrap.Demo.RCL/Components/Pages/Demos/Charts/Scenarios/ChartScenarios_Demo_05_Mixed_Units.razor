@@ -1,0 +1,103 @@
+<div class="d-flex flex-wrap align-items-center gap-3 mb-3">
+    <RadioButtonGroup @bind-Value="useSecondAxis" @bind-Value:after="UpdateChartAsync" AriaLabel="Axis for gross margin" Size="ButtonGroupSize.Small">
+        <ButtonGroupItem Value="false">One shared axis</ButtonGroupItem>
+        <ButtonGroupItem Value="true">Second axis for %</ButtonGroupItem>
+    </RadioButtonGroup>
+    <Badge Color="@(useSecondAxis ? BadgeColor.Success : BadgeColor.Danger)">@(useSecondAxis ? "Fix" : "Problem")</Badge>
+</div>
+
+<BarChart @ref="revenueChart" ContainerStyle="position: relative; width: 100%; aspect-ratio: 5 / 2; min-height: 240px;"
+          role="img" aria-label="Bar and line chart: monthly revenue in US dollars as bars and gross margin in percent as a line, January to June 2026" />
+
+@code {
+    private static readonly List<string> months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun"];
+    private static readonly List<double?> revenue = [412_000, 398_000, 455_000, 471_000, 502_000, 538_000];
+    private static readonly List<double?> grossMargin = [34.2, 31.8, 35.5, 36.1, 29.7, 37.2]; // percent
+
+    private BarChart revenueChart = default!;
+    private bool useSecondAxis;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+            await revenueChart.InitializeAsync(GetChartData(), GetOptions());
+
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
+    private async Task UpdateChartAsync() => await revenueChart.UpdateAsync(GetChartData(), GetOptions());
+
+    private ChartData GetChartData()
+    {
+        var revenueColor = ColorUtility.CategoricalTwelveColors[0].ToChartColor().ToChartRgbString();
+        var marginColor = ColorUtility.CategoricalTwelveColors[2].ToChartColor().ToChartRgbString();
+
+        var marginDataset = new LineChartDataset
+        {
+            Label = "Gross margin",
+            Data = grossMargin,
+            BorderColor = marginColor,
+            BackgroundColor = marginColor,
+            PointRadius = [4],
+            PointHoverRadius = [6],
+            Order = 0, // a lower order is drawn on top, so the line stays in front of the bars
+        };
+
+        // The fix: plot the percentage on its own axis. Without it, 34% shares an axis with $538,000 and lies flat on the bottom.
+        if (useSecondAxis)
+            marginDataset.YAxisID = "y1";
+
+        return new ChartData
+        {
+            Labels = months,
+            Datasets =
+            [
+                new BarChartDataset
+                {
+                    Label = "Revenue",
+                    Data = revenue,
+                    BackgroundColor = [revenueColor],
+                    BorderWidth = [0],
+                    Order = 1,
+                },
+                marginDataset,
+            ],
+        };
+    }
+
+    private BarChartOptions GetOptions()
+    {
+        var options = new BarChartOptions
+        {
+            Locale = "en-US",
+            Responsive = true,
+            MaintainAspectRatio = false,
+            Interaction = new Interaction { Mode = InteractionMode.Index, Intersect = false },
+        };
+
+        options.Scales.Y!.Title = new ChartAxesTitle { Text = "Revenue", Display = true, Color = null };
+        options.Scales.Y!.Ticks = new ChartAxesTicks
+        {
+            Format = new ChartNumberFormat { Style = "currency", Currency = "USD", Notation = "compact", MaximumFractionDigits = 0 },
+        };
+
+        if (useSecondAxis)
+        {
+            options.Scales.AdditionalAxes = new()
+            {
+                ["y1"] = new ChartAxes
+                {
+                    Type = ChartAxesType.Linear,
+                    Position = "right",
+                    Min = 0,
+                    Max = 50,
+                    Grid = new ChartAxesGrid { DrawOnChartArea = false }, // one set of grid lines is enough
+                    Title = new ChartAxesTitle { Text = "Gross margin", Display = true, Color = null },
+                    Ticks = new ChartAxesTicks { Format = new ChartNumberFormat { Style = "unit", Unit = "percent", MaximumFractionDigits = 1 } },
+                },
+            };
+        }
+
+        return options;
+    }
+}
