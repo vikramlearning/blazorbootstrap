@@ -1,0 +1,38 @@
+﻿@attribute [Route(pageUrl)]
+@layout DemosMainLayout
+
+<DemosPageHeadSection PageUrl="@pageUrl"
+                      PageTitle="@pageTitle"
+                      PageDescription="@pageDescription"
+                      MetaTitle="@metaTitle"
+                      MetaDescription="@metaDescription"
+                      ImageUrl="@imageUrl" />
+
+<DocsLink Href="@DemoRouteConstants.Docs_URL_Grid" />
+
+<Section Size="HeadingSize.H2" Name="Column chooser" PageUrl="@pageUrl" Link="column-chooser">
+    <div class="mb-3">
+        Let people choose which columns they see and in what order. A <b>Columns</b> button above the grid opens a list with a search box, a checkbox for each column, and move up and move down buttons; columns can also be dragged.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Set <code>AllowColumnChooser="true"</code> on the Grid.</li>
+                <li>Give each column a <code>PropertyName</code> or <code>HeaderText</code>; the chooser lists the columns by it.</li>
+                <li>Set <code>AlwaysVisible="true"</code> on a column people must not hide. The last visible column can never be hidden.</li>
+                <li>To keep the choice, handle <code>GridSettingsChanged</code> and return the saved settings from <code>SettingsProvider</code>. <code>GridSettings.ColumnOrder</code> and <code>GridSettings.HiddenColumns</code> hold it. <b>Reset to default</b>, or <code>ResetColumnsAsync()</code>, restores the declared columns.</li>
+            </ol>
+        </div>
+        Change the text with <code>ColumnChooserButtonText</code>, <code>ColumnChooserSearchPlaceholderText</code>, <code>ColumnChooserResetText</code>, and the other <code>ColumnChooser*Text</code> parameters.
+    </div>
+    <Demo Type="typeof(Grid_Demo_01_Column_Chooser)" Tabs="true" />
+</Section>
+
+@code {
+    private const string pageUrl = DemoRouteConstants.Demos_URL_Grid_ColumnChooser;
+    private const string pageTitle = "Blazor Grid - Column chooser";
+    private const string pageDescription = "The Blazor Grid component shows tabular data with client-side or server-side paging, sorting and filtering, plus selection, a column chooser, saved settings and CSV export. The example below lets people show, hide and reorder columns, and keeps their choice in saved grid settings.";
+    private const string metaTitle = "Blazor Grid column chooser example";
+    private const string metaDescription = "Live Blazor Grid column chooser example with source code: show, hide, search and reorder columns, keep a column always visible, and save the choice in grid settings.";
+    private const string imageUrl = "https://i.imgur.com/kKNgo2I.png";
+}

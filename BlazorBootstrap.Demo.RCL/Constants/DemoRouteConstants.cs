@@ -89,10 +89,12 @@ public static class DemoRouteConstants
     public const string Demos_URL_Grid_Prefix = Demos_URL_Prefix + "/grid";
     public const string Demos_URL_Grid_Overview = Demos_URL_Grid_Prefix + "/overview";
     public const string Demos_URL_Grid_Alignment = Demos_URL_Grid_Prefix + "/alignment";
+    public const string Demos_URL_Grid_ColumnChooser = Demos_URL_Grid_Prefix + "/column-chooser";
     public const string Demos_URL_Grid_CustomCSSClass = Demos_URL_Grid_Prefix + "/custom-css-class";
     public const string Demos_URL_Grid_DataBinding = Demos_URL_Grid_Prefix + "/data-binding";
     public const string Demos_URL_Grid_DetailView = Demos_URL_Grid_Prefix + "/detail-view";
     public const string Demos_URL_Grid_Events = Demos_URL_Grid_Prefix + "/events";
+    public const string Demos_URL_Grid_Export = Demos_URL_Grid_Prefix + "/export";
     public const string Demos_URL_Grid_Filters = Demos_URL_Grid_Prefix + "/filters";
     public const string Demos_URL_Grid_FixedHeader = Demos_URL_Grid_Prefix + "/fixed-header";
     public const string Demos_URL_Grid_FreezeColumns = Demos_URL_Grid_Prefix + "/freeze-columns";

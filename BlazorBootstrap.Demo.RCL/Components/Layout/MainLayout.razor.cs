@@ -60,10 +60,12 @@ public partial class MainLayout : MainLayoutBase
             new (){ Id = "513", Text = "Grid", IconName = IconName.Grid, ParentId = "5" },
             new (){ Id = "51301", Text = "Overview", Href = DemoRouteConstants.Demos_URL_Grid_Overview, IconName = IconName.Grid, ParentId = "513" }, // first item - do not change
             new (){ Id = "51302", Text = "Alignment", Href = DemoRouteConstants.Demos_URL_Grid_Alignment, IconName = IconName.Justify, ParentId = "513" },
+            new (){ Id = "51318", Text = "Column Chooser", Href = DemoRouteConstants.Demos_URL_Grid_ColumnChooser, IconName = IconName.ListCheck, ParentId = "513" },
             new (){ Id = "51303", Text = "Custom CSS Class", Href = DemoRouteConstants.Demos_URL_Grid_CustomCSSClass, IconName = IconName.FileTypeCss, ParentId = "513" },
             new (){ Id = "51304", Text = "Data Binding", Href = DemoRouteConstants.Demos_URL_Grid_DataBinding, IconName = IconName.GridFill, ParentId = "513" },
             new (){ Id = "51306", Text = "Detail View", Href = DemoRouteConstants.Demos_URL_Grid_DetailView, IconName = IconName.ListNested, ParentId = "513" },
             new (){ Id = "51307", Text = "Events", Href = DemoRouteConstants.Demos_URL_Grid_Events, IconName = IconName.LightningChargeFill, ParentId = "513" },
+            new (){ Id = "51319", Text = "Export", Href = DemoRouteConstants.Demos_URL_Grid_Export, IconName = IconName.FileEarmarkArrowDown, ParentId = "513" },
             new (){ Id = "51307", Text = "Filters", Href = DemoRouteConstants.Demos_URL_Grid_Filters, IconName = IconName.FunnelFill, ParentId = "513" },
             new (){ Id = "51308", Text = "Fixed Header", Href = DemoRouteConstants.Demos_URL_Grid_FixedHeader, IconName = IconName.Table, ParentId = "513" },
             new (){ Id = "51309", Text = "Freeze Columns", Href = DemoRouteConstants.Demos_URL_Grid_FreezeColumns, IconName = IconName.LayoutThreeColumns, ParentId = "513" },
