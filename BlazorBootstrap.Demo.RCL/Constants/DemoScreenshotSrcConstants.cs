@@ -61,10 +61,12 @@ public class DemoScreenshotSrcConstants
     public const string Demos_URL_Grid_Prefix = DemoScreenshotSrcPrefix + "grid.png";
     public const string Demos_URL_Grid_Overview = DemoScreenshotSrcPrefix + "grid_fixed_header_freeze_columns.png";
     public const string Demos_URL_Grid_Alignment = DemoScreenshotSrcPrefix + "home.png";
+    public const string Demos_URL_Grid_ColumnChooser = DemoScreenshotSrcPrefix + "home.png";
     public const string Demos_URL_Grid_CustomCSSClass = DemoScreenshotSrcPrefix + "home.png";
     public const string Demos_URL_Grid_DataBinding = DemoScreenshotSrcPrefix + "home.png";
     public const string Demos_URL_Grid_DetailView = DemoScreenshotSrcPrefix + "home.png";
     public const string Demos_URL_Grid_Events = DemoScreenshotSrcPrefix + "home.png";
+    public const string Demos_URL_Grid_Export = DemoScreenshotSrcPrefix + "home.png";
     public const string Demos_URL_Grid_Filters = DemoScreenshotSrcPrefix + "home.png";
     public const string Demos_URL_Grid_FixedHeader = DemoScreenshotSrcPrefix + "grid_fixed_header_freeze_columns.png";
     public const string Demos_URL_Grid_FreezeColumns = DemoScreenshotSrcPrefix + "grid_fixed_header_freeze_columns.png";

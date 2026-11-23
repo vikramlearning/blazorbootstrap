@@ -41,42 +41,6 @@
     <Demo Type="typeof(Grid_Demo_06_Hide_Columns_Dynamically)" Tabs="true" />
 </Section>
 
-<Section Size="HeadingSize.H2" Name="Column chooser" PageUrl="@pageUrl" Link="column-chooser">
-    <div class="mb-3">
-        Let people choose which columns they see and in what order. A <b>Columns</b> button above the grid opens a list with a search box, a checkbox for each column, and move up and move down buttons; columns can also be dragged.
-        <br />
-        <strong>How to use:</strong>
-        <div class="content mb-2">
-            <ol>
-                <li>Set <code>AllowColumnChooser="true"</code> on the Grid.</li>
-                <li>Give each column a <code>PropertyName</code> or <code>HeaderText</code>; the chooser lists the columns by it.</li>
-                <li>Set <code>AlwaysVisible="true"</code> on a column people must not hide. The last visible column can never be hidden.</li>
-                <li>To keep the choice, handle <code>GridSettingsChanged</code> and return the saved settings from <code>SettingsProvider</code>. <code>GridSettings.ColumnOrder</code> and <code>GridSettings.HiddenColumns</code> hold it. <b>Reset to default</b>, or <code>ResetColumnsAsync()</code>, restores the declared columns.</li>
-            </ol>
-        </div>
-        Change the text with <code>ColumnChooserButtonText</code>, <code>ColumnChooserSearchPlaceholderText</code>, <code>ColumnChooserResetText</code>, and the other <code>ColumnChooser*Text</code> parameters.
-    </div>
-    <Demo Type="typeof(Grid_Demo_08_Column_Chooser)" Tabs="true" />
-</Section>
-
-<Section Size="HeadingSize.H2" Name="Export to CSV" PageUrl="@pageUrl" Link="export-to-csv">
-    <div class="mb-3">
-        An <b>Export CSV</b> button downloads every row that matches the current filters and sort, across all pages, with the columns people see, in their order.
-        <br />
-        <strong>How to use:</strong>
-        <div class="content mb-2">
-            <ol>
-                <li>Set <code>AllowExport="true"</code> on the Grid, and optionally <code>ExportFileName</code>.</li>
-                <li>Give each exported column a <code>PropertyName</code>; its value is written with the grid's culture. Set <code>Exportable="false"</code> on columns such as actions.</li>
-                <li>With a <code>DataProvider</code>, return all matching rows when <code>PageNumber</code> and <code>PageSize</code> are 0. <code>request.ApplyTo(...)</code> already does.</li>
-                <li>Call <code>ExportToCsvAsync()</code> to export from your own button.</li>
-            </ol>
-        </div>
-        Text that starts with <code>=</code>, <code>+</code>, <code>-</code>, or <code>@@</code> is written with a leading apostrophe, so spreadsheet apps don't run it as a formula.
-    </div>
-    <Demo Type="typeof(Grid_Demo_09_Export_To_Csv)" Tabs="true" />
-</Section>
-
 <Section Size="HeadingSize.H2" Name="Increase textbox width" PageUrl="@pageUrl" Link="increase-textbox-width">
     <Demo Type="typeof(Grid_Demo_07_Increase_TextBox_Width)" Tabs="true" />
 </Section>

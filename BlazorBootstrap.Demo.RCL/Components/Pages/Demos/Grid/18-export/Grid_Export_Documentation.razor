@@ -1,0 +1,38 @@
+﻿@attribute [Route(pageUrl)]
+@layout DemosMainLayout
+
+<DemosPageHeadSection PageUrl="@pageUrl"
+                      PageTitle="@pageTitle"
+                      PageDescription="@pageDescription"
+                      MetaTitle="@metaTitle"
+                      MetaDescription="@metaDescription"
+                      ImageUrl="@imageUrl" />
+
+<DocsLink Href="@DemoRouteConstants.Docs_URL_Grid" />
+
+<Section Size="HeadingSize.H2" Name="Export to CSV" PageUrl="@pageUrl" Link="export-to-csv">
+    <div class="mb-3">
+        An <b>Export CSV</b> button downloads every row that matches the current filters and sort, across all pages, with the columns people see, in their order.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Set <code>AllowExport="true"</code> on the Grid, and optionally <code>ExportFileName</code>.</li>
+                <li>Give each exported column a <code>PropertyName</code>; its value is written with the grid's culture. Set <code>Exportable="false"</code> on columns such as actions.</li>
+                <li>With a <code>DataProvider</code>, return all matching rows when <code>PageNumber</code> and <code>PageSize</code> are 0. <code>request.ApplyTo(...)</code> already does.</li>
+                <li>Call <code>ExportToCsvAsync()</code> to export from your own button.</li>
+            </ol>
+        </div>
+        Text that starts with <code>=</code>, <code>+</code>, <code>-</code>, or <code>@@</code> is written with a leading apostrophe, so spreadsheet apps don't run it as a formula.
+    </div>
+    <Demo Type="typeof(Grid_Demo_01_Export_To_Csv)" Tabs="true" />
+</Section>
+
+@code {
+    private const string pageUrl = DemoRouteConstants.Demos_URL_Grid_Export;
+    private const string pageTitle = "Blazor Grid - Export";
+    private const string pageDescription = "The Blazor Grid component shows tabular data with client-side or server-side paging, sorting and filtering, plus selection, a column chooser, saved settings and CSV export. The example below exports every filtered and sorted row, across all pages, to a CSV file.";
+    private const string metaTitle = "Blazor Grid export to CSV example";
+    private const string metaDescription = "Live Blazor Grid export to CSV example with source code: export every filtered and sorted row across all pages, with the visible columns in their order, from the built-in button or your own.";
+    private const string imageUrl = "https://i.imgur.com/kKNgo2I.png";
+}
