@@ -1,6 +1,6 @@
 ---
 title: Blazor Bootstrap v1.0.0
-description: "What's new in Blazor Bootstrap 1.0.0: changes to the NumberInput component in this release."
+description: "Blazor Bootstrap 1.0.0, the first major release: the new NumberInput component, Tabs features such as the fade effect, and demo site updates."
 authors:
   name: Vikram Reddy
   title: Creator

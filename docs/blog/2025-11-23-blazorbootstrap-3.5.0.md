@@ -1,6 +1,6 @@
 ---
 title: Blazor Bootstrap v3.5.0
-description: "Release notes for Blazor Bootstrap 3.5.0: what changed in the EnumInput and PdfViewer components in this version."
+description: "Blazor Bootstrap 3.5.0 adds .NET 10 support, the EnumInput component and password-protected PDFs in the PdfViewer, plus fixes."
 authors:
   name: Vikram Reddy
   title: Creator

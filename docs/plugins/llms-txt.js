@@ -7,8 +7,8 @@
 const fs = require('fs');
 const path = require('path');
 
-/** @param {string} value */
-const escapeMarkdown = value => value.replace(/\\/g, '\\\\').replace(/\[/g, '\\[').replace(/\]/g, '\\]').replace(/\(/g, '\\(').replace(/\)/g, '\\)');
+/** Link text: drop bold markers and escape only what can end the link text early. @param {string} value */
+const linkText = value => value.replace(/\*\*/g, '').replace(/\\/g, '\\\\').replace(/\[/g, '\\[').replace(/\]/g, '\\]');
 
 /** @param {string} value */
 const oneLine = value => value.replace(/\s+/g, ' ').trim();
@@ -63,8 +63,8 @@ module.exports = function llmsTxtPlugin(context) {
             for (const category of categories) {
                 lines.push(`## ${label(category)}`, '');
                 for (const page of pages.filter(p => p.category === category).sort((a, b) => a.position - b.position || a.title.localeCompare(b.title))) {
-                    const note = page.description ? `: ${escapeMarkdown(oneLine(page.description))}` : '';
-                    lines.push(`- [${escapeMarkdown(page.title)}](${siteConfig.url}${page.permalink})${note}`);
+                    const note = page.description ? `: ${oneLine(page.description)}` : '';
+                    lines.push(`- [${linkText(page.title)}](${siteConfig.url}${page.permalink})${note}`);
                 }
                 lines.push('');
             }
