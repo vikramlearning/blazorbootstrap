@@ -1,33 +1,29 @@
-# Website
+# Blazor Bootstrap documentation
 
-This website is built using [Docusaurus 2](https://docusaurus.io/), a modern static website generator.
+This folder holds the source of the Blazor Bootstrap documentation site, <https://docs.blazorbootstrap.com/>. It is built with [Docusaurus 3](https://docusaurus.io/), a static website generator, and needs Node.js 20 or later.
 
-### Installation
-
-```
-$ yarn
-```
-
-### Local Development
+## Installation
 
 ```
-$ yarn start
+npm install
 ```
 
-This command starts a local development server and opens up a browser window. Most changes are reflected live without having to restart the server.
-
-### Build
+## Local development
 
 ```
-$ yarn build
+npm start
 ```
 
-This command generates static content into the `build` directory and can be served using any static contents hosting service.
+This command starts a local development server and opens a browser window. Most changes are reflected live without restarting the server.
 
-### Deployment
+## Build
 
 ```
-$ GIT_USER=<Your GitHub username> USE_SSH=true yarn deploy
+npm run build
 ```
 
-If you are using GitHub pages for hosting, this command is a convenient way to build the website and push to the `gh-pages` branch.
+This command generates static content into the `build` folder. To check the production build locally, run `npm run serve`.
+
+## Deployment
+
+The site is deployed to GitHub Pages by the `.github/workflows/publish-docs.yml` workflow, which runs `npm run deploy` when a production release is requested.

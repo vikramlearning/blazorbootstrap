@@ -8,6 +8,7 @@
 
 - [Quick start](#quick-start)
 - [Online Demos](#online-demos)
+- [Charts](#charts)
 - [Components](#blazor-bootstrap-components)
 - [Documentation](#documentation)
 - [Creators](#creators)
@@ -18,7 +19,7 @@
 Get started any way you want
 
 - Clone the repo: `git clone https://github.com/vikramlearning/blazorbootstrap.git`
-- Install with [NuGet](https://www.nuget.org/): `Install-Package Blazor.Bootstrap -Version 4.0.0`
+- Install with [NuGet](https://www.nuget.org/): `Install-Package Blazor.Bootstrap -Version 4.1.0`
   - Supported .NET versions: .NET 8, .NET 9, .NET 10, and .NET 11.
 - Install [Blazor Bootstrap templates](https://github.com/vikramlearning/blazorbootstrap-project-templates) with **.NET CLI**: `dotnet new install Blazor.Bootstrap.Templates::1.11.0`
 
@@ -28,6 +29,7 @@ Get started any way you want
 
 ## Online Demos
 
+- [Docs Website](https://docs.blazorbootstrap.com/)
 - [Demo Website - Blazor Server](https://demos.blazorbootstrap.com/)
 - [Demo Website - Blazor WebAssembly](https://demos.getblazorbootstrap.com/)
 
@@ -36,62 +38,78 @@ Get started any way you want
 Chart components have moved out of BlazorBootstrap and are now provided by the dedicated [BlazorExpress.ChartJS](https://chartjs.blazorexpress.com/) package.
 
 This is a breaking change for existing chart users: install `BlazorExpress.ChartJS`, import its namespace, load its browser scripts, and migrate from the former BlazorBootstrap chart API. See the [migration and setup guide](https://docs.blazorbootstrap.com/components/charts), the [GitHub repository](https://github.com/BlazorExpress/BlazorExpress.ChartJS), and the [original demos](https://chartjs.blazorexpress.com/demos/bar-chart).
+
 ## Blazor Bootstrap Components
 
-| Component Name | Docs | Demos |
+| Component | Docs | Demos |
 |:--|:--|:--|
-| Accordion | [Docs](https://docs.blazorbootstrap.com/components/accordion) | [Demos](https://demos.blazorbootstrap.com/accordion) |
-| Alerts | [Docs](https://docs.blazorbootstrap.com/components/alerts) | [Demos](https://demos.blazorbootstrap.com/alerts) |
-| AutoComplete | [Docs](https://docs.blazorbootstrap.com/forms/autocomplete) | [Demos](https://demos.blazorbootstrap.com/autocomplete) |
-| Badge | [Docs](https://docs.blazorbootstrap.com/components/badge) | [Demos](https://demos.blazorbootstrap.com/badge) |
-| Breadcrumb | [Docs](https://docs.blazorbootstrap.com/components/breadcrumb) | [Demos](https://demos.blazorbootstrap.com/breadcrumb) |
-| Buttons | [Docs](https://docs.blazorbootstrap.com/components/buttons) | [Demos](https://demos.blazorbootstrap.com/buttons) |
-| Callout | [Docs](https://docs.blazorbootstrap.com/components/callout) | [Demos](https://demos.blazorbootstrap.com/callout) |
-| Card | [Docs](https://docs.blazorbootstrap.com/components/card) | [Demos](https://demos.blazorbootstrap.com/card) |
-| Carousel | [Docs](https://docs.blazorbootstrap.com/components/carousel) | [Demos](https://demos.blazorbootstrap.com/carousel) |
-| Checkbox Input | [Docs](https://docs.blazorbootstrap.com/forms/checkbox-input) | [Demos](https://demos.blazorbootstrap.com/form/checkbox-input) |
-| Collapse | [Docs](https://docs.blazorbootstrap.com/components/collapse) | [Demos](https://demos.blazorbootstrap.com/collapse) |
-| Confirm Dialog | [Docs](https://docs.blazorbootstrap.com/components/confirm-dialog) | [Demos](https://demos.blazorbootstrap.com/confirm-dialog) |
-| Currency Input | [Docs](https://docs.blazorbootstrap.com/forms/currency-input) | [Demos](https://demos.blazorbootstrap.com/form/currency-input) |
-| Date Input | [Docs](https://docs.blazorbootstrap.com/forms/date-input) | [Demos](https://demos.blazorbootstrap.com/form/date-input) |
-| Dropdown | [Docs](https://docs.blazorbootstrap.com/components/dropdown) | [Demos](https://demos.blazorbootstrap.com/dropdown) |
-| Enum Input| [Docs](https://docs.blazorbootstrap.com/forms/enum-input) | [Demos](https://demos.blazorbootstrap.com//form/enum-input) |
-| Google Map | [Docs](https://docs.blazorbootstrap.com/components/google-map) | [Demos](https://demos.blazorbootstrap.com/google-map) |
-| Grid | [Docs](https://docs.blazorbootstrap.com/components/grid) | [Demos](https://demos.blazorbootstrap.com/grid) |
-| Icons | [Docs](https://docs.blazorbootstrap.com/content/icons) | [Demos](https://demos.blazorbootstrap.com/icons) |
-| Images | [Docs](https://docs.blazorbootstrap.com/content/images) | [Demos](https://demos.blazorbootstrap.com/images) |
-| Markdown | [Docs](https://docs.blazorbootstrap.com/components/markdown) | [Demos](https://demos.blazorbootstrap.com/markdown) |
-| Modals | [Docs](https://docs.blazorbootstrap.com/components/modal) | [Demos](https://demos.blazorbootstrap.com/modals) |
-| Number Input | [Docs](https://docs.blazorbootstrap.com/forms/number-input) | [Demos](https://demos.blazorbootstrap.com/form/number-input) |
-| Offcanvas | [Docs](https://docs.blazorbootstrap.com/components/offcanvas) | [Demos](https://demos.blazorbootstrap.com/offcanvas) |
-| Pagination | [Docs](https://docs.blazorbootstrap.com/components/pagination) | [Demos](https://demos.blazorbootstrap.com/pagination) |
-| Password Input | [Docs](https://docs.blazorbootstrap.com/forms/password-input) | [Demos](https://demos.blazorbootstrap.com/form/password-input) |
-| PDF Viewer | [Docs](https://docs.blazorbootstrap.com/components/pdf-viewer) | [Demos](https://demos.blazorbootstrap.com/pdf-viewer) |
-| Placeholders | [Docs](https://docs.blazorbootstrap.com/components/placeholders) | [Demos](https://demos.blazorbootstrap.com/placeholders) |
-| Preload | [Docs](https://docs.blazorbootstrap.com/components/preload) | [Demos](https://demos.blazorbootstrap.com/preload) |
-| Progress | [Docs](https://docs.blazorbootstrap.com/components/progress) | [Demos](https://demos.blazorbootstrap.com/progress) |
-| Radio Input | [Docs](https://docs.blazorbootstrap.com/forms/radio-input) | [Demos](https://demos.blazorbootstrap.com/form/radio-input) |
-| RangeInput | [Docs](https://docs.blazorbootstrap.com/forms/range-input) | [Demos](https://demos.blazorbootstrap.com/form/range-input) |
-| Ribbon | [Docs](https://docs.blazorbootstrap.com/components/ribbon) | [Demos](https://demos.blazorbootstrap.com/ribbon) |
-| Script Loader | [Docs](https://docs.blazorbootstrap.com/components/script-loader) | [Demos](https://demos.blazorbootstrap.com/script-loader) |
-| Sidebar | [Docs](https://docs.blazorbootstrap.com/components/sidebar) | [Demos](https://demos.blazorbootstrap.com/sidebar) |
-| Sidebar2 | [Docs](https://docs.blazorbootstrap.com/components/sidebar2) | [Demos](https://demos.blazorbootstrap.com/sidebar2) |
-| Sortable List | [Docs](https://docs.blazorbootstrap.com/components/sortable-list) | [Demos](https://demos.blazorbootstrap.com/sortable-list) |
-| Spinners | [Docs](https://docs.blazorbootstrap.com/components/spinners) | [Demos](https://demos.blazorbootstrap.com/spinners) |
-| Switch | [Docs](https://docs.blazorbootstrap.com/forms/switch) | [Demos](https://demos.blazorbootstrap.com/form/switch) |
-| Tabs | [Docs](https://docs.blazorbootstrap.com/components/tabs) | [Demos](https://demos.blazorbootstrap.com/tabs) |
-| Text Input | [Docs](https://docs.blazorbootstrap.com/forms/text-input) | [Demos](https://demos.blazorbootstrap.com/form/text-input) |
-| TextArea Input | [Docs](https://docs.blazorbootstrap.com/forms/textarea-input) | [Demos](https://demos.blazorbootstrap.com/form/text-area-input) |
-| Theme Switcher | [Docs](https://docs.blazorbootstrap.com/components/theme-switcher) | [Demos](https://demos.blazorbootstrap.com/theme-switcher) |
-| Time Input | [Docs](https://docs.blazorbootstrap.com/forms/time-input) | [Demos](https://demos.blazorbootstrap.com/form/time-input) |
-| Toasts | [Docs](https://docs.blazorbootstrap.com/components/toasts) | [Demos](https://demos.blazorbootstrap.com/toasts) |
-| Tooltips | [Docs](https://docs.blazorbootstrap.com/components/tooltips) | [Demos](https://demos.blazorbootstrap.com/tooltips) |
+| Accordion | [Docs](https://docs.blazorbootstrap.com/components/accordion) | [Demos](https://demos.blazorbootstrap.com/demos/accordion) |
+| Alerts | [Docs](https://docs.blazorbootstrap.com/components/alerts) | [Demos](https://demos.blazorbootstrap.com/demos/alerts) |
+| Auto Complete | [Docs](https://docs.blazorbootstrap.com/forms/autocomplete) | [Demos](https://demos.blazorbootstrap.com/demos/form/autocomplete) |
+| Avatar | [Docs](https://docs.blazorbootstrap.com/components/avatar) | [Demos](https://demos.blazorbootstrap.com/demos/avatar) |
+| Badge | [Docs](https://docs.blazorbootstrap.com/components/badge) | [Demos](https://demos.blazorbootstrap.com/demos/badge) |
+| Breadcrumb | [Docs](https://docs.blazorbootstrap.com/components/breadcrumb) | [Demos](https://demos.blazorbootstrap.com/demos/breadcrumb) |
+| Button Group | [Docs](https://docs.blazorbootstrap.com/components/button-group) | [Demos](https://demos.blazorbootstrap.com/demos/button-group) |
+| Buttons | [Docs](https://docs.blazorbootstrap.com/components/buttons) | [Demos](https://demos.blazorbootstrap.com/demos/buttons) |
+| Calendar | [Docs](https://docs.blazorbootstrap.com/components/calendar) | [Demos](https://demos.blazorbootstrap.com/demos/calendar) |
+| Callout | [Docs](https://docs.blazorbootstrap.com/components/callout) | [Demos](https://demos.blazorbootstrap.com/demos/callout) |
+| Card | [Docs](https://docs.blazorbootstrap.com/components/card) | [Demos](https://demos.blazorbootstrap.com/demos/card) |
+| Carousel | [Docs](https://docs.blazorbootstrap.com/components/carousel) | [Demos](https://demos.blazorbootstrap.com/demos/carousel) |
+| Checkbox Input | [Docs](https://docs.blazorbootstrap.com/forms/checkbox-input) | [Demos](https://demos.blazorbootstrap.com/demos/form/checkbox-input) |
+| Collapse | [Docs](https://docs.blazorbootstrap.com/components/collapse) | [Demos](https://demos.blazorbootstrap.com/demos/collapse) |
+| Confirm Dialog | [Docs](https://docs.blazorbootstrap.com/components/confirm-dialog) | [Demos](https://demos.blazorbootstrap.com/demos/confirm-dialog) |
+| Currency Input | [Docs](https://docs.blazorbootstrap.com/forms/currency-input) | [Demos](https://demos.blazorbootstrap.com/demos/form/currency-input) |
+| Date Input | [Docs](https://docs.blazorbootstrap.com/forms/date-input) | [Demos](https://demos.blazorbootstrap.com/demos/form/date-input) |
+| Drag and Drop File Input | [Docs](https://docs.blazorbootstrap.com/forms/drag-and-drop-file-input) | [Demos](https://demos.blazorbootstrap.com/demos/form/drag-and-drop-file-input) |
+| Dropdown | [Docs](https://docs.blazorbootstrap.com/components/dropdown) | [Demos](https://demos.blazorbootstrap.com/demos/dropdown) |
+| Enum Input | [Docs](https://docs.blazorbootstrap.com/forms/enum-input) | [Demos](https://demos.blazorbootstrap.com/demos/form/enum-input) |
+| File Input | [Docs](https://docs.blazorbootstrap.com/forms/file-input) | [Demos](https://demos.blazorbootstrap.com/demos/form/file-input) |
+| Google Map | [Docs](https://docs.blazorbootstrap.com/components/google-map) | [Demos](https://demos.blazorbootstrap.com/demos/google-map) |
+| Grid | [Docs](https://docs.blazorbootstrap.com/components/grid) | [Demos](https://demos.blazorbootstrap.com/demos/grid/overview) |
+| Icons | [Docs](https://docs.blazorbootstrap.com/content/icons) | [Demos](https://demos.blazorbootstrap.com/demos/icons) |
+| Images | [Docs](https://docs.blazorbootstrap.com/content/images) | [Demos](https://demos.blazorbootstrap.com/demos/images) |
+| Input Group | [Docs](https://docs.blazorbootstrap.com/components/input-group) | [Demos](https://demos.blazorbootstrap.com/demos/form/input-group) |
+| List Group | [Docs](https://docs.blazorbootstrap.com/components/list-group) | [Demos](https://demos.blazorbootstrap.com/demos/list-group) |
+| Markdown | [Docs](https://docs.blazorbootstrap.com/components/markdown) | [Demos](https://demos.blazorbootstrap.com/demos/markdown) |
+| Mind Map | [Docs](https://docs.blazorbootstrap.com/components/mind-map) | [Demos](https://demos.blazorbootstrap.com/demos/mind-map) |
+| Modals | [Docs](https://docs.blazorbootstrap.com/components/modal) | [Demos](https://demos.blazorbootstrap.com/demos/modals) |
+| Navbar | [Docs](https://docs.blazorbootstrap.com/components/navbar) | [Demos](https://demos.blazorbootstrap.com/demos/navbar) |
+| Number Input | [Docs](https://docs.blazorbootstrap.com/forms/number-input) | [Demos](https://demos.blazorbootstrap.com/demos/form/number-input) |
+| Offcanvas | [Docs](https://docs.blazorbootstrap.com/components/offcanvas) | [Demos](https://demos.blazorbootstrap.com/demos/offcanvas) |
+| OTP Input | [Docs](https://docs.blazorbootstrap.com/forms/otp-input) | [Demos](https://demos.blazorbootstrap.com/demos/form/otp-input) |
+| Pagination | [Docs](https://docs.blazorbootstrap.com/components/pagination) | [Demos](https://demos.blazorbootstrap.com/demos/pagination) |
+| Password Input | [Docs](https://docs.blazorbootstrap.com/forms/password-input) | [Demos](https://demos.blazorbootstrap.com/demos/form/password-input) |
+| PDF Viewer | [Docs](https://docs.blazorbootstrap.com/components/pdf-viewer) | [Demos](https://demos.blazorbootstrap.com/demos/pdf-viewer) |
+| Placeholders | [Docs](https://docs.blazorbootstrap.com/components/placeholders) | [Demos](https://demos.blazorbootstrap.com/demos/placeholders) |
+| Popover | [Docs](https://docs.blazorbootstrap.com/components/popover) | [Demos](https://demos.blazorbootstrap.com/demos/popover) |
+| Preload | [Docs](https://docs.blazorbootstrap.com/components/preload) | [Demos](https://demos.blazorbootstrap.com/demos/preload) |
+| Progress | [Docs](https://docs.blazorbootstrap.com/components/progress) | [Demos](https://demos.blazorbootstrap.com/demos/progress) |
+| Radio Input | [Docs](https://docs.blazorbootstrap.com/forms/radio-input) | [Demos](https://demos.blazorbootstrap.com/demos/form/radio-input) |
+| Range Input | [Docs](https://docs.blazorbootstrap.com/forms/range-input) | [Demos](https://demos.blazorbootstrap.com/demos/form/range-input) |
+| Rating Input | [Docs](https://docs.blazorbootstrap.com/forms/rating-input) | [Demos](https://demos.blazorbootstrap.com/demos/form/rating-input) |
+| Ribbon | [Docs](https://docs.blazorbootstrap.com/components/ribbon) | [Demos](https://demos.blazorbootstrap.com/demos/ribbon) |
+| Rich Text Editor | [Docs](https://docs.blazorbootstrap.com/forms/rich-text-editor) | [Demos](https://demos.blazorbootstrap.com/demos/form/rich-text-editor) |
+| Script Loader | [Docs](https://docs.blazorbootstrap.com/components/script-loader) | [Demos](https://demos.blazorbootstrap.com/demos/script-loader) |
+| Sidebar | [Docs](https://docs.blazorbootstrap.com/components/sidebar) | [Demos](https://demos.blazorbootstrap.com/demos/sidebar) |
+| Sidebar 2 | [Docs](https://docs.blazorbootstrap.com/components/sidebar2) | [Demos](https://demos.blazorbootstrap.com/demos/sidebar2) |
+| Sortable List | [Docs](https://docs.blazorbootstrap.com/components/sortable-list) | [Demos](https://demos.blazorbootstrap.com/demos/sortable-list) |
+| Spinners | [Docs](https://docs.blazorbootstrap.com/components/spinners) | [Demos](https://demos.blazorbootstrap.com/demos/spinners) |
+| Split View | [Docs](https://docs.blazorbootstrap.com/components/split-view) | [Demos](https://demos.blazorbootstrap.com/demos/split-view) |
+| Switch | [Docs](https://docs.blazorbootstrap.com/forms/switch) | [Demos](https://demos.blazorbootstrap.com/demos/form/switch) |
+| Tabs | [Docs](https://docs.blazorbootstrap.com/components/tabs) | [Demos](https://demos.blazorbootstrap.com/demos/tabs) |
+| Text Input | [Docs](https://docs.blazorbootstrap.com/forms/text-input) | [Demos](https://demos.blazorbootstrap.com/demos/form/text-input) |
+| Text Area Input | [Docs](https://docs.blazorbootstrap.com/forms/textarea-input) | [Demos](https://demos.blazorbootstrap.com/demos/form/text-area-input) |
+| Theme Switcher | [Docs](https://docs.blazorbootstrap.com/components/theme-switcher) | [Demos](https://demos.blazorbootstrap.com/demos/theme-switcher) |
+| Time Input | [Docs](https://docs.blazorbootstrap.com/forms/time-input) | [Demos](https://demos.blazorbootstrap.com/demos/form/time-input) |
+| Timeline | [Docs](https://docs.blazorbootstrap.com/components/timeline) | [Demos](https://demos.blazorbootstrap.com/demos/timeline) |
+| Toasts | [Docs](https://docs.blazorbootstrap.com/components/toasts) | [Demos](https://demos.blazorbootstrap.com/demos/toasts) |
+| Tooltips | [Docs](https://docs.blazorbootstrap.com/components/tooltips) | [Demos](https://demos.blazorbootstrap.com/demos/tooltips) |
 
 More components coming...
 
 ## Documentation
 
-Blazor Bootstrap's documentation, included in this repo in the root directory, is built with [Docusaurus](https://docusaurus.io/) and publicly hosted on GitHub Pages at <https://docs.blazorbootstrap.com/>. The docs may also be run locally.
+Blazor Bootstrap's documentation lives in the `docs` folder of the [GitHub repository](https://github.com/vikramlearning/blazorbootstrap). It is built with [Docusaurus](https://docusaurus.io/) and publicly hosted on GitHub Pages at <https://docs.blazorbootstrap.com/>.
 
 ## Creators
 
@@ -99,4 +117,4 @@ Blazor Bootstrap's documentation, included in this repo in the root directory, i
 
 ## Copyright and license
 
-Code and documentation copyright 2024 [Blazor Bootstrap](https://docs.blazorbootstrap.com/) Code released under the [Apache-2.0 License](https://github.com/vikramlearning/blazorbootstrap/blob/main/LICENSE.txt).
+Code and documentation copyright 2026 [Blazor Bootstrap](https://docs.blazorbootstrap.com/) Code released under the [Apache-2.0 License](https://github.com/vikramlearning/blazorbootstrap/blob/main/LICENSE.txt).
