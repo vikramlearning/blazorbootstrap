@@ -916,6 +916,84 @@ public static class EnumExtensions
             _ => "spinner-border"
         };
 
+    /// <summary>
+    /// Converts a <see cref="TableBorderColor" /> value to its Bootstrap <c>border-*</c> class; <see cref="TableBorderColor.None" /> needs none.
+    /// </summary>
+    [AddedVersion("4.1.0")]
+    [Description("Converts a TableBorderColor value to its Bootstrap border-* class; None needs none.")]
+    public static string ToTableBorderColorClass(this TableBorderColor borderColor) =>
+        borderColor switch
+        {
+            TableBorderColor.Primary => "border-primary",
+            TableBorderColor.PrimarySubtle => "border-primary-subtle",
+            TableBorderColor.Secondary => "border-secondary",
+            TableBorderColor.SecondarySubtle => "border-secondary-subtle",
+            TableBorderColor.Success => "border-success",
+            TableBorderColor.SuccessSubtle => "border-success-subtle",
+            TableBorderColor.Danger => "border-danger",
+            TableBorderColor.DangerSubtle => "border-danger-subtle",
+            TableBorderColor.Warning => "border-warning",
+            TableBorderColor.WarningSubtle => "border-warning-subtle",
+            TableBorderColor.Info => "border-info",
+            TableBorderColor.InfoSubtle => "border-info-subtle",
+            TableBorderColor.Light => "border-light",
+            TableBorderColor.LightSubtle => "border-light-subtle",
+            TableBorderColor.Dark => "border-dark",
+            TableBorderColor.DarkSubtle => "border-dark-subtle",
+            TableBorderColor.Black => "border-black",
+            TableBorderColor.White => "border-white",
+            _ => ""
+        };
+
+    /// <summary>
+    /// Converts a <see cref="TableColor" /> value to its Bootstrap <c>table-*</c> variant class; <see cref="TableColor.None" /> needs none.
+    /// </summary>
+    [AddedVersion("4.1.0")]
+    [Description("Converts a TableColor value to its Bootstrap table-* variant class; None needs none.")]
+    public static string ToTableColorClass(this TableColor tableColor) =>
+        tableColor switch
+        {
+            TableColor.Primary => "table-primary",
+            TableColor.Secondary => "table-secondary",
+            TableColor.Success => "table-success",
+            TableColor.Danger => "table-danger",
+            TableColor.Warning => "table-warning",
+            TableColor.Info => "table-info",
+            TableColor.Light => "table-light",
+            TableColor.Dark => "table-dark",
+            _ => ""
+        };
+
+    /// <summary>
+    /// Converts a <see cref="TableResponsiveBreakpoint" /> value to its Bootstrap <c>table-responsive-*</c> class; <see cref="TableResponsiveBreakpoint.None" /> needs none.
+    /// </summary>
+    [AddedVersion("4.1.0")]
+    [Description("Converts a TableResponsiveBreakpoint value to its Bootstrap table-responsive-* class; None needs none.")]
+    public static string ToTableResponsiveClass(this TableResponsiveBreakpoint breakpoint) =>
+        breakpoint switch
+        {
+            TableResponsiveBreakpoint.Small => "table-responsive-sm",
+            TableResponsiveBreakpoint.Medium => "table-responsive-md",
+            TableResponsiveBreakpoint.Large => "table-responsive-lg",
+            TableResponsiveBreakpoint.ExtraLarge => "table-responsive-xl",
+            TableResponsiveBreakpoint.ExtraExtraLarge => "table-responsive-xxl",
+            _ => ""
+        };
+
+    /// <summary>
+    /// Converts a <see cref="TableVerticalAlignment" /> value to its Bootstrap <c>align-*</c> class; <see cref="TableVerticalAlignment.None" /> needs none.
+    /// </summary>
+    [AddedVersion("4.1.0")]
+    [Description("Converts a TableVerticalAlignment value to its Bootstrap align-* class; None needs none.")]
+    public static string ToTableVerticalAlignmentClass(this TableVerticalAlignment alignment) =>
+        alignment switch
+        {
+            TableVerticalAlignment.Top => "align-top",
+            TableVerticalAlignment.Middle => "align-middle",
+            TableVerticalAlignment.Bottom => "align-bottom",
+            _ => ""
+        };
+
     public static string ToTargetString(this Target target) =>
         target switch
         {

@@ -1,0 +1,22 @@
+<Table TItem="Order" Data="orders" Striped="true" Bordered="true" Color="TableColor.Primary" VerticalAlignment="TableVerticalAlignment.Middle"
+       Caption="Orders and their lines" VisuallyHiddenCaption="true">
+    <TableColumn HeaderText="Order" IsRowHeader="true">@context.Number</TableColumn>
+    <TableColumn HeaderText="Lines">
+        <Table TItem="OrderLine" Data="context.Lines" Small="true" Class="mb-0" Caption="@($"Lines of {context.Number}")" VisuallyHiddenCaption="true">
+            <TableColumn HeaderText="Item" IsRowHeader="true" Context="line">@line.Item</TableColumn>
+            <TableColumn HeaderText="Qty" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" Context="line">@line.Quantity</TableColumn>
+        </Table>
+    </TableColumn>
+</Table>
+
+@code {
+    private readonly List<Order> orders =
+    [
+        new("SO-501", [new("Desk lamp", 2), new("LED bulb", 4)]),
+        new("SO-502", [new("Office chair", 1)])
+    ];
+
+    private record Order(string Number, List<OrderLine> Lines);
+
+    private record OrderLine(string Item, int Quantity);
+}

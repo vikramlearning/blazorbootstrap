@@ -1,0 +1,146 @@
+@namespace BlazorBootstrap
+@inherits BlazorBootstrapComponentBase
+@typeparam TItem
+@attribute [CascadingTypeParameter(nameof(TItem))]
+
+<CascadingValue Value="@(this)" Name="Parent" IsFixed="true">
+    @ChildContent
+</CascadingValue>
+
+@if (IsResponsive)
+{
+    <div class="@ContainerClassNames" style="@TableContainerStyle" tabindex="0" role="@(HasCaption ? "region" : null)" aria-labelledby="@(HasCaption ? CaptionId : null)">
+        @RenderTable()
+    </div>
+}
+else
+{
+    @RenderTable()
+}
+
+@code {
+    private RenderFragment RenderTable() => __builder =>
+    {
+        var visibleColumns = GetVisibleColumns();
+        var columnCount = visibleColumns.Count;
+        var items = Data?.ToList();
+        var isLoading = items is null;
+
+        <table @ref="@Element" id="@Id" class="@ClassNames" style="@StyleNames" aria-busy="@(isLoading ? "true" : null)" @attributes="@AdditionalAttributes">
+            @if (HasCaption)
+            {
+                <caption id="@CaptionId" class="@CaptionClassNames">
+                    @if (CaptionTemplate is not null)
+                    {
+                        @CaptionTemplate
+                    }
+                    else
+                    {
+                        @Caption
+                    }
+                </caption>
+            }
+            <thead class="@HeadClassNames">
+                <tr>
+                    @foreach (var column in visibleColumns)
+                    {
+                        <th scope="col" class="@column.HeaderClassNames" style="@column.HeaderStyle">
+                            @if (column.HeaderContent is not null)
+                            {
+                                @column.HeaderContent
+                            }
+                            else
+                            {
+                                @column.HeaderText
+                            }
+                        </th>
+                    }
+                </tr>
+            </thead>
+            <tbody class="@(GroupDivider ? BootstrapClass.TableGroupDivider : null)">
+                @if (isLoading)
+                {
+                    @if (LoadingTemplate is not null)
+                    {
+                        <tr>
+                            <td colspan="@columnCount">@LoadingTemplate</td>
+                        </tr>
+                    }
+                    else
+                    {
+                        @for (var row = 0; row < PlaceholderRowCount; row++)
+                        {
+                            <tr>
+                                @for (var cell = 0; cell < columnCount; cell++)
+                                {
+                                    <td class="placeholder-glow"><span class="placeholder col-12"></span></td>
+                                }
+                            </tr>
+                        }
+                    }
+                }
+                else if (items!.Count == 0)
+                {
+                    <tr>
+                        <td colspan="@columnCount" class="text-center">
+                            @if (EmptyDataTemplate is not null)
+                            {
+                                @EmptyDataTemplate
+                            }
+                            else
+                            {
+                                @EmptyText
+                            }
+                        </td>
+                    </tr>
+                }
+                else
+                {
+                    @foreach (var item in items)
+                    {
+                        <tr @key="@(RowKeySelector?.Invoke(item))" class="@GetRowClassNames(item)">
+                            @foreach (var column in visibleColumns)
+                            {
+                                @if (column.IsRowHeader)
+                                {
+                                    <th scope="row" class="@column.GetCellClassNames(item)">@column.ChildContent?.Invoke(item)</th>
+                                }
+                                else
+                                {
+                                    <td class="@column.GetCellClassNames(item)">@column.ChildContent?.Invoke(item)</td>
+                                }
+                            }
+                        </tr>
+                    }
+                }
+            </tbody>
+            @if (!isLoading && items!.Count > 0)
+            {
+                @if (FooterTemplate is not null)
+                {
+                    <tfoot>@FooterTemplate</tfoot>
+                }
+                else if (visibleColumns.Any(column => column.HasFooter))
+                {
+                    <tfoot>
+                        <tr>
+                            @foreach (var column in visibleColumns)
+                            {
+                                <td class="@column.FooterClassNames">
+                                    @if (column.FooterTemplate is not null)
+                                    {
+                                        @column.FooterTemplate
+                                    }
+                                    else
+                                    {
+                                        @column.FooterText
+                                    }
+                                </td>
+                            }
+                        </tr>
+                    </tfoot>
+                }
+            }
+        </table>
+    };
+}

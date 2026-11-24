@@ -1,0 +1,16 @@
+<Table TItem="Product" Data="products" Caption="Top products" VisuallyHiddenCaption="true">
+    <TableColumn HeaderText="SKU" TextNoWrap="true">@context.Sku</TableColumn>
+    <TableColumn HeaderText="Product" IsRowHeader="true" ColumnClass="@(_ => "fw-normal")">@context.Name</TableColumn>
+    <TableColumn HeaderText="Units sold" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End">@context.Units.ToString("N0")</TableColumn>
+</Table>
+
+@code {
+    private readonly List<Product> products =
+    [
+        new("SKU-2041", "Wireless keyboard", 1840),
+        new("SKU-1187", "USB-C hub", 1512),
+        new("SKU-3390", "Noise-cancelling headset", 1306)
+    ];
+
+    private record Product(string Sku, string Name, int Units);
+}

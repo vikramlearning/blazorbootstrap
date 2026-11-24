@@ -1,0 +1,34 @@
+<div class="d-flex flex-wrap gap-3 mb-3">
+    <Switch @bind-Value="captionTop" Label="Caption on top" />
+    <Switch @bind-Value="visuallyHidden" Label="Visually hidden caption" />
+</div>
+
+<Table TItem="Transfer" Data="transfers" Caption="Transfers that triggered this alert" CaptionTop="captionTop" VisuallyHiddenCaption="visuallyHidden" CaptionClass="small">
+    <TableColumn HeaderText="Reference" IsRowHeader="true">@context.Reference</TableColumn>
+    <TableColumn HeaderText="Counterparty">@context.Counterparty</TableColumn>
+    <TableColumn HeaderText="Amount" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End">@context.Amount.ToString("C", System.Globalization.CultureInfo.GetCultureInfo("en-US"))</TableColumn>
+</Table>
+
+<Table TItem="Transfer" Data="transfers" CaptionTop="true">
+    <CaptionTemplate>
+        <strong>Flagged transfers</strong> <span class="text-body-secondary">from the last 7 days</span>
+    </CaptionTemplate>
+    <ChildContent>
+        <TableColumn HeaderText="Reference" IsRowHeader="true">@context.Reference</TableColumn>
+        <TableColumn HeaderText="Amount" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End">@context.Amount.ToString("C", System.Globalization.CultureInfo.GetCultureInfo("en-US"))</TableColumn>
+    </ChildContent>
+</Table>
+
+@code {
+    private bool captionTop = true;
+    private bool visuallyHidden;
+
+    private readonly List<Transfer> transfers =
+    [
+        new("TR-8812", "Kestrel Imports", 9400m),
+        new("TR-8813", "Kestrel Imports", 9750m),
+        new("TR-8820", "Blue Harbor LLC", 9900m)
+    ];
+
+    private record Transfer(string Reference, string Counterparty, decimal Amount);
+}

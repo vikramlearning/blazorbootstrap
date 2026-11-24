@@ -1,0 +1,17 @@
+<Table TItem="SprintTask" Data="tasks" Small="true" GroupDivider="true" Caption="Sprint tasks" VisuallyHiddenCaption="true">
+    <TableColumn HeaderText="Key" IsRowHeader="true" TextNoWrap="true">@context.Key</TableColumn>
+    <TableColumn HeaderText="Summary">@context.Summary</TableColumn>
+    <TableColumn HeaderText="Points" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End">@context.Points</TableColumn>
+</Table>
+
+@code {
+    private readonly List<SprintTask> tasks =
+    [
+        new("PB-101", "Add invoice export", 5),
+        new("PB-102", "Fix timezone on reports", 3),
+        new("PB-103", "Archive closed projects", 2),
+        new("PB-104", "Invite reviewers by email", 3)
+    ];
+
+    private record SprintTask(string Key, string Summary, int Points);
+}

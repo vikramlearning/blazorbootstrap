@@ -99,6 +99,7 @@ public class DemoScreenshotSrcConstants
     public const string Demos_URL_SplitView = DemoScreenshotSrcPrefix + "split-view.png";
     public const string Demos_URL_SortableList = DemoScreenshotSrcPrefix + "sortable-list.png";
     public const string Demos_URL_Spinners = DemoScreenshotSrcPrefix + "spinners.png";
+    public const string Demos_URL_Table = DemoScreenshotSrcPrefix + "table.png";
     public const string Demos_URL_Tabs = DemoScreenshotSrcPrefix + "tabs.png";
     public const string Demos_URL_ThemeSwitcher = DemoScreenshotSrcPrefix + "theme-switcher.png";
     public const string Demos_URL_Timeline = DemoScreenshotSrcPrefix + "timeline.png";

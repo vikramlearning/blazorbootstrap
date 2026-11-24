@@ -378,6 +378,13 @@ html :is(a, button, input, select, textarea, summary, .btn, .form-control, .form
     box-shadow: none;
 }
 
+/* A responsive Table's scroll region takes keyboard focus (WCAG 2.1.1). It is a separate rule so the list above keeps
+   its specificity (0,2,1) and Showcase sites' scoped focus rules still win. */
+html [class*="table-responsive"][tabindex]:focus-visible {
+    outline: 2px solid var(--bs-emphasis-color);
+    outline-offset: 2px;
+}
+
 /* Button-style toggles hide the real input, so the visible label shows the focus outline instead.
    The :checked variant (0,4,1) is needed to beat Bootstrap's .btn-check:checked:focus-visible + .btn glow (0,4,0). */
 html .btn-check:focus-visible + .btn,

@@ -1,0 +1,225 @@
+@attribute [Route(pageUrl)]
+@layout DemosMainLayout
+
+<DemosPageHeadSection PageUrl="@pageUrl"
+                      PageTitle="@pageTitle"
+                      PageDescription="@pageDescription"
+                      MetaTitle="@metaTitle"
+                      MetaDescription="@metaDescription"
+                      ImageUrl="@imageUrl" />
+
+<Callout Color="CalloutColor.Info">
+    <b>Table</b> renders a read-only Bootstrap 5.3 table from a list, one row per item, with columns declared as <code>TableColumn</code> children.
+    It is the lightweight sibling of <a href="@DemoRouteConstants.Demos_URL_Grid_Overview">Grid</a>: use <b>Grid</b> when you need paging, sorting, filtering, selection, or a data provider.
+    Every option maps to a Bootstrap class, so the table follows the light and dark themes and needs no JavaScript.
+</Callout>
+
+<Section Size="HeadingSize.H2" Name="Basic usage" PageUrl="@pageUrl" Link="basic-usage">
+    <div class="mb-3">
+        A table with a caption, a row header, and a right-aligned amount column. Cells can hold other components, such as a badge.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Add <code>Table</code> with <code>TItem</code> and <code>Data</code> (any <code>IEnumerable&lt;TItem&gt;</code>).</li>
+                <li>Add one <code>TableColumn</code> per column. Set <code>HeaderText</code>, and write the cell inside it with the row item as <code>@@context</code>. The columns take <code>TItem</code> from the table.</li>
+                <li>Set <code>IsRowHeader="true"</code> on the column that names each row, and <code>Caption</code> to name the table.</li>
+                <li>Use <code>TextAlignment</code> and <code>HeaderTextAlignment</code> to align a column, for example numbers to <code>Alignment.End</code>.</li>
+            </ol>
+        </div>
+    </div>
+    <Demo Type="typeof(Table_Demo_01_Basic_Usage)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Variants" PageUrl="@pageUrl" Link="variants">
+    <div class="mb-3">
+        Color the whole table or its head with Bootstrap's table variants. Change the colors below.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Set <code>Color</code> (<code>TableColor</code>) for the table.</li>
+                <li>Set <code>HeaderColor</code> for the head, for example <code>TableColor.Light</code> or <code>TableColor.Dark</code>.</li>
+            </ol>
+        </div>
+    </div>
+    <Demo Type="typeof(Table_Demo_02_Variants)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Accented tables" PageUrl="@pageUrl" Link="accented-tables">
+    <div class="mb-3">
+        Stripe the rows or the columns, and highlight the row under the pointer.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Set <code>Striped</code> for striped rows and <code>StripedColumns</code> for striped columns.</li>
+                <li>Set <code>Hover</code> to highlight rows on hover.</li>
+            </ol>
+        </div>
+    </div>
+    <Demo Type="typeof(Table_Demo_03_Accented)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Borders" PageUrl="@pageUrl" Link="borders">
+    <div class="mb-3">
+        Add borders on all sides, remove them, or change their color.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Set <code>Bordered</code> for borders on every cell, or <code>Borderless</code> for none.</li>
+                <li>Set <code>BorderColor</code> (<code>TableBorderColor</code>), which includes the subtle colors, black, and white.</li>
+            </ol>
+        </div>
+    </div>
+    <Demo Type="typeof(Table_Demo_04_Borders)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Small and group divider" PageUrl="@pageUrl" Link="small-and-group-divider">
+    <div class="mb-3">
+        Halve the cell padding, and put a thicker border between the head and the body.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Set <code>Small</code> for compact rows.</li>
+                <li>Set <code>GroupDivider</code> for the thicker border above the body.</li>
+            </ol>
+        </div>
+    </div>
+    <Demo Type="typeof(Table_Demo_05_Small_And_Group_Divider)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Alignment" PageUrl="@pageUrl" Link="alignment">
+    <div class="mb-3">
+        Align cells vertically for the whole table, and override one column. Change the table's alignment below; the last column stays at the bottom.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Set <code>VerticalAlignment</code> (<code>TableVerticalAlignment</code>) on the table.</li>
+                <li>Set <code>VerticalAlignment</code> on a column to override it for that column's cells.</li>
+                <li>Set <code>TextAlignment</code> for horizontal alignment, and <code>TextNoWrap</code> to keep a column on one line.</li>
+            </ol>
+        </div>
+    </div>
+    <Demo Type="typeof(Table_Demo_06_Alignment)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Header cells" PageUrl="@pageUrl" Link="header-cells">
+    <div class="mb-3">
+        Style a column's header cell, or replace its text with markup.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Set <code>HeaderClass</code> and <code>HeaderStyle</code> to style the column's <code>&lt;th&gt;</code>.</li>
+                <li>Use <code>HeaderContent</code> instead of <code>HeaderText</code> for markup such as an icon; the cell then goes in <code>ChildContent</code>.</li>
+            </ol>
+        </div>
+    </div>
+    <Demo Type="typeof(Table_Demo_07_Header_Cells)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Caption" PageUrl="@pageUrl" Link="caption">
+    <div class="mb-3">
+        A caption works like a heading for the table and names it for screen readers. Move it above the table or hide it visually below.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Set <code>Caption</code>, or <code>CaptionTemplate</code> for markup.</li>
+                <li>Set <code>CaptionTop</code> to show it above the table, and <code>CaptionClass</code> to style it.</li>
+                <li>Set <code>VisuallyHiddenCaption</code> to keep it for screen readers only when a visible heading already names the table.</li>
+            </ol>
+        </div>
+    </div>
+    <Demo Type="typeof(Table_Demo_08_Caption)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Row headers" PageUrl="@pageUrl" Link="row-headers">
+    <div class="mb-3">
+        Any column can name its rows. Screen readers then announce that cell with every other cell in the row.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Set <code>IsRowHeader="true"</code> on the column; its cells render as <code>&lt;th scope="row"&gt;</code>.</li>
+                <li>Use <code>ColumnClass</code> to change its weight, for example <code>fw-normal</code>.</li>
+            </ol>
+        </div>
+    </div>
+    <Demo Type="typeof(Table_Demo_09_Row_Headers)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Row and cell colors" PageUrl="@pageUrl" Link="row-and-cell-colors">
+    <div class="mb-3">
+        Color or activate a row or a single cell from the row's data. Colors must never be the only way the meaning is shown, so the last column says it in words.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Set <code>RowColor</code> (<code>Func&lt;TItem, TableColor&gt;</code>) and <code>RowActive</code> (<code>Func&lt;TItem, bool&gt;</code>) on the table.</li>
+                <li>Set <code>CellColor</code> and <code>CellActive</code> on a column for its cells.</li>
+                <li>Use <code>RowClass</code> and <code>ColumnClass</code> (<code>Func&lt;TItem, string&gt;</code>) for any other class.</li>
+            </ol>
+        </div>
+    </div>
+    <Demo Type="typeof(Table_Demo_10_Row_And_Cell_Colors)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Responsive" PageUrl="@pageUrl" Link="responsive">
+    <div class="mb-3">
+        A wide table scrolls horizontally inside its own wrapper instead of widening the page. Keyboard users can focus the wrapper and scroll it with the arrow keys.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Set <code>Responsive</code> to scroll at every width, or <code>ResponsiveBreakpoint</code> to scroll only below that width.</li>
+                <li>Style the wrapper with <code>TableContainerClass</code> and <code>TableContainerStyle</code>.</li>
+                <li>Set a <code>Caption</code> (it can be visually hidden): it also names the scrolling region for screen readers.</li>
+            </ol>
+        </div>
+    </div>
+    <Demo Type="typeof(Table_Demo_11_Responsive)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Nesting" PageUrl="@pageUrl" Link="nesting">
+    <div class="mb-3">
+        A table inside a cell keeps its own styles; the outer table's color, stripes, and borders do not reach it.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Put a <code>Table</code> in a column's content.</li>
+                <li>Give the inner columns their own <code>Context</code> name, such as <code>Context="line"</code>, so it does not clash with the outer <code>context</code>.</li>
+            </ol>
+        </div>
+    </div>
+    <Demo Type="typeof(Table_Demo_12_Nested)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Classes and attributes" PageUrl="@pageUrl" Link="classes-and-attributes">
+    <div class="mb-3">
+        <code>Class</code>, <code>Style</code>, and any other attribute always go on the <code>&lt;table&gt;</code> element, whether or not the table is responsive.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Set <code>Class</code>, <code>Style</code>, or an attribute such as <code>data-testid</code> on the table.</li>
+                <li>Use <code>TableContainerClass</code> and <code>TableContainerStyle</code> for the responsive wrapper.</li>
+            </ol>
+        </div>
+    </div>
+    <Demo Type="typeof(Table_Demo_13_Classes_And_Attributes)" Tabs="true" />
+</Section>
+
+@code {
+    private const string pageUrl = DemoRouteConstants.Demos_URL_Table;
+    private const string pageTitle = "Blazor Table";
+    private const string pageDescription = "The Blazor Bootstrap Table component renders a read-only Bootstrap 5.3 table from a list, with declared columns. The examples below cover variants, accented rows, borders, alignment, captions, row headers, row and cell colors, responsive scrolling and nesting.";
+    private const string metaTitle = "Blazor Table examples";
+    private const string metaDescription = "Live Blazor Table examples with source code: variants, striped and hover rows, borders, captions, row headers, row and cell colors, responsive scrolling and nested tables.";
+    private const string imageUrl = DemoScreenshotSrcConstants.Demos_URL_Table;
+}

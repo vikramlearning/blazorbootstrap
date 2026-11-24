@@ -1,0 +1,29 @@
+<div class="mb-3">
+    <label class="form-label" for="table-demo-valign">Table vertical alignment</label>
+    <select id="table-demo-valign" class="form-select form-select-sm w-auto" @bind="verticalAlignment">
+        @foreach (var value in Enum.GetValues<TableVerticalAlignment>())
+        {
+            <option value="@value">@value</option>
+        }
+    </select>
+</div>
+
+<Table TItem="Review" Data="reviews" VerticalAlignment="verticalAlignment" Bordered="true" Caption="Product reviews" VisuallyHiddenCaption="true">
+    <TableColumn HeaderText="Product" IsRowHeader="true">@context.Product</TableColumn>
+    <TableColumn HeaderText="Review">@context.Text</TableColumn>
+    <TableColumn HeaderText="Rating" TextAlignment="Alignment.Center" HeaderTextAlignment="Alignment.Center">@context.Rating / 5</TableColumn>
+    <TableColumn HeaderText="Always bottom" VerticalAlignment="TableVerticalAlignment.Bottom" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End">@context.Date.ToString("MMM d")</TableColumn>
+</Table>
+
+@code {
+    private TableVerticalAlignment verticalAlignment = TableVerticalAlignment.Middle;
+
+    private readonly List<Review> reviews =
+    [
+        new("Desk lamp", "Bright, steady light. The arm holds its position, and the base is heavy enough that it never tips over when I move it around the desk.", 5, new DateTime(2026, 11, 3)),
+        new("Office chair", "Comfortable for a full day.", 4, new DateTime(2026, 10, 30)),
+        new("Monitor stand", "Sturdy, but the cable clip broke in the first week, so the cables now hang behind the desk.", 3, new DateTime(2026, 10, 18))
+    ];
+
+    private record Review(string Product, string Text, int Rating, DateTime Date);
+}

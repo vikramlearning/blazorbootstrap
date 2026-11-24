@@ -166,8 +166,18 @@ public static class BootstrapClass
 
     public const  string TabPane = "tab-pane";
 
+    public const string Table = "table";
+    public const string TableActive = "table-active";
+    public const string TableBordered = "table-bordered";
+    public const string TableBorderless = "table-borderless";
+    public const string TableCaptionTop = "caption-top";
+    public const string TableGroupDivider = "table-group-divider";
+    public const string TableHover = "table-hover";
     public const string TableResponsive = "table-responsive";
+    public const string TableSmall = "table-sm";
     public const string TableSticky = "bb-table-sticky";
+    public const string TableStriped = "table-striped";
+    public const string TableStripedColumns = "table-striped-columns";
 
     public const string TextCenter = "text-center";
     public const string TextNoWrap = "text-nowrap";

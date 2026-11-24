@@ -1,0 +1,29 @@
+<div class="d-flex flex-wrap gap-3 mb-3">
+    <Switch @bind-Value="striped" Label="Striped rows" />
+    <Switch @bind-Value="stripedColumns" Label="Striped columns" />
+    <Switch @bind-Value="hover" Label="Hover" />
+</div>
+
+<Table TItem="Region" Data="regions" Striped="striped" StripedColumns="stripedColumns" Hover="hover" Caption="Sales by region" VisuallyHiddenCaption="true">
+    <TableColumn HeaderText="Region" IsRowHeader="true">@context.Name</TableColumn>
+    <TableColumn HeaderText="Q1" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End">@context.Q1.ToString("N0")</TableColumn>
+    <TableColumn HeaderText="Q2" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End">@context.Q2.ToString("N0")</TableColumn>
+    <TableColumn HeaderText="Q3" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End">@context.Q3.ToString("N0")</TableColumn>
+    <TableColumn HeaderText="Q4" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End">@context.Q4.ToString("N0")</TableColumn>
+</Table>
+
+@code {
+    private bool striped = true;
+    private bool stripedColumns;
+    private bool hover = true;
+
+    private readonly List<Region> regions =
+    [
+        new("North", 12400, 13150, 12980, 14820),
+        new("South", 9800, 10240, 11030, 11560),
+        new("East", 15320, 14870, 15990, 17210),
+        new("West", 8760, 9120, 9480, 10050)
+    ];
+
+    private record Region(string Name, int Q1, int Q2, int Q3, int Q4);
+}

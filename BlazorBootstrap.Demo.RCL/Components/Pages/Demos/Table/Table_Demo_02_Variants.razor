@@ -1,0 +1,40 @@
+<div class="d-flex flex-wrap gap-3 mb-3">
+    <div>
+        <label class="form-label" for="table-demo-variant">Table color</label>
+        <select id="table-demo-variant" class="form-select form-select-sm" @bind="color">
+            @foreach (var value in Enum.GetValues<TableColor>())
+            {
+                <option value="@value">@value</option>
+            }
+        </select>
+    </div>
+    <div>
+        <label class="form-label" for="table-demo-head">Head color</label>
+        <select id="table-demo-head" class="form-select form-select-sm" @bind="headerColor">
+            @foreach (var value in Enum.GetValues<TableColor>())
+            {
+                <option value="@value">@value</option>
+            }
+        </select>
+    </div>
+</div>
+
+<Table TItem="Plan" Data="plans" Color="color" HeaderColor="headerColor" Caption="Plans" VisuallyHiddenCaption="true">
+    <TableColumn HeaderText="Plan" IsRowHeader="true">@context.Name</TableColumn>
+    <TableColumn HeaderText="Seats" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End">@context.Seats</TableColumn>
+    <TableColumn HeaderText="Price per month" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End">@context.Price.ToString("C", System.Globalization.CultureInfo.GetCultureInfo("en-US"))</TableColumn>
+</Table>
+
+@code {
+    private TableColor color = TableColor.None;
+    private TableColor headerColor = TableColor.Light;
+
+    private readonly List<Plan> plans =
+    [
+        new("Starter", 5, 19m),
+        new("Team", 25, 79m),
+        new("Business", 100, 249m)
+    ];
+
+    private record Plan(string Name, int Seats, decimal Price);
+}

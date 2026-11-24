@@ -1,0 +1,21 @@
+<Table TItem="Invoice" Data="invoices" Caption="Last four invoices">
+    <TableColumn HeaderText="Invoice" IsRowHeader="true">@context.Number</TableColumn>
+    <TableColumn HeaderText="Customer">@context.Customer</TableColumn>
+    <TableColumn HeaderText="Issued">@context.IssuedOn.ToString("MMM d, yyyy")</TableColumn>
+    <TableColumn HeaderText="Amount" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End">@context.Amount.ToString("C", System.Globalization.CultureInfo.GetCultureInfo("en-US"))</TableColumn>
+    <TableColumn HeaderText="Status">
+        <Badge Color="@(context.IsPaid ? BadgeColor.Success : BadgeColor.Warning)">@(context.IsPaid ? "Paid" : "Due")</Badge>
+    </TableColumn>
+</Table>
+
+@code {
+    private readonly List<Invoice> invoices =
+    [
+        new("INV-1042", "Northwind Traders", new DateTime(2026, 11, 2), 480.00m, false),
+        new("INV-1041", "Contoso Ltd", new DateTime(2026, 10, 28), 1250.50m, true),
+        new("INV-1040", "Fabrikam Inc", new DateTime(2026, 10, 21), 75.00m, true),
+        new("INV-1039", "Adventure Works", new DateTime(2026, 10, 14), 910.25m, false)
+    ];
+
+    private record Invoice(string Number, string Customer, DateTime IssuedOn, decimal Amount, bool IsPaid);
+}
