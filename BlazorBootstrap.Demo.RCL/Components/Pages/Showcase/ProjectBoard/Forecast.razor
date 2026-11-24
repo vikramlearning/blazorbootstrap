@@ -68,30 +68,13 @@
             <p class="mt-3 mb-2">@report.MonthSummary</p>
             <details class="pb-fc-details">
                 <summary>Show the data as a table</summary>
-                <div class="table-responsive mt-2">
-                    <table class="table table-sm align-middle mb-0">
-                        <caption class="visually-hidden">Won revenue, weighted open pipeline, and the target by month, oldest first</caption>
-                        <thead>
-                            <tr>
-                                <th scope="col">Month</th>
-                                <th scope="col" class="text-end">Won</th>
-                                <th scope="col" class="text-end">Weighted pipeline</th>
-                                <th scope="col" class="text-end">Target</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var month in report.Months)
-                            {
-                                <tr @key="month.Start">
-                                    <th scope="row" class="text-nowrap">@month.Label@(month.IsCurrent ? " (this month)" : null)</th>
-                                    <td class="text-end">@PbDisplay.Money(month.Won) <span class="small text-body-secondary">(@PbDisplay.Plural(month.WonCount, "deal"))</span></td>
-                                    <td class="text-end">@PbDisplay.Money(month.Weighted) <span class="small text-body-secondary">(@PbDisplay.Plural(month.OpenCount, "deal"))</span></td>
-                                    <td class="text-end">@targetText</td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
-                </div>
+                <Table Data="report.Months" Class="table-sm align-middle mb-0" Responsive="true" TableContainerClass="mt-2" RowKeySelector="month => month.Start"
+                       Caption="Won revenue, weighted open pipeline, and the target by month, oldest first" VisuallyHiddenCaption="true">
+                    <TableColumn HeaderText="Month" IsRowHeader="true" ColumnClass="@(_ => "text-nowrap")" Context="month">@month.Label@(month.IsCurrent ? " (this month)" : null)</TableColumn>
+                    <TableColumn HeaderText="Won" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" Context="month">@PbDisplay.Money(month.Won) <span class="small text-body-secondary">(@PbDisplay.Plural(month.WonCount, "deal"))</span></TableColumn>
+                    <TableColumn HeaderText="Weighted pipeline" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" Context="month">@PbDisplay.Money(month.Weighted) <span class="small text-body-secondary">(@PbDisplay.Plural(month.OpenCount, "deal"))</span></TableColumn>
+                    <TableColumn HeaderText="Target" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" Context="month">@targetText</TableColumn>
+                </Table>
             </details>
         </section>
 
@@ -105,52 +88,27 @@
                     }
                     else
                     {
-                        <div class="table-responsive">
-                            <table class="table align-middle mb-0">
-                                <caption class="pb-fc-caption">
-                                    @PbDisplay.Plural(report.Closing.Count, "open deal") expected to close by @PbDisplay.Date(report.HorizonEnd), the soonest first:
-                                    @PbDisplay.Money(report.Closing.Sum(deal => (long)deal.Value)), weighted @PbDisplay.Money(report.Closing.Sum(deal => (long)PbState.Weighted(deal))).
-                                </caption>
-                                <thead>
-                                    <tr>
-                                        <th scope="col">Deal</th>
-                                        <th scope="col">Client</th>
-                                        <th scope="col">Stage</th>
-                                        <th scope="col" class="text-end">Value</th>
-                                        <th scope="col" class="text-end">Chance</th>
-                                        <th scope="col" class="text-end">Weighted</th>
-                                        <th scope="col">Close date</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach (var deal in report.Closing)
-                                    {
-                                        var client = State.FindClient(deal.ClientId);
-                                        var overdue = DealDisplay.IsCloseOverdue(deal, State.Clock.Today);
-                                        <tr @key="deal.Id">
-                                            <th scope="row" class="pb-fc-wrap"><a href="@($"{DealDisplay.PipelineUrl}#pb-deal-{deal.Id}")">@deal.Title</a></th>
-                                            <td class="pb-fc-wrap">
-                                                @if (client is not null)
-                                                {
-                                                    <a href="@PbDisplay.ClientUrl(client.Id)">@client.Name</a>
-                                                }
-                                            </td>
-                                            <td>@PbDisplay.StageLabel(deal.Stage)</td>
-                                            <td class="text-end text-nowrap">@PbDisplay.Money(deal.Value)</td>
-                                            <td class="text-end">@DealDisplay.Percent(PbState.Probability(deal.Stage))</td>
-                                            <td class="text-end text-nowrap">@PbDisplay.Money(PbState.Weighted(deal))</td>
-                                            <td class="pb-fc-close @(overdue ? "text-danger-emphasis fw-semibold" : null)">
-                                                @if (overdue)
-                                                {
-                                                    <Icon Name="IconName.ExclamationTriangle" class="me-1" aria-hidden="true" />
-                                                }
-                                                @DealDisplay.CloseText(deal, State.Clock.Today)
-                                            </td>
-                                        </tr>
-                                    }
-                                </tbody>
-                            </table>
-                        </div>
+                        <Table Data="report.Closing" Class="align-middle mb-0" Responsive="true" RowKeySelector="deal => deal.Id" CaptionClass="pb-fc-caption"
+                               Caption="@($"{PbDisplay.Plural(report.Closing.Count, "open deal")} expected to close by {PbDisplay.Date(report.HorizonEnd)}, the soonest first: {PbDisplay.Money(report.Closing.Sum(deal => (long)deal.Value))}, weighted {PbDisplay.Money(report.Closing.Sum(deal => (long)PbState.Weighted(deal)))}.")">
+                            <TableColumn HeaderText="Deal" IsRowHeader="true" ColumnClass="@(_ => "pb-fc-wrap")" Context="deal"><a href="@($"{DealDisplay.PipelineUrl}#pb-deal-{deal.Id}")">@deal.Title</a></TableColumn>
+                            <TableColumn HeaderText="Client" ColumnClass="@(_ => "pb-fc-wrap")" Context="deal">
+                                @if (State.FindClient(deal.ClientId) is { } client)
+                                {
+                                    <a href="@PbDisplay.ClientUrl(client.Id)">@client.Name</a>
+                                }
+                            </TableColumn>
+                            <TableColumn HeaderText="Stage" Context="deal">@PbDisplay.StageLabel(deal.Stage)</TableColumn>
+                            <TableColumn HeaderText="Value" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" ColumnClass="@(_ => "text-nowrap")" Context="deal">@PbDisplay.Money(deal.Value)</TableColumn>
+                            <TableColumn HeaderText="Chance" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" Context="deal">@DealDisplay.Percent(PbState.Probability(deal.Stage))</TableColumn>
+                            <TableColumn HeaderText="Weighted" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" ColumnClass="@(_ => "text-nowrap")" Context="deal">@PbDisplay.Money(PbState.Weighted(deal))</TableColumn>
+                            <TableColumn HeaderText="Close date" ColumnClass="@(deal => DealDisplay.IsCloseOverdue(deal, State.Clock.Today) ? "pb-fc-close text-danger-emphasis fw-semibold" : "pb-fc-close")" Context="deal">
+                                @if (DealDisplay.IsCloseOverdue(deal, State.Clock.Today))
+                                {
+                                    <Icon Name="IconName.ExclamationTriangle" class="me-1" aria-hidden="true" />
+                                }
+                                @DealDisplay.CloseText(deal, State.Clock.Today)
+                            </TableColumn>
+                        </Table>
                     }
                 </section>
             </div>
@@ -158,38 +116,23 @@
             <div class="col-xxl-4">
                 <section class="tb-panel" aria-labelledby="pb-fc-stage-title">
                     <h2 class="tb-section-title" id="pb-fc-stage-title">By stage</h2>
-                    <div class="table-responsive">
-                        <table class="table table-sm align-middle mb-0">
-                            <caption class="pb-fc-caption">Every deal by stage. Won and lost are all time.</caption>
-                            <thead>
-                                <tr>
-                                    <th scope="col">Stage</th>
-                                    <th scope="col" class="text-end">Deals</th>
-                                    <th scope="col" class="text-end">Value</th>
-                                    <th scope="col" class="text-end">Weighted</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var row in report.Stages)
-                                {
-                                    <tr @key="row.Stage">
-                                        <th scope="row" class="text-nowrap">@PbDisplay.StageLabel(row.Stage) <span class="fw-normal small text-body-secondary">(@DealDisplay.Percent(PbState.Probability(row.Stage)))</span></th>
-                                        <td class="text-end">@row.Count</td>
-                                        <td class="text-end text-nowrap">@PbDisplay.Money(row.Value)</td>
-                                        <td class="text-end text-nowrap">@PbDisplay.Money(row.Weighted)</td>
-                                    </tr>
-                                }
-                            </tbody>
-                            <tfoot>
-                                <tr>
-                                    <th scope="row">Open</th>
-                                    <td class="text-end fw-semibold">@report.OpenCount</td>
-                                    <td class="text-end fw-semibold text-nowrap">@PbDisplay.Money(report.OpenValue)</td>
-                                    <td class="text-end fw-semibold text-nowrap">@PbDisplay.Money(report.WeightedValue)</td>
-                                </tr>
-                            </tfoot>
-                        </table>
-                    </div>
+                    <Table Data="report.Stages" Class="table-sm align-middle mb-0" Responsive="true" RowKeySelector="row => row.Stage" CaptionClass="pb-fc-caption"
+                           Caption="Every deal by stage. Won and lost are all time.">
+                        <ChildContent>
+                            <TableColumn HeaderText="Stage" IsRowHeader="true" ColumnClass="@(_ => "text-nowrap")" Context="row">@PbDisplay.StageLabel(row.Stage) <span class="fw-normal small text-body-secondary">(@DealDisplay.Percent(PbState.Probability(row.Stage)))</span></TableColumn>
+                            <TableColumn HeaderText="Deals" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" Context="row">@row.Count</TableColumn>
+                            <TableColumn HeaderText="Value" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" ColumnClass="@(_ => "text-nowrap")" Context="row">@PbDisplay.Money(row.Value)</TableColumn>
+                            <TableColumn HeaderText="Weighted" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" ColumnClass="@(_ => "text-nowrap")" Context="row">@PbDisplay.Money(row.Weighted)</TableColumn>
+                        </ChildContent>
+                        <FooterTemplate>
+                            <tr>
+                                <th scope="row">Open</th>
+                                <td class="text-end fw-semibold">@report.OpenCount</td>
+                                <td class="text-end fw-semibold text-nowrap">@PbDisplay.Money(report.OpenValue)</td>
+                                <td class="text-end fw-semibold text-nowrap">@PbDisplay.Money(report.WeightedValue)</td>
+                            </tr>
+                        </FooterTemplate>
+                    </Table>
                     <p class="small mt-3 mb-0"><a href="@DealDisplay.PipelineUrl">Open the deal pipeline</a></p>
                 </section>
             </div>

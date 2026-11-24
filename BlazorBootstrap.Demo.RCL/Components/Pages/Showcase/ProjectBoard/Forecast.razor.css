@@ -15,19 +15,20 @@
     overflow-wrap: anywhere;
 }
 
-.pb-fc-caption {
+/* Table renders the captions and cells, so these reach them through ::deep. */
+::deep .pb-fc-caption {
     caption-side: top;
     padding-top: 0;
     font-size: .8125rem;
     color: var(--bs-secondary-color);
 }
 
-.pb-fc-wrap {
+::deep .pb-fc-wrap {
     min-width: 10rem;
     overflow-wrap: anywhere;
 }
 
-.pb-fc-close {
+::deep .pb-fc-close {
     min-width: 9rem;
 }
 

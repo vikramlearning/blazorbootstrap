@@ -65,32 +65,14 @@
                     </span>
                 </p>
                 <div class="hc-panel p-0">
-                    <div class="table-responsive">
-                        <table class="table table-sm align-middle mb-0 hc-av-table">
-                            <caption class="visually-hidden">Booked appointments with @doctor.Name to rebook</caption>
-                            <thead>
-                                <tr>
-                                    <th scope="col">When</th>
-                                    <th scope="col">Patient</th>
-                                    <th scope="col">Phone</th>
-                                    <th scope="col">Why</th>
-                                    <th scope="col">What to do</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var appointment in rebook)
-                                {
-                                    <tr @key="appointment.Id">
-                                        <td class="text-nowrap">@HcDisplay.When(appointment.Start)</td>
-                                        <th scope="row">@(names.TryGetValue(appointment.PatientId, out var patientName) ? patientName : "Unknown patient")</th>
-                                        <td class="text-nowrap">@(State.FindPatient(appointment.PatientId)?.Phone is { Length: > 0 } phone ? phone : "Not on file")</td>
-                                        <td>@WhyText(appointment)</td>
-                                        <td>Call to rebook</td>
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
-                    </div>
+                    <Table Data="rebook" Class="table-sm align-middle mb-0 hc-av-table" Responsive="true" RowKeySelector="appointment => appointment.Id"
+                           Caption="@($"Booked appointments with {doctor.Name} to rebook")" VisuallyHiddenCaption="true">
+                        <TableColumn HeaderText="When" ColumnClass="@(_ => "text-nowrap")" Context="appointment">@HcDisplay.When(appointment.Start)</TableColumn>
+                        <TableColumn HeaderText="Patient" IsRowHeader="true" Context="appointment">@(names.TryGetValue(appointment.PatientId, out var patientName) ? patientName : "Unknown patient")</TableColumn>
+                        <TableColumn HeaderText="Phone" ColumnClass="@(_ => "text-nowrap")" Context="appointment">@(State.FindPatient(appointment.PatientId)?.Phone is { Length: > 0 } phone ? phone : "Not on file")</TableColumn>
+                        <TableColumn HeaderText="Why" Context="appointment">@WhyText(appointment)</TableColumn>
+                        <TableColumn HeaderText="What to do" Context="appointment">Call to rebook</TableColumn>
+                    </Table>
                 </div>
             }
         </section>
@@ -105,42 +87,31 @@
                     }
                     else
                     {
-                        <div class="table-responsive">
-                            <table class="table table-sm align-middle mb-0 hc-av-table">
-                                <caption class="visually-hidden">@(doctor.Name)'s weekly hours</caption>
-                                <thead>
-                                    <tr>
-                                        <th scope="col">Day</th>
-                                        <th scope="col">Hours</th>
-                                        <th scope="col">Clinic</th>
-                                        <th scope="col"><span class="visually-hidden">Actions</span></th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach (var block in blocks)
-                                    {
+                        <Table Data="blocks" Class="table-sm align-middle mb-0 hc-av-table" Responsive="true" RowKeySelector="block => block.Id"
+                               RowClass="@(block => editingBlockId == block.Id ? "hc-av-editing" : "")"
+                               Caption="@($"{doctor.Name}'s weekly hours")" VisuallyHiddenCaption="true">
+                            <TableColumn HeaderText="Day" IsRowHeader="true" Context="block">@block.Day</TableColumn>
+                            <TableColumn HeaderText="Hours" ColumnClass="@(_ => "hc-mono text-nowrap")" Context="block">@DoctorProfile.BlockText(block)</TableColumn>
+                            <TableColumn HeaderText="Clinic" Context="block">@(State.FindClinic(block.ClinicId)?.Name)</TableColumn>
+                            <TableColumn Context="block">
+                                <HeaderContent><span class="visually-hidden">Actions</span></HeaderContent>
+                                <ChildContent>
+                                    @{
                                         var label = BlockLabel(block);
                                         var editKey = $"hours-edit-{block.Id}";
                                         var deleteKey = $"hours-delete-{block.Id}";
-                                        <tr @key="block.Id" class="@(editingBlockId == block.Id ? "hc-av-editing" : null)">
-                                            <th scope="row">@block.Day</th>
-                                            <td class="hc-mono text-nowrap">@DoctorProfile.BlockText(block)</td>
-                                            <td>@(State.FindClinic(block.ClinicId)?.Name)</td>
-                                            <td>
-                                                <div class="d-flex flex-wrap justify-content-end gap-2">
-                                                    <button type="button" class="btn btn-sm btn-outline-primary" @ref="openers[editKey]" @onclick="() => EditBlock(block)">
-                                                        Edit<span class="visually-hidden">&#32;@label</span>
-                                                    </button>
-                                                    <button type="button" class="btn btn-sm btn-outline-danger" @ref="openers[deleteKey]" @onclick="() => AskDeleteBlockAsync(block, deleteKey)">
-                                                        Delete<span class="visually-hidden">&#32;@label</span>
-                                                    </button>
-                                                </div>
-                                            </td>
-                                        </tr>
                                     }
-                                </tbody>
-                            </table>
-                        </div>
+                                    <div class="d-flex flex-wrap justify-content-end gap-2">
+                                        <button type="button" class="btn btn-sm btn-outline-primary" @ref="openers[editKey]" @onclick="() => EditBlock(block)">
+                                            Edit<span class="visually-hidden">&#32;@label</span>
+                                        </button>
+                                        <button type="button" class="btn btn-sm btn-outline-danger" @ref="openers[deleteKey]" @onclick="() => AskDeleteBlockAsync(block, deleteKey)">
+                                            Delete<span class="visually-hidden">&#32;@label</span>
+                                        </button>
+                                    </div>
+                                </ChildContent>
+                            </TableColumn>
+                        </Table>
                         @if (freeDays.Count > 0)
                         {
                             <p class="small text-body-secondary mt-2 mb-0">No hours on @DoctorProfile.JoinAnd(freeDays).</p>
@@ -221,46 +192,36 @@
                     }
                     else
                     {
-                        <div class="table-responsive">
-                            <table class="table table-sm align-middle mb-0 hc-av-table">
-                                <caption class="visually-hidden">@(doctor.Name)'s time off</caption>
-                                <thead>
-                                    <tr>
-                                        <th scope="col">Days</th>
-                                        <th scope="col">Reason</th>
-                                        <th scope="col"><span class="visually-hidden">Actions</span></th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach (var entry in timeOff)
-                                    {
+                        <Table Data="timeOff" Class="table-sm align-middle mb-0 hc-av-table" Responsive="true" RowKeySelector="entry => entry.Id"
+                               RowClass="@(entry => editingOffId == entry.Id ? "hc-av-editing" : "")"
+                               Caption="@($"{doctor.Name}'s time off")" VisuallyHiddenCaption="true">
+                            <TableColumn HeaderText="Days" IsRowHeader="true" Context="entry">
+                                <span class="text-nowrap">@DoctorProfile.AwayText(entry)</span>
+                                <span class="d-block small fw-normal text-body-secondary">@TimeOffPhase(entry)</span>
+                            </TableColumn>
+                            <TableColumn HeaderText="Reason" ColumnClass="@(_ => "hc-plain")" Context="entry">@(entry.Reason.Length > 0 ? entry.Reason : "—")</TableColumn>
+                            <TableColumn Context="entry">
+                                <HeaderContent><span class="visually-hidden">Actions</span></HeaderContent>
+                                <ChildContent>
+                                    @{
                                         var dates = DoctorProfile.AwayText(entry);
                                         var editKey = $"off-edit-{entry.Id}";
                                         var deleteKey = $"off-delete-{entry.Id}";
-                                        <tr @key="entry.Id" class="@(editingOffId == entry.Id ? "hc-av-editing" : null)">
-                                            <th scope="row">
-                                                <span class="text-nowrap">@dates</span>
-                                                <span class="d-block small fw-normal text-body-secondary">@TimeOffPhase(entry)</span>
-                                            </th>
-                                            <td class="hc-plain">@(entry.Reason.Length > 0 ? entry.Reason : "—")</td>
-                                            <td>
-                                                <div class="d-flex flex-wrap justify-content-end gap-2">
-                                                    @if (entry.To >= today)
-                                                    {
-                                                        <button type="button" class="btn btn-sm btn-outline-primary" @ref="openers[editKey]" @onclick="() => EditTimeOff(entry)">
-                                                            Edit<span class="visually-hidden"> time off @dates</span>
-                                                        </button>
-                                                    }
-                                                    <button type="button" class="btn btn-sm btn-outline-danger" @ref="openers[deleteKey]" @onclick="() => AskDeleteTimeOffAsync(entry, deleteKey)">
-                                                        Delete<span class="visually-hidden"> time off @dates</span>
-                                                    </button>
-                                                </div>
-                                            </td>
-                                        </tr>
                                     }
-                                </tbody>
-                            </table>
-                        </div>
+                                    <div class="d-flex flex-wrap justify-content-end gap-2">
+                                        @if (entry.To >= today)
+                                        {
+                                            <button type="button" class="btn btn-sm btn-outline-primary" @ref="openers[editKey]" @onclick="() => EditTimeOff(entry)">
+                                                Edit<span class="visually-hidden"> time off @dates</span>
+                                            </button>
+                                        }
+                                        <button type="button" class="btn btn-sm btn-outline-danger" @ref="openers[deleteKey]" @onclick="() => AskDeleteTimeOffAsync(entry, deleteKey)">
+                                            Delete<span class="visually-hidden"> time off @dates</span>
+                                        </button>
+                                    </div>
+                                </ChildContent>
+                            </TableColumn>
+                        </Table>
                     }
                 </div>
 

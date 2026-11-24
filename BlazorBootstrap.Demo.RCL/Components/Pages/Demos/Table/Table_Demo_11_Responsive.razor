@@ -1,0 +1,33 @@
+<div class="mb-3">
+    <label class="form-label" for="table-demo-responsive">Scroll inside the wrapper below</label>
+    <select id="table-demo-responsive" class="form-select form-select-sm w-auto" @bind="breakpoint">
+        @foreach (var value in Enum.GetValues<TableResponsiveBreakpoint>())
+        {
+            <option value="@value">@(value == TableResponsiveBreakpoint.None ? "Every width (Responsive)" : value.ToString())</option>
+        }
+    </select>
+</div>
+
+<Table TItem="Employee" Data="employees" Responsive="true" ResponsiveBreakpoint="breakpoint" TableContainerClass="border rounded" Class="mb-0"
+       Caption="Employee directory" VisuallyHiddenCaption="true">
+    <TableColumn HeaderText="Name" IsRowHeader="true" TextNoWrap="true">@context.Name</TableColumn>
+    <TableColumn HeaderText="Title" TextNoWrap="true">@context.Title</TableColumn>
+    <TableColumn HeaderText="Department" TextNoWrap="true">@context.Department</TableColumn>
+    <TableColumn HeaderText="Location" TextNoWrap="true">@context.Location</TableColumn>
+    <TableColumn HeaderText="Email" TextNoWrap="true">@context.Email</TableColumn>
+    <TableColumn HeaderText="Phone" TextNoWrap="true">@context.Phone</TableColumn>
+    <TableColumn HeaderText="Start date" TextNoWrap="true">@context.StartDate.ToString("MMM d, yyyy")</TableColumn>
+</Table>
+
+@code {
+    private TableResponsiveBreakpoint breakpoint = TableResponsiveBreakpoint.None;
+
+    private readonly List<Employee> employees =
+    [
+        new("Aisha Khan", "Senior product designer", "Design", "London, United Kingdom", "aisha.khan@example.com", "+44 20 7946 0958", new DateTime(2021, 3, 15)),
+        new("Diego Morales", "Staff software engineer", "Engineering", "Mexico City, Mexico", "diego.morales@example.com", "+52 55 5555 0142", new DateTime(2019, 8, 1)),
+        new("Mei Tanaka", "Customer success lead", "Support", "Osaka, Japan", "mei.tanaka@example.com", "+81 6 6000 0183", new DateTime(2022, 1, 10))
+    ];
+
+    private record Employee(string Name, string Title, string Department, string Location, string Email, string Phone, DateTime StartDate);
+}

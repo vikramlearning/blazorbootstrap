@@ -39,28 +39,29 @@
         border-radius: .25rem;
     }
 
-.pa-adov-details .table {
+/* Table renders the tables, captions and cells, so these reach them through ::deep. */
+.pa-adov-details ::deep .table {
     font-size: .8125rem;
 }
 
-.pa-adov-caption {
+::deep .pa-adov-caption {
     caption-side: top;
     padding-top: 0;
     font-size: .8125rem;
     color: var(--bs-secondary-color);
 }
 
-.pa-adov-name {
+::deep .pa-adov-name {
     min-width: 9rem;
     overflow-wrap: anywhere;
 }
 
-.pa-adov-email {
+::deep .pa-adov-email {
     min-width: 11rem;
     overflow-wrap: anywhere;
 }
 
-.pa-adov-share {
+::deep .pa-adov-share {
     min-width: 13rem;
 }
 

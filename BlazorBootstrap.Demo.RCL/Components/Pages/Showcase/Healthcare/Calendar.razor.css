@@ -151,16 +151,17 @@
     font-size: .875rem;
 }
 
-.hc-cal-week {
+/* Table renders the week table and its cells, so the selectors reach them through ::deep. */
+::deep .hc-cal-week {
     font-size: .875rem;
 }
 
-    .hc-cal-week th,
-    .hc-cal-week td {
+    ::deep .hc-cal-week th,
+    ::deep .hc-cal-week td {
         white-space: nowrap;
     }
 
-.hc-cal-week-doc {
+::deep .hc-cal-week-doc {
     font-weight: 600;
 }
 

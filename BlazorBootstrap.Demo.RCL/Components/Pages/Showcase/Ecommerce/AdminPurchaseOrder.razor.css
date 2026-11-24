@@ -16,12 +16,13 @@
         overflow-wrap: anywhere;
     }
 
-/* Quantity and cost inputs keep a usable width while the table scrolls sideways on phones. */
-.ea-po-lines {
+/* Quantity and cost inputs keep a usable width while the table scrolls sideways on phones.
+   Table renders the table and its header cells, so these reach them through ::deep. */
+::deep .ea-po-lines {
     min-width: 36rem;
 }
 
-.ea-po-number-col {
+::deep .ea-po-number-col {
     width: 9rem;
     min-width: 8rem;
 }

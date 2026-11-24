@@ -80,37 +80,26 @@
                         : "Ratings by department: calibrated where HR has done so, otherwise the manager's. Use it to check that each department rates by the same bar.")
                 </p>
                 @* A summary of counts, not a record list, so it stays a plain table (AC-1). *@
-                <div class="table-responsive">
-                    <table class="table table-sm align-middle mb-0 hr-arc-table">
-                        <caption class="visually-hidden">Ratings by department, from 1 Below expectations to 5 Exceptional, and reviews not rated yet</caption>
-                        <thead>
-                            <tr>
-                                <th scope="col">Department</th>
-                                @for (var rating = 1; rating <= 5; rating++)
-                                {
-                                    <th scope="col" class="text-end" @key="rating">@rating <span class="d-block small fw-normal">@HrState.RatingName(rating)</span></th>
+                <Table Data="Distribution(reviews)" Class="table-sm align-middle mb-0 hr-arc-table" Responsive="true" RowKeySelector="row => row.Name"
+                       RowClass="@(row => row.IsTotal ? "fw-semibold" : "")"
+                       Caption="Ratings by department, from 1 Below expectations to 5 Exceptional, and reviews not rated yet" VisuallyHiddenCaption="true">
+                    <TableColumn HeaderText="Department" IsRowHeader="true" Context="row">@row.Name</TableColumn>
+                    @for (var rating = 1; rating <= 5; rating++)
+                    {
+                        var columnRating = rating;
+                        <TableColumn TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" ColumnClass="@(_ => "hr-mono")" Context="row">
+                            <HeaderContent>@columnRating <span class="d-block small fw-normal">@HrState.RatingName(columnRating)</span></HeaderContent>
+                            <ChildContent>
+                                @{
+                                    var count = row.Counts[columnRating - 1];
                                 }
-                                <th scope="col" class="text-end">Not rated</th>
-                                <th scope="col" class="text-end">Average</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var row in Distribution(reviews))
-                            {
-                                <tr @key="row.Name" class="@(row.IsTotal ? "fw-semibold" : null)">
-                                    <th scope="row">@row.Name</th>
-                                    @for (var rating = 1; rating <= 5; rating++)
-                                    {
-                                        var count = row.Counts[rating - 1];
-                                        <td class="text-end hr-mono" @key="rating">@count@(row.Rated > 0 && count > 0 ? string.Create(CultureInfo.InvariantCulture, $" ({Math.Round(count * 100.0 / row.Rated):0}%)") : null)</td>
-                                    }
-                                    <td class="text-end hr-mono">@row.NotRated</td>
-                                    <td class="text-end hr-mono">@(row.Rated == 0 ? "None" : row.Average.ToString("0.0", CultureInfo.InvariantCulture))</td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
-                </div>
+                                @count@(row.Rated > 0 && count > 0 ? string.Create(CultureInfo.InvariantCulture, $" ({Math.Round(count * 100.0 / row.Rated):0}%)") : null)
+                            </ChildContent>
+                        </TableColumn>
+                    }
+                    <TableColumn HeaderText="Not rated" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" ColumnClass="@(_ => "hr-mono")" Context="row">@row.NotRated</TableColumn>
+                    <TableColumn HeaderText="Average" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" ColumnClass="@(_ => "hr-mono")" Context="row">@(row.Rated == 0 ? "None" : row.Average.ToString("0.0", CultureInfo.InvariantCulture))</TableColumn>
+                </Table>
             </section>
 
             <section class="hr-panel" aria-labelledby="hr-arc-people-title">

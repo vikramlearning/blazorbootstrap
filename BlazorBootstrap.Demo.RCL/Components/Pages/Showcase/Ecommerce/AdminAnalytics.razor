@@ -49,24 +49,10 @@
             </div>
             @* A table can't shrink below its content, so the clipping wrapper keeps the hidden table from widening the page. *@
             <div class="position-relative overflow-hidden">
-            <table class="visually-hidden">
-                <caption>Net revenue per day, @RangeDates</caption>
-                <thead>
-                    <tr>
-                        <th scope="col">Day</th>
-                        <th scope="col">Net revenue</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var day in report.Daily)
-                    {
-                        <tr @key="day.Day">
-                            <th scope="row">@DayLabel(day.Day)</th>
-                            <td>@EcommerceDisplay.Money(day.Net)</td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
+            <Table Data="report.Daily" Class="visually-hidden" RowKeySelector="day => day.Day" Caption="@($"Net revenue per day, {RangeDates}")">
+                <TableColumn HeaderText="Day" IsRowHeader="true" Context="day">@DayLabel(day.Day)</TableColumn>
+                <TableColumn HeaderText="Net revenue" Context="day">@EcommerceDisplay.Money(day.Net)</TableColumn>
+            </Table>
             </div>
         </section>
     </div>
@@ -84,24 +70,10 @@
             }
             @* A table can't shrink below its content, so the clipping wrapper keeps the hidden table from widening the page. *@
             <div class="position-relative overflow-hidden">
-            <table class="visually-hidden">
-                <caption>Merchandise sales by category, @RangeDates</caption>
-                <thead>
-                    <tr>
-                        <th scope="col">Category</th>
-                        <th scope="col">Revenue</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var category in report.Categories)
-                    {
-                        <tr @key="category.Name">
-                            <th scope="row">@category.Name</th>
-                            <td>@EcommerceDisplay.Money(category.Revenue)</td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
+            <Table Data="report.Categories" Class="visually-hidden" RowKeySelector="category => category.Name" Caption="@($"Merchandise sales by category, {RangeDates}")">
+                <TableColumn HeaderText="Category" IsRowHeader="true" Context="category">@category.Name</TableColumn>
+                <TableColumn HeaderText="Revenue" Context="category">@EcommerceDisplay.Money(category.Revenue)</TableColumn>
+            </Table>
             </div>
         </section>
     </div>
@@ -119,24 +91,10 @@
             }
             @* A table can't shrink below its content, so the clipping wrapper keeps the hidden table from widening the page. *@
             <div class="position-relative overflow-hidden">
-            <table class="visually-hidden">
-                <caption>Orders placed by status, @RangeDates</caption>
-                <thead>
-                    <tr>
-                        <th scope="col">Status</th>
-                        <th scope="col">Orders</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var status in report.Statuses)
-                    {
-                        <tr @key="status.Status">
-                            <th scope="row">@StatusName(status.Status)</th>
-                            <td>@Count(status.Orders)</td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
+            <Table Data="report.Statuses" Class="visually-hidden" RowKeySelector="status => status.Status" Caption="@($"Orders placed by status, {RangeDates}")">
+                <TableColumn HeaderText="Status" IsRowHeader="true" Context="status">@StatusName(status.Status)</TableColumn>
+                <TableColumn HeaderText="Orders" Context="status">@Count(status.Orders)</TableColumn>
+            </Table>
             </div>
         </section>
     </div>
@@ -152,32 +110,14 @@
             }
             else
             {
-                <div class="table-responsive">
-                    <table class="table ea-table align-middle">
-                        <caption class="visually-hidden">Top @report.TopProducts.Count products by units sold, @RangeDates, not counting cancelled orders</caption>
-                        <thead>
-                            <tr>
-                                <th scope="col" class="text-end">Rank</th>
-                                <th scope="col">Product</th>
-                                <th scope="col" class="text-end">Units</th>
-                                <th scope="col" class="text-end">Revenue</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @for (var index = 0; index < report.TopProducts.Count; index++)
-                            {
-                                var product = report.TopProducts[index];
-
-                                <tr @key="product.ProductId">
-                                    <td class="text-end text-body-secondary">@(index + 1)</td>
-                                    <th scope="row" class="fw-semibold">@product.Name</th>
-                                    <td class="text-end">@Count(product.Units)</td>
-                                    <td class="text-end">@EcommerceDisplay.Money(product.Revenue)</td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
-                </div>
+                <Table Data="report.TopProducts.Select((product, index) => (Product: product, Index: index))" Class="ea-table align-middle" Responsive="true"
+                       RowKeySelector="row => row.Product.ProductId" VisuallyHiddenCaption="true"
+                       Caption="@($"Top {report.TopProducts.Count} products by units sold, {RangeDates}, not counting cancelled orders")">
+                    <TableColumn HeaderText="Rank" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" ColumnClass="@(_ => "text-body-secondary")" Context="row">@(row.Index + 1)</TableColumn>
+                    <TableColumn HeaderText="Product" IsRowHeader="true" ColumnClass="@(_ => "fw-semibold")" Context="row">@row.Product.Name</TableColumn>
+                    <TableColumn HeaderText="Units" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" Context="row">@Count(row.Product.Units)</TableColumn>
+                    <TableColumn HeaderText="Revenue" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" Context="row">@EcommerceDisplay.Money(row.Product.Revenue)</TableColumn>
+                </Table>
             }
         </section>
     </div>
@@ -191,28 +131,12 @@
             }
             else
             {
-                <div class="table-responsive">
-                    <table class="table ea-table align-middle">
-                        <caption class="visually-hidden">Coupons used, @RangeDates, not counting cancelled orders</caption>
-                        <thead>
-                            <tr>
-                                <th scope="col">Code</th>
-                                <th scope="col" class="text-end">Orders</th>
-                                <th scope="col" class="text-end">Total discount</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var coupon in report.Coupons)
-                            {
-                                <tr @key="coupon.Code">
-                                    <th scope="row"><code class="aa-code">@coupon.Code</code></th>
-                                    <td class="text-end">@Count(coupon.Orders)</td>
-                                    <td class="text-end">@EcommerceDisplay.Money(coupon.Discount)</td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
-                </div>
+                <Table Data="report.Coupons" Class="ea-table align-middle" Responsive="true" RowKeySelector="coupon => coupon.Code"
+                       Caption="@($"Coupons used, {RangeDates}, not counting cancelled orders")" VisuallyHiddenCaption="true">
+                    <TableColumn HeaderText="Code" IsRowHeader="true" Context="coupon"><code class="aa-code">@coupon.Code</code></TableColumn>
+                    <TableColumn HeaderText="Orders" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" Context="coupon">@Count(coupon.Orders)</TableColumn>
+                    <TableColumn HeaderText="Total discount" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" Context="coupon">@EcommerceDisplay.Money(coupon.Discount)</TableColumn>
+                </Table>
             }
         </section>
     </div>

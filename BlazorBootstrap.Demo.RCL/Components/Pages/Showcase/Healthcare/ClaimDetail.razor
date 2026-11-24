@@ -135,43 +135,23 @@
 
                     <section class="hc-panel mb-3" aria-labelledby="hc-cd-codes-title">
                         <h2 class="hc-section-title" id="hc-cd-codes-title">Codes sent (version @claim.Versions.Count)</h2>
-                        <div class="table-responsive">
-                            <table class="table table-sm align-middle mb-0">
-                                <caption class="visually-hidden">The claim's diagnosis and procedure codes, with the procedure fees</caption>
-                                <thead>
-                                    <tr>
-                                        <th scope="col">Code</th>
-                                        <th scope="col">Description</th>
-                                        <th scope="col" class="text-end">Fee</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach (var listed in claim.DiagnosisCodes)
-                                    {
-                                        <tr @key="@($"dx-{listed}")">
-                                            <th scope="row" class="hc-mono fw-semibold">@listed</th>
-                                            <td>Diagnosis: @(State.DiagnosisCodes.FirstOrDefault(item => item.Code == listed)?.Description)</td>
-                                            <td></td>
-                                        </tr>
-                                    }
-                                    @foreach (var listed in claim.ProcedureCodes)
-                                    {
-                                        var known = State.ProcedureCodes.FirstOrDefault(item => item.Code == listed);
-                                        <tr @key="@($"px-{listed}")">
-                                            <th scope="row" class="hc-mono fw-semibold">@listed</th>
-                                            <td>@(known?.Description)</td>
-                                            <td class="text-end text-nowrap">@HcDisplay.Money(known?.FeeCents ?? 0)</td>
-                                        </tr>
-                                    }
-                                </tbody>
-                                <tfoot>
-                                    <tr>
-                                        <th scope="row" colspan="2">Billed</th>
-                                        <td class="text-end fw-semibold text-nowrap">@HcDisplay.Money(claim.BilledCents)</td>
-                                    </tr>
-                                </tfoot>
-                            </table>
-                        </div>
+                        @* Diagnosis codes first, then procedure codes with their fees, as one list of rows. *@
+                        <Table Data="@(claim.DiagnosisCodes.Select(code => (Key: $"dx-{code}", Code: code, Description: (string?)$"Diagnosis: {State.DiagnosisCodes.FirstOrDefault(item => item.Code == code)?.Description}", FeeCents: (int?)null))
+                                         .Concat(claim.ProcedureCodes.Select(code => { var known = State.ProcedureCodes.FirstOrDefault(item => item.Code == code); return (Key: $"px-{code}", Code: code, Description: known?.Description, FeeCents: (int?)(known?.FeeCents ?? 0)); })))"
+                               Class="table-sm align-middle mb-0" Responsive="true" RowKeySelector="row => row.Key"
+                               Caption="The claim's diagnosis and procedure codes, with the procedure fees" VisuallyHiddenCaption="true">
+                            <ChildContent>
+                                <TableColumn HeaderText="Code" IsRowHeader="true" ColumnClass="@(_ => "hc-mono fw-semibold")" Context="row">@row.Code</TableColumn>
+                                <TableColumn HeaderText="Description" Context="row">@row.Description</TableColumn>
+                                <TableColumn HeaderText="Fee" HeaderTextAlignment="Alignment.End" ColumnClass="@(row => row.FeeCents is null ? "" : "text-end text-nowrap")" Context="row">@(row.FeeCents is { } fee ? HcDisplay.Money(fee) : null)</TableColumn>
+                            </ChildContent>
+                            <FooterTemplate>
+                                <tr>
+                                    <th scope="row" colspan="2">Billed</th>
+                                    <td class="text-end fw-semibold text-nowrap">@HcDisplay.Money(claim.BilledCents)</td>
+                                </tr>
+                            </FooterTemplate>
+                        </Table>
                     </section>
 
                     <section class="hc-panel mb-3" aria-labelledby="hc-cd-answers-title">
@@ -182,34 +162,15 @@
                         }
                         else
                         {
-                            <div class="table-responsive">
-                                <table class="table table-sm align-middle mb-0">
-                                    <caption class="visually-hidden">The plan's answers, oldest first</caption>
-                                    <thead>
-                                        <tr>
-                                            <th scope="col">Recorded</th>
-                                            <th scope="col">Answer</th>
-                                            <th scope="col" class="text-end">Allowed</th>
-                                            <th scope="col" class="text-end">Paid</th>
-                                            <th scope="col" class="text-end">Patient</th>
-                                            <th scope="col">Codes</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach (var response in claim.Responses)
-                                        {
-                                            <tr @key="@($"answer-{response.At.Ticks}")">
-                                                <td class="text-nowrap">@HcDisplay.Date(response.At)<span class="d-block small text-body-secondary">version @response.Version@(response.AfterAppeal ? ", after appeal" : null)</span></td>
-                                                <th scope="row" class="fw-normal">@OutcomeLabel(response.Outcome)@(response.Remark.Length > 0 ? ": " : null)<span class="hc-plain small">@response.Remark</span></th>
-                                                <td class="text-end text-nowrap">@HcDisplay.Money(response.AllowedCents)</td>
-                                                <td class="text-end text-nowrap">@HcDisplay.Money(response.PaidCents)</td>
-                                                <td class="text-end text-nowrap">@HcDisplay.Money(response.PatientCents)</td>
-                                                <td>@CodesText(State, response.DenialCodes)</td>
-                                            </tr>
-                                        }
-                                    </tbody>
-                                </table>
-                            </div>
+                            <Table Data="claim.Responses" Class="table-sm align-middle mb-0" Responsive="true" RowKeySelector="@(response => $"answer-{response.At.Ticks}")"
+                                   Caption="The plan's answers, oldest first" VisuallyHiddenCaption="true">
+                                <TableColumn HeaderText="Recorded" ColumnClass="@(_ => "text-nowrap")" Context="response">@HcDisplay.Date(response.At)<span class="d-block small text-body-secondary">version @response.Version@(response.AfterAppeal ? ", after appeal" : null)</span></TableColumn>
+                                <TableColumn HeaderText="Answer" IsRowHeader="true" ColumnClass="@(_ => "fw-normal")" Context="response">@OutcomeLabel(response.Outcome)@(response.Remark.Length > 0 ? ": " : null)<span class="hc-plain small">@response.Remark</span></TableColumn>
+                                <TableColumn HeaderText="Allowed" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" ColumnClass="@(_ => "text-nowrap")" Context="response">@HcDisplay.Money(response.AllowedCents)</TableColumn>
+                                <TableColumn HeaderText="Paid" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" ColumnClass="@(_ => "text-nowrap")" Context="response">@HcDisplay.Money(response.PaidCents)</TableColumn>
+                                <TableColumn HeaderText="Patient" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" ColumnClass="@(_ => "text-nowrap")" Context="response">@HcDisplay.Money(response.PatientCents)</TableColumn>
+                                <TableColumn HeaderText="Codes" Context="response">@CodesText(State, response.DenialCodes)</TableColumn>
+                            </Table>
                         }
                     </section>
                 </div>

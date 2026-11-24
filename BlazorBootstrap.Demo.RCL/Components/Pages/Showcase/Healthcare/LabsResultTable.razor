@@ -6,43 +6,25 @@
 }
 else
 {
-    <div class="table-responsive">
-        <table class="table table-sm align-middle mb-2 hc-lrt-table">
-            <caption>@Caption</caption>
-            <thead>
-                <tr>
-                    <th scope="col">Test</th>
-                    <th scope="col">Result</th>
-                    <th scope="col">Reference range</th>
-                    <th scope="col">Flag</th>
-                </tr>
-            </thead>
-            <tbody>
-                @for (var index = 0; index < Panel.Analytes.Count; index++)
+    @* The host is rendered by this component, so its scoped caption style reaches the caption that Table renders. *@
+    <div class="hc-lrt">
+        <Table Data="@(Panel.Analytes.Select((analyte, index) => (Index: index, Analyte: analyte, Value: Order.Values[index], Flag: HcState.Flag(analyte, Order.Values[index]))))"
+               Class="table-sm align-middle mb-2 hc-lrt-table" Responsive="true" RowKeySelector="@(row => $"row-{row.Index}")" Caption="@Caption">
+            <TableColumn HeaderText="Test" IsRowHeader="true" ColumnClass="@(_ => "fw-normal")" Context="row">@row.Analyte.Name</TableColumn>
+            <TableColumn HeaderText="Result" ColumnClass="@(_ => "text-nowrap fw-semibold")" Context="row">@HcDisplay.Number(row.Value) @row.Analyte.Unit</TableColumn>
+            <TableColumn HeaderText="Reference range" ColumnClass="@(_ => "text-nowrap")" Context="row">@Labs.RangeText(row.Analyte)</TableColumn>
+            <TableColumn HeaderText="Flag" ColumnClass="@(row => row.Flag == "Normal" ? "text-nowrap" : "text-nowrap fw-semibold text-danger-emphasis")" Context="row">
+                @if (row.Flag == "High")
                 {
-                    var analyte = Panel.Analytes[index];
-                    var value = Order.Values[index];
-                    var flag = HcState.Flag(analyte, value);
-
-                    <tr @key="@($"row-{index}")">
-                        <th scope="row" class="fw-normal">@analyte.Name</th>
-                        <td class="text-nowrap fw-semibold">@HcDisplay.Number(value) @analyte.Unit</td>
-                        <td class="text-nowrap">@Labs.RangeText(analyte)</td>
-                        <td class="@(flag == "Normal" ? "text-nowrap" : "text-nowrap fw-semibold text-danger-emphasis")">
-                            @if (flag == "High")
-                            {
-                                <Icon Name="IconName.ArrowUp" class="me-1" aria-hidden="true" />
-                            }
-                            else if (flag == "Low")
-                            {
-                                <Icon Name="IconName.ArrowDown" class="me-1" aria-hidden="true" />
-                            }
-                            @flag
-                        </td>
-                    </tr>
+                    <Icon Name="IconName.ArrowUp" class="me-1" aria-hidden="true" />
                 }
-            </tbody>
-        </table>
+                else if (row.Flag == "Low")
+                {
+                    <Icon Name="IconName.ArrowDown" class="me-1" aria-hidden="true" />
+                }
+                @row.Flag
+            </TableColumn>
+        </Table>
     </div>
     @if (Order.Comment.Length > 0)
     {

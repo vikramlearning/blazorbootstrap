@@ -103,49 +103,38 @@
         }
         else
         {
-            <div class="table-responsive">
-                <table class="table table-sm align-middle mb-0 tb-ts-summary">
-                    <caption class="tb-ts-caption">Hours per project and day, Monday to Sunday, with totals. @Hours(entries.Where(entry => entry.IsBillable).Sum(entry => entry.Hours)) of @Hours(entries.Sum(entry => entry.Hours)) are billable.</caption>
-                    <thead>
-                        <tr>
-                            <th scope="col">Project</th>
-                            @for (var day = 0; day < 7; day++)
-                            {
-                                var date = weekStart.AddDays(day);
-                                <th scope="col" class="text-end" @key="day"><abbr title="@date.ToString("dddd, MMM d", CultureInfo.InvariantCulture)">@date.ToString("ddd d", CultureInfo.InvariantCulture)</abbr></th>
-                            }
-                            <th scope="col" class="text-end">Total</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var project in projectsInWeek)
-                        {
-                            <tr @key="project.Id">
-                                <th scope="row"><span class="tb-key me-1">@project.Key</span><span class="tb-ts-wrap">@project.Name</span></th>
-                                @for (var day = 0; day < 7; day++)
-                                {
-                                    var date = weekStart.AddDays(day);
+            <Table Data="projectsInWeek" Class="table-sm align-middle mb-0 tb-ts-summary" Responsive="true" RowKeySelector="project => project.Id" CaptionClass="tb-ts-caption"
+                   Caption="@($"Hours per project and day, Monday to Sunday, with totals. {Hours(entries.Where(entry => entry.IsBillable).Sum(entry => entry.Hours))} of {Hours(entries.Sum(entry => entry.Hours))} are billable.")">
+                <ChildContent>
+                    <TableColumn HeaderText="Project" IsRowHeader="true" Context="project"><span class="tb-key me-1">@project.Key</span><span class="tb-ts-wrap">@project.Name</span></TableColumn>
+                    @for (var day = 0; day < 7; day++)
+                    {
+                        var date = weekStart.AddDays(day);
+                        <TableColumn TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" ColumnClass="@(_ => "tb-mono")" Context="project">
+                            <HeaderContent><abbr title="@date.ToString("dddd, MMM d", CultureInfo.InvariantCulture)">@date.ToString("ddd d", CultureInfo.InvariantCulture)</abbr></HeaderContent>
+                            <ChildContent>
+                                @{
                                     var value = entries.Where(entry => entry.ProjectId == project.Id && entry.Date == date).Sum(entry => entry.Hours);
-                                    <td class="text-end tb-mono" @key="day">@(value == 0 ? "–" : Hours(value, false))</td>
                                 }
-                                <td class="text-end tb-mono fw-semibold">@Hours(entries.Where(entry => entry.ProjectId == project.Id).Sum(entry => entry.Hours), false)</td>
-                            </tr>
+                                @(value == 0 ? "–" : Hours(value, false))
+                            </ChildContent>
+                        </TableColumn>
+                    }
+                    <TableColumn HeaderText="Total" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" ColumnClass="@(_ => "tb-mono fw-semibold")" Context="project">@Hours(entries.Where(entry => entry.ProjectId == project.Id).Sum(entry => entry.Hours), false)</TableColumn>
+                </ChildContent>
+                <FooterTemplate>
+                    <tr>
+                        <th scope="row">Total</th>
+                        @for (var day = 0; day < 7; day++)
+                        {
+                            var date = weekStart.AddDays(day);
+                            var value = entries.Where(entry => entry.Date == date).Sum(entry => entry.Hours);
+                            <td class="text-end tb-mono fw-semibold" @key="day">@(value == 0 ? "–" : Hours(value, false))</td>
                         }
-                    </tbody>
-                    <tfoot>
-                        <tr>
-                            <th scope="row">Total</th>
-                            @for (var day = 0; day < 7; day++)
-                            {
-                                var date = weekStart.AddDays(day);
-                                var value = entries.Where(entry => entry.Date == date).Sum(entry => entry.Hours);
-                                <td class="text-end tb-mono fw-semibold" @key="day">@(value == 0 ? "–" : Hours(value, false))</td>
-                            }
-                            <td class="text-end tb-mono fw-bold">@Hours(entries.Sum(entry => entry.Hours), false)</td>
-                        </tr>
-                    </tfoot>
-                </table>
-            </div>
+                        <td class="text-end tb-mono fw-bold">@Hours(entries.Sum(entry => entry.Hours), false)</td>
+                    </tr>
+                </FooterTemplate>
+            </Table>
         }
     </section>
 

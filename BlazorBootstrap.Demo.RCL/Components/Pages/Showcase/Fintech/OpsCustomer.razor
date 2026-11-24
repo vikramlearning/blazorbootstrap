@@ -84,48 +84,30 @@ else
                     @* A short key-value summary of the accounts, so it stays a plain table. *@
                     <section class="tm-panel mb-4" aria-labelledby="tm-opscustomer-accounts-title">
                         <h2 class="tm-section-title" id="tm-opscustomer-accounts-title">Accounts</h2>
-                        <div class="table-responsive">
-                            <table class="table align-middle mb-0">
-                                <caption class="caption-top small">Balance, what's available after scheduled and held transfers, and the card.</caption>
-                                <thead>
-                                    <tr>
-                                        <th scope="col">Account</th>
-                                        <th scope="col" class="text-end">Balance</th>
-                                        <th scope="col" class="text-end">Available</th>
-                                        <th scope="col">Card</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach (var account in State.Accounts)
-                                    {
-                                        var isCard = account.Kind == FintechAccountKind.CreditCard;
-                                        <tr @key="account.Id">
-                                            <th scope="row" class="fw-normal">
-                                                <span class="fw-semibold d-block">@account.Name</span>
-                                                <span class="small text-body-secondary">@FintechDisplay.KindLabel(account.Kind) · @account.MaskedNumber</span>
-                                            </th>
-                                            <td class="tm-mono text-end text-nowrap">
-                                                @(account.Balance < 0 ? "−" : null)@FintechDisplay.Money(account.Balance)@(isCard && account.Balance < 0 ? " owed" : null)
-                                            </td>
-                                            <td class="tm-mono text-end text-nowrap">
-                                                @(isCard ? $"{FintechDisplay.Money(FintechState.CreditAvailable(account))} credit" : FintechDisplay.Money(State.Available(account)))
-                                            </td>
-                                            <td class="text-nowrap">
-                                                @if (account.CardLast4 is not { } last4)
-                                                {
-                                                    <span class="text-body-secondary">No card</span>
-                                                }
-                                                else
-                                                {
-                                                    <span class="d-block small">Ending @last4</span>
-                                                    <Badge Color="@(account.CardFrozen ? BadgeColor.Warning : BadgeColor.Success)">@(account.CardFrozen ? "Frozen" : "Active")</Badge>
-                                                }
-                                            </td>
-                                        </tr>
-                                    }
-                                </tbody>
-                            </table>
-                        </div>
+                        <Table Data="State.Accounts" Class="align-middle mb-0" Responsive="true" RowKeySelector="account => account.Id"
+                               Caption="Balance, what's available after scheduled and held transfers, and the card." CaptionClass="caption-top small">
+                            <TableColumn HeaderText="Account" IsRowHeader="true" ColumnClass="@(_ => "fw-normal")" Context="account">
+                                <span class="fw-semibold d-block">@account.Name</span>
+                                <span class="small text-body-secondary">@FintechDisplay.KindLabel(account.Kind) · @account.MaskedNumber</span>
+                            </TableColumn>
+                            <TableColumn HeaderText="Balance" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" ColumnClass="@(_ => "tm-mono text-nowrap")" Context="account">
+                                @(account.Balance < 0 ? "−" : null)@FintechDisplay.Money(account.Balance)@(account.Kind == FintechAccountKind.CreditCard && account.Balance < 0 ? " owed" : null)
+                            </TableColumn>
+                            <TableColumn HeaderText="Available" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" ColumnClass="@(_ => "tm-mono text-nowrap")" Context="account">
+                                @(account.Kind == FintechAccountKind.CreditCard ? $"{FintechDisplay.Money(FintechState.CreditAvailable(account))} credit" : FintechDisplay.Money(State.Available(account)))
+                            </TableColumn>
+                            <TableColumn HeaderText="Card" ColumnClass="@(_ => "text-nowrap")" Context="account">
+                                @if (account.CardLast4 is not { } last4)
+                                {
+                                    <span class="text-body-secondary">No card</span>
+                                }
+                                else
+                                {
+                                    <span class="d-block small">Ending @last4</span>
+                                    <Badge Color="@(account.CardFrozen ? BadgeColor.Warning : BadgeColor.Success)">@(account.CardFrozen ? "Frozen" : "Active")</Badge>
+                                }
+                            </TableColumn>
+                        </Table>
                     </section>
                 }
 

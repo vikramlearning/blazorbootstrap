@@ -1,0 +1,39 @@
+<div class="d-flex flex-wrap align-items-end gap-3 mb-3">
+    <div>
+        <label class="form-label" for="table-demo-borders">Borders</label>
+        <select id="table-demo-borders" class="form-select form-select-sm" @bind="borders">
+            <option value="default">Default</option>
+            <option value="bordered">Bordered</option>
+            <option value="borderless">Borderless</option>
+        </select>
+    </div>
+    <div>
+        <label class="form-label" for="table-demo-border-color">Border color</label>
+        <select id="table-demo-border-color" class="form-select form-select-sm" @bind="borderColor">
+            @foreach (var value in Enum.GetValues<TableBorderColor>())
+            {
+                <option value="@value">@value</option>
+            }
+        </select>
+    </div>
+</div>
+
+<Table TItem="Shipment" Data="shipments" Bordered="@(borders == "bordered")" Borderless="@(borders == "borderless")" BorderColor="borderColor" Caption="Shipments" VisuallyHiddenCaption="true">
+    <TableColumn HeaderText="Tracking" IsRowHeader="true">@context.Tracking</TableColumn>
+    <TableColumn HeaderText="Carrier">@context.Carrier</TableColumn>
+    <TableColumn HeaderText="Destination">@context.Destination</TableColumn>
+</Table>
+
+@code {
+    private string borders = "bordered";
+    private TableBorderColor borderColor = TableBorderColor.Primary;
+
+    private readonly List<Shipment> shipments =
+    [
+        new("1Z 999 AA1 01", "UPS", "Seattle, WA"),
+        new("7489 3021 5566", "FedEx", "Austin, TX"),
+        new("9400 1000 0000", "USPS", "Denver, CO")
+    ];
+
+    private record Shipment(string Tracking, string Carrier, string Destination);
+}

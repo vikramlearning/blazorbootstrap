@@ -112,28 +112,12 @@
             </div>
             @* The wrapper hides the table: a hidden table itself can't shrink below its content and would widen the page. *@
             <div class="visually-hidden">
-                <table>
-                    <caption>Tickets resolved per day, within the SLA and late, @RangeText</caption>
-                    <thead>
-                        <tr>
-                            <th scope="col">Day</th>
-                            <th scope="col">Within SLA</th>
-                            <th scope="col">Late</th>
-                            <th scope="col">Resolved</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var day in report.Days)
-                        {
-                            <tr @key="day.Date">
-                                <th scope="row">@DayLabel(day.Date)</th>
-                                <td>@Count(day.ResolvedInSla)</td>
-                                <td>@Count(day.Resolved - day.ResolvedInSla)</td>
-                                <td>@Count(day.Resolved)</td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
+                <Table Data="report.Days" RowKeySelector="day => day.Date" Caption="@($"Tickets resolved per day, within the SLA and late, {RangeText}")">
+                    <TableColumn HeaderText="Day" IsRowHeader="true" Context="day">@DayLabel(day.Date)</TableColumn>
+                    <TableColumn HeaderText="Within SLA" Context="day">@Count(day.ResolvedInSla)</TableColumn>
+                    <TableColumn HeaderText="Late" Context="day">@Count(day.Resolved - day.ResolvedInSla)</TableColumn>
+                    <TableColumn HeaderText="Resolved" Context="day">@Count(day.Resolved)</TableColumn>
+                </Table>
             </div>
         </CardBody>
     </Card>
@@ -147,38 +131,17 @@
                     <a class="small fw-semibold mb-2" href="@($"{HelpDeskAgentLayout.AdminBase}/sla")">Edit SLA policies</a>
                 }
             </div>
-            <div class="table-responsive hd-grid">
-                <table class="table">
-                    <caption class="visually-hidden">SLA results by priority, @RangeText. Targets are the current policies.</caption>
-                    <thead>
-                        <tr>
-                            <th scope="col">Priority</th>
-                            <th scope="col" class="text-end">First reply target</th>
-                            <th scope="col" class="text-end">Resolution target</th>
-                            <th scope="col" class="text-end">First reply in SLA</th>
-                            <th scope="col" class="text-end">Resolution in SLA</th>
-                            <th scope="col" class="text-end">Resolved</th>
-                            <th scope="col" class="text-end">Breached now</th>
-                            <th scope="col" class="text-end">At risk now</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var row in report.ByPriority)
-                        {
-                            <tr @key="row.Priority">
-                                <th scope="row" class="fw-normal"><Badge Color="@HelpDeskDisplay.PriorityColor(row.Priority)">@row.Priority</Badge></th>
-                                <td class="text-end text-nowrap">@Hours(row.FirstReplyHours)</td>
-                                <td class="text-end text-nowrap">@Hours(row.ResolveHours)</td>
-                                <td class="text-end">@PercentText(row.FirstReplyInSla, row.FirstReplyDue)</td>
-                                <td class="text-end">@PercentText(row.ResolvedInSla, row.Resolved)</td>
-                                <td class="text-end">@Count(row.Resolved)</td>
-                                <td class="text-end">@Count(row.OpenBreached)</td>
-                                <td class="text-end">@Count(row.OpenAtRisk)</td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            </div>
+            <Table Data="report.ByPriority" Responsive="true" TableContainerClass="hd-grid" RowKeySelector="row => row.Priority"
+                   Caption="@($"SLA results by priority, {RangeText}. Targets are the current policies.")" VisuallyHiddenCaption="true">
+                <TableColumn HeaderText="Priority" IsRowHeader="true" ColumnClass="@(_ => "fw-normal")" Context="row"><Badge Color="@HelpDeskDisplay.PriorityColor(row.Priority)">@row.Priority</Badge></TableColumn>
+                <TableColumn HeaderText="First reply target" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" ColumnClass="@(_ => "text-nowrap")" Context="row">@Hours(row.FirstReplyHours)</TableColumn>
+                <TableColumn HeaderText="Resolution target" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" ColumnClass="@(_ => "text-nowrap")" Context="row">@Hours(row.ResolveHours)</TableColumn>
+                <TableColumn HeaderText="First reply in SLA" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" Context="row">@PercentText(row.FirstReplyInSla, row.FirstReplyDue)</TableColumn>
+                <TableColumn HeaderText="Resolution in SLA" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" Context="row">@PercentText(row.ResolvedInSla, row.Resolved)</TableColumn>
+                <TableColumn HeaderText="Resolved" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" Context="row">@Count(row.Resolved)</TableColumn>
+                <TableColumn HeaderText="Breached now" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" Context="row">@Count(row.OpenBreached)</TableColumn>
+                <TableColumn HeaderText="At risk now" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" Context="row">@Count(row.OpenAtRisk)</TableColumn>
+            </Table>
         </CardBody>
     </Card>
 
@@ -187,44 +150,26 @@
             <Card Class="hd-card h-100">
                 <CardBody Class="p-3 p-lg-4">
                     <h2 class="hd-section-title">By agent</h2>
-                    <div class="table-responsive hd-grid">
-                        <table class="table">
-                            <caption class="visually-hidden">SLA results by agent, @RangeText, the most resolved first</caption>
-                            <thead>
-                                <tr>
-                                    <th scope="col">Agent</th>
-                                    <th scope="col">Team</th>
-                                    <th scope="col" class="text-end">Resolved</th>
-                                    <th scope="col" class="text-end">Within SLA</th>
-                                    <th scope="col" class="text-end">Open assigned</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @if (report.ByAgent.Count == 0)
+                    <Table Data="report.ByAgent" Responsive="true" TableContainerClass="hd-grid" RowKeySelector="row => row.AgentId"
+                           Caption="@($"SLA results by agent, {RangeText}, the most resolved first")" VisuallyHiddenCaption="true">
+                                <EmptyDataTemplate>
+                                    @* The cell's own padding plus py-3 matches the page's former py-4 cell. *@
+                                    <span class="d-block text-body-secondary py-3">No agent in this team resolved or holds a ticket.</span>
+                                </EmptyDataTemplate>
+                        <ChildContent>
+                            <TableColumn HeaderText="Agent" IsRowHeader="true" ColumnClass="@(_ => "fw-normal")" Context="row">
+                                @row.Name
+                                @if (!row.IsActive)
                                 {
-                                    <tr>
-                                        <td colspan="5" class="text-center text-body-secondary py-4">No agent in this team resolved or holds a ticket.</td>
-                                    </tr>
+                                    <span class="d-block small text-body-secondary">Inactive</span>
                                 }
-                                @foreach (var row in report.ByAgent)
-                                {
-                                    <tr @key="row.AgentId">
-                                        <th scope="row" class="fw-normal">
-                                            @row.Name
-                                            @if (!row.IsActive)
-                                            {
-                                                <span class="d-block small text-body-secondary">Inactive</span>
-                                            }
-                                        </th>
-                                        <td>@(row.TeamName.Length == 0 ? "No team" : row.TeamName)</td>
-                                        <td class="text-end">@Count(row.Resolved)</td>
-                                        <td class="text-end">@PercentText(row.ResolvedInSla, row.Resolved)</td>
-                                        <td class="text-end">@Count(row.OpenAssigned)</td>
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
-                    </div>
+                            </TableColumn>
+                            <TableColumn HeaderText="Team" Context="row">@(row.TeamName.Length == 0 ? "No team" : row.TeamName)</TableColumn>
+                            <TableColumn HeaderText="Resolved" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" Context="row">@Count(row.Resolved)</TableColumn>
+                            <TableColumn HeaderText="Within SLA" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" Context="row">@PercentText(row.ResolvedInSla, row.Resolved)</TableColumn>
+                            <TableColumn HeaderText="Open assigned" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" Context="row">@Count(row.OpenAssigned)</TableColumn>
+                        </ChildContent>
+                    </Table>
                 </CardBody>
             </Card>
         </div>
@@ -234,34 +179,17 @@
                 <Card Class="hd-card h-100">
                     <CardBody Class="p-3 p-lg-4">
                         <h2 class="hd-section-title">By team</h2>
-                        <div class="table-responsive hd-grid">
-                            <table class="table">
-                                <caption class="visually-hidden">SLA results by team, @RangeText</caption>
-                                <thead>
-                                    <tr>
-                                        <th scope="col">Team</th>
-                                        <th scope="col" class="text-end">Resolved</th>
-                                        <th scope="col" class="text-end">Within SLA</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @if (report.ByTeam.Count == 0)
-                                    {
-                                        <tr>
-                                            <td colspan="3" class="text-center text-body-secondary py-4">No teams yet.</td>
-                                        </tr>
-                                    }
-                                    @foreach (var row in report.ByTeam)
-                                    {
-                                        <tr @key="row.TeamId">
-                                            <th scope="row" class="fw-normal">@row.Name</th>
-                                            <td class="text-end">@Count(row.Resolved)</td>
-                                            <td class="text-end">@PercentText(row.ResolvedInSla, row.Resolved)</td>
-                                        </tr>
-                                    }
-                                </tbody>
-                            </table>
-                        </div>
+                        <Table Data="report.ByTeam" Responsive="true" TableContainerClass="hd-grid" RowKeySelector="row => row.TeamId"
+                               Caption="@($"SLA results by team, {RangeText}")" VisuallyHiddenCaption="true">
+                            <EmptyDataTemplate>
+                                <span class="d-block text-body-secondary py-3">No teams yet.</span>
+                            </EmptyDataTemplate>
+                            <ChildContent>
+                                <TableColumn HeaderText="Team" IsRowHeader="true" ColumnClass="@(_ => "fw-normal")" Context="row">@row.Name</TableColumn>
+                                <TableColumn HeaderText="Resolved" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" Context="row">@Count(row.Resolved)</TableColumn>
+                                <TableColumn HeaderText="Within SLA" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" Context="row">@PercentText(row.ResolvedInSla, row.Resolved)</TableColumn>
+                            </ChildContent>
+                        </Table>
                     </CardBody>
                 </Card>
             </div>

@@ -78,6 +78,7 @@ internal static class HomeCatalog
             new("Sortable List", DemoRouteConstants.Demos_URL_SortableList, IconName.ArrowsMove, "Drag items to reorder.", HomeCatalogBadge.Updated),
             new("Spinner", DemoRouteConstants.Demos_URL_Spinners, IconName.ArrowRepeat, "Busy indicators.", HomeCatalogBadge.None),
             new("Split View", DemoRouteConstants.Demos_URL_SplitView, IconName.LayoutSplit, "Resizable panes.", HomeCatalogBadge.New),
+            new("Table", DemoRouteConstants.Demos_URL_Table, IconName.Table, "Read-only data tables.", HomeCatalogBadge.New),
             new("Tabs", DemoRouteConstants.Demos_URL_Tabs, IconName.WindowPlus, "Tabbed content.", HomeCatalogBadge.None),
             new("Theme Switcher", DemoRouteConstants.Demos_URL_ThemeSwitcher, IconName.NintendoSwitch, "Light, dark and auto themes.", HomeCatalogBadge.None),
             new("Timeline", DemoRouteConstants.Demos_URL_Timeline, IconName.ClockHistory, "Events in order.", HomeCatalogBadge.New),

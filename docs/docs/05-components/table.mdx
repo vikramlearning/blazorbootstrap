@@ -1,0 +1,247 @@
+---
+title: Blazor Table Component
+description: The Blazor Bootstrap Table renders a read-only Bootstrap 5.3 table from a list, with declared columns, captions, row headers, row and cell colors, footers, and responsive scrolling.
+image: https://demos.blazorbootstrap.com/_content/BlazorBootstrap.Demo.RCL/images/screenshots/table.png
+
+sidebar_label: Table
+sidebar_position: 29.5
+---
+
+import CarbonAd from '/carbon-ad.mdx'
+
+# Blazor Table
+
+The Blazor Bootstrap `Table` component renders a read-only Bootstrap 5.3 table from a list, one row per item, with columns declared as `TableColumn` children. It covers every variation on the Bootstrap 5.3 tables page: color variants, striped rows and columns, hover, borders, small tables, group dividers, vertical alignment, head colors, captions, responsive scrolling, and nesting. Use it for invoices, reports, plan comparisons, and other small tables.
+
+<CarbonAd />
+
+## Before you start
+
+- **Table or Grid.** `Table` is the lightweight, read-only sibling of [`Grid`](/components/grid). Use `Grid` when you need paging, sorting, filtering, selection, a data provider, or editing. The two share parameter names wherever they do the same thing, such as `RowClass`, `ColumnClass`, `EmptyText`, `RowKeySelector`, and `IsVisible`.
+- **Columns.** Each `TableColumn` renders its cell from its content, with the row item as `@context`. Columns take `TItem` from the table, so you do not have to repeat it.
+- **States.** While `Data` is `null`, the table shows placeholder rows (or `LoadingTemplate`); when it is empty, it shows one row with `EmptyText` or `EmptyDataTemplate`. Footers are hidden in both states.
+- **Footers.** Set `FooterText` or `FooterTemplate` on columns for one footer row. For a label that spans columns, or several footer rows, write the rows yourself in the table's `FooterTemplate`.
+- **Row keys.** Set `RowKeySelector` to keep rows when the same records come back as new instances. Keys must be unique. Without it, rows are matched by position, so a list with equal items works as it is.
+- **Row index.** A column's content receives the row item only. To show a rank or row number, pair each item with its index: `Data="items.Select((item, index) => (item, index))"`.
+- **No JavaScript.** Every option maps to a Bootstrap class, so the table follows the light and dark themes.
+- **Name clashes.** If your app has its own `Table`, `TableColumn`, or `TableColor` type, write the full name, such as `<BlazorBootstrap.Table TItem="Invoice">`.
+- **Clipped popups.** Bootstrap's responsive wrapper sets `overflow-y: hidden`, so a dropdown or popover inside a responsive table's cell can be cut off. Leave `Responsive` off for such tables, or open the menu outside the table.
+
+## Accessibility
+
+- Header cells render as `<th scope="col">`. Set `IsRowHeader` on the column that names each row; its cells render as `<th scope="row">`.
+- Set `Caption` (or `CaptionTemplate`) to name the table. Use `VisuallyHiddenCaption` when a visible heading already names it.
+- A responsive table's scrolling wrapper takes keyboard focus, so keyboard users can scroll it with the arrow keys, and screen readers announce it as a region named by the caption.
+- Row and cell colors must never be the only way the meaning is shown: say it in a cell's text too.
+- Don't give a cell a color on an active row. In dark mode, Bootstrap's active state sets a light text color for the whole row, which falls below 4.5:1 on a colored cell.
+- The empty-state row carries no `role="alert"`, so screen readers do not announce every empty table when a page loads.
+
+## Table parameters
+
+| Name | Type | Default | Required | Description | Added Version |
+|:--|:--|:--|:--|:--|:--|
+| BorderColor | `TableBorderColor` | `TableBorderColor.None` | | Gets or sets the border color of a bordered table (Bootstrap `border-*` utilities, including the subtle colors, black, and white). | 4.1.0 |
+| Bordered | bool | false | | Gets or sets whether the table has borders on all sides of the table and its cells (`table-bordered`). | 4.1.0 |
+| Borderless | bool | false | | Gets or sets whether the table has no borders (`table-borderless`). | 4.1.0 |
+| Caption | string? | null | | Gets or sets the caption text, rendered as the table's `caption`. `CaptionTemplate` wins when both are set. | 4.1.0 |
+| CaptionClass | string? | null | | Gets or sets the CSS class added to the `caption` element. | 4.1.0 |
+| CaptionTemplate | RenderFragment? | null | | Gets or sets the caption content, rendered as the table's `caption`. | 4.1.0 |
+| CaptionTop | bool | false | | Gets or sets whether the caption shows above the table (`caption-top`) instead of below it. | 4.1.0 |
+| ChildContent | RenderFragment? | null | | Gets or sets the `TableColumn` children that declare the columns. | 4.1.0 |
+| Color | `TableColor` | `TableColor.None` | | Gets or sets the color variant of the whole table (`table-*`). | 4.1.0 |
+| Data | `IEnumerable<TItem>?` | null | | Gets or sets the rows, one per item. While it is `null`, the table shows its loading state; when it is empty, it shows `EmptyText` or `EmptyDataTemplate`. | 4.1.0 |
+| EmptyDataTemplate | RenderFragment? | null | | Gets or sets the content of the single row shown when `Data` is empty. Wins over `EmptyText`. | 4.1.0 |
+| EmptyText | string | No records to display | | Gets or sets the text of the single row shown when `Data` is empty. | 4.1.0 |
+| FooterTemplate | RenderFragment? | null | | Gets or sets the footer rows written by you, rendered inside `tfoot` in place of the per-column footers. It is hidden while `Data` is `null` or empty. | 4.1.0 |
+| GroupDivider | bool | false | | Gets or sets whether the table body puts a thicker border between itself and the head (`table-group-divider`). | 4.1.0 |
+| HeaderColor | `TableColor` | `TableColor.None` | | Gets or sets the color variant of the table head (`table-*` on `thead`), such as `Light` or `Dark`. | 4.1.0 |
+| Hover | bool | false | | Gets or sets whether body rows highlight on hover (`table-hover`). | 4.1.0 |
+| LoadingTemplate | RenderFragment? | null | | Gets or sets the content shown in the body while `Data` is `null`, in place of the placeholder rows. | 4.1.0 |
+| Responsive | bool | false | | Gets or sets whether the table scrolls horizontally inside its own wrapper at every width (`table-responsive`). `ResponsiveBreakpoint` wins when it is set. | 4.1.0 |
+| ResponsiveBreakpoint | `TableResponsiveBreakpoint` | `TableResponsiveBreakpoint.None` | | Gets or sets the width below which the table scrolls horizontally inside its own wrapper (`table-responsive-*`). | 4.1.0 |
+| RowActive | `Func<TItem, bool>?` | null | | Gets or sets the function that marks a row active (`table-active`). | 4.1.0 |
+| RowClass | `Func<TItem, string>?` | null | | Gets or sets the function that returns custom CSS classes for a row. | 4.1.0 |
+| RowColor | `Func<TItem, TableColor>?` | null | | Gets or sets the function that returns a row's color variant (`table-*`). | 4.1.0 |
+| RowKeySelector | `Func<TItem, object>?` | null | | Gets or sets the function that returns a unique key for each row, so rows are kept when the same records come back as new instances. When it is not set, rows are matched by position. | 4.1.0 |
+| Small | bool | false | | Gets or sets whether the table uses compact cell padding (`table-sm`). | 4.1.0 |
+| Striped | bool | false | | Gets or sets whether body rows have zebra stripes (`table-striped`). | 4.1.0 |
+| StripedColumns | bool | false | | Gets or sets whether columns have zebra stripes (`table-striped-columns`). | 4.1.0 |
+| TableContainerClass | string? | null | | Gets or sets the CSS class added to the responsive wrapper, which renders only when `Responsive` or `ResponsiveBreakpoint` is set. | 4.1.0 |
+| TableContainerStyle | string? | null | | Gets or sets the inline style of the responsive wrapper. | 4.1.0 |
+| VerticalAlignment | `TableVerticalAlignment` | `TableVerticalAlignment.None` | | Gets or sets the vertical alignment of every cell (`align-*`). A column can override it. | 4.1.0 |
+| VisuallyHiddenCaption | bool | false | | Gets or sets whether the caption is kept for screen readers only (`visually-hidden`). | 4.1.0 |
+
+`Class`, `Style`, and any other attribute go on the `table` element.
+
+## TableColumn parameters
+
+| Name | Type | Default | Required | Description | Added Version |
+|:--|:--|:--|:--|:--|:--|
+| CellActive | `Func<TItem, bool>?` | null | | Gets or sets the function that marks this column's cell active (`table-active`) for a row item. | 4.1.0 |
+| CellColor | `Func<TItem, TableColor>?` | null | | Gets or sets the function that returns this column's cell color variant (`table-*`) for a row item. | 4.1.0 |
+| ChildContent | `RenderFragment<TItem>?` | null | | Gets or sets the content of this column's cell, rendered once per row with the row item as `context`. A column without it renders empty cells. | 4.1.0 |
+| ColumnClass | `Func<TItem, string>?` | null | | Gets or sets the function that returns custom CSS classes for this column's cell in a row. | 4.1.0 |
+| FooterTemplate | RenderFragment? | null | | Gets or sets the content of this column's footer cell. Wins over `FooterText`. | 4.1.0 |
+| FooterText | string? | null | | Gets or sets the text of this column's footer cell. | 4.1.0 |
+| HeaderClass | string? | null | | Gets or sets the CSS class added to this column's header cell (`th`). | 4.1.0 |
+| HeaderContent | RenderFragment? | null | | Gets or sets the content of this column's header cell. Wins over `HeaderText`. | 4.1.0 |
+| HeaderStyle | string? | null | | Gets or sets the inline style of this column's header cell (`th`). | 4.1.0 |
+| HeaderText | string? | null | | Gets or sets the text of this column's header cell. | 4.1.0 |
+| HeaderTextAlignment | `Alignment` | `Alignment.Start` | | Gets or sets the horizontal alignment of this column's header cell. Every value except `None` adds its `text-*` class, which overrides alignment set by page CSS; `None` adds no class, so the cells keep the alignment they inherit. | 4.1.0 |
+| IsRowHeader | bool | false | | Gets or sets whether this column's body cells are row headers (`th scope="row"`) instead of data cells. | 4.1.0 |
+| IsVisible | bool | true | | Gets or sets whether the column is shown. A hidden column renders no header, body, footer, or placeholder cell. | 4.1.0 |
+| TextAlignment | `Alignment` | `Alignment.Start` | | Gets or sets the horizontal alignment of this column's body and footer cells. Every value except `None` adds its `text-*` class, which overrides alignment set by page CSS; `None` adds no class, so the cells keep the alignment they inherit. | 4.1.0 |
+| TextNoWrap | bool | false | | Gets or sets whether this column's header, body, and footer cells keep their text on one line (`text-nowrap`). | 4.1.0 |
+| VerticalAlignment | `TableVerticalAlignment` | `TableVerticalAlignment.None` | | Gets or sets the vertical alignment of this column's body cells (`align-*`); `None` follows the table. | 4.1.0 |
+
+## Examples
+
+### Basic usage
+
+A table with a caption, a row header, and a right-aligned amount column. Cells can hold other components, such as a badge.
+
+```cshtml {} showLineNumbers
+<Table TItem="Invoice" Data="invoices" Caption="Last four invoices">
+    <TableColumn HeaderText="Invoice" IsRowHeader="true">@context.Number</TableColumn>
+    <TableColumn HeaderText="Customer">@context.Customer</TableColumn>
+    <TableColumn HeaderText="Amount" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End">@context.Amount.ToString("C")</TableColumn>
+    <TableColumn HeaderText="Status">
+        <Badge Color="@(context.IsPaid ? BadgeColor.Success : BadgeColor.Warning)">@(context.IsPaid ? "Paid" : "Due")</Badge>
+    </TableColumn>
+</Table>
+```
+
+[See demo here](https://demos.blazorbootstrap.com/demos/table#basic-usage)
+
+### Variants and accented tables
+
+```cshtml {} showLineNumbers
+<Table TItem="Region" Data="regions" Color="TableColor.Info" HeaderColor="TableColor.Dark" Striped="true" Hover="true">
+    <TableColumn HeaderText="Region" IsRowHeader="true">@context.Name</TableColumn>
+    <TableColumn HeaderText="Q1" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End">@context.Q1.ToString("N0")</TableColumn>
+</Table>
+```
+
+[See demo here](https://demos.blazorbootstrap.com/demos/table#variants)
+
+### Borders, small, and group divider
+
+```cshtml {} showLineNumbers
+<Table TItem="Shipment" Data="shipments" Bordered="true" BorderColor="TableBorderColor.PrimarySubtle" Small="true" GroupDivider="true">
+    <TableColumn HeaderText="Tracking" IsRowHeader="true">@context.Tracking</TableColumn>
+    <TableColumn HeaderText="Carrier">@context.Carrier</TableColumn>
+</Table>
+```
+
+[See demo here](https://demos.blazorbootstrap.com/demos/table#borders)
+
+### Header cells and caption
+
+```cshtml {} showLineNumbers
+<Table TItem="PageVisit" Data="pages" Caption="Top pages this week" CaptionTop="true" CaptionClass="small">
+    <TableColumn HeaderText="Page" IsRowHeader="true" HeaderClass="small text-body-secondary">@context.Path</TableColumn>
+    <TableColumn HeaderText="Conversion" HeaderClass="small text-body-secondary" HeaderStyle="min-width: 9rem;">
+        <Progress Height="8"><ProgressBar Width="@context.Conversion" /></Progress>
+    </TableColumn>
+</Table>
+```
+
+[See demo here](https://demos.blazorbootstrap.com/demos/table#header-cells)
+
+### Row and cell colors
+
+```cshtml {} showLineNumbers
+<Table TItem="LabResult" Data="results"
+       RowColor="@(r => r.Flag == "Critical" ? TableColor.Danger : TableColor.None)"
+       RowActive="@(r => r.Test == selectedTest)">
+    <TableColumn HeaderText="Test" IsRowHeader="true">@context.Test</TableColumn>
+    <TableColumn HeaderText="Result" CellColor="@(r => r.Flag == "High" ? TableColor.Warning : TableColor.None)">@context.Value</TableColumn>
+    <TableColumn HeaderText="Flag">@context.Flag</TableColumn>
+</Table>
+```
+
+[See demo here](https://demos.blazorbootstrap.com/demos/table#row-and-cell-colors)
+
+### Responsive
+
+```cshtml {} showLineNumbers
+<Table TItem="Employee" Data="employees" ResponsiveBreakpoint="TableResponsiveBreakpoint.Medium" TableContainerClass="border rounded"
+       Caption="Employee directory" VisuallyHiddenCaption="true">
+    <TableColumn HeaderText="Name" IsRowHeader="true" TextNoWrap="true">@context.Name</TableColumn>
+    <TableColumn HeaderText="Email" TextNoWrap="true">@context.Email</TableColumn>
+</Table>
+```
+
+[See demo here](https://demos.blazorbootstrap.com/demos/table#responsive)
+
+### Loading and empty states
+
+```cshtml {} showLineNumbers
+<Table TItem="Order" Data="orders" EmptyText="No orders yet.">
+    <TableColumn HeaderText="Order" IsRowHeader="true">@context.Number</TableColumn>
+    <TableColumn HeaderText="Items" TextAlignment="Alignment.End" FooterText="@orders?.Sum(o => o.Items).ToString()">@context.Items</TableColumn>
+</Table>
+
+@code {
+    private List<Order>? orders; // null shows placeholder rows until the data arrives
+}
+```
+
+[See demo here](https://demos.blazorbootstrap.com/demos/table#loading-and-empty-states)
+
+### Footer template
+
+```cshtml {} showLineNumbers
+<Table TItem="InvoiceLine" Data="lines">
+    <ChildContent>
+        <TableColumn HeaderText="Item" IsRowHeader="true">@context.Item</TableColumn>
+        <TableColumn HeaderText="Hours" TextAlignment="Alignment.End">@context.Hours</TableColumn>
+        <TableColumn HeaderText="Amount" TextAlignment="Alignment.End">@context.Amount.ToString("C")</TableColumn>
+    </ChildContent>
+    <FooterTemplate>
+        <tr>
+            <th scope="row" colspan="2">Total</th>
+            <td class="text-end">@lines.Sum(l => l.Amount).ToString("C")</td>
+        </tr>
+    </FooterTemplate>
+</Table>
+```
+
+[See demo here](https://demos.blazorbootstrap.com/demos/table#footer-template)
+
+### Row keys and column visibility
+
+```cshtml {} showLineNumbers
+<Table TItem="Ticket" Data="tickets" RowKeySelector="ticket => ticket.Id">
+    <TableColumn HeaderText="Ticket" IsRowHeader="true">@context.Id</TableColumn>
+    <TableColumn HeaderText="Assignee" IsVisible="showAssignee">@context.Assignee</TableColumn>
+</Table>
+```
+
+[See demo here](https://demos.blazorbootstrap.com/demos/table#row-keys)
+
+### Row index
+
+```cshtml {} showLineNumbers
+<Table TItem="(Product Product, int Index)" Data="@products.Select((product, index) => (product, index))">
+    <TableColumn HeaderText="Rank" TextAlignment="Alignment.End">@(context.Index + 1)</TableColumn>
+    <TableColumn HeaderText="Product" IsRowHeader="true">@context.Product.Name</TableColumn>
+</Table>
+```
+
+[See demo here](https://demos.blazorbootstrap.com/demos/table#row-index)
+
+### Nesting
+
+```cshtml {} showLineNumbers
+<Table TItem="Order" Data="orders" Striped="true">
+    <TableColumn HeaderText="Order" IsRowHeader="true">@context.Number</TableColumn>
+    <TableColumn HeaderText="Lines">
+        <Table TItem="OrderLine" Data="context.Lines" Small="true" Class="mb-0">
+            <TableColumn HeaderText="Item" Context="line">@line.Item</TableColumn>
+        </Table>
+    </TableColumn>
+</Table>
+```
+
+[See demo here](https://demos.blazorbootstrap.com/demos/table#nesting)

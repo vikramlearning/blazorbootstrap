@@ -160,24 +160,10 @@
                     </div>
                     @* The wrapper hides the table: a hidden table itself can't shrink below its content and would widen the page. *@
                     <div class="visually-hidden">
-                        <table>
-                            <caption>Net worth at the end of each of the last 12 months</caption>
-                            <thead>
-                                <tr>
-                                    <th scope="col">Month</th>
-                                    <th scope="col">Net worth</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var (month, value) in NetWorthRows)
-                                {
-                                    <tr>
-                                        <th scope="row">@month</th>
-                                        <td>@(value < 0 ? "−" : string.Empty)@FintechDisplay.Money(value)</td>
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
+                        <Table Data="NetWorthRows" Caption="Net worth at the end of each of the last 12 months">
+                            <TableColumn HeaderText="Month" IsRowHeader="true" Context="row">@row.Month</TableColumn>
+                            <TableColumn HeaderText="Net worth" Context="row">@(row.Value < 0 ? "−" : string.Empty)@FintechDisplay.Money(row.Value)</TableColumn>
+                        </Table>
                     </div>
                 </CardBody>
             </Card>
@@ -195,24 +181,10 @@
                         <DoughnutChart @ref="spendingChart" Height="280" HeightUnit="Unit.Px" Width="100" WidthUnit="Unit.Percentage" />
                     </div>
                     <div class="visually-hidden">
-                        <table>
-                            <caption>Spending this month by category</caption>
-                            <thead>
-                                <tr>
-                                    <th scope="col">Category</th>
-                                    <th scope="col">Spent</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var entry in Spending)
-                                {
-                                    <tr>
-                                        <th scope="row">@entry.Category.Name</th>
-                                        <td>@FintechDisplay.Money(entry.Spent)</td>
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
+                        <Table Data="Spending" Caption="Spending this month by category">
+                            <TableColumn HeaderText="Category" IsRowHeader="true" Context="entry">@entry.Category.Name</TableColumn>
+                            <TableColumn HeaderText="Spent" Context="entry">@FintechDisplay.Money(entry.Spent)</TableColumn>
+                        </Table>
                     </div>
                 </CardBody>
             </Card>

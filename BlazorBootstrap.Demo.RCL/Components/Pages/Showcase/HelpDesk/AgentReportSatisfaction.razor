@@ -124,28 +124,12 @@
             </div>
             @* The wrapper hides the table: a hidden table itself can't shrink below its content and would widen the page. *@
             <div class="visually-hidden">
-                <table>
-                    <caption>Good and bad ratings per day, @RangeText</caption>
-                    <thead>
-                        <tr>
-                            <th scope="col">Day</th>
-                            <th scope="col">Good</th>
-                            <th scope="col">Bad</th>
-                            <th scope="col">CSAT</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var day in report.Days)
-                        {
-                            <tr @key="day.Date">
-                                <th scope="row">@DayLabel(day.Date)</th>
-                                <td>@Count(day.Good)</td>
-                                <td>@Count(day.Bad)</td>
-                                <td>@(day.Good + day.Bad == 0 ? "No ratings" : PercentText(day.Good, day.Good + day.Bad))</td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
+                <Table Data="report.Days" RowKeySelector="day => day.Date" Caption="@($"Good and bad ratings per day, {RangeText}")">
+                    <TableColumn HeaderText="Day" IsRowHeader="true" Context="day">@DayLabel(day.Date)</TableColumn>
+                    <TableColumn HeaderText="Good" Context="day">@Count(day.Good)</TableColumn>
+                    <TableColumn HeaderText="Bad" Context="day">@Count(day.Bad)</TableColumn>
+                    <TableColumn HeaderText="CSAT" Context="day">@(day.Good + day.Bad == 0 ? "No ratings" : PercentText(day.Good, day.Good + day.Bad))</TableColumn>
+                </Table>
             </div>
         </CardBody>
     </Card>
@@ -155,44 +139,26 @@
             <Card Class="hd-card h-100">
                 <CardBody Class="p-3 p-lg-4">
                     <h2 class="hd-section-title">By agent</h2>
-                    <div class="table-responsive hd-grid">
-                        <table class="table">
-                            <caption class="visually-hidden">Ratings by agent, @RangeText</caption>
-                            <thead>
-                                <tr>
-                                    <th scope="col">Agent</th>
-                                    <th scope="col">Team</th>
-                                    <th scope="col" class="text-end">Ratings</th>
-                                    <th scope="col" class="text-end">CSAT</th>
-                                    <th scope="col" class="text-end">Bad</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @if (report.ByAgent.Count == 0)
+                    <Table Data="report.ByAgent" Responsive="true" TableContainerClass="hd-grid" RowKeySelector="row => row.AgentId"
+                           Caption="@($"Ratings by agent, {RangeText}")" VisuallyHiddenCaption="true">
+                                <EmptyDataTemplate>
+                                    @* The cell's own padding plus py-3 matches the page's former py-4 cell. *@
+                                    <span class="d-block text-body-secondary py-3">No agent in this team resolved or holds a ticket.</span>
+                                </EmptyDataTemplate>
+                        <ChildContent>
+                            <TableColumn HeaderText="Agent" IsRowHeader="true" ColumnClass="@(_ => "fw-normal")" Context="row">
+                                @row.Name
+                                @if (!row.IsActive)
                                 {
-                                    <tr>
-                                        <td colspan="5" class="text-center text-body-secondary py-4">No agent in this team resolved or holds a ticket.</td>
-                                    </tr>
+                                    <span class="d-block small text-body-secondary">Inactive</span>
                                 }
-                                @foreach (var row in report.ByAgent)
-                                {
-                                    <tr @key="row.AgentId">
-                                        <th scope="row" class="fw-normal">
-                                            @row.Name
-                                            @if (!row.IsActive)
-                                            {
-                                                <span class="d-block small text-body-secondary">Inactive</span>
-                                            }
-                                        </th>
-                                        <td>@(row.TeamName.Length == 0 ? "No team" : row.TeamName)</td>
-                                        <td class="text-end">@Count(row.Good + row.Bad)</td>
-                                        <td class="text-end">@PercentText(row.Good, row.Good + row.Bad)</td>
-                                        <td class="text-end">@Count(row.Bad)</td>
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
-                    </div>
+                            </TableColumn>
+                            <TableColumn HeaderText="Team" Context="row">@(row.TeamName.Length == 0 ? "No team" : row.TeamName)</TableColumn>
+                            <TableColumn HeaderText="Ratings" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" Context="row">@Count(row.Good + row.Bad)</TableColumn>
+                            <TableColumn HeaderText="CSAT" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" Context="row">@PercentText(row.Good, row.Good + row.Bad)</TableColumn>
+                            <TableColumn HeaderText="Bad" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" Context="row">@Count(row.Bad)</TableColumn>
+                        </ChildContent>
+                    </Table>
                 </CardBody>
             </Card>
         </div>

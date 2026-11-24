@@ -43,28 +43,12 @@
                     <p class="small mt-3 mb-2">@ThroughputSummary(weeks)</p>
                     <details class="tb-rp-details">
                         <summary>Tasks done per week as a table</summary>
-                        <div class="table-responsive mt-2">
-                            <table class="table table-sm mb-0">
-                                <caption class="visually-hidden">Tasks done and their estimated hours per week, oldest first</caption>
-                                <thead>
-                                    <tr>
-                                        <th scope="col">Week of</th>
-                                        <th scope="col" class="text-end">Tasks done</th>
-                                        <th scope="col" class="text-end">Hours done</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach (var week in weeks)
-                                    {
-                                        <tr @key="week.WeekStart">
-                                            <th scope="row" class="fw-semibold text-nowrap">@PbDisplay.Date(week.WeekStart)@(week.WeekStart == PbState.WeekStart(today) ? " (this week)" : null)</th>
-                                            <td class="text-end tb-mono">@week.Tasks</td>
-                                            <td class="text-end tb-mono">@week.Hours h</td>
-                                        </tr>
-                                    }
-                                </tbody>
-                            </table>
-                        </div>
+                        <Table Data="weeks" Class="table-sm mb-0" Responsive="true" TableContainerClass="mt-2" RowKeySelector="week => week.WeekStart"
+                               Caption="Tasks done and their estimated hours per week, oldest first" VisuallyHiddenCaption="true">
+                            <TableColumn HeaderText="Week of" IsRowHeader="true" ColumnClass="@(_ => "fw-semibold text-nowrap")" Context="week">@PbDisplay.Date(week.WeekStart)@(week.WeekStart == PbState.WeekStart(today) ? " (this week)" : null)</TableColumn>
+                            <TableColumn HeaderText="Tasks done" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" ColumnClass="@(_ => "tb-mono")" Context="week">@week.Tasks</TableColumn>
+                            <TableColumn HeaderText="Hours done" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" ColumnClass="@(_ => "tb-mono")" Context="week">@week.Hours h</TableColumn>
+                        </Table>
                     </details>
                 </section>
             </div>
@@ -86,28 +70,12 @@
                         <p class="small mt-3 mb-2">@StatusSummary(openByStatus)</p>
                         <details class="tb-rp-details">
                             <summary>Open tasks by status as a table</summary>
-                            <div class="table-responsive mt-2">
-                                <table class="table table-sm mb-0">
-                                    <caption class="visually-hidden">Open tasks by status, in board order</caption>
-                                    <thead>
-                                        <tr>
-                                            <th scope="col">Status</th>
-                                            <th scope="col" class="text-end">Tasks</th>
-                                            <th scope="col" class="text-end">Share</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach (var item in openByStatus)
-                                        {
-                                            <tr @key="item.Status">
-                                                <th scope="row" class="fw-semibold">@PbDisplay.StatusLabel(item.Status)</th>
-                                                <td class="text-end tb-mono">@item.Count</td>
-                                                <td class="text-end tb-mono">@Share(item.Count, openByStatus.Sum(other => other.Count))</td>
-                                            </tr>
-                                        }
-                                    </tbody>
-                                </table>
-                            </div>
+                            <Table Data="openByStatus" Class="table-sm mb-0" Responsive="true" TableContainerClass="mt-2" RowKeySelector="item => item.Status"
+                                   Caption="Open tasks by status, in board order" VisuallyHiddenCaption="true">
+                                <TableColumn HeaderText="Status" IsRowHeader="true" ColumnClass="@(_ => "fw-semibold")" Context="item">@PbDisplay.StatusLabel(item.Status)</TableColumn>
+                                <TableColumn HeaderText="Tasks" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" ColumnClass="@(_ => "tb-mono")" Context="item">@item.Count</TableColumn>
+                                <TableColumn HeaderText="Share" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" ColumnClass="@(_ => "tb-mono")" Context="item">@Share(item.Count, openByStatus.Sum(other => other.Count))</TableColumn>
+                            </Table>
                         </details>
                     }
                 </section>
@@ -122,49 +90,33 @@
             }
             else
             {
-                <div class="table-responsive">
-                    <table class="table align-middle mb-0 tb-rp-table">
-                        <caption class="tb-rp-caption">Each project's tasks and estimated hours done, overdue tasks, and next milestone: active first, then planned, on hold, and completed.</caption>
-                        <thead>
-                            <tr>
-                                <th scope="col">Project</th>
-                                <th scope="col">Status</th>
-                                <th scope="col">Tasks done</th>
-                                <th scope="col" class="text-end">Hours done</th>
-                                <th scope="col" class="text-end">Overdue</th>
-                                <th scope="col">Next milestone</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var project in State.Projects)
-                            {
-                                var projectTasks = State.TasksOf(project.Id);
-                                var progress = State.ProjectProgress(project.Id);
-                                var hoursDone = projectTasks.Where(task => task.Status == PbTaskStatus.Done).Sum(task => task.EstimateHours);
-                                var hoursTotal = projectTasks.Sum(task => task.EstimateHours);
-                                var lateCount = projectTasks.Count(task => PbDisplay.IsOverdue(task, today));
-                                var percent = ManageProjects.Percent(progress.Done, progress.Total);
-                                <tr @key="project.Id">
-                                    <th scope="row" class="tb-rp-name">
-                                        <a href="@PbDisplay.ProjectUrl(project.Id)"><span class="tb-key me-1">@project.Key</span>@project.Name</a>
-                                    </th>
-                                    <td><Badge Color="@ManageProjects.StatusBadge(project.Status)">@PbDisplay.ProjectStatusLabel(project.Status)</Badge></td>
-                                    <td class="tb-rp-progress">
-                                        <Progress Height="6" Class="mb-1">
-                                            <ProgressBar Width="percent" Color="ProgressColor.Success"
-                                                         aria-label="@($"{project.Name}, tasks done")" aria-valuenow="@Math.Round(percent)" aria-valuemin="0" aria-valuemax="100"
-                                                         aria-valuetext="@ManageProjects.ProgressText(progress.Done, progress.Total)" />
-                                        </Progress>
-                                        <span class="small text-nowrap">@ManageProjects.ProgressText(progress.Done, progress.Total)</span>
-                                    </td>
-                                    <td class="text-end text-nowrap tb-mono">@hoursDone of @hoursTotal h</td>
-                                    <td class="text-end text-nowrap @(lateCount > 0 ? "text-danger-emphasis fw-semibold" : null)">@(lateCount == 0 ? "None" : lateCount.ToString(CultureInfo.InvariantCulture))</td>
-                                    <td class="tb-rp-next">@NextMilestoneText(project, today)</td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
-                </div>
+                <Table Data="State.Projects" Class="align-middle mb-0 tb-rp-table" Responsive="true" RowKeySelector="project => project.Id" CaptionClass="tb-rp-caption"
+                       Caption="Each project's tasks and estimated hours done, overdue tasks, and next milestone: active first, then planned, on hold, and completed.">
+                    <TableColumn HeaderText="Project" IsRowHeader="true" ColumnClass="@(_ => "tb-rp-name")" Context="project">
+                        <a href="@PbDisplay.ProjectUrl(project.Id)"><span class="tb-key me-1">@project.Key</span>@project.Name</a>
+                    </TableColumn>
+                    <TableColumn HeaderText="Status" Context="project"><Badge Color="@ManageProjects.StatusBadge(project.Status)">@PbDisplay.ProjectStatusLabel(project.Status)</Badge></TableColumn>
+                    <TableColumn HeaderText="Tasks done" ColumnClass="@(_ => "tb-rp-progress")" Context="project">
+                        @{
+                            var progress = State.ProjectProgress(project.Id);
+                            var percent = ManageProjects.Percent(progress.Done, progress.Total);
+                        }
+                        <Progress Height="6" Class="mb-1">
+                            <ProgressBar Width="percent" Color="ProgressColor.Success"
+                                         aria-label="@($"{project.Name}, tasks done")" aria-valuenow="@Math.Round(percent)" aria-valuemin="0" aria-valuemax="100"
+                                         aria-valuetext="@ManageProjects.ProgressText(progress.Done, progress.Total)" />
+                        </Progress>
+                        <span class="small text-nowrap">@ManageProjects.ProgressText(progress.Done, progress.Total)</span>
+                    </TableColumn>
+                    <TableColumn HeaderText="Hours done" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" ColumnClass="@(_ => "text-nowrap tb-mono")" Context="project">
+                        @{
+                            var projectTasks = State.TasksOf(project.Id);
+                        }
+                        @projectTasks.Where(task => task.Status == PbTaskStatus.Done).Sum(task => task.EstimateHours) of @projectTasks.Sum(task => task.EstimateHours) h
+                    </TableColumn>
+                    <TableColumn HeaderText="Overdue" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" ColumnClass="@(project => LateCount(project) > 0 ? "text-nowrap text-danger-emphasis fw-semibold" : "text-nowrap")" Context="project">@(LateCount(project) == 0 ? "None" : LateCount(project).ToString(CultureInfo.InvariantCulture))</TableColumn>
+                    <TableColumn HeaderText="Next milestone" ColumnClass="@(_ => "tb-rp-next")" Context="project">@NextMilestoneText(project, today)</TableColumn>
+                </Table>
             }
         </section>
 
@@ -176,34 +128,14 @@
             }
             else
             {
-                <div class="table-responsive">
-                    <table class="table align-middle mb-0 tb-rp-table">
-                        <caption class="tb-rp-caption">Open tasks past their due date, the longest overdue first</caption>
-                        <thead>
-                            <tr>
-                                <th scope="col">Key</th>
-                                <th scope="col">Task</th>
-                                <th scope="col">Project</th>
-                                <th scope="col">Assignee</th>
-                                <th scope="col" class="text-end">Overdue by</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var task in overdue)
-                            {
-                                var project = State.FindProject(task.ProjectId);
-                                var days = (today - task.DueDate!.Value.Date).Days;
-                                <tr @key="task.Id">
-                                    <td class="text-nowrap"><span class="tb-key">@State.TaskKey(task)</span></td>
-                                    <th scope="row" class="tb-rp-name"><a href="@PbDisplay.TaskUrl(task.Id)">@task.Title</a></th>
-                                    <td class="tb-rp-project">@(project?.Name ?? "Unknown project")</td>
-                                    <td class="text-nowrap">@(State.FindPerson(task.AssigneeId)?.Name ?? "Unassigned")</td>
-                                    <td class="text-end text-nowrap fw-semibold text-danger-emphasis">@PbDisplay.Plural(days, "day")</td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
-                </div>
+                <Table Data="overdue" Class="align-middle mb-0 tb-rp-table" Responsive="true" RowKeySelector="task => task.Id" CaptionClass="tb-rp-caption"
+                       Caption="Open tasks past their due date, the longest overdue first">
+                    <TableColumn HeaderText="Key" ColumnClass="@(_ => "text-nowrap")" Context="task"><span class="tb-key">@State.TaskKey(task)</span></TableColumn>
+                    <TableColumn HeaderText="Task" IsRowHeader="true" ColumnClass="@(_ => "tb-rp-name")" Context="task"><a href="@PbDisplay.TaskUrl(task.Id)">@task.Title</a></TableColumn>
+                    <TableColumn HeaderText="Project" ColumnClass="@(_ => "tb-rp-project")" Context="task">@(State.FindProject(task.ProjectId)?.Name ?? "Unknown project")</TableColumn>
+                    <TableColumn HeaderText="Assignee" ColumnClass="@(_ => "text-nowrap")" Context="task">@(State.FindPerson(task.AssigneeId)?.Name ?? "Unassigned")</TableColumn>
+                    <TableColumn HeaderText="Overdue by" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" ColumnClass="@(_ => "text-nowrap fw-semibold text-danger-emphasis")" Context="task">@PbDisplay.Plural((today - task.DueDate!.Value.Date).Days, "day")</TableColumn>
+                </Table>
             }
         </section>
     </PbRoleGuard>

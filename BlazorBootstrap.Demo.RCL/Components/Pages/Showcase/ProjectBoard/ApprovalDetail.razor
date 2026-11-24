@@ -77,33 +77,14 @@
                                     </button>
                                 }
                             </div>
-                            <div class="table-responsive">
-                                <table class="table table-sm align-middle mb-0">
-                                    <caption class="tb-ap-caption">@project.Key entries: @group.Entries.Sum(entry => entry.Hours).ToString("0.##", CultureInfo.InvariantCulture) h, by day.</caption>
-                                    <thead>
-                                        <tr>
-                                            <th scope="col">Day</th>
-                                            <th scope="col">Task</th>
-                                            <th scope="col" class="text-end">Hours</th>
-                                            <th scope="col">Billable</th>
-                                            <th scope="col">Note</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach (var entry in group.Entries)
-                                        {
-                                            var task = entry.TaskId is { } taskId ? State.FindTask(taskId) : null;
-                                            <tr @key="entry.Id">
-                                                <th scope="row" class="text-nowrap fw-normal">@entry.Date.ToString("ddd, MMM d", CultureInfo.InvariantCulture)</th>
-                                                <td>@(task is null ? "None" : $"{State.TaskKey(task)} {task.Title}")</td>
-                                                <td class="text-end tb-mono">@entry.Hours.ToString("0.##", CultureInfo.InvariantCulture)</td>
-                                                <td class="text-nowrap">@(entry.IsBillable ? "Billable" : "Not billable")</td>
-                                                <td class="tb-plain">@(entry.Note.Length == 0 ? "None" : entry.Note)</td>
-                                            </tr>
-                                        }
-                                    </tbody>
-                                </table>
-                            </div>
+                            <Table Data="group.Entries" Class="table-sm align-middle mb-0" Responsive="true" RowKeySelector="entry => entry.Id" CaptionClass="tb-ap-caption"
+                                   Caption="@($"{project.Key} entries: {group.Entries.Sum(entry => entry.Hours).ToString("0.##", CultureInfo.InvariantCulture)} h, by day.")">
+                                <TableColumn HeaderText="Day" IsRowHeader="true" ColumnClass="@(_ => "text-nowrap fw-normal")" Context="entry">@entry.Date.ToString("ddd, MMM d", CultureInfo.InvariantCulture)</TableColumn>
+                                <TableColumn HeaderText="Task" Context="entry">@(entry.TaskId is { } taskId && State.FindTask(taskId) is { } task ? $"{State.TaskKey(task)} {task.Title}" : "None")</TableColumn>
+                                <TableColumn HeaderText="Hours" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" ColumnClass="@(_ => "tb-mono")" Context="entry">@entry.Hours.ToString("0.##", CultureInfo.InvariantCulture)</TableColumn>
+                                <TableColumn HeaderText="Billable" ColumnClass="@(_ => "text-nowrap")" Context="entry">@(entry.IsBillable ? "Billable" : "Not billable")</TableColumn>
+                                <TableColumn HeaderText="Note" ColumnClass="@(_ => "tb-plain")" Context="entry">@(entry.Note.Length == 0 ? "None" : entry.Note)</TableColumn>
+                            </Table>
                         </section>
                     }
                 </div>

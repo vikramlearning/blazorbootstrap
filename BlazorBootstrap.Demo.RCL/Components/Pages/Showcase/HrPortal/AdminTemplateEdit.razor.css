@@ -28,26 +28,27 @@
     outline-offset: 2px;
 }
 
-.hr-ate-caption {
+/* Table renders the table, its caption, rows and cells, so these reach them through ::deep. */
+::deep .hr-ate-caption {
     caption-side: top;
     padding-top: 0;
     font-size: .8125rem;
     color: var(--bs-secondary-color);
 }
 
-.hr-ate-table {
+::deep .hr-ate-table {
     font-size: .875rem;
 }
 
-.hr-ate-due {
+::deep .hr-ate-due {
     min-width: 9rem;
 }
 
-.hr-ate-task {
+::deep .hr-ate-task {
     min-width: 14rem;
     overflow-wrap: anywhere;
 }
 
-.hr-ate-row-editing > * {
+::deep .hr-ate-row-editing > * {
     background-color: rgba(var(--sc-primary-rgb), .07);
 }

@@ -1,0 +1,20 @@
+<Table TItem="(Product Product, int Index)" Data="RankedProducts" Caption="Top products by units sold" VisuallyHiddenCaption="true">
+    <TableColumn HeaderText="Rank" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End">@(context.Index + 1)</TableColumn>
+    <TableColumn HeaderText="Product" IsRowHeader="true">@context.Product.Name</TableColumn>
+    <TableColumn HeaderText="Units sold" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End">@context.Product.Units.ToString("N0")</TableColumn>
+</Table>
+
+@code {
+    private readonly List<Product> products =
+    [
+        new("Wireless keyboard", 1840),
+        new("USB-C hub", 1512),
+        new("Noise-cancelling headset", 1306)
+    ];
+
+    // Pair each item with its position, so the cells can show a rank.
+    private IEnumerable<(Product Product, int Index)> RankedProducts =>
+        products.OrderByDescending(product => product.Units).Select((product, index) => (product, index));
+
+    private record Product(string Name, int Units);
+}

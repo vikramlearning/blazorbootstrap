@@ -49,15 +49,16 @@
         color: inherit;
     }
 
-.hc-av-table {
+/* Table renders these tables, rows and cells, so the selectors reach them through ::deep. */
+::deep .hc-av-table {
     font-size: .9375rem;
 }
 
-    .hc-av-table th[scope=row] {
+    ::deep .hc-av-table th[scope=row] {
         font-weight: 600;
     }
 
-.hc-av-editing > * {
+::deep .hc-av-editing > * {
     background: var(--hc-soft) !important;
 }
 

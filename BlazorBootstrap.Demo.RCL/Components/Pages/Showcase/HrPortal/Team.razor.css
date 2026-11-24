@@ -30,11 +30,12 @@
     overflow-wrap: anywhere;
 }
 
-.hr-team-table {
+/* Table renders the table and its cells, so these reach them through ::deep. */
+::deep .hr-team-table {
     --bs-table-bg: transparent;
 }
 
-    .hr-team-table th,
-    .hr-team-table td {
+    ::deep .hr-team-table th,
+    ::deep .hr-team-table td {
         padding-inline: .75rem;
     }

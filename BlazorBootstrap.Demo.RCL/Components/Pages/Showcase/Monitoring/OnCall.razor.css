@@ -24,8 +24,9 @@
         margin-top: .5rem;
     }
 
-.oc-table td,
-.oc-table th[scope=row] {
+/* Table renders the cells, so the rule reaches them through ::deep. */
+::deep .oc-table td,
+::deep .oc-table th[scope=row] {
     min-width: 11rem;
     vertical-align: top;
 }

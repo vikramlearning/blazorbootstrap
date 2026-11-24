@@ -165,32 +165,14 @@
                     else
                     {
                         <div class="hr-panel p-0">
-                            <div class="table-responsive">
-                                <table class="table table-sm align-middle mb-0 hr-team-table">
-                                    <caption class="visually-hidden">Approved leave on @(isMine ? "your" : $"{lead.Name}'s") team in the next 4 weeks</caption>
-                                    <thead>
-                                        <tr>
-                                            <th scope="col">Person</th>
-                                            <th scope="col">Type</th>
-                                            <th scope="col">Dates</th>
-                                            <th scope="col">Working days</th>
-                                            <th scope="col">When</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach (var (person, request) in away)
-                                        {
-                                            <tr @key="@($"row-{request.Id}")">
-                                                <th scope="row">@person.Name</th>
-                                                <td>@(State.FindPolicy(request.PolicyId)?.Name ?? "Leave")</td>
-                                                <td class="text-nowrap">@HrDisplay.Range(request.From, request.To)</td>
-                                                <td>@request.Days</td>
-                                                <td class="text-nowrap">@WhenText(request, today)</td>
-                                            </tr>
-                                        }
-                                    </tbody>
-                                </table>
-                            </div>
+                            <Table Data="away" Class="table-sm align-middle mb-0 hr-team-table" Responsive="true" RowKeySelector="@(row => $"row-{row.Request.Id}")"
+                                   Caption="@($"Approved leave on {(isMine ? "your" : $"{lead.Name}'s")} team in the next 4 weeks")" VisuallyHiddenCaption="true">
+                                <TableColumn HeaderText="Person" IsRowHeader="true" Context="row">@row.Person.Name</TableColumn>
+                                <TableColumn HeaderText="Type" Context="row">@(State.FindPolicy(row.Request.PolicyId)?.Name ?? "Leave")</TableColumn>
+                                <TableColumn HeaderText="Dates" ColumnClass="@(_ => "text-nowrap")" Context="row">@HrDisplay.Range(row.Request.From, row.Request.To)</TableColumn>
+                                <TableColumn HeaderText="Working days" Context="row">@row.Request.Days</TableColumn>
+                                <TableColumn HeaderText="When" ColumnClass="@(_ => "text-nowrap")" Context="row">@WhenText(row.Request, today)</TableColumn>
+                            </Table>
                         </div>
                     }
                 </section>

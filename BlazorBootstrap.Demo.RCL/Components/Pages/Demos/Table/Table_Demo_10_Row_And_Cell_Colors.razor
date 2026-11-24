@@ -1,0 +1,34 @@
+<Table TItem="LabResult" Data="results" Caption="Lab results" VisuallyHiddenCaption="true"
+       RowColor="@(result => result.Flag == "Critical" ? TableColor.Danger : TableColor.None)"
+       RowActive="@(result => result.Test == selectedTest)"
+       RowClass="@(result => result.Flag == "Critical" ? "fw-semibold" : "")">
+    <TableColumn HeaderText="Test" IsRowHeader="true">
+        <Button Color="ButtonColor.Link" Size="ButtonSize.Small" Class="p-0 text-reset" @onclick="() => selectedTest = context.Test">
+            @context.Test
+            @if (context.Test == selectedTest)
+            {
+                <Icon Name="IconName.Check2" Class="ms-1" aria-hidden="true" /><span class="visually-hidden">(selected)</span>
+            }
+        </Button>
+    </TableColumn>
+    <TableColumn HeaderText="Result" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End"
+                 CellColor="@(result => result.Flag == "High" && result.Test != selectedTest ? TableColor.Warning : TableColor.None)">@context.Value</TableColumn>
+    <TableColumn HeaderText="Range">@context.Range</TableColumn>
+    <TableColumn HeaderText="Flag" CellActive="@(result => result.Flag != "Normal")"
+                 ColumnClass="@(result => result.Flag == "Normal" ? "text-body-secondary" : "")">@context.Flag</TableColumn>
+</Table>
+<p class="small text-body-secondary mb-0">Select a test name to mark its row active; a check mark, read out as "selected", shows the selection without relying on color. The flag column says in words what the colors show. An active row drops its cell color: in dark mode, Bootstrap's active state sets the text color for the whole row, which is too light on a colored cell.</p>
+
+@code {
+    private string? selectedTest = "Potassium";
+
+    private readonly List<LabResult> results =
+    [
+        new("Hemoglobin", "13.9 g/dL", "12.0-15.5", "Normal"),
+        new("Potassium", "5.4 mmol/L", "3.5-5.1", "High"),
+        new("Glucose", "212 mg/dL", "70-99", "Critical"),
+        new("Sodium", "139 mmol/L", "135-145", "Normal")
+    ];
+
+    private record LabResult(string Test, string Value, string Range, string Flag);
+}

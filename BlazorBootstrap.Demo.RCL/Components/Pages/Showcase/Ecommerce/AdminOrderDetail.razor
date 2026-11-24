@@ -80,41 +80,22 @@ else
                 }
                 else
                 {
-                    <div class="table-responsive">
-                        <table class="table ea-table align-middle">
-                            <caption class="visually-hidden">Items in order #@order.Id</caption>
-                            <thead>
-                                <tr>
-                                    <th scope="col">Item</th>
-                                    <th scope="col">Color</th>
-                                    <th scope="col" class="text-end">Qty</th>
-                                    <th scope="col" class="text-end">Unit price</th>
-                                    <th scope="col" class="text-end">Line total</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var line in order.Lines)
-                                {
-                                    <tr>
-                                        <th scope="row" class="fw-normal">
-                                            @if (State.FindAnyProduct(line.ProductId) is not null)
-                                            {
-                                                <a href="@($"{EcommerceAdminLayout.Base}/products/{line.ProductId}")">@line.Name</a>
-                                            }
-                                            else
-                                            {
-                                                <span>@line.Name</span> <span class="small text-body-secondary">(no longer in the catalog)</span>
-                                            }
-                                        </th>
-                                        <td>@line.Color</td>
-                                        <td class="text-end">@line.Quantity</td>
-                                        <td class="text-end text-nowrap">@EcommerceDisplay.Money(line.UnitPrice)</td>
-                                        <td class="text-end text-nowrap">@EcommerceDisplay.Money(line.UnitPrice * line.Quantity)</td>
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
-                    </div>
+                    <Table Data="order.Lines" Class="ea-table align-middle" Responsive="true" Caption="@($"Items in order #{order.Id}")" VisuallyHiddenCaption="true">
+                        <TableColumn HeaderText="Item" IsRowHeader="true" ColumnClass="@(_ => "fw-normal")" Context="line">
+                            @if (State.FindAnyProduct(line.ProductId) is not null)
+                            {
+                                <a href="@($"{EcommerceAdminLayout.Base}/products/{line.ProductId}")">@line.Name</a>
+                            }
+                            else
+                            {
+                                <span>@line.Name</span> <span class="small text-body-secondary">(no longer in the catalog)</span>
+                            }
+                        </TableColumn>
+                        <TableColumn HeaderText="Color" Context="line">@line.Color</TableColumn>
+                        <TableColumn HeaderText="Qty" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" Context="line">@line.Quantity</TableColumn>
+                        <TableColumn HeaderText="Unit price" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" ColumnClass="@(_ => "text-nowrap")" Context="line">@EcommerceDisplay.Money(line.UnitPrice)</TableColumn>
+                        <TableColumn HeaderText="Line total" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" ColumnClass="@(_ => "text-nowrap")" Context="line">@EcommerceDisplay.Money(line.UnitPrice * line.Quantity)</TableColumn>
+                    </Table>
                 }
             </section>
 

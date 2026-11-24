@@ -57,7 +57,8 @@
     flex: 0 0 auto;
 }
 
-.hr-arc-table {
+/* Table renders the table, so the rule reaches it through ::deep. */
+::deep .hr-arc-table {
     --bs-table-bg: transparent;
     font-size: .875rem;
 }

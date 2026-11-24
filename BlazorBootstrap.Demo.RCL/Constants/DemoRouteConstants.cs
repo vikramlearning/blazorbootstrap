@@ -127,6 +127,7 @@ public static class DemoRouteConstants
     public const string Demos_URL_SplitView = Demos_URL_Prefix + "/split-view";
     public const string Demos_URL_SortableList = Demos_URL_Prefix + "/sortable-list";
     public const string Demos_URL_Spinners = Demos_URL_Prefix + "/spinners";
+    public const string Demos_URL_Table = Demos_URL_Prefix + "/table";
     public const string Demos_URL_Tabs = Demos_URL_Prefix + "/tabs";
     public const string Demos_URL_ThemeSwitcher = Demos_URL_Prefix + "/theme-switcher";
     public const string Demos_URL_Timeline = Demos_URL_Prefix + "/timeline";
@@ -236,6 +237,7 @@ public static class DemoRouteConstants
     public const string Docs_URL_Spinners = Docs_URL_Prefix + "/spinners";
     public const string Docs_URL_Tabs = Docs_URL_Prefix + "/tabs";
     public const string Docs_URL_ThemeSwitcher = Docs_URL_Prefix + "/theme-switcher";
+    public const string Docs_URL_Table = Docs_URL_Prefix + "/table";
     public const string Docs_URL_Timeline = Docs_URL_Prefix + "/timeline";
     public const string Docs_URL_Toasts = Docs_URL_Prefix + "/toasts";
     public const string Docs_URL_Tooltips = Docs_URL_Prefix + "/tooltips";

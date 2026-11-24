@@ -51,50 +51,37 @@
                         else
                         {
                             @* Line items of the template, edited in the form below, so they stay a plain table (AC-1). *@
-                            <div class="table-responsive">
-                                <table class="table align-middle mb-0 hr-ate-table">
-                                    <caption class="hr-ate-caption">
-                                        The template's tasks by due day, counted from the new hire's start date (day one). @AdminHelpers.OwnerSplit(template.Tasks.Select(task => task.Owner)).
-                                    </caption>
-                                    <thead>
-                                        <tr>
-                                            <th scope="col">Due</th>
-                                            <th scope="col">Task</th>
-                                            <th scope="col">Who does it</th>
-                                            <th scope="col"><span class="visually-hidden">Actions</span></th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach (var task in template.Tasks)
-                                        {
+                            <Table Data="template.Tasks" Class="align-middle mb-0 hr-ate-table" Responsive="true" RowKeySelector="task => task.Id"
+                                   RowClass="@(task => task.Id == taskEditId ? "hr-ate-row-editing" : "")" CaptionClass="hr-ate-caption"
+                                   Caption="@($"The template's tasks by due day, counted from the new hire's start date (day one). {AdminHelpers.OwnerSplit(template.Tasks.Select(task => task.Owner))}.")">
+                                <TableColumn HeaderText="Due" ColumnClass="@(_ => "hr-ate-due")" Context="task">
+                                    <span class="fw-semibold">@AdminHelpers.OffsetLabel(task.DueOffsetDays)</span>
+                                    @if (task.DueOffsetDays > 0)
+                                    {
+                                        <span class="d-block small text-body-secondary">@AdminHelpers.OffsetPhrase(task.DueOffsetDays)</span>
+                                    }
+                                </TableColumn>
+                                <TableColumn HeaderText="Task" IsRowHeader="true" ColumnClass="@(_ => "hr-ate-task fw-normal")" Context="task">@task.Title@(task.Id == taskEditId ? " (editing)" : null)</TableColumn>
+                                <TableColumn HeaderText="Who does it" ColumnClass="@(_ => "text-nowrap")" Context="task">@HrDisplay.OwnerLabel(task.Owner)</TableColumn>
+                                <TableColumn Context="task">
+                                    <HeaderContent><span class="visually-hidden">Actions</span></HeaderContent>
+                                    <ChildContent>
+                                        @{
                                             var taskId = task.Id;
                                             var editKey = "edit-" + taskId.ToString(CultureInfo.InvariantCulture);
                                             var deleteKey = "delete-" + taskId.ToString(CultureInfo.InvariantCulture);
-                                            <tr @key="task.Id" class="@(task.Id == taskEditId ? "hr-ate-row-editing" : null)">
-                                                <td class="hr-ate-due">
-                                                    <span class="fw-semibold">@AdminHelpers.OffsetLabel(task.DueOffsetDays)</span>
-                                                    @if (task.DueOffsetDays > 0)
-                                                    {
-                                                        <span class="d-block small text-body-secondary">@AdminHelpers.OffsetPhrase(task.DueOffsetDays)</span>
-                                                    }
-                                                </td>
-                                                <th scope="row" class="hr-ate-task fw-normal">@task.Title@(task.Id == taskEditId ? " (editing)" : null)</th>
-                                                <td class="text-nowrap">@HrDisplay.OwnerLabel(task.Owner)</td>
-                                                <td>
-                                                    <div class="d-flex flex-nowrap gap-1 justify-content-end">
-                                                        <button type="button" class="btn btn-sm btn-outline-secondary" @ref="rowButtons[editKey]" @onclick="() => StartEditTask(taskId)">
-                                                            Edit<span class="visually-hidden">&#32;@task.Title</span>
-                                                        </button>
-                                                        <button type="button" class="btn btn-sm btn-outline-danger" @ref="rowButtons[deleteKey]" @onclick="() => OpenDeleteTaskAsync(taskId)">
-                                                            Delete<span class="visually-hidden">&#32;@task.Title</span>
-                                                        </button>
-                                                    </div>
-                                                </td>
-                                            </tr>
                                         }
-                                    </tbody>
-                                </table>
-                            </div>
+                                        <div class="d-flex flex-nowrap gap-1 justify-content-end">
+                                            <button type="button" class="btn btn-sm btn-outline-secondary" @ref="rowButtons[editKey]" @onclick="() => StartEditTask(taskId)">
+                                                Edit<span class="visually-hidden">&#32;@task.Title</span>
+                                            </button>
+                                            <button type="button" class="btn btn-sm btn-outline-danger" @ref="rowButtons[deleteKey]" @onclick="() => OpenDeleteTaskAsync(taskId)">
+                                                Delete<span class="visually-hidden">&#32;@task.Title</span>
+                                            </button>
+                                        </div>
+                                    </ChildContent>
+                                </TableColumn>
+                            </Table>
                         }
                     </section>
 

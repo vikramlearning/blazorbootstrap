@@ -1,9 +1,10 @@
-.ea-preview {
+/* Table renders the scroll box and the head, so the selectors start from the page's own host element. */
+.ea-preview-host ::deep .ea-preview {
     max-height: 28rem;
     overflow-y: auto;
 }
 
-    .ea-preview thead th {
+    .ea-preview-host ::deep .ea-preview thead th {
         position: sticky;
         top: 0;
         z-index: 1;

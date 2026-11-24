@@ -120,71 +120,57 @@
                 <span class="small text-body-secondary">You can take a position nobody has taken over yet, and remove your own overrides until their week ends.</span>
             </CardHeader>
             <CardBody Class="pt-2">
-                <div class="table-responsive mw-grid">
-                    <table class="table oc-table">
-                        <caption class="visually-hidden">On-call rotation for the next @Weeks weeks: the primary and secondary of each week, with overrides</caption>
-                        <thead>
-                            <tr>
-                                <th scope="col">Week</th>
-                                <th scope="col">Primary</th>
-                                <th scope="col">Secondary</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var shift in weeks)
-                            {
-                                <tr @key="shift.Start">
-                                    <th scope="row" class="text-nowrap">
-                                        <span class="d-block">@WeekText(shift)</span>
-                                        @if (shift == now)
-                                        {
-                                            <Badge Color="BadgeColor.Primary" Class="mt-1">This week</Badge>
-                                        }
-                                    </th>
-                                    @foreach (var role in Enum.GetValues<MonitoringOnCallRole>())
-                                    {
-                                        var holderId = Holder(shift, role);
-                                        var otherId = Holder(shift, Other(role));
-                                        var taken = Override(shift, role);
-                                        var key = CellKey(shift, role);
-                                        <td>
-                                            <span class="fw-semibold">@Name(holderId)@(holderId == MyId ? " (you)" : null)</span>
-                                            @if (taken is not null)
-                                            {
-                                                <span class="d-block small">@Name(taken.EngineerId), covering for @Name(taken.OriginalId)</span>
-                                                @if (taken.Reason.Length > 0)
-                                                {
-                                                    <span class="d-block small text-body-secondary oc-reason">Reason: @taken.Reason</span>
-                                                }
-                                            }
-
-                                            @if (taken is not null && taken.AccountId == MyId)
-                                            {
-                                                <button type="button" class="btn btn-sm btn-outline-danger mt-2" @ref="openers[key]" @onclick="() => AskRemoveAsync(shift, role, taken, key)">
-                                                    Remove my override<span class="visually-hidden">: @RoleLabel(role).ToLowerInvariant(), @WeekText(shift)</span>
-                                                </button>
-                                            }
-                                            else if (holderId == MyId)
-                                            {
-                                                <span class="d-block small text-body-secondary">You're on call</span>
-                                            }
-                                            else if (otherId == MyId)
-                                            {
-                                                <span class="d-block small text-body-secondary">You're @RoleLabel(Other(role)).ToLowerInvariant() this week</span>
-                                            }
-                                            else if (taken is null)
-                                            {
-                                                <button type="button" class="btn btn-sm btn-outline-primary mt-2" @ref="openers[key]" @onclick="() => AskTakeAsync(shift, role, key)">
-                                                    Take this shift<span class="visually-hidden">: @RoleLabel(role).ToLowerInvariant(), @WeekText(shift)</span>
-                                                </button>
-                                            }
-                                        </td>
-                                    }
-                                </tr>
+                <Table Data="weeks" Class="oc-table" Responsive="true" TableContainerClass="mw-grid" RowKeySelector="shift => shift.Start"
+                       Caption="@($"On-call rotation for the next {Weeks} weeks: the primary and secondary of each week, with overrides")" VisuallyHiddenCaption="true">
+                    <TableColumn HeaderText="Week" IsRowHeader="true" ColumnClass="@(_ => "text-nowrap")" Context="shift">
+                        <span class="d-block">@WeekText(shift)</span>
+                        @if (shift == now)
+                        {
+                            <Badge Color="BadgeColor.Primary" Class="mt-1">This week</Badge>
+                        }
+                    </TableColumn>
+                    @foreach (var role in Enum.GetValues<MonitoringOnCallRole>())
+                    {
+                        <TableColumn HeaderText="@RoleLabel(role)" Context="shift">
+                            @{
+                                var holderId = Holder(shift, role);
+                                var otherId = Holder(shift, Other(role));
+                                var taken = Override(shift, role);
+                                var key = CellKey(shift, role);
                             }
-                        </tbody>
-                    </table>
-                </div>
+                            <span class="fw-semibold">@Name(holderId)@(holderId == MyId ? " (you)" : null)</span>
+                            @if (taken is not null)
+                            {
+                                <span class="d-block small">@Name(taken.EngineerId), covering for @Name(taken.OriginalId)</span>
+                                @if (taken.Reason.Length > 0)
+                                {
+                                    <span class="d-block small text-body-secondary oc-reason">Reason: @taken.Reason</span>
+                                }
+                            }
+
+                            @if (taken is not null && taken.AccountId == MyId)
+                            {
+                                <button type="button" class="btn btn-sm btn-outline-danger mt-2" @ref="openers[key]" @onclick="() => AskRemoveAsync(shift, role, taken, key)">
+                                    Remove my override<span class="visually-hidden">: @RoleLabel(role).ToLowerInvariant(), @WeekText(shift)</span>
+                                </button>
+                            }
+                            else if (holderId == MyId)
+                            {
+                                <span class="d-block small text-body-secondary">You're on call</span>
+                            }
+                            else if (otherId == MyId)
+                            {
+                                <span class="d-block small text-body-secondary">You're @RoleLabel(Other(role)).ToLowerInvariant() this week</span>
+                            }
+                            else if (taken is null)
+                            {
+                                <button type="button" class="btn btn-sm btn-outline-primary mt-2" @ref="openers[key]" @onclick="() => AskTakeAsync(shift, role, key)">
+                                    Take this shift<span class="visually-hidden">: @RoleLabel(role).ToLowerInvariant(), @WeekText(shift)</span>
+                                </button>
+                            }
+                        </TableColumn>
+                    }
+                </Table>
             </CardBody>
         </Card>
     </section>

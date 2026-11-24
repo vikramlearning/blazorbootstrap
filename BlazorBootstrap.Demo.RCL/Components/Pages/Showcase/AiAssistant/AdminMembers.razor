@@ -83,41 +83,24 @@
                 <section class="pa-panel h-100" aria-labelledby="pa-admem-matrix-title">
                     <h2 class="pa-section-title mb-1" id="pa-admem-matrix-title">Roles and permissions</h2>
                     <p class="small text-body-secondary mb-2">Each role has the rights of the roles before it. The workspace checks them on every action, not only on these pages.</p>
-                    <div class="table-responsive">
-                        <table class="table table-sm align-middle pa-admem-matrix mb-2">
-                            <caption class="visually-hidden">What each workspace role may do</caption>
-                            <thead>
-                                <tr>
-                                    <th scope="col">Permission</th>
-                                    @foreach (var role in Enum.GetValues<AiMemberRole>())
-                                    {
-                                        <th scope="col" class="text-center" @key="role">@AiDisplay.RoleLabel(role)</th>
-                                    }
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var permission in Enum.GetValues<AiPermission>())
+                    @* Rows are permissions and columns are roles, so the role columns come from a loop. *@
+                    <Table Data="Enum.GetValues<AiPermission>()" Class="table-sm align-middle pa-admem-matrix mb-2" Responsive="true" RowKeySelector="permission => permission"
+                           Caption="What each workspace role may do" VisuallyHiddenCaption="true">
+                        <TableColumn HeaderText="Permission" IsRowHeader="true" ColumnClass="@(_ => "fw-normal")" Context="permission">@AiDisplay.PermissionLabel(permission)</TableColumn>
+                        @foreach (var role in Enum.GetValues<AiMemberRole>())
+                        {
+                            <TableColumn HeaderText="@AiDisplay.RoleLabel(role)" TextAlignment="Alignment.Center" HeaderTextAlignment="Alignment.Center" Context="permission">
+                                @if (AiState.RoleAllows(role, permission))
                                 {
-                                    <tr @key="permission">
-                                        <th scope="row" class="fw-normal">@AiDisplay.PermissionLabel(permission)</th>
-                                        @foreach (var role in Enum.GetValues<AiMemberRole>())
-                                        {
-                                            <td class="text-center" @key="role">
-                                                @if (AiState.RoleAllows(role, permission))
-                                                {
-                                                    <Icon Name="IconName.CheckLg" class="text-success-emphasis" aria-hidden="true" /><span class="visually-hidden">Yes</span>
-                                                }
-                                                else
-                                                {
-                                                    <span class="text-body-secondary" aria-hidden="true">—</span><span class="visually-hidden">No</span>
-                                                }
-                                            </td>
-                                        }
-                                    </tr>
+                                    <Icon Name="IconName.CheckLg" class="text-success-emphasis" aria-hidden="true" /><span class="visually-hidden">Yes</span>
                                 }
-                            </tbody>
-                        </table>
-                    </div>
+                                else
+                                {
+                                    <span class="text-body-secondary" aria-hidden="true">—</span><span class="visually-hidden">No</span>
+                                }
+                            </TableColumn>
+                        }
+                    </Table>
                     <ul class="small mb-0 ps-3">
                         <li>The workspace has exactly one Owner, @State.OwnerName now. Only the Owner hands the role on, by a transfer.</li>
                         <li>Nobody changes their own role or access.</li>

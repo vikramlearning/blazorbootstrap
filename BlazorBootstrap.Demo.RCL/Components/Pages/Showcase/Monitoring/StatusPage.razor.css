@@ -217,7 +217,8 @@
         border-radius: .25rem;
     }
 
-.mw-uptime-details .table {
+/* Table renders the table, so the rule reaches it through ::deep. */
+.mw-uptime-details ::deep .table {
     --bs-table-bg: transparent;
     font-size: .875rem;
 }

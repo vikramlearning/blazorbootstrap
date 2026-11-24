@@ -98,6 +98,9 @@ public partial class Reports : ComponentBase, IDisposable
         static string Count(int value) => value.ToString("#,0", CultureInfo.InvariantCulture);
     }
 
+    /// <summary>The number of a project's open tasks past their due date.</summary>
+    private int LateCount(PbProject project) => State.TasksOf(project.Id).Count(task => PbDisplay.IsOverdue(task, State.Clock.Today));
+
     /// <summary>The next milestone due today or later, with its progress, or why there is none.</summary>
     private string NextMilestoneText(PbProject project, DateTime today)
     {

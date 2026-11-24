@@ -1,0 +1,24 @@
+<div class="d-flex flex-wrap gap-3 mb-3">
+    <Switch @bind-Value="showEmail" Label="Show email" />
+    <Switch @bind-Value="showPhone" Label="Show phone" />
+</div>
+
+<Table TItem="Contact" Data="contacts" Caption="Contacts" VisuallyHiddenCaption="true">
+    <TableColumn HeaderText="Name" IsRowHeader="true" FooterText="@($"{contacts.Count} contacts")">@context.Name</TableColumn>
+    <TableColumn HeaderText="Email" IsVisible="showEmail">@context.Email</TableColumn>
+    <TableColumn HeaderText="Phone" IsVisible="showPhone">@context.Phone</TableColumn>
+    <TableColumn HeaderText="City">@context.City</TableColumn>
+</Table>
+
+@code {
+    private bool showEmail = true;
+    private bool showPhone;
+
+    private readonly List<Contact> contacts =
+    [
+        new("Aisha Khan", "aisha.khan@example.com", "+44 20 7946 0958", "London"),
+        new("Diego Morales", "diego.morales@example.com", "+52 55 5555 0142", "Mexico City")
+    ];
+
+    private record Contact(string Name, string Email, string Phone, string City);
+}

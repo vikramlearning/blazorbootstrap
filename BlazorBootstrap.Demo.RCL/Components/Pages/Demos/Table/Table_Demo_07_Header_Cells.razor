@@ -1,0 +1,25 @@
+<Table TItem="PageVisit" Data="pages" Caption="Top pages this week" VisuallyHiddenCaption="true" VerticalAlignment="TableVerticalAlignment.Middle">
+    <TableColumn HeaderText="Page" IsRowHeader="true" HeaderClass="small text-body-secondary">@context.Path</TableColumn>
+    <TableColumn TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" HeaderClass="small text-body-secondary">
+        <HeaderContent>
+            Views <Icon Name="IconName.Eye" aria-hidden="true" />
+        </HeaderContent>
+        <ChildContent>@context.Views.ToString("N0")</ChildContent>
+    </TableColumn>
+    <TableColumn HeaderText="Conversion" HeaderClass="small text-body-secondary" HeaderStyle="min-width: 9rem;">
+        <Progress Class="mb-0" Height="8">
+            <ProgressBar Width="@context.Conversion" Label="" aria-label="@($"{context.Conversion:0}% converted")" />
+        </Progress>
+    </TableColumn>
+</Table>
+
+@code {
+    private readonly List<PageVisit> pages =
+    [
+        new("/pricing", 8420, 64),
+        new("/docs/getting-started", 6115, 41),
+        new("/blog/release-4-1", 3902, 22)
+    ];
+
+    private record PageVisit(string Path, int Views, double Conversion);
+}

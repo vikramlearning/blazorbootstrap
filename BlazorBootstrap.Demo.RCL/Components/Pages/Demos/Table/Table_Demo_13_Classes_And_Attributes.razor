@@ -1,0 +1,17 @@
+<Table TItem="Coupon" Data="coupons" Class="mb-0 shadow-sm" Style="max-width: 32rem;" data-testid="coupon-table"
+       Responsive="true" TableContainerClass="p-2 border rounded" TableContainerStyle="max-width: 34rem;"
+       Caption="Coupons used" VisuallyHiddenCaption="true">
+    <TableColumn HeaderText="Code" IsRowHeader="true" ColumnClass="@(_ => "font-monospace")">@context.Code</TableColumn>
+    <TableColumn HeaderText="Uses" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End">@context.Uses</TableColumn>
+</Table>
+
+@code {
+    private readonly List<Coupon> coupons =
+    [
+        new("WELCOME10", 214),
+        new("SPRING25", 87),
+        new("FREESHIP", 302)
+    ];
+
+    private record Coupon(string Code, int Uses);
+}

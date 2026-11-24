@@ -14,14 +14,15 @@
     overflow-wrap: anywhere;
 }
 
-.tb-ts-caption {
+/* Table renders the caption, table and cells, so these reach them through ::deep. */
+::deep .tb-ts-caption {
     caption-side: top;
     padding-top: 0;
     font-size: .8125rem;
     color: var(--bs-secondary-color);
 }
 
-.tb-ts-summary {
+::deep .tb-ts-summary {
     min-width: 36rem;
 }
 

@@ -65,32 +65,15 @@
     </div>
 
     <Collapse @ref="comparisonCollapse" id="mk-compare" OnShown="() => comparisonOpen = true" OnHidden="() => comparisonOpen = false">
-        <div class="table-responsive mt-4">
-            <table class="table align-middle">
-                <caption class="visually-hidden">Plan comparison</caption>
-                <thead>
-                    <tr>
-                        <th scope="col">Feature</th>
-                        @foreach (var plan in State.Plans)
-                        {
-                            <th scope="col" @key="plan.Id">@plan.Name</th>
-                        }
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var row in comparison)
-                    {
-                        <tr @key="row.Feature">
-                            <th scope="row" class="fw-medium">@row.Feature</th>
-                            @foreach (var plan in State.Plans)
-                            {
-                                <td @key="plan.Id">@CompareValue(row, plan)</td>
-                            }
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        </div>
+        @* Rows are features and columns are plans, so the plan columns come from a loop. *@
+        <Table Data="comparison" Class="align-middle" Responsive="true" TableContainerClass="mt-4" RowKeySelector="row => row.Feature"
+               Caption="Plan comparison" VisuallyHiddenCaption="true">
+            <TableColumn HeaderText="Feature" IsRowHeader="true" ColumnClass="@(_ => "fw-medium")" Context="row">@row.Feature</TableColumn>
+            @foreach (var plan in State.Plans)
+            {
+                <TableColumn HeaderText="@plan.Name" Context="row">@CompareValue(row, plan)</TableColumn>
+            }
+        </Table>
     </Collapse>
 
     <Callout Color="CalloutColor.Info" Heading="Non-profit or education?" Class="mt-5">

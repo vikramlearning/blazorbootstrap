@@ -54,6 +54,7 @@
     cursor: pointer;
 }
 
-.pa-usage-details .table {
+/* Table renders the tables, so the rule reaches them through ::deep. */
+.pa-usage-details ::deep .table {
     --bs-table-bg: transparent;
 }
