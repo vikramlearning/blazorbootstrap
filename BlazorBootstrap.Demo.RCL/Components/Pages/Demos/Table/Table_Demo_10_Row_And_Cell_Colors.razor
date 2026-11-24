@@ -3,15 +3,15 @@
        RowActive="@(result => result.Test == selectedTest)"
        RowClass="@(result => result.Flag == "Critical" ? "fw-semibold" : "")">
     <TableColumn HeaderText="Test" IsRowHeader="true">
-        <Button Color="ButtonColor.Link" Size="ButtonSize.Small" Class="p-0" @onclick="() => selectedTest = context.Test">@context.Test</Button>
+        <Button Color="ButtonColor.Link" Size="ButtonSize.Small" Class="p-0 text-reset" @onclick="() => selectedTest = context.Test">@context.Test</Button>
     </TableColumn>
     <TableColumn HeaderText="Result" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End"
-                 CellColor="@(result => result.Flag == "High" ? TableColor.Warning : TableColor.None)">@context.Value</TableColumn>
+                 CellColor="@(result => result.Flag == "High" && result.Test != selectedTest ? TableColor.Warning : TableColor.None)">@context.Value</TableColumn>
     <TableColumn HeaderText="Range">@context.Range</TableColumn>
     <TableColumn HeaderText="Flag" CellActive="@(result => result.Flag != "Normal")"
                  ColumnClass="@(result => result.Flag == "Normal" ? "text-body-secondary" : "")">@context.Flag</TableColumn>
 </Table>
-<p class="small text-body-secondary mb-0">Select a test name to mark its row active. The flag column says in words what the colors show.</p>
+<p class="small text-body-secondary mb-0">Select a test name to mark its row active. The flag column says in words what the colors show. An active row drops its cell color: in dark mode, Bootstrap's active state sets the text color for the whole row, which is too light on a colored cell.</p>
 
 @code {
     private string? selectedTest = "Potassium";

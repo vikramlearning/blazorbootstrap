@@ -33,6 +33,7 @@ The Blazor Bootstrap `Table` component renders a read-only Bootstrap 5.3 table f
 - Set `Caption` (or `CaptionTemplate`) to name the table. Use `VisuallyHiddenCaption` when a visible heading already names it.
 - A responsive table's scrolling wrapper takes keyboard focus, so keyboard users can scroll it with the arrow keys, and screen readers announce it as a region named by the caption.
 - Row and cell colors must never be the only way the meaning is shown: say it in a cell's text too.
+- Don't give a cell a color on an active row. In dark mode, Bootstrap's active state sets a light text color for the whole row, which falls below 4.5:1 on a colored cell.
 - The empty-state row carries no `role="alert"`, so screen readers do not announce every empty table when a page loads.
 
 ## Table parameters
