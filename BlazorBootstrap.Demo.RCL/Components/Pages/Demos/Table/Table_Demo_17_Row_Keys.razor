@@ -1,0 +1,34 @@
+<div class="d-flex flex-wrap gap-2 mb-3">
+    <Button Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="Refresh">Refresh from the server</Button>
+</div>
+
+<Table TItem="Ticket" Data="tickets" RowKeySelector="ticket => ticket.Id" Caption="Open tickets" VisuallyHiddenCaption="true">
+    <TableColumn HeaderText="Ticket" IsRowHeader="true">@context.Id</TableColumn>
+    <TableColumn HeaderText="Subject">@context.Subject</TableColumn>
+    <TableColumn HeaderText="Note">
+        <input class="form-control form-control-sm" aria-label="@($"Note for {context.Id}")" placeholder="Type a note, then refresh" />
+    </TableColumn>
+</Table>
+
+<p class="small text-body-secondary">Each refresh replaces the list with new instances of the same tickets. Rows are keyed by <code>Id</code>, so a note you typed stays in its row.</p>
+
+<Table TItem="string" Data="sizes" Caption="Sizes ordered" VisuallyHiddenCaption="true" Small="true">
+    <TableColumn HeaderText="Size">@context</TableColumn>
+</Table>
+<p class="small text-body-secondary mb-0">This list has two equal items and no <code>RowKeySelector</code>: rows have no key, so duplicates render without an error.</p>
+
+@code {
+    private List<Ticket> tickets = Load();
+    private readonly List<string> sizes = ["Medium", "Large", "Large", "Small"];
+
+    private static List<Ticket> Load() =>
+    [
+        new("HD-311", "Cannot reset password"),
+        new("HD-312", "Invoice shows the wrong address"),
+        new("HD-313", "Export to CSV times out")
+    ];
+
+    private void Refresh() => tickets = Load();
+
+    private record Ticket(string Id, string Subject);
+}

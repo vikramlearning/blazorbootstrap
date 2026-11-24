@@ -1,0 +1,54 @@
+<div class="d-flex flex-wrap gap-2 mb-3">
+    <Button Color="ButtonColor.Secondary" Size="ButtonSize.Small" @onclick="() => orders = null">Loading (Data is null)</Button>
+    <Button Color="ButtonColor.Secondary" Size="ButtonSize.Small" @onclick="() => orders = []">Empty</Button>
+    <Button Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="LoadAsync">Load orders</Button>
+</div>
+
+<Table TItem="Order" Data="orders" Caption="Recent orders" VisuallyHiddenCaption="true" EmptyText="No orders yet.">
+    <TableColumn HeaderText="Order" IsRowHeader="true">@context.Number</TableColumn>
+    <TableColumn HeaderText="Customer">@context.Customer</TableColumn>
+    <TableColumn HeaderText="Items" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" FooterText="@orders?.Sum(order => order.Items).ToString()">@context.Items</TableColumn>
+</Table>
+
+<Table TItem="Order" Data="heldOrders" Caption="Orders on hold" VisuallyHiddenCaption="true">
+    <EmptyDataTemplate>
+        <Icon Name="IconName.Inbox" aria-hidden="true" /> Nothing is on hold.
+    </EmptyDataTemplate>
+    <LoadingTemplate>
+        <Spinner Size="SpinnerSize.Small" /> Loading orders on hold
+    </LoadingTemplate>
+    <ChildContent>
+        <TableColumn HeaderText="Order" IsRowHeader="true">@context.Number</TableColumn>
+        <TableColumn HeaderText="Customer">@context.Customer</TableColumn>
+    </ChildContent>
+</Table>
+
+@code {
+    private List<Order>? orders;
+    private List<Order>? heldOrders;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await LoadAsync();
+            StateHasChanged();
+        }
+    }
+
+    private async Task LoadAsync()
+    {
+        orders = null;
+        heldOrders = null;
+        await Task.Delay(1500); // stands in for a service call
+        heldOrders = [];
+        orders =
+        [
+            new("SO-1203", "Contoso Ltd", 3),
+            new("SO-1202", "Fabrikam Inc", 1),
+            new("SO-1201", "Northwind Traders", 6)
+        ];
+    }
+
+    private record Order(string Number, string Customer, int Items);
+}

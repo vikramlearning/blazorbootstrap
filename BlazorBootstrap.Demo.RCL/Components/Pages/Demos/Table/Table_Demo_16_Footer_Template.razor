@@ -1,0 +1,40 @@
+<Table TItem="InvoiceLine" Data="lines" Caption="Invoice lines" VisuallyHiddenCaption="true" Small="true">
+    <ChildContent>
+        <TableColumn HeaderText="Item" IsRowHeader="true">@context.Item</TableColumn>
+        <TableColumn HeaderText="Hours" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End">@context.Hours</TableColumn>
+        <TableColumn HeaderText="Rate" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End">@context.Rate.ToString("C", usCulture)</TableColumn>
+        <TableColumn HeaderText="Amount" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End">@context.Amount.ToString("C", usCulture)</TableColumn>
+    </ChildContent>
+    <FooterTemplate>
+        <tr>
+            <th scope="row" colspan="3">Subtotal</th>
+            <td class="text-end">@Subtotal.ToString("C", usCulture)</td>
+        </tr>
+        <tr>
+            <th scope="row" colspan="3">Tax (10%)</th>
+            <td class="text-end">@((Subtotal * 0.10m).ToString("C", usCulture))</td>
+        </tr>
+        <tr>
+            <th scope="row" colspan="3">Total</th>
+            <td class="text-end fw-semibold">@((Subtotal * 1.10m).ToString("C", usCulture))</td>
+        </tr>
+    </FooterTemplate>
+</Table>
+
+@code {
+    private static readonly System.Globalization.CultureInfo usCulture = System.Globalization.CultureInfo.GetCultureInfo("en-US");
+
+    private readonly List<InvoiceLine> lines =
+    [
+        new("Design review", 6, 120m),
+        new("Implementation", 18, 100m),
+        new("Testing", 4, 90m)
+    ];
+
+    private decimal Subtotal => lines.Sum(line => line.Amount);
+
+    private record InvoiceLine(string Item, decimal Hours, decimal Rate)
+    {
+        public decimal Amount => Hours * Rate;
+    }
+}

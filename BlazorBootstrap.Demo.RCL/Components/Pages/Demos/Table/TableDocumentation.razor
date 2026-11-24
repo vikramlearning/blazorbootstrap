@@ -215,6 +215,83 @@
     <Demo Type="typeof(Table_Demo_13_Classes_And_Attributes)" Tabs="true" />
 </Section>
 
+<Section Size="HeadingSize.H2" Name="Loading and empty states" PageUrl="@pageUrl" Link="loading-and-empty-states">
+    <div class="mb-3">
+        While <code>Data</code> is <code>null</code>, the table shows placeholder rows under its header; when the list is empty, it shows one row with a message. Use the buttons to switch states.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Leave <code>Data</code> <code>null</code> until the rows arrive; set <code>LoadingTemplate</code> to show your own content instead of the placeholders.</li>
+                <li>Set <code>EmptyText</code> (default "No records to display"), or <code>EmptyDataTemplate</code> for markup, for an empty list.</li>
+                <li>Footers are hidden in both states.</li>
+            </ol>
+        </div>
+    </div>
+    <Demo Type="typeof(Table_Demo_14_Loading_And_Empty)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Footer" PageUrl="@pageUrl" Link="footer">
+    <div class="mb-3">
+        Give columns a footer cell for totals. The footer row appears when at least one column has a footer; other columns get an empty cell.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Set <code>FooterText</code> on a column, or <code>FooterTemplate</code> for markup.</li>
+                <li>The footer cell follows the column's <code>TextAlignment</code>.</li>
+            </ol>
+        </div>
+    </div>
+    <Demo Type="typeof(Table_Demo_15_Footer)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Footer template" PageUrl="@pageUrl" Link="footer-template">
+    <div class="mb-3">
+        Write the footer rows yourself when a label spans several columns or there is more than one footer row.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Put the columns in <code>ChildContent</code> and your <code>&lt;tr&gt;</code> rows in the table's <code>FooterTemplate</code>.</li>
+                <li>Use <code>&lt;th scope="row" colspan="…"&gt;</code> for a label that names its row.</li>
+                <li>It replaces the per-column footers and is hidden while loading or empty.</li>
+            </ol>
+        </div>
+    </div>
+    <Demo Type="typeof(Table_Demo_16_Footer_Template)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Row keys" PageUrl="@pageUrl" Link="row-keys">
+    <div class="mb-3">
+        Key rows by a record's ID so they are kept, not re-created, when the same records come back as new instances. Type a note, then refresh.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Set <code>RowKeySelector</code>, for example <code>RowKeySelector="ticket =&gt; ticket.Id"</code>. Keys must be unique.</li>
+                <li>Without it, rows have no key and are matched by position, so lists with equal items work as they are.</li>
+            </ol>
+        </div>
+    </div>
+    <Demo Type="typeof(Table_Demo_17_Row_Keys)" Tabs="true" />
+</Section>
+
+<Section Size="HeadingSize.H2" Name="Column visibility" PageUrl="@pageUrl" Link="column-visibility">
+    <div class="mb-3">
+        Hide and show columns. A hidden column renders no header, cell, or footer cell.
+        <br />
+        <strong>How to use:</strong>
+        <div class="content mb-2">
+            <ol>
+                <li>Set <code>IsVisible</code> on the column.</li>
+                <li>Prefer it over wrapping the column in <code>@@if</code>: a column added back by <code>@@if</code> moves to the end.</li>
+            </ol>
+        </div>
+    </div>
+    <Demo Type="typeof(Table_Demo_18_Column_Visibility)" Tabs="true" />
+</Section>
+
 @code {
     private const string pageUrl = DemoRouteConstants.Demos_URL_Table;
     private const string pageTitle = "Blazor Table";

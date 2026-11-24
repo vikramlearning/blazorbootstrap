@@ -12,7 +12,7 @@ public partial class TableColumn<TItem> : BlazorBootstrapComponentBase
 
     private bool isRegistered;
 
-    private bool isVisible = true;
+    private object? renderedParameters;
 
     #endregion
 
@@ -37,7 +37,7 @@ public partial class TableColumn<TItem> : BlazorBootstrapComponentBase
     {
         base.OnInitialized();
 
-        isVisible = IsVisible;
+        renderedParameters = GetValueParameters();
         isRegistered = true;
         Parent.AddColumn(this);
     }
@@ -45,9 +45,14 @@ public partial class TableColumn<TItem> : BlazorBootstrapComponentBase
     /// <inheritdoc />
     protected override void OnParametersSet()
     {
-        if (isVisible != IsVisible)
+        // The table renders before its columns receive new parameters, so a changed value (for example a footer total)
+        // asks the table to render again. Templates and functions are read when the table renders, so they never go stale,
+        // and comparing only values keeps this from re-rendering in a loop.
+        var valueParameters = GetValueParameters();
+
+        if (!Equals(renderedParameters, valueParameters))
         {
-            isVisible = IsVisible;
+            renderedParameters = valueParameters;
 
             if (isRegistered)
                 Parent.ColumnChanged();
@@ -75,6 +80,9 @@ public partial class TableColumn<TItem> : BlazorBootstrapComponentBase
     #endregion
 
     #region Private Methods
+
+    private object GetValueParameters() =>
+        (HeaderText, FooterText, HeaderClass, HeaderStyle, IsRowHeader, IsVisible, TextAlignment, HeaderTextAlignment, TextNoWrap, VerticalAlignment);
 
     /// <summary>
     /// Start is a cell's natural alignment, so only Center and End add a class; a page class such as <c>text-end</c> in

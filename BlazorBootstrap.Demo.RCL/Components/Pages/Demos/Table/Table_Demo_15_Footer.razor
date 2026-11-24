@@ -1,0 +1,22 @@
+<Table TItem="Stage" Data="stages" Caption="Open pipeline by stage" VisuallyHiddenCaption="true">
+    <TableColumn HeaderText="Stage" IsRowHeader="true" FooterText="Open total">@context.Name</TableColumn>
+    <TableColumn HeaderText="Deals" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" FooterText="@stages.Sum(stage => stage.Deals).ToString()">@context.Deals</TableColumn>
+    <TableColumn HeaderText="Note" />
+    <TableColumn HeaderText="Value" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End">
+        <ChildContent>@context.Value.ToString("C0", usCulture)</ChildContent>
+        <FooterTemplate><strong>@stages.Sum(stage => stage.Value).ToString("C0", usCulture)</strong></FooterTemplate>
+    </TableColumn>
+</Table>
+
+@code {
+    private static readonly System.Globalization.CultureInfo usCulture = System.Globalization.CultureInfo.GetCultureInfo("en-US");
+
+    private readonly List<Stage> stages =
+    [
+        new("Qualified", 14, 182000m),
+        new("Proposal", 6, 96500m),
+        new("Negotiation", 3, 61000m)
+    ];
+
+    private record Stage(string Name, int Deals, decimal Value);
+}
