@@ -87,10 +87,10 @@ The Blazor Bootstrap `Table` component renders a read-only Bootstrap 5.3 table f
 | HeaderContent | RenderFragment? | null | | Gets or sets the content of this column's header cell. Wins over `HeaderText`. | 4.1.0 |
 | HeaderStyle | string? | null | | Gets or sets the inline style of this column's header cell (`th`). | 4.1.0 |
 | HeaderText | string? | null | | Gets or sets the text of this column's header cell. | 4.1.0 |
-| HeaderTextAlignment | `Alignment` | `Alignment.Start` | | Gets or sets the horizontal alignment of this column's header cell. | 4.1.0 |
+| HeaderTextAlignment | `Alignment` | `Alignment.Start` | | Gets or sets the horizontal alignment of this column's header cell. Every value except `None` adds its `text-*` class, which overrides alignment set by page CSS; `None` adds no class, so the cells keep the alignment they inherit. | 4.1.0 |
 | IsRowHeader | bool | false | | Gets or sets whether this column's body cells are row headers (`th scope="row"`) instead of data cells. | 4.1.0 |
 | IsVisible | bool | true | | Gets or sets whether the column is shown. A hidden column renders no header, body, footer, or placeholder cell. | 4.1.0 |
-| TextAlignment | `Alignment` | `Alignment.Start` | | Gets or sets the horizontal alignment of this column's body and footer cells. | 4.1.0 |
+| TextAlignment | `Alignment` | `Alignment.Start` | | Gets or sets the horizontal alignment of this column's body and footer cells. Every value except `None` adds its `text-*` class, which overrides alignment set by page CSS; `None` adds no class, so the cells keep the alignment they inherit. | 4.1.0 |
 | TextNoWrap | bool | false | | Gets or sets whether this column's header, body, and footer cells keep their text on one line (`text-nowrap`). | 4.1.0 |
 | VerticalAlignment | `TableVerticalAlignment` | `TableVerticalAlignment.None` | | Gets or sets the vertical alignment of this column's body cells (`align-*`); `None` follows the table. | 4.1.0 |
 

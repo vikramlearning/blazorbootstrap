@@ -24,6 +24,12 @@ public partial class Table<TItem> : BlazorBootstrapComponentBase
     /// </summary>
     private bool isTableRenderPending;
 
+    /// <summary>
+    /// The component that builds the table markup. A column that changes outside the table's own render renders only this
+    /// component, so the table's <c>ChildContent</c>, and any component in it that holds columns, is not rendered again.
+    /// </summary>
+    private TableDefer? tableDefer;
+
     #endregion
 
     #region Methods
@@ -43,8 +49,9 @@ public partial class Table<TItem> : BlazorBootstrapComponentBase
     }
 
     /// <summary>
-    /// Renders the table again after a column received new parameters outside the table's own render, for example when
-    /// a component that wraps the columns re-renders by itself.
+    /// Builds the table markup again after a column received new parameters outside the table's own render: a column inside
+    /// a component that is itself inside another component, a component that re-renders by itself, or one that awaits in
+    /// <c>OnParametersSetAsync</c>.
     /// </summary>
     internal void ColumnChanged() => RenderIfIdle();
 
@@ -73,10 +80,20 @@ public partial class Table<TItem> : BlazorBootstrapComponentBase
 
     private List<TableColumn<TItem>> GetVisibleColumns() => columns.Where(column => column.IsVisible).ToList();
 
+    /// <summary>
+    /// Builds the table markup again unless the table's own render is still in progress and will pick the change up.
+    /// It renders only <see cref="TableDefer" />, not the table: rendering the table would give the components that hold the
+    /// columns new parameters, their columns would report a change again, and the table would never stop rendering.
+    /// </summary>
     private void RenderIfIdle()
     {
-        if (!isTableRenderPending)
+        if (isTableRenderPending)
+            return;
+
+        if (tableDefer is null)
             StateHasChanged();
+        else
+            tableDefer.Render();
     }
 
     #endregion

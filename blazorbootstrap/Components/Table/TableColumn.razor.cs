@@ -204,14 +204,16 @@ public partial class TableColumn<TItem> : BlazorBootstrapComponentBase
     public string? HeaderText { get; set; }
 
     /// <summary>
-    /// Gets or sets the horizontal alignment of this column's header cell.
+    /// Gets or sets the horizontal alignment of this column's header cell. Every value except <see cref="Alignment.None" /> adds its
+    /// <c>text-*</c> class, which overrides alignment set by page CSS; <see cref="Alignment.None" /> adds no class, so the cells
+    /// keep the alignment they inherit.
     /// <para>
     /// Default value is <see cref="Alignment.Start" />.
     /// </para>
     /// </summary>
     [AddedVersion("4.1.0")]
     [DefaultValue(Alignment.Start)]
-    [Description("Gets or sets the horizontal alignment of this column's header cell.")]
+    [Description("Gets or sets the horizontal alignment of this column's header cell. Every value except <b>None</b> adds its <b>text-*</b> class, which overrides alignment set by page CSS; <b>None</b> adds no class, so the cells keep the alignment they inherit.")]
     [Parameter]
     public Alignment HeaderTextAlignment { get; set; } = Alignment.Start;
 
@@ -244,14 +246,16 @@ public partial class TableColumn<TItem> : BlazorBootstrapComponentBase
     internal Table<TItem> Parent { get; set; } = default!;
 
     /// <summary>
-    /// Gets or sets the horizontal alignment of this column's body and footer cells.
+    /// Gets or sets the horizontal alignment of this column's body and footer cells. Every value except <see cref="Alignment.None" /> adds its
+    /// <c>text-*</c> class, which overrides alignment set by page CSS; <see cref="Alignment.None" /> adds no class, so the cells
+    /// keep the alignment they inherit.
     /// <para>
     /// Default value is <see cref="Alignment.Start" />.
     /// </para>
     /// </summary>
     [AddedVersion("4.1.0")]
     [DefaultValue(Alignment.Start)]
-    [Description("Gets or sets the horizontal alignment of this column's body and footer cells.")]
+    [Description("Gets or sets the horizontal alignment of this column's body and footer cells. Every value except <b>None</b> adds its <b>text-*</b> class, which overrides alignment set by page CSS; <b>None</b> adds no class, so the cells keep the alignment they inherit.")]
     [Parameter]
     public Alignment TextAlignment { get; set; } = Alignment.Start;
 

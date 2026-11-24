@@ -17,6 +17,17 @@ internal sealed class TableDefer : ComponentBase
 
     #endregion
 
+    #region Internal Methods
+
+    /// <summary>
+    /// Builds the table markup again from the columns' current parameters. Only this component renders, not the table's
+    /// <c>ChildContent</c>, so the components that hold the columns get no new parameters and the render cannot come back as
+    /// another column change.
+    /// </summary>
+    internal void Render() => StateHasChanged();
+
+    #endregion
+
     #endregion
 
     #region Properties, Indexers

@@ -16,6 +16,7 @@
     {
         builder.OpenComponent<TableDefer>(0);
         builder.AddComponentParameter(1, nameof(TableDefer.ChildContent), (RenderFragment)RenderContainer);
+        builder.AddComponentReferenceCapture(2, component => tableDefer = (TableDefer)component);
         builder.CloseComponent();
     };
 
