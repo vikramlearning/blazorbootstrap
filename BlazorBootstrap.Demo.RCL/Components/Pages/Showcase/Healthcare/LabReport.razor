@@ -33,50 +33,29 @@
                 <div class="hc-lab-main">
                     <section class="hc-panel" aria-labelledby="hc-lab-results-title">
                         <h2 class="hc-section-title" id="hc-lab-results-title">Results</h2>
-                        <div class="table-responsive">
-                            <table class="table align-middle mb-2">
-                                <caption class="visually-hidden">Results of your @panel.Name, released @HcDisplay.Date(released), with each reference range</caption>
-                                <thead>
-                                    <tr>
-                                        <th scope="col">Test</th>
-                                        <th scope="col" class="text-end">Result</th>
-                                        <th scope="col">Unit</th>
-                                        <th scope="col">Reference range</th>
-                                        <th scope="col">Flag</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @for (var index = 0; index < panel.Analytes.Count; index++)
-                                    {
-                                        var analyte = panel.Analytes[index];
-                                        double? value = index < order.Values.Count ? order.Values[index] : null;
-                                        var flag = value is { } shown ? HcState.Flag(analyte, shown) : null;
-                                        var unusual = flag is "High" or "Low";
-
-                                        <tr class="@(unusual ? "hc-lab-unusual" : null)">
-                                            <th scope="row" class="fw-semibold">@analyte.Name</th>
-                                            <td class="text-end text-nowrap @(unusual ? "fw-bold" : null)">@(value is { } number ? HcDisplay.Number(number) : "Not reported")</td>
-                                            <td class="text-nowrap">@analyte.Unit</td>
-                                            <td class="text-nowrap">@RangeLabel(analyte)</td>
-                                            <td class="text-nowrap">
-                                                @if (flag == "High")
-                                                {
-                                                    <span class="fw-bold text-danger-emphasis"><Icon Name="IconName.ArrowUpCircleFill" class="me-1" aria-hidden="true" />High</span>
-                                                }
-                                                else if (flag == "Low")
-                                                {
-                                                    <span class="fw-bold text-danger-emphasis"><Icon Name="IconName.ArrowDownCircleFill" class="me-1" aria-hidden="true" />Low</span>
-                                                }
-                                                else
-                                                {
-                                                    <span>@(flag ?? "None")</span>
-                                                }
-                                            </td>
-                                        </tr>
-                                    }
-                                </tbody>
-                            </table>
-                        </div>
+                        @* Each analyte paired with its value (by position) and its flag, one row each. *@
+                        <Table Data="@(panel.Analytes.Select((analyte, index) => { double? value = index < order.Values.Count ? order.Values[index] : null; return (Analyte: analyte, Value: value, Flag: value is { } shown ? HcState.Flag(analyte, shown) : null); }))"
+                               Class="align-middle mb-2" Responsive="true" RowClass="@(row => row.Flag is "High" or "Low" ? "hc-lab-unusual" : "")"
+                               Caption="@($"Results of your {panel.Name}, released {HcDisplay.Date(released)}, with each reference range")" VisuallyHiddenCaption="true">
+                            <TableColumn HeaderText="Test" IsRowHeader="true" ColumnClass="@(_ => "fw-semibold")" Context="row">@row.Analyte.Name</TableColumn>
+                            <TableColumn HeaderText="Result" TextAlignment="Alignment.End" HeaderTextAlignment="Alignment.End" ColumnClass="@(row => row.Flag is "High" or "Low" ? "text-nowrap fw-bold" : "text-nowrap")" Context="row">@(row.Value is { } number ? HcDisplay.Number(number) : "Not reported")</TableColumn>
+                            <TableColumn HeaderText="Unit" ColumnClass="@(_ => "text-nowrap")" Context="row">@row.Analyte.Unit</TableColumn>
+                            <TableColumn HeaderText="Reference range" ColumnClass="@(_ => "text-nowrap")" Context="row">@RangeLabel(row.Analyte)</TableColumn>
+                            <TableColumn HeaderText="Flag" ColumnClass="@(_ => "text-nowrap")" Context="row">
+                                @if (row.Flag == "High")
+                                {
+                                    <span class="fw-bold text-danger-emphasis"><Icon Name="IconName.ArrowUpCircleFill" class="me-1" aria-hidden="true" />High</span>
+                                }
+                                else if (row.Flag == "Low")
+                                {
+                                    <span class="fw-bold text-danger-emphasis"><Icon Name="IconName.ArrowDownCircleFill" class="me-1" aria-hidden="true" />Low</span>
+                                }
+                                else
+                                {
+                                    <span>@(row.Flag ?? "None")</span>
+                                }
+                            </TableColumn>
+                        </Table>
                         <p class="small text-body-secondary mb-0">"High" or "Low" means outside the lab's usual range, not always a problem. Demo only: these results are made up, and nothing here is medical advice.</p>
                     </section>
 

@@ -1,5 +1,5 @@
 /* Lab values: the caption reads as a small heading above the table. */
-.hc-lrt-table caption {
+.hc-lrt ::deep .hc-lrt-table caption {
     caption-side: top;
     padding-top: 0;
     color: var(--bs-secondary-color);

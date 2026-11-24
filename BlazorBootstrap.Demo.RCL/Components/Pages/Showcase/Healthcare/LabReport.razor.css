@@ -13,7 +13,8 @@
     }
 }
 
-.hc-lab-unusual {
+/* Table renders the rows, so the row class reaches them through ::deep. */
+::deep .hc-lab-unusual {
     --bs-table-bg: var(--bs-danger-bg-subtle);
 }
 

@@ -134,53 +134,39 @@
         <section aria-labelledby="hc-cal-week-title">
             <h2 class="hc-section-title" id="hc-cal-week-title">Week of @HcDisplay.Day(weekStart) to @HcDisplay.Day(weekStart.AddDays(6))</h2>
             <div class="hc-panel p-0">
-                <div class="table-responsive">
-                    <table class="table table-sm align-middle mb-0 hc-cal-week">
-                        <caption class="visually-hidden">
-                            Appointments per doctor and day, week of @HcDisplay.Day(weekStart)@(clinicFilter is not null ? $", at {State.FindClinic(clinicFilter)?.Name}" : null), not counting cancelled ones. Each day links to its calendar.
-                        </caption>
-                        <thead>
-                            <tr>
-                                <th scope="col">Doctor</th>
-                                @for (var offset = 0; offset < 7; offset++)
-                                {
-                                    var day = weekStart.AddDays(offset);
-                                    <th scope="col" class="text-center">
-                                        <a href="@DateUrl(day)" aria-current="@(day == date ? "date" : null)" class="@(day == date ? "fw-bold" : null)">@HcDisplay.Day(day)</a>
-                                    </th>
+                <Table Data="WeekRows(weekStart)" Class="table-sm align-middle mb-0 hc-cal-week" Responsive="true" RowKeySelector="row => row.Doctor.Id"
+                       Caption="@($"Appointments per doctor and day, week of {HcDisplay.Day(weekStart)}{(clinicFilter is not null ? $", at {State.FindClinic(clinicFilter)?.Name}" : null)}, not counting cancelled ones. Each day links to its calendar.")"
+                       VisuallyHiddenCaption="true">
+                    <TableColumn HeaderText="Doctor" IsRowHeader="true" ColumnClass="@(_ => "hc-cal-week-doc")" Context="row">@row.Doctor.Name</TableColumn>
+                    @for (var offset = 0; offset < 7; offset++)
+                    {
+                        var dayIndex = offset;
+                        var day = weekStart.AddDays(dayIndex);
+                        <TableColumn TextAlignment="Alignment.Center" HeaderTextAlignment="Alignment.Center" Context="row">
+                            <HeaderContent>
+                                <a href="@DateUrl(day)" aria-current="@(day == date ? "date" : null)" class="@(day == date ? "fw-bold" : null)">@HcDisplay.Day(day)</a>
+                            </HeaderContent>
+                            <ChildContent>
+                                @{
+                                    var cell = row.Cells[dayIndex];
                                 }
-                                <th scope="col" class="text-center">Week</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var row in WeekRows(weekStart))
-                            {
-                                <tr @key="row.Doctor.Id">
-                                    <th scope="row" class="hc-cal-week-doc">@row.Doctor.Name</th>
-                                    @for (var offset = 0; offset < 7; offset++)
-                                    {
-                                        var cell = row.Cells[offset];
-                                        <td class="text-center">
-                                            @if (cell.Away)
-                                            {
-                                                <span class="small text-body-secondary">Away</span>
-                                            }
-                                            else if (!cell.Works && cell.Count == 0)
-                                            {
-                                                <span aria-hidden="true">—</span><span class="visually-hidden">No hours</span>
-                                            }
-                                            else
-                                            {
-                                                @cell.Count
-                                            }
-                                        </td>
-                                    }
-                                    <td class="text-center fw-semibold">@row.Cells.Sum(cell => cell.Count)</td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
-                </div>
+                                @if (cell.Away)
+                                {
+                                    <span class="small text-body-secondary">Away</span>
+                                }
+                                else if (!cell.Works && cell.Count == 0)
+                                {
+                                    <span aria-hidden="true">—</span><span class="visually-hidden">No hours</span>
+                                }
+                                else
+                                {
+                                    @cell.Count
+                                }
+                            </ChildContent>
+                        </TableColumn>
+                    }
+                    <TableColumn HeaderText="Week" TextAlignment="Alignment.Center" HeaderTextAlignment="Alignment.Center" ColumnClass="@(_ => "fw-semibold")" Context="row">@row.Cells.Sum(cell => cell.Count)</TableColumn>
+                </Table>
             </div>
         </section>
     </div>

@@ -125,26 +125,11 @@
                         }
                         else
                         {
-                            <div class="table-responsive">
-                                <table class="table table-sm mb-2">
-                                    <caption class="visually-hidden">Your vaccinations, newest first</caption>
-                                    <thead>
-                                        <tr>
-                                            <th scope="col">Vaccine</th>
-                                            <th scope="col">Date given</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach (var shot in patient.Immunizations.OrderByDescending(item => item.Date))
-                                        {
-                                            <tr>
-                                                <th scope="row" class="fw-normal">@shot.Name</th>
-                                                <td class="text-nowrap">@HcDisplay.Date(shot.Date)</td>
-                                            </tr>
-                                        }
-                                    </tbody>
-                                </table>
-                            </div>
+                            <Table Data="patient.Immunizations.OrderByDescending(item => item.Date)" Class="table-sm mb-2" Responsive="true"
+                                   Caption="Your vaccinations, newest first" VisuallyHiddenCaption="true">
+                                <TableColumn HeaderText="Vaccine" IsRowHeader="true" ColumnClass="@(_ => "fw-normal")" Context="shot">@shot.Name</TableColumn>
+                                <TableColumn HeaderText="Date given" ColumnClass="@(_ => "text-nowrap")" Context="shot">@HcDisplay.Date(shot.Date)</TableColumn>
+                            </Table>
                         }
                         <p class="small text-body-secondary mb-0">Your doctor adds vaccinations given at our clinics. Bring a record of ones given elsewhere to your next visit.</p>
                     </section>
