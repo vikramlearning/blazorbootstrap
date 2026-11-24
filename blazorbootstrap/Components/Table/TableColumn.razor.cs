@@ -71,7 +71,7 @@ public partial class TableColumn<TItem> : BlazorBootstrapComponentBase
     /// </summary>
     internal string? GetCellClassNames(TItem item) =>
         Table<TItem>.NullIfEmpty(BuildClassNames(ColumnClass?.Invoke(item),
-            (TextAlignment.ToTextAlignmentClass(), NeedsAlignmentClass(TextAlignment)),
+            (TextAlignment.ToTextAlignmentClass(), TextAlignment != Alignment.None),
             (BootstrapClass.TextNoWrap, TextNoWrap),
             (VerticalAlignment.ToTableVerticalAlignmentClass(), VerticalAlignment != TableVerticalAlignment.None),
             ((CellColor?.Invoke(item) ?? TableColor.None).ToTableColorClass(), CellColor is not null),
@@ -83,12 +83,6 @@ public partial class TableColumn<TItem> : BlazorBootstrapComponentBase
 
     private object GetValueParameters() =>
         (HeaderText, FooterText, HeaderClass, HeaderStyle, IsRowHeader, IsVisible, TextAlignment, HeaderTextAlignment, TextNoWrap, VerticalAlignment);
-
-    /// <summary>
-    /// Start is a cell's natural alignment, so only Center and End add a class; a page class such as <c>text-end</c> in
-    /// <see cref="ColumnClass" /> then never competes with an implicit <c>text-start</c>.
-    /// </summary>
-    private static bool NeedsAlignmentClass(Alignment alignment) => alignment is Alignment.Center or Alignment.End;
 
     #endregion
 
@@ -147,7 +141,7 @@ public partial class TableColumn<TItem> : BlazorBootstrapComponentBase
 
     internal string? FooterClassNames =>
         Table<TItem>.NullIfEmpty(BuildClassNames(
-            (TextAlignment.ToTextAlignmentClass(), NeedsAlignmentClass(TextAlignment)),
+            (TextAlignment.ToTextAlignmentClass(), TextAlignment != Alignment.None),
             (BootstrapClass.TextNoWrap, TextNoWrap)));
 
     /// <summary>
@@ -190,7 +184,7 @@ public partial class TableColumn<TItem> : BlazorBootstrapComponentBase
 
     internal string? HeaderClassNames =>
         Table<TItem>.NullIfEmpty(BuildClassNames(HeaderClass,
-            (HeaderTextAlignment.ToTextAlignmentClass(), NeedsAlignmentClass(HeaderTextAlignment)),
+            (HeaderTextAlignment.ToTextAlignmentClass(), HeaderTextAlignment != Alignment.None),
             (BootstrapClass.TextNoWrap, TextNoWrap)));
 
     /// <summary>
